@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.varsql.web.app.manage">
+
+	<select id="selectUserTotalcnt" parameterType="map" resultType="int">
+		select count(1) as totalcnt 
+		from vtuser 
+		where (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
+	</select>
+
+	<select id="selectUserList" parameterType="map" resultType="map">
+		select a.*, CHAR (a.cre_dt) as char_cre_dt
+		from vtuser a
+		where (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
+		order by viewid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+	</select>
+	
+	<delete id="deleteUserInfo" parameterType="map">
+		delete from vtuser where viewid =#{viewid}
+	</delete>
+	
+	<update id="updateAccept" parameterType="map">
+		update vtuser 
+		set 
+			role =#{role}
+			,accept_yn=#{acceptyn}
+		where viewid =#{viewid}
+	</update>
+	
+	<select id="selectQnaMgmtTotalCnt" parameterType="map" resultType="int">
+		select count(1) as totalcnt
+		from vtqna a
+		where del_yn !='Y'
+<if test="answerYn != null and answerYn.equalsIgnoreCase('Y')">
+	AND answer !=''
+</if>
+<if test="answerYn != null and answerYn.equalsIgnoreCase('N')">
+	AND answer =''
+</if>
+		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
+	</select>
+	
+	<select id="selectQnaMgmtList" parameterType="map" resultType="com.varsql.web.common.vo.DataCommonVO">
+		select a.*, b.uname, CHAR (a.cre_dt) as char_cre_dt, char(a.upd_dt) as char_upd_dt
+		from vtqna a , vtuser b
+		where del_yn !='Y'
+<if test="answerYn != null and answerYn.equalsIgnoreCase('Y')">
+	AND answer !=''
+</if>
+<if test="answerYn != null and answerYn.equalsIgnoreCase('N')">
+	AND answer =''
+</if>
+		and a.cre_id = b.viewid
+		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
+		order by qnaid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+	</select>
+	
+	<update id="updateQnaAnswerContent" parameterType="map">
+		update vtqna
+		set
+			answer =#{answer}
+			,upd_id =#{cre_id}
+			,upd_dt = CURRENT TIMESTAMP
+		where qnaid=#{qnaid}
+	</update>
+	
+	<select id="selectdbList" parameterType="map" resultType="map">
+		select
+			a.vconnid
+			,a.vname
+		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
+		where a.vconnid = b.vconnid
+		and b.viewid = #{uid}
+		and (a.vname like '%'||#{searchval}||'%' or a.vurl like '%'||#{searchval}||'%') 
+		order  by a.vconnid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+	</select>
+	
+	<select id="selectdbListTotalCnt" parameterType="map" resultType="int">
+		select count(1) as totalcnt 
+		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
+		where a.vconnid = b.vconnid
+		and b.viewid = #{uid}
+		and (a.vname like '%'||#{searchval}||'%' or a.vurl like '%'||#{searchval}||'%') 
+	</select>
+	
+	<select id="selectDbUserMappingList" parameterType="map" resultType="map">
+		select * 
+		from vtuser a left outer join vtdatabase_user_role b 
+		on a.viewid = b.viewid 
+		and b.vconnid = #{vconnid}
+		where (b.vconnid = #{vconnid} or b.vconnid is null ) 
+	</select>
+	
+	<delete id="deleteDbUser" parameterType="map">
+		delete from vtdatabase_user_role
+		where vconnid = #{vconnid}
+	</delete>
+	
+	<update id="updateDbUser" parameterType="map">
+		insert into vtdatabase_user_role (vconnid, viewid , upd_id ,upd_dt)
+		values(
+			#{vconnid}
+			, #{viewid}
+			, #{upd_id}
+			,CURRENT TIMESTAMP
+		)
+	</update>
+	
+	<!-- sql 로그 통계 날짜별 통계  -->
+	<select id="selectSqlDateStat" parameterType="map" resultType="map">
+		select 
+			date(max(start_time)) VIEW_DATE, CASE WHEN s_mm >10 then cast(s_mm AS CHAR(2)) else  '0'||CAST (s_mm AS CHAR(1)) END||'-'||CAST(CAST (s_dd AS CHAR(2))  AS VARCHAR(2)) X_COL
+			, count(1) as Y_COL 
+		from VTSQL_LOG a
+		where	vconnid=#{vconnid}
+		and start_time between #{s_date} and	#{e_date}
+		group by s_mm , s_dd
+		order by s_mm, s_dd
+	</select>
+	
+	<!-- 
+	sql 로그 통계 날짜별 통계
+	select ,insert ,update	,delete	,create,alter,drop
+	  -->
+	<select id="selectSqlDayStat" parameterType="map" resultType="map">
+			select 
+			COMMAND_TYPE X_COL, count(1) as Y_COL
+		from VTSQL_LOG a
+		where	vconnid=#{vconnid}
+		and start_time between #{s_date} and	#{e_date}
+		group by COMMAND_TYPE
+	</select>
+	
+	<!-- 
+		날짜별 top 5 
+	 -->
+	<select id="selectSqlDayUserRank" parameterType="map" resultType="map">
+		select b.uname label , cnt as data from 
+		(
+			select 
+				UID, count(1) cnt 
+			from VTSQL_LOG a
+			where	vconnid=#{vconnid}
+			and start_time between #{s_date} and	#{e_date}
+<if test="command_type != null and command_type != '' and !command_type.equalsIgnoreCase('ETC')">
+	AND command_type =#{command_type}
+</if>
+			group by UID 
+			order by cnt desc	  
+			FETCH FIRST 5 ROWS ONLY
+		) a , vtuser b
+		where a.uid = b.viewid
+	</select>
+</mapper>

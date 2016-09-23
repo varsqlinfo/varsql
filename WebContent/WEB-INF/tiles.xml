@@ -1,0 +1,78 @@
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	
+	<!-- user main layout -->
+	<definition name="user-tiles" template="/WEB-INF/views/user/_templates/main.jsp">
+		<put-attribute name="title" value="user" type="string" />
+		<put-attribute name="header" value="/WEB-INF/views/user/_templates/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/user/_templates/footer.jsp" />
+		<put-attribute name="left" value="/WEB-INF/views/user/_templates/left.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/user/_templates/blank.jsp" />
+	</definition>
+	
+    <definition name="/user/**" extends="user-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/user/{1}.jsp" />
+    </definition>
+
+	<!-- manager main layout -->
+	<definition name="manager-tiles" template="/WEB-INF/views/manager/_templates/main.jsp">
+		<put-attribute name="title" value="manager" type="string" />
+		<put-attribute name="header" value="/WEB-INF/views/manager/_templates/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/manager/_templates/footer.jsp" />
+		<put-attribute name="left" value="/WEB-INF/views/manager/_templates/left.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/manager/_templates/blank.jsp" />
+	</definition>
+	
+    <definition name="/manager/**" extends="manager-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/manager/{1}.jsp" />
+    </definition>
+	
+	
+	<!-- admin main layout -->
+	<definition name="admin-tiles" template="/WEB-INF/views/admin/_templates/main.jsp">
+		<put-attribute name="title" value="administrator" type="string" />
+		<put-attribute name="header" value="/WEB-INF/views/admin/_templates/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/admin/_templates/footer.jsp" />
+		<put-attribute name="left" value="/WEB-INF/views/admin/_templates/left.jsp" />
+		<put-attribute name="body" value="" />
+	</definition>
+	
+    <definition name="/admin/**" extends="admin-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
+    </definition>
+    
+    <definition name="/database/*/*" template="/WEB-INF/views/database/_templates/main.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/views/database/{1}/{2}.jsp" />
+    </definition>
+    
+    <!-- login -->
+	<definition name="/login/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+		<put-attribute name="body" value="/WEB-INF/views/login/{1}.jsp" />
+	</definition>
+	
+	<!-- join -->
+	<definition name="/join/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+		<put-attribute name="body" value="/WEB-INF/views/join/{1}.jsp" />
+	</definition>
+	
+	<!-- guest -->
+	<definition name="/guest/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+		<put-attribute name="body" value="/WEB-INF/views/guest/{1}.jsp" />
+	</definition>
+	
+	<!-- error -->
+	<definition name="/error/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+		<put-attribute name="body" value="/WEB-INF/views/error/{1}.jsp" />
+	</definition>
+
+
+	<!-- no tiles 
+	<definition name="no-tiles" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+		<put-attribute name="noTemplate" value="" />
+	</definition -->
+
+	
+
+</tiles-definitions>

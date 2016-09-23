@@ -1,0 +1,117 @@
+package com.varsql.web.app.guest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.util.SecurityUtil;
+
+
+
+/**
+ * The Class OutsideController.
+ */
+@Controller
+@RequestMapping("/guest")
+public class GuestController {
+
+	/** The Constant logger. */
+	private static final Logger logger = LoggerFactory.getLogger(GuestController.class);
+	
+	@Autowired
+	private GuestService guestService;
+
+	@RequestMapping({""})
+	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return new ModelAndView("redirect:/guest/");
+	}
+	
+	@RequestMapping({"/","/main"})
+	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		return  new ModelAndView("/guest/guestMain");
+	}
+	
+	@RequestMapping(value = "/qnaList")
+	public @ResponseBody String qnalist(HttpServletRequest req 
+			,@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
+			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
+		) throws Exception {
+	
+		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put("page", page);
+		paramMap.put("rows", rows);
+		paramMap.put("searchval", searchval);
+	
+		paramMap.put("uid", SecurityUtil.loginId(req));
+		
+		return guestService.selectQna(paramMap);
+	}
+	
+	@RequestMapping(value="/insQna")
+	public ModelAndView qna(HttpServletRequest req 
+			,@RequestParam(value = "title", required = true)  String title
+			,@RequestParam(value = "question", required = false )  String question) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("title", title);
+		paramMap.put("question", question);
+		paramMap.put("cre_id", SecurityUtil.loginId(req));
+		
+		guestService.insertQnaInfo(paramMap);
+		
+		return  new ModelAndView("redirect:/guest/");
+	}
+	
+	@RequestMapping(value="/delQna")
+	public ModelAndView qnaDelete(@RequestParam(value = "qnaid")  String qnaid) throws Exception {
+		
+		DataCommonVO dcv = new DataCommonVO();
+		
+		dcv.put("qnaid", qnaid);
+		
+		guestService.deleteQnaInfo(dcv);
+		
+		return new ModelAndView("redirect:/guest/");
+	}
+	
+	@RequestMapping(value="/updQna")
+	public ModelAndView qnaUpdate(HttpServletRequest req 
+			,@RequestParam(value = "qnaid")  String qnaid
+			,@RequestParam(value = "title", required = true)  String title
+			,@RequestParam(value = "question", required = false )  String question) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("qnaid", qnaid);
+		paramMap.put("title", title);
+		paramMap.put("question", question);
+		paramMap.put("cre_id", SecurityUtil.loginId(req));
+		
+		guestService.updateQnaInfo(paramMap);
+		
+		return new ModelAndView("redirect:/guest/");
+	}
+	
+	@RequestMapping(value = "/detailQna")
+	public @ResponseBody String dbDetail(@RequestParam(value = "qnaid") String qnaid) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("qnaid", qnaid);
+		
+		return guestService.selectDetailQna(paramMap);
+	}
+	
+	
+}

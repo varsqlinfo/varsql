@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>varsql</comment>
+<entry key="page.title.varsql">Varsql</entry>
+
+<entry key="msg.login">Log In</entry>
+<entry key="msg.signup">Sign Up</entry>
+<entry key="msg.save">Save</entry>
+<entry key="msg.login.fail">Incorrect login name or password. Please retry using correct login name and password.</entry>
+
+
+</properties>

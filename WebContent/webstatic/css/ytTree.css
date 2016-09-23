@@ -1,0 +1,38 @@
+.style2 {
+	color: #333;
+	background-color:#c0d2ec;
+}
+
+.ytTree{
+	font-family:맑은 고딕, Courier New,Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	line-height: 15px;
+}
+
+.ytTree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.ytTree div a {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color: #333;
+	text-decoration: none;
+	padding-left:0px;
+}
+
+.ytTree div {
+	height:18px;
+}
+.ytTree div a {
+	line-height: 20px;
+	color: #333;
+	background-color:#ffffff;
+}
+
+.ytTree div a:focus{
+	color: #333333;
+	background-color:#c0d2ec;
+}

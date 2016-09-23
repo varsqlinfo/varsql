@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>varsql</comment>
+<entry key="page.title.varsql">Varsql</entry>
+<entry key="user.home.title">- VarSQL -</entry>
+<entry key="manager.home.title">-- Manager --</entry>
+<entry key="admin.home.title">--- Admin ---</entry>
+<entry key="msg.please.sign.in">VARSQL 로그인</entry>
+
+
+<entry key="header.menu.file">File</entry>
+<entry key="header.menu.edit">Edit</entry>
+<entry key="header.menu.help">Help</entry>
+
+
+<entry key="screen">화면</entry>
+<entry key="screen.user">사용자</entry>
+<entry key="screen.manager">매니저</entry>
+<entry key="screen.admin">관리자</entry>
+
+<!-- admin menu -->
+<entry key="admin.menu.database">Databse</entry>
+<entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
+<entry key="admin.menu.report">Report</entry>
+<entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
+
+<!-- manage menu -->
+<entry key="manage.menu.usermgmt">사용자 관리</entry>
+<entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manage.menu.logmgmt">로그 통계</entry>
+<entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
+<entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
+
+
+<entry key="login.form.id">아이디</entry>
+<entry key="login.form.pw">패스워드</entry>
+
+<!-- guest  -->
+<entry key="guest.title">환영합니다.</entry>
+<entry key="guest.message"><![CDATA[님 아직 권한이 처리 되지 않았습니다</br> 관리자에게 문의하시기 바랍니다.]]></entry>
+<entry key="btn.contact">문의</entry>
+<entry key="btn.login.screen">로그인 화면</entry>
+<entry key="guest.form.title">제목</entry>
+<entry key="guest.form.question">문의사항</entry>
+<entry key="guest.form.answer">답변</entry>
+
+<!-- join form -->
+<entry key="join.form.title">회원가입</entry>
+<entry key="join.form.email">이메일</entry>
+<entry key="join.form.name">이름</entry>
+<entry key="join.form.dept">소속</entry>
+
+<entry key="join.form.password">비밀번호</entry>
+<entry key="join.form.password.confirm">비밀번호 확인</entry>
+<entry key="btn.join">가입신청</entry>
+<entry key="btn.main">메인으로</entry>
+
+
+<!-- button message -->
+<entry key="btn.save">저장</entry>
+<entry key="btn.delete">삭제</entry>
+<entry key="btn.add">추가</entry>
+<entry key="btn.connnection.check">연결 테스트</entry>
+<entry key="btn.login">로그인</entry>
+<entry key="btn.accept">수락</entry>
+<entry key="btn.denial">거부</entry>
+
+
+<entry key="btn.profile">프로파일</entry>
+<entry key="btn.setting">셋팅</entry>
+<entry key="btn.signup">회원가입</entry>
+<entry key="btn.logout">로그아웃</entry>
+<entry key="btn.search">검색</entry>
+
+<entry key="msg.email.empty">이메일을 입력하세요</entry>
+<entry key="msg.title.empty">제목을 입력하세요</entry>
+<entry key="msg.contactus.empty">문의사항을 입력하세요</entry>
+<entry key="msg.name.empty">이름을 입력하세요</entry>
+<entry key="msg.password.empty">패스워드를 입력하세요</entry>
+<entry key="msg.password.differrent">패스워드가 같지 않습니다</entry>
+<entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
+<entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
+<entry key="msg.save.confirm">저장 하시겠습니까?</entry>
+<entry key="msg.save.success">저장 되었습니다</entry>
+<entry key="msg.save.fail">저장을 실패 하였습니다</entry>
+<entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
+<entry key="msg.nodata">데이타가 없습니다.</entry>
+<entry key="msg.success">성공</entry>
+<entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
+<entry key="msg.data.select">데이터를 선택하시오.</entry>
+<entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
+<entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
+<entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
+<entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
+
+
+<entry key="msg.warning.select">선택하시오</entry>
+<entry key="msg.records.per.page">페이지 당 레코드</entry>
+
+
+<entry key="admin.form.header">Database info</entry>
+<entry key="admin.form.db.vname">db명</entry>
+<entry key="admin.form.db.vurl">Url</entry>
+<entry key="admin.form.db.vdriver">Driver</entry>
+<entry key="admin.form.db.vtype">Type</entry>
+<entry key="admin.form.db.vid">Id</entry>
+<entry key="admin.form.db.vpw">Password</entry>
+<entry key="admin.form.db.vsql">Validation Sql</entry>
+<entry key="admin.form.db.vconnopt">Connection Option</entry>
+<entry key="admin.form.db.vpoolopt">Pool Option</entry>
+
+<entry key="admin.userlist.search.head">사용자 검색</entry>
+<entry key="admin.managerlist.head">관리자 목록</entry>
+
+<entry key="admin.managerlist.dbuser">데이타 베이스 관리 매니저</entry>
+
+<entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
+
+
+
+<entry key="manage.userlist.head">사용자 목록</entry>
+<entry key="manage.userlist.name">이름</entry>
+<entry key="manage.userlist.id">아이디</entry>
+<entry key="manage.userlist.dept">소속</entry>
+<entry key="manage.userlist.date">등록일</entry>
+<entry key="manage.userlist.access">수락여부</entry>
+<entry key="manage.userlist.useyn">사용여부</entry>
+<entry key="manage.userlist.dept">소속</entry>
+<entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
+<entry key="manage.answeryn">답변여부</entry>
+<entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
+
+
+
+
+
+</properties>

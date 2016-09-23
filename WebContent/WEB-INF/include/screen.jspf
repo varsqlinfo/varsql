@@ -1,0 +1,17 @@
+<%@ page language="java" pageEncoding="UTF-8" %>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<sec:authorize access="hasAnyRole('USER','MANAGER','ADMIN')">
+	<li>
+		<a href="<c:url value="/user/" />"><spring:message code="screen.user"/></a>
+	</li>
+</sec:authorize>
+<sec:authorize access="hasAnyRole('MANAGER','ADMIN')">
+	<li>
+		<a href="<c:url value="/manager/" />"><spring:message code="screen.manage"/></a>
+	</li>
+</sec:authorize>
+<sec:authorize access="hasRole('ADMIN')">
+	<li>
+		<a href="<c:url value="/admin/" />"><spring:message code="screen.admin"/></a>
+	</li>
+</sec:authorize>

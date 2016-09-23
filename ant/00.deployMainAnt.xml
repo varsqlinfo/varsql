@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project basedir=".">
+
+<!--
+	배포하려는  ant 모듈 
+-->
+	<!-- 참조 라이브러리 셋팅. -->
+	<taskdef name="ssh" classname="com.sshtools.ant.Ssh" />
+	
+	<!-- 배포 할려는 서버의 정보. -->
+	<property file="00.aftpInfo.properties" />
+	
+
+	<!-- 실행 할 ant target -->
+	<target name="sourceUpload">
+		
+		<property name="prefix.ftp.server" value="${paramPrefix}.ftp.server"/>
+		<property name="prefix.ftp.userid" value="${paramPrefix}.ftp.userid"/>
+		<property name="prefix.ftp.password" value="${paramPrefix}.ftp.password"/>
+		
+		<property name="ftp.server" value="${${prefix.ftp.server}}" />
+		<property name="ftp.userid" value="${${prefix.ftp.userid}}" />
+		<property name="ftp.password" value="${${prefix.ftp.password}}" />
+		
+		<echo message="========================================="/>
+		<echo message="connection server : ${${prefix.ftp.server}}"/>
+		<echo message="connection userid: ${${prefix.ftp.userid}}"/>
+		<echo message="========================================="/>
+		
+		<antcall target="jspUnitUpload"/>
+		
+		
+	</target>
+
+	<target name="nonexecute">
+		
+		<antcall target="propertyUpload" />
+		
+		
+		
+		<antcall target="jspUnitUpload"/>
+		
+		<!-- jsp unit upload-->
+		<antcall target="jspUnitUpload" />
+		
+		<!-- property file upload -->
+		<antcall target="propertyUpload" />
+		
+		<!-- class unit upload -->
+		<antcall target="classUnitUpload"/>
+			
+		<!-- config file upload -->
+		<antcall target="configFileUpload" />
+		
+		<!-- package upload-->
+		<antcall target="classPackageUpload" />
+
+		<!-- jsp folder upload-->
+		<antcall target="jspFolderUpload" />
+		
+	</target>
+
+	<!-- 업로드할 사항들 -->
+	<!--
+		클래스 지정해서 서버에 반영할때 반영할 클래스 명을 입력한다.
+		 - 아래와 같이 입력할 경우 java 패키지에서 아래와 같은 클래스를 찾아서 업로드 한다. 
+		   ex : <include name="**/CLASS_NAME*.*" />
+		
+		 - 명시적으로 해서 등록할 경우는 아래와 같이 플 패키지 경로와 클래스 명을 입력한다.  
+		   ex : <include name="com/ytkim/constants/CLASS_NAME*.*" />
+	 -->
+
+	<fileset id="uploadclasspath" dir="${build.classes.dir}" casesensitive="yes">
+		<include name="com/spit/sim/action/selfservice/userreginfo/RegExternalInfoAction*.*" />
+		<include name="com/spit/sim/services/dao/McompanyDAO*.*" />
+		
+		
+		<!--
+		
+		<include name="com/spit/sim/action/aboard/NimBoardAction*.*" />
+		<include name="com/spit/sim/action/aboard/NimBoardDAO*.*" />
+		<include name="com/spit/sim/action/aboard/NimBoardInitAction*.*" />
+		<include name="com/spit/sim/action/aboard/NimBoardVO*.*" />
+		
+		<include name="com/spit/sim/action/timmgmt/compadminmgmt/CompAdminMgmtListAction*.*" />
+		<include name="com/spit/sim/action/commons/OrganizationSearchListAction*.*" />
+		<include name="com/spit/sim/action/commons/EmployeeListAction*.*" />
+		
+		<include name="com/spit/sim/action/selfservice/userreginfo/RegInfoListAction*.*" />
+		<include name="com/spit/sim/action/selfservice/userreginfo/RegExternalInfoAction*.*" />
+		<include name="com/spit/sim/action/selfservice/userreginfo/RegManageInfoAction*.*" />
+		<include name="com/spit/sim/action/commons/TimPasswordResetAction*.*" />
+		
+		<include name="**/UploadExcelRead*.*" /> 
+		<include name="**/FileUploadProcAction*.*" />
+		-->
+		
+		<!--
+		<include name="com/spit/sim/services/dao/HsyncinfoDAO*.*" />
+		<include name="com/spit/sim/action/report/dailymonitor/DaliyMonitorListAction*.*" />
+		<include name="com/spit/sim/action/report/dailymonitor/DailyMonitorInitAction*.*" />
+		<include name="com/spit/sim/action/report/dailymonitor/DailyMonitorPopupAction*.*" />
+		<include name="com/spit/sim/action/report/dailymonitor/DailyMonitorCompareAction*.*" />
+		-->
+	</fileset>
+
+	<echo message="proc : ${prop1}"/>
+	<!--
+		jsp 지정해서 서버에 반영할때 반영할 jsp명을 입력한다.
+		아래와 같이 입력할 경우 webcontent  아래와 같은 클래스를 찾아서 업로드 한다. 
+		ex : <include name="**/JSP_NAME*.*" />
+		명시적으로 해서 등록할 경우는 아래와 같이 jsp 경로를 입력한다.  
+		ex : <include name="jsp/dept/dept.jsp" />
+	 -->
+	<fileset id="uploadjspunit" dir="${build.dir}" casesensitive="yes">
+		<include name="WEB-INF/templates/selfservice/userreginfo/am/registryinfo.jsp" />
+		
+		<!--include name="WEB-INF/templates/selfservice/empreg/empreg.jsp" />
+		<include name="WEB-INF/templates/selfservice/userreginfo/am/registryinfo.jsp" />
+		<include name="WEB-INF/templates/report/dailymonitor/dailymonitor.jsp" />
+		<include name="WEB-INF/templates/report/dailymonitor/userlist.jsp" />
+		<include name="WEB-INF/templates/selfservice/passwordchg/passwordchg.jsp" />
+		<include name="WEB-INF/templates/selfservice/passwordchg/passwordchgpop.jsp" /-->
+	</fileset>
+	
+	<fileset id="propertyUnit" dir="${build.classes.dir}" casesensitive="yes">
+		<include name="**/messages_sim_en.properties" />
+		<include name="**/messages_sim_ko.properties" />
+		<include name="**/messages_sim.properties" />
+		<!-- include name="**/SpitConfig.properties" /-->
+	</fileset>
+	
+	<fileset id="configFileUnit" dir="${build.config.dir}" casesensitive="yes">
+		<include name="**/struts-config.xml" />
+		<!-- include name="**/SpitConfig.properties" /-->
+	</fileset>
+
+	<property name="upload.package.dir" value="com/spit/sim/action/aboard" />
+	<property name="upload.jsp.dir" value="" />
+
+	<!--property setting -->
+	<property name="version" value="1.0" />
+	<property name="src.dir" value="src" />
+
+	<!-- build path config -->
+	<property name="build.src.path" value="${src.dir}/${upload.package.dir}" />
+	<property name="build.dir" value="WebContent" />
+	<property name="build.jar.dir" value="${build.dir}/WEB-INF/lib" />
+	<property name="build.config.dir" value="${build.dir}/WEB-INF/config" />
+	<property name="build.classes.dir" value="${build.dir}/WEB-INF/classes/" />
+	<property name="build.package.dir" value="${build.classes.dir}${upload.package.dir}" />
+	<property name="build.jsp.dir" value="${build.dir}/${upload.jsp.dir}" />
+
+	<!-- ftp upload config -->
+	<property name="upload.path" value="/SIM/WAS/Webcontent" />
+	<property name="upload.classes.path" value="${upload.path}/WEB-INF/classes/" />
+	<property name="upload.config.path" value="${upload.path}/WEB-INF/config/" />
+	<property name="upload.package.path" value="${upload.classes.path}${upload.package.dir}" />
+	<property name="upload.jsp.root.path" value="${upload.path}" />
+	<property name="upload.jsp.path" value="${upload.jsp.root.path}/${upload.jsp.dir}" />
+
+
+	<!--  config file upload  target -->
+	<target name="configFileUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.config.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp configFileUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.config.path}" depends="true">
+				<fileset refid="configFileUnit">
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp configFileUpload end ------" />
+	</target>
+	
+	<!--  property file upload  target -->
+	<target name="propertyUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.classes.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp propertyUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.classes.path}" depends="true">
+				<fileset refid="propertyUnit">
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp propertyUpload end ------" />
+	</target>
+	
+	<!-- class unit upload target -->
+	<target name="classUnitUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.classes.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp classUnitUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.classes.path}" depends="true">
+				<fileset refid="uploadclasspath">
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp classUnitUpload end ------" />
+	</target>
+
+	
+	<!-- class package upload target -->
+	<target name="classPackageUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.package.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp classPackageUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.package.path}" depends="true">
+				<fileset dir="${build.package.dir}">
+					<include name="**/*.class" />
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp classPackageUpload end ------" />
+	</target>
+	
+
+	<!-- jsp folder upload target -->
+	<target name="jspFolderUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.jsp.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp jspFolderUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.jsp.path}" depends="true">
+				<fileset dir="${build.jsp.dir}">
+					<include name="**/*.jsp" />
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp jspFolderUpload end ------" />
+	</target>
+	
+	<!-- jsp unit upload target -->
+	<target name="jspUnitUpload">
+		<property name="uploadInfo" value="${ftp.userid}:${ftp.password}@${ftp.server}:${upload.jsp.root.path}" />
+
+		<echo message="###### ftp info : ${uploadInfo} ######" />
+		<echo message="------ ftp jspUnitUpload start ------" />
+
+		<ssh host="${ftp.server}" username="${ftp.userid}" password="${ftp.password}" port="22" version="2">
+			<sftp action="put" remotedir="${upload.jsp.root.path}" depends="true">
+				<fileset refid="uploadjspunit">
+				</fileset>
+			</sftp>
+		</ssh>
+		<echo message="------ ftp jspUnitUpload end ------" />
+	</target>
+	
+</project>

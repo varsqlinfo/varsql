@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.varsql.web.app.user">
+
+	<select id="selectUserDetail" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+		select * 
+		from vtuser 
+		where viewid =#{viewid}
+	</select>
+	
+	<select id="selectIdCheck" parameterType="java.util.Map" resultType="int">
+		select count(1)as cnt 
+		from vtuser
+		where uid =#{uid} 
+	</select>
+
+	<select id="selectUserMaxVal" resultType="java.lang.String">
+		select max(viewid)as maxval from vtuser 
+	</select>
+	
+	<insert id="insertUserInfo" parameterType="java.util.Map">
+		insert  into vtuser (
+			viewid 
+			, uid 
+			, upw 
+			, uname 
+			, org_nm 
+			, dept_nm 
+			, uemail 
+			, role 
+			, description 
+			, accept_yn
+			, cre_id 
+			, upd_id
+			, cre_dt
+		) 
+		values(
+			#{viewid}
+			, #{uid}
+			, #{upw}
+			, #{uname}
+			, #{org_nm}
+			, #{dept_nm}
+			, #{uemail}
+			, 'GUEST'
+			, #{description}
+			, #{accept_yn}
+			, #{cre_id}
+			, #{cre_id}
+			, CURRENT TIMESTAMP
+		) 
+	</insert>
+	
+	<update id="updateUserInfo" parameterType="java.util.Map">
+		update vtuser 
+		set 
+			upw=#{upw}
+			, uname =#{uname}
+			, org_nm =#{org_nm}
+			, dept_nm =#{dept_nm}
+			, uemail =#{uemail}
+			, description =#{description}
+			, upd_dt = CURRENT TIMESTAMP
+		where viewid =#{viewid}
+	</update>
+	
+	<select id="selectQnaTotalCnt" parameterType="java.util.Map" resultType="int">
+		select count(1) as totalcnt
+		from vtqna a
+		where cre_id =#{uid}
+		and del_yn !='Y'
+		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
+	</select>
+	
+	<select id="selectQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+		select a.*, CHAR (a.cre_dt) as char_cre_dt , CHAR (a.upd_dt) as char_upd_dt 
+		from vtqna a
+		where cre_id =#{uid}
+		and del_yn !='Y'
+		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
+		order by qnaid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+	</select>
+	
+	<select id="selectDetailQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+		select a.*, CHAR (a.cre_dt) as char_cre_dt 
+		from vtqna a
+		where del_yn !='Y'
+		and qnaid=#{qnaid}
+	</select>
+	
+	<select id="selectQnaMaxVal" parameterType="java.util.Map" resultType="java.lang.String">
+		select max(qnaid)as maxval from vtqna
+	</select>
+	
+	<insert id="insertQnaInfo" parameterType="java.util.Map">
+		insert  into vtqna (
+			qnaid 
+			, title 
+			, question 
+			, cre_id 
+			, cre_dt 
+			, del_yn
+			, answer
+		)
+		values(
+			#{qnaid}
+			, #{title}
+			, #{question}
+			, #{cre_id}
+			, CURRENT TIMESTAMP
+			, 'N'
+			, ''
+		)
+	</insert>
+	
+	<update id="updateQnaInfo" parameterType="java.util.Map">
+		update vtqna
+		set
+			title =#{title}
+			,question =#{question}
+		where qnaid=#{qnaid}
+	</update>
+	
+	<update id="deleteQnaInfo" parameterType="java.util.Map">
+		update vtqna 
+		set
+			del_yn ='Y'
+		where qnaid=#{qnaid}
+	</update>
+	
+	<select id="selectUserDbUseList" parameterType="java.util.Map" resultType="java.util.Map">
+		select  vconnid, vtype, vname
+		from vtconnection a
+		where
+		<choose>
+			<when test="role=='ADMIN'">
+				1=1
+			</when>
+			<when test="role=='MANAGER'">
+				a.VCONNID in (select vconnid from vtdatabase_manager_role where viewid = #{uid})
+			</when>
+			<when test="role=='USER'">
+				a.VCONNID in (select vconnid from vtdatabase_user_role where viewid = #{uid} )
+			</when>
+	    	<otherwise>
+	      		1!=1
+	    	</otherwise>
+	  	</choose>
+	</select>
+	
+	
+</mapper>

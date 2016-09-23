@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<entry key="label.id">아이디</entry>
+<entry key="label.pw">패스워드</entry>
+<entry key="label.login">로그인</entry>
+
+<entry key="label.first.name">First Name</entry>
+<entry key="label.last.name">Last Name</entry>
+<entry key="label.email">Email</entry>
+<entry key="label.pw_re">Re Enter Password</entry>
+<entry key="label.birthday">Birthday</entry>
+<entry key="label.sex">Sex</entry>
+<entry key="label.category">Category</entry>
+
+</properties>
