@@ -1,5 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
+
 <ul class="db-nav navbar-nav">
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.file" /></a>

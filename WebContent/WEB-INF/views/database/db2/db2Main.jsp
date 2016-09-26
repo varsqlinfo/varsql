@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <jsp:include page="./db2Head.jsp" flush="true"></jsp:include>
 	<div class="col-xs-3">

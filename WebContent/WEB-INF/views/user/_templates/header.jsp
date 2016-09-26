@@ -1,5 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!-- Brand and toggle get grouped for better mobile display -->
 <div class="navbar-header">
 	<ul class="nav navbar-nav">

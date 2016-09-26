@@ -27,7 +27,7 @@ var _initialized = false
 		}
 		,colWidthFixed:false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
-		,resizeCursor : 'e-resize'
+		,resizeCursor : 'col-resize'
 	}
 	,height: 200
 	,tColItem : [] //head item
@@ -606,7 +606,7 @@ Plugin.prototype ={
 		var _this = this
 			,resizeEle = $('#'+_this.prefix+'pubGrid-header .pub-header-resizer');
 		if(flag===true){
-			resizeEle.css('cursor','col-resize');
+			resizeEle.css('cursor','e-resize');
 			
 			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
 				var oe = e.originalEvent.touches;

@@ -1,5 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <ul class="nav left-menu">
     <li <c:if test="${fn:endsWith(originalURL,'/main.do')}">class="active"</c:if>>

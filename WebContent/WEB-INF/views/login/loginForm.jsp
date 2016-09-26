@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <%@ page import=" java.util.*, java.io.*" %>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <HTML>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><spring:message code="page.title.varsql"/></title>
 <head>

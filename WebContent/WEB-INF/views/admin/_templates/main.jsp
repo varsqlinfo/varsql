@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
-
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <html>
 <head>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <title><spring:message code="admin.home.title" /></title>
 <%@ include file="/WEB-INF/include/head-admin.jsp"%>
 </head>
