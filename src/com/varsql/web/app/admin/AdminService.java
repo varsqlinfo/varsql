@@ -1,5 +1,6 @@
 package com.varsql.web.app.admin;
 import java.util.List;
+import java.util.Map;
 
 import com.varsql.web.common.vo.DataCommonVO;
 
@@ -62,7 +63,7 @@ public interface AdminService  {
 	 * @param paramMap
 	 * @return
 	 */
-	boolean updateVtconnectionInfo(DataCommonVO paramMap);
+	Map updateVtconnectionInfo(DataCommonVO paramMap);
 	
 	/**
 	 * 

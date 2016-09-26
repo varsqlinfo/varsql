@@ -64,6 +64,7 @@
 <entry key="btn.save">저장</entry>
 <entry key="btn.delete">삭제</entry>
 <entry key="btn.add">추가</entry>
+<entry key="btn.save.andpoolnit"><![CDATA[저장 & DB 풀초기화]]></entry>
 <entry key="btn.connnection.check">연결 테스트</entry>
 <entry key="btn.login">로그인</entry>
 <entry key="btn.accept">수락</entry>
@@ -96,6 +97,7 @@
 <entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
 <entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
 <entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
 
 
 <entry key="msg.warning.select">선택하시오</entry>

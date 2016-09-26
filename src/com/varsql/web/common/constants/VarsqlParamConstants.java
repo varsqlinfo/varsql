@@ -25,7 +25,6 @@ public interface VarsqlParamConstants {
 	public String EXPORT_TYPE ="exportType";
 	public String EXPORT_COLUMN_INFO ="columnInfo";
 	
-	
 	public String DB_TYPE ="dbtype";
 	public String DB_SCHEMA ="schema";
 	public String DB_GUBUN ="gubun";

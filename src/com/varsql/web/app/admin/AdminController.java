@@ -177,6 +177,7 @@ public class AdminController{
 			,@RequestParam(value = "vconnopt")  String vconnopt
 			,@RequestParam(value = "vpoolopt")  String vpoolopt
 			,@RequestParam(value = "vsql")  String vsql
+			,@RequestParam(value = "pollinit")  String pollinit
 			)throws Exception {
 			
 		DataCommonVO dcv = new DataCommonVO();
@@ -191,6 +192,7 @@ public class AdminController{
 		dcv.put("vconnopt", vconnopt);
 		dcv.put("vpoolopt", vpoolopt);
 		dcv.put("vsql", vsql);
+		dcv.put("pollinit", pollinit);
 		
 		Map json = new HashMap();
 			

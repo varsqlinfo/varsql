@@ -2,283 +2,304 @@
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <script>
 $(document).ready(function (){
-	fnInit();
+	adminMain.init();
 });
 
-function fnInit(){
-	fnSearch();
-	fnAdd();
-	//add btn
-	$('.addBtn').click(function() {
-		$('#addForm').data('bootstrapValidator').resetForm(true);
-		fnAdd();
-	});
-	// connection check
-	$('.connCheckBtn').click(function() {
-		fnConnectionCheck();
-	});
-	//delete btn
-	$('.deleteBtn').click(function() {
-		fnDelete();
-	});
-	//search
-	$('.searchBtn').click(function() {
-		fnSearch();
-	});
-	
-	$('#searchval').keydown(function() {
-		if(event.keyCode =='13') fnSearch();
-	});
-	
-	$('#addForm').bootstrapValidator({
-		message: 'This value is not valid',
-		feedbackIcons: {
-			valid: 'glyphicon glyphicon-ok',
-			invalid: 'glyphicon glyphicon-remove',
-			validating: 'glyphicon glyphicon-refresh'
-		},
-		fields: {
-		  vname: {
-			  validators: {
-				  notEmpty: {
-					  message: 'The name is required and cannot be empty'
-				  }
-			  }
-		  },
-		  vurl: {
-			  validators: {
-				  notEmpty: {
-					  message: 'The url is required and cannot be empty'
-				  }
-			  }
-		  },
-		  vdriver: {
-			  message: 'The driver is not valid',
-			  validators: {
-				  notEmpty: {
-					  message: 'The driver is required and cannot be empty'
-				  }
-			  }
-		  },
-		  /*
-		  vid: {
-			  validators: {
-				  notEmpty: {
-					  message: 'The id is required and cannot be empty'
-				  }
-			  }
-		  },
-		  vpw: {
-			  validators: {
-				  notEmpty: {
-					  message: 'The password is required and cannot be empty'
-				  }
-			  }
-		  }
-		  */
-		}
-	}).on('success.form.bv', function(e) {
-		// Prevent form submission
-		e.preventDefault();
-
-		fnSave();
-	});
-};
-
-function fnClickDbInfo(sObj){
-	sObj = $(sObj);
-	
-	$('#vconid').val(sObj.attr('conid'));
-	$.ajax({
-		type:'POST'
-		,data:{
-			vconid:$('#vconid').val()
-		}
-		,url : '<c:url value="/admin/main/dbDetail.do" />'
-		,dataType:'JSON'
-		,success:function (response){
-			var result = response.result;
+var adminMain = {
+	init : function (){
+		var _this = this; 
+		_this.search();
+		_this.add();
+		_this.initEvt();
+	}
+	,initEvt : function (){
+		var _this = this; 
+		//add btn
+		$('.addBtn').click(function() {
+			$('#addForm').data('bootstrapValidator').resetForm(true);
+			_this.add();
+		});
+		
+		//add btn
+		$('.saveAndPoolInitBtn').click(function() {
+			if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
 			
-			$('#vname').val(result.VNAME);
-			$('#vurl').val(result.VURL);
-			$('#vdriver').val(result.VDRIVER);
-			$('#vtype').val(result.VTYPE);
-			$('#vid').val(result.VID);
-			$('#vpw').val(result.VPW);
-			$('#vconnopt').val(result.VCONNOPT);
-			$('#vpoolopt').val(result.VPOOLOPT);
-			$('#vsql').val(result.VSQL);
-		}
-		,error :function (data, status, err){
-			$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('dataViewAreaTd');
-		}
-	});
-}
+			$('#pollinit').val('Y');
+			$('.saveBtn').trigger('click');
+		});
+		// connection check
+		$('.connCheckBtn').click(function() {
+			_this.connectionCheck();
+		});
+		//delete btn
+		$('.deleteBtn').click(function() {
+			_this.deleteInfo();
+		});
+		//search
+		$('.searchBtn').click(function() {
+			_this.search();
+		});
+		
+		$('#searchval').keydown(function() {
+			if(event.keyCode =='13') _this.search();
+		});
+		
+		$('#addForm').bootstrapValidator({
+			message: 'This value is not valid',
+			feedbackIcons: {
+				valid: 'glyphicon glyphicon-ok',
+				invalid: 'glyphicon glyphicon-remove',
+				validating: 'glyphicon glyphicon-refresh'
+			},
+			fields: {
+			  vname: {
+				  validators: {
+					  notEmpty: {
+						  message: 'The name is required and cannot be empty'
+					  }
+				  }
+			  },
+			  vurl: {
+				  validators: {
+					  notEmpty: {
+						  message: 'The url is required and cannot be empty'
+					  }
+				  }
+			  },
+			  vdriver: {
+				  message: 'The driver is not valid',
+				  validators: {
+					  notEmpty: {
+						  message: 'The driver is required and cannot be empty'
+					  }
+				  }
+			  },
+			  /*
+			  vid: {
+				  validators: {
+					  notEmpty: {
+						  message: 'The id is required and cannot be empty'
+					  }
+				  }
+			  },
+			  vpw: {
+				  validators: {
+					  notEmpty: {
+						  message: 'The password is required and cannot be empty'
+					  }
+				  }
+			  }
+			  */
+			}
+		}).on('success.form.bv', function(e) {
+			// Prevent form submission
+			e.preventDefault();
 
-function fnSearch(no){
-	var param = {
-		page:no?no:1
-		,'searchval':$('#searchval').val()
-	};
-	
-	$.ajax({
-		type:'POST'
-		,data:param
-		,url : '<c:url value="/admin/main/dblist.do" />'
-		,dataType:'JSON'
-		,success:function (response){
-			try{
+			_this.save();
+		});
+	}
+	// 추가
+	,add : function (){
+		$('#vconid').val('');
+		$('#vname').val('');
+		$('#vurl').val('');
+		$('#vdriver').val('');
+		$('#vtype').val('');
+		$('#vid').val('');
+		$('#vpw').val('');
+		$('#vconnopt').val('');
+		$('#vpoolopt').val('');
+		$('#vsql').val('');
+		$('#pollinit').val('N');
+	}
+	,clickDbInfo : function (sObj){
+		sObj = $(sObj);
+		
+		$('#vconid').val(sObj.attr('conid'));
+		$.ajax({
+			type:'POST'
+			,data:{
+				vconid:$('#vconid').val()
+			}
+			,url : '<c:url value="/admin/main/dbDetail.do" />'
+			,dataType:'JSON'
+			,success:function (response){
+				var result = response.result;
 				
-	    		var resultLen = response.result?response.result.length:0;
-	    		
-	    		if(resultLen==0){
-	    			$('#dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
-	    			$('#pageNavigation').pagingNav();
-	    			return ; 
-	    		}
-	    		var result = response.result;
-	    		
-	    		var strHtm = new Array();
-	    		var item; 
-	    		for(var i = 0 ;i < resultLen; i ++){
-	    			item = result[i];
-	    			strHtm.push('<a href="javascript:;" class="list-group-item" onclick="fnClickDbInfo(this)" class="list-group-item" conid="'+item.VCONNID+'">'+item.VNAME);
-	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
-	    		}
-	    		
-	    		$('#dbinfolist').html(strHtm.join(''));
-	    		
-	    		$('#pageNavigation').pagingNav(response.paging,fnSearch);
-	    		
-			}catch(e){
-				$('#dataViewAreaTd').attr('color','red');
-				$("#dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + resultMsg);  
+				$('#vname').val(result.VNAME);
+				$('#vurl').val(result.VURL);
+				$('#vdriver').val(result.VDRIVER);
+				$('#vtype').val(result.VTYPE);
+				$('#vid').val(result.VID);
+				$('#vpw').val(result.VPW);
+				$('#vconnopt').val(result.VCONNOPT);
+				$('#vpoolopt').val(result.VPOOLOPT);
+				$('#vsql').val(result.VSQL);
 			}
-		}
-		,error :function (data, status, err){
-			$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('dataViewAreaTd');
-		}
-	});
-}
-
-function fnSave(){
-	$.ajax({
-		type:'POST'
-		,data:$("#addForm").serialize()
-		,url : '<c:url value="/admin/main/dbSave.do" />'
-		,dataType:'JSON'
-		,success:function (response){
-			fnSearch();
-			$('.addBtn').trigger("click");
-		}
-		,error :function (data, status, err){
-			$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('dataViewAreaTd');
-		}
-	});
-}
-
-function fnDelete(){
-	
-	if($('#vconid').val()==''){
-		$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
-		return ; 
-	}
-	
-	if(!confirm('<spring:message code="msg.delete.confirm"/>')){
-		return ; 
-	}
-	
-	$.ajax({
-		type:'POST'
-		,data: {
-			vconid : $('#vconid').val() 
-		}
-		,url : '<c:url value="/admin/main/dbDelete.do" />'
-		,dataType:'JSON'
-		,success:function (response){
-			fnSearch();
-			$('#addBtn').trigger("click");
-		}
-		,error :function (data, status, err){
-			$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('dataViewAreaTd');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('dataViewAreaTd');
-		}
-	});
-}
-
-function fnAdd(){
-	$('#vconid').val('');
-	$('#vname').val('');
-	$('#vurl').val('');
-	$('#vdriver').val('');
-	$('#vtype').val('');
-	$('#vid').val('');
-	$('#vpw').val('');
-	$('#vconnopt').val('');
-	$('#vpoolopt').val('');
-	$('#vsql').val('');
-}
-
-function fnConnectionCheck(){
-	/*
-	if($('#vconid').val()==''){
-		$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
-		return ; 
-	}
-	*/
-	
-	$.ajax({
-		type:'POST'
-		,data: $("#addForm").serialize()
-		,url : '<c:url value="/admin/main/dbConnectionCheck.do" />'
-		,dataType:'JSON'
-		,success:function (response){
-			if(response.result =='success'){
-				alert('<spring:message code="msg.success" />');
-				return 
-			}else{
-				alert(response.result +'\n'+ response.msg);
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
 			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start ('dataViewAreaTd');
+			}
+		});
+	}
+	,search : function (no){
+		var _this = this;
+		
+		var param = {
+			page:no?no:1
+			,'searchval':$('#searchval').val()
+		};
+		
+		$.ajax({
+			type:'POST'
+			,data:param
+			,url : '<c:url value="/admin/main/dblist.do" />'
+			,dataType:'JSON'
+			,success:function (response){
+				try{
+					
+		    		var resultLen = response.result?response.result.length:0;
+		    		
+		    		if(resultLen==0){
+		    			$('#dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
+		    			$('#pageNavigation').pagingNav();
+		    			return ; 
+		    		}
+		    		var result = response.result;
+		    		
+		    		var strHtm = new Array();
+		    		var item; 
+		    		for(var i = 0 ;i < resultLen; i ++){
+		    			item = result[i];
+		    			strHtm.push('<a href="javascript:;" class="list-group-item" conid="'+item.VCONNID+'">'+item.VNAME);
+		    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
+		    		}
+		    		
+		    		$('#dbinfolist').html(strHtm.join(''));
+		    		
+		    		$('#dbinfolist .list-group-item').on('click',function (){
+		    			adminMain.clickDbInfo($(this));
+		    		});
+		    		
+		    		$('#pageNavigation').pagingNav(response.paging,adminMain.search);
+		    		
+				}catch(e){
+					$('#dataViewAreaTd').attr('color','red');
+					$("#dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + resultMsg);  
+				}
+			}
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start ('dataViewAreaTd');
+			}
+		});
+	}
+	,save : function (){
+		var _this = this; 
+		$.ajax({
+			type:'POST'
+			,data:$("#addForm").serialize()
+			,url : '<c:url value="/admin/main/dbSave.do" />'
+			,dataType:'JSON'
+			,success:function (response){
+				_this.search();
+				$('.addBtn').trigger("click");
+			}
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start ('dataViewAreaTd');
+			}
+		});
+	}
+	// 정보 삭제 .
+	,deleteInfo : function (){
+		var _this = this; 
+		
+		if($('#vconid').val()==''){
+			$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
+			return ; 
 		}
-		,error :function (data, status, err){
-			$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('dataViewAreaTd');
+		
+		if(!confirm('<spring:message code="msg.delete.confirm"/>')){
+			return ; 
 		}
-		,complete: function() { 
-			VARSQL.progress.end('dataViewAreaTd');
+		
+		$.ajax({
+			type:'POST'
+			,data: {
+				vconid : $('#vconid').val() 
+			}
+			,url : '<c:url value="/admin/main/dbDelete.do" />'
+			,dataType:'JSON'
+			,success:function (response){
+				_this.search();
+				$('#addBtn').trigger("click");
+			}
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start ('dataViewAreaTd');
+			}
+		});
+	}
+	,connectionCheck : function (){
+		/*
+		if($('#vconid').val()==''){
+			$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
+			return ; 
 		}
-		,beforeSend: function() {
-			VARSQL.progress.start('dataViewAreaTd');
-		}
-	});
+		*/
+		
+		$.ajax({
+			type:'POST'
+			,data: $("#addForm").serialize()
+			,url : '<c:url value="/admin/main/dbConnectionCheck.do" />'
+			,dataType:'JSON'
+			,success:function (response){
+				if(response.result =='success'){
+					alert('<spring:message code="msg.success" />');
+					return 
+				}else{
+					alert(response.result +'\n'+ response.msg);
+				}
+			}
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start('dataViewAreaTd');
+			}
+		});
+	}
 }
+
 </script>
 <!-- Page Heading -->
 <div class="row">
@@ -319,6 +340,7 @@ function fnConnectionCheck(){
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal">
 					<input type="hidden" id="vconid" name="vconid">
+					<input type="hidden" id="pollinit" name="pollinit" value="N">
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
@@ -386,6 +408,7 @@ function fnConnectionCheck(){
 						<div class="col-sm-offset-4 col-sm-8">
 							<button type="button" class="btn btn-default addBtn"><spring:message code="btn.add"/></button>
 							<button type="submit" class="btn btn-default saveBtn"><spring:message code="btn.save"/></button>
+							<button type="button" class="btn btn-default saveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
 							<button type="button" class="btn btn-primary connCheckBtn"><spring:message code="btn.connnection.check"/></button>
 							<button type="button" class="btn btn-danger deleteBtn"><spring:message code="btn.delete"/></button>
 						</div>

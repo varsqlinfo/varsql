@@ -12,9 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.ResourceTransactionManager;
 
 import com.varsql.common.util.CommUtil;
+import com.varsql.db.ConnectionFactory;
 import com.varsql.sql.SQLUtil;
+import com.varsql.web.common.constants.ResultConstants;
+import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
@@ -105,7 +109,7 @@ public class AdminServiceImpl implements AdminService{
 		String failMessage = "";
 		
 		PreparedStatement pstmt = null;
-		Connection connChk = null; 
+		Connection connChk = null;
 		try {
 			Class.forName(driver);
 			connChk = DriverManager.getConnection(url, p);
@@ -150,8 +154,21 @@ public class AdminServiceImpl implements AdminService{
 		return adminDAO.insertVtconnectionInfo(paramMap) > 0;
 	}
 
-	public boolean updateVtconnectionInfo(DataCommonVO paramMap) {
-		return adminDAO.updateVtconnectionInfo(paramMap) > 0;
+	public Map updateVtconnectionInfo(DataCommonVO paramMap) {
+		Map json = new HashMap();
+		try {
+			int result =adminDAO.updateVtconnectionInfo(paramMap);
+			
+			if(result > 0 && "Y".equals(paramMap.getString("pollinit"))){
+				ConnectionFactory.getInstance().resetConnectionPool(paramMap.getString("vconid"));
+				json.put(ResultConstants.CODE,ResultConstants.CODE_VAL.SUCCESS);
+			}
+		} catch (Exception e) {
+			json.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+			json.put(ResultConstants.MESSAGE,e.getMessage());
+		}
+		
+		return json;
 	}
 	
 	public boolean deleteVtconnectionInfo(DataCommonVO paramMap) {
