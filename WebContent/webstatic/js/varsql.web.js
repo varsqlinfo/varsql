@@ -20,7 +20,7 @@ if (typeof window != "undefined") {
 var _$base = {
 	version:'0.1'
 	,author:'ytkim'
-	,contextPath:'/vsql'
+	,contextPath: (typeof global_page_context_path === 'undefined' ? '/vsql' : global_page_context_path)
 	,uri:{
 		'admin':'/admin'
 		,'manager':'/manager'

@@ -10,4 +10,6 @@
 <c:set var="pageContextPath" value="${pageContext.request.contextPath}" />
 <c:set var="varsqlLoginUrl" value="${pageContextPath}/login_check.do" />
 <c:set var="varsqlLogoutUrl" value="${pageContextPath}/logout.do" />
-
+<script>
+var global_page_context_path =${pageContextPath}; 
+</script>
