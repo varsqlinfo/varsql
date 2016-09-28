@@ -210,7 +210,12 @@ _$base.log={
  */
 _$base.req ={
 	ajax:function (option){
-		var loadSelector = option.loadSelector ?option.loadSelector :false; 
+		console.log('loadSelector', option);
+		
+		
+		var loadSelector = option.loadSelector ?option.loadSelector :false;
+		
+		console.log('loadSelector', loadSelector);
 		
 		var urlObj = option.url;
 		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
@@ -220,7 +225,9 @@ _$base.req ={
 			,cache: false
 			,dataType: "json"
 			,beforeSend : function( xhr ) {
+				console.log(2222222222, $(loadSelector));
 				if(loadSelector){
+					console.log(111, $(loadSelector));
 					$(loadSelector).centerLoading({
 						contentClear:false 
 					});
@@ -311,7 +318,7 @@ jQuery.fn.centerLoading = function(options) {
 
 	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;	
 		
-	var firstDiv = $('<div style="z-index:10;'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
+	var firstDiv = $('<div style="'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
 	var centerLoading = $('<div style="background-repeat:no-repeat;"></div>');
 	centerLoading.css('background-image', 'url("'+config.loadingImg+'")')
 				.css('background-position', config.centerYn=='Y'?'center center':'')

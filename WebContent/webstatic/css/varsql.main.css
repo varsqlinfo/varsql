@@ -27,8 +27,6 @@ body {
 	color: #000;
 }
 
-
-
 #user-page-wrapper {
   position: absolute;
   width: 100%;
@@ -164,9 +162,6 @@ padding-top: 5px;
     line-height: 22px;
     color: #000;
 }
-
-
-
 
 
 .sql-result-area{
@@ -360,4 +355,10 @@ padding-top: 5px;
     border: 1px solid #aaaaaa;
     background: #ffffff url("images/ui-bg_flat_75_ffffff_40x100.png") 50% 50% repeat-x;
     color: #222222;
+}
+
+.centerLoading{
+	background-color:#aaaaaa;
+	opacity:0.3;
+	z-index:10;
 }

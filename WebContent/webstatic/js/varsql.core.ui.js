@@ -79,7 +79,8 @@ _ui.leftDbObject ={
 		tmpParam.schema = $(obj).attr('obj_nm');
 		
 		VARSQL.req.ajax({      
-		    type:"POST"  
+		    type:"POST"
+		    ,loadSelector : '#leftServiceMenuContent'
 		    ,url:{gubun:VARSQL.uri.database, url:_ui.options.getUriPrefix('/serviceMenu.do')}
 		    ,dataType:'json'
 		    ,data:tmpParam
@@ -778,7 +779,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    type:"POST" 
-		    ,loadSelector : _self.options.dataGridSelectorWrap 
+		    ,loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlData.do'}
 		    ,dataType:'json'
 		    ,data:params 
@@ -854,7 +855,8 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({      
-		    type:"POST"  
+		    type:"POST"
+		    ,loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlFormat.do'}
 		    ,dataType:'text'
 		    ,data:params 
@@ -1094,12 +1096,14 @@ _ui.SQL = {
 		editObj.focus();
 		
 	}
+	/*
 	,loadBeforeSend :function (){
 		
 	}
 	,loadComplete :function (){
 		
 	}
+	*/
 	// 왼쪽 메뉴 생성 .
 	,setGridData: function (pGridData){
 		var _self = this; 
