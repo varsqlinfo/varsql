@@ -5,7 +5,7 @@ public interface VarsqlParamConstants {
 	public String VCONNID ="vconnid";
 	public String SQL ="sql";
 	public String LIMIT ="limit";
-	public int SQL_MAX_ROW =100;
+	public int SQL_MAX_ROW =1000;
 	
 	/**
 	 * 페이징 관련 파라미터 정보

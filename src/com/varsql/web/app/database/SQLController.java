@@ -15,6 +15,7 @@ import com.varsql.web.app.database.db2.Db2Controller;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.util.HttpUtil;
 import com.varsql.web.util.SecurityUtil;
 
 /**
@@ -58,7 +59,7 @@ public class SQLController {
 			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype,
 			HttpServletRequest req) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);

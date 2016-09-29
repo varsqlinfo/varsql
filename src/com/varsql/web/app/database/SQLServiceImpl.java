@@ -103,7 +103,6 @@ public class SQLServiceImpl implements SQLService{
 		
 		
 		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
-		int maxRow = paramMap.getInt(VarsqlParamConstants.LIMIT, VarsqlParamConstants.SQL_MAX_ROW);
 		
 		ArrayList reLst = new ArrayList();
 		
@@ -113,7 +112,7 @@ public class SQLServiceImpl implements SQLService{
 			
 			for (SqlSource tmpSqlSource : sqlList) {
 				
-				getRequestSqlData(paramMap,conn,tmpSqlSource , maxRow);
+				getRequestSqlData(paramMap,conn,tmpSqlSource);
 				
 				reLst.add(tmpSqlSource.getResult());
 			}
@@ -143,9 +142,11 @@ public class SQLServiceImpl implements SQLService{
 	 */
 	private Statement getStatement(Connection conn, SqlSource tmpSqlSource, int maxRow) throws SQLException {
 		
-		Statement stmt = conn.prepareStatement(tmpSqlSource.getQuery());
+		Statement stmt = null; 
 		if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
-			stmt = conn.createStatement();
+			stmt = conn.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
 			setMaxRow(stmt, maxRow);
 			stmt.execute(tmpSqlSource.getQuery());
 		}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
@@ -154,7 +155,8 @@ public class SQLServiceImpl implements SQLService{
 			callStatement.execute();
 			stmt = callStatement; 
 		}else{
-			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
+			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
 			setMaxRow(pstmt, maxRow);
 			pstmt.execute();
 			stmt = pstmt; 
@@ -174,7 +176,7 @@ public class SQLServiceImpl implements SQLService{
 	 * @throws SQLException
 	 */
 	private void setMaxRow(Statement stmt, int maxRow) throws SQLException {
-		stmt.setMaxRows(maxRow);
+		//stmt.setMaxRows(maxRow);
 	}
 	
 	/**
@@ -190,23 +192,25 @@ public class SQLServiceImpl implements SQLService{
 	 * @param maxRow
 	 * @return
 	 */
-	protected Object getRequestSqlData(DataCommonVO paramMap, Connection conn, SqlSource tmpSqlSource, int maxRow) {
+	protected Object getRequestSqlData(DataCommonVO paramMap, Connection conn, SqlSource tmpSqlSource) {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		Object reVal=null;
 		SqlSourceResultVO ssrv = new SqlSourceResultVO();
+		
+		int maxRow = paramMap.getInt(VarsqlParamConstants.LIMIT, VarsqlParamConstants.SQL_MAX_ROW);
 		
 		ssrv.setStarttime(System.currentTimeMillis());
 		
 	    try{
 			stmt  = getStatement(conn, tmpSqlSource, maxRow);
 			
-			if(VarsqlCommandType.SELECT.equals(tmpSqlSource.getCommandType())){
-				resultSetHandler(stmt.getResultSet(), ssrv);
+			rs = stmt.getResultSet(); 
+			
+			if(rs != null){
+				resultSetHandler(rs, ssrv, paramMap, maxRow);
 				ssrv.setViewType("grid");
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
-			}else if(VarsqlCommandType.CALL.equals(tmpSqlSource.getCommandType())){
-				
 			}else{
 				ssrv.setViewType("msg");
 				ssrv.setResultCnt(stmt.getUpdateCount());
@@ -285,13 +289,12 @@ public class SQLServiceImpl implements SQLService{
 		SqlSource sqlSource = new SqlSourceBuilder().getSqlSource(reqSql);
 		
 		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
-		int maxRow = paramMap.getInt(VarsqlParamConstants.LIMIT, VarsqlParamConstants.SQL_MAX_ROW);
 		
 		Connection conn = null;
 		List result = new ArrayList();
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(vconnid);
-			getRequestSqlData(paramMap,conn,sqlSource , maxRow);
+			getRequestSqlData(paramMap,conn,sqlSource);
 			result = sqlSource.getResult().getData();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);
@@ -332,10 +335,12 @@ public class SQLServiceImpl implements SQLService{
 	 * 리스트 형식 List<Map> rows = new ArrayList<Map>();
 	 * @param rs
 	 * @param ssrv 
+	 * @param paramMap 
+	 * @param maxRow 
 	 * @return
 	 * @throws SQLException 
 	 */
-	protected SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv) throws SQLException{
+	protected SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, DataCommonVO paramMap, int maxRow) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -374,13 +379,37 @@ public class SQLServiceImpl implements SQLService{
 			columnNameArr.add(columnMap);
 		}
 		
+		rs.last(); 
+		int totalCnt = rs.getRow();
+		rs.beforeFirst();
+		
+		int first = 0,last = totalCnt;
+		
+		if(totalCnt > maxRow){
+		
+			int pageNo = paramMap.getInt(VarsqlParamConstants.SEARCH_NO,1);
+			int countPerPage = maxRow;
+			first = ((pageNo-1)*countPerPage);
+			last = first+countPerPage;
+						
+			if(first != 0){
+				rs.absolute(first);
+			}
+			
+			if(totalCnt > last){
+				rs.setFetchSize((maxRow > 1000 ? VarsqlParamConstants.SQL_MAX_ROW : maxRow));
+			}else{
+				last = totalCnt; 
+				rs.setFetchSize(totalCnt);
+			}
+		}
+		
 		Map columns = null;
 		Reader input = null;
 		char[] buffer  = null;
 		int byteRead=-1;
-		long cnt =0; 
 		while (rs.next()) {
-			++cnt;
+			
 			columns = new LinkedHashMap(count);
 			for (int i = 1; i <= count; i++) {				
 				columnName = columns_key[i-1];
@@ -404,10 +433,13 @@ public class SQLServiceImpl implements SQLService{
 					columns.put(columnName, columnValue==null?"": columnValue+"");
 				}
 			}
-			
 			rows.add(columns);
+			++first;
+			
+			if(first >= last) break;
 		}
-		ssrv.setResultCnt(cnt);
+		ssrv.setTotalCnt(totalCnt);
+		ssrv.setResultCnt(last-first);
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
 		ssrv.setColumn(columnNameArr);
 		ssrv.setData(rows);
