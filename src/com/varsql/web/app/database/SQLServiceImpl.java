@@ -386,9 +386,7 @@ public class SQLServiceImpl implements SQLService{
 		int first = 0,last = totalCnt;
 		
 		ssrv.setTotalCnt(totalCnt);
-		ssrv.setResultCnt(last-first);
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
-		ssrv.setColumn(columnNameArr);
 		ssrv.setColumn(columnNameArr);
 		
 		
@@ -409,8 +407,10 @@ public class SQLServiceImpl implements SQLService{
 				last = totalCnt; 
 				rs.setFetchSize(totalCnt);
 			}
+			ssrv.setResultCnt(last-first);
 			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, pageNo, maxRow));
 		}else{
+			ssrv.setResultCnt(last-first);
 			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, 1, maxRow));
 		}
 		
