@@ -210,13 +210,7 @@ _$base.log={
  */
 _$base.req ={
 	ajax:function (option){
-		console.log('loadSelector', option);
-		
-		
 		var loadSelector = option.loadSelector ?option.loadSelector :false;
-		
-		console.log('loadSelector', loadSelector);
-		
 		var urlObj = option.url;
 		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
 		
@@ -225,9 +219,7 @@ _$base.req ={
 			,cache: false
 			,dataType: "json"
 			,beforeSend : function( xhr ) {
-				console.log(2222222222, $(loadSelector));
 				if(loadSelector){
-					console.log(111, $(loadSelector));
 					$(loadSelector).centerLoading({
 						contentClear:false 
 					});

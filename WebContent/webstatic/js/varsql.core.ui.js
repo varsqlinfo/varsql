@@ -654,7 +654,7 @@ _ui.SQL = {
 		$(_self.options.dataGridResultTabWrap).html(resultTabHtm.join(''));
 		
 		// data grid araea
-		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area" tab_gubun="result"></div>');
+		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
 		resultGridHtm.push('<div id="resultMsgAreaWrap" class="sql-result-area" tab_gubun="msg"></div>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}

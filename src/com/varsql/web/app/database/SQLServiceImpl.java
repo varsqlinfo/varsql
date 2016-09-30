@@ -38,6 +38,7 @@ import com.varsql.sql.builder.VarsqlStatementType;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
 
 /**
@@ -382,8 +383,14 @@ public class SQLServiceImpl implements SQLService{
 		rs.last(); 
 		int totalCnt = rs.getRow();
 		rs.beforeFirst();
-		
 		int first = 0,last = totalCnt;
+		
+		ssrv.setTotalCnt(totalCnt);
+		ssrv.setResultCnt(last-first);
+		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
+		ssrv.setColumn(columnNameArr);
+		ssrv.setColumn(columnNameArr);
+		
 		
 		if(totalCnt > maxRow){
 		
@@ -402,6 +409,9 @@ public class SQLServiceImpl implements SQLService{
 				last = totalCnt; 
 				rs.setFetchSize(totalCnt);
 			}
+			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, pageNo, maxRow));
+		}else{
+			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, 1, maxRow));
 		}
 		
 		Map columns = null;
@@ -438,10 +448,6 @@ public class SQLServiceImpl implements SQLService{
 			
 			if(first >= last) break;
 		}
-		ssrv.setTotalCnt(totalCnt);
-		ssrv.setResultCnt(last-first);
-		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
-		ssrv.setColumn(columnNameArr);
 		ssrv.setData(rows);
 		
 		return ssrv;

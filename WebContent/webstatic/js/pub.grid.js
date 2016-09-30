@@ -258,27 +258,29 @@ Plugin.prototype ={
 	,_calcElementWidth : function (mode){
 
 		var _this = this
-			,_sw ,_w
+			,_containerWidth ,_w
 			,gridElementWidth = _this.config.gridElementWidth
 			,opt = _this.options
 			,tci = opt.tColItem
 			,tciLen = tci.length;
 
 		_w = _this.config.totGridWidth;
-		_sw = _w+_this.options.scrollWidth;
+		_containerWidth = (_w+opt.scrollWidth);
 		tciLen = tci.length;
 
-		if( _sw > gridElementWidth){
+		if( _containerWidth > gridElementWidth){
 			_this.config.gridXScrollFlag = true;
 
 			if(mode=='resize'){				
 				_this.config.gridWidth = gridElementWidth - opt.scrollWidth;
- 				var remainderWidth = Math.floor((_sw-gridElementWidth)/tciLen);
+ 				var remainderWidth = Math.floor((_containerWidth-gridElementWidth)/tciLen);
 
 				for(var j=0; j<tciLen; j++){
 					opt.tColItem[j].width -= remainderWidth;
 				}
-				opt.tColItem[tciLen-1].width -=( (_sw-gridElementWidth)%tciLen);
+				opt.tColItem[tciLen-1].width -=( (_containerWidth-gridElementWidth)%tciLen);
+			}else{
+				_this.config.gridWidth = _w; 
 			}
 		}else{
 			if(opt.headerOptions.colWidthFixed !== true){
@@ -292,8 +294,12 @@ Plugin.prototype ={
 					opt.tColItem[j].width += remainderWidth;
 				}
 				opt.tColItem[tciLen-1].width +=( (_gw -_w)%tciLen);
+			}else{
+
 			}
 		}
+
+		console.log('asdfasdf',_containerWidth, _this.config.totGridWidth ,_this.config.gridWidth )
 		_this.config.totGridWidth = _this.config.gridWidth;
 		//console.log(_this.config.gridWidth, gridElementWidth, _w, _sw );
 	}
@@ -480,7 +486,7 @@ Plugin.prototype ={
 			strHtm.push('<div class="pubGrid-wrapper" style="width:'+_this.config.gridElementWidth+'px;">');
 			strHtm.push('	<div id="'+_this.prefix+'pubGrid-container" class="pubGrid-container">');
 			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-wrapper" class="pubGrid-header-wrapper">');
-			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-container" class="pubGrid-header-container">');
+			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-container" class="pubGrid-header-container" style="width: '+(_this.config.totGridWidth+_this.options.scrollWidth)+'px;">');
 			strHtm.push('			<table id="'+_this.prefix+'pubGrid-header" class="pubGrid-header" style="width:'+_this.config.gridWidth+'px" onselectstart="return false">');
 			strHtm.push(theadHtml());
 			strHtm.push('			</table></div>');	
