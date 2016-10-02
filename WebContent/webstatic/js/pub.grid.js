@@ -127,7 +127,8 @@ Plugin.prototype ={
 			pubGridWrapper.hide();
 		}
 			
-		_this.config.gridElementWidth = _this.element.innerWidth()-3; // border 값 빼주기.
+		_this.config.gridSelectEleWidth = _this.element.innerWidth(); // border 값 빼주기.
+		_this.config.gridElementWidth = _this.config.gridSelectEleWidth-3; // border 값 빼주기.
 		_this.config.gridWidth = _this.config.gridElementWidth;
 			
 		if(mode != 'init') pubGridWrapper.show();
@@ -153,7 +154,7 @@ Plugin.prototype ={
 			
 			if(_cb){
 				_this.options.rowContextMenu.callback = function(key,sObj) {
-					this.gridItem = _this.getItems(this.element.attr('rowInfo'))
+					this.gridItem = _this.getItems(this.element.attr('rowInfo'));
 					_cb.call(this,key,sObj);
 				}
 			}
@@ -535,6 +536,10 @@ Plugin.prototype ={
      */
 	,resizeDraw :function (){
 		var _this = this; 
+		
+		if(_this.config.gridSelectEleWidth == _this.element.innerWidth()){
+			return  false; 
+		}
 		_this._setGridWidth();
 		_this._calcElementWidth('resize');
 		
