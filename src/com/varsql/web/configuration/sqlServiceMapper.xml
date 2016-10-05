@@ -3,8 +3,8 @@
 	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.varsql.web.app.database">
-	<insert id="insertSqlUserLog" parameterType="java.util.Map">
+<mapper namespace="sqlServiceMapper">
+	<insert id="sqlServiceMapper.insertSqlUserLog" parameterType="java.util.Map">
 		insert into vtsql_log (
 			vconnid
 			, uid
@@ -31,6 +31,38 @@
 			, #{result_count}
 			, #{command_type}
 		)
+	</insert>
+	
+	<insert id="sqlServiceMapper.saveQueryInfo" parameterType="java.util.Map">
+		insert  into VTSQL_BOARD (
+			UID
+			, VCONNID
+			, SQL_ID
+			, GUERY_TITLE
+			, QUERY_CONT
+			, REG_DT
+			, UPD_DT
+		) 
+		values(
+			#{uid}
+			, #{vconnid}
+			, #{sql_id}
+			, #{saveQueryTitle}
+			, #{sql}
+			, CURRENT TIMESTAMP
+			, CURRENT TIMESTAMP
+		)
+	</insert>
+	<insert id="sqlServiceMapper.updateQueryInfo" parameterType="java.util.Map">
+		update VTSQL_BOARD 
+		set
+			 GUERY_TITLE = #{saveQueryTitle}
+			, QUERY_CONT = #{sql}
+			, UPD_DT = CURRENT TIMESTAMP
+		where sql_id = #{sql_id}
+		and VCONNID = #{vconnid}
+		and UID = #{uid}
+
 	</insert>
 	
 </mapper>

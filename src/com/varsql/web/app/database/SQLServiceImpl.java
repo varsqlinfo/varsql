@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,8 +34,8 @@ import com.varsql.sql.SQLUtil;
 import com.varsql.sql.builder.SqlSource;
 import com.varsql.sql.builder.SqlSourceBuilder;
 import com.varsql.sql.builder.SqlSourceResultVO;
-import com.varsql.sql.builder.VarsqlCommandType;
 import com.varsql.sql.builder.VarsqlStatementType;
+import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
@@ -50,7 +51,7 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class SQLServiceImpl implements SQLService{
+public class SQLServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 	
 	@Autowired
@@ -75,14 +76,14 @@ public class SQLServiceImpl implements SQLService{
 	 * @throws Exception
 	 */
 	public String sqlFormat(DataCommonVO paramMap) throws Exception {
-		
-		List<SqlSource> sqlList=new SqlSourceBuilder().parse(paramMap.getString(VarsqlParamConstants.SQL));
 		StringBuffer sqlFormatSb = new StringBuffer();
-		for (SqlSource tmpSqlSource : sqlList) {
-			
-			sqlFormatSb.append(new VarsqlFormatterDb2().execute(tmpSqlSource.getQuery())).append("\n");
-		}
 		
+//		List<SqlSource> sqlList=new SqlSourceBuilder().parse(paramMap.getString(VarsqlParamConstants.SQL));
+//		for (SqlSource tmpSqlSource : sqlList) {
+//			
+//			sqlFormatSb.append(new VarsqlFormatterDb2().execute(tmpSqlSource.getQuery())).append("\n");
+//		}
+		sqlFormatSb.append(new VarsqlFormatterDb2().execute(paramMap.getString(VarsqlParamConstants.SQL))).append("\n");
 		return sqlFormatSb.toString();
 	}
 	
@@ -270,9 +271,6 @@ public class SQLServiceImpl implements SQLService{
 		    logInfoMap.put("result_count", ssrv.getResultCnt());
 		    logInfoMap.put("command_type", tmpSqlSource.getCommandType());
 		    
-		    System.out.println("-------------------------");
-		    System.out.println("logInfoMap : "+ logInfoMap);
-		    System.out.println("-------------------------");
 		    sqlDAO.insertSqlUserLog(logInfoMap);
 	    }catch(Exception e){
 	    	e.printStackTrace();
@@ -328,6 +326,32 @@ public class SQLServiceImpl implements SQLService{
 			HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * 쿼리 저장. 
+	 * @param paramMap
+	 */
+	public Map saveQuery(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			
+			if("".equals(paramMap.getString("sql_id"))){
+				paramMap.put("sql_id",UUID.randomUUID().toString().replaceAll("-", ""));
+			    sqlDAO.saveQueryInfo(paramMap);
+			    reval.put("sql_id", paramMap.get("sql_id"));
+			}else{
+				sqlDAO.updateQueryInfo(paramMap);
+			}
+		    
+		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
 	}
 	
 	

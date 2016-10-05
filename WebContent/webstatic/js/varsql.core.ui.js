@@ -721,6 +721,15 @@ _ui.SQL = {
 			_self.sqlFormatData();
 		});
 		
+		$('.sql-save-btn').on('click',function (){
+			_self.saveSql();
+		});
+		
+		$('.sql-new-file').on('click',function (){
+			$('#saveQueryTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
+			_self.getTextAreaObj().setValue('');
+		});
+		
 		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
 			var sObj = $(this);
 			
@@ -731,6 +740,33 @@ _ui.SQL = {
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+sObj.attr('tab_gubun')+']').addClass('on');
 		});
+	}
+	// save sql
+	,saveSql : function (){
+		var _self = this; 
+		
+		var params = $.extend({},_ui.options.param , {
+			'sql' :_self.getTextAreaObj().getValue()
+			,'saveQueryTitle' : $('#saveQueryTitle').val()
+			,'sql_id' : $('#sql_id').val()
+		});
+		VARSQL.req.ajax({      
+		    type:"POST"
+		    ,loadSelector : '#editorAreaTable'
+		    ,url:{gubun:VARSQL.uri.database, url:'/base/saveQuery.do'}
+		    ,dataType:'json'
+		    ,data:params 
+		    ,success:function (res){
+		    	
+		    	$('#sql_id').val(res.sql_id);
+		    	alert('저장되었습니다.');
+			}
+			,error :function (data, status, err){
+				VARSQL.log.error(data, status, err);
+			}
+			,beforeSend: _self.loadBeforeSend
+			,complete: _self.loadComplete
+		});  
 	}
 	//텍스트 박스 object
 	,getTextAreaObj:function(){

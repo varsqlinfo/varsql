@@ -3,6 +3,9 @@
 <div class="col-xs-9 fill">
 	<div class="row">
 		<div>
+			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일">
+				<span class="glyphicon glyphicon-file"></span>
+			</button>
 			<button type="button" class="btn btn-default btn-sm sql-execue-btn" title="실행  Ctrl+Enter">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
@@ -21,6 +24,8 @@
 				<td>
 					<div>
 						<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
+						<input type="hidden" id="sql_id" name="sql_id" value="">
+						<input type="text" id="saveQueryTitle" name="saveQueryTitle" value="" placeholder="새파일명">
 						LIMIT 
 						<select id="limitRowCnt" name="limitRowCnt">
 							<option value="100" selected>100</option>

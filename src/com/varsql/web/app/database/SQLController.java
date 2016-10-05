@@ -1,5 +1,7 @@
 package com.varsql.web.app.database;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,7 +36,7 @@ public class SQLController {
 	private static final Logger logger = LoggerFactory.getLogger(Db2Controller.class);
 	
 	@Autowired
-	private SQLService sqlService;
+	private SQLServiceImpl sQLServiceImpl;
 	
 	/**
 	 * 
@@ -68,7 +71,7 @@ public class SQLController {
 		
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		return sqlService.sqlData(paramMap);
+		return sQLServiceImpl.sqlData(paramMap);
 	}
 	
 	/**
@@ -95,7 +98,7 @@ public class SQLController {
 		paramMap.put(VarsqlParamConstants.SQL, sql);
 		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
 		
-		return sqlService.sqlFormat(paramMap);
+		return sQLServiceImpl.sqlFormat(paramMap);
 	}
 	
 	/**
@@ -136,7 +139,28 @@ public class SQLController {
 		paramMap.put(VarsqlParamConstants.LIMIT, limit);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		sqlService.dataExport(paramMap, response);
+		sQLServiceImpl.dataExport(paramMap, response);
+	}
+	/**
+	 */
+	@RequestMapping({"/base/saveQuery",""})
+	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+			,@RequestParam(value = "saveQueryTitle", required = true, defaultValue = "" )  String saveQueryTitle 
+			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
+			,@RequestParam(value = "sql_id", required = true, defaultValue = "" )  String sql_id
+			,HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put("saveQueryTitle", saveQueryTitle);
+		paramMap.put( VarsqlParamConstants.SQL, sql);
+		paramMap.put( "sql_id", sql_id);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.saveQuery(paramMap);
 	}
 	
 }

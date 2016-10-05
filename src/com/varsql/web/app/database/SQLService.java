@@ -8,4 +8,5 @@ public interface SQLService  {
 	String sqlFormat(DataCommonVO paramMap) throws Exception;
 	void dataExport(DataCommonVO paramMap, HttpServletResponse response) throws Exception;
 	void columnInfoExport(DataCommonVO paramMap, HttpServletResponse response)throws Exception;
+	void saveQuery(DataCommonVO paramMap, HttpServletResponse response);
 }
