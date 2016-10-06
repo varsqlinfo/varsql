@@ -53,7 +53,7 @@
 			, CURRENT TIMESTAMP
 		)
 	</insert>
-	<insert id="sqlServiceMapper.updateQueryInfo" parameterType="java.util.Map">
+	<update id="sqlServiceMapper.updateQueryInfo" parameterType="java.util.Map">
 		update VTSQL_BOARD 
 		set
 			 GUERY_TITLE = #{saveQueryTitle}
@@ -62,7 +62,13 @@
 		where sql_id = #{sql_id}
 		and VCONNID = #{vconnid}
 		and UID = #{uid}
-
-	</insert>
+	</update>
 	
+	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="map" resultType="map">
+		select * from VTSQL_BOARD
+		where VCONNID = #{vconnid}
+		and UID = #{uid}
+		order by upd_dt desc
+		FETCH FIRST 1 ROWS ONLY
+	</select>
 </mapper>

@@ -43,9 +43,11 @@ _ui.leftDbObject ={
 		$.extend(true,_self.options, _opts);
 		
 		_self._grid();
-		
 		_ui.SQL.init({dbtype:_opts.dbtype});
+		
+		_self._userSettingInfo();
 	}
+	// db schema 그리기
 	,_grid:function (){
 		var _self = this;
 		
@@ -73,6 +75,30 @@ _ui.leftDbObject ={
 			_self._click(this);
 		});
 	}
+	// 사용자 셋팅 정보 가져오기.
+	,_userSettingInfo : function (){
+		var params = $.extend({},_ui.options.param);
+		
+		VARSQL.req.ajax({      
+		    type:"POST"
+		    ,loadSelector : '#db-page-wrapper'
+		    ,url:{gubun:VARSQL.uri.database, url:'/base/userSettingInfo.do'}
+		    ,dataType:'json'
+		    ,data:params 
+		    ,success:function (res){
+		    	if(res.sqlInfo){
+		    		
+		    	}
+		    	_ui.SQL.getTextAreaObj().setValue('');
+			}
+			,error :function (data, status, err){
+				VARSQL.log.error(data, status, err);
+			}
+			,beforeSend: _self.loadBeforeSend
+			,complete: _self.loadComplete
+		});  
+	}
+	// 스키마 클릭. 
 	,_click:function (obj){
 		var _self = this;
 		var tmpParam = _self.options.param;
@@ -620,6 +646,7 @@ _ui.SQL = {
 		,dataGridSelectorWrap:'#dataGridAreaWrap'
 		,resultMsgAreaWrap:'#resultMsgAreaWrap'
 		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
+		,preloaderArea :'#sqlEditerPreloaderArea'
 		,limitCnt:'#limitRowCnt'
 		,vconnidObj:'#vconnid'
 		,active: null
@@ -750,6 +777,7 @@ _ui.SQL = {
 			,'saveQueryTitle' : $('#saveQueryTitle').val()
 			,'sql_id' : $('#sql_id').val()
 		});
+		
 		VARSQL.req.ajax({      
 		    type:"POST"
 		    ,loadSelector : '#editorAreaTable'
@@ -759,7 +787,8 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	
 		    	$('#sql_id').val(res.sql_id);
-		    	alert('저장되었습니다.');
+		    	$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
+		    	
 			}
 			,error :function (data, status, err){
 				VARSQL.log.error(data, status, err);

@@ -161,6 +161,20 @@ public class SQLController {
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return sQLServiceImpl.saveQuery(paramMap);
+	
+	}
+	@RequestMapping({"/base/userSettingInfo",""})
+	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+			,HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.userSettingInfo(paramMap);
 	}
 	
 }

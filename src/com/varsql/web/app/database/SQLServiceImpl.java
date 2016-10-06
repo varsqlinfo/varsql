@@ -354,6 +354,24 @@ public class SQLServiceImpl{
 		return reval; 
 	}
 	
+	/**
+	 * 사용자 셋팅 정보 읽기
+	 * @param paramMap
+	 * @return
+	 */
+	public Map userSettingInfo(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			reval.put("sqlInfo", sqlDAO.selectLastSqlInfo(paramMap));
+		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
+	}
 	
 	/**
 	 * resultSet을  리스트로 만드는 방법 
@@ -476,4 +494,6 @@ public class SQLServiceImpl{
 		
 		return ssrv;
 	}
+
+	
 }

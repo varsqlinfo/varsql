@@ -33,6 +33,8 @@
 							<option value="1000">1000</option>
 						</select>
 						<span class="glyphicon glyphicon-cog btn-sm" title="설정"></span>
+						
+						<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
 					</div>
 					<div>
 						<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>

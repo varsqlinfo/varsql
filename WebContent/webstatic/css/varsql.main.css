@@ -367,3 +367,10 @@ padding-top: 5px;
 	border:1px solid #cfcfcf;
 	background-color: #fff;
 }
+
+#sqlEditerPreloaderArea{
+	display:none; 
+}
+#sqlEditerPreloaderArea>.preloader-msg{
+	font-weight:bold; 
+}

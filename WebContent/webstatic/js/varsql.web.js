@@ -219,17 +219,31 @@ _$base.req ={
 			,cache: false
 			,dataType: "json"
 			,beforeSend : function( xhr ) {
+				
 				if(loadSelector){
+					if(loadSelector=='#editorAreaTable'){
+						$('#sqlEditerPreloaderArea').show();
+					}
 					$(loadSelector).centerLoading({
 						contentClear:false 
 					});
 				}
 			}
 			,error : function (data, status, err){
-				if(loadSelector) $(loadSelector).centerLoadingClose();
+				if(loadSelector) {
+					if(loadSelector=='#editorAreaTable'){
+						$('#sqlEditerPreloaderArea').hide(1000);
+					}
+					$(loadSelector).centerLoadingClose();
+				}
 			}
 			,complete: function (data, status, err){
-				if(loadSelector) $(loadSelector).centerLoadingClose();
+				if(loadSelector){
+					if(loadSelector=='#editorAreaTable'){
+						$('#sqlEditerPreloaderArea').hide(1000);
+					}
+					$(loadSelector).centerLoadingClose();
+				} 
 			}	
 		},option));
 	}
