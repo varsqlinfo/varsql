@@ -47,7 +47,7 @@
 			#{uid}
 			, #{vconnid}
 			, #{sql_id}
-			, #{saveQueryTitle}
+			, #{sqlTitle}
 			, #{sql}
 			, CURRENT TIMESTAMP
 			, CURRENT TIMESTAMP
@@ -56,7 +56,7 @@
 	<update id="sqlServiceMapper.updateQueryInfo" parameterType="java.util.Map">
 		update VTSQL_BOARD 
 		set
-			 GUERY_TITLE = #{saveQueryTitle}
+			 GUERY_TITLE = #{sqlTitle}
 			, QUERY_CONT = #{sql}
 			, UPD_DT = CURRENT TIMESTAMP
 		where sql_id = #{sql_id}

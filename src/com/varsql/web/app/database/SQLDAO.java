@@ -1,6 +1,6 @@
 package com.varsql.web.app.database;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +22,7 @@ public class SQLDAO extends BaseDAO{
 		return getSqlSession().update("sqlServiceMapper.updateQueryInfo", paramMap );
 	}
 
-	public List selectLastSqlInfo(DataCommonVO paramMap) {
-		return getSqlSession().selectList("sqlServiceMapper.selectLastSqlInfo", paramMap );
+	public Map selectLastSqlInfo(DataCommonVO paramMap) {
+		return getSqlSession().selectOne("sqlServiceMapper.selectLastSqlInfo", paramMap );
 	}
 }

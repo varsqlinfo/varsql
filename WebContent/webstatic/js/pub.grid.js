@@ -299,8 +299,6 @@ Plugin.prototype ={
 
 			}
 		}
-
-		console.log('asdfasdf',_containerWidth, _this.config.totGridWidth ,_this.config.gridWidth )
 		_this.config.totGridWidth = _this.config.gridWidth;
 		//console.log(_this.config.gridWidth, gridElementWidth, _w, _sw );
 	}

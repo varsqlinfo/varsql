@@ -25,7 +25,7 @@
 					<div>
 						<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
 						<input type="hidden" id="sql_id" name="sql_id" value="">
-						<input type="text" id="saveQueryTitle" name="saveQueryTitle" value="" placeholder="새파일명">
+						<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명">
 						LIMIT 
 						<select id="limitRowCnt" name="limitRowCnt">
 							<option value="100" selected>100</option>

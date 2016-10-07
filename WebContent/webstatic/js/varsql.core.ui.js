@@ -77,6 +77,7 @@ _ui.leftDbObject ={
 	}
 	// 사용자 셋팅 정보 가져오기.
 	,_userSettingInfo : function (){
+		var _self = this;
 		var params = $.extend({},_ui.options.param);
 		
 		VARSQL.req.ajax({      
@@ -87,15 +88,17 @@ _ui.leftDbObject ={
 		    ,data:params 
 		    ,success:function (res){
 		    	if(res.sqlInfo){
-		    		
+		    		var sqlInfo = res.sqlInfo;
+		    		$('#sql_id').val(sqlInfo.SQL_ID);
+		    		$('#saveSqlTitle').val(sqlInfo.GUERY_TITLE);
+		    		_ui.SQL.getTextAreaObj().setValue(sqlInfo.QUERY_CONT);
+		    	}else{
+		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 		    	}
-		    	_ui.SQL.getTextAreaObj().setValue('');
 			}
 			,error :function (data, status, err){
 				VARSQL.log.error(data, status, err);
 			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});  
 	}
 	// 스키마 클릭. 
@@ -753,7 +756,7 @@ _ui.SQL = {
 		});
 		
 		$('.sql-new-file').on('click',function (){
-			$('#saveQueryTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
+			$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 			_self.getTextAreaObj().setValue('');
 		});
 		
@@ -774,7 +777,7 @@ _ui.SQL = {
 		
 		var params = $.extend({},_ui.options.param , {
 			'sql' :_self.getTextAreaObj().getValue()
-			,'saveQueryTitle' : $('#saveQueryTitle').val()
+			,'sqlTitle' : $('#saveSqlTitle').val()
 			,'sql_id' : $('#sql_id').val()
 		});
 		
@@ -785,7 +788,6 @@ _ui.SQL = {
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
-		    	
 		    	$('#sql_id').val(res.sql_id);
 		    	$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
 		    	

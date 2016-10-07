@@ -145,7 +145,7 @@ public class SQLController {
 	 */
 	@RequestMapping({"/base/saveQuery",""})
 	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
-			,@RequestParam(value = "saveQueryTitle", required = true, defaultValue = "" )  String saveQueryTitle 
+			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
 			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
 			,@RequestParam(value = "sql_id", required = true, defaultValue = "" )  String sql_id
 			,HttpServletRequest req
@@ -155,7 +155,7 @@ public class SQLController {
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
-		paramMap.put("saveQueryTitle", saveQueryTitle);
+		paramMap.put("sqlTitle", sqlTitle);
 		paramMap.put( VarsqlParamConstants.SQL, sql);
 		paramMap.put( "sql_id", sql_id);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
