@@ -751,8 +751,14 @@ _ui.SQL = {
 			_self.sqlFormatData();
 		});
 		
-		$('.sql-save-btn').on('click',function (){
+		$('.sql-save-btn').on('click',function (e){
 			_self.saveSql();
+		});
+		
+		$('.sql-save-list-btn').on('click',function (){
+			_self.sqlSaveList();
+			return false; 
+			
 		});
 		
 		$('.sql-new-file').on('click',function (){
@@ -789,7 +795,42 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (res){
 		    	$('#sql_id').val(res.sql_id);
-		    	$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
+		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
+		    	
+			}
+			,error :function (data, status, err){
+				VARSQL.log.error(data, status, err);
+			}
+			,beforeSend: _self.loadBeforeSend
+			,complete: _self.loadComplete
+		});  
+	}
+	,sqlSaveList : function (){
+		var _self = this; 
+		var params = $.extend({},_ui.options.param , {
+			
+		});
+		VARSQL.req.ajax({
+		    type:"POST"
+		    ,loadSelector : '#editorAreaTable'
+		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlList.do'}
+		    ,dataType:'json'
+		    ,data:params 
+		    ,success:function (res){
+		    	var items = res.items;
+		    	var strHtm = []
+		    		,len = items.length;
+		    	
+		    	if(items.length > 0){
+		    		for(var i =0 ;i <len; i++){
+		    			var item = items[i];
+		    			strHtm.push('<li class="list-item" _idx="'+i+'">'+item.GUERY_TITLE+'</li>')
+		    		}
+		    	}else{
+		    		strHtm.push('<li>no data</li>')
+		    	}
+		    	
+		    	$('#saveSqlList').empty().html(strHtm.join(''));
 		    	
 			}
 			,error :function (data, status, err){

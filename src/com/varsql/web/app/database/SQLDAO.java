@@ -25,4 +25,8 @@ public class SQLDAO extends BaseDAO{
 	public Map selectLastSqlInfo(DataCommonVO paramMap) {
 		return getSqlSession().selectOne("sqlServiceMapper.selectLastSqlInfo", paramMap );
 	}
+
+	public Object selectSqlList(DataCommonVO paramMap) {
+		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", paramMap );
+	}
 }

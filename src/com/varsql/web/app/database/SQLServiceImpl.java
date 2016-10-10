@@ -372,6 +372,24 @@ public class SQLServiceImpl{
 	    }
 		return reval; 
 	}
+	/**
+	 * 사용자 sql 목록 보기.
+	 * @param paramMap
+	 * @return
+	 */
+	public Map selectSqlList(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSqlList(paramMap));
+		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
+	}
 	
 	/**
 	 * resultSet을  리스트로 만드는 방법 

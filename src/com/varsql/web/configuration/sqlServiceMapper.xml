@@ -71,4 +71,11 @@
 		order by upd_dt desc
 		FETCH FIRST 1 ROWS ONLY
 	</select>
+	
+	<select id="sqlServiceMapper.selectSqlList" parameterType="map" resultType="map">
+		select * from VTSQL_BOARD
+		where VCONNID = #{vconnid}
+		and UID = #{uid}
+		order by upd_dt desc
+	</select>
 </mapper>

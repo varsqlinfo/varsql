@@ -22,22 +22,49 @@
 		<table id="editorAreaTable">
 			<tr height="*">
 				<td>
-					<div>
-						<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
-						<input type="hidden" id="sql_id" name="sql_id" value="">
-						<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명">
-						LIMIT 
-						<select id="limitRowCnt" name="limitRowCnt">
-							<option value="100" selected>100</option>
-							<option value="500">500</option>
-							<option value="1000">1000</option>
-						</select>
-						<span class="glyphicon glyphicon-cog btn-sm" title="설정"></span>
-						
-						<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
-					</div>
-					<div>
-						<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+					<div class="row">
+						<div class="col-xs-12">
+							<div style="width:200px;float:left;">
+								<div class="input-group input-group-sm">
+							      <input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
+							      <div class="input-group-btn sql-save-list-btn varsql-dropdown"> 
+							      	<button class="btn btn-default varsql-dropdown-dropbtn" type="button">List</button>
+									    <div class="varsql-dropdown-content" style="width:250px;">
+						                    <div class="panel-success">
+						                        <div class="panel-heading">
+						                            <input type="text" name="saveSqlSearch" id="saveSqlSearch"/>
+						                        </div>
+						                        <div class="save-sql-list-wrapper">
+						                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
+						                            </ul>
+						                        </div>
+						                        <div class="panel-footer">
+						                            1/50
+						                        </div>
+						                    </div>
+									  </div> 
+							      </div>
+							      
+							    </div>		
+							</div>
+							<div style="float:left;padding-left:10px;">
+								<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
+								<input type="hidden" id="sql_id" name="sql_id" value="">
+								LIMIT 
+		    
+								<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">
+									<option value="100" selected>100</option>
+									<option value="500">500</option>
+									<option value="1000">1000</option>
+								</select>
+								<span class="glyphicon glyphicon-cog btn-sm" title="설정"></span>
+							</div>
+						 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
+						</div>
+						<div class="col-md-12">
+							
+							<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+						</div>
 					</div>
 				</td>
 			</tr>

@@ -177,4 +177,18 @@ public class SQLController {
 		return sQLServiceImpl.userSettingInfo(paramMap);
 	}
 	
+	@RequestMapping({"/base/sqlList",""})
+	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+			,HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.selectSqlList(paramMap);
+	}
+	
 }
