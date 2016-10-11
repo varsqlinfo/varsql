@@ -755,11 +755,12 @@ _ui.SQL = {
 			_self.saveSql();
 		});
 		
+		$('.sql-save-list-btn').dropdown();
 		$('.sql-save-list-btn').on('click',function (){
+			$('.varsql-dropdown').addClass('on')
 			_self.sqlSaveList();
-			return false; 
-			
 		});
+		
 		
 		$('.sql-new-file').on('click',function (){
 			$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
@@ -805,6 +806,7 @@ _ui.SQL = {
 			,complete: _self.loadComplete
 		});  
 	}
+	// 저장된 sql 목록 보기.
 	,sqlSaveList : function (){
 		var _self = this; 
 		var params = $.extend({},_ui.options.param , {

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
 <script>
 $(document).ready(function (){

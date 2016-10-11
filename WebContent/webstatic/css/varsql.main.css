@@ -375,6 +375,7 @@ padding-top: 5px;
 	font-weight:bold; 
 }
 
+.open.dropdown-menu{display:block  !important;}
 
 /* Dropdown Content (Hidden by Default) */
 .varsql-dropdown-content {
@@ -399,14 +400,10 @@ padding-top: 5px;
 .varsql-dropdown-content a:hover {background-color: #f1f1f1}
 
 /* Show the dropdown menu on hover */
-.varsql-dropdown:hover .varsql-dropdown-content {
+.varsql-dropdown.on .varsql-dropdown-content {
     display: block;
 }
 
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.varsql-dropdown:hover .dropbtn {
-    background-color: #3e8e41;
-}
 .save-sql-list-wrapper{
 	height:100px;
 	overflow-y:auto;
