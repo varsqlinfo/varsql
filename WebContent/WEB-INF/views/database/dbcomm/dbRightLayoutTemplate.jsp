@@ -22,7 +22,7 @@
 		<table id="editorAreaTable">
 			<tr height="*">
 				<td>
-					<div class="row">
+					<div class="row" style="margin-right: 0px;">
 						<div class="col-xs-12">
 							<div style="width:200px;float:left;">
 								<div class="input-group input-group-sm">
@@ -63,8 +63,7 @@
 							</div>
 						 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
 						</div>
-						<div class="col-md-12">
-							
+						<div class="col-md-12" style="padding-right: 0px;">
 							<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
 						</div>
 					</div>

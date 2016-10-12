@@ -16,7 +16,7 @@
 			</div>
 		</div>
 		<div id="db-page-wrapper">
-			<div class="container-fluid fill row">
+			<div class="container-fluid fill row" style="margin-right: 0px; ">
 				<div class="row fill">
 					<tiles:insertAttribute name="body" />
 				</div>
