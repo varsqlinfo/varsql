@@ -6,7 +6,7 @@
 <head>
 	<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 	<title><spring:message code="user.home.title"/></title>
-	<%@ include file="/WEB-INF/include/user-head.jsp"%>
+	<%@ include file="/WEB-INF/include/user-top-head.jsp"%>
 </head>
 <body>
   <div id="wrapper">
