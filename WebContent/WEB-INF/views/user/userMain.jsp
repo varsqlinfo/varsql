@@ -76,8 +76,8 @@ var userMain = {
 </script>
 <!-- Page Heading -->
 
-<div class="col-lg-12 fill">
-	<div class="row fill" id="user_connection_info_iframe">
+<div class="col-lg-12 fill" style="height:100%;">
+	<div class="row fill" id="user_connection_info_iframe" style="height:100%;">
 		<table id="connection_select_msg_wrapper" style="width: 100%; height: 100%;">
 			<tbody>
 				<tr>
