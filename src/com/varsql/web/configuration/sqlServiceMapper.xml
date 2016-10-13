@@ -4,6 +4,8 @@
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sqlServiceMapper">
+	
+	<!-- 사용자 sql 로그 저장 -->
 	<insert id="sqlServiceMapper.insertSqlUserLog" parameterType="java.util.Map">
 		insert into vtsql_log (
 			vconnid
@@ -33,6 +35,7 @@
 		)
 	</insert>
 	
+	<!-- 사용자 sql 정보 저장  -->
 	<insert id="sqlServiceMapper.saveQueryInfo" parameterType="java.util.Map">
 		insert  into VTSQL_BOARD (
 			UID
@@ -53,6 +56,8 @@
 			, CURRENT TIMESTAMP
 		)
 	</insert>
+	
+	<!-- 사용자 sql 정보 업데이트  -->
 	<update id="sqlServiceMapper.updateQueryInfo" parameterType="java.util.Map">
 		update VTSQL_BOARD 
 		set
@@ -64,6 +69,7 @@
 		and UID = #{uid}
 	</update>
 	
+	<!-- 사용자 sql 마지막 저장 정보  -->
 	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="map" resultType="map">
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}
@@ -72,10 +78,26 @@
 		FETCH FIRST 1 ROWS ONLY
 	</select>
 	
+	<!-- 사용자 sql 목록 토탈 카운트 -->
+	<select id="sqlServiceMapper.selectSqlListTotalCnt" parameterType="map" resultType="int">
+		select count(1) as TOTALCNT 
+		from VTSQL_BOARD
+		where VCONNID = #{vconnid}
+		and UID = #{uid}
+	</select>
+	
+	<!-- 사용자 sql 목록  -->
 	<select id="sqlServiceMapper.selectSqlList" parameterType="map" resultType="map">
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}
 		and UID = #{uid}
 		order by upd_dt desc
 	</select>
+	
+	<!-- sql 저장 정보 삭제 .  -->
+	<delete id="sqlServiceMapper.deleteSqlSaveInfo" parameterType="java.util.Map">
+		delete from VTSQL_BOARD
+		where SQL_ID = #{sql_id}
+	</delete>
+	
 </mapper>

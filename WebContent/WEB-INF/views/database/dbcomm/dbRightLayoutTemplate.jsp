@@ -26,32 +26,31 @@
 						<div class="col-xs-12" style="padding-bottom:3px;">
 							<div style="width:200px;float:left;">
 								<div class="input-group input-group-sm">
-							      <input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
-							      <div class="input-group-btn"> 
-							      	<button class="btn btn-default sql-save-list-btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
-							      		List
-							      	</button>
-								    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">
-					                    <div class="panel-success">
-					                        <div class="panel-heading">
-					                            <input type="text" name="saveSqlSearch" id="saveSqlSearch"/>
-					                        </div>
-					                        <div class="save-sql-list-wrapper">
-					                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
-					                            </ul>
-					                        </div>
-					                        <div class="panel-footer">
-					                            1/50
-					                        </div>
-					                    </div>
-								    </div> 
-							      </div>
-							      
+									<input type="hidden" id="sql_id" name="sql_id" value="">
+							      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
+							      	<div class="input-group-btn"> 
+							      		<button class="btn btn-default sql-save-list-btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
+								      		List
+								      	</button>
+									    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">
+						                    <div class="panel-success">
+						                        <div class="panel-heading">
+						                            <input type="text" name="saveSqlSearch" id="saveSqlSearch"/>
+						                        </div>
+						                        <div class="save-sql-list-wrapper">
+						                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
+						                            </ul>
+						                        </div>
+						                        <div class="panel-footer">
+						                            1/50
+						                        </div>
+						                    </div>
+									    </div> 
+									</div>
 							    </div>		
 							</div>
 							<div style="float:left;padding-left:10px;">
 								<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
-								<input type="hidden" id="sql_id" name="sql_id" value="">
 								LIMIT 
 		    
 								<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">

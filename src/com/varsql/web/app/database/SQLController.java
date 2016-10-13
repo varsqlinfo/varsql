@@ -191,4 +191,18 @@ public class SQLController {
 		return sQLServiceImpl.selectSqlList(paramMap);
 	}
 	
+	@RequestMapping({"/base/delSqlSaveInfo",""})
+	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+			,HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		
+		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.deleteSqlSaveInfo(paramMap);
+	}
+	
 }

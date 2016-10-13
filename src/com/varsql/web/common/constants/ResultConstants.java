@@ -5,6 +5,8 @@ public interface ResultConstants {
 	public String MESSAGE ="msg";
 	public String CODE ="code";
 	public String RESULT_ITEMS ="items";
+	public String PAGING ="paging";
+	public String RESULT ="result";
 	
 	enum CODE_VAL{
 		SUCCESS(200), ERROR(500), NOT_FOUND(400);

@@ -380,8 +380,47 @@ public class SQLServiceImpl{
 	public Map selectSqlList(DataCommonVO paramMap) {
 		Map reval =  new HashMap();
 		try{
-			reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSqlList(paramMap));
-		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+			int totalcnt = sqlDAO.selectSqlListTotalCnt(paramMap);
+			
+			int page = paramMap.getInt("page",0);
+			int rows = paramMap.getInt("rows",10);
+			
+			if(totalcnt > 0){
+				
+				int first = (page-1)*rows ;
+				
+				paramMap.put("first", first);
+				paramMap.put("rows", rows);
+				
+				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, page,rows));
+				reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSqlList(paramMap));
+			}else{
+				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, page,rows));
+				reval.put(ResultConstants.RESULT_ITEMS, new ArrayList());
+			}
+			
+			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
+	}
+	
+	/**
+	 * sql 저장 정보 삭제 .
+	 * @param paramMap
+	 * @return
+	 */
+	public Map deleteSqlSaveInfo(DataCommonVO paramMap) {
+
+		Map reval =  new HashMap();
+		try{
+			reval.put(ResultConstants.RESULT, sqlDAO.deleteSqlSaveInfo(paramMap));
+			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 			
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
@@ -512,6 +551,5 @@ public class SQLServiceImpl{
 		
 		return ssrv;
 	}
-
 	
 }

@@ -757,13 +757,16 @@ _ui.SQL = {
 		
 		$('.sql-save-list-btn').dropdown();
 		$('.sql-save-list-btn').on('click',function (){
-			$('.varsql-dropdown').addClass('on')
-			_self.sqlSaveList();
+			
+			if($('.sql-save-list-layer').attr('loadFlag') != 'Y'){
+				$('.varsql-dropdown').addClass('on');
+				_self.sqlSaveList();
+			}
 		});
 		
-		
 		$('.sql-new-file').on('click',function (){
-			$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
+			$('#sql_id').val('');
+			$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query');
 			_self.getTextAreaObj().setValue('');
 		});
 		
@@ -796,6 +799,7 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (res){
 		    	$('#sql_id').val(res.sql_id);
+		    	_self.sqlSaveList();
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
 		    	
 			}
@@ -826,13 +830,46 @@ _ui.SQL = {
 		    	if(items.length > 0){
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
-		    			strHtm.push('<li class="list-item" _idx="'+i+'">'+item.GUERY_TITLE+'</li>')
+		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'</a>');
+		    			strHtm.push('<a href="javascript:;" class="pull-right save-list-item" _mode="del">삭제</a></li>');
 		    		}
 		    	}else{
 		    		strHtm.push('<li>no data</li>')
 		    	}
 		    	
 		    	$('#saveSqlList').empty().html(strHtm.join(''));
+		    	
+		    	$('.sql-save-list-layer').attr('loadFlag' ,'Y');
+		    	
+		    	$('#saveSqlList .save-list-item').on('click', function (e){
+		    		var sObj = $(this)
+		    			, mode = sObj.attr('_mode')
+		    			, idx = sObj.closest('[_idx]').attr('_idx');
+		    		
+		    		var sItem =items[idx]; 
+		    		
+		    		if(mode=='view'){
+		    			$('#sql_id').val(sItem.SQL_ID);
+		    			$('#saveSqlTitle').val(sItem.GUERY_TITLE);
+		    			_self.getTextAreaObj().setValue(sItem.QUERY_CONT);
+		    			$('.sql-save-list-btn').trigger('click');
+		    		}else{
+		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
+		    				return ; 
+		    			}
+		    			params['sql_id'] = sItem.SQL_ID;
+		    			VARSQL.req.ajax({
+		    			    type:"POST"
+		    			    ,loadSelector : '#editorAreaTable'
+		    			    ,url:{gubun:VARSQL.uri.database, url:'/base/delSqlSaveInfo.do'}
+		    			    ,dataType:'json'
+		    			    ,data:params 
+		    			    ,success:function (res){
+		    			    	_self.sqlSaveList();
+		    			    }
+		    			});
+		    		}
+		    	})
 		    	
 			}
 			,error :function (data, status, err){

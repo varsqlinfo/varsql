@@ -41,8 +41,8 @@ var userMain = {
 		
 		var strHtm='<li class="db-info-tab ui-state-default ui-corner-top connection-ui-tabs-active ui-state-active tabs_'+sconid+'">';
 		strHtm+='	<span class="ui-paddingl5-r5 " vconnid="'+sconid+'" vname="'+escape(selectObj.attr('vname'))+'">';
-		strHtm+='		<a href="javascript:" class="tab-ui-name-'+sconid+'">'+selectObj.attr('vname')+'</a>&nbsp;';
-		strHtm+='		<a href="javascript:" class="tab-ui-close-'+sconid+'">X</a>&nbsp;';
+		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name-'+sconid+'">'+selectObj.attr('vname')+'</a>&nbsp;';
+		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close-'+sconid+'">X</a>&nbsp;';
 		strHtm+='	</span>';
 		strHtm+='</li>';
 
@@ -59,8 +59,28 @@ var userMain = {
 			var tmpid = pObj.attr('vconnid');
 			if(!confirm(unescape(pObj.attr('vname'))+' db를 닫으시겠습니까?')) return ; 
 			
+			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
+			
+			console.log('tmpDbTabInfo : ', tmpDbTabInfo);
+			
+			var viewElement = $(tmpDbTabInfo.prev());
+			
+			console.log('viewElement ',viewElement);
+			 
+			if(viewElement.length < 1){
+				viewElement= $(tmpDbTabInfo.next());
+			}
+			
+			
+			console.log('viewElement ', viewElement)
+			
 			$('.tabs_'+tmpid).remove();
 			$('.iframe_'+tmpid).remove();
+			
+			if(viewElement.length > 0){
+				console.log('viewElementaaa ', viewElement)
+				$(viewElement.find('.db-info-tab-item')).trigger('click');	
+			}
 			
 			if($('.db_sql_view_area').length < 1){
 				$('#connection_select_msg_wrapper').show();

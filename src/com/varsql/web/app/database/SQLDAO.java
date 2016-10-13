@@ -1,5 +1,6 @@
 package com.varsql.web.app.database;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,14 @@ public class SQLDAO extends BaseDAO{
 		return getSqlSession().selectOne("sqlServiceMapper.selectLastSqlInfo", paramMap );
 	}
 
-	public Object selectSqlList(DataCommonVO paramMap) {
+	public int selectSqlListTotalCnt(DataCommonVO paramMap) {
+		return getSqlSession().selectOne("sqlServiceMapper.selectSqlListTotalCnt", paramMap );
+	}
+	public List selectSqlList(DataCommonVO paramMap) {
 		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", paramMap );
+	}
+
+	public int deleteSqlSaveInfo(DataCommonVO paramMap) {
+		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", paramMap );
 	}
 }

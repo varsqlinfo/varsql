@@ -415,3 +415,9 @@ padding-top: 5px;
 .save-sql-list{
 	margin:10px 10px 0px 10px;
 }
+
+.sql-save-list-layer{
+	padding :0px;
+	border-radius: 0px;
+	margin: 0px 0 0;
+}
