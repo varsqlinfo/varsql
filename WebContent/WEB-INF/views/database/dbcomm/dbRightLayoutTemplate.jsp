@@ -23,7 +23,7 @@
 			<tr height="*">
 				<td>
 					<div class="row" style="margin-right: 0px;">
-						<div class="col-xs-12">
+						<div class="col-xs-12" style="padding-bottom:3px;">
 							<div style="width:200px;float:left;">
 								<div class="input-group input-group-sm">
 							      <input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">

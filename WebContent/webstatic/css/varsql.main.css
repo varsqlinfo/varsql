@@ -16,7 +16,7 @@ body {
   position: absolute;
   height: 33px;
   width: 100%;
-  background: #3c8dbc;
+  background: #0f8bf7;
   border-bottom: 2px solid #EBEBEB;
 }
 .navbar-top-links li a{
@@ -67,6 +67,8 @@ body {
   position: relative;
   display: block;
   padding: 5px 15px;
+  color: #8c8787;
+  font-weight :bold;
 }
 
 .db-navbar {
@@ -323,7 +325,7 @@ padding-top: 5px;
 #editorAreaTable{
 	table-layout:fixed; 
 	background-color: #f0f4f0;
-	border: 1px solid black;
+	border: 1px solid #ffffff;
 }
 
 .input-group-addon-trans {

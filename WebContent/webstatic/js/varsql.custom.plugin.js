@@ -109,9 +109,11 @@
  		 if($this.attr('bgiframe')=='true') $($parent.find('.dropdown-menu')).bgiframe();
  		return
  	  }
+      
+      var bsDoropDown = $this.data('bs.dropdown'); 
 
-	  if($this.data('bs.dropdown')._options && $.isFunction($this.data('bs.dropdown')._options.beforeClick)){
-		$this.data('bs.dropdown')._options.beforeClick($this);
+	  if(bsDoropDown && bsDoropDown._options && $.isFunction(bsDoropDown._options.beforeClick)){
+		  bsDoropDown._options.beforeClick($this);
 	  }
 	
       $this
@@ -119,7 +121,7 @@
         .attr('aria-expanded', 'true')
 		.addClass('on');
       
-      $($this.data('bs.dropdown')._options.iframeCoverSelector).each(function (i, item){
+      $(bsDoropDown && bsDoropDown._options.iframeCoverSelector).each(function (i, item){
 		 var sItem = $(this);
 		 var tmpNextEle = sItem.next();
 		 if(!tmpNextEle.hasClass('bs-dropdown-iframe-cover')){
