@@ -15,7 +15,7 @@
 				<tiles:insertAttribute name="header" />
 			</div>
 		</div>
-		<div id="db-page-wrapper">
+		<div id="db-page-wrapper" style="height:750px;"><!-- to do 수정할것 필히. -->
 			<div class="container-fluid fill row" style="margin-right: 0px; ">
 				<div class="row fill">
 					<tiles:insertAttribute name="body" />
