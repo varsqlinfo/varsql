@@ -42,7 +42,13 @@
 						                            </ul>
 						                        </div>
 						                        <div class="panel-footer">
-						                            1/50
+						                        	<div>
+							                            <input type="number" id="sql-save-list-no" name="sql-save-list-no" min="1" max="10000" size="2" value="1">/<span id="sql-save-list-pagecnt"></span>(<span id="sql-save-list-totalcnt"></span>)
+							                            <span style="padding-left:10px;">
+								                            <a href="javascript:;" class="sql-list-move-btn" _mode="p"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+								                            <a href="javascript:;" class="sql-list-move-btn" _mode="n"><span class="glyphicon glyphicon-chevron-right"></span></a>
+							                            </span>
+						                            </div>
 						                        </div>
 						                    </div>
 									    </div> 

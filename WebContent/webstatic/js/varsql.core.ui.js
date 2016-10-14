@@ -78,7 +78,7 @@ _ui.leftDbObject ={
 	// 사용자 셋팅 정보 가져오기.
 	,_userSettingInfo : function (){
 		var _self = this;
-		var params = $.extend({},_ui.options.param);
+		var params = _ui.options.param;
 		
 		VARSQL.req.ajax({      
 		    type:"POST"
@@ -743,17 +743,53 @@ _ui.SQL = {
 			}
 		});
 		
+		// sql 실행
 		$('.sql-execue-btn').on('click',function (evt){
 			_self.sqlData(evt);
 		});
 		
+		// sql 포멧 정리.
 		$('.sql-format-btn').on('click',function (){
 			_self.sqlFormatData();
 		});
 		
+		// sql 정보 저장. 
 		$('.sql-save-btn').on('click',function (e){
 			_self.saveSql();
 		});
+		
+		$('#sql-save-list-no').keydown(function(e) {
+			if (e.keyCode == '13') {
+				_self.sqlSaveList($('#sql-save-list-no').val());
+			}
+		});
+		
+		$('#saveSqlSearch').keydown(function(e) {
+			if (e.keyCode == '13') {
+				_self.sqlSaveList(1);
+			}
+		});
+		
+		// sql 정보 목록 이동. 
+		$('.sql-list-move-btn').on('click',function (e){
+			var mode = $(this).attr('_mode');
+			
+			var pageNo = $('#sql-save-list-no').val();
+			var lastPage = $('#sql-save-list-pagecnt').html(); 
+			
+			pageNo = parseInt(pageNo, 10);
+			if(mode=='p'){
+				pageNo = pageNo -1; 
+			}else{
+				pageNo = pageNo +1;
+			}
+			
+			if(pageNo > 0 && pageNo <= lastPage){
+				_self.sqlSaveList(pageNo);
+				return ; 
+			}
+		});
+		
 		
 		$('.sql-save-list-btn').dropdown();
 		$('.sql-save-list-btn').on('click',function (){
@@ -785,7 +821,7 @@ _ui.SQL = {
 	,saveSql : function (){
 		var _self = this; 
 		
-		var params = $.extend({},_ui.options.param , {
+		var params =VARSQL.util.objectMerge (_ui.options.param,{
 			'sql' :_self.getTextAreaObj().getValue()
 			,'sqlTitle' : $('#saveSqlTitle').val()
 			,'sql_id' : $('#sql_id').val()
@@ -811,11 +847,15 @@ _ui.SQL = {
 		});  
 	}
 	// 저장된 sql 목록 보기.
-	,sqlSaveList : function (){
+	,sqlSaveList : function (pageNo){
 		var _self = this; 
-		var params = $.extend({},_ui.options.param , {
-			
+		
+		var params =VARSQL.util.objectMerge (_ui.options.param,{
+			searchVal : $('#saveSqlSearch').val()
+			,page : pageNo ? pageNo : $('#sql-save-list-no').val()
+			,countPerPage : 5
 		});
+		
 		VARSQL.req.ajax({
 		    type:"POST"
 		    ,loadSelector : '#editorAreaTable'
@@ -824,13 +864,14 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (res){
 		    	var items = res.items;
+		    	var paging = res.paging;
 		    	var strHtm = []
 		    		,len = items.length;
 		    	
 		    	if(items.length > 0){
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
-		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'</a>');
+		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right save-list-item" _mode="del">삭제</a></li>');
 		    		}
 		    	}else{
@@ -840,6 +881,9 @@ _ui.SQL = {
 		    	$('#saveSqlList').empty().html(strHtm.join(''));
 		    	
 		    	$('.sql-save-list-layer').attr('loadFlag' ,'Y');
+		    	$('#sql-save-list-no').val(paging.currPage); 
+		    	$('#sql-save-list-pagecnt').html(paging.totalPage); 
+		    	$('#sql-save-list-totalcnt').html(paging.totalCount); 
 		    	
 		    	$('#saveSqlList .save-list-item').on('click', function (e){
 		    		var sObj = $(this)
@@ -919,7 +963,7 @@ _ui.SQL = {
 		
 		if(''== sqlVal) return ; 
 		
-		var params = $.extend({},_ui.options.param , {
+		var params =VARSQL.util.objectMerge (_ui.options.param,{
 			'sql' :sqlVal
 			,'limit' : $(_self.options.limitCnt).val()
 		});
@@ -997,7 +1041,7 @@ _ui.SQL = {
 		
 		if(''== sqlVal) return ; 
 		
-		var params = $.extend({},_ui.options.param , {
+		var params =VARSQL.util.objectMerge (_ui.options.param,{
 			'sql' :sqlVal
 		});
 		
@@ -1099,7 +1143,7 @@ _ui.SQL = {
 				"내보내기":function (){
 					if(!confirm('내보내기 하시겠습니까?')) return ; 
 
-					var params = $.extend({},_ui.options.param , {
+					var params =VARSQL.util.objectMerge (_ui.options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='columnCheck']:not([value='all'])").join(',')
 						,name: tmpName

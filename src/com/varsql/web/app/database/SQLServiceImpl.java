@@ -383,25 +383,25 @@ public class SQLServiceImpl{
 			
 			int totalcnt = sqlDAO.selectSqlListTotalCnt(paramMap);
 			
-			int page = paramMap.getInt("page",0);
-			int rows = paramMap.getInt("rows",10);
-			
+			int pageNo = paramMap.getInt("page", 1);
+			int countPerPage = paramMap.getInt("countPerPage", 10);
+
 			if(totalcnt > 0){
 				
-				int first = (page-1)*rows ;
+				int first = (pageNo - 1) * countPerPage + 1;
+				int last = first + countPerPage - 1;
+				paramMap.put("first", Integer.valueOf(first));
+				paramMap.put("last", Integer.valueOf(last));
+				paramMap.put("rows", countPerPage);
 				
-				paramMap.put("first", first);
-				paramMap.put("rows", rows);
-				
-				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, page,rows));
+				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
 				reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSqlList(paramMap));
 			}else{
-				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, page,rows));
+				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
 				reval.put(ResultConstants.RESULT_ITEMS, new ArrayList());
 			}
 			
 			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-			
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
 	    	logger.error(getClass().getName()+"saveQuery", e);

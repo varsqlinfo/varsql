@@ -183,7 +183,7 @@ public class SQLController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));

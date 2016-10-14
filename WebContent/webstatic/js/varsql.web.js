@@ -723,6 +723,31 @@ _$base.util = {
 			sdtObj.val(tmped);
 		}
 	}
+	/**
+	 * @method objectMerge
+	 * @param target
+	 * @param source
+	 * @description object merge
+	 */	
+	,objectMerge : function () {
+		var dst = {},src ,p ,args = [].splice.call(arguments, 0);
+		
+		while (args.length > 0) {
+			src = args.splice(0, 1)[0];
+			if (Object.prototype.toString.call(src) == '[object Object]') {
+				for (p in src) {
+					if (src.hasOwnProperty(p)) {
+						if (Object.prototype.toString.call(src[p]) == '[object Object]') {
+							dst[p] = _$base.util.objectMerge(dst[p] || {}, src[p]);
+						} else {
+							dst[p] = src[p];
+						}
+					}
+				}
+			}
+		}
+		return dst;
+	}
 }
 
 /**
