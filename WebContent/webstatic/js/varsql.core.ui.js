@@ -690,24 +690,14 @@ _ui.SQL = {
 	}
 	,_initEditor : function (mime){
 		var _self = this;
-		var _w = $('#sqlEditorWrap').outerWidth()-5; 
-		$( window ).resize(function() {
-			_w = $('#sqlEditorWrap').outerWidth()-5; 
-			$('#editorAreaTable').css('width', _w+'px');
-			
-//			var gridObj = $(_self.options.dataGridSelector); 
-//			gridObj.setGridWidth(width, false);
-	        // 그리드의 width를 div 에 맞춰서 적용
-			//gridObj.setGridWidth(_w , false); //Resized to new width as per windo
-		});
-		
-		$('#editorAreaTable').css('width',_w);
 		
 		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: mime,
 			indentWithTabs: true,
 			smartIndent: true,
 			lineNumbers: true,
+			height:'auto',
+			 lineWrapping: true,
 			matchBrackets : true,
 			autofocus: true,
 			extraKeys: {"Ctrl-Space": "autocomplete"},
@@ -722,10 +712,6 @@ _ui.SQL = {
 		var _self = this; 
 	
 		var textareaObj = $('.CodeMirror.cm-s-default');
-		textareaObj.resizable({
-			handles: "s"
-			,minHeight:50
-		});
 		
 		textareaObj.on('keydown',function (e) {
 			var evt =window.event || e; 
@@ -1301,7 +1287,7 @@ _ui.SQL = {
 		
 		$.pubGrid(_self.options.dataGridSelector,{
 			headerView:true
-			,height:200
+			,height:'auto'
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});

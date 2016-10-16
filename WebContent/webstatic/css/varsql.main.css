@@ -325,8 +325,14 @@ padding-top: 5px;
 }
 
 .CodeMirror {
-	height: 220px;
+  min-height: 100px;
+  height: 100px;
 }
+
+.CodeMirror-vscrollbar{
+	display:block;
+}
+
 
 #editorAreaTable{
 	table-layout:fixed; 

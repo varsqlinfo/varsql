@@ -14,10 +14,10 @@
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
-
 <link href="${pageContextPath}/webstatic/css/editor/codemirror.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.grid.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.main.layout.css" rel="stylesheet" type="text/css">
 
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -32,6 +32,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/jquery.form.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/layout/jquery.layout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>
 <!--  script src="${pageContextPath}/webstatic/js/plugins/contextMenu/jquery.contextMenu.js"></script -->
 
