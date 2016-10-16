@@ -8,16 +8,33 @@
 .ui-layout-pane { /* all 'panes' */
 	padding: 0px;
 	background: #FFF;
-	border-top: 1px solid #BBB;
-	border-bottom: 1px solid #BBB;
-}
-
-.ui-layout-pane-north, .ui-layout-pane-south {
-	border: 1px solid #BBB;
+	border-top: 0px solid #BBB;
+	border-bottom: 0px solid #BBB;
 }
 
 .ui-layout-pane-west {
 	border-left: 1px solid #BBB;
+}
+
+.ui-layout-header-area{
+	border-top: 0px solid #BBB;
+	border-bottom: 1px solid #BBB;
+}
+.ui-layout-footer-area{
+	border-top: 1px solid #BBB;
+}
+
+.inner-layout-toolbar-area{
+	background: #f0f4f0;
+	border-left: 0px solid #BBB;
+	border-right: 0px solid #BBB;
+	border-bottom: 1px solid #BBB;
+	padding-left:3px;
+}
+
+.inner-layout-toolbar-area{
+	z-index:50 !important;
+	height : 62px !important;
 }
 
 .ui-layout-pane-east {
@@ -42,7 +59,7 @@
 }
 
 .ui-layout-resizer { /* all 'resizer-bars' */
-	background: #DDD;
+	background:#edf5f4;
 }
 
 .ui-layout-resizer:hover { /* all 'resizer-bars' */
@@ -71,12 +88,5 @@
 	border: 0;
 }
 
-.inner-layout-toolbar-area{
-	z-index:50 !important;
-}
-/*
-.inner-layout-sql-editor-area {
-	overflow-y:auto;
-}
-*/
+
 

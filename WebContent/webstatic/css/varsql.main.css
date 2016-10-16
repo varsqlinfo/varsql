@@ -337,7 +337,7 @@ padding-top: 5px;
 #editorAreaTable{
 	table-layout:fixed; 
 	background-color: #f0f4f0;
-	border: 1px solid #ffffff;
+	border: 0px solid #ffffff;
 }
 
 .input-group-addon-trans {

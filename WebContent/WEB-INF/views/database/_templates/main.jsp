@@ -47,7 +47,7 @@
 			<!-- div class="inner-layout-sql-editor-area">sql editor</div>
 			<div class="inner-layout-result-area">grid area</div -->
 		</div>
-		<div class="ui-layout-south">ytechinfo copy right</div>
+		<div class="ui-layout-footer-area">ytechinfo copy right</div>
 		<script>
 		var varsqlMainLayout, varsqlMiddleLayout;
 		
@@ -57,8 +57,9 @@
 				center__paneSelector:	".ui-layout-center-area"
 				, west__paneSelector:	".ui-layout-left-area"
 				, north__paneSelector: ".ui-layout-header-area"
-				, west__size:				360 
-				, spacing_open:			8 // ALL panes
+				, south__paneSelector : ".ui-layout-footer-area"
+				, west__size:				300 
+				, spacing_open:			5 // ALL panes
 				, spacing_closed:   12 // ALL panes
 				, north__spacing_open: 0
 				, south__spacing_open: 0
@@ -73,9 +74,10 @@
 				, center__paneSelector: ".inner-layout-sql-editor-area"
 				, south__paneSelector: ".inner-layout-result-area"
 				, north__size:    65
-				, south__size:    300 
-				, spacing_open:   8  // ALL panes
-				, spacing_closed:   8  // ALL panes
+				, north__resizable: false
+				, south__size:    100 
+				, spacing_open:   5  // ALL panes
+				, spacing_closed:   5  // ALL panes
 				, north__spacing_open: 0
 				, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 					$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
