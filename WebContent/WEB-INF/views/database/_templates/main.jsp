@@ -60,14 +60,12 @@
 				, south__paneSelector : ".ui-layout-footer-area"
 				, west__size:				300 
 				, spacing_open:			5 // ALL panes
-				, spacing_closed:   12 // ALL panes
+				, spacing_closed:   8 // ALL panes
 				, north__spacing_open: 0
 				, south__spacing_open: 0
+				, resizerDblClickToggle: false
 				, center__onresize:  "varsqlMiddleLayout.resizeAll"
 			}); 
-			
-			
-			//CodeMirror-scroll
 		
 			varsqlMiddleLayout = $('div.ui-layout-center-area').layout({
 				north__paneSelector: ".inner-layout-toolbar-area"
@@ -76,9 +74,10 @@
 				, north__size:    65
 				, north__resizable: false
 				, south__size:    100 
-				, spacing_open:   5  // ALL panes
-				, spacing_closed:   5  // ALL panes
+				, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+				, spacing_closed:   8  // ALL panes
 				, north__spacing_open: 0
+				, resizerDblClickToggle: false
 				, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 					$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
 				}

@@ -70,7 +70,11 @@
 		</div>
 	</div>
 </div>
+
+
 <div class="inner-layout-result-area">
-	<div id="data_grid_result_tab_wrap"></div>
-	<div id="dataGridAreaWrap"></div>
+	<div style="height:100%; display:table;width:100%">
+		<div id="data_grid_result_tab_wrap" style="display:table-row;width:100%;height:1px"></div>
+		<div id="dataGridAreaWrap" style="display:table-row;width:100%;height:100%"></div>
+	</div>
 </div>
