@@ -20,9 +20,11 @@
 		<tiles:insertAttribute name="body" />
     </div>
     <!-- /#page-wrapper -->
+    <%--
     <div id="footer">
       <tiles:insertAttribute name="footer" />
     </div>
+     --%>
   </div>
 </body>
 </html>
