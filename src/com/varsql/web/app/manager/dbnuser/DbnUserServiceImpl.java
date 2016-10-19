@@ -18,9 +18,16 @@ public class DbnUserServiceImpl implements DbnUserService{
 	DbnUserDAO dbnUserDAO;
 
 	public String selectdbList(DataCommonVO paramMap) {
+		
+		System.out.println("============");
+		System.out.println(paramMap);
+		System.out.println("============");
+		
 		int totalcnt = dbnUserDAO.selectdbListTotalCnt(paramMap);
 		
 		paramMap=VarsqlUtil.setPagingParam(paramMap);
+		
+		
 		
 		Map json = new HashMap();
 		if(totalcnt > 0){

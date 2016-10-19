@@ -49,6 +49,7 @@ public class SqlStatsController {
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		
 		return dbnUserService.selectdbList(paramMap);
 	}

@@ -73,7 +73,14 @@
 			,a.vname
 		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
 		where a.vconnid = b.vconnid
-		and b.viewid = #{uid}
+		<choose>
+			<when test="role eq ADMIN">
+				AND 1=1
+			</when>
+			<otherwise>
+				and b.viewid = #{uid}
+			</otherwise>
+		</choose>
 		and (a.vname like '%'||#{searchval}||'%' or a.vurl like '%'||#{searchval}||'%') 
 		order  by a.vconnid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
@@ -82,7 +89,14 @@
 		select count(1) as totalcnt 
 		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
 		where a.vconnid = b.vconnid
-		and b.viewid = #{uid}
+		<choose>
+			<when test="role eq ADMIN">
+				AND 1=1
+			</when>
+			<otherwise>
+				and b.viewid = #{uid}
+			</otherwise>
+		</choose>
 		and (a.vname like '%'||#{searchval}||'%' or a.vurl like '%'||#{searchval}||'%') 
 	</select>
 	
@@ -112,7 +126,7 @@
 	<!-- sql 로그 통계 날짜별 통계  -->
 	<select id="selectSqlDateStat" parameterType="map" resultType="map">
 		select 
-			date(max(start_time)) VIEW_DATE, CASE WHEN s_mm >10 then cast(s_mm AS CHAR(2)) else  '0'||CAST (s_mm AS CHAR(1)) END||'-'||CAST(CAST (s_dd AS CHAR(2))  AS VARCHAR(2)) X_COL
+			date(max(start_time)) VIEW_DATE, CASE WHEN s_mm >= 10 then cast(s_mm AS CHAR(2)) else  '0'||CAST (s_mm AS CHAR(1)) END||'-'||CAST(CAST (s_dd AS CHAR(2))  AS VARCHAR(2)) X_COL
 			, count(1) as Y_COL 
 		from VTSQL_LOG a
 		where	vconnid=#{vconnid}
