@@ -3,8 +3,11 @@
 <div class="inner-layout-toolbar-area">
 	<div>
 		<div>
-			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일">
+			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일  Ctrl+alt+n">
 				<span class="glyphicon glyphicon-file"></span>
+			</button>
+			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장  Ctrl+shift+s">
+				<span class="glyphicon glyphicon-save"></span>
 			</button>
 			<button type="button" class="btn btn-default btn-sm sql-execue-btn" title="실행  Ctrl+Enter">
 				<span class="glyphicon glyphicon-play"></span>
@@ -12,8 +15,8 @@
 			<button type="button" class="btn btn-default btn-sm sql-format-btn" title="쿼리 정리 Ctrl+Shift+f">
 				<span class="glyphicon glyphicon-align-left" aria-hidden="true" ></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장">
-				<span class="glyphicon glyphicon-save"></span>
+			<button type="button" class="btn btn-default btn-sm sql-send-btn" title="보내기">
+				<span class="glyphicon glyphicon-send"></span>
 			</button>
 		</div>
 		<div style="padding-bottom:3px;">
@@ -70,7 +73,6 @@
 		</div>
 	</div>
 </div>
-
 
 <div class="inner-layout-result-area">
 	<div style="height:100%; display:table;width:100%">

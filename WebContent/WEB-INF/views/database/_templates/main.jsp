@@ -98,5 +98,34 @@
 	
 	<form name="downloadForm" id="downloadForm"  style="display:none;" target="hiddenIframe"></form>
 	<iframe name="hiddenIframe" id="hiddenIframe"  style="width:0px;height:px;display:none;"></iframe>
+	
+	<div id="memoTemplate" style="display:none;" title="메시지 보내기">
+		<table class="memoTable">
+			<colgroup>
+				<col width="50%">
+				<col width="50%">
+			</colgroup>
+			<tr>
+				<td>
+					<div class="input-group input-group-sm">
+				      	<input type="text" id="recvUserSearch" name="recvUserSearch" value="" class="form-control" placeholder="보낼사용자검색">
+				      	<div class="input-group-btn"> 
+				      		<button class="btn btn-default sq-recv-user-btn" type="button">
+					      		검색
+					      	</button>
+						</div>
+				    </div>
+				    	받을목록
+				    <div id="recvIdArr">
+				    	ㅁㄴㅇㄹ
+				    </div>	
+				</td>
+				<td>
+					<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="새파일명">
+					<textarea id="memoContent" name="memoContent" rows="5"></textarea>
+				</td>
+			</tr>
+		</table>
+	</div>
 </body>
 </html>

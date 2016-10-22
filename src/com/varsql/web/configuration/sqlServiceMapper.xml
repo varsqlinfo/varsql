@@ -103,4 +103,28 @@
 		where SQL_ID = #{sql_id}
 	</delete>
 	
+	<!-- sql 정보 보내기  -->
+	<insert id="sqlServiceMapper.insertSendSqlInfo" parameterType="java.util.Map">
+		insert  into VTMEMO (
+			MEMO_ID
+			, SEND_ID
+			, RECV_ID
+			, MEMO_TITLE
+			, MEMO_CONT
+			, SEND_DEL_YN
+			, RECV_DEL_YN
+			, REG_DT
+		) 
+		values(
+			#{memo_id}
+			, #{send_id}
+			, #{recv_id}
+			, #{memo_title}
+			, #{memo_cont}
+			, 'N'
+			, 'N'
+			, CURRENT TIMESTAMP
+		);
+	</insert>
+	
 </mapper>

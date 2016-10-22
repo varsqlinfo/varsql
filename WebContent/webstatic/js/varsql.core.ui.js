@@ -722,9 +722,24 @@ _ui.SQL = {
 					return false; // preventing default action
 				}
 				
-				if (evt.keyCode == 70 && evt.shiftKey) { // keyCode 13 is Enter
-					$('.sql-format-btn').trigger('click');
-					return false; // preventing default action
+				if (evt.altKey) { // keyCode 78 is n
+					if(evt.keyCode == 78){
+						$('.sql-new-file').trigger('click');
+						return false; // preventing default action
+					}
+				}
+				
+				if (evt.shiftKey) { // keyCode 70 is f
+					
+					if(evt.keyCode == 70){
+						$('.sql-format-btn').trigger('click');
+						return false; // preventing default action
+					}
+					
+					if(evt.keyCode == 83){  // keyCode 83 is s
+						$('.sql-save-btn').trigger('click');
+						return false; // preventing default action
+					}
 				}
 			}
 		});
@@ -732,6 +747,11 @@ _ui.SQL = {
 		// sql 실행
 		$('.sql-execue-btn').on('click',function (evt){
 			_self.sqlData(evt);
+		});
+		
+		// sql 보내기
+		$('.sql-send-btn').on('click',function (evt){
+			_self.sqlSend(evt);
 		});
 		
 		// sql 포멧 정리.
@@ -831,6 +851,55 @@ _ui.SQL = {
 			,beforeSend: _self.loadBeforeSend
 			,complete: _self.loadComplete
 		});  
+	}
+	// sql 보내기.
+	,sqlSend :function (){
+		var _self = this;
+		var sqlVal = _self.getSql();
+		
+		sqlVal=$.trim(sqlVal);
+		if(sqlVal.length < 1){
+			alert('sql을 선택하고 보내주세요.');
+			return false; 
+		}
+		
+		$('#memoTemplate').dialog({
+			height: 350
+			,width: 640
+			,modal: true
+			,buttons: {
+				"보내기":function (){
+					if(!confirm('보내기 시겠습니까?')) return ; 
+
+					var params ={
+						'sql' :sqlVal
+					};
+					
+					VARSQL.req.ajax({      
+					    type:"POST" 
+					    ,loadSelector : '#editorAreaTable'
+					    ,url:{gubun:VARSQL.uri.database, url:'/base/sendSql.do'}
+					    ,dataType:'json'
+					    ,data:params 
+					    ,success:function (resData){
+					    	
+						}
+						,error :function (data, status, err){
+							VARSQL.log.error(data, status, err);
+						}
+						,beforeSend: _self.loadBeforeSend
+						,complete: _self.loadComplete
+					});
+				}
+				,Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+			,close: function() {
+			  $( this ).dialog( "close" );
+			}
+		});
+		
 	}
 	// 저장된 sql 목록 보기.
 	,sqlSaveList : function (pageNo){

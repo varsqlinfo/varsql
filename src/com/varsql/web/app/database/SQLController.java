@@ -141,7 +141,17 @@ public class SQLController {
 		
 		sQLServiceImpl.dataExport(paramMap, response);
 	}
+
 	/**
+	 * 쿼리 저장
+	 * @param vconnid
+	 * @param sqlTitle
+	 * @param sql
+	 * @param sql_id
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
 	 */
 	@RequestMapping({"/base/saveQuery",""})
 	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
@@ -163,6 +173,14 @@ public class SQLController {
 		return sQLServiceImpl.saveQuery(paramMap);
 	
 	}
+	/**
+	 * 사용자 정보 셋팅
+	 * @param vconnid
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/base/userSettingInfo",""})
 	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
@@ -177,6 +195,14 @@ public class SQLController {
 		return sQLServiceImpl.userSettingInfo(paramMap);
 	}
 	
+	/**
+	 * sql 저장 목록 보기.
+	 * @param vconnid
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/base/sqlList",""})
 	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
@@ -190,7 +216,14 @@ public class SQLController {
 		
 		return sQLServiceImpl.selectSqlList(paramMap);
 	}
-	
+	/**
+	 * sql 정보 삭제 하기.
+	 * @param vconnid
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/base/delSqlSaveInfo",""})
 	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
@@ -203,6 +236,25 @@ public class SQLController {
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return sQLServiceImpl.deleteSqlSaveInfo(paramMap);
+	}
+	
+	/**
+	 * sql 정보 보내기.
+	 * @param vconnid
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/base/sendSql",""})
+	public @ResponseBody Map sendSql(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.insertSendSqlInfo(paramMap);
 	}
 	
 }

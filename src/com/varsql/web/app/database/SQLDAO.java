@@ -16,7 +16,6 @@ public class SQLDAO extends BaseDAO{
 
 	public int saveQueryInfo(DataCommonVO paramMap) {
 		return getSqlSession().insert("sqlServiceMapper.saveQueryInfo", paramMap );
-		
 	}
 
 	public int updateQueryInfo(DataCommonVO paramMap) {
@@ -36,5 +35,9 @@ public class SQLDAO extends BaseDAO{
 
 	public int deleteSqlSaveInfo(DataCommonVO paramMap) {
 		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", paramMap );
+	}
+
+	public int insertSendSqlInfo(DataCommonVO paramMap) {
+		return getSqlSession().insert("sqlServiceMapper.insertSendSqlInfo", paramMap );
 	}
 }
