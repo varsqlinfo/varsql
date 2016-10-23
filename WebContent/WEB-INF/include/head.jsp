@@ -7,11 +7,10 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<!-- Bootstrap Core CSS -->
-<link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
-
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/sb-admin.css" rel="stylesheet">
+<!-- Bootstrap Core CSS -->
+<link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Morris Charts CSS -->
 <link href="${pageContextPath}/webstatic/css/plugins/morris.css" rel="stylesheet">

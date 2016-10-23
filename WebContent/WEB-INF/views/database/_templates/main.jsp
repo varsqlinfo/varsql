@@ -100,32 +100,46 @@
 	<iframe name="hiddenIframe" id="hiddenIframe"  style="width:0px;height:px;display:none;"></iframe>
 	
 	<div id="memoTemplate" style="display:none;" title="메시지 보내기">
-		<table class="memoTable">
-			<colgroup>
-				<col width="50%">
-				<col width="50%">
-			</colgroup>
-			<tr>
-				<td>
-					<div class="input-group input-group-sm">
-				      	<input type="text" id="recvUserSearch" name="recvUserSearch" value="" class="form-control" placeholder="보낼사용자검색">
-				      	<div class="input-group-btn"> 
-				      		<button class="btn btn-default sq-recv-user-btn" type="button">
-					      		검색
-					      	</button>
+		<div style="margin: 0px -10px 0px -10px;">
+			<div class="col-xs-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="input-group">
+							<input type="text" id="recvUserSearch" name="recvUserSearch" class="form-control" placeholder="보낼사용자검색">
+								<span class="input-group-btn">
+								<span class="btn btn-default searchBtn">
+									<span class="glyphicon glyphicon-search"></span>
+								</span>
+							</span>
 						</div>
-				    </div>
-				    	받을목록
-				    <div id="recvIdArr">
-				    	ㅁㄴㅇㄹ
-				    </div>	
-				</td>
-				<td>
-					<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="새파일명">
-					<textarea id="memoContent" name="memoContent" rows="5"></textarea>
-				</td>
-			</tr>
-		</table>
+					</div>
+					<!-- /.panel-heading -->
+					<div class="panel-body">
+						<div class="list-group" id="recvIdArr">
+							<a href="javascript:;" class="list-group-item db-list-item">로컬
+								가인db11<span class="pull-right text-muted small">
+							</span>
+							</a>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</div>
+			<!-- /.col-lg-4 -->
+			<div class="col-xs-6">
+				<div class="panel panel-default">
+					<!-- /.panel-heading -->
+					<div class="panel-body">
+						<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
+						<textarea id="memoContent" name="memoContent" class="form-control" rows="6" placeholder="내용"></textarea>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</div>
+			<!-- /.col-lg-8 -->
+		</div>
 	</div>
 </body>
 </html>

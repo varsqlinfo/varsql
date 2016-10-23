@@ -859,9 +859,12 @@ _ui.SQL = {
 		
 		sqlVal=$.trim(sqlVal);
 		if(sqlVal.length < 1){
-			alert('sql을 선택하고 보내주세요.');
-			return false; 
+			//alert('sql을 선택하고 보내주세요.');
+			//return false; 
 		}
+		
+		$('#memoTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_메시지');
+		$('#memoContent').val(sqlVal);
 		
 		$('#memoTemplate').dialog({
 			height: 350
