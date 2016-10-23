@@ -132,14 +132,8 @@ _ui.leftDbObject ={
  * 테이블 , 스키마 , view 등등 
  */
 _ui.leftDbObjectServiceMenu ={
-	metadataCache:{
-		tableCache:{}
-		,viewCache:{}
-		,procedureCache:{}
-		,functionCache:{}
-	}
+	metadataCache:false
 	,metaGridHeight :150
-	,cacheSuffix:'Cache'
 	,options :{
 		selector:'#leftServiceMenu'
 		,menuData:[]
@@ -157,9 +151,18 @@ _ui.leftDbObjectServiceMenu ={
 		
 		$.extend(true,_self.options, options);
 		
+		_self._initCacheObject();
 		_self.initElement();
 	
 		_self._tabs();
+	}
+	,_initCacheObject : function (){
+		this.metadataCache = {
+			'table':{}
+			,'view':{}
+			,'procedure':{}
+			,'function':{}
+		}
 	}
 	,initElement :function (){
 		var _self = this;
@@ -215,6 +218,7 @@ _ui.leftDbObjectServiceMenu ={
 	    		var sObj = this.element;
 	    		
 	        	if(key=='refresh'){
+	        		_self._removeMetaCache();
 	        		sObj.attr('refresh','Y').trigger('click');
 	        	}
 	    	}
@@ -232,14 +236,22 @@ _ui.leftDbObjectServiceMenu ={
 	}
 	// 메타 데이타 케쉬된값 꺼내기
 	,_getMetaCache:function (gubun, key){
-		gubun =gubun+this.cacheSuffix; 
 		var t =this.metadataCache[gubun][key]; 
 		return t?t:null;
 	}
 	// 메타 데이타 셋팅하기.
 	,_setMetaCache:function (gubun, key ,data){
-		gubun =gubun+this.cacheSuffix; 
 		this.metadataCache[gubun][key]= data;  
+	}
+	,_removeMetaCache:function (gubun, key){
+		
+		if(typeof gubun !='undefined' && typeof key != 'undefined'){
+			delete this.metadataCache[gubun][key];  
+		}else if(typeof gubun !='undefined'){
+			delete this.metadataCache[gubun];
+		}else{
+			this._initCacheObject();
+		}
 	}
 	// 클릭시 테메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
@@ -382,13 +394,15 @@ _ui.leftDbObjectServiceMenu ={
 						var ele = this.element, sItem = this.gridItem;
 						var gubun='table'
 							,tmpName = sItem.TABLE_NAME;
-						var cacheData = _self._getMetaCache(gubun,tmpName);
 						
 						if(key=='refresh'){
+							_self._removeMetaCache(gubun,tmpName);
 							ele.attr('refresh','Y');
-							ele.trigger('mousedown');
+							ele.trigger('click.pubgridrow');
 							return ; 
 						}
+						
+						var cacheData = _self._getMetaCache(gubun,tmpName);
 						
 						if(key=='ddl_copy' || key=='ddl_paste'){
 							_self._createDDL({
@@ -858,12 +872,8 @@ _ui.SQL = {
 		var sqlVal = _self.getSql();
 		
 		sqlVal=$.trim(sqlVal);
-		if(sqlVal.length < 1){
-			//alert('sql을 선택하고 보내주세요.');
-			//return false; 
-		}
 		
-		$('#memoTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_메시지');
+		$('#memoTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_제목');
 		$('#memoContent').val(sqlVal);
 		
 		$('#memoTemplate').dialog({
@@ -875,7 +885,9 @@ _ui.SQL = {
 					if(!confirm('보내기 시겠습니까?')) return ; 
 
 					var params ={
-						'sql' :sqlVal
+						'momo_title' : $('#memoTitle').val()
+						,'memo_content' : $('#memoContent').val()
+						,'recv_id' : ''
 					};
 					
 					VARSQL.req.ajax({      
