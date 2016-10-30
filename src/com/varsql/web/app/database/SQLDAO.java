@@ -36,30 +36,7 @@ public class SQLDAO extends BaseDAO{
 		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", paramMap );
 	}
 	
-	public List selectSearchUserList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("sqlServiceMapper.selectSearchUserList", paramMap );
-	}
-
 	public int deleteSqlSaveInfo(DataCommonVO paramMap) {
 		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", paramMap );
-	}
-
-	public int insertSendSqlInfo(DataCommonVO paramMap) {
-		SqlSession batch = getSqlSession(true);
-		String [] recvArr = paramMap.getString("recv_id").split(";;");
-		
-		batch.commit(false);
-		
-		for (int i = 0; i < recvArr.length; i++) {
-			paramMap.put("memo_id", VarsqlUtil.generateUUID());
-			paramMap.put("recv_id", recvArr[i]);
-			
-			System.out.println(paramMap);
-			batch.insert("sqlServiceMapper.insertSendSqlInfo", paramMap );
-		}
-		batch.flushStatements();
-		
-		batch.commit(true);
-		return 0; 
 	}
 }

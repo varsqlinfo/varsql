@@ -424,42 +424,4 @@ public class SQLServiceImpl{
 		return reval; 
 	}
 	
-	
-	/**
-	 * sql 보내기
-	 * @param paramMap
-	 * @return
-	 */
-	public Map insertSendSqlInfo(DataCommonVO paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT, sqlDAO.insertSendSqlInfo(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-			
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval; 
-	}
-	
-	/**
-	 * 사용자 검색.
-	 * @param paramMap
-	 * @return
-	 */
-	public Map selectSearchUserList(DataCommonVO paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSearchUserList(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval; 
-	}
-	
 }

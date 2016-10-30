@@ -1,5 +1,7 @@
 package com.varsql.web.app.user;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.manager.dbnuser.DbnUserService;
+import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.HttpUtil;
 import com.varsql.web.util.SecurityUtil;
@@ -29,7 +32,7 @@ public class UserMainController {
 	private static final Logger logger = LoggerFactory.getLogger(UserMainController.class);
 	
 	@Autowired
-	UserMainService userMainService;
+	UserMainServiceImpl userMainServiceImpl;
 	
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -48,6 +51,36 @@ public class UserMainController {
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
 		return  new ModelAndView("/user/userMain",model);
+	}
+	
+	@RequestMapping({"/searchUserList"})
+	public @ResponseBody Map searchUserList(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {	
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return userMainServiceImpl.selectSearchUserList(paramMap);
+	}
+	
+	/**
+	 * sql 정보 보내기.
+	 * @param vconnid
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/sendSql"})
+	public @ResponseBody Map sendSql(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return userMainServiceImpl.insertSendSqlInfo(paramMap);
 	}
 
 }

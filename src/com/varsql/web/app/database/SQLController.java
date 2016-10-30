@@ -238,33 +238,4 @@ public class SQLController {
 		return sQLServiceImpl.deleteSqlSaveInfo(paramMap);
 	}
 	
-	/**
-	 * sql 정보 보내기.
-	 * @param vconnid
-	 * @param req
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping({"/base/sendSql"})
-	public @ResponseBody Map sendSql(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
-		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return sQLServiceImpl.insertSendSqlInfo(paramMap);
-	}
-	
-	@RequestMapping({"/base/searchUserList"})
-	public @ResponseBody Map searchUserList(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
-		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return sQLServiceImpl.selectSearchUserList(paramMap);
-	}
 }

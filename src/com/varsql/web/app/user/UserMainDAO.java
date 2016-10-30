@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
+import com.varsql.web.util.VarsqlUtil;
 
 
 @Repository
@@ -30,5 +31,28 @@ public class UserMainDAO extends BaseDAO{
 	
 	public List<Object>  selectDbUserMappingList(DataCommonVO paramMap){
 		return getSqlSession().selectList("selectDbUserMappingList", paramMap);
+	}
+	
+	public List selectSearchUserList(DataCommonVO paramMap) {
+		return getSqlSession().selectList("sqlServiceMapper.selectSearchUserList", paramMap );
+	}
+	
+	public int insertSendSqlInfo(DataCommonVO paramMap) {
+		SqlSession batch = getSqlSession(true);
+		String [] recvArr = paramMap.getString("recv_id").split(";;");
+		
+		try{
+			for (int i = 0; i < recvArr.length; i++) {
+				paramMap.put("memo_id", VarsqlUtil.generateUUID());
+				paramMap.put("recv_id", recvArr[i]);
+				batch.insert("sqlServiceMapper.insertSendSqlInfo", paramMap );
+			}
+			batch.flushStatements();
+			batch.commit(true);
+		}finally{
+			batch.close();
+		}
+		
+		return 0; 
 	}
 }

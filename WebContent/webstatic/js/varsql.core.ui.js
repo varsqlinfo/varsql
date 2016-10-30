@@ -657,6 +657,7 @@ _ui.SQL = {
 	sqlTextAreaObj:null
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
+	,memoDialog : null
 	,options :{
 		selector:'#sqlExecuteArea'
 		,dataGridSelector:'#dataGridArea'
@@ -797,11 +798,11 @@ _ui.SQL = {
 //		});
 		$('#recvUserSearch').autocomplete({
 			source : function( request, response ) {
-				var params =VARSQL.util.objectMerge (_ui.options.param, { searchVal : request.term });
+				var params = { searchVal : request.term };
 				
 				VARSQL.req.ajax({      
 				    type:"POST"
-				    ,url:  {gubun:VARSQL.uri.database, url:'/base/searchUserList.do'}
+				    ,url:{gubun:VARSQL.uri.user, url:'/searchUserList.do'}
 				    ,dataType:'json'
 				    ,data: params
 				    ,success:function (data){
@@ -932,56 +933,62 @@ _ui.SQL = {
 		$('#memoTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_제목');
 		$('#memoContent').val(sqlVal);
 		
-		var memoDialog = $('#memoTemplate').dialog({
-			height: 350
-			,width: 640
-			,modal: true
-			,buttons: {
-				"보내기":function (){
-					var recvEle = $('.recv_id_item[_recvid]');
-					
-					if(recvEle.length < 1) {
-						alert('보낼 사람을 선택하세요.');
-						return ; 
-					}
-					
-					if(!confirm('보내기 시겠습니까?')) return ; 
-					
-					var recv_id = [];
-					$.each(recvEle,function (i , item ){
-						recv_id.push($(item).attr('_recvid'));
-					});
+		if(_self.memoDialog==null){
+			_self.memoDialog = $('#memoTemplate').dialog({
+				height: 350
+				,width: 640
+				,modal: true
+				,buttons: {
+					"보내기":function (){
+						var recvEle = $('.recv_id_item[_recvid]');
+						
+						if(recvEle.length < 1) {
+							alert('보낼 사람을 선택하세요.');
+							return ; 
+						}
+						
+						if(!confirm('보내기 시겠습니까?')) return ; 
+						
+						var recv_id = [];
+						$.each(recvEle,function (i , item ){
+							recv_id.push($(item).attr('_recvid'));
+						});
 
-					var params = VARSQL.util.objectMerge (_ui.options.param,{
-						'memo_title' : $('#memoTitle').val()
-						,'memo_cont' : $('#memoContent').val()
-						,'recv_id' : recv_id.join(';;')
-					});
-					
-					VARSQL.req.ajax({      
-					    type:"POST" 
-					    ,loadSelector : '#editorAreaTable'
-					    ,url:{gubun:VARSQL.uri.database, url:'/base/sendSql.do'}
-					    ,dataType:'json'
-					    ,data:params 
-					    ,success:function (resData){
-					    	memoDialog.dialog( "close" );
-						}
-						,error :function (data, status, err){
-							VARSQL.log.error(data, status, err);
-						}
-						,beforeSend: _self.loadBeforeSend
-						,complete: _self.loadComplete
-					});
+						var params = {
+							'memo_title' : $('#memoTitle').val()
+							,'memo_cont' : $('#memoContent').val()
+							,'recv_id' : recv_id.join(';;')
+						};
+						
+						VARSQL.req.ajax({      
+						    type:"POST" 
+						    ,loadSelector : '#editorAreaTable'
+						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.do'}
+						    ,dataType:'json'
+						    ,data:params 
+						    ,success:function (resData){
+						    	_self.memoDialog.dialog( "close" );
+							}
+							,error :function (data, status, err){
+								VARSQL.log.error(data, status, err);
+							}
+							,beforeSend: _self.loadBeforeSend
+							,complete: _self.loadComplete
+						});
+					}
+					,Cancel: function() {
+						_self.memoDialog.dialog( "close" );
+					}
 				}
-				,Cancel: function() {
-					memoDialog.dialog( "close" );
+				,close: function() {
+					_self.memoDialog.dialog( "close" );
 				}
-			}
-			,close: function() {
-				memoDialog.dialog( "close" );
-			}
-		});
+			});
+		}
+		
+		_self.memoDialog.dialog("open");
+		
+		$('#recvIdArr').html('');
 		
 	}
 	// 저장된 sql 목록 보기.
