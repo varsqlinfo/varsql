@@ -54,7 +54,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlData",""})
+	@RequestMapping({"/base/sqlData"})
 	public @ResponseBody String sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
 			@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = true, defaultValue = "" )  String schema,
 			@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit,
@@ -87,7 +87,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlFormat",""})
+	@RequestMapping({"/base/sqlFormat"})
 	public @ResponseBody String sqlFormat(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
 			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
 			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ) throws Exception {
@@ -118,7 +118,7 @@ public class SQLController {
 	 * @param response
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/dataExport",""})
+	@RequestMapping({"/base/dataExport"})
 	public void dataExport(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype 
 			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = true, defaultValue = "" )  String objectName 
@@ -153,7 +153,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/saveQuery",""})
+	@RequestMapping({"/base/saveQuery"})
 	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
 			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
@@ -181,7 +181,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/userSettingInfo",""})
+	@RequestMapping({"/base/userSettingInfo"})
 	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -203,7 +203,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlList",""})
+	@RequestMapping({"/base/sqlList"})
 	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -224,7 +224,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/delSqlSaveInfo",""})
+	@RequestMapping({"/base/delSqlSaveInfo"})
 	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -246,7 +246,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sendSql",""})
+	@RequestMapping({"/base/sendSql"})
 	public @ResponseBody Map sendSql(HttpServletRequest req
 			,HttpServletResponse response
 			) throws Exception {
@@ -257,4 +257,14 @@ public class SQLController {
 		return sQLServiceImpl.insertSendSqlInfo(paramMap);
 	}
 	
+	@RequestMapping({"/base/searchUserList"})
+	public @ResponseBody Map searchUserList(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return sQLServiceImpl.selectSearchUserList(paramMap);
+	}
 }

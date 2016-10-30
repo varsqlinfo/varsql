@@ -2,6 +2,7 @@ package com.varsql.web.util;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
@@ -18,6 +19,9 @@ import com.varsql.web.common.vo.DataCommonVO;
 
 public class VarsqlUtil {
 	
+	public static String generateUUID (){
+		return UUID.randomUUID().toString().replaceAll("-", ""); 
+	}
 	public static String objectToString(Object json) {
 		try {
 			return new ObjectMapper().writeValueAsString(json);

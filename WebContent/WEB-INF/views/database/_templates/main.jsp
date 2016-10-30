@@ -104,22 +104,11 @@
 			<div class="col-xs-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<div class="input-group">
-							<input type="text" id="recvUserSearch" name="recvUserSearch" class="form-control" placeholder="보낼사용자검색">
-								<span class="input-group-btn">
-								<span class="btn btn-default searchBtn">
-									<span class="glyphicon glyphicon-search"></span>
-								</span>
-							</span>
-						</div>
+						<input type="text" id="recvUserSearch" name="recvUserSearch" class="form-control" placeholder="보낼사용자검색">
 					</div>
 					<!-- /.panel-heading -->
 					<div class="panel-body">
-						<div class="list-group" id="recvIdArr">
-							<a href="javascript:;" class="list-group-item db-list-item">로컬
-								가인db11<span class="pull-right text-muted small">
-							</span>
-							</a>
+						<div class="list-group memo-recv-id-cont" id="recvIdArr">
 						</div>
 					</div>
 					<!-- /.panel-body -->
@@ -132,7 +121,7 @@
 					<!-- /.panel-heading -->
 					<div class="panel-body">
 						<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
-						<textarea id="memoContent" name="memoContent" class="form-control" rows="6" placeholder="내용"></textarea>
+						<textarea id="memoContent" name="memoContent" class="form-control" rows="7" placeholder="내용"></textarea>
 					</div>
 					<!-- /.panel-body -->
 				</div>

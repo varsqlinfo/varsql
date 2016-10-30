@@ -97,6 +97,15 @@
 		order by upd_dt desc OFFSET ${pageStartNum} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
+	<!-- 사용자 조회  -->
+	<select id="sqlServiceMapper.selectSearchUserList" parameterType="map" resultType="map">
+		select VIEWID,UID,UNAME
+		from VTUSER
+		WHERE ACCEPT_YN ='Y'
+		and ROLE not in ('ADMIN')
+		and UID like '%'||#{searchVal}||'%' 
+	</select>
+	
 	<!-- sql 저장 정보 삭제 .  -->
 	<delete id="sqlServiceMapper.deleteSqlSaveInfo" parameterType="java.util.Map">
 		delete from VTSQL_BOARD
@@ -117,14 +126,14 @@
 		) 
 		values(
 			#{memo_id}
-			, #{send_id}
+			, #{uid}
 			, #{recv_id}
 			, #{memo_title}
 			, #{memo_cont}
 			, 'N'
 			, 'N'
 			, CURRENT TIMESTAMP
-		);
+		)
 	</insert>
 	
 </mapper>

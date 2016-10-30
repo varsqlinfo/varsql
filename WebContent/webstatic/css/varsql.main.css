@@ -438,3 +438,14 @@ padding-top: 5px;
     font-family: Verdana,Arial,sans-serif;
     font-size: -2em;
 }
+
+.ui-autocomplete{
+	z-index:2000;
+}
+
+.memo-recv-id-cont{
+	height:125px;
+	width: 250px;
+	overflow:auto; 
+	margin-bottom: 0px;
+}

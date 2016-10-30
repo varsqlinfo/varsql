@@ -790,6 +790,62 @@ _ui.SQL = {
 			}
 		});
 		
+//		$('#recvUserSearch').keydown(function(e) {
+//			if (e.keyCode == '13') {
+//				$('#recvUserSearchBtn').trigger('click');
+//			}
+//		});
+		$('#recvUserSearch').autocomplete({
+			source : function( request, response ) {
+				var params =VARSQL.util.objectMerge (_ui.options.param, { searchVal : request.term });
+				
+				VARSQL.req.ajax({      
+				    type:"POST"
+				    ,url:  {gubun:VARSQL.uri.database, url:'/base/searchUserList.do'}
+				    ,dataType:'json'
+				    ,data: params
+				    ,success:function (data){
+				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
+				    	
+				    	var result = [];
+				    	$.each(data.items , function (idx,item){
+				    		result.push({
+								label: item.UNAME+'('+item.UID+')',
+								value: item.VIEWID
+							})
+				    	})
+				    	
+						response(result	);
+					}
+					,error :function (data, status, err){
+						VARSQL.log.error(data, status, err);
+					}
+					,beforeSend: _self.loadBeforeSend
+					,complete: _self.loadComplete
+				});  
+			},
+			//조회를 위한 최소글자수
+			minLength: 2,
+			select: function( event, ui ) {
+				var strHtm = [];
+				var sItem = ui.item;
+				
+				if($('.recv_id_item[_recvid="'+sItem.value+'"]').length > 0 ) return false;
+				
+				strHtm.push('<div class="recv_id_item" _recvid="'+sItem.value+'">'+sItem.label);
+				strHtm.push('<a href="javascript:;" class="pull-right">X</a></div>');
+				$('#recvIdArr').append(strHtm.join(''));
+				
+				$('.recv_id_item[_recvid="'+sItem.value+'"] a').on('click', function (){
+					$(this).closest('[_recvid]').remove();
+				})
+				
+				this.value ='';
+				
+				return false; 
+			}
+		});
+		
 		// sql 정보 목록 이동. 
 		$('.sql-list-move-btn').on('click',function (e){
 			var mode = $(this).attr('_mode');
@@ -876,19 +932,31 @@ _ui.SQL = {
 		$('#memoTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_제목');
 		$('#memoContent').val(sqlVal);
 		
-		$('#memoTemplate').dialog({
+		var memoDialog = $('#memoTemplate').dialog({
 			height: 350
 			,width: 640
 			,modal: true
 			,buttons: {
 				"보내기":function (){
+					var recvEle = $('.recv_id_item[_recvid]');
+					
+					if(recvEle.length < 1) {
+						alert('보낼 사람을 선택하세요.');
+						return ; 
+					}
+					
 					if(!confirm('보내기 시겠습니까?')) return ; 
+					
+					var recv_id = [];
+					$.each(recvEle,function (i , item ){
+						recv_id.push($(item).attr('_recvid'));
+					});
 
-					var params ={
-						'momo_title' : $('#memoTitle').val()
-						,'memo_content' : $('#memoContent').val()
-						,'recv_id' : ''
-					};
+					var params = VARSQL.util.objectMerge (_ui.options.param,{
+						'memo_title' : $('#memoTitle').val()
+						,'memo_cont' : $('#memoContent').val()
+						,'recv_id' : recv_id.join(';;')
+					});
 					
 					VARSQL.req.ajax({      
 					    type:"POST" 
@@ -897,7 +965,7 @@ _ui.SQL = {
 					    ,dataType:'json'
 					    ,data:params 
 					    ,success:function (resData){
-					    	
+					    	memoDialog.dialog( "close" );
 						}
 						,error :function (data, status, err){
 							VARSQL.log.error(data, status, err);
@@ -907,11 +975,11 @@ _ui.SQL = {
 					});
 				}
 				,Cancel: function() {
-					$( this ).dialog( "close" );
+					memoDialog.dialog( "close" );
 				}
 			}
 			,close: function() {
-			  $( this ).dialog( "close" );
+				memoDialog.dialog( "close" );
 			}
 		});
 		

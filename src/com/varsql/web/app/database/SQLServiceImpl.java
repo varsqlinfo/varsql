@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -332,7 +331,7 @@ public class SQLServiceImpl{
 		try{
 			
 			if("".equals(paramMap.getString("sql_id"))){
-				paramMap.put("sql_id",UUID.randomUUID().toString().replaceAll("-", ""));
+				paramMap.put("sql_id",VarsqlUtil.generateUUID());
 			    sqlDAO.saveQueryInfo(paramMap);
 			    reval.put("sql_id", paramMap.get("sql_id"));
 			}else{
@@ -437,6 +436,24 @@ public class SQLServiceImpl{
 			reval.put(ResultConstants.RESULT, sqlDAO.insertSendSqlInfo(paramMap));
 			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
+	}
+	
+	/**
+	 * 사용자 검색.
+	 * @param paramMap
+	 * @return
+	 */
+	public Map selectSearchUserList(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSearchUserList(paramMap));
+			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
 	    	logger.error(getClass().getName()+"saveQuery", e);
