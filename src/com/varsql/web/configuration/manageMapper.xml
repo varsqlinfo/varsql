@@ -3,26 +3,26 @@
 	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.varsql.web.app.manage">
+<mapper namespace="manageMapper">
 
-	<select id="selectUserTotalcnt" parameterType="map" resultType="int">
+	<select id="manageMapper.selectUserTotalcnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from vtuser 
 		where (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
 	</select>
 
-	<select id="selectUserList" parameterType="map" resultType="map">
+	<select id="manageMapper.selectUserList" parameterType="map" resultType="map">
 		select a.*, CHAR (a.cre_dt) as char_cre_dt
 		from vtuser a
 		where (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
 		order by viewid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<delete id="deleteUserInfo" parameterType="map">
+	<delete id="manageMapper.deleteUserInfo" parameterType="map">
 		delete from vtuser where viewid =#{viewid}
 	</delete>
 	
-	<update id="updateAccept" parameterType="map">
+	<update id="manageMapper.updateAccept" parameterType="map">
 		update vtuser 
 		set 
 			role =#{role}
@@ -30,7 +30,7 @@
 		where viewid =#{viewid}
 	</update>
 	
-	<select id="selectQnaMgmtTotalCnt" parameterType="map" resultType="int">
+	<select id="manageMapper.selectQnaMgmtTotalCnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt
 		from vtqna a
 		where del_yn !='Y'
@@ -43,7 +43,7 @@
 		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
 	</select>
 	
-	<select id="selectQnaMgmtList" parameterType="map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="manageMapper.selectQnaMgmtList" parameterType="map" resultType="com.varsql.web.common.vo.DataCommonVO">
 		select a.*, b.uname, CHAR (a.cre_dt) as char_cre_dt, char(a.upd_dt) as char_upd_dt
 		from vtqna a , vtuser b
 		where del_yn !='Y'
@@ -58,7 +58,7 @@
 		order by qnaid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<update id="updateQnaAnswerContent" parameterType="map">
+	<update id="manageMapper.updateQnaAnswerContent" parameterType="map">
 		update vtqna
 		set
 			answer =#{answer}
@@ -67,17 +67,18 @@
 		where qnaid=#{qnaid}
 	</update>
 	
-	<select id="selectdbList" parameterType="map" resultType="map">
+	<select id="manageMapper.selectdbList" parameterType="map" resultType="map">
 		select
 			a.vconnid
 			,a.vname
-		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
-		where a.vconnid = b.vconnid
+		from vtconnection a 
 		<choose>
-			<when test="role eq ADMIN">
-				AND 1=1
+			<when test="role != null and role.equalsIgnoreCase('ADMIN')">
+				where 1=1
 			</when>
 			<otherwise>
+				, VTDATABASE_MANAGER_ROLE  b
+				where a.vconnid = b.vconnid
 				and b.viewid = #{uid}
 			</otherwise>
 		</choose>
@@ -85,12 +86,12 @@
 		order  by a.vconnid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<select id="selectdbListTotalCnt" parameterType="map" resultType="int">
+	<select id="manageMapper.selectdbListTotalCnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from vtconnection a , VTDATABASE_MANAGER_ROLE  b
 		where a.vconnid = b.vconnid
 		<choose>
-			<when test="role eq ADMIN">
+			<when test="role != null and role.equalsIgnoreCase('ADMIN')">
 				AND 1=1
 			</when>
 			<otherwise>
@@ -100,7 +101,7 @@
 		and (a.vname like '%'||#{searchval}||'%' or a.vurl like '%'||#{searchval}||'%') 
 	</select>
 	
-	<select id="selectDbUserMappingList" parameterType="map" resultType="map">
+	<select id="manageMapper.selectDbUserMappingList" parameterType="map" resultType="map">
 		select * 
 		from vtuser a left outer join vtdatabase_user_role b 
 		on a.viewid = b.viewid 
@@ -108,12 +109,12 @@
 		where (b.vconnid = #{vconnid} or b.vconnid is null ) 
 	</select>
 	
-	<delete id="deleteDbUser" parameterType="map">
+	<delete id="manageMapper.deleteDbUser" parameterType="map">
 		delete from vtdatabase_user_role
 		where vconnid = #{vconnid}
 	</delete>
 	
-	<update id="updateDbUser" parameterType="map">
+	<insert id="manageMapper.updateDbUser" parameterType="map">
 		insert into vtdatabase_user_role (vconnid, viewid , upd_id ,upd_dt)
 		values(
 			#{vconnid}
@@ -121,10 +122,10 @@
 			, #{upd_id}
 			,CURRENT TIMESTAMP
 		)
-	</update>
+	</insert>
 	
 	<!-- sql 로그 통계 날짜별 통계  -->
-	<select id="selectSqlDateStat" parameterType="map" resultType="map">
+	<select id="manageMapper.selectSqlDateStat" parameterType="map" resultType="map">
 		select 
 			date(max(start_time)) VIEW_DATE, CASE WHEN s_mm >= 10 then cast(s_mm AS CHAR(2)) else  '0'||CAST (s_mm AS CHAR(1)) END||'-'||CAST(CAST (s_dd AS CHAR(2))  AS VARCHAR(2)) X_COL
 			, count(1) as Y_COL 
@@ -139,7 +140,7 @@
 	sql 로그 통계 날짜별 통계
 	select ,insert ,update	,delete	,create,alter,drop
 	  -->
-	<select id="selectSqlDayStat" parameterType="map" resultType="map">
+	<select id="manageMapper.selectSqlDayStat" parameterType="map" resultType="map">
 			select 
 			COMMAND_TYPE X_COL, count(1) as Y_COL
 		from VTSQL_LOG a
@@ -151,7 +152,7 @@
 	<!-- 
 		날짜별 top 5 
 	 -->
-	<select id="selectSqlDayUserRank" parameterType="map" resultType="map">
+	<select id="manageMapper.selectSqlDayUserRank" parameterType="map" resultType="map">
 		select b.uname label , cnt as data from 
 		(
 			select 

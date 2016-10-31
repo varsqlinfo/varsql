@@ -10,22 +10,22 @@ import com.varsql.web.dao.BaseDAO;
 public class UserMenuMgmtDAO extends BaseDAO{
 	
 	public int listDbMenuTotalcnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("listDbMenuTotalcnt", paramMap);
+		return getSqlSession().selectOne("adminMapper.listDbMenuTotalcnt", paramMap);
 	}
 
 	public Object listDbMenu(DataCommonVO paramMap) {
-		return getSqlSession().selectList("listDbMenu", paramMap);
+		return getSqlSession().selectList("adminMapper.listDbMenu", paramMap);
 	}
 
 	public int moodifyDbMenu(DataCommonVO paramMap) {
-		return getSqlSession().update("moodifyDbMenu", paramMap);
+		return getSqlSession().update("adminMapper.moodifyDbMenu", paramMap);
 	}
 
 	public int addDbMenu(DataCommonVO paramMap) {
-		return getSqlSession().insert("addDbMenu", paramMap);
+		return getSqlSession().insert("adminMapper.addDbMenu", paramMap);
 	}
 
 	public int deleteDbMenu(DataCommonVO paramMap) {
-		return getSqlSession().delete("deleteDbMenu", paramMap);
+		return getSqlSession().delete("adminMapper.deleteDbMenu", paramMap);
 	}
 }

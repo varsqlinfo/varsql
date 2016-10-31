@@ -14,27 +14,27 @@ import com.varsql.web.util.VarsqlUtil;
 public class UserMainDAO extends BaseDAO{
 	
 	public int selectdbListTotalCnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectdbListTotalCnt", paramMap);
+		return getSqlSession().selectOne("userMapper.selectdbListTotalCnt", paramMap);
 	}
 	
 	public List<Object> selectdbList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("selectdbList", paramMap);
+		return getSqlSession().selectList("userMapper.selectdbList", paramMap);
 	}
 
 	public int updateQnaAnswerContent(DataCommonVO paramMap){
-		return getSqlSession().update("updateQnaAnswerContent", paramMap);
+		return getSqlSession().update("userMapper.updateQnaAnswerContent", paramMap);
 	}
 	
 	public int selectDbUserMappingListTotalCnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectDbUserMappingListTotalCnt", paramMap);
+		return getSqlSession().selectOne("userMapper.selectDbUserMappingListTotalCnt", paramMap);
 	}
 	
 	public List<Object>  selectDbUserMappingList(DataCommonVO paramMap){
-		return getSqlSession().selectList("selectDbUserMappingList", paramMap);
+		return getSqlSession().selectList("userMapper.selectDbUserMappingList", paramMap);
 	}
 	
 	public List selectSearchUserList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("sqlServiceMapper.selectSearchUserList", paramMap );
+		return getSqlSession().selectList("userMapper.selectSearchUserList", paramMap );
 	}
 	
 	public int insertSendSqlInfo(DataCommonVO paramMap) {
@@ -45,7 +45,7 @@ public class UserMainDAO extends BaseDAO{
 			for (int i = 0; i < recvArr.length; i++) {
 				paramMap.put("memo_id", VarsqlUtil.generateUUID());
 				paramMap.put("recv_id", recvArr[i]);
-				batch.insert("sqlServiceMapper.insertSendSqlInfo", paramMap );
+				batch.insert("userMapper.insertSendSqlInfo", paramMap );
 			}
 			batch.flushStatements();
 			batch.commit(true);
@@ -54,5 +54,9 @@ public class UserMainDAO extends BaseDAO{
 		}
 		
 		return 0; 
+	}
+
+	public List selectMessageInfo(DataCommonVO paramMap) {
+		return getSqlSession().selectList("userMapper.selectMessageInfo", paramMap );
 	}
 }

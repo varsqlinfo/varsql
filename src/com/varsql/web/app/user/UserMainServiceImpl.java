@@ -52,4 +52,18 @@ public class UserMainServiceImpl implements UserMainService{
 	    }
 		return reval; 
 	}
+
+	public Map selectMessageInfo(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			reval.put(ResultConstants.RESULT_ITEMS, userMainDAO.selectMessageInfo(paramMap));
+			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval; 
+	}
 }

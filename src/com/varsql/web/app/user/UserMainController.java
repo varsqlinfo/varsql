@@ -83,4 +83,14 @@ public class UserMainController {
 		return userMainServiceImpl.insertSendSqlInfo(paramMap);
 	}
 
+	@RequestMapping({"/message"})
+	public @ResponseBody Map message(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return userMainServiceImpl.selectMessageInfo(paramMap);
+	}
 }

@@ -66,6 +66,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.vsql</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
 		<url-pattern>*.json</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>

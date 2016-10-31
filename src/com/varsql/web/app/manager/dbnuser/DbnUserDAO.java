@@ -13,15 +13,15 @@ import com.varsql.web.dao.BaseDAO;
 public class DbnUserDAO extends BaseDAO{
 	
 	public int selectdbListTotalCnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectdbListTotalCnt", paramMap);
+		return getSqlSession().selectOne("manageMapper.selectdbListTotalCnt", paramMap);
 	}
 	
 	public List<Object> selectdbList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("selectdbList", paramMap);
+		return getSqlSession().selectList("manageMapper.selectdbList", paramMap);
 	}
 
 	public int updateQnaAnswerContent(DataCommonVO paramMap){
-		return getSqlSession().update("updateQnaAnswerContent", paramMap);
+		return getSqlSession().update("manageMapper.updateQnaAnswerContent", paramMap);
 	}
 	
 	public int selectDbUserMappingListTotalCnt(DataCommonVO paramMap) {
@@ -29,7 +29,7 @@ public class DbnUserDAO extends BaseDAO{
 	}
 	
 	public List<Object>  selectDbUserMappingList(DataCommonVO paramMap){
-		return getSqlSession().selectList("selectDbUserMappingList", paramMap);
+		return getSqlSession().selectList("manageMapper.selectDbUserMappingList", paramMap);
 	}
 
 	public Object updateDbUser(String[] viewidArr, DataCommonVO paramMap) throws Exception {
@@ -39,11 +39,11 @@ public class DbnUserDAO extends BaseDAO{
         try {
         	batchSqlSession.commit(false);
         	
-        	batchSqlSession.delete("deleteDbUser",paramMap);
+        	batchSqlSession.delete("manageMapper.deleteDbUser",paramMap);
         	
             for(String id: viewidArr){
             	paramMap.put("viewid", id);
-            	batchSqlSession.update("updateDbUser", paramMap);
+            	batchSqlSession.update("manageMapper.updateDbUser", paramMap);
             }
             batchSqlSession.commit();
             result = true;
@@ -51,7 +51,6 @@ public class DbnUserDAO extends BaseDAO{
         	batchSqlSession.rollback();
         	throw e;
         }finally{
-        	
         	batchSqlSession.close();
         }
 		return result;

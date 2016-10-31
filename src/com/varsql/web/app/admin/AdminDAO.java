@@ -12,34 +12,34 @@ import com.varsql.web.dao.BaseDAO;
 public class AdminDAO extends BaseDAO{
 	
 	public List<Object> selectPageList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("selectPageList", paramMap);
+		return getSqlSession().selectList("adminMapper.selectPageList", paramMap);
 	}
 
 	public Object selectDetailObject(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectDetailObject", paramMap);
+		return getSqlSession().selectOne("adminMapper.selectDetailObject", paramMap);
 	}
 
 	public String selectVtconnectionMaxVal() {
-		return getSqlSession().selectOne("selectVtconnectionMaxVal");
+		return getSqlSession().selectOne("adminMapper.selectVtconnectionMaxVal");
 	}
 	
 	public int insertVtconnectionInfo(DataCommonVO paramMap){
-		return getSqlSession().insert("insertVtconnectionInfo", paramMap );
+		return getSqlSession().insert("adminMapper.insertVtconnectionInfo", paramMap );
 	}
 	
 	public int updateVtconnectionInfo(DataCommonVO paramMap){
-		return getSqlSession().update("updateVtconnectionInfo", paramMap);
+		return getSqlSession().update("adminMapper.updateVtconnectionInfo", paramMap);
 	}
 
 	public int deleteVtconnectionInfo(DataCommonVO paramMap) {
-		return getSqlSession().delete("deleteVtconnectionInfo", paramMap);
+		return getSqlSession().delete("adminMapper.deleteVtconnectionInfo", paramMap);
 	}
 
 	public int selectPageTotalCnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectPageTotalCnt", paramMap);
+		return getSqlSession().selectOne("adminMapper.selectPageTotalCnt", paramMap);
 	}
 
 	public List selectAllDbType() {
-		return getSqlSession().selectList("selectAllDbType");
+		return getSqlSession().selectList("adminMapper.selectAllDbType");
 	}
 }

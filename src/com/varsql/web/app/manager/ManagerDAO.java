@@ -18,33 +18,13 @@ public class ManagerDAO extends BaseDAO{
 	
 	
 	public int selectUserTotalcnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectUserTotalcnt", paramMap);
+		return getSqlSession().selectOne("manageMapper.selectUserTotalcnt", paramMap);
 	}
 	
 	public List<Object> selectUserList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("selectUserList", paramMap);
+		return getSqlSession().selectList("manageMapper.selectUserList", paramMap);
 	}
 
-	public Object selectUserDetail(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("selectUserDetail", paramMap);
-	}
-
-	public String selectUserMaxVal() {
-		return getSqlSession().selectOne("selectUserMaxVal");
-	}
-	
-	public int insertUserInfo(DataCommonVO paramMap){
-		return getSqlSession().insert("insertUserInfo", paramMap );
-	}
-	
-	public int updateUserInfo(DataCommonVO paramMap){
-		return getSqlSession().update("updateUserInfo", paramMap);
-	}
-
-	public int deleteUserInfo(DataCommonVO paramMap) {
-		return getSqlSession().delete("deleteUserInfo", paramMap);
-	}
-	
 	public boolean updateAccept(String[] viewidArr, DataCommonVO paramMap){
         SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
         
@@ -52,7 +32,7 @@ public class ManagerDAO extends BaseDAO{
         try {
             for(String id: viewidArr){
             	paramMap.put("viewid", id);
-            	batchSqlSession.update("updateAccept", paramMap);
+            	batchSqlSession.update("manageMapper.updateAccept", paramMap);
             }
             batchSqlSession.commit();
             result = true; 

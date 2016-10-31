@@ -19,18 +19,11 @@ public class DbnUserServiceImpl implements DbnUserService{
 
 	public String selectdbList(DataCommonVO paramMap) {
 		
-		System.out.println("============");
-		System.out.println(paramMap);
-		System.out.println("============");
-		
 		int totalcnt = dbnUserDAO.selectdbListTotalCnt(paramMap);
-		
-		paramMap=VarsqlUtil.setPagingParam(paramMap);
-		
-		
 		
 		Map json = new HashMap();
 		if(totalcnt > 0){
+			paramMap=VarsqlUtil.setPagingParam(paramMap);
 			json.put("paging", PagingUtil.getPageObject(totalcnt, paramMap));
 			json.put("result", dbnUserDAO.selectdbList(paramMap));
 		}
@@ -41,10 +34,6 @@ public class DbnUserServiceImpl implements DbnUserService{
 	public String selectDbUserMappingList(DataCommonVO paramMap) {
 		
 		paramMap=VarsqlUtil.setPagingParam(paramMap);
-		
-		System.out.println("--------------------------------");
-		System.out.println("paramMap : "+ paramMap);
-		System.out.println("--------------------------------");
 		
 		Map json = new HashMap();
 		json.put("result", dbnUserDAO.selectDbUserMappingList(paramMap));

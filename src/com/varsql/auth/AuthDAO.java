@@ -134,6 +134,10 @@ public class AuthDAO {
 			}
 			break; 
 		}
+		
+		System.out.println("@@######################################");
+		System.out.println(query);
+		System.out.println("@@######################################");
 	  	
 		Map<String, HashMap> userDatabaseInfo = new HashMap<String, HashMap>(); 
 		if(!tmpAuthority.equals(Authority.GUEST.name())){

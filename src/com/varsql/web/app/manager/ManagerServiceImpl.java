@@ -37,34 +37,6 @@ public class ManagerServiceImpl implements ManagerService{
 		return VarsqlUtil.objectToString(json);
 	}
 
-	public String selectUserDetail(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		json.put("result", manageDAO.selectUserDetail(paramMap));
-		return VarsqlUtil.objectToString(json);
-	}
-
-	public boolean insertUserInfo(DataCommonVO paramMap) {
-		String vconid = manageDAO.selectUserMaxVal();
-		
-		try{
-			vconid=String.format("%07d", Integer.parseInt(vconid)+1);
-		}catch(Exception e){
-			vconid=String.format("%07d", 1);
-		}
-		
-		paramMap.put("viewid", vconid);
-		
-		return manageDAO.insertUserInfo(paramMap) > 0;
-	}
-
-	public boolean updateUserInfo(DataCommonVO paramMap) {
-		return manageDAO.updateUserInfo(paramMap) > 0;
-	}
-
-	public boolean deleteUserInfo(DataCommonVO paramMap) {
-		return manageDAO.deleteUserInfo(paramMap) > 0;
-	}
-	
 	public String updateAccept(DataCommonVO paramMap) {
 		
 		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");

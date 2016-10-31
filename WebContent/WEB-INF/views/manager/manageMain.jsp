@@ -38,6 +38,7 @@ var manageMain ={
 		});
 	}
 	,acceptYn : function(obj){
+		var _self = this; 
 		var selectItem = VARSQL.check.getCheckVal('input:checkbox[class="itemCheck"]');
 		
 		if(VARSQL.isDataEmpty(selectItem)){
@@ -61,7 +62,7 @@ var manageMain ={
 			,dataType:'JSON'
 			,success:function (response){
 				$('#allcheck').prop('checked', false);
-				fnSearch();
+				_self.search();
 			}
 		});
 	}

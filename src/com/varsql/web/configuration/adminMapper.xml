@@ -3,32 +3,32 @@
 	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.varsql.web.app.admin">
+<mapper namespace="adminMapper">
 
-	<select id="selectPageList" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectPageList" parameterType="java.util.Map" resultType="java.util.Map">
 		select * 
 		from vtconnection 
 		where (vname like '%'||#{searchval}||'%' or vurl like '%'||#{searchval}||'%') 
 		order by vconnid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<select id="selectPageTotalCnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.selectPageTotalCnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt 
 		from vtconnection 
 		where (vname like '%'||#{searchval}||'%' or vurl like '%'||#{searchval}||'%') 
 	</select>
 	
-	<select id="selectDetailObject" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="adminMapper.selectDetailObject" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
 		select * 
 		from vtconnection 
 		where vconnid =#{vconid}
 	</select>
 	
-	<select id="selectVtconnectionMaxVal" resultType="java.lang.String">
+	<select id="adminMapper.selectVtconnectionMaxVal" resultType="java.lang.String">
 		select max(vconnid)as maxval from vtconnection
 	</select>
 	
-	<insert id="insertVtconnectionInfo" parameterType="java.util.Map">
+	<insert id="adminMapper.insertVtconnectionInfo" parameterType="java.util.Map">
 		insert into vtconnection (
 			vname 
 			,vurl 
@@ -55,7 +55,7 @@
 		)
 	</insert>
 	
-	<update id="updateVtconnectionInfo" parameterType="java.util.Map">
+	<update id="adminMapper.updateVtconnectionInfo" parameterType="java.util.Map">
 		update vtconnection 
 		set 
 			vname =#{vname}
@@ -70,18 +70,18 @@
 		where vconnid =#{vconid}
 	</update>
 	
-	<delete id="deleteVtconnectionInfo" parameterType="java.util.Map">
+	<delete id="adminMapper.deleteVtconnectionInfo" parameterType="java.util.Map">
 		delete from vtconnection where vconnid =#{vconid}
 	</delete>
 	
-	<select id="selectRoleUserTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.selectRoleUserTotalcnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt 
 		from vtuser
 		where role = 'USER' 
 		and (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
 	</select>
 
-	<select id="selectRoleUserList" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectRoleUserList" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*, CHAR (a.cre_dt) as char_cre_dt
 		from vtuser a
 		where role = 'USER' 
@@ -89,14 +89,14 @@
 		order by viewid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<select id="selectRoleManagerTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.selectRoleManagerTotalcnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt 
 		from vtuser
 		where role = 'MANAGER' 
 		and (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
 	</select>
 
-	<select id="selectRoleManagerList" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectRoleManagerList" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*, CHAR (a.cre_dt) as char_cre_dt
 		from vtuser a
 		where role = 'MANAGER' 
@@ -104,7 +104,7 @@
 		order by viewid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<update id="updateManagerRole" parameterType="java.util.Map">
+	<update id="adminMapper.updateManagerRole" parameterType="java.util.Map">
 		update vtuser 
 		set 
 		<choose>
@@ -118,7 +118,7 @@
 		where viewid =#{viewid}
 	</update>
 	
-	<select id="selectDatabaseManager" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectDatabaseManager" parameterType="java.util.Map" resultType="java.util.Map">
 		select * 
 		from vtuser a left outer join vtdatabase_manager_role b 
 		on a.viewid = b.viewid 
@@ -126,12 +126,12 @@
 		where ROLE = 'MANAGER' and (b.vconnid = #{vconid} or b.vconnid is null ) 
 	</select>
 	
-	<delete id="deleteDbManager" parameterType="java.util.Map">
+	<delete id="adminMapper.deleteDbManager" parameterType="java.util.Map">
 		delete from vtdatabase_manager_role
 		where vconnid = #{vconid}
 	</delete>
 	
-	<update id="updateDbManager" parameterType="java.util.Map">
+	<update id="adminMapper.updateDbManager" parameterType="java.util.Map">
 		insert into vtdatabase_manager_role (vconnid, viewid , upd_dt)
 		values(
 			#{vconid}
@@ -140,25 +140,25 @@
 		)
 	</update>
 	
-	<select id="selectAllDbType" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectAllDbType" parameterType="java.util.Map" resultType="java.util.Map">
 		select * from vtdbtype
 	</select>
 	
-	<select id="listDbMenuTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.listDbMenuTotalcnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt 
 		from vtmenu
 		where db_type  = #{db_type}
 		and (menu_nm like '%'||#{searchval}||'%' or unique_id like '%'||#{searchval}||'%') 
 	</select>
 	
-	<select id="listDbMenu" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.listDbMenu" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*
 		from vtmenu a
 		where db_type  = #{db_type}
 		and (menu_nm like '%'||#{searchval}||'%' or unique_id like '%'||#{searchval}||'%') 
 	</select>
 	
-	<insert id="addDbMenu" parameterType="java.util.Map">
+	<insert id="adminMapper.addDbMenu" parameterType="java.util.Map">
 		insert  into vtmenu (
 			db_type 
 			, menu_id 
@@ -188,7 +188,7 @@
 		)
 	</insert>
 	
-	<update id="moodifyDbMenu" parameterType="java.util.Map">
+	<update id="adminMapper.moodifyDbMenu" parameterType="java.util.Map">
 		update vtmenu 
 		set 
 			db_type=#{db_type}
@@ -204,7 +204,7 @@
 		where menu_id =#{menu_id}
 	</update>
 	
-	<delete id="deleteDbMenu" parameterType="java.util.Map">
+	<delete id="adminMapper.deleteDbMenu" parameterType="java.util.Map">
 		delete from vtmenu where menu_id =#{menu_id}
 	</delete>
 </mapper>

@@ -42,6 +42,7 @@ public class DbnUserController {
 		paramMap.put(VarsqlParamConstants.SEARCH_NO, page);
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
+		paramMap.put(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return dbnUserService.selectdbList(paramMap);
@@ -58,12 +59,12 @@ public class DbnUserController {
 	
 	@RequestMapping({"/addDbUser"})
 	public @ResponseBody String addDbUser(@RequestParam(value = "selectItem", required = true)  String selectItem
-			,@RequestParam(value = "vconid", required = true) String vconid, HttpServletRequest req
+			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid, HttpServletRequest req
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put("selectItem", selectItem);
-		paramMap.put("vconid", vconid);
+		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
 		paramMap.put("upd_id", SecurityUtil.loginId(req));
 		
 		return dbnUserService.updateDbUser(paramMap);
