@@ -61,18 +61,11 @@ var userMain = {
 			
 			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
 			
-			console.log('tmpDbTabInfo : ', tmpDbTabInfo);
-			
 			var viewElement = $(tmpDbTabInfo.prev());
 			
-			console.log('viewElement ',viewElement);
-			 
 			if(viewElement.length < 1){
 				viewElement= $(tmpDbTabInfo.next());
 			}
-			
-			
-			console.log('viewElement ', viewElement)
 			
 			$('.tabs_'+tmpid).remove();
 			$('.iframe_'+tmpid).remove();
@@ -107,5 +100,10 @@ var userMain = {
 				</tr>
 			</tbody>
 		</table>
+	</div>
+</div>
+<div id="memoTemplate_view_dialog" style="display:none;" title="메시지">
+	<div style="margin: 0px -10px 0px -10px;">
+		<textarea id="memo_content" name="memo_content" class="form-control" rows="12" placeholder="내용"></textarea>
 	</div>
 </div>

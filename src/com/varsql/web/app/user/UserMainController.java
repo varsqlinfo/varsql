@@ -93,4 +93,21 @@ public class UserMainController {
 		
 		return userMainServiceImpl.selectMessageInfo(paramMap);
 	}
+	/**
+	 * 메시지 본 날짜 업데이트
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/updMsgViewDt"})
+	public @ResponseBody Map updMsgViewDt(HttpServletRequest req
+			,HttpServletResponse response
+			) throws Exception {
+		
+		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return userMainServiceImpl.updateMemoViewDate(paramMap);
+	}
 }

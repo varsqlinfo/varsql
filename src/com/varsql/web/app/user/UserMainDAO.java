@@ -59,4 +59,8 @@ public class UserMainDAO extends BaseDAO{
 	public List selectMessageInfo(DataCommonVO paramMap) {
 		return getSqlSession().selectList("userMapper.selectMessageInfo", paramMap );
 	}
+	
+	public int updateMemoViewDate(DataCommonVO paramMap) {
+		return getSqlSession().update("userMapper.updateMemoViewDate", paramMap);
+	}
 }

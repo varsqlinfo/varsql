@@ -1,6 +1,7 @@
 package com.varsql.web.configuration;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -38,12 +39,15 @@ public class MyBatisConfig {
 
         // 마이바티스가 사용한 DataSource를 등록
         factoryBean.setDataSource(dataSource);
-
+        
+        
+        
         // spring.examples.model 패키지 이하의 model 클래스 이름을 짧은 별칭으로 등록
         factoryBean.setTypeAliasesPackage("com.varsql.web");
-
+        
+        factoryBean.setConfigLocation(applicationContext.getResource("classpath:/com/varsql/web/configuration/mybatisConfig.xml"));
         // META-INF/mybatis/mappers 패키지 이하의 모든 XML을 매퍼로 등록
-        factoryBean.setMapperLocations(applicationContext.getResources("classpath:/com/varsql/web/configuration/*.xml"));
+        factoryBean.setMapperLocations(applicationContext.getResources("classpath:/com/varsql/web/configuration/*Mapper.xml"));
 
         return factoryBean;
     }

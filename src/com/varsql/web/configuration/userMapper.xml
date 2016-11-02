@@ -162,7 +162,7 @@
 	
 	<!-- 쪽지 조회  -->
 	<select id="userMapper.selectMessageInfo" parameterType="map" resultType="map">
-		select MEMO_TITLE , MEMO_ID, SEND_ID, REG_DT 
+		select MEMO_TITLE , MEMO_ID, MEMO_CONT, SEND_ID, REG_DT , UPD_DT
 		from VTMEMO
 		where recv_id = #{uid}
 		order by reg_dt desc
@@ -190,6 +190,13 @@
 			, 'N'
 			, CURRENT TIMESTAMP
 		)
+	</insert>
+	
+	<insert id="userMapper.updateMemoViewDate" parameterType="java.util.Map">
+		update VTMEMO 
+		set 
+			UPD_DT = CURRENT TIMESTAMP
+		where MEMO_ID = #{memo_id}
 	</insert>
 	
 </mapper>

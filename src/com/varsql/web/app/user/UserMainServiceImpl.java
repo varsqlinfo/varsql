@@ -11,7 +11,7 @@ import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 
 @Service
-public class UserMainServiceImpl implements UserMainService{
+public class UserMainServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(UserMainServiceImpl.class);
 	@Autowired
 	UserMainDAO userMainDAO;
@@ -28,7 +28,7 @@ public class UserMainServiceImpl implements UserMainService{
 			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	logger.error(getClass().getName()+"selectSearchUserList", e);
 	    	reval.put("msg", e.getMessage());
 	    }
 		return reval; 
@@ -47,7 +47,7 @@ public class UserMainServiceImpl implements UserMainService{
 			
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	logger.error(getClass().getName()+"insertSendSqlInfo", e);
 	    	reval.put("msg", e.getMessage());
 	    }
 		return reval; 
@@ -61,9 +61,22 @@ public class UserMainServiceImpl implements UserMainService{
 			
 	    }catch(Exception e){
 	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	logger.error(getClass().getName()+"selectMessageInfo", e);
 	    	reval.put("msg", e.getMessage());
 	    }
 		return reval; 
+	}
+
+	public Map updateMemoViewDate(DataCommonVO paramMap) {
+		Map reval =  new HashMap();
+		try{
+			reval.put(ResultConstants.RESULT, userMainDAO.updateMemoViewDate(paramMap));
+			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+	    }catch(Exception e){
+	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	logger.error(getClass().getName()+"updateMemoViewDate", e);
+	    	reval.put("msg", e.getMessage());
+	    }
+		return reval;
 	}
 }
