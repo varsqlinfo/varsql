@@ -738,23 +738,36 @@ _ui.SQL = {
 				}
 				
 				if (evt.altKey) { // keyCode 78 is n
-					if(evt.keyCode == 78){
-						$('.sql-new-file').trigger('click');
-						return false; // preventing default action
+					switch (evt.keyCode) {
+						case 78:
+							$('.sql-new-file').trigger('click');
+							break;
+						default:
+							break;
 					}
 				}
 				
 				if (evt.shiftKey) { // keyCode 70 is f
-					
-					if(evt.keyCode == 70){
-						$('.sql-format-btn').trigger('click');
-						return false; // preventing default action
+					switch (evt.keyCode) {
+						case 70:
+							$('.sql-format-btn').trigger('click');
+							break;
+						case 83: // keyCode 83 is s
+							$('.sql-save-btn').trigger('click');
+							break;
+						case 88: // toUpperCase
+							_self.getTextAreaObj().replaceSelection(
+									_self.getSql().toUpperCase());
+							break;
+						case 89: // toLowerCase
+							_self.getTextAreaObj().replaceSelection(
+									_self.getSql().toLowerCase());
+							break;
+						default:
+							break;
 					}
 					
-					if(evt.keyCode == 83){  // keyCode 83 is s
-						$('.sql-save-btn').trigger('click');
-						return false; // preventing default action
-					}
+					return false; 
 				}
 			}
 		});
