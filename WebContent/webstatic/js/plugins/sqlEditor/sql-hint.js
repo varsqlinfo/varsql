@@ -11,7 +11,7 @@
 })(function(CodeMirror) {
   "use strict";
 
-  var tables;
+  var tables={};
   var defaultTable;
   var keywords;
   var CONS = {
@@ -39,7 +39,8 @@
   }
 
   function parseTables(input) {
-    var result = {}
+	  
+    var result =tables;
     if (isArray(input)) {
       for (var i = input.length - 1; i >= 0; i--) {
         var item = input[i]

@@ -368,6 +368,18 @@ _ui.leftDbObjectServiceMenu ={
 			var itemArr = resData.result;
 			var item;
 			
+			var tableHint = {};
+			$.each(itemArr , function (_idx, _item){
+				tableHint[_item.TABLE_NAME] = [];
+			})
+			
+			// 테이블 hint;
+			CodeMirror.commands.autocomplete = function(cm) {
+			    CodeMirror.showHint(cm, CodeMirror.hint.sql, { 
+			        tables: tableHint
+			    } );
+			}
+			
 			$.pubGrid(_self.options.contentAreaId+' > #tables',{
 				height:_self.metaGridHeight
 				,tColItem : [
