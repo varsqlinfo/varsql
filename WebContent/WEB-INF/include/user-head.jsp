@@ -43,11 +43,10 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/varsql.core.ui.js?version=<%=versionNum%>"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=<%=versionNum%>"></script>
 
-
 <!-- sql editor -->
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql-hint.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=<%=versionNum%>"></script>
 

@@ -297,7 +297,7 @@ _ui.leftDbObjectServiceMenu ={
 			var cacheData = _self._getMetaCache(param.gubun,param.name);
 		
 			if(cacheData){
-				_self[callback].call(_self,cacheData);
+				_self[callback].call(_self,cacheData, param);
 				return ; 
 			}
 		}
@@ -310,7 +310,7 @@ _ui.leftDbObjectServiceMenu ={
 		    ,data:param
 		    ,success:function (resData){
 		    	_self._setMetaCache(param.gubun,param.name, resData); // data cache
-		    	_self[callback].call(_self,resData);
+		    	_self[callback].call(_self,resData, param);
 			}
 			,error :function (data, status, err){
 				VARSQL.log.error(data, status, err);
@@ -359,7 +359,7 @@ _ui.leftDbObjectServiceMenu ={
 		_ui.SQL.exportDataDownload(exportObj);
 	}
 	// 테이블 정보보기.
-	,_tables:function (resData){
+	,_tables:function (resData, reqParam){
 		var _self = this;
 		try{
     		var len = resData.result?resData.result.length:0;
@@ -370,15 +370,21 @@ _ui.leftDbObjectServiceMenu ={
 			
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
-				tableHint[_item.TABLE_NAME] = [];
+				tableHint[_item.TABLE_NAME] = {
+					colums:[]
+					,text :_item.TABLE_NAME
+				};
 			})
 			
 			// 테이블 hint;
-			CodeMirror.commands.autocomplete = function(cm) {
-			    CodeMirror.showHint(cm, CodeMirror.hint.sql, { 
-			        tables: tableHint
-			    } );
-			}
+//			CodeMirror.commands.autocomplete = function(cm) {
+//			    CodeMirror.showHint(cm, CodeMirror.hint.sql, { 
+//			        tables: tableHint
+//			    } );
+//			}
+			
+			// 테이블 hint;
+			VARSQLHints.setTableInfo( tableHint);
 			
 			$.pubGrid(_self.options.contentAreaId+' > #tables',{
 				height:_self.metaGridHeight
@@ -485,10 +491,17 @@ _ui.leftDbObjectServiceMenu ={
 		}
 	}
 	//테이블에 대한 메타 정보 보기 .
-	,_tableMetadata :function (colData){
+	,_tableMetadata :function (colData ,reqParam){
 		var _self = this;
 		
 		try{
+			var colArr = [];
+			$.each(colData.result , function (i , item){
+				colArr.push(item.COLUMN_NAME);
+			});
+			
+			VARSQLHints.setTableColumns(reqParam.name ,colArr);
+			
     		var gridObj = {
     			data:colData.result
     			,column : [
@@ -506,7 +519,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 	}
 	//view 정보 보기.
-	,_views:function (resData){
+	,_views:function (resData ,reqParam){
 		var _self = this;
 		try{
 			var itemArr = resData.result;
@@ -532,7 +545,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 	}
 	// view 메타 데이타 보기.
-	,_viewMetadata :function (colData){
+	,_viewMetadata :function (colData ,reqParam){
 		var _self = this;
 		
 		try{
@@ -552,7 +565,7 @@ _ui.leftDbObjectServiceMenu ={
 			VARSQL.log.info(e);
 		}
 	}
-	,_procedures:function (resData){
+	,_procedures:function (resData ,reqParam){
 		var _self = this;
 		try{
 			var itemArr = resData.result;
@@ -579,7 +592,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 	}
 	//테이블에 대한 메타 정보 보기 .
-	,_procedureMetadata :function (colData){
+	,_procedureMetadata :function (colData ,reqParam){
 		var _self = this;
 		
 		try{
@@ -598,7 +611,7 @@ _ui.leftDbObjectServiceMenu ={
 			VARSQL.log.info(e);
 		}
 	}
-	,_functions:function (resData){
+	,_functions:function (resData ,reqParam){
 		var _self = this;
 		try{
 			var itemArr = resData.result;
