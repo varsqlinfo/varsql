@@ -781,12 +781,18 @@ _ui.SQL = {
 							$('.sql-save-btn').trigger('click');
 							break;
 						case 88: // toUpperCase
-							_self.getTextAreaObj().replaceSelection(
-									_self.getSql().toUpperCase());
+							var sCursor = _self.getTextAreaObj().getCursor(true)
+							,eCursor = _self.getTextAreaObj().getCursor(false);
+						
+						_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
+						_self.getTextAreaObj().setSelection(sCursor, eCursor);
 							break;
 						case 89: // toLowerCase
-							_self.getTextAreaObj().replaceSelection(
-									_self.getSql().toLowerCase());
+							var sCursor = _self.getTextAreaObj().getCursor(true)
+							,eCursor = _self.getTextAreaObj().getCursor(false);
+						
+							_self.getTextAreaObj().replaceSelection(_self.getSql().toLowerCase());
+							_self.getTextAreaObj().setSelection(sCursor, eCursor);
 							break;
 						default:
 							break;
