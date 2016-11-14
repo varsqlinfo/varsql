@@ -1,5 +1,16 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
+if (typeof window != "undefined") {
+    if (typeof window.VARSQLHints == "undefined") {
+        window.VARSQLHints = {};
+    }
+}else{
+	if(!VARSQLHints){
+		VARSQLHints = {};
+	}
+}
+VARSQLHints.tables = {};
+
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -10,14 +21,39 @@
     mod(CodeMirror);
 })(function(CodeMirror) {
   "use strict";
+  
+	var tables=VARSQLHints.tables;
+	  var defaultTable;
+	  var keywords;
+	  var CONS = {
+	    QUERY_DIV: ";",
+	    ALIAS_KEYWORD: "AS"
+	  };
 
-  var tables={};
-  var defaultTable;
-  var keywords;
-  var CONS = {
-    QUERY_DIV: ";",
-    ALIAS_KEYWORD: "AS"
-  };
+//ytkim add start
+  VARSQLHints.setTableInfo = function (table){
+	  return parseTables(table);
+  }
+  
+  VARSQLHints.setTableColumns = function (tableNm , columns){
+	  tableNm = tableNm.toUpperCase();
+	  
+	  if(typeof tables[tableNm] === 'undefined'){
+		  tables[tableNm] ={
+			 'columns' : columns
+			 ,text : tableNm
+		  };
+	  }else{
+		  tables[tableNm]['columns'] = columns
+	  }
+  }
+  
+  VARSQLHints.getHintsInfo = function (){
+	 return tables; 
+  }
+  
+//ytkim add end
+  
   var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
 
   function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
@@ -39,8 +75,8 @@
   }
 
   function parseTables(input) {
-	  
-    var result =tables;
+	// ytkim modify; //  var result ={};
+    var result =(tables||{});
     if (isArray(input)) {
       for (var i = input.length - 1; i >= 0; i--) {
         var item = input[i]
@@ -228,7 +264,9 @@
   }
 
   CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+	  
     tables = parseTables(options && options.tables)
+      
     var defaultTableName = options && options.defaultTable;
     var disableKeywords = options && options.disableKeywords;
     defaultTable = defaultTableName && getTable(defaultTableName);
