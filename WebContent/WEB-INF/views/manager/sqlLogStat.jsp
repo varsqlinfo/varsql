@@ -28,7 +28,7 @@ var sqlLogStat ={
 		        y : {
 		            type : "range",
 		            domain : "Y_COL",
-		            step : 2,
+		            step : 10,
 					line : true
 		        },
 		        data : []
@@ -72,7 +72,7 @@ var sqlLogStat ={
 		        y : {
 		            type : "range",
 		            domain : "Y_COL",
-		            step : 2,
+		            step : 5,
 					line : true
 		        },
 		        data : []
