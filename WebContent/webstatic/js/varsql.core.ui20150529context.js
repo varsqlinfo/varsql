@@ -115,10 +115,10 @@ _ui.leftDbObjectServiceMenu ={
 		,menuData:[]
 		,param:{}
 		,contentAreaId:'#leftServiceMenuContent'
-		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
-		,metadataContentAreaWrapEle:null
-		,metadataContentAreaId:'#metadataContentArea'
-		,metadataContentAreaIdEle:null
+		,metadata_content_area_wrapId:'#metadata_content_area_wrap'
+		,metadata_content_area_wrapEle:null
+		,metadata_content_areaId:'#metadata_content_area'
+		,metadata_content_areaIdEle:null
 	}
 	// 왼쪽 메뉴 생성 . 
 	,create: function (options){
@@ -132,10 +132,10 @@ _ui.leftDbObjectServiceMenu ={
 	}
 	,initElement :function (){
 		var _self = this;
-		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
+		_self.options.metadata_content_area_wrapEle = $(_self.options.metadata_content_area_wrapId);
 	}
 	,getMetaContentWrapEle:function (){
-		return this.options.metadataContentAreaWrapEle; 
+		return this.options.metadata_content_area_wrapEle; 
 	}
 	// 왼쪽 상단 텝 메뉴 그리기
 	,_tabs : function (){
@@ -578,9 +578,9 @@ _ui.leftDbObjectServiceMenu ={
 	,setMetadataGrid :function (gridObj){
 		var _self = this;
 		_self.getMetaContentWrapEle().empty();
-		_self.getMetaContentWrapEle().html('<table id="'+_self.options.metadataContentAreaId.replace('#', '')+'" width="100%"></table>');
+		_self.getMetaContentWrapEle().html('<table id="'+_self.options.metadata_content_areaId.replace('#', '')+'" width="100%"></table>');
 		
-		$(_self.options.metadataContentAreaId).jqGrid({
+		$(_self.options.metadata_content_areaId).jqGrid({
 			data: gridObj.data,
 			datatype: "local",
 			width:'100%',

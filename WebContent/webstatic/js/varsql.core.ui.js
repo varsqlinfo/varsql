@@ -109,7 +109,7 @@ _ui.leftDbObject ={
 		
 		VARSQL.req.ajax({      
 		    type:"POST"
-		    ,loadSelector : '#leftServiceMenuContent'
+		    ,loadSelector : '#left_service_menu_content'
 		    ,url:{gubun:VARSQL.uri.database, url:_ui.options.getUriPrefix('/serviceMenu.do')}
 		    ,dataType:'json'
 		    ,data:tmpParam
@@ -138,11 +138,11 @@ _ui.leftDbObjectServiceMenu ={
 		selector:'#leftServiceMenu'
 		,menuData:[]
 		,param:{}
-		,contentAreaId:'#leftServiceMenuContent'
-		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
-		,metadataContentAreaWrapEle:null
-		,metadataContentAreaId:'#metadataContentArea'
-		,metadataContentAreaIdEle:null
+		,contentAreaId:'#left_service_menu_content'
+		,metadata_content_area_wrapId:'#metadata_content_area_wrap'
+		,metadata_content_area_wrapEle:null
+		,metadata_content_areaId:'#metadata_content_area'
+		,metadata_content_areaIdEle:null
 	}
 	,_metaCacheGubun : ''
 	// 왼쪽 메뉴 생성 . 
@@ -166,10 +166,10 @@ _ui.leftDbObjectServiceMenu ={
 	}
 	,initElement :function (){
 		var _self = this;
-		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
+		_self.options.metadata_content_area_wrapEle = $(_self.options.metadata_content_area_wrapId);
 	}
 	,getMetaContentWrapEle:function (){
-		return this.options.metadataContentAreaWrapEle; 
+		return this.options.metadata_content_area_wrapEle; 
 	}
 	// 왼쪽 상단 텝 메뉴 그리기
 	,_tabs : function (){
@@ -258,7 +258,7 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		var $contentId = selObj.attr('contentid');
 		
-		var activeObj = $(_self.options.contentAreaId+' > #'+$contentId);
+		var activeObj = $(_self.options.contentAreaId+'>#'+$contentId);
 		
 		$(_self.options.contentAreaId+'>'+' .show-display').removeClass('show-display');
 		
@@ -386,8 +386,9 @@ _ui.leftDbObjectServiceMenu ={
 			// 테이블 hint;
 			VARSQLHints.setTableInfo( tableHint);
 			
-			$.pubGrid(_self.options.contentAreaId+' > #tables',{
-				height:_self.metaGridHeight
+			$.pubGrid(_self.options.contentAreaId+'>#tables',{
+				height:'auto'
+				,autoResize :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
@@ -524,9 +525,10 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
 			
-			$.pubGrid(_self.options.contentAreaId+' > #views',{
+			$.pubGrid(_self.options.contentAreaId+'>#views',{
 				headerView:true
-				,height:_self.metaGridHeight
+				,height:'auto'
+				,autoResize :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'View', width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
@@ -570,9 +572,10 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
 			
-			$.pubGrid(_self.options.contentAreaId+' > #procedures',{
+			$.pubGrid(_self.options.contentAreaId+'>#procedures',{
 				headerView:true
-				,height: _self.metaGridHeight
+				,height:'auto'
+				,autoResize :false
 				,tColItem : [
 					{key :'PROCEDURE_NAME', label:'Procedure',width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
@@ -616,7 +619,7 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
     				
-			$.pubGrid(_self.options.contentAreaId+' > #functions',{
+			$.pubGrid(_self.options.contentAreaId+'>#functions',{
 				headerView:true
 				,height: _self.metaGridHeight
 				,tColItem : [
@@ -641,9 +644,9 @@ _ui.leftDbObjectServiceMenu ={
 	,setMetadataGrid :function (gridObj, type){
 		var _self = this;
 		//_self.getMetaContentWrapEle().empty();
-		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadataContentAreaId.replace('#', '')+'"></div>');
+		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadata_content_areaId.replace('#', '')+'"></div>');
 		
-		var tmpEle = $(_self.options.metadataContentAreaWrapId+type);
+		var tmpEle = $(_self.options.metadata_content_area_wrapId+type);
 		
 		if(!tmpEle.hasClass('on')){
 			$('.varsql-meta-cont-ele.on').removeClass('on');
@@ -651,14 +654,15 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		if(tmpEle.length < 1){
-			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadataContentAreaWrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
+			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadata_content_area_wrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
 		}
 		
-		$.pubGrid(_self.options.metadataContentAreaWrapId+type, {
+		$.pubGrid(_self.options.metadata_content_area_wrapId+type, {
 			headerOptions : {
 				redraw : false
 			}
-			,height: 230
+			,height:'auto'
+			,autoResize :false
 			,tColItem : gridObj.column
 			,tbodyItem :gridObj.data
 		});
@@ -1491,6 +1495,7 @@ _ui.SQL = {
 		$.pubGrid(_self.options.dataGridSelector,{
 			headerView:true
 			,height:'auto'
+			,autoResize :false
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});

@@ -11,23 +11,18 @@
 
 </style>
 
-<div class="ui-layout-left-top-area">
-	<div class="panel panel-default left-panel">
-		<div class="panel-default left-panel padding2">
-			<div id="leftDBList">
-			</div>
+<div class="panel panel-default left-panel" style="min-height:600px;">
+	<div class="panel-default left-panel padding2">
+		<div id="leftDBList">
 		</div>
 	</div>
-</div>
-<div class="ui-layout-left-middle-area">
+
 	<div class="ui-tabs ui-widget">
 		<ul id="leftServiceMenu" style="margin-right: 2px;" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-tl ui-corner-tr" role="tablist">
 			<li>db를 선택하시오.</li>
 		</ul>
+		<div id="left_service_menu_content" style="height:180px;"></div>
+		<div id="metadata_content_area_wrap"><div id="metadata_content_area"></div></div>
 	</div>
-	<div id="left_service_menu_content"></div>
-</div>
-<div class="ui-layout-left-bottom-area">
-	<div id="metadata_content_area_wrap"></div>
 </div>
 

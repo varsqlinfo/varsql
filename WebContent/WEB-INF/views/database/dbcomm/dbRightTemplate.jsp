@@ -2,12 +2,12 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <div class="inner-layout-toolbar-area">
 	<div>
-		<div>
+		<div class="sql-btn-area">
 			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일  Ctrl+alt+n">
 				<span class="glyphicon glyphicon-file"></span>
 			</button>
 			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장  Ctrl+shift+s">
-				<span class="glyphicon glyphicon-save"></span>
+				<span class="glyphicon glyphicon-floppy-saved"></span>
 			</button>
 			<button type="button" class="btn btn-default btn-sm sql-execue-btn" title="실행  Ctrl+Enter">
 				<span class="glyphicon glyphicon-play"></span>

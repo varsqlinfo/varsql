@@ -28,13 +28,13 @@
 	background: #f0f4f0;
 	border-left: 0px solid #BBB;
 	border-right: 0px solid #BBB;
-	border-bottom: 1px solid #BBB;
+	border-bottom: 1px solid #e0dddd;
 	padding-left:3px;
 }
 
 .inner-layout-toolbar-area{
 	z-index:50 !important;
-	height : 62px !important;
+	height : 65px !important;
 }
 
 .ui-layout-pane-east {
@@ -88,5 +88,9 @@
 	border: 0;
 }
 
+.ui-layout-pane-north ,
+.ui-layout-pane-south {
+    overflow: hidden !important;
+}
 
 

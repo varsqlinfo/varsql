@@ -49,7 +49,7 @@
 		</div>
 		<div class="ui-layout-footer-area">ytechinfo copy right</div>
 		<script>
-		var varsqlMainLayout, varsqlMiddleLayout;
+		var varsqlMainLayout, varsqlLeftLayout,  varsqlRightLayout;
 		
 		$(document).ready(function(){
 		
@@ -64,10 +64,38 @@
 				, north__spacing_open: 0
 				, south__spacing_open: 0
 				, resizerDblClickToggle: false
-				, center__onresize:  "varsqlMiddleLayout.resizeAll"
-			}); 
+				, center__onresize:  "varsqlRightLayout.resizeAll"
+				, west__onresize:  "varsqlLeftLayout.resizeAll"
+			});
+			
+			varsqlLeftLayout = $('div.ui-layout-left-area').layout({
+				north__paneSelector: ".ui-layout-left-top-area"
+				, center__paneSelector: ".ui-layout-left-middle-area"
+				, south__paneSelector: ".ui-layout-left-bottom-area"
+				, north__size:    125
+				, south__size:    150
+				, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+				, spacing_closed:   8  // ALL panes
+				, resizerDblClickToggle: false
+				, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+					if($('.db-metadata-area.show-display').length > 0){
+						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw();
+					}
+					//$('.db-metadata-area .pubGrid-body-container').css('height' ,obj3.layoutHeight);
+				}
+				,south__onresize :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+					try{
+						if($('.varsql-meta-cont-ele.on').length > 0){
+							$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw();
+						}
+					}catch(e){
+						console.log(e)
+					}
+					//$('.varsql-meta-cont-ele .pubGrid-body-container').css('height' ,obj3.layoutHeight);
+				}
+			});
 		
-			varsqlMiddleLayout = $('div.ui-layout-center-area').layout({
+			varsqlRightLayout = $('div.ui-layout-center-area').layout({
 				north__paneSelector: ".inner-layout-toolbar-area"
 				, center__paneSelector: ".inner-layout-sql-editor-area"
 				, south__paneSelector: ".inner-layout-result-area"
@@ -82,7 +110,12 @@
 					$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
 				}
 				,south__onresize :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-					$('#dataGridArea .pubGrid-body-container').css('height' ,obj3.layoutHeight-50);
+					
+					if($('#dataGridArea .pubGrid-body-container').length > 0){
+						$.pubGrid('#dataGridArea').resizeDraw();
+					}
+					
+					//$('#dataGridArea .pubGrid-body-container').css('height' ,obj3.layoutHeight-50);
 				}
 			});
 			

@@ -264,7 +264,7 @@ Plugin.prototype ={
 			,opt = _this.options
 			,tci = opt.tColItem
 			,tciLen = tci.length;
-
+		
 		_w = _this.config.totGridWidth;
 		_containerWidth = (_w+opt.scrollWidth);
 		tciLen = tci.length;
@@ -300,6 +300,10 @@ Plugin.prototype ={
 			}
 		}
 		_this.config.totGridWidth = _this.config.gridWidth;
+		_this.config.height = opt.height;
+		if(opt.height=='auto'){
+			_this.config.height = _this.element.height();
+		}
 		//console.log(_this.config.gridWidth, gridElementWidth, _w, _sw );
 	}
 	/**
@@ -485,10 +489,11 @@ Plugin.prototype ={
 			strHtm.push('<div class="pubGrid-wrapper" style="width:'+_this.config.gridElementWidth+'px;">');
 			strHtm.push('	<div id="'+_this.prefix+'pubGrid-container" class="pubGrid-container">');
 			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-wrapper" class="pubGrid-header-wrapper">');
-			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-container" class="pubGrid-header-container" style="width: '+(_this.config.totGridWidth+_this.options.scrollWidth)+'px;">');
-			strHtm.push('			<table id="'+_this.prefix+'pubGrid-header" class="pubGrid-header" style="width:'+_this.config.gridWidth+'px" onselectstart="return false">');
+			strHtm.push('			<div id="'+_this.prefix+'pubGrid-header-container" class="pubGrid-header-container" style="width: '+(_this.config.totGridWidth+_this.options.scrollWidth)+'px;">');
+			strHtm.push('				<table id="'+_this.prefix+'pubGrid-header" class="pubGrid-header" style="width:'+_this.config.gridWidth+'px" onselectstart="return false">');
 			strHtm.push(theadHtml());
-			strHtm.push('			</table></div>');	
+			strHtm.push('				</table>');
+			strHtm.push('			</div>');	
 			strHtm.push('		</div>');
 			strHtm.push('		<div class="pubGrid-body-wrapper">');
 			strHtm.push('			<div id="'+_this.prefix+'pubGrid-body-container" class="pubGrid-body-container" style="height:'+opt.height+'px;">');
@@ -514,6 +519,12 @@ Plugin.prototype ={
 			_this.config.bodyContainerElement = $('#'+_this.prefix +'pubGrid-body-container');
 			_this.config.hiddenArea = $('#'+_this.prefix +'hiddenArea');
 			
+			if(opt.height =='auto'){
+				var bodyH = _this.config.height-_this.config.headerWrapElement.height(); 
+				bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height+5 ; 
+				_this.config.bodyContainerElement.css('height',(bodyH)+'px');
+			}
+			
 			$(_this.selector+' .pubGrid-body-container').scroll(function (e){
 				_this.config.headerWrapElement.scrollLeft($(this).scrollLeft());
 			});
@@ -535,7 +546,7 @@ Plugin.prototype ={
 	,resizeDraw :function (){
 		var _this = this; 
 		
-		if(_this.config.gridSelectEleWidth == _this.element.innerWidth()){
+		if(_this.config.gridSelectEleWidth == _this.element.innerWidth() && _this.config.height == _this.element.height()){
 			return  false; 
 		}
 		_this._setGridWidth();
@@ -546,6 +557,13 @@ Plugin.prototype ={
 		_this.config.headerElement.css('width',(_this.config.gridWidth)+'px');
 		_this.config.bodyElement.css('width',(_this.config.gridWidth)+'px');
 		
+		if(_this.options.height =='auto'){
+			var bodyH = _this.config.height-_this.config.headerWrapElement.height(); 
+			bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height+5 ; 
+			_this.config.bodyContainerElement.css('height',(bodyH)+'px');
+		}
+		
+		_this.config.bodyContainerElement.css('height',(bodyH)+'px');
 
 		$('#'+_this.prefix+"colgroup_head").empty().html(_this._getColGroup(_this.prefix+'colHeader'));
 		$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody'));

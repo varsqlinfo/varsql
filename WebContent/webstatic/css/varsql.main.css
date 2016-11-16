@@ -173,6 +173,7 @@ padding-top: 5px;
 
 
 .sql-result-area{
+	height:100%;
 	display:none;
 }
 .sql-result-area.on{
@@ -263,10 +264,6 @@ padding-top: 5px;
 	display:none;
 }
 
-.db-metadata-area{
-	display:none;
-}
-
 #leftDBList{
 	height:118px;
 	overflow-y:auto;
@@ -290,7 +287,12 @@ padding-top: 5px;
 .db-metadata-area{
 	padding-left: 0;
 	display:none;
+	height:100%;
 	/* margin-bottom: 20px; */
+}
+
+.db-metadata-area.show-display{
+	display:block;
 }
 
 .db-metadata-area-item {
@@ -310,10 +312,6 @@ padding-top: 5px;
 .db-metadata-area-item > a.active{
 	color: #333;
 	background-color: #7c9fce;
-}
-
-.db-metadata-area.show-display{
-	display:block;
 }
 
 .error-log-message{
@@ -354,6 +352,7 @@ padding-top: 5px;
 }
 
 .varsql-meta-cont-ele{
+	height:100%;
 	display:none; 
 }
 .varsql-meta-cont-ele.on{
@@ -448,4 +447,19 @@ padding-top: 5px;
 	width: 250px;
 	overflow:auto; 
 	margin-bottom: 0px;
+}
+
+.sql-btn-area .btn-sm,.sql-btn-area .btn-group-sm>.btn {
+    padding: 5px 10px 5px 10px;
+    font-size: 16px;
+    line-height: 1.0;
+    border-radius: 3px;
+   margin-bottom: 2px;
+}
+
+#left_service_menu_content{
+	height:100%;
+}
+#metadata_content_area_wrap{
+	height:100%;
 }
