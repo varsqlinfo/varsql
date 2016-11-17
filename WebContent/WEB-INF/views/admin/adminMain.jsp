@@ -59,6 +59,13 @@ var adminMain = {
 					  }
 				  }
 			  },
+			  vdbname: {
+				  validators: {
+					  notEmpty: {
+						  message: 'The url is required and cannot be empty'
+					  }
+				  }
+			  },
 			  vurl: {
 				  validators: {
 					  notEmpty: {
@@ -102,6 +109,7 @@ var adminMain = {
 	,add : function (){
 		$('#vconid').val('');
 		$('#vname').val('');
+		$('#vdbname').val('');
 		$('#vurl').val('');
 		$('#vdriver').val('');
 		$('#vtype').val('');
@@ -129,6 +137,7 @@ var adminMain = {
 				$('#vname').val(result.VNAME);
 				$('#vurl').val(result.VURL);
 				$('#vdriver').val(result.VDRIVER);
+				$('#vdbname').val(result.VDBNAME);
 				$('#vtype').val(result.VTYPE);
 				$('#vid').val(result.VID);
 				$('#vpw').val(result.VPW);
@@ -346,6 +355,12 @@ var adminMain = {
 						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" id="vname" name="vname" value="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
+						<div class="col-sm-8">
+							<input class="form-control text required" id="vdbname" name="vdbname" value="">
 						</div>
 					</div>
 					<div class="form-group">

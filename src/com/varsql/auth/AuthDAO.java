@@ -116,7 +116,7 @@ public class AuthDAO {
 		
 	  	StringBuffer query = new StringBuffer();
 	  	
-	  	query.append("select  VCONNID, VTYPE, VNAME from VTCONNECTION a where");
+	  	query.append("select  VCONNID, VTYPE, VNAME, VDBNAME from VTCONNECTION a where");
 	  	
 	  	Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
 		
@@ -139,7 +139,7 @@ public class AuthDAO {
 		if(!tmpAuthority.equals(Authority.GUEST.name())){
 			pstmt  = conn.prepareStatement(query.toString());
 			rs= pstmt.executeQuery();
-			String vconnid, vtype, vname;
+			String vconnid;
 			
 			HashMap databaseInfo = null; 
 			while(rs.next()){
@@ -149,6 +149,7 @@ public class AuthDAO {
 				databaseInfo.put(VarsqlConstants.CONN_ID, vconnid);
 				databaseInfo.put(VarsqlConstants.CONN_TYPE, rs.getString(VarsqlConstants.CONN_TYPE));
 				databaseInfo.put(VarsqlConstants.CONN_NAME, rs.getString(VarsqlConstants.CONN_NAME));
+				databaseInfo.put(VarsqlConstants.CONN_DBNAME, rs.getString(VarsqlConstants.CONN_DBNAME));
 				
 				userDatabaseInfo.put(vconnid, databaseInfo);
 			}

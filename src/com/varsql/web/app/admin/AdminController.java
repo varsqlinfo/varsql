@@ -168,10 +168,11 @@ public class AdminController{
 	 */
 	@RequestMapping(value = "/main/dbSave")
 	public @ResponseBody String dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
-			,@RequestParam(value = "vname")  String vname
-			,@RequestParam(value = "vurl")  String vurl
-			,@RequestParam(value = "vdriver")  String vdriver
-			,@RequestParam(value = "vtype")  String vtype
+			,@RequestParam(value = "vname" ,required = true,defaultValue = "")  String vname
+			,@RequestParam(value = "vurl",required = true,defaultValue = "")  String vurl
+			,@RequestParam(value = "vdriver",required = true,defaultValue = "")  String vdriver
+			,@RequestParam(value = "vdbname",required = true,defaultValue = "")  String vdbname
+			,@RequestParam(value = "vtype",required = true,defaultValue = "")  String vtype
 			,@RequestParam(value = "vid")  String vid
 			,@RequestParam(value = "vpw")  String vpw
 			,@RequestParam(value = "vconnopt")  String vconnopt
@@ -184,6 +185,7 @@ public class AdminController{
 		
 		dcv.put("vconid", vconid);
 		dcv.put("vname", vname);
+		dcv.put("vdbname", vdbname);
 		dcv.put("vurl", vurl);
 		dcv.put("vdriver", vdriver);
 		dcv.put("vtype", vtype);

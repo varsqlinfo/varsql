@@ -157,6 +157,7 @@ public class AdminServiceImpl implements AdminService{
 	public Map updateVtconnectionInfo(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		try {
+			
 			int result =adminDAO.updateVtconnectionInfo(paramMap);
 			
 			if(result > 0 && "Y".equals(paramMap.getString("pollinit"))){

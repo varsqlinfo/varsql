@@ -105,8 +105,9 @@
 
 
 <entry key="admin.form.header">Database info</entry>
-<entry key="admin.form.db.vname">db명</entry>
+<entry key="admin.form.db.vname">연결명</entry>
 <entry key="admin.form.db.vurl">Url</entry>
+<entry key="admin.form.db.databasename">데이타베이스명</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
