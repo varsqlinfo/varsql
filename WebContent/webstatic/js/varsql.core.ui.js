@@ -1488,7 +1488,7 @@ _ui.SQL = {
 		
 	}
 	*/
-	// 왼쪽 메뉴 생성 .
+	// sql data grid
 	,setGridData: function (pGridData){
 		var _self = this; 
 		
@@ -1496,6 +1496,7 @@ _ui.SQL = {
 			headerView:true
 			,height:'auto'
 			,autoResize :false
+			,resizeGridWidthFixed : true
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});

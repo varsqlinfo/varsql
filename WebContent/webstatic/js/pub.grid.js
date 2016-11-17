@@ -18,6 +18,7 @@ var _initialized = false
 	,scrollWidth : 18
 	,minWidth : 30
 	,autoResize : true
+	,resizeGridWidthFixed : false	// 리사이즈시 그리드 리사이즈 여부.
 	,headerOptions : {
 		view : true	// header 보기 여부
 		,sort : false	// 초기에 정렬할 값
@@ -242,9 +243,9 @@ Plugin.prototype ={
 		
 		for(var j=0; j<tci.length; j++){
 			var tciItem = opt.tColItem[j];
-			if(!tciItem.width){
-				tciItem.width =opt.headerOptions.colMinWidth;
-			}
+			tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
+			tciItem.width = Math.max(tciItem.width, opt.headerOptions.colMinWidth0);
+			
 			tciItem['_alignClass'] = tciItem.align=='right' ? 'ar' : (tciItem.align=='center'?'ac':'al');
 			opt.tColItem[j] = tciItem;
 			_this.config.totGridWidth +=tciItem.width;
@@ -485,7 +486,7 @@ Plugin.prototype ={
 		if(type =='all'){
 			
 			var strHtm = [];
-			
+			strHtm.push('<div class="pubGrid-width-size" style="width:100%;height:0px;"></div>');
 			strHtm.push('<div class="pubGrid-wrapper" style="width:'+_this.config.gridElementWidth+'px;">');
 			strHtm.push('	<div id="'+_this.prefix+'pubGrid-container" class="pubGrid-container">');
 			strHtm.push('		<div id="'+_this.prefix+'pubGrid-header-wrapper" class="pubGrid-header-wrapper">');
@@ -543,27 +544,38 @@ Plugin.prototype ={
      * @method resizeDraw
      * @description resize 하기
      */
-	,resizeDraw :function (){
-		var _this = this; 
+	,resizeDraw :function (opt){
+		var _this = this;
 		
-		if(_this.config.gridSelectEleWidth == _this.element.innerWidth() && _this.config.height == _this.element.height()){
+		var isOpt =typeof opt==='undefined'; 
+		
+		opt = $.extend(true, {width : _this.element.innerWidth(), height : _this.element.height()}, (isOpt ? {} :opt));
+		
+		if(_this.config.gridSelectEleWidth == opt.width && _this.config.height == opt.height){
 			return  false; 
 		}
+		
+		if(!isOpt){
+			_this.element.css('width',opt.width);
+			_this.element.css('height',opt.height);
+		}
+		
 		_this._setGridWidth();
 		_this._calcElementWidth('resize');
 		
 		$(_this.selector+'>.pubGrid-wrapper').css('width',(_this.config.gridElementWidth)+'px');
-		_this.config.headerContainerElement.css('width',(_this.config.gridWidth+_this.options.scrollWidth)+'px');
-		_this.config.headerElement.css('width',(_this.config.gridWidth)+'px');
-		_this.config.bodyElement.css('width',(_this.config.gridWidth)+'px');
-		
-		if(_this.options.height =='auto'){
-			var bodyH = _this.config.height-_this.config.headerWrapElement.height(); 
-			bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height+5 ; 
-			_this.config.bodyContainerElement.css('height',(bodyH)+'px');
+
+		if(_this.options.resizeGridWidthFixed !== true){
+			_this.config.headerContainerElement.css('width',(_this.config.gridWidth+_this.options.scrollWidth)+'px');
+			_this.config.headerElement.css('width',(_this.config.gridWidth)+'px');
+			_this.config.bodyElement.css('width',(_this.config.gridWidth)+'px');
 		}
 		
-		_this.config.bodyContainerElement.css('height',(bodyH)+'px');
+		if(_this.options.height =='auto'){
+			var bodyH = opt.height-_this.config.headerWrapElement.height(); 
+			bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height()+5; 
+			_this.config.bodyContainerElement.css('height',(bodyH)+'px');
+		}
 
 		$('#'+_this.prefix+"colgroup_head").empty().html(_this._getColGroup(_this.prefix+'colHeader'));
 		$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody'));
@@ -594,10 +606,10 @@ Plugin.prototype ={
 
 		_special = _evt.special.pubgridResize = {
 			setup: function() {
-				$( this ).on( "resize", _special.handler );
+				$( this ).on( "resize.pubGrid", _special.handler );
 			},
 			teardown: function() {
-				$( this ).off( "resize", _special.handler );
+				$( this ).off( "resize.pubGrid", _special.handler );
 			},
 			handler: function( event, execAsap ) {
 				// Save the context

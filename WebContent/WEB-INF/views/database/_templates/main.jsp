@@ -77,21 +77,15 @@
 				, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
 				, spacing_closed:   8  // ALL panes
 				, resizerDblClickToggle: false
-				, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				, center__onresize_end:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 					if($('.db-metadata-area.show-display').length > 0){
-						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw();
+						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-24});
 					}
-					//$('.db-metadata-area .pubGrid-body-container').css('height' ,obj3.layoutHeight);
 				}
-				,south__onresize :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-					try{
-						if($('.varsql-meta-cont-ele.on').length > 0){
-							$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw();
-						}
-					}catch(e){
-						console.log(e)
+				,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+					if($('.varsql-meta-cont-ele.on').length > 0){
+						$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width:obj3.resizerLength,height:obj3.layoutHeight});
 					}
-					//$('.varsql-meta-cont-ele .pubGrid-body-container').css('height' ,obj3.layoutHeight);
 				}
 			});
 		
@@ -109,13 +103,14 @@
 				, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 					$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
 				}
-				,south__onresize :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-					
-					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid('#dataGridArea').resizeDraw();
+				,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+					try{
+						if($('#dataGridArea .pubGrid-body-container').length > 0){
+							$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:obj3.css.height-25});
+						}
+					}catch(e){
+						console.log(e)
 					}
-					
-					//$('#dataGridArea .pubGrid-body-container').css('height' ,obj3.layoutHeight-50);
 				}
 			});
 			
