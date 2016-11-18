@@ -79,9 +79,11 @@ public class AuthDAO {
 			List<Role> roles = new ArrayList<Role>();
 			Role r = new Role();
 			for (int i = 0; i < roleArr.length; i++) {
-				 r = new Role();
-				 r.setName(roleArr[i]);
-				 roles.add(r);
+				String roleName = roleArr[i];  
+				r = new Role();
+				r.setName(roleName);
+				r.setPriority(Authority.valueOf(roleName).getPriority());
+				roles.add(r);
 			}
 			user.setAuthorities(roles);
 			user.setDatabaseInfo(getUserDataBaseInfo(conn,pstmt, rs , user));

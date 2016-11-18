@@ -16,6 +16,7 @@ public class Role implements GrantedAuthority {
 
 	private static final long serialVersionUID = 1L;
 	private String name;
+	private int priority;
 
 	private List<Privilege> privileges;
 
@@ -46,8 +47,17 @@ public class Role implements GrantedAuthority {
 		builder.append(name);
 		builder.append(", privileges=");
 		builder.append(privileges);
+		builder.append(", priority=");
+		//builder.append(priority);
 		builder.append("]");
 		return builder.toString();
 	}
 
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 }
