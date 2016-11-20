@@ -88,9 +88,3 @@
 	border: 0;
 }
 
-.ui-layout-pane-north ,
-.ui-layout-pane-south {
-    overflow: hidden !important;
-}
-
-

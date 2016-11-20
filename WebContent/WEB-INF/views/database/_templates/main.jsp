@@ -58,7 +58,7 @@
 				, west__paneSelector:	".ui-layout-left-area"
 				, north__paneSelector: ".ui-layout-header-area"
 				, south__paneSelector : ".ui-layout-footer-area"
-				, west__size:				300 
+				, west__size:	300 
 				, spacing_open:			5 // ALL panes
 				, spacing_closed:   8 // ALL panes
 				, north__spacing_open: 0
