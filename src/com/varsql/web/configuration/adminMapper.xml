@@ -32,7 +32,7 @@
 		insert into vtconnection (
 			vname 
 			,vurl 
-			,vdbname 
+			,vdbschema 
 			,vdriver 
 			,vtype 
 			,vid 
@@ -45,7 +45,7 @@
 		values (
 			#{vname}
 			,#{vurl} 
-			,#{vdbname} 
+			,#{vdbschema} 
 			,#{vdriver} 
 			,#{vtype}
 			,#{vid}
@@ -62,7 +62,7 @@
 		set 
 			vname =#{vname}
 			, vurl =#{vurl}
-			, vdbname =#{vdbname}
+			, vdbschema =#{vdbschema}
 			, vdriver =#{vdriver} 
 			, vtype =#{vtype}
 			, vid =#{vid}

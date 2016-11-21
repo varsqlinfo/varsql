@@ -171,7 +171,7 @@ public class AdminController{
 			,@RequestParam(value = "vname" ,required = true,defaultValue = "")  String vname
 			,@RequestParam(value = "vurl",required = true,defaultValue = "")  String vurl
 			,@RequestParam(value = "vdriver",required = true,defaultValue = "")  String vdriver
-			,@RequestParam(value = "vdbname",required = true,defaultValue = "")  String vdbname
+			,@RequestParam(value = "vdbschema",required = true,defaultValue = "")  String vdbschema
 			,@RequestParam(value = "vtype",required = true,defaultValue = "")  String vtype
 			,@RequestParam(value = "vid")  String vid
 			,@RequestParam(value = "vpw")  String vpw
@@ -185,7 +185,7 @@ public class AdminController{
 		
 		dcv.put("vconid", vconid);
 		dcv.put("vname", vname);
-		dcv.put("vdbname", vdbname);
+		dcv.put("vdbschema", vdbschema);
 		dcv.put("vurl", vurl);
 		dcv.put("vdriver", vdriver);
 		dcv.put("vtype", vtype);
