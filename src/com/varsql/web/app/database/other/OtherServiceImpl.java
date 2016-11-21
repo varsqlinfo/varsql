@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.meta.DBMetaImplOTHER;
 import com.varsql.sql.ddl.script.DDLScriptAbstract;
 import com.varsql.sql.ddl.script.DDLScriptImplOTHER;
@@ -24,7 +25,7 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class OtherServiceImpl implements OtherService{
+public class OtherServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(OtherServiceImpl.class);
 	
 	@Autowired
@@ -53,8 +54,9 @@ public class OtherServiceImpl implements OtherService{
 		
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID);
 		
-		json.put("urlPrefix", oracleMetaImpl.getUrlPrefix(connid));
 		json.put("db_object_list", oracleMetaImpl.getSchemas(connid));
+		json.put("connInfo", SecurityUtil.userDBInfo(connid));
+		json.put("urlPrefix", oracleMetaImpl.getUrlPrefix(connid));
 		
 		return VarsqlUtil.objectToString(json);
 	}

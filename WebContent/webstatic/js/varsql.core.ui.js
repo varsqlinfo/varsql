@@ -74,6 +74,9 @@ _ui.leftDbObject ={
 			_ui.options.param.schema =_self.options.active.attr('obj_nm');
 			_self._click(this);
 		});
+		
+		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.connInfo.VDBSCHEMA+'"]').trigger('click');
+		
 	}
 	// 사용자 셋팅 정보 가져오기.
 	,_userSettingInfo : function (){

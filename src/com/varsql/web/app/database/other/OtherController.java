@@ -30,7 +30,7 @@ public class OtherController {
 	private static final Logger logger = LoggerFactory.getLogger(OtherController.class);
 	
 	@Autowired
-	private OtherService otherService;
+	private OtherServiceImpl otherService;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {

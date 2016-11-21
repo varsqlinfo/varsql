@@ -30,7 +30,7 @@ public class OracleController {
 	private static final Logger logger = LoggerFactory.getLogger(OracleController.class);
 	
 	@Autowired
-	private OracleService oracleService;
+	private OracleServiceImpl oracleService;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {

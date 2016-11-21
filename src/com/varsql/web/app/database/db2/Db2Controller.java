@@ -30,7 +30,7 @@ public class Db2Controller {
 	private static final Logger logger = LoggerFactory.getLogger(Db2Controller.class);
 	
 	@Autowired
-	private Db2Service db2Service;
+	private Db2ServiceImpl db2Service;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {

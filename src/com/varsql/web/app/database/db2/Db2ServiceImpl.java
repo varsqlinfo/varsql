@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.meta.DBMetaImplDB2;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
@@ -23,7 +24,7 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class Db2ServiceImpl implements Db2Service{
+public class Db2ServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(Db2ServiceImpl.class);
 	
 	@Autowired
@@ -50,6 +51,7 @@ public class Db2ServiceImpl implements Db2Service{
 		Map json = new HashMap();
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
 		json.put("urlPrefix", db2metaImpl.getUrlPrefix(connid));
+		json.put("connInfo", SecurityUtil.userDBInfo(connid));
 		json.put("db_object_list", db2metaImpl.getSchemas(connid));
 		
 		return VarsqlUtil.objectToString(json);
