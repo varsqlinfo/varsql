@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtil;
 
 

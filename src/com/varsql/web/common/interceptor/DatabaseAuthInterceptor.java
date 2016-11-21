@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.constants.VarsqlConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.util.SecurityUtil;
 
 /**
  * 
