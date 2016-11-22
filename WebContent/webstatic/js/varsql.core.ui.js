@@ -45,7 +45,21 @@ _ui.leftDbObject ={
 		_self._grid();
 		_ui.SQL.init({dbtype:_opts.dbtype});
 		
+		_self.initEvt();
+		
 		_self._userSettingInfo();
+	}
+	// init left event 
+	,initEvt : function (){
+		var _self = this;
+		
+		// schema refresh button 
+		$('.refresh-schema-btn').on('click', function (e){
+			if(_self.options.active){
+				_self._click(_self.options.active.attr('obj_nm'));
+			}
+		})
+		
 	}
 	// db schema 그리기
 	,_grid:function (){
@@ -58,20 +72,23 @@ _ui.leftDbObject ={
 	
 		var strHtm = [];
 		var item; 
-		strHtm.push("<div class=\"db-list-group\">");
 		for (var i=0; i<len ; i++ ){
 			item = data[i];
-			strHtm.push('<a href=\"javascript:;\" class=\"db-list-group-item\" obj_nm='+item+'>'+item+'</a>');
+			strHtm.push('<li><a href=\"javascript:;\" class=\"db-list-group-item\" obj_nm='+item+'>'+item+'</a></li>');
 		}
-		strHtm.push("</div>");
 									
 		$(_self.options.selector).html(strHtm.join(''));
+		
+		if(len > 1){
+			$('.db-schema-list-btn').show();
+		}
 		
 		$(_self.options.selector+' .db-list-group-item').on('click', function (){
 			if(_self.options.active) _self.options.active.removeClass('active');
 			_self.options.active =$(this);
 			_self.options.active.addClass('active');
 			_ui.options.param.schema =_self.options.active.attr('obj_nm');
+			$('#varsql_schema_name').html(_ui.options.param.schema);
 			_self._click(this);
 		});
 		

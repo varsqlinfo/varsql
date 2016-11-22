@@ -12,12 +12,27 @@
 </style>
 
 <div class="ui-layout-left-top-area">
-	<div class="panel panel-default left-panel">
-		<div class="panel-default left-panel padding2">
-			<div id="leftDBList">
-			</div>
-		</div>
-	</div>
+	<div class="panel-heading">
+       <img src="/vsql/webstatic/imgs/Database.gif"/>
+       <span id="varsql_schema_name">schema명</span>
+       <div class="btn-group pull-right">
+           <button type="button" class="btn btn-default btn-xs refresh-schema-btn">
+               <i class="fa fa-refresh fa-fw"></i>
+           </button>
+           
+           <button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
+               <i class="fa fa-chevron-down"></i>
+           </button>
+           <ul id="leftDBList" class="dropdown-menu slidedown">
+           </ul>
+       </div>
+   </div>
+<!-- 	<div class="panel panel-default left-panel"> -->
+<!-- 		<div class="panel-default left-panel padding2"> -->
+<!-- 			<div id="leftDBList"> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
 </div>
 
 

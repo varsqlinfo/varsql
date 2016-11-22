@@ -88,3 +88,16 @@
 	border: 0;
 }
 
+.ui-layout-left-top-area{
+	z-index:30 !important;
+	background-color: #dff0d8;
+}
+
+
+.ui-layout-left-middle-area{
+	/*z-index:29 !important;*/
+}
+
+.ui-layout-left-bottom-area {
+	/*z-index:28 !important;*/
+}

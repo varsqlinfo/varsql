@@ -268,6 +268,20 @@ padding-top: 5px;
 	height:118px;
 	overflow-y:auto;
 	border: 1px solid #f1f1f1;
+	font-size :12px;
+}
+#leftDBList.dropdown-menu {
+	padding:0px 0px;
+}
+
+#leftDBList>li>a {
+    padding: 3px 10px;
+    clear: both;
+    line-height: 1.42857143;
+}
+
+.btn.db-schema-list-btn{
+	display:none;
 }
 
 .db-list-group{

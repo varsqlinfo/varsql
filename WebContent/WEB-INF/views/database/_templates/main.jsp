@@ -129,7 +129,9 @@ var varsqlMain = {
 			north__paneSelector: ".ui-layout-left-top-area"
 			, center__paneSelector: ".ui-layout-left-middle-area"
 			, south__paneSelector: ".ui-layout-left-bottom-area"
-			, north__size:    125
+			, north__size:    38
+			, north__resizable: false
+			, north__spacing_open: 0
 			, south__size:    150
 			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
 			, spacing_closed:   8  // ALL panes
