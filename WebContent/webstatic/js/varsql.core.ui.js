@@ -24,6 +24,127 @@ _ui.options={
 	}
 };
 
+_ui.create = function (_opts){
+	var _self = this; 
+	
+	_self.headerMenu.init(_opts);
+	_self.leftDbObject.create(_opts);
+	_self.layout.init(_opts);
+}
+
+// header 메뉴 처리.
+_ui.headerMenu ={
+	init : function(){
+		var _self = this; 
+		
+		_self.initEvt();
+	}
+	,initEvt : function (){
+		$('.db-header-menu-wrapper .header-menu-item').on('click', function (e){
+			var menu_mode = $(this).attr('data-menu-item');
+			alert('['+menu_mode+'] 준비중입니다.');
+		})
+	}
+}
+
+// main layout 처리.
+_ui.layout = {
+	layoutObj :{
+		mainLayout :false
+		, leftLayout : false
+		, rightLayout : false
+	}
+	,init : function(_opts){
+		var _self = this; 
+		_self.setLayout();
+		_self.initEvt();
+	}	
+	,initEvt : function (){
+		
+	}
+	,setLayout: function (){
+		var _self = this; 
+		_self.layoutObj.mainLayout = $('body').layout({
+			center__paneSelector:	".ui-layout-center-area"
+			, west__paneSelector:	".ui-layout-left-area"
+			, north__paneSelector: ".ui-layout-header-area"
+			, south__paneSelector : ".ui-layout-footer-area"
+			, west__size:	300 
+			, spacing_open:			5 // ALL panes
+			, spacing_closed:   8 // ALL panes
+			, north__spacing_open: 0
+			, south__spacing_open: 0
+			, resizerDblClickToggle: false
+			, center__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				_self.layoutObj.rightLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
+			} 
+			, west__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				_self.layoutObj.leftLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
+			}
+		});
+		
+		_self.layoutObj.leftLayout = $('div.ui-layout-left-area').layout({
+			north__paneSelector: ".ui-layout-left-top-area"
+			, center__paneSelector: ".ui-layout-left-middle-area"
+			, south__paneSelector: ".ui-layout-left-bottom-area"
+			, north__size:    38
+			, north__resizable: false
+			, north__spacing_open: 0
+			, south__size:    150
+			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+			, spacing_closed:   8  // ALL panes
+			, resizerDblClickToggle: false
+			, center__onresize_end:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				try{
+					if($('.db-metadata-area.show-display').length > 0){
+						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-24});
+					}
+				}catch(e){
+					console.log(arguments)
+				}
+			}
+			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				try{
+					if($('.varsql-meta-cont-ele.on').length > 0){
+						$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width:obj3.resizerLength,height:obj3.layoutHeight});
+					}
+				}catch(e){
+					console.log(arguments)
+				}
+			}
+		});
+
+		_self.layoutObj.rightLayout = $('div.ui-layout-center-area').layout({
+			north__paneSelector: ".inner-layout-toolbar-area"
+			, center__paneSelector: ".inner-layout-sql-editor-area"
+			, south__paneSelector: ".inner-layout-result-area"
+			, north__size:    65
+			, north__resizable: false
+			, south__size:    100 
+			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+			, spacing_closed:   8  // ALL panes
+			, north__spacing_open: 0
+			, resizerDblClickToggle: false
+			, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
+			}
+			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				try{
+					if($('#dataGridArea .pubGrid-body-container').length > 0){
+						$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:obj3.css.height-25});
+					}
+				}catch(e){
+					console.log(e)
+				}
+			}
+		});
+		
+		$('.CodeMirror.cm-s-default').css('height' ,$('#editorAreaTable').height());
+		VARSQL.ui.SQL.sqlTextAreaObj.refresh();
+	}
+}
+
+// 왼쪽 영역 처리.
 _ui.leftDbObject ={
 	options :{
 		selector:'#leftDbObjectWrap'

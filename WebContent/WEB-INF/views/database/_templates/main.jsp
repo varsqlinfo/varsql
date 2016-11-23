@@ -93,90 +93,12 @@
 
 <script>
 $(document).ready(function(){
-	varsqlMain.init();
+	var viewConnInfo = ${left_db_object}; 
+	VARSQL.ui.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.VTYPE}, viewConnInfo));
+	
+	//varsqlMain.init();
 }); 
 
-var varsqlMainLayout , varsqlLeftLayout, varsqlRightLayout;
-
-var varsqlMain = {
-	init :  function (){
-		var _self = this; 
-		_self.initLeft();
-		_self.initLayout();
-	}
-	,initLeft : function (){
-		var viewConnInfo = ${left_db_object}; 
-		VARSQL.ui.leftDbObject.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.VTYPE}, viewConnInfo));
-	}
-	,initLayout : function (){
-		var _self = this; 
-		varsqlMainLayout = $('body').layout({
-			center__paneSelector:	".ui-layout-center-area"
-			, west__paneSelector:	".ui-layout-left-area"
-			, north__paneSelector: ".ui-layout-header-area"
-			, south__paneSelector : ".ui-layout-footer-area"
-			, west__size:	300 
-			, spacing_open:			5 // ALL panes
-			, spacing_closed:   8 // ALL panes
-			, north__spacing_open: 0
-			, south__spacing_open: 0
-			, resizerDblClickToggle: false
-			, center__onresize:  "varsqlRightLayout.resizeAll"
-			, west__onresize:  "varsqlLeftLayout.resizeAll"
-		});
-		
-		varsqlLeftLayout = $('div.ui-layout-left-area').layout({
-			north__paneSelector: ".ui-layout-left-top-area"
-			, center__paneSelector: ".ui-layout-left-middle-area"
-			, south__paneSelector: ".ui-layout-left-bottom-area"
-			, north__size:    38
-			, north__resizable: false
-			, north__spacing_open: 0
-			, south__size:    150
-			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
-			, spacing_closed:   8  // ALL panes
-			, resizerDblClickToggle: false
-			, center__onresize_end:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-				if($('.db-metadata-area.show-display').length > 0){
-					$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-24});
-				}
-			}
-			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-				if($('.varsql-meta-cont-ele.on').length > 0){
-					$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width:obj3.resizerLength,height:obj3.layoutHeight});
-				}
-			}
-		});
-
-		varsqlRightLayout = $('div.ui-layout-center-area').layout({
-			north__paneSelector: ".inner-layout-toolbar-area"
-			, center__paneSelector: ".inner-layout-sql-editor-area"
-			, south__paneSelector: ".inner-layout-result-area"
-			, north__size:    65
-			, north__resizable: false
-			, south__size:    100 
-			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
-			, spacing_closed:   8  // ALL panes
-			, north__spacing_open: 0
-			, resizerDblClickToggle: false
-			, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-				$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
-			}
-			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-				try{
-					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:obj3.css.height-25});
-					}
-				}catch(e){
-					console.log(e)
-				}
-			}
-		});
-		
-		$('.CodeMirror.cm-s-default').css('height' ,$('#editorAreaTable').height());
-		VARSQL.ui.SQL.sqlTextAreaObj.refresh();
-	}
-}
 </script>
 </html>
 

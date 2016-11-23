@@ -10,9 +10,19 @@
 <entry key="msg.please.sign.in">VARSQL 로그인</entry>
 
 
-<entry key="header.menu.file">File</entry>
-<entry key="header.menu.edit">Edit</entry>
-<entry key="header.menu.help">Help</entry>
+<entry key="header.menu.file">파일</entry>
+<entry key="header.menu.file.save">저장</entry>
+<entry key="header.menu.file.close">닫기</entry>
+
+<entry key="header.menu.edit">편집</entry>
+<entry key="header.menu.edit.compare">쿼리 비교</entry>
+
+<entry key="header.menu.tool">도구</entry>
+<entry key="header.menu.tool.import">가져오기</entry>
+<entry key="header.menu.tool.export">내보내기</entry>
+<entry key="header.menu.tool.setting">설정</entry>
+
+<entry key="header.menu.help">도움말</entry>
 
 
 <entry key="screen">화면</entry>
