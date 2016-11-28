@@ -35,14 +35,86 @@ _ui.create = function (_opts){
 // header 메뉴 처리.
 _ui.headerMenu ={
 	init : function(){
-		var _self = this; 
+		var _self = this;
 		
 		_self.initEvt();
 	}
 	,initEvt : function (){
+		
+		$('body').on('keydown',function (e) {
+			var evt =window.event || e; 
+			
+			if(evt.ctrlKey){
+				if (evt.shiftKey) {
+					switch (evt.keyCode) {
+						case 83: // keyCode 83 is s
+							$('.sql-save-btn').trigger('click');
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		});
+		
 		$('.db-header-menu-wrapper .header-menu-item').on('click', function (e){
-			var menu_mode = $(this).attr('data-menu-item');
-			alert('['+menu_mode+'] 준비중입니다.');
+			var dataMenuItem = $(this).attr('data-menu-item');
+			var menuArr = dataMenuItem.split('_');
+			
+			var depth1 =menuArr[0]
+				,menu_mode =menuArr[1]; 
+			
+			switch (depth1) {
+				case 'file': {
+					
+					switch (menu_mode) {
+						case 'save':
+							$('.sql-save-btn').trigger('click');
+							break;
+						case 'close':
+							var isInIFrame = (window.location != window.parent.location);
+							if(isInIFrame==true){
+								parent.userMain.activeClose();
+							}else {
+								if(confirm('창을 닫으시겠습니까?')){
+									window.close();
+								}
+							}
+							
+							break;
+						default:
+							break;
+					}
+					
+					break;
+				}case 'edit':{
+					alert('['+menu_mode+'] 준비중입니다.');
+					return ; 
+					switch (menu_mode) {
+						case 'compare':
+							break;
+						default:
+							break;
+					}
+					break;
+				}case 'tool':{
+					alert('['+menu_mode+'] 준비중입니다.');
+					return ; 
+					switch (menu_mode) {
+						case 'import':
+							break;
+						case 'export':
+							break;
+						case 'setting':
+							break;
+						default:
+							break;
+					}
+					break;
+				} default:
+					break;
+			}
+			
 		})
 	}
 }
@@ -929,8 +1001,8 @@ _ui.SQL = {
 							var sCursor = _self.getTextAreaObj().getCursor(true)
 							,eCursor = _self.getTextAreaObj().getCursor(false);
 						
-						_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
-						_self.getTextAreaObj().setSelection(sCursor, eCursor);
+							_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
+							_self.getTextAreaObj().setSelection(sCursor, eCursor);
 							break;
 						case 89: // toLowerCase
 							var sCursor = _self.getTextAreaObj().getCursor(true)
