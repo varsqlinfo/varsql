@@ -1,4 +1,4 @@
-package com.varsql.web.app.database;
+package com.varsql.web.app.database.sql;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.common.util.SecurityUtil;
-import com.varsql.web.app.database.db2.Db2Controller;
+import com.varsql.web.app.database.DatabaseController;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
@@ -29,10 +29,10 @@ import com.varsql.web.util.HttpUtil;
  * @변경이력 :
  */
 @Controller
-@RequestMapping("/database")
+@RequestMapping("/sql/base")
 public class SQLController {
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(Db2Controller.class);
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseController.class);
 	
 	@Autowired
 	private SQLServiceImpl sQLServiceImpl;
@@ -53,7 +53,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlData"})
+	@RequestMapping({"/sqlData"})
 	public @ResponseBody String sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
 			@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = true, defaultValue = "" )  String schema,
 			@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit,
@@ -86,7 +86,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlFormat"})
+	@RequestMapping({"/sqlFormat"})
 	public @ResponseBody String sqlFormat(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
 			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
 			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ) throws Exception {
@@ -117,7 +117,7 @@ public class SQLController {
 	 * @param response
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/dataExport"})
+	@RequestMapping({"/dataExport"})
 	public void dataExport(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype 
 			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = true, defaultValue = "" )  String objectName 
@@ -152,7 +152,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/saveQuery"})
+	@RequestMapping({"/saveQuery"})
 	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
 			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
@@ -180,7 +180,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/userSettingInfo"})
+	@RequestMapping({"/userSettingInfo"})
 	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -202,7 +202,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/sqlList"})
+	@RequestMapping({"/sqlList"})
 	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -223,7 +223,7 @@ public class SQLController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/base/delSqlSaveInfo"})
+	@RequestMapping({"/delSqlSaveInfo"})
 	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,HttpServletRequest req
 			,HttpServletResponse response

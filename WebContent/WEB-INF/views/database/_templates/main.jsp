@@ -39,14 +39,11 @@
 		</div>
 	
 		<div class="ui-layout-left-area">
-			<tiles:insertAttribute name="initLeft" />
 			<tiles:insertAttribute name="left" />
 		</div>
 	
 		<div class="ui-layout-center-area">
 			<tiles:insertAttribute name="rightContent" />
-			<!-- div class="inner-layout-sql-editor-area">sql editor</div>
-			<div class="inner-layout-result-area">grid area</div -->
 		</div>
 		<div class="ui-layout-footer-area">ytechinfo copy right</div>
       </c:otherwise>
@@ -94,7 +91,7 @@
 <script>
 $(document).ready(function(){
 	var viewConnInfo = ${left_db_object}; 
-	VARSQL.ui.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.VTYPE}, viewConnInfo));
+	VARSQL.ui.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.type}, viewConnInfo));
 	
 	//varsqlMain.init();
 }); 

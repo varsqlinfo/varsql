@@ -1,10 +1,10 @@
-package com.varsql.web.app.database.db2;
+package com.varsql.web.app.database;
 
-import com.varsql.db.meta.DBMeta;
 import com.varsql.db.meta.DBMetaImpl;
-import com.varsql.db.meta.DBMetaImplDB2;
-import com.varsql.db.meta.DBMetaImplMYSQL;
 import com.varsql.db.meta.DBMetaImplOTHER;
+import com.varsql.sql.ddl.script.DDLScript;
+import com.varsql.sql.ddl.script.DDLScriptImpl;
+import com.varsql.sql.ddl.script.DDLScriptImplOTHER;
 
 public enum DbTypeEnum {
 	MYSQL("mysql")
@@ -21,6 +21,7 @@ public enum DbTypeEnum {
 	,OTHER("other");
 	
 	private DBMetaImpl dbMetaImpl;
+	private DDLScript ddlScript;
 	
 	private DbTypeEnum(String db){
 		try {
@@ -29,9 +30,20 @@ public enum DbTypeEnum {
 		} catch (Exception e) {
 			this.dbMetaImpl=new DBMetaImplOTHER();
 		}
+		
+		try {
+			String cls = DDLScriptImpl.class.getName()+this.name(); 
+			this.ddlScript=(DDLScriptImpl)Class.forName(cls).newInstance();
+		} catch (Exception e) {
+			this.ddlScript=new DDLScriptImplOTHER();
+		}
 	}
 	
-	public DBMetaImpl getDBMetaImpl(){
+	public DBMetaImpl getDBMeta(){
 		return this.dbMetaImpl;
+	}
+	
+	public DDLScript getDDLScript(){
+		return this.ddlScript;
 	}
 }

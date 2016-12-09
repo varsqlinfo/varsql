@@ -1,4 +1,4 @@
-package com.varsql.web.app.database;
+package com.varsql.web.app.database.sql;
 
 import java.util.List;
 import java.util.Map;

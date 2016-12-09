@@ -1,13 +1,15 @@
-package com.varsql.web.app.database.other;
+package com.varsql.web.app.database;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,23 +22,18 @@ import com.varsql.web.common.vo.DataCommonVO;
 
 
 /**
- * The Class OtherController.
+ * The Class OutsideController.
  */
 @Controller
-@RequestMapping("/database/other")
-public class OtherController {
+@RequestMapping("/database")
+public class DatabaseController {
 
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(OtherController.class);
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseController.class);
 	
 	@Autowired
-	private OtherServiceImpl otherService;
+	private DatabaseServiceImpl databaseServiceImpl;
 
-	@RequestMapping({""})
-	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return new ModelAndView("redirect:/database/other/");
-	}
-	
 	@RequestMapping({"/","/main"})
 	public ModelAndView mainpage(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		
@@ -44,13 +41,14 @@ public class OtherController {
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		
 		ModelMap model = mav.getModelMap();
-		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, otherService.schemas(paramMap));
-		return  new ModelAndView("/database/other/otherMain",model);
+		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(paramMap));
+		return  new ModelAndView("/database/main",model);
 	}
 	
 	@RequestMapping(value = "/serviceMenu")
 	public @ResponseBody String schemas(HttpServletRequest req 
-			,@RequestParam(value = "vconnid", required = false, defaultValue = "" )  String vconnid
+			,@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid
+			,@RequestParam(value = "schema", required = true, defaultValue = "" )  String schema
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
@@ -58,11 +56,11 @@ public class OtherController {
 		
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
-		return otherService.serviceMenu(paramMap);
+		return databaseServiceImpl.serviceMenu(paramMap);
 	}
 	
 	@RequestMapping(value = "/dbObjectList")
-	public @ResponseBody String dbObjectList(HttpServletRequest req 
+	public @ResponseBody Map dbObjectList(HttpServletRequest req 
 			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
@@ -75,16 +73,16 @@ public class OtherController {
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
 		if("tables".equals(gubun)){
-			return otherService.tables(paramMap); 
+			return databaseServiceImpl.tables(paramMap); 
 		}else if("views".equals(gubun)){
-			return otherService.views(paramMap);
+			return databaseServiceImpl.views(paramMap);
 		}else if("procedures".equals(gubun)){
-			return otherService.procedures(paramMap);
+			return databaseServiceImpl.procedures(paramMap);
 		}else if("functions".equals(gubun)){
-			return otherService.functions(paramMap);
+			return databaseServiceImpl.functions(paramMap);
 		}
 		
-		return "";
+		return null;
 	}
 	
 	/**
@@ -102,7 +100,7 @@ public class OtherController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbObjectMetadataList")
-	public @ResponseBody String dbObjectMetadataList(HttpServletRequest req 
+	public @ResponseBody Map dbObjectMetadataList(HttpServletRequest req 
 			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
@@ -116,20 +114,20 @@ public class OtherController {
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
 		if("table".equals(gubun)){
-			return otherService.tableMetadata(paramMap); 
+			return databaseServiceImpl.tableMetadata(paramMap); 
 		}else if("view".equals(gubun)){
-			return otherService.viewMetadata(paramMap);
+			return databaseServiceImpl.viewMetadata(paramMap);
 		}else if("procedure".equals(gubun)){
-			return otherService.procedureMetadata(paramMap);
+			return databaseServiceImpl.procedureMetadata(paramMap);
 		}else if("function".equals(gubun)){
-			return otherService.functionMetadata(paramMap);
+			return databaseServiceImpl.functionMetadata(paramMap);
 		}
 		
-		return "";
+		return null;
 	}
 	
 	@RequestMapping(value = "/createDDL")
-	public @ResponseBody String createDDL(HttpServletRequest req 
+	public @ResponseBody Map createDDL(HttpServletRequest req 
 			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
@@ -143,15 +141,15 @@ public class OtherController {
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
 		if("table".equals(gubun)){
-			return otherService.ddlTableScript(paramMap); 
+			return databaseServiceImpl.ddlTableScript(paramMap); 
 		}else if("view".equals(gubun)){
-			return otherService.ddlViewScript(paramMap);
+			return databaseServiceImpl.ddlViewScript(paramMap);
 		}else if("procedure".equals(gubun)){
-			return otherService.ddlProcedureScript(paramMap);
+			return databaseServiceImpl.ddlProcedureScript(paramMap);
 		}else if("function".equals(gubun)){
-			return otherService.ddlFunctionScript(paramMap);
+			return databaseServiceImpl.ddlFunctionScript(paramMap);
 		}
 		
-		return "";
+		return null;
 	}
 }

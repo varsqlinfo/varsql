@@ -80,7 +80,7 @@ var userMain = {
 
 		$(_self._connectionTab).append(strHtm);
 		
-		var _url = VARSQL.url(VARSQL.uri.database, '/'+selectObj.attr('dbtype'))+'/?vconnid='+sconid; 
+		var _url = VARSQL.url(VARSQL.uri.database)+'/?vconnid='+sconid; 
 		var strHtm = '<iframe class="db_sql_view_area iframe_'+sconid+'" src="'+_url+'" style="width:100%;height:100%;" width="100%" height="100%" frameborder="0"></iframe>';
 		
 		$(_self._connectionIframe).append(strHtm);

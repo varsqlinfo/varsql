@@ -1,4 +1,4 @@
-package com.varsql.web.app.database.other;
+package com.varsql.web.app.database;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,9 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.SecurityUtil;
-import com.varsql.db.meta.DBMetaImplOTHER;
-import com.varsql.sql.ddl.script.DDLScriptAbstract;
-import com.varsql.sql.ddl.script.DDLScriptImplOTHER;
+import com.varsql.db.meta.DBMetaImplDB2;
+import com.varsql.db.vo.DatabaseInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
@@ -25,15 +24,9 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class OtherServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(OtherServiceImpl.class);
+public class DatabaseServiceImpl{
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 	
-	@Autowired
-	OtherDAO otherDAO ;
-	
-	DBMetaImplOTHER oracleMetaImpl = new DBMetaImplOTHER();
-	DDLScriptAbstract ddlScriptImplOracle = new DDLScriptImplOTHER();
-
 	public String selectQna(DataCommonVO paramMap) {
 		return "";
 	}
@@ -51,12 +44,12 @@ public class OtherServiceImpl{
 	 */
 	public String schemas(DataCommonVO paramMap) throws Exception {
 		Map json = new HashMap();
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		
-		String connid =paramMap.getString(VarsqlParamConstants.VCONNID);
-		
-		json.put("db_object_list", oracleMetaImpl.getSchemas(connid));
+		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
 		json.put("connInfo", SecurityUtil.userDBInfo(connid));
-		json.put("urlPrefix", oracleMetaImpl.getUrlPrefix(connid));
+		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(connid));
 		
 		return VarsqlUtil.objectToString(json);
 	}
@@ -75,7 +68,9 @@ public class OtherServiceImpl{
 	 */
 	public String serviceMenu(DataCommonVO paramMap) throws Exception {
 		try{
-			List serviceMenu = oracleMetaImpl.getServiceMenu();
+			String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+			DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+			List serviceMenu = dbMetaEnum.getDBMeta().getServiceMenu();
 			
 			Map reval = new HashMap();
 			
@@ -101,11 +96,13 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String tables(DataCommonVO paramMap) throws Exception {
+	public Map tables(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
-		json.put(VarsqlParamConstants.JSON_REUSLT, oracleMetaImpl.getTables(paramMap.getString(VarsqlParamConstants.VCONNID) ,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
-		
-		return VarsqlUtil.objectToString(json);
+		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getTables(connid
+				,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
+		return json;
 	}
 	
 	/**
@@ -119,11 +116,13 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String views(DataCommonVO paramMap) throws Exception {
+	public Map views(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
-		json.put(VarsqlParamConstants.JSON_REUSLT, oracleMetaImpl.getViews(paramMap.getString(VarsqlParamConstants.VCONNID),paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
+		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getViews(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	/**
@@ -137,11 +136,13 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String procedures(DataCommonVO paramMap) throws Exception {
+	public Map procedures(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
-		json.put(VarsqlParamConstants.JSON_REUSLT, oracleMetaImpl.getProcedures(paramMap.getString(VarsqlParamConstants.VCONNID),paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
+		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getProcedures(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	/**
@@ -155,14 +156,14 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String functions(DataCommonVO paramMap) throws Exception {
+	public Map functions(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		
 		Map json = new HashMap();
-		try{
-			json.put(VarsqlParamConstants.JSON_REUSLT, oracleMetaImpl.getFunctions(paramMap.getString(VarsqlParamConstants.VCONNID),paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return VarsqlUtil.objectToString(json);
+		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getFunctions(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
+		
+		return json;
 	}
 	
 	/**
@@ -177,15 +178,17 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String tableMetadata(DataCommonVO paramMap) throws Exception {
+	public Map tableMetadata(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
-			oracleMetaImpl.getColumns(paramMap.getString(VarsqlParamConstants.VCONNID)
+				dbMetaEnum.getDBMeta().getColumns(connid
 					,paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME)
 					,paramMap.getString(VarsqlParamConstants.DB_SCHEMA))
 		);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	/**
@@ -200,42 +203,33 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String viewMetadata(DataCommonVO paramMap) throws Exception {
+	public Map viewMetadata(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
-			oracleMetaImpl.getColumns(paramMap.getString(VarsqlParamConstants.VCONNID)
+				dbMetaEnum.getDBMeta().getColumns(connid
 					,paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME)
 					,paramMap.getString(VarsqlParamConstants.DB_SCHEMA))
 		);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
-	
-	/**
-	 * 
-	 * @Method Name  : procedureMetadata
-	 * @Method 설명 : 프로시저 메타 데이타. 
-	 * @Method override : @see com.varsql.web.app.database.oracle.OracleService#procedureMetadata(com.varsql.web.common.vo.DataCommonVO)
-	 * @작성자   : ytkim
-	 * @작성일   : 2015. 6. 19. 
-	 * @변경이력  :
-	 * @param paramMap
-	 * @return
-	 * @throws Exception
-	 */
-	public String procedureMetadata(DataCommonVO paramMap) throws Exception {
+
+	public Map procedureMetadata(DataCommonVO paramMap) throws Exception {
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
-			oracleMetaImpl.getProceduresMetadata(paramMap.getString(VarsqlParamConstants.VCONNID)
+				dbMetaEnum.getDBMeta().getProceduresMetadata( connid
 					,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)
 					,paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME))
 		);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
-	
-	public String functionMetadata(DataCommonVO paramMap) throws Exception {
-		// TODO Auto-generated method stub
+
+	public Map functionMetadata(DataCommonVO paramMap) throws Exception {
 		return null;
 	}
 	
@@ -251,32 +245,34 @@ public class OtherServiceImpl{
 	 * @return
 	 * @throws Exception 
 	 */
-	public String ddlTableScript(DataCommonVO paramMap) throws Exception {
+	public Map ddlTableScript(DataCommonVO paramMap) throws Exception {
+		
+		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
+		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
-				ddlScriptImplOracle.getTable(paramMap.getString(VarsqlParamConstants.VCONNID)
+				dbMetaEnum.getDDLScript().getTable(paramMap.getString(VarsqlParamConstants.VCONNID)
 					,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)
 					,paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME))
 		);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String ddlViewScript(DataCommonVO paramMap) throws Exception{
+	public Map ddlViewScript(DataCommonVO paramMap) throws Exception{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public String ddlProcedureScript(DataCommonVO paramMap)throws Exception {
+	public Map ddlProcedureScript(DataCommonVO paramMap)throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public String ddlFunctionScript(DataCommonVO paramMap) throws Exception{
+	public Map ddlFunctionScript(DataCommonVO paramMap) throws Exception{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
 	
 }

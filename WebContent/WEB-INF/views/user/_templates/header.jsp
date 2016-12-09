@@ -7,10 +7,11 @@
         	<div class="form-horizontal" >
 				<div class="ui-connection-list">
 					<label>Connect to : </label> 
+					
 					<select id="user_connection_info">
 						<option value="">----connection info---</option>
 						<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
-							<option value="${tmpInfo.VCONNID}" dbtype="${tmpInfo.VTYPE}" vname="${tmpInfo.VNAME}">${tmpInfo.VNAME}</option>
+							<option value="${tmpInfo.vconnid}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
 						</c:forEach>
 					</select>
 				</div>

@@ -14,6 +14,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.module.SimpleModule;
 
+import com.varsql.common.util.SecurityUtil;
+import com.varsql.db.vo.DatabaseInfo;
+import com.varsql.web.app.database.DbTypeEnum;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 
@@ -79,6 +82,16 @@ public class VarsqlUtil {
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		
 		return paramMap; 
+	}
+	
+	public static DbTypeEnum getDBMetaImpl(String connid){
+		try{
+			DatabaseInfo  dbinfo= SecurityUtil.loginInfo().getDatabaseInfo().get(connid);
+			return DbTypeEnum.valueOf(dbinfo.getType());
+		}catch(Exception e){
+			return DbTypeEnum.OTHER;
+		}
+		 
 	}
 }
 

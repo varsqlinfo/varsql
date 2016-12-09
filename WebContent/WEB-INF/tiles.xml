@@ -42,10 +42,8 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
     </definition>
     
-    <definition name="/database/*/*" template="/WEB-INF/views/database/_templates/main.jsp">
+    <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp">
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
-        <put-attribute name="body" value="/WEB-INF/views/database/{1}/{2}.jsp" />
-        <put-attribute name="initLeft" value="/WEB-INF/views/database/{1}/{1}Left.jsp" />
         <put-attribute name="left" value="/WEB-INF/views/database/dbcomm/dbLeftTemplate.jsp" />
         <put-attribute name="right" value="/WEB-INF/views/database/dbcomm/dbRightLayoutTemplate.jsp" />
         <put-attribute name="rightContent" value="/WEB-INF/views/database/dbcomm/dbRightTemplate.jsp" />

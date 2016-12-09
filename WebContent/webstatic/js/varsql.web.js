@@ -27,6 +27,7 @@ var _$base = {
 		,'user':'/user'
 		,'guest':'/guest'
 		,'database':'/database'
+		,'sql':'/sql'
 	}
 };
 
@@ -141,7 +142,7 @@ _$base.url = function (gubun , url){
 	if(url !== undefined){
 		return _$base.getContextPathUrl(gubun+ url);
 	}else{
-		return _$base.getContextPathUrl('/' +gubun);
+		return _$base.getContextPathUrl(gubun);
 	}
 };
 

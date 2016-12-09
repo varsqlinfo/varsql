@@ -285,7 +285,7 @@ _ui.leftDbObject ={
 			_self._click(this);
 		});
 		
-		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.connInfo.VDBSCHEMA+'"]').trigger('click');
+		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.connInfo.schema+'"]').trigger('click');
 		
 	}
 	// 사용자 셋팅 정보 가져오기.
@@ -296,7 +296,7 @@ _ui.leftDbObject ={
 		VARSQL.req.ajax({      
 		    type:"POST"
 		    ,loadSelector : '#db-page-wrapper'
-		    ,url:{gubun:VARSQL.uri.database, url:'/base/userSettingInfo.do'}
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/userSettingInfo.varsql'}
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
@@ -323,7 +323,7 @@ _ui.leftDbObject ={
 		VARSQL.req.ajax({      
 		    type:"POST"
 		    ,loadSelector : '#left_service_menu_content'
-		    ,url:{gubun:VARSQL.uri.database, url:_ui.options.getUriPrefix('/serviceMenu.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
 		    ,dataType:'json'
 		    ,data:tmpParam
 		    ,success:function (resData){
@@ -489,7 +489,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({      
 		    type:"POST"  
-		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectList.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 		    ,dataType:'json'
 		    ,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 		    ,success:function (resData){
@@ -517,7 +517,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({
 		    type:"POST"
-		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectMetadataList.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 		    ,dataType:'json'
 		    ,async:false
 		    ,data:param
@@ -550,7 +550,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({
 		    type:"POST"
-		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/createDDL.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
 		    ,dataType:'json'
 		    ,data:param
 		    ,success:function (resData){
@@ -1063,7 +1063,7 @@ _ui.SQL = {
 				
 				VARSQL.req.ajax({      
 				    type:"POST"
-				    ,url:{gubun:VARSQL.uri.user, url:'/searchUserList.do'}
+				    ,url:{gubun:VARSQL.uri.user, url:'/searchUserList.varsql'}
 				    ,dataType:'json'
 				    ,data: params
 				    ,success:function (data){
@@ -1168,7 +1168,7 @@ _ui.SQL = {
 		VARSQL.req.ajax({      
 		    type:"POST"
 		    ,loadSelector : '#editorAreaTable'
-		    ,url:{gubun:VARSQL.uri.database, url:'/base/saveQuery.do'}
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
@@ -1224,7 +1224,7 @@ _ui.SQL = {
 						VARSQL.req.ajax({      
 						    type:"POST" 
 						    ,loadSelector : '#editorAreaTable'
-						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.do'}
+						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.varsql'}
 						    ,dataType:'json'
 						    ,data:params 
 						    ,success:function (resData){
@@ -1265,7 +1265,7 @@ _ui.SQL = {
 		VARSQL.req.ajax({
 		    type:"POST"
 		    ,loadSelector : '#editorAreaTable'
-		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlList.do'}
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
@@ -1311,7 +1311,7 @@ _ui.SQL = {
 		    			VARSQL.req.ajax({
 		    			    type:"POST"
 		    			    ,loadSelector : '#editorAreaTable'
-		    			    ,url:{gubun:VARSQL.uri.database, url:'/base/delSqlSaveInfo.do'}
+		    			    ,url:{gubun:VARSQL.uri.sql, url:'/base/delSqlSaveInfo.varsql'}
 		    			    ,dataType:'json'
 		    			    ,data:params 
 		    			    ,success:function (res){
@@ -1377,7 +1377,7 @@ _ui.SQL = {
 		VARSQL.req.ajax({      
 		    type:"POST" 
 		    ,loadSelector : '#editorAreaTable'
-		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlData.do'}
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (resData){
@@ -1454,7 +1454,7 @@ _ui.SQL = {
 		VARSQL.req.ajax({      
 		    type:"POST"
 		    ,loadSelector : '#editorAreaTable'
-		    ,url:{gubun:VARSQL.uri.database, url:'/base/sqlFormat.do'}
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
 		    ,dataType:'text'
 		    ,data:params 
 		    ,success:function (res){
@@ -1558,7 +1558,7 @@ _ui.SQL = {
 
 					VARSQL.req.download(_ui.options.downloadForm, {
 						type: 'post'
-						,url: {gubun:VARSQL.uri.database, url:'/base/dataExport.do'}
+						,url: {gubun:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
 						,params:params
 					});
 				}

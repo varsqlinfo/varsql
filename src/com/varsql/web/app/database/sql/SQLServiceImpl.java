@@ -1,4 +1,4 @@
-package com.varsql.web.app.database;
+package com.varsql.web.app.database.sql;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

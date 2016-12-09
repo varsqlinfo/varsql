@@ -47,18 +47,7 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 	 * @return
 	 */
 	private boolean authCheck(HttpServletRequest req, String connid) {
-		if(SecurityUtil.loginInfo(req).getDatabaseInfo().containsKey(connid)){
-			String uri =req.getRequestURI(); 
-			if(uri.indexOf("/database/base/") > 0){
-				return true; 
-			}else{
-				String type = (String)SecurityUtil.loginInfo(req).getDatabaseInfo().get(connid).get(VarsqlConstants.CONN_TYPE);
-				type = type.toLowerCase();
-				return uri.indexOf("/"+type+"/") > -1?true :false;
-			}
-		}else{
-			return false;
-		}
+		return SecurityUtil.loginInfo(req).getDatabaseInfo().containsKey(connid); 
 		
 	}
 }
