@@ -26,10 +26,24 @@ _ui.options={
 
 _ui.create = function (_opts){
 	var _self = this; 
-	
+	_self.initContextMenu();
 	_self.headerMenu.init(_opts);
 	_self.leftDbObject.create(_opts);
 	_self.layout.init(_opts);
+}
+
+//context menu 초기화
+_ui.initContextMenu  = function (){
+	if (document.addEventListener) { // IE >= 9; other browsers
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        }, false);
+    } else { // IE < 9
+        document.attachEvent('oncontextmenu', function() {
+            window.event.returnValue = false;
+        });
+    }
+	
 }
 
 // header 메뉴 처리.
@@ -88,10 +102,15 @@ _ui.headerMenu ={
 					
 					break;
 				}case 'edit':{
-					alert('['+menu_mode+'] 준비중입니다.');
-					return ; 
 					switch (menu_mode) {
+						case 'undo':
+							_ui.SQL.getTextAreaObj().undo();
+							break;
+						case 'redo':
+							_ui.SQL.getTextAreaObj().redo();
+							break;
 						case 'compare':
+							alert('['+menu_mode+'] 준비중입니다.');
 							break;
 						default:
 							break;
@@ -305,6 +324,8 @@ _ui.leftDbObject ={
 		    		$('#sql_id').val(sqlInfo.SQL_ID);
 		    		$('#saveSqlTitle').val(sqlInfo.GUERY_TITLE);
 		    		_ui.SQL.getTextAreaObj().setValue(sqlInfo.QUERY_CONT);
+		    		// history 초기화.
+		    		_ui.SQL.getTextAreaObj().setHistory({done:[],undone:[]})
 		    	}else{
 		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 		    	}
