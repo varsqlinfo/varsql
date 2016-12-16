@@ -60,7 +60,8 @@
 			<div class="col-xs-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<input type="text" id="recvUserSearch" name="recvUserSearch" class="form-control" placeholder="보낼사용자검색">
+						<input type="text" id="recv_user_search" name="recv_user_search" class="form-control" placeholder="보낼사용자검색">
+						<div id="recv_autocomplete_area" class=""></div>
 					</div>
 					<!-- /.panel-heading -->
 					<div class="panel-body">

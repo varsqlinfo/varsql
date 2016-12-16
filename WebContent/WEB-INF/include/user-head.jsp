@@ -16,6 +16,7 @@
 
 <link href="${pageContextPath}/webstatic/css/editor/codemirror.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/editor/show-hint.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.ep.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.grid.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.main.layout.css" rel="stylesheet" type="text/css">
@@ -49,6 +50,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=<%=versionNum%>"></script>
+<script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=<%=versionNum%>"></script>
 
 <script>
 //VARSQL.loadResource([VARSQL.staticResource.get('jquery.contextMenu') ]);

@@ -294,6 +294,11 @@ padding-top: 5px;
 	overflow-y:auto;
 }
 
+#recv_autocomplete_area{
+	width:253px;
+	font-size: 12px;
+}
+
 .hide-display{
 	display:none;
 }

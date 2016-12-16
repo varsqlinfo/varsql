@@ -611,13 +611,6 @@ _ui.leftDbObjectServiceMenu ={
 			})
 			
 			// 테이블 hint;
-//			CodeMirror.commands.autocomplete = function(cm) {
-//			    CodeMirror.showHint(cm, CodeMirror.hint.sql, { 
-//			        tables: tableHint
-//			    } );
-//			}
-			
-			// 테이블 hint;
 			VARSQLHints.setTableInfo( tableHint);
 			
 			$.pubGrid(_self.options.contentAreaId+'>#tables',{
@@ -1073,14 +1066,22 @@ _ui.SQL = {
 			}
 		});
 		
-//		$('#recvUserSearch').keydown(function(e) {
+//		$('#recv_user_search').keydown(function(e) {
 //			if (e.keyCode == '13') {
-//				$('#recvUserSearchBtn').trigger('click');
+//				$('#recv_user_searchBtn').trigger('click');
 //			}
 //		});
-		$('#recvUserSearch').autocomplete({
-			source : function( request, response ) {
-				var params = { searchVal : request.term };
+		
+		$.pubAutocomplete('#recv_user_search' , {
+			minLength : 1
+			,itemkey : 'UID'
+			,addSelector:'#recv_autocomplete_area'
+			,autoClose:false
+			,autocompleteTemplate : function (baseHtml){
+				return '<div class="">'+baseHtml+'</div>';
+			}
+			,source : function (request, response){
+				var params = { searchVal : request };
 				
 				VARSQL.req.ajax({      
 				    type:"POST"
@@ -1089,43 +1090,30 @@ _ui.SQL = {
 				    ,data: params
 				    ,success:function (data){
 				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
-				    	
-				    	var result = [];
-				    	$.each(data.items , function (idx,item){
-				    		result.push({
-								label: item.UNAME+'('+item.UID+')',
-								value: item.VIEWID
-							})
-				    	})
-				    	
-						response(result	);
+				    	response(data.items);
 					}
 					,error :function (data, status, err){
 						VARSQL.log.error(data, status, err);
 					}
-					,beforeSend: _self.loadBeforeSend
-					,complete: _self.loadComplete
 				});  
-			},
-			//조회를 위한 최소글자수
-			minLength: 2,
-			select: function( event, ui ) {
+			}
+			,select: function( event, item ) {
 				var strHtm = [];
-				var sItem = ui.item;
 				
-				if($('.recv_id_item[_recvid="'+sItem.value+'"]').length > 0 ) return false;
+				if($('.recv_id_item[_recvid="'+item.VIEWID+'"]').length > 0 ) return false;
 				
-				strHtm.push('<div class="recv_id_item" _recvid="'+sItem.value+'">'+sItem.label);
+				strHtm.push('<div class="recv_id_item" _recvid="'+item.VIEWID+'">'+item.UNAME+'('+item.UID+')');
 				strHtm.push('<a href="javascript:;" class="pull-right">X</a></div>');
 				$('#recvIdArr').append(strHtm.join(''));
 				
-				$('.recv_id_item[_recvid="'+sItem.value+'"] a').on('click', function (){
+				$('.recv_id_item[_recvid="'+item.VIEWID+'"] a').on('click', function (){
 					$(this).closest('[_recvid]').remove();
 				})
 				
-				this.value ='';
-				
 				return false; 
+			}
+			,renderItem : function (matchData,item){
+				return item.UNAME+'('+matchData+')';
 			}
 		});
 		

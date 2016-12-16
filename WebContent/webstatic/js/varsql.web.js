@@ -119,6 +119,11 @@ _$base.staticResource  ={
 	          '/webstatic/css/jquery.contextMenu.css'
 	          ]
 	}
+	,'pubAutocomplete':{
+		'js' : [
+		        '/webstatic/js/pub.autocomplete.js' 
+		        ]
+	}
 };
 
 var _defaultOption = {
