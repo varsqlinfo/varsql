@@ -16,7 +16,7 @@ var _initialized = false
 	fixed:false
 	,drag:false
 	,scrollWidth : 18
-	,minWidth : 30
+	,minWidth : 38
 	,autoResize : true
 	,resizeGridWidthFixed : false	// 리사이즈시 그리드 리사이즈 여부.
 	,headerOptions : {
@@ -25,10 +25,11 @@ var _initialized = false
 		,redraw : true	// 초기에 옵션 들어오면 새로 그릴지 여부.
 		,resize:{	// resize 여부
 			enabled : true
+			,cursor : 'col-resize'
+			,realTime : true	// resize 실시간으로 반영할지 여부. 
 		}
-		,colWidthFixed:false  // 넓이 고정 여부.
+		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
-		,resizeCursor : 'col-resize'
 	}
 	,height: 200
 	,tColItem : [] //head item
@@ -243,11 +244,16 @@ Plugin.prototype ={
 		
 		for(var j=0; j<tci.length; j++){
 			var tciItem = opt.tColItem[j];
+
+			//console.log(tciItem.width);
+
 			tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
-			tciItem.width = Math.max(tciItem.width, opt.headerOptions.colMinWidth0);
+			tciItem.width = Math.max(tciItem.width, opt.headerOptions.colMinWidth);
 			
 			tciItem['_alignClass'] = tciItem.align=='right' ? 'ar' : (tciItem.align=='center'?'ac':'al');
 			opt.tColItem[j] = tciItem;
+
+			
 			_this.config.totGridWidth +=tciItem.width;
 		}
 		
@@ -265,6 +271,8 @@ Plugin.prototype ={
 			,opt = _this.options
 			,tci = opt.tColItem
 			,tciLen = tci.length;
+
+		//console.log(_this.config.totGridWidth)
 		
 		_w = _this.config.totGridWidth;
 		_containerWidth = (_w+opt.scrollWidth);
@@ -305,7 +313,7 @@ Plugin.prototype ={
 		if(opt.height=='auto'){
 			_this.config.height = _this.element.height();
 		}
-		//console.log(_this.config.gridWidth, gridElementWidth, _w, _sw );
+		//console.log(_this.config.gridWidth, gridElementWidth, _w );
 	}
 	/**
      * @method _setTbody
@@ -565,20 +573,20 @@ Plugin.prototype ={
 		
 		$(_this.selector+'>.pubGrid-wrapper').css('width',(_this.config.gridElementWidth)+'px');
 
-		if(_this.options.resizeGridWidthFixed !== true){
-			_this.config.headerContainerElement.css('width',(_this.config.gridWidth+_this.options.scrollWidth)+'px');
-			_this.config.headerElement.css('width',(_this.config.gridWidth)+'px');
-			_this.config.bodyElement.css('width',(_this.config.gridWidth)+'px');
-		}
-		
 		if(_this.options.height =='auto'){
 			var bodyH = opt.height-_this.config.headerWrapElement.height(); 
 			bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height()+5; 
 			_this.config.bodyContainerElement.css('height',(bodyH)+'px');
 		}
 
-		$('#'+_this.prefix+"colgroup_head").empty().html(_this._getColGroup(_this.prefix+'colHeader'));
-		$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody'));
+		if(_this.options.resizeGridWidthFixed !== true){
+			_this.config.headerContainerElement.css('width',(_this.config.gridWidth+_this.options.scrollWidth)+'px');
+			_this.config.headerElement.css('width',(_this.config.gridWidth)+'px');
+			_this.config.bodyElement.css('width',(_this.config.gridWidth)+'px');
+
+			$('#'+_this.prefix+"colgroup_head").empty().html(_this._getColGroup(_this.prefix+'colHeader'));
+			$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody'));
+		}
 		//_this._headerResize(_this.options.headerOptions.resize.enabled);
 
 	}
@@ -635,46 +643,6 @@ Plugin.prototype ={
 		$(window).on("pubgridResize", function( event ) {
 			_this.resizeDraw();
 		});
-	}
-	/**
-     * @method colResize
-	 * @param  flag {Boolean} resize 여부
-     * @description header resize 설정
-     */
-	,_headerResize :function (flag){
-		var _this = this
-			,resizeEle = $('#'+_this.prefix+'pubGrid-header .pub-header-resizer');
-		if(flag===true){
-			resizeEle.css('cursor','e-resize');
-			
-			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
-				var oe = e.originalEvent.touches;
-
-				_this.drag = {};
-				_this.drag.pageX = oe ? oe[0].pageX : e.pageX;
-				_this.drag.ele = $(this);
-				_this.drag.colspanidx = _this.drag.ele.attr('colspanidx');
-				_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.colspanidx);
-				_this.drag.colBody= $('#'+_this.prefix+'colbody'+_this.drag.colspanidx);
-				_this.drag.colW = _this.drag.colHeader.attr('_width')?parseInt(_this.drag.colHeader.attr('_width'),10):_this.drag.colHeader.width();
-				_this.drag.gridW = _this.config.headerElement.width();
-				
-				// resize시 select안되게 처리 . cursor처리 
-				_doc.attr("onselectstart", "return false");
-				_this.config.hiddenArea.append("<style type='text/css'>*{cursor:" + _this.options.headerOptions.resizeCursor + "!important}</style>");
-
-				_doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e){
-					_this.onGripDrag(e,_this);
-				}).on('touchend.colheaderresize mouseup.colheaderresize mouseleave.colheaderresize', function (e){
-					_this.onGripDragEnd(e,_this);
-				});
-
-				return false; 
-			})
-		}else{
-			resizeEle.css('cursor','auto');
-			resizeEle.off('touchstart.pubresizer mousedown.pubresizer');
-		}
 	}
 	/**
      * @method getItems
@@ -804,35 +772,55 @@ Plugin.prototype ={
 		return tbi; 
 	}
 	/**
+     * @method colResize
+	 * @param  flag {Boolean} resize 여부
+     * @description header resize 설정
+     */
+	,_headerResize :function (flag){
+		var _this = this
+			,resizeEle = $('#'+_this.prefix+'pubGrid-header .pub-header-resizer');
+		if(flag===true){
+			resizeEle.css('cursor','e-resize');
+			
+			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
+				var oe = e.originalEvent.touches;
+
+				_this.drag = {};
+				_this.drag.pageX = oe ? oe[0].pageX : e.pageX;
+				_this.drag.ele = $(this);
+				_this.drag.ele.addClass('pubGrid-move-header')
+				_this.drag.colspanidx = _this.drag.ele.attr('colspanidx');
+				_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.colspanidx);
+				_this.drag.colBody= $('#'+_this.prefix+'colbody'+_this.drag.colspanidx);
+				_this.drag.colW = _this.drag.colHeader.attr('_width')?parseInt(_this.drag.colHeader.attr('_width'),10):_this.drag.colHeader.width();
+				_this.drag.gridW = _this.config.headerElement.width();
+				
+				// resize시 select안되게 처리 . cursor처리 
+				_doc.attr("onselectstart", "return false");
+				_this.config.hiddenArea.append("<style type='text/css'>*{cursor:" + _this.options.headerOptions.resize.cursor + "!important}</style>");
+
+				_doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e){
+					_this.onGripDrag(e,_this);
+				}).on('touchend.colheaderresize mouseup.colheaderresize mouseleave.colheaderresize', function (e){
+					_this.drag.ele.removeClass('pubGrid-move-header');
+					_this.onGripDragEnd(e,_this);
+				});
+
+				return false; 
+			})
+		}else{
+			resizeEle.css('cursor','auto');
+			resizeEle.off('touchstart.pubresizer mousedown.pubresizer');
+		}
+	}
+	/**
      * @method onGripDrag
 	 * @param  e {Event} 이벤트
 	 * @param  _this {Object} pub그리드 this
      * @description reisze 드래그 처리.
      */
 	,onGripDrag : function(e, _this) { 
-		
-		if (!_this.drag) return false;
-
-		var drag = _this.drag; 
-		
-		var t = drag.ele
-			,oe = e.originalEvent.touches
-			,ox = oe ? oe[0].pageX : e.pageX;
-		
-		var w = drag.colW + (ox - drag.pageX) ;
-		
-		//console.log(w , ox , drag.pageX, (ox - drag.pageX) )
-		if(w > _this.options.minWidth){
-			drag.changeColW = w;
-			_this.config.gridElementWidth = drag.gridW+(ox - drag.pageX);
-			_this.config.headerContainerElement.css('width',(_this.config.gridElementWidth+_this.options.scrollWidth)+'px');
-			_this.config.headerElement.css('width',(_this.config.gridElementWidth)+'px');
-			_this.config.bodyElement.css('width',(_this.config.gridElementWidth)+'px');
-
-			drag.colHeader.css('width',w+'px');
-			drag.colHeader.attr('_width',w);
-			drag.colBody.css('width',w+'px');
-		}		
+		_this._setHeaderResize(e,_this, 'move');	
 			
 		return false
 	}
@@ -843,15 +831,50 @@ Plugin.prototype ={
      * @description reisze 드래그 end
      */
 	,onGripDragEnd : function(e,_this) {
+		
 		_doc.off('touchend.colheaderresize mouseup.colheaderresize').off('touchmove.colheaderresize mousemove.colheaderresize mouseleave.colheaderresize');
 		_doc.removeAttr("onselectstart");
 		_this.config.hiddenArea.empty();
 		
-		if(!_this.drag) return false;
+		_this._setHeaderResize(e,_this, 'end');
 		
 		_this.drag=false;
 
 		return false; 
+	}
+	,_setHeaderResize : function (e,_this , mode){
+
+		if (!_this.drag) return false;
+
+		var drag = _this.drag; 
+		
+		var oe = e.originalEvent.touches
+			,ox = oe ? oe[0].pageX : e.pageX;
+		
+		var w = drag.colW + (ox - drag.pageX);
+
+		if(_this.options.headerOptions.resize.realTime || mode=='end'){
+			if(w > _this.options.headerOptions.colMinWidth){
+	
+			}else{
+				w =_this.options.headerOptions.colMinWidth;
+			}
+			drag.changeColW = w;	
+			_this.config.gridElementWidth = drag.gridW+(ox - drag.pageX);
+			_this.config.headerContainerElement.css('width',(_this.config.gridElementWidth+_this.options.scrollWidth)+'px');
+			_this.config.headerElement.css('width',(_this.config.gridElementWidth)+'px');
+			_this.config.bodyElement.css('width',(_this.config.gridElementWidth)+'px');
+			
+			drag.ele.removeAttr('style');
+			drag.colHeader.css('width',w+'px');
+			drag.colHeader.attr('_width',w);
+			drag.colBody.css('width',w+'px');
+		}else{
+			if(w > _this.options.headerOptions.colMinWidth){
+				drag.changeColW = w;
+				drag.ele.css('left',w);
+			}
+		}
 	}
 	/**
      * @method destory

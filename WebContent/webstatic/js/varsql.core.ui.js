@@ -938,7 +938,7 @@ _ui.SQL = {
 		}
 		$.extend(true,_self.options, options);
 		_self._createHtml();
-		_self._initEditor('text/x-sql');
+		_self._initEditor('text/x-mssql');
 		_self._initEvent();
 	}
 	,_createHtml :function(){
@@ -962,6 +962,14 @@ _ui.SQL = {
 	,_initEditor : function (mime){
 		var _self = this;
 		
+		var tableHint = {};
+		$.each(VARSQL.dataType.sqlHints(_self.options.dbtype)  , function (_idx, _item){
+			tableHint[_item] = {
+				colums:[]
+				,text :_item
+			};
+		})
+		
 		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: mime,
 			indentWithTabs: true,
@@ -972,10 +980,7 @@ _ui.SQL = {
 			matchBrackets : true,
 			autofocus: true,
 			extraKeys: {"Ctrl-Space": "autocomplete"},
-			hintOptions: {tables: {
-				users: {name: null, score: null, birthDate: null},
-				countries: {name: null, population: null, size: null}
-			}}
+			hintOptions: {tables:tableHint}
 		});
 	}
 	//이벤트 초기화 
@@ -1717,7 +1722,13 @@ _ui.SQL = {
 		$.pubGrid(_self.options.dataGridSelector,{
 			headerView:true
 			,height:'auto'
-			,autoResize :false
+			,autoResize : false
+			,headerOptions:{
+				view:true
+				,resize:{
+					enabled : true
+				}
+			}
 			,resizeGridWidthFixed : true
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data

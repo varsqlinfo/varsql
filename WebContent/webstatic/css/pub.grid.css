@@ -169,6 +169,10 @@
 	cursor: e-resize;
 	z-index: 1;
 }
+
+.pubGrid-header .label-wrapper > .pubGrid-move-header{
+	background:#82c5c0;
+}
 /* --/header end */
 
 .pubGrid-body .al{text-align:left;}
