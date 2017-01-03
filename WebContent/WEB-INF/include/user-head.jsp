@@ -46,9 +46,10 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
 <!-- sql editor -->
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
+
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=<%=versionNum%>"></script>
 <script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=<%=versionNum%>"></script>
 

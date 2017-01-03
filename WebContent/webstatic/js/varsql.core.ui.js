@@ -9,8 +9,10 @@
 var _ui=VARSQL.ui||{};
 
 _ui.base ={
-	dto:$.extend({}, VARSQL.datatype , {})
-	,constants:$.extend({}, VARSQL.constants , {})
+	dto:$.extend({}, VARSQL.dataType , {})	// db datatype
+	,constants:$.extend({}, VARSQL.constants , {})	// 설정 상수
+	,mimetype : ''	// editor mime type
+	,sqlHints :{}	// sql hints
 };
 
 _ui.options={
@@ -26,6 +28,10 @@ _ui.options={
 
 _ui.create = function (_opts){
 	var _self = this; 
+	
+	_ui.base.sqlHints = VARSQL.dataType.sqlHints(_opts.dbtype);
+	_ui.base.mimetype = VARSQL.dataType.getMimeType(_opts.dbtype);
+	
 	_self.initContextMenu();
 	_self.headerMenu.init(_opts);
 	_self.leftDbObject.create(_opts);
@@ -34,6 +40,7 @@ _ui.create = function (_opts){
 
 //context menu 초기화
 _ui.initContextMenu  = function (){
+	return ; 
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -938,7 +945,7 @@ _ui.SQL = {
 		}
 		$.extend(true,_self.options, options);
 		_self._createHtml();
-		_self._initEditor('text/x-mssql');
+		_self._initEditor();
 		_self._initEvent();
 	}
 	,_createHtml :function(){
@@ -959,19 +966,21 @@ _ui.SQL = {
 		resultGridHtm.push('<div id="resultMsgAreaWrap" class="sql-result-area" tab_gubun="msg"></div>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
-	,_initEditor : function (mime){
+	,_initEditor : function (){
 		var _self = this;
 		
 		var tableHint = {};
-		$.each(VARSQL.dataType.sqlHints(_self.options.dbtype)  , function (_idx, _item){
+		$.each(_ui.base.sqlHints , function (_idx, _item){
 			tableHint[_item] = {
 				colums:[]
 				,text :_item
 			};
 		})
 		
+		console.log(_ui.base.mimetype);
+		
 		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
-			mode: mime,
+			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
 			lineNumbers: true,

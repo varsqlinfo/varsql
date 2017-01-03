@@ -84,13 +84,17 @@ var DBTYPE_HINTS = {
 	,mssql :[]
 }
 
+var MIME_TYPE ={
+	mssql : 'text/x-mssql'
+	,mysql : 'text/x-mysql'
+	,mariadb : 'text/x-mariadb'
+	//,oracle : 'text/x-oracle'
+}
+
 var dataType = {};
 
 // sql datatype bean;
 dataType.dto = _dto;
-dataType.dto = _dto;
-
-
 
 dataType.sqlHints = function (dbType){
 	if(DBTYPE_HINTS[dbType]){
@@ -98,6 +102,10 @@ dataType.sqlHints = function (dbType){
 	}else{
 		return DEFAULT_HINTS
 	}
+}
+
+dataType.getMimeType = function (dbType){
+	return MIME_TYPE[dbType] || 'text/x-sql';
 }
 
 VARSQL.dataType = dataType;
