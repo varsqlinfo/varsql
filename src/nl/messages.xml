@@ -117,6 +117,9 @@
 <entry key="msg.records.per.page">페이지 당 레코드</entry>
 
 
+<entry key="database.preferences">환경설정</entry>
+
+
 <entry key="admin.form.header">Database info</entry>
 <entry key="admin.form.db.vname">연결명</entry>
 <entry key="admin.form.db.vurl">Url</entry>

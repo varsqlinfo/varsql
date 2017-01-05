@@ -42,6 +42,10 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
     </definition>
     
+    <definition name="/database/setting/**" template="/WEB-INF/views/database/setting/_templates/preferencesMain.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/database/setting/preferencesBody.jsp" />
+    </definition>
+    
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp">
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
         <put-attribute name="left" value="/WEB-INF/views/database/dbcomm/dbLeftTemplate.jsp" />
