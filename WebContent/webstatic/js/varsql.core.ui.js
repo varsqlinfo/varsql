@@ -55,12 +55,14 @@ _ui.initContextMenu  = function (){
 
 // header 메뉴 처리.
 _ui.headerMenu ={
-	init : function(){
+	preferencesDialog : ''
+	,init : function(){
 		var _self = this;
 		
 		_self.initEvt();
 	}
 	,initEvt : function (){
+		var _self = this;
 		
 		$('body').on('keydown',function (e) {
 			var evt =window.event || e; 
@@ -123,25 +125,51 @@ _ui.headerMenu ={
 							break;
 					}
 					break;
-				}case 'tool':{
-					alert('['+menu_mode+'] 준비중입니다.');
-					return ; 
+				}case 'tool':{           
 					switch (menu_mode) {
 						case 'import':
+							alert('['+menu_mode+'] 준비중입니다.');
 							break;
 						case 'export':
+							alert('['+menu_mode+'] 준비중입니다.');
 							break;
 						case 'setting':
+							_self.openPreferences();
 							break;
 						default:
 							break;
 					}
 					break;
-				} default:
+				}default:
 					break;
 			}
 			
 		})
+	}
+	//header 메뉴 환경설정처리.
+	,openPreferences : function (){
+		var _self = this; 
+		
+		if(_self.preferencesDialog ==''){
+			_self.preferencesDialog = $('#preferencesTemplate').dialog({
+				height: 410
+				,width: 640
+				,modal: true
+				,buttons: {
+					Ok:function (){
+						_self.preferencesDialog.dialog( "close" );
+					}
+					,Cancel: function() {
+						_self.preferencesDialog.dialog( "close" );
+					}
+				}
+				,close: function() {
+					_self.preferencesDialog.dialog( "close" );
+				}
+			});
+		}
+		
+		_self.preferencesDialog.dialog("open");
 	}
 }
 

@@ -1,0 +1,53 @@
+.style2 {
+	color: #333;
+	background-color:#c0d2ec;
+}
+
+.pub-tree{
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	line-height: 15px;
+}
+
+.pub-tree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.pub-tree div a {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color: #333;
+	text-decoration: none;
+	padding-left:0px;
+}
+.pub-tree a {
+	line-height: 20px;
+}
+
+.pub-tree-atag-blur {
+	color: #333 ;
+	background-color:#ffffff;
+}
+
+.pub-tree-atag-focus {
+	color: #ffffff ;
+	background-color:#c0d2ec;
+}
+
+.pub-tree .tree-empty-area{
+	padding-left:15px;
+}
+
+.pub-tree .pubtree-item{
+	cursor:pointer;
+}
+
+.pub-tree .pub-tree-join-icon{
+	cursor:pointer;
+}
+
+.pub-tree [data-tree-id]{
+	height: 18px;
+}

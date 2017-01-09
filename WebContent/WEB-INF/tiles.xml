@@ -2,6 +2,9 @@
 
 <tiles-definitions>
 	
+	<definition name="no-template" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+	</definition>
+	
 	<!-- user main layout -->
 	<definition name="user-tiles" template="/WEB-INF/views/user/_templates/main.jsp">
 		<put-attribute name="title" value="user" type="string" />
@@ -42,8 +45,12 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
     </definition>
     
-    <definition name="/database/setting/**" template="/WEB-INF/views/database/setting/_templates/preferencesMain.jsp">
-        <put-attribute name="body" value="/WEB-INF/views/database/setting/preferencesBody.jsp" />
+    <definition name="/database/setting/**" extends="no-template">
+        <put-attribute name="body" value="/WEB-INF/views/database/setting/{1}.jsp" />
+    </definition>
+    
+    <definition name="/database/preferences/**" template="/WEB-INF/views/database/setting/_templates/preferencesMain.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/database/setting/_templates/preferencesBody.jsp" />
     </definition>
     
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp">
@@ -54,22 +61,22 @@
     </definition>
     
     <!-- login -->
-	<definition name="/login/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+	<definition name="/login/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/login/{1}.jsp" />
 	</definition>
 	
 	<!-- join -->
-	<definition name="/join/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+	<definition name="/join/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/join/{1}.jsp" />
 	</definition>
 	
 	<!-- guest -->
-	<definition name="/guest/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+	<definition name="/guest/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/guest/{1}.jsp" />
 	</definition>
 	
 	<!-- error -->
-	<definition name="/error/**" template="/WEB-INF/views/default_templates/noTemplate.jsp">
+	<definition name="/error/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/error/{1}.jsp" />
 	</definition>
 

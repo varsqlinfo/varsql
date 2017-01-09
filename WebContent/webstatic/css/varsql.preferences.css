@@ -1,0 +1,96 @@
+.preferences .row, .preferences .col {
+	overflow: hidden;
+	position: absolute;
+}
+.preferences .row {
+	left: 0;
+	right: 0;
+}
+
+.preferences .col {
+	top: 0;
+	bottom: 0;
+}
+
+.preferences .scroll-y {
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.preferences-body {
+	top: 40px;
+    bottom: 0px;
+    position: absolute;
+	-webkit-text-size-adjust: 100%;
+	background: #fff;
+}
+
+.preferences .header {
+	color: #eee;
+	background: #696f77;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+	padding: 0 0.5em;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #696f77),
+		color-stop(100%, #28343b));
+	background: -webkit-linear-gradient(top, #696f77 0%, #28343b 100%);
+	background: -ms-linear-gradient(top, #696f77 0%, #28343b 100%);
+}
+
+.preferences .header {
+	font-size: 1.4em;
+}
+
+.preferences-search {
+	padding :10px 10px 10px 10px;
+}
+
+.preferences-search input{
+	width:100%;
+}
+
+.preferences  .content-area.col {
+	border-left: 1px solid black;
+}
+
+.preferences .content-area.col .body {
+	padding: 0px 0px 0px 1em;
+}
+
+.preferences .navi-item {
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	color: #444;
+}
+
+.preferences .navi-area {
+	width: 220px;
+}
+
+.preferences .content-area.col {
+	left: 220px;
+	right: 0;
+	line-height: 0px;
+}
+
+.preferences .header.row {
+	height: 30px;
+	line-height: 30px;
+}
+
+.preferences .body.row {
+	top: 40px;
+	bottom: 0px;
+}
+
+.preferences .content-view-iframe {
+	width: 100%;
+	height: 99%;
+	border: 0px solid #f1f1f1;
+}
+
+.preferences .page-header{
+	padding-bottom:10px;
+	maring 20px 0px 10px;
+	border-bottom:1px solid #aaa;
+}

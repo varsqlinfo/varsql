@@ -4,24 +4,14 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
-<title><spring:message code="screen.database.setting" /></title>
-<%@ include file="/WEB-INF/include/user-head.jsp"%>
+<title><spring:message code="database.preferences" /></title>
+<%@ include file="/WEB-INF/include/head-preferences.jsp"%>
 
 </head>
-<body>
-	<div>
-		<div class="setting-left">
-			left
-		</div>
-		<div class="setting-left">
-			right
-		</div>
-	</div>	
-</body>
 
-<script>
-
-</script>
+<BODY class="pub-main-body">
+	<tiles:insertAttribute name="body" />
+</BODY>
 </html>
 
 
