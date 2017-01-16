@@ -152,8 +152,8 @@ _ui.headerMenu ={
 		
 		if(_self.preferencesDialog ==''){
 			_self.preferencesDialog = $('#preferencesTemplate').dialog({
-				height: 410
-				,width: 640
+				height: 510
+				,width: 700
 				,modal: true
 				,buttons: {
 					Ok:function (){

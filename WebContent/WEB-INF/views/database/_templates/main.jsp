@@ -90,7 +90,7 @@
 	
 	<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
 		<div style="margin: 0px 0px 0px 0px;">
-			<iframe src="<c:url value="/preferences/main.vsql?vconnid=${param.vconnid}" />" style="border:0px;width:100%;height:305px;"></iframe>
+			<iframe src="<c:url value="/preferences/main.vsql?vconnid=${param.vconnid}" />" style="border:0px;width:100%;height:400px;"></iframe>
 		</div>
 	</div>
 </body>

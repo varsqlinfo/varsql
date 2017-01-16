@@ -11,25 +11,24 @@
 	var _datastore = {}
 	,defaultsConfig={
 		icon : {
-			path : '../theme/default/images/tree/'
-			,root				: 'base.gif'
-			,folder			: 'folder.gif'
-			,folderOpen	: 'folderopen.gif'
-			,node				: 'page.gif'
-			,empty				: 'empty.gif'
-			,line				: 'line.gif'
-			,join				: 'join.gif'
-			,joinBottom	: 'joinbottom.gif'
-			,plus				: 'plus.gif'
-			,plusBottom	: 'plusbottom.gif'
-			,minus				: 'minus.gif'
-			,minusBottom	: 'minusbottom.gif'
-			,nlPlus			: 'nolines_plus.gif'
-			,nlMinus			: 'nolines_minus.gif'
+			root				: 'pub-tree-root'
+			,folder			: 'pub-tree-folder'
+			,node				: 'pub-tree-node'
+			,empty				: 'pub-tree-empty'
+			,line				: 'pub-tree-line'
+			,join				: 'pub-tree-join'
+			,joinBottom	: 'pub-tree-joinbottom'
+			,oc				: 'pub-tree-nloc'
+			,ocBottom	: 'pub-tree-nloc'
+			,nloc			: 'pub-tree-nloc'
 		}
 		,itemKey :{
 			id : 'id'
 			,pid : 'pid'
+		}
+		,useIcon :{
+			line : false
+			,icon : true
 		}
 		,items			: []
 		,treeItem		: new Object()
@@ -81,13 +80,7 @@
 		_this.selector = (typeof element=='object') ? element.selector : element;
 		_this.contextId = 'pubTree_'+new Date().getTime();
         _this.options = objectMerge(defaultsConfig, options);
-
 		
-		for(var key in _this.options.icon){
-			if('path' !== key){ 
-				_this.options.icon[key] = (_this.options.icon['path']+''+_this.options.icon[key]);	
-			}	
-		}
 		_this.init();
 		_this.initEvt();
 	
@@ -148,28 +141,21 @@
 		}
 		,toggle : function (selectEle){
 			var _this = this
-				,_opt = _this.options; 
-			var treeId = selectEle.closest('[data-tree-id]').attr('data-tree-id');
+				,_opt = _this.options
+				,treeItemEle = selectEle.closest('[data-tree-id]'); 
+			var treeId = treeItemEle.attr('data-tree-id');
 				
 			var tNode=_opt.treeItem[treeId];
-
-			if(_opt.selectedNode){
-				$('#'+_opt.selectedNode.id+'_a').removeClass('pub-tree-atag-focus');
-			}
-			$('#'+tNode.id+'_a').addClass('pub-tree-atag-focus');
-
+			
 			_opt.selectedNode = tNode;
 			var icon = _opt.icon;
 			var imgSel = document.getElementById('c_'+treeId);
 
 			if(imgSel){
-				if(imgSel.childNodes.length >0 || tNode.childCnt > 0){
-					var viewYn= imgSel.style.display=='none'?'inline':'none';
-					if(tNode.depth !=0 ){
-						document.getElementById(treeId+'_icon').src = tNode.icon =='' || tNode.icon ==undefined?(viewYn !='none'?icon.folderOpen:icon.folder):(viewYn =='none'?(tNode.iconOpen==''||tNode.iconOpen==undefined?tNode.icon:tNode.iconOpen):tNode.icon);
-						document.getElementById(treeId+'_join').src = _opt.treeItem[tNode.pid].childDataCnt != tNode.sortOrder?((viewYn !='none')?icon.minus:icon.plus):((viewYn !='none')?icon.minusBottom:icon.plusBottom);
-					}
-					imgSel.style.display =viewYn;
+				if(treeItemEle.hasClass('open')){
+					treeItemEle.removeClass('open');
+				}else{
+					treeItemEle.addClass('open');
 				}
 				
 				if(tNode.childCnt > 0 && imgSel.childNodes.length < 1 ) {
@@ -188,30 +174,33 @@
 		,setOpenDepth : function(depth){	
 			this.options.openDepth=depth;
 		}
-		,setImg : function(tNode, display){	
-			var treeItem =  this.options.treeItem;
-			var depth = treeItem[tNode.id].depth;
-			var str= [];	
-			var icon = this.options.icon;
-			
-			var imgYnArr= tNode.imgYn.split(',');
-
+		,_getEmptyImg : function (){
+			return '<span class="tree-empty-area"></span>'
+		}
+		,setImg : function(tNode, iconImg){	
+			var treeItem =  this.options.treeItem
+				,depth = treeItem[tNode.id].depth
+				,str= []
+				,icon = this.options.icon
+				,useLineFlag  = (this.options.useIcon.line === true);
+		
 			var i = this.options.topMenuView===true?0:1;
-			
-			for(; i <depth ; i ++){
-				str.push(((imgYnArr[i]=='false' || imgYnArr[i]=='' )?'<span class="tree-empty-area"></span>':'<img src="'+icon.line+'">'));
-			}
-			str.push( '<img id="'+tNode.id+'_join" src="');
+					
+			str.push( '<span id="'+tNode.id+'_join" class="pub-tree-icon ');
+			str.push( (treeItem[tNode.pid].childDataCnt != tNode.sortOrder ?(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.join :'pub-tree-join-icon '+icon.oc):(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.joinBottom :'pub-tree-join-icon '+icon.nloc)));
+			str.push('"></span>');
 
-			var flag = display=='block'?true:false;
-			
-			str.push( (treeItem[tNode.pid].childDataCnt != tNode.sortOrder?(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.join :(tNode.childDataCnt == 0 && tNode.childCnt > 0 ? icon.plus:(flag?icon.minus:icon.plus))):(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.joinBottom :(tNode.childDataCnt == 0 && tNode.childCnt > 0 ? icon.plusBottom:(flag?icon.minusBottom:icon.plusBottom)))));
-			str.push('" class="pub-tree-join-icon">');
+			if(this.options.useIcon.icon){
+				str.push( '<span id="'+tNode.id+'_icon" class="pub-tree-icon '+iconImg+'"></span>');
+			}
 
 			return str.join('');
 		}
 
 		,setFolder : function (tNode){
+			if(this.options.useIcon.icon !== true){
+				return '';
+			}
 			var treeItem = this.options.treeItem;
 
 			var icon = this.options.icon;
@@ -223,11 +212,11 @@
 			if(sNode.depth > 0 && sNode != null){
 				if(sNode.depth >0){
 					if(sNode.childDataCnt>0){
-						document.getElementById(sNode.id +'_join').src = (treeItem[sNode.pid].childDataCnt != sNode.sortOrder?(sNode.childDataCnt ==0?icon.join:icon.minus):(sNode.childDataCnt ==0?icon.joinBottom:icon.minusBottom));	
-						document.getElementById(sNode.id +'_icon').src = icon.folderOpen;	
+						$(sNode.id +'_icon').removeClass(icon.node);
+						$(sNode.id +'_icon').addClass(icon.folder);	
 					}else{
-						document.getElementById(sNode.id +'_join').src = (treeItem[sNode.pid].childDataCnt != sNode.sortOrder?(sNode.childDataCnt ==0?icon.join:icon.minus):(sNode.childDataCnt ==0?icon.joinBottom:icon.minusBottom));	
-						document.getElementById(sNode.id +'_icon').src = icon.node;	
+						$(sNode.id +'_icon').removeClass(icon.folder);
+						$(sNode.id +'_icon').addClass(icon.node);
 					}
 				}
 			}
@@ -267,7 +256,6 @@
 				,childDataCnt:0
 				,childCnt:0
 				,sortOrder:0
-				,imgYn:''
 				,depth:this.options.treeItem[pid]?((this.options.treeItem[pid].depth)+1):0
 				,childNodes:[]
 			};
@@ -351,7 +339,7 @@
 			var childDataCnt=0;
 			var firstNodeFlag = this.options.selectedNode==null && this.selector?true:false;
 			
-			if(firstNodeFlag && obj===undefined)	treeHtml.push('<div id="'+this.contextId+'"class="pub-tree" ondrag="return false">')
+			if(firstNodeFlag && obj===undefined)	treeHtml.push('<ul id="'+this.contextId+'"class="pub-tree" ondrag="return false">')
 			
 			for(var i = 0 ; i < idArrlLen ; i++){
 				
@@ -359,27 +347,29 @@
 
 				childNodeArr = tNode.childNodes;
 
-				this.options.treeItem[id_arr[i]].imgYn = tree_item[tNode.pid]?(tree_item[tNode.pid].imgYn+','+(tree_item[tNode.pid].childDataCnt==tNode.sortOrder?false:true)):'';
-				
 				tNode=tree_item[id_arr[i]];
 
-				var display = this.options.openDepth != 'all' ? (this.options.openDepth > tNode.depth?'block':'none') :'block';
-				var flag = display=='block'?true:false;
-				var iconImg = (tNode.icon =='' || tNode.icon ==undefined) ?(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.node :(tNode.childDataCnt == 0 && tNode.childCnt > 0 ? icon.folder:(flag?icon.folderOpen:icon.folder))):tNode.icon;
+				var openClass = this.options.openDepth != 'all' ? (this.options.openDepth > tNode.depth?'open ':'') :'open ';
+				var flag = openClass=='open'?true:false;
+				var iconImg = (tNode.icon =='' || tNode.icon ==undefined) ?(tNode.childDataCnt==0 && tNode.childCnt==0 ? icon.node :(tNode.childDataCnt == 0 && tNode.childCnt > 0 ? icon.folder:(flag?icon.folder:icon.folder))):tNode.icon;
 
+				if(this.options)
+				
 				if(tNode.depth ==0){
-					treeHtml.push('<div data-tree-id="'+tNode.id+'" style="display:'+(this.options.topMenuView?'inline':'none')+'"><img id="'+tNode.id+'_icon" src="'+icon.root+'" class="pubtree-join-icon"> <a href ="javascript:" id = "'+tNode.id+'_a" class="pubtree-item">'+tNode.name+'</a> </div><span id="c_'+tNode.id+'" style="display:inline">'+this.toString(childNodeArr) +'</span>');
+					treeHtml.push('<li data-tree-id="'+tNode.id+'"><span style="display:'+(this.options.topMenuView?'inline':'none')+'"><a href ="javascript:" id = "'+tNode.id+'_a" class="pubtree-item">'+tNode.name+'</a></span><ul id="c_'+tNode.id+'" class="sub-node-wrapper first-child">'+this.toString(childNodeArr) +'</ul></li>');
 				}else{
+					var lastNodeClass =(tree_item[tNode.pid].childDataCnt==tNode.sortOrder?'tree-last-node':'');
+
 					if(tNode.childDataCnt ==0){
-						treeHtml.push('<div data-tree-id="'+tNode.id+'" style="display:block">'+this.setImg(tNode, display)+'<img id="'+tNode.id+'_icon" src="'+iconImg+'"> <a href ="javascript:" id="'+tNode.id+'_a" class="pubtree-item pubtree-item-folder">'+tNode.name+'</a> </div><span id="c_'+tNode.id+'" style="display:none"></span>');
+						treeHtml.push('<li data-tree-id="'+tNode.id+'" class="'+openClass+lastNodeClass+'">'+this.setImg(tNode, iconImg)+'<a href ="javascript:" id="'+tNode.id+'_a" class="pubtree-item pubtree-item-folder">'+tNode.name+'</a> <ul id="c_'+tNode.id+'" class="sub-node-wrapper"></ul></li>');
 						
 					}else{
-						treeHtml.push('<div data-tree-id="'+tNode.id+'" style="display:block">'+this.setImg(tNode, display)+'<img id="'+tNode.id+'_icon" src="'+iconImg+'"> <a href="javascript:" id="'+tNode.id+'_a" class="pubtree-item">'+tNode.name+'</a> </div><span id ="c_'+tNode.id+'" style="display:'+display+'">' +this.toString(childNodeArr) +'</span>');
+						treeHtml.push('<li data-tree-id="'+tNode.id+'" class="'+openClass+lastNodeClass+'">'+this.setImg(tNode, iconImg)+'<a href="javascript:" id="'+tNode.id+'_a" class="pubtree-item">'+tNode.name+'</a> <ul id ="c_'+tNode.id+'" class="sub-node-wrapper">' +this.toString(childNodeArr) +'</ul></li>');
 					}
 				}
 			}
 			
-			if(firstNodeFlag && obj===undefined)	treeHtml.push('</div>');
+			if(firstNodeFlag && obj===undefined)	treeHtml.push('</ul>');
 			
 			return treeHtml.join('');
 		}
@@ -409,85 +399,48 @@
 		}
 		,allOpen : function(){
 			var rootArr =  this.options.rootArr;
-			var treeItem = this.options.treeItem;
 			var rootArrLen =rootArr.length;
 			
 			for(var i =0 ; i <rootArrLen ;  i ++){
-				var tNode =treeItem[rootArr[i]];
-
-				this.setFolderOpenImg(tNode);
+				var tNode =this.options.treeItem[rootArr[i]];
 				this.folderOpen(tNode);
-
 			}
 		}
 		,folderOpen : function (tNode){
 			var cNode = tNode.childNodes;
 			var cNodeLen = cNode.length;
-			var treeItem = this.options.treeItem;
 
 			if( cNodeLen > 0 ){
 				for(var i=0; i < cNodeLen; i ++){
-					var tmpNode = treeItem[cNode[i]];
-					this.setFolderOpenImg(tmpNode)
+					var tmpNode = this.options.treeItem[cNode[i]];
+					$('[data-tree-id="'+tmpNode.id+'"]').addClass('open');
 					
 					if(tmpNode.childNodes.length >0) this.folderOpen(tmpNode);
-					
 				}
 			}
 		}
-		,setFolderOpenImg : function (tNode){
-			var icon = this.options.icon;
-			var treeItem = this.options.treeItem;
-
-			var c_obj = document.getElementById('c_'+tNode.id);
-			if(c_obj != '' && c_obj != undefined){
-				
-				if(tNode.depth > 0  && tNode.childNodes.length > 0){
-					c_obj.style.display='inline';
-					document.getElementById(tNode.id+'_icon').src = tNode.icon =='' || tNode.icon ==undefined ? (icon.folderOpen) : (tNode.iconOpen==''||tNode.iconOpen==undefined?tNode.icon:tNode.iconOpen);
-					document.getElementById(tNode.id+'_join').src = treeItem[tNode.pid].childDataCnt != tNode.sortOrder?icon.minus:icon.minusBottom;
-				}
-			}
-		}
+		
 		,allClose : function(){
 			var rootArr =  this.options.rootArr;
-			var treeItem = this.options.treeItem;
 			var rootArrLen =rootArr.length;
-			
+
 			for(var i =0 ; i <rootArrLen ;  i ++){
-				var tNode =treeItem[rootArr[i]];
-
-				this.setFolderCloseImg(tNode);
+				var tNode =this.options.treeItem[rootArr[i]];
 				this.folderClose(tNode);
-
 			}
 		}
 		,folderClose : function (tNode){
 			var cNode = tNode.childNodes;
 			var cNodeLen = cNode.length;
-			var treeItem = this.options.treeItem;
 
 			if( cNodeLen > 0 ){
 				for(var i=0; i < cNodeLen; i ++){
-					var tmpNode = treeItem[cNode[i]];
-					this.setFolderCloseImg(tmpNode)
-					
+					var tmpNode = this.options.treeItem[cNode[i]];
+					$('[data-tree-id="'+tmpNode.id+'"]').removeClass('open');
 					if(tmpNode.childNodes.length >0) this.folderClose(tmpNode);
-					
 				}
-			}
-		}
-		,setFolderCloseImg : function (tNode){
-			var icon = this.options.icon;
-			var treeItem = this.options.treeItem;
-
-			var c_obj = document.getElementById('c_'+tNode.id);
-			if(c_obj != '' && c_obj != undefined){
-				if(tNode.depth > 0  && tNode.childNodes.length > 0){
-					c_obj.style.display='none';		
-					document.getElementById(tNode.id+'_icon').src = tNode.icon =='' || tNode.icon ==undefined?icon.folder:tNode.icon;
-					document.getElementById(tNode.id+'_join').src = treeItem[tNode.pid].childDataCnt != tNode.sortOrder?icon.plus:icon.plusBottom;
-				}
+			}else{
+				$('[data-tree-id="'+tNode.id+'"]').removeClass('open');	
 			}
 		}
 	}

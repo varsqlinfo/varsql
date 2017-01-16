@@ -1,29 +1,26 @@
-.style2 {
-	color: #333;
-	background-color:#c0d2ec;
-}
-
 .pub-tree{
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size: 11px;
-	color: #666;
+	color: #808080;
 	white-space: nowrap;
 	line-height: 15px;
+	padding:0px;
+	margin:0px;
 }
 
-.pub-tree img {
-	border: 0px;
-	vertical-align: middle;
+.pub-tree li {
+    list-style-type:none;
+	position:relative;
+	vertical-align:top;
+    color: #000;
+    white-space: nowrap;
+    padding: 0 4px 0 1px;
+    margin: 0;
+    vertical-align: top;
 }
-.pub-tree div a {
-	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size:11px;
-	color: #333;
-	text-decoration: none;
-	padding-left:0px;
-}
-.pub-tree a {
-	line-height: 20px;
+
+.pub-tree li a {
+	vertical-align: top;
 }
 
 .pub-tree-atag-blur {
@@ -47,7 +44,72 @@
 .pub-tree .pub-tree-join-icon{
 	cursor:pointer;
 }
-
-.pub-tree [data-tree-id]{
-	height: 18px;
+.pub-tree .sub-node-wrapper{
+	display:none;
+    min-width: 100%;
+	padding-left: 11px;
+	margin-left: 7px;
+	/*border-left:1px dotted #808080;*/
 }
+
+.pub-tree .sub-node-wrapper.first-child{
+    padding-left: 0px;
+    margin-left: 0px;
+	display:block;
+	border-left:0px dotted #6b4949;
+}
+.pub-tree [data-tree-id].open > .sub-node-wrapper{
+	display:block;
+}
+
+/*--------------------icon --------------------*/
+.pub-tree-icon{
+	width:18px;
+	height:19px;
+	display:inline-block;
+	z-index:1;
+}
+.pub-tree-icon.pub-tree-root{
+	background:url('./images/tree/base.gif');
+}
+
+.pub-tree-icon.pub-tree-folder{
+	background:url('./images/tree/folder.gif');
+}
+[data-tree-id].open > .pub-tree-icon.pub-tree-folder{
+	background:url('./images/tree/folderopen.gif');
+}
+.pub-tree-icon.pub-tree-node{
+	background:url('./images/tree/page.gif');
+}
+.pub-tree-icon.pub-tree-empty{
+	background:url('./images/tree/empty.gif');
+}
+.pub-tree-icon.pub-tree-line{
+	background:url('./images/tree/line.gif');
+}
+.pub-tree-icon.pub-tree-join{
+	/*background:url('./images/tree/join.gif');*/
+}
+.pub-tree-icon.pub-tree-joinbottom{
+	/*background:url('./images/tree/joinBottom.gif');*/
+}
+.pub-tree-icon.pub-tree-oc{
+	background:url('./images/tree/plus.gif');
+}
+[data-tree-id].open > .pub-tree-icon.pub-tree-oc{
+	background:url('./images/tree/minus.gif');
+}
+.pub-tree-icon.pub-tree-ocbottom{
+	background:url('./images/tree/plusbottom.gif');
+}
+[data-tree-id].open > .pub-tree-icon.pub-tree-ocbottom{
+	background:url('./images/tree/minusbottom.gif');
+}
+.pub-tree-icon.pub-tree-nloc{
+	background:url('./images/tree/nolines_plus.gif');
+}
+[data-tree-id].open > .pub-tree-icon.pub-tree-nloc{
+	background:url('./images/tree/nolines_minus.gif');
+}
+/*--------------------icon --------------------*/

@@ -43,6 +43,25 @@ public class PreferencesController {
 	}
 	
 	/**
+	* @Method	: keySetting
+	* @Method설명	: 단축키 설정.  
+	* @작성일		: 2017. 1. 16.
+	* @AUTHOR	: ytkim
+	* @변경이력	: 
+	* @param vconnid
+	* @param mav
+	* @return
+	* @throws Exception
+	 */
+	@RequestMapping("/keySetting")
+	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return  new ModelAndView("/database/setting/keySetting",model);
+	}
+	
+	
+	
+	/**
 	* @Method	: sqlFormatSetting
 	* @Method설명	: sql 자동생성 포켓 설정. 
 	* @작성일		: 2017. 1. 9.
@@ -57,5 +76,39 @@ public class PreferencesController {
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return  new ModelAndView("/database/setting/sqlFormatSetting",model);
+	}
+	
+	/**
+	* @Method	: codeEditerSetting
+	* @Method설명	:  에디터 설정. 
+	* @작성일		: 2017. 1. 16.
+	* @AUTHOR	: ytkim
+	* @변경이력	: 
+	* @param vconnid
+	* @param mav
+	* @return
+	* @throws Exception
+	 */
+	@RequestMapping("/codeEditerSetting")
+	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return  new ModelAndView("/database/setting/codeEditerSetting",model);
+	}
+	
+	/**
+	* @Method	: exportSetting
+	* @Method설명	: 내보내기 설정.  
+	* @작성일		: 2017. 1. 16.
+	* @AUTHOR	: ytkim
+	* @변경이력	: 
+	* @param vconnid
+	* @param mav
+	* @return
+	* @throws Exception
+	 */
+	@RequestMapping("/exportSetting")
+	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return  new ModelAndView("/database/setting/exportSetting",model);
 	}
 }
