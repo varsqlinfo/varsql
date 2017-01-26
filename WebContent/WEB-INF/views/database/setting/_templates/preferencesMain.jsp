@@ -14,6 +14,10 @@
 </BODY>
 </html>
 
-
+<script>
+$('.pub-main-body').on('selectstart', function (e){
+	return false; 	
+})
+</script>
 
 

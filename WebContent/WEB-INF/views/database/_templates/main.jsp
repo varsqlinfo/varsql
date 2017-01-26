@@ -45,7 +45,6 @@
 		<div class="ui-layout-center-area">
 			<tiles:insertAttribute name="rightContent" />
 		</div>
-		<div class="ui-layout-footer-area">ytechinfo copy right</div>
       </c:otherwise>
 </c:choose>
 

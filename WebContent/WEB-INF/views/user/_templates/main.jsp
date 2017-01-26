@@ -19,6 +19,8 @@
   	<div id="user-page-wrapper">
 		<tiles:insertAttribute name="body" />
     </div>
+    
+    <div class="user-main-footer">ytechinfo copy right</div>
     <!-- /#page-wrapper -->
     <%--
     <div id="footer">

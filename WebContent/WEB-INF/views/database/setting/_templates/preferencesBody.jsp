@@ -6,8 +6,8 @@
 		<div class="preferences-search">
 			<input type="text" id="preferences_text" value=""/>
 		</div>
-		<div class="preferences-body scroll-y">
-			<div id="preferences_area" style="padding-left:5px;"></div>
+		<div class="preferences-body">
+			<div id="preferences_area"></div>
 		</div>
 	</div>
 	<div class="content-area col scroll-y">

@@ -21,6 +21,7 @@
 	top: 40px;
     bottom: 0px;
     position: absolute;
+    overflow: auto;
 	-webkit-text-size-adjust: 100%;
 	background: #fff;
 }
@@ -41,7 +42,7 @@
 }
 
 .preferences-search {
-	padding :10px 10px 10px 10px;
+	padding :10px 0px 10px 0px;
 }
 
 .preferences-search input{
@@ -65,6 +66,8 @@
 
 .preferences .navi-area {
 	width: 220px;
+	padding-left:5px;
+	padding-right:5px;
 }
 
 .preferences .content-area.col {

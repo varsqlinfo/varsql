@@ -194,12 +194,10 @@ _ui.layout = {
 			center__paneSelector:	".ui-layout-center-area"
 			, west__paneSelector:	".ui-layout-left-area"
 			, north__paneSelector: ".ui-layout-header-area"
-			, south__paneSelector : ".ui-layout-footer-area"
 			, west__size:	300 
 			, spacing_open:			5 // ALL panes
 			, spacing_closed:   8 // ALL panes
 			, north__spacing_open: 0
-			, south__spacing_open: 0
 			, resizerDblClickToggle: false
 			, center__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				_self.layoutObj.rightLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
