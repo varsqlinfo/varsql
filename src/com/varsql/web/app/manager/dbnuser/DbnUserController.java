@@ -1,5 +1,7 @@
 package com.varsql.web.app.manager.dbnuser;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.VarsqlUtil;
 
 
 
@@ -29,10 +30,10 @@ public class DbnUserController {
 	private static final Logger logger = LoggerFactory.getLogger(DbnUserController.class);
 	
 	@Autowired
-	DbnUserService dbnUserService;
+	DbnUserServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"/dbList"})
-	public @ResponseBody String dbList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map dbList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
 			,HttpServletRequest req
@@ -45,20 +46,20 @@ public class DbnUserController {
 		paramMap.put(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		return dbnUserService.selectdbList(paramMap);
+		return dbnUserServiceImpl.selectdbList(paramMap);
 	}
 	
 	@RequestMapping({"/dbnUserMappingList"})
-	public @ResponseBody String dbnUserMappingList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid) throws Exception {
+	public @ResponseBody Map dbnUserMappingList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
 		
-		return dbnUserService.selectDbUserMappingList(paramMap);
+		return dbnUserServiceImpl.selectDbUserMappingList(paramMap);
 	}
 	
 	@RequestMapping({"/addDbUser"})
-	public @ResponseBody String addDbUser(@RequestParam(value = "selectItem", required = true)  String selectItem
+	public @ResponseBody Map addDbUser(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid, HttpServletRequest req
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -67,6 +68,6 @@ public class DbnUserController {
 		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
 		paramMap.put("upd_id", SecurityUtil.loginId(req));
 		
-		return dbnUserService.updateDbUser(paramMap);
+		return dbnUserServiceImpl.updateDbUser(paramMap);
 	}
 }

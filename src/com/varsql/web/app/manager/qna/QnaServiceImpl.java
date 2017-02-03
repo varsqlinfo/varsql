@@ -10,12 +10,12 @@ import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
 
 @Service
-public class QnaServiceImpl implements QnaService{
+public class QnaServiceImpl{
 	
 	@Autowired
 	QnaDAO qnaDAO;
 
-	public String selectQnaMgmtList(DataCommonVO paramMap) {
+	public Map selectQnaMgmtList(DataCommonVO paramMap) {
 		int totalcnt = qnaDAO.selectQnaMgmtTotalCnt(paramMap);
 		
 		paramMap = VarsqlUtil.setPagingParam(paramMap);
@@ -26,15 +26,15 @@ public class QnaServiceImpl implements QnaService{
 			json.put("result", qnaDAO.selectQnaMgmtList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String updateQnaAnswerContent(DataCommonVO paramMap) {
+	public Map updateQnaAnswerContent(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		
 		json.put("result", qnaDAO.updateQnaAnswerContent(paramMap) > 0);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 		
 	}
 

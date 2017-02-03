@@ -1,5 +1,7 @@
 package com.varsql.web.app.user.join;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.HttpUtil;
 
 
 
@@ -30,7 +31,7 @@ public class JoinController {
 	private static final Logger logger = LoggerFactory.getLogger(JoinController.class);
 	
 	@Autowired
-	JoinService joinService;
+	JoinServiceImpl joinServiceImpl;
 	
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -55,7 +56,7 @@ public class JoinController {
 		paramMap.put("upw", upw);
 		paramMap.put("org_nm", udept);
 		
-		boolean result = joinService.insertUserInfo(paramMap);
+		boolean result = joinServiceImpl.insertUserInfo(paramMap);
 		
 		ModelAndView mav = null;
 		if(result){
@@ -80,11 +81,11 @@ public class JoinController {
 	}
 	
 	@RequestMapping(value = "/idCheck")
-	public @ResponseBody String idCheck(@RequestParam(value = "uid")  String uid) throws Exception {
+	public @ResponseBody Map idCheck(@RequestParam(value = "uid")  String uid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		dcv.put("uid", uid);
 		
-		return joinService.selectIdCheck(dcv);
+		return joinServiceImpl.selectIdCheck(dcv);
 	}
 }

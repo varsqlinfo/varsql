@@ -1,5 +1,7 @@
 package com.varsql.web.app.guest;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +30,7 @@ public class GuestController {
 	private static final Logger logger = LoggerFactory.getLogger(GuestController.class);
 	
 	@Autowired
-	private GuestService guestService;
+	private GuestServiceImpl guestServiceImpl;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -41,7 +43,7 @@ public class GuestController {
 	}
 	
 	@RequestMapping(value = "/qnaList")
-	public @ResponseBody String qnalist(HttpServletRequest req 
+	public @ResponseBody Map qnalist(HttpServletRequest req 
 			,@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
@@ -54,7 +56,7 @@ public class GuestController {
 	
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
-		return guestService.selectQna(paramMap);
+		return guestServiceImpl.selectQna(paramMap);
 	}
 	
 	@RequestMapping(value="/insQna")
@@ -68,7 +70,7 @@ public class GuestController {
 		paramMap.put("question", question);
 		paramMap.put("cre_id", SecurityUtil.loginId(req));
 		
-		guestService.insertQnaInfo(paramMap);
+		guestServiceImpl.insertQnaInfo(paramMap);
 		
 		return  new ModelAndView("redirect:/guest/");
 	}
@@ -80,7 +82,7 @@ public class GuestController {
 		
 		dcv.put("qnaid", qnaid);
 		
-		guestService.deleteQnaInfo(dcv);
+		guestServiceImpl.deleteQnaInfo(dcv);
 		
 		return new ModelAndView("redirect:/guest/");
 	}
@@ -98,19 +100,19 @@ public class GuestController {
 		paramMap.put("question", question);
 		paramMap.put("cre_id", SecurityUtil.loginId(req));
 		
-		guestService.updateQnaInfo(paramMap);
+		guestServiceImpl.updateQnaInfo(paramMap);
 		
 		return new ModelAndView("redirect:/guest/");
 	}
 	
 	@RequestMapping(value = "/detailQna")
-	public @ResponseBody String dbDetail(@RequestParam(value = "qnaid") String qnaid) throws Exception {
+	public @ResponseBody Map dbDetail(@RequestParam(value = "qnaid") String qnaid) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put("qnaid", qnaid);
 		
-		return guestService.selectDetailQna(paramMap);
+		return guestServiceImpl.selectDetailQna(paramMap);
 	}
 	
 	

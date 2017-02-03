@@ -12,13 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.ResourceTransactionManager;
 
 import com.varsql.common.util.CommUtil;
 import com.varsql.db.ConnectionFactory;
 import com.varsql.sql.SQLUtil;
 import com.varsql.web.common.constants.ResultConstants;
-import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
@@ -32,13 +30,13 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class AdminServiceImpl implements AdminService{
+public class AdminServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
 	
 	@Autowired
 	AdminDAO adminDAO ;
 	
-	public String selectPageList(DataCommonVO paramMap) {
+	public Map selectPageList(DataCommonVO paramMap) {
 		
 		int totalcnt = adminDAO.selectPageTotalCnt(paramMap);
 		
@@ -56,17 +54,17 @@ public class AdminServiceImpl implements AdminService{
 			json.put("result", adminDAO.selectPageList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
-	public String selectDetailObject(DataCommonVO paramMap) {
+	public Map selectDetailObject(DataCommonVO paramMap) {
 		
 		Map json = new HashMap();
 		json.put("result", adminDAO.selectDetailObject(paramMap));
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
-	public String connectionCheck(DataCommonVO dcv) {
+	public Map connectionCheck(DataCommonVO dcv) {
 		
 		Map json = new HashMap();
 		
@@ -135,7 +133,7 @@ public class AdminServiceImpl implements AdminService{
 		json.put("result", result);
 		json.put("msg", failMessage);
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 		
 	}
 

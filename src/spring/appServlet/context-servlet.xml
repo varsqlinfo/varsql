@@ -16,9 +16,6 @@
 
 	<mvc:resources location="/webstatic/" mapping="/webstatic/**" />
 	<mvc:default-servlet-handler />
-	<mvc:annotation-driven />
-	
-
 	<!-- controller init bind -->
 	<bean id="conversionService"
 		class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
@@ -31,6 +28,15 @@
 		<context:include-filter type="regex"
 			expression="(service|controller)\..*" />
 	</context:component-scan>
+	
+	<mvc:annotation-driven>
+	    <mvc:message-converters>
+	        <!-- @ResponseBody로 String 처리할때 한글처리 -->
+	         <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+	            <property name="objectMapper" ref="jacksonObjectMapper"/>
+	        </bean>
+	    </mvc:message-converters>
+	</mvc:annotation-driven>
 
 	<!-- @MVC & binding convert -->
 	<mvc:annotation-driven conversion-service="conversionService" />
@@ -55,7 +61,18 @@
 		<property name="suffix" value=".jsp" />
 		<property name="contentType" value="text/html; charset=UTF-8" />
 	</bean -->
-				
+
+	<!-- you can't call it objectMapper for some reason -->
+	<bean name="jacksonObjectMapper"
+		class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+		<property name="featuresToDisable">
+			<array>
+				<util:constant
+					static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
+			</array>
+		</property>
+	</bean>
+	
 	<bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="order" value="0" />
@@ -69,7 +86,6 @@
 							<map>
 								<entry key="atom" value="application/atom+xml" />
 								<entry key="html" value="text/html" />
-								<entry key="json" value="application/json" />
 							</map>
 						</constructor-arg>
 					</bean>
@@ -79,12 +95,6 @@
 
 		<property name="defaultViews">
 			<list>
-				<!-- JSON View -->
-				<bean
-					class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
-					<property name="prefixJson" value="true" />
-				</bean>
-
 				<!-- XML View -->
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
 					<constructor-arg>

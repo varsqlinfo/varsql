@@ -12,12 +12,12 @@ import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
 
 @Service
-public class DbnUserServiceImpl implements DbnUserService{
+public class DbnUserServiceImpl{
 	
 	@Autowired
 	DbnUserDAO dbnUserDAO;
 
-	public String selectdbList(DataCommonVO paramMap) {
+	public Map selectdbList(DataCommonVO paramMap) {
 		
 		int totalcnt = dbnUserDAO.selectdbListTotalCnt(paramMap);
 		
@@ -28,20 +28,20 @@ public class DbnUserServiceImpl implements DbnUserService{
 			json.put("result", dbnUserDAO.selectdbList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String selectDbUserMappingList(DataCommonVO paramMap) {
+	public Map selectDbUserMappingList(DataCommonVO paramMap) {
 		
 		paramMap=VarsqlUtil.setPagingParam(paramMap);
 		
 		Map json = new HashMap();
 		json.put("result", dbnUserDAO.selectDbUserMappingList(paramMap));
 	
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String updateDbUser(DataCommonVO paramMap) {
+	public Map updateDbUser(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
 		try{
@@ -50,7 +50,7 @@ public class DbnUserServiceImpl implements DbnUserService{
 			json.put("result", "error");
 			json.put("resultMsg", e.getMessage());
 		}
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
 }

@@ -20,13 +20,13 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class GuestServiceImpl implements GuestService{
+public class GuestServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(GuestServiceImpl.class);
 	
 	@Autowired
 	GuestDAO guestDAO ;
 
-	public String selectQna(DataCommonVO paramMap) {
+	public Map selectQna(DataCommonVO paramMap) {
 		
 		int totalcnt = guestDAO.selectQnaTotalCnt(paramMap);
 		
@@ -44,7 +44,7 @@ public class GuestServiceImpl implements GuestService{
 			json.put("result", guestDAO.selectQna(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
 	public boolean insertQnaInfo(DataCommonVO paramMap) {
@@ -68,11 +68,11 @@ public class GuestServiceImpl implements GuestService{
 		return guestDAO.updateQnaInfo(paramMap) > 0;
 	}
 
-	public String selectDetailQna(DataCommonVO paramMap) {
+	public Map selectDetailQna(DataCommonVO paramMap) {
 		Map json = new HashMap();
 			
 		json.put("result", guestDAO.selectDetailQna(paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 }

@@ -21,13 +21,13 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class UserMenuMgmtServiceImpl implements UserMenuMgmtService{
+public class UserMenuMgmtServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(UserMenuMgmtServiceImpl.class);
 	
 	@Autowired
 	UserMenuMgmtDAO userMenuMgmtDAO ;
 	
-	public String listDbMenu(DataCommonVO paramMap) {
+	public Map listDbMenu(DataCommonVO paramMap) {
 		int totalcnt = userMenuMgmtDAO.listDbMenuTotalcnt(paramMap);
 		
 		Map json = new HashMap();
@@ -44,7 +44,7 @@ public class UserMenuMgmtServiceImpl implements UserMenuMgmtService{
 			json.put("result", userMenuMgmtDAO.listDbMenu(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
 	public boolean moodifyDbMenu(DataCommonVO paramMap) {

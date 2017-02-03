@@ -33,10 +33,10 @@ public class UserMenuMgmtController{
 	private final static Logger logger = LoggerFactory.getLogger(UserMenuMgmtController.class);
 	
 	@Autowired
-	UserMenuMgmtService userMenuMgmtService; 
+	UserMenuMgmtServiceImpl userMenuMgmtServiceImpl; 
 	
 	@RequestMapping({"/listDbMenu"})
-	public @ResponseBody String listDbMenu(
+	public @ResponseBody Map listDbMenu(
 			@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
 			,@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int pageNo
@@ -49,11 +49,11 @@ public class UserMenuMgmtController{
 		paramMap.put(VarsqlParamConstants.SEARCH_NO, pageNo);
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		
-		return userMenuMgmtService.listDbMenu(paramMap);
+		return userMenuMgmtServiceImpl.listDbMenu(paramMap);
 	}
 	
 	@RequestMapping({"/moodifyDbMenu"})
-	public @ResponseBody String moodifyDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
+	public @ResponseBody Map moodifyDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
 			,@RequestParam(value = DBMenuConstants.MENU_ID ,required = true) String menu_id 
 			,@RequestParam(value = DBMenuConstants.UNIQUE_ID ) String unique_id 
 			,@RequestParam(value = DBMenuConstants.MENU_NM ) String menu_nm 
@@ -82,13 +82,13 @@ public class UserMenuMgmtController{
 		
 		Map json = new HashMap();
 		
-		json.put("result", userMenuMgmtService.moodifyDbMenu(paramMap));
+		json.put("result", userMenuMgmtServiceImpl.moodifyDbMenu(paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	@RequestMapping({"/addDbMenu"})
-	public @ResponseBody String addDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
+	public @ResponseBody Map addDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
 			,@RequestParam(value = DBMenuConstants.P_MENU_ID ,required = true) String p_menu_id 
 			,@RequestParam(value = DBMenuConstants.UNIQUE_ID ) String unique_id 
 			,@RequestParam(value = DBMenuConstants.MENU_NM ) String menu_nm 
@@ -116,13 +116,13 @@ public class UserMenuMgmtController{
 
 		Map json = new HashMap();
 		
-		json.put("result", userMenuMgmtService.addDbMenu(paramMap));
+		json.put("result", userMenuMgmtServiceImpl.addDbMenu(paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	@RequestMapping({"/deleteDbMenu"})
-	public @ResponseBody String deleteDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
+	public @ResponseBody Map deleteDbMenu(@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
 			,@RequestParam(value = DBMenuConstants.MENU_ID, required = true)  String menuid) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
@@ -131,8 +131,8 @@ public class UserMenuMgmtController{
 		
 		Map json = new HashMap();
 		
-		json.put("result", userMenuMgmtService.deleteDbMenu(paramMap));
+		json.put("result", userMenuMgmtServiceImpl.deleteDbMenu(paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 }

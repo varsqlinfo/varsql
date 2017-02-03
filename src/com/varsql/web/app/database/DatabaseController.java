@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.util.VarsqlUtil;
 
 
 
@@ -41,12 +42,12 @@ public class DatabaseController {
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		
 		ModelMap model = mav.getModelMap();
-		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(paramMap));
+		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, VarsqlUtil.objectToString(databaseServiceImpl.schemas(paramMap)));
 		return  new ModelAndView("/database/main",model);
 	}
 	
 	@RequestMapping(value = "/serviceMenu")
-	public @ResponseBody String schemas(HttpServletRequest req 
+	public @ResponseBody Map schemas(HttpServletRequest req 
 			,@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid
 			,@RequestParam(value = "schema", required = true, defaultValue = "" )  String schema
 			) throws Exception {

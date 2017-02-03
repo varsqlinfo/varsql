@@ -12,12 +12,12 @@ import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
 
 @Service
-public class ManagerServiceImpl implements ManagerService{
+public class ManagerServiceImpl{
 	
 	@Autowired
 	ManagerDAO manageDAO;
 
-	public String selectUserList(DataCommonVO paramMap) {
+	public Map selectUserList(DataCommonVO paramMap) {
 		int totalcnt = manageDAO.selectUserTotalcnt(paramMap);
 		
 		int page = paramMap.getInt("page",0);
@@ -34,10 +34,10 @@ public class ManagerServiceImpl implements ManagerService{
 			json.put("result", manageDAO.selectUserList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String updateAccept(DataCommonVO paramMap) {
+	public Map updateAccept(DataCommonVO paramMap) {
 		
 		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
 		String role = paramMap.getString("acceptyn").equals("Y")?Authority.USER.name():Authority.GUEST.name();
@@ -47,7 +47,7 @@ public class ManagerServiceImpl implements ManagerService{
 		Map json = new HashMap();
 		json.put("result", manageDAO.updateAccept(viewidArr, paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 }

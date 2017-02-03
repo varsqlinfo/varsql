@@ -21,13 +21,13 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class ManagerMgmtServiceImpl implements ManagerMgmtService{
+public class ManagerMgmtServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(ManagerMgmtServiceImpl.class);
 	
 	@Autowired
 	ManagerMgmtDAO managerMgmtDAO ;
 	
-	public String selectRoleUserList(DataCommonVO paramMap) {
+	public Map selectRoleUserList(DataCommonVO paramMap) {
 		
 		int totalcnt = managerMgmtDAO.selectRoleUserTotalcnt(paramMap);
 		
@@ -45,11 +45,11 @@ public class ManagerMgmtServiceImpl implements ManagerMgmtService{
 			json.put("result", managerMgmtDAO.selectRoleUserList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 		
 	}
 	
-	public String selectRoleManagerList(DataCommonVO paramMap) {
+	public Map selectRoleManagerList(DataCommonVO paramMap) {
 		
 		int totalcnt = managerMgmtDAO.selectRoleManagerTotalcnt(paramMap);
 		
@@ -67,27 +67,27 @@ public class ManagerMgmtServiceImpl implements ManagerMgmtService{
 			json.put("result", managerMgmtDAO.selectRoleManagerList(paramMap));
 		}
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
-	public String updateManagerRole(DataCommonVO paramMap) {
+	public Map updateManagerRole(DataCommonVO paramMap) {
 		
 		Map json = new HashMap();
 		json.put("result", managerMgmtDAO.updateManagerRole( paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
-	public String selectDatabaseManager(DataCommonVO paramMap) {
+	public Map selectDatabaseManager(DataCommonVO paramMap) {
 		
 		Map json = new HashMap();
 			
 		json.put("result", managerMgmtDAO.selectDatabaseManager(paramMap));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
-	public String updateDbManager(DataCommonVO paramMap) {
+	public Map updateDbManager(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
 		try{
@@ -96,6 +96,6 @@ public class ManagerMgmtServiceImpl implements ManagerMgmtService{
 			json.put("result", "error");
 			json.put("resultMsg", e.getMessage());
 		}
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 }

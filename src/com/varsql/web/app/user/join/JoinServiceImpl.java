@@ -20,17 +20,17 @@ import com.varsql.web.util.VarsqlUtil;
  * @프로그램 설명 :
  */
 @Service
-public class JoinServiceImpl implements JoinService{
+public class JoinServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
 	
 	@Autowired
 	JoinDAO joinDAO ;
 	
 
-	public String selectUserDetail(DataCommonVO paramMap) {
+	public Map selectUserDetail(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		json.put("result", joinDAO.selectUserDetail(paramMap));
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
 	public boolean insertUserInfo(DataCommonVO paramMap) {
@@ -47,13 +47,6 @@ public class JoinServiceImpl implements JoinService{
 		paramMap.put("accept_yn", "N");
 		paramMap.put("cre_id", "join");
 		
-		System.out.println("===========================");
-		System.out.println("===========================");
-		System.out.println("===========================");
-		System.out.println(paramMap);
-		System.out.println("===========================");
-		System.out.println("===========================");
-		
 		return joinDAO.insertUserInfo(paramMap) > 0;
 	}
 
@@ -61,10 +54,10 @@ public class JoinServiceImpl implements JoinService{
 		return joinDAO.updateUserInfo(paramMap) > 0;
 	}
 
-	public String selectIdCheck(DataCommonVO paramMap) {
+	public Map selectIdCheck(DataCommonVO paramMap) {
 		Map json = new HashMap();
 		json.put("result", joinDAO.selectIdCheck(paramMap));
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 
 }

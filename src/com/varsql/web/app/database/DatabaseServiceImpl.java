@@ -5,12 +5,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.SecurityUtil;
-import com.varsql.db.meta.DBMetaImplDB2;
-import com.varsql.db.vo.DatabaseInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
@@ -42,7 +39,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String schemas(DataCommonVO paramMap) throws Exception {
+	public Map schemas(DataCommonVO paramMap) throws Exception {
 		Map json = new HashMap();
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
 		DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
@@ -51,7 +48,7 @@ public class DatabaseServiceImpl{
 		json.put("connInfo", SecurityUtil.userDBInfo(connid));
 		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(connid));
 		
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	/**
@@ -66,7 +63,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String serviceMenu(DataCommonVO paramMap) throws Exception {
+	public Map serviceMenu(DataCommonVO paramMap) throws Exception {
 		try{
 			String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
 			DbTypeEnum dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
@@ -76,12 +73,12 @@ public class DatabaseServiceImpl{
 			
 			reval.put("menuData", serviceMenu);
 			
-			return VarsqlUtil.objectToString(reval);
+			return reval;
 			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return "";
+		return new HashMap();
 	}
 	
 	/**

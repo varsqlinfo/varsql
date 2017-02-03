@@ -240,8 +240,8 @@ var sqlLogStat ={
 				var items = response.result;
 				var aaa = {};
 				$.each(items , function (idx , item){
-					names[item.label] = item.label;
-					aaa[item.label] =  item.data
+					names[item.LABEL] = item.LABEL;
+					aaa[item.LABEL] =  item.DATA;
 				});
 				chartData.push(aaa);
 				

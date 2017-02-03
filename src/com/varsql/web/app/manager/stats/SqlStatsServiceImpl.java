@@ -1,15 +1,12 @@
 package com.varsql.web.app.manager.stats;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.VarsqlUtil;
 
 @Service
 public class SqlStatsServiceImpl{
@@ -62,12 +59,12 @@ public class SqlStatsServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public String dbSqlDayUserRank(DataCommonVO paramMap) {
+	public Map dbSqlDayUserRank(DataCommonVO paramMap) {
 		
 		Map json = new HashMap();
 		json.put("result", sqlStatsDAO.dbSqlDayUserRank(paramMap));
 		
-		return VarsqlUtil.objectToKeyLowerString(json);
+		return json;
 	}
 
 }

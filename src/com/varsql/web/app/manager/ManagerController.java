@@ -1,5 +1,7 @@
 package com.varsql.web.app.manager;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.admin.AdminService;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.DateUtil;
 import com.varsql.web.util.HttpUtil;
@@ -31,7 +32,7 @@ public class ManagerController {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 	
 	@Autowired
-	ManagerService manageService;
+	ManagerServiceImpl managerServiceImpl;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -76,7 +77,7 @@ public class ManagerController {
 	}
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody String userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 		) throws Exception {
@@ -86,11 +87,11 @@ public class ManagerController {
 		paramMap.put("rows", rows);
 		paramMap.put("searchval", searchval);
 		
-		return manageService.selectUserList(paramMap);
+		return managerServiceImpl.selectUserList(paramMap);
 	}
 	
 	@RequestMapping({"/acceptYn"})
-	public @ResponseBody String updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
+	public @ResponseBody Map updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
 			,@RequestParam(value = "selectItem", required = true )  String selectItem
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -98,6 +99,6 @@ public class ManagerController {
 		paramMap.put("acceptyn", acceptyn);
 		paramMap.put("selectItem", selectItem);
 		
-		return manageService.updateAccept(paramMap);
+		return managerServiceImpl.updateAccept(paramMap);
 	}
 }

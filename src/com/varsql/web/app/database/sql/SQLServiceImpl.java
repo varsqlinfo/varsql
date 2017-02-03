@@ -13,12 +13,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.common.type.ResultType;
 import com.varsql.common.util.DataExportUtil;
 import com.varsql.db.ConnectionFactory;
@@ -93,7 +93,7 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public String sqlData(DataCommonVO paramMap) throws Exception {
+	public ArrayList sqlData(DataCommonVO paramMap) throws Exception {
 		String reqSql = paramMap.getString(VarsqlParamConstants.SQL);
 		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql);
 		
@@ -113,14 +113,14 @@ public class SQLServiceImpl{
 				reLst.add(tmpSqlSource.getResult());
 			}
 			
-			return VarsqlUtil.objectToString(reLst);
+			return reLst;
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			SQLUtil.close(conn);
 		}
 		
-		return "";
+		return  new ArrayList();
 	}
 	
 	/**

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.common.util.StringUtil;
-import com.varsql.web.app.manager.dbnuser.DbnUserService;
+import com.varsql.web.app.manager.dbnuser.DbnUserServiceImpl;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
@@ -35,10 +35,10 @@ public class SqlStatsController {
 	SqlStatsServiceImpl sqlStatsServiceImpl;
 	
 	@Autowired
-	DbnUserService dbnUserService;
+	DbnUserServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"/dbList"})
-	public @ResponseBody String dbList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map dbList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
 			,HttpServletRequest req
@@ -51,7 +51,7 @@ public class SqlStatsController {
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		paramMap.put(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		
-		return dbnUserService.selectdbList(paramMap);
+		return dbnUserServiceImpl.selectdbList(paramMap);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class SqlStatsController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDayUserRank"})
-	public @ResponseBody String dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+	public @ResponseBody Map dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = false, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = false, defaultValue = "" )  String e_date
 			,@RequestParam(value = "command_type", required = false,defaultValue = "" )  String command_type

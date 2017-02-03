@@ -1,5 +1,6 @@
 package com.varsql.web.app.database.sql;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +55,7 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlData"})
-	public @ResponseBody String sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
+	public @ResponseBody List sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
 			@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = true, defaultValue = "" )  String schema,
 			@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit,
 			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,

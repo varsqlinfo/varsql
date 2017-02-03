@@ -1,5 +1,7 @@
 package com.varsql.web.app.admin.managermgmt;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +25,10 @@ public class ManagerMgmtController{
 	private final static Logger logger = LoggerFactory.getLogger(ManagerMgmtController.class);
 	
 	@Autowired
-	ManagerMgmtService managerMgmtService; 
+	ManagerMgmtServiceImpl managerMgmtServiceImpl; 
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody String userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 		) throws Exception {
@@ -36,11 +38,11 @@ public class ManagerMgmtController{
 		paramMap.put("rows", rows);
 		paramMap.put("searchval", searchval);
 		
-		return managerMgmtService.selectRoleUserList(paramMap);
+		return managerMgmtServiceImpl.selectRoleUserList(paramMap);
 	}
 	
 	@RequestMapping({"/managerList"})
-	public @ResponseBody String managerlist(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map managerlist(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 			) throws Exception {
@@ -50,11 +52,11 @@ public class ManagerMgmtController{
 		paramMap.put("rows", rows);
 		paramMap.put("searchval", searchval);
 		
-		return managerMgmtService.selectRoleManagerList(paramMap);
+		return managerMgmtServiceImpl.selectRoleManagerList(paramMap);
 	}
 	
 	@RequestMapping({"/managerRoleMgmt"})
-	public @ResponseBody String managerRoleMgmt(@RequestParam(value = "mode", required = true, defaultValue = "del" )  String mode
+	public @ResponseBody Map managerRoleMgmt(@RequestParam(value = "mode", required = true, defaultValue = "del" )  String mode
 			,@RequestParam(value = "viewid", required = true)  String viewid
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -62,11 +64,11 @@ public class ManagerMgmtController{
 		paramMap.put("mode", mode);
 		paramMap.put("viewid", viewid);
 		
-		return managerMgmtService.updateManagerRole(paramMap);
+		return managerMgmtServiceImpl.updateManagerRole(paramMap);
 	}
 	
 	@RequestMapping({"/addDbManager"})
-	public @ResponseBody String addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
+	public @ResponseBody Map addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "vconid", required = true) String vconid
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -74,16 +76,16 @@ public class ManagerMgmtController{
 		paramMap.put("selectItem", selectItem);
 		paramMap.put("vconid", vconid);
 		
-		return managerMgmtService.updateDbManager(paramMap);
+		return managerMgmtServiceImpl.updateDbManager(paramMap);
 	}
 	
 	@RequestMapping({"/dbManagerList"})
-	public @ResponseBody String dbManagerList(@RequestParam(value = "vconid", required = true) String vconid) throws Exception {
+	public @ResponseBody Map dbManagerList(@RequestParam(value = "vconid", required = true) String vconid) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put("vconid", vconid);
 		
-		return managerMgmtService.selectDatabaseManager(paramMap);
+		return managerMgmtServiceImpl.selectDatabaseManager(paramMap);
 	}
 }

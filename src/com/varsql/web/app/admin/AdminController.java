@@ -35,7 +35,7 @@ public class AdminController{
 	private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
 	
 	@Autowired
-	AdminService adminService; 
+	AdminServiceImpl adminServiceImpl; 
 	
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -46,7 +46,7 @@ public class AdminController{
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
-		model.addAttribute("dbtype", adminService.selectAllDbType());
+		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
 		return  new ModelAndView("/admin/adminMain",model);
 	}
 	
@@ -75,7 +75,7 @@ public class AdminController{
 	public ModelAndView userMenuMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
-		model.addAttribute("dbtype", adminService.selectAllDbType());
+		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
 		return new ModelAndView("/admin/userMenuMgmt",model);
 	}
 	
@@ -93,7 +93,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dblist")
-	public @ResponseBody String dblist(
+	public @ResponseBody Map dblist(
 			@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int pageNo
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
@@ -104,7 +104,7 @@ public class AdminController{
 		paramMap.put(VarsqlParamConstants.SEARCH_NO, pageNo);
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		
-		return adminService.selectPageList(paramMap);
+		return adminServiceImpl.selectPageList(paramMap);
 	}
 	
 	/**
@@ -119,13 +119,13 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDetail")
-	public @ResponseBody String dbDetail(@RequestParam(value = "vconid") String vconid) throws Exception {
+	public @ResponseBody Map dbDetail(@RequestParam(value = "vconid") String vconid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		
 		dcv.put("vconid", vconid);
 		
-		return adminService.selectDetailObject(dcv);
+		return adminServiceImpl.selectDetailObject(dcv);
 	}
 	
 	/**
@@ -140,10 +140,10 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbConnectionCheck")
-	public @ResponseBody String dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+	public @ResponseBody Map dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		DataCommonVO dcv = HttpUtil.getAllParameter(req);
 		
-		return adminService.connectionCheck(dcv);
+		return adminServiceImpl.connectionCheck(dcv);
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbSave")
-	public @ResponseBody String dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
+	public @ResponseBody Map dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
 			,@RequestParam(value = "vname" ,required = true,defaultValue = "")  String vname
 			,@RequestParam(value = "vurl",required = true,defaultValue = "")  String vurl
 			,@RequestParam(value = "vdriver",required = true,defaultValue = "")  String vdriver
@@ -199,12 +199,12 @@ public class AdminController{
 		Map json = new HashMap();
 			
 		if("".equals(vconid)){
-			json.put("result", adminService.insertVtconnectionInfo(dcv));
+			json.put("result", adminServiceImpl.insertVtconnectionInfo(dcv));
 		}else{
-			json.put("result", adminService.updateVtconnectionInfo(dcv));
+			json.put("result", adminServiceImpl.updateVtconnectionInfo(dcv));
 		}
 			
-		return VarsqlUtil.objectToString(json);
+		return json;
 	}
 	
 	/**
@@ -219,16 +219,14 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDelete")
-	public @ResponseBody String dbDelete(@RequestParam(value = "vconid")  String vconid) throws Exception {
+	public @ResponseBody Map dbDelete(@RequestParam(value = "vconid")  String vconid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		
 		dcv.put("vconid", vconid);
 		
 		Map json = new HashMap();
-		
-		json.put("result", adminService.deleteVtconnectionInfo(dcv));
-		
-		return VarsqlUtil.objectToString(json);
+		json.put("result", adminServiceImpl.deleteVtconnectionInfo(dcv));
+		return json;
 	}
 }
