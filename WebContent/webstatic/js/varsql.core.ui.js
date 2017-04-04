@@ -590,6 +590,9 @@ _ui.leftDbObjectServiceMenu ={
 	,_createScriptSql :function (scriptObj){
 		_ui.SQL.addCreateScriptSql(scriptObj);
 	}
+	,_createJavaProgram: function (scriptObj){
+		_ui.JAVA.createJavaProgram(scriptObj);
+	}
 	/**
 	 * @method _createDDL
 	 * @param name 
@@ -608,7 +611,7 @@ _ui.leftDbObjectServiceMenu ={
 		    ,dataType:'json'
 		    ,data:param
 		    ,success:function (resData){
-		    	if(sObj.scriptType=='ddl_copy'){
+		    	if(sObj.gubnKey=='ddl_copy'){
 		    		_ui.text.copy(resData.result);
 		    	}else{
 		    		_ui.SQL.addSqlEditContent(resData.result);
@@ -685,7 +688,7 @@ _ui.leftDbObjectServiceMenu ={
 						
 						if(key=='ddl_copy' || key=='ddl_paste'){
 							_self._createDDL({
-								scriptType : key
+								gubnKey : key
 								,gubun : 'table'
 								,objName :  tmpName 
 								,item : cacheData
@@ -696,7 +699,17 @@ _ui.leftDbObjectServiceMenu ={
 						if(key=='export_data'||key=='export_column'){
 							_self._dataExport({
 								gubun:gubun
-								,downloadType:key
+								,gubnKey :key
+								,objName :  tmpName 
+								,item : cacheData
+							});
+							return ;
+						}
+						
+						if(key=='java_camel_case_naming'||key=='java_json'||'java_valid'){
+							_self._createJavaProgram({
+								gubun:gubun
+								,gubnKey :key
 								,objName :  tmpName 
 								,item : cacheData
 							});
@@ -706,7 +719,7 @@ _ui.leftDbObjectServiceMenu ={
 						key = sObj.mode;
 						
 						_self._createScriptSql({
-							scriptType : key
+							gubnKey : key
 							,gubun : 'table'
 							,objName :  tmpName 
 							,item : cacheData
@@ -730,6 +743,13 @@ _ui.leftDbObjectServiceMenu ={
 								{key : "ddl_copy","name": "복사하기"}
 								,{key : "ddl_paste","name": "edit 영역에보기"}
 							]
+						}
+						,{key : "create_java","name": "java 모델생성" 
+							,subMenu:[
+								{key : "java_camel_case_naming","name": "Camel case naming"}
+								,{key : "java_json","name": "json형식"}
+								,{key : "java_valid","name": "우효성 체크 Bean"}
+								]
 						}
 						,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
 							,subMenu : [
@@ -1623,7 +1643,7 @@ _ui.SQL = {
 	// 스크립트 내보내기
 	,addCreateScriptSql :function (scriptInfo){
 		var _self = this;
-		var key = scriptInfo.scriptType
+		var key = scriptInfo.gubnKey
 			,gubun = scriptInfo.gubun
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
@@ -1862,6 +1882,91 @@ _ui.text={
 
 	}
 }
+_ui.JAVA = {
+	createJavaProgram : function (scriptInfo){
+		var _self = this;
+		var key = scriptInfo.gubnKey
+			,gubun = scriptInfo.gubun
+			,tmpName = scriptInfo.objName
+			,data = scriptInfo.item
+			
+		var dataArr = data.result, tmpval , item;
+		
+		var len = dataArr.length;
+		
+		var newLine = _ui.base.constants.newline
+			,tabStr = _ui.base.constants.tab;
+		
+		function javaCreate (createType){
+			var codeStr =[];
+			
+			if(createType =='valid'){
+				codeStr.push('import javax.validation.constraints.Max;' +newLine);
+				codeStr.push('import javax.validation.constraints.Min;' +newLine);
+				codeStr.push('import javax.validation.constraints.NotNull;' +newLine);
+				codeStr.push('import javax.validation.constraints.Past;' +newLine);
+				codeStr.push('import javax.validation.constraints.Size;' +newLine);
+			}
+			
+			codeStr.push(newLine);
+			codeStr.push('//@author'+newLine);
+			
+			codeStr.push('public class '+capitalizeFirstLetter(convertCamel(tmpName))+'{' +newLine);
+			var methodStr = [];
+			for(var i=0; i < len; i++){
+				item = dataArr[i];
+				var tmpDbType = VARSQL.dataType.getDbType(item.DATA_TYPE)
+					,tmpJavaType=tmpDbType.javaType
+					,tmpColumnNm = convertCamel(item.COLUMN_NAME)
+					,tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
+				
+				if(createType =='json'){
+					codeStr.push(tabStr+'@JsonProperty("'+tmpColumnNm +'")'+newLine);
+				}
+				
+				if(createType =='valid'){
+					if(item.IS_NULLABLE =='NO'){
+						codeStr.push(tabStr+'@NotNull '+newLine); 
+					}
+					var columnSize = item.COLUMN_SIZE;
+					if($.isFunction (tmpDbType.getLen)){
+						columnSize = tmpDbType.getLen(columnSize);
+					}
+					codeStr.push(tabStr+'@Size(max='+columnSize+')'+newLine);
+				}
+				
+				codeStr.push(tabStr+'private '+tmpJavaType+' ' +tmpColumnNm +';'+newLine+newLine);
+				
+				methodStr.push(tabStr+'public '+tmpJavaType+' ' + 'get' +tmpMethodNm +'(){'+newLine);
+				methodStr.push(tabStr+tabStr+'return this.'+tmpColumnNm+';'+newLine);
+				methodStr.push(tabStr+'}'+newLine);
+				
+				methodStr.push(tabStr+'public void ' + 'set' +tmpMethodNm +'('+tmpJavaType+' '+tmpColumnNm+'){'+newLine);
+				methodStr.push(tabStr+tabStr+'this.'+tmpColumnNm+'='+tmpColumnNm+';'+newLine);
+				methodStr.push(tabStr+'}'+newLine);
+			}
+			
+			codeStr.push(methodStr.join('')+newLine);
+			codeStr.push('}');
+			
+			return codeStr.join('');
+		}
+		var reval = '';
+		// java camel case
+		if(key=='java_camel_case_naming'){
+			reval = javaCreate('default');
+		}
+		// java_json
+		else if(key=='java_json'){
+			reval = javaCreate('json');
+		}
+		// java valid
+		else if(key=='java_valid'){
+			reval = javaCreate('valid');
+		}
+		_ui.text.copy(reval);
+	}
+}
 
 function queryParameter(flag, colName, dataType){
 	if(flag=='Y'){
@@ -1869,6 +1974,25 @@ function queryParameter(flag, colName, dataType){
 	}else{
 		return _ui.base.dto[dataType].val; 
 	}
+}
+// camel 변환
+function convertCamel(camelStr){
+	
+    if(camelStr == '') {
+        return camelStr;
+    }
+    camelStr = camelStr.toLowerCase();
+    // conversion
+    var returnStr = camelStr.replace(/_(\w)/g, function(word) {
+        return word.toUpperCase();
+    });
+    returnStr = returnStr.replace(/_/g, "");
+    
+    return returnStr; 
+}
+
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 VARSQL.ui = _ui;

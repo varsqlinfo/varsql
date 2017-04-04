@@ -16,42 +16,45 @@ var _constants = {
 };
 
 var _dto = {
-	'-7':{name : 'BIT',isNum : false ,val : ''}
-	,'-6':{name : 'TINYINT',isNum : true ,val : 0}
-	,'5':{name : 'SMALLINT',isNum : true ,val : 0}
-	,'4':{name : 'INTEGER',isNum : true ,val : 0}
-	,'-5':{name : 'BIGINT',isNum : true ,val : 0}
-	,'6':{name : 'FLOAT',isNum : true ,val : 0.0}
-	,'7':{name : 'REAL',isNum : true ,val : 0}
-	,'8':{name : 'DOUBLE',isNum : true ,val : 0}
-	,'2':{name : 'NUMERIC',isNum : true ,val : 0}
-	,'3':{name : 'DECIMAL',isNum : true ,val : 0}
-	,'1':{name : 'CHAR',isNum : false ,val : ''}
-	,'12':{name : 'VARCHAR',isNum : false ,val : ''}
-	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : ''}
-	,'91':{name : 'DATE',isNum : false ,val : 'current date'}
-	,'92':{name : 'TIME',isNum : false ,val : 'current time'}
-	,'93':{name : 'TIMESTAMP',isNum : false ,val : 'current timestamp'}
-	,'-2':{name : 'BINARY',isNum : false ,val : ''}
-	,'-3':{name : 'VARBINARY',isNum : false ,val : ''}
-	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : ''}
-	,'0':{name : 'NULL',isNum : false ,val : ''}
-	,'1111':{name : 'OTHER',isNum : false ,val : ''}
-	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : ''}
-	,'2001':{name : 'DISTINCT',isNum : false ,val : ''}
-	,'2002':{name : 'STRUCT',isNum : false ,val : ''}
-	,'2003':{name : 'ARRAY',isNum : false ,val : ''}
-	,'2004':{name : 'BLOB',isNum : false ,val : ''}
-	,'2005':{name : 'CLOB',isNum : false ,val : ''}
-	,'2006':{name : 'REF',isNum : false ,val : ''}
-	,'70':{name : 'DATALINK',isNum : false ,val : ''}
-	,'16':{name : 'BOOLEAN',isNum : false ,val : ''}
-	,'-8':{name : 'ROWID',isNum : false ,val : ''}
-	,'-15':{name : 'NCHAR',isNum : false ,val : ''}
-	,'-9':{name : 'NVARCHAR',isNum : false ,val : ''}
-	,'-16':{name : 'LONGNVARCHAR',isNum : false ,val : ''}
-	,'2011':{name : 'NCLOB',isNum : false ,val : ''}
-	,'2009':{name : 'SQLXML',isNum : false ,val : ''}
+	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'char'}
+	,'-6':{name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
+	,'5':{name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
+	,'4':{name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
+	,'-5':{name : 'BIGINT',isNum : true ,val : 0, javaType:'long'}
+	,'6':{name : 'FLOAT',isNum : true ,val : 0.0, javaType:'float'}
+	,'7':{name : 'REAL',isNum : true ,val : 0, javaType:'Integer'}
+	,'8':{name : 'DOUBLE',isNum : true ,val : 0, javaType:'double'}
+	,'2':{name : 'NUMERIC',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'3':{name : 'DECIMAL',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'char'}
+	,'12':{name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'91':{name : 'DATE',isNum : false ,val : 'current date', javaType:'String'}
+	,'92':{name : 'TIME',isNum : false ,val : 'current time', javaType:'String'}
+	,'93':{name : 'TIMESTAMP',isNum : false ,val : 'current timestamp', javaType:'String'}
+	,'-2':{name : 'BINARY',isNum : false ,val : '', javaType:'String'}
+	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'String'}
+	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'String'}
+	,'0':{name : 'NULL',isNum : false ,val : '', javaType:'String'}
+	,'1111':{name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String' , getLen : function (len){
+		return parseInt(len /2,10);
+	}}
+	//,'1111':{name : 'OTHER',isNum : false ,val : '', javaType:'Object'}
+	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object'}
+	,'2001':{name : 'DISTINCT',isNum : false ,val : '', javaType:'Object'}
+	,'2002':{name : 'STRUCT',isNum : false ,val : '', javaType:'Object'}
+	,'2003':{name : 'ARRAY',isNum : false ,val : '', javaType:'Object'}
+	,'2004':{name : 'BLOB',isNum : false ,val : '', javaType:'Object'}
+	,'2005':{name : 'CLOB',isNum : false ,val : '', javaType:'String'}
+	,'2006':{name : 'REF',isNum : false ,val : '', javaType:'Object'}
+	,'70':{name : 'DATALINK',isNum : false ,val : '', javaType:'Object'}
+	,'16':{name : 'BOOLEAN',isNum : false ,val : '', javaType:'boolean'}
+	,'-8':{name : 'ROWID',isNum : false ,val : '', javaType:'Object'}
+	,'-15':{name : 'NCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-9':{name : 'NVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-16':{name : 'LONGNVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'2011':{name : 'NCLOB',isNum : false ,val : '', javaType:'String'}
+	,'2009':{name : 'SQLXML',isNum : false ,val : '', javaType:'String'}
 };
 
 var DEFAULT_HINTS = [
@@ -106,6 +109,15 @@ dataType.sqlHints = function (dbType){
 
 dataType.getMimeType = function (dbType){
 	return MIME_TYPE[dbType] || 'text/x-sql';
+}
+
+dataType.getDbType = function (dbType){
+	var tmpDataType= _dto[dbType]; 
+	if(typeof  tmpDataType !=='undefined'){
+		return  tmpDataType;
+	}else{
+		return _dto['12'] ;
+	}
 }
 
 VARSQL.dataType = dataType;
