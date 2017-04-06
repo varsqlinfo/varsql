@@ -9,7 +9,7 @@
 var _ui=VARSQL.ui||{};
 
 _ui.base ={
-	dto:$.extend({}, VARSQL.dataType , {})	// db datatype
+	dataType:VARSQL.dataType // db datatype
 	,constants:$.extend({}, VARSQL.constants , {})	// 설정 상수
 	,mimetype : ''	// editor mime type
 	,sqlHints :{}	// sql hints
@@ -706,7 +706,7 @@ _ui.leftDbObjectServiceMenu ={
 							return ;
 						}
 						
-						if(key=='java_camel_case_naming'||key=='java_json'||'java_valid'){
+						if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
 							_self._createJavaProgram({
 								gubun:gubun
 								,gubnKey :key
@@ -1686,7 +1686,7 @@ _ui.SQL = {
 				}
 				reval.push(item.COLUMN_NAME);
 				
-				valuesStr.push(queryParameter(param_yn, item.COLUMN_NAME , item.DATA_TYPE));
+				valuesStr.push(queryParameter(param_yn, item));
 				
 			}
 			reval.push(' )'+_ui.base.constants.newline +'values( '+ valuesStr.join('')+' )');
@@ -1702,7 +1702,7 @@ _ui.SQL = {
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
 				
-				tmpval = queryParameter(param_yn, item.COLUMN_NAME , item.DATA_TYPE);
+				tmpval = queryParameter(param_yn, item);
 				
 				if(item.KEY_SEQ =='YES'){
 					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
@@ -1728,13 +1728,10 @@ _ui.SQL = {
 			
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
-				if(!firstFlag){
-					reval.push(',');
-				}
-				
-				tmpval = queryParameter(param_yn, item.COLUMN_NAME , item.DATA_TYPE);
 				
 				if(item.KEY_SEQ =='YES'){
+					tmpval = queryParameter(param_yn, item);
+					
 					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
 				}
 			}
@@ -1967,14 +1964,36 @@ _ui.JAVA = {
 		_ui.text.copy(reval);
 	}
 }
-
-function queryParameter(flag, colName, dataType){
+	
+function queryParameter(flag, columnInfo ){
+	var colName = columnInfo.COLUMN_NAME
+		, dataType = columnInfo.DATA_TYPE; 
+	
 	if(flag=='Y'){
 		return _ui.base.constants.queryParameterPrefix+colName+_ui.base.constants.queryParameterSuffix;
 	}else{
-		return _ui.base.dto[dataType].val; 
+		var tmpType = _ui.base.dataType.dto[dataType];
+		
+		if(tmpType.isNum===true){
+			return 1;
+		}else{
+			//var colLen  = columnInfo.COLUMN_SIZE;
+			return tmpType.val; 
+		}
 	}
 }
+
+function randomString(strLen) {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var randomstring = '';
+	for (var i=0; i<strLen; i++) {
+	var rnum = Math.floor(Math.random() * chars.length);
+	randomstring += chars.substring(rnum,rnum+1);
+	}
+	
+	return randomstring;
+}
+
 // camel 변환
 function convertCamel(camelStr){
 	
