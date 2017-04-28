@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.common.constants.DBMenuConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.HttpUtil;
-import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -45,7 +44,7 @@ public class AdminController{
 	@RequestMapping({"/","/main"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
 		return  new ModelAndView("/admin/adminMain",model);
 	}
@@ -53,28 +52,28 @@ public class AdminController{
 	@RequestMapping(value = "/report")
 	public ModelAndView report(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/admin/report",model);
 	}
 	
 	@RequestMapping(value = "/managerMgmt")
 	public ModelAndView managerMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/admin/managerMgmt",model);
 	}
 	
 	@RequestMapping(value = "/databaseUserMgmt")
 	public ModelAndView databaseUserMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/admin/databaseUserMgmt",model);
 	}
 	
 	@RequestMapping(value = "/userMenuMgmt")
 	public ModelAndView userMenuMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
 		return new ModelAndView("/admin/userMenuMgmt",model);
 	}
@@ -141,7 +140,7 @@ public class AdminController{
 	 */
 	@RequestMapping(value = "/main/dbConnectionCheck")
 	public @ResponseBody Map dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		DataCommonVO dcv = HttpUtil.getAllParameter(req);
+		ParamMap dcv = HttpUtils.getServletRequestParam(req);
 		
 		return adminServiceImpl.connectionCheck(dcv);
 	}

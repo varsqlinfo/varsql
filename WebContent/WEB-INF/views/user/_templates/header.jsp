@@ -53,7 +53,7 @@
 	         </li>
 	         <li class="divider"></li>
 	         <li>
-	             <a href="<c:url value="/logout.do" />"><i class="fa fa-fw fa-power-off"></i> <spring:message code="btn.logout"/></a>
+	             <a href="<c:url value="/logout" />"><i class="fa fa-fw fa-power-off"></i> <spring:message code="btn.logout"/></a>
 	            </li>
 	        </ul>
     </li>

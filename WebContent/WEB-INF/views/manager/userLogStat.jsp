@@ -56,7 +56,7 @@ function fnAcceptYn(obj){
 	$.ajax({
 		type:'POST'
 		,data:param
-		,url : '<c:url value="./acceptYn.do" />'
+		,url : '<c:url value="./acceptYn" />'
 		,dataType:'JSON'
 		,success:function (response){
 			$('#allcheck').prop('checked', false);
@@ -85,7 +85,7 @@ function fnSearch(no){
 	$.ajax({
 		type:'POST'
 		,data:param
-		,url : '<c:url value="./userList.do" />'
+		,url : '<c:url value="./userList" />'
 		,dataType:'JSON'
 		,success:function (response){
 			try{

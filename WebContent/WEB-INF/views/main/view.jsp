@@ -14,19 +14,19 @@
 <body>
 	<form name="joinForm" action="./joinAction.html" method="post">
 		로그인 성공. <br/>
-		<a href="<c:url value='/user/main.do' />">user main</a><br /> 
-		<a href="<c:url value='/manage/main.do' />">manage main</a><br />
-		<a href="<c:url value='/admin/main.do' />">admin main</a><br />
+		<a href="<c:url value='/user/main' />">user main</a><br /> 
+		<a href="<c:url value='/manage/main' />">manage main</a><br />
+		<a href="<c:url value='/admin/main' />">admin main</a><br />
 		<table>
 			<tr>
 				<td>name</td>
 				<td>${pageContext.request.userPrincipal.name} <sec:authorize
 						access="hasRole('USER')">
 					ROLE_USER-=============== <br>
-				</sec:authorize> <sec:authorize access="hasAnyRole('USER','ADMIN')">
+				</sec:authorize> <sec:authorize access="hasAnyAuthority'USER','ADMIN')">
 					ROLE_ADMIN-===============<br>
 					ROLE_USER-===============
-				</sec:authorize> <sec:authorize access="hasRole('MANAGE')">
+				</sec:authorize> <sec:authorize access="hasAnyAuthority'MANAGE')">
 					ROLE_MANAGE-===============<br>
 				</sec:authorize> <br /> Your password is <sec:authentication property="credentials" />
 
@@ -44,7 +44,7 @@
 			<tr>
 				<td>로그아웃</td>
 				<td><input type="button" value="logout"
-					onclick="location.href='<c:url value="/logout.do" />'"></td>
+					onclick="location.href='<c:url value="/logout" />'"></td>
 			</tr>
 		</table>
 	</form>

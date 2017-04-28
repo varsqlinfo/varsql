@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 import com.varsql.auth.Authority;
 import com.varsql.common.util.StringUtil;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.PagingUtil;
 
 @Service
 public class ManagerServiceImpl{
@@ -17,21 +18,13 @@ public class ManagerServiceImpl{
 	@Autowired
 	ManagerDAO manageDAO;
 
-	public Map selectUserList(DataCommonVO paramMap) {
-		int totalcnt = manageDAO.selectUserTotalcnt(paramMap);
-		
-		int page = paramMap.getInt("page",0);
-		int rows = paramMap.getInt("rows",10);
-		
-		int first = (page-1)*rows ;
-		
-		paramMap.put("first", first);
-		paramMap.put("rows", rows);
+	public Map selectUserList(SearchParameter searchParameter) {
+		int totalcnt = manageDAO.selectUserTotalcnt(searchParameter);
 		
 		Map json = new HashMap();
 		if(totalcnt > 0){
-			json.put("paging", PagingUtil.getPageObject(totalcnt, page, rows));
-			json.put("result", manageDAO.selectUserList(paramMap));
+			json.put("paging", PagingUtil.getPageObject(totalcnt, searchParameter));
+			json.put("result", manageDAO.selectUserList(searchParameter));
 		}
 		
 		return json;

@@ -6,24 +6,22 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
+import com.vartech.common.app.beans.SearchParameter;
 
 
 @Repository
 public class QnaDAO extends BaseDAO{
 	
-	public int selectQnaMgmtTotalCnt(DataCommonVO paramMap) {
-		System.out.println("------------------");
-		System.out.println("paramMap : "+ paramMap);
-		System.out.println("------------------");
-		return getSqlSession().selectOne("selectQnaMgmtTotalCnt", paramMap);
+	public int selectQnaMgmtTotalCnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("manageMapper.selectQnaMgmtTotalCnt", searchParameter);
 	}
 	
-	public List<Object> selectQnaMgmtList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("selectQnaMgmtList", paramMap);
+	public List<Object> selectQnaMgmtList(SearchParameter searchParameter) {
+		return getSqlSession().selectList("manageMapper.selectQnaMgmtList", searchParameter);
 	}
 
 	public int updateQnaAnswerContent(DataCommonVO paramMap){
-		return getSqlSession().update("updateQnaAnswerContent", paramMap);
+		return getSqlSession().update("manageMapper.updateQnaAnswerContent", paramMap);
 	}
 
 }

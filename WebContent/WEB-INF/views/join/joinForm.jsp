@@ -61,7 +61,7 @@ function fnInit(){
 <div class="container">
     <h3 class="page-header"><spring:message code="join.form.title"/></h3>
     <!-- form start -->
-    <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join.do' />"  class="form-horizontal well" role="form">
+    <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form">
 
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="join.form.email"/></label>

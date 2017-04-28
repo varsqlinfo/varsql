@@ -81,7 +81,7 @@ _ui.leftDbObject ={
 		
 		VARSQL.req.ajax({      
 		    type:"POST"  
-		    ,url:{gubun:VARSQL.uri.database, url:_ui.options.getUriPrefix('/serviceMenu.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:_ui.options.getUriPrefix('/serviceMenu')}
 		    ,dataType:'json'
 		    ,data:tmpParam
 		    ,success:function (resData){
@@ -236,7 +236,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({      
 		    type:"POST"  
-		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectList.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectList')}
 		    ,dataType:'json'
 		    ,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 		    ,success:function (resData){
@@ -264,7 +264,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({
 		    type:"POST"
-		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectMetadataList.do')}
+		    ,url:{gubun:VARSQL.uri.database, url:_self._getPrefixUri('/dbObjectMetadataList')}
 		    ,dataType:'json'
 		    ,data:param
 		    ,success:function (resData){
@@ -751,7 +751,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    type:"POST"  
-		    ,url:{gubun:VARSQL.uri.database, url:'/sqlData.do'}
+		    ,url:{gubun:VARSQL.uri.database, url:'/sqlData'}
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (resData){
@@ -821,7 +821,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    type:"POST"  
-		    ,url:{gubun:VARSQL.uri.database, url:'/sqlFormat.do'}
+		    ,url:{gubun:VARSQL.uri.database, url:'/sqlFormat'}
 		    ,dataType:'text'
 		    ,data:params 
 		    ,success:function (res){
@@ -925,7 +925,7 @@ _ui.SQL = {
 
 					VARSQL.req.download(_ui.options.downloadForm, {
 						type: 'post'
-						,url: {gubun:VARSQL.uri.database, url:'/dataExport.do'}
+						,url: {gubun:VARSQL.uri.database, url:'/dataExport'}
 						,params:params
 					});
 				}

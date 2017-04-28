@@ -85,7 +85,7 @@
 	</select>
 
 	<select id="adminMapper.selectRoleUserList" parameterType="java.util.Map" resultType="java.util.Map">
-		select a.*, CHAR (a.cre_dt) as char_cre_dt
+		select a.*, a.cre_dt as char_cre_dt
 		from vtuser a
 		where role = 'USER' 
 		and (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 
@@ -100,7 +100,7 @@
 	</select>
 
 	<select id="adminMapper.selectRoleManagerList" parameterType="java.util.Map" resultType="java.util.Map">
-		select a.*, CHAR (a.cre_dt) as char_cre_dt
+		select a.*, a.cre_dt as char_cre_dt
 		from vtuser a
 		where role = 'MANAGER' 
 		and (uname like '%'||#{searchval}||'%' or uid like '%'||#{searchval}||'%') 

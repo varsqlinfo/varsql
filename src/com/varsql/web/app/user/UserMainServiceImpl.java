@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.vartech.common.app.beans.ParamMap;
 
 @Service
 public class UserMainServiceImpl{
@@ -21,7 +22,7 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map selectSearchUserList(DataCommonVO paramMap) {
+	public Map selectSearchUserList(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
 			reval.put(ResultConstants.RESULT_ITEMS, userMainDAO.selectSearchUserList(paramMap));
@@ -39,7 +40,7 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map insertSendSqlInfo(DataCommonVO paramMap) {
+	public Map insertSendSqlInfo(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
 			reval.put(ResultConstants.RESULT, userMainDAO.insertSendSqlInfo(paramMap));
@@ -53,7 +54,7 @@ public class UserMainServiceImpl{
 		return reval; 
 	}
 
-	public Map selectMessageInfo(DataCommonVO paramMap) {
+	public Map selectMessageInfo(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
 			reval.put(ResultConstants.RESULT_ITEMS, userMainDAO.selectMessageInfo(paramMap));
@@ -67,7 +68,7 @@ public class UserMainServiceImpl{
 		return reval; 
 	}
 
-	public Map updateMemoViewDate(DataCommonVO paramMap) {
+	public Map updateMemoViewDate(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
 			reval.put(ResultConstants.RESULT, userMainDAO.updateMemoViewDate(paramMap));

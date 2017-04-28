@@ -60,7 +60,7 @@ public class JoinController {
 		
 		ModelAndView mav = null;
 		if(result){
-			mav = new ModelAndView("forward:/join/joinLogin.do");
+			mav = new ModelAndView("forward:/join/joinLogin");
 		}else{
 			mav=new ModelAndView("/join/");
 		}

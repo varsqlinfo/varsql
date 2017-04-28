@@ -35,7 +35,7 @@ function fnSearch1(no){
 	VARSQL.req.ajax({
 		type:'POST'
 		,data:param
-		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/userList.do'}
+		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/userList'}
 		,dataType:'JSON'
 		,success:function (response){
 				
@@ -90,7 +90,7 @@ function fnSearch2(no){
 	VARSQL.req.ajax({
 		type:'POST'
 		,data:param
-		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerList.do'}
+		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
 		,dataType:'JSON'
 		,success:function (response){
 				
@@ -151,7 +151,7 @@ function fnManagerRoleEvent(pType){
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerRoleMgmt.do'}
+			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerRoleMgmt'}
 			,dataType:'JSON'
 			,success:function (response){
 				fnSearch1();	

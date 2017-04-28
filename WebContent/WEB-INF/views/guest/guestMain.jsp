@@ -37,6 +37,7 @@ var guestMain ={
 		_self.search();
 	}
 	,initEvt : function (){
+		var _self = this; 
 		$('.btnMain').click(function (){
 			location.href ='${varsqlLogoutUrl}';
 		});
@@ -78,7 +79,7 @@ var guestMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.guest, url:'/detailQna.do'}
+			,url : {gubun:VARSQL.uri.guest, url:'/detailQna'}
 			,dataType:'JSON'
 			,success:function (response){
 				var item = response.result?response.result:{};
@@ -88,7 +89,7 @@ var guestMain ={
 				$('#title').focus();
 				$('#qnaid').val(item.QNAID);
 				
-				$('#guestForm').attr('action','<c:url value="/guest/updQna.do" />');
+				$('#guestForm').attr('action','<c:url value="/guest/updQna" />');
 				
 			}
 		});
@@ -100,7 +101,7 @@ var guestMain ={
 		}
 		$('#qnaid').val($('.open').attr('qnaid'));
 		
-		$('#guestForm').attr('action','<c:url value="/guest/delQna.do" />');
+		$('#guestForm').attr('action','<c:url value="/guest/delQna" />');
 		
 		document.guestForm.submit();
 	}
@@ -114,7 +115,7 @@ var guestMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url :{gubun:VARSQL.uri.guest, url:'/qnaList.do'}
+			,url :{gubun:VARSQL.uri.guest, url:'/qnaList'}
 			,dataType:'JSON'
 			,success:function (response){
 				try{
@@ -199,7 +200,7 @@ var guestMain ={
 		</h3>
 		<!-- form start -->
 		<form name="guestForm" id="guestForm"
-			action="<c:url value="/guest/insQna.do" />" method="post"
+			action="<c:url value="/guest/insQna" />" method="post"
 			class="form-horizontal well" role="form">
 			<input type="hidden" name="qnaid" id="qnaid" value="">
 			<div class="form-group">

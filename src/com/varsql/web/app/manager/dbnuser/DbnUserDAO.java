@@ -7,17 +7,18 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
+import com.vartech.common.app.beans.SearchParameter;
 
 
 @Repository
 public class DbnUserDAO extends BaseDAO{
 	
-	public int selectdbListTotalCnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("manageMapper.selectdbListTotalCnt", paramMap);
+	public int selectdbListTotalCnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("manageMapper.selectdbListTotalCnt", searchParameter);
 	}
 	
-	public List<Object> selectdbList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("manageMapper.selectdbList", paramMap);
+	public List<Object> selectdbList(SearchParameter searchParameter) {
+		return getSqlSession().selectList("manageMapper.selectdbList", searchParameter);
 	}
 
 	public int updateQnaAnswerContent(DataCommonVO paramMap){

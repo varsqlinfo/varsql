@@ -11,18 +11,19 @@ import org.springframework.stereotype.Repository;
 import com.varsql.auth.Authority;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
+import com.vartech.common.app.beans.SearchParameter;
 
 
 @Repository
 public class ManagerDAO extends BaseDAO{
 	
 	
-	public int selectUserTotalcnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("manageMapper.selectUserTotalcnt", paramMap);
+	public int selectUserTotalcnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("manageMapper.selectUserTotalcnt", searchParameter);
 	}
 	
-	public List<Object> selectUserList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("manageMapper.selectUserList", paramMap);
+	public List<Object> selectUserList(SearchParameter searchParameter) {
+		return getSqlSession().selectList("manageMapper.selectUserList", searchParameter);
 	}
 
 	public boolean updateAccept(String[] viewidArr, DataCommonVO paramMap){

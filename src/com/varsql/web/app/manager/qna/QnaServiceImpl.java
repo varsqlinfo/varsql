@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.PagingUtil;
 
 @Service
 public class QnaServiceImpl{
@@ -15,15 +16,13 @@ public class QnaServiceImpl{
 	@Autowired
 	QnaDAO qnaDAO;
 
-	public Map selectQnaMgmtList(DataCommonVO paramMap) {
-		int totalcnt = qnaDAO.selectQnaMgmtTotalCnt(paramMap);
-		
-		paramMap = VarsqlUtil.setPagingParam(paramMap);
+	public Map selectQnaMgmtList(SearchParameter searchParameter) {
+		int totalcnt = qnaDAO.selectQnaMgmtTotalCnt(searchParameter);
 		
 		Map json = new HashMap();
 		if(totalcnt > 0){
-			json.put("paging", PagingUtil.getPageObject(totalcnt, paramMap));
-			json.put("result", qnaDAO.selectQnaMgmtList(paramMap));
+			json.put("paging", PagingUtil.getPageObject(totalcnt, searchParameter));
+			json.put("result", qnaDAO.selectQnaMgmtList(searchParameter));
 		}
 		
 		return json;

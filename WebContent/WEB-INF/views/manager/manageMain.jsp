@@ -58,7 +58,7 @@ var manageMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/acceptYn.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
 			,dataType:'JSON'
 			,success:function (response){
 				$('#allcheck').prop('checked', false);
@@ -78,7 +78,7 @@ var manageMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/userList.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/userList'}
 			,dataType:'JSON'
 			,success:function (response){
 	    		var resultLen = response.result?response.result.length:0;

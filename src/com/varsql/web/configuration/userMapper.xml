@@ -76,7 +76,7 @@
 	</select>
 	
 	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
-		select a.*, CHAR (a.cre_dt) as char_cre_dt , CHAR (a.upd_dt) as char_upd_dt 
+		select a.*, a.cre_dt as char_cre_dt , a.upd_dt as char_upd_dt 
 		from vtqna a
 		where cre_id =#{uid}
 		and del_yn !='Y'
@@ -85,7 +85,7 @@
 	</select>
 	
 	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
-		select a.*, CHAR (a.cre_dt) as char_cre_dt 
+		select a.*, a.cre_dt as char_cre_dt 
 		from vtqna a
 		where del_yn !='Y'
 		and qnaid=#{qnaid}

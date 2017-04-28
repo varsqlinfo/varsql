@@ -36,7 +36,7 @@ var dbUserMgmt ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList'}
 			,dataType:'JSON'
 			,success:function (response){
 				try{
@@ -82,7 +82,7 @@ var dbUserMgmt ={
 			,data:{
 				vconnid:$('#vconnid').val()
 			}
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbnUserMappingList.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbnUserMappingList'}
 			,dataType:'JSON'
 			,success:function (response){
 				var resultLen = response.result?response.result.length:0;
@@ -134,7 +134,7 @@ var dbUserMgmt ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/addDbUser.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/addDbUser'}
 			,dataType:'JSON'
 			,success:function (response){
 				

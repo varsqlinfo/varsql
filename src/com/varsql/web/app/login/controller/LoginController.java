@@ -32,7 +32,13 @@ public class LoginController {
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		
-		if(auth != null){	
+		
+		
+		System.out.println("111111111111111111111111111111111");
+		System.out.println("auth : "+auth);
+		System.out.println("111111111111111111111111111111111");
+		
+		if(auth != null && !"anonymousUser".equals(auth.getPrincipal())){	
 			final Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
 			
 			String url  = Authority.GUEST.mainPage();
@@ -70,6 +76,6 @@ public class LoginController {
 	
 	@RequestMapping(value = "/accessDenied")
 	public String accessDenied() throws Exception {
-		return "redirect:/login.do";
+		return "redirect:/login";
 	}
 }

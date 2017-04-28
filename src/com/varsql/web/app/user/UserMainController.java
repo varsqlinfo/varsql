@@ -17,7 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.HttpUtil;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -47,7 +48,7 @@ public class UserMainController {
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
 		return  new ModelAndView("/user/userMain",model);
@@ -58,7 +59,7 @@ public class UserMainController {
 			,HttpServletResponse response
 			) throws Exception {	
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.selectSearchUserList(paramMap);
@@ -77,7 +78,7 @@ public class UserMainController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.insertSendSqlInfo(paramMap);
@@ -88,7 +89,7 @@ public class UserMainController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.selectMessageInfo(paramMap);
@@ -105,7 +106,7 @@ public class UserMainController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.updateMemoViewDate(paramMap);

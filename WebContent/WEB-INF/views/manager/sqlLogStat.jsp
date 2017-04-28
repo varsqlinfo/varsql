@@ -144,7 +144,7 @@ var sqlLogStat ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList'}
 			,dataType:'JSON'
 			,success:function (response){
 					
@@ -180,7 +180,7 @@ var sqlLogStat ={
 				,s_date: $('#sdt').val()+' 00:00:00'
 				,e_date: $('#edt').val()+' 23:59:59'
 			}
-			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDateStats.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
 			,dataType:'JSON'
 			,success:function (response){
 				var items = response.items ||[]; 
@@ -205,7 +205,7 @@ var sqlLogStat ={
 				,s_date:  sObj+' 00:00:00'
 				,e_date:  sObj+' 23:59:59'
 			}
-			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayStats.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
 			,dataType:'JSON'
 			,success:function (response){
 				var items = response.items ||[]; 
@@ -230,7 +230,7 @@ var sqlLogStat ={
 				,e_date:date+' 23:59:59'
 				,command_type :type
 			}
-			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank.do'}
+			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
 			,dataType:'JSON'
 			,success:function (response){
 				var names = {}; 

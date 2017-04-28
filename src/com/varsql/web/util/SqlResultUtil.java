@@ -22,6 +22,8 @@ import java.util.Map;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.PagingUtil;
 
 /**
  *날짜 관련 util
@@ -38,7 +40,7 @@ public class SqlResultUtil {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, DataCommonVO paramMap, int maxRow) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, ParamMap paramMap, int maxRow) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}

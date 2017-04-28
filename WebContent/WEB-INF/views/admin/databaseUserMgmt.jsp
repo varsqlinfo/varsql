@@ -39,7 +39,7 @@ var databaseUserMgmt = {
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.admin, url:'/main/dblist.do'}
+			,url : {gubun:VARSQL.uri.admin, url:'/main/dblist'}
 			,dataType:'JSON'
 			,success:function (response){
 				try{
@@ -96,7 +96,7 @@ var databaseUserMgmt = {
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/addDbManager.do'}
+			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/addDbManager'}
 			,dataType:'JSON'
 			,success:function (response){
 				
@@ -111,7 +111,7 @@ var databaseUserMgmt = {
 			,data:{
 				vconid:sObj.attr('conid')
 			}
-			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList.do'}
+			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
 			,dataType:'JSON'
 			,success:function (response){
 				var resultLen = response.result?response.result.length:0;

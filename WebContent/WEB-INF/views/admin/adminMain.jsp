@@ -129,7 +129,7 @@ var adminMain = {
 			,data:{
 				vconid:$('#vconid').val()
 			}
-			,url : '<c:url value="/admin/main/dbDetail.do" />'
+			,url : '<c:url value="/admin/main/dbDetail" />'
 			,dataType:'JSON'
 			,success:function (response){
 				var result = response.result;
@@ -168,7 +168,7 @@ var adminMain = {
 		$.ajax({
 			type:'POST'
 			,data:param
-			,url : '<c:url value="/admin/main/dblist.do" />'
+			,url : '<c:url value="/admin/main/dblist" />'
 			,dataType:'JSON'
 			,success:function (response){
 				try{
@@ -220,7 +220,7 @@ var adminMain = {
 		$.ajax({
 			type:'POST'
 			,data:$("#addForm").serialize()
-			,url : '<c:url value="/admin/main/dbSave.do" />'
+			,url : '<c:url value="/admin/main/dbSave" />'
 			,dataType:'JSON'
 			,success:function (response){
 				_this.search();
@@ -256,7 +256,7 @@ var adminMain = {
 			,data: {
 				vconid : $('#vconid').val() 
 			}
-			,url : '<c:url value="/admin/main/dbDelete.do" />'
+			,url : '<c:url value="/admin/main/dbDelete" />'
 			,dataType:'JSON'
 			,success:function (response){
 				_this.search();
@@ -285,7 +285,7 @@ var adminMain = {
 		$.ajax({
 			type:'POST'
 			,data: $("#addForm").serialize()
-			,url : '<c:url value="/admin/main/dbConnectionCheck.do" />'
+			,url : '<c:url value="/admin/main/dbConnectionCheck" />'
 			,dataType:'JSON'
 			,success:function (response){
 				if(response.result =='success'){

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ParamMap;
 
 
 @Repository
@@ -33,11 +34,11 @@ public class UserMainDAO extends BaseDAO{
 		return getSqlSession().selectList("userMapper.selectDbUserMappingList", paramMap);
 	}
 	
-	public List selectSearchUserList(DataCommonVO paramMap) {
+	public List selectSearchUserList(ParamMap paramMap) {
 		return getSqlSession().selectList("userMapper.selectSearchUserList", paramMap );
 	}
 	
-	public int insertSendSqlInfo(DataCommonVO paramMap) {
+	public int insertSendSqlInfo(ParamMap paramMap) {
 		SqlSession batch = getSqlSession(true);
 		String [] recvArr = paramMap.getString("recv_id").split(";;");
 		
@@ -56,11 +57,11 @@ public class UserMainDAO extends BaseDAO{
 		return 0; 
 	}
 
-	public List selectMessageInfo(DataCommonVO paramMap) {
+	public List selectMessageInfo(ParamMap paramMap) {
 		return getSqlSession().selectList("userMapper.selectMessageInfo", paramMap );
 	}
 	
-	public int updateMemoViewDate(DataCommonVO paramMap) {
+	public int updateMemoViewDate(ParamMap paramMap) {
 		return getSqlSession().update("userMapper.updateMemoViewDate", paramMap);
 	}
 }

@@ -89,7 +89,7 @@ function fnClickDbInfo(sObj){
 		,data:{
 			vconid:$('#vconid').val()
 		}
-		,url : '<c:url value="/admin/main/dbDetail.do" />'
+		,url : '<c:url value="/admin/main/dbDetail" />'
 		,dataType:'JSON'
 		,success:function (response){
 			var result = response.result;
@@ -126,7 +126,7 @@ function fnSearch(no){
 	$.ajax({
 		type:'POST'
 		,data:param
-		,url : '<c:url value="/admin/main/dblist.do" />'
+		,url : '<c:url value="/admin/main/dblist" />'
 		,dataType:'JSON'
 		,success:function (response){
 			try{
@@ -174,7 +174,7 @@ function fnSave(){
 	$.ajax({
 		type:'POST'
 		,data:$("#addForm").serialize()
-		,url : '<c:url value="/admin/main/dbSave.do" />'
+		,url : '<c:url value="/admin/main/dbSave" />'
 		,dataType:'JSON'
 		,success:function (response){
 			fnSearch();
@@ -209,7 +209,7 @@ function fnDelete(){
 		,data: {
 			vconid : $('#vconid').val() 
 		}
-		,url : '<c:url value="/admin/main/dbDelete.do" />'
+		,url : '<c:url value="/admin/main/dbDelete" />'
 		,dataType:'JSON'
 		,success:function (response){
 			fnSearch();
@@ -252,7 +252,7 @@ function fnConnectionCheck(){
 		,data: {
 			vconid : $('#vconid').val() 
 		}
-		,url : '<c:url value="/admin/main/dbConnectionCheck.do" />'
+		,url : '<c:url value="/admin/main/dbConnectionCheck" />'
 		,dataType:'JSON'
 		,success:function (response){
 			if(response.result =='success'){

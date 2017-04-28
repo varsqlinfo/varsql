@@ -18,6 +18,8 @@ import com.varsql.web.app.manager.dbnuser.DbnUserServiceImpl;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -38,20 +40,13 @@ public class SqlStatsController {
 	DbnUserServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"/dbList"})
-	public @ResponseBody Map dbList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
-			,HttpServletRequest req
-		) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody Map dbList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		paramMap.put(VarsqlParamConstants.SEARCH_NO, page);
-		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
-		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		paramMap.put(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		
-		return dbnUserServiceImpl.selectdbList(paramMap);
+		return dbnUserServiceImpl.selectdbList(searchParameter);
 	}
 	
 	/**

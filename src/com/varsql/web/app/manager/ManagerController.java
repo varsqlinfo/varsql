@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.DateUtil;
-import com.varsql.web.util.HttpUtil;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.DateUtils;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -42,52 +45,45 @@ public class ManagerController {
 	@RequestMapping({"/","/main"})
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/manager/manageMain", model);
 	}
 	
 	@RequestMapping(value="/dbUserMgmt")
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/manager/dbUserMgmt");
 	}
 	
 	@RequestMapping({"/qnaMgmt"})
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/manager/qnaMgmt",model);
 	}
 	
 	@RequestMapping({"/sqlLogStat"})
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
-		model.addAttribute("startDate", DateUtil.getCurrentDayCalc(-7));
-		model.addAttribute("currentDate", DateUtil.getCurrentDate());
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
+		model.addAttribute("currentDate", DateUtils.getCurrentDate());
 		return new ModelAndView("/manager/sqlLogStat",model);
 	}
 	
 	@RequestMapping({"/userLogStat"})
 	public ModelAndView userLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtil.getOriginatingRequestUri(req));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/manager/userLogStat",model);
 	}
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody Map userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
-			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
-		) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody Map userList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
-		paramMap.put("page", page);
-		paramMap.put("rows", rows);
-		paramMap.put("searchval", searchval);
-		
-		return managerServiceImpl.selectUserList(paramMap);
+		return managerServiceImpl.selectUserList(searchParameter);
 	}
 	
 	@RequestMapping({"/acceptYn"})

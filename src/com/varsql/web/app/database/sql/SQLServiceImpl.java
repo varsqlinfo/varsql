@@ -32,9 +32,10 @@ import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.PagingUtil;
 import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.PagingUtil;
 
 /**
  * 
@@ -93,7 +94,7 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList sqlData(DataCommonVO paramMap) throws Exception {
+	public ArrayList sqlData(ParamMap paramMap) throws Exception {
 		String reqSql = paramMap.getString(VarsqlParamConstants.SQL);
 		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql);
 		
@@ -189,7 +190,7 @@ public class SQLServiceImpl{
 	 * @param maxRow
 	 * @return
 	 */
-	protected Object getRequestSqlData(DataCommonVO paramMap, Connection conn, SqlSource tmpSqlSource) {
+	protected Object getRequestSqlData(ParamMap paramMap, Connection conn, SqlSource tmpSqlSource) {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		Object reVal=null;
@@ -247,7 +248,7 @@ public class SQLServiceImpl{
 	 * @param tmpSqlSource
 	 * @param ssrv
 	 */
-	private void sqlLogInsert(DataCommonVO paramMap, SqlSource tmpSqlSource, SqlSourceResultVO ssrv) {
+	private void sqlLogInsert(ParamMap paramMap, SqlSource tmpSqlSource, SqlSourceResultVO ssrv) {
 		try{
 	    	DataCommonVO logInfoMap = new DataCommonVO();
 	    	
@@ -372,7 +373,7 @@ public class SQLServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map selectSqlList(DataCommonVO paramMap) {
+	public Map selectSqlList(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
 			
@@ -410,7 +411,7 @@ public class SQLServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map deleteSqlSaveInfo(DataCommonVO paramMap) {
+	public Map deleteSqlSaveInfo(ParamMap paramMap) {
 
 		Map reval =  new HashMap();
 		try{

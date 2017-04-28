@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -32,19 +35,13 @@ public class QnaController {
 	QnaServiceImpl qnaServiceImpl;
 	
 	@RequestMapping({"/qnaMgmtList"})
-	public @ResponseBody Map qnaMgmtList(@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
-			,@RequestParam(value = "answerYn", required = false, defaultValue = "Y" )  String answerYn
-		) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody Map qnaMgmtList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
-		paramMap.put(VarsqlParamConstants.SEARCH_NO, page);
-		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
-		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
-		paramMap.put("answerYn", answerYn);
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		return qnaServiceImpl.selectQnaMgmtList(paramMap);
+		return qnaServiceImpl.selectQnaMgmtList(searchParameter);
 	}
 	
 	

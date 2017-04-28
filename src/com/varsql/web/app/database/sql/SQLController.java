@@ -19,7 +19,8 @@ import com.varsql.web.app.database.DatabaseController;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.HttpUtil;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.HttpUtils;
 
 /**
  * 
@@ -62,7 +63,7 @@ public class SQLController {
 			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype,
 			HttpServletRequest req) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
@@ -209,7 +210,7 @@ public class SQLController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
@@ -230,7 +231,7 @@ public class SQLController {
 			,HttpServletResponse response
 			) throws Exception {
 		
-		DataCommonVO paramMap = HttpUtil.getAllParameter(req);
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
