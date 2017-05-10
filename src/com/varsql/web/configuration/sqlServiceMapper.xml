@@ -7,18 +7,18 @@
 	
 	<!-- 사용자 sql 로그 저장 -->
 	<insert id="sqlServiceMapper.insertSqlUserLog" parameterType="java.util.Map">
-		insert into vtsql_log (
-			vconnid
-			, uid
-			, start_time
-			, s_mm
-			, s_dd
-			, s_hh
-			, end_time
-			, delay_time
-			, log_sql
-			, result_count
-			, command_type
+		insert into VTSQL_LOG (
+			VCONNID
+			, UID
+			, START_TIME
+			, S_MM
+			, S_DD
+			, S_HH
+			, END_TIME
+			, DELAY_TIME
+			, LOG_SQL
+			, RESULT_COUNT
+			, COMMAND_TYPE
 		)
 		values( 
 			#{vconnid}

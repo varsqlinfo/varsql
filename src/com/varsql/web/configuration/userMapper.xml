@@ -7,35 +7,35 @@
 
 	<select id="userMapper.selectUserDetail" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
 		select * 
-		from vtuser 
+		from VTUSER 
 		where viewid =#{viewid}
 	</select>
 	
 	<select id="userMapper.selectIdCheck" parameterType="java.util.Map" resultType="int">
 		select count(1)as cnt 
-		from vtuser
+		from VTUSER
 		where uid =#{uid} 
 	</select>
 
 	<select id="userMapper.selectUserMaxVal" resultType="java.lang.String">
-		select max(viewid)as maxval from vtuser 
+		select max(viewid)as maxval from VTUSER 
 	</select>
 	
 	<insert id="userMapper.insertUserInfo" parameterType="java.util.Map">
-		insert  into vtuser (
-			viewid 
-			, uid 
-			, upw 
-			, uname 
-			, org_nm 
-			, dept_nm 
-			, uemail 
-			, role 
-			, description 
-			, accept_yn
-			, cre_id 
-			, upd_id
-			, cre_dt
+		insert  into VTUSER (
+			VIEWID 
+			, UID 
+			, UPW 
+			, UNAME 
+			, ORG_NM 
+			, DEPT_NM 
+			, UEMAIL 
+			, ROLE 
+			, DESCRIPTION 
+			, ACCEPT_YN
+			, CRE_ID 
+			, UPD_ID
+			, CRE_DT
 		) 
 		values(
 			#{viewid}
@@ -55,55 +55,55 @@
 	</insert>
 	
 	<update id="userMapper.updateUserInfo" parameterType="java.util.Map">
-		update vtuser 
+		update VTUSER 
 		set 
-			upw=#{upw}
-			, uname =#{uname}
-			, org_nm =#{org_nm}
-			, dept_nm =#{dept_nm}
-			, uemail =#{uemail}
-			, description =#{description}
-			, upd_dt = CURRENT TIMESTAMP
-		where viewid =#{viewid}
+			UPW=#{upw}
+			, UNAME =#{uname}
+			, ORG_NM =#{org_nm}
+			, DEPT_NM =#{dept_nm}
+			, UEMAIL =#{uemail}
+			, DESCRIPTION =#{description}
+			, UPD_DT = CURRENT TIMESTAMP
+		where VIEWID =#{viewid}
 	</update>
 	
 	<select id="userMapper.selectQnaTotalCnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt
-		from vtqna a
-		where cre_id =#{uid}
-		and del_yn !='Y'
-		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
+		from VTQNA a
+		where CRE_ID =#{uid}
+		and DEL_YN !='Y'
+		and (TITLE like '%'||#{searchval}||'%' or QUESTION like '%'||#{searchval}||'%') 
 	</select>
 	
 	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
-		select a.*, a.cre_dt as char_cre_dt , a.upd_dt as char_upd_dt 
-		from vtqna a
-		where cre_id =#{uid}
-		and del_yn !='Y'
-		and (title like '%'||#{searchval}||'%' or question like '%'||#{searchval}||'%') 
-		order by qnaid desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+		select a.*, a.CRE_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
+		from VTQNA a
+		where CRE_ID =#{uid}
+		and DEL_YN !='Y'
+		and (TITLE like '%'||#{searchval}||'%' or QUESTION like '%'||#{searchval}||'%') 
+		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
 	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
-		select a.*, a.cre_dt as char_cre_dt 
-		from vtqna a
-		where del_yn !='Y'
-		and qnaid=#{qnaid}
+		select a.*, a.CRE_DT as CHAR_CRE_DT 
+		from VTQNA a
+		where DEL_YN !='Y'
+		and QNAID=#{qnaid}
 	</select>
 	
 	<select id="userMapper.selectQnaMaxVal" parameterType="java.util.Map" resultType="java.lang.String">
-		select max(qnaid)as maxval from vtqna
+		select max(QNAID)as MAXVAL from VTQNA
 	</select>
 	
 	<insert id="userMapper.insertQnaInfo" parameterType="java.util.Map">
-		insert  into vtqna (
-			qnaid 
-			, title 
-			, question 
-			, cre_id 
-			, cre_dt 
-			, del_yn
-			, answer
+		insert  into VTQNA (
+			QNAID 
+			, TITLE 
+			, QUESTION 
+			, CRE_ID 
+			, CRE_DT 
+			, DEL_YN
+			, ANSWER
 		)
 		values(
 			#{qnaid}
@@ -117,33 +117,33 @@
 	</insert>
 	
 	<update id="userMapper.updateQnaInfo" parameterType="java.util.Map">
-		update vtqna
+		update VTQNA
 		set
-			title =#{title}
-			,question =#{question}
-		where qnaid=#{qnaid}
+			TITLE =#{title}
+			,QUESTION =#{question}
+		where QNAID=#{qnaid}
 	</update>
 	
 	<update id="userMapper.deleteQnaInfo" parameterType="java.util.Map">
-		update vtqna 
+		update VTQNA 
 		set
-			del_yn ='Y'
-		where qnaid=#{qnaid}
+			DEL_YN ='Y'
+		where QNAID=#{qnaid}
 	</update>
 	
 	<select id="userMapper.selectUserDbUseList" parameterType="java.util.Map" resultType="java.util.Map">
-		select  vconnid, vtype, vname
-		from vtconnection a
+		select  VCONNID, VTYPE, VNAME
+		from VTCONNECTION a
 		where
 		<choose>
 			<when test="role=='ADMIN'">
 				1=1
 			</when>
 			<when test="role=='MANAGER'">
-				a.VCONNID in (select vconnid from vtdatabase_manager_role where viewid = #{uid})
+				a.VCONNID in (select VCONNID from VTDATABASE_MANAGER_ROLE where VIEWID = #{uid})
 			</when>
 			<when test="role=='USER'">
-				a.VCONNID in (select vconnid from vtdatabase_user_role where viewid = #{uid} )
+				a.VCONNID in (select vconnid from VTDATABASE_USER_ROLE where VIEWID = #{uid} )
 			</when>
 	    	<otherwise>
 	      		1!=1

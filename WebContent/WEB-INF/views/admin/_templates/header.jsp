@@ -19,7 +19,6 @@
 		                </a>
 		                <ul class="top-setting-menu dropdown-menu">
 		                	<%@ include file="/WEB-INF/include/screen.jspf"%>
-		                	<li class="divider"></li>
 		                    <li>
 		                        <a href="#"><i class="fa fa-fw fa-user"></i> <spring:message code="btn.profile"/></a>
 		                    </li>

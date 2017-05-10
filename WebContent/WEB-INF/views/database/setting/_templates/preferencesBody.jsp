@@ -30,7 +30,8 @@ function init(){
 	treeItem.push({id:'4',pid:'top',name:'코드편집기',url:'<c:url value="/preferences/codeEditerSetting.vsql?vconnid=${param.vconnid}" />'});	
 	treeItem.push({id:'4-1',pid:'4',name:'글꼴',url:'<c:url value="/preferences/sqlFormatSetting.vsql?vconnid=${param.vconnid}" />'});	
 	treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/preferences/sqlFormatSetting.vsql?vconnid=${param.vconnid}" />'});	
-	treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/preferences/exportSetting.vsql?vconnid=${param.vconnid}" />'});	
+	treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/preferences/exportSetting.vsql?vconnid=${param.vconnid}" />'});
+	treeItem.push({id:'6',pid:'top',name:'코드 생성설정',url:'<c:url value="/preferences/keySetting.vsql?vconnid=${param.vconnid}" />'});
 
 	$.pubTree("#preferences_area", {
 		source : treeItem

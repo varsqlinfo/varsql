@@ -82,6 +82,7 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
             .addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/")
                 .setCachePeriod(CACHE_PERIOD);
+        
     }
 
     @Override

@@ -74,7 +74,7 @@ body {
 				<button type="button" class="btn btn-default"
 					onclick="$('#id').val('manage');$('#password').val('manage');">Manage</button>
 				<button type="button" class="btn btn-default"
-					onclick="$('#id').val('abcde10@naver.com');$('#password').val('asdfas');">User</button>
+					onclick="$('#id').val('aaa@bbb.com');$('#password').val('123456');">User</button>
 			</div>
 			<input class="form-control" id="id" name="id" value="manage"
 				type="text" placeholder="<spring:message code="login.form.id"/>"

@@ -18,6 +18,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tree.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 
 
@@ -32,6 +33,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>

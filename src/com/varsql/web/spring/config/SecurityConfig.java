@@ -2,6 +2,7 @@ package com.varsql.web.spring.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,6 +12,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.varsql.auth.UserService;
 import com.varsql.auth.VarsqlAccessDeniedHandler;
+import com.varsql.auth.VarsqlAuthenticationProvider;
 import com.varsql.auth.VarsqlAuthenticationSuccessHandler;
 import com.varsql.configuration.VarsqlWebConfig;
 
@@ -35,19 +37,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		configureLogin(http);
+		configureHttpSecurity(http);
 	    configureLogout(http);
 	    configureAuth(http);
 	    configureSession(http);
 	    configureSSOFilter(http);
 	    
-        http.csrf().disable()
-            .httpBasic();
+        
     }
+	private void configureHttpSecurity(HttpSecurity http) throws Exception {
+		http.headers()
+			.frameOptions().sameOrigin().httpStrictTransportSecurity()
+			.disable()
+			.and()
+			.csrf().disable()
+			.httpBasic();
+	}
 	private void configureSession(HttpSecurity http) throws Exception {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
 		/*
 		.invalidSessionUrl("/gainCommon/sessioninvalidation?error_code=1")
-		.sessionAuthenticationErrorUrl("/gainCommon/sessioninvalidation?error_code=2")
+		.sessionAuthenticationErrorUrl("/gainCommon/sessionin validation?error_code=2")
 		.maximumSessions(1)
 		.expiredUrl("/gainCommon/sessioninvalidation?error_code=3")
 		.maxSessionsPreventsLogin(true);
@@ -143,6 +153,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
     
     @Bean
+    public VarsqlAuthenticationProvider varsqlAuthenticationProvider() {
+    	return new VarsqlAuthenticationProvider();
+    }
+    
+    @Bean
     public VarsqlAccessDeniedHandler gainAccessDeniedHandler() {
     	return new VarsqlAccessDeniedHandler();
     }
@@ -150,4 +165,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private void configureSSOFilter(HttpSecurity http) {
     	
 	}
+    
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    	 auth.authenticationProvider(varsqlAuthenticationProvider());
+    }
 }

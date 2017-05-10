@@ -45,7 +45,7 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
     </definition>
     
-    <definition name="/database/setting/**" extends="no-template">
+    <definition name="/database/setting/**" template="/WEB-INF/views/database/setting/_templates/preferencesEditMain.jsp">
         <put-attribute name="body" value="/WEB-INF/views/database/setting/{1}.jsp" />
     </definition>
     

@@ -1,17 +1,11 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<sec:authorize access="hasAnyAuthority('USER','MANAGER','ADMIN')">
-	<li>
-		<a href="<c:url value="/user/" />"><spring:message code="screen.user"/></a>
-	</li>
-</sec:authorize>
-<sec:authorize access="hasAnyAuthority('MANAGER','ADMIN')">
-	<li>
-		<a href="<c:url value="/manager/" />"><spring:message code="screen.manage"/></a>
-	</li>
-</sec:authorize>
-<sec:authorize access="hasAnyAuthority('ADMIN')">
-	<li>
-		<a href="<c:url value="/admin/" />"><spring:message code="screen.admin"/></a>
-	</li>
-</sec:authorize>
+
+<c:if test="${fn:length(sessionScope['var.user.screen']) > 1}">
+	<c:forEach var="screenInfo" items="${sessionScope['var.user.screen']}" begin="0" varStatus="status">
+		<li>
+			<a href="<c:url value="${screenInfo.mainPage}" />"><spring:message code="${screenInfo.i18N}"/></a>
+		</li>       
+	</c:forEach>
+	<li class="divider"></li>
+</c:if>
