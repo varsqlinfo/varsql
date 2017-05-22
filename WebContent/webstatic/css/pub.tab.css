@@ -1,0 +1,73 @@
+/*
+ * pub.css: 0.0.1
+ * ========================================================================
+ * Copyright 2015 ytkim
+ * Licensed under MIT
+ * http://www.opensource.org/licenses/mit-license.php
+*/
+
+/* dialog LAYER */
+.pub-tab-wrapper{
+	background: #fff;
+    height: 25px;
+    padding-top: 2px;
+}
+
+.pub-tab{
+	position:relative;
+	-webkit-box-sizing: content-box !important;
+	-moz-box-sizing: content-box !important;
+	box-sizing: content-box !important;
+}
+.pub-tab-scroll{
+	overflow:hidden;
+	padding: 2px 0px 2px 0px;
+}
+
+.pub-tab-move-area{
+	background:#fff;
+	z-index:1;
+	position:absolute; 
+	right:0px;
+	top:0px;
+	bottom: 0px;
+    margin-top: 1px;
+}
+.pub-tab-move-area >span:hover{
+	background:#dff0d8;
+	border: 1px solid #bfb8b8;
+}
+.pub-tab-prev{
+	cursor : pointer; 
+}
+.pub-tab-next{
+	cursor : pointer; 
+}
+
+.pub-tab-container{	
+	list-style: none;
+	padding: 0px;
+    margin: 0px;
+	display: table;
+    border-bottom: 1px solid #bfb8b8;
+}
+.pub-tab-item{
+	vertical-align: baseline;
+	cursor : pointer; 
+	padding: 0px 5px 0px 0px;
+	display: table-cell;
+}
+.pub-tab-item-cont{
+	border: 1px solid #bfb8b8;
+	padding: 0px 5px;
+	border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+	border-bottom: 0px;
+}
+
+.pub-tab-item.last {
+    padding: 0px 0px;
+}
+.pub-tab-item-cont.active{
+	background:#f1f1f1;
+}

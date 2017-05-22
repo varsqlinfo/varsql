@@ -5,13 +5,8 @@
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
 */
-
-.pubGrid .text-center{
-	text-align:center;
-}
-
 /*bootstrap conflict 막기위해 넣은 코드. */
-.pubGrid-wrapper {
+.pubGrid {
 	font-family: Ubuntu, Arial, "Apple SD Gothic Neo", "���� SD ��� Neo", "NanumBarunGothic", "NanumBarunGothicOTF", "�����ٸ����", "�����ٸ����OTF", "Malgun Gothic", "���� ���", "NanumGothic", "NanumGothicOTF", "�������", "�������OTF", sans-serif; font-size: 14px;  font-weight: light; 
 	border : 1px solid #ddd;
 	font-size:12px;
@@ -27,6 +22,7 @@
 .pubGrid-header-wrapper{
 	background-color: #EFEFEF;
 	overflow-x: hidden;
+    overflow-y: hidden;
 }
 /* header ����*/
 .pubGrid-header {
@@ -100,7 +96,7 @@
 	display:none;	
 }
 
-.pubGrid-body-container{
+.pubGrid-body-scroll{
 	position: relative;
 	margin: 0;
 	padding: 0;
@@ -128,37 +124,51 @@
 	border-top: 0px solid #ddd;
 }
 
-.pubGrid-body .pub-body-td a{
-	text-decoration:none;
-	pointer-events: none;
-    cursor: default;
-	color:#3b3b3b;
+.pubGrid-body{
+	color: #3b3b3b;
 }
-
-
-
 .pubGrid-body .pub-body-td .pub-body-td-click{
-	text-decoration:underline;
-	pointer-events: inherit;
 	cursor: auto;
 	color:#0000CD;
+	cursor:pointer;
 }
 
-.pubGrid-body tbody .pub-body-tr.active {
-	background: #FEF1EC;
+/*
+.pubGrid-body tbody .pub-body-tr.active {background: #FEF1EC;}
+.pubGrid-body tbody .pub-body-tr:hover {background: #F5F8F5;}
+*/
+
+.pubGrid-body tbody .pub-body-tr.tr0{
+   background: #F5F8F5;
+}
+.pubGrid-body tbody .pub-body-tr.tr1{
+   background: F000;
 }
 
-.pubGrid-body tbody .pub-body-tr:hover {
-	background: #F5F8F5;
-}
 .pubGrid-body .pub-body-tr > td > .pub-content {
-	position: relative;
-	margin-right:5px;
-	padding-left:2px;
-	color: #3b3b3b;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.pubGrid-body .pub-body-tr > td .pub-content-cell {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+	padding:1px 2px 1px 2px;
+}
+
+.pubGrid-body .pub-body-tr > td .pub-content-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pubGrid-body .pub-body-td.col-active .pub-content-cell{
+	background: #FEF1EC;
+	-moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box;
 }
 .pubGrid-header .label-wrapper > .pub-header-resizer {
 	position: absolute;
@@ -166,7 +176,7 @@
 	top: 0;
 	width: 5px;
 	height:100%;
-	cursor: e-resize;
+	cursor: col-resize;
 	z-index: 1;
 }
 
@@ -361,10 +371,10 @@
 	padding-top: 0;
 	padding-bottom: 0;
 	font-size: 13px;
-	}
+}
 .compressed-context .divider{
 	margin: 5px 1px;
-	}
+}
 .compressed-context .pub-context-header{
 	padding:1px 13px;
-	}
+}

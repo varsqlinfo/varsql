@@ -39,9 +39,7 @@
 <div class="ui-layout-left-middle-area">
 	<div style="height:100%;width:100%;display:table;">
 		<div class="ui-tabs ui-widget" style="width:100%;display:table-row;">
-			<ul id="leftServiceMenu" style="margin-right: 2px;" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-tl ui-corner-tr" role="tablist">
-				<li>db를 선택하시오.</li>
-			</ul>
+			<div id="leftServiceMenu" style="margin-right: 2px;"></div>
 		</div>
 		<div id="left_service_menu_content" style="width:100%;height:100%;display:table-row;"></div>
 	</div>

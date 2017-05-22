@@ -221,7 +221,11 @@ _ui.layout = {
 			, center__onresize_end:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				try{
 					if($('.db-metadata-area.show-display').length > 0){
-						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-24});
+						
+						// tab 리지이즈						
+						$.pubTab(_ui.leftDbObjectServiceMenu.options.selector).setWidth(obj3.layoutWidth);
+						
+						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-25});
 					}
 				}catch(e){
 					console.log(arguments)
@@ -447,32 +451,30 @@ _ui.leftDbObjectServiceMenu ={
 	
 		if(len < 1) return ; 
 		var item; 
-	
-		var htmStr = new Array();
-		for (var i=0; i<len ; i++ ){
-			item = data[i];
-			htmStr.push('<li class="service_menu_tab ui-state-default ui-corner-top" contentid="'+item.contentid+'" contenturl="'+item.contentid+'"><a href="#tabs-3" class="left-menu-ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-3">'+item.name+'</a></li>');
-		}
 		
-		var beforeSelectContentId = _self.options.active?_self.options.active.attr('contentid'):'';
 		$(_self.options.contentAreaId).empty();
 		$(_self.options.selector).empty();
-		$(_self.options.selector).html(htmStr.join(''));
-		beforeSelectContentId=beforeSelectContentId?beforeSelectContentId:$($('.service_menu_tab')[0]).attr('contentid');
 		
-		$(_self.options.selector+' .service_menu_tab').on('click', function (){
-			var sObj = $(this);
-			_self._off();
-			_self.options.active =sObj;
-			_self._on();
-			var refresh = sObj.attr('refresh')=='Y'?true:false; 
-			sObj.attr('refresh','N');
-			
-			_self._dbObjectList(sObj, refresh);
-		});
+		var serviceElement = $('#left_service_menu_content');
+		$.pubTab(_self.options.selector,{
+			items :data
+			,width:'auto'
+			,addClass :'service_menu_tab'
+			,click : function (item){
+				var sObj = $(this);
+				
+				var refresh = sObj.attr('refresh')=='Y'?true:false; 
+				sObj.attr('refresh','N');
+				_self._dbObjectList(item, refresh);
+				var menuObj =$.pubGrid('#left_service_menu_content>#'+item.contentid); 
+				if(typeof menuObj.resizeDraw !=='undefined'){
+					menuObj.resizeDraw({width: serviceElement.width() ,height: serviceElement.height()});
+				}
+				
+			}
+		})
 		
-		$($('.service_menu_tab[contentid='+beforeSelectContentId+']')).trigger('click');
-		
+		$($('.service_menu_tab')[0]).trigger('click');
 		_self._serviceMenuContextMenu();
 	}
 	,_serviceMenuContextMenu : function (){
@@ -490,16 +492,6 @@ _ui.leftDbObjectServiceMenu ={
 	        	}
 	    	}
 		});
-	}
-	// 텝 메뉴 활성 지우기
-	,_off : function (){
-		var _self = this; 
-		if(_self.options.active) _self.options.active.removeClass('ui-state-active');
-	}
-	// 텝메뉴 활성 시키기
-	,_on : function (){
-		var _self = this; 
-		if(_self.options.active) _self.options.active.addClass('ui-state-active');
 	}
 	// 메타 데이타 케쉬된값 꺼내기
 	,_getMetaCache:function (gubun, key){
@@ -523,7 +515,7 @@ _ui.leftDbObjectServiceMenu ={
 	// 클릭시 테메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
 		var _self = this;
-		var $contentId = selObj.attr('contentid');
+		var $contentId = selObj.contentid;
 		
 		var activeObj = $(_self.options.contentAreaId+'>#'+$contentId);
 		
@@ -901,7 +893,7 @@ _ui.leftDbObjectServiceMenu ={
     				
 			$.pubGrid(_self.options.contentAreaId+'>#functions',{
 				headerView:true
-				,height: _self.metaGridHeight
+				,height: 'auto'
 				,tColItem : [
 					{key :'FUNCTION_NAME', label:'Function',width:200, sort:true}
 					,{key :'FUNCTION_TYPE', label:'설명'}
@@ -948,10 +940,6 @@ _ui.leftDbObjectServiceMenu ={
 		});
 		
 		
-	}
-	//tab 종료 값 얻기
-	,_getContentId:function (){
-		return this.options.active.attr('contentid');
 	}
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
