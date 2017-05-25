@@ -145,6 +145,7 @@ Plugin.prototype ={
 		_this.addStyleTag();
 		
 		_this.config.gridXScrollFlag = false;
+		_this.config.totalColHeight = _this.options.rowOptions.colHeight+1;
 		_this.config.scroll = {top :0 , left:0, startIdx :0, endIdx :0, updown:'', viewItemIdx : 1, height:0};
 
 		_this._setThead();
@@ -459,7 +460,7 @@ Plugin.prototype ={
 			_this.drawGrid('tbody', gridMode);
 		}
 
-		var itemHeight = _this.options.tbodyItem.length* _this.options.rowOptions.colHeight
+		var itemHeight = _this.options.tbodyItem.length* _this.config.totalColHeight
 			,unitHeight = _this.options.bigData.spaceUnitHeight
 			,loopCnt = Math.floor(itemHeight/unitHeight);
 		
@@ -475,12 +476,15 @@ Plugin.prototype ={
 			topHeightHtm.push('<div data-top-idx="'+(loopCnt)+'" style="height:0px;"></div>');
 			loopCnt+=1;
 		}
+
+		_this.config.scroll.spaceCount = loopCnt;
 		
 		_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
 		_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
-		// scroll height 값
-		_this.config.scroll.height = itemHeight - _this.config.bodyScroll.height();
-		_this.config.scroll.spaceCount = loopCnt;
+		
+		// item total height 값
+		_this.config.scroll.itemGroupTotalHeight = opt.bigData.gridCount* _this.config.totalColHeight; 
+		_this.config.scroll.maxViewItemIdx = Math.ceil(opt.tbodyItem.length / opt.bigData.gridCount)-2;
 	}
 	/**
      * @method getHeaderHtml
@@ -502,7 +506,7 @@ Plugin.prototype ={
 			+'		<div id="pubGrid-body-wrapper" class="pubGrid-body-wrapper">'
 			+'			<div id="'+_this.prefix+'pubGrid-body-scroll" class="pubGrid-body-scroll" style="height:'+_this.options.height+'px;">'
 			+'			  <div id="'+_this.prefix+'pubGrid-body-container" class="pubGrid-body-container">'
-			+'				<div id="'+_this.prefix+'pubGrid-body-top-space" class="pubGrid-body-top-space" style="width: 0px; padding:0px;line-height:0px;"></div>'
+			+'				<div id="'+_this.prefix+'pubGrid-body-top-space" class="pubGrid-body-top-space" style="width: 1px; padding:0px;height:100%;"></div>'
 			+'				<table id="'+_this.prefix+'pubGrid-body" class="pubGrid-body" style="width:'+_this.config.gridWidth+'px">'
 			+'					<colgroup id="'+_this.prefix+'colgroup_body">'+_this._getColGroup(_this.prefix+'colbody')+'</colgroup>'
 			+'					<tbody class="pub-cont-tbody-top"></tbody>'
@@ -682,9 +686,11 @@ Plugin.prototype ={
 			,updown = _this.config.scroll.updown
 			,bigDataGridCount = _this.options.bigData.gridCount
 			,topIdx =viewItemIdx ,middleIdx=viewItemIdx+1 , bottomIdx = viewItemIdx+2; 
-	
-		if(type=='scroll'){
 
+		
+		//console.log('scroll top start : ',updown , viewItemIdx, $('.pubGrid-body-scroll').scrollTop());
+
+		if(type=='scroll'){
 			if(updown =='down'){
 				var topEle = _this.config.bodyElement.find('.pub-cont-tbody-top').addClass('pub-cont-tbody-top-temp').removeClass('pub-cont-tbody-top');
 				_this.config.bodyElement.find('.pub-cont-tbody-middle').addClass('pub-cont-tbody-top').removeClass('pub-cont-tbody-middle');
@@ -702,7 +708,7 @@ Plugin.prototype ={
 				_this.config.bodyElement.find('.pub-cont-tbody-middle').before(bottomEle);
 				bottomEle.empty().html(tbodyHtml(topIdx));
 			}
-
+			
 		}else{
 			_this.config.bodyElement.find('.pub-cont-tbody-top').empty().html(tbodyHtml(topIdx));
 			if(tbi.length > 0){
@@ -711,12 +717,13 @@ Plugin.prototype ={
 			}
 		}
 		
-		var topSpaceHeight = (bigDataGridCount* viewItemIdx -bigDataGridCount) * _this.options.rowOptions.colHeight; 
+		
+
+		var topSpaceHeight = (viewItemIdx -1)*_this.config.scroll.itemGroupTotalHeight; 
 
 		var spaceItemCount = Math.floor(topSpaceHeight /_this.options.bigData.spaceUnitHeight)
 			,overHeight = topSpaceHeight % _this.options.bigData.spaceUnitHeight; 
-		
-		
+				
 		for(var i =0 ;i < _this.config.scroll.spaceCount; i++){
 			if(i < spaceItemCount){
 				_this.config.pubGridTopSpaceElement.find('[data-top-idx="'+i+'"]').css('height', _this.options.bigData.spaceUnitHeight);
@@ -724,7 +731,13 @@ Plugin.prototype ={
 				_this.config.pubGridTopSpaceElement.find('[data-top-idx="'+i+'"]').css('height', 0);
 			}
 		}
-		_this.config.pubGridTopSpaceElement.find('[data-top-idx="'+spaceItemCount+'"]').css('height', overHeight);	
+		
+		_this.config.pubGridTopSpaceElement.find('[data-top-idx="'+spaceItemCount+'"]').css('height', overHeight);
+
+
+		//console.log('----------------)))))))))))', type,overHeight,  $('.pubGrid-body-scroll').scrollTop());
+
+
 		_this._setBodyEvent();
 	}
 	/**
@@ -750,21 +763,20 @@ Plugin.prototype ={
 
 			var e = event.originalEvent
 				,scrollData = _conf.scroll
-				,scrollH = scrollData.height
 				,sTop  = scrollEle.scrollTop()
 				,sLeft = scrollEle.scrollLeft();
 
 			var updown = '';
-			if(scrollData.top > sTop){
-				updown = 'up';
-			}else if(scrollData.top < sTop){
+			if(sTop > scrollData.top){
 				updown = 'down';
+			}else if(sTop < scrollData.top){
+				updown = 'up';
 			}
 
 			var lr = '';
-			if(scrollData.left > sLeft){
+			if(sLeft < scrollData.left){
 				lr = 'left';
-			}else if(scrollData.left < sLeft){
+			}else if(sLeft > scrollData.left){
 				lr = 'right';
 			}
 			
@@ -775,52 +787,63 @@ Plugin.prototype ={
 
 			_conf.scroll = scrollData;
 			
-			var redrawFlag = false;
+			var scrollRedrawFlag = false;
 			
 			var viewIdx = _conf.scroll.viewItemIdx;
-			
+
 			if(updown =='up'){
-				redrawFlag = sTop < _this._getScrollOverHeight(viewIdx-1 ,updown) ?true:false;
+				scrollRedrawFlag = sTop < _this._getScrollOverHeight(viewIdx,updown) ?true:false;
 			}else if(updown =='down'){
-				redrawFlag = sTop > _this._getScrollOverHeight(viewIdx+1 ,updown) ?true:false;
+				scrollRedrawFlag = sTop > _this._getScrollOverHeight(viewIdx+1 ,updown) ?true:false;
 			}
-			
-			//console.log('#############',viewIdx ,scrollEle.prop("scrollHeight"),scrollData);
-			
-			if(redrawFlag){
+		
+			if(scrollRedrawFlag){
 
-				//if(timerObj) clearTimeout(timerObj);
+				viewIdx = viewIdx + (updown=='down' ? 1 : -1);
+				viewIdx = viewIdx < 1 ? 1 : viewIdx;
+			
+				var jumpFlag = false, scrIdx = 1; 
+				var scrIdxVal = sTop/scrollData.itemGroupTotalHeight; 
+				if(updown=='down'){
+					
+					scrIdx = Math.ceil(scrIdxVal);
+
+					if(scrIdx - viewIdx > 1){
+						scrIdx =  scrIdx > scrollData.maxViewItemIdx ? scrollData.maxViewItemIdx : scrIdx;
+						jumpFlag = true; 
+					}
+				}else if( updown=='up'){
+					scrIdx = Math.floor(scrIdxVal);
+					
+
+					if(viewIdx-scrIdx > 1){
+						//scrIdx = scrIdx +1;
+						jumpFlag = true; 	
+					}else{
+						scrIdx = scrIdx -1; 
+					}
+				}
+
+				//console.log('scroll--------- ',jumpFlag, updown, scrIdx ,  viewIdx)
+				//console.log('-------------	##################-------------------------------------')
 				
-				//timerObj = setTimeout(function(){ 
+				if(_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx) return ; 
+				
+				if(jumpFlag){
+					_conf.scroll.viewItemIdx = scrIdx < 1 ? 1 :scrIdx;
+					_this.drawGrid('scrollRedraw');
+				}else{
+					_conf.scroll.viewItemIdx = viewIdx;
+					_this.drawGrid('scroll');
+				}
 					
-						
-						viewIdx = viewIdx + (updown=='down' ? 1 : -1);
-
-						var scrIdx = Math.round(sTop/(_opt.bigData.gridCount* _opt.rowOptions.colHeight));
-						scrIdx = scrIdx < 1 ? 1 :scrIdx;
-						var maxScrIdx = Math.ceil(_opt.tbodyItem.length / _opt.bigData.gridCount)-2;
-
-						scrIdx =  scrIdx > maxScrIdx ? maxScrIdx : scrIdx;
-
-						if(scrIdx - viewIdx > 1 || viewIdx-scrIdx > 1){
-
-							
-							_conf.scroll.viewItemIdx = scrIdx-1;
-							_this.drawGrid('scrollRedraw');
-						}else{
-							_conf.scroll.viewItemIdx = viewIdx;
-							_this.drawGrid('scroll');
-						}
-					
-					
-				//}, 1);
 			}
 
 			return true; 
 		});
 	}
 	,_getScrollOverHeight : function (idx , updown){
-		return idx* (this.options.bigData.gridCount)* this.options.rowOptions.colHeight;
+		return idx* (this.options.bigData.gridCount)* this.config.totalColHeight;
 	}
 	/**
      * @method resizeDraw
