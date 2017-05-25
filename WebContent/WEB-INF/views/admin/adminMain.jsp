@@ -44,6 +44,10 @@ var adminMain = {
 			if(event.keyCode =='13') _this.search();
 		});
 		
+		$('#vtype').on('change',function() {
+			_this.dbDriverLoad(this.value);
+		});
+		
 		$('#addForm').bootstrapValidator({
 			message: 'This value is not valid',
 			feedbackIcons: {
@@ -144,6 +148,8 @@ var adminMain = {
 				$('#vconnopt').val(result.VCONNOPT);
 				$('#vpoolopt').val(result.VPOOLOPT);
 				$('#vsql').val(result.VSQL);
+				
+				$('#vtype').trigger('change');
 			}
 			,error :function (data, status, err){
 				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
@@ -307,6 +313,46 @@ var adminMain = {
 			}
 		});
 	}
+	// db driver list
+	,dbDriverLoad : function (val){
+		$.ajax({
+			type:'POST'
+			,data: {
+				dbtype :val
+			}
+			,url : '<c:url value="/admin/main/dbDriver" />'
+			,dataType:'JSON'
+			,success:function (response){
+					
+	    		var resultLen = response.result?response.result.length:0;
+	    		
+	    		if(resultLen==0){
+	    			$('#vdriver').empty();
+	    			return ; 
+	    		}
+	    		
+	    		var result = response.result;
+	    		var strHtm = [];
+	    		var item;
+	    		for(var i = 0 ;i < resultLen; i ++){
+	    			item = result[i];
+	    			strHtm.push('<option value="'+item.DBDRIVER+'">'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
+	    		}
+	    		
+	    		$('#vdriver').empty().html(strHtm.join(''));
+			}
+			,error :function (data, status, err){
+				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,complete: function() { 
+				VARSQL.progress.end('dataViewAreaTd');
+			}
+			,beforeSend: function() {
+				VARSQL.progress.start('dataViewAreaTd');
+			}
+		});
+	}
 }
 
 </script>
@@ -370,12 +416,6 @@ var adminMain = {
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" id="vdriver" name="vdriver" value="">
-						</div>
-					</div>
-					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
 						<div class="col-sm-8">
 							<select class="form-control text required" id="vtype" name="vtype">
@@ -385,7 +425,13 @@ var adminMain = {
 							</select>
 						</div>
 					</div>
-					
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
+						<div class="col-sm-8">
+							<select class="form-control text required" id="vdriver" name="vdriver">
+							</select>
+						</div>
+					</div>
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
 						<div class="col-sm-8">

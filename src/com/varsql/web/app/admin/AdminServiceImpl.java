@@ -178,4 +178,24 @@ public class AdminServiceImpl{
 	public List selectAllDbType() {
 		return adminDAO.selectAllDbType();
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectDbDriverList
+	 * @Method 설명 : db driver list
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 5. 25. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public Map selectDbDriverList(DataCommonVO paramMap) {
+		
+		System.out.println("paramMap : "+ paramMap);
+		
+		Map json = new HashMap();
+		json.put("result", adminDAO.selectDbDriverList(paramMap));
+		
+		return json;
+	}
 }

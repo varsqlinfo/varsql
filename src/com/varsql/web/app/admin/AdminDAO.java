@@ -42,4 +42,8 @@ public class AdminDAO extends BaseDAO{
 	public List selectAllDbType() {
 		return getSqlSession().selectList("adminMapper.selectAllDbType");
 	}
+
+	public List selectDbDriverList(DataCommonVO paramMap) {
+		return getSqlSession().selectList("adminMapper.selectDbDriverList", paramMap);
+	}
 }

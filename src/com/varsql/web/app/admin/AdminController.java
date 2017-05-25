@@ -107,6 +107,28 @@ public class AdminController{
 	}
 	
 	/**
+	 * 
+	 * @Method Name  : dbDriver
+	 * @Method 설명 : select db driver
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 5. 25. 
+	 * @변경이력  :
+	 * @param dbtype
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/main/dbDriver")
+	public @ResponseBody Map dbDriver(@RequestParam(value = "dbtype", required = true)  String dbtype
+			
+			) throws Exception {
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("db_type", dbtype);
+		
+		return adminServiceImpl.selectDbDriverList(paramMap);
+	}
+	
+	/**
 	 *
 	 * @Method Name  : dbDetail
 	 * @작성일   : 2014. 8. 18. 

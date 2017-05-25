@@ -210,4 +210,11 @@
 	<delete id="adminMapper.deleteDbMenu" parameterType="java.util.Map">
 		delete from VTMENU where MENU_ID =#{menu_id}
 	</delete>
+	
+	<!-- db driver list -->
+	<select id="adminMapper.selectDbDriverList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT DBTYPE,DBDRIVER,DRIVER_DESC 
+		FROM VTDBTYPE_DRIVER
+		WHERE DBTYPE = #{db_type}
+	</select>
 </mapper>
