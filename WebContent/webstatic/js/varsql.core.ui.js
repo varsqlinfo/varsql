@@ -603,7 +603,7 @@ _ui.leftDbObjectServiceMenu ={
 		    ,dataType:'json'
 		    ,data:param
 		    ,success:function (resData){
-		    	if(sObj.gubnKey=='ddl_copy'){
+		    	if(sObj.gubunKey=='ddl_copy'){
 		    		_ui.text.copy(resData.result);
 		    	}else{
 		    		_ui.SQL.addSqlEditContent(resData.result);
@@ -680,7 +680,7 @@ _ui.leftDbObjectServiceMenu ={
 						
 						if(key=='ddl_copy' || key=='ddl_paste'){
 							_self._createDDL({
-								gubnKey : key
+								gubunKey : key
 								,gubun : 'table'
 								,objName :  tmpName 
 								,item : cacheData
@@ -691,7 +691,7 @@ _ui.leftDbObjectServiceMenu ={
 						if(key=='export_data'||key=='export_column'){
 							_self._dataExport({
 								gubun:gubun
-								,gubnKey :key
+								,gubunKey :key
 								,objName :  tmpName 
 								,item : cacheData
 							});
@@ -701,7 +701,7 @@ _ui.leftDbObjectServiceMenu ={
 						if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
 							_self._createJavaProgram({
 								gubun:gubun
-								,gubnKey :key
+								,gubunKey :key
 								,objName :  tmpName 
 								,item : cacheData
 							});
@@ -711,7 +711,7 @@ _ui.leftDbObjectServiceMenu ={
 						key = sObj.mode;
 						
 						_self._createScriptSql({
-							gubnKey : key
+							gubunKey : key
 							,gubun : 'table'
 							,objName :  tmpName 
 							,item : cacheData
@@ -748,6 +748,9 @@ _ui.leftDbObjectServiceMenu ={
 								{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
 								,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
 								,{ key : "mybatis_delete","name": "delete" ,mode:"delete",param_yn:'Y'}
+								,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
+								,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
+								,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
 							]
 						}
 						,{key :'export', "name": "내보내기" 
@@ -1631,11 +1634,16 @@ _ui.SQL = {
 	// 스크립트 내보내기
 	,addCreateScriptSql :function (scriptInfo){
 		var _self = this;
-		var key = scriptInfo.gubnKey
+		var gubunKey = scriptInfo.gubunKey
 			,gubun = scriptInfo.gubun
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
 			,param_yn  = scriptInfo.param_yn;
+		
+		gubunKey =gubunKey.split('|');
+		
+		var key =gubunKey[0]
+			,keyMode = gubunKey[1];
 		
 		param_yn = param_yn?param_yn:'N';
 		
@@ -1674,7 +1682,7 @@ _ui.SQL = {
 				}
 				reval.push(item.COLUMN_NAME);
 				
-				valuesStr.push(queryParameter(param_yn, item));
+				valuesStr.push(queryParameter(param_yn, item , keyMode));
 				
 			}
 			reval.push(' )'+_ui.base.constants.newline +'values( '+ valuesStr.join('')+' )');
@@ -1690,7 +1698,7 @@ _ui.SQL = {
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
 				
-				tmpval = queryParameter(param_yn, item);
+				tmpval = queryParameter(param_yn, item, keyMode);
 				
 				if(item.KEY_SEQ =='YES'){
 					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
@@ -1718,7 +1726,7 @@ _ui.SQL = {
 				item = dataArr[i];
 				
 				if(item.KEY_SEQ =='YES'){
-					tmpval = queryParameter(param_yn, item);
+					tmpval = queryParameter(param_yn, item, keyMode);
 					
 					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
 				}
@@ -1870,7 +1878,7 @@ _ui.text={
 _ui.JAVA = {
 	createJavaProgram : function (scriptInfo){
 		var _self = this;
-		var key = scriptInfo.gubnKey
+		var key = scriptInfo.gubunKey
 			,gubun = scriptInfo.gubun
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
@@ -1953,11 +1961,14 @@ _ui.JAVA = {
 	}
 }
 	
-function queryParameter(flag, columnInfo ){
+function queryParameter(flag, columnInfo , colNameCase){
 	var colName = columnInfo.COLUMN_NAME
 		, dataType = columnInfo.DATA_TYPE; 
 	
 	if(flag=='Y'){
+		if(colNameCase=='camel'){
+			colName = convertCamel(colName);
+		}
 		return _ui.base.constants.queryParameterPrefix+colName+_ui.base.constants.queryParameterSuffix;
 	}else{
 		var tmpType = _ui.base.dataType.dto[dataType];
