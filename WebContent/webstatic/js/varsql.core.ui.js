@@ -1102,13 +1102,34 @@ _ui.SQL = {
 		
 		// 메개변수 처리. 
 		$('#sql_parameter_toggle_btn').on('click',function (){
-			if($('#sql_parameter_area').hasClass('col-xs-2')){
-				$('#sql_parameter_area').removeClass('col-xs-2');
-				$('#sql_editor_area').removeClass('col-xs-10').addClass('col-xs-12');
+			if($('#sql_parameter_area').is(':visible')){
+				$('#sql_parameter_area').hide();
 			}else{
-				$('#sql_parameter_area').addClass('col-xs-2');
-				$('#sql_editor_area').removeClass('col-xs-12').addClass('col-xs-10')
+				$('#sql_parameter_area').show();
 			}
+		});
+		
+		// sql 정보 저장. 
+		$('#sql_parameter_area').on('click','.sql-param-del-btn',function (e){
+			if(!confirm('삭제 하시겠습니까?')){
+				$(this).closest('.sql-param-row').remove();
+			}
+		});
+		
+		$('.sql-param-add-btn').on('click',function (e){
+			var paramHtm='<tr class="sql-param-row">'
+			+'	<td>'
+			+'		<div><input type="text" class="sql-param-key" /></div>'
+			+'	</td>'
+			+'	<td>'
+			+'		<div><input type="text" class="sql-param-value"/></div>'
+			+'	</td>'
+			+'	<td>'
+			+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
+			+'	</td>'
+			+'	</tr>';
+			
+			$('#sql_parameter_row_area').append(paramHtm);
 			
 		});
 		

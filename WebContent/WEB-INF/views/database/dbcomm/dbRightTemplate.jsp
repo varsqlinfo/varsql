@@ -73,8 +73,38 @@
 		<div id="sql_editor_area" class="col-xs-12" style="padding: 0px;">
 			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
 		</div>
-		<div id="sql_parameter_area" class="col-xs-0">
-			asdf
+		<div id="sql_parameter_area" class="sql-parameter-area">
+			<table>
+				<thead>
+					<tr>
+						<th>파라미터</th>
+						<th>값</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="sql_parameter_row_area">
+					<tr class="sql-param-row">
+						<td>
+							<div><input type="text" class="sql-param-key" /></div>
+						</td>
+						<td>
+							<div><input type="text" class="sql-param-value"/></div>
+						</td>
+						<td>
+							<span><button type="button" class="sql-param-del-btn">삭제</button></span>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3" class="text-center">
+							<div class="margin-top5">
+								<button class="sql-param-add-btn">추가</button>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
 		</div>
 	</div>
 </div>
