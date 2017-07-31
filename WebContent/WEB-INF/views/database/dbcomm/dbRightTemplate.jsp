@@ -63,13 +63,18 @@
 				<span class="glyphicon glyphicon-cog btn-sm" title="설정"></span>
 			</div>
 		 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
+		 	
+		 	<span id="sql_parameter_toggle_btn" class="pull-right">매개</span>
 		</div>
 	</div>
 </div>
 <div id="editorAreaTable" class="inner-layout-sql-editor-area">
 	<div id="sqlEditorWrap">
-		<div class="col-md-12" style="padding: 0px;">
+		<div id="sql_editor_area" class="col-xs-12" style="padding: 0px;">
 			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+		</div>
+		<div id="sql_parameter_area" class="col-xs-0">
+			asdf
 		</div>
 	</div>
 </div>

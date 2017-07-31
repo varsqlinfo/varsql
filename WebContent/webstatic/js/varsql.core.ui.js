@@ -1100,6 +1100,18 @@ _ui.SQL = {
 			_self.sqlFormatData();
 		});
 		
+		// 메개변수 처리. 
+		$('#sql_parameter_toggle_btn').on('click',function (){
+			if($('#sql_parameter_area').hasClass('col-xs-2')){
+				$('#sql_parameter_area').removeClass('col-xs-2');
+				$('#sql_editor_area').removeClass('col-xs-10').addClass('col-xs-12');
+			}else{
+				$('#sql_parameter_area').addClass('col-xs-2');
+				$('#sql_editor_area').removeClass('col-xs-12').addClass('col-xs-10')
+			}
+			
+		});
+		
 		// sql 정보 저장. 
 		$('.sql-save-btn').on('click',function (e){
 			_self.saveSql();
