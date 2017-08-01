@@ -1564,7 +1564,7 @@ _ui.SQL = {
 		    		
 		    		if(resultLen < 1 ){
 		    			resData.data = [{result:"데이타가 없습니다."}];
-		    			resData.column =[{name:'result',key:'result', align:'center'}];
+		    			resData.column =[{label:'result',key:'result', align:'center'}];
 		    			_self.setGridData(resData);
 		    		}else{
 		    			var item, msgViewFlag = false;
