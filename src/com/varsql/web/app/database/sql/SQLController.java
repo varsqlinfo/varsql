@@ -158,6 +158,7 @@ public class SQLController {
 	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
 			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
 			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
+			,@RequestParam(value = VarsqlParamConstants.SQL_PARAM, required = true, defaultValue = "" )  String sqlParam
 			,@RequestParam(value = "sql_id", required = true, defaultValue = "" )  String sql_id
 			,HttpServletRequest req
 			,HttpServletResponse response
@@ -168,6 +169,7 @@ public class SQLController {
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		paramMap.put("sqlTitle", sqlTitle);
 		paramMap.put( VarsqlParamConstants.SQL, sql);
+		paramMap.put( VarsqlParamConstants.SQL_PARAM,sqlParam);
 		paramMap.put( "sql_id", sql_id);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		

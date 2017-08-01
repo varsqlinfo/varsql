@@ -39,6 +39,7 @@
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.core.ui.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/plugins/mustache/mustache.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/i18n/grid.locale-en.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.tablednd.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>

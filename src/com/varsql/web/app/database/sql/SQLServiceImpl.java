@@ -36,6 +36,7 @@ import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.PagingUtil;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  * 
@@ -96,7 +97,10 @@ public class SQLServiceImpl{
 	 */
 	public ArrayList sqlData(ParamMap paramMap) throws Exception {
 		String reqSql = paramMap.getString(VarsqlParamConstants.SQL);
-		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql);
+		
+		Map sqlParamMap = VartechUtils.stringToObject(paramMap.getString(VarsqlParamConstants.SQL_PARAM), HashMap.class); 
+		
+		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql,sqlParamMap);
 		
 		
 		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
@@ -154,6 +158,15 @@ public class SQLServiceImpl{
 		}else{
 			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
+			
+			List param= tmpSqlSource.getParam();
+			
+			if(param != null){
+				for(int i =0 ;i < param.size() ;i++){
+					pstmt.setObject(i+1, param.get(i));
+				}
+			}
+			
 			setMaxRow(pstmt, maxRow);
 			pstmt.execute();
 			stmt = pstmt; 

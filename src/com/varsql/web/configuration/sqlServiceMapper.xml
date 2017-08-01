@@ -43,6 +43,7 @@
 			, SQL_ID
 			, GUERY_TITLE
 			, QUERY_CONT
+			, SQL_PARAM
 			, REG_DT
 			, UPD_DT
 		) 
@@ -52,6 +53,7 @@
 			, #{sql_id}
 			, #{sqlTitle}
 			, #{sql}
+			, #{sqlParam}
 			, CURRENT TIMESTAMP
 			, CURRENT TIMESTAMP
 		)
@@ -64,6 +66,7 @@
 			 GUERY_TITLE = #{sqlTitle}
 			, QUERY_CONT = #{sql}
 			, UPD_DT = CURRENT TIMESTAMP
+			, SQL_PARAM =#{sqlParam}
 		where sql_id = #{sql_id}
 		and VCONNID = #{vconnid}
 		and UID = #{uid}

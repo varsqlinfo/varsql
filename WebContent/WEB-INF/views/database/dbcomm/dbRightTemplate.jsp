@@ -83,17 +83,6 @@
 					</tr>
 				</thead>
 				<tbody id="sql_parameter_row_area">
-					<tr class="sql-param-row">
-						<td>
-							<div><input type="text" class="sql-param-key" /></div>
-						</td>
-						<td>
-							<div><input type="text" class="sql-param-value"/></div>
-						</td>
-						<td>
-							<span><button type="button" class="sql-param-del-btn">삭제</button></span>
-						</td>
-					</tr>
 				</tbody>
 				<tfoot>
 					<tr>

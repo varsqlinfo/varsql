@@ -6,6 +6,7 @@ public interface VarsqlParamConstants {
 	public String SQL ="sql";
 	public String LIMIT ="limit";
 	public int SQL_MAX_ROW =1000;
+	public String SQL_PARAM ="sqlParam";
 	
 	/**
 	 * 페이징 관련 파라미터 정보

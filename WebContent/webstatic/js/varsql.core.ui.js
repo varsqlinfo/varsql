@@ -363,6 +363,7 @@ _ui.leftDbObject ={
 		    		_ui.SQL.getTextAreaObj().setValue(sqlInfo.QUERY_CONT);
 		    		// history 초기화.
 		    		_ui.SQL.getTextAreaObj().setHistory({done:[],undone:[]})
+		    		_ui.SQL.addParamTemplate($.parseJSON(sqlInfo.SQL_PARAM));
 		    	}else{
 		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 		    	}
@@ -1102,34 +1103,23 @@ _ui.SQL = {
 		
 		// 메개변수 처리. 
 		$('#sql_parameter_toggle_btn').on('click',function (){
-			if($('#sql_parameter_area').is(':visible')){
-				$('#sql_parameter_area').hide();
+			if($('#sql_parameter_area').hasClass('on')){
+				$('#sql_parameter_area').removeClass('on');
 			}else{
-				$('#sql_parameter_area').show();
+				$('#sql_parameter_area').addClass('on');
 			}
 		});
 		
 		// sql 정보 저장. 
 		$('#sql_parameter_area').on('click','.sql-param-del-btn',function (e){
-			if(!confirm('삭제 하시겠습니까?')){
+			if(confirm('삭제 하시겠습니까?')){
 				$(this).closest('.sql-param-row').remove();
 			}
 		});
 		
+		// param add
 		$('.sql-param-add-btn').on('click',function (e){
-			var paramHtm='<tr class="sql-param-row">'
-			+'	<td>'
-			+'		<div><input type="text" class="sql-param-key" /></div>'
-			+'	</td>'
-			+'	<td>'
-			+'		<div><input type="text" class="sql-param-value"/></div>'
-			+'	</td>'
-			+'	<td>'
-			+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
-			+'	</td>'
-			+'	</tr>';
-			
-			$('#sql_parameter_row_area').append(paramHtm);
+			_self.addParamTemplate();
 			
 		});
 		
@@ -1221,7 +1211,6 @@ _ui.SQL = {
 			}
 		});
 		
-		
 		$('.sql-save-list-btn').dropdown();
 		$('.sql-save-list-btn').on('click',function (){
 			
@@ -1248,6 +1237,42 @@ _ui.SQL = {
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+sObj.attr('tab_gubun')+']').addClass('on');
 		});
 	}
+	// sql 파라미터 셋팅. 
+	,addParamTemplate : function (data){
+		if(typeof data !=='undefined'){
+			var paramHtm = [];
+			for(var key in data){
+				var tmpHtm='<tr class="sql-param-row">'
+					+'	<td>'
+					+'		<div><input type="text" class="sql-param-key" value="{{key}}" /></div>'
+					+'	</td>'
+					+'	<td>'
+					+'		<div><input type="text" class="sql-param-value" value="{{val}}"/></div>'
+					+'	</td>'
+					+'	<td>'
+					+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
+					+'	</td>'
+					+'	</tr>';
+				paramHtm.push(Mustache.render(tmpHtm, {key: key , val : data[key]}));
+			}
+			
+			$('#sql_parameter_row_area').append(paramHtm.join(''));
+		}else{
+			var paramHtm='<tr class="sql-param-row">'
+				+'	<td>'
+				+'		<div><input type="text" class="sql-param-key" /></div>'
+				+'	</td>'
+				+'	<td>'
+				+'		<div><input type="text" class="sql-param-value"/></div>'
+				+'	</td>'
+				+'	<td>'
+				+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
+				+'	</td>'
+				+'	</tr>';
+				$('#sql_parameter_row_area').append(paramHtm);
+		}
+		
+	}
 	// save sql
 	,saveSql : function (){
 		var _self = this; 
@@ -1256,6 +1281,7 @@ _ui.SQL = {
 			'sql' :_self.getTextAreaObj().getValue()
 			,'sqlTitle' : $('#saveSqlTitle').val()
 			,'sql_id' : $('#sql_id').val()
+			,'sqlParam' : JSON.stringify(_self.getSqlParam())
 		});
 		
 		VARSQL.req.ajax({      
@@ -1450,6 +1476,57 @@ _ui.SQL = {
 		
 		return textObj.getSelection()
 	}
+	// sql 실행시 셋팅 파라미터 구하기.
+	,getSqlParam : function (){
+		var sqlParam ={};
+	
+		$('.sql-param-row').each(function(i ,item){
+			var k = $(this).find('.sql-param-key').val()
+				,v=$(this).find('.sql-param-value').val();
+			sqlParam[k] = v;
+		})
+		return sqlParam; 
+	}
+	// sql 실행시 파라미터 체크. 
+	,sqlParamCheck : function (sqlVal, sqlParam){
+		var _self =this; 
+		var matchArr = sqlVal.match(/[#|$]{(.+?)}/gi);
+		if(matchArr){
+			var addParam = {};
+			var flag = true;
+			for(var i =0 ;i < matchArr.length;i++){
+		    	var tmpKey = matchArr[i].replace(/[$|#|{|}]/gi,''); 
+		    	
+		    	if(typeof sqlParam[tmpKey]==='undefined'){
+		    		addParam[tmpKey] = '';
+		    		flag = false; 
+		    	}
+			}
+			
+			if(flag == false){
+				_self.addParamTemplate(addParam);
+				$('#sql_parameter_area').addClass('on');
+				
+				var loopCnt = 0; 
+				var loopInter = setInterval(function (){
+					if((loopCnt+1)%2==1){
+						$('#sql_parameter_area').css('background-color','#ffb3b3');
+					}else{
+						$('#sql_parameter_area').css('background-color','');
+					}
+					++loopCnt;
+					if(loopCnt > 3){
+						clearInterval(loopInter);
+					}
+				}, 500);	
+			}
+			
+			return flag; 
+			
+		}
+		
+		return true; 
+	}
 	// sql 데이타 보기 
 	,sqlData :function (evt){
 		var _self = this;
@@ -1460,11 +1537,18 @@ _ui.SQL = {
 			sqlVal  = _self.getTextAreaObj().getValue();
 		}
 		
-		if(''== sqlVal) return ; 
+		if(''== sqlVal) return ;
+		
+		var sqlParam = _self.getSqlParam();
+		if(!_self.sqlParamCheck(sqlVal, sqlParam)){
+			
+			return '';
+		}
 		
 		var params =VARSQL.util.objectMerge (_ui.options.param,{
 			'sql' :sqlVal
 			,'limit' : $(_self.options.limitCnt).val()
+			,sqlParam : JSON.stringify(sqlParam)
 		});
 		
 		VARSQL.req.ajax({      
