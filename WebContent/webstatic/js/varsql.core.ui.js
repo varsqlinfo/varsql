@@ -358,12 +358,7 @@ _ui.leftDbObject ={
 		    ,success:function (res){
 		    	if(res.sqlInfo){
 		    		var sqlInfo = res.sqlInfo;
-		    		$('#sql_id').val(sqlInfo.SQL_ID);
-		    		$('#saveSqlTitle').val(sqlInfo.GUERY_TITLE);
-		    		_ui.SQL.getTextAreaObj().setValue(sqlInfo.QUERY_CONT);
-		    		// history 초기화.
-		    		_ui.SQL.getTextAreaObj().setHistory({done:[],undone:[]})
-		    		_ui.SQL.addParamTemplate($.parseJSON(sqlInfo.SQL_PARAM));
+		    		_ui.SQL.setQueryInfo(sqlInfo);
 		    	}else{
 		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 		    	}
@@ -1119,7 +1114,7 @@ _ui.SQL = {
 		
 		// param add
 		$('.sql-param-add-btn').on('click',function (e){
-			_self.addParamTemplate();
+			_self.addParamTemplate('add');
 			
 		});
 		
@@ -1221,9 +1216,7 @@ _ui.SQL = {
 		});
 		
 		$('.sql-new-file').on('click',function (){
-			$('#sql_id').val('');
-			$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query');
-			_self.getTextAreaObj().setValue('');
+			_self.setQueryInfo('clear');
 		});
 		
 		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
@@ -1238,9 +1231,21 @@ _ui.SQL = {
 		});
 	}
 	// sql 파라미터 셋팅. 
-	,addParamTemplate : function (data){
-		if(typeof data !=='undefined'){
+	,addParamTemplate : function (mode, data){
+		if('data' == mode || 'init_data' == mode){
 			var paramHtm = [];
+			
+			var dataLen = Object.keys(data||{}).length;
+			if(dataLen < 1) data = {'' :''};
+			
+			if('data' == mode){
+				$('.param-field-key').each(function (){
+					if($.trim($(this).val())==''){
+						$(this).closest('.input-field-row').remove();
+					}
+				})
+			}
+			
 			for(var key in data){
 				var tmpHtm='<tr class="sql-param-row">'
 					+'	<td>'
@@ -1256,7 +1261,11 @@ _ui.SQL = {
 				paramHtm.push(Mustache.render(tmpHtm, {key: key , val : data[key]}));
 			}
 			
-			$('#sql_parameter_row_area').append(paramHtm.join(''));
+			if('init_data' ==mode){
+				$('#sql_parameter_row_area').empty().html(paramHtm.join(''));	
+			}else{
+				$('#sql_parameter_row_area').append(paramHtm.join(''));
+			}
 		}else{
 			var paramHtm='<tr class="sql-param-row">'
 				+'	<td>'
@@ -1269,7 +1278,12 @@ _ui.SQL = {
 				+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
 				+'	</td>'
 				+'	</tr>';
+			
+			if(mode =='init'){
+				$('#sql_parameter_row_area').empty().html(paramHtm);	
+			}else{
 				$('#sql_parameter_row_area').append(paramHtm);
+			}
 		}
 		
 	}
@@ -1371,6 +1385,25 @@ _ui.SQL = {
 		$('#recvIdArr').html('');
 		
 	}
+	// set queryInfo
+	,setQueryInfo : function (sItem){
+		if(sItem=='clear'){
+			sItem = {
+				SQL_ID:''
+				, GUERY_TITLE:(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
+				,QUERY_CONT:'',SQL_PARAM :''
+			}
+		}
+		$('#sql_id').val(sItem.SQL_ID);
+		$('#saveSqlTitle').val(sItem.GUERY_TITLE);
+		this.getTextAreaObj().setValue(sItem.QUERY_CONT);
+		this.getTextAreaObj().setHistory({done:[],undone:[]});
+		try{
+			this.addParamTemplate('init_data',$.parseJSON(sItem.SQL_PARAM));
+		}catch(e){
+			this.addParamTemplate('init_data',{'':''});
+		}
+	}
 	// 저장된 sql 목록 보기.
 	,sqlSaveList : function (pageNo){
 		var _self = this; 
@@ -1418,14 +1451,17 @@ _ui.SQL = {
 		    		var sItem =items[idx]; 
 		    		
 		    		if(mode=='view'){
-		    			$('#sql_id').val(sItem.SQL_ID);
-		    			$('#saveSqlTitle').val(sItem.GUERY_TITLE);
-		    			_self.getTextAreaObj().setValue(sItem.QUERY_CONT);
+		    			_self.setQueryInfo(sItem);
 		    			$('.sql-save-list-btn').trigger('click');
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 
 		    			}
+		    			
+		    			if(sItem.SQL_ID == $('#sql_id').val()){
+		    				_self.setQueryInfo('clear');
+		    			}
+		    			
 		    			params['sql_id'] = sItem.SQL_ID;
 		    			VARSQL.req.ajax({
 		    			    type:"POST"
@@ -1504,7 +1540,7 @@ _ui.SQL = {
 			}
 			
 			if(flag == false){
-				_self.addParamTemplate(addParam);
+				_self.addParamTemplate('data',addParam);
 				$('#sql_parameter_area').addClass('on');
 				
 				var loopCnt = 0; 
