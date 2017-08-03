@@ -25,7 +25,8 @@ var _initialized = false
 		,number : {prefix :'$', suffix :'원' , fixed : 0}
 	}
 	,bigData : {
-		gridCount : 30		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
+		countFixed : false
+		,gridCount : 30		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
 		,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
 	}
 	,autoResize : true
@@ -50,6 +51,7 @@ var _initialized = false
 	,tfootItem : []  // foot item
 	,rowClick : false //row(tr) click event
 	,rowContextMenu : false // row(tr) contextmenu event
+	,page : false	// paging info
 }
 ,agt = navigator.userAgent.toLowerCase()
 ,_broswer = ((function (){
@@ -77,25 +79,39 @@ var _initialized = false
     if (win.ActiveXObject === undefined) return null;
     if (!win.XMLHttpRequest) return 6;
     if (!doc.querySelector){
-		_defaults.scrollWidth = 21;
+		//_defaults.scrollWidth = 21;
 		return 7;
 	}
     if (!doc.addEventListener){
-		_defaults.scrollWidth = 18;
+		//_defaults.scrollWidth = 18;
 		return 8;
 	}
     if (!win.atob){
-		_defaults.scrollWidth = 18;
+		//_defaults.scrollWidth = 18;
 		return 9;
 	}
 
     if (!input.dataset){
-		_defaults.scrollWidth = 18;
+		//_defaults.scrollWidth = 18;
 		return 10;
 	}
     return 11;
 })());
 
+
+function scrollBarSize (ele) {
+	 if (_defaults.scrollBarSize) return _defaults.scrollBarSize;
+	var scrollInfo = {};
+    	var html =
+	    '<div id="_pubGrid_scrollbar_width" style="position: absolute; top: -300px; width: 100px; height: 100px; overflow-y: scroll;">'+
+	    '    <div style="height: 120px">1</div>'+
+	    '</div>';
+	$(ele).append(html);
+	_defaults.scrollBarSize = 100 - $('#_scrollbar_width > div').width();
+	ele.find('#_pubGrid_scrollbar_width').remove();
+	if (_broswer == 'msie') _defaults.scrollBarSize  = _defaults.scrollBarSize / 2; // need this for IE9+
+	return _defaults.scrollBarSize;
+} 
 
 var util= {
 	formatter : {
@@ -132,11 +148,14 @@ Plugin.prototype ={
      * @description 그리드 초기화.
      */
 	_initialize :function(element,options){
+		// scroll size 
 		var _this = this; 
 		_this.selector = element;
 		_this.prefix = 'pub'+new Date().getTime();
 		_this.element = $(element);
+		scrollBarSize(_this.element); 
 		_this.config = {totGridWidth : 0};
+
 		_this.options =$.extend(true, {}, _defaults);
 		_this.setOptions(options);
 		_this.drag ={};
@@ -145,6 +164,7 @@ Plugin.prototype ={
 		_this.addStyleTag();
 		
 		_this.config.gridXScrollFlag = false;
+		_this.config.page = _this.options.page;
 		_this.config.totalColHeight = _this.options.rowOptions.colHeight+1;
 		_this.config.scroll = {top :0 , left:0, startIdx :0, endIdx :0, updown:'', viewItemIdx : 1, height:0};
 
@@ -184,6 +204,19 @@ Plugin.prototype ={
 		}
 
 		$.extend(true, _this.options, options);
+
+		if(_this.options.bigData === false){
+			_this.options.bigData ={
+				gridCount : 1000
+				,spaceUnitHeight : 100000
+			};
+		}else{
+			if(_this.options.height =='auto'){
+				var gridCount =parseInt((_this.element.height() / _this.options.rowOptions.colHeight), 10 );
+				_this.options.bigData.gridCount = gridCount + parseInt(gridCount/2, 10);
+			}
+		}
+
 		this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
 
 		var _cb = _this.options.rowContextMenu.callback; 
@@ -242,62 +275,83 @@ Plugin.prototype ={
 			,thg = opt.theadGroup
 			,gridElementWidth =_this.config.gridElementWidth
 			,tciItem,thgItem, rowItem, headItem
-			,headGroupInfo = [],groupInfo = [], rowSpanNum = {};
+			,headGroupInfo = [],groupInfo = [], rowSpanNum = {}, colSpanNum = {};
 		
 		if(thg.length < 1){
 			thg.push(tci);
 		}
 		
-		var tmpThgIdx=0,tmpColIdx=0,tmpThgItem;
+		var tmpThgIdx=0,tmpColIdx=0,tmpThgItem , currentColSpanIdx=0  , beforeColSpanIdx=0 ;
 		var sortHeaderInfo = {};
 		for(var i=0,j=0 ;i <thg.length; i++ ){
 			thgItem = thg[i];
 			groupInfo = [];
 			tmpColIdx = 0;
 			tmpThgIdx = 0;
-
+			currentColSpanIdx=0
+			colSpanNum[i] = {};
+			beforeColSpanIdx = -1 ; 
+			
 			for(j=0; j<tci.length; j++) {
 				tciItem = tci[j];
+				
+				if(i != 0) currentColSpanIdx = colSpanNum[i-1][j]||currentColSpanIdx; 
+
+				//console.log('====================currentColSpanIdx : ', currentColSpanIdx)
+				
 				if(tmpColIdx > j || tmpThgIdx >= thgItem.length){
 					headItem = {r:i,c:j,view:false};
 				}else{
 					headItem=thgItem[tmpThgIdx];
 
-					tmpColIdx +=(headItem['colspan'] || 0);
+					tmpColIdx +=(headItem['colspan'] || 1);
 					headItem['r'] = i;
 					headItem['c'] = j;
 					headItem['view'] = true;
 					headItem['sort'] = tciItem.sort===true ? true : opt.headerOptions.sort;
-					headItem['colSpanIdx'] = j;
+					headItem['colSpanIdx'] = beforeColSpanIdx+1;
 					headItem['span'] = 'scope="col"';
 					headItem['label'] = headItem.label ? headItem.label : tciItem.label;
 					
 					if(headItem.colspan){
-						headItem['colSpanIdx'] = j+headItem.colspan-1;
+						headItem['colSpanIdx'] = headItem['colSpanIdx']+headItem.colspan-1;
 						headItem['span'] = ' scope="colgroup" colspan="'+headItem.colspan+'" ';
+						
+						colSpanNum[i][j]= j+headItem.colspan; 
 					}
 
-					if(rowSpanNum[j] && rowSpanNum[j] >= i){
-						headItem['view'] = false;
+					if(currentColSpanIdx > j){
+						headItem['view'] = true;	
+						tmpThgIdx +=1;
+					}else{
+						if(rowSpanNum[j] && rowSpanNum[j] >= i){
+							headItem['view'] = false;
+						}else{
+							tmpThgIdx +=1;		
+						}
 					}
-					
 					if(headItem.rowspan){
 						headItem['span'] = ' scope="col" rowspan="'+headItem.rowspan+'" ';
 						rowSpanNum[j] = i+ headItem.rowspan -1;
 					}
+					beforeColSpanIdx = headItem['colSpanIdx'];
 					
-					tmpThgIdx +=1;
 				}
+				
+				//console.log(j+' ;; '+rowSpanNum[j] +' : '+headItem.view, headItem);
+
 				if(headItem.view==true){
 					sortHeaderInfo[j] = {r:i,key:tciItem.key}
+					groupInfo.push(headItem);
 				}
-				groupInfo.push(headItem);
 			}
 			headGroupInfo.push(groupInfo);
 		}
 		
 		for(var _ikey in sortHeaderInfo){
 			var tmpHgi = headGroupInfo[sortHeaderInfo[_ikey].r][_ikey]; 
+			if(typeof tmpHgi ==='undefined') continue; 
+
 			tmpHgi['isSort'] =(tmpHgi.sort===true?true:false); 
 			headGroupInfo[sortHeaderInfo[_ikey].r][_ikey] = tmpHgi;
 		}
@@ -425,10 +479,17 @@ Plugin.prototype ={
 	 * @param gridMode {String} - 그리드 모드 
      * @description 데이타 그리기
      */
-	,setData :function (data, gridMode){
+	,setData :function (pdata, gridMode){
 		var _this = this
 			,opt = _this.options
 			,tci = opt.tColItem;
+		var data = pdata;
+		var pageInfo = {};
+		if(!$.isArray(pdata)){
+			data = pdata.items;
+			pageInfo = pdata.page; 
+
+		}
 
 		if(data){
 			_this.options.tbodyItem = data
@@ -460,6 +521,12 @@ Plugin.prototype ={
 			_this.drawGrid('tbody', gridMode);
 		}
 
+		if(gridMode != 'sort'){
+			if(_this.config.page){
+				_this.setPage(pageInfo);
+			}
+		}
+
 		var itemHeight = _this.options.tbodyItem.length* _this.config.totalColHeight
 			,unitHeight = _this.options.bigData.spaceUnitHeight
 			,loopCnt = Math.floor(itemHeight/unitHeight);
@@ -485,6 +552,11 @@ Plugin.prototype ={
 		// item total height 값
 		_this.config.scroll.itemGroupTotalHeight = opt.bigData.gridCount* _this.config.totalColHeight; 
 		_this.config.scroll.maxViewItemIdx = Math.ceil(opt.tbodyItem.length / opt.bigData.gridCount)-2;
+
+	}
+	,setPage : function (pageInfo){
+		var _this =this; 
+		_this.pageNav(pageInfo);
 	}
 	/**
      * @method getHeaderHtml
@@ -517,6 +589,7 @@ Plugin.prototype ={
 			+'			  </div>'
 			+'			</div>'
 			+'		</div>'
+			+'		<div id="'+_this.prefix+'pubGrid-pageNav"></div>'
 			+'		<div id="'+_this.prefix+'hiddenArea" style="display:none;"></div>'
 			+'	</div>'
 			+'  </div>'
@@ -537,6 +610,7 @@ Plugin.prototype ={
 				endIdx = itemLen> startIdx ? ( itemLen > (startIdx + this.options.bigData.gridCount) ? (startIdx + this.options.bigData.gridCount) : itemLen) : 0;
 			}
 			
+			var tmpVal;
 			for(var i =startIdx ; i < endIdx; i++){
 				tbiItem = tbi[i];
 				strHtm.push('<tr class="pub-body-tr '+((i%2==0)?'tr0':'tr1')+'" rowinfo="'+i+'">');
@@ -544,7 +618,8 @@ Plugin.prototype ={
 				for(var j=0 ;j <tci.length; j++){
 					thiItem = tci[j];
 					clickFlag = thiItem.colClick;
-					strHtm.push('<td class="pub-body-td '+(thiItem.hidden===true ? 'pubGrid-disoff':'')+'" data-colinfo="'+i+','+j+'"><div class="pub-content '+thiItem._alignClass+'"><div class="pub-content-cell"><div class="pub-content-ellipsis '+ (clickFlag?'pub-body-td-click':'') +'">'+this.valueFormatter( i, thiItem,tbiItem)+'</div></div></div></td>');
+					tmpVal = this.valueFormatter( i, thiItem,tbiItem); 
+					strHtm.push('<td class="pub-body-td '+(thiItem.hidden===true ? 'pubGrid-disoff':'')+'" data-colinfo="'+i+','+j+'"><div class="pub-content '+thiItem._alignClass+'"><div class="pub-content-cell"><div class="pub-content-ellipsis '+ (clickFlag?'pub-body-td-click':'') +'" title="'+tmpVal+'" >'+tmpVal+'</div></div></div></td>');
 				}
 			}
 		}else{
@@ -717,8 +792,6 @@ Plugin.prototype ={
 			}
 		}
 		
-		
-
 		var topSpaceHeight = (viewItemIdx -1)*_this.config.scroll.itemGroupTotalHeight; 
 
 		var spaceItemCount = Math.floor(topSpaceHeight /_this.options.bigData.spaceUnitHeight)
@@ -817,17 +890,20 @@ Plugin.prototype ={
 					
 
 					if(viewIdx-scrIdx > 1){
-						//scrIdx = scrIdx +1;
+						
 						jumpFlag = true; 	
 					}else{
 						scrIdx = scrIdx -1; 
 					}
 				}
 
-				//console.log('scroll--------- ',jumpFlag, updown, scrIdx ,  viewIdx)
+				//console.log('scroll--------- ',jumpFlag, updown, scrIdx ,_conf.scroll.viewItemIdx,  viewIdx)
 				//console.log('-------------	##################-------------------------------------')
 				
-				if(_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx) return ; 
+
+				//if(scrIdx < 1) return ; 
+
+				if( !jumpFlag  &&  (_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx)) return ; 
 				
 				if(jumpFlag){
 					_conf.scroll.viewItemIdx = scrIdx < 1 ? 1 :scrIdx;
@@ -1173,19 +1249,28 @@ Plugin.prototype ={
 			,ox = oe ? oe[0].pageX : e.pageX;
 		
 		var w = drag.colW + (ox - drag.pageX);
-
+		
+		var minFlag = false; 
 		if(_this.options.headerOptions.resize.realTime || mode=='end'){
 			if(w > _this.options.headerOptions.colMinWidth){
 	
 			}else{
 				w =_this.options.headerOptions.colMinWidth;
+				minFlag =true; 
 			}
-			drag.changeColW = w;	
-			_this.config.gridElementWidth = drag.gridW+(ox - drag.pageX);
-			_this.config.headerContainerElement.css('width',(_this.config.gridElementWidth+_this.options.scrollWidth)+'px');
-			_this.config.headerElement.css('width',(_this.config.gridElementWidth)+'px');
-			_this.config.bodyElement.css('width',(_this.config.gridElementWidth)+'px');
 			
+			drag.changeColW = w;	
+			var beforeW = _this.config.gridElementWidth; 
+			if(!minFlag){
+				_this.config.gridElementWidth = drag.gridW+(ox - drag.pageX);
+			}
+			
+			if(beforeW != _this.config.gridElementWidth){
+				_this.config.headerContainerElement.css('width',(_this.config.gridElementWidth+_this.options.scrollWidth)+'px');
+				_this.config.headerElement.css('width',(_this.config.gridElementWidth)+'px');
+				_this.config.bodyElement.css('width',(_this.config.gridElementWidth)+'px');
+			}
+
 			drag.ele.removeAttr('style');
 			drag.colHeader.css('width',w+'px');
 			drag.colHeader.attr('_width',w);
@@ -1196,6 +1281,156 @@ Plugin.prototype ={
 				drag.ele.css('left',w);
 			}
 		}
+	}
+	/**
+     * @method pageNav
+	 * @param  options {Object} 옵션
+     * @description 페이징 하기.
+     */
+	,pageNav : function(options) {
+		var _this =this; 
+
+		var navPosition = _this.config.page.position || 'left';
+		
+		var pagingInfo = _this.getPageInfo(options.totalCount , options.currPage , options.countPerPage, options.unitPage);
+		
+		var currP = pagingInfo.currPage;
+		if (currP == "0") currP = 1;
+		var preP_is = pagingInfo.prePage_is;
+		var nextP_is = pagingInfo.nextPage_is;
+		var currS = pagingInfo.currStartPage;
+		var currE = pagingInfo.currEndPage;
+		if (currE == "0") currE = 1;
+		var nextO = 1 * currP + 1;
+		var preO = currP - 1;
+		var strHTML = new Array();
+		strHTML.push('<div class="pubGrid-page-navigation page-'+navPosition+'"><ul>');
+		if (new Boolean(preP_is) == true) {
+			strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+		} else {
+			if (currP <= 1) {
+				strHTML.push(' <li class="disabled"><a href="javascript:">&laquo;</a></li>');
+			} else {
+				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+			}
+		}
+		var no = 0;
+		for (no = currS * 1; no <= currE * 1; no++) {
+			if (no == currP) {
+				strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
+			} else {
+				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+no+'">'+ no + '</a></li>');
+			}
+		}
+
+		if (new Boolean(nextP_is) == true) {
+			strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');
+		} else {
+			if (currP == currE) {
+				strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
+			} else {
+				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');
+			}
+		}
+		strHTML.push('</ul></div>');
+
+		$('#'+_this.prefix+'pubGrid-pageNav').empty().html(strHTML.join(''));
+		
+		$('#'+_this.prefix+'pubGrid-pageNav .page-click').on('click', function() {
+			var pageno = $(this).attr('pageno');
+			if (typeof _this.config.page.callback == 'function') {
+				_this.config.page.callback(pageno);
+			}
+		});
+		
+		return this; 
+	}
+	/**
+     * @method getPageInfo
+	 * @param  totalCount {int} 총카운트
+	 * @param  currPage {int} 현재 페이지
+	 * @param  countPerPage {int} 한페이지에 나올 row수
+	 * @param  unitPage {int} 한페이지에 나올 페이번호 갯수
+     * @description 페이징 하기.
+     */
+	,getPageInfo : function (totalCount, currPage, countPerPage, unitPage) {
+		var unitCount = 100;
+		countPerPage = countPerPage || 10;
+		unitPage = unitPage || 10;
+
+		if (totalCount == 0) {
+			countPerPage = unitCount;
+		} else if (totalCount < countPerPage) {
+			countPerPage = totalCount / unitCount * unitCount;
+			if (totalCount % unitCount > 0) {
+				countPerPage += unitCount;
+			}
+		}
+
+		function getMaxNum( allPage, list_num) {
+			if (allPage % list_num == 0) {
+				return allPage / list_num;
+			}
+			return allPage / list_num + 1;
+		}
+
+		var totalPage = getMaxNum(totalCount, countPerPage);
+
+		if (totalPage < currPage)
+			currPage = totalPage;
+		var currEndCount;
+		if (currPage != 1) {
+			currEndCount = currPage * countPerPage;
+		} else {
+			currEndCount = countPerPage;
+		}
+
+		if (currEndCount > totalCount)
+			currEndCount = totalCount;
+		var currStartPage;
+		var currEndPage;
+		
+		if (totalPage <= unitPage) {
+			currEndPage = totalPage;
+			currStartPage = 1;
+		} else {
+			if(currPage < (unitPage /2)){
+				currEndPage = (currPage - 1) / unitPage * unitPage + unitPage;
+				currStartPage = currEndPage - unitPage + 1;
+			}else{
+				currEndPage = (currPage + unitPage /2);
+				
+				if(currEndPage > totalPage){
+					currEndPage =totalPage;
+				}
+				currStartPage = currEndPage - unitPage + 1;
+			}
+		}
+
+		if (currEndPage > totalPage)
+			currEndPage = totalPage;
+
+		var prePage=0;
+		var prePage_is=false;
+		if (currStartPage != 1) {
+			prePage_is = true;
+			prePage = currStartPage - 1;
+		} 
+
+		var nextPage=0;
+		var nextPage_is =false;
+		if (currEndPage != totalPage) {
+			nextPage_is = true;
+			nextPage = currEndPage + 1;
+		}
+
+		return  {
+			'currPage' :currPage ,'unitPage' : unitPage	
+			,'prePage' : prePage ,'prePage_is' : prePage_is
+			,'nextPage' : nextPage,'nextPage_is' : nextPage_is
+			,'currStartPage' : currStartPage ,'currEndPage' : currEndPage
+			,'totalCount' : totalCount ,'totalPage' : totalPage
+		};
 	}
 	/**
      * @method excelExport
