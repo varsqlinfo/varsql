@@ -145,9 +145,7 @@ public class SQLServiceImpl{
 		
 		Statement stmt = null; 
 		if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
-			stmt = conn.createStatement(
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+			stmt = conn.createStatement();
 			setMaxRow(stmt, maxRow);
 			stmt.execute(tmpSqlSource.getQuery());
 		}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
@@ -156,8 +154,7 @@ public class SQLServiceImpl{
 			callStatement.execute();
 			stmt = callStatement; 
 		}else{
-			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 			
 			List param= tmpSqlSource.getParam();
 			

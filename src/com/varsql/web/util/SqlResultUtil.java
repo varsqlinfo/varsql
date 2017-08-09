@@ -79,39 +79,11 @@ public class SqlResultUtil {
 			columnNameArr.add(columnMap);
 		}
 		
-		rs.last(); 
-		int totalCnt = rs.getRow();
-		rs.beforeFirst();
-		int first = 0,last = totalCnt;
+		int first = 0,last = maxRow;
 		
-		ssrv.setTotalCnt(totalCnt);
+		
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
 		ssrv.setColumn(columnNameArr);
-		
-		
-		if(totalCnt > maxRow){
-		
-			int pageNo = paramMap.getInt(VarsqlParamConstants.SEARCH_NO,1);
-			int countPerPage = maxRow;
-			first = ((pageNo-1)*countPerPage);
-			last = first+countPerPage;
-						
-			if(first != 0){
-				rs.absolute(first);
-			}
-			
-			if(totalCnt > last){
-				rs.setFetchSize((maxRow > 1000 ? VarsqlParamConstants.SQL_MAX_ROW : maxRow));
-			}else{
-				last = totalCnt; 
-				rs.setFetchSize(totalCnt);
-			}
-			ssrv.setResultCnt(last-first);
-			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, pageNo, maxRow));
-		}else{
-			ssrv.setResultCnt(last-first);
-			ssrv.setPagingInfo(PagingUtil.getPageObject(totalCnt, 1, maxRow));
-		}
 		
 		Map columns = null;
 		Reader input = null;

@@ -640,6 +640,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.contentAreaId+'>#tables',{
 				height:'auto'
 				,autoResize :false
+				,bigData :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
@@ -799,6 +800,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.contentAreaId+'>#views',{
 				headerView:true
 				,height:'auto'
+				,bigData :false
 				,autoResize :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'View', width:200, sort:true}
@@ -846,6 +848,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.contentAreaId+'>#procedures',{
 				headerView:true
 				,height:'auto'
+				,bigData :false
 				,autoResize :false
 				,tColItem : [
 					{key :'PROCEDURE_NAME', label:'Procedure',width:200, sort:true}
@@ -893,6 +896,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.contentAreaId+'>#functions',{
 				headerView:true
 				,height: 'auto'
+				,bigData :false
 				,tColItem : [
 					{key :'FUNCTION_NAME', label:'Function',width:200, sort:true}
 					,{key :'FUNCTION_TYPE', label:'설명'}
@@ -932,6 +936,7 @@ _ui.leftDbObjectServiceMenu ={
 			headerOptions : {
 				redraw : false
 			}
+			,bigData :false
 			,height:'auto'
 			,autoResize :false
 			,tColItem : gridObj.column
@@ -1924,13 +1929,17 @@ _ui.SQL = {
 			headerView:true
 			,height:'auto'
 			,autoResize : false
+			,bigData : {
+				gridCount : 20		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
+				,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
+				,horizontalEnableCount : 50
+			}
 			,headerOptions:{
 				view:true
 				,resize:{
 					enabled : true
 				}
 			}
-			,resizeGridWidthFixed : true
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});

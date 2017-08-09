@@ -15,6 +15,12 @@
 	box-sizing: content-box !important;
 }
 
+.pubGrid th, .pubGrid td{
+ -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
 .pubGrid-container {
 	position: relative;
 }
@@ -31,6 +37,10 @@
 	table-layout: fixed;
 	border:0px;
 	border-bottom:1px solid #ddd;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+
 
 }
 
