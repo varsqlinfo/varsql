@@ -964,9 +964,7 @@ Plugin.prototype ={
 		_conf.bodyScroll.scroll(function (e){
 			_conf.headerWrapElement.scrollLeft($(this).scrollLeft());
 		});
-		
-		var timerObj = null; 
-		
+				
 		_conf.bodyScroll.on("scroll", function(event) {
 			event.preventDefault();
 			var scrollEle = $(this);
@@ -1032,8 +1030,8 @@ Plugin.prototype ={
 
 					if(scrollData.hScrollMoveFlag===true  && (updown =='down' || sTop > topViewHeight)){
 						scrollData.hScrollMoveFlag = false; 
-						$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
 						_this.drawGrid('scrollV_draw');
+						$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
 					}
 				}
 				
@@ -1074,19 +1072,19 @@ Plugin.prototype ={
 						}
 					}
 
-					//console.log('scroll--------- ',jumpFlag, sTop, updown, scrIdx ,_conf.scroll.viewItemIdx,  viewIdx)
-					//console.log('-------------	##################-------------------------------------')
-					
-					//if(scrIdx < 1) return ; 
-
-					if( !jumpFlag  &&  (_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx)) return ; 
-
 					if(scrollData.hScrollMoveFlag===true){
 						scrollData.hScrollMoveFlag = false; 
 						$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
 						_this.drawGrid('scrollV_draw');
 						return ; 
 					}
+
+					//console.log('scroll--------- ',jumpFlag, sTop, updown, scrIdx ,_conf.scroll.viewItemIdx,  viewIdx)
+					//console.log('-------------	##################-------------------------------------')
+					
+					//if(scrIdx < 1) return ; 
+
+					if( !jumpFlag  &&  (_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx)) return ; 
 					
 					if(jumpFlag){
 						_conf.scroll.viewItemIdx = scrIdx < 1 ? 1 :scrIdx;
