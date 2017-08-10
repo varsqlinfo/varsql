@@ -1926,8 +1926,7 @@ _ui.SQL = {
 		var _self = this; 
 		
 		$.pubGrid(_self.options.dataGridSelector,{
-			headerView:true
-			,height:'auto'
+			height:'auto'
 			,autoResize : false
 			,bigData : {
 				gridCount : 20		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 

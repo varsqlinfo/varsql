@@ -25,7 +25,8 @@ var _initialized = false
 		,number : {prefix :'$', suffix :'원' , fixed : 0}
 	}
 	,bigData : {
-		gridCount : 30		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
+		enabled: true
+		,gridCount : 30		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
 		,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
 		,horizontalEnableCount : 20	// 컬럼 view 카운트. 20개 이상일경우 처리. 
 	}
@@ -155,19 +156,16 @@ Plugin.prototype ={
 		_this.config = {totGridWidth : 0, scrollWidth :(scrollBarSize(_this.element)+1)};
 		
 		_this.options =$.extend(true, {}, _defaults);
-		_this.setOptions(options);
+		_this.setOptions(options, true);
 		
-
 		_this.drag ={};
-		_this._setGridWidth('init');
-
 		_this.addStyleTag();
-		
-		_this.config.gridXScrollFlag = false;
-		_this.config.page = _this.options.page;
 
 		_this._setThead();
 		_this.setData(_this.options.tbodyItem , 'init');
+		
+		_this.config.gridXScrollFlag = false;
+		_this.config.page = _this.options.page;
 
 		_this._windowResize();
 
@@ -180,19 +178,13 @@ Plugin.prototype ={
 	,_setGridWidth : function (mode){
 		var _this = this;
 		
-		if(mode != 'init'){
-			_this.config.pubGridElement.hide();
-		}
-			
-		_this.config.gridElementWidth = _this.element.innerWidth(); // border 값 빼주기.
-			
-		if(mode != 'init') _this.config.pubGridElement.show();
+		_this.config.gridElementWidth = _this.element.innerWidth()-1; // border 값 빼주기.			
 	}
 	/**
      * @method setOptions
      * @description 옵션 셋팅.
      */
-	,setOptions : function(options){
+	,setOptions : function(options , firstFlag){
 		var _this = this; 
 		
 		if($.isArray(options.tbodyItem)){
@@ -204,11 +196,13 @@ Plugin.prototype ={
 		this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
 
 		_this.config.totalColHeight = _this.options.rowOptions.colHeight+1;
-		_this.config.scroll = {top :0 , left:0, startRow :0, endRow :0, updown:'', viewItemIdx : 1, height:0, hScrollMoveFlag: false, viewArea :{top :true , mid:false , bottom:false}};
 
-		if(_this.options.bigData === false){
+		_this.config.scroll = {top :0 , left:0, startCol:0, endCol:this.options.tbodyItem.length,startRow :0, endRow :0, updown:'', viewItemIdx : 1, height:0, hScrollMoveFlag: false, viewArea :{top :true , mid:false , bottom:false}};
+		
+		if(_this.options.bigData === false || _this.options.bigData.enabled === false){
 			_this.options.bigData ={
-				gridCount : 1000
+				enabled :false
+				,gridCount : 1000
 				,spaceUnitHeight : 100000
 				,horizontalEnableCount : 50 
 			};
@@ -236,6 +230,13 @@ Plugin.prototype ={
 		}else{
 			_this.options.rowContextMenu =false; 
 		}
+		
+		_this._setGridWidth('init');
+
+		if(firstFlag !== true){
+			_this._calcElementWidth();
+		}
+		
 	}
 	/**
      * @method addStyleTag
@@ -624,8 +625,8 @@ Plugin.prototype ={
 	,getHeaderHtml : function (){
 		var _this = this; 
 
-		return '<div class="pubGrid-wrapper">'
-			+' <div class="pubGrid-width-size" style="width:100%;height:0px;"></div>'
+		return '<div id="'+_this.prefix+'pubGrid-width-size" class="pubGrid-width-size" style="width:100%;height:0px;"></div>'
+			+' <div class="pubGrid-wrapper">'
 			+'  <div id="'+_this.prefix+'pubGrid" class="pubGrid" style="width:'+_this.config.gridElementWidth+'px;">'
 			+'	<div id="'+_this.prefix+'pubGrid-container" class="pubGrid-container">'
 			+'		<div id="'+_this.prefix+'pubGrid-header-wrapper" class="pubGrid-header-wrapper">'
@@ -846,7 +847,7 @@ Plugin.prototype ={
 		if(_this._isHorizontalCheck()){
 			_this.config.pubGridLeftSpaceElement.css('width','0px');	
 		}else{
-			_this.config.pubGridLeftSpaceElement.css('width',scrollData.leftWidth[scrollData.startCol]+'px');
+			_this.config.pubGridLeftSpaceElement.css('width',scrollData.leftWidth[scrollData.startCol||0]+'px');
 		}
 		//console.log('scroll top start : ',updown , viewItemIdx, $('.pubGrid-body-scroll').scrollTop());
 
@@ -1002,8 +1003,6 @@ Plugin.prototype ={
 					currentEndCol = scrollData.endCol;
 				_this.scrollColumnPosition(sLeft);
 
-				//console.log(currentStartCol, scrollData.endCol)
-				
 				if(scrollData.startCol != currentStartCol || scrollData.endCol != currentEndCol){
 					if(!_this._isHorizontalCheck() || scrollData.hScrollMoveFlag !== true){
 						scrollData.hScrollMoveFlag = true;
@@ -1012,7 +1011,13 @@ Plugin.prototype ={
 					}					 
 				}
 			}else{
-			
+				if(scrollData.hScrollMoveFlag===true){
+					scrollData.hScrollMoveFlag = false; 
+					$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
+					_this.drawGrid('scrollV_draw');
+					return ; 
+				}
+
 				var viewIdx = _conf.scroll.viewItemIdx
 					,topViewHeight = _this._getScrollOverHeight(viewIdx)
 					,midViewHeight = _this._getScrollOverHeight(viewIdx+1)
@@ -1072,14 +1077,6 @@ Plugin.prototype ={
 						}
 					}
 
-					if(scrollData.hScrollMoveFlag===true){
-						scrollData.hScrollMoveFlag = false; 
-						$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
-						_this.drawGrid('scrollV_draw');
-						return ; 
-					}
-
-					//console.log('scroll--------- ',jumpFlag, sTop, updown, scrIdx ,_conf.scroll.viewItemIdx,  viewIdx)
 					//console.log('-------------	##################-------------------------------------')
 					
 					//if(scrIdx < 1) return ; 
@@ -1138,8 +1135,10 @@ Plugin.prototype ={
 			_this.config.bodyScroll.css('height',(bodyH)+'px');
 						
 			_this._setBigDataCount(parseInt((_this.element.height() / _this.options.rowOptions.colHeight), 10 ));
-			_this.drawGrid('scrollV_draw');
-			
+
+			if(_this.options.bigData.enabled === true){
+				_this.drawGrid('scrollV_draw');
+			}
 		}
 
 		if(_this.options.resizeGridWidthFixed === false){
