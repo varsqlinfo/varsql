@@ -462,10 +462,6 @@ _ui.leftDbObjectServiceMenu ={
 				var refresh = sObj.attr('refresh')=='Y'?true:false; 
 				sObj.attr('refresh','N');
 				_self._dbObjectList(item, refresh);
-				var menuObj =$.pubGrid('#left_service_menu_content>#'+item.contentid); 
-				if(typeof menuObj.resizeDraw !=='undefined'){
-					menuObj.resizeDraw({width: serviceElement.width() ,height: serviceElement.height()});
-				}
 				
 			}
 		})
@@ -916,7 +912,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 	}
 	// 메타 데이타 그리기.
-	,setMetadataGrid :function (gridObj, type){
+	,setMetadataGrid :function (gridData, type){
 		var _self = this;
 		//_self.getMetaContentWrapEle().empty();
 		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadata_content_areaId.replace('#', '')+'"></div>');
@@ -932,16 +928,24 @@ _ui.leftDbObjectServiceMenu ={
 			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadata_content_area_wrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
 		}
 		
-		$.pubGrid(_self.options.metadata_content_area_wrapId+type, {
-			headerOptions : {
-				redraw : false
-			}
-			,bigData :false
-			,height:'auto'
-			,autoResize :false
-			,tColItem : gridObj.column
-			,tbodyItem :gridObj.data
-		});
+		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type);
+		
+		if(gridObj){
+			gridObj.setData(gridData.data);
+		}else{
+			$.pubGrid(_self.options.metadata_content_area_wrapId+type, {
+				headerOptions : {
+					redraw : false
+				}
+				,bigData :false
+				,height:'auto'
+				,autoResize :false
+				,tColItem : gridData.column
+				,tbodyItem :gridData.data
+			});
+		}
+		
+		
 		
 		
 	}
@@ -1014,8 +1018,6 @@ _ui.SQL = {
 				,text :_item
 			};
 		})
-		
-		console.log(_ui.base.mimetype);
 		
 		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: _ui.base.mimetype,
