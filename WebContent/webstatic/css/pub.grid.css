@@ -8,14 +8,14 @@
 /*bootstrap conflict 막기위해 넣은 코드. */
 .pubGrid {
 	font-family: Ubuntu, Arial, "Apple SD Gothic Neo", "���� SD ��� Neo", "NanumBarunGothic", "NanumBarunGothicOTF", "�����ٸ����", "�����ٸ����OTF", "Malgun Gothic", "���� ���", "NanumGothic", "NanumGothicOTF", "�������", "�������OTF", sans-serif; font-size: 14px;  font-weight: light; 
-	border : 1px solid #ddd;
+	border : 1px solid #bcbcbd;
 	font-size:12px;
 	-webkit-box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	box-sizing: content-box !important;
 }
 
-.pubGrid th, .pubGrid td{
+.pubGrid tr, .pubGrid th, .pubGrid td{
  -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
@@ -36,12 +36,10 @@
 	border-collapse: collapse;
 	table-layout: fixed;
 	border:0px;
-	border-bottom:1px solid #ddd;
+	border-bottom:1px solid #bcbcbd;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-
-
 }
 
 .pubGrid-header .label-wrapper {
@@ -68,7 +66,7 @@
 }
 .pubGrid-header .pub-header-tr .pub-header-cont .inner .centered {
   position: relative;
-  padding: 3px 2px;
+  padding: 5px 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -81,16 +79,27 @@
 
 .pubGrid-header .pub-header-tr .label-wrapper.sortasc {
     background: url(./images/sort-asc.png) center 0 no-repeat;
-    background-position: 50% -4px;
+    background-position: 50% -3px;
 }
 
 .pubGrid-header .pub-header-tr .label-wrapper.sortdesc {
     background: url(./images/sort-desc.png) center 0 no-repeat;
-    background-position: 50% -3px;
+    background-position: 50% -2px;
 }
 .pubGrid-header th {
-	border: 1px solid #ddd;
+	border: 1px solid #bcbcbd;
+	margin: 0;
+    padding: 0;
+    color: #000;
+	height:25px;
+    background-image: -webkit-linear-gradient(#ffffff,#dadada);
+    background-image: -moz-linear-gradient(#ffffff,#dadada);
+    background-image: -ms-linear-gradient(#ffffff,#dadada);
+    background-image: -o-linear-gradient(#ffffff,#dadada);
+    background-image: linear-gradient(#ffffff,#dadada);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#dadada', GradientType=0);
 }
+
 
 /* body ����.*/
 .pubGrid-body-wrapper{
@@ -115,27 +124,27 @@
 .pubGrid-body{
 	width: 100%;
 	border-collapse: collapse;
-	border-left: 0px solid #ddd;
-	border-right: 0px solid #ddd;
+	border-left: 0px solid #bcbcbd;
+	border-right: 0px solid #bcbcbd;
 	table-layout: fixed;
 }
 
 .pubGrid-body td {
-	border: 1px solid #ddd;
+	border: 1px solid #bcbcbd;
   
 }
 
 .pubGrid-body [rowinfo="0"]>td {
-	border-top:0px;
+	border-top:1px;
 }
 
 /* first th td board 0 처리 */
 .pubGrid-header th:first-child, .pubGrid-body td:first-child {
-	border-left: 0px solid #ddd;
+	border-left: 0px solid #bcbcbd;
 }
 
 .pubGrid-header tr:first-child th{
-	border-top: 0px solid #ddd;
+	border-top: 0px solid #bcbcbd;
 }
 
 .pubGrid-body{
@@ -153,7 +162,7 @@
 */
 
 .pubGrid-body tbody .pub-body-tr.tr0{
-   background: #F5F8F5;
+   background: #f3f6fa;
 }
 .pubGrid-body tbody .pub-body-tr.tr1{
    background: #fff;
@@ -194,6 +203,22 @@
 	z-index: 1;
 }
 
+.pubGrid-footer-wrapper {
+	border-top:1px solid #bcbcbd;
+	position:relative;
+
+	margin: 0;
+    padding: 0;
+    color: #000;
+	height:30px;
+    background-image: -webkit-linear-gradient(#ffffff,#dadada);
+    background-image: -moz-linear-gradient(#ffffff,#dadada);
+    background-image: -ms-linear-gradient(#ffffff,#dadada);
+    background-image: -o-linear-gradient(#ffffff,#dadada);
+    background-image: linear-gradient(#ffffff,#dadada);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#dadada', GradientType=0);
+}
+
 .pubGrid-header .label-wrapper > .pubGrid-move-header{
 	background:#82c5c0;
 }
@@ -209,21 +234,19 @@
   padding-left: 0;
   margin: 3px;
   border-radius: 4px;
+  line-height:22px;
 }
 .pubGrid-page-navigation>ul> li {
   display: inline;
 }
 .pubGrid-page-navigation>ul> li > a,
 .pubGrid-page-navigation>ul> li > span {
-  position: relative;
-  float: left;
-  padding: 6px 12px;
-  margin-left: -1px;
-  line-height: 1.42857143;
-  color: #337ab7;
-  text-decoration: none;
-  background-color: #fff;
-  border: 1px solid #ddd;
+	position: relative;
+	float: left;
+	padding: 2px 7px;
+	margin-left: -1px;
+	color: #000;
+	text-decoration: none;
 }
 .pubGrid-page-navigation>ul> li:first-child > a,
 .pubGrid-page-navigation>ul> li:first-child > span {
@@ -242,8 +265,8 @@
 .pubGrid-page-navigation>ul> li > span:focus {
   z-index: 2;
   color: #23527c;
-  background-color: #eee;
-  border-color: #ddd;
+  background-color: #d1e4f5;
+  border-color: #bcbcbd;
 }
 .pubGrid-page-navigation>ul> .active > a,
 .pubGrid-page-navigation>ul> .active > span,
@@ -265,10 +288,11 @@
 .pubGrid-page-navigation>ul> .disabled > a:focus {
   color: #777;
   cursor: not-allowed;
-  background-color: #fff;
-  border-color: #ddd;
+  border-color: #bcbcbd;
 }
-
+.pubgGrid-count-info{
+	position:absolute;top:0px;margin-top:8px;;right:5px;line-height:17px;
+}
 .pubGrid-page-navigation.page-left{
 	text-align:left;
 }

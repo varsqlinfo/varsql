@@ -18,7 +18,9 @@ var _initialized = false
 	,scrollWidth : 18	// 스크롤바 넓이
 	,minWidth : 38
 	,rowOptions:{
-		height:20	// cell 높이
+		height: 22	// cell 높이
+		,click : false //row(tr) click event
+		,contextMenu : false // row(tr) contextmenu event
 	}
 	,formatter :{
 		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
@@ -46,15 +48,23 @@ var _initialized = false
 		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
 	}
+	,scroll :{
+		lazyLoad : false // scroll 실시간으로 로드할지 여부 (속도에 영향으줌. )
+		,lazyLoadTime : 30 // scroll 로드 타임. 
+	}
 	,height: 200
 	,tColItem : [] //head item
  	,theadGroup : [] // head group 
 	,tbodyItem : []  // body item
 	,tbodyGroup : [] // body group 
 	,tfootItem : []  // foot item
-	,rowClick : false //row(tr) click event
-	,rowContextMenu : false // row(tr) contextmenu event
 	,page : false	// paging info
+	,message : {
+		emtpy : 'no data'
+		,pageStatus : function (status){
+			return status.currStart +' - ' + status.currEnd+' of '+ status.total;
+		}
+	}
 }
 ,agt = navigator.userAgent.toLowerCase()
 ,_broswer = ((function (){
@@ -168,8 +178,6 @@ Plugin.prototype ={
 		_this.setData(_this.options.tbodyItem , 'init');
 		
 		_this.config.gridXScrollFlag = false;
-		_this.config.page = _this.options.page;
-
 		_this._windowResize();
 
 		return this;
@@ -201,10 +209,7 @@ Plugin.prototype ={
 		//_this.config.rowHeight = _this.options.rowOptions.height+1;	// border-box 수정. 2017-08-11
 		_this.config.rowHeight = _this.options.rowOptions.height+1;
 
-		_this.config.scroll = {top :0 , left:0, startCol:0, endCol:this.options.tbodyItem.length,startRow :0
-			, endRow :0, updown:'', viewItemIdx : 1, height:0, hScrollMoveFlag: false,viewArea :{area0 :true , area1:false , area2:false}};
-		_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
-		
+		var bigDataGridCount = 0 ; 
 		if(_this.options.bigData === false || _this.options.bigData.enabled === false){
 			_this.options.bigData ={
 				enabled :false
@@ -212,34 +217,47 @@ Plugin.prototype ={
 				,spaceUnitHeight : 100000
 				,horizontalEnableCount : 50 
 			};
+
+			bigDataGridCount = _this.options.bigData.gridCount; 
+
 		}else{
 			if(_this.options.bigData.gridCount=='auto'){
 				var gc = parseInt((_this.element.height() / _this.options.rowOptions.height), 10 ); 
-				_this._setBigDataCount(gc + parseInt(gc/2, 10));				
+				bigDataGridCount = gc + parseInt(gc/2, 10);
 			}else{
-				_this._setBigDataCount(_this.options.bigData.gridCount);
+				bigDataGridCount = _this.options.bigData.gridCount;
 			}
 		}
+
+		_this.config.scroll = _this.initScrollData(bigDataGridCount);
+		_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 				
 		this.config.horizontalEnabled = this.options.tColItem.length > _this.options.bigData.horizontalEnableCount ? true : false; 
 
-		var _cb = _this.options.rowContextMenu.callback; 
+		var _cb = _this.options.rowOptions.contextMenu.callback; 
 
-		if(_this.options.rowContextMenu !== false && typeof _this.options.rowContextMenu == 'object'){
-			var _cb = _this.options.rowContextMenu.callback; 
+		if(_this.options.rowOptions.contextMenu !== false && typeof _this.options.rowOptions.contextMenu == 'object'){
+			var _cb = _this.options.rowOptions.contextMenu.callback; 
 			
 			if(_cb){
-				_this.options.rowContextMenu.callback = function(key,sObj) {
+				_this.options.rowOptions.contextMenu.callback = function(key,sObj) {
 					this.gridItem = _this.getItems(this.element.attr('rowInfo'));
 					_cb.call(this,key,sObj);
 				}
 			}
 		}else{
-			_this.options.rowContextMenu =false; 
+			_this.options.rowOptions.contextMenu =false; 
 		}
-		
 		_this._setGridWidth();
+	}
+	,initScrollData : function (gridCount){
+		var scrollData =  {top :0 , left:0, startCol:0, endCol : (this.options.tColItem.length-1)
+				, endRow :0, updown:'', viewItemIdx : 1, height:0, hScrollMoveFlag: false, leftWidth :{}, viewArea :{area0 :true , area1:false , area2:false}};
 
+		scrollData.itemGroupTotalHeight = gridCount * this.config.rowHeight; 
+		scrollData.maxViewItemIdx = Math.ceil(this.options.tbodyItem.length / gridCount)-2;
+
+		return scrollData; 
 	}
 	/**
      * @method addStyleTag
@@ -514,11 +532,21 @@ Plugin.prototype ={
 			,opt = _this.options
 			,tci = opt.tColItem;
 		var data = pdata;
-		var pageInfo = {};
+		var pageInfo = opt.page;
+
+		gridMode = gridMode||'reDraw';
 		if(!$.isArray(pdata)){
 			data = pdata.items;
 			pageInfo = pdata.page; 
+		}
 
+		if(gridMode=='reDraw'){
+			_this.config.scroll = _this.initScrollData(_this.options.bigData.gridCount);
+			_this.config.bodyScroll.scrollTop(0);
+			_this.scrollColumnPosition(0, _this.config.bodyScroll.scrollLeft());
+
+			
+			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
 
 		if(data){
@@ -544,46 +572,23 @@ Plugin.prototype ={
 			
 			if(_idx != -1) _this.getSortList(_idx, _sortType);
 		}
-
-		if(gridMode=='init'){
-			_this.drawGrid('init',true);
-		}else{
-			_this.drawGrid('tbody',true);
-		}
-
-		if(gridMode != 'sort'){
-			if(_this.config.page){
-				_this.setPage(pageInfo);
-			}
-		}
-
-		var itemHeight = _this.options.tbodyItem.length* _this.config.rowHeight
-			,unitHeight = _this.options.bigData.spaceUnitHeight
-			,loopCnt = Math.floor(itemHeight/unitHeight);
 		
-		var itemHeightHtm = [], topHeightHtm = [];
+		_this.drawGrid(gridMode,true);
 
-		for(var i =0 ;i <loopCnt ;i++ ){
-			itemHeightHtm.push('<div _idx="'+i+'" style="height:'+unitHeight+'px;"></div>');
-			topHeightHtm.push('<div data-top-idx="'+i+'" style="height:0px;"></div>');
-		}
-
-		if(itemHeight%unitHeight != 0){
-			itemHeightHtm.push('<div style="height:'+itemHeight%unitHeight+'px;"></div>');
-			topHeightHtm.push('<div data-top-idx="'+(loopCnt)+'" style="height:0px;"></div>');
-			loopCnt+=1;
-		}
-
-		_this.config.scroll.spaceCount = loopCnt;
+		_this.setPage(_this.options.page);
 		
-		_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
-		_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
-		
-
 	}
 	,setPage : function (pageInfo){
-		var _this =this; 
-		_this.pageNav(pageInfo);
+		var _this =this;
+
+		if(pageInfo === false){
+			$('#'+_this.prefix+'pubGrid-footer-wrapper').hide();
+			return ; 
+		}
+
+		if(typeof pageInfo ==='object'){
+			_this.pageNav(pageInfo);
+		}
 	}
 	,initStyle : function (){
 	
@@ -634,12 +639,12 @@ Plugin.prototype ={
 			+'				<div style="width:'+(_this.config.scrollWidth+1)+'px;height:10px;display:table-cell;float:left;"></div>'
 			+'			</div>'	
 			+'		</div>'
-			+'		<div id="pubGrid-body-wrapper" class="pubGrid-body-wrapper">'
-			+'			<div id="'+_this.prefix+'pubGrid-body-scroll" class="pubGrid-body-scroll" style="height:'+_this.options.height+'px;">'
+			+'		<div id="'+_this.prefix+'pubGrid-body-wrapper" class="pubGrid-body-wrapper">'
+			+'			<div id="'+_this.prefix+'pubGrid-body-scroll" class="pubGrid-body-scroll">'
 			+'			  <div id="'+_this.prefix+'pubGrid-body-container" class="pubGrid-body-container" style="style="display: table-row;"">'
 			
-			+'				<div id="'+_this.prefix+'pubGrid-body-height" class="pubGrid-body-height" style="width: 0px;padding:0px;display: table-cell;float:left;"></div>'
-			+'				<div style="display:table-cell;float:left;position:relative;">'
+			+'				<div id="'+_this.prefix+'pubGrid-body-height" class="pubGrid-body-height" style="position:absolute;top:0px;left:0px;width: 1px;padding:0px;display: table-cell;float:left;"></div>'
+			+'				<div style="display:table-cell;float:left;">'
 			+'					<div id="'+_this.prefix+'pubGrid-body-top-space" class="pubGrid-body-top-space" style="width: 1px; padding:0px;height:100%;"></div>'
 			+'					<div style="display: table-row;">'
 			+'						<div id="'+_this.prefix+'pubGrid-body-left-space" style="float:left;display: table-cell;"></div>'
@@ -652,7 +657,7 @@ Plugin.prototype ={
 			+'			  </div>'
 			+'			</div>'
 			+'		</div>'
-			+'		<div id="'+_this.prefix+'pubGrid-pageNav"></div>'
+			+'		<div id="'+_this.prefix+'pubGrid-footer-wrapper" class="pubGrid-footer-wrapper" style="position:relative;"><div id="'+_this.prefix+'pubGrid-pageNav" class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'pubGrid-page-status" class="pubgGrid-count-info"></div></div>'
 			+'		<div id="'+_this.prefix+'hiddenArea" style="display:none;"></div>'
 			+'	</div>'
 			+'  </div>'
@@ -740,9 +745,17 @@ Plugin.prototype ={
 
 		return itemVal; 
 	}
+	/**
+     * @method _isHorizontalCheck
+     * @description 가로 스크롤 체크.
+     */
 	,_isHorizontalCheck : function (){
 		return this.config.horizontalEnabled===true ?false : (this.config.horizontalEnabled===false && this.config.scroll.hScrollMoveFlag ===true);
 	}
+	/**
+     * @method _setTbodyAppend
+     * @description tbody 추가 , 삭제 .
+     */
 	,_setTbodyAppend : function (){
 		
 		this.config.bodyCount= this.config.bodyCount||-1;
@@ -770,6 +783,22 @@ Plugin.prototype ={
 		}
 	}
 	/**
+     * @method _getBodyHeight
+     * @description get body content height
+     */
+	,_getBodyHeight : function (){
+		var footerHeight = 0 ; 
+		if(this.options.page !== false){
+			footerHeight = this.config.footerWrapElement.height();
+		}
+		
+		var bodyH = this.config.height-this.config.headerWrapElement.height() - footerHeight; 
+		bodyH = bodyH > 0 ? bodyH : _this.config.headerWrapElement.height+5
+		this.config.gridBodyHeight = bodyH;
+		
+		return bodyH ;
+	}
+	/**
      * @method drawGrid
 	 * @param  type {String} 그리드 타입.
      * @description foot 데이타 셋팅
@@ -781,6 +810,14 @@ Plugin.prototype ={
 			,tci = opt.tColItem
 			,tbi = opt.tbodyItem
 			,hederOpt=opt.headerOptions;
+
+
+		if(drawMode ==='sort'){
+			for(var i =0 ; i <= _this.config.bodyCount; i++){
+				_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(_this.config.scroll.viewItemIdx+i));
+			}
+			return ; 
+		}
 		
 		// header html 만들기
 		function theadHtml(){
@@ -848,30 +885,55 @@ Plugin.prototype ={
 			_this.config.bodyElement = $('#'+_this.prefix +'pubGrid-body');
 			_this.config.bodyScroll = $('#'+_this.prefix +'pubGrid-body-scroll');
 			_this.config.hiddenArea = $('#'+_this.prefix +'hiddenArea');
+			_this.config.footerWrapElement = $('#'+_this.prefix+'pubGrid-footer-wrapper');
+			_this.config.footerPageStatusElement = $('#'+_this.prefix+'pubGrid-page-status');
 			
-			if(opt.height =='auto'){
-				var bodyH = _this.config.height-_this.config.headerWrapElement.height(); 
-				bodyH = bodyH > 0?bodyH : _this.config.headerWrapElement.height+5 ; 
-				_this.config.bodyScroll.css('height',(bodyH)+'px');
-			}
+			_this.element.css('height',this.config.height);
+
+			var bodyH = _this._getBodyHeight();
+			_this.config.bodyScroll.css('height',(bodyH)+'px');
+						
 			// resize 설정
 			_this._initHeaderEvent();
 			_this._headerResize(hederOpt.resize.enabled);
 			_this.scroll();
 			_this._initBodyEvent();
 			_this._setBodyEvent();
-			_this.config.gridBodyHeight = _this.config.bodyScroll.height();
-
+			
 			_this._setTbodyAppend();
 			_this.scrollColumnPosition(0,0);
 
 			$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
+			
+			_this._setFooterStatusMessage(0);
+
+			var itemHeight = _this.options.tbodyItem.length* _this.config.rowHeight
+			,unitHeight = _this.options.bigData.spaceUnitHeight
+			,loopCnt = Math.floor(itemHeight/unitHeight);
+		
+			var itemHeightHtm = [], topHeightHtm = [];
+
+			for(var i =0 ;i <loopCnt ;i++ ){
+				itemHeightHtm.push('<div _idx="'+i+'" style="height:'+unitHeight+'px;"></div>');
+				topHeightHtm.push('<div data-top-idx="'+i+'" style="height:0px;"></div>');
+			}
+
+			if(itemHeight%unitHeight != 0){
+				itemHeightHtm.push('<div style="height:'+itemHeight%unitHeight+'px;"></div>');
+				topHeightHtm.push('<div data-top-idx="'+(loopCnt)+'" style="height:0px;"></div>');
+				loopCnt+=1;
+			}
+
+			_this.config.scroll.spaceCount = loopCnt;
+			
+			_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
+			_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
+
 		}
 	
 		var scrollData = _this.config.scroll
 			,viewItemIdx=scrollData.viewItemIdx
-			,updown = scrollData.updown
-			,bigDataGridCount = _this.options.bigData.gridCount;
+			,updown = scrollData.updown;
 		
 		if(unconditionallyFlag != true && _this.config.drawBeforeData.viewItemIdx==viewItemIdx
 			&& _this.config.drawBeforeData.startCol==scrollData.startCol
@@ -951,6 +1013,13 @@ Plugin.prototype ={
 		_this.config.pubGridTopSpaceElement.find('[data-top-idx="'+spaceItemCount+'"]').css('height', overHeight +'px');
 
 	}
+	/**
+     * @method scrollColumnPosition
+	 * @param  sTop {int} scroll top value
+	 * @param  sLeft {int} scroll left value
+	 * @param  pType {String} scroll type
+     * @description foot 데이타 셋팅
+     */
 	,scrollColumnPosition : function (sTop, sLeft, pType){
 		var tci = this.options.tColItem; 
 		
@@ -1007,16 +1076,12 @@ Plugin.prototype ={
 	,scroll : function (){
 		var _this = this
 			,_conf = _this.config;
-			
-		_conf.bodyScroll.on("scroll", function(event) {
-			event.preventDefault();
-			var scrollEle = $(this);
 
-			var scrollData = _conf.scroll
-				,sTop  = scrollEle.scrollTop()
-				,sLeft = scrollEle.scrollLeft();
+		function scrollEvent (scrollData, sTop, sLeft){
 
 			var updown = '';
+				
+
 			if(sTop > scrollData.top){
 				updown = 'down';
 			}else if(sTop < scrollData.top){
@@ -1038,8 +1103,6 @@ Plugin.prototype ={
 			var currentStartCol = scrollData.startCol, currentEndCol = scrollData.endCol;
 						
 			if(updown == ''){
-				_conf.headerWrapElement.scrollLeft(sLeft);
-
 				_this.scrollColumnPosition(sTop , sLeft , 'hscroll');
 												
 				if(scrollData.startCol != currentStartCol || scrollData.endCol != currentEndCol){
@@ -1109,18 +1172,42 @@ Plugin.prototype ={
 						_this.scrollColumnPosition(sTop , sLeft , 'vscroll');
 						_this.drawGrid('scroll');																	
 					}
-						
 				}
 			}
+		}
+		
+		var scrollTimeout; 
+		_conf.bodyScroll.on("scroll", function(event) {
+			event.preventDefault();
 
-			return true; 
+			var scrollEle = $(this)
+				, sTop = scrollEle.scrollTop()
+				, sLeft = scrollEle.scrollLeft();
+
+			_this._setFooterStatusMessage(sTop);
+			_conf.headerWrapElement.scrollLeft(scrollEle.scrollLeft());
+
+			if(_this.options.scroll.lazyLoad === true){
+				if ( scrollTimeout ) {
+					clearTimeout( scrollTimeout );
+				}
+
+				scrollTimeout = setTimeout( function (){
+					scrollEvent(_conf.scroll, sTop, sLeft);
+				}, _this.options.scroll.lazyLoadTime );
+			}else{
+				scrollEvent(_conf.scroll,  sTop, sLeft);
+			}
+			
+			return false; 
 		});
 	}
-	,_setBigDataCount: function (gridCount){
-		// item total height 값
-		this.config.scroll.itemGroupTotalHeight = this.options.bigData.gridCount* this.config.rowHeight; 
-		this.config.scroll.maxViewItemIdx = Math.ceil(this.options.tbodyItem.length / this.options.bigData.gridCount)-2;
-	
+	,_setFooterStatusMessage : function (sTop){
+		this.config.footerPageStatusElement.empty().html(this.options.message.pageStatus({
+			currStart : Math.round(sTop / this.config.rowHeight)
+			,currEnd : Math.floor((sTop+this.config.gridBodyHeight) / this.config.rowHeight)
+			,total : this.options.tbodyItem.length
+		}))
 	}
 	,_getScrollOverHeight : function (idx , updown){
 		return idx* (this.options.bigData.gridCount)* this.config.rowHeight;
@@ -1141,9 +1228,10 @@ Plugin.prototype ={
 		if(!isOpt){
 			_this.element.css('width',opt.width);
 		}
-
+		
 		_this._setGridWidth();
 		_this.config.pubGridElement.css('width',(_this.config.gridElementWidth)+'px');
+		_this.scrollColumnPosition(_this.config.bodyScroll.scrollTop(),_this.config.bodyScroll.scrollLeft());
 		
 		if(_this.options.resizeGridWidthFixed === false){
 			_this._calcElementWidth('resize');
@@ -1156,20 +1244,20 @@ Plugin.prototype ={
 			
 		}else{
 			if(_this.options.height =='auto'){
+				_this.config.height = opt.height; 
 				_this.element.css('height',opt.height);
 
-				var bodyH = opt.height-_this.config.headerWrapElement.height(); 
-				bodyH = bodyH > 0?bodyH : bodyH+5;
+				var bodyH =_this._getBodyHeight();
+
 				_this.config.bodyScroll.css('height',(bodyH)+'px');
-				_this.config.gridBodyHeight = bodyH;
-				_this._setTbodyAppend();
+			}
+
+			_this._setTbodyAppend();
 		
-				if(_this.options.bigData.enabled === true){
-					setTimeout(function (){
-						_this.scrollColumnPosition(_this.config.bodyScroll.scrollTop(),_this.config.bodyScroll.scrollLeft());
-						_this.drawGrid('scrollV_draw');
-					}, 100);
-				}
+			if(_this.options.bigData.enabled === true){
+				setTimeout(function (){
+					_this.drawGrid('scrollV_draw');
+				}, 100);
 			}
 		}
 	}
@@ -1314,7 +1402,7 @@ Plugin.prototype ={
 		});
 		
 
-		if(_this.options.rowClick !== false && typeof _this.options.rowClick == 'function'){
+		if(_this.options.rowOptions.click !== false && typeof _this.options.rowOptions.click == 'function'){
 			rowClickFlag =true; 
 
 			var beforeRow; 
@@ -1328,7 +1416,7 @@ Plugin.prototype ={
 				selRow.addClass('active');
 				beforeRow = selRow; 
 				
-				_this.options.rowClick.call(selRow ,rowinfo , selItem);							
+				_this.options.rowOptions.click.call(selRow ,rowinfo , selItem);							
 			});
 		}
 	}
@@ -1337,8 +1425,8 @@ Plugin.prototype ={
      * @description body event setting
      */
 	,_setBodyEvent : function (){
-		if(this.options.rowContextMenu !== false){
-			$.pubContextMenu($('#'+this.prefix+'pubGrid-container .pub-body-tr'),this.options.rowContextMenu);
+		if(this.options.rowOptions.contextMenu !== false){
+			$.pubContextMenu($('#'+this.prefix+'pubGrid-container .pub-body-tr'),this.options.rowOptions.contextMenu);
 		}
 	}
 	/**
@@ -1507,8 +1595,6 @@ Plugin.prototype ={
 	,pageNav : function(options) {
 		var _this =this; 
 
-		var navPosition = _this.config.page.position || 'left';
-		
 		var pagingInfo = _this.getPageInfo(options.totalCount , options.currPage , options.countPerPage, options.unitPage);
 		
 		var currP = pagingInfo.currPage;
@@ -1521,7 +1607,7 @@ Plugin.prototype ={
 		var nextO = 1 * currP + 1;
 		var preO = currP - 1;
 		var strHTML = new Array();
-		strHTML.push('<div class="pubGrid-page-navigation page-'+navPosition+'"><ul>');
+		strHTML.push('<ul>');
 		if (new Boolean(preP_is) == true) {
 			strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
 		} else {
@@ -1536,27 +1622,32 @@ Plugin.prototype ={
 			if (no == currP) {
 				strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
 			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+no+'">'+ no + '</a></li>');
+				strHTML.push(' <li class="page-click" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
 			}
 		}
 
 		if (new Boolean(nextP_is) == true) {
-			strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');
+			strHTML.push(' <li class="page-click" pageno="'+nextO+'"><a href="javascript:" >&raquo;</a></li>');
 		} else {
 			if (currP == currE) {
 				strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
 			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');
+				strHTML.push(' <li class="page-click" pageno="'+nextO+'"><a href="javascript:" >&raquo;</a></li>');
 			}
 		}
-		strHTML.push('</ul></div>');
-
+		strHTML.push('</ul>');
+		
+		$('#'+_this.prefix+'pubGrid-pageNav').addClass('page-'+(options.position || 'center'))
 		$('#'+_this.prefix+'pubGrid-pageNav').empty().html(strHTML.join(''));
 		
 		$('#'+_this.prefix+'pubGrid-pageNav .page-click').on('click', function() {
 			var pageno = $(this).attr('pageno');
-			if (typeof _this.config.page.callback == 'function') {
-				_this.config.page.callback(pageno);
+			
+			$('#'+_this.prefix+'pubGrid-pageNav').find('li.active').removeClass('active');
+			$('#'+_this.prefix+'pubGrid-pageNav').find('[pageno="'+pageno+'"]').addClass('active');
+
+			if (typeof options.callback == 'function') {
+				options.callback(pageno);
 			}
 		});
 		
@@ -1745,7 +1836,7 @@ $.pubGrid = function (selector,options, args) {
 			_datastore[selector] = _cacheObject;
 		}else{
 			_cacheObject.setOptions(options);
-			_cacheObject.setData(_this.options.tbodyItem , 'init');
+			_cacheObject.setData(_this.options.tbodyItem , 'reDraw');
 		}
 		return _cacheObject; 
 	}

@@ -504,7 +504,7 @@ _ui.leftDbObjectServiceMenu ={
 			this._initCacheObject();
 		}
 	}
-	// 클릭시 테메뉴에 해당하는 메뉴 그리기
+	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
 		var _self = this;
 		var $contentId = selObj.contentid;
@@ -516,9 +516,11 @@ _ui.leftDbObjectServiceMenu ={
 		
 		if(activeObj.length > 0){
 			activeObj.addClass('show-display');
+			
 			if(refresh){
 				activeObj.empty();
 			}else{
+				$.pubGrid(_self.options.contentAreaId+'>#'+$contentId).resizeDraw({width:$(_self.options.contentAreaId).width() , height:$(_self.options.contentAreaId).height()});
 				return ; 
 			}
 		}else{
@@ -637,122 +639,125 @@ _ui.leftDbObjectServiceMenu ={
 				height:'auto'
 				,autoResize :false
 				,bigData :false
+				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
 				]
 				,tbodyItem :itemArr
-				,rowClick : function (idx, item){
-					var sObj = $(this);
-					
-	    			var refresh = sObj.attr('refresh')=='Y'?true:false; 
-	    			sObj.attr('refresh','N');
-	    			
-	    			$('.table-list-item.active').removeClass('active');
-	    			sObj.addClass('active');
-	    			
-	    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','name':item.TABLE_NAME}), '_tableMetadata', refresh);
-				}
-				,rowContextMenu :{
-					beforeSelect :function (){
-						$(this).trigger('click');
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+						
+		    			var refresh = sObj.attr('refresh')=='Y'?true:false; 
+		    			sObj.attr('refresh','N');
+		    			
+		    			$('.table-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','name':item.TABLE_NAME}), '_tableMetadata', refresh);
 					}
-					,callback: function(key,sObj) {
-						var ele = this.element, sItem = this.gridItem;
-						var gubun='table'
-							,tmpName = sItem.TABLE_NAME;
-						
-						if(key=='refresh'){
-							_self._removeMetaCache(gubun,tmpName);
-							ele.attr('refresh','Y');
-							ele.trigger('click.pubgridrow');
-							return ; 
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
 						}
-						
-						var cacheData = _self._getMetaCache(gubun,tmpName);
-						
-						if(key=='ddl_copy' || key=='ddl_paste'){
-							_self._createDDL({
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var gubun='table'
+								,tmpName = sItem.TABLE_NAME;
+							
+							if(key=='refresh'){
+								_self._removeMetaCache(gubun,tmpName);
+								ele.attr('refresh','Y');
+								ele.trigger('click.pubgridrow');
+								return ; 
+							}
+							
+							var cacheData = _self._getMetaCache(gubun,tmpName);
+							
+							if(key=='ddl_copy' || key=='ddl_paste'){
+								_self._createDDL({
+									gubunKey : key
+									,gubun : 'table'
+									,objName :  tmpName 
+									,item : cacheData
+								});
+								return ;
+							}
+							
+							if(key=='export_data'||key=='export_column'){
+								_self._dataExport({
+									gubun:gubun
+									,gubunKey :key
+									,objName :  tmpName 
+									,item : cacheData
+								});
+								return ;
+							}
+							
+							if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
+								_self._createJavaProgram({
+									gubun:gubun
+									,gubunKey :key
+									,objName :  tmpName 
+									,item : cacheData
+								});
+								return ;
+							}
+							
+							key = sObj.mode;
+							
+							_self._createScriptSql({
 								gubunKey : key
 								,gubun : 'table'
 								,objName :  tmpName 
 								,item : cacheData
+								,param_yn: sObj.param_yn
 							});
-							return ;
-						}
-						
-						if(key=='export_data'||key=='export_column'){
-							_self._dataExport({
-								gubun:gubun
-								,gubunKey :key
-								,objName :  tmpName 
-								,item : cacheData
-							});
-							return ;
-						}
-						
-						if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
-							_self._createJavaProgram({
-								gubun:gubun
-								,gubunKey :key
-								,objName :  tmpName 
-								,item : cacheData
-							});
-							return ;
-						}
-						
-						key = sObj.mode;
-						
-						_self._createScriptSql({
-							gubunKey : key
-							,gubun : 'table'
-							,objName :  tmpName 
-							,item : cacheData
-							,param_yn: sObj.param_yn
-						});
-					},
-					items: [
-						{key : "refresh" , "name": "새로고침"}
-						,{key : "sql_create", "name": "sql생성" 
-							,subMenu: [
-								{ key : "selectStar","name": "select *" , mode: "selectStar"}
-								,{ key : "select","name": "select column" ,mode:"select"}
-								,{ key : "insert","name": "insert" , mode:"insert"}
-								,{ key : "update","name": "update" ,mode:"update"}
-								,{ key : "delete","name": "delete" ,mode:"delete"}
-								,{ key : "drop","name": "drop" , mode:"drop"}
-							]
-						}
-						,{key : "create_ddl_top","name": "DDL 보기" 
-							,subMenu:[
-								{key : "ddl_copy","name": "복사하기"}
-								,{key : "ddl_paste","name": "edit 영역에보기"}
-							]
-						}
-						,{key : "create_java","name": "java 모델생성" 
-							,subMenu:[
-								{key : "java_camel_case_naming","name": "Camel case naming"}
-								,{key : "java_json","name": "json형식"}
-								,{key : "java_valid","name": "우효성 체크 Bean"}
+						},
+						items: [
+							{key : "refresh" , "name": "새로고침"}
+							,{key : "sql_create", "name": "sql생성" 
+								,subMenu: [
+									{ key : "selectStar","name": "select *" , mode: "selectStar"}
+									,{ key : "select","name": "select column" ,mode:"select"}
+									,{ key : "insert","name": "insert" , mode:"insert"}
+									,{ key : "update","name": "update" ,mode:"update"}
+									,{ key : "delete","name": "delete" ,mode:"delete"}
+									,{ key : "drop","name": "drop" , mode:"drop"}
 								]
-						}
-						,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
-							,subMenu : [
-								{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
-								,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
-								,{ key : "mybatis_delete","name": "delete" ,mode:"delete",param_yn:'Y'}
-								,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
-								,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
-								,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
-							]
-						}
-						,{key :'export', "name": "내보내기" 
-							,subMenu:[
-								{key : "export_data","name": "데이타 내보내기"}
-								,{key : "export_column","name": "컬럼정보 내보내기"}
-							]
-						}
-					]
+							}
+							,{key : "create_ddl_top","name": "DDL 보기" 
+								,subMenu:[
+									{key : "ddl_copy","name": "복사하기"}
+									,{key : "ddl_paste","name": "edit 영역에보기"}
+								]
+							}
+							,{key : "create_java","name": "java 모델생성" 
+								,subMenu:[
+									{key : "java_camel_case_naming","name": "Camel case naming"}
+									,{key : "java_json","name": "json형식"}
+									,{key : "java_valid","name": "우효성 체크 Bean"}
+									]
+							}
+							,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
+								,subMenu : [
+									{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
+									,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
+									,{ key : "mybatis_delete","name": "delete" ,mode:"delete",param_yn:'Y'}
+									,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
+									,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
+									,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
+								]
+							}
+							,{key :'export', "name": "내보내기" 
+								,subMenu:[
+									{key : "export_data","name": "데이타 내보내기"}
+									,{key : "export_column","name": "컬럼정보 내보내기"}
+								]
+							}
+						]
+					}
 				}
 			});
  		}catch(e){
@@ -798,17 +803,20 @@ _ui.leftDbObjectServiceMenu ={
 				,height:'auto'
 				,bigData :false
 				,autoResize :false
+				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'View', width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
 				]
 				,tbodyItem :itemArr
-				,rowClick : function (idx, item){
-					var sObj = $(this);
-	    			$('.view-list-item.active').removeClass('active');
-	    			sObj.addClass('active');
-	    			
-	    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','name':item.TABLE_NAME}), '_viewMetadata');
+				,rowOptions : {
+					click : function (idx, item){
+						var sObj = $(this);
+		    			$('.view-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','name':item.TABLE_NAME}), '_viewMetadata');
+					}
 				}
 			});
  		}catch(e){
@@ -846,18 +854,21 @@ _ui.leftDbObjectServiceMenu ={
 				,height:'auto'
 				,bigData :false
 				,autoResize :false
+				,page :false
 				,tColItem : [
 					{key :'PROCEDURE_NAME', label:'Procedure',width:200, sort:true}
 					,{key :'REMARKS', label:'설명'}
 				]
 				,tbodyItem :itemArr
-				,rowClick : function (idx, item){
-					var sObj = $(this);
-	    			
-	    			$('.procedure-list-item.active').removeClass('active');
-	    			sObj.addClass('active');
-	    			
-	    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'procedure','name':item.PROCEDURE_NAME}), '_procedureMetadata');
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			$('.procedure-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'procedure','name':item.PROCEDURE_NAME}), '_procedureMetadata');
+					}
 				}
 			});
  		}catch(e){
@@ -893,18 +904,21 @@ _ui.leftDbObjectServiceMenu ={
 				headerView:true
 				,height: 'auto'
 				,bigData :false
+				,page :false
 				,tColItem : [
 					{key :'FUNCTION_NAME', label:'Function',width:200, sort:true}
 					,{key :'FUNCTION_TYPE', label:'설명'}
 				]
 				,tbodyItem :itemArr
-				,rowClick : function (idx, item){
-					var sObj = $(this);
-	    			
-	    			$('.function-list-item.active').removeClass('active');
-	    			sObj.addClass('active');
-	    			
-	    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'function','name':sObj.attr('function_nm')}), '_functionMetadata');
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			$('.function-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'function','name':sObj.attr('function_nm')}), '_functionMetadata');
+					}
 				}
 			});
  		}catch(e){
@@ -938,6 +952,7 @@ _ui.leftDbObjectServiceMenu ={
 					redraw : false
 				}
 				,bigData :false
+				,page :false
 				,height:'auto'
 				,autoResize :false
 				,tColItem : gridData.column
@@ -1930,6 +1945,7 @@ _ui.SQL = {
 		$.pubGrid(_self.options.dataGridSelector,{
 			height:'auto'
 			,autoResize : false
+			,page :false
 			,bigData : {
 				gridCount : 20		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
 				,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
