@@ -148,6 +148,14 @@ var util= {
 	}
 }
 
+function convertToHex(str) {
+    var hex = '';
+    for(var i=0;i<str.length;i++) {
+        hex += ''+str.charCodeAt(i).toString(16);
+    }
+    return hex;
+}
+
 
 function Plugin(element, options) {
 	this._initialize(element, options);
@@ -159,12 +167,13 @@ Plugin.prototype ={
      * @method _initialize
      * @description 그리드 초기화.
      */
-	_initialize :function(element,options){
+	_initialize :function(selector,options){
 		// scroll size 
 		var _this = this; 
-		_this.selector = element;
-		_this.prefix = 'pub'+new Date().getTime();
-		_this.element = $(element);
+		_this.selector = selector;
+
+		_this.prefix = 'pub'+convertToHex(_this.selector);
+		_this.element = $(selector);
 		
 		_this.config = {totGridWidth : 0, scrollWidth :(scrollBarSize(_this.element)+1)};
 		
@@ -210,16 +219,9 @@ Plugin.prototype ={
 		_this.config.rowHeight = _this.options.rowOptions.height+1;
 
 		var bigDataGridCount = 0 ; 
-		if(_this.options.bigData === false || _this.options.bigData.enabled === false){
-			_this.options.bigData ={
-				enabled :false
-				,gridCount : 1000
-				,spaceUnitHeight : 100000
-				,horizontalEnableCount : 50 
-			};
-
+		if(_this.options.bigData.enabled === false){
+			_this.options.bigData ={ enabled :false	,gridCount : 1000 ,spaceUnitHeight : 100000	,horizontalEnableCount : 50 };
 			bigDataGridCount = _this.options.bigData.gridCount; 
-
 		}else{
 			if(_this.options.bigData.gridCount=='auto'){
 				var gc = parseInt((_this.element.height() / _this.options.rowOptions.height), 10 ); 
@@ -757,29 +759,33 @@ Plugin.prototype ={
      * @description tbody 추가 , 삭제 .
      */
 	,_setTbodyAppend : function (){
-		
-		this.config.bodyCount= this.config.bodyCount||-1;
+		if(this.options.bigData.enabled === false){
+			this.config.bodyElement.append('<tbody class="pub-cont-tbody-0"></tbody>');
+			this.config.bodyCount = 0; 
+		}else{
+			this.config.bodyCount= this.config.bodyCount||-1;
 
-		var viewItemCount = parseInt(this.config.gridBodyHeight/ this.options.rowOptions.height, 10 );
-		var bodyCount = 2 + parseInt(viewItemCount/this.options.bigData.gridCount,10); 
-		bodyCount = bodyCount < 2 ? 2 :bodyCount;
+			var viewItemCount = parseInt(this.config.gridBodyHeight/ this.options.rowOptions.height, 10 );
+			var bodyCount = 2 + parseInt(viewItemCount/this.options.bigData.gridCount,10); 
+			bodyCount = bodyCount < 2 ? 2 :bodyCount;
+					
+			if(this.config.bodyCount != bodyCount){
 				
-		if(this.config.bodyCount != bodyCount){
-			
-			if(this.config.bodyCount > bodyCount){
-				for(var i =bodyCount+1; i<= this.config.bodyCount; i++){
-					this.config.bodyElement.find('.pub-cont-tbody-'+(i)).remove();
-				}
-			}else{
-				var bodyHtm ='';
-				for(var i =this.config.bodyCount+1; i<= bodyCount; i++){
-					bodyHtm += '<tbody class="pub-cont-tbody-'+i+'"></tbody>';
-				}
-				this.config.bodyElement.append(bodyHtm);
+				if(this.config.bodyCount > bodyCount){
+					for(var i =bodyCount+1; i<= this.config.bodyCount; i++){
+						this.config.bodyElement.find('.pub-cont-tbody-'+(i)).remove();
+					}
+				}else{
+					var bodyHtm ='';
+					for(var i =this.config.bodyCount+1; i<= bodyCount; i++){
+						bodyHtm += '<tbody class="pub-cont-tbody-'+i+'"></tbody>';
+					}
+					this.config.bodyElement.append(bodyHtm);
 
-				
+					
+				}
+				this.config.bodyCount = bodyCount; 
 			}
-			this.config.bodyCount = bodyCount; 
 		}
 	}
 	/**
@@ -981,16 +987,15 @@ Plugin.prototype ={
 				bottomEle.empty().html(tbodyHtml(viewItemIdx));
 			}
 			
-		}else if(drawMode == 'scrollH_draw' ||drawMode == 'scrollV_draw'){
-			for(var i =0 ; i <= _this.config.bodyCount; i++){
-				var tmpArea = 'area'+i;
-				if( drawMode != 'scrollH_draw'||(drawMode=='scrollH_draw' && scrollData.viewArea[tmpArea])){
+		}else{
+			if(updown =='down'){
+				for(var i =_this.config.bodyCount; i >=0; i--){
 					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx+i));
 				}
-			}
-		}else{
-			for(var i =0 ; i <= _this.config.bodyCount; i++){
-				_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx+i));
+			}else{
+				for(var i =0 ; i <= _this.config.bodyCount; i++){
+					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx+i));
+				}
 			}
 		}
 
@@ -1021,18 +1026,17 @@ Plugin.prototype ={
      * @description foot 데이타 셋팅
      */
 	,scrollColumnPosition : function (sTop, sLeft, pType){
-		var tci = this.options.tColItem; 
+
+		if(this.options.bigData.enabled === false){
+			return ;
+		}
 		
-		var gridW = sLeft+this.config.gridElementWidth; 
-		var itemLeftVal=0;
-		var startCol = 0, endCol =tci.length;
-		var leftWidth ={};
-		if(pType === 'vscroll'){
-			leftWidth = this.config.scroll.leftWidth;
-			startCol = this.config.scroll.startCol;
-			endCol = this.config.scroll.endCol;
-		}else{
-			
+		if(pType !== 'vscroll'){
+			var tci = this.options.tColItem; 
+			var gridW = sLeft+this.config.gridElementWidth; 
+			var itemLeftVal=0;
+			var startCol = 0, endCol =tci.length;
+			var leftWidth ={};
 			for(var i =0 ;i <tci.length ;i++){
 				var thiItem = tci[i];
 
@@ -1050,6 +1054,9 @@ Plugin.prototype ={
 					break; 
 				}
 			}
+			this.config.scroll.leftWidth = leftWidth; 
+			this.config.scroll.startCol = ( startCol > 0? startCol:0 ); 
+			this.config.scroll.endCol = ( endCol >= tci.length? tci.length-1:endCol );
 		}
 
 		var viewIdx = this.config.scroll.viewItemIdx
@@ -1063,11 +1070,6 @@ Plugin.prototype ={
 			this.config.scroll.viewArea[tmpArea] = (beforeHeight > sTop + this.config.gridBodyHeight) || (sTop > currHeight)?false : true; 
 			beforeHeight = currHeight; 	
 		}
-
-		this.config.scroll.beforeTop = sTop; 
-		this.config.scroll.leftWidth = leftWidth; 
-		this.config.scroll.startCol = ( startCol > 0? startCol:0 ); 
-		this.config.scroll.endCol = ( endCol >= tci.length? tci.length-1:endCol );
 	}
 	/**
      * @method scroll
@@ -1080,8 +1082,7 @@ Plugin.prototype ={
 		function scrollEvent (scrollData, sTop, sLeft){
 
 			var updown = '';
-				
-
+		
 			if(sTop > scrollData.top){
 				updown = 'down';
 			}else if(sTop < scrollData.top){
@@ -1112,31 +1113,26 @@ Plugin.prototype ={
 					}					 
 				}
 			}else{
-				var scrollRedrawFlag = false;
-				if(scrollData.hScrollMoveFlag===true){
-					scrollData.hScrollMoveFlag = false; 
-					_this.scrollColumnPosition(sTop , sLeft , 'vscroll');
-					
-					_this.drawGrid('scrollV_draw', true);
-					return ; 
-				}
+				scrollData.hScrollMoveFlag = false; 
 
-				var viewIdx = _conf.scroll.viewItemIdx
-					,topViewHeight = _this._getScrollOverHeight(viewIdx)
-					,midViewHeight = _this._getScrollOverHeight(viewIdx+1)
+				var viewIdx = _conf.scroll.viewItemIdx;
 
+				var scrollRedrawFlag = false;	
+				
 				if(updown =='up'){
-					scrollRedrawFlag = sTop < topViewHeight ?true:false;
+					scrollRedrawFlag = sTop < _this._getScrollOverHeight(viewIdx) ?true:false;
 				}else if(updown =='down'){
-					scrollRedrawFlag = sTop > midViewHeight ?true:false;
+					scrollRedrawFlag = sTop > _this._getScrollOverHeight(viewIdx+1) ?true:false;
 				}
-							
+											
 				if(scrollRedrawFlag){
 					viewIdx = viewIdx + (updown=='down' ? 1 : -1);
 					viewIdx = viewIdx < 1 ? 1 : viewIdx;
 				
-					var jumpFlag = false, scrIdx = 1; 
-					var scrIdxVal = sTop/scrollData.itemGroupTotalHeight; 
+					var jumpFlag = false
+						, scrIdx = 1
+						,scrIdxVal = sTop/scrollData.itemGroupTotalHeight; 
+
 					if(updown=='down'){
 						
 						scrIdx = Math.ceil(scrIdxVal);
@@ -1154,12 +1150,15 @@ Plugin.prototype ={
 							scrIdx = scrIdx -1; 
 						}
 					}
-
+					
 					//console.log('-------------	##################-------------------------------------')
 					
 					//if(scrIdx < 1) return ; 
 
 					if( !jumpFlag  &&  (_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx)) return ; 
+
+
+					console.log('111111  '+scrollData.hScrollMoveFlag, jumpFlag, viewIdx)
 					
 					if(jumpFlag){
 						_conf.scroll.viewItemIdx = scrIdx < 1 ? 1 :scrIdx;
@@ -1179,13 +1178,16 @@ Plugin.prototype ={
 		var scrollTimeout; 
 		_conf.bodyScroll.on("scroll", function(event) {
 			event.preventDefault();
-
 			var scrollEle = $(this)
 				, sTop = scrollEle.scrollTop()
 				, sLeft = scrollEle.scrollLeft();
-
-			_this._setFooterStatusMessage(sTop);
+			
 			_conf.headerWrapElement.scrollLeft(scrollEle.scrollLeft());
+			_this._setFooterStatusMessage(sTop);
+
+			if(_this.options.bigData.enabled === false){
+				return ;
+			}
 
 			if(_this.options.scroll.lazyLoad === true){
 				if ( scrollTimeout ) {
@@ -1252,9 +1254,8 @@ Plugin.prototype ={
 				_this.config.bodyScroll.css('height',(bodyH)+'px');
 			}
 
-			_this._setTbodyAppend();
-		
 			if(_this.options.bigData.enabled === true){
+				_this._setTbodyAppend();
 				setTimeout(function (){
 					_this.drawGrid('scrollV_draw');
 				}, 100);
@@ -1278,17 +1279,12 @@ Plugin.prototype ={
 	,_windowResize :function (){
 		var _this = this; 
 		
-		if(_this.config.windowResize == 'init'){
-			return false; 
-		}
 		if(_this.options.autoResize ===false || _this.options.autoResize.enabled === false) return false; 
-		
-		_this.config.windowResize = 'init';
 		
 		var _evt = $.event,
 			_special,
 			resizeTimeout,
-			eventName = _this.prefix+"pubgridResize"; 
+			eventName =  _this.prefix+"pubgridResize"; 
 
 		_special = _evt.special[eventName] = {
 			setup: function() {
@@ -1317,7 +1313,7 @@ Plugin.prototype ={
 			},
 			threshold: _this.options.autoResize.threshold
 		};
-		
+		$(window).off(eventName);
 		$(window).on(eventName, function( event ) {
 			_this.resizeDraw();
 		});
@@ -1401,7 +1397,6 @@ Plugin.prototype ={
 			}
 		});
 		
-
 		if(_this.options.rowOptions.click !== false && typeof _this.options.rowOptions.click == 'function'){
 			rowClickFlag =true; 
 
