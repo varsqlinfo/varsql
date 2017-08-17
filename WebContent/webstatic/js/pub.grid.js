@@ -510,6 +510,8 @@ Plugin.prototype ={
 		}
 		
 		//console.log(this.config.horizontalEnabled , this.config.scroll.hScrollMoveFlag , startCol, endCol )
+
+		strHtm.push('<colgroup id="'+_this.prefix+'colgroup_'+type+'">');
 		
 		for(var i=startCol ;i <endCol; i++){
 			thiItem = tci[i];
@@ -523,6 +525,8 @@ Plugin.prototype ={
 			}
 			strHtm.push('<col id="'+id+i+'" style="'+tmpStyle.join('')+'" />');
 		}
+
+		strHtm.push('</colgroup>');
 		
 		return strHtm.join('');	
 	}
@@ -654,7 +658,6 @@ Plugin.prototype ={
 			+'					<div style="display: table-row;">'
 			+'						<div id="'+_this.prefix+'pubGrid-body-left-space" style="float:left;display: table-cell;"></div>'
 			+'						<div style="display: table-cell;"><table id="'+_this.prefix+'pubGrid-body" class="pubGrid-body">'
-			+'							<colgroup id="'+_this.prefix+'colgroup_body"></colgroup>'
 			+'						</table></div>'	
 			+'					</div>'
 			+'				</div>'
@@ -759,9 +762,11 @@ Plugin.prototype ={
      * @method _setTbodyAppend
      * @description tbody 추가 , 삭제 .
      */
-	,_setTbodyAppend : function (){
+	,_setTbodyAppend : function (mode){
+		
 		if(this.options.bigData.enabled === false){
-			this.config.bodyElement.append('<tbody class="pub-cont-tbody-0"></tbody>');
+			var bodyHtm = this._getColGroup(this.prefix+'colbody', 'body')+'<tbody class="pub-cont-tbody-0"></tbody>';
+			this.config.bodyElement.empty().html(bodyHtm);
 			this.config.bodyCount = 0; 
 		}else{
 			this.config.bodyCount= this.config.bodyCount||-1;
@@ -778,6 +783,10 @@ Plugin.prototype ={
 					}
 				}else{
 					var bodyHtm ='';
+					if(mode == 'init'){
+						bodyHtm = this._getColGroup(this.prefix+'colbody', 'body');
+					}
+					
 					for(var i =this.config.bodyCount+1; i<= bodyCount; i++){
 						bodyHtm += '<tbody class="pub-cont-tbody-'+i+'"></tbody>';
 					}
@@ -829,7 +838,7 @@ Plugin.prototype ={
 		function theadHtml(){
 			var strHtm = [];
 
-			strHtm.push('<colgroup id="'+_this.prefix+'colgroup_head">'+_this._getColGroup(_this.prefix+'colHeader')+'</colgroup>');
+			strHtm.push(_this._getColGroup(_this.prefix+'colHeader'));
 
 			strHtm.push('<thead>');
 			if(ci.headerInfo.length > 0 && hederOpt.view){
@@ -859,22 +868,7 @@ Plugin.prototype ={
 		function tbodyHtml(itemIdx, tbodyIdx){
 			return _this.getTbodyHtml(tbi, tci, itemIdx, tbodyIdx);
 		}
-		
-		// foot html 만들기
-		function tfootHtml(){
-			var strHtm = [];
-			strHtm.push("				<tfoot>");
-			if(opt.tfootItem.length > 0){
-				strHtm.push("					<tr class=\"pub-foot-tr\">");
-				strHtm.push("						<td>1.9</td>");
-				strHtm.push("						<td>0.003</td>");
-				strHtm.push("						<td>40%</td>");
-				strHtm.push("					</tr>");				
-			}
-			strHtm.push("				</tfoot>");
-			return strHtm.join('');
-		}
-
+	
 		if(drawMode =='init'){
 			
 			_this.element.empty().html(_this.getHeaderHtml().replace('#theaderHtmlArea#',theadHtml()));
@@ -906,10 +900,8 @@ Plugin.prototype ={
 			_this._initBodyEvent();
 			_this._setBodyEvent();
 			
-			_this._setTbodyAppend();
+			_this._setTbodyAppend('init');
 			_this.scrollColumnPosition(0,0);
-
-			$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
 			
 			_this._setFooterStatusMessage(0);
 
@@ -952,7 +944,7 @@ Plugin.prototype ={
 				,endCol : scrollData.endCol	
 			}
 
-			$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
+			//$('#'+_this.prefix+"colgroup_body").empty().html(_this._getColGroup(_this.prefix+'colbody', 'body'));
 		}
 
 		if(_this._isHorizontalCheck()){
@@ -987,15 +979,15 @@ Plugin.prototype ={
 			}
 			
 		}else{
-			if(updown =='down'){
-				for(var i =_this.config.bodyCount; i >=0; i--){
-					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx, i));
-				}
-			}else{
-				for(var i =0 ; i <= _this.config.bodyCount; i++){
-					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx ,i));
-				}
+			var bodyHtm = '';
+			bodyHtm +=_this._getColGroup(_this.prefix+'colbody', 'body');
+
+			for(var i =0 ; i <= _this.config.bodyCount; i++){
+				bodyHtm +='<tbody class="pub-cont-tbody-'+i+'">'+tbodyHtml(viewItemIdx, i)+'</tbody>';
 			}
+
+			document.getElementById(_this.prefix +'pubGrid-body').innerHTML = bodyHtm;
+			//_this.config.bodyElement.empty().html(bodyHtm);
 		}
 
 		var topSpaceHeight = (viewItemIdx -1)*scrollData.itemGroupTotalHeight; 
@@ -1078,28 +1070,13 @@ Plugin.prototype ={
 		var _this = this
 			,_conf = _this.config;
 
-		function scrollEvent (scrollData, sTop, sLeft){
+		function scrollEvent (scrollData){
 
-			var updown = '';
-		
-			if(sTop > scrollData.top){
-				updown = 'down';
-			}else if(sTop < scrollData.top){
-				updown = 'up';
-			}
-
-			var lr = '';
-			if(sLeft < scrollData.left){
-				lr = 'left';
-			}else if(sLeft > scrollData.left){
-				lr = 'right';
-			}
+			var  updown = scrollData.updown
+				,lr = scrollData.leftright
+				,sTop = scrollData.top
+				,sLeft = scrollData.left;
 			
-			scrollData.top= sTop;
-			scrollData.left= sLeft;
-			scrollData.updown= updown;
-			scrollData.leftright= lr;
-
 			var currentStartCol = scrollData.startCol, currentEndCol = scrollData.endCol;
 						
 			if(updown == ''){
@@ -1176,7 +1153,8 @@ Plugin.prototype ={
 			event.preventDefault();
 			var scrollEle = $(this)
 				, sTop = scrollEle.scrollTop()
-				, sLeft = scrollEle.scrollLeft();
+				, sLeft = scrollEle.scrollLeft()
+				, scrollData= _conf.scroll;
 			
 			_conf.headerWrapElement.scrollLeft(scrollEle.scrollLeft());
 
@@ -1187,17 +1165,22 @@ Plugin.prototype ={
 			if(_this.options.bigData.enabled === false){
 				return ;
 			}
+			
+			scrollData.updown= (sTop > scrollData.top ? 'down' : (sTop < scrollData.top ?'up' :''));
+			scrollData.leftright= (sLeft < scrollData.left ? 'left' : (sLeft > scrollData.left ? 'right':''));
+			scrollData.top= sTop;
+			scrollData.left= sLeft;
 
 			if(_this.options.scroll.lazyLoad === true){
 				if ( scrollTimeout ) {
 					clearTimeout( scrollTimeout );
 				}
-
+				
 				scrollTimeout = setTimeout( function (){
-					scrollEvent(_conf.scroll, sTop, sLeft);
-				}, _this.options.scroll.lazyLoadTime );
+					scrollEvent(scrollData);
+				}, (_this.options.scroll.lazyLoadTime +(scrollData.leftright !='' ? 30 : 0)) );
 			}else{
-				scrollEvent(_conf.scroll,  sTop, sLeft);
+				scrollEvent(scrollData);
 			}
 			
 			return false; 

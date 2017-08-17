@@ -962,10 +962,6 @@ _ui.leftDbObjectServiceMenu ={
 				,tbodyItem :gridData.data
 			});
 		}
-		
-		
-		
-		
 	}
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
