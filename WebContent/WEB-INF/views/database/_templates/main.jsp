@@ -4,7 +4,7 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
-<title><spring:message code="screen.user" /></title>
+<title>${left_db_object.connInfo.name}::<spring:message code="screen.user" /></title>
 <%@ include file="/WEB-INF/include/user-head.jsp"%>
 
 </head>
@@ -96,7 +96,7 @@
 
 <script>
 $(document).ready(function(){
-	var viewConnInfo = ${left_db_object}; 
+	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)}; 
 	VARSQL.ui.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.type}, viewConnInfo));
 	
 	//varsqlMain.init();

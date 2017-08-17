@@ -42,7 +42,7 @@ public class DatabaseController {
 		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
 		
 		ModelMap model = mav.getModelMap();
-		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, VarsqlUtil.objectToString(databaseServiceImpl.schemas(paramMap)));
+		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(paramMap));
 		return  new ModelAndView("/database/main",model);
 	}
 	

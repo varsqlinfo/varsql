@@ -225,7 +225,7 @@ _ui.layout = {
 						// tab 리지이즈						
 						$.pubTab(_ui.leftDbObjectServiceMenu.options.selector).setWidth(obj3.layoutWidth);
 						
-						$.pubGrid('#left_service_menu_content>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-25});
+						$.pubGrid(_ui.leftDbObjectServiceMenu.options.left_service_menu_contentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-25});
 					}
 				}catch(e){
 					console.log(arguments)
@@ -376,7 +376,7 @@ _ui.leftDbObject ={
 		
 		VARSQL.req.ajax({      
 		    type:"POST"
-		    ,loadSelector : '#left_service_menu_content'
+		    ,loadSelector : _ui.leftDbObjectServiceMenu.options.left_service_menu_contentId
 		    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
 		    ,dataType:'json'
 		    ,data:tmpParam
@@ -405,7 +405,7 @@ _ui.leftDbObjectServiceMenu ={
 		selector:'#leftServiceMenu'
 		,menuData:[]
 		,param:{}
-		,contentAreaId:'#left_service_menu_content'
+		,left_service_menu_contentId:'#left_service_menu_content'
 		,metadata_content_area_wrapId:'#metadata_content_area_wrap'
 		,metadata_content_area_wrapEle:null
 		,metadata_content_areaId:'#metadata_content_area'
@@ -448,10 +448,9 @@ _ui.leftDbObjectServiceMenu ={
 		if(len < 1) return ; 
 		var item; 
 		
-		$(_self.options.contentAreaId).empty();
+		$(_self.options.left_service_menu_contentId).empty();
 		$(_self.options.selector).empty();
 		
-		var serviceElement = $('#left_service_menu_content');
 		$.pubTab(_self.options.selector,{
 			items :data
 			,width:'auto'
@@ -509,10 +508,12 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		var $contentId = selObj.contentid;
 		
-		var activeObj = $(_self.options.contentAreaId+'>#'+$contentId);
+		var activeObj = $(_self.options.left_service_menu_contentId+'>#'+$contentId);
 		
-		$(_self.options.contentAreaId+'>'+' .show-display').removeClass('show-display');
+		// 현재 창 사이즈 구하기.
+		var dimension = {width:$(_self.options.left_service_menu_contentId).width() , height:$(_self.options.left_service_menu_contentId).height()};
 		
+		$(_self.options.left_service_menu_contentId+'>'+' .show-display').removeClass('show-display');
 		
 		if(activeObj.length > 0){
 			activeObj.addClass('show-display');
@@ -520,15 +521,16 @@ _ui.leftDbObjectServiceMenu ={
 			if(refresh){
 				activeObj.empty();
 			}else{
-				$.pubGrid(_self.options.contentAreaId+'>#'+$contentId).resizeDraw({width:$(_self.options.contentAreaId).width() , height:$(_self.options.contentAreaId).height()});
+				$.pubGrid(_self.options.left_service_menu_contentId+'>#'+$contentId).resizeDraw(dimension);
 				return ; 
 			}
 		}else{
-			$(_self.options.contentAreaId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
+			$(_self.options.left_service_menu_contentId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
 		}
-		
+	
 		VARSQL.req.ajax({      
 		    type:"POST"  
+		    ,loadSelector : _self.options.left_service_menu_contentId
 		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 		    ,dataType:'json'
 		    ,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
@@ -557,6 +559,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		VARSQL.req.ajax({
 		    type:"POST"
+		    ,loadSelector : _self.options.metadata_content_area_wrapId
 		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 		    ,dataType:'json'
 		    ,async:false
@@ -635,7 +638,7 @@ _ui.leftDbObjectServiceMenu ={
 			// 테이블 hint;
 			VARSQLHints.setTableInfo( tableHint);
 			
-			$.pubGrid(_self.options.contentAreaId+'>#tables',{
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
 				,bigData :false
@@ -798,7 +801,7 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
 			
-			$.pubGrid(_self.options.contentAreaId+'>#views',{
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
 				,height:'auto'
 				,bigData :false
@@ -849,7 +852,7 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
 			
-			$.pubGrid(_self.options.contentAreaId+'>#procedures',{
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#procedures',{
 				headerView:true
 				,height:'auto'
 				,bigData :false
@@ -900,7 +903,7 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var itemArr = resData.result;
     				
-			$.pubGrid(_self.options.contentAreaId+'>#functions',{
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#functions',{
 				headerView:true
 				,height: 'auto'
 				,bigData :false
