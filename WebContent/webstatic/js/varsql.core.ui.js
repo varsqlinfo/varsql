@@ -641,7 +641,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
-				,bigData :false
+				,bigData : {enabled :false}
 				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
@@ -804,7 +804,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
 				,height:'auto'
-				,bigData :false
+				,bigData : {enabled :false}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -855,7 +855,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#procedures',{
 				headerView:true
 				,height:'auto'
-				,bigData :false
+				,bigData : {enabled :false}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -906,7 +906,7 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#functions',{
 				headerView:true
 				,height: 'auto'
-				,bigData :false
+				,bigData : {enabled :false}
 				,page :false
 				,tColItem : [
 					{key :'FUNCTION_NAME', label:'Function',width:200, sort:true}
@@ -954,7 +954,7 @@ _ui.leftDbObjectServiceMenu ={
 				headerOptions : {
 					redraw : false
 				}
-				,bigData :false
+				,bigData : {enabled :false}
 				,page :false
 				,height:'auto'
 				,autoResize :false

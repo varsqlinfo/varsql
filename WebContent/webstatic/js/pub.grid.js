@@ -148,12 +148,15 @@ var util= {
 	}
 }
 
-function convertToHex(str) {
-    var hex = '';
-    for(var i=0;i<str.length;i++) {
-        hex += ''+str.charCodeAt(i).toString(16);
+function getHashCode (str){
+    var hash = 0;
+    if (str.length == 0) return hash;
+    for (var i = 0; i < str.length; i++) {
+        var tmpChar = str.charCodeAt(i);
+        hash = ((hash<<5)-hash)+tmpChar;
+        hash = hash & hash; 
     }
-    return hex;
+    return ''+hash+'99';
 }
 
 
@@ -172,7 +175,7 @@ Plugin.prototype ={
 		var _this = this; 
 		_this.selector = selector;
 
-		_this.prefix = 'pub'+convertToHex(_this.selector);
+		_this.prefix = 'pub'+getHashCode(_this.selector);
 		_this.element = $(selector);
 		
 		_this.config = {totGridWidth : 0, scrollWidth :(scrollBarSize(_this.element)+1)};
@@ -679,6 +682,7 @@ Plugin.prototype ={
 				, itemVal;
 			
 			if(itemIdx !='all'){
+				itemIdx = (itemIdx+tbodyIdx)
 				var itemLen = endRow; 
 				startRow = (itemIdx-1) * this.options.bigData.gridCount
 				endRow = itemLen> startRow ? ( itemLen > (startRow + this.options.bigData.gridCount) ? (startRow + this.options.bigData.gridCount) : itemLen) : 0;
@@ -705,15 +709,12 @@ Plugin.prototype ={
 				}
 			}
 		}else{
-			strHtm.push('<tr><td colspan="'+tci.length+'"><div class="text-center">NO DATA</div></td></tr>');
+			if(tbodyIdx==0){
+				strHtm.push('<tr><td colspan="'+tci.length+'"><div class="text-center">NO DATA</div></td></tr>');
+			}
 		}
 
-		if(!isNaN(tbodyIdx)){
-			return '<tbody class="pub-cont-tbody-'+tbodyIdx+'">' +strHtm.join('')+'</tbody>';
-		}else{
-			return strHtm.join('');
-		}
-
+		return strHtm.join('');
 	}
 	/**
      * @method valueFormatter
@@ -817,10 +818,9 @@ Plugin.prototype ={
 			,tbi = opt.tbodyItem
 			,hederOpt=opt.headerOptions;
 
-
 		if(drawMode ==='sort'){
 			for(var i =0 ; i <= _this.config.bodyCount; i++){
-				_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(_this.config.scroll.viewItemIdx+i));
+				_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(_this.config.scroll.viewItemIdx,i));
 			}
 			return ; 
 		}
@@ -931,7 +931,6 @@ Plugin.prototype ={
 			}
 
 			_this.config.scroll.spaceCount = loopCnt;
-			
 			_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
 			_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
 
@@ -973,7 +972,7 @@ Plugin.prototype ={
 				topEle.addClass('pub-cont-tbody-'+(_this.config.bodyCount)).removeClass('pub-cont-tbody-temp');
 				_this.config.bodyElement.find('.pub-cont-tbody-'+(_this.config.bodyCount-1)).after(topEle);
 
-				topEle.empty().html(tbodyHtml(viewItemIdx+_this.config.bodyCount));
+				topEle.empty().html(tbodyHtml(viewItemIdx+_this.config.bodyCount,0));
 			}else if(updown =='up'){
 
 				var bottomEle = _this.config.bodyElement.find('.pub-cont-tbody-'+_this.config.bodyCount).addClass('pub-cont-tbody-temp').removeClass('pub-cont-tbody-'+_this.config.bodyCount);
@@ -984,17 +983,17 @@ Plugin.prototype ={
 				
 				bottomEle.addClass('pub-cont-tbody-0').removeClass('pub-cont-tbody-temp');
 				_this.config.bodyElement.find('.pub-cont-tbody-1').before(bottomEle);
-				bottomEle.empty().html(tbodyHtml(viewItemIdx));
+				bottomEle.empty().html(tbodyHtml(viewItemIdx,0));
 			}
 			
 		}else{
 			if(updown =='down'){
 				for(var i =_this.config.bodyCount; i >=0; i--){
-					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx+i));
+					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx, i));
 				}
 			}else{
 				for(var i =0 ; i <= _this.config.bodyCount; i++){
-					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx+i));
+					_this.config.bodyElement.find('.pub-cont-tbody-'+i).empty().html(tbodyHtml(viewItemIdx ,i));
 				}
 			}
 		}
@@ -1156,9 +1155,6 @@ Plugin.prototype ={
 					//if(scrIdx < 1) return ; 
 
 					if( !jumpFlag  &&  (_conf.scroll.viewItemIdx==viewIdx || viewIdx==scrIdx)) return ; 
-
-
-					console.log('111111  '+scrollData.hScrollMoveFlag, jumpFlag, viewIdx)
 					
 					if(jumpFlag){
 						_conf.scroll.viewItemIdx = scrIdx < 1 ? 1 :scrIdx;
@@ -1183,6 +1179,9 @@ Plugin.prototype ={
 				, sLeft = scrollEle.scrollLeft();
 			
 			_conf.headerWrapElement.scrollLeft(scrollEle.scrollLeft());
+
+			if(_this.options.tbodyItem.length  < 1) return ; 
+
 			_this._setFooterStatusMessage(sTop);
 
 			if(_this.options.bigData.enabled === false){
@@ -1749,7 +1748,7 @@ Plugin.prototype ={
         cssText += 'td {border:thin   solid #524848;border-collapse: collapse;}';
         cssText += '</style>';
 		
-		downloadInfo = downloadInfo.replace('<tbody></tbody>', this.getTbodyHtml(this.options.tbodyItem, this.options.tColItem,'all'));
+		downloadInfo = downloadInfo.replace('<tbody></tbody>', this.getTbodyHtml(this.options.tbodyItem, this.options.tColItem,'all', 0));
 		
 		downloadInfo = cssText+downloadInfo;
 		if(typeof opt !=='undefined'){
