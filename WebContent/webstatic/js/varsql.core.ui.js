@@ -953,7 +953,6 @@ _ui.leftDbObjectServiceMenu ={
 				headerOptions : {
 					redraw : false
 				}
-				,bigData : {enabled :false}
 				,page :false
 				,height:'auto'
 				,autoResize :false

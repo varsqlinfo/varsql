@@ -278,7 +278,7 @@ Plugin.prototype ={
 		var rowOptHeight = _this.options.rowOptions.height; 
 		if(!isNaN(rowOptHeight)){
 			cssStr.push('#'+_this.prefix+'pubGrid .pub-body-td{height:'+rowOptHeight+'px;padding: 0px;margin:0px;}');
-			cssStr.push('#'+_this.prefix+'pubGrid .pub-content-ellipsis{height:'+(rowOptHeight-4)+'px;padding: 0px;margin:0px;}');
+			cssStr.push('#'+_this.prefix+'pubGrid .pub-content-ellipsis{height:'+(rowOptHeight)+'px;line-height:'+(rowOptHeight)+'px;}');
 			cssStr.push('#'+_this.prefix+'pubGrid .pub-body-td> .pub-content{height:'+rowOptHeight+'px;}');
 		}
 
@@ -584,6 +584,27 @@ Plugin.prototype ={
 		
 		_this.drawGrid(gridMode,true);
 
+		var itemHeight = _this.options.tbodyItem.length* _this.config.rowHeight
+			,unitHeight = _this.options.bigData.spaceUnitHeight
+			,loopCnt = Math.floor(itemHeight/unitHeight);
+		
+		var itemHeightHtm = [], topHeightHtm = [];
+
+		for(var i =0 ;i <loopCnt ;i++ ){
+			itemHeightHtm.push('<div _idx="'+i+'" style="height:'+unitHeight+'px;"></div>');
+			topHeightHtm.push('<div data-top-idx="'+i+'" style="height:0px;"></div>');
+		}
+
+		if(itemHeight%unitHeight != 0){
+			itemHeightHtm.push('<div style="height:'+itemHeight%unitHeight+'px;"></div>');
+			topHeightHtm.push('<div data-top-idx="'+(loopCnt)+'" style="height:0px;"></div>');
+			loopCnt+=1;
+		}
+
+		_this.config.scroll.spaceCount = loopCnt;
+		_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
+		_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
+
 		_this.setPage(_this.options.page);
 		
 	}
@@ -708,8 +729,10 @@ Plugin.prototype ={
 					thiItem = tci[j];
 					clickFlag = thiItem.colClick;
 					tmpVal = this.valueFormatter( i, thiItem,tbiItem); 
-					strHtm.push('<td scope="col" class="pub-body-td '+(thiItem.hidden===true ? 'pubGrid-disoff':'')+'" data-colinfo="'+i+','+j+'"><div class="pub-content '+thiItem._alignClass+'"><div class="pub-content-cell"><div class="pub-content-ellipsis '+ (clickFlag?'pub-body-td-click':'') +'" title="'+tmpVal+'" >'+tmpVal+'</div></div></div></td>');
+					strHtm.push('<td scope="col" class="pub-body-td '+(thiItem.hidden===true ? 'pubGrid-disoff':'')+'" data-colinfo="'+i+','+j+'"><div class="pub-content-ellipsis '+ (clickFlag?'pub-body-td-click':'') +'" title="'+tmpVal+'" >'+tmpVal+'</div></td>');
 				}
+
+				strHtm.push('</tr>');
 			}
 		}else{
 			if(tbodyIdx==0){
@@ -791,8 +814,6 @@ Plugin.prototype ={
 						bodyHtm += '<tbody class="pub-cont-tbody-'+i+'"></tbody>';
 					}
 					this.config.bodyElement.append(bodyHtm);
-
-					
 				}
 				this.config.bodyCount = bodyCount; 
 			}
@@ -809,7 +830,7 @@ Plugin.prototype ={
 		}
 		
 		var bodyH = this.config.height-this.config.headerWrapElement.height() - footerHeight; 
-		bodyH = bodyH > 0 ? bodyH : _this.config.headerWrapElement.height+5
+		bodyH = bodyH > 0 ? bodyH : this.config.headerWrapElement.height+5
 		this.config.gridBodyHeight = bodyH;
 		
 		return bodyH ;
@@ -905,26 +926,7 @@ Plugin.prototype ={
 			
 			_this._setFooterStatusMessage(0);
 
-			var itemHeight = _this.options.tbodyItem.length* _this.config.rowHeight
-			,unitHeight = _this.options.bigData.spaceUnitHeight
-			,loopCnt = Math.floor(itemHeight/unitHeight);
-		
-			var itemHeightHtm = [], topHeightHtm = [];
-
-			for(var i =0 ;i <loopCnt ;i++ ){
-				itemHeightHtm.push('<div _idx="'+i+'" style="height:'+unitHeight+'px;"></div>');
-				topHeightHtm.push('<div data-top-idx="'+i+'" style="height:0px;"></div>');
-			}
-
-			if(itemHeight%unitHeight != 0){
-				itemHeightHtm.push('<div style="height:'+itemHeight%unitHeight+'px;"></div>');
-				topHeightHtm.push('<div data-top-idx="'+(loopCnt)+'" style="height:0px;"></div>');
-				loopCnt+=1;
-			}
-
-			_this.config.scroll.spaceCount = loopCnt;
-			_this.config.pubGridTopSpaceElement.empty().html(topHeightHtm.join(''));
-			_this.config.pubGridBodyHeightElement.empty().html(itemHeightHtm.join(''));
+			
 
 		}
 	

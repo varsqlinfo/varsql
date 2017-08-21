@@ -22,7 +22,8 @@ body {
   position: absolute;
   height: 33px;
   width: 100%;
-  background: #0f8bf7;
+  background: #7376df;
+  color: #fff;
   border-bottom: 2px solid #EBEBEB;
 }
 .navbar-top-links li a{
@@ -177,6 +178,9 @@ padding-top: 5px;
 
 .ui-connection-list{
 	width:260px;float:left;
+}
+.ui-connection-list > select{
+	color: #151414;
 }
 .ui-connection-tabs-wrap{
 	height:20px;float:left;
