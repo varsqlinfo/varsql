@@ -641,7 +641,6 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
-				,bigData : {enabled :false}
 				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
