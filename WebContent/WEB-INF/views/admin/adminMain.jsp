@@ -121,7 +121,7 @@ var adminMain = {
 		$('#vpw').val('');
 		$('#vconnopt').val('');
 		$('#vpoolopt').val('');
-		$('#vsql').val('');
+		$('#vquery').val('');
 		$('#pollinit').val('N');
 	}
 	,clickDbInfo : function (sObj){
@@ -147,7 +147,7 @@ var adminMain = {
 				$('#vpw').val(result.VPW);
 				$('#vconnopt').val(result.VCONNOPT);
 				$('#vpoolopt').val(result.VPOOLOPT);
-				$('#vsql').val(result.VSQL);
+				$('#vquery').val(result.VQUERY);
 				
 				$('#vtype').trigger('change');
 			}
@@ -287,10 +287,13 @@ var adminMain = {
 			return ; 
 		}
 		*/
+		var param =  $("#addForm").serializeJSON();
+		
+		param.vdriver = $('#vdriver option:selected').attr('data-driver');
 		
 		$.ajax({
 			type:'POST'
-			,data: $("#addForm").serialize()
+			,data:param
 			,url : '<c:url value="/admin/main/dbConnectionCheck" />'
 			,dataType:'JSON'
 			,success:function (response){
@@ -336,7 +339,7 @@ var adminMain = {
 	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
-	    			strHtm.push('<option value="'+item.DBDRIVER+'">'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
+	    			strHtm.push('<option value="'+item.DRIVER_ID+'" data-driver="'+item.DBDRIVER+'">'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
 	    		}
 	    		
 	    		$('#vdriver').empty().html(strHtm.join(''));
@@ -447,9 +450,9 @@ var adminMain = {
 					</div>
 					
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vsql" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vquery" /></label>
 						<div class="col-sm-8">
-							<input class="form-control text" type="text" id="vsql" name="vsql" value="">
+							<input class="form-control text" type="text" id="vquery" name="vquery" value="">
 						</div>
 					</div>
 					<div class="form-group">

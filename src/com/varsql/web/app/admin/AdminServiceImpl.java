@@ -78,7 +78,7 @@ public class AdminServiceImpl{
 		String dbtype = dcv.getString("vtype");
 		
 		String connection_opt = dcv.getString("vconnopt");
-		String validation_sql = dcv.getString("vsql","");
+		String validation_query = dcv.getString("vquery","");
 		
 		Properties p =new Properties();
 		
@@ -112,9 +112,9 @@ public class AdminServiceImpl{
 		try {
 			Class.forName(driver);
 			connChk = DriverManager.getConnection(url, p);
-			validation_sql = validation_sql != null && !"".equals(validation_sql.trim()) ?validation_sql :com.varsql.db.validation.Validation.getInstance().validationQuery(dbtype);
+			validation_query = validation_query != null && !"".equals(validation_query.trim()) ?validation_query :com.varsql.db.validation.Validation.getInstance().validationQuery(dbtype);
 			
-			pstmt=connChk.prepareStatement(validation_sql);
+			pstmt=connChk.prepareStatement(validation_query);
 			pstmt.executeQuery();
 			
 			result="success";

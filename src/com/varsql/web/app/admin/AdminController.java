@@ -183,7 +183,7 @@ public class AdminController{
 	 * @param vpw
 	 * @param vconnopt
 	 * @param vpoolopt
-	 * @param vsql
+	 * @param vquery
 	 * @return
 	 * @throws Exception
 	 */
@@ -198,7 +198,7 @@ public class AdminController{
 			,@RequestParam(value = "vpw")  String vpw
 			,@RequestParam(value = "vconnopt")  String vconnopt
 			,@RequestParam(value = "vpoolopt")  String vpoolopt
-			,@RequestParam(value = "vsql")  String vsql
+			,@RequestParam(value = "vquery")  String vquery
 			,@RequestParam(value = "pollinit")  String pollinit
 			)throws Exception {
 			
@@ -214,7 +214,7 @@ public class AdminController{
 		dcv.put("vpw", vpw);
 		dcv.put("vconnopt", vconnopt);
 		dcv.put("vpoolopt", vpoolopt);
-		dcv.put("vsql", vsql);
+		dcv.put("vquery", vquery);
 		dcv.put("pollinit", pollinit);
 		
 		Map json = new HashMap();

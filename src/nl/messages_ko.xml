@@ -75,7 +75,7 @@
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
-<entry key="admin.form.db.vsql">Validation Sql</entry>
+<entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 

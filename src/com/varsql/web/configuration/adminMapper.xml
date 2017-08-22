@@ -39,7 +39,7 @@
 			,VPW
 			,VCONNOPT 
 			,VPOOLOPT
-			,VSQL
+			,VQUERY
 			,VCONNID
 		)
 		values (
@@ -52,7 +52,7 @@
 			,#{vpw}
 			,#{vconnopt}
 			,#{vpoolopt}
-			,#{vsql}
+			,#{vquery}
 			,#{vconid}
 		)
 	</insert>
@@ -69,7 +69,7 @@
 			, VPW =#{vpw}
 			, VCONNOPT =#{vconnopt}
 			, VPOOLOPT =#{vpoolopt}
-			, VSQL=#{vsql}
+			, VQUERY=#{vquery}
 		where VCONNID =#{vconid}
 	</update>
 	
@@ -213,7 +213,7 @@
 	
 	<!-- db driver list -->
 	<select id="adminMapper.selectDbDriverList" parameterType="java.util.Map" resultType="java.util.Map">
-		SELECT DBTYPE,DBDRIVER,DRIVER_DESC 
+		SELECT DRIVER_ID,DBTYPE,DBDRIVER,DRIVER_DESC
 		FROM VTDBTYPE_DRIVER
 		WHERE DBTYPE = #{db_type}
 	</select>
