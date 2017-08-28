@@ -111,7 +111,7 @@ public class SqlResultUtil {
 				}else if( columnValue instanceof Blob){
 					columns.put(columnName , "Blob");
 				}else{
-					columns.put(columnName, columnValue==null?"": columnValue+"");
+					columns.put(columnName, columnValue);
 				}
 			}
 			rows.add(columns);
