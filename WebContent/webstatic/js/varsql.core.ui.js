@@ -191,7 +191,14 @@ _ui.layout = {
 	,setLayout: function (){
 		var _self = this; 
 		_self.layoutObj.mainLayout = $('body').layout({
-			center__paneSelector:	".ui-layout-center-area"
+			inset: {
+				top:	0
+			,	bottom:	0
+			,	left:	1
+			,	right:	1
+			}
+
+			,center__paneSelector:	".ui-layout-center-area"
 			, west__paneSelector:	".ui-layout-left-area"
 			, north__paneSelector: ".ui-layout-header-area"
 			, west__size:	300 
@@ -975,6 +982,7 @@ _ui.SQL = {
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
+	,currentSqlData :''
 	,options :{
 		selector:'#sqlExecuteArea'
 		,dataGridSelector:'#dataGridArea'
@@ -1326,6 +1334,7 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	$('#sql_id').val(res.sql_id);
 		    	_self.sqlSaveList();
+		    	_self.currentSqlData = params.sqlTitle;
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
 		    	
 			}
@@ -1407,6 +1416,11 @@ _ui.SQL = {
 	// set queryInfo
 	,setQueryInfo : function (sItem){
 		if(sItem=='clear'){
+			if(this.currentSqlData != this.getTextAreaObj().getValue()){
+				if(confirm('현재 쿼리를 저장하고 새로 여시겠습니까?')){
+					$('.sql-save-btn').trigger('click');
+				}
+			}
 			sItem = {
 				SQL_ID:''
 				, GUERY_TITLE:(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
@@ -1422,6 +1436,8 @@ _ui.SQL = {
 		}catch(e){
 			this.addParamTemplate('init_data',{'':''});
 		}
+		
+		this.currentSqlData =  sItem.QUERY_CONT;
 	}
 	// 저장된 sql 목록 보기.
 	,sqlSaveList : function (pageNo){
