@@ -40,6 +40,7 @@ var _initialized = false
 	,resizeGridWidthFixed : true	// 리사이즈시 그리드 리사이즈 여부.
 	,headerOptions : {
 		view : true	// header 보기 여부
+		,height: 23
 		,sort : false	// 초기에 정렬할 값
 		,redraw : true	// 초기에 옵션 들어오면 새로 그릴지 여부.
 		,resize:{	// resize 여부
@@ -114,20 +115,6 @@ var _initialized = false
 	}
     return 11;
 })());
-
-
-function scrollBarSize (ele) {
-	var scrollInfo = {};
-    	var html =
-	    '<div id="_pubGrid_scrollbar_width" style="position: absolute; top: -300px; width: 100px; height: 100px; overflow-y: scroll;">'+
-	    '    <div style="height: 120px">1</div>'+
-	    '</div>';
-	$(ele).append(html);
-	var schBarW= 100 - $('#_pubGrid_scrollbar_width > div').width();
-	ele.find('#_pubGrid_scrollbar_width').remove();
-	//if (_broswer == 'msie') schBarW  = schBarW / 2; // need this for IE9+
-	return schBarW;
-} 
 
 var util= {
 	formatter : {
@@ -277,8 +264,15 @@ Plugin.prototype ={
 		var cssStr = [];
 		
 		var rowOptHeight = _this.options.rowOptions.height; 
+
 		if(!isNaN(rowOptHeight)){
-			cssStr.push('#'+_this.prefix+'_pubGrid .pub-body-td{height:'+rowOptHeight+'px;padding: 0px;margin:0px;}');
+			cssStr.push('#'+_this.prefix+'_pubGrid .pub-body-td{height:'+rowOptHeight+'px;}');
+		}
+
+		var headerHeight = _this.options.headerOptions.height; 
+
+		if(!isNaN(headerHeight)){
+			cssStr.push('#'+_this.prefix+'_pubGrid .pubGrid-header-cont th{height:'+headerHeight+'px;}');
 		}
 
 		var styleTag = _d.createElement('style');

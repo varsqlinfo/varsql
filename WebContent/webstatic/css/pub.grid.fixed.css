@@ -366,7 +366,7 @@
 }
 .pubGrid-header-cont .pub-header-tr .pub-header-cont .inner .centered {
   position: relative;
-  padding: 5px 2px;
+  padding: 0px 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -445,7 +445,7 @@
 .pubGrid-body-cont td{
 	border-collapse: collapse;
 	border:1px solid #bcbcbd;
-    padding: 0;
+    padding: 0px 2px 0px 2px;
     margin: 0;
     border-spacing: 0;
     border-collapse: collapse;
