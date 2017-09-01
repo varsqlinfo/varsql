@@ -1,7 +1,11 @@
 /*
 * Customize borders and shading to suit this nested layout
 */
-
+.ui-layout-container div{
+	-webkit-box-sizing:  border-box; !important;
+	-moz-box-sizing: border-box; !important;
+	box-sizing: border-box !important;
+}
 .ui-layout-header-area{
 	z-index:100 !important;
 }

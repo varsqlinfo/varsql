@@ -517,10 +517,10 @@ _ui.leftDbObjectServiceMenu ={
 		
 		var activeObj = $(_self.options.left_service_menu_contentId+'>#'+$contentId);
 		
+		$(_self.options.left_service_menu_contentId+'>'+' .show-display').removeClass('show-display');
+		
 		// 현재 창 사이즈 구하기.
 		var dimension = {width:$(_self.options.left_service_menu_contentId).width() , height:$(_self.options.left_service_menu_contentId).height()};
-		
-		$(_self.options.left_service_menu_contentId+'>'+' .show-display').removeClass('show-display');
 		
 		if(activeObj.length > 0){
 			activeObj.addClass('show-display');

@@ -97,9 +97,6 @@ _$base.staticResource  ={
 		'js' : [
 		       '/webstatic/js/pub.context.js' 
 		        ]
-		,'css' : [
-	          '/webstatic/css/pub.grid.css'
-	          ]
 	}
 	,
 	'pubgrid':{
