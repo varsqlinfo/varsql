@@ -521,13 +521,14 @@ Plugin.prototype ={
 			data = pdata.items;
 			pageInfo = pdata.page; 
 		}
-
-		if(gridMode=='reDraw'){
-			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
-		}
-
+		
 		if(data){
 			_this.options.tbodyItem = data
+		}
+		
+		if(gridMode=='reDraw'){
+			_this.calcDimension('init');
+			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
 
 		// sort 값이 있으면 초기 데이타 정렬
@@ -888,7 +889,6 @@ Plugin.prototype ={
 		opt = opt||{height : (_this.options.height =='auto' ? _this.gridElement.parent().height() : _this.config.body.height )}; 
 		opt = $.extend(true, {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()},opt);
 		
-		console.log(opt)
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
