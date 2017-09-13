@@ -954,7 +954,7 @@ _ui.leftDbObjectServiceMenu ={
 		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type);
 		
 		if(gridObj){
-			gridObj.setData(gridData.data);
+			gridObj.setData(gridData.data,'reDraw');
 		}else{
 			$.pubGrid(_self.options.metadata_content_area_wrapId+type, {
 				headerOptions : {
@@ -1966,6 +1966,8 @@ _ui.SQL = {
 			}
 			,headerOptions:{
 				view:true
+				,displayLineNumber : true	 // 라인 넘버 보기.
+				,sort : true
 				,resize:{
 					enabled : true
 				}
@@ -2032,39 +2034,47 @@ _ui.progress = {
 _ui.text={
 	clipboardObj :false
 	,clipBoardEle : false
+	,modalEle :false
 	,copy :function (copyString){
 		var _this = this; 
 		
 		var strHtm = [];
 		
-		var modalEle = $('#data-copy-modal'); 
-		if(modalEle.length > 0){
-			$('#data-copy-area').empty();
-		}else{
+		if(_this.modalEle === false){
+			var modalEle = $('#data-copy-modal');
 			$(_ui.options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사"><div><pre id="data-copy-area"></pre></div></div>');
 			modalEle = $('#data-copy-modal'); 
+			
+			_this.modalEle = modalEle.dialog({
+				height: 350
+				,width: 640
+				,modal: true
+				,buttons: {
+					"복사":function (){
+						$( this ).dialog( "close" );
+					}
+					,Cancel: function() {
+						$( this ).dialog( "close" );
+					}
+				}
+				,close: function() {
+				  $( this ).dialog( "close" );
+				}
+			});
+			
+			$($('[aria-describedby="data-copy-modal"] .ui-dialog-buttonset button.ui-button')[0]).addClass('varsql-copy-btn');
+			new Clipboard('.varsql-copy-btn', {
+			  text: function(trigger) {
+			    return $('#data-copy-area').html();
+			  }
+			});
+		}else{
+			_this.modalEle.dialog( "open" );
 		}
 		
-		$('#data-copy-area').html(copyString);
+		$('#data-copy-area').empty().html(copyString);
 		
-		modalEle.dialog({
-			height: 350
-			,width: 640
-			,modal: true
-			,buttons: {
-				"복사":function (){
-					clipboard.copy(copyString);
-					$( this ).dialog( "close" );
-				}
-				,Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			}
-			,close: function() {
-			  $( this ).dialog( "close" );
-			}
-		});
-
+		
 	}
 }
 _ui.JAVA = {

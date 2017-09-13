@@ -345,11 +345,11 @@ public class SQLServiceImpl{
 			if("".equals(paramMap.getString("sql_id"))){
 				paramMap.put("sql_id",VarsqlUtil.generateUUID());
 			    sqlDAO.saveQueryInfo(paramMap);
-			    reval.put("sql_id", paramMap.get("sql_id"));
 			}else{
 				sqlDAO.updateQueryInfo(paramMap);
 			}
-		    
+			
+			reval.put("sql_id", paramMap.get("sql_id"));
 		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 			
 	    }catch(Exception e){
