@@ -34,5 +34,5 @@
 	</li>
 </ul>
 
-<div class="pull-right"><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}" target="_new">a</a></div>
+<div class="pull-right"><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}" target="_new">_</a></div>
 				

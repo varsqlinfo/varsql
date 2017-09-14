@@ -2,9 +2,16 @@
 * Customize borders and shading to suit this nested layout
 */
 .ui-layout-container div{
-	-webkit-box-sizing:  border-box; !important;
-	-moz-box-sizing: border-box; !important;
+	-webkit-box-sizing:  border-box !important;
+	-moz-box-sizing: border-box !important;
 	box-sizing: border-box !important;
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
 .ui-layout-header-area{
 	z-index:100 !important;
@@ -140,8 +147,4 @@
 .sql-parameter-area .sql-param-del-btn{
 	width:42px;
 }
-	
-	
-	
-	
-	
+

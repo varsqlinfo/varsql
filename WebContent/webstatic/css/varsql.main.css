@@ -173,7 +173,6 @@ padding-top: 5px;
 
 #dataGridAreaWrap {
   background: #fff;
-  min-height: 200px;
 }
 
 .ui-connection-list{
@@ -299,11 +298,12 @@ padding-top: 5px;
 }
 
 #resultMsgAreaWrap{
-	min-height:200px;
-	height:200px;
 	font-size: 12px;
 	overflow-x:hidden;
 	overflow-y:auto;
+	background: #fff;
+	border-top :1px solid #bcbcbd;
+	padding : 3px 0px 0px 3px;
 }
 
 #recv_autocomplete_area{

@@ -1813,6 +1813,11 @@ Plugin.prototype ={
 		_this.config.select.isMouseDown = false; 		
 		
 		_this.element.body.on('mousedown.pubgridcol','.pub-body-td',function (e){
+
+			if(e.which ===3){
+				return true; 
+			}
+
 			var sEle = $(this)
 				,selCol = sEle.attr('data-grid-position').split(',')
 				,selRow = selCol[0]

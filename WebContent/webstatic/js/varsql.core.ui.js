@@ -41,8 +41,7 @@ _ui.create = function (_opts){
 //context menu 초기화
 _ui.initContextMenu  = function (){
 	
-	document.ondragstart = new Function('return false');     // 드래그 방지
-	document.onselectstart = new Function('return false');
+	$('body').on("selectstart.varsql", function(event){ return false; }); 
 	
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
@@ -209,6 +208,7 @@ _ui.layout = {
 			, spacing_closed:   8 // ALL panes
 			, north__spacing_open: 0
 			, resizerDblClickToggle: false
+			, center__maskIframesOnResize: true	
 			, center__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				_self.layoutObj.rightLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
 			} 
@@ -262,15 +262,20 @@ _ui.layout = {
 			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
 			, spacing_closed:   8  // ALL panes
 			, north__spacing_open: 0
+			, south__maskIframesOnResize: true	
 			, resizerDblClickToggle: false
 			, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
 			}
 			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				try{
+					var containerH = obj3.css.height-25;  
+				
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:obj3.css.height-25});
+						$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:containerH});
 					}
+					
+					$(_ui.SQL.options.resultMsgAreaWrap).css('height',(containerH)+'px');
 				}catch(e){
 					console.log(e)
 				}
@@ -278,7 +283,8 @@ _ui.layout = {
 		});
 		
 		$('.CodeMirror.cm-s-default').css('height' ,$('#editorAreaTable').height());
-		VARSQL.ui.SQL.sqlTextAreaObj.refresh();
+		$(_ui.SQL.options.resultMsgAreaWrap).css('height',$('#dataGridAreaWrap').height()+'px');
+		_ui.SQL.sqlTextAreaObj.refresh();
 	}
 }
 
@@ -1028,7 +1034,7 @@ _ui.SQL = {
 		
 		// data grid araea
 		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
-		resultGridHtm.push('<div id="resultMsgAreaWrap" class="sql-result-area" tab_gubun="msg"></div>');
+		resultGridHtm.push('<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;"></iframe>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
 	,_initEditor : function (){
@@ -1540,7 +1546,13 @@ _ui.SQL = {
 		var _self = this; 
 		
 		if(_self.resultMsgAreaObj==null){
-			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
+			var msgEle = $(_self.options.resultMsgAreaWrap).contents();
+			var msgStyle = '<style>body{margin:0px;}.error-log-message{font-size:12px;color:#dd4b39}'
+				+'.success-log-message{	font-size:12px;color:#000099}</style>';
+			
+			msgEle.find('head').html(msgStyle);
+			
+			_self.resultMsgAreaObj = msgEle.find('body');
 		}
 		return _self.resultMsgAreaObj; 
 	}
@@ -1636,32 +1648,32 @@ _ui.SQL = {
 		    				    		
 		    		var resultLen = resData.length;
 		    		
+		    		
+		    		
 		    		if(resultLen < 1 ){
 		    			resData.data = [{result:"데이타가 없습니다."}];
 		    			resData.column =[{label:'result',key:'result', align:'center'}];
-		    			_self.setGridData(resData);
-		    		}else{
-		    			var item, msgViewFlag = false;
-		    			
-		    			for(var i=0; i < resultLen; i++){
-		    				item = resData[i];
-		    				if(item.viewType=='grid'){
-		    					_self.setGridData(item);
-		    				}
-		    				if(item.resultType=='FAIL' || item.viewType=='msg'){
-		    					msgViewFlag = true;
-		    				}
-		    				_self.getResultMsgAreaObj().prepend('<div class="'+(item.resultType=='FAIL'?'error-log-message':'success-log-message')+'">'+item.resultMessage+'</div>');
-		    				
-		    				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
-		    			}
-		    			
-		    			if(msgViewFlag){
-		    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
-		    			}else{
-		    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
-		    			}
 		    		}
+		    		
+		    		var item = resData[0];
+		    		
+		    		if(item.resultType=='FAIL' || item.viewType=='msg'){
+		    			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
+    				}else{
+	    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
+	    			}
+	    			
+		    		var resultMsg = [];
+	    			for(var i=0; i < resultLen; i++){
+	    				item = resData[i];
+	    				
+	    				if(item.viewType=='grid'){
+	    					_self.setGridData(item);
+	    				}
+	    				resultMsg.push('<div class="'+(item.resultType=='FAIL'?'error-log-message':'success-log-message')+'">#resultMsg#</div>'.replace('#resultMsg#' , VARSQL.util.escapeHTML(item.resultMessage)));
+	    			}
+	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
+    				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
 		 		}catch(e){
 					VARSQL.log.info(e);
 				}		             

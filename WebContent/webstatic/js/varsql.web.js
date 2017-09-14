@@ -652,7 +652,7 @@ function getParameter(url, param){
 
 _$base.util = {
 	/**
-	 * @method EWPFUEL.util.calcDate
+	 * @method VARSQL.util.calcDate
 	 * @param date
 	 * @param masks
 	 * @description 날짜 계산
@@ -669,7 +669,7 @@ _$base.util = {
 		return this.dateFormat(a,format);
 	}
 	/**
-	 * @method EWPFUEL.util.dateFormat
+	 * @method VARSQL.util.dateFormat
 	 * @param date
 	 * @param masks
 	 * @description 날짜 포켓 변환
@@ -678,7 +678,7 @@ _$base.util = {
 		return dateFormat(date, masks);
 	}
 	/**
-     * @method EWPFUEL.util.removeSpecial
+     * @method VARSQL.util.removeSpecial
      * @param str
      * @description 특수문자 제거
      */
@@ -686,7 +686,7 @@ _$base.util = {
 		return str.replace(/[-&\/\\#,+()$~%.'":*?<>{}]/g,'');
 	}
 	/**
-     * @method EWPFUEL.util.setRangeDate
+     * @method VARSQL.util.setRangeDate
      * @param sdtObj
      * @param edtObj
      * @param cdt
@@ -750,6 +750,18 @@ _$base.util = {
 			}
 		}
 		return dst;
+	}
+	,escapeHTML : function(html) {
+	    var fn=function(tag) {
+	        var charsToReplace = {
+	            '&': '&amp;',
+	            '<': '&lt;',
+	            '>': '&gt;',
+	            '"': '&#34;'
+	        };
+	        return charsToReplace[tag] || tag;
+	    }
+	    return html.replace(/[&<>"]/g, fn);
 	}
 }
 
