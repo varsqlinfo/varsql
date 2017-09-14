@@ -40,7 +40,10 @@ _ui.create = function (_opts){
 
 //context menu 초기화
 _ui.initContextMenu  = function (){
-	return ; 
+	
+	document.ondragstart = new Function('return false');     // 드래그 방지
+	document.onselectstart = new Function('return false');
+	
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();

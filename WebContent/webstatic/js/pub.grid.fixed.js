@@ -1442,7 +1442,7 @@ Plugin.prototype ={
 				_this.horizontalScroll(data,e, 'end');
 			});
 
-			return false; 
+			return true; 
 		});
 		
 		_this.element.vScrollBar.off('touchstart.pubvscroll mousedown.pubvscroll');
@@ -1462,7 +1462,7 @@ Plugin.prototype ={
 				_this.verticalScroll(data, e , 'end');
 			});
 
-			return false; 
+			return true; 
 		})
 	}
 	/**
