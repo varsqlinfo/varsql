@@ -286,6 +286,7 @@ Plugin.prototype ={
 			if(_cb){
 				_this.options.rowOptions.contextMenu.callback = function(key,sObj) {
 					this.gridItem = _this.getItems(_this.config.scroll.viewIdx + parseInt(this.element.attr('rowInfo'),10));
+					
 					_cb.call(this,key,sObj);
 				}
 			}
@@ -1703,10 +1704,10 @@ Plugin.prototype ={
      * @description item 값 얻기.
      */
 	,getItems:function (idx){
-		if(idx){
-			return this.options.tbodyItem[idx]
-		}else{
+		if(isNaN(idx)){
 			return this.options.tbodyItem;
+		}else{
+			return this.options.tbodyItem[idx]
 		}
 	}
 	/**
