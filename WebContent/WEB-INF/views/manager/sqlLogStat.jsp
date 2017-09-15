@@ -67,7 +67,7 @@ var sqlLogStat ={
 		        x : {
 		            type : "block",
 		            domain : "X_COL",
-					line : "solid"
+					line : true
 		        },
 		        y : {
 		            type : "range",
@@ -80,7 +80,8 @@ var sqlLogStat ={
 		    brush : [{
 		        type : "column",
 		        outerPadding : 20,
-		        target : "Y_COL"
+		        target : "Y_COL",
+		        animate : true
 		    }],
 			 event : {
 		        click : function(obj, e) {
@@ -89,17 +90,9 @@ var sqlLogStat ={
 					}
 		        }
 		    }
-			,widget : [{
-		        type : "tooltip"
-		    }, 
-			{
-		        type : "title",
-		        text : "COUNT",
-		        align : "start",
-		        orient : "center",
-		        dx : -120,
-		        dy : -10
-		    }
+			,widget : [
+				{ type : "title", text : "Query 구문별" },
+		        { type : "tooltip", orient: "center" },
 			
 			]
 		});
@@ -191,12 +184,25 @@ var sqlLogStat ={
 				    }]
 				});
 				
-				_self.dateDetailStats(items[items.length-1].VIEW_DATE);
+				if(items.length > 0){
+					_self.dateDetailStats(items[items.length-1].VIEW_DATE);
+				}else{
+					_self.dateDetailStats('');
+				}
 			}
 		});
 	}
 	,dateDetailStats:function (sObj){
 		var _self = this; 
+		if(sObj==''){
+			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+				axis : [{
+			        data :[]
+			    }]
+			});
+			_self.sqlUserRank('');
+			return ; 
+		}
 		$('#detailDate').val(sObj);
 		VARSQL.req.ajax({
 			type:'POST'
@@ -209,18 +215,31 @@ var sqlLogStat ={
 			,dataType:'JSON'
 			,success:function (response){
 				var items = response.items ||[]; 
-				VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-					axis : [{
-				        data :items
-				    }]
-				});
 				
-				_self.sqlUserRank('');
+				if(items.length > 0){
+					VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+						axis : [{
+					        data :items
+					    }]
+					});
+					_self.sqlUserRank(items[0].X_COL);
+				}else{
+					_self.sqlUserRank('');
+				}
+				
 				return ; 
 			}
 		});
 	}
 	,sqlUserRank : function (type){
+		if(type==''){
+			VARSQL.pluginUI.chart.bar("#sqlUserRankChart", {
+				axis : [{
+			        data :[]
+			    }]
+			});
+			return ; 
+		}
 		var date = $('#detailDate').val(); 
 		VARSQL.req.ajax({
 			type:'POST'
@@ -260,7 +279,7 @@ var sqlLogStat ={
 				    widget : [
 				    	{
 				            type : "title",
-				            text : "Top 5"
+				            text :"[ "+type+" ] Query user Top 5"
 				        }, {
 				            type : "tooltip",
 				            orient : "left"
@@ -297,41 +316,33 @@ var sqlLogStat ={
 								 	<input type="hidden" id="detailDate" name="detailDate" value="">
 									<select id="dbinfolist" class="form-control input-sm"></select>
 								</div>
-								<div class="col-xs-6">
-									<div class="row">
-										<div class="col-xs-4">
-											<div class="row">
-												<input type="hidden"name="hidCurrentDate" id="hidCurrentDate" value="${currentDate}">
-												조회구분
-												<select	id="searchGubun" name="searchGubun" class="input-sm">
+								<div class="col-xs-9">
+								 	<div class="form-group col-xs-8">
+									 	<div class="input-group input-daterange">
+								            <span class="input-group-addon" style="padding:0px 12px;background:auto;border:0px;">
+								            	조회구분
+								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="2017-09-15"><select id="searchGubun" name="searchGubun" class="input-sm">
 													<option value="7">주</option>
 													<option value="30">월</option>
 													<option value="90">분기</option>
 													<option value="365">년</option>
 												</select>
-											</div>
-									 	</div>
-									 	<div class="form-group col-xs-4">
-							                <div class="input-group date">
-							                    <input name="sdt" id="sdt" type="text" value="${startDate}" class="input-sm form-control">
-							                    <span class="input-group-addon-trans">~</span>
-							                </div>
-							            </div>
-							            <div class="form-group col-xs-4">
-							                <div class="input-group date">
-							                    <input name="edt" id="edt" type="text" value="${currentDate}" class="input-sm form-control">
-							                </div>
-							            </div>
+								            </span>
+								            <input name="sdt" id="sdt" type="text" value="${startDate}"  class="input-sm form-control">
+								            <span class="input-group-addon">~</span>
+											<input name="edt" id="edt" type="text" value="${currentDate}"  class="input-sm form-control">
+						          		</div>
+						            </div>
+						            <div class="col-xs-4">
+							            	<button type="button" class="btn btn-sm btn-outline btn-primary btnSearch">
+												조회
+											</button>
 									</div>
 								</div>
 							 </div>
 					    </div>
 					</div>
-			    	<div class="pull-right">
-						<button type="button" class="btn btn-outline btn-primary btnSearch">
-							조회
-						</button>
-					</div>
+			    	
 			    </div>
 			</div>
 			<!-- /.panel-heading -->
