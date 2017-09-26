@@ -1426,9 +1426,10 @@ _ui.SQL = {
 	,setQueryInfo : function (sItem){
 		if(sItem=='clear'){
 			if(this.currentSqlData != this.getTextAreaObj().getValue()){
-				if(confirm('현재 쿼리를 저장하고 새로 여시겠습니까?')){
+				if(confirm('현재 쿼리를 저장 하시겠습니까?')){
 					$('.sql-save-btn').trigger('click');
 				}
+				
 			}
 			sItem = {
 				SQL_ID:''

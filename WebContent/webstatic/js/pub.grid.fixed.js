@@ -286,7 +286,6 @@ Plugin.prototype ={
 			if(_cb){
 				_this.options.rowOptions.contextMenu.callback = function(key,sObj) {
 					this.gridItem = _this.getItems(_this.config.scroll.viewIdx + parseInt(this.element.attr('rowInfo'),10));
-					
 					_cb.call(this,key,sObj);
 				}
 			}
@@ -1427,6 +1426,8 @@ Plugin.prototype ={
 				
 		_this.element.hScrollBar.off('touchstart.pubhscroll mousedown.pubhscroll');
 		_this.element.hScrollBar.on('touchstart.pubhscroll mousedown.pubhscroll',function (e){
+			e.stopPropagation();
+
 			var oe = e.originalEvent.touches;
 			var ele = $(this); 
 			var data = {};
@@ -1448,6 +1449,7 @@ Plugin.prototype ={
 		
 		_this.element.vScrollBar.off('touchstart.pubvscroll mousedown.pubvscroll');
 		_this.element.vScrollBar.on('touchstart.pubvscroll mousedown.pubvscroll',function (e){
+			e.stopPropagation();
 			var oe = e.originalEvent.touches;
 			var ele = $(this); 
 			var data = {};

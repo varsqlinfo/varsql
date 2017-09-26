@@ -26,15 +26,23 @@ public enum DbTypeEnum {
 	private DbTypeEnum(String db){
 		try {
 			String cls = DBMetaImpl.class.getName()+this.name(); 
+			
+			System.out.println("DbTypeEnum cls : "+ cls);
 			this.dbMetaImpl=(DBMetaImpl)Class.forName(cls).newInstance();
 		} catch (Exception e) {
+			System.out.println("e.getMessage() ; "+ e.getMessage());
+			
 			this.dbMetaImpl=new DBMetaImplOTHER();
 		}
 		
 		try {
 			String cls = DDLScriptImpl.class.getName()+this.name(); 
+			
+			System.out.println("DbTypeEnum cls : "+ cls);
+			
 			this.ddlScript=(DDLScriptImpl)Class.forName(cls).newInstance();
 		} catch (Exception e) {
+			System.out.println("e.getMessage() ; "+ e.getMessage());
 			this.ddlScript=new DDLScriptImplOTHER();
 		}
 	}

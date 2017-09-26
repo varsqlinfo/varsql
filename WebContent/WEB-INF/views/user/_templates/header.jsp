@@ -100,7 +100,7 @@
 									strHtm.push(' </li>');
 								}
 							} else {
-								strHtm.push('<li>no data</li>')
+								strHtm.push('<li class="empty-area">no data</li>')
 							}
 
 							$('#memo_alert_area').empty().html(strHtm.join(''));

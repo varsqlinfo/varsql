@@ -3,6 +3,8 @@ package com.varsql.web.util;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,7 +87,11 @@ public class VarsqlUtil {
 	public static DbTypeEnum getDBMetaImpl(String connid){
 		try{
 			DatabaseInfo  dbinfo= SecurityUtil.loginInfo().getDatabaseInfo().get(connid);
-			return DbTypeEnum.valueOf(dbinfo.getType());
+			
+			System.out.println("dbinfo : "+ ReflectionToStringBuilder.toString(dbinfo));
+			System.out.println("dbinfo.getType() : "+ dbinfo.getType().toUpperCase());
+			System.out.println("toUpperCase : "+ DbTypeEnum.valueOf(dbinfo.getType().toUpperCase()));
+			return DbTypeEnum.valueOf(dbinfo.getType().toUpperCase());
 		}catch(Exception e){
 			return DbTypeEnum.OTHER;
 		}
