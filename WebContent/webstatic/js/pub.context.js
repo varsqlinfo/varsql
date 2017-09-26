@@ -4,6 +4,8 @@
  * Copyright 2016 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
+ * url : https://github.com/ytechinfo/pub
+ * demo : http://pub.moaview.com/
 */
 ;(function ($, window, document, undefined) {
 
@@ -226,7 +228,6 @@ Plugin.prototype ={
 				,eleW = $dd.width()
 				,evtX = e.pageX
 				,evtY=e.pageY;
-
 			
 			var bottom = $win.scrollTop() + $win.height(),
 				right = $win.scrollLeft() + $win.width(),
@@ -265,6 +266,9 @@ Plugin.prototype ={
 		
 		$(document).off('mousedown.'+this.contextId).off('mouseenter.'+this.contextId);
 		$(document).off('contextmenu.pubcontext', this.element).off('click', '.context-event');
+
+		$._removeData(this.selector)
+		delete _datastore[this.selector];
 	}
 };
 
@@ -281,11 +285,12 @@ $[ pluginName ] = function (selector,options) {
 		return _cacheObject||{}; 
 	}
 	
-	if(!_cacheObject){
+	if(typeof _cacheObject === 'undefined'){
 		_cacheObject = new Plugin(selector, options);
 		_datastore[jSelctor] = _cacheObject;
 		return _cacheObject; 
 	}else if(typeof options==='object'){
+		_cacheObject.destory();
 		_cacheObject = new Plugin(selector, options);
 		_datastore[jSelctor] = _cacheObject;
 		return _cacheObject; 

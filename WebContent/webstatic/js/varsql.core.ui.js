@@ -415,7 +415,8 @@ _ui.leftDbObject ={
  * 테이블 , 스키마 , view 등등 
  */
 _ui.leftDbObjectServiceMenu ={
-	metadataCache:false
+	initFlag : false
+	,metadataCache:false
 	,metaGridHeight :150
 	,options :{
 		selector:'#leftServiceMenu'
@@ -435,9 +436,15 @@ _ui.leftDbObjectServiceMenu ={
 		$.extend(true,_self.options, options);
 		
 		_self._initCacheObject();
+		if(_self.initFlag ===false){
+			_self._tabs();
+			$($('.service_menu_tab')[0]).trigger('click');
+		}else{
+			$($('.service_menu_tab')[0]).trigger('click');
+		}
+		
 		_self.initElement();
-	
-		_self._tabs();
+		_self.initFlag = true; 
 	}
 	,_initCacheObject : function (){
 		this.metadataCache = {
@@ -481,12 +488,12 @@ _ui.leftDbObjectServiceMenu ={
 			}
 		})
 		
-		$($('.service_menu_tab')[0]).trigger('click');
 		_self._serviceMenuContextMenu();
 	}
 	,_serviceMenuContextMenu : function (){
-		var _self = this; 
-		$.pubContextMenu('.service_menu_tab', {
+		var _self = this;
+		
+		$.pubContextMenu($('.service_menu_tab'), {
 			items:[
 			       {key:'refresh' ,name: '새로고침'},
     		]
