@@ -11,6 +11,7 @@
 
 
 <entry key="header.menu.file">파일</entry>
+<entry key="header.menu.file.new">새 파일</entry>
 <entry key="header.menu.file.save">저장</entry>
 <entry key="header.menu.file.close">닫기</entry>
 

@@ -93,6 +93,9 @@ _ui.headerMenu ={
 				case 'file': {
 					
 					switch (menu_mode) {
+						case 'new':
+							$('.sql-new-file').trigger('click');
+							break;
 						case 'save':
 							$('.sql-save-btn').trigger('click');
 							break;
@@ -321,7 +324,7 @@ _ui.leftDbObject ={
 		// schema refresh button 
 		$('.refresh-schema-btn').on('click', function (e){
 			if(_self.options.active){
-				_self._click(_self.options.active.attr('obj_nm'));
+				_self._click(_self.options.active.attr('obj_nm'), true);
 			}
 		})
 		
@@ -385,10 +388,17 @@ _ui.leftDbObject ={
 		});  
 	}
 	// 스키마 클릭. 
-	,_click:function (obj){
+	,_click:function (obj , refreshFlag){
 		var _self = this;
 		var tmpParam = _self.options.param;
 		tmpParam.schema = $(obj).attr('obj_nm');
+		
+		if(refreshFlag){
+			_ui.leftDbObjectServiceMenu.create(
+	    		$.extend({},{param:tmpParam})
+	    	);
+			return ; 
+		}
 		
 		VARSQL.req.ajax({      
 		    type:"POST"
@@ -432,15 +442,14 @@ _ui.leftDbObjectServiceMenu ={
 	// 왼쪽 메뉴 생성 . 
 	,create: function (options){
 		var _self = this; 
-		
-		$.extend(true,_self.options, options);
-		
 		_self._initCacheObject();
+		
 		if(_self.initFlag ===false){
+			$.extend(true,_self.options, options);
 			_self._tabs();
 			$($('.service_menu_tab')[0]).trigger('click');
 		}else{
-			$($('.service_menu_tab')[0]).trigger('click');
+			$($('.service_menu_tab')[0]).attr('refresh','Y').trigger('click');
 		}
 		
 		_self.initElement();
