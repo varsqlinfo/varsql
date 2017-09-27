@@ -458,8 +458,6 @@ $.pubTree = function (selector,options) {
 		return _cacheObject; 
 	}
 
-	console.log('asdfasfd',options,  _cacheObject);
-	
 	if(!_cacheObject){
 		_cacheObject = new pubTree(selector, options);
 		_datastore[selector] = _cacheObject;

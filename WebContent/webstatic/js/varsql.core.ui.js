@@ -324,7 +324,7 @@ _ui.leftDbObject ={
 		// schema refresh button 
 		$('.refresh-schema-btn').on('click', function (e){
 			if(_self.options.active){
-				_self._click(_self.options.active.attr('obj_nm'), true);
+				_self._click(_self.options.active, true);
 			}
 		})
 		
@@ -394,9 +394,7 @@ _ui.leftDbObject ={
 		tmpParam.schema = $(obj).attr('obj_nm');
 		
 		if(refreshFlag){
-			_ui.leftDbObjectServiceMenu.create(
-	    		$.extend({},{param:tmpParam})
-	    	);
+			_ui.leftDbObjectServiceMenu.create({param:tmpParam});
 			return ; 
 		}
 		
@@ -444,8 +442,11 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this; 
 		_self._initCacheObject();
 		
+		_self.options = VARSQL.util.objectMerge(_self.options, options);
+		
+		console.log(options)
+		
 		if(_self.initFlag ===false){
-			$.extend(true,_self.options, options);
 			_self._tabs();
 			$($('.service_menu_tab')[0]).trigger('click');
 		}else{
