@@ -20,9 +20,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.varsql.sql.builder.SqlSourceResultVO;
+import com.varsql.sql.resultset.handle.ResultSetHandle;
+import com.varsql.web.app.database.DbTypeEnum;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.PagingUtil;
 
 /**
@@ -30,6 +33,12 @@ import com.vartech.common.utils.PagingUtil;
  * @author ytkim 
 */
 public class SqlResultUtil {
+	
+	private static SimpleDateFormat timestampSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+	private static SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd"); 
+	private static SimpleDateFormat timeSDF = new SimpleDateFormat("HH:mm:ss.SSS"); 
+	
+	private SqlResultUtil(){}
 	/**
 	 * resultSet을  리스트로 만드는 방법 
 	 * 리스트 형식 List<Map> rows = new ArrayList<Map>();
@@ -37,10 +46,11 @@ public class SqlResultUtil {
 	 * @param ssrv 
 	 * @param paramMap 
 	 * @param maxRow 
+	 * @param vconnid 
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, ParamMap paramMap, int maxRow) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, ParamMap paramMap, int maxRow, String vconnid) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -49,16 +59,18 @@ public class SqlResultUtil {
 		ResultSetMetaData rsmd = null;
 		
 		rsmd = rs.getMetaData();
+		
+		ResultSetHandle resultsetHandle = VarsqlUtil.getDBMetaImpl(vconnid).getResultsetHandle();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];
+		String [] columns_type = new String[count];
 		
 		int columnType=-1;
 		HashMap columnMap = null;
 		ArrayList columnNameArr = new ArrayList();
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
 		String columnName = "";
-		Object columnValue = "";
 		
 		for (int i = 1; i <= count; i++) {
 			columnName=columns_key[i - 1] = rsmd.getColumnName(i);
@@ -68,14 +80,34 @@ public class SqlResultUtil {
 			columnMap.put("key", columnName);
 			if(count > 10) columnMap.put("width", 70);
 			
+			columnMap.put("align", "left");
+			columnNumberTypeFlag.add(false);
+			
 			if(columnType == Types.INTEGER||columnType ==Types.NUMERIC||columnType ==Types.BIGINT||columnType ==Types.DECIMAL
 					||columnType ==Types.DOUBLE||columnType ==Types.FLOAT||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
+				columns_type[i - 1] = "number";
 				columnMap.put("align","right");
 				columnNumberTypeFlag.add(true);
+			}else if(columnType == Types.DATE ){
+				columns_type[i - 1] = "date";
+			}else if(columnType == Types.TIME ){
+				columns_type[i - 1] = "time";
+			}else if(columnType == Types.TIMESTAMP ){
+				columns_type[i - 1] = "timestamp";
+			}else if(columnType == Types.BLOB ){
+				columns_type[i - 1] = "blob";
+			}else if(columnType == Types.CLOB ){
+				columns_type[i - 1] = "clob";
+			}else if(columnType == Types.REF ){
+				columns_type[i - 1] = "ref";
+			}else if(columnType == Types.NCLOB ){
+				columns_type[i - 1] = "nclob";
+			}else if(columnType == Types.SQLXML ){
+				columns_type[i - 1] = "sqlxml";
 			}else{
-				columnMap.put("align", "left");
-				columnNumberTypeFlag.add(false);
+				columns_type[i - 1] = "string";
 			}
+			
 			columnNameArr.add(columnMap);
 		}
 		
@@ -89,29 +121,27 @@ public class SqlResultUtil {
 		Reader input = null;
 		char[] buffer  = null;
 		int byteRead=-1;
+		String tmpColumnType = "";
+		Object columnValue = "";
 		while (rs.next()) {
 			
 			columns = new LinkedHashMap(count);
 			for (int i = 1; i <= count; i++) {				
 				columnName = columns_key[i-1];
-				columnValue = rs.getObject(columnName);
-				if( columnValue instanceof Clob){
-					try{
-						StringBuffer output = new StringBuffer();
-						input = rs.getCharacterStream(columnName);
-						buffer = new char[1024];
-						while((byteRead=input.read(buffer,0,1024))!=-1){
-							output.append(buffer,0,byteRead);
-						}
-						input.close();
-						columns.put(columnName, output.toString());
-					}catch(Exception e){
-						columns.put(columnName , "Clob" +e.getMessage());
-					}
-				}else if( columnValue instanceof Blob){
-					columns.put(columnName , "Blob");
+				tmpColumnType = columns_type[i-1]; 
+				
+				if( "clob".equals(tmpColumnType)){
+					columns.put(columnName , resultsetHandle.getClob(rs, columnName));
+				}else if( "blob".equals(tmpColumnType)){
+					columns.put(columnName , resultsetHandle.getBlob(rs, columnName));
+				}else if("timestamp".equals(tmpColumnType)){
+					columns.put(columnName, resultsetHandle.getTimeStamp(rs, columnName));
+				}else if("date".equals(tmpColumnType)){
+					columns.put(columnName, resultsetHandle.getDate(rs, columnName));
+				}else if("time".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getTime(rs, columnName));
 				}else{
-					columns.put(columnName, columnValue);
+					columns.put(columnName,resultsetHandle.getObject(rs, columnName));
 				}
 			}
 			rows.add(columns);

@@ -11,7 +11,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * 
 *-----------------------------------------------------------------------------
 * @PROJECT	: gain
-* @NAME		: GainSpringConfig.java
+* @NAME		: VarsqlSpringConfig.java
 * @DESC		: spring bean 설정. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------

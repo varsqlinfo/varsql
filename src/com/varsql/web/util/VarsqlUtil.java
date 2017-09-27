@@ -3,8 +3,8 @@ package com.varsql.web.util;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +27,9 @@ public class VarsqlUtil {
 	}
 	public static String objectToString(Object json) {
 		try {
-			return new ObjectMapper().writeValueAsString(json);
+			 ObjectMapper objectMapper = new ObjectMapper();
+			 objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+			return objectMapper.writeValueAsString(json);
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,10 +89,6 @@ public class VarsqlUtil {
 	public static DbTypeEnum getDBMetaImpl(String connid){
 		try{
 			DatabaseInfo  dbinfo= SecurityUtil.loginInfo().getDatabaseInfo().get(connid);
-			
-			System.out.println("dbinfo : "+ ReflectionToStringBuilder.toString(dbinfo));
-			System.out.println("dbinfo.getType() : "+ dbinfo.getType().toUpperCase());
-			System.out.println("toUpperCase : "+ DbTypeEnum.valueOf(dbinfo.getType().toUpperCase()));
 			return DbTypeEnum.valueOf(dbinfo.getType().toUpperCase());
 		}catch(Exception e){
 			return DbTypeEnum.OTHER;

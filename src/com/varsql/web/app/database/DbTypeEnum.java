@@ -5,6 +5,9 @@ import com.varsql.db.meta.DBMetaImplOTHER;
 import com.varsql.sql.ddl.script.DDLScript;
 import com.varsql.sql.ddl.script.DDLScriptImpl;
 import com.varsql.sql.ddl.script.DDLScriptImplOTHER;
+import com.varsql.sql.resultset.handle.ResultSetHandle;
+import com.varsql.sql.resultset.handle.ResultSetHandleImpl;
+import com.varsql.sql.resultset.handle.ResultSetHandleOTHER;
 
 public enum DbTypeEnum {
 	MYSQL("mysql")
@@ -22,28 +25,32 @@ public enum DbTypeEnum {
 	
 	private DBMetaImpl dbMetaImpl;
 	private DDLScript ddlScript;
+	private ResultSetHandle resultSetHandle;
 	
 	private DbTypeEnum(String db){
 		try {
 			String cls = DBMetaImpl.class.getName()+this.name(); 
 			
-			System.out.println("DbTypeEnum cls : "+ cls);
 			this.dbMetaImpl=(DBMetaImpl)Class.forName(cls).newInstance();
 		} catch (Exception e) {
-			System.out.println("e.getMessage() ; "+ e.getMessage());
-			
 			this.dbMetaImpl=new DBMetaImplOTHER();
 		}
 		
 		try {
 			String cls = DDLScriptImpl.class.getName()+this.name(); 
 			
-			System.out.println("DbTypeEnum cls : "+ cls);
 			
 			this.ddlScript=(DDLScriptImpl)Class.forName(cls).newInstance();
 		} catch (Exception e) {
-			System.out.println("e.getMessage() ; "+ e.getMessage());
 			this.ddlScript=new DDLScriptImplOTHER();
+		}
+		
+		try {
+			String cls = ResultSetHandleImpl.class.getName()+this.name(); 
+			
+			this.resultSetHandle=(ResultSetHandle)Class.forName(cls).newInstance();
+		} catch (Exception e) {
+			this.resultSetHandle=new ResultSetHandleOTHER();
 		}
 	}
 	
@@ -53,5 +60,9 @@ public enum DbTypeEnum {
 	
 	public DDLScript getDDLScript(){
 		return this.ddlScript;
+	}
+	
+	public ResultSetHandle getResultsetHandle(){
+		return this.resultSetHandle;
 	}
 }

@@ -113,13 +113,15 @@ public class SQLServiceImpl{
 			
 			for (SqlSource tmpSqlSource : sqlList) {
 				
-				getRequestSqlData(paramMap,conn,tmpSqlSource);
+				getRequestSqlData(paramMap,conn,tmpSqlSource, vconnid);
 				
 				reLst.add(tmpSqlSource.getResult());
 			}
 			
 			return reLst;
-		} catch (SQLException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
+			
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			SQLUtil.close(conn);
@@ -197,10 +199,11 @@ public class SQLServiceImpl{
 	 * @변경이력  :
 	 * @param conn
 	 * @param tmpSqlSource
+	 * @param vconnid 
 	 * @param maxRow
 	 * @return
 	 */
-	protected Object getRequestSqlData(ParamMap paramMap, Connection conn, SqlSource tmpSqlSource) {
+	protected Object getRequestSqlData(ParamMap paramMap, Connection conn, SqlSource tmpSqlSource, String vconnid) {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		Object reVal=null;
@@ -216,7 +219,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet(); 
 			
 			if(rs != null){
-				SqlResultUtil.resultSetHandler(rs, ssrv, paramMap, maxRow);
+				SqlResultUtil.resultSetHandler(rs, ssrv, paramMap, maxRow,vconnid);
 				ssrv.setViewType("grid");
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -299,7 +302,7 @@ public class SQLServiceImpl{
 		List result = new ArrayList();
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(vconnid);
-			getRequestSqlData(paramMap,conn,sqlSource);
+			getRequestSqlData(paramMap,conn,sqlSource, vconnid);
 			result = sqlSource.getResult().getData();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);
