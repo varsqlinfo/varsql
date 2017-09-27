@@ -102,6 +102,8 @@ public class SqlResultUtil {
 				columns_type[i - 1] = "ref";
 			}else if(columnType == Types.NCLOB ){
 				columns_type[i - 1] = "nclob";
+			}else if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
+				columns_type[i - 1] = "binary";
 			}else if(columnType == Types.SQLXML ){
 				columns_type[i - 1] = "sqlxml";
 			}else{
@@ -140,6 +142,12 @@ public class SqlResultUtil {
 					columns.put(columnName, resultsetHandle.getDate(rs, columnName));
 				}else if("time".equals(tmpColumnType)){
 					columns.put(columnName,resultsetHandle.getTime(rs, columnName));
+				}else if("sqlxml".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getSQLXML(rs, columnName));
+				}else if("binary".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getBinary(rs, columnName));
+				}else if("nclob".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getNCLOB(rs, columnName));
 				}else{
 					columns.put(columnName,resultsetHandle.getObject(rs, columnName));
 				}
