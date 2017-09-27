@@ -542,7 +542,7 @@ _ui.leftDbObjectServiceMenu ={
 			activeObj.addClass('show-display');
 			
 			if(refresh){
-				activeObj.empty();
+				//activeObj.empty();
 			}else{
 				$.pubGrid(_self.options.left_service_menu_contentId+'>#'+$contentId).resizeDraw(dimension);
 				return ; 
@@ -550,6 +550,8 @@ _ui.leftDbObjectServiceMenu ={
 		}else{
 			$(_self.options.left_service_menu_contentId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
 		}
+		
+		
 	
 		VARSQL.req.ajax({      
 		    type:"POST"  
@@ -1298,7 +1300,7 @@ _ui.SQL = {
 					+'		<div><input type="text" class="sql-param-value" value="{{val}}"/></div>'
 					+'	</td>'
 					+'	<td>'
-					+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
+					+'		<span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
 					+'	</td>'
 					+'	</tr>';
 				paramHtm.push(Mustache.render(tmpHtm, {key: key , val : data[key]}));
@@ -1318,7 +1320,7 @@ _ui.SQL = {
 				+'		<div><input type="text" class="sql-param-value"/></div>'
 				+'	</td>'
 				+'	<td>'
-				+'		<span><button type="button" class="sql-param-del-btn">삭제</button></span>'
+				+'		<span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
 				+'	</td>'
 				+'	</tr>';
 			

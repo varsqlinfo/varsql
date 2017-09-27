@@ -53,14 +53,13 @@ function Plugin(element, options) {
 	if(pubContextElement ===false){
 		$('body').append('<div id="pub-context-area"></div>');
 		pubContextElement = $('#pub-context-area');
-
 	}
 	
 	if(initialized===false){
-		this.init(); 
-		//initialized = true; 
+		this.initEvt(); 
+		initialized = true; 
 	}
-	
+		
 	this.addContext();
 	this.context = $('#'+this.contextId);
 
@@ -72,28 +71,29 @@ Plugin.prototype ={
 		var _this = this;
 		defaults = this.options;
 		id=_this.contextId;
-		
-		$(document).on('mousedown.'+this.contextId, 'html', function (e) {
-			if(e.which !==2 && $(e.target).closest('#'+id+'_wrap .pub-context').length < 1){
-				$('#'+id+'_wrap .pub-context').fadeOut(defaults.fadeSpeed, function(){
-					$('#'+id+'_wrap .pub-context').css({display:''}).find('.drop-left').removeClass('drop-left');
-				});
-			}
-		});
 
 		if(defaults.preventDoubleContext){
-			$(document).on('contextmenu.pubcontext', '#'+id+'_wrap .pub-context', function (e) {
+			$(document).on('contextmenu.pubcontext'+_this.contextId, '#'+id+'_wrap .pub-context', function (e) {
 				e.preventDefault();
 			});
 		}
 
-		$(document).on('mouseenter.'+this.contextId, '#'+id+'_wrap .pub-context-submenu', function(){
+		$(document).on('mouseenter.pubcontext'+this.contextId, '#'+id+'_wrap .pub-context-submenu', function(){
 			var $sub = $(this).find('.pub-context-sub:first'),
 				subWidth = $sub.width(),
 				subLeft = $sub.offset().left,
 				collision = (subWidth+subLeft) > window.innerWidth;
 			if(collision){
 				$sub.addClass('drop-left');
+			}
+		});
+	}
+	,initEvt : function (){
+		$(document).on('mousedown.pubcontext', 'html', function (e) {
+			if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
+				$('#pub-context-area .pub-context').fadeOut(defaults.fadeSpeed, function(){
+					$('#pub-context-area .pub-context').css({display:''}).find('.drop-left').removeClass('drop-left');
+				});
 			}
 		});
 	}
@@ -159,8 +159,8 @@ Plugin.prototype ={
 	,contextEvent : function (){
 		var _self = this,opt = _self.options;
 		
-		$('#'+_self.contextId+' .ui-context-item').off('click');
-		$('#'+_self.contextId+' .ui-context-item').on('click',function (){
+		$('#'+_self.contextId+' .ui-context-item').off('click.'+this.contextId);
+		$('#'+_self.contextId+' .ui-context-item').on('click.'+this.contextId,function (){
 			var clickEle=$(this);
 			
 			if(clickEle.hasClass('pub-context-submenu')){
@@ -203,8 +203,8 @@ Plugin.prototype ={
 		_self.contextEvent();
 		var $win = $(window);
 
-		$(document).off('contextmenu.pubcontext', _self.selector);
-		$(document).on('contextmenu.pubcontext', _self.selector, function (e) {
+		$(document).off('contextmenu.pubcontext'+this.contextId, _self.selector);
+		$(document).on('contextmenu.pubcontext'+this.contextId, _self.selector, function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			
@@ -264,8 +264,8 @@ Plugin.prototype ={
 			contextMenu.remove();
 		}
 		
-		$(document).off('mousedown.'+this.contextId).off('mouseenter.'+this.contextId);
-		$(document).off('contextmenu.pubcontext', this.element).off('click', '.context-event');
+		$(document).off('mousedown.'+this.contextId).off('mouseenter.pubcontext'+this.contextId);
+		$(document).off('contextmenu.pubcontext'+this.contextId, this.element).off('click.'+this.contextId, '.context-event');
 
 		$._removeData(this.selector)
 		delete _datastore[this.selector];

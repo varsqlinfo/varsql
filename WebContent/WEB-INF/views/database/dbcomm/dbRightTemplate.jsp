@@ -64,7 +64,9 @@
 			</div>
 		 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
 		 	
-		 	<span id="sql_parameter_toggle_btn" class="pull-right">매개</span>
+		 	<span id="sql_parameter_toggle_btn" class="pull-right">
+		 		<button type="button" class="btn btn-sm fa fa-plus-square-o" style="margin-top:7px;margin-right:3px;background-color: #eef1ed;">변수</button>
+		 	</span>
 		</div>
 	</div>
 </div>
@@ -74,11 +76,16 @@
 			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
 		</div>
 		<div id="sql_parameter_area" class="sql-parameter-area">
-			<table>
+			<table style="width:100%;">
+				<colgroup>
+					<col width="90px">
+					<col width="130px">
+					<col width="30px">
+			    </colgroup>
 				<thead>
 					<tr>
-						<th>파라미터</th>
-						<th>값</th>
+						<th>Key</th>
+						<th>Value</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -88,7 +95,7 @@
 					<tr>
 						<td colspan="3" class="text-center">
 							<div class="margin-top5">
-								<button class="sql-param-add-btn">추가</button>
+								<button type="button" class="sql-param-add-btn btn btn-sm btn-default fa fa-plus"></button>
 							</div>
 						</td>
 					</tr>

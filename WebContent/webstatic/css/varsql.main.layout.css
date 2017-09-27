@@ -117,8 +117,13 @@
 	height:100%;
 	position:absolute;
 	right:0px;
-	background:#f1f1f1;
+	background:#e8f7e8;
 	overflow:auto;
+	border: 1px solid #ddd;
+}
+
+.sql-parameter-area table th{
+	text-align:center;
 }
 .on.sql-parameter-area{
 	display:block;
@@ -135,16 +140,4 @@
 	width:100%;
 }	
 
-.sql-parameter-area .key-field{
-	width:80px;
-	padding: 5px;
-}
-
-.sql-parameter-area .val-field{
-	width:120px;
-}
-
-.sql-parameter-area .sql-param-del-btn{
-	width:42px;
-}
 
