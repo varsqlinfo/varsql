@@ -25,18 +25,14 @@
 }
 
 .pub-tab-move-area{
-	background:#fff;
 	z-index:1;
 	position:absolute; 
 	right:0px;
 	top:0px;
-	bottom: 0px;
     margin-top: 1px;
+	min-width:32px;
 }
-.pub-tab-move-area >span:hover{
-	background:#dff0d8;
-	border: 1px solid #bfb8b8;
-}
+
 .pub-tab-prev{
 	cursor : pointer; 
 }
@@ -70,4 +66,42 @@
 }
 .pub-tab-item-cont.active{
 	background:#f1f1f1;
+}
+
+.pub-tab-right-arrow , .pub-tab-left-arrow{
+	padding: 0px;
+    margin: 0px;
+    width: 12px;
+	color: #b3b1b1;
+	font-size: 11pt;
+	font-style: inherit;
+	float: left;
+    margin: 0px;
+}
+
+.pub-tab-left-arrow:before {
+    content:'\25C0';
+	margin: 0 0px 0 0;
+	text-align: right;
+}
+
+.pub-tab-right-arrow:after {
+    content:'\25B6';
+	text-align: center;	
+}
+.pub-tab-move-area >i:hover{
+	color:#676262;
+}
+
+.pub-tab-move-dim{
+	background:#fff;
+	position:absolute; 
+	right:1px;
+	top:1px;
+	bottom:0px;
+	left:0px;
+	z-index:-1;
+	opacity: 0.5;
+	filter: alpha(opacity=5);
+	box-shadow: none;
 }

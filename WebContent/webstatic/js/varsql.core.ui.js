@@ -444,8 +444,6 @@ _ui.leftDbObjectServiceMenu ={
 		
 		_self.options = VARSQL.util.objectMerge(_self.options, options);
 		
-		console.log(options)
-		
 		if(_self.initFlag ===false){
 			_self._tabs();
 			$($('.service_menu_tab')[0]).trigger('click');

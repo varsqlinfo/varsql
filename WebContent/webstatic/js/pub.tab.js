@@ -4,6 +4,8 @@
  * Copyright 2016 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
+ * url : https://github.com/ytechinfo/pub
+ * demo : http://pub.moaview.com/
 */
 
 ;(function ($, window, document, undefined) {
@@ -17,12 +19,12 @@
 				// Modify $obj, Do not return
 			}
 			,icon :{
-				prev :'<'
-				,next : '>'
+				prev :'pub-tab-left-arrow'
+				,next : 'pub-tab-right-arrow'
 			}
-			,addClass : 'service_menu_tab'	// tab li Ï∂îÍ∞Ä ÌÅ¥ÎûòÏä§
+			,addClass : 'service_menu_tab'	// tab li √ﬂ∞° ≈¨∑°Ω∫
 			,items:[]							// tab item
-			,click :function (item){			// tab click ÏòµÏÖò
+			,click :function (item){			// tab click ø…º«
 				
 			}
 			,itemKey :{							// item key mapping
@@ -172,9 +174,10 @@
 			strHtm.push('			<li><div id="'+_this.contextId+'pub-tab-move-space"  style="display:none;">&nbsp;</div></li>');
 			strHtm.push('			</ul>');
 			strHtm.push('		</div> ');
-			strHtm.push('		<div class="pub-tab-move-area"> ');
-			strHtm.push('			<span class="pub-tab-prev">'+_this.options.icon.prev+'</span>');
-			strHtm.push('			<span class="pub-tab-next">'+_this.options.icon.next+'</span>');
+			strHtm.push('		<div class="pub-tab-move-area">');
+			strHtm.push('			<div class="pub-tab-move-dim"></div>');
+			strHtm.push('			<i class="pub-tab-prev '+_this.options.icon.prev+'"></i>');
+			strHtm.push('			<i class="pub-tab-next '+_this.options.icon.next+'"></i>');
 			strHtm.push('		</div>');
 			strHtm.push('	</div>');
 			strHtm.push('</div>');
@@ -212,6 +215,7 @@
 			_datastore[selector] = _cacheObject;
 			return _cacheObject; 
 		}else if(typeof options==='object'){
+			_cacheObject.destory();
 			_cacheObject = new Plugin(selector, options);
 			_datastore[selector] = _cacheObject;
 			return _cacheObject; 
@@ -232,4 +236,3 @@
     };
 
 })(jQuery, window, document);
-

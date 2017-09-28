@@ -691,7 +691,7 @@ Plugin.prototype ={
 		}
 
 		if(gridMode=='reDraw'){
-			_this.config.select = {isMouseDown:false,startIdx : 0,endIdx : 0, startRow : 0 ,startCol : 0, endRow:0, endCol :0};
+			_this.config.select = {isSelect :false, isMouseDown:false,startIdx : 0,endIdx : 0, startRow : 0 ,startCol : 0, endRow:0, endCol :0};
 			_this.calcDimension('reDraw');
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
@@ -1105,7 +1105,7 @@ Plugin.prototype ={
 		startCol = startCol < colFixedIndex ? colFixedIndex : startCol;
 
 		//var selectFlag = (drawMode != 'init'&&selectCell.startIdx <= itemIdx && itemIdx <= selectCell.endIdx) ?true :false;
-		var selectFlag = (drawMode != 'init'  && drawMode != 'reDraw') ?true :false;
+		var selectFlag = (_this.config.select.isSelect ===true) ?true :false;
 
 		function setSelectCell(row , col, addEle){
 			addEle.parentElement.classList.remove( 'col-active' );
@@ -1227,7 +1227,7 @@ Plugin.prototype ={
 		
 		opt = opt||{height : (_this.options.height =='auto' ? _this.gridElement.parent().height() : _this.config.body.height )}; 
 		opt = $.extend(true, {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()},opt);
-				
+		
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
@@ -1239,12 +1239,11 @@ Plugin.prototype ={
 		var mainHeight = opt.height - this.config.navi.height;
 		_this.element.container.css('height',mainHeight);
 
-
 		var bodyH = mainHeight - this.config.header.height - this.config.footer.height - (hScrollFlag?this.options.scroll.horizontalHeight:0)
 			, itemTotHeight = _this.options.tbodyItem.length * _this.config.rowHeight
 			, vScrollFlag = itemTotHeight > bodyH ? true :false
 			, bodyW = (_this.config.body.width- (vScrollFlag?this.options.scroll.verticalWidth :0))
-			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false
+			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false;
 			
 		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main)+'px');
 		_this.element.header.find('.pubGrid-header-left-cont').css('width',(_this.config.gridWidth.left)+'px');
@@ -1840,7 +1839,7 @@ Plugin.prototype ={
 				_this.config.select.endCol=colIdx;
 				selectTo();
 			} else {
-				_this.config.select = {startIdx : selIdx, endIdx : selIdx, startRow : selRow ,endRow:selRow, startCol : colIdx,  endCol :colIdx};
+				_this.config.select = {isSelect :true, startIdx : selIdx, endIdx : selIdx, startRow : selRow ,endRow:selRow, startCol : colIdx,  endCol :colIdx};
 				_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
 				sEle.addClass('col-active');
 			}
