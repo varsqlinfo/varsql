@@ -4,6 +4,8 @@
  * Copyright 2016 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
+ * url : https://github.com/ytechinfo/pub
+ * demo : http://pub.moaview.com/
 */
 
 ;(function($, window, document) {
@@ -404,7 +406,7 @@ Plugin.prototype ={
 		var tci = opt.tColItem
 			,thg = opt.theadGroup
 			,fixedColIdx = opt.headerOptions.colFixedIndex
-			,gridElementWidth =_this.config.body.width
+			,gridElementWidth =_this.config.body.width-(_this.config.gridWidth.aside+opt.scroll.verticalWidth)
 			,tciItem,thgItem, rowItem, headItem
 			,headGroupInfo = [] ,groupInfo = [], rowSpanNum = {}, colSpanNum = {}
 			,leftHeaderGroupInfo = [] ,leftGroupInfo = [], rowSpanNum = {}, colSpanNum = {};
@@ -514,7 +516,7 @@ Plugin.prototype ={
 		_this.config.headerInfo = headGroupInfo;
 		_this.config.headerLeftInfo = leftHeaderGroupInfo;
 
-		var colWidth = Math.floor(gridElementWidth/tci.length);
+		var colWidth = Math.floor((gridElementWidth)/tci.length);
 		
 		var viewAllLabel= (opt.headerOptions.viewAllLabel ===true ?true :false); 
 
@@ -550,18 +552,19 @@ Plugin.prototype ={
 		var _this = this
 			,_containerWidth ,_w
 			,opt = _this.options
-			,_gw = _this.config.body.width -opt.scroll.verticalWidth
+			,_gw = _this.config.body.width
 			,tci = opt.tColItem
 			,tciLen = tci.length;
 
 		//console.log(_this.config.gridWidth.main)
 		
-		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main;
-		
+		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+opt.scroll.verticalWidth;
+
+			
 		if(opt.headerOptions.colWidthFixed !== true){
 			var resizeFlag = _totW  < _gw ? true : false;
 			var remainderWidth = (_gw -_totW)/tciLen
-				, lastSpaceW = (_gw -_totW)%tciLen; 
+				, lastSpaceW = (_gw -_totW)-remainderWidth *tciLen;
 
 			if(opt.autoResize.responsive ===true){
 				resizeFlag = true; 
@@ -569,7 +572,7 @@ Plugin.prototype ={
 				if(_this.config.body.width != 0){
 					var resizeW = (_gw-(_this.config.drawBeforeData.bodyWidth||0)); 
 					remainderWidth  = resizeW/tciLen;
-					lastSpaceW =resizeW%tciLen;
+					lastSpaceW =resizeW - remainderWidth*tciLen;
 				}
 			}
 
@@ -591,7 +594,7 @@ Plugin.prototype ={
 				_this.config.gridWidth.main =mainGridWidth+lastSpaceW; 
 			}
 		}
-		
+
 		_this.config.body.height = opt.height;
 		
 		//console.log(_this.config.gridWidth, gridElementWidth, _w );
@@ -1236,11 +1239,13 @@ Plugin.prototype ={
 		var mainHeight = opt.height - this.config.navi.height;
 		_this.element.container.css('height',mainHeight);
 
-		var hScrollFlag = _this.config.gridWidth.total > _this.config.body.width  ? true : false
-			, bodyH = mainHeight - this.config.header.height - this.config.footer.height - (hScrollFlag?this.options.scroll.horizontalHeight:0)
+
+		var bodyH = mainHeight - this.config.header.height - this.config.footer.height - (hScrollFlag?this.options.scroll.horizontalHeight:0)
 			, itemTotHeight = _this.options.tbodyItem.length * _this.config.rowHeight
-			, vScrollFlag = itemTotHeight > bodyH ? true :false;
-		
+			, vScrollFlag = itemTotHeight > bodyH ? true :false
+			, bodyW = (_this.config.body.width- (vScrollFlag?this.options.scroll.verticalWidth :0))
+			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false
+			
 		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main)+'px');
 		_this.element.header.find('.pubGrid-header-left-cont').css('width',(_this.config.gridWidth.left)+'px');
 		
@@ -1281,7 +1286,8 @@ Plugin.prototype ={
 			_this.config.scroll.hUse = true; 
 			$('#'+_this.prefix+'_hscroll').css('padding-right',(vScrollFlag?_this.options.scroll.verticalWidth:0));
 			$('#'+_this.prefix+'_hscroll').show();
-			var barWidth = (_this.config.body.width*(_this.config.body.width/_this.config.gridWidth.total*100))/100; 
+			var hscrollW = bodyW-_this.config.gridWidth.aside; 
+			var barWidth = (hscrollW*(hscrollW/_this.config.gridWidth.total*100))/100; 
 			barWidth = barWidth < 25 ? 25 :barWidth;
 			_this.config.scroll.hBarWidth = barWidth; 
 			_this.config.scroll.horizontalWidth =$('#'+_this.prefix+'_hscroll').find('.pubGrid-hscroll-bar-area').width() - barWidth;
@@ -1565,7 +1571,7 @@ Plugin.prototype ={
 	*/
 	,moveHScroll : function (leftVal, drawFlag){
 		var vWidth =(this.config.scroll.vUse ? this.options.scroll.verticalWidth :0) +1
-			,hw = this.config.scroll.horizontalWidth + vWidth;
+			,hw = this.config.scroll.horizontalWidth;
 		leftVal = leftVal > 0 ? (leftVal >= hw ? hw : leftVal) : 0 ; 
 
 		var headerLeft  = ((this.config.gridWidth.total - this.config.body.width+vWidth)*(leftVal/hw*100))/100; 
@@ -1810,8 +1816,6 @@ Plugin.prototype ={
 	,_initBodyEvent : function (){
 		var _this = this
 			 ,rowClickFlag =false; 
-		
-		var table = _this.element.body.find('.pubGrid-body-cont');
 		
 		_this.config.select.isMouseDown = false; 		
 		
@@ -2068,7 +2072,7 @@ Plugin.prototype ={
 					_this.onGripDragEnd(e,_this);
 				});
 
-				return false; 
+				return true; 
 			})
 		}else{
 			resizeEle.css('cursor','auto');
