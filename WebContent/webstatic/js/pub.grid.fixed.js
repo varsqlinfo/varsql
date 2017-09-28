@@ -1522,7 +1522,8 @@ Plugin.prototype ={
 			
 		if(this.config.scroll.endFlag){
 			if(this.config.scroll.overflowVal > 0){
-				this.element.body.css('margin-top',(tmpRowHeight-this.config.scroll.overflowVal+3)*-1); // 아래 조금 띄우기 위에서 +3 해줌. 
+				var vHeight = (this.config.scroll.hUse?this.options.scroll.horizontalHeight:0);
+				this.element.body.css('margin-top',(tmpRowHeight-this.config.scroll.overflowVal+2+vHeight)*-1); // 아래 조금 띄우기 위에서 +3 해줌. 
 			}
 		}else{
 			if(beforeEndFlag && !this.config.scroll.endFlag){
