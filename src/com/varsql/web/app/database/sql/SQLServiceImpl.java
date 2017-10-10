@@ -235,7 +235,7 @@ public class SQLServiceImpl{
 	    	ssrv.setResultType(ResultType.FAIL.name());
 	    	//e.fillInStackTrace()
 	    	ssrv.setResultMessage("error : "+e.getSQLState()+": "+ e.getLocalizedMessage());
-	    	logger.error(getClass().getName()+" sqlData", e);
+	    	//logger.error(getClass().getName()+" sqlData", e);
 		} finally {
 	    	SQLUtil.close(stmt, rs);
 	    }
