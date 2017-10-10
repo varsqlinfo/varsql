@@ -1571,6 +1571,7 @@ _ui.SQL = {
 			msgEle.find('head').html(msgStyle);
 			
 			_self.resultMsgAreaObj = msgEle.find('body');
+			_self.resultMsgAreaObj.attr('oncontextmenu', "return false");
 		}
 		return _self.resultMsgAreaObj; 
 	}
