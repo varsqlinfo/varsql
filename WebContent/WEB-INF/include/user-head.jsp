@@ -6,6 +6,9 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
+<link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
+<link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
+
 <link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
 
 <!-- Bootstrap Core CSS -->

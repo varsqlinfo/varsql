@@ -7,6 +7,9 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
+<link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
+<link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
+
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/sb-admin.css" rel="stylesheet">
 <!-- Bootstrap Core CSS -->
