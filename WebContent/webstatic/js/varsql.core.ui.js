@@ -41,7 +41,7 @@ _ui.create = function (_opts){
 //context menu 초기화
 _ui.initContextMenu  = function (){
 	
-	$('body').on("selectstart.varsql", function(event){ return false; }); 
+	//$('body').on("selectstart.varsql", function(event){ return false; }); 
 	
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
@@ -1088,11 +1088,6 @@ _ui.SQL = {
 			var evt =window.event || e; 
 			
 			if(evt.ctrlKey){
-				if (evt.keyCode == 13) { // keyCode 13 is Enter
-					$('.sql-execue-btn').trigger('click');
-					return false; // preventing default action
-				}
-				
 				if (evt.altKey) { // keyCode 78 is n
 					switch (evt.keyCode) {
 						case 78:
@@ -1130,6 +1125,11 @@ _ui.SQL = {
 					}
 					
 					return false; 
+				}
+				
+				if (evt.keyCode == 13) { // keyCode 13 is Enter
+					$('.sql-execue-btn').trigger('click');
+					return false; // preventing default action
 				}
 			}
 		});
@@ -2107,8 +2107,6 @@ _ui.text={
 		}
 		
 		$('#data-copy-area').empty().html(copyString);
-		
-		
 	}
 }
 _ui.JAVA = {

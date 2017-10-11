@@ -1,6 +1,6 @@
 .CodeMirror-hints {
   position: absolute;
-  z-index: 101;  /* menu 보다 더 높게 나오기 위해서 수정  원본은 10 임*/
+  z-index: 10;
   overflow: hidden;
   list-style: none;
 
