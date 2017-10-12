@@ -191,8 +191,6 @@ public class AdminServiceImpl{
 	 */
 	public Map selectDbDriverList(DataCommonVO paramMap) {
 		
-		System.out.println("paramMap : "+ paramMap);
-		
 		Map json = new HashMap();
 		json.put("result", adminDAO.selectDbDriverList(paramMap));
 		

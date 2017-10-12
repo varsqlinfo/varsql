@@ -23,8 +23,6 @@ public class ErrorController {
 
 	@RequestMapping(value = "/error403")
 	public ModelAndView ModelAndView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		System.out.println("===========error403============");
-		System.out.println("===========error403============");
 		ModelAndView model = new ModelAndView();
 		
 		model.setViewName("/error/error403");
@@ -33,15 +31,11 @@ public class ErrorController {
 	
 	@RequestMapping(value = "/error404")
 	public String error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		System.out.println("===========error404============");
-		System.out.println("===========error404============");
 		return "/error/error404";
 	}
 	
 	@RequestMapping(value = "/error500")
 	public String error500(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		System.out.println("===========error500============");
-		System.out.println("===========error500============");
 		return "/error/error500";
 	}
 }
