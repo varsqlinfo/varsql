@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.varsql.sql.builder.ColumnInfo;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.resultset.handle.ResultSetHandle;
 import com.varsql.web.app.database.DbTypeEnum;
@@ -55,7 +56,6 @@ public class SqlResultUtil {
 			return ssrv;
 		}
 		
-		ArrayList rows = new ArrayList();
 		ResultSetMetaData rsmd = null;
 		
 		rsmd = rs.getMetaData();
@@ -67,26 +67,27 @@ public class SqlResultUtil {
 		String [] columns_type = new String[count];
 		
 		int columnType=-1;
-		HashMap columnMap = null;
-		ArrayList columnNameArr = new ArrayList();
+		ColumnInfo columnInfo=null;
+		List<ColumnInfo> columnInfoList = new ArrayList<ColumnInfo>();
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
 		String columnName = "";
 		
 		for (int i = 1; i <= count; i++) {
 			columnName=columns_key[i - 1] = rsmd.getColumnName(i);
 			columnType = rsmd.getColumnType(i);
-			columnMap = new HashMap();
-			columnMap.put("label", columnName);
-			columnMap.put("key", columnName);
-			if(count > 10) columnMap.put("width", 70);
+			columnInfo = new ColumnInfo();
+			columnInfo.setLabel(columnName);
+			columnInfo.setKey(columnName);
+			if(count > 10) columnInfo.setWidth(70);
 			
-			columnMap.put("align", "left");
+			columnInfo.setAlign("left");
+			
 			columnNumberTypeFlag.add(false);
 			
 			if(columnType == Types.INTEGER||columnType ==Types.NUMERIC||columnType ==Types.BIGINT||columnType ==Types.DECIMAL
 					||columnType ==Types.DOUBLE||columnType ==Types.FLOAT||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
 				columns_type[i - 1] = "number";
-				columnMap.put("align","right");
+				columnInfo.setAlign("right");
 				columnNumberTypeFlag.add(true);
 			}else if(columnType == Types.DATE ){
 				columns_type[i - 1] = "date";
@@ -110,21 +111,19 @@ public class SqlResultUtil {
 				columns_type[i - 1] = "string";
 			}
 			
-			columnNameArr.add(columnMap);
+			columnInfo.setType(columns_type[i - 1]);
+			columnInfoList.add(columnInfo);
 		}
 		
 		int first = 0,last = maxRow;
 		
-		
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
-		ssrv.setColumn(columnNameArr);
+		ssrv.setColumn(columnInfoList);
 		
 		Map columns = null;
-		Reader input = null;
-		char[] buffer  = null;
-		int byteRead=-1;
 		String tmpColumnType = "";
-		Object columnValue = "";
+		ArrayList rows = new ArrayList();
+		
 		while (rs.next()) {
 			
 			columns = new LinkedHashMap(count);

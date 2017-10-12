@@ -299,35 +299,36 @@ public class SQLServiceImpl{
 		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
 		
 		Connection conn = null;
-		List result = new ArrayList();
+		SqlSourceResultVO result = new SqlSourceResultVO();
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(vconnid);
 			getRequestSqlData(paramMap,conn,sqlSource, vconnid);
-			result = sqlSource.getResult().getData();
+			result = sqlSource.getResult();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			SQLUtil.close(conn);
 		}
 		
-		res.setContentType("application/octet-stream");
+		res.setContentType("application/octet-stream;charset=UTF-8");
 		res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ";");
 		res.setHeader("Content-Transfer-Encoding", "binary;");
+		res.setCharacterEncoding("utf-8");
 		res.setHeader("Pragma", "no-cache;");
 		res.setHeader("Expires", "-1;");
 		
 		if("csv".equals(exportType)){
 			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".csv;");
-			DataExportUtil.toCSVWrite(result, '\t', res.getOutputStream());
+			DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), res.getOutputStream());
 		}else if("json".equals(exportType)){
 			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".json;");
-			new ObjectMapper().writeValue(res.getOutputStream(), result);
+			new ObjectMapper().writeValue(res.getOutputStream(), result.getData());
 		}else if("insert".equals(exportType)){
 			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".sql;");
-			DataExportUtil.toInsertQueryWrite(result, sqlSource.getResult().getNumberTypeFlag(), tmpName, res.getOutputStream());
+			DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, res.getOutputStream());
 		}else if("xml".equals(exportType)){
 			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".xml;");
-			DataExportUtil.toXmlWrite(result, "row", res.getOutputStream());
+			DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , res.getOutputStream());
 		}
 	}
 	
