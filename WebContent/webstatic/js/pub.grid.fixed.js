@@ -135,6 +135,10 @@ var util= {
 			if (!isFinite(num)) {
 				return num;
 			}
+			if(typeof num === 'string'){
+				num = num* 1;
+			}
+			
 			var a = num.toFixed(fixedNum).split('.');
 			a[0] = a[0].replace(/\d(?=(\d{3})+$)/g, '$&,');
 			return a.join('.');

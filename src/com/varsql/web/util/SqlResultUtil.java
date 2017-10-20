@@ -131,7 +131,11 @@ public class SqlResultUtil {
 				columnName = columns_key[i-1];
 				tmpColumnType = columns_type[i-1]; 
 				
-				if( "clob".equals(tmpColumnType)){
+				if("number".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getNumber(rs, columnName));
+				}else if("string".equals(tmpColumnType)){
+					columns.put(columnName,resultsetHandle.getString(rs, columnName));
+				}else if( "clob".equals(tmpColumnType)){
 					columns.put(columnName , resultsetHandle.getClob(rs, columnName));
 				}else if( "blob".equals(tmpColumnType)){
 					columns.put(columnName , resultsetHandle.getBlob(rs, columnName));
