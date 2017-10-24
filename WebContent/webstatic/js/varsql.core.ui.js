@@ -275,7 +275,8 @@ _ui.layout = {
 					var containerH = obj3.css.height-25;  
 				
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid('#dataGridArea').resizeDraw({width:obj3.resizerLength,height:containerH});
+						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
+						$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
 					}
 					
 					$(_ui.SQL.options.resultMsgAreaWrap).css('height',(containerH)+'px');
@@ -1009,9 +1010,11 @@ _ui.SQL = {
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
 	,currentSqlData :''
+	,_currnetQueryReusltData :{}
 	,options :{
 		selector:'#sqlExecuteArea'
 		,dataGridSelector:'#dataGridArea'
+		,dataColumnTypeSelector:'#dataColumnTypeArea'
 		,dataGridSelectorWrap:'#dataGridAreaWrap'
 		,resultMsgAreaWrap:'#resultMsgAreaWrap'
 		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
@@ -1044,6 +1047,7 @@ _ui.SQL = {
 		// data grid result tab
 		resultTabHtm.push('<ul id="data_grid_result_tab" class="sql-result-tab">');
 		resultTabHtm.push('	<li tab_gubun="result" class="on"><a href="javascript:;">결과</a></li>');
+		resultTabHtm.push('	<li tab_gubun="columnType"><a href="javascript:;">컬럼타입</a></li>');
 		resultTabHtm.push('	<li tab_gubun="msg"><a href="javascript:;">메시지</a></li>');
 		resultTabHtm.push('</ul>');
 		
@@ -1051,6 +1055,7 @@ _ui.SQL = {
 		
 		// data grid araea
 		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
+		resultGridHtm.push('<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>');
 		resultGridHtm.push('<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;"></iframe>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
@@ -1274,13 +1279,52 @@ _ui.SQL = {
 		
 		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
 			var sObj = $(this);
+			var tab_gubun = sObj.attr('tab_gubun');
+			
+			if(sObj.hasClass('on')){
+				return ;
+			}
 			
 			$(_self.options.dataGridResultTabWrap+' [tab_gubun]').removeClass('on');
 			sObj.addClass('on');
 			
 			// data grid araea
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+sObj.attr('tab_gubun')+']').addClass('on');
+			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('on');
+			
+			if(tab_gubun == 'columnType'){
+				_self.viewResultColumnType();
+			}
+			
+			if(tab_gubun != 'msg'){
+				$.pubGrid('#'+$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').attr('id')).resizeDraw({});
+			}
+		});
+	}
+	,viewResultColumnType : function (){
+		var _self = this; 
+		var columnTypeArr = _self._currnetQueryReusltData.column; 
+		if(_self._currnetQueryReusltData.viewType != 'grid'){
+			columnTypeArr = [];
+		}
+		
+		$.pubGrid(_self.options.dataColumnTypeSelector,{
+			height:'auto'
+			,autoResize : false
+			,page :false
+			,headerOptions:{
+				view:true
+				,displayLineNumber : true	 // 라인 넘버 보기.
+				,sort : true
+				,resize:{
+					enabled : true
+				}
+			}
+			,tColItem : [
+				{label: "NAME", key: "key"}
+				,{label: "TYPE", key: "dbType"}
+			]
+			,tbodyItem :columnTypeArr
 		});
 	}
 	// sql 파라미터 셋팅. 
@@ -1360,7 +1404,7 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	$('#sql_id').val(res.sql_id);
 		    	_self.sqlSaveList();
-		    	_self.currentSqlData = params.sqlTitle;
+		    	_self.currentSqlData = params.sql;
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
 		    	
 			}
@@ -1664,10 +1708,7 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (resData){
 		    	try{
-		    				    		
 		    		var resultLen = resData.length;
-		    		
-		    		
 		    		
 		    		if(resultLen < 1 ){
 		    			resData.data = [{result:"데이타가 없습니다."}];
@@ -1675,6 +1716,7 @@ _ui.SQL = {
 		    		}
 		    		
 		    		var item = resData[0];
+		    		_self._currnetQueryReusltData =item;
 		    		
 		    		if(item.resultType=='FAIL' || item.viewType=='msg'){
 		    			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');

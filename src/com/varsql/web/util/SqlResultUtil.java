@@ -67,6 +67,7 @@ public class SqlResultUtil {
 		String [] columns_type = new String[count];
 		
 		int columnType=-1;
+		String columnTypeName = "";
 		ColumnInfo columnInfo=null;
 		List<ColumnInfo> columnInfoList = new ArrayList<ColumnInfo>();
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
@@ -75,9 +76,13 @@ public class SqlResultUtil {
 		for (int i = 1; i <= count; i++) {
 			columnName=columns_key[i - 1] = rsmd.getColumnName(i);
 			columnType = rsmd.getColumnType(i);
+			columnTypeName = rsmd.getColumnTypeName(i);
+			
 			columnInfo = new ColumnInfo();
 			columnInfo.setLabel(columnName);
 			columnInfo.setKey(columnName);
+			columnInfo.setDbType(columnTypeName);
+			
 			if(count > 10) columnInfo.setWidth(70);
 			
 			columnInfo.setAlign("left");

@@ -24,6 +24,7 @@ var _initialized = false
 		,click : false //row(tr) click event
 		,contextMenu : false // row(tr) contextmenu event
 	}
+	,useDefaultFormatter :false
 	,formatter :{
 		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
 		,number : {prefix :'$', suffix :'원' , fixed : 0}
@@ -130,6 +131,11 @@ var util= {
 			return (prefix||'')+ util.formatter.number(num, fixedNum) +(suffix||'');
 		}
 		,'number': function (num, fixedNum){
+			
+			if(!isNaN(num)){
+				return num; 
+			}
+			
 			fixedNum = fixedNum || 0; 
 			
 			if (!isFinite(num)) {
@@ -944,10 +950,12 @@ Plugin.prototype ={
 				return util.formatter[type](val, fixed ,prefix, suffix); 
 			}});
 		}else{
-			if(type == 'money'){
-				itemVal = util.formatter[type](itemVal, tmpFormatter.fixed , tmpFormatter.prefix ,tmpFormatter.suffix);
-			}else if(type == 'number'){
-				itemVal = util.formatter[type](itemVal , tmpFormatter.fixed , tmpFormatter.prefix ,tmpFormatter.suffix);
+			if(this.options.useDefaultFormatter===true){
+				if(type == 'money'){
+					itemVal = util.formatter[type](itemVal, tmpFormatter.fixed , tmpFormatter.prefix ,tmpFormatter.suffix);
+				}else if(type == 'number'){
+					itemVal = util.formatter[type](itemVal , tmpFormatter.fixed , tmpFormatter.prefix ,tmpFormatter.suffix);
+				}
 			}
 		}
 		if(returnFlag){
