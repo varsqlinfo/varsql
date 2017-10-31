@@ -268,7 +268,7 @@ _ui.layout = {
 			, south__maskIframesOnResize: true	
 			, resizerDblClickToggle: false
 			, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
-				$('.CodeMirror.cm-s-default').css('height' ,obj3.layoutHeight);
+				setSqlEditorHeight (obj3.layoutHeight)
 			}
 			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				try{
@@ -276,18 +276,21 @@ _ui.layout = {
 				
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
 						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
-						$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
+						
+						if(typeof $.pubGrid(_ui.SQL.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw)){
+							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
+						}
 					}
-					
-					$(_ui.SQL.options.resultMsgAreaWrap).css('height',(containerH)+'px');
 				}catch(e){
 					console.log(e)
 				}
 			}
 		});
 		
-		$('.CodeMirror.cm-s-default').css('height' ,$('#editorAreaTable').height());
-		$(_ui.SQL.options.resultMsgAreaWrap).css('height',$('#dataGridAreaWrap').height()+'px');
+		function setSqlEditorHeight (_h){
+			$('.CodeMirror.cm-s-default').css('height' ,_h);
+		}
+		setSqlEditorHeight($('#editorAreaTable').height())
 		_ui.SQL.sqlTextAreaObj.refresh();
 	}
 }
@@ -1056,7 +1059,7 @@ _ui.SQL = {
 		// data grid araea
 		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
 		resultGridHtm.push('<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>');
-		resultGridHtm.push('<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;"></iframe>');
+		resultGridHtm.push('<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;bottom:0px;left:0px;top:0px;right:0px;"></iframe>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
 	,_initEditor : function (){

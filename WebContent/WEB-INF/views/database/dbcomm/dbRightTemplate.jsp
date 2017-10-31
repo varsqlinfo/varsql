@@ -106,8 +106,8 @@
 </div>
 
 <div class="inner-layout-result-area">
-	<div style="height:100%;width:100%;display:table;">
-		<div id="data_grid_result_tab_wrap" style="width:100%;display:table-row;"></div>
-		<div id="dataGridAreaWrap" style="width:100%;height:100%;display:table-row;padding-right:5px;"></div>
+	<div style="height:100%;width:100%;">
+		<div id="data_grid_result_tab_wrap" style="width:100%;height:26px;z-index:1;padding-top:3px;position:absolute;"></div>
+		<div id="dataGridAreaWrap" style="width:100%;height:100%;padding-top:25px;"></div>
 	</div>
 </div>

@@ -193,7 +193,7 @@ padding-top: 5px;
 }
 #data_grid_result_tab_wrap{
 	height :25px;
-	 border-bottom: 1px solid #fdfdfd;
+	 border-bottom: 1px solid #c7bdbd;
 }
 
 .sql-result-tab{
@@ -309,7 +309,7 @@ padding-top: 5px;
 	overflow-x:hidden;
 	overflow-y:auto;
 	background: #fff;
-	border-top :1px solid #bcbcbd;
+	border-top :0px solid #bcbcbd;
 	padding : 3px 0px 0px 3px;
 }
 
