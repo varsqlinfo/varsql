@@ -1,33 +1,19 @@
 package com.varsql.web.util;
 
-import java.io.Reader;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import com.varsql.sql.builder.ColumnInfo;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.resultset.handle.ResultSetHandle;
-import com.varsql.web.app.database.DbTypeEnum;
-import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.sql.vo.GridColumnInfo;
 import com.vartech.common.app.beans.ParamMap;
-import com.vartech.common.utils.DateUtils;
-import com.vartech.common.utils.PagingUtil;
 
 /**
  *날짜 관련 util
@@ -68,8 +54,8 @@ public class SqlResultUtil {
 		
 		int columnType=-1;
 		String columnTypeName = "";
-		ColumnInfo columnInfo=null;
-		List<ColumnInfo> columnInfoList = new ArrayList<ColumnInfo>();
+		GridColumnInfo columnInfo=null;
+		List<GridColumnInfo> columnInfoList = new ArrayList<GridColumnInfo>();
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
 		String columnName = "";
 		
@@ -78,7 +64,7 @@ public class SqlResultUtil {
 			columnType = rsmd.getColumnType(i);
 			columnTypeName = rsmd.getColumnTypeName(i);
 			
-			columnInfo = new ColumnInfo();
+			columnInfo = new GridColumnInfo();
 			columnInfo.setLabel(columnName);
 			columnInfo.setKey(columnName);
 			columnInfo.setDbType(columnTypeName);

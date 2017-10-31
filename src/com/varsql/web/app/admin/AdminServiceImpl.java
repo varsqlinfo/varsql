@@ -15,10 +15,9 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.CommUtil;
 import com.varsql.db.ConnectionFactory;
-import com.varsql.sql.SQLUtil;
+import com.varsql.sql.util.SQLUtil;
 import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.PagingUtil;
 
