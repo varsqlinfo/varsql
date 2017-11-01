@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.db.util.DbInstanceFactory;
 import com.varsql.db.vo.DatabaseInfo;
-import com.varsql.web.app.database.DbTypeEnum;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 
@@ -86,12 +86,12 @@ public class VarsqlUtil {
 		return paramMap; 
 	}
 	
-	public static DbTypeEnum getDBMetaImpl(String connid){
+	public static DbInstanceFactory getDBMetaImpl(String connid){
 		try{
 			DatabaseInfo  dbinfo= SecurityUtil.loginInfo().getDatabaseInfo().get(connid);
-			return DbTypeEnum.valueOf(dbinfo.getType().toUpperCase());
+			return DbInstanceFactory.valueOf(dbinfo.getType().toUpperCase());
 		}catch(Exception e){
-			return DbTypeEnum.OTHER;
+			return DbInstanceFactory.OTHER;
 		}
 	}
 }
