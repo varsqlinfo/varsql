@@ -46,7 +46,7 @@ public class DatabaseServiceImpl{
 		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
 		
 		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
-		json.put("connInfo", SecurityUtil.userDBInfo(connid));
+		json.put("connInfo", SecurityUtil.userDBInfo(paramMap.getString(VarsqlParamConstants.CONN_UUID)));
 		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(connid));
 		
 		return json;

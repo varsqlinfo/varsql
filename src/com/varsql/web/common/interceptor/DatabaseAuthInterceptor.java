@@ -1,6 +1,7 @@
 package com.varsql.web.common.interceptor;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.constants.VarsqlConstants;
+import com.varsql.db.vo.DatabaseInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 
 /**
@@ -30,6 +32,7 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 			res.sendRedirect(req.getContextPath()+"/error401");
 			return false; 
 		}
+		
 		return true;
 	}
 	
@@ -47,7 +50,15 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 	 * @return
 	 */
 	private boolean authCheck(HttpServletRequest req, String connid) {
-		return SecurityUtil.loginInfo(req).getDatabaseInfo().containsKey(connid); 
+		Map<String, DatabaseInfo> dataBaseInfo = SecurityUtil.loginInfo(req).getDatabaseInfo();
+		
+		if(!dataBaseInfo.containsKey(connid)){
+			return false;
+		}
+		
+		req.setAttribute(VarsqlParamConstants.VCONNID, dataBaseInfo.get(connid).getVconnid());
+		return true; 
+		 
 		
 	}
 }

@@ -3,6 +3,8 @@ package com.varsql.web.util;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -25,6 +27,12 @@ public class VarsqlUtil {
 	public static String generateUUID (){
 		return UUID.randomUUID().toString().replaceAll("-", ""); 
 	}
+	
+	public static String getVconnID (HttpServletRequest req){
+		return (String) req.getAttribute(VarsqlParamConstants.VCONNID); 
+	}
+	
+	
 	public static String objectToString(Object json) {
 		try {
 			 ObjectMapper objectMapper = new ObjectMapper();

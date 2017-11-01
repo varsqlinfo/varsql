@@ -3,6 +3,7 @@ package com.varsql.web.common.constants;
 public interface VarsqlParamConstants {
 	
 	public String VCONNID ="vconnid";
+	public String CONN_UUID ="connUUID";
 	public String SQL ="sql";
 	public String LIMIT ="limit";
 	public int SQL_MAX_ROW =1000;

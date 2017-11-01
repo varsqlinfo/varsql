@@ -3,10 +3,10 @@
 
 <div class="preferences">
 	<div class="navi-area col">
-		<div class="preferences-search">
+		<div class="preferences-left-search">
 			<input type="text" id="preferences_text" value=""/>
 		</div>
-		<div class="preferences-body">
+		<div class="preferences-left-body">
 			<div id="preferences_area"></div>
 		</div>
 	</div>

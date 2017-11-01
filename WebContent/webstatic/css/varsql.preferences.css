@@ -1,3 +1,15 @@
+.preferences-body {
+	top: 0px;
+	right:0px;
+	left:0px;
+    bottom: 0px;
+    position: absolute;
+    overflow: auto;
+	-webkit-text-size-adjust: 100%;
+	background: #fff;
+}
+
+
 .preferences .row, .preferences .col {
 	overflow: hidden;
 	position: absolute;
@@ -15,15 +27,6 @@
 .preferences .scroll-y {
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
-}
-
-.preferences-body {
-	top: 40px;
-    bottom: 0px;
-    position: absolute;
-    overflow: auto;
-	-webkit-text-size-adjust: 100%;
-	background: #fff;
 }
 
 .setting-body{
@@ -46,11 +49,11 @@
 	font-size: 1.4em;
 }
 
-.preferences-search {
+.preferences-left-search {
 	padding :10px 0px 10px 0px;
 }
 
-.preferences-search input{
+.preferences-left-search input{
 	width:100%;
 }
 

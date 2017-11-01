@@ -36,10 +36,11 @@ public class DatabaseController {
 	private DatabaseServiceImpl databaseServiceImpl;
 
 	@RequestMapping({"/","/main"})
-	public ModelAndView mainpage(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView mainpage(HttpServletRequest req,@RequestParam(value =VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, ModelAndView mav) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		
 		ModelMap model = mav.getModelMap();
 		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(paramMap));
@@ -48,12 +49,12 @@ public class DatabaseController {
 	
 	@RequestMapping(value = "/serviceMenu")
 	public @ResponseBody Map schemas(HttpServletRequest req 
-			,@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid
+			,@RequestParam(value =VarsqlParamConstants.VCONNID , required = true, defaultValue = "" )  String connuuid
 			,@RequestParam(value = "schema", required = true, defaultValue = "" )  String schema
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		
@@ -62,13 +63,13 @@ public class DatabaseController {
 	
 	@RequestMapping(value = "/dbObjectList")
 	public @ResponseBody Map dbObjectList(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
+			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
 		) throws Exception {
 	
 		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 	
 		paramMap.put("uid", SecurityUtil.loginId(req));
@@ -102,14 +103,14 @@ public class DatabaseController {
 	 */
 	@RequestMapping(value = "/dbObjectMetadataList")
 	public @ResponseBody Map dbObjectMetadataList(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
+			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
 			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = false, defaultValue = "" )  String object_nm
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);
 		paramMap.put("uid", SecurityUtil.loginId(req));
@@ -129,14 +130,14 @@ public class DatabaseController {
 	
 	@RequestMapping(value = "/createDDL")
 	public @ResponseBody Map createDDL(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String vconnid
+			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
 			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
 			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
 			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = false, defaultValue = "" )  String object_nm
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);
 		paramMap.put("uid", SecurityUtil.loginId(req));

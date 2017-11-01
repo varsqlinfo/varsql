@@ -104,7 +104,7 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
 	    //registry.addInterceptor(new RequestInterceptor());
     	//registry.addInterceptor(virtualPortalBaseInterceptor()).addPathPatterns("/portal");
     	
-	    registry.addInterceptor(DatabaseAuthInterceptor()).addPathPatterns("/database/**");
+	    registry.addInterceptor(DatabaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
 	}
     
     @Bean

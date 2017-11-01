@@ -19,6 +19,7 @@ import com.varsql.web.app.database.DatabaseController;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.HttpUtils;
 
@@ -56,7 +57,7 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlData"})
-	public @ResponseBody List sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
+	public @ResponseBody List sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, 
 			@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = true, defaultValue = "" )  String schema,
 			@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit,
 			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
@@ -65,7 +66,7 @@ public class SQLController {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.SQL, sql);
 		paramMap.put(VarsqlParamConstants.LIMIT, limit);
@@ -89,13 +90,13 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlFormat"})
-	public @ResponseBody String sqlFormat(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid, 
+	public @ResponseBody String sqlFormat(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, 
 			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
-			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ) throws Exception {
+			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ,HttpServletRequest req) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.SQL, sql);
 		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
 		
@@ -120,7 +121,7 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dataExport"})
-	public void dataExport(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+	public void dataExport(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
 			,@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype 
 			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = true, defaultValue = "" )  String objectName 
 			,@RequestParam(value = VarsqlParamConstants.EXPORT_TYPE, required = true, defaultValue = "" )  String exportType
@@ -132,7 +133,7 @@ public class SQLController {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, objectName);
 		paramMap.put(VarsqlParamConstants.EXPORT_TYPE, exportType);
@@ -155,7 +156,7 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/saveQuery"})
-	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
 			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
 			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
 			,@RequestParam(value = VarsqlParamConstants.SQL_PARAM, required = true, defaultValue = "" )  String sqlParam
@@ -166,7 +167,7 @@ public class SQLController {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put("sqlTitle", sqlTitle);
 		paramMap.put( VarsqlParamConstants.SQL, sql);
 		paramMap.put( VarsqlParamConstants.SQL_PARAM,sqlParam);
@@ -185,14 +186,14 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/userSettingInfo"})
-	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
 			,HttpServletRequest req
 			,HttpServletResponse response
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return sQLServiceImpl.userSettingInfo(paramMap);
@@ -207,14 +208,14 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlList"})
-	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
 			,HttpServletRequest req
 			,HttpServletResponse response
 			) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return sQLServiceImpl.selectSqlList(paramMap);
@@ -228,14 +229,14 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/delSqlSaveInfo"})
-	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String vconnid 
+	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
 			,HttpServletRequest req
 			,HttpServletResponse response
 			) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
-		paramMap.put(VarsqlParamConstants.VCONNID, vconnid);
+		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return sQLServiceImpl.deleteSqlSaveInfo(paramMap);

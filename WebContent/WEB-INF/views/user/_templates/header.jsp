@@ -11,7 +11,7 @@
 					<select id="user_connection_info">
 						<option value="">----connection info---</option>
 						<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
-							<option value="${tmpInfo.vconnid}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
+							<option value="${tmpInfo.connUUID}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
 						</c:forEach>
 					</select>
 				</div>
