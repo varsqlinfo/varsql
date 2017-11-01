@@ -1142,6 +1142,10 @@ _ui.SQL = {
 			}
 		});
 		
+		textareaObj.on('click', function(e){
+			$('#sql_parameter_area').removeClass('on');
+		})
+		
 		// sql 실행
 		$('.sql-execue-btn').on('click',function (evt){
 			_self.sqlData(evt);
@@ -1166,11 +1170,11 @@ _ui.SQL = {
 			}
 		});
 		
-		// sql 정보 저장. 
+		// sql 파라미터 삭제. 
 		$('#sql_parameter_area').on('click','.sql-param-del-btn',function (e){
-			if(confirm('삭제 하시겠습니까?')){
-				$(this).closest('.sql-param-row').remove();
-			}
+			//if(confirm('삭제 하시겠습니까?')){
+			$(this).closest('.sql-param-row').remove();
+			//}
 		});
 		
 		// param add

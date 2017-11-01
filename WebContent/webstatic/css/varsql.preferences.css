@@ -26,6 +26,11 @@
 	background: #fff;
 }
 
+.setting-body{
+	background: #fff;
+	overflow: auto;
+}
+
 .preferences .header {
 	color: #eee;
 	background: #696f77;

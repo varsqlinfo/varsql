@@ -9,7 +9,7 @@
 
 </head>
 
-<BODY class="pub-main-body">
+<BODY class="setting-body">
 	<tiles:insertAttribute name="body" />
 </BODY>
 </html>
