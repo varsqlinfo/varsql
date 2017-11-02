@@ -54,6 +54,7 @@ public class DatabaseController {
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		
 		paramMap.put("uid", SecurityUtil.loginId(req));
@@ -69,6 +70,7 @@ public class DatabaseController {
 		) throws Exception {
 	
 		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 	
@@ -110,6 +112,7 @@ public class DatabaseController {
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);
@@ -137,6 +140,7 @@ public class DatabaseController {
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);

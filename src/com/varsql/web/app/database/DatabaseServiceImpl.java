@@ -96,7 +96,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map tables(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getTables(connid
 				,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
@@ -116,7 +116,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map views(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getViews(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
 		
@@ -136,7 +136,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map procedures(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getProcedures(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
 		
@@ -156,7 +156,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map functions(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, dbMetaEnum.getDBMeta().getFunctions(connid,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)));
@@ -178,7 +178,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map tableMetadata(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
 				dbMetaEnum.getDBMeta().getColumns(connid
@@ -203,7 +203,7 @@ public class DatabaseServiceImpl{
 	 */
 	public Map viewMetadata(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
 				dbMetaEnum.getDBMeta().getColumns(connid
@@ -216,7 +216,7 @@ public class DatabaseServiceImpl{
 
 	public Map procedureMetadata(DataCommonVO paramMap) throws Exception {
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
 				dbMetaEnum.getDBMeta().getProceduresMetadata( connid
@@ -246,11 +246,11 @@ public class DatabaseServiceImpl{
 	public Map ddlTableScript(DataCommonVO paramMap) throws Exception {
 		
 		String connid =paramMap.getString(VarsqlParamConstants.VCONNID); 
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(paramMap.getString(VarsqlParamConstants.CONN_UUID));
 		
 		Map json = new HashMap();
 		json.put(VarsqlParamConstants.JSON_REUSLT, 
-				dbMetaEnum.getDDLScript().getTable(paramMap.getString(VarsqlParamConstants.VCONNID)
+				dbMetaEnum.getDDLScript().getTable(connid
 					,paramMap.getString(VarsqlParamConstants.DB_SCHEMA)
 					,paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME))
 		);

@@ -66,6 +66,7 @@ public class SQLController {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
 		paramMap.put(VarsqlParamConstants.SQL, sql);
@@ -95,7 +96,7 @@ public class SQLController {
 			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ,HttpServletRequest req) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.SQL, sql);
 		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
@@ -132,7 +133,7 @@ public class SQLController {
 	) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
 		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, objectName);
@@ -166,7 +167,7 @@ public class SQLController {
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put("sqlTitle", sqlTitle);
 		paramMap.put( VarsqlParamConstants.SQL, sql);
@@ -192,7 +193,7 @@ public class SQLController {
 			) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
@@ -214,7 +215,7 @@ public class SQLController {
 			) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
@@ -235,7 +236,7 @@ public class SQLController {
 			) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		
+		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
 		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
