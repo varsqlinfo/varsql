@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
@@ -32,6 +33,9 @@ import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 *-----------------------------------------------------------------------------
  */
 @Configuration
+@Import(value = { 
+       ValidatorConfig.class
+})
 public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
 
     private static final int CACHE_PERIOD = 31556926; // one year

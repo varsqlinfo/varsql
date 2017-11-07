@@ -13,6 +13,7 @@ import java.util.Map;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.resultset.handle.ResultSetHandle;
 import com.varsql.sql.vo.GridColumnInfo;
+import com.varsql.web.app.database.bean.SqlParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -31,13 +32,13 @@ public class SqlResultUtil {
 	 * 리스트 형식 List<Map> rows = new ArrayList<Map>();
 	 * @param rs
 	 * @param ssrv 
-	 * @param paramMap 
+	 * @param sqlParamInfo 
 	 * @param maxRow 
 	 * @param vconnid 
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, ParamMap paramMap, int maxRow, String vconnid) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlParamInfo sqlParamInfo, int maxRow, String vconnid) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}

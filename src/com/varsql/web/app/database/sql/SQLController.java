@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.el.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.app.database.DatabaseController;
+import com.varsql.web.app.database.bean.SqlParamInfo;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  * 
@@ -47,34 +51,11 @@ public class SQLController {
 	 * @작성일   : 2015. 6. 22. 
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconnid
-	 * @param schema
-	 * @param limit
-	 * @param sql
-	 * @param dbtype
-	 * @param req
-	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlData"})
-	public @ResponseBody List sqlData(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, 
-			@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = true, defaultValue = "" )  String schema,
-			@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit,
-			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
-			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype,
-			HttpServletRequest req) throws Exception {
-		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
-		paramMap.put(VarsqlParamConstants.SQL, sql);
-		paramMap.put(VarsqlParamConstants.LIMIT, limit);
-		
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return sQLServiceImpl.sqlData(paramMap);
+	public @ResponseBody List sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sQLServiceImpl.sqlData(sqlParamInfo);
 	}
 	
 	/**
@@ -84,24 +65,11 @@ public class SQLController {
 	 * @작성일   : 2015. 6. 22. 
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconnid
-	 * @param sql
-	 * @param dbtype
-	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlFormat"})
-	public @ResponseBody String sqlFormat(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, 
-			@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql,
-			@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype ,HttpServletRequest req) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.SQL, sql);
-		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
-		
-		return sQLServiceImpl.sqlFormat(paramMap);
+	public @ResponseBody String sqlFormat(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sQLServiceImpl.sqlFormat(sqlParamInfo);
 	}
 	
 	/**
@@ -122,27 +90,8 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dataExport"})
-	public void dataExport(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
-			,@RequestParam(value = VarsqlParamConstants.DB_TYPE, required = true, defaultValue = "" )  String dbtype 
-			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = true, defaultValue = "" )  String objectName 
-			,@RequestParam(value = VarsqlParamConstants.EXPORT_TYPE, required = true, defaultValue = "" )  String exportType
-			,@RequestParam(value = VarsqlParamConstants.EXPORT_COLUMN_INFO, required = true, defaultValue = "" )  String columnInfo
-			,@RequestParam(value = VarsqlParamConstants.LIMIT, required = true, defaultValue = "" )  String limit
-			,HttpServletRequest req
-			,HttpServletResponse response
-	) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.DB_TYPE, dbtype);
-		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, objectName);
-		paramMap.put(VarsqlParamConstants.EXPORT_TYPE, exportType);
-		paramMap.put(VarsqlParamConstants.EXPORT_COLUMN_INFO, columnInfo);
-		paramMap.put(VarsqlParamConstants.LIMIT, limit);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		sQLServiceImpl.dataExport(paramMap, response);
+	public void dataExport(SqlParamInfo sqlParamInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
+		sQLServiceImpl.dataExport(sqlParamInfo, response);
 	}
 
 	/**
@@ -157,25 +106,11 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/saveQuery"})
-	public @ResponseBody Map saveQuery(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
-			,@RequestParam(value = "sqlTitle", required = true, defaultValue = "" )  String sqlTitle 
-			,@RequestParam(value = VarsqlParamConstants.SQL, required = true, defaultValue = "" )  String sql
-			,@RequestParam(value = VarsqlParamConstants.SQL_PARAM, required = true, defaultValue = "" )  String sqlParam
-			,@RequestParam(value = "sql_id", required = true, defaultValue = "" )  String sql_id
-			,HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
+	public @ResponseBody ResponseResult saveQuery( SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put("sqlTitle", sqlTitle);
-		paramMap.put( VarsqlParamConstants.SQL, sql);
-		paramMap.put( VarsqlParamConstants.SQL_PARAM,sqlParam);
-		paramMap.put( "sql_id", sql_id);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		sqlParamInfo.setCustomInfo(HttpUtils.getServletRequestParam(req));
 		
-		return sQLServiceImpl.saveQuery(paramMap);
+		return sQLServiceImpl.saveQuery(sqlParamInfo);
 	
 	}
 	/**
@@ -187,17 +122,8 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/userSettingInfo"})
-	public @ResponseBody Map userSettingInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
-			,HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return sQLServiceImpl.userSettingInfo(paramMap);
+	public @ResponseBody ResponseResult userSettingInfo(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sQLServiceImpl.userSettingInfo(sqlParamInfo);
 	}
 	
 	/**
@@ -209,17 +135,11 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlList"})
-	public @ResponseBody Map sqlList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
-			,HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
+	public @ResponseBody ResponseResult sqlList(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		sqlParamInfo.setCustomInfo(HttpUtils.getServletRequestParam(req));
 		
-		return sQLServiceImpl.selectSqlList(paramMap);
+		return sQLServiceImpl.selectSqlList(sqlParamInfo);
 	}
 	/**
 	 * sql 정보 삭제 하기.
@@ -230,17 +150,8 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/delSqlSaveInfo"})
-	public @ResponseBody Map delSqlSaveInfo(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid 
-			,HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
-		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return sQLServiceImpl.deleteSqlSaveInfo(paramMap);
+	public @ResponseBody ResponseResult delSqlSaveInfo(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sQLServiceImpl.deleteSqlSaveInfo(sqlParamInfo);
 	}
 	
 }

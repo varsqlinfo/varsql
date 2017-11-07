@@ -88,14 +88,14 @@
 	</div>
 	
 	<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
-		<iframe src="<c:url value="/preferences/main.vsql?vconnid=${param.vconnid}" />" class="preferences-frame"></iframe>
+		<iframe src="<c:url value="/preferences/main.vsql?conuid=${param.conuid}" />" class="preferences-frame"></iframe>
 	</div>
 </body>
 
 <script>
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)}; 
-	VARSQL.ui.create($.extend({}, {param:{vconnid:'${param.vconnid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.type}, viewConnInfo));
+	VARSQL.ui.create($.extend({}, {param:{conuid:'${param.conuid}'},selector:'#leftDBList',dbtype:viewConnInfo.connInfo.type}, viewConnInfo));
 	
 	//varsqlMain.init();
 }); 

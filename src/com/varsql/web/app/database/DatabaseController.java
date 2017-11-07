@@ -9,16 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.app.database.bean.DatabaseParamInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
-import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ResponseResult;
 
 
 
@@ -34,59 +31,46 @@ public class DatabaseController {
 	
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
-
+	
 	@RequestMapping({"/","/main"})
-	public ModelAndView mainpage(HttpServletRequest req,@RequestParam(value =VarsqlParamConstants.VCONNID, required = true, defaultValue = "" )  String connuuid, ModelAndView mav) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		
+	public ModelAndView mainpage(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(paramMap));
+		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(databaseParamInfo));
 		return  new ModelAndView("/database/main",model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : schemas
+	 * @Method 설명 : servicemenu
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 6. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/serviceMenu")
-	public @ResponseBody Map schemas(HttpServletRequest req 
-			,@RequestParam(value =VarsqlParamConstants.VCONNID , required = true, defaultValue = "" )  String connuuid
-			,@RequestParam(value = "schema", required = true, defaultValue = "" )  String schema
-			) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		
-		paramMap.put("uid", SecurityUtil.loginId(req));
-		
-		return databaseServiceImpl.serviceMenu(paramMap);
+	public @ResponseBody ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+		return databaseServiceImpl.serviceMenu(databaseParamInfo);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : dbObjectList
+	 * @Method 설명 : db object list 
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 6. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/dbObjectList")
-	public @ResponseBody Map dbObjectList(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
-			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
-			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
-		) throws Exception {
-	
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
-	
-		paramMap.put("uid", SecurityUtil.loginId(req));
-		
-		if("tables".equals(gubun)){
-			return databaseServiceImpl.tables(paramMap); 
-		}else if("views".equals(gubun)){
-			return databaseServiceImpl.views(paramMap);
-		}else if("procedures".equals(gubun)){
-			return databaseServiceImpl.procedures(paramMap);
-		}else if("functions".equals(gubun)){
-			return databaseServiceImpl.functions(paramMap);
-		}
-		
-		return null;
+	public @ResponseBody ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+		return databaseServiceImpl.dbObjectList(databaseParamInfo);
 	}
 	
 	/**
@@ -104,58 +88,28 @@ public class DatabaseController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbObjectMetadataList")
-	public @ResponseBody Map dbObjectMetadataList(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
-			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
-			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
-			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = false, defaultValue = "" )  String object_nm
-			) throws Exception {
+	public @ResponseBody ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
-		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);
-		paramMap.put("uid", SecurityUtil.loginId(req));
-		
-		if("table".equals(gubun)){
-			return databaseServiceImpl.tableMetadata(paramMap); 
-		}else if("view".equals(gubun)){
-			return databaseServiceImpl.viewMetadata(paramMap);
-		}else if("procedure".equals(gubun)){
-			return databaseServiceImpl.procedureMetadata(paramMap);
-		}else if("function".equals(gubun)){
-			return databaseServiceImpl.functionMetadata(paramMap);
-		}
-		
-		return null;
+		return databaseServiceImpl.dbObjectMetadataList(databaseParamInfo);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : createDDL
+	 * @Method 설명 : 생성 스크립트.  
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 6. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/createDDL")
-	public @ResponseBody Map createDDL(HttpServletRequest req 
-			,@RequestParam(value = VarsqlParamConstants.VCONNID, required = false, defaultValue = "" )  String connuuid
-			,@RequestParam(value = VarsqlParamConstants.DB_SCHEMA, required = false, defaultValue = "" )  String schema
-			,@RequestParam(value = VarsqlParamConstants.DB_GUBUN, required = false, defaultValue = "" )  String gubun
-			,@RequestParam(value = VarsqlParamConstants.DB_OBJECT_NAME, required = false, defaultValue = "" )  String object_nm
-			) throws Exception {
+	public @ResponseBody ResponseResult createDDL(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.CONN_UUID, connuuid);
-		paramMap.put(VarsqlParamConstants.VCONNID, VarsqlUtil.getVconnID(req));
-		paramMap.put(VarsqlParamConstants.DB_SCHEMA, schema);
-		paramMap.put(VarsqlParamConstants.DB_OBJECT_NAME, object_nm);
-		paramMap.put("uid", SecurityUtil.loginId(req));
+		return databaseServiceImpl.createDDL(databaseParamInfo);
 		
-		if("table".equals(gubun)){
-			return databaseServiceImpl.ddlTableScript(paramMap); 
-		}else if("view".equals(gubun)){
-			return databaseServiceImpl.ddlViewScript(paramMap);
-		}else if("procedure".equals(gubun)){
-			return databaseServiceImpl.ddlProcedureScript(paramMap);
-		}else if("function".equals(gubun)){
-			return databaseServiceImpl.ddlFunctionScript(paramMap);
-		}
-		
-		return null;
 	}
 }

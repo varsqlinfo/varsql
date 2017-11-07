@@ -28,13 +28,14 @@ import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.builder.VarsqlStatementType;
 import com.varsql.sql.format.VarsqlFormatterDb2;
 import com.varsql.sql.util.SQLUtil;
+import com.varsql.web.app.database.bean.SqlParamInfo;
 import com.varsql.web.common.constants.ResultConstants;
-import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.VartechUtils;
 
@@ -67,11 +68,11 @@ public class SQLServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 6. 
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @return
 	 * @throws Exception
 	 */
-	public String sqlFormat(DataCommonVO paramMap) throws Exception {
+	public String sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
 		StringBuffer sqlFormatSb = new StringBuffer();
 		
 //		List<SqlSource> sqlList=new SqlSourceBuilder().parse(paramMap.getString(VarsqlParamConstants.SQL));
@@ -79,7 +80,7 @@ public class SQLServiceImpl{
 //			
 //			sqlFormatSb.append(new VarsqlFormatterDb2().execute(tmpSqlSource.getQuery())).append("\n");
 //		}
-		sqlFormatSb.append(new VarsqlFormatterDb2().execute(paramMap.getString(VarsqlParamConstants.SQL))).append("\n");
+		sqlFormatSb.append(new VarsqlFormatterDb2().execute(sqlParamInfo.getSql())).append("\n");
 		return sqlFormatSb.toString();
 	}
 	
@@ -91,19 +92,19 @@ public class SQLServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 9. 
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList sqlData(ParamMap paramMap) throws Exception {
-		String reqSql = paramMap.getString(VarsqlParamConstants.SQL);
+	public ArrayList sqlData(SqlParamInfo sqlParamInfo) throws Exception {
+		String reqSql = sqlParamInfo.getSql();
 		
-		Map sqlParamMap = VartechUtils.stringToObject(paramMap.getString(VarsqlParamConstants.SQL_PARAM), HashMap.class); 
+		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
 		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql,sqlParamMap);
 		
 		
-		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
+		String vconnid = sqlParamInfo.getVconnid();
 		
 		ArrayList reLst = new ArrayList();
 		
@@ -113,7 +114,7 @@ public class SQLServiceImpl{
 			
 			for (SqlSource tmpSqlSource : sqlList) {
 				
-				getRequestSqlData(paramMap,conn,tmpSqlSource, vconnid);
+				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource, vconnid);
 				
 				reLst.add(tmpSqlSource.getResult());
 			}
@@ -191,7 +192,7 @@ public class SQLServiceImpl{
 	
 	/**
 	 * 
-	 * @param paramMap 
+	 * @param sqlParamInfo 
 	 * @Method Name  : getResultData
 	 * @Method 설명 : 데이타 얻기
 	 * @작성일   : 2015. 4. 9. 
@@ -203,13 +204,13 @@ public class SQLServiceImpl{
 	 * @param maxRow
 	 * @return
 	 */
-	protected Object getRequestSqlData(ParamMap paramMap, Connection conn, SqlSource tmpSqlSource, String vconnid) {
+	protected Object getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource, String vconnid) {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		Object reVal=null;
 		SqlSourceResultVO ssrv = new SqlSourceResultVO();
 		
-		int maxRow = paramMap.getInt(VarsqlParamConstants.LIMIT, VarsqlParamConstants.SQL_MAX_ROW);
+		int maxRow = sqlParamInfo.getLimit(VarsqlParamConstants.SQL_MAX_ROW);
 		
 		ssrv.setStarttime(System.currentTimeMillis());
 		
@@ -219,7 +220,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet(); 
 			
 			if(rs != null){
-				SqlResultUtil.resultSetHandler(rs, ssrv, paramMap, maxRow,vconnid);
+				SqlResultUtil.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow,vconnid);
 				ssrv.setViewType("grid");
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -246,7 +247,7 @@ public class SQLServiceImpl{
 		
 	    tmpSqlSource.setResult(ssrv);
 	    
-	    sqlLogInsert(paramMap,tmpSqlSource , ssrv);
+	    sqlLogInsert(sqlParamInfo,tmpSqlSource , ssrv);
 	    return reVal;
 	}
 	
@@ -257,19 +258,19 @@ public class SQLServiceImpl{
 	 * @작성일   : 2015. 5. 6. 
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @param tmpSqlSource
 	 * @param ssrv
 	 */
-	private void sqlLogInsert(ParamMap paramMap, SqlSource tmpSqlSource, SqlSourceResultVO ssrv) {
+	private void sqlLogInsert(SqlParamInfo sqlParamInfo, SqlSource tmpSqlSource, SqlSourceResultVO ssrv) {
 		try{
 	    	DataCommonVO logInfoMap = new DataCommonVO();
 	    	
 	    	java.sql.Timestamp stime = new java.sql.Timestamp(ssrv.getStarttime());
 	    	calendar.setTime(stime);
 	    	
-		    logInfoMap.put("vconnid", paramMap.getString(VarsqlParamConstants.VCONNID));
-		    logInfoMap.put("uid", paramMap.getString(UserConstants.UID));
+		    logInfoMap.put("vconnid", sqlParamInfo.getVconnid());
+		    logInfoMap.put("uid", sqlParamInfo.getUserid());
 		    logInfoMap.put("start_time", stime);
 		    logInfoMap.put("s_mm", calendar.get(Calendar.MONTH)+1);
 		    logInfoMap.put("s_dd", calendar.get(Calendar.DATE));
@@ -289,20 +290,20 @@ public class SQLServiceImpl{
 	/**
 	 * 데이타 내보내기.
 	 */
-	public void dataExport(DataCommonVO paramMap, HttpServletResponse res) throws Exception {
+	public void dataExport(SqlParamInfo sqlParamInfo, HttpServletResponse res) throws Exception {
 		
-		String exportType = paramMap.getString(VarsqlParamConstants.EXPORT_TYPE);
-		String tmpName = paramMap.getString(VarsqlParamConstants.DB_OBJECT_NAME); 
-		String reqSql = "select "+ paramMap.getString(VarsqlParamConstants.EXPORT_COLUMN_INFO) + " from "+tmpName;
+		String exportType = sqlParamInfo.getExportType();
+		String tmpName = sqlParamInfo.getObjectName(); 
+		String reqSql = "select "+ sqlParamInfo.getColumnInfo() + " from "+tmpName;
 		SqlSource sqlSource = new SqlSourceBuilder().getSqlSource(reqSql);
 		
-		String vconnid = paramMap.getString(VarsqlParamConstants.VCONNID);
+		String vconnid = sqlParamInfo.getVconnid();
 		
 		Connection conn = null;
 		SqlSourceResultVO result = new SqlSourceResultVO();
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(vconnid);
-			getRequestSqlData(paramMap,conn,sqlSource, vconnid);
+			getRequestSqlData(sqlParamInfo,conn,sqlSource, vconnid);
 			result = sqlSource.getResult();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);
@@ -340,104 +341,100 @@ public class SQLServiceImpl{
 	
 	/**
 	 * 쿼리 저장. 
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 */
-	public Map saveQuery(DataCommonVO paramMap) {
-		Map reval =  new HashMap();
+	public ResponseResult saveQuery(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
 		try{
 			
-			if("".equals(paramMap.getString("sql_id"))){
-				paramMap.put("sql_id",VarsqlUtil.generateUUID());
-			    sqlDAO.saveQueryInfo(paramMap);
+			if("".equals(sqlParamInfo.getSqlId())){
+				sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
+			    sqlDAO.saveQueryInfo(sqlParamInfo);
 			}else{
-				sqlDAO.updateQueryInfo(paramMap);
+				sqlDAO.updateQueryInfo(sqlParamInfo);
 			}
 			
-			reval.put("sql_id", paramMap.get("sql_id"));
-		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			result.setItemOne(sqlParamInfo.getSqlId());
 			
 	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
 	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
+	    	result.setMessageCode(e.getMessage());
 	    }
-		return reval; 
+		return result; 
 	}
 	
 	/**
 	 * 사용자 셋팅 정보 읽기
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @return
 	 */
-	public Map userSettingInfo(DataCommonVO paramMap) {
-		Map reval =  new HashMap();
+	public ResponseResult userSettingInfo(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
 		try{
-			reval.put("sqlInfo", sqlDAO.selectLastSqlInfo(paramMap));
-		    reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
 			
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			System.out.println(VartechUtils.reflectionToString(sqlParamInfo));
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			result.setItemOne(sqlDAO.selectLastSqlInfo(sqlParamInfo));
 	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
+	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+	    	logger.error(getClass().getName()+"userSettingInfo", e);
+	    	result.setMessageCode(e.getMessage());
 	    }
-		return reval; 
+		return result; 
 	}
 	/**
 	 * 사용자 sql 목록 보기.
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @return
 	 */
-	public Map selectSqlList(ParamMap paramMap) {
-		Map reval =  new HashMap();
+	public ResponseResult selectSqlList(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
+		
 		try{
 			
-			int totalcnt = sqlDAO.selectSqlListTotalCnt(paramMap);
+			int totalcnt = sqlDAO.selectSqlListTotalCnt(sqlParamInfo);
 			
-			int pageNo = paramMap.getInt("page", 1);
-			int countPerPage = paramMap.getInt("countPerPage", 10);
+			int pageNo = sqlParamInfo.getCustomInfo().getInt("page", 1);
+			int countPerPage = sqlParamInfo.getCustomInfo().getInt("countPerPage", 10);
 
 			if(totalcnt > 0){
 				
 				int first = (pageNo - 1) * countPerPage + 1;
 				int last = first + countPerPage - 1;
-				paramMap.put("first", Integer.valueOf(first));
-				paramMap.put("last", Integer.valueOf(last));
-				paramMap.put("rows", countPerPage);
-				
-				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
-				reval.put(ResultConstants.RESULT_ITEMS, sqlDAO.selectSqlList(paramMap));
+				sqlParamInfo.addCustomInfo("first", Integer.valueOf(first));
+				sqlParamInfo.addCustomInfo("last", Integer.valueOf(last));
+				sqlParamInfo.addCustomInfo("rows", countPerPage);
+				result.setItemList(sqlDAO.selectSqlList(sqlParamInfo));
 			}else{
-				reval.put(ResultConstants.PAGING, PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
-				reval.put(ResultConstants.RESULT_ITEMS, new ArrayList());
+				result.setItemList(null);
 			}
-			
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			result.setPage(PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
 	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
+	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
 	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
+	    	result.setMessageCode(e.getMessage());
 	    }
-		return reval; 
+		return result; 
 	}
 	
 	/**
 	 * sql 저장 정보 삭제 .
-	 * @param paramMap
+	 * @param sqlParamInfo
 	 * @return
 	 */
-	public Map deleteSqlSaveInfo(ParamMap paramMap) {
+	public ResponseResult deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
 
-		Map reval =  new HashMap();
+		ResponseResult result = new ResponseResult();
 		try{
-			reval.put(ResultConstants.RESULT, sqlDAO.deleteSqlSaveInfo(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+			result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
 			
 	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	reval.put("msg", e.getMessage());
+	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+	    	logger.error(getClass().getName()+"deleteSqlSaveInfo", e);
+	    	result.setMessageCode(e.getMessage());
 	    }
-		return reval; 
+		return result; 
 	}
 	
 }

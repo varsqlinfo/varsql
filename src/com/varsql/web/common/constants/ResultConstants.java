@@ -16,6 +16,10 @@ public interface ResultConstants {
 			this.code = pcode;
 		}
 		
+		public int intVal(){
+			return this.code; 
+		}
+		
 		@Override
 		public String toString() {
 			return this.code+"";

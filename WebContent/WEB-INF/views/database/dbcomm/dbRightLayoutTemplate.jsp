@@ -56,7 +56,7 @@
 							    </div>		
 							</div>
 							<div style="float:left;padding-left:10px;">
-								<input type="hidden" id="vconnid" name="vconnid" value="${param.vconnid}">
+								<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
 								LIMIT 
 		    
 								<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">

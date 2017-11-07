@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.varsql.web.app.database.bean.SqlParamInfo;
 import com.varsql.web.dao.BaseDAO;
 import com.vartech.common.app.beans.ParamMap;
 
@@ -14,27 +15,27 @@ public class SQLDAO extends BaseDAO{
 		return getSqlSession().insert("sqlServiceMapper.insertSqlUserLog", paramMap );
 	}
 
-	public int saveQueryInfo(ParamMap paramMap) {
-		return getSqlSession().insert("sqlServiceMapper.saveQueryInfo", paramMap );
+	public int saveQueryInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().insert("sqlServiceMapper.saveQueryInfo", sqlParamInfo );
 	}
 
-	public int updateQueryInfo(ParamMap paramMap) {
-		return getSqlSession().update("sqlServiceMapper.updateQueryInfo", paramMap );
+	public int updateQueryInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().update("sqlServiceMapper.updateQueryInfo", sqlParamInfo );
 	}
 
-	public Map selectLastSqlInfo(ParamMap paramMap) {
-		return getSqlSession().selectOne("sqlServiceMapper.selectLastSqlInfo", paramMap );
+	public Map selectLastSqlInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectOne("sqlServiceMapper.selectLastSqlInfo", sqlParamInfo );
 	}
 
-	public int selectSqlListTotalCnt(ParamMap paramMap) {
-		return getSqlSession().selectOne("sqlServiceMapper.selectSqlListTotalCnt", paramMap );
+	public int selectSqlListTotalCnt(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectOne("sqlServiceMapper.selectSqlListTotalCnt", sqlParamInfo );
 	}
 	
-	public List selectSqlList(ParamMap paramMap) {
-		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", paramMap );
+	public List selectSqlList(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", sqlParamInfo );
 	}
 	
-	public int deleteSqlSaveInfo(ParamMap paramMap) {
-		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", paramMap );
+	public int deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", sqlParamInfo );
 	}
 }

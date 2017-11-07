@@ -25,14 +25,14 @@ var userMain = {
 		});
 		
 		$(_self._connectionTab).on('click','.tab-ui-name',function (){
-			var tmpid = $(this).closest('[vconnid]').attr('vconnid');
+			var tmpid = $(this).closest('[conuid]').attr('conuid');
 			$(_self._userConnectionInfo).val(tmpid);
 			$(_self._userConnectionInfo).trigger( "change" );
 		});
 		
 		$(_self._connectionTab).on('click','.tab-ui-close',function (){
-			var pObj = $(this).closest('[vconnid]'); 
-			var tmpid = pObj.attr('vconnid');
+			var pObj = $(this).closest('[conuid]'); 
+			var tmpid = pObj.attr('conuid');
 			if(!confirm(unescape(pObj.attr('vname'))+' db를 닫으시겠습니까?')) return ; 
 			
 			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
@@ -72,7 +72,7 @@ var userMain = {
 		}
 		
 		var strHtm='<li class="db-info-tab ui-state-default ui-corner-top connection-ui-tabs-active ui-state-active tabs_'+sconid+'">';
-		strHtm+='	<span class="ui-paddingl5-r5 " vconnid="'+sconid+'" vname="'+escape(selectObj.attr('vname'))+'">';
+		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(selectObj.attr('vname'))+'">';
 		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+selectObj.attr('vname')+'</a>&nbsp;';
 		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp;';
 		strHtm+='	</span>';
@@ -80,7 +80,7 @@ var userMain = {
 
 		$(_self._connectionTab).append(strHtm);
 		
-		var _url = VARSQL.url(VARSQL.uri.database)+'/?vconnid='+sconid; 
+		var _url = VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid; 
 		var strHtm = '<iframe class="db_sql_view_area iframe_'+sconid+'" src="'+_url+'" style="width:100%;height:100%;" width="100%" height="100%" frameborder="0"></iframe>';
 		
 		$(_self._connectionIframe).append(strHtm);

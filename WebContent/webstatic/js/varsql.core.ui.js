@@ -379,8 +379,8 @@ _ui.leftDbObject ={
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
-		    	if(res.sqlInfo){
-		    		var sqlInfo = res.sqlInfo;
+		    	var sqlInfo = res.item;
+		    	if(sqlInfo){
 		    		_ui.SQL.setQueryInfo(sqlInfo);
 		    	}else{
 		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
@@ -410,7 +410,7 @@ _ui.leftDbObject ={
 		    ,data:tmpParam
 		    ,success:function (resData){
 		    	_ui.leftDbObjectServiceMenu.create(
-		    		$.extend({},{param:tmpParam} , resData)
+		    		$.extend({},{param:tmpParam} ,{menuData: resData.items})
 		    	);
 			}
 			,error :function (data, status, err){
@@ -586,7 +586,7 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		
 		if(!refresh){
-			var cacheData = _self._getMetaCache(param.gubun,param.name);
+			var cacheData = _self._getMetaCache(param.gubun,param.objectName);
 		
 			if(cacheData){
 				_self[callback].call(_self,cacheData, param);
@@ -602,7 +602,7 @@ _ui.leftDbObjectServiceMenu ={
 		    ,async:false
 		    ,data:param
 		    ,success:function (resData){
-		    	_self._setMetaCache(param.gubun,param.name, resData); // data cache
+		    	_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
 		    	_self[callback].call(_self,resData, param);
 			}
 			,error :function (data, status, err){
@@ -629,7 +629,7 @@ _ui.leftDbObjectServiceMenu ={
 	,_createDDL :function (sObj){
 		var _self = this; 
 		
-		var param =$.extend({},_self.options.param,{'gubun':'table','name':sObj.objName})
+		var param =$.extend({},_self.options.param,{'gubun':'table',objectName:sObj.objName})
 		
 		VARSQL.req.ajax({
 		    type:"POST"
@@ -638,9 +638,9 @@ _ui.leftDbObjectServiceMenu ={
 		    ,data:param
 		    ,success:function (resData){
 		    	if(sObj.gubunKey=='ddl_copy'){
-		    		_ui.text.copy(resData.result);
+		    		_ui.text.copy(resData.item);
 		    	}else{
-		    		_ui.SQL.addSqlEditContent(resData.result);
+		    		_ui.SQL.addSqlEditContent(resData.item);
 		    	}
 			}
 			,error :function (data, status, err){
@@ -658,10 +658,10 @@ _ui.leftDbObjectServiceMenu ={
 	,_tables:function (resData, reqParam){
 		var _self = this;
 		try{
-    		var len = resData.result?resData.result.length:0;
+    		var len = resData.items?resData.items.length:0;
     		var strHtm = [];
     		
-			var itemArr = resData.result;
+			var itemArr = resData.items;
 			var item;
 			
 			var tableHint = {};
@@ -694,7 +694,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.table-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','name':item.TABLE_NAME}), '_tableMetadata', refresh);
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','objectName':item.TABLE_NAME}), '_tableMetadata', refresh);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -809,14 +809,14 @@ _ui.leftDbObjectServiceMenu ={
 		
 		try{
 			var colArr = [];
-			$.each(colData.result , function (i , item){
+			$.each(colData.items , function (i , item){
 				colArr.push(item.COLUMN_NAME);
 			});
 			
-			VARSQLHints.setTableColumns(reqParam.name ,colArr);
+			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
 			
     		var gridObj = {
-    			data:colData.result
+    			data:colData.items
     			,column : [
 					{ label: '컬럼명', key: 'COLUMN_NAME',width:80 },
 					{ label: '데이타타입', key: 'TYPE_NAME_SIZE' },
@@ -835,7 +835,7 @@ _ui.leftDbObjectServiceMenu ={
 	,_views:function (resData ,reqParam){
 		var _self = this;
 		try{
-			var itemArr = resData.result;
+			var itemArr = resData.items;
 			
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
@@ -854,7 +854,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.view-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','name':item.TABLE_NAME}), '_viewMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','objectName':item.TABLE_NAME}), '_viewMetadata');
 					}
 				}
 			});
@@ -868,7 +868,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		try{
     		var gridObj = {
-    			data:colData.result
+    			data:colData.items
     			,column : [
 					{ label: '컬럼명', key: 'COLUMN_NAME',width:80 },
 					{ label: '데이타타입', key: 'TYPE_NAME_SIZE' },
@@ -886,7 +886,7 @@ _ui.leftDbObjectServiceMenu ={
 	,_procedures:function (resData ,reqParam){
 		var _self = this;
 		try{
-			var itemArr = resData.result;
+			var itemArr = resData.items;
 			
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#procedures',{
 				headerView:true
@@ -906,7 +906,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.procedure-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'procedure','name':item.PROCEDURE_NAME}), '_procedureMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'procedure','objectName':item.PROCEDURE_NAME}), '_procedureMetadata');
 					}
 				}
 			});
@@ -920,7 +920,7 @@ _ui.leftDbObjectServiceMenu ={
 		
 		try{
     		var gridObj = {
-    			data:colData.result
+    			data:colData.items
     			,column : [
 					{ label: '컬럼명', key: 'COLUMN_NAME',width:80 },
 					{ label: '데이타타입', key: 'TYPE_NAME_SIZE' },
@@ -937,7 +937,7 @@ _ui.leftDbObjectServiceMenu ={
 	,_functions:function (resData ,reqParam){
 		var _self = this;
 		try{
-			var itemArr = resData.result;
+			var itemArr = resData.items;
     				
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#functions',{
 				headerView:true
@@ -956,13 +956,16 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.function-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'function','name':sObj.attr('function_nm')}), '_functionMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'function','objectName':sObj.attr('function_nm')}), '_functionMetadata');
 					}
 				}
 			});
  		}catch(e){
 			VARSQL.log.info(e);
 		}
+	}
+	,_functionMetadata : function (colData ,reqParam){
+		
 	}
 	// 메타 데이타 그리기.
 	,setMetadataGrid :function (gridData, type){
@@ -1023,7 +1026,7 @@ _ui.SQL = {
 		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
 		,preloaderArea :'#sqlEditerPreloaderArea'
 		,limitCnt:'#limitRowCnt'
-		,vconnidObj:'#vconnid'
+		,conuidObj:'#conuid'
 		,active: null
 		,dbtype:'db2'
 		,cancel: "input,textarea,button,select,option"
@@ -1302,10 +1305,6 @@ _ui.SQL = {
 			if(tab_gubun == 'columnType'){
 				_self.viewResultColumnType();
 			}
-			
-			if(tab_gubun != 'msg'){
-				$.pubGrid('#'+$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').attr('id')).resizeDraw({});
-			}
 		});
 	}
 	,viewResultColumnType : function (){
@@ -1398,7 +1397,7 @@ _ui.SQL = {
 		var params =VARSQL.util.objectMerge (_ui.options.param,{
 			'sql' :_self.getTextAreaObj().getValue()
 			,'sqlTitle' : $('#saveSqlTitle').val()
-			,'sql_id' : $('#sql_id').val()
+			,'sqlId' : $('#sql_id').val()
 			,'sqlParam' : JSON.stringify(_self.getSqlParam())
 		});
 		
@@ -1409,7 +1408,7 @@ _ui.SQL = {
 		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
-		    	$('#sql_id').val(res.sql_id);
+		    	$('#sql_id').val(res.item);
 		    	_self.sqlSaveList();
 		    	_self.currentSqlData = params.sql;
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
@@ -1535,7 +1534,7 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (res){
 		    	var items = res.items;
-		    	var paging = res.paging;
+		    	var paging = res.page;
 		    	var strHtm = []
 		    		,len = items.length;
 		    	
@@ -1575,7 +1574,7 @@ _ui.SQL = {
 		    				_self.setQueryInfo('clear');
 		    			}
 		    			
-		    			params['sql_id'] = sItem.SQL_ID;
+		    			params['sqlId'] = sItem.SQL_ID;
 		    			VARSQL.req.ajax({
 		    			    type:"POST"
 		    			    ,loadSelector : '#editorAreaTable'
@@ -1807,7 +1806,7 @@ _ui.SQL = {
 		,tmpName = exportInfo.objName
 		,data = exportInfo.item;
 		
-		var dataArr = data.result;
+		var dataArr = data.items;
 		var len = dataArr.length;
 		
 		var strHtm = [];
@@ -1883,7 +1882,7 @@ _ui.SQL = {
 					var params =VARSQL.util.objectMerge (_ui.options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='columnCheck']:not([value='all'])").join(',')
-						,name: tmpName
+						,objectName : tmpName
 						,limit: $('#exportCount').val()
 					});
 
@@ -1920,7 +1919,7 @@ _ui.SQL = {
 		
 		var reval =[];
 		
-		var dataArr = data.result, tmpval , item;
+		var dataArr = data.items, tmpval , item;
 		
 		var len = dataArr.length;
 		
@@ -2058,29 +2057,6 @@ _ui.SQL = {
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});
-		
-		return ; 
-		var labelClick= function (){
-			var sObj = $(this);
-			sObj.unbind('click');
-			
-			try{
-				$($('.ui-grid-col-header-select').parent()).html($('.ui-grid-col-header-select').val());
-			}catch(e){}
-
-			var labelHtm = '<input type="text" class="ui-grid-col-header-select" value="'+sObj.text()+'"/>';
-			var labelObj = $(labelHtm);
-						
-			sObj.html(labelObj);
-
-			labelObj.blur(function (){
-				sObj.text(labelObj.val());
-				sObj.bind('click',labelClick);
-			});
-
-			labelObj.select();
-		};
-		$('.ui-grid-cols-select').click(labelClick);
 	}
 };
 
@@ -2166,7 +2142,7 @@ _ui.JAVA = {
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
 			
-		var dataArr = data.result, tmpval , item;
+		var dataArr = data.items, tmpval , item;
 		
 		var len = dataArr.length;
 		

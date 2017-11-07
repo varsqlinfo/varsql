@@ -27,7 +27,7 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
 			throws ServletException, IOException {
-		String connid =req.getParameter(VarsqlParamConstants.VCONNID);
+		String connid =req.getParameter(VarsqlParamConstants.CONN_UUID);
 		if (!authCheck(req, connid)) {
 			res.sendRedirect(req.getContextPath()+"/error401");
 			return false; 
@@ -58,7 +58,5 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 		
 		req.setAttribute(VarsqlParamConstants.VCONNID, dataBaseInfo.get(connid).getVconnid());
 		return true; 
-		 
-		
 	}
 }
