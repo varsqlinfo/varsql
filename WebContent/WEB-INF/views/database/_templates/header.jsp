@@ -1,6 +1,17 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<style>
+.dropdown-submenu{
+	position:relative;
+}
 
+.dropdown-submenu .dropdown-menu{
+	top:0px;
+	left :100%;
+	margin-top:-1px;
+}
+
+</style>
 <ul class="db-nav navbar-nav db-header-menu-wrapper">
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.file" /></a>
@@ -55,15 +66,24 @@
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.import" /></span>
 				</a>
 			</li> 
-			<li class="header-menu-item" data-menu-item="tool_export">
-				<a>
+			<li class="dropdown-submenu">
+				<a href="javascript:;" onclick="return false;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.export" /></span>
 				</a>
+				<ul class="dropdown-menu">
+					<li class="header-menu-item" data-menu-item="tool_export">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export" /></span></a>
+					</li>
+					<li class="header-menu-item" data-menu-item="tool_export">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export" /></span></a>
+					</li>
+				</ul>
 			</li> 
 			<li class="header-menu-item" data-menu-item="tool_setting">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span>
 				</a>
+				
 			</li>
 		</ul>
 	</li>

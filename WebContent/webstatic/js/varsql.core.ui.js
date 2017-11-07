@@ -82,7 +82,7 @@ _ui.headerMenu ={
 			}
 		});
 		
-		$('.db-header-menu-wrapper .header-menu-item').on('click', function (e){
+		$('.db-header-menu-wrapper').on('click', '.header-menu-item', function (e){
 			var dataMenuItem = $(this).attr('data-menu-item');
 			var menuArr = dataMenuItem.split('_');
 			
@@ -667,7 +667,7 @@ _ui.leftDbObjectServiceMenu ={
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
 				tableHint[_item.TABLE_NAME] = {
-					colums:[]
+					columns:[]
 					,text :_item.TABLE_NAME
 				};
 			})
