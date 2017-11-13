@@ -65,16 +65,8 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo) {
 		ResponseResult result = new ResponseResult();
-		
-		try{
-			DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getVconnid());
-			
-			result.setItemList(dbMetaEnum.getDBMeta().getServiceMenu());
-			
-			return result;
-		}catch(Exception e){
-			logger.error("serviceMenu : ", e);
-		}
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getVconnid());
+		result.setItemList(dbMetaEnum.getDBMeta().getServiceMenu());
 		return result;
 	}
 	
