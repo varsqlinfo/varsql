@@ -84,24 +84,30 @@ _ui.headerMenu ={
 			}
 		});
 		
+		// header menu dropdown  init
+		$('.header-menu-top-label').headerDropdown();
+		
 		$('.db-header-menu-wrapper').on('click', '.header-menu-item', function (e){
 			var dataMenuItem = $(this).attr('data-menu-item');
 			var menuArr = dataMenuItem.split('_');
 			
 			var depth1 =menuArr[0]
-				,menu_mode =menuArr[1]; 
+				,menu_mode2 =menuArr[1]
+				,menu_mode3 = menuArr.length > 2 ?menuArr[2] :''; 
+			
+			$(document).trigger('click.bs.header-dropdown.data-api');
 			
 			switch (depth1) {
 				case 'file': {
 					
-					switch (menu_mode) {
-						case 'new':
+					switch (menu_mode2) {
+						case 'new':	// 새파일
 							$('.sql-new-file').trigger('click');
 							break;
-						case 'save':
+						case 'save': // 저장
 							$('.sql-save-btn').trigger('click');
 							break;
-						case 'close':
+						case 'close': // 닫기
 							var isInIFrame = (window.location != window.parent.location);
 							if(isInIFrame==true){
 								parent.userMain.activeClose();
@@ -118,39 +124,50 @@ _ui.headerMenu ={
 					
 					break;
 				}case 'edit':{
-					switch (menu_mode) {
-						case 'undo':
+					switch (menu_mode2) {
+						case 'undo':	// 취소
 							_ui.SQL.getTextAreaObj().undo();
 							break;
-						case 'redo':
+						case 'redo':	// 살리기
 							_ui.SQL.getTextAreaObj().redo();
 							break;
-						case 'compare':
-							alert('['+menu_mode+'] 준비중입니다.');
+						case 'compare': //비교
+							alert('['+menu_mode2+'] 준비중입니다.');
 							break;
 						default:
 							break;
 					}
 					break;
 				}case 'tool':{           
-					switch (menu_mode) {
-						case 'import':
-							alert('['+menu_mode+'] 준비중입니다.');
+					switch (menu_mode2) {
+						case 'import':	//가져오기
+							alert('['+menu_mode2+'] 준비중입니다.');
 							break;
-						case 'export':
-							alert('['+menu_mode+'] 준비중입니다.');
+						case 'export':	//내보내기
+							_self.exportInfo(menu_mode3);
 							break;
-						case 'setting':
+						case 'setting':	//설정.
 							_self.openPreferences();
 							break;
 						default:
 							break;
 					}
 					break;
-				}default:
+				}case 'help':{           
+					switch (menu_mode2) {
+						case 'help':	//도움말
+							alert('['+menu_mode2+'] 준비중입니다.');
+							break;
+						case 'info':	//정보 보기.
+							alert('['+menu_mode2+'] 준비중입니다.');
+							break;
+						default:
+							break;
+					}
 					break;
-			}
-			
+				}default:
+						break;
+				}
 		})
 	}
 	//header 메뉴 환경설정처리.
@@ -182,6 +199,10 @@ _ui.headerMenu ={
 		}
 		
 		_self.preferencesDialog.dialog("open");
+	}
+	// 데이타 내보내기.
+	,exportInfo :function (type){
+		alert(type);
 	}
 }
 

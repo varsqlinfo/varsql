@@ -24,9 +24,13 @@
 <entry key="header.menu.tool">도구</entry>
 <entry key="header.menu.tool.import">가져오기</entry>
 <entry key="header.menu.tool.export">내보내기</entry>
+<entry key="header.menu.tool.export.specification">테이블 명세서</entry>
+<entry key="header.menu.tool.export.data">데이타</entry>
 <entry key="header.menu.tool.setting">설정</entry>
 
 <entry key="header.menu.help">도움말</entry>
+<entry key="header.menu.help.help">도움말 항목</entry>
+<entry key="header.menu.help.info">VARSQL 정보</entry>
 
 
 <entry key="screen">화면</entry>
