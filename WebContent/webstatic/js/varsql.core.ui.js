@@ -41,6 +41,8 @@ _ui.create = function (_opts){
 //context menu 초기화
 _ui.initContextMenu  = function (){
 	
+	return ; 
+	
 	//$('body').on("selectstart.varsql", function(event){ return false; }); 
 	
 	if (document.addEventListener) { // IE >= 9; other browsers
@@ -172,6 +174,11 @@ _ui.headerMenu ={
 					_self.preferencesDialog.dialog( "close" );
 				}
 			});
+			
+			var iframeEle =$($('#preferencesTemplate').find('iframe')); 
+			
+			var loadUrl = iframeEle.attr('data-load-url');
+			iframeEle.attr('src', loadUrl);
 		}
 		
 		_self.preferencesDialog.dialog("open");

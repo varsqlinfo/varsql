@@ -88,7 +88,7 @@
 	</div>
 	
 	<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
-		<iframe src="<c:url value="/preferences/main.vsql?conuid=${param.conuid}" />" class="preferences-frame"></iframe>
+		<iframe src="" data-load-url="<c:url value="/preferences/main.vsql?conuid=${param.conuid}" />" class="preferences-frame"></iframe>
 	</div>
 </body>
 

@@ -371,10 +371,6 @@ public class SQLServiceImpl{
 	public ResponseResult userSettingInfo(SqlParamInfo sqlParamInfo) {
 		ResponseResult result = new ResponseResult();
 		try{
-			
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-			System.out.println(VartechUtils.reflectionToString(sqlParamInfo));
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			result.setItemOne(sqlDAO.selectLastSqlInfo(sqlParamInfo));
 	    }catch(Exception e){
 	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());

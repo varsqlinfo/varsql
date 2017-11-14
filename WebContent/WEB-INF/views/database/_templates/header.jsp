@@ -14,7 +14,7 @@
 </style>
 <ul class="db-nav navbar-nav db-header-menu-wrapper">
 	<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.file" /></a>
+		<a href="javascript:;" class="header-menu-top-label" data-toggle="dropdown"><spring:message code="header.menu.file" /></a>
 		<ul class="dropdown-menu db-header-menu">
 			<li class="header-menu-item" data-menu-item="file_new">
 				<a>
@@ -37,7 +37,7 @@
 		</ul>
 	</li>
 	<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.edit" /></a>
+		<a href="javascript:;" class="header-menu-top-label" data-toggle="dropdown"><spring:message code="header.menu.edit" /></a>
 		<ul class="dropdown-menu db-header-menu">
 			<li class="header-menu-item" data-menu-item="edit_undo">
 				<a>
@@ -59,7 +59,7 @@
 		</ul>
 	</li>
 	<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.tool" /></a>
+		<a href="javascript:;" class="header-menu-top-label" data-toggle="dropdown"><spring:message code="header.menu.tool" /></a>
 		<ul class="dropdown-menu db-header-menu">
 			<li class="header-menu-item" data-menu-item="tool_import">
 				<a>
@@ -88,7 +88,7 @@
 		</ul>
 	</li>
 	<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><spring:message code="header.menu.help" /></a>
+		<a href="javascript:;" class="header-menu-top-label" data-toggle="dropdown"><spring:message code="header.menu.help" /></a>
 		<ul class="dropdown-menu db-header-menu">
 			<li>구현중</li>
 		</ul>
@@ -97,3 +97,6 @@
 
 <div class="pull-right"><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}" target="_new"><span class="glyphicon glyphicon-new-window"></span></a></div>
 				
+<script>
+$('.header-menu-top-label').dropdown();
+</script>
