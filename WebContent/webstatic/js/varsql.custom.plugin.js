@@ -317,13 +317,14 @@
 }));
 
 
-
+/**
+ * top 메뉴 처리 dropdown.
+ */
 +function ($) {
 	  'use strict';
 
 	  // DROPDOWN CLASS DEFINITION
 	  // =========================
-
 	  var backdrop = '.header-dropdown-backdrop'
 	  var toggle   = '[data-toggle="header-dropdown"]'
 	  var Dropdown = function (element, option) {
@@ -331,8 +332,6 @@
 		this.selectParent = '';
 	    $(element).on('click.bs.header-dropdown', this.toggle)
 	  }
-
-	  Dropdown.VERSION = '3.3.6'
 
 	  function getParent($this) {
 	    var selector = $this.attr('data-target')
@@ -345,8 +344,6 @@
 	    var $parent = selector && $(selector);
 
 	    return $parent && $parent.length ? $parent : $this.parent();
-	   
-	    //console.log('$$$$$$ asdfasdf ',$this,selector,  reval);
 	     
 	  }
 
@@ -372,12 +369,9 @@
 
 	      $parent.trigger(e = $.Event('hide.bs.header-dropdown', relatedTarget))
 	      
-	      
 	      if (e.isDefaultPrevented()) return
 		  
 	      $this.attr('aria-expanded', 'false').removeClass('on');
-	      
-	      $('.bs-dropdown-iframe-cover').hide();
 	      
 	      $parent.removeClass('open').trigger($.Event('hidden.bs.header-dropdown', relatedTarget))
 	    })
@@ -394,7 +388,6 @@
 	    var $parent  = getParent($this)
 	        
 	    var isActive = $parent.hasClass('open')
-		var _drop_down_idx = $this.attr('_drop_down_idx'); 
 		
 		Dropdown.prototype.clearMenus();
 		
@@ -463,15 +456,6 @@
 
 	    $items.eq(index).trigger('focus')
 	  }
-	  function getUUID(){
-		var d = new Date().getTime();
-		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-			var r = (d + Math.random()*16)%16 | 0;
-			d = Math.floor(d/16);
-			return (c=='x' ? r : (r&0x7|0x8)).toString(16);
-		});
-		return uuid;
-	  }
 
 	  // DROPDOWN PLUGIN DEFINITION
 	  // ==========================
@@ -489,8 +473,6 @@
 	      var $this = $(this)
 	      
 	      var data  = $this.data('bs.header-dropdown')
-		  $this.attr('bgiframe',option.bgiframe);
-		  $this.attr('_drop_down_idx',getUUID());
 		  
 		  if (!data) {
 			  $this.data('bs.header-dropdown', (data = new Dropdown(this,option)))
@@ -528,9 +510,7 @@
 	    		}
 	    	})
 			
-	    	if(subParent.hasClass('open')){
-				subParent.removeClass('open');
-			}else{
+	    	if(!subParent.hasClass('open')){
 				subParent.addClass('open');
 			}			  
 			e.stopPropagation();
