@@ -52,7 +52,7 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
     public ViewResolver viewResolver() {
         // Example: the 'info' view logical name is mapped to the file '/WEB-INF/jsp/info.jsp'
         InternalResourceViewResolver bean = new InternalResourceViewResolver();
-        bean.setPrefix("/WEB-INF/gain/");
+        bean.setPrefix("/WEB-INF/views/");
         bean.setSuffix(".jsp");
         bean.setOrder(2);
         return bean;
