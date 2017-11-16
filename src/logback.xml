@@ -8,17 +8,47 @@
 			</Pattern>
 		</layout>
 	</appender>
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+	
+	<appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>c:/zzz/varsql.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>c:/zzz/old/varsql.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30mb</maxFileSize> <!-- kb , mb , gb 로 설정 가능. -->
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory> <!-- 30일 이 자난 로그는 순서 대로 삭제.  -->
+		</rollingPolicy>
+		
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
 
 	<logger name="org.springframework" level="info" additivity="false">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILEOUT" />
 	</logger>
 	
 	<logger name="com.varsql" level="TRACE" additivity="false">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILEOUT" />
 	</logger>
 	
 	<logger name="com.varsql_query" level="debug" additivity="false">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILEOUT" />
 	</logger>
 	
 	<!-- mybatis log intercepter  

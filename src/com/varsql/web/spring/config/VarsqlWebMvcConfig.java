@@ -80,11 +80,7 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
         // Static ressources from both WEB-INF and webjars
         registry
             .addResourceHandler("/webstatic/**")
-                .addResourceLocations("/webstatic/")
-                .setCachePeriod(CACHE_PERIOD);
-        registry
-            .addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .addResourceLocations("/webstatic/","classpath:/META-INF/resources/webstatic/")
                 .setCachePeriod(CACHE_PERIOD);
         
     }

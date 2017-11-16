@@ -72,7 +72,7 @@ public class DataSourceConfig {
 	}
 
 	@Bean(name = "varsqlSessionFactoryBean")
-	public SqlSessionFactoryBean gainSqlSessionFactoryBean() throws Exception {
+	public SqlSessionFactoryBean varsqlSqlSessionFactoryBean() throws Exception {
 		SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
 
@@ -80,10 +80,10 @@ public class DataSourceConfig {
 		factoryBean.setTypeAliasesPackage("com.varsql");
 
 		factoryBean.setConfigLocation(
-				pathMatchingResourcePatternResolver.getResource("classpath:/spring/etc/mybatis-env-setting.xml"));
+				pathMatchingResourcePatternResolver.getResource("classpath:spring/etc/mybatis-env-setting.xml"));
 
 		//Resource[] sql1 = applicationContext.getResources("classpath:/config/sql/*.xml");
-		Resource[] sql2 = applicationContext.getResources("classpath:/com/varsql/web/configuration/*.xml");
+		Resource[] sql2 = applicationContext.getResources("classpath:com/varsql/web/configuration/*.xml");
 
 		//factoryBean.setMapperLocations((Resource[]) ArrayUtils.addAll(sql1, sql2));
 		factoryBean.setMapperLocations( sql2);
