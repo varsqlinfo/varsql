@@ -14,7 +14,21 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy;
 import org.apache.commons.compress.utils.IOUtils;
+/**
+ * 
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ExportJarUtil.java
+* @DESC		: jar 생성 util.  
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2016. 11. 15. 			ytkim			최초작성
 
+*-----------------------------------------------------------------------------
+ */
 public class ExportJarUtil {
 	
 	private File target_file = null;
@@ -26,7 +40,7 @@ public class ExportJarUtil {
 	private static final String EXPORT_PATH = "E:/09.utils/99.yona/apache-tomcat-8.5.23/webapps/vsql/WEB-INF/lib/";
 	
 	enum JAR_TYPE{
-		APP("varsql-app","/WebContent/WEB-INF/classes", Arrays.asList("com/zjar") ,false ,"")
+		APP("varsql-app","/WebContent/WEB-INF/classes", Arrays.asList("$$export") ,false ,"")
 		,WEB("varsql-web","/WebContent/WEB-INF", Arrays.asList("WEB-INF/lib","WEB-INF/classes","WEB-INF/web.xml","WEB-INF/varsql-fn.tld"), true ,"META-INF/resources/")
 		,STATIC("varsql-static","/WebContent/webstatic",null,true ,"META-INF/resources/");
 		

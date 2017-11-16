@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.util.DbInstanceFactory;
-import com.varsql.web.app.database.bean.DatabaseParamInfo;
+import com.varsql.db.vo.DatabaseParamInfo;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -43,7 +43,7 @@ public class DatabaseServiceImpl{
 		
 		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
 		json.put("connInfo", SecurityUtil.userDBInfo(databaseParamInfo.getConuid()));
-		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(connid));
+		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(databaseParamInfo));
 		
 		return json;
 	}
@@ -86,16 +86,15 @@ public class DatabaseServiceImpl{
 			String gubun = databaseParamInfo.getGubun();
 			
 			if("tables".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getTables(connid
-						,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getTables(databaseParamInfo));
 				
 			}else if("views".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getViews(connid,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getViews(databaseParamInfo));
 				
 			}else if("procedures".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProcedures(connid,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getProcedures(databaseParamInfo));
 			}else if("functions".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getFunctions(connid,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getFunctions(databaseParamInfo));
 			}
 		}catch(Exception e){
 			logger.error("serviceMenu : ", e);
@@ -124,17 +123,11 @@ public class DatabaseServiceImpl{
 			
 			String gubun = databaseParamInfo.getGubun();
 			if("table".equals(gubun)){	//tableMetadata
-				result.setItemList(dbMetaEnum.getDBMeta().getColumns(connid
-						,databaseParamInfo.getObjectName()
-						,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo , databaseParamInfo.getObjectName()));
 			}else if("view".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getColumns(connid
-						,databaseParamInfo.getObjectName()
-						,databaseParamInfo.getSchema()));
+				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo	,databaseParamInfo.getObjectName()) );
 			}else if("procedure".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProceduresMetadata( connid
-						,databaseParamInfo.getSchema()
-						,databaseParamInfo.getObjectName()));
+				result.setItemList(dbMetaEnum.getDBMeta().getProceduresMetadata( databaseParamInfo,databaseParamInfo.getObjectName()));
 			}else if("function".equals(gubun)){
 				result.setItemList(null);
 			}
@@ -164,21 +157,13 @@ public class DatabaseServiceImpl{
 		
 		try{
 			if("table".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getTable(connid
-						,databaseParamInfo.getSchema()
-						,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getTable(databaseParamInfo	,databaseParamInfo.getObjectName()));
 			}else if("view".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getView(connid
-						,databaseParamInfo.getSchema()
-						,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getView(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}else if("procedure".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(connid
-						,databaseParamInfo.getSchema()
-						,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo	,databaseParamInfo.getObjectName()));
 			}else if("function".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(connid
-						,databaseParamInfo.getSchema()
-						,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}
 		}catch(Exception e){
 			logger.error("createDDL : ", e);

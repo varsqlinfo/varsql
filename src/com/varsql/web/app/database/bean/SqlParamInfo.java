@@ -1,6 +1,7 @@
 package com.varsql.web.app.database.bean;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.db.vo.DatabaseParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -14,7 +15,7 @@ public class SqlParamInfo extends DatabaseParamInfo{
 	
 	// sql
 	private String sql;
-	
+	                                                                                                                                                                             
 	// sql_id
 	private String sqlId;
 	

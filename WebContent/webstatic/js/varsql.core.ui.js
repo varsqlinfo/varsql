@@ -846,11 +846,11 @@ _ui.leftDbObjectServiceMenu ={
     		var gridObj = {
     			data:colData.items
     			,column : [
-					{ label: '컬럼명', key: 'COLUMN_NAME',width:80 },
-					{ label: '데이타타입', key: 'TYPE_NAME_SIZE' },
-					{ label: '널여부', key: 'IS_NULLABLE',width:45},
-					{ label: '키여부', key: 'KEY_SEQ',width:45},
-					{ label: '설명', key: 'REMARKS',width:45}
+					{ label: '컬럼명', key: 'name',width:80 },
+					{ label: '데이타타입', key: 'typeName' },
+					{ label: '널여부', key: 'nullable',width:45},
+					{ label: 'PK', key: 'primayKey',width:45},
+					{ label: '설명', key: 'comment',width:45}
 				]
     		};
 			
@@ -898,11 +898,11 @@ _ui.leftDbObjectServiceMenu ={
     		var gridObj = {
     			data:colData.items
     			,column : [
-					{ label: '컬럼명', key: 'COLUMN_NAME',width:80 },
-					{ label: '데이타타입', key: 'TYPE_NAME_SIZE' },
-					{ label: '널여부', key: 'IS_NULLABLE',width:45},
-					{ label: '키여부', key: 'KEY_SEQ',width:45},
-					{ label: '설명', key: 'REMARKS',width:45}
+    				{ label: '컬럼명', key: 'name',width:80 },
+					{ label: '데이타타입', key: 'typeName' },
+					{ label: '널여부', key: 'nullable',width:45},
+					{ label: 'PK', key: 'primayKey',width:45},
+					{ label: '설명', key: 'comment',width:45}
 				]
     		};
 			
