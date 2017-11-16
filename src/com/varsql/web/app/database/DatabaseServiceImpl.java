@@ -1,6 +1,5 @@
 package com.varsql.web.app.database;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.springframework.stereotype.Service;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.util.DbInstanceFactory;
 import com.varsql.web.app.database.bean.DatabaseParamInfo;
-import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -70,6 +67,16 @@ public class DatabaseServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : dbObjectList
+	 * @Method 설명 : db object 목록 보기 (table, view 등등)
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 16. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @return
+	 */
 	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
 		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
@@ -97,6 +104,16 @@ public class DatabaseServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : dbObjectMetadataList
+	 * @Method 설명 : meta 정보 보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 16. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @return
+	 */
 	public ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
 		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
@@ -127,6 +144,16 @@ public class DatabaseServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : createDDL
+	 * @Method 설명 : 생성 스크립트.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 16. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @return
+	 */
 	public ResponseResult createDDL(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
 		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
