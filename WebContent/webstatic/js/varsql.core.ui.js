@@ -38,11 +38,6 @@ _ui.create = function (_opts){
 
 //context menu 초기화
 _ui.initContextMenu  = function (){
-	
-	return ; 
-	
-	//$('body').on("selectstart.varsql", function(event){ return false; }); 
-	
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -589,8 +584,6 @@ _ui.leftDbObjectServiceMenu ={
 			$(_self.options.left_service_menu_contentId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
 		}
 		
-		
-	
 		VARSQL.req.ajax({      
 		    type:"POST"  
 		    ,loadSelector : _self.options.left_service_menu_contentId
@@ -1229,14 +1222,8 @@ _ui.SQL = {
 			}
 		});
 		
-//		$('#recv_user_search').keydown(function(e) {
-//			if (e.keyCode == '13') {
-//				$('#recv_user_searchBtn').trigger('click');
-//			}
-//		});
-		
 		$.pubAutocomplete('#recv_user_search' , {
-			minLength : 1
+			minLength : 0
 			,itemkey : 'UID'
 			,addSelector:'#recv_autocomplete_area'
 			,autoClose:false
