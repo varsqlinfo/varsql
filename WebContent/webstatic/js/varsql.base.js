@@ -4,7 +4,18 @@
 *varsql base object js
  */
 
-;(function(VARSQL) {
+if (typeof window != "undefined") {
+    if (typeof window.VARSQLCont == "undefined") {
+        window.VARSQLCont = {};
+    }
+}else{
+	if(!VARSQLCont){
+		VARSQLCont = {};
+	}
+}
+
+
+;(function(VARSQLCont) {
 "use strict";
 
 var _constants = {
@@ -82,6 +93,16 @@ var DEFAULT_HINTS = [
 	,'CURRNET TIMESTAMP'
 ];
 
+var TABLE_COL_KEYS ={
+	NAME :'name'
+	,TYPE_NAME :'typeName'
+	,DATA_TYPE :'dataType'
+	,NULLABLE :'nullable'
+	,PRIMAY_KEY :'primayKey'
+	,COMMENT :'comment'
+	,SIZE :'length'
+}
+
 var DBTYPE_HINTS = {
 	oracle : ['VARCHAR2','NVARCHAR2','NCHAR2']
 	,mssql :[]
@@ -120,7 +141,8 @@ dataType.getDbType = function (dbType){
 	}
 }
 
-VARSQL.dataType = dataType;
-VARSQL.constants = _constants;
+VARSQLCont.dataType = dataType;
+VARSQLCont.constants = _constants;
+VARSQLCont.tableColKey = TABLE_COL_KEYS;
 
-}(VARSQL));
+}(VARSQLCont));

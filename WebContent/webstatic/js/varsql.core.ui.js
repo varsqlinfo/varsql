@@ -9,9 +9,7 @@
 var _ui=VARSQL.ui||{};
 
 _ui.base ={
-	dataType:VARSQL.dataType // db datatype
-	,constants:$.extend({}, VARSQL.constants , {})	// 설정 상수
-	,mimetype : ''	// editor mime type
+	mimetype : ''	// editor mime type
 	,sqlHints :{}	// sql hints
 };
 
@@ -29,8 +27,8 @@ _ui.options={
 _ui.create = function (_opts){
 	var _self = this; 
 	
-	_ui.base.sqlHints = VARSQL.dataType.sqlHints(_opts.dbtype);
-	_ui.base.mimetype = VARSQL.dataType.getMimeType(_opts.dbtype);
+	_ui.base.sqlHints = VARSQLCont.dataType.sqlHints(_opts.dbtype);
+	_ui.base.mimetype = VARSQLCont.dataType.getMimeType(_opts.dbtype);
 	
 	_self.initContextMenu();
 	_self.headerMenu.init(_opts);
@@ -1816,7 +1814,7 @@ _ui.SQL = {
 		    ,dataType:'text'
 		    ,data:params 
 		    ,success:function (res){
-		    	var linecnt = VARSQL.matchCount(res,_ui.base.constants.newline);
+		    	var linecnt = VARSQL.matchCount(res,VARSQLCont.constants.newline);
 	    		tmpEditor.replaceSelection(res);
 	    		tmpEditor.setSelection(startSelection, {line:startSelection.line+linecnt,ch:0});
 			}
@@ -1951,7 +1949,7 @@ _ui.SQL = {
 		
 		var len = dataArr.length;
 		
-		reval.push(_ui.base.constants.newline); // 첫라인 줄바꿈으로 시작.
+		reval.push(VARSQLCont.constants.newline); // 첫라인 줄바꿈으로 시작.
 		// select 모든것.
 		if(key=='selectStar'){
 			reval.push('select * from '+tmpName);
@@ -1962,7 +1960,7 @@ _ui.SQL = {
 			reval.push('select ');
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
-				reval.push((i==0?'':',')+item.COLUMN_NAME);
+				reval.push((i==0?'':',')+item[VARSQLCont.tableColKey.NAME]);
 			}
 			
 			reval.push(' from '+tmpName);
@@ -1978,17 +1976,17 @@ _ui.SQL = {
 					reval.push(',');
 					valuesStr.push(',');
 				}
-				reval.push(item.COLUMN_NAME);
+				reval.push(item[VARSQLCont.tableColKey.NAME]);
 				
 				valuesStr.push(queryParameter(param_yn, item , keyMode));
 				
 			}
-			reval.push(' )'+_ui.base.constants.newline +'values( '+ valuesStr.join('')+' )');
+			reval.push(' )'+VARSQLCont.constants.newline +'values( '+ valuesStr.join('')+' )');
 			
 		}
 		// update 문
 		else if(key=='update'){
-			reval.push('update '+tmpName+_ui.base.constants.newline+' set ');
+			reval.push('update '+tmpName+VARSQLCont.constants.newline+' set ');
 			
 			var keyStr = [];
 			var firstFlag = true; 
@@ -1998,18 +1996,18 @@ _ui.SQL = {
 				
 				tmpval = queryParameter(param_yn, item, keyMode);
 				
-				if(item.KEY_SEQ =='YES'){
-					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
+				if(item[VARSQLCont.tableColKey.PRIMAY_KEY] =='YES'){
+					keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 				}else{
 					if(!firstFlag){
 						reval.push(',');
 					}
-					reval.push(item.COLUMN_NAME+ ' = '+ tmpval);
+					reval.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 					firstFlag = false; 
 				}
 			}
 			
-			if(keyStr.length > 0) reval.push(_ui.base.constants.newline+'where '+keyStr.join(' and '));
+			if(keyStr.length > 0) reval.push(VARSQLCont.constants.newline+'where '+keyStr.join(' and '));
 			
 		}
 		// delete 문
@@ -2023,14 +2021,14 @@ _ui.SQL = {
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
 				
-				if(item.KEY_SEQ =='YES'){
+				if(item[VARSQLCont.tableColKey.PRIMAY_KEY] == 'YES'){
 					tmpval = queryParameter(param_yn, item, keyMode);
 					
-					keyStr.push(item.COLUMN_NAME+ ' = '+ tmpval);
+					keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 				}
 			}
 			
-			if(keyStr.length > 0) reval.push(_ui.base.constants.newline+'where '+keyStr.join(' and '));
+			if(keyStr.length > 0) reval.push(VARSQLCont.constants.newline+'where '+keyStr.join(' and '));
 			
 		}
 		// drop 문
@@ -2044,7 +2042,7 @@ _ui.SQL = {
 	,addSqlEditContent :function (cont){
 	
 		var _self = this
-			,insVal = cont +_ui.base.constants.querySuffix;
+			,insVal = cont +VARSQLCont.constants.querySuffix;
 		
 		var editObj =_self.getTextAreaObj()
 			,insLine = editObj.lastLine(); 
@@ -2174,8 +2172,8 @@ _ui.JAVA = {
 		
 		var len = dataArr.length;
 		
-		var newLine = _ui.base.constants.newline
-			,tabStr = _ui.base.constants.tab;
+		var newLine = VARSQLCont.constants.newline
+			,tabStr = VARSQLCont.constants.tab;
 		
 		function javaCreate (createType){
 			var codeStr =[];
@@ -2195,9 +2193,9 @@ _ui.JAVA = {
 			var methodStr = [];
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
-				var tmpDbType = VARSQL.dataType.getDbType(item.DATA_TYPE)
+				var tmpDbType = VARSQLCont.dataType.getDbType(item[VARSQLCont.tableColKey.DATA_TYPE])
 					,tmpJavaType=tmpDbType.javaType
-					,tmpColumnNm = convertCamel(item.COLUMN_NAME)
+					,tmpColumnNm = convertCamel(item[VARSQLCont.tableColKey.NAME])
 					,tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
 				
 				if(createType =='json'){
@@ -2208,7 +2206,7 @@ _ui.JAVA = {
 					if(item.IS_NULLABLE =='NO'){
 						codeStr.push(tabStr+'@NotNull '+newLine); 
 					}
-					var columnSize = item.COLUMN_SIZE;
+					var columnSize = item[VARSQLCont.tableColKey.SIZE];
 					if($.isFunction (tmpDbType.getLen)){
 						columnSize = tmpDbType.getLen(columnSize);
 					}
@@ -2249,16 +2247,16 @@ _ui.JAVA = {
 }
 	
 function queryParameter(flag, columnInfo , colNameCase){
-	var colName = columnInfo.COLUMN_NAME
-		, dataType = columnInfo.DATA_TYPE; 
+	var colName = columnInfo[VARSQLCont.tableColKey.NAME]
+		, dataType = columnInfo[VARSQLCont.tableColKey.DATA_TYPE]; 
 	
 	if(flag=='Y'){
 		if(colNameCase=='camel'){
 			colName = convertCamel(colName);
 		}
-		return _ui.base.constants.queryParameterPrefix+colName+_ui.base.constants.queryParameterSuffix;
+		return VARSQLCont.constants.queryParameterPrefix+colName+VARSQLCont.constants.queryParameterSuffix;
 	}else{
-		var tmpType = _ui.base.dataType.dto[dataType];
+		var tmpType = VARSQLCont.dataType.dto[dataType];
 		
 		if(tmpType.isNum===true){
 			return 1;
