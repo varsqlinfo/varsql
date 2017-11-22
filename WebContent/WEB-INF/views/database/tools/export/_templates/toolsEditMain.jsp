@@ -4,20 +4,14 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
-<title><spring:message code="database.preferences" /></title>
+<title><spring:message code="database.tools" /></title>
 <%@ include file="/WEB-INF/include/head-preferences.jsp"%>
 
 </head>
 
-<BODY class="preferences-body">
+<BODY class="setting-body">
 	<tiles:insertAttribute name="body" />
 </BODY>
 </html>
-
-<script>
-$('.pub-main-body').on('selectstart', function (e){
-	return false; 	
-})
-</script>
 
 

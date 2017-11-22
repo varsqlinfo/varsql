@@ -17,7 +17,7 @@ var dbUserMgmt ={
 			_self.search();
 		});
 		
-		$('#searchval').keydown(function() {
+		$('#searchVal').keydown(function() {
 			if(event.keyCode =='13') _self.search();
 		});
 		
@@ -30,7 +30,7 @@ var dbUserMgmt ={
 		var _self = this; 
 		var param = {
 			page:no?no:1
-			,'searchval':$('#searchval').val()
+			,'searchVal':$('#searchVal').val()
 		};
 		
 		VARSQL.req.ajax({
@@ -156,7 +156,7 @@ var dbUserMgmt ={
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
-					<input type="text" id="searchval" name="searchval" class="form-control">
+					<input type="text" id="searchVal" name="searchVal" class="form-control">
 						<span class="input-group-btn">
 						<button class="btn btn-default searchBtn" type="button">
 							<span class="glyphicon glyphicon-search"></span>

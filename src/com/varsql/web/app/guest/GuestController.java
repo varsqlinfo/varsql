@@ -44,7 +44,7 @@ public class GuestController {
 	
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody Map qnalist(HttpServletRequest req 
-			,@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+			,@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 		) throws Exception {
@@ -52,7 +52,7 @@ public class GuestController {
 		DataCommonVO paramMap = new DataCommonVO();
 		paramMap.put("page", page);
 		paramMap.put("rows", rows);
-		paramMap.put("searchval", searchval);
+		paramMap.put("searchVal", searchVal);
 	
 		paramMap.put("uid", SecurityUtil.loginId(req));
 		

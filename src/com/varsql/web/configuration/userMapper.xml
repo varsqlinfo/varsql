@@ -72,7 +72,7 @@
 		from VTQNA a
 		where CRE_ID =#{uid}
 		and DEL_YN !='Y'
-		and (TITLE like '%'||#{searchval}||'%' or QUESTION like '%'||#{searchval}||'%') 
+		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
@@ -80,7 +80,7 @@
 		from VTQNA a
 		where CRE_ID =#{uid}
 		and DEL_YN !='Y'
-		and (TITLE like '%'||#{searchval}||'%' or QUESTION like '%'||#{searchval}||'%') 
+		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	

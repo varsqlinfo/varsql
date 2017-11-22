@@ -1,6 +1,5 @@
 package com.varsql.web.app.database.bean;
 
-import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.vo.DatabaseParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 
@@ -23,9 +22,7 @@ public class SqlParamInfo extends DatabaseParamInfo{
 	private String sqlTitle;
 	
 	// limit count
-	private String limit;
-	
-	private String userid;
+	private int limit;
 	
 	// sql parameer
 	private String sqlParam;
@@ -38,7 +35,6 @@ public class SqlParamInfo extends DatabaseParamInfo{
 	
 	public SqlParamInfo(){
 		super();
-		this.userid = SecurityUtil.loginInfo().getUid();
 	}
 
 	public String getSql() {
@@ -50,15 +46,13 @@ public class SqlParamInfo extends DatabaseParamInfo{
 	}
 
 	public int getLimit(int defaultLimit) {
-		try{
-			return Integer.parseInt(limit);
-		}catch(Exception e){}
-		
-		return defaultLimit;
+		return limit > -1? limit : defaultLimit;
 	}
 
 	public void setLimit(String limit) {
-		this.limit = limit;
+		try{
+			this.limit =Integer.parseInt(limit);
+		}catch(Exception e){}
 	}
 
 	public String getSqlParam() {
@@ -67,14 +61,6 @@ public class SqlParamInfo extends DatabaseParamInfo{
 
 	public void setSqlParam(String sqlParam) {
 		this.sqlParam = sqlParam;
-	}
-
-	public String getUserid() {
-		return userid;
-	}
-
-	public void setUserid(String userid) {
-		this.userid = userid;
 	}
 
 	public String getExportType() {

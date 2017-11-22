@@ -140,7 +140,7 @@ _ui.headerMenu ={
 							_self.exportInfo(menu_mode3);
 							break;
 						case 'setting':	//설정.
-							_self.openPreferences();
+							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/tools/preferences/main.vsql?conuid='+_ui.options.param.conuid));
 							break;
 						default:
 							break;
@@ -164,7 +164,7 @@ _ui.headerMenu ={
 		})
 	}
 	//header 메뉴 환경설정처리.
-	,openPreferences : function (){
+	,openPreferences : function (title , loadUrl){
 		var _self = this; 
 		
 		if(_self.preferencesDialog ==''){
@@ -184,18 +184,27 @@ _ui.headerMenu ={
 					_self.preferencesDialog.dialog( "close" );
 				}
 			});
-			
-			var iframeEle =$($('#preferencesTemplate').find('iframe')); 
-			
-			var loadUrl = iframeEle.attr('data-load-url');
+		}
+		
+		var iframeEle =$($('#preferencesTemplate').find('iframe')); 
+		
+		if(iframeEle.attr('src') != loadUrl){
 			iframeEle.attr('src', loadUrl);
 		}
 		
-		_self.preferencesDialog.dialog("open");
+		_self.preferencesDialog.dialog("open").parent().find('.ui-dialog-title').html(title);
 	}
 	// 데이타 내보내기.
 	,exportInfo :function (type){
-		alert(type);
+		var _self = this; 
+		
+		if(type=='spec'){
+			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/main?conuid='+_ui.options.param.conuid));
+		}else{
+			
+		}
+		
+		
 	}
 }
 
@@ -385,7 +394,7 @@ _ui.leftDbObject ={
 			_self._click(this);
 		});
 		
-		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.connInfo.schema+'"]').trigger('click');
+		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.schema+'"]').trigger('click');
 		
 	}
 	// 사용자 셋팅 정보 가져오기.

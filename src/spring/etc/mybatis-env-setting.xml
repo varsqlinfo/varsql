@@ -12,6 +12,7 @@
 	</settings>
 	
 	<typeAliases>
+	  <typeAlias alias="preferencesInfo" type="com.varsql.web.app.database.bean.PreferencesInfo"/>
 	  <typeAlias alias="searchParameter" type="com.vartech.common.app.beans.SearchParameter"/>
 	  <typeAlias alias="sqlParamInfo" type="com.varsql.web.app.database.bean.SqlParamInfo"/>
 	</typeAliases>

@@ -47,7 +47,7 @@ var guestMain ={
 			_self.search();
 		});
 		
-		$('#searchval').keydown(function() {
+		$('#searchVal').keydown(function() {
 			if(event.keyCode =='13') _self.search();
 		});
 		
@@ -109,7 +109,7 @@ var guestMain ={
 		var _self = guestMain; 
 		var param = {
 			page:no?no:1
-			,'searchval':$('#searchval').val()
+			,'searchVal':$('#searchVal').val()
 		};
 		
 		VARSQL.req.ajax({
@@ -236,7 +236,7 @@ var guestMain ={
 			<div class="panel-heading">
 				<spring:message code="guest.form.question" />
 				<div class="input-group">
-					<input id="searchval" type="text" class="form-control input-sm"
+					<input id="searchVal" type="text" class="form-control input-sm"
 						placeholder="<spring:message code="msg.search.placeholder" />"> <span
 						class="input-group-btn">
 						<button class="btn btn-warning btn-sm searchBtn">

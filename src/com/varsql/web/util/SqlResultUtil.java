@@ -47,7 +47,7 @@ public class SqlResultUtil {
 		
 		rsmd = rs.getMetaData();
 		
-		ResultSetHandle resultsetHandle = VarsqlUtil.getDBMetaImpl(vconnid).getResultsetHandle();
+		ResultSetHandle resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(vconnid).getResultsetHandle();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];

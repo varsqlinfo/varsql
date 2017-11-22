@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.util.DbInstanceFactory;
+import com.varsql.db.vo.DatabaseInfo;
 import com.varsql.db.vo.DatabaseParamInfo;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
@@ -37,12 +38,17 @@ public class DatabaseServiceImpl{
 	 */
 	public Map schemas(DatabaseParamInfo databaseParamInfo) throws Exception {
 		Map json = new HashMap();
-		String connid =databaseParamInfo.getVconnid();
+		String connid =databaseParamInfo.getConuid();
 		
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(connid);
+		
+		DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
+		
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDbInstanceFactory(dbinfo.getType());
 		
 		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
-		json.put("connInfo", SecurityUtil.userDBInfo(databaseParamInfo.getConuid()));
+		json.put("schema", dbinfo.getSchema());
+		json.put("conuid", dbinfo.getConnUUID());
+		json.put("type", dbinfo.getType());
 		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(databaseParamInfo));
 		
 		return json;
@@ -62,7 +68,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo) {
 		ResponseResult result = new ResponseResult();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getVconnid());
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getVconnid());
 		result.setItemList(dbMetaEnum.getDBMeta().getServiceMenu());
 		return result;
 	}
@@ -79,7 +85,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
 		try{
@@ -115,7 +121,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
 		
@@ -149,7 +155,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult createDDL(DatabaseParamInfo databaseParamInfo) {
 		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDBMetaImpl(databaseParamInfo.getConuid());
+		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		String gubun = databaseParamInfo.getGubun();
 		

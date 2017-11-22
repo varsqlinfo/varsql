@@ -85,7 +85,7 @@ public class AdminController{
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @Method 설명 : db 목록 보기
-	 * @param searchval
+	 * @param searchVal
 	 * @param page
 	 * @param rows
 	 * @return
@@ -93,13 +93,13 @@ public class AdminController{
 	 */
 	@RequestMapping(value = "/main/dblist")
 	public @ResponseBody Map dblist(
-			@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
+			@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchVal
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int pageNo
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
+		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchVal);
 		paramMap.put(VarsqlParamConstants.SEARCH_NO, pageNo);
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		

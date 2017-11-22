@@ -26,7 +26,7 @@ function fnInitEvent(){
 	});
 	
 	// 검색 input 처리
-	$('#searchval').keydown(function() {
+	$('#searchVal').keydown(function() {
 		if(event.keyCode =='13') fnSearch();
 	});
 	
@@ -79,7 +79,7 @@ function fnSearch(no){
 	var param = {
 		page:no?no:1
 		,rows:$('#rowDataSize').val()
-		,'searchval':$('#searchval').val()
+		,'searchVal':$('#searchVal').val()
 	};
 	
 	$.ajax({
@@ -169,7 +169,7 @@ function fnSearch(no){
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchval" name="searchval"
+								<input type="text" value="" id="searchVal" name="searchVal"
 									class="form-control" onkeydown=""> <span
 									class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button">

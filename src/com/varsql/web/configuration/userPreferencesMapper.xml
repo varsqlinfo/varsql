@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="userPreferencesMapper">
+	
+	<!-- 환경설정 정보 보기-->
+	<select id="userPreferencesMapper.selectPreferencesInfo" parameterType="preferencesInfo" resultType="com.varsql.web.common.vo.DataCommonVO">
+		select * 
+		from VTPREFERENCES 
+		where VCONNID =#{vconnid}
+		and VIEWID =#{userid}
+		and PREF_KEY =#{prefKey}
+	</select>
+	
+	<!-- 환경설정 정보 등록 -->
+	<insert id="userPreferencesMapper.insertPreferencesInfo" parameterType="preferencesInfo">
+		insert  into VTPREFERENCES (VCONNID,VIEWID,PREF_KEY,PREF_VAL,REG_DT,UPD_DT ) 
+		values(
+			#{vconnid}
+			, #{userid}
+			, #{prefKey}
+			, #{prefVal}
+			, CURRENT TIMESTAMP
+			, CURRENT TIMESTAMP
+		)
+	</insert>
+	
+	<!-- 환경설정 정보 수정. -->
+	<update id="userPreferencesMapper.updatePreferencesInfo" parameterType="java.util.Map">
+		update VTPREFERENCES 
+		set
+			PREF_VAL = #{prefVal}
+			, UPD_DT = CURRENT TIMESTAMP
+		where	VCONNID = #{vconnid} 
+		and	VIEWID = #{userid} 
+		and	PREF_KEY = #{prefKey}
+	</update>
+	
+</mapper>

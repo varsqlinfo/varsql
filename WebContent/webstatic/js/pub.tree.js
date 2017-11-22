@@ -4,6 +4,8 @@
  * Copyright 2016 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
+ * url : https://github.com/ytechinfo/pub
+ * demo : http://pub.moaview.com/
 */
 ;(function($, window, document) {
 	"use strict";
@@ -138,6 +140,14 @@
 			$(this.selector).on('click','.pub-tree-join-icon', function (e){
 				_this.toggle($(this));
 			})
+		}
+		,nodeClick : function (id){
+			var _this  = this;
+			
+			var clickEle = $(this.selector).find('#'+id+'_a');
+			
+			clickEle.trigger('click');
+			
 		}
 		,toggle : function (selectEle){
 			var _this = this
@@ -454,10 +464,11 @@ $.pubTree = function (selector,options) {
 
 	var _cacheObject = _datastore[selector];
 
-	if(typeof options === undefined){
-		return _cacheObject; 
+	if(typeof options === 'undefined'){
+		return _cacheObject||{}; 
 	}
 
+	
 	if(!_cacheObject){
 		_cacheObject = new pubTree(selector, options);
 		_datastore[selector] = _cacheObject;

@@ -9,7 +9,7 @@
 	<insert id="sqlServiceMapper.insertSqlUserLog" parameterType="java.util.Map">
 		insert into VTSQL_LOG (
 			VCONNID
-			, UID
+			, VIEWID
 			, START_TIME
 			, S_MM
 			, S_DD
@@ -22,7 +22,7 @@
 		)
 		values( 
 			#{vconnid}
-			, #{uid}
+			, #{viewid}
 			, #{start_time}
 			, #{s_mm}
 			, #{s_dd}
@@ -38,7 +38,7 @@
 	<!-- 사용자 sql 정보 저장  -->
 	<insert id="sqlServiceMapper.saveQueryInfo" parameterType="sqlParamInfo">
 		insert  into VTSQL_BOARD (
-			UID
+			VIEWID
 			, VCONNID
 			, SQL_ID
 			, GUERY_TITLE
@@ -69,14 +69,14 @@
 			, SQL_PARAM =#{sqlParam}
 		where sql_id = #{sqlId}
 		and VCONNID = #{vconnid}
-		and UID = #{userid}
+		and VIEWID = #{userid}
 	</update>
 	
 	<!-- 사용자 sql 마지막 저장 정보  -->
 	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="sqlParamInfo" resultType="map">
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}
-		and UID = #{userid}
+		and VIEWID = #{userid}
 		order by upd_dt desc
 		FETCH FIRST 1 ROWS ONLY
 	</select>
@@ -86,7 +86,7 @@
 		select count(1) as TOTALCNT 
 		from VTSQL_BOARD
 		where VCONNID = #{vconnid}
-		and UID = #{userid}
+		and VIEWID = #{userid}
 		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
 	</select>
 	
@@ -95,7 +95,7 @@
 		<bind name="pageStartNum" value="(customInfo.first-1)" />
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}
-		and UID = #{userid}
+		and VIEWID = #{userid}
 		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
 		order by upd_dt desc OFFSET ${pageStartNum} ROWS FETCH FIRST ${customInfo.rows} ROWS ONLY
 	</select>

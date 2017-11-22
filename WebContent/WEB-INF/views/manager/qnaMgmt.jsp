@@ -18,7 +18,7 @@ var qnaMgmt ={
 			_self.search();
 		});
 		
-		$('#searchval').keydown(function() {
+		$('#searchVal').keydown(function() {
 			if(event.keyCode =='13') _self.search();
 		});
 		
@@ -35,7 +35,7 @@ var qnaMgmt ={
 		var param = {
 			page:no?no:1
 			,rows:$('#rowDataSize').val()
-			,'searchval':$('#searchval').val()
+			,'searchVal':$('#searchVal').val()
 			,'answerYn' : $('input:radio[name=answerYn]:checked').val()
 		};
 		
@@ -156,7 +156,7 @@ var qnaMgmt ={
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchval" name="searchval"
+								<input type="text" value="" id="searchVal" name="searchVal"
 									class="form-control"
 									onkeydown="" placeholder="<spring:message code="msg.search.placeholder" />"> <span
 									class="input-group-btn">

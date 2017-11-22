@@ -94,10 +94,18 @@ public class VarsqlUtil {
 		return paramMap; 
 	}
 	
-	public static DbInstanceFactory getDBMetaImpl(String connid){
+	public static DbInstanceFactory getConnidToDbInstanceFactory(String connid){
 		try{
-			DatabaseInfo  dbinfo= SecurityUtil.loginInfo().getDatabaseInfo().get(connid);
-			return DbInstanceFactory.valueOf(dbinfo.getType().toUpperCase());
+			DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(connid);
+			return getDbInstanceFactory(dbinfo.getType());
+		}catch(Exception e){
+			return DbInstanceFactory.OTHER;
+		}
+	}
+	
+	public static DbInstanceFactory getDbInstanceFactory(String type){
+		try{
+			return DbInstanceFactory.valueOf(type);
 		}catch(Exception e){
 			return DbInstanceFactory.OTHER;
 		}

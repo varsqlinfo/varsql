@@ -52,7 +52,7 @@ public class SQLServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 	
 	@Autowired
-	SQLDAO sqlDAO ;
+	private SQLDAO sqlDAO ;
 	
 	private Calendar calendar = Calendar.getInstance();
 	
@@ -270,7 +270,7 @@ public class SQLServiceImpl{
 	    	calendar.setTime(stime);
 	    	
 		    logInfoMap.put("vconnid", sqlParamInfo.getVconnid());
-		    logInfoMap.put("uid", sqlParamInfo.getUserid());
+		    logInfoMap.put("viewid", sqlParamInfo.getUserid());
 		    logInfoMap.put("start_time", stime);
 		    logInfoMap.put("s_mm", calendar.get(Calendar.MONTH)+1);
 		    logInfoMap.put("s_dd", calendar.get(Calendar.DATE));

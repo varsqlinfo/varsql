@@ -1,4 +1,4 @@
-package com.varsql.web.app.database.setting;
+package com.varsql.web.app.database.tools.setting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,5 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PreferencesServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(PreferencesServiceImpl.class);
+	
+	
 	
 }

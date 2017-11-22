@@ -1,4 +1,4 @@
-package com.varsql.web.app.database.setting;
+package com.varsql.web.app.database.tools.setting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/preferences")
+@RequestMapping("/database/tools/preferences")
 public class PreferencesController {
 
 	/** The Constant logger. */
@@ -22,7 +22,7 @@ public class PreferencesController {
 	@RequestMapping("/main")
 	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/main",model);
+		return  new ModelAndView("/database/tools/preferencesMain",model);
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class PreferencesController {
 	@RequestMapping("/generalSetting")
 	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/setting/generalSetting",model);
+		return  new ModelAndView("/database/tools/preferences/generalSetting",model);
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class PreferencesController {
 	@RequestMapping("/keySetting")
 	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/setting/keySetting",model);
+		return  new ModelAndView("/database/tools/preferences/keySetting",model);
 	}
 	
 	
@@ -75,7 +75,7 @@ public class PreferencesController {
 	@RequestMapping("/sqlFormatSetting")
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/setting/sqlFormatSetting",model);
+		return  new ModelAndView("/database/tools/preferences/sqlFormatSetting",model);
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class PreferencesController {
 	@RequestMapping("/codeEditerSetting")
 	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/setting/codeEditerSetting",model);
+		return  new ModelAndView("/database/tools/preferences/codeEditerSetting",model);
 	}
 	
 	/**
@@ -109,6 +109,6 @@ public class PreferencesController {
 	@RequestMapping("/exportSetting")
 	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/setting/exportSetting",model);
+		return  new ModelAndView("/database/tools/preferences/exportSetting",model);
 	}
 }

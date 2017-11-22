@@ -131,7 +131,6 @@ var sqlLogStat ={
 		var _self = this; 
 		var param = {
 			page:no?no:1
-			,'searchval':$('#searchval').val()
 		};
 		
 		VARSQL.req.ajax({

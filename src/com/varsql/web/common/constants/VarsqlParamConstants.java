@@ -12,7 +12,7 @@ public interface VarsqlParamConstants {
 	/**
 	 * 페이징 관련 파라미터 정보
 	 */
-	public String SEARCHVAL ="searchval";
+	public String SEARCHVAL ="searchVal";
 	public String SEARCH_NO ="page";
 	public String SEARCH_FIRST ="first";
 	public String SEARCH_START_DATE ="s_date";

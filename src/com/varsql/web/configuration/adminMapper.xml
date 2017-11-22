@@ -8,14 +8,14 @@
 	<select id="adminMapper.selectPageList" parameterType="java.util.Map" resultType="java.util.Map">
 		select * 
 		from VTCONNECTION 
-		where (VNAME like '%'||#{searchval}||'%' or VURL like '%'||#{searchval}||'%') 
+		where (VNAME like '%'||#{searchVal}||'%' or VURL like '%'||#{searchVal}||'%') 
 		order by VCONNID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
 	<select id="adminMapper.selectPageTotalCnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt 
 		from VTCONNECTION 
-		where (VNAME like '%'||#{searchval}||'%' or VURL like '%'||#{searchval}||'%') 
+		where (VNAME like '%'||#{searchVal}||'%' or VURL like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<select id="adminMapper.selectDetailObject" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
@@ -81,14 +81,14 @@
 		select count(1) as totalcnt 
 		from VTUSER
 		where ROLE = 'USER' 
-		and (UNAME like '%'||#{searchval}||'%' or UID like '%'||#{searchval}||'%') 
+		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 	</select>
 
 	<select id="adminMapper.selectRoleUserList" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*, a.CRE_DT as CHAR_CRE_DT
 		from VTUSER a
 		where ROLE = 'USER' 
-		and (UNAME like '%'||#{searchval}||'%' or UID like '%'||#{searchval}||'%') 
+		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
@@ -96,14 +96,14 @@
 		select count(1) as totalcnt 
 		from VTUSER
 		where ROLE = 'MANAGER' 
-		and (UNAME like '%'||#{searchval}||'%' or UID like '%'||#{searchval}||'%') 
+		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 	</select>
 
 	<select id="adminMapper.selectRoleManagerList" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*, a.CRE_DT as CHAR_CRE_DT
 		from VTUSER a
 		where ROLE = 'MANAGER' 
-		and (UNAME like '%'||#{searchval}||'%' or UID like '%'||#{searchval}||'%') 
+		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
@@ -151,14 +151,14 @@
 		select count(1) as totalcnt 
 		from VTMENU
 		where DB_TYPE  = #{db_type}
-		and (MENU_NM like '%'||#{searchval}||'%' or UNIQUE_ID like '%'||#{searchval}||'%') 
+		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<select id="adminMapper.listDbMenu" parameterType="java.util.Map" resultType="java.util.Map">
 		select a.*
 		from VTMENU a
 		where DB_TYPE  = #{db_type}
-		and (MENU_NM like '%'||#{searchval}||'%' or UNIQUE_ID like '%'||#{searchval}||'%') 
+		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<insert id="adminMapper.addDbMenu" parameterType="java.util.Map">

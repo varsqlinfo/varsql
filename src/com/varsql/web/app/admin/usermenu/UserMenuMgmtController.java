@@ -38,14 +38,14 @@ public class UserMenuMgmtController{
 	@RequestMapping({"/listDbMenu"})
 	public @ResponseBody Map listDbMenu(
 			@RequestParam(value = DBMenuConstants.DB_TYPE ,required = true) String db_type 
-			,@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchval
+			,@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchVal
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int pageNo
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put(DBMenuConstants.DB_TYPE, db_type);
-		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchval);
+		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchVal);
 		paramMap.put(VarsqlParamConstants.SEARCH_NO, pageNo);
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		

@@ -10,7 +10,7 @@ function fnInit(){
 		fnSearch1();
 	});
 	
-	$('#searchval1').keydown(function() {
+	$('#searchVal1').keydown(function() {
 		if(event.keyCode =='13') fnSearch1();
 	});
 	
@@ -18,7 +18,7 @@ function fnInit(){
 		fnSearch2();
 	});
 	
-	$('#searchval2').keydown(function() {
+	$('#searchVal2').keydown(function() {
 		if(event.keyCode =='13') fnSearch2();
 	});
 	
@@ -29,7 +29,7 @@ function fnInit(){
 function fnSearch1(no){
 	var param = {
 		page:no?no:1
-		,'searchval':$('#searchval1').val()
+		,'searchVal':$('#searchVal1').val()
 	};
 	
 	VARSQL.req.ajax({
@@ -84,7 +84,7 @@ function fnSearch1(no){
 function fnSearch2(no){
 	var param = {
 		page:no?no:1
-		,'searchval':$('#searchval2').val()
+		,'searchVal':$('#searchVal2').val()
 	};
 	
 	VARSQL.req.ajax({
@@ -188,7 +188,7 @@ function fnManagerRoleEvent(pType){
 					<div class="col-sm-12">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchval1" name="searchval1"
+								<input type="text" value="" id="searchVal1" name="searchVal1"
 									class="form-control"> <span
 									class="input-group-btn">
 									<button class="btn btn-default searchBtn1" type="button">
@@ -236,7 +236,7 @@ function fnManagerRoleEvent(pType){
 					<div class="col-sm-12">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchval2" name="searchval2"
+								<input type="text" value="" id="searchVal2" name="searchVal2"
 									class="form-control"> <span
 									class="input-group-btn">
 									<button class="btn btn-default searchBtn2" type="button">

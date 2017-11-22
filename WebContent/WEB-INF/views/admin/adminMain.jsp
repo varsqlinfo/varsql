@@ -40,7 +40,7 @@ var adminMain = {
 			_this.search();
 		});
 		
-		$('#searchval').keydown(function() {
+		$('#searchVal').keydown(function() {
 			if(event.keyCode =='13') _this.search();
 		});
 		
@@ -168,7 +168,7 @@ var adminMain = {
 		
 		var param = {
 			page:no?no:1
-			,'searchval':$('#searchval').val()
+			,'searchVal':$('#searchVal').val()
 		};
 		
 		$.ajax({
@@ -371,7 +371,7 @@ var adminMain = {
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
-					<input type="text" value="" id="searchval" name="searchval"
+					<input type="text" value="" id="searchVal" name="searchVal"
 						class="form-control"> <span
 						class="input-group-btn">
 						<button class="btn btn-default searchBtn" type="button">

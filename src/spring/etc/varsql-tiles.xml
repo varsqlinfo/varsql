@@ -45,12 +45,20 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
     </definition>
     
-    <definition name="/database/setting/**" template="/WEB-INF/views/database/setting/_templates/preferencesEditMain.jsp">
-        <put-attribute name="body" value="/WEB-INF/views/database/setting/{1}.jsp" />
+    <!-- 설정 메인 화면. -->
+    <definition name="/database/tools/preferencesMain" template="/WEB-INF/views/database/tools/setting/_templates/preferencesMain.jsp"></definition>
+    
+    <!-- 설정  하위 페이지  -->
+    <definition name="/database/tools/preferences/**" template="/WEB-INF/views/database/tools/setting/_templates/preferencesEditMain.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/database/tools/setting/{1}.jsp" />
     </definition>
     
-    <definition name="/database/preferences/**" template="/WEB-INF/views/database/setting/_templates/preferencesMain.jsp">
-        <put-attribute name="body" value="/WEB-INF/views/database/setting/_templates/preferencesBody.jsp" />
+    <!-- export main -->
+    <definition name="/database/tools/exportMain" template="/WEB-INF/views/database/tools/export/_templates/toolsMain.jsp"></definition>
+    
+    <!-- export 하위 페이지. -->
+    <definition name="/database/tools/export/**" template="/WEB-INF/views/database/tools/export/_templates/toolsEditMain.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}.jsp" />
     </definition>
     
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp">

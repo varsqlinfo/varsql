@@ -28,7 +28,7 @@ public class ManagerMgmtController{
 	ManagerMgmtServiceImpl managerMgmtServiceImpl; 
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody Map userList(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map userList(@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 		) throws Exception {
@@ -36,13 +36,13 @@ public class ManagerMgmtController{
 		
 		paramMap.put("page", page);
 		paramMap.put("rows", rows);
-		paramMap.put("searchval", searchval);
+		paramMap.put("searchVal", searchVal);
 		
 		return managerMgmtServiceImpl.selectRoleUserList(paramMap);
 	}
 	
 	@RequestMapping({"/managerList"})
-	public @ResponseBody Map managerlist(@RequestParam(value = "searchval", required = false, defaultValue = "" )  String searchval
+	public @ResponseBody Map managerlist(@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
 			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
 			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
 			) throws Exception {
@@ -50,7 +50,7 @@ public class ManagerMgmtController{
 		
 		paramMap.put("page", page);
 		paramMap.put("rows", rows);
-		paramMap.put("searchval", searchval);
+		paramMap.put("searchVal", searchVal);
 		
 		return managerMgmtServiceImpl.selectRoleManagerList(paramMap);
 	}
