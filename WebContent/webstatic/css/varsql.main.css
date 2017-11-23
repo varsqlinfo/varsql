@@ -539,6 +539,10 @@ padding-top: 5px;
 .margin-top5{
 	margin-top:5px;
 }
+
+.margin-bottom0{
+	margin-bottom:0px;
+}
 #memo_alert_area{
 	color: #000;
 }

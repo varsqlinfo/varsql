@@ -6,7 +6,7 @@
 <mapper namespace="userPreferencesMapper">
 	
 	<!-- 환경설정 정보 보기-->
-	<select id="userPreferencesMapper.selectPreferencesInfo" parameterType="preferencesInfo" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="userPreferencesMapper.selectPreferencesInfo" parameterType="preferencesInfo" resultType="dataCommonVO">
 		select * 
 		from VTPREFERENCES 
 		where VCONNID =#{vconnid}

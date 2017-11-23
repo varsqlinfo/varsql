@@ -275,26 +275,34 @@ _$base.req ={
 
 		formObj.ajaxSubmit(opts);
 	}
-	,download :function (formid , opts){
-		var formObj = $(formid)
-			,tmpMethod = opts.method?opts.method:'post'
+	,download :function (opts){
+		var tmpMethod = opts.method?opts.method:'post'
 			,tmpParam = opts.params?opts.params:{}
-			,urlObj = opts.url
-			,inputStr = [];
+			,urlObj = opts.url;
+			
+		
+		if($('#varsql_hidden_down_area').length < 1){
+			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;"><form name="varsql_hidden_down_form" id="varsql_hidden_down_form"  target="varsql_hidden_down_iframe"></form>'
+				+'<iframe name="varsql_hidden_down_iframe" id="varsql_hidden_down_iframe"  style="width:0px;height:px;display:none;"></iframe><div>';
+			$('body').append(strHtm);
+		}
+		
+		var formObj = $('#varsql_hidden_down_form');
+		
+		formObj.empty();
 		
 		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
 		
-		var tmpVal;
+		var tmpVal, tmpIdName;
 		for(var key in tmpParam){
+			var tmpIdName ='varsql_download_'+key; 
 			tmpVal = tmpParam[key];
-			inputStr.push('<input type="hidden" name="'+key+'" value="'+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'"/>');
+			formObj.append('<input type="hidden" id="'+tmpIdName+'" name="'+key+'"/>')
+			$('#'+tmpIdName).val(((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal)));
 		}
 		
-		formObj.empty();
-		formObj.append(inputStr.join(''));
 		formObj.prop('method',tmpMethod);
 		formObj.prop('action',opts.url);
-
 		formObj.submit();
 	}
 };

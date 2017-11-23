@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
+
+import com.varsql.constants.VarsqlConstants;
 /**
  * 
 *-----------------------------------------------------------------------------
@@ -29,7 +31,7 @@ public class VarsqlSpringConfig {
 		StringHttpMessageConverter converter = new StringHttpMessageConverter();
 		
         converter.setSupportedMediaTypes(new ArrayList<MediaType>(){{
-        	add(new MediaType("text", "plain", Charset.forName("UTF-8")));
+        	add(new MediaType("text", "plain", Charset.forName(VarsqlConstants.CHAR_SET)));
         }});;
         return converter;
     }

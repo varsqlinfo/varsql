@@ -1908,7 +1908,7 @@ _ui.SQL = {
 						,limit: $('#exportCount').val()
 					});
 
-					VARSQL.req.download(_ui.options.downloadForm, {
+					VARSQL.req.download({
 						type: 'post'
 						,url: {gubun:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
 						,params:params

@@ -2,8 +2,6 @@ package com.varsql.web.interceptor;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.varsql.constants.VarsqlConstants;
 
 //import com.circlook.common.constants.CircConstants;
 //import com.circlook.common.constants.bean.CF_CIRCLER;
@@ -94,9 +94,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter
 		sb.append("</html>");
 		
 		response.setContentType("text/html");
-		response.setCharacterEncoding("utf-8");
+		response.setCharacterEncoding(VarsqlConstants.CHAR_SET);
 		response.setHeader("Cache-Control", "no-cache");
-		response.setContentLength(sb.toString().getBytes("utf-8").length);
+		response.setContentLength(sb.toString().getBytes(VarsqlConstants.CHAR_SET).length);
 		
 		response.getWriter().print(sb.toString());
 	}

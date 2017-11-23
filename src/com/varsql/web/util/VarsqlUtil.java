@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.constants.VarsqlConstants;
 import com.varsql.db.util.DbInstanceFactory;
 import com.varsql.db.vo.DatabaseInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
@@ -109,6 +111,25 @@ public class VarsqlUtil {
 		}catch(Exception e){
 			return DbInstanceFactory.OTHER;
 		}
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : setResponseDownAttr
+	 * @Method 설명 : 파일 다운로드  송성 처리.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 23. 
+	 * @변경이력  :
+	 * @param res
+	 * @param fileName
+	 */
+	public static void setResponseDownAttr(HttpServletResponse res, String fileName){
+		res.setContentType("application/octet-stream");
+		res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";",fileName));
+		res.setCharacterEncoding(VarsqlConstants.CHAR_SET);
+		res.setHeader("Content-Transfer-Encoding", "binary;");
+		res.setHeader("Pragma", "no-cache;");
+		res.setHeader("Expires", "-1;");
 	}
 }
 

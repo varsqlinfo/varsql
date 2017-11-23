@@ -51,9 +51,6 @@
 	
 	<div id="dbHiddenArea"></div>
 	
-	<form name="downloadForm" id="downloadForm"  style="display:none;" target="hiddenIframe"></form>
-	<iframe name="hiddenIframe" id="hiddenIframe"  style="width:0px;height:px;display:none;"></iframe>
-	
 	<div id="memoTemplate" style="display:none;" title="메시지 보내기">
 		<div style="margin: 0px -10px 0px -10px;">
 			<div class="col-xs-6">

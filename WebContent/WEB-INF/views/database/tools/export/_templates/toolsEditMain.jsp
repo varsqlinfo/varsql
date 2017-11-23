@@ -11,6 +11,7 @@
 
 <BODY class="setting-body">
 	<tiles:insertAttribute name="body" />
+	<iframe style="display:none;width:0px;height:0px;" id="downloadForm" name="downloadForm"></iframe>
 </BODY>
 </html>
 

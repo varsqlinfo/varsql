@@ -116,12 +116,14 @@
 <entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
 <entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
 <entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
+<entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
 
 
 <entry key="msg.select.value">선택된 값</entry>
 <entry key="msg.warning.select">선택하시오</entry>
 <entry key="msg.records.per.page">페이지 당 레코드</entry>
 <entry key="msg.table.dbclick.move">* 테이블을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
+<entry key="msg.column.dbclick.move">* 컬럼을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
 
 <entry key="database.preferences">환경설정</entry>
 <entry key="database.tools">도구</entry>

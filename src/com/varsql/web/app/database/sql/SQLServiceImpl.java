@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.common.type.ResultType;
 import com.varsql.common.util.DataExportUtil;
+import com.varsql.constants.VarsqlConstants;
 import com.varsql.db.ConnectionFactory;
 import com.varsql.sql.builder.SqlSource;
 import com.varsql.sql.builder.SqlSourceBuilder;
@@ -34,7 +35,6 @@ import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.VartechUtils;
@@ -311,24 +311,20 @@ public class SQLServiceImpl{
 			SQLUtil.close(conn);
 		}
 		
-		res.setContentType("application/octet-stream;charset=UTF-8");
-		res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ";");
-		res.setHeader("Content-Transfer-Encoding", "binary;");
-		res.setCharacterEncoding("utf-8");
-		res.setHeader("Pragma", "no-cache;");
-		res.setHeader("Expires", "-1;");
+		
+		
 		
 		if("csv".equals(exportType)){
-			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".csv;");
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".csv",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), res.getOutputStream());
 		}else if("json".equals(exportType)){
-			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".json;");
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".json",VarsqlConstants.CHAR_SET));
 			new ObjectMapper().writeValue(res.getOutputStream(), result.getData());
 		}else if("insert".equals(exportType)){
-			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".sql;");
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".sql",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, res.getOutputStream());
 		}else if("xml".equals(exportType)){
-			res.setHeader("Content-Disposition", "attachment; filename=" + tmpName + ".xml;");
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".xml",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , res.getOutputStream());
 		}
 	}

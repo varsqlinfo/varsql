@@ -9,14 +9,6 @@
 		</layout>
 	</appender>
 	
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-			</Pattern>
-		</layout>
-	</appender>
-	
 	<appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>c:/zzz/varsql.log</file>
 		<append>true</append>
@@ -57,7 +49,7 @@
 	</logger>
 	 -->
   
-	<root level="debug">
+	<root level="info">
 		<appender-ref ref="STDOUT" />
 	</root>
 

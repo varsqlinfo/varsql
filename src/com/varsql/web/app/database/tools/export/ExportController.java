@@ -1,6 +1,7 @@
 package com.varsql.web.app.database.tools.export;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.db.vo.DatabaseParamInfo;
 import com.varsql.web.app.database.bean.PreferencesInfo;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.HttpUtils;
 
 /**
  * 
@@ -44,10 +47,16 @@ public class ExportController {
 		return  new ModelAndView("/database/tools/exportMain",model);
 	}
 	
-	@RequestMapping("/tableExport")
-	public ModelAndView tableExport(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	@RequestMapping("/table")
+	public ModelAndView table(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		exportServiceImpl.selectTableExportConfigInfo(preferencesInfo, model);
-		return  new ModelAndView("/database/tools/export/tableExport",model);
+		return  new ModelAndView("/database/tools/export/table",model);
+	}
+	
+	@RequestMapping("/tableExport")
+	public void tableExport(PreferencesInfo preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
+		ParamMap paramInfo = HttpUtils.getServletRequestParam(req);
+		exportServiceImpl.tableExport(preferencesInfo,paramInfo, res);
 	}
 }
