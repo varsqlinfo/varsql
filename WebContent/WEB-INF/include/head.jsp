@@ -35,7 +35,7 @@
 <![endif]-->
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.jqGrid.src.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.selection.js"></script>

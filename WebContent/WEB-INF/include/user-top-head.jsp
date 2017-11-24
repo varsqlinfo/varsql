@@ -34,7 +34,7 @@
 long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/plugins/mustache/mustache.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=<%=versionNum%>"></script>
 

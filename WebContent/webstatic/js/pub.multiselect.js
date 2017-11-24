@@ -30,6 +30,7 @@ var pluginName = "pubMultiselect"
 	,maxSize : -1	// 추가 가능한 max size
 	,maxSizeMsg : false	// 추가 가능한 max size가 넘었을경우 메시지
 	,useMultiSelect : false	// ctrl , shift key 이용해서 다중 선택하기 여부
+	,containment : ''
 	,useDragMove : true	// drag해서 이동할지 여부.  
 	,useDragSort : true // target drag 해서 정렬할지 여부.
 	,addPosition : 'last'	// 추가 되는 방향키로 추가시 어디를 추가할지. ex(source, last)
@@ -41,7 +42,9 @@ var pluginName = "pubMultiselect"
 		,emptyMessage : '드래그 해서 추가하세요.'
 	}
 	,itemSelector :'.pub-select-item'
-	,selectCls : 'selected'	// item 선택 클래스.
+	,addItemClass :'selected'	// add item class
+	,selectClass : 'selected'
+	,handleClass : 'pub-handle'	// item 선택 클래스.
 	,items :[]
 	,sourceItem : {
 		optVal : 'CODE_ID'
@@ -366,14 +369,16 @@ Plugin.prototype ={
 		
 		_this.targetElement.sortable({
 			 scroll: true
-			,cancel: ((opts.useDragSort !== false) ?'li:not(.'+opts.selectCls+')' :'li')
+			,containment : "parent"
+			,cancel: ((opts.useDragSort !== false) ?'li:not(.'+opts.selectClass+')' :'li')
 			,start:function(e,ui){
+				
 				try{
 					var uiItem = $(ui.item);
 					if(!uiItem.hasClass('ui-draggable')){
 						var selectItem = _this.getSelectElement(_this.targetElement);
 
-						if( $.inArray(opts.selectCls,e.currentTarget.classList) < 0 || selectItem.length < 1) {
+						if( $.inArray(opts.selectClass,e.currentTarget.classList) < 0 || selectItem.length < 1) {
 							//return false;
 						}	
 					}
@@ -383,7 +388,7 @@ Plugin.prototype ={
 			}
 			,update : function (e, ui){
 				var uiItem = $(ui.item);
-				if(uiItem.hasClass('ui-draggable')){
+				if(uiItem.hasClass('pub-multi-add-helper-wrapper')){
 					var addHtm = _this.sourceMove(true);
 
 					uiItem.replaceWith(addHtm);
@@ -399,14 +404,17 @@ Plugin.prototype ={
 			,opts = _this.options;
 		
 		if(opts.useDragMove !== false){
+
 			_this.sourceElement.find(opts.itemSelector).draggable({
 				appendTo: "body"
+				,containment : (opts.containment|| 'parent')
+				,scroll : false
 				,connectToSortable: _this.targetSelector
 				,classes: {
-					"ui-draggable": opts.selectCls
+					"ui-draggable": opts.handleClass
 				}
 				,helper: function (event){
-					var selectItem = _this.getSelectElement(_this.sourceElement); 
+					var selectItem = _this.getSelectElement(_this.sourceElement);
 										
 					if(selectItem.length  < 1){
 						return '<div></div>'; 
@@ -422,7 +430,7 @@ Plugin.prototype ={
 				,start:function(e,info){
 					var selectItem = _this.getSelectElement(_this.sourceElement);
 
-					if( $.inArray(opts.selectCls,e.currentTarget.classList) < 0 || selectItem.length < 1) {
+					if( $.inArray(opts.selectClass,e.currentTarget.classList) < 0 || selectItem.length < 1) {
 						e.preventDefault();
 						e.stopPropagation();
 						return false; 
@@ -455,8 +463,8 @@ Plugin.prototype ={
 					return false;
 				};
 			}
-			_this.targetElement.find(opts.itemSelector).removeClass(opts.selectCls);
-			$(this).addClass(opts.selectCls);
+			_this.targetElement.find(opts.itemSelector).removeClass(opts.addItemClass);
+			$(this).addClass(opts.addItemClass);
 			_this.targetMove();				
 		})
 		//_this.targetElement.on('selectstart',function(){ return false; });
@@ -495,18 +503,18 @@ Plugin.prototype ={
 				var source = Math.min(beforeIdx, currIdx)
 					,last = Math.max(beforeIdx, currIdx);
 
-				evtElement.find(opts.itemSelector+'.'+ opts.selectCls).removeClass(opts.selectCls);
+				evtElement.find(opts.itemSelector+'.'+ opts.selectClass).removeClass(opts.selectClass);
 
 				for(var i=last; i >= source; i--){
-					$(allItem[i]).addClass(opts.selectCls);
+					$(allItem[i]).addClass(opts.selectClass);
 				}
 			}else{
 				lastClickEle.removeAttr('data-last-click');
 				if(evt.ctrlKey){
-					if(sEle.hasClass(opts.selectCls)){
-						sEle.removeClass(opts.selectCls);
+					if(sEle.hasClass(opts.selectClass)){
+						sEle.removeClass(opts.selectClass);
 					}else{
-						sEle.addClass(opts.selectCls);
+						sEle.addClass(opts.selectClass);
 					}
 				}else{
 					onlyClickFlag=true; 
@@ -520,8 +528,8 @@ Plugin.prototype ={
 			if($.isFunction(selectItem.click)){
 				selectItem.click.call(sEle , e, _this.addItemList[_this.config.currPage][_this.getItemVal(sEle)]); 
 			}
-			evtElement.find(opts.itemSelector+'.'+ opts.selectCls).removeClass(opts.selectCls);	
-			sEle.addClass(opts.selectCls);
+			evtElement.find(opts.itemSelector+'.'+ opts.selectClass).removeClass(opts.selectClass);	
+			sEle.addClass(opts.selectClass);
 		}
 
 		sEle.attr('data-last-click','Y');	
@@ -570,7 +578,7 @@ Plugin.prototype ={
 	 * @description 선택된 html eleement 얻기.
 	 */	
 	,getSelectElement : function (evtElement){
-		return 	evtElement ? evtElement.find(this.options.itemSelector+'.'+ this.options.selectCls) : this.targetElement.find(this.options.itemSelector+'.'+ this.options.selectCls);
+		return 	evtElement ? evtElement.find(this.options.itemSelector+'.'+ this.options.selectClass) : this.targetElement.find(this.options.itemSelector+'.'+ this.options.selectClass);
 	}
 	,getElement : function (key){
 		return 	this.targetElement.find('[data-val="'+key+'"]');
@@ -603,14 +611,29 @@ Plugin.prototype ={
 	,move :function (type){
 		var _this = this; 
 		var selectElement =_this.getSelectElement(_this.targetElement);
-		var len = selectElement.length;  
+		var selectLen = selectElement.length;  
 		if(len ==0) return ; 
 
-		if(type=='up'){			
-			var sourceIdx = _this.targetElement.find(this.options.itemSelector).index(selectElement[0]);
+		if(type=='up'){
+			var sourceIdx = 0;
+			var tmpSelector = _this.targetElement.find(this.options.itemSelector);
+			
+			var len = tmpSelector.length; 
+			var lastIdx = tmpSelector.index(selectElement[len]);
 
+			for(var i =0 ;i <len ;i++){
+				if(sourceIdx > 0){
+					
+				}else if(i < lastIdx){
+					break ; 
+				}else{
+					sourceIdx = tmpSelector.index(selectElement[i]);	
+				}
+			}
+		
 			if(sourceIdx < 1) return ;
 			
+						
 			$(selectElement[len-1]).after(_this.targetElement.find(this.options.itemSelector).get(sourceIdx-1));
 		}else{
 			var lastIdx = _this.targetElement.find(this.options.itemSelector).index(selectElement[len-1]);
@@ -849,7 +872,7 @@ Plugin.prototype ={
 			,strHtm = [];
 
 		if( len> 0){
-			_this.sourceElement.find(_opts.itemSelector).removeClass(_opts.selectCls);
+			_this.sourceElement.find(_opts.itemSelector).removeClass(_opts.selectClass);
 			for(var i=0 ;i < len; i++){
 				tmpItem = _opts.sourceItem.items[i];
 

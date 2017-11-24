@@ -33,7 +33,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <![endif]-->
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
