@@ -22,7 +22,6 @@ import com.varsql.web.common.constants.PreferencesConstants;
 import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.EnumMapperValue;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.utils.VartechUtils;
 
@@ -39,7 +38,7 @@ public class ExportServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
 	
 	@Autowired
-	private ExportDAO exportDAO ;
+	private ExportDAO exportDAO;
 	
 	@Autowired
 	private PreferencesDAO preferencesDAO ;
@@ -60,7 +59,7 @@ public class ExportServiceImpl{
 		
 		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta().getTables(preferencesInfo));
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
-		model.addAttribute("userSettingInfo",preferencesDAO.selectPreferencesInfo(preferencesInfo));
+		model.addAttribute("userSettingInfo",preferencesDAO.selectPreferencesInfo(preferencesInfo ,true));
 	}
 	
 	/**
@@ -76,7 +75,7 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception 
 	 */
-	public void tableExport(PreferencesInfo preferencesInfo,ParamMap paramInfo, HttpServletResponse res) throws Exception {
+	public void tableExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
 		
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		

@@ -56,7 +56,6 @@ public class ExportController {
 	
 	@RequestMapping("/tableExport")
 	public void tableExport(PreferencesInfo preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
-		ParamMap paramInfo = HttpUtils.getServletRequestParam(req);
-		exportServiceImpl.tableExport(preferencesInfo,paramInfo, res);
+		exportServiceImpl.tableExport(preferencesInfo, res);
 	}
 }

@@ -16,14 +16,22 @@ public class PreferencesDAO extends BaseDAO{
 	 * @작성일   : 2017. 11. 22. 
 	 * @변경이력  :
 	 * @param preferencesInfo
+	 * @param b 
 	 * @return
 	 */
 	public String selectPreferencesInfo(PreferencesInfo preferencesInfo) {
+		return selectPreferencesInfo(preferencesInfo, false);
+	}
+	public String selectPreferencesInfo(PreferencesInfo preferencesInfo, boolean defaultVal) {
 		DataCommonVO dcv = getSqlSession().selectOne("userPreferencesMapper.selectPreferencesInfo", preferencesInfo);
 		
 		if(dcv ==null){
-			dcv = new DataCommonVO();
-			dcv.put("PREF_VAL","{}");
+			if(defaultVal){
+				dcv = new DataCommonVO();
+				dcv.put("PREF_VAL","{}");
+			}else{
+				return null; 
+			}
 		}
 		return dcv.getString("PREF_VAL","{}");
 	}
