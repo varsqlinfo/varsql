@@ -1,57 +1,55 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!-- Brand and toggle get grouped for better mobile display -->
-<div class="navbar-header">
-	<ul class="nav navbar-nav">
-        <li class="dropdown">
-        	<div class="form-horizontal" >
-				<div class="ui-connection-list">
-					<label>Connect to : </label> 
-					
-					<select id="user_connection_info">
-						<option value="">----connection info---</option>
-						<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
-							<option value="${tmpInfo.connUUID}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
-						</c:forEach>
-					</select>
-				</div>
-				
-				<div class="ui-connection-tabs-wrap">
-					<div class="connection-ui-tabs">
-						<ul class="connection-ui-tabs-nav" id="user_connection_info_tab">
-						</ul>
-					</div>
-				</div>
-			</div>
-        </li>
-    </ul>
+
+<div class="">
+	<div class="ui-connection-list">
+		<label>Connect to : </label> 
+		
+		<select id="user_connection_info">
+			<option value="">----connection info---</option>
+			<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
+				<option value="${tmpInfo.connUUID}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
+			</c:forEach>
+		</select>
+	</div>
+	
+	<div class="ui-connection-tabs-wrap">
+		<div class="connection-ui-tabs">
+			<ul class="connection-ui-tabs-nav" id="user_connection_info_tab">
+			</ul>
+		</div>
+	</div>
+	
+	<div class="pull-right">
+		<!-- Top Menu Items -->
+		<ul class="navbar-top-links navbar-right">
+			<li class="dropdown">
+		        <a href="javascript:;" class="dropdown-toggle ui-memo-btn" data-toggle="dropdown" >
+		            <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+		        </a>
+		        <ul id="memo_alert_area" class="dropdown-menu dropdown-alerts">
+		        </ul>
+		    </li>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle"	data-toggle="dropdown"> 
+					<sec:authentication	property="principal.username" /> <b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+			        <%@ include file="/WEB-INF/include/screen.jspf"%>
+					<li>
+						<a href="<c:url value="/user/preferences" />"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
+					</li>
+					<li class="divider"></li>
+					<li>
+						<a href="<c:url value="/logout" />"><i class="fa fa-fw fa-power-off"></i> <spring:message code="btn.logout"/></a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
 </div>
- <!-- Top Menu Items -->
-<ul class="navbar-top-links navbar-right">
-	<li class="dropdown">
-        <a href="javascript:;" class="dropdown-toggle ui-memo-btn" data-toggle="dropdown" >
-            <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
-        </a>
-        <ul id="memo_alert_area" class="dropdown-menu dropdown-alerts">
-        </ul>
-    </li>
-	<li class="dropdown">
-		<a href="#" class="dropdown-toggle"	data-toggle="dropdown"> 
-			<sec:authentication	property="principal.username" /> <b class="caret"></b>
-		</a>
-		<ul class="dropdown-menu">
-	        <%@ include file="/WEB-INF/include/screen.jspf"%>
-	     	
-			<li><a href="#"><i class="fa fa-fw fa-user"></i> <spring:message
-						code="btn.profile" /></a></li>
-			<li><a href="#"><i class="fa fa-fw fa-gear"></i> <spring:message
-						code="btn.setting" /></a></li>
-			<li class="divider"></li>
-			<li><a href="<c:url value="/logout" />"><i
-					class="fa fa-fw fa-power-off"></i> <spring:message
-						code="btn.logout" /></a></li>
-		</ul></li>
-</ul>
+ 
 <script>
 	var userHeader = {
 		memoDialog : false,

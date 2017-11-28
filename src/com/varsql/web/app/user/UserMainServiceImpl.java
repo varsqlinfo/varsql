@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.ResultConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.vartech.common.app.beans.ParamMap;
 
 @Service

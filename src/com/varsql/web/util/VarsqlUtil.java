@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.constants.VarsqlConstants;
 import com.varsql.db.util.DbInstanceFactory;
-import com.varsql.db.vo.DatabaseInfo;
+import com.varsql.db.beans.DatabaseInfo;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 
 public class VarsqlUtil {
 	

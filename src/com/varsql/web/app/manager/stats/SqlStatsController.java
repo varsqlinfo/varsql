@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.common.util.StringUtil;
 import com.varsql.web.app.manager.dbnuser.DbnUserServiceImpl;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 

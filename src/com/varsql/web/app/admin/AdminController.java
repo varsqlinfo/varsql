@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.HttpUtils;
 

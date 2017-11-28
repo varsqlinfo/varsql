@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.common.util.SecurityUtil;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.common.beans.DataCommonVO;
 
 
 

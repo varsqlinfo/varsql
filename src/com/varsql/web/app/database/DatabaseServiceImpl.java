@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.util.DbInstanceFactory;
-import com.varsql.db.vo.DatabaseInfo;
-import com.varsql.db.vo.DatabaseParamInfo;
+import com.varsql.db.beans.DatabaseInfo;
+import  com.varsql.db.beans.DatabaseParamInfo;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -58,7 +58,6 @@ public class DatabaseServiceImpl{
 	 * 
 	 * @Method Name  : serviceMenu
 	 * @Method 설명 : 메뉴 정보보기 
-	 * @Method override : @see com.varsql.web.app.database.db2.Db2Service#serviceMenu(com.varsql.web.common.vo.DataCommonVO)
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 10. 
 	 * @변경이력  :

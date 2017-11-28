@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.common.beans.DataCommonVO;
 
 @Service
 public class SqlStatsServiceImpl{

@@ -1,6 +1,6 @@
-package com.varsql.web.app.database.bean;
+package com.varsql.web.app.database.beans;
 
-import com.varsql.db.vo.DatabaseParamInfo;
+import  com.varsql.db.beans.DatabaseParamInfo;
 
 /**
  * 

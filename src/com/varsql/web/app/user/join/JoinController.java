@@ -4,19 +4,25 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.app.user.beans.UserForm;
+import com.varsql.web.common.beans.DataCommonVO;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.constants.ResultConst;
 
 
 
@@ -34,58 +40,37 @@ public class JoinController {
 	JoinServiceImpl joinServiceImpl;
 	
 	@RequestMapping(value="/",method=RequestMethod.GET)
-	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {
 		return new ModelAndView("/join/joinForm");
 	}
 	
-	@RequestMapping(value="/join",method=RequestMethod.POST)
-	public ModelAndView insertUserInfo(@RequestParam(value = "uid", required = true, defaultValue = "")  String uid
-			,@RequestParam(value = "uemail", required = false )  String email
-			,@RequestParam(value = "uname")  String uname
-			,@RequestParam(value = "udept")  String udept
-			,@RequestParam(value = "upw")  String upw
-			,@RequestParam(value = "upw2")  String upw2
-			)throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		
-		paramMap.put("uid", uid);
-		paramMap.put("uemail", "".equals(email) || null == email?uid:email);
-		paramMap.put("uname", uname);
-		paramMap.put("dept_nm", udept);
-		paramMap.put("upw", upw);
-		paramMap.put("org_nm", udept);
-		
-		boolean result = joinServiceImpl.insertUserInfo(paramMap);
-		
-		ModelAndView mav = null;
-		if(result){
-			mav = new ModelAndView("forward:/join/joinLogin");
-		}else{
-			mav=new ModelAndView("/join/");
+	@RequestMapping(value="/save",method=RequestMethod.POST)
+	public @ResponseBody ResponseResult insertUserInfo(@Valid UserForm userForm, BindingResult result, ModelAndView mav, HttpServletRequest req) {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  saveVirtualPortal validation check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(500);
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
 		}
 		
-		return mav;
-	}
-	
-	@RequestMapping(value = "/joinLogin")
-	public ModelAndView joinLogin(@RequestParam(value = "uid")  String uid
-			,@RequestParam(value = "upw")  String password) throws Exception {
+		int idCheck = joinServiceImpl.selectIdCheck(userForm.getUid()).getItem(); 
 		
+		if(idCheck > 0){
+			resultObject.setResultCode(ResultConst.CODE.DUPLICATES.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.CONFLICT.toString());
+		}
 		
-		ModelMap model = new ModelMap();
-		model.addAttribute("userjoinid",uid);
-		model.addAttribute("userjoinpassword",password);
+		resultObject.setItemOne(joinServiceImpl.insertUserInfo(userForm));
 		
-		return new ModelAndView("/join/joinLogin", model);
+		return resultObject; 
 	}
 	
 	@RequestMapping(value = "/idCheck")
-	public @ResponseBody Map idCheck(@RequestParam(value = "uid")  String uid) throws Exception {
-		
-		DataCommonVO dcv = new DataCommonVO();
-		dcv.put("uid", uid);
-		
-		return joinServiceImpl.selectIdCheck(dcv);
+	public @ResponseBody ResponseResult idCheck(@RequestParam(value = "uid")  String uid) {
+		return joinServiceImpl.selectIdCheck(uid);
 	}
 }

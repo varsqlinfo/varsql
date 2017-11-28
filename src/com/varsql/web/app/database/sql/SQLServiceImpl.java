@@ -29,10 +29,10 @@ import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.builder.VarsqlStatementType;
 import com.varsql.sql.format.VarsqlFormatterDb2;
 import com.varsql.sql.util.SQLUtil;
-import com.varsql.web.app.database.bean.SqlParamInfo;
+import com.varsql.web.app.database.beans.SqlParamInfo;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
@@ -64,7 +64,6 @@ public class SQLServiceImpl{
 	 * 
 	 * @Method Name  : sqlFormat
 	 * @Method 설명 : sql 포멧 맞추기
-	 * @Method override : @see com.varsql.web.app.database.SQLService#sqlFormat(com.varsql.web.common.vo.DataCommonVO)
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 6. 
 	 * @변경이력  :
@@ -88,7 +87,6 @@ public class SQLServiceImpl{
 	 * 
 	 * @Method Name  : sqlData
 	 * @Method 설명 : 쿼리 데이타 보기. 
-	 * @Method override : @see com.varsql.web.app.database.SQLService#sqlData(com.varsql.web.common.vo.DataCommonVO)
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 9. 
 	 * @변경이력  :

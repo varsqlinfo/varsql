@@ -2,7 +2,8 @@ package com.varsql.web.app.user.join;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.app.user.beans.UserForm;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 
 
@@ -17,15 +18,15 @@ public class JoinDAO extends BaseDAO{
 		return getSqlSession().selectOne("userMapper.selectUserMaxVal");
 	}
 	
-	public int insertUserInfo(DataCommonVO paramMap){
-		return getSqlSession().insert("userMapper.insertUserInfo", paramMap );
+	public int insertUserInfo(UserForm userForm){
+		return getSqlSession().insert("userMapper.insertUserInfo", userForm );
 	}
 	
 	public int updateUserInfo(DataCommonVO paramMap){
 		return getSqlSession().update("userMapper.updateUserInfo", paramMap);
 	}
 
-	public int selectIdCheck(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("userMapper.selectIdCheck", paramMap);
+	public int selectIdCheck(String uid) {
+		return getSqlSession().selectOne("userMapper.selectIdCheck", uid);
 	}
 }

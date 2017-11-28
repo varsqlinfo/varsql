@@ -24,6 +24,7 @@ var _$base = {
 	,uri:{
 		'admin':'/admin'
 		,'manager':'/manager'
+		,'join':'/join'
 		,'user':'/user'
 		,'guest':'/guest'
 		,'database':'/database'

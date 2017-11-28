@@ -11,8 +11,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.db.vo.DatabaseParamInfo;
-import com.varsql.web.app.database.bean.PreferencesInfo;
+import  com.varsql.db.beans.DatabaseParamInfo;
+import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.HttpUtils;
 

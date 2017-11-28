@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.db.vo.DatabaseParamInfo;
+import  com.varsql.db.beans.DatabaseParamInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.vartech.common.app.beans.ResponseResult;
 

@@ -1,4 +1,4 @@
-package com.varsql.web.common.vo;
+package com.varsql.web.common.beans;
 
 import com.vartech.common.app.beans.ParamMap;
 

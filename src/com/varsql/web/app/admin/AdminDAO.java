@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 
 

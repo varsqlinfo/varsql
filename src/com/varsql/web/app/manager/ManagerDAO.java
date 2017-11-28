@@ -9,7 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.auth.Authority;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 import com.vartech.common.app.beans.SearchParameter;
 

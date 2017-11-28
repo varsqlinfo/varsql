@@ -15,15 +15,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.HttpUtils;
 
 
 
 /**
- * The Class OutsideController.
+ * 
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: UserMainController.java
+* @DESC		: 사용자 관리 컨트롤러. 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2017. 11. 28. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/user")
@@ -52,6 +64,22 @@ public class UserMainController {
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
 		return  new ModelAndView("/user/userMain",model);
+	}
+	
+	@RequestMapping({"/preferences"})
+	public ModelAndView preferencesMain(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		
+		return  new ModelAndView("/user/preferences/general", model);
+	}
+	
+	@RequestMapping({"/preferences/password"})
+	public ModelAndView preferencesPassword(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		
+		return  new ModelAndView("/user/preferences/password", model);
 	}
 	
 	@RequestMapping({"/searchUserList"})

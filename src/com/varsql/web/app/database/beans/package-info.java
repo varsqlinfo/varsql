@@ -12,4 +12,4 @@
 
 *-----------------------------------------------------------------------------
  */
-package com.varsql.web.app.database.bean;
+package com.varsql.web.app.database.beans;

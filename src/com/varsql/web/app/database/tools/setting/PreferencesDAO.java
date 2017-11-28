@@ -2,8 +2,8 @@ package com.varsql.web.app.database.tools.setting;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.database.bean.PreferencesInfo;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.app.database.beans.PreferencesInfo;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 
 @Repository

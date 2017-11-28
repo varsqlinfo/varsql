@@ -5,14 +5,14 @@
 
 <mapper namespace="userMapper">
 
-	<select id="userMapper.selectUserDetail" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="userMapper.selectUserDetail" parameterType="java.util.Map" resultType="dataCommonVO">
 		select * 
 		from VTUSER 
 		where viewid =#{viewid}
 	</select>
 	
-	<select id="userMapper.selectIdCheck" parameterType="java.util.Map" resultType="int">
-		select count(1)as cnt 
+	<select id="userMapper.selectIdCheck" parameterType="string" resultType="int">
+		select count(1)as CNT 
 		from VTUSER
 		where uid =#{uid} 
 	</select>
@@ -21,7 +21,7 @@
 		select max(viewid)as maxval from VTUSER 
 	</select>
 	
-	<insert id="userMapper.insertUserInfo" parameterType="java.util.Map">
+	<insert id="userMapper.insertUserInfo" parameterType="userForm">
 		insert  into VTUSER (
 			VIEWID 
 			, UID 
@@ -42,14 +42,14 @@
 			, #{uid}
 			, #{upw}
 			, #{uname}
-			, #{org_nm}
-			, #{dept_nm}
+			, #{orgNm}
+			, #{deptNm}
 			, #{uemail}
 			, 'GUEST'
 			, #{description}
-			, #{accept_yn}
-			, #{cre_id}
-			, #{cre_id}
+			, #{acceptYn}
+			, #{creId}
+			, #{creId}
 			, CURRENT TIMESTAMP
 		) 
 	</insert>
@@ -75,7 +75,7 @@
 		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 	</select>
 	
-	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="dataCommonVO">
 		select a.*, a.CRE_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
 		from VTQNA a
 		where CRE_ID =#{uid}
@@ -84,7 +84,7 @@
 		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="dataCommonVO">
 		select a.*, a.CRE_DT as CHAR_CRE_DT 
 		from VTQNA a
 		where DEL_YN !='Y'

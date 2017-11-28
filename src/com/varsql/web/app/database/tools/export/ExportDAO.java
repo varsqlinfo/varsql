@@ -2,7 +2,7 @@ package com.varsql.web.app.database.tools.export;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.database.bean.PreferencesInfo;
+import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.dao.BaseDAO;
 
 @Repository

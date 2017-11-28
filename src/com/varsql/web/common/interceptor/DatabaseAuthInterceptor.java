@@ -11,7 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.constants.VarsqlConstants;
-import com.varsql.db.vo.DatabaseInfo;
+import com.varsql.db.beans.DatabaseInfo;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 
 /**

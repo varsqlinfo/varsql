@@ -10,10 +10,15 @@
 		<put-attribute name="title" value="user" type="string" />
 		<put-attribute name="header" value="/WEB-INF/views/user/_templates/header.jsp" />
 		<put-attribute name="footer" value="/WEB-INF/views/user/_templates/footer.jsp" />
-		<put-attribute name="left" value="/WEB-INF/views/user/_templates/left.jsp" />
-		<put-attribute name="body" value="/WEB-INF/views/user/_templates/blank.jsp" />
 	</definition>
 	
+    <definition name="/user/preferences/**" template="/WEB-INF/views/user/preferences/_templates/main.jsp">
+    	<put-attribute name="header" value="/WEB-INF/views/user/preferences/_templates/header.jsp" />
+        <put-attribute name="left" value="/WEB-INF/views/user/preferences/_templates/left.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/views/user/preferences/_templates/footer.jsp" />
+        <put-attribute name="body" value="/WEB-INF/views/user/preferences/{1}.jsp" />
+    </definition>
+    
     <definition name="/user/**" extends="user-tiles">
         <put-attribute name="body" value="/WEB-INF/views/user/{1}.jsp" />
     </definition>

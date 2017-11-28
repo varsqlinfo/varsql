@@ -12,9 +12,10 @@
 	</settings>
 	
 	<typeAliases>
-	  <typeAlias alias="dataCommonVO" type="com.varsql.web.common.vo.DataCommonVO"/>
-	  <typeAlias alias="preferencesInfo" type="com.varsql.web.app.database.bean.PreferencesInfo"/>
+	  <typeAlias alias="dataCommonVO" type="com.varsql.web.common.beans.DataCommonVO"/>
+	  <typeAlias alias="preferencesInfo" type="com.varsql.web.app.database.beans.PreferencesInfo"/>
 	  <typeAlias alias="searchParameter" type="com.vartech.common.app.beans.SearchParameter"/>
-	  <typeAlias alias="sqlParamInfo" type="com.varsql.web.app.database.bean.SqlParamInfo"/>
+	  <typeAlias alias="sqlParamInfo" type="com.varsql.web.app.database.beans.SqlParamInfo"/>
+	  <typeAlias alias="userForm" type="com.varsql.web.app.user.beans.UserForm"/>
 	</typeAliases>
 </configuration>

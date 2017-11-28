@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.auth.Authority;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.app.user.beans.UserForm;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ResponseResult;
 
 /**
  * 
@@ -33,31 +35,43 @@ public class JoinServiceImpl{
 		return json;
 	}
 
-	public boolean insertUserInfo(DataCommonVO paramMap) {
-		String vconid = joinDAO.selectUserMaxVal();
+	public boolean insertUserInfo(UserForm userForm) {
+		String viewId = joinDAO.selectUserMaxVal();
 		
 		try{
-			vconid=String.format("%07d", Integer.parseInt(vconid)+1);
+			viewId=String.format("%07d", Integer.parseInt(viewId)+1);
 		}catch(Exception e){
-			vconid=String.format("%07d", 1);
+			viewId=String.format("%07d", 1);
 		}
-		paramMap.put("viewid", vconid);
-		paramMap.put("role", Authority.GUEST.name());
-		paramMap.put("description", "");
-		paramMap.put("accept_yn", "N");
-		paramMap.put("cre_id", "join");
 		
-		return joinDAO.insertUserInfo(paramMap) > 0;
+		userForm.setViewid(viewId);
+		userForm.setRole(Authority.GUEST.name());
+		userForm.setAcceptYn("N");
+		userForm.setCreId("join");
+		
+		return joinDAO.insertUserInfo(userForm) > 0;
 	}
 
 	public boolean updateUserInfo(DataCommonVO paramMap) {
 		return joinDAO.updateUserInfo(paramMap) > 0;
 	}
-
-	public Map selectIdCheck(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		json.put("result", joinDAO.selectIdCheck(paramMap));
-		return json;
+	
+	/**
+	 * 
+	 * @Method Name  : selectIdCheck
+	 * @Method 설명 : id check
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 28. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectIdCheck(String uid) {
+		
+		ResponseResult resultObject = new ResponseResult();
+		resultObject.setItemOne(joinDAO.selectIdCheck(uid));
+		
+		return resultObject;
 	}
 
 }

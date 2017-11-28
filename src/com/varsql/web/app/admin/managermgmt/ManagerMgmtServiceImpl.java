@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.StringUtil;
-import com.varsql.web.common.vo.DataCommonVO;
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.utils.PagingUtil;
 

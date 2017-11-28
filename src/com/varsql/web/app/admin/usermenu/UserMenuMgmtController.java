@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.DBMenuConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
-import com.varsql.web.common.vo.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
 
 

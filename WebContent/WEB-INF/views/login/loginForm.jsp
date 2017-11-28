@@ -70,22 +70,12 @@ body {
 		<form name="f" action="${varsqlLoginUrl}" method="post"
 			class="form-signin" role="form">
 			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
-			<div>
-				<button type="button" class="btn btn-default"
-					onclick="$('#id').val('varsqladmin');$('#password').val('varsqladmin');">Admin</button>
-				<button type="button" class="btn btn-default"
-					onclick="$('#id').val('manage');$('#password').val('manage');">Manage</button>
-				<button type="button" class="btn btn-default"
-					onclick="$('#id').val('aaa@bbb.com');$('#password').val('123456');">User</button>
-			</div>
-			<input class="form-control" id="id" name="id" value="manage"
-				type="text" placeholder="<spring:message code="login.form.id"/>"
-				autofocus> <input class="form-control" id="password"
-				name="password" value="manage" type="password"
-				placeholder="<spring:message code="login.form.pw"/>" value="">
+			
+			<input class="form-control" id="id" name="id" type="text" placeholder="<spring:message code="login.form.id"/>"	autofocus> 
+			<input class="form-control" id="password" name="password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
 			<div class="checkbox">
-				<label> <input type="checkbox" value="remember-me">
-					Remember me
+				<label>
+					<input type="checkbox" value="remember-me"> Remember me
 				</label>
 			</div>
 			<c:if test="${login=='fail'}">
@@ -99,8 +89,10 @@ body {
 				<spring:message code="btn.login" />
 			</button>
 			<div class="text-center panel-footer">
+				<!-- 
 				<a href="javascript:;" class="">아이디찾기</a>
 				<a href="javascript:;" class="">비밀번호찾기</a>
+				 -->
 				<a href="./join/" class="">회원가입</a>
 			</div>
 		</form>

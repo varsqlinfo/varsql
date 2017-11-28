@@ -47,7 +47,7 @@
 		and (TITLE like '%'||#{keyword}||'%' or QUESTION LIKE '%'||#{keyword}||'%') 
 	</select>
 	
-	<select id="manageMapper.selectQnaMgmtList" parameterType="searchParameter" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="manageMapper.selectQnaMgmtList" parameterType="searchParameter" resultType="dataCommonVO">
 		select a.*, b.UNAME, a.CRE_DT as CHAR_CRE_DT, a.UPD_DT as CHAR_UPD_DT
 		from VTQNA a , VTUSER b
 		where DEL_YN !='Y'

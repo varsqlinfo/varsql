@@ -26,6 +26,16 @@ body {
   color: #fff;
   border-bottom: 2px solid #EBEBEB;
 }
+
+.navbar-top-links {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.navbar-top-links li {
+    display: inline-block;
+}
+
 .navbar-top-links li a{
 	color: #fff;
 }
@@ -33,6 +43,58 @@ body {
 .navbar-top-links li .dropdown-menu a{
 	color: #000;
 }
+
+.navbar-top-links li:last-child {
+    margin-right: 15px;
+}
+
+.navbar-top-links li a {
+    padding-right: 15px;
+    min-height: 50px;
+}
+
+.navbar-top-links .dropdown-menu li {
+    display: block;
+}
+
+.navbar-top-links .dropdown-menu li:last-child {
+    margin-right: 0;
+}
+
+.navbar-top-links .dropdown-menu li a {
+    padding: 3px 20px;
+    min-height: 0;
+}
+
+.navbar-top-links .dropdown-menu li a div {
+    white-space: normal;
+}
+
+.navbar-top-links .dropdown-messages,
+.navbar-top-links .dropdown-tasks,
+.navbar-top-links .dropdown-alerts {
+    width: 310px;
+    min-width: 0;
+}
+
+.navbar-top-links .dropdown-messages {
+    margin-left: 5px;
+}
+
+.navbar-top-links .dropdown-tasks {
+    margin-left: -59px;
+}
+
+.navbar-top-links .dropdown-alerts {
+    margin-left: -123px;
+}
+
+.navbar-top-links .dropdown-user {
+    right: 0;
+    left: auto;
+}
+
+
 
 #user-page-wrapper {
   position: absolute;
@@ -538,6 +600,10 @@ padding-top: 5px;
 
 .margin-top5{
 	margin-top:5px;
+}
+
+.margin-bottom5{
+	margin-bottom:5px;
 }
 
 .margin-bottom0{

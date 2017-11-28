@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.database.bean.SqlParamInfo;
+import com.varsql.web.app.database.beans.SqlParamInfo;
 import com.varsql.web.dao.BaseDAO;
 import com.vartech.common.app.beans.ParamMap;
 

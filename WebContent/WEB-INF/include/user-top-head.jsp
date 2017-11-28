@@ -14,7 +14,6 @@
 
 <link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
 <!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/sb-admin-2.css" rel="stylesheet">
 <!--  link href="${pageContextPath}/webstatic/css/ui.jqgrid.css" rel="stylesheet"-->
 
 <!-- Custom Fonts -->

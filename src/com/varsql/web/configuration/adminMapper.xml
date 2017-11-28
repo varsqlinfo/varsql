@@ -18,7 +18,7 @@
 		where (VNAME like '%'||#{searchVal}||'%' or VURL like '%'||#{searchVal}||'%') 
 	</select>
 	
-	<select id="adminMapper.selectDetailObject" parameterType="java.util.Map" resultType="com.varsql.web.common.vo.DataCommonVO">
+	<select id="adminMapper.selectDetailObject" parameterType="java.util.Map" resultType="dataCommonVO">
 		select * 
 		from VTCONNECTION 
 		where VCONNID =#{vconid}

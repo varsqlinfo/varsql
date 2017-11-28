@@ -7,6 +7,7 @@
 <entry key="user.home.title">- VarSQL -</entry>
 <entry key="manager.home.title">-- Manager --</entry>
 <entry key="admin.home.title">--- Admin ---</entry>
+<entry key="user.preferences.title">환결설정</entry>
 <entry key="msg.please.sign.in">VARSQL 로그인</entry>
 
 
@@ -53,6 +54,12 @@
 <entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
 <entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
 
+<!-- user menu -->
+<entry key="user.edit.general">프로필 수정</entry>
+<entry key="user.edit.pasword">비밀번호 변경</entry>
+
+
+
 
 <entry key="login.form.id">아이디</entry>
 <entry key="login.form.pw">패스워드</entry>
@@ -68,6 +75,7 @@
 
 <!-- join form -->
 <entry key="join.form.title">회원가입</entry>
+<entry key="join.form.uid">아이디</entry>
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
 <entry key="join.form.dept">소속</entry>
