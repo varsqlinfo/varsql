@@ -4,24 +4,28 @@
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="userMapper">
-
-	<select id="userMapper.selectUserDetail" parameterType="java.util.Map" resultType="dataCommonVO">
+	
+	<!-- 사용자 정보 상세 보기. -->
+	<select id="userMapper.selectUserDetail" parameterType="string" resultType="dataCommonVO">
 		select * 
 		from VTUSER 
 		where viewid =#{viewid}
 	</select>
 	
+	<!-- id check -->
 	<select id="userMapper.selectIdCheck" parameterType="string" resultType="int">
 		select count(1)as CNT 
 		from VTUSER
 		where uid =#{uid} 
 	</select>
-
+	
+	<!-- 사용자 view id max val -->
 	<select id="userMapper.selectUserMaxVal" resultType="java.lang.String">
 		select max(viewid)as maxval from VTUSER 
 	</select>
 	
-	<insert id="userMapper.insertUserInfo" parameterType="userForm">
+	<!-- 회원 가입. -->
+	<insert id="userMapper.insertUserInfo" parameterType="joinForm">
 		insert  into VTUSER (
 			VIEWID 
 			, UID 
@@ -54,19 +58,36 @@
 		) 
 	</insert>
 	
-	<update id="userMapper.updateUserInfo" parameterType="java.util.Map">
+	<!-- 사용자 정보 업데이트 -->
+	<update id="userMapper.updateUserInfo" parameterType="userForm">
 		update VTUSER 
 		set 
-			UPW=#{upw}
-			, UNAME =#{uname}
-			, ORG_NM =#{org_nm}
-			, DEPT_NM =#{dept_nm}
+			 UNAME =#{uname}
+			, ORG_NM =#{orgNm}
+			, DEPT_NM =#{deptNm}
 			, UEMAIL =#{uemail}
 			, DESCRIPTION =#{description}
 			, UPD_DT = CURRENT TIMESTAMP
 		where VIEWID =#{viewid}
 	</update>
 	
+	<!-- current password check -->
+	<select id="userMapper.selectUserPasswordCheck" parameterType="passwordForm" resultType="int">
+		select count(1) as TOTALCNT
+		from VTUSER a
+		where VIEWID =#{viewid}
+		and UPW = #{currPw}
+	</select>
+	
+	<!-- 패스워드 변경. -->
+	<update id="userMapper.updatePasswordInfo" parameterType="passwordForm">
+		update VTUSER 
+		set 
+			 UPW = #{upw}
+		where VIEWID =#{viewid}
+	</update>
+	
+	<!-- qna 총 수 -->
 	<select id="userMapper.selectQnaTotalCnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt
 		from VTQNA a
@@ -75,6 +96,7 @@
 		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 	</select>
 	
+	<!-- qna 목록보기 -->
 	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="dataCommonVO">
 		select a.*, a.CRE_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
 		from VTQNA a
@@ -84,6 +106,7 @@
 		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
+	<!-- qna 상세보기 -->
 	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="dataCommonVO">
 		select a.*, a.CRE_DT as CHAR_CRE_DT 
 		from VTQNA a
@@ -91,6 +114,7 @@
 		and QNAID=#{qnaid}
 	</select>
 	
+	<!-- qna 상세보기 -->
 	<select id="userMapper.selectQnaMaxVal" parameterType="java.util.Map" resultType="java.lang.String">
 		select max(QNAID)as MAXVAL from VTQNA
 	</select>

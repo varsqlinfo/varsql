@@ -83,7 +83,7 @@
             <label class="col-sm-3 control-label"><spring:message code="join.form.password.confirm"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="password" class="form-control" id="configUpw" name="configUpw" placeholder="<spring:message code="join.form.password.confirm" />" />
+                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="join.form.password.confirm" />" />
             </div>
         </div>
 
@@ -193,7 +193,7 @@ var joinForm = {
 	                        message: '아이디와 달라야 합니다.'
 	                    }
 	                    ,identical: {
-	                        field: 'configUpw',
+	                        field: 'confirmUpw',
 	                        message: '비밀번호가 같아야합니다.'
 	                    }
 	                    ,stringLength: {
@@ -203,7 +203,7 @@ var joinForm = {
 	                    }
 	                }
 	            }
-	            ,configUpw: {
+	            ,confirmUpw: {
 	                validators: {
 	                    notEmpty: {
 	                        message: '필수 입력사항입니다.'

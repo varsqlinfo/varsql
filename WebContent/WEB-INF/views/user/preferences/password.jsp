@@ -2,112 +2,142 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
-<script>
-$(document).ready(function (){
-	userMain.init();
-})
-var userMain = {
-	_userConnectionInfo :'#user_connection_info'
-	,_connectionTab :'#user_connection_info_tab'
-	,_connectionIframe :'#user_connection_info_iframe'
-	,init : function (){
-		var _self = this; 
-		_self.evtInit();
-	}
-	,evtInit : function (){
-		var _self = this; 
-		$(_self._userConnectionInfo).on('change',function (){
-			var selectObj = $(this);
-			
-			if(selectObj.val()=='') return ;
-			
-			_self.tabCntl($(_self._userConnectionInfo+" option:selected"));
-		});
-		
-		$(_self._connectionTab).on('click','.tab-ui-name',function (){
-			var tmpid = $(this).closest('[conuid]').attr('conuid');
-			$(_self._userConnectionInfo).val(tmpid);
-			$(_self._userConnectionInfo).trigger( "change" );
-		});
-		
-		$(_self._connectionTab).on('click','.tab-ui-close',function (){
-			var pObj = $(this).closest('[conuid]'); 
-			var tmpid = pObj.attr('conuid');
-			if(!confirm(unescape(pObj.attr('vname'))+' db를 닫으시겠습니까?')) return ; 
-			
-			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
-			
-			var viewElement = $(tmpDbTabInfo.prev());
-			
-			if(viewElement.length < 1){
-				viewElement= $(tmpDbTabInfo.next());
-			}
-			
-			$('.tabs_'+tmpid).remove();
-			$('.iframe_'+tmpid).remove();
-			
-			if(viewElement.length > 0){
-				console.log('viewElementaaa ', viewElement)
-				$(viewElement.find('.db-info-tab-item')).trigger('click');	
-			}
-			
-			if($('.db_sql_view_area').length < 1){
-				$('#connection_select_msg_wrapper').show();
-			}
-		});
-	}
-	// 탭정보 컨트롤
-	,tabCntl:function (selectObj){
-		var _self = this;
-		var sconid = selectObj.val();
-		var tabs = $('.tabs_'+sconid);
-		
-		$( _self._connectionTab+'> .ui-state-active').removeClass('ui-state-active');
-		tabs.addClass('ui-state-active');
-		$('.db_sql_view_area').hide();
-		
-		if(tabs.length > 0){
-			$('.iframe_'+sconid).show();
-			return ; 
-		}
-		
-		var strHtm='<li class="db-info-tab ui-state-default ui-corner-top connection-ui-tabs-active ui-state-active tabs_'+sconid+'">';
-		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(selectObj.attr('vname'))+'">';
-		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+selectObj.attr('vname')+'</a>&nbsp;';
-		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp;';
-		strHtm+='	</span>';
-		strHtm+='</li>';
+<div class="page-cont row">
+	<div class="col-xs-12 fill">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">	
+					<div class="col-sm-12">
+						<div class="pull-right margin-bottom5">
+							<button type="button" class="btn btn-default save-btn">
+								<i class="fa fa-save"></i><spring:message code="btn.save"/>
+							</button>
+						</div>
+					</div>
+				</div>
+				
+				<div>
+					<form id="writeForm" name="writeForm" role="form" class="form-horizontal">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="inputError"><spring:message code="user.form.password.current"/></label>
+							<div class="col-lg-10">
+								<input type="password"  id=currPw name="currPw" placeholder="<spring:message code="user.form.password.current"/>" class="form-control text required">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="inputError"><spring:message code="user.form.password.new" /></label>
+							<div class="col-lg-10">
+								 <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="user.form.password.new"/>" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><spring:message code="user.form.password.confirm"/></label>
 
-		$(_self._connectionTab).append(strHtm);
-		
-		var _url = VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid; 
-		var strHtm = '<iframe class="db_sql_view_area iframe_'+sconid+'" src="'+_url+'" style="width:100%;height:100%;" width="100%" height="100%" frameborder="0"></iframe>';
-		
-		$(_self._connectionIframe).append(strHtm);
-		$('#connection_select_msg_wrapper').hide();
+				            <div class="col-sm-10">
+				                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="user.form.password.confirm"/>" />
+				            </div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+var passwordMain = {
+	init:function(){
+		var _self = this;
+		_self.initEvt();
 	}
-	,activeClose : function (){
-		$(this._connectionTab+'> .ui-state-active .tab-ui-close').trigger('click');
+	,initEvt : function (){
+		var _self = this;
+		
+		$('.save-btn').on('click',function (){
+			$('#writeForm').submit();
+		});
+		
+		$('#writeForm').bootstrapValidator({
+			message: 'This value is not valid',
+			feedbackIcons: {
+				valid: 'glyphicon glyphicon-ok',
+				invalid: 'glyphicon glyphicon-remove',
+				validating: 'glyphicon glyphicon-refresh'
+			},
+			fields: {
+				currPw: {
+	                validators: {
+	                    notEmpty: { message: '필수 입력사항입니다.'}
+	                    ,stringLength: {min: 4, max: 500, message: '최소 4글자 이상 이여야 합니다.' }
+	                }
+	            }
+				,upw : {
+	                validators: {
+	                	 notEmpty: { message: '필수 입력사항입니다.'}
+                    	,stringLength: {min: 4, max: 500, message: '최소 4글자 이상 이여야 합니다.' }
+	                    ,identical: {
+	                        field: 'confirmUpw',
+	                        message: '비밀번호가 같아야합니다.'
+	                    }
+	                }
+	            }
+	            ,confirmUpw : {
+	                validators: {
+	                    notEmpty: {
+	                        message: '필수 입력사항입니다.'
+	                    }
+	                    ,identical: {
+	                        field: 'upw',
+	                        message: '비밀번호가 같아야합니다.'
+	                    }
+	                }
+	            }
+			}
+		}).on('success.form.bv', function(e) {
+			// Prevent form submission
+			e.preventDefault();
+			
+			_self.saveInfo();
+		});
+	}
+	// 정보 저장.
+	,saveInfo : function (){
+		var _self = this;
+		
+		var params  =$('#writeForm').serializeJSON();
+		
+		VARSQL.req.ajax({
+			url: {gubun:VARSQL.uri.user, url:'/preferences/passwordSave'},
+			cache: false,
+			type:"post",
+			data:params,
+			dataType: "json",
+			success: function(resData) {
+				if(resData.messageCode=='valid'){
+					var items = resData.items;
+					objLen = items.length;
+					if(objLen >0){
+						var item;
+						for(var i=0; i <objLen; i++){
+							item = items[i];
+							alert(item.field + "\n"+ item.defaultMessage)
+							return ; 
+						}
+					}
+				}
+				
+				if(resData.resultCode == 403){
+					alert('현재 비밀번호가 맞지 않습니다');
+					return ; 
+				}
+				
+				location.href= location.href;
+			}
+		});
 	}
 }
-</script>
-<!-- Page Heading -->
 
-<div class="col-lg-12 fill" style="height:100%;">
-	<div class="row fill" id="user_connection_info_iframe" style="height:100%;">
-		<table id="connection_select_msg_wrapper" style="width: 100%; height: 100%;">
-			<tbody>
-				<tr>
-					<td style="text-align: center; font-size: 3em;">
-							접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</div>
-<div id="memoTemplate_view_dialog" style="display:none;" title="메시지">
-	<div style="margin: 0px -10px 0px -10px;">
-		<textarea id="memo_content" name="memo_content" class="form-control" rows="12" placeholder="내용"></textarea>
-	</div>
-</div>
+$(document).ready(function (){
+	passwordMain.init();
+});
+</script>

@@ -46,20 +46,24 @@ public class GuestServiceImpl{
 		
 		return json;
 	}
-
+	/**
+	 * 
+	 * @Method Name  : insertQnaInfo
+	 * @Method 설명 : qna 등록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
 	public boolean insertQnaInfo(DataCommonVO paramMap) {
 		String qnaid = guestDAO.selectQnaMaxVal();
-		
-		try{
-			qnaid=String.format("%06d", Integer.parseInt(qnaid)+1);
-		}catch(Exception e){
-			qnaid=String.format("%06d", 1);
-		}
+		qnaid=VarsqlUtil.generateUUID();
 		paramMap.put("qnaid", qnaid);
 		
 		return guestDAO.insertQnaInfo(paramMap) > 0;
 	}
-
+	
 	public boolean deleteQnaInfo(DataCommonVO paramMap) {
 		return guestDAO.deleteQnaInfo(paramMap) > 0;
 	}

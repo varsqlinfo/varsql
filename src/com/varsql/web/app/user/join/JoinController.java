@@ -1,7 +1,5 @@
 package com.varsql.web.app.user.join;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -10,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.user.beans.UserForm;
-import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.app.user.beans.JoinForm;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 
@@ -45,7 +41,7 @@ public class JoinController {
 	}
 	
 	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public @ResponseBody ResponseResult insertUserInfo(@Valid UserForm userForm, BindingResult result, ModelAndView mav, HttpServletRequest req) {
+	public @ResponseBody ResponseResult insertUserInfo(@Valid JoinForm	joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			
@@ -57,14 +53,14 @@ public class JoinController {
 			resultObject.setItemList(result.getAllErrors());
 		}
 		
-		int idCheck = joinServiceImpl.selectIdCheck(userForm.getUid()).getItem(); 
+		int idCheck = joinServiceImpl.selectIdCheck(joinForm.getUid()).getItem(); 
 		
 		if(idCheck > 0){
 			resultObject.setResultCode(ResultConst.CODE.DUPLICATES.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.CONFLICT.toString());
 		}
 		
-		resultObject.setItemOne(joinServiceImpl.insertUserInfo(userForm));
+		resultObject.setItemOne(joinServiceImpl.insertUserInfo(joinForm));
 		
 		return resultObject; 
 	}

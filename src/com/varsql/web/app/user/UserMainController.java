@@ -4,20 +4,27 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.app.user.beans.PasswordForm;
+import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -65,21 +72,116 @@ public class UserMainController {
 		
 		return  new ModelAndView("/user/userMain",model);
 	}
-	
+	/**
+	 * 
+	 * @Method Name  : preferencesMain
+	 * @Method 설명 : 사용자 정보 환결 설정.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/preferences"})
 	public ModelAndView preferencesMain(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		
+		model.addAttribute("detailInfo" , userMainServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
 		return  new ModelAndView("/user/preferences/general", model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : userInfoSave
+	 * @Method 설명 : 사용자 정보 업데이트.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param userForm
+	 * @param result
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/userInfoSave"})
+	public @ResponseBody ResponseResult userInfoSave(@Valid UserForm userForm, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController validation check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(500);
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			userForm.setViewid(SecurityUtil.loginId(req));
+			resultObject.setItemOne(userMainServiceImpl.updateUserInfo(userForm));
+		}
+		
+		return  resultObject;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : preferencesPassword
+	 * @Method 설명 : 패스워드 변경.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/preferences/password"})
 	public ModelAndView preferencesPassword(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		
 		return  new ModelAndView("/user/preferences/password", model);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : userInfoSave
+	 * @Method 설명 : 비밀번호 변경.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param passwordForm
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/passwordSave"})
+	public @ResponseBody ResponseResult userInfoSave(@Valid PasswordForm passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			passwordForm.setViewid(SecurityUtil.loginId(req));
+			
+			int checkCnt = userMainServiceImpl.selectUserPasswordCheck(passwordForm);
+			
+			if(checkCnt > 0){
+				resultObject.setItemOne(userMainServiceImpl.updatePasswordInfo(passwordForm));
+			}else{
+				resultObject.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+			}
+		}
+		
+		return  resultObject;
 	}
 	
 	@RequestMapping({"/searchUserList"})

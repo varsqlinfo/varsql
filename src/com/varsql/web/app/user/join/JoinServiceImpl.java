@@ -1,16 +1,12 @@
 package com.varsql.web.app.user.join;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.auth.Authority;
+import com.varsql.web.app.user.beans.JoinForm;
 import com.varsql.web.app.user.beans.UserForm;
-import com.varsql.web.common.beans.DataCommonVO;
-import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -28,14 +24,17 @@ public class JoinServiceImpl{
 	@Autowired
 	JoinDAO joinDAO ;
 	
-
-	public Map selectUserDetail(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		json.put("result", joinDAO.selectUserDetail(paramMap));
-		return json;
-	}
-
-	public boolean insertUserInfo(UserForm userForm) {
+	/**
+	 * 
+	 * @Method Name  : insertUserInfo
+	 * @Method 설명 : 사용자 정보 등록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param userForm
+	 * @return
+	 */
+	public boolean insertUserInfo(JoinForm	joinForm) {
 		String viewId = joinDAO.selectUserMaxVal();
 		
 		try{
@@ -44,18 +43,14 @@ public class JoinServiceImpl{
 			viewId=String.format("%07d", 1);
 		}
 		
-		userForm.setViewid(viewId);
-		userForm.setRole(Authority.GUEST.name());
-		userForm.setAcceptYn("N");
-		userForm.setCreId("join");
+		joinForm.setViewid(viewId);
+		joinForm.setRole(Authority.GUEST.name());
+		joinForm.setAcceptYn("N");
+		joinForm.setCreId("join");
 		
-		return joinDAO.insertUserInfo(userForm) > 0;
+		return joinDAO.insertUserInfo(joinForm) > 0;
 	}
 
-	public boolean updateUserInfo(DataCommonVO paramMap) {
-		return joinDAO.updateUserInfo(paramMap) > 0;
-	}
-	
 	/**
 	 * 
 	 * @Method Name  : selectIdCheck

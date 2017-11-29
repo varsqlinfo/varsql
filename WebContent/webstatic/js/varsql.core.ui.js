@@ -847,7 +847,7 @@ _ui.leftDbObjectServiceMenu ={
     			data:colData.items
     			,column : [
 					{ label: '컬럼명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'typeName' },
+					{ label: '데이타타입', key: 'typeAndLength' },
 					{ label: '널여부', key: 'nullable',width:45},
 					{ label: 'PK', key: 'primayKey',width:45},
 					{ label: '설명', key: 'comment',width:45}

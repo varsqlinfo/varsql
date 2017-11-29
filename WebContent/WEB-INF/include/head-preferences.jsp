@@ -19,6 +19,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <!-- Custom CSS -->
+<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
@@ -38,6 +39,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>

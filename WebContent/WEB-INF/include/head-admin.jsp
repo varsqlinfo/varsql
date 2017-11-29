@@ -21,6 +21,7 @@
 
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 
 

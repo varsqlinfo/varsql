@@ -85,6 +85,10 @@
 <entry key="btn.join">가입신청</entry>
 <entry key="btn.main">메인으로</entry>
 
+<!-- user form  -->
+<entry key="user.form.password.current">현재 비밀번호</entry>
+<entry key="user.form.password.new">신규 비밀번호</entry>
+<entry key="user.form.password.confirm">확인 비밀번호</entry>
 
 <!-- button message -->
 <entry key="btn.save">저장</entry>

@@ -2,11 +2,11 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <div data-curr-step="1">
-	<div class="process-step-wrapper" style="height:270px;overflow:auto;">
+	<div class="process-step-wrapper" style="height:280px;overflow:auto;">
 		<div class="process-step" data-step="1">
 			<div>
 				<div class="col-xs-12">
-					<spring:message code="msg.table.export.info" />
+					<label class="control-label"><spring:message code="msg.table.export.info" /></label>
 				</div>
 				<div class="col-xs-12">
 					<form id="firstConfigForm" name="firstConfigForm" class="form-horizontal bv-form eportalForm">
@@ -35,7 +35,7 @@
 		<div class="process-step" data-step="2">
 			<div>
 				<div class="col-xs-12">
-					<spring:message code="msg.table.dbclick.move" />
+					<label class="control-label"><spring:message code="msg.table.dbclick.move" /></label>
 				</div>
 				<div class="col-xs-5">
 					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
@@ -71,62 +71,62 @@
 		<div class="process-step" data-step="3">
 			<div>
 				<div class="col-xs-12">
-					<spring:message code="msg.column.dbclick.move" />
+					<label class="control-label"><spring:message code="msg.column.dbclick.move" /></label>
 				</div>
-				<div class="col-xs-3">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
-					<div>
-						<ul id="columnSource" class="pub-select-source pub-multiselect-area" style="height: 200px;width: 100%;">
-						</ul>
-					</div>
-				</div>
-				<div class="col-xs-1 text-center">
-					<div style="position:relative;top:100px;">
-						<a href="javascript:;" class="add-item2"><span class="glyphicon glyphicon-forward"></span></a>
-						<br/>
-						<a href="javascript:;" class="cancle-item2"><span class="glyphicon glyphicon-backward"></span></a>
-					</div>
-				</div>
-				<div class="col-xs-3">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.value" /></div>
-					<div>
-						<ul id="columnTarget" class="pub-select-target pub-multiselect-area" style="height: 200px;width: 100%;">
-						
-						</ul>
-					</div>
-					<div class="pull-right">
-						<a href="javascript:;" class="item-move2" mode="up">위</a>
-						<span style="padding-left:10px;"></span>
-						<a href="javascript:;" class="item-move2" mode="down">아래</a>
-						<span style="padding-right:10px;"></span>
-					</div>
-				</div>
-				<div class="col-xs-5">
-					<form id="mappingForm" name="mappingForm" class="form-horizontal bv-form eportalForm">
-						<div class="col-xs-12" style="padding:0px 0px 5px 0px;">
-						    <div class="pull-right">
-								<button type="button" class="btn btn-info btn-sm mappingInfoAddBtn">수정정보등록</button>
-							</div>
+				<div style="height:245px;;border:1px solid #ddd;margin:3px;overflow:hidden;">
+					<div class="col-xs-3">
+						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+						<div>
+							<ul id="columnSource" class="pub-select-source pub-multiselect-area" style="height: 200px;width: 100%;">
+							</ul>
 						</div>
-						<div class="form-group">
-							<label class="col-xs-3 control-label">컬럼</label>
-							<div class="col-xs-9">
-								<input class="form-control text required input-sm" id="col_key" name="col_key" value="" disabled="disabled">
-							</div>
+					</div>
+					<div class="col-xs-1 text-center">
+						<div style="position:relative;top:100px;">
+							<a href="javascript:;" class="add-item2"><span class="glyphicon glyphicon-forward"></span></a>
+							<br/>
+							<a href="javascript:;" class="cancle-item2"><span class="glyphicon glyphicon-backward"></span></a>
 						</div>
-						<div class="form-group">
-							<label class="col-xs-3 control-label">컬럼명</label>
-							<div class="col-xs-9">
-								<input class="form-control text required input-sm" id="col_name" name="col_name" value="">
-							</div>
+					</div>
+					<div class="col-xs-3">
+						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.value" /></div>
+						<div>
+							<ul id="columnTarget" class="pub-select-target pub-multiselect-area" style="height: 200px;width: 100%;">
+							
+							</ul>
 						</div>
-						<div class="form-group">
-							<label class="col-xs-3 control-label">사이즈</label>
-							<div class="col-xs-9">
-								<input class="form-control text required input-sm" id="col_width" name="col_width" value="">
-							</div>
+						<div class="pull-right">
+							<a href="javascript:;" class="item-move2" mode="up">위</a>
+							<span style="padding-left:10px;"></span>
+							<a href="javascript:;" class="item-move2" mode="down">아래</a>
+							<span style="padding-right:10px;"></span>
 						</div>
-					</form>
+					</div>
+					<div class="col-xs-5">
+						<form id="mappingForm" name="mappingForm" class="form-horizontal bv-form eportalForm">
+							<div class="col-xs-12" style="padding:0px 0px 5px 0px;">
+								컬럼 상세정보
+							</div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label padding0">컬럼</label>
+								<div class="col-xs-9">
+									<input class="form-control text required input-sm" v-model="detailItem.code" disabled="disabled">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label padding0">컬럼명</label>
+								<div class="col-xs-9">
+									<input class="form-control text required input-sm" v-model="detailItem.title" >
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label padding0">사이즈</label>
+								<div class="col-xs-9">
+									<input class="form-control text required input-sm" v-model="detailItem.width">
+								</div>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -143,6 +143,16 @@
 </div>
 	
 <script>
+
+var mappingFormVue =  new Vue({
+	el: '#mappingForm'
+	,created:function(){
+		
+	}
+	,data: {
+		detailItem :{}
+	}
+})
 
 var tableExport = {
 	selectTableObj : []
@@ -185,20 +195,6 @@ var tableExport = {
 		//아래위 이동
 		$('.item-move2').on('click',function (){
 			_self.selectColumnObj.move($(this).attr('mode'));
-		});
-		
-		$('.mappingInfoAddBtn').on('click',function (){
-			var tmpKey= $('#col_key').val(); 
-			if(tmpKey != ''){
-				
-				var mappingInfo = $("#mappingForm").serializeJSON();
-				var sItem =_self.selectColumnObj.getTargetItem(tmpKey); 
-				sItem.title =mappingInfo.col_name;
-				sItem.width =mappingInfo.col_width; 
-				
-				_self.selectColumnObj.addItemStausUpdate(tmpKey);
-				$("#mappingForm")[0].reset(); 
-			}
 		});
 		
 		var currStep =1
@@ -350,9 +346,8 @@ var tableExport = {
 				,optTxt : 'code'
 				,items : (_self.userSettring.columns ||[])
 				,click: function (e, sItem){
-					$('#col_key').val(sItem.code);
-					$('#col_name').val(sItem.title);
-					$('#col_width').val( (sItem.width ||sItem.custom.width));
+					sItem.width = (sItem.width ||sItem.custom.width);
+					mappingFormVue.detailItem = sItem;
 				}
 			}
 		}); 

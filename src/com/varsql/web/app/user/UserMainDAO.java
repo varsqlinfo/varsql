@@ -1,16 +1,33 @@
 package com.varsql.web.app.user;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.varsql.web.app.user.beans.PasswordForm;
+import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 
+/**
+ * 
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: UserMainDAO.java
+* @DESC		: 사용자 정보 dao
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2017. 11. 29. 			ytkim			최초작성
 
+*-----------------------------------------------------------------------------
+ */
 @Repository
 public class UserMainDAO extends BaseDAO{
 	
@@ -63,5 +80,61 @@ public class UserMainDAO extends BaseDAO{
 	
 	public int updateMemoViewDate(ParamMap paramMap) {
 		return getSqlSession().update("userMapper.updateMemoViewDate", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserDetail
+	 * @Method 설명 : 사용자 상세
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param loginId
+	 * @return
+	 */
+	public Map selectUserDetail(String loginId) {
+		return getSqlSession().selectOne("userMapper.selectUserDetail", loginId);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateUserInfo
+	 * @Method 설명 : 사용자 정보 업데이트
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param userForm
+	 * @return
+	 */
+	public int updateUserInfo(UserForm userForm) {
+		return getSqlSession().update("userMapper.updateUserInfo", userForm);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updatePasswordInfo
+	 * @Method 설명 : 패스워드 변경.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param passwordForm
+	 * @return
+	 */
+	public int updatePasswordInfo(PasswordForm passwordForm) {
+		return getSqlSession().update("userMapper.updatePasswordInfo", passwordForm);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserPasswordCheck
+	 * @Method 설명 : password 변경 전 체크.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param passwordForm
+	 * @return
+	 */
+	public int selectUserPasswordCheck(PasswordForm passwordForm) {
+		return getSqlSession().selectOne("userMapper.selectUserPasswordCheck", passwordForm);
 	}
 }

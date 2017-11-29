@@ -22,6 +22,7 @@
 <link href="${pageContextPath}/webstatic/css/pub.ep.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tab.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.grid.fixed.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.main.layout.css" rel="stylesheet" type="text/css">
 

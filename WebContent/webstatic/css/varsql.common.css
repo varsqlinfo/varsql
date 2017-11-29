@@ -1,0 +1,20 @@
+body {
+    font-size: 12px;
+    background-color: #dfdfdf;
+}
+
+.margin-top5{
+	margin-top:5px;
+}
+
+.padding0{
+	padding:0px;
+}
+
+.margin-bottom5{
+	margin-bottom:5px;
+}
+
+.margin-bottom0{
+	margin-bottom:0px;
+}
