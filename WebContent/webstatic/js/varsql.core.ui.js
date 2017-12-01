@@ -1853,8 +1853,8 @@ _ui.SQL = {
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
 			strHtm.push("						<tr class=\"gradeA add\">	");
-			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"columnCheck\" value=\""+item.COLUMN_NAME+"\"></td>	");
-			strHtm.push("							<td class=\"\">"+item.COLUMN_NAME+"</td>	");
+			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"columnCheck\" value=\""+item.name+"\"></td>	");
+			strHtm.push("							<td class=\"\">"+item.name+"</td>	");
 			strHtm.push("						</tr>");
 		}
 		strHtm.push("					</tbody>");

@@ -1,120 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<script>
-$(document).ready(function (){
-	manageMain.init();
-});
-
-var manageMain ={
-	init:function (){
-		var _self = this; 
-		_self.initEvt();
-		_self.search();
-	}
-	,initEvt:function (){
-		var _self = this; 
-		$('#allcheck').click(function() {
-			$('input:checkbox[class="itemCheck"]').prop( 'checked', $(this).is(':checked'));
-		});
-		
-		//수락 거부 버튼 처리 
-		$('.btnAcceptYN').click(function() {
-			_self.acceptYn($(this).val());
-		});
-		
-		//검색 버튼 처리
-		$('.searchBtn').click(function() {
-			_self.search();
-		});
-		
-		// 검색 input 처리
-		$('#searchVal').keydown(function() {
-			if(event.keyCode =='13') _self.search();
-		});
-		
-		// 갯수 셋팅시 이벤트 처리
-		$('#rowDataSize').change(function() {
-			_self.search();
-		});
-	}
-	,acceptYn : function(obj){
-		var _self = this; 
-		var selectItem = VARSQL.check.getCheckVal('input:checkbox[class="itemCheck"]');
-		
-		if(VARSQL.isDataEmpty(selectItem)){
-			VARSQL.alert('<spring:message code="msg.data.select" />');
-			return ; 
-		}
-		
-		if(!confirm(obj=='Y'?'<spring:message code="msg.accept.msg" />':'<spring:message code="msg.denial.msg" />')){
-			return ; 
-		}
-		
-		var param = {
-			acceptyn:obj
-			,selectItem:selectItem.join(',')
-		};
-		
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
-			,dataType:'JSON'
-			,success:function (response){
-				$('#allcheck').prop('checked', false);
-				_self.search();
-			}
-		});
-	}
-	,search : function(no){
-		var _self = this; 
-		
-		var param = {
-			page:no?no:1
-			,rows:$('#rowDataSize').val()
-			,'searchVal':$('#searchVal').val()
-		};
-		
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/userList'}
-			,dataType:'JSON'
-			,success:function (response){
-	    		var resultLen = response.result?response.result.length:0;
-	    		
-	    		if(resultLen==0){
-	    			$('.dataTableContent').html('<tr><td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>');
-	    			$('.pageNavigation').pagingNav();
-	    			return ; 
-	    		}
-	    		var result = response.result;
-	    		
-	    		var strHtm = new Array();
-	    		var item;
-	    		var clazz;
-	    		for(var i = 0 ;i < resultLen; i ++){
-	    			item = result[i];
-	    			clazz= i%2==0?'add':'even';
-	    			strHtm.push('<tr class="gradeA '+clazz+'">');
-	    			strHtm.push('	<td><div class="text-center"><input type="checkbox" class="itemCheck" value="'+item.VIEWID+'"></div></td>');
-	    			strHtm.push('	<td class="">'+item.UNAME+'</td>');
-	    			strHtm.push('	<td class="">'+item.UID+'</td>');
-	    			strHtm.push('	<td class="center">'+item.CHAR_CRE_DT+'</td>');
-	    			strHtm.push('	<td class="center">'+item.ACCEPT_YN+'</td>');
-	    			strHtm.push('</tr>');
-	    		}
-	    		
-	    		$('.dataTableContent').html(strHtm.join(''));
-	    		
-	    		$('.pageNavigation').pagingNav(response.paging,manageMain.search);
-			}
-		});
-	}
-}
-
-
-</script>
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
@@ -122,34 +7,32 @@ var manageMain ={
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row">
+<div class="row" id="epViewArea">
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-sm-6">
-						<label><select name="rowDataSize" id="rowDataSize"
-							aria-controls="dataTables-example" class="form-control input-sm"><option
+						<label><select v-model="list_count" @change="search()" class="form-control input-sm"><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 						</label>
 						<label> 
-							<button type="button" class="btn btn-xs btn-primary btnAcceptYN" value="Y"><spring:message code="btn.accept" /></button>
+							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
 						</label>
 						<label> 
-							<button type="button" class="btn btn-xs btn-danger btnAcceptYN" value="N"><spring:message code="btn.denial" /></button>
+							<button type="button" class="btn btn-xs btn-danger" @click="acceptYn('N')"><spring:message code="btn.denial" /></button>
 						</label>
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchVal" name="searchVal"
-									class="form-control" onkeydown=""> <span
-									class="input-group-btn">
-									<button class="btn btn-default searchBtn" type="button">
+								<input type="text" value="" id="searchVal" name="searchVal"	class="form-control" @keyup="search()">
+								 <span class="input-group-btn">
+									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
 									</button>
 								</span>
@@ -165,24 +48,47 @@ var manageMain ={
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 10px;"><div
+									<th  style="width: 10px;"><div
 											class="text-center">
 											<input type="checkbox" id="allcheck" name="allcheck">
-										</div></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message
-											code="manage.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message
-											code="manage.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message
-											code="manage.userlist.date" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 50px;"><spring:message
-											code="manage.userlist.access" /></th>
+										</div>
+									</th>
+									<th style="width: 195px;">
+										<spring:message	code="manage.userlist.name" />
+									</th>
+									<th style="width: 150px;">
+										<spring:message	code="manage.userlist.id" />
+									</th>
+									<th style="width: 179px;">
+										<spring:message	code="manage.userlist.date" />
+									</th>
+									<th style="width: 50px;">
+										<spring:message	code="manage.userlist.access" />
+									</th>
+									<th style="width: 150px;">
+										<spring:message	code="manage.userlist.init.password" />
+									</th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
+								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
+									<td><input type="checkbox" :value="item.VIEWID" v-model="selectItem"></td>
+									<td>{{item.UNAME}}</td>
+									<td>{{item.UID}}</td>
+									<td class="center">{{item.CHAR_CRE_DT}}</td>
+									<td class="center">{{item.ACCEPT_YN}}</td>
+									<td class="center">
+										<button class="btn btn-default" @click="initPassword(item)" >초기화</button>
+										<span>{{item.INITPW}}</span>
+									</td>
+								</tr>
+								<tr v-if="gridData.length === 0">
+									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+								</tr>
 							</tbody>
 						</table>
-						<div class="pageNavigation"></div>
+						
+						<page-navigation :page-info="pageInfo" callback="goPage"></page-navigation>
 					</div>
 				</div>
 			</div>
@@ -193,3 +99,79 @@ var manageMain ={
 	<!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+
+<script>
+
+VarsqlAPP.vueServiceBean( {
+	el: '#epViewArea'
+	,data: {
+		list_count :10
+		,searchVal : ''
+		,pageInfo : {}
+		,gridData :  []
+		,detailItem :{}
+		,selectItem :[]
+	}
+	,methods:{
+		acceptYn : function(obj){
+			var _self = this; 
+			var selectItem = _self.selectItem;
+			
+			if(VARSQL.isDataEmpty(selectItem)){
+				VARSQL.alert('<spring:message code="msg.data.select" />');
+				return ; 
+			}
+			
+			if(!confirm(obj=='Y'?'<spring:message code="msg.accept.msg" />':'<spring:message code="msg.denial.msg" />')){
+				return ; 
+			}
+			
+			var param = {
+				acceptyn:obj
+				,selectItem:selectItem.join(',')
+			};
+			
+			this.$ajax({
+				data:param
+				,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
+				,success:function (response){
+					_self.search();
+				}
+			});
+		}
+		,search : function(no){
+			var _self = this; 
+			
+			var param = {
+				page:no?no:1
+				,rows: _self.list_count
+				,'searchVal':_self.searchVal
+			};
+			
+			this.$ajax({
+				url:{gubun:VARSQL.uri.manager, url:'/userList'}
+				,data : param
+				,success: function(resData) {
+					_self.gridData = resData.items;
+					_self.pageInfo = resData.page;
+				}
+			})
+		}
+		,initPassword :function(sItem){
+			this.$ajax({
+				url:{gubun:VARSQL.uri.manager, url:'/initPassword'}
+				,data : sItem
+				,success: function(resData) {
+					sItem.INITPW = resData.item;
+					
+					setTimeout(function (){
+						sItem.INITPW ='';
+					}, 5000);
+					
+					alert('변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.');
+				}
+			})
+		}
+	}
+});
+</script>

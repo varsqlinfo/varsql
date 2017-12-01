@@ -219,7 +219,7 @@ _$base.req ={
 		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
 		
 		$.ajax($.extend({}, {
-			type :'get'
+			type :'post'
 			,cache: false
 			,dataType: "json"
 			,beforeSend : function( xhr ) {

@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.auth.Authority;
+import com.varsql.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.JoinForm;
 import com.varsql.web.app.user.beans.UserForm;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.encryption.EncryptDecryptException;
 
 /**
  * 
@@ -33,8 +35,9 @@ public class JoinServiceImpl{
 	 * @변경이력  :
 	 * @param userForm
 	 * @return
+	 * @throws EncryptDecryptException 
 	 */
-	public boolean insertUserInfo(JoinForm	joinForm) {
+	public boolean insertUserInfo(JoinForm	joinForm) throws EncryptDecryptException {
 		String viewId = joinDAO.selectUserMaxVal();
 		
 		try{
@@ -43,6 +46,7 @@ public class JoinServiceImpl{
 			viewId=String.format("%07d", 1);
 		}
 		
+		joinForm.setUpw(EncryptionFactory.getInstance().encrypt(joinForm.getUpw()));
 		joinForm.setViewid(viewId);
 		joinForm.setRole(Authority.GUEST.name());
 		joinForm.setAcceptYn("N");

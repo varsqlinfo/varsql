@@ -98,4 +98,18 @@ public class GlobalExceptionHandler{
 		return result; 
 	}
 	
+	@ExceptionHandler(value=Exception.class)
+	public @ResponseBody ResponseResult exceptionHandle(Exception ex, HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		response.setContentType("application/json;charset=UTF-8");
+		response.setStatus(HttpStatus.OK.value());
+		
+		ResponseResult result = new ResponseResult();
+		result.setStatus(500);
+		result.setMessage(ex.getMessage());
+		return result; 
+	}
+	
 }

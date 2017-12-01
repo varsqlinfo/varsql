@@ -12,9 +12,20 @@
 	</select>
 
 	<select id="manageMapper.selectUserList" parameterType="searchParameter" resultType="map">
-		select a.*, a.CRE_DT as CHAR_CRE_DT
+		select 
+			VIEWID
+			,UNAME
+			,DEPT_NM
+			,ORG_NM
+			,UID
+			,ACCEPT_YN
+			,DESCRIPTION
+			,UEMAIL
+			,'' as INITPW
+		 	,a.CRE_DT as CHAR_CRE_DT
 		from VTUSER a
-		where (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
+		where (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%')
+		and ROLE not in ('ADMIN','MANAGER') 
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
 	

@@ -66,7 +66,7 @@ var adminMain = {
 			  vdbschema: {
 				  validators: {
 					  notEmpty: {
-						  message: 'The url is required and cannot be empty'
+						  message: 'The schema is required and cannot be empty'
 					  }
 				  }
 			  },

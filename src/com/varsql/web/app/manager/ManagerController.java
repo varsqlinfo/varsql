@@ -1,7 +1,5 @@
 package com.varsql.web.app.manager;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.common.beans.DataCommonVO;
-import com.varsql.web.common.constants.UserConstants;
+import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.HttpUtils;
@@ -80,14 +78,14 @@ public class ManagerController {
 	}
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody Map userList(HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
 		return managerServiceImpl.selectUserList(searchParameter);
 	}
 	
 	@RequestMapping({"/acceptYn"})
-	public @ResponseBody Map updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
+	public @ResponseBody ResponseResult updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
 			,@RequestParam(value = "selectItem", required = true )  String selectItem
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -96,5 +94,15 @@ public class ManagerController {
 		paramMap.put("selectItem", selectItem);
 		
 		return managerServiceImpl.updateAccept(paramMap);
+	}
+	
+	@RequestMapping({"/initPassword"})
+	public @ResponseBody ResponseResult initPassword(@RequestParam(value = "VIEWID", required = true )  String viewid) throws Exception {
+		
+		PasswordForm userForm = new PasswordForm();
+		
+		userForm.setViewid(viewid);
+		
+		return managerServiceImpl.initPassword(userForm);
 	}
 }

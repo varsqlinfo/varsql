@@ -33,18 +33,18 @@
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery.jqGrid.src.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.selection.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.core.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/i18n/grid.locale-en.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/jquery.tablednd.js" type="text/javascript"></script>
+<script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
+
+
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/sb-admin-2.js" type="text/javascript"></script>
 
 <!-- Metis Menu Plugin JavaScript -->
 <script src="${pageContextPath}/webstatic/js/plugins/metisMenu/metisMenu.min.js"></script>

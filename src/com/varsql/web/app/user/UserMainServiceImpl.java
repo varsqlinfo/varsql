@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.constants.ResultConstants;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.encryption.EncryptDecryptException;
 
 @Service
 public class UserMainServiceImpl{
@@ -141,8 +143,10 @@ public class UserMainServiceImpl{
 	 * @변경이력  :
 	 * @param passwordForm
 	 * @return
+	 * @throws EncryptDecryptException 
 	 */
-	public boolean updatePasswordInfo(PasswordForm passwordForm) {
+	public boolean updatePasswordInfo(PasswordForm passwordForm) throws EncryptDecryptException {
+		passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordForm.getUpw()));
 		return userMainDAO.updatePasswordInfo(passwordForm)> 0;
 	}
 	

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.web.app.user.beans.JoinForm;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
+import com.vartech.common.encryption.EncryptDecryptException;
 
 
 
@@ -41,7 +42,7 @@ public class JoinController {
 	}
 	
 	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public @ResponseBody ResponseResult insertUserInfo(@Valid JoinForm	joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) {
+	public @ResponseBody ResponseResult insertUserInfo(@Valid JoinForm	joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) throws EncryptDecryptException {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			
