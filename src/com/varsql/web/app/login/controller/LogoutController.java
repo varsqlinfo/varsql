@@ -22,12 +22,6 @@ public class LogoutController {
 
 	@RequestMapping(value = "/logout")
 	public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		try {
-			System.out.println("logout");
-		} catch (Exception e) {
-			
-		}
-		
 		return new ModelAndView("/login/loginForm");
 	}
 

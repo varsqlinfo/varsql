@@ -18,7 +18,7 @@ public class QnaServiceImpl{
 
 	public Map selectQnaMgmtList(SearchParameter searchParameter) {
 		
-		System.out.println("searchParameter : "+ searchParameter);
+		//System.out.println("searchParameter : "+ searchParameter);
 		int totalcnt = qnaDAO.selectQnaMgmtTotalCnt(searchParameter);
 		
 		Map json = new HashMap();

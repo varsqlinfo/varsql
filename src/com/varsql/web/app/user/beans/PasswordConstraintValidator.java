@@ -11,9 +11,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(final String password, final ConstraintValidatorContext context) {
-    	
-    	
-        System.out.println("================================= password");
+        //System.out.println("================================= password");
         return true;
     }
 
