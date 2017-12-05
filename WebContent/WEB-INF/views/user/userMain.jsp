@@ -47,7 +47,6 @@ var userMain = {
 			$('.iframe_'+tmpid).remove();
 			
 			if(viewElement.length > 0){
-				console.log('viewElementaaa ', viewElement)
 				$(viewElement.find('.db-info-tab-item')).trigger('click');	
 			}
 			

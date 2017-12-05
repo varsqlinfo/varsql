@@ -1,9 +1,11 @@
 /**
- * pubContextMenu: v0.0.1
+ * pubAutocomplete : v0.0.1
  * ========================================================================
  * Copyright 2016 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
+ * url : https://github.com/ytechinfo/pub
+ * demo : http://pub.moaview.com/
 */
 ;(function ($, window, document, undefined) {
 
@@ -134,8 +136,16 @@
 			});
 
 			_this.selectorElement.on('keyup.pubAutocomplete' , function (e){
-				var isWordCharacter = e.key.length === 1;
-				var isBackspaceOrDelete = (e.keyCode == 8 || e.keyCode == 46);
+				
+				var keyCode = window.event ? e.keyCode : e.which;
+				var eventKey = e.key; 
+				
+				if(typeof eventKey ==='undefined'){
+					eventKey = String.fromCharCode(keyCode);
+				}
+				
+				var isWordCharacter = eventKey.length === 1;
+				var isBackspaceOrDelete = (keyCode== 8 || keyCode == 46);
 				
 				if (isWordCharacter || isBackspaceOrDelete) {
 					var searchVal = _this.selectorElement.val(); 
@@ -517,8 +527,8 @@
 
 		var _cacheObject = _datastore[selector];
 
-		if(typeof options === undefined){
-			return _cacheObject; 
+		if(typeof options === 'undefined'){
+			return _cacheObject||{}; 
 		}
 		
 		if(!_cacheObject){

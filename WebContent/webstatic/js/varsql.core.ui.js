@@ -13,7 +13,7 @@ _ui.base ={
 	,sqlHints :{}	// sql hints
 };
 
-_ui.options={
+var _g_options={
 	dbtype:''
 	,urlPrefix:''
 	,param:{}
@@ -140,7 +140,7 @@ _ui.headerMenu ={
 							_self.exportInfo(menu_mode3);
 							break;
 						case 'setting':	//설정.
-							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/tools/preferences/main.vsql?conuid='+_ui.options.param.conuid));
+							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/tools/preferences/main.vsql?conuid='+_g_options.param.conuid));
 							break;
 						default:
 							break;
@@ -199,7 +199,7 @@ _ui.headerMenu ={
 		var _self = this; 
 		
 		if(type=='spec'){
-			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/main?conuid='+_ui.options.param.conuid));
+			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/main?conuid='+_g_options.param.conuid));
 		}else{
 			
 		}
@@ -341,7 +341,7 @@ _ui.leftDbObject ={
 			return ;
 		}
 		
-		$.extend(true,_ui.options, _opts);
+		$.extend(true,_g_options, _opts);
 		$.extend(true,_self.options, _opts);
 		
 		_self._grid();
@@ -389,18 +389,18 @@ _ui.leftDbObject ={
 			if(_self.options.active) _self.options.active.removeClass('active');
 			_self.options.active =$(this);
 			_self.options.active.addClass('active');
-			_ui.options.param.schema =_self.options.active.attr('obj_nm');
-			$('#varsql_schema_name').html(_ui.options.param.schema);
+			_g_options.param.schema =_self.options.active.attr('obj_nm');
+			$('#varsql_schema_name').html(_g_options.param.schema);
 			_self._click(this);
 		});
 		
-		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_ui.options.schema+'"]').trigger('click');
+		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_g_options.schema+'"]').trigger('click');
 		
 	}
 	// 사용자 셋팅 정보 가져오기.
 	,_userSettingInfo : function (){
 		var _self = this;
-		var params = _ui.options.param;
+		var params = _g_options.param;
 		
 		VARSQL.req.ajax({      
 		    type:"POST"
@@ -526,7 +526,6 @@ _ui.leftDbObjectServiceMenu ={
 				var refresh = sObj.attr('refresh')=='Y'?true:false; 
 				sObj.attr('refresh','N');
 				_self._dbObjectList(item, refresh);
-				
 			}
 		})
 		
@@ -838,7 +837,7 @@ _ui.leftDbObjectServiceMenu ={
 		try{
 			var colArr = [];
 			$.each(colData.items , function (i , item){
-				colArr.push(item.COLUMN_NAME);
+				colArr.push(item.name);
 			});
 			
 			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
@@ -883,6 +882,36 @@ _ui.leftDbObjectServiceMenu ={
 		    			sObj.addClass('active');
 		    			
 		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','objectName':item.TABLE_NAME}), '_viewMetadata');
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var gubun='view'
+								,tmpName = sItem.TABLE_NAME;
+							
+							var cacheData = _self._getMetaCache(gubun,tmpName);
+							
+							key = sObj.mode;
+							
+							_self._createScriptSql({
+								gubunKey : key
+								,gubun : 'view'
+								,objName :  tmpName 
+								,item : cacheData
+								,param_yn: sObj.param_yn
+							});
+						},
+						items: [
+							{key : "sql_create", "name": "sql생성" 
+								,subMenu: [
+									{ key : "selectStar","name": "select *" , mode: "selectStar"}
+									,{ key : "select","name": "select column" ,mode:"select"}
+								]
+							}
+						]
 					}
 				}
 			});
@@ -1031,7 +1060,7 @@ _ui.leftDbObjectServiceMenu ={
 	}
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
-		return _ui.options.getUriPrefix(uri);
+		return _g_options.getUriPrefix(uri);
 	}
 };
 
@@ -1416,7 +1445,7 @@ _ui.SQL = {
 	,saveSql : function (){
 		var _self = this; 
 		
-		var params =VARSQL.util.objectMerge (_ui.options.param,{
+		var params =VARSQL.util.objectMerge (_g_options.param,{
 			'sql' :_self.getTextAreaObj().getValue()
 			,'sqlTitle' : $('#saveSqlTitle').val()
 			,'sqlId' : $('#sql_id').val()
@@ -1542,7 +1571,7 @@ _ui.SQL = {
 	,sqlSaveList : function (pageNo){
 		var _self = this; 
 		
-		var params =VARSQL.util.objectMerge (_ui.options.param,{
+		var params =VARSQL.util.objectMerge (_g_options.param,{
 			searchVal : $('#saveSqlSearch').val()
 			,page : pageNo ? pageNo : $('#sql-save-list-no').val()
 			,countPerPage : 5
@@ -1722,7 +1751,7 @@ _ui.SQL = {
 			return '';
 		}
 		
-		var params =VARSQL.util.objectMerge (_ui.options.param,{
+		var params =VARSQL.util.objectMerge (_g_options.param,{
 			'sql' :sqlVal
 			,'limit' : $(_self.options.limitCnt).val()
 			,sqlParam : JSON.stringify(sqlParam)
@@ -1799,7 +1828,7 @@ _ui.SQL = {
 		
 		if(''== sqlVal) return ; 
 		
-		var params =VARSQL.util.objectMerge (_ui.options.param,{
+		var params =VARSQL.util.objectMerge (_g_options.param,{
 			'sql' :sqlVal
 		});
 		
@@ -1882,7 +1911,7 @@ _ui.SQL = {
 			modalEle.empty();
 			modalEle.html(strHtm.join(''));
 		}else{
-			$(_ui.options.hiddenArea).append('<div id=\"data-export-modal\" title="데이타 내보내기">'+strHtm.join('')+'</div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-export-modal\" title="데이타 내보내기">'+strHtm.join('')+'</div>');
 			modalEle = $('#data-export-modal'); 
 		}
 		
@@ -1901,7 +1930,7 @@ _ui.SQL = {
 				"내보내기":function (){
 					if(!confirm('내보내기 하시겠습니까?')) return ; 
 
-					var params =VARSQL.util.objectMerge (_ui.options.param,{
+					var params =VARSQL.util.objectMerge (_g_options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='columnCheck']:not([value='all'])").join(',')
 						,objectName : tmpName
@@ -1932,6 +1961,11 @@ _ui.SQL = {
 			,data = scriptInfo.item
 			,param_yn  = scriptInfo.param_yn;
 		
+		
+		if(_g_options.schema != _g_options.param.schema){
+			tmpName = _g_options.param.schema+'.'+tmpName;
+		}
+				
 		gubunKey =gubunKey.split('|');
 		
 		var key =gubunKey[0]
@@ -2123,7 +2157,7 @@ _ui.text={
 		
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
-			$(_ui.options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사"><div><pre id="data-copy-area"></pre></div></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사"><div><pre id="data-copy-area"></pre></div></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
@@ -2252,7 +2286,7 @@ function queryParameter(flag, columnInfo , colNameCase){
 		}
 		return VARSQLCont.constants.queryParameterPrefix+colName+VARSQLCont.constants.queryParameterSuffix;
 	}else{
-		var tmpType = VARSQLCont.dataType.dto[dataType];
+		var tmpType = VARSQLCont.dataType.getDbType(dataType);
 		
 		if(tmpType.isNum===true){
 			return 1;

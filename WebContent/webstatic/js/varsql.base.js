@@ -66,6 +66,7 @@ var _dto = {
 	,'-16':{name : 'LONGNVARCHAR',isNum : false ,val : '\'\'', javaType:'String'}
 	,'2011':{name : 'NCLOB',isNum : false ,val : '\'\'', javaType:'String'}
 	,'2009':{name : 'SQLXML',isNum : false ,val : '\'\'', javaType:'String'}
+	,'9999':{name : 'OTHER',isNum : false ,val : '\'\'', javaType:'Object'}
 };
 
 var DEFAULT_HINTS = [
@@ -137,7 +138,7 @@ dataType.getDbType = function (dbType){
 	if(typeof  tmpDataType !=='undefined'){
 		return  tmpDataType;
 	}else{
-		return _dto['12'] ;
+		return _dto['9999'] ;
 	}
 }
 
