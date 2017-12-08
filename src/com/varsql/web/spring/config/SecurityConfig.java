@@ -51,7 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.disable()
 			.and()
 			.csrf().disable()
-			.httpBasic();
+			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint())
+			.and().httpBasic();
 	}
 	private void configureSession(HttpSecurity http) throws Exception {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
@@ -135,6 +136,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .invalidateHttpSession(true)
         .deleteCookies("JSESSIONID").permitAll().and();
 		
+	}
+	
+	@Bean
+	public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
+		return new RestAuthenticationEntryPoint();
 	}
 	
 	@Bean

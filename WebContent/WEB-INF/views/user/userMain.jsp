@@ -98,7 +98,7 @@ var userMain = {
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">
-							접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.
+						접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.
 					</td>
 				</tr>
 			</tbody>
