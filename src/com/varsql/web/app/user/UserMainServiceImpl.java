@@ -7,12 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.common.util.StringUtil;
 import com.varsql.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.constants.ResultConstants;
+import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -59,18 +61,15 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map insertSendSqlInfo(ParamMap paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT, userMainDAO.insertSendSqlInfo(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-			
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"insertSendSqlInfo", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval; 
+	@Transactional
+	public ResponseResult insertSendSqlInfo(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		paramMap.put("memo_id", VarsqlUtil.generateUUID());
+		userMainDAO.insertSendSqlInfo(paramMap);
+		
+		result.setItemOne(userMainDAO.insertSendUserInfo(paramMap));
+		
+		return result; 
 	}
 	
 	

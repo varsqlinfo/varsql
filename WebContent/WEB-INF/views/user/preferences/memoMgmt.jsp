@@ -16,6 +16,13 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-sm-6">
+						<label>
+							<select v-model="message_type" @change="search()" class="form-control input-sm">
+								<option value="recv">받은메시지</option>
+								<option value="send">보낸메시지</option>
+							</select>
+						</label>
+						
 						<label><select v-model="list_count" @change="search()" class="form-control input-sm"><option
 									value="10">10</option>
 								<option value="25">25</option>
@@ -121,6 +128,7 @@ VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
 		list_count :10
+		,message_type : 'recv'
 		,searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
@@ -142,7 +150,8 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			var param = {
-				selectItem:selectItem.join(',')
+				message_type : _self.message_type
+				,selectItem:selectItem.join(',')
 			};
 			
 			this.$ajax({
@@ -161,6 +170,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			var param = {
 				page:no?no:1
+				,message_type : _self.message_type
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};

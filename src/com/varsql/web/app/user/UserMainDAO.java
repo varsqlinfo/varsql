@@ -57,14 +57,16 @@ public class UserMainDAO extends BaseDAO{
 	}
 	
 	public int insertSendSqlInfo(ParamMap paramMap) {
+		return getSqlSession().insert("userMapper.insertSendSqlInfo", paramMap ); 
+	}
+	public int insertSendUserInfo(ParamMap paramMap) {
 		SqlSession batch = getSqlSession(true);
 		String [] recvArr = paramMap.getString("recv_id").split(";;");
 		
 		try{
 			for (int i = 0; i < recvArr.length; i++) {
-				paramMap.put("memo_id", VarsqlUtil.generateUUID());
 				paramMap.put("recv_id", recvArr[i]);
-				batch.insert("userMapper.insertSendSqlInfo", paramMap );
+				batch.insert("userMapper.insertSendUserInfo", paramMap );
 			}
 			batch.flushStatements();
 			batch.commit(true);

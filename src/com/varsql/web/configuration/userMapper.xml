@@ -183,66 +183,104 @@
 		and UID like '%'||#{searchVal}||'%' 
 	</select>
 	
-	<!-- 쪽지 조회  -->
+	<!-- 신규 메시지 조회  -->
 	<select id="userMapper.selectMessageInfo" parameterType="map" resultType="map">
-		select MEMO_TITLE , MEMO_ID, MEMO_CONT, SEND_ID, REG_DT , UPD_DT
-		from VTMEMO
-		where recv_id = #{uid}
-		and UPD_DT is null
+		select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, REG_DT , VIEW_DT
+		from VTMEMO a , VTMEMO_USER b 
+		where a.MEMO_ID = b.MEMO_ID 
+		and RECV_ID = #{uid}
+		and VIEW_DT is null
 		order by reg_dt desc
 	</select>
 	
-	<!-- 사용자 메모  목록 수-->
+	<!-- 사용자 메시지  목록 수-->
 	<select id="userMapper.selectUserMsgTotalcnt" parameterType="searchParameter" resultType="int">
 		select count(1) CNT
-		from VTMEMO
-		where recv_id = #{customParam.uid}
+		from VTMEMO a , VTMEMO_USER b 
+		where a.MEMO_ID = b.MEMO_ID 
+		<choose>
+			<when test="customParam.message_type == 'send'">
+				and SEND_ID = #{customParam.uid}
+			</when>
+			<otherwise>
+				and RECV_ID = #{customParam.uid}
+			</otherwise>
+		</choose>
 		and MEMO_TITLE like '%'||#{keyword}||'%'
 	</select>
 	
-	<!-- 사용자 메모  목록 -->
+	<!-- 사용자 메시지  목록 -->
 	<select id="userMapper.selectUserMsg" parameterType="searchParameter" resultType="map">
-		select MEMO_TITLE , MEMO_ID, MEMO_CONT, SEND_ID, REG_DT , UPD_DT
-		from VTMEMO
-		where RECV_ID = #{customParam.uid}
+		select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, REG_DT , VIEW_DT
+		from VTMEMO a , VTMEMO_USER b 
+		where a.MEMO_ID = b.MEMO_ID 
+		<choose>
+			<when test="customParam.message_type == 'send'">
+				and SEND_ID = #{customParam.uid}
+			</when>
+			<otherwise>
+				and RECV_ID = #{customParam.uid}
+			</otherwise>
+		</choose>
 		and MEMO_TITLE like '%'||#{keyword}||'%' 
 		order by reg_dt desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
 	
-	<!-- 메모 삭제 -->
+	<!-- 메시지 삭제 -->
 	<delete id="userMapper.deleteUserMsg" parameterType="map" >
-		delete from VTMEMO where RECV_ID = #{uid} and MEMO_ID =#{memoId}
+		delete from VTMEMO_USER 
+		where 1=1
+		<choose>
+			<when test="message_type == 'send'">
+				and SEND_ID = (select REG_ID from VTMEMO WHERE MEMO_ID =#{memoId})
+				and VIEW_DT is null
+			</when>
+			<otherwise>
+				and RECV_ID = #{uid}
+			</otherwise>
+		</choose>
+		and MEMO_ID =#{memoId}
 	</delete>
 	
-	<!-- sql 정보 보내기  -->
+	<!-- 메시지 정보 보내기  -->
 	<insert id="userMapper.insertSendSqlInfo" parameterType="java.util.Map">
 		insert  into VTMEMO (
 			MEMO_ID
-			, SEND_ID
-			, RECV_ID
 			, MEMO_TITLE
 			, MEMO_CONT
-			, SEND_DEL_YN
-			, RECV_DEL_YN
+			, REG_ID
 			, REG_DT
+		) 
+		values(
+			#{memo_id}
+			, #{memo_title}
+			, #{memo_cont}
+			, #{uid}
+			, CURRENT TIMESTAMP
+		)
+	</insert>
+	
+	<!-- 메시지 보낸 사람과 받는 사람 등록. -->
+	<insert id="userMapper.insertSendUserInfo" parameterType="java.util.Map">
+		insert  into VTMEMO_USER (
+			MEMO_ID
+			,SEND_ID
+			,RECV_ID
 		) 
 		values(
 			#{memo_id}
 			, #{uid}
 			, #{recv_id}
-			, #{memo_title}
-			, #{memo_cont}
-			, 'N'
-			, 'N'
-			, CURRENT TIMESTAMP
 		)
 	</insert>
 	
+	<!-- 메시지 확인 날짜 업데이트-->
 	<insert id="userMapper.updateMemoViewDate" parameterType="java.util.Map">
-		update VTMEMO 
+		update VTMEMO_USER 
 		set 
-			UPD_DT = CURRENT TIMESTAMP
-		where MEMO_ID = #{memo_id}
+			VIEW_DT = CURRENT TIMESTAMP
+		where RECV_ID = #{uid}
+		and MEMO_ID = #{memo_id}
 	</insert>
 	
 </mapper>

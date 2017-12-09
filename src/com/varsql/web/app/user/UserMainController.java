@@ -260,7 +260,7 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sendSql"})
-	public @ResponseBody Map sendSql(HttpServletRequest req
+	public @ResponseBody ResponseResult sendSql(HttpServletRequest req
 			,HttpServletResponse response
 			) throws Exception {
 		
