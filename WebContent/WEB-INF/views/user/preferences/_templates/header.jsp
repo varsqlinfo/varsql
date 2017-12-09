@@ -13,7 +13,7 @@
 		<ul class="nav navbar-right top-nav">
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle"	data-toggle="dropdown">
-					<sec:authentication property="principal.username" /> <b class="caret"></b>
+					<sec:authentication property="principal.fullname" /> <b class="caret"></b>
 				</a>
 				<ul class="top-setting-menu dropdown-menu">
 					<%@ include file="/WEB-INF/include/screen.jspf"%>

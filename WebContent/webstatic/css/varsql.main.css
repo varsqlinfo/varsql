@@ -258,6 +258,24 @@ padding-top: 5px;
 	 border-bottom: 1px solid #c7bdbd;
 }
 
+[data-init-msg="Y"] .var-load-frame{
+	display:none;
+}
+
+[data-init-msg="N"] .var-db-select-text{
+	display:none;
+}
+
+.alram-count{
+    position: absolute;
+    top: -6px;
+    right: 11px;
+    text-align: center;
+    font-size: 9px;
+    padding: 2px 3px;
+    line-height: .9;
+}
+
 .sql-result-tab{
   list-style: none;
   padding-left: 10px;

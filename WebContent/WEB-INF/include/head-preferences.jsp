@@ -39,7 +39,9 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
+
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>

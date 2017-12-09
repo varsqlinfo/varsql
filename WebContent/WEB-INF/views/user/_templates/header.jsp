@@ -26,14 +26,15 @@
 		<ul class="navbar-top-links navbar-right">
 			<li class="dropdown">
 		        <a href="javascript:;" class="dropdown-toggle ui-memo-btn" data-toggle="dropdown" >
-		            <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+		            <i class="fa fa-bell-o fa-fw"></i>
+		            <span class="label label-warning alram-count">0</span>
 		        </a>
 		        <ul id="memo_alert_area" class="dropdown-menu dropdown-alerts">
 		        </ul>
 		    </li>
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle"	data-toggle="dropdown"> 
-					<sec:authentication	property="principal.username" /> <b class="caret"></b>
+					<sec:authentication	property="principal.fullname" /> <b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
 			        <%@ include file="/WEB-INF/include/screen.jspf"%>
@@ -56,6 +57,7 @@
 		init : function() {
 			var _self = this;
 			_self.initEvt();
+			_self.messageLoad();
 		},
 		initEvt : function() {
 			var _self = this;
@@ -65,54 +67,53 @@
 		},
 		messageLoad : function() {
 			var _self = this;
-			VARSQL.req
-					.ajax({
-						type : "POST",
-						url : {
-							gubun : VARSQL.uri.user,
-							url : '/message.vsql'
-						},
-						dataType : 'json',
-						data : {},
-						success : function(res) {
-							var items = res.items;
-							var paging = res.paging;
-							var strHtm = [], len = items.length;
+			VARSQL.req.ajax({
+				type : "POST",
+				url : {
+					gubun : VARSQL.uri.user,
+					url : '/message.vsql'
+				},
+				dataType : 'json',
+				data : {},
+				success : function(res) {
+					var items = res.items;
+					var paging = res.paging;
+					var strHtm = [], len = items.length;
+					$('.alram-count').html(len);
+					if (len > 0) {
+						for (var i = 0; i < len; i++) {
+							var item = items[i];
 
-							if (items.length > 0) {
-								for (var i = 0; i < len; i++) {
-									var item = items[i];
-
-									strHtm.push('<li>');
-									strHtm
-											.push('    <a href="javascript:;" class="memo-item" _idx="'+i+'">');
-									strHtm.push('         <div>');
-									strHtm
-											.push('             <i class="fa fa-envelope fa-fw"></i>'
-													+ item.MEMO_TITLE);
-									strHtm
-											.push('            <span class="pull-right text-muted small">'
-													+ item.REG_DT + '</span>');
-									strHtm.push('		</div>');
-									strHtm.push('     </a>');
-									strHtm.push(' </li>');
-								}
-							} else {
-								strHtm.push('<li class="empty-area">no data</li>')
-							}
-
-							$('#memo_alert_area').empty().html(strHtm.join(''));
-							$('#memo_alert_area .memo-item').on('click',
-									function() {
-										var idx = $(this).attr('_idx');
-										_self.memoDetail(items[idx]);
-									})
-
-						},
-						error : function(data, status, err) {
-							VARSQL.log.error(data, status, err);
+							strHtm.push('<li>');
+							strHtm
+									.push('    <a href="javascript:;" class="memo-item" _idx="'+i+'">');
+							strHtm.push('         <div>');
+							strHtm
+									.push('             <i class="fa fa-envelope fa-fw"></i>'
+											+ item.MEMO_TITLE);
+							strHtm
+									.push('            <span class="pull-right text-muted small">'
+											+ item.REG_DT + '</span>');
+							strHtm.push('		</div>');
+							strHtm.push('     </a>');
+							strHtm.push(' </li>');
 						}
-					});
+					} else {
+						strHtm.push('<li class="empty-area">no data</li>')
+					}
+
+					$('#memo_alert_area').empty().html(strHtm.join(''));
+					$('#memo_alert_area .memo-item').on('click',
+							function() {
+								var idx = $(this).attr('_idx');
+								_self.memoDetail(items[idx]);
+							})
+
+				},
+				error : function(data, status, err) {
+					VARSQL.log.error(data, status, err);
+				}
+			});
 		},
 		memoDetail : function(item) {
 			var _self = this;

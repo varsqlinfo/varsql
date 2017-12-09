@@ -195,7 +195,7 @@ var guestMain ={
 
 	<div class="container">
 		<h3 class="page-header">
-			<sec:authentication property="principal.username" />
+			<sec:authentication property="principal.fullname" />
 			<spring:message code="guest.message" />
 		</h3>
 		<!-- form start -->

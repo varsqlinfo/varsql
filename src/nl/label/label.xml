@@ -30,6 +30,7 @@
 <entry key="label.prev">이전</entry>
 <entry key="label.next">다음</entry>
 <entry key="label.cancle">취소</entry>
+<entry key="label.delete">삭제</entry>
 
 
 </properties>

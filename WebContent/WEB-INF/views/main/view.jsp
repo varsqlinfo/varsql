@@ -38,7 +38,7 @@
 							<li>${role}</li>
 						</c:forEach>
 					</ul> <br /> <!-- Username display --> Your username is <sec:authentication
-						property="principal.username" /> <br />
+						property="principal.fullname" /> <br />
 				</td>
 			</tr>
 			<tr>

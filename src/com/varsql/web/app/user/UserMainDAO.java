@@ -12,6 +12,7 @@ import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.SearchParameter;
 
 /**
  * 
@@ -134,7 +135,33 @@ public class UserMainDAO extends BaseDAO{
 	 * @param passwordForm
 	 * @return
 	 */
-	public int selectUserPasswordCheck(PasswordForm passwordForm) {
+	public String selectUserPasswordCheck(PasswordForm passwordForm) {
 		return getSqlSession().selectOne("userMapper.selectUserPasswordCheck", passwordForm);
+	}
+
+	public int selectUserMsgTotalcnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("userMapper.selectUserMsgTotalcnt", searchParameter);
+	}
+
+	public List selectUserMsg(SearchParameter searchParameter) {
+		return getSqlSession().selectList("userMapper.selectUserMsg", searchParameter);
+	}
+
+	public boolean deleteUserMsg(String[] viewidArr, ParamMap paramMap) {
+		
+		SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
+        
+        boolean result = false; 
+        try {
+            for(String id: viewidArr){
+            	paramMap.put("memoId", id);
+            	batchSqlSession.delete("userMapper.deleteUserMsg", paramMap);
+            }
+            batchSqlSession.commit();
+            result = true; 
+        }finally{
+        	batchSqlSession.close();
+        }
+		return result;
 	}
 }

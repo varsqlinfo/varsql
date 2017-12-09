@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
@@ -171,17 +174,70 @@ public class UserMainController {
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			passwordForm.setViewid(SecurityUtil.loginId(req));
-			
-			int checkCnt = userMainServiceImpl.selectUserPasswordCheck(passwordForm);
-			
-			if(checkCnt > 0){
-				resultObject.setItemOne(userMainServiceImpl.updatePasswordInfo(passwordForm));
-			}else{
-				resultObject.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
-			}
+			resultObject = userMainServiceImpl.updatePasswordInfo(passwordForm, resultObject); 
 		}
 		
 		return  resultObject;
+	}
+	
+	/**
+	 * @Method Name  : preferencesMessage
+	 * @Method 설명 : 메시지 관리
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/message"})
+	public ModelAndView preferencesMessage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		
+		return  new ModelAndView("/user/preferences/memoMgmt", model);
+	}
+	
+	/**
+	 * @Method Name  : preferenceslistMsg
+	 * @Method 설명 : 메시지 목록보기
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/listMsg"})
+	public @ResponseBody ResponseResult preferenceslistMsg(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return  userMainServiceImpl.selectUserMsg(searchParameter);
+	}
+	
+	/**
+	 * @Method Name  : preferencesdeleteMsg
+	 * @Method 설명 : 메시지 목록보기
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/deleteMsg"})
+	public @ResponseBody ResponseResult preferencesdeleteMsg(HttpServletRequest req) throws Exception {
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
+		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return  userMainServiceImpl.deleteUserMsg( paramMap);
 	}
 	
 	@RequestMapping({"/searchUserList"})

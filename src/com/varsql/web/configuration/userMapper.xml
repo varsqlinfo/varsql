@@ -72,11 +72,10 @@
 	</update>
 	
 	<!-- current password check -->
-	<select id="userMapper.selectUserPasswordCheck" parameterType="passwordForm" resultType="int">
-		select count(1) as TOTALCNT
+	<select id="userMapper.selectUserPasswordCheck" parameterType="passwordForm" resultType="string">
+		select UPW
 		from VTUSER a
 		where VIEWID =#{viewid}
-		and UPW = #{currPw}
 	</select>
 	
 	<!-- 패스워드 변경. -->
@@ -189,8 +188,31 @@
 		select MEMO_TITLE , MEMO_ID, MEMO_CONT, SEND_ID, REG_DT , UPD_DT
 		from VTMEMO
 		where recv_id = #{uid}
+		and UPD_DT is null
 		order by reg_dt desc
 	</select>
+	
+	<!-- 사용자 메모  목록 수-->
+	<select id="userMapper.selectUserMsgTotalcnt" parameterType="searchParameter" resultType="int">
+		select count(1) CNT
+		from VTMEMO
+		where recv_id = #{customParam.uid}
+		and MEMO_TITLE like '%'||#{keyword}||'%'
+	</select>
+	
+	<!-- 사용자 메모  목록 -->
+	<select id="userMapper.selectUserMsg" parameterType="searchParameter" resultType="map">
+		select MEMO_TITLE , MEMO_ID, MEMO_CONT, SEND_ID, REG_DT , UPD_DT
+		from VTMEMO
+		where RECV_ID = #{customParam.uid}
+		and MEMO_TITLE like '%'||#{keyword}||'%' 
+		order by reg_dt desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
+	</select>
+	
+	<!-- 메모 삭제 -->
+	<delete id="userMapper.deleteUserMsg" parameterType="map" >
+		delete from VTMEMO where RECV_ID = #{uid} and MEMO_ID =#{memoId}
+	</delete>
 	
 	<!-- sql 정보 보내기  -->
 	<insert id="userMapper.insertSendSqlInfo" parameterType="java.util.Map">

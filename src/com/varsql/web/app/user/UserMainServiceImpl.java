@@ -8,12 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.common.util.StringUtil;
 import com.varsql.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.constants.ResultConstants;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.utils.PagingUtil;
 
 @Service
 public class UserMainServiceImpl{
@@ -142,25 +147,45 @@ public class UserMainServiceImpl{
 	 * @작성일   : 2017. 11. 29. 
 	 * @변경이력  :
 	 * @param passwordForm
+	 * @param resultObject 
 	 * @return
 	 * @throws EncryptDecryptException 
 	 */
-	public boolean updatePasswordInfo(PasswordForm passwordForm) throws EncryptDecryptException {
-		passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordForm.getUpw()));
-		return userMainDAO.updatePasswordInfo(passwordForm)> 0;
+	public ResponseResult updatePasswordInfo(PasswordForm passwordForm, ResponseResult resultObject) throws EncryptDecryptException {
+		String password = userMainDAO.selectUserPasswordCheck(passwordForm);
+		
+		if(passwordForm.getCurrPw().equals(EncryptionFactory.getInstance().decrypt(password))){
+			passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordForm.getUpw()));
+			resultObject.setItemOne(userMainDAO.updatePasswordInfo(passwordForm)> 0);
+		}else{
+			resultObject.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+		}
+		
+		return resultObject;
 	}
-	
-	/**
-	 * 
-	 * @Method Name  : selectUserPasswordCheeck
-	 * @Method 설명 : 패스워드 변경전 password check
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 29. 
-	 * @변경이력  :
-	 * @param passwordForm
-	 * @return
-	 */
-	public int selectUserPasswordCheck(PasswordForm passwordForm) {
-		return userMainDAO.selectUserPasswordCheck(passwordForm);
+
+	public ResponseResult selectUserMsg(SearchParameter searchParameter) {
+		ResponseResult result = new ResponseResult();
+		
+		int totalcnt = userMainDAO.selectUserMsgTotalcnt(searchParameter);
+		
+		if(totalcnt > 0){
+			result.setItemList(userMainDAO.selectUserMsg(searchParameter));
+		}else{
+			result.setItemList(null);
+		}
+		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
+		
+		return result;
+	}
+
+	public ResponseResult deleteUserMsg(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		
+		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
+		
+		result.setItemOne(userMainDAO.deleteUserMsg(viewidArr,paramMap));
+		
+		return result;
 	}
 }

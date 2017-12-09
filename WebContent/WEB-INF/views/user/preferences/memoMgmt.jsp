@@ -1,14 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.usermgmt" /></h1>
+        <h1 class="page-header"><spring:message code="user.edit.message" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 <div class="row" id="epViewArea">
-	<div class="col-lg-12">
+	<div class="col-xs-6">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
@@ -20,18 +22,16 @@
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 						</label>
+						
 						<label> 
-							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
-						</label>
-						<label> 
-							<button type="button" class="btn btn-xs btn-danger" @click="acceptYn('N')"><spring:message code="btn.denial" /></button>
+							<button type="button" class="btn btn-xs btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
 						</label>
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup="search()">
-								 <span class="input-group-btn">
+								<input type="text" v-model="searchVal"	class="form-control">
+								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
 									</button>
@@ -54,33 +54,26 @@
 										</div>
 									</th>
 									<th style="width: 195px;">
-										<spring:message	code="manage.userlist.name" />
+										<spring:message	code="user.edit.msgtitle" />
 									</th>
 									<th style="width: 150px;">
-										<spring:message	code="manage.userlist.id" />
+										<spring:message	code="user.edit.send_id" />
+									</th>
+									<th style="width: 150px;">
+										<spring:message	code="reg_dt" />
 									</th>
 									<th style="width: 179px;">
-										<spring:message	code="manage.userlist.date" />
-									</th>
-									<th style="width: 50px;">
-										<spring:message	code="manage.userlist.access" />
-									</th>
-									<th style="width: 150px;">
-										<spring:message	code="manage.userlist.init.password" />
+										<spring:message	code="view_dt" />
 									</th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.VIEWID" v-model="selectItem"></td>
-									<td>{{item.UNAME}}</td>
-									<td>{{item.UID}}</td>
-									<td class="center">{{item.CHAR_CRE_DT}}</td>
-									<td class="center">{{item.ACCEPT_YN}}</td>
-									<td class="center">
-										<button class="btn btn-default" @click="initPassword(item)" >초기화</button>
-										<span>{{item.INITPW}}</span>
-									</td>
+									<td><input type="checkbox" :value="item.MEMO_ID" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="viewItem(item)"> {{item.MEMO_TITLE}} </a></td>
+									<td class="center">{{item.SEND_ID}}</td>
+									<td class="center">{{item.REG_DT}}</td>
+									<td class="center">{{item.UPD_DT}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
@@ -95,6 +88,28 @@
 			<!-- /.panel-body -->
 		</div>
 		<!-- /.panel -->
+	</div>
+	<div class="col-xs-6">
+		<div class="panel panel-default">
+			<div class="panel-heading"><spring:message code="detail.view" /></div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<form id="addForm" name="addForm" class="form-horizontal">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<div class="form-control text required">{{detailItem.MEMO_TITLE}}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<textarea class="form-control text required" rows="10" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<!-- /.panel-body -->
+		</div>
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
@@ -113,7 +128,7 @@ VarsqlAPP.vueServiceBean( {
 		,selectItem :[]
 	}
 	,methods:{
-		acceptYn : function(obj){
+		deleteMsg : function(){
 			var _self = this; 
 			var selectItem = _self.selectItem;
 			
@@ -122,22 +137,24 @@ VarsqlAPP.vueServiceBean( {
 				return ; 
 			}
 			
-			if(!confirm(obj=='Y'?'<spring:message code="msg.accept.msg" />':'<spring:message code="msg.denial.msg" />')){
+			if(!confirm('삭제 하시겠습니까?')){
 				return ; 
 			}
 			
 			var param = {
-				acceptyn:obj
-				,selectItem:selectItem.join(',')
+				selectItem:selectItem.join(',')
 			};
 			
 			this.$ajax({
 				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
+				,url:{gubun:VARSQL.uri.user, url:'/preferences/deleteMsg'}
 				,success:function (response){
 					_self.search();
 				}
 			});
+		}
+		,viewItem : function (item){
+			this.detailItem = item;
 		}
 		,search : function(no){
 			var _self = this; 
@@ -149,26 +166,11 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/userList'}
+				url:{gubun:VARSQL.uri.user, url:'/preferences/listMsg'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;
 					_self.pageInfo = resData.page;
-				}
-			})
-		}
-		,initPassword :function(sItem){
-			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/initPassword'}
-				,data : sItem
-				,success: function(resData) {
-					sItem.INITPW = resData.item;
-					
-					setTimeout(function (){
-						sItem.INITPW ='';
-					}, 5000);
-					
-					alert('변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.');
 				}
 			})
 		}

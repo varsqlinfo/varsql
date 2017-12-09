@@ -12,4 +12,9 @@
         	<spring:message code="user.edit.pasword" />
         </a>
     </li>
+    <li class="<c:if test="${fn:endsWith(originalURL,'/preferences/message')}"> active</c:if>">
+        <a href="<c:url value="/user/preferences/message" />">
+        	<spring:message code="user.edit.message" />
+        </a>
+    </li>
 </ul>
