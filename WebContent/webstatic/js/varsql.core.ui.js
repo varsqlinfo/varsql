@@ -702,7 +702,7 @@ _ui.leftDbObjectServiceMenu ={
 			// 테이블 hint;
 			VARSQLHints.setTableInfo( tableHint);
 			
-			$.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
+			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
 				,page :false
@@ -736,6 +736,11 @@ _ui.leftDbObjectServiceMenu ={
 								_self._removeMetaCache(gubun,tmpName);
 								ele.attr('refresh','Y');
 								ele.trigger('click.pubgridrow');
+								return ; 
+							}
+							
+							if(key =='copy'){
+								tableObj.copyData();
 								return ; 
 							}
 							
@@ -783,6 +788,7 @@ _ui.leftDbObjectServiceMenu ={
 						},
 						items: [
 							{key : "refresh" , "name": "새로고침"}
+							,{key : "copy" , "name": "복사"}
 							,{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
@@ -1046,7 +1052,7 @@ _ui.leftDbObjectServiceMenu ={
 		if(gridObj){
 			gridObj.setData(gridData.data,'reDraw');
 		}else{
-			$.pubGrid(_self.options.metadata_content_area_wrapId+type, {
+			var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type, {
 				headerOptions : {
 					redraw : false
 				}
@@ -1055,6 +1061,23 @@ _ui.leftDbObjectServiceMenu ={
 				,autoResize :false
 				,tColItem : gridData.column
 				,tbodyItem :gridData.data
+				,rowOptions :{
+					contextMenu : {
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							if(key =='copy'){
+								gridObj.copyData();
+								return ; 
+							}
+							
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
 			});
 		}
 	}
@@ -1365,7 +1388,7 @@ _ui.SQL = {
 			columnTypeArr = [];
 		}
 		
-		$.pubGrid(_self.options.dataColumnTypeSelector,{
+		var gridObj= $.pubGrid(_self.options.dataColumnTypeSelector,{
 			height:'auto'
 			,autoResize : false
 			,page :false
@@ -1382,6 +1405,23 @@ _ui.SQL = {
 				,{label: "TYPE", key: "dbType"}
 			]
 			,tbodyItem :columnTypeArr
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						
+					},
+					items: [
+						{key : "copy" , "name": "복사"}
+					]
+				}
+			}
 		});
 	}
 	// sql 파라미터 셋팅. 
@@ -2093,7 +2133,7 @@ _ui.SQL = {
 	,setGridData: function (pGridData){
 		var _self = this; 
 		
-		$.pubGrid(_self.options.dataGridSelector,{
+		var gridObj = $.pubGrid(_self.options.dataGridSelector,{
 			height:'auto'
 			,autoResize : false
 			,page :false
@@ -2112,6 +2152,23 @@ _ui.SQL = {
 			}
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						
+					},
+					items: [
+						{key : "copy" , "name": "복사"}
+					]
+				}
+			}
 		});
 	}
 };

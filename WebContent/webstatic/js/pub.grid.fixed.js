@@ -1922,30 +1922,6 @@ Plugin.prototype ={
 			}
 		}
 
-		// select data 구하기.
-		function selectData() {
-			
-			var colInfo = _this.getSelectCellInfo(_this.config.select);
-				
-			var sCol= colInfo.startCol
-				,eCol =  colInfo.endCol
-				,sIdx= colInfo.startIdx
-				,eIdx =  colInfo.endIdx;
-						
-			var textArr = [];
-			for(var i = sIdx ; i <= eIdx ; i++){
-				var item = _this.options.tbodyItem[i];
-				var rowText = [];
-				for(var j=sCol ;j <= eCol; j++){
-					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
-				}
-				
-				textArr.push(rowText.join('\t'));
-			}
-
-			return textArr.join('\n');
-		}
-	
 		if(_this.options.rowOptions.click !== false && typeof _this.options.rowOptions.click == 'function'){
 			rowClickFlag =true; 
 
@@ -1974,7 +1950,7 @@ Plugin.prototype ={
 				
 				if (e.which == 67) {
 					
-					var copyData = selectData();
+					var copyData = _this.selectData();
 					try{
 						copyStringToClipboard(_this.prefix, copyData);
 					}catch(e){
@@ -1993,6 +1969,44 @@ Plugin.prototype ={
 				_this.config.focus = false; 
 			}
 		});
+	}
+	/**
+     * @method copyData
+     * @description 데이타 복사.
+     */
+	,copyData : function (){
+		var copyData = this.selectData();
+		try{
+			copyStringToClipboard(this.prefix, copyData);
+		}catch(e){
+			console.log('Unable to copy', e);					
+		}			
+	}
+	/**
+     * @method selectData
+     * @description select data 구하기.
+     */
+	,selectData : function () {
+		var _this = this; 
+		var colInfo = _this.getSelectCellInfo(_this.config.select);
+			
+		var sCol= colInfo.startCol
+			,eCol =  colInfo.endCol
+			,sIdx= colInfo.startIdx
+			,eIdx =  colInfo.endIdx;
+					
+		var textArr = [];
+		for(var i = sIdx ; i <= eIdx ; i++){
+			var item = _this.options.tbodyItem[i];
+			var rowText = [];
+			for(var j=sCol ;j <= eCol; j++){
+				rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
+			}
+			
+			textArr.push(rowText.join('\t'));
+		}
+
+		return textArr.join('\n');
 	}
 	/**
      * @method _setBodyEvent
