@@ -3,7 +3,7 @@
 
 <ul class="nav left-menu">
     <li class="<c:if test="${fn:endsWith(originalURL,'/user/preferences')}"> active</c:if>">
-        <a href="<c:url value="/user/preferences" />">
+        <a href="<c:url value="/user/preferences?header=${headerview}" />">
         	<spring:message code="user.edit.general" />
         </a>
     </li>

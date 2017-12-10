@@ -230,7 +230,7 @@ a.show-sidebar:hover {
   z-index: 10;
   background: #f1f1f1;
   box-shadow: 0 0 6px #131313;
-  padding: 0px 25px;
+  padding: 0px 15px;
   overflow-y:auto;
   -webkit-transition: 0.2s;
   -moz-transition: 0.2s;

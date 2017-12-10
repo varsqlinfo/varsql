@@ -11,11 +11,13 @@
 <body>
 	<div id="wrapper" class="height100">
 		<!-- Navigation -->
-		<nav class="manager-top-wrap navbar-inverse navbar-fixed-top" role="navigation">
-			<tiles:insertAttribute name="header" />
-		</nav>
+		<c:if test="${headerview eq 'Y'}">
+			<nav class="manager-top-wrap navbar-inverse navbar-fixed-top" role="navigation">
+				<tiles:insertAttribute name="header" />
+			</nav>
+		</c:if>
 		<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-		<div id="main-wrap" class="container-fluid height100">
+		<div id="main-wrap" style="padding-top:${headerview eq 'Y'?'50':'0'}px" class="container-fluid height100">
 			<div class="row height100">
 				<div class="col-xs-2">
 					<tiles:insertAttribute name="left" />

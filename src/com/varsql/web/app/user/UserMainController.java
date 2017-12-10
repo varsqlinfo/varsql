@@ -91,6 +91,8 @@ public class UserMainController {
 	@RequestMapping({"/preferences"})
 	public ModelAndView preferencesMain(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
+		
+		model.addAttribute("headerview", ("Y".equals(req.getParameter("header"))?"Y":""));
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("detailInfo" , userMainServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
 		return  new ModelAndView("/user/preferences/general", model);
