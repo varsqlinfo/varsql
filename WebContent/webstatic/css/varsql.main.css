@@ -496,8 +496,10 @@ padding-top: 5px;
 }
 
 .CodeMirror {
+  /*
   min-height: 100px;
   height: 100px;
+  */
 }
 
 .CodeMirror-vscrollbar{
