@@ -352,6 +352,27 @@ padding-top: 5px;
 	background: none;
 }
 
+.ui-tab-item {
+	position: relative;/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+	background: #7376df;
+    font-weight: normal;
+    color: #ffffff;
+    border: 1px solid #003eff;
+}
+
+.ui-tab-item a{
+	color: #ffffff;
+}
+
+.ui-tab-item-active {
+	position: relative;/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+	background: #fff;
+    color: #000;
+}
+.ui-tab-item-active a{
+	color: #000;
+}
+
 .ui-paddingl5-r5{
 	padding : 0 5px 0 5px;
 }

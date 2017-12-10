@@ -146,6 +146,7 @@ public class UserMainController {
 	@RequestMapping({"/preferences/password"})
 	public ModelAndView preferencesPassword(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
+		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		
 		return  new ModelAndView("/user/preferences/password", model);
@@ -197,6 +198,7 @@ public class UserMainController {
 	@RequestMapping({"/preferences/message"})
 	public ModelAndView preferencesMessage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
+		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		
 		return  new ModelAndView("/user/preferences/memoMgmt", model);

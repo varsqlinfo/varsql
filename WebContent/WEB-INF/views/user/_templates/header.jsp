@@ -39,7 +39,7 @@
 				<ul class="dropdown-menu">
 			        <%@ include file="/WEB-INF/include/screen.jspf"%>
 					<li>
-						<a href="<c:url value="/user/preferences?header=N" />"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
+						<a href="javascript:;" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
 					</li>
 					<li class="divider"></li>
 					<li>
@@ -63,6 +63,13 @@
 			var _self = this;
 			$('.ui-memo-btn').on('click', function(e) {
 				_self.messageLoad();
+			})
+			$('.preferences').on('click', function(e) {
+				userMain.tabCntl({
+					id : 'preferences'
+					,name : '환경설정'
+					,url : '<c:url value="/user/preferences?header=N" />'
+				});
 			})
 		},
 		messageLoad : function() {

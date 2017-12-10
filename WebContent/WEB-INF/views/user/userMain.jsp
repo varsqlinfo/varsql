@@ -21,13 +21,28 @@ var userMain = {
 			
 			if(selectObj.val()=='') return ;
 			
-			_self.tabCntl($(_self._userConnectionInfo+" option:selected"));
+			var sEle =$(_self._userConnectionInfo+" option:selected"); 
+			
+			_self.tabCntl({
+				id : sEle.val()
+				,name : sEle.attr('vname')
+			});
 			
 			$('#connection_select_msg_wrapper').attr('data-init-msg','N');
 		});
 		
 		$(_self._connectionTab).on('click','.tab-ui-name',function (){
 			var tmpid = $(this).closest('[conuid]').attr('conuid');
+			
+			if(tmpid=='preferences'){
+				userMain.tabCntl({
+					id : 'preferences'
+					,name : '환경설정'
+					,url : '<c:url value="/user/preferences?header=N" />'
+				});
+				return ; 
+				
+			}
 			$(_self._userConnectionInfo).val(tmpid);
 			$(_self._userConnectionInfo).trigger( "change" );
 		});
@@ -59,13 +74,13 @@ var userMain = {
 		});
 	}
 	// 탭정보 컨트롤
-	,tabCntl:function (selectObj){
+	,tabCntl:function (sItem){
 		var _self = this;
-		var sconid = selectObj.val();
+		var sconid = sItem.id;
 		var tabs = $('.tabs_'+sconid);
 		
-		$( _self._connectionTab+'> .ui-state-active').removeClass('ui-state-active');
-		tabs.addClass('ui-state-active');
+		$( _self._connectionTab+'> .ui-tab-item-active').removeClass('ui-tab-item-active');
+		tabs.addClass('ui-tab-item-active');
 		$('.db_sql_view_area').hide();
 		
 		if(tabs.length > 0){
@@ -81,16 +96,20 @@ var userMain = {
 		
 		$('#connection_select_msg_wrapper').show();
 		
-		var strHtm='<li class="db-info-tab ui-state-default ui-corner-top connection-ui-tabs-active ui-state-active tabs_'+sconid+'">';
-		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(selectObj.attr('vname'))+'">';
-		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+selectObj.attr('vname')+'</a>&nbsp;';
+		var strHtm='<li class="db-info-tab ui-tab-item ui-tab-item-active tabs_'+sconid+'">';
+		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(sItem.name)+'">';
+		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+sItem.name+'</a>&nbsp;';
 		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp;';
 		strHtm+='	</span>';
 		strHtm+='</li>';
 		
 		$(_self._connectionTab).append(strHtm);
 		
-		var _url = VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid; 
+		var _url = sItem.url; 
+		if(typeof _url ==='undefined'){
+			_url = VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;	
+		}
+		 
 		var strHtm = '<iframe class="db_sql_view_area iframe_'+sconid+' display-hidden" src="'+_url+'" style="width:100%;height:100%;" width="100%" height="100%" frameborder="0"></iframe>';
 		
 		$(_self._connectionIframe).append(strHtm);
