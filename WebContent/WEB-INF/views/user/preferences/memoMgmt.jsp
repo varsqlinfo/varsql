@@ -8,33 +8,37 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row" id="epViewArea">
+<div class="row display-off" id="epViewArea">
 	<div class="col-xs-6">
 		<div class="panel panel-default">
+			<div class="panel-heading">
+				<label>
+					<input type="radio" value="recv" v-model="message_type" @change="search()">받은메시지
+					<input type="radio" value="send" v-model="message_type" @change="search()">보낸메시지
+				</label>
+			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
+				
+				<div class="row">
+					<div class="col-xs-12">
+						
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-sm-6">
-						<label>
-							<select v-model="message_type" @change="search()" class="form-control input-sm">
-								<option value="recv">받은메시지</option>
-								<option value="send">보낸메시지</option>
-							</select>
-						</label>
-						
-						<label><select v-model="list_count" @change="search()" class="form-control input-sm"><option
-									value="10">10</option>
-								<option value="25">25</option>
-								<option value="50">50</option>
-								<option value="100">100</option></select>
-						</label>
-						
 						<label> 
-							<button type="button" class="btn btn-xs btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
+							<button type="button" class="btn btn-sm btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
 						</label>
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+									value="10">10</option>
+								<option value="25">25</option>
+								<option value="50">50</option>
+								<option value="100">100</option></select>
+							</label>
 							<div class="input-group floatright">
 								<input type="text" v-model="searchVal"	class="form-control">
 								<span class="input-group-btn">
@@ -43,6 +47,7 @@
 									</button>
 								</span>
 							</div>
+							
 						</div>
 					</div>
 				</div>

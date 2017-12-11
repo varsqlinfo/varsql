@@ -7,19 +7,13 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row" id="epViewArea">
+<div class="row display-off" id="epViewArea">
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-sm-6">
-						<label><select v-model="list_count" @change="search()" class="form-control input-sm"><option
-									value="10">10</option>
-								<option value="25">25</option>
-								<option value="50">50</option>
-								<option value="100">100</option></select>
-						</label>
 						<label> 
 							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
 						</label>
@@ -29,6 +23,12 @@
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+									value="10">10</option>
+								<option value="25">25</option>
+								<option value="50">50</option>
+								<option value="100">100</option></select>
+							</label>
 							<div class="input-group floatright">
 								<input type="text" v-model="searchVal" class="form-control" @keyup="search()">
 								 <span class="input-group-btn">
@@ -78,7 +78,7 @@
 									<td class="center">{{item.CHAR_CRE_DT}}</td>
 									<td class="center">{{item.ACCEPT_YN}}</td>
 									<td class="center">
-										<button class="btn btn-default" @click="initPassword(item)" >초기화</button>
+										<button class="btn btn-xs btn-default" @click="initPassword(item)" >초기화</button>
 										<span>{{item.INITPW}}</span>
 									</td>
 								</tr>

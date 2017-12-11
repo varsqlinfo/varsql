@@ -185,12 +185,16 @@
 	
 	<!-- 신규 메시지 조회  -->
 	<select id="userMapper.selectMessageInfo" parameterType="map" resultType="map">
-		select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, REG_DT , VIEW_DT
-		from VTMEMO a , VTMEMO_USER b 
-		where a.MEMO_ID = b.MEMO_ID 
-		and RECV_ID = #{uid}
-		and VIEW_DT is null
-		order by reg_dt desc
+		select c.* , d.UNAME as SEND_NM , d.UID  as SEND_ID
+		from (
+			select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT , VIEW_DT
+			from VTMEMO a , VTMEMO_USER b 
+			where a.MEMO_ID = b.MEMO_ID 
+			and RECV_ID = #{uid}
+			and VIEW_DT is null
+			order by reg_dt desc
+		) c left outer join VTUSER d 
+		where c.SEND_ID  = d.VIEWID
 	</select>
 	
 	<!-- 사용자 메시지  목록 수-->
@@ -211,19 +215,23 @@
 	
 	<!-- 사용자 메시지  목록 -->
 	<select id="userMapper.selectUserMsg" parameterType="searchParameter" resultType="map">
-		select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, REG_DT , VIEW_DT
-		from VTMEMO a , VTMEMO_USER b 
-		where a.MEMO_ID = b.MEMO_ID 
-		<choose>
-			<when test="customParam.message_type == 'send'">
-				and SEND_ID = #{customParam.uid}
-			</when>
-			<otherwise>
-				and RECV_ID = #{customParam.uid}
-			</otherwise>
-		</choose>
-		and MEMO_TITLE like '%'||#{keyword}||'%' 
-		order by reg_dt desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
+		select c.* , d.UNAME as SEND_NM , d.UID  as SEND_ID
+		from (
+			select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, SEND_ID, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT  , VIEW_DT
+			from VTMEMO a , VTMEMO_USER b 
+			where a.MEMO_ID = b.MEMO_ID 
+			<choose>
+				<when test="customParam.message_type == 'send'">
+					and SEND_ID = #{customParam.uid}
+				</when>
+				<otherwise>
+					and RECV_ID = #{customParam.uid}
+				</otherwise>
+			</choose>
+			and MEMO_TITLE like '%'||#{keyword}||'%' 
+			order by reg_dt desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
+		) c left outer join VTUSER d 
+		where c.SEND_ID  = d.VIEWID
 	</select>
 	
 	<!-- 메시지 삭제 -->

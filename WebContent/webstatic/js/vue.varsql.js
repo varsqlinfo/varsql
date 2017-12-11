@@ -185,6 +185,8 @@ VarsqlAPP.vueServiceBean = function (opts){
 	
 	var vueObj = new Vue(opts);
 	
+	$(opts.el).removeClass('display-off')
+	
 	return vueObj;
 }
 })(Vue , portalDefaultTemplate, jQuery);
