@@ -160,11 +160,11 @@ Plugin.prototype ={
 		var _self = this,opt = _self.options;
 		
 		$('#'+_self.contextId+' .ui-context-item').off('click.'+this.contextId);
-		$('#'+_self.contextId+' .ui-context-item').on('click.'+this.contextId,function (){
+		$('#'+_self.contextId+' .ui-context-item').on('click.'+this.contextId,function (e){
 			var clickEle=$(this);
 			
 			if(clickEle.hasClass('pub-context-submenu')){
-				
+				return ; 
 			}else{
 				skey = clickEle.attr('context-key');
 				var sobj = {
@@ -172,10 +172,11 @@ Plugin.prototype ={
 					,item : _self.contextData[skey]
 					,list : _self.contextData
 					,element : _self.selectElement
+					,evt : e
 				}
 			
 				if(jQuery.isFunction(opt.callback)){
-					opt.callback.call(sobj, sobj.item.key, sobj.item);
+					opt.callback.call(sobj, sobj.item.key, sobj.item , sobj.evt);
 				}else{
 					alert(skey);
 				}

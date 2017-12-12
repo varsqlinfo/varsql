@@ -534,7 +534,7 @@ Plugin.prototype ={
 			var tciItem = opt.tColItem[j];
 
 			if(viewAllLabel){
-				tciItem.width = tciItem.label.length* 10 + 1; 
+				tciItem.width = tciItem.label.length* 11; 
 			}else{
 				tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
 			}

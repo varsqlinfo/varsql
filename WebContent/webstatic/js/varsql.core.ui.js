@@ -6,7 +6,9 @@
 ;(function($, window, document, VARSQL) {
 "use strict";
 
-var _ui=VARSQL.ui||{};
+VARSQL.ui = VARSQL.ui||{};
+
+var _ui = {};
 
 _ui.base ={
 	mimetype : ''	// editor mime type
@@ -24,16 +26,15 @@ var _g_options={
 	}
 };
 
-_ui.create = function (_opts){
-	var _self = this; 
+VARSQL.ui.create = function (_opts){
 	
 	_ui.base.sqlHints = VARSQLCont.dataType.sqlHints(_opts.dbtype);
 	_ui.base.mimetype = VARSQLCont.dataType.getMimeType(_opts.dbtype);
 	
-	_self.initContextMenu();
-	_self.headerMenu.init(_opts);
-	_self.leftDbObject.create(_opts);
-	_self.layout.init(_opts);
+	_ui.initContextMenu();
+	_ui.headerMenu.init(_opts);
+	_ui.leftDbObject.create(_opts);
+	_ui.layout.init(_opts);
 }
 
 //context menu 초기화
@@ -318,7 +319,7 @@ _ui.layout = {
 		});
 		
 		function setSqlEditorHeight (_h){
-			$('.CodeMirror.cm-s-default').css('height' ,_h);
+			_ui.SQL.sqlEditorEle.css('height' ,_h);
 		}
 		setSqlEditorHeight($('#editorAreaTable').height())
 		_ui.SQL.sqlTextAreaObj.refresh();
@@ -1092,6 +1093,7 @@ _ui.leftDbObjectServiceMenu ={
  */
 _ui.SQL = {
 	sqlTextAreaObj:null
+	,sqlEditorEle:null
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
@@ -1168,14 +1170,119 @@ _ui.SQL = {
 			extraKeys: {"Ctrl-Space": "autocomplete"},
 			hintOptions: {tables:tableHint}
 		});
+		
+		_self.sqlEditorEle = $('.CodeMirror.cm-s-default');
 	}
 	//이벤트 초기화 
 	,_initEvent :function (){
-		var _self = this; 
-	
-		var textareaObj = $('.CodeMirror.cm-s-default');
+		var _self = this;
 		
-		textareaObj.on('keydown',function (e) {
+		
+		function strUpperCase(){
+			var sCursor = _self.getTextAreaObj().getCursor(true)
+			,eCursor = _self.getTextAreaObj().getCursor(false);
+		
+			_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
+			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+		}
+		function strLowerCase(){
+			var sCursor = _self.getTextAreaObj().getCursor(true)
+			,eCursor = _self.getTextAreaObj().getCursor(false);
+		
+			_self.getTextAreaObj().replaceSelection(_self.getSql().toLowerCase());
+			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+		}
+		function strCamelCase(){
+			var sCursor = _self.getTextAreaObj().getCursor(true)
+			,eCursor = _self.getTextAreaObj().getCursor(false);
+			
+			_self.getTextAreaObj().replaceSelection(convertCamel(_self.getSql()));
+			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+		}
+		
+		$.pubContextMenu(_self.sqlEditorEle, {
+			items:[
+				{key : "undo" , "name": "실행취소"}
+				,{key : "redo" , "name": "다시 실행"}
+				,{divider:true}
+				,{key : "copy" , "name": "복사"}
+				,{key : "cut" , "name": "잘라내기"}
+				//,{key : "paste" , "name": "뭍여넣기"}
+				,{key : "delete" , "name": "지우기"}
+				,{divider:true}
+				,{key : "msgSend" , "name": "메시지 보내기"}
+				,{key : "sqlFormat" , "name": "쿼리 정렬"}
+				,{key : "upperLowerCase", "name": "대소문자변환" 
+					,subMenu: [
+						{ key : "upper","name": "대문자변환"}
+						,{ key : "lower","name": "소문자"}
+						,{ key : "camel","name": "Camel Case"}
+					]
+				}
+    		]
+			,callback:function (key, item , evt){
+	    		var sObj = this.element;
+	    		
+	    		switch (key) {
+					case 'undo':
+						_ui.SQL.getTextAreaObj().undo();
+						break;
+					case 'redo':
+						_ui.SQL.getTextAreaObj().redo();
+						break;
+					case 'copy':
+						copyStringToClipboard('varsqleditor',_self.getSql());
+						break;
+					case 'cut':
+						var startCursor = _self.getTextAreaObj().getCursor(true);
+						copyStringToClipboard('varsqleditor',_self.getSql());
+						_self.getTextAreaObj().replaceSelection('');
+						
+						_self.getTextAreaObj().focus();
+						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch})
+						break;
+					case 'paste':
+						
+						console.log('paste')
+						var startCursor = _self.getTextAreaObj().getCursor(true);
+						_self.getTextAreaObj().focus();
+						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch});
+						try{
+							document.execCommand('paste');
+						}catch(e){
+							console.log(e);
+						}
+						break;
+					case 'delete':
+						var startCursor = _self.getTextAreaObj().getCursor(true);
+						_self.getTextAreaObj().replaceSelection('');
+						
+						_self.getTextAreaObj().focus();
+						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch})
+						
+						break;
+					case 'msgSend':
+						$('.sql-send-btn').trigger('click');
+						break;
+					case 'sqlFormat':
+						$('.sql-format-btn').trigger('click');
+						break;
+					case 'upper':
+						strUpperCase();
+						break;
+					case 'lower':
+						strLowerCase();
+						break;
+					case 'camel':
+						strCamelCase();
+						break;
+					default:
+						break;
+				}
+	    	}
+		});
+	
+		_self.sqlEditorEle.on('keydown',function (e) {
 			var evt =window.event || e; 
 			
 			if(evt.ctrlKey){
@@ -1198,18 +1305,10 @@ _ui.SQL = {
 							$('.sql-save-btn').trigger('click');
 							break;
 						case 88: // toUpperCase
-							var sCursor = _self.getTextAreaObj().getCursor(true)
-							,eCursor = _self.getTextAreaObj().getCursor(false);
-						
-							_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
-							_self.getTextAreaObj().setSelection(sCursor, eCursor);
+							strUpperCase();
 							break;
 						case 89: // toLowerCase
-							var sCursor = _self.getTextAreaObj().getCursor(true)
-							,eCursor = _self.getTextAreaObj().getCursor(false);
-						
-							_self.getTextAreaObj().replaceSelection(_self.getSql().toLowerCase());
-							_self.getTextAreaObj().setSelection(sCursor, eCursor);
+							strLowerCase();
 							break;
 						default:
 							break;
@@ -1225,7 +1324,7 @@ _ui.SQL = {
 			}
 		});
 		
-		textareaObj.on('click', function(e){
+		_self.sqlEditorEle.on('click', function(e){
 			$('#sql_parameter_area').removeClass('on');
 		})
 		
@@ -2381,9 +2480,42 @@ function convertCamel(camelStr){
     return returnStr; 
 }
 
+function copyStringToClipboard (prefix , copyText) {
+	var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+	if (typeof window.clipboardData !== "undefined" &&
+	  typeof window.clipboardData.setData !== "undefined") {
+		window.clipboardData.setData("Text", copyText);
+		return ; 
+	}
+
+	var _id = prefix+'copyTextId'; 
+	var copyArea = document.getElementById(_id); 
+	if(!copyArea){
+		var fakeElem = document.createElement('textarea');
+		var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+		fakeElem.id =_id;
+		fakeElem.style = 'top:'+yPosition+'px;font-size : 12pt;border:0;padding:0;margin:0;position:absolute;' +(isRTL ? 'right' : 'left')+':-9999px';
+		fakeElem.setAttribute('readonly', '');
+
+		document.body.appendChild(fakeElem);
+		copyArea = document.getElementById(_id);
+	}
+
+	copyArea.value = copyText;
+	copyArea.select();
+	
+	function handler (event){
+		document.removeEventListener('copy', handler);
+		copyArea = null; 
+	}
+	document.addEventListener('copy', handler);
+
+	document.execCommand('copy');
+}
+
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-VARSQL.ui = _ui;
 }(jQuery, window, document,VARSQL));

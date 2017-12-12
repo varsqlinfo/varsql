@@ -170,10 +170,9 @@
 	*width: 100%;
 	height: 1px;
 	margin: 9px 1px;
-	*margin: -5px 0 5px;
+	margin: -5px 0 5px;
 	overflow: hidden;
-	background-color: #e5e5e5;
-	border-bottom: 1px solid #ffffff;
+	border-bottom: 1px solid #ddd;
 }
 .pub-context-menu a {
 	display: block;
@@ -297,7 +296,7 @@
 	font-size: 12px;
 }
 .compressed-context .divider{
-	margin: 5px 1px;
+	margin: 3px 1px;
 }
 .compressed-context .pub-context-header{
 	padding:1px 13px;
