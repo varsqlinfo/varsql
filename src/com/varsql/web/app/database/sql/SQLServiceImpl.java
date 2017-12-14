@@ -28,6 +28,7 @@ import com.varsql.sql.builder.SqlSourceBuilder;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.builder.VarsqlStatementType;
 import com.varsql.sql.format.VarsqlFormatterDb2;
+import com.varsql.sql.format.VarsqlFormatterUtil;
 import com.varsql.sql.util.SQLUtil;
 import com.varsql.web.app.database.beans.SqlParamInfo;
 import com.varsql.web.common.beans.DataCommonVO;
@@ -72,15 +73,7 @@ public class SQLServiceImpl{
 	 * @throws Exception
 	 */
 	public String sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
-		StringBuffer sqlFormatSb = new StringBuffer();
-		
-//		List<SqlSource> sqlList=new SqlSourceBuilder().parse(paramMap.getString(VarsqlParamConstants.SQL));
-//		for (SqlSource tmpSqlSource : sqlList) {
-//			
-//			sqlFormatSb.append(new VarsqlFormatterDb2().execute(tmpSqlSource.getQuery())).append("\n");
-//		}
-		sqlFormatSb.append(new VarsqlFormatterDb2().execute(sqlParamInfo.getSql())).append("\n");
-		return sqlFormatSb.toString();
+		return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n";
 	}
 	
 	/**
@@ -99,8 +92,7 @@ public class SQLServiceImpl{
 		
 		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
-		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql,sqlParamMap);
-		
+		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql,sqlParamMap, VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
 		
 		String vconnid = sqlParamInfo.getVconnid();
 		
