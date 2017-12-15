@@ -12,9 +12,8 @@ import java.util.Map;
 
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.resultset.handle.ResultSetHandle;
-import com.varsql.sql.vo.GridColumnInfo;
+import com.varsql.sql.beans.GridColumnInfo;
 import com.varsql.web.app.database.beans.SqlParamInfo;
-import com.vartech.common.app.beans.ParamMap;
 
 /**
  *날짜 관련 util
