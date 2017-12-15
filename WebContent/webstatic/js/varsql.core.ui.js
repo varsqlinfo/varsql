@@ -1902,8 +1902,9 @@ _ui.SQL = {
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
 		    ,dataType:'json'
 		    ,data:params 
-		    ,success:function (resData){
+		    ,success:function (responseData){
 		    	try{
+		    		var resData = responseData.items; 
 		    		var resultLen = resData.length;
 		    		
 		    		if(resultLen < 1 ){
@@ -1911,26 +1912,43 @@ _ui.SQL = {
 		    			resData.column =[{label:'result',key:'result', align:'center'}];
 		    		}
 		    		
-		    		var item = resData[0];
-		    		_self._currnetQueryReusltData =item;
+		    		var resultMessage =responseData.message
+		    			,resultMessage  = resultMessage!=null && resultMessage != ''? resultMessage+'</br>':'';
 		    		
-		    		if(item.resultType=='FAIL' || item.viewType=='msg'){
+		    		var msgViewFlag =false, item; 
+		    		var resultMsg = [];
+		    		var resultClass;
+		    		
+	    			for(var i=0; i < resultLen; i++){
+	    				resultClass = 'success-log-message';
+	    				item = resData[i];
+	    				
+	    				if(item.resultType=='FAIL' || item.viewType=='msg'){
+	    					msgViewFlag = true;
+	    					
+	    					if(item.resultType=='FAIL'){
+		    					resultClass = 'error-log-message'; 
+		    					item.resultMessage = resultMessage+item.resultMessage;
+	    					}
+	    				}
+	    				
+	    				if(item.viewType=='grid'){
+	    					_self._currnetQueryReusltData =item;
+	    				}
+	    				    				
+	    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , VARSQL.util.escapeHTML(item.resultMessage)));
+	    			}
+	    			
+	    			if(msgViewFlag){
 		    			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
     				}else{
 	    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
 	    			}
 	    			
-		    		var resultMsg = [];
-	    			for(var i=0; i < resultLen; i++){
-	    				item = resData[i];
-	    				
-	    				if(item.viewType=='grid'){
-	    					_self.setGridData(item);
-	    				}
-	    				resultMsg.push('<div class="'+(item.resultType=='FAIL'?'error-log-message':'success-log-message')+'">#resultMsg#</div>'.replace('#resultMsg#' , VARSQL.util.escapeHTML(item.resultMessage)));
-	    			}
+	    			_self.setGridData(_self._currnetQueryReusltData);
 	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
     				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
+    				
 		 		}catch(e){
 					VARSQL.log.info(e);
 				}		             

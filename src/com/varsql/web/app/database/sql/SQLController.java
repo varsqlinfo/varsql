@@ -54,7 +54,7 @@ public class SQLController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlData"})
-	public @ResponseBody List sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		return sQLServiceImpl.sqlData(sqlParamInfo);
 	}
 	

@@ -87,38 +87,42 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList sqlData(SqlParamInfo sqlParamInfo) throws Exception {
-		String reqSql = sqlParamInfo.getSql();
+	public ResponseResult sqlData(SqlParamInfo sqlParamInfo) throws Exception {
 		
 		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
-		List<SqlSource> sqlList=new SqlSourceBuilder().parse(reqSql,sqlParamMap, VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
 		
-		String vconnid = sqlParamInfo.getVconnid();
+		List<SqlSource> sqlList = parseInfo.getItems();
 		
-		ArrayList reLst = new ArrayList();
+		ArrayList<SqlSourceResultVO> reLst = new ArrayList<SqlSourceResultVO>();
+		
+		ResponseResult result = new ResponseResult();
+		
+		result.setMessage(parseInfo.getMessage());
+		result.setMessageCode(parseInfo.getMessageCode());
 		
 		Connection conn = null;
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(vconnid);
+			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
 			
 			for (SqlSource tmpSqlSource : sqlList) {
 				
-				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource, vconnid);
+				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource);
 				
 				reLst.add(tmpSqlSource.getResult());
 			}
-			
-			return reLst;
+			result.setItemList(reLst);
+			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
 			
+			result.setItemList(null);
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			SQLUtil.close(conn);
 		}
 		
-		return  new ArrayList();
+		return  result;
 	}
 	
 	/**
@@ -193,11 +197,11 @@ public class SQLServiceImpl{
 	 * @param vconnid 
 	 * @param maxRow
 	 * @return
+	 * @throws SQLException 
 	 */
-	protected Object getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource, String vconnid) {
+	protected void getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
-		Object reVal=null;
 		SqlSourceResultVO ssrv = new SqlSourceResultVO();
 		
 		int maxRow = sqlParamInfo.getLimit(VarsqlParamConstants.SQL_MAX_ROW);
@@ -210,7 +214,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet(); 
 			
 			if(rs != null){
-				SqlResultUtil.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow,vconnid);
+				SqlResultUtil.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow);
 				ssrv.setViewType("grid");
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -218,13 +222,12 @@ public class SQLServiceImpl{
 				ssrv.setResultCnt(stmt.getUpdateCount());
 				ssrv.setResultMessage("success update count : "+ ssrv.getResultCnt());
 			}
-			    
+
 			ssrv.setResultType(ResultType.SUCCESS.name());
 			
 	    }catch(SQLException e){
 	    	ssrv.setViewType("msg");
 	    	ssrv.setResultType(ResultType.FAIL.name());
-	    	//e.fillInStackTrace()
 	    	ssrv.setResultMessage("error : "+e.getSQLState()+": "+ e.getLocalizedMessage());
 	    	//logger.error(getClass().getName()+" sqlData", e);
 		} finally {
@@ -238,7 +241,6 @@ public class SQLServiceImpl{
 	    tmpSqlSource.setResult(ssrv);
 	    
 	    sqlLogInsert(sqlParamInfo,tmpSqlSource , ssrv);
-	    return reVal;
 	}
 	
 	/**
@@ -285,15 +287,13 @@ public class SQLServiceImpl{
 		String exportType = sqlParamInfo.getExportType();
 		String tmpName = sqlParamInfo.getObjectName(); 
 		String reqSql = "select "+ sqlParamInfo.getColumnInfo() + " from "+tmpName;
-		SqlSource sqlSource = new SqlSourceBuilder().getSqlSource(reqSql);
-		
-		String vconnid = sqlParamInfo.getVconnid();
+		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(reqSql);
 		
 		Connection conn = null;
 		SqlSourceResultVO result = new SqlSourceResultVO();
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(vconnid);
-			getRequestSqlData(sqlParamInfo,conn,sqlSource, vconnid);
+			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
+			getRequestSqlData(sqlParamInfo,conn,sqlSource);
 			result = sqlSource.getResult();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+"sqlData", e);

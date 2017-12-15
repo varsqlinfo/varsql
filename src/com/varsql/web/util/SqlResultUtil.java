@@ -38,7 +38,7 @@ public class SqlResultUtil {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlParamInfo sqlParamInfo, int maxRow, String vconnid) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlParamInfo sqlParamInfo, int maxRow) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -47,7 +47,7 @@ public class SqlResultUtil {
 		
 		rsmd = rs.getMetaData();
 		
-		ResultSetHandle resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(vconnid).getResultsetHandle();
+		ResultSetHandle resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandle();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];
