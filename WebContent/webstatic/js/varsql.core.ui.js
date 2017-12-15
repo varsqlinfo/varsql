@@ -1805,8 +1805,8 @@ _ui.SQL = {
 		
 		if(_self.resultMsgAreaObj==null){
 			var msgEle = $(_self.options.resultMsgAreaWrap).contents();
-			var msgStyle = '<style>body{margin:0px;}.error-log-message{font-size:12px;color:#dd4b39}'
-				+'.success-log-message{	font-size:12px;color:#000099}</style>';
+			var msgStyle = '<style>body{margin:0px;}.error-log-message{font-size:12px;color:#dd4b39;padding-bottom: 3px;border-bottom: 1px solid #f1e4e4;}'
+				+'.success-log-message{	font-size:12px;color:#000099;padding-bottom: 3px;border-bottom: 1px solid #f1e4e4;}</style>';
 			
 			msgEle.find('head').html(msgStyle);
 			
@@ -1886,7 +1886,6 @@ _ui.SQL = {
 		
 		var sqlParam = _self.getSqlParam();
 		if(!_self.sqlParamCheck(sqlVal, sqlParam)){
-			
 			return '';
 		}
 		
@@ -1912,31 +1911,29 @@ _ui.SQL = {
 		    			resData.column =[{label:'result',key:'result', align:'center'}];
 		    		}
 		    		
-		    		var resultMessage =responseData.message
-		    			,resultMessage  = resultMessage!=null && resultMessage != ''? resultMessage+'</br>':'';
-		    		
-		    		var msgViewFlag =false, item; 
+		    		var msgViewFlag =false,gridViewFlag = false, item; 
 		    		var resultMsg = [];
-		    		var resultClass;
+		    		var resultClass , tmpMsg;
 		    		
 	    			for(var i=0; i < resultLen; i++){
 	    				resultClass = 'success-log-message';
 	    				item = resData[i];
 	    				
+	    				tmpMsg= item.resultMessage;
 	    				if(item.resultType=='FAIL' || item.viewType=='msg'){
 	    					msgViewFlag = true;
 	    					
 	    					if(item.resultType=='FAIL'){
 		    					resultClass = 'error-log-message'; 
-		    					item.resultMessage = resultMessage+item.resultMessage;
 	    					}
 	    				}
 	    				
 	    				if(item.viewType=='grid'){
+	    					gridViewFlag = true;
 	    					_self._currnetQueryReusltData =item;
 	    				}
 	    				    				
-	    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , VARSQL.util.escapeHTML(item.resultMessage)));
+	    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
 	    			}
 	    			
 	    			if(msgViewFlag){
@@ -1945,7 +1942,9 @@ _ui.SQL = {
 	    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
 	    			}
 	    			
-	    			_self.setGridData(_self._currnetQueryReusltData);
+	    			if(gridViewFlag){
+	    				_self.setGridData(_self._currnetQueryReusltData);
+	    			}
 	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
     				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
     				

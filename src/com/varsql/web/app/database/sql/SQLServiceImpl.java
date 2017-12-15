@@ -27,7 +27,6 @@ import com.varsql.sql.builder.SqlSource;
 import com.varsql.sql.builder.SqlSourceBuilder;
 import com.varsql.sql.builder.SqlSourceResultVO;
 import com.varsql.sql.builder.VarsqlStatementType;
-import com.varsql.sql.format.VarsqlFormatterDb2;
 import com.varsql.sql.format.VarsqlFormatterUtil;
 import com.varsql.sql.util.SQLUtil;
 import com.varsql.web.app.database.beans.SqlParamInfo;
@@ -38,6 +37,8 @@ import com.varsql.web.util.SqlResultUtil;
 import com.varsql.web.util.VarsqlUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.PagingUtil;
+import com.vartech.common.utils.StringUtil;
+import com.vartech.common.utils.StringUtil.EscapeType;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -56,10 +57,6 @@ public class SQLServiceImpl{
 	private SQLDAO sqlDAO ;
 	
 	private Calendar calendar = Calendar.getInstance();
-	
-	public String selectQna(DataCommonVO paramMap) {
-		return "";
-	}
 	
 	/**
 	 * 
@@ -99,24 +96,32 @@ public class SQLServiceImpl{
 		
 		ResponseResult result = new ResponseResult();
 		
-		result.setMessage(parseInfo.getMessage());
-		result.setMessageCode(parseInfo.getMessageCode());
-		
 		Connection conn = null;
+		SqlSourceResultVO ssrv =null; 
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
-			
 			for (SqlSource tmpSqlSource : sqlList) {
+				
+				ssrv = new SqlSourceResultVO();
+				reLst.add(ssrv);
+				
+				tmpSqlSource.setResult(ssrv);
+				ssrv.setStarttime(System.currentTimeMillis());
 				
 				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource);
 				
-				reLst.add(tmpSqlSource.getResult());
+				ssrv.setEndtime(System.currentTimeMillis());
+				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
+				ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
+				sqlLogInsert(sqlParamInfo,tmpSqlSource , ssrv);
 			}
 			result.setItemList(reLst);
-			return result;
 		} catch (Exception e) {
+			String tmpMsg = parseInfo.getMessage();
+			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 			
-			result.setItemList(null);
+			ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
+			result.setItemList(reLst);
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			SQLUtil.close(conn);
@@ -202,11 +207,9 @@ public class SQLServiceImpl{
 	protected void getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
-		SqlSourceResultVO ssrv = new SqlSourceResultVO();
+		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
 		
 		int maxRow = sqlParamInfo.getLimit(VarsqlParamConstants.SQL_MAX_ROW);
-		
-		ssrv.setStarttime(System.currentTimeMillis());
 		
 	    try{
 			stmt  = getStatement(conn, tmpSqlSource, maxRow);
@@ -229,18 +232,11 @@ public class SQLServiceImpl{
 	    	ssrv.setViewType("msg");
 	    	ssrv.setResultType(ResultType.FAIL.name());
 	    	ssrv.setResultMessage("error : "+e.getSQLState()+": "+ e.getLocalizedMessage());
+	    	throw new SQLException();
 	    	//logger.error(getClass().getName()+" sqlData", e);
 		} finally {
 	    	SQLUtil.close(stmt, rs);
 	    }
-	    
-	    ssrv.setEndtime(System.currentTimeMillis());
-		ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
-		ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+ssrv.getResultMessage());
-		
-	    tmpSqlSource.setResult(ssrv);
-	    
-	    sqlLogInsert(sqlParamInfo,tmpSqlSource , ssrv);
 	}
 	
 	/**

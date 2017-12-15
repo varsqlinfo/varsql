@@ -115,7 +115,7 @@ public class SqlResultUtil {
 		Map columns = null;
 		String tmpColumnType = "";
 		ArrayList rows = new ArrayList();
-		
+		int totalCnt = 0 ; 
 		while (rs.next()) {
 			
 			columns = new LinkedHashMap(count);
@@ -149,10 +149,12 @@ public class SqlResultUtil {
 			}
 			rows.add(columns);
 			++first;
+			totalCnt++;
 			
 			if(first >= last) break;
 		}
 		ssrv.setData(rows);
+		ssrv.setResultCnt(totalCnt);
 		
 		return ssrv;
 	}
