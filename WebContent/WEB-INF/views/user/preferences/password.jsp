@@ -1,6 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%
+response.setHeader("Cache-Control","no-cache"); 
+response.setHeader("Pragma","no-cache"); 
+response.setDateHeader ("Expires", -1);
+%>
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header"><spring:message code="user.edit.pasword" /></h1>
@@ -22,24 +26,24 @@
 				</div>
 				
 				<div>
-					<form id="writeForm" name="writeForm" role="form" class="form-horizontal">
+					<form id="passwordResetForm" class="form-horizontal required-validate" method="post">
 						<div class="form-group">
-							<label class="col-lg-2 control-label" for="inputError"><spring:message code="user.form.password.current"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.form.password.current"/></label>
 							<div class="col-lg-10">
-								<input type="password"  id="currPw" name="currPw" placeholder="<spring:message code="user.form.password.current"/>" class="form-control text required">
+								<input type="password"  id="currPw" name="currPw" value="" class="form-control text">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label" for="inputError"><spring:message code="user.form.password.new" /></label>
+							<label class="col-sm-2 control-label"><spring:message code="user.form.password.new" /></label>
 							<div class="col-lg-10">
-								 <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="user.form.password.new"/>" />
+								 <input type="password" id="upw" name="upw" value="" class="form-control"/>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label"><spring:message code="user.form.password.confirm"/></label>
 
 				            <div class="col-sm-10">
-				                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="user.form.password.confirm"/>" />
+				                <input type="password" id="confirmUpw" name="confirmUpw" value="" class="form-control"/>
 				            </div>
 						</div>
 					</form>
@@ -50,6 +54,11 @@
 </div>
 
 <script>
+
+$(document).ready(function (){
+	passwordMain.init();
+});
+
 var passwordMain = {
 	init:function(){
 		var _self = this;
@@ -59,10 +68,10 @@ var passwordMain = {
 		var _self = this;
 		
 		$('.save-btn').on('click',function (){
-			$('#writeForm').submit();
+			$('#passwordResetForm').submit();
 		});
 		
-		$('#writeForm').bootstrapValidator({
+		$('#passwordResetForm').bootstrapValidator({
 			message: 'This value is not valid',
 			feedbackIcons: {
 				valid: 'glyphicon glyphicon-ok',
@@ -135,13 +144,13 @@ var passwordMain = {
 					return ; 
 				}
 				
+				alert('비밀번호가 변경되었습니다.');
+				
 				location.href= location.href;
 			}
 		});
 	}
 }
 
-$(document).ready(function (){
-	passwordMain.init();
-});
+
 </script>
