@@ -733,6 +733,11 @@ _ui.leftDbObjectServiceMenu ={
 							var gubun='table'
 								,tmpName = sItem.TABLE_NAME;
 							
+							if(key=='dataview'){
+								_ui.SQL._sqlData('select * from '+tmpName,false);
+								return ; 
+							}
+							
 							if(key=='refresh'){
 								_self._removeMetaCache(gubun,tmpName);
 								ele.attr('refresh','Y');
@@ -788,8 +793,10 @@ _ui.leftDbObjectServiceMenu ={
 							});
 						},
 						items: [
-							{key : "refresh" , "name": "새로고침"}
+							
+							{key : "dataview" , "name": "데이타 보기"}
 							,{key : "copy" , "name": "복사"}
+							,{divider:true}
 							,{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
@@ -798,12 +805,6 @@ _ui.leftDbObjectServiceMenu ={
 									,{ key : "update","name": "update" ,mode:"update"}
 									,{ key : "delete","name": "delete" ,mode:"delete"}
 									,{ key : "drop","name": "drop" , mode:"drop"}
-								]
-							}
-							,{key : "create_ddl_top","name": "DDL 보기" 
-								,subMenu:[
-									{key : "ddl_copy","name": "복사하기"}
-									,{key : "ddl_paste","name": "edit 영역에보기"}
 								]
 							}
 							,{key : "create_java","name": "java 모델생성" 
@@ -823,12 +824,21 @@ _ui.leftDbObjectServiceMenu ={
 									,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
 								]
 							}
+							,{divider:true}
+							,{key : "create_ddl_top","name": "DDL 보기" 
+								,subMenu:[
+									{key : "ddl_copy","name": "복사하기"}
+									,{key : "ddl_paste","name": "edit 영역에보기"}
+								]
+							}
 							,{key :'export', "name": "내보내기" 
 								,subMenu:[
 									{key : "export_data","name": "데이타 내보내기"}
 									,{key : "export_column","name": "컬럼정보 내보내기"}
 								]
 							}
+							,{divider:true}
+							,{key : "refresh" , "name": "새로고침"}
 						]
 					}
 				}
@@ -1877,16 +1887,24 @@ _ui.SQL = {
 		var _self = this;
 		var sqlVal = _self.getSql();
 		
+		_self._sqlData(sqlVal,true);
+	}
+	// sql 데이타 보기 
+	,_sqlData :function (sqlVal, paramFlag){
+		var _self = this;
+		
 		sqlVal=$.trim(sqlVal);
 		if('' == sqlVal){
-			sqlVal  = _self.getTextAreaObj().getValue();
+			return ; 
 		}
 		
-		if(''== sqlVal) return ;
+		var sqlParam = {};
 		
-		var sqlParam = _self.getSqlParam();
-		if(!_self.sqlParamCheck(sqlVal, sqlParam)){
-			return '';
+		if(paramFlag===true){
+			sqlParam = _self.getSqlParam();
+			if(!_self.sqlParamCheck(sqlVal, sqlParam)){
+				return '';
+			}
 		}
 		
 		var params =VARSQL.util.objectMerge (_g_options.param,{

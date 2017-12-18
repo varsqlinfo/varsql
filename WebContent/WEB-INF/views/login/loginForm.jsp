@@ -61,9 +61,16 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
-
 </style>
+<script>
+$(document).ready(function (){
+	$('.btn-login').on('click', function (){
+		$('#id').val($.trim($('#id').val()))
+		$('#password').val($.trim($('#password').val()))
+		document.f.submit();
+	});
+})
+</script>
 </head>
 <body>
 	<div class="container">
@@ -85,7 +92,7 @@ body {
 					<p>
 				</div>
 			</c:if>
-			<button class="btn btn-lg btn-primary btn-block" type="submit">
+			<button class="btn btn-lg btn-primary btn-block btn-login" type="button">
 				<spring:message code="btn.login" />
 			</button>
 			<div class="text-center panel-footer">

@@ -26,7 +26,7 @@
 						<div class="form-group">
 							<label class="col-lg-2 control-label" for="inputError"><spring:message code="user.form.password.current"/></label>
 							<div class="col-lg-10">
-								<input type="password"  id=currPw name="currPw" placeholder="<spring:message code="user.form.password.current"/>" class="form-control text required">
+								<input type="password"  id="currPw" name="currPw" placeholder="<spring:message code="user.form.password.current"/>" class="form-control text required">
 							</div>
 						</div>
 						<div class="form-group">
@@ -73,7 +73,6 @@ var passwordMain = {
 				currPw: {
 	                validators: {
 	                    notEmpty: { message: '필수 입력사항입니다.'}
-	                    ,stringLength: {min: 4, max: 500, message: '최소 4글자 이상 이여야 합니다.' }
 	                }
 	            }
 				,upw : {
