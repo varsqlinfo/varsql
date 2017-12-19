@@ -64,6 +64,16 @@ body {
 </style>
 <script>
 $(document).ready(function (){
+	
+	$('#password')
+	
+	$('#password').keydown(function(event) {
+		if(event.keyCode =='13'){
+			$('.btn-login').trigger('click');
+		}
+	});
+	
+	
 	$('.btn-login').on('click', function (){
 		$('#id').val($.trim($('#id').val()))
 		$('#password').val($.trim($('#password').val()))

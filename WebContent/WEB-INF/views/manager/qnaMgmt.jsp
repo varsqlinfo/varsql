@@ -74,7 +74,7 @@ var qnaMgmt ={
 		    			strHtm.push('<div><p>'+ item.QUESTION+'</p></div>');
 		    			
 	    				strHtm.push('<div class="form-group">');
-	    				strHtm.push('	<label>Answer</label>');
+	    				strHtm.push('	<label>Answer ('+item.CHAR_UPD_DT+')</label>');
 	    				strHtm.push('	<textarea class="form-control answerTextArea '+item.QNAID+'" rows="3">'+(answerflag?item.ANSWER:'')+'</textarea>');
 	    				strHtm.push('</div>');
 	    				strHtm.push('<div class="text-right"><button type="button" class="btn btn-xs btn-primary btnReply" qnaid="'+item.QNAID+'">Save</button></div>');

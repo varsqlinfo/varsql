@@ -17,7 +17,7 @@ var dbUserMgmt ={
 			_self.search();
 		});
 		
-		$('#searchVal').keydown(function() {
+		$('#searchVal').keydown(function(event) {
 			if(event.keyCode =='13') _self.search();
 		});
 		

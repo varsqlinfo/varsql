@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.auth.Authority;
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.common.util.StringUtil;
 import com.varsql.configuration.Configuration;
 import com.varsql.db.encryption.EncryptionFactory;
@@ -53,6 +54,8 @@ public class ManagerServiceImpl{
 	public ResponseResult selectUserList(SearchParameter searchParameter) {
 		
 		ResponseResult result = new ResponseResult();
+		
+		searchParameter.addCustomParam("isAdmin",SecurityUtil.isAdmin());
 		
 		int totalcnt = manageDAO.selectUserTotalcnt(searchParameter);
 		

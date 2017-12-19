@@ -8,7 +8,17 @@
 	<select id="manageMapper.selectUserTotalcnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTUSER 
-		where (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
+		where 1=1
+		and ROLE not in
+		<choose>
+			<when test="customParam.isAdmin">
+				('ADMIN') 
+			</when>
+			<otherwise>
+				('ADMIN','MANAGER') 
+			</otherwise>
+		</choose>
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
 	</select>
 
 	<select id="manageMapper.selectUserList" parameterType="searchParameter" resultType="map">
@@ -24,8 +34,17 @@
 			,'' as INITPW
 		 	,to_char(a.CRE_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
 		from VTUSER a
-		where (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%')
-		and ROLE not in ('ADMIN','MANAGER') 
+		where 1=1
+		and ROLE not in
+		<choose>
+			<when test="customParam.isAdmin">
+				('ADMIN') 
+			</when>
+			<otherwise>
+				('ADMIN','MANAGER') 
+			</otherwise>
+		</choose>
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%')
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
 	
@@ -59,10 +78,11 @@
 	</select>
 	
 	<select id="manageMapper.selectQnaMgmtList" parameterType="searchParameter" resultType="dataCommonVO">
-		select a.*, b.UNAME, a.CRE_DT as CHAR_CRE_DT
-			, ,to_char(a.UPD_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_UPD_DT
+		select a.*, b.UNAME,to_char( a.CRE_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
+			,to_char(a.UPD_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_UPD_DT
 		from VTQNA a , VTUSER b
-		where DEL_YN !='Y'
+		where a.CRE_ID = b.VIEWID
+		and DEL_YN !='Y'
 		<if test="customParam.answerYn != null and !customParam.answerYn.equalsIgnoreCase('ALL')">
 			<choose>
 				<when test="customParam.answerYn.equalsIgnoreCase('Y')">
@@ -73,7 +93,6 @@
 				</otherwise>
 			</choose>
 		</if>
-		and a.CRE_ID = b.VIEWID
 		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
 		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
