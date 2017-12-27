@@ -2024,14 +2024,7 @@ Plugin.prototype ={
 		var _this =this; 
 		var cfgSelect = this.config.select;
 
-		/**
-		asdfasdf
-		asdf
-		asdf
-		asdf  min , asdfawefawef
-		*/
-
-		if(selectInfo.allSelect !==false  && _this._isAllSelect()){
+		if(initFlag !==true  && _this._isAllSelect()){
 			return ; 
 		}
 
@@ -2230,6 +2223,8 @@ Plugin.prototype ={
 			sIdx= colInfo.minIdx;
 			eIdx =  colInfo.maxIdx;
 		}
+
+		if(sIdx < 0 || eIdx < 1) return ''; 
 
 		var textArr = [];
 		var addRowFlag; 
