@@ -125,6 +125,21 @@ var _initialized = false
     return 11;
 })());
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function hasProperty(obj , key){
+	return hasOwnProperty.call(obj, key);
+}
+
+function isUndefined(obj){
+	return typeof obj==='undefined';
+}
+
+function intValue(val){
+	return parseInt(val , 10);
+}
+
+
 var util= {
 	formatter : {
 		'money' : function (num , fixedNum , prefix , suffix){
@@ -168,8 +183,7 @@ function getHashCode (str){
 function copyStringToClipboard (prefix , copyText) {
 	var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
 
-	if (typeof window.clipboardData !== "undefined" &&
-	  typeof window.clipboardData.setData !== "undefined") {
+	if (!isUndefined(window.clipboardData) && !isUndefined(window.clipboardData.setData)) {
 		window.clipboardData.setData("Text", copyText);
 		return ; 
 	}
@@ -251,8 +265,10 @@ Plugin.prototype ={
 			, navi :{height : 0, width : 0}
 			, scroll : {before:{},top :0 , left:0, startCol:0, endCol : 0,startRow : 0, endRow :0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, verticalHeight:0,horizontalWidth:0}
 			,aside :{items :[]}
-			,select :{startIdx : 0,endIdx : 0, startRow : 0 ,startCol : 0, endRow:0, endCol :0}
+			,select : {}
 		};
+
+		_this._setRangeSelectInfo({},true);
 		
 		_this.setOptions(options, true);
 
@@ -297,7 +313,7 @@ Plugin.prototype ={
 			
 			if(_cb){
 				_this.options.rowOptions.contextMenu.callback = function(key,sObj) {
-					this.gridItem = _this.getItems(_this.config.scroll.viewIdx + parseInt(this.element.attr('rowInfo'),10));
+					this.gridItem = _this.getItems(_this.config.scroll.viewIdx + intValue(this.element.attr('rowInfo')));
 					_cb.call(this,key,sObj);
 				}
 			}
@@ -511,13 +527,13 @@ Plugin.prototype ={
 
 		for(var _ikey in sortHeaderInfo){
 			var tmpHgi = headGroupInfo[sortHeaderInfo[_ikey].r][_ikey]
-			if(typeof tmpHgi !=='undefined'){
+			if(!isUndefined(tmpHgi)){
 				tmpHgi['isSort'] =(tmpHgi.sort===true?true:false); 
 				headGroupInfo[sortHeaderInfo[_ikey].r][_ikey] = tmpHgi;
 			}
 
 			tmpHgi = leftHeaderGroupInfo[sortHeaderInfo[_ikey].r][_ikey]
-			if(typeof tmpHgi !=='undefined'){
+			if(!isUndefined(tmpHgi)){
 				tmpHgi['isSort'] =(tmpHgi.sort===true?true:false); 
 				leftHeaderGroupInfo[sortHeaderInfo[_ikey].r][_ikey] = tmpHgi;
 			}
@@ -639,7 +655,7 @@ Plugin.prototype ={
 		}
 		
 		strHtm.push('<colgroup>');
-		
+
 		for(var i=startCol ;i <endCol; i++){
 			thiItem = tci[i];
 			var tmpStyle = [];
@@ -701,7 +717,7 @@ Plugin.prototype ={
 		}
 
 		if(gridMode=='reDraw'){
-			_this.config.select = {isSelect :false, isMouseDown:false,startIdx : 0,endIdx : 0, startRow : 0 ,startCol : 0, endRow:0, endCol :0};
+			_this._setRangeSelectInfo({}, true);
 			_this.calcDimension('reDraw');
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
@@ -944,9 +960,9 @@ Plugin.prototype ={
 
 		if($.isFunction(thiItem.formatter)){
 			itemVal = thiItem.formatter.call(null,{idx : _idx , colInfo:thiItem, item: rowItem , formatter : function (val, fixed , prefix , suffix){
-				fixed = typeof fixed ==='undefined'?tmpFormatter.fixed :fixed;
-				prefix = typeof prefix ==='undefined'?tmpFormatter.prefix :prefix;
-				suffix = typeof suffix ==='undefined'?tmpFormatter.suffix :suffix;
+				fixed = isUndefined(fixed)?tmpFormatter.fixed :fixed;
+				prefix = isUndefined(prefix)?tmpFormatter.prefix :prefix;
+				suffix = isUndefined(suffix)?tmpFormatter.suffix :suffix;
 				return util.formatter[type](val, fixed ,prefix, suffix); 
 			}});
 		}else{
@@ -1110,20 +1126,21 @@ Plugin.prototype ={
 		
 		var asideItem =_this.config.aside.items; 
 
-		var selectCell = _this.getSelectCellInfo(_this.config.select);
-
 		var colFixedIndex = this.options.headerOptions.colFixedIndex;
 
-		startCol = startCol < colFixedIndex ? colFixedIndex : startCol;
-
-		//var selectFlag = (drawMode != 'init'&&selectCell.startIdx <= itemIdx && itemIdx <= selectCell.endIdx) ?true :false;
-		var selectFlag = (_this.config.select.isSelect ===true) ?true :false;
 
 		function setSelectCell(row , col, addEle){
-			addEle.parentElement.classList.remove( 'col-active' );
-			if(selectFlag){
-				if(selectCell.startIdx <=row && row <= selectCell.endIdx
-					&& selectCell.startCol <=col && col <= selectCell.endCol ){
+
+			if(_this._isAllSelect()){
+				if(_this.isAllSelectUnSelectPosition(row , col)){
+					addEle.parentElement.classList.remove( 'col-active' );
+				}else{
+					addEle.parentElement.classList.add( 'col-active' );
+				}
+			}else{
+				addEle.parentElement.classList.remove( 'col-active' );
+				
+				if(_this.isSelectPosition(row , col)){
 					addEle.parentElement.classList.add( 'col-active' );
 				}
 			}
@@ -1165,8 +1182,11 @@ Plugin.prototype ={
 				//var addEle = _this.element.tdEle[rowCol] = $pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-tbody').querySelector('[data-grid-position="'+rowCol+'"]>.pub-content')
 				
 				addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+(i+','+j)+'"]>.pub-content');
-				this.valueFormatter( i, tci[j],tbiItem , addEle);
-				setSelectCell(itemIdx , j ,  addEle);
+
+				if(addEle){
+					this.valueFormatter( i, tci[j],tbiItem , addEle);
+					setSelectCell(itemIdx , j ,  addEle);
+				}
 				addEle = null; 
 			}
 			itemIdx++;
@@ -1774,13 +1794,15 @@ Plugin.prototype ={
      * @method getSelectCellInfo
      * @description 선택된 cell 영역 구하기.
      */
-	,getSelectCellInfo :function(selectInfo, flag){
+	,getSelectCellInfo :function(curr, allDataFlag){
+		var selectInfo = this.config.select.range;
+
 		var  startIdx = selectInfo.startIdx
 			,endIdx = selectInfo.endIdx	
-			,startRow = parseInt(selectInfo.startRow,10)
-			,endRow = parseInt(selectInfo.endRow,10)
-			,startCol = parseInt(selectInfo.startCol,10)
-			,endCol = parseInt(selectInfo.endCol,10);
+			,startRow = selectInfo.startRow
+			,endRow = selectInfo.endRow
+			,startCol = selectInfo.startCol
+			,endCol = selectInfo.endCol;
 		
 		if(startIdx > endIdx){
 			var tmp = endIdx;
@@ -1829,7 +1851,7 @@ Plugin.prototype ={
 		var _this = this
 			 ,rowClickFlag =false; 
 		
-		_this.config.select.isMouseDown = false; 		
+		_this._setRangeSelectInfo({isMouseDown : false});
 		
 		_this.element.body.on('mousedown.pubgridcol','.pub-body-td',function (e){
 
@@ -1838,29 +1860,66 @@ Plugin.prototype ={
 			}
 
 			var sEle = $(this)
-				,selCol = sEle.attr('data-grid-position').split(',')
-				,selRow = selCol[0]
-				,colIdx = selCol[1];
+				,gridTdPos = sEle.attr('data-grid-position')
+				,selCol = gridTdPos.split(',')
+				,selRow = intValue(selCol[0])
+				,colIdx = intValue(selCol[1]);
 
-			var selIdx = _this.config.scroll.viewIdx+parseInt(selRow,10);
+			var selIdx = _this.config.scroll.viewIdx+intValue(selRow);
 				
 			var selItem = _this.options.tbodyItem[selRow];
 			
 			if (e.shiftKey) {
-				_this.config.select.endIdx=selIdx;
-				_this.config.select.endRow=selRow;
-				_this.config.select.endCol=colIdx;
-				selectTo();
-			} else {
-				_this.config.select = {isSelect :true, startIdx : selIdx, endIdx : selIdx, startRow : selRow ,endRow:selRow, startCol : colIdx,  endCol :colIdx};
-				_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
-				sEle.addClass('col-active');
+				_this._setRangeSelectInfo({
+					rangeInfo : {
+						endIdx: selIdx
+						,endRow: selRow
+						,endCol: colIdx
+					}
+				},false , true);
+
+			}else{
+
+				if(e.ctrlKey){
+					_this._setRangeSelectInfo({
+						rangeInfo : {startIdx : selIdx, endIdx : selIdx, startRow : selRow ,endRow:selRow, startCol : colIdx,  endCol :colIdx}
+						,isSelect : true
+						,curr : (_this.config.select.isSelect?'add':'')
+					}, false);
+				}else{
+					_this._setRangeSelectInfo({
+						rangeInfo : {startIdx : selIdx, endIdx : selIdx, startRow : selRow ,endRow:selRow, startCol : colIdx,  endCol :colIdx}
+						,isSelect : true
+						,allSelect : false
+					}, true);
+
+					_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
+				}
+				
+			
+				if(sEle.hasClass('col-active')){
+					sEle.removeClass('col-active');
+										
+					if(_this._isAllSelect()){
+						_this.config.select.unSelectPosition[selIdx+','+colIdx]='';
+					}else{
+						_this._removeSelectPosition(selIdx ,colIdx);
+					}
+				}else{
+					sEle.addClass('col-active');
+
+					if(_this._isAllSelect()){
+						delete _this.config.select.unSelectPosition[selIdx+','+colIdx];
+					}else{
+						_this._addSelectPosition(selIdx ,colIdx, _this.config.select.curr);
+					}
+				}
 			}
 			
 			window.getSelection().removeAllRanges();
 		
 			//_this.element.body.attr("onselectstart", "return false");
-			_this.config.select.isMouseDown = true; 
+			_this._setRangeSelectInfo({isMouseDown : true});
 
 			if($.isFunction(_this.options.tColItem[colIdx].colClick)){
 				_this.options.tColItem[colIdx].colClick.call(this,colIdx,{
@@ -1879,49 +1938,24 @@ Plugin.prototype ={
 
 			var sEle = $(this)
 				,selCol = sEle.attr('data-grid-position').split(',')
-				,selRow = selCol[0]
-				,colIdx = selCol[1];
+				,selRow = intValue(selCol[0])
+				,colIdx = intValue(selCol[1]);
 
-			_this.config.select.endRow=selRow;
-			_this.config.select.endCol=colIdx;
-			_this.config.select.endIdx=_this.config.scroll.viewIdx+parseInt(selRow,10);
-
-			selectTo();
+			_this._setRangeSelectInfo({
+				rangeInfo : {
+					endIdx : _this.config.scroll.viewIdx+intValue(selRow)
+					,endRow : selRow
+					,endCol : colIdx
+				}
+			},false , true);
+			
 		})
 				
-		$(document).on('mouseup.'+_this.prefix,function () {
+		$(document).on('mouseup.'+_this.prefix,function (e) {
 			//_this.element.body.removeClass('pubGrid-noselect');
-			_this.config.select.isMouseDown = false;
+			_this._setRangeSelectInfo({isMouseDown : false});
 		});
 	
-		// col select
-		function selectTo() {
-			var colInfo = _this.getSelectCellInfo(_this.config.select);
-			
-			var  sRow= colInfo.startRow
-				,eRow =  colInfo.endRow
-				,sCol= colInfo.startCol
-				,eCol =  colInfo.endCol; 
-			
-			_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
-			
-			for(var i = sRow ; i <= eRow ; i++){
-				for(var j=sCol ;j <= eCol; j++){
-					var rowCol = i+','+j; 
-					var addEle;
-					
-					if(_this._isFixedPostion(j)){
-						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
-					}else{
-						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+rowCol+'"]');
-					}
-					addEle.classList.add( 'col-active' );
-					
-					addEle = null; 
-				}
-			}
-		}
-
 		if(_this.options.rowOptions.click !== false && typeof _this.options.rowOptions.click == 'function'){
 			rowClickFlag =true; 
 
@@ -1930,7 +1964,7 @@ Plugin.prototype ={
 				var selRow = $(this)
 					,rowinfo=selRow.attr('rowinfo');
 				
-				rowinfo = _this.config.scroll.viewIdx+parseInt(rowinfo,10);
+				rowinfo = _this.config.scroll.viewIdx+intValue(rowinfo);
 
 				var selItem = _this.options.tbodyItem[rowinfo];
 				
@@ -1944,11 +1978,11 @@ Plugin.prototype ={
 		}
 				
 		$(window).on("keydown." + _this.prefix, function (e) {
-				if(!_this.config.focus) return ; 
+			if(!_this.config.focus) return ; 
 
-			if (e.metaKey || e.ctrlKey) {
-				
-				if (e.which == 67) {
+			if (e.metaKey || e.ctrlKey) { // copy 
+
+				if (e.which == 67) { // ctrl+ c
 					
 					var copyData = _this.selectData();
 					try{
@@ -1956,6 +1990,9 @@ Plugin.prototype ={
 					}catch(e){
 						console.log('Unable to copy', e);					
 					}					
+				}else if(e.which==65){ // ctrl + a
+					_this.allItemSelect();
+					return false; 
 				}
 			}
 		});
@@ -1969,6 +2006,194 @@ Plugin.prototype ={
 				_this.config.focus = false; 
 			}
 		});
+	}
+	/**
+     * @method allItemSelect
+     * @description 전체 선택.
+     */
+	,allItemSelect : function (){
+		this.config.select.allSelect = true; 
+		this.element.body.find('.pub-body-td').addClass('col-active');
+		return ; 
+	}
+	/**
+     * @method _setRangeSelectInfo
+     * @description 선택 영역 정보 셋팅.
+     */
+	,_setRangeSelectInfo : function(selectInfo, initFlag, tdSelectFlag){
+		var _this =this; 
+		var cfgSelect = this.config.select;
+
+		/**
+		asdfasdf
+		asdf
+		asdf
+		asdf  min , asdfawefawef
+		*/
+
+		if(selectInfo.allSelect !==false  && _this._isAllSelect()){
+			return ; 
+		}
+
+		var	rangeInfo = selectInfo.rangeInfo;
+		
+		function setSelectInfo (cfgSelect, selectInfo){
+			for(var key in selectInfo){
+				if(key =='rangeInfo'){
+					;
+				}else if(key =='curr'){
+					if(selectInfo[key]=='add'){
+						cfgSelect.curr+=1;
+						cfgSelect.range = rangeInfo;
+					}
+				}else{
+					cfgSelect[key] = selectInfo[key];
+				}
+			}
+			return cfgSelect; 
+		}
+
+		if(initFlag === true){
+		
+			var initOpt = {
+				curr :0
+				,range : {startIdx : -1,endIdx : -1, startRow : -1 ,startCol : -1, endRow : -1, endCol : -1}
+				,isSelect : false
+				,isMouseDown:false
+				,selectPosition : {}
+				,unSelectPosition:{}
+				,allSelect : false
+				,minIdx : -1 ,maxIdx : -1
+				,minCol : -1 ,maxCol : -1
+			};
+			setSelectInfo(initOpt, selectInfo);
+			cfgSelect = this.config.select = initOpt;
+		}else{
+			setSelectInfo(cfgSelect, selectInfo);
+		}
+
+		var currInfo = cfgSelect.range;
+
+		for(var key in rangeInfo){
+			currInfo[key] = rangeInfo[key];
+		}
+
+		cfgSelect.minIdx =  ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
+		cfgSelect.maxIdx =  Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
+
+		cfgSelect.minCol =  (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
+		cfgSelect.maxCol = Math.max(cfgSelect.maxCol ,currInfo.endCol , currInfo.startCol); 
+
+
+		if(isUndefined(rangeInfo)) return ; 
+		
+		if(tdSelectFlag){
+			_this._setCellSelect();
+		}
+	}
+	/**
+     * @method _isAllSelect
+     * @description cell select  
+     */
+	,_isAllSelect : function (){
+		return this.config.select.allSelect;
+	}
+	/**
+     * @method _setCellSelect
+     * @description cell select  
+     */
+	,_setCellSelect : function () {
+		var _this =this; 
+
+		var tmpCurr = _this.config.select.curr;
+		var colInfo = _this.getSelectCellInfo(tmpCurr, false);
+		
+		var sIdx = colInfo.startIdx 
+			,sRow= colInfo.startRow
+			,eRow =  colInfo.endRow
+			,sCol= colInfo.startCol
+			,eCol =  colInfo.endCol; 
+		
+		_this.element.body.find('.pub-body-td[data-select-idx="'+tmpCurr+'"].col-active').each(function (){
+			var sEle = $(this);
+			
+			var gridTdPos = sEle.attr('data-grid-position')
+				,selCol = gridTdPos.split(',')
+				,selRow = intValue(selCol[0])
+				,colIdx = intValue(selCol[1]);
+
+			var selIdx = _this.config.scroll.viewIdx+intValue(selRow);
+
+			var selPos = _this.getSelectPosition(selIdx, colIdx);
+
+			if(!isUndefined(selPos) && selPos != tmpCurr){
+				
+			}else{
+				_this._removeSelectPosition(selIdx, colIdx);
+				sEle.removeClass('col-active');
+			}
+		})
+
+		var rowIdx =-1; 
+
+		for(var i = sRow ; i <= eRow ; i++){
+			++rowIdx;
+			for(var j=sCol ;j <= eCol; j++){
+				var rowCol = i+','+j; 
+				
+				if(_this.isSelectPosition((sIdx+rowIdx) ,j)){
+					continue; 
+				}
+				
+				_this._addSelectPosition((sIdx+rowIdx) ,j ,tmpCurr);
+				var addEle;
+				
+				if(_this._isFixedPostion(j)){
+					addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+				}else{
+					addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+				}
+				addEle.setAttribute('data-select-idx',tmpCurr);
+				addEle.classList.add('col-active' );
+				
+				addEle = null; 
+			}
+		}
+	}
+	/**
+     * @method _setSelectPosition
+     * @description 선택 영역 정보 추가.
+     */
+	,_addSelectPosition: function (row , col , selCurr){
+		this.config.select.selectPosition[row+','+col] =selCurr;
+	}
+	/**
+     * @method _removeSelectPosition
+     * @description 선택 영역 정보 삭제
+     */
+	,_removeSelectPosition: function (row , col){
+		delete this.config.select.selectPosition[row+','+col];
+	}
+	/**
+     * @method isSelectPosition
+     * @description cell 선택 여부
+     */
+	,isSelectPosition: function (row , col){
+		return hasProperty(this.config.select.selectPosition, row+','+col)
+	}
+	/**
+     * @method isAllSelectUnSelectPosition
+     * @description cell all 선택시 선택 여부
+     */
+	,isAllSelectUnSelectPosition: function (row , col){
+		return hasProperty(this.config.select.unSelectPosition, row+','+col)
+	}
+	/**
+     * @method getSelectPosition
+     * @description 선택영역 정보 얻기
+     */
+	,getSelectPosition: function (row , col){
+		return this.config.select.selectPosition[row+','+col]
 	}
 	/**
      * @method copyData
@@ -1988,22 +2213,47 @@ Plugin.prototype ={
      */
 	,selectData : function () {
 		var _this = this; 
-		var colInfo = _this.getSelectCellInfo(_this.config.select);
-			
-		var sCol= colInfo.startCol
-			,eCol =  colInfo.endCol
-			,sIdx= colInfo.startIdx
-			,eIdx =  colInfo.endIdx;
-					
+		
+		var sCol,eCol,sIdx,eIdx , chkFn;
+
+		var allSelectFlag = _this._isAllSelect(); 
+		
+		if(allSelectFlag){
+			sCol= 0;
+			eCol= _this.options.tColItem.length-1;
+			sIdx= 0;
+			eIdx = _this.options.tbodyItem.length-1;
+		}else{
+			var colInfo = _this.config.select;
+			sCol= colInfo.minCol;
+			eCol =  colInfo.maxCol;
+			sIdx= colInfo.minIdx;
+			eIdx =  colInfo.maxIdx;
+		}
+
 		var textArr = [];
+		var addRowFlag; 
 		for(var i = sIdx ; i <= eIdx ; i++){
 			var item = _this.options.tbodyItem[i];
+
+			if(item.hidden===true) continue; 
+
 			var rowText = [];
+			addRowFlag = false; 
 			for(var j=sCol ;j <= eCol; j++){
-				rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
+				if(allSelectFlag && !_this.isAllSelectUnSelectPosition( i,j)){
+					addRowFlag = true;
+					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
+				}else if(_this.isSelectPosition( i,j)){
+					addRowFlag = true;
+					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
+				}else{
+					rowText.push(''); 
+				}
 			}
-			
-			textArr.push(rowText.join('\t'));
+			if(addRowFlag){
+				textArr.push(rowText.join('\t'));
+			}
 		}
 
 		return textArr.join('\n');
@@ -2363,7 +2613,8 @@ Plugin.prototype ={
 		console.log(downloadInfo);
 		
 		downloadInfo = cssText+downloadInfo;
-		if(typeof opt !=='undefined'){
+
+		if(!isUndefined(opt)){
 			if(opt.type=='download'){
 				var fileName = opt.fileName || 'pubgrid-excel-data.xls',
 					charset = opt.charset||"utf-8";
@@ -2372,7 +2623,7 @@ Plugin.prototype ={
 					var _blob = new Blob([downloadInfo], { type: "text/html" });
 					window.navigator.msSaveOrOpenBlob(_blob, fileName);
 				} else {
-					if (_broswer=='msie' && typeof Blob === "undefined") {
+					if (_broswer=='msie' && typeof isUndefined(Blob)) {
 						
 						var downloadFrame = $('<iframe id="' + this.prefix+ '-excel-export" style="display:none"></iframe>');
 						$(document.body).append(downloadFrame);
@@ -2438,11 +2689,11 @@ $.pubGrid = function (selector,options, args) {
 	
 	var _cacheObject = _datastore[selector]; 
 
-	if(typeof options === 'undefined'){
+	if(isUndefined(options)){
 		return _cacheObject; 
 	}
 	
-	if(typeof _cacheObject === 'undefined'){
+	if(isUndefined(_cacheObject)){
 		_cacheObject = new Plugin(selector, options);
 		_datastore[selector] = _cacheObject;
 		return _cacheObject; 
@@ -2464,7 +2715,7 @@ $.pubGrid = function (selector,options, args) {
 
 	if(typeof options === 'string'){
 		var callObj =_cacheObject[options]; 
-		if(typeof callObj ==='undefined'){
+		if(isUndefined(callObj)){
 			return options+' not found';
 		}else if(typeof callObj==='function'){
 			return _cacheObject[options].apply(_cacheObject,args);
