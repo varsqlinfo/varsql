@@ -2231,11 +2231,12 @@ Plugin.prototype ={
 		for(var i = sIdx ; i <= eIdx ; i++){
 			var item = _this.options.tbodyItem[i];
 
-			if(item.hidden===true) continue; 
-
 			var rowText = [];
 			addRowFlag = false; 
 			for(var j=sCol ;j <= eCol; j++){
+				
+				if(_this.options.tColItem[j].hidden===true) continue; 
+				
 				if(allSelectFlag && !_this.isAllSelectUnSelectPosition( i,j)){
 					addRowFlag = true;
 					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
@@ -2252,6 +2253,59 @@ Plugin.prototype ={
 		}
 
 		return textArr.join('\n');
+	}
+	/**
+     * @method getSelectItem
+     * @description select item 구하기.
+     */
+	,getSelectItem : function (itemKeys) {
+		var _this = this; 
+		
+		var sCol,eCol,sIdx,eIdx , chkFn;
+
+		var allSelectFlag = _this._isAllSelect(); 
+		
+		if(allSelectFlag){
+			sIdx= 0;
+			eIdx = _this.options.tbodyItem.length-1;
+		}else{
+			var colInfo = _this.config.select;
+			sIdx= colInfo.minIdx;
+			eIdx =  colInfo.maxIdx;
+		}
+
+		if(sIdx < 0 || eIdx < 1) return []; 
+
+		var selectItem = [];
+		var addRowFlag; 
+		var keyLen = itemKeys.length; 
+		
+		var hi = _this.config.headerInfo[_this.config.headerInfo.length-1];
+		var itemKeysIdx = [] , tmpKeyIdx={};
+		for(var i = 0 ; i <hi.length ; i++){
+			tmpKeyIdx[hi[i].key] = i; 
+		}
+		
+		for(var k = 0 ; k <keyLen ;k++){
+			itemKeysIdx.push(tmpKeyIdx[itemKeys[k]]);
+		}
+		
+		var idxLen = itemKeysIdx.length; 
+		for(var i = sIdx ; i <= eIdx ; i++){
+			var item = _this.options.tbodyItem[i];
+
+			var sItem = {};
+			addRowFlag = false;
+			for(var j=0 ;j < idxLen; j++){
+				if((allSelectFlag && !_this.isAllSelectUnSelectPosition( i,itemKeysIdx[j]))  ||  _this.isSelectPosition( i,itemKeysIdx[j])){
+					addRowFlag = true; 
+					sItem[itemKeys[j]] = item[itemKeys[j]];
+				}
+			}
+			if(addRowFlag) 	selectItem.push(sItem);
+		}
+
+		return selectItem;
 	}
 	/**
      * @method _setBodyEvent

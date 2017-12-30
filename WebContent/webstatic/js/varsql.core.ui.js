@@ -496,6 +496,8 @@ _ui.leftDbObjectServiceMenu ={
 			,'procedure':{}
 			,'function':{}
 		}
+		
+		this.selectMetadata = {}; // 선택한 메뉴 
 	}
 	,initElement :function (){
 		var _self = this;
@@ -610,14 +612,14 @@ _ui.leftDbObjectServiceMenu ={
 		});
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
-	,_dbObjectMetadataList:function(param,callback,refresh){
+	,_dbObjectMetadataList:function(param,callMethod,refresh){
 		var _self = this;
 		
 		if(!refresh){
 			var cacheData = _self._getMetaCache(param.gubun,param.objectName);
 		
 			if(cacheData){
-				_self[callback].call(_self,cacheData, param);
+				_self[callMethod].call(_self,cacheData, param);
 				return ; 
 			}
 		}
@@ -631,7 +633,7 @@ _ui.leftDbObjectServiceMenu ={
 		    ,data:param
 		    ,success:function (resData){
 		    	_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
-		    	_self[callback].call(_self,resData, param);
+		    	_self[callMethod].call(_self,resData, param);
 			}
 			,error :function (data, status, err){
 				VARSQL.log.error(data, status, err);
@@ -870,6 +872,7 @@ _ui.leftDbObjectServiceMenu ={
 				]
     		};
 			
+    		_self.selectMetadata['table'] = reqParam.objectName;
     		_self.setMetadataGrid(gridObj, 'table');
  		}catch(e){
 			VARSQL.log.info(e);
@@ -1062,35 +1065,73 @@ _ui.leftDbObjectServiceMenu ={
 		
 		if(gridObj){
 			gridObj.setData(gridData.data,'reDraw');
-		}else{
-			var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type, {
-				headerOptions : {
-					redraw : false
-				}
-				,page :false
-				,height:'auto'
-				,autoResize :false
-				,tColItem : gridData.column
-				,tbodyItem :gridData.data
-				,rowOptions :{
-					contextMenu : {
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							if(key =='copy'){
-								gridObj.copyData();
-								return ; 
-							}
-							
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
+			return ; 
 		}
+		
+		var contextItem = [
+			{key : "copy" , "name": "복사"}
+		];
+		
+		if(type == 'table'){
+			contextItem = [
+				{key : "copy" , "name": "복사"}
+				,{divider:true}
+				,{key : "sql_create", "name": "sql생성" 
+					,subMenu: [
+						{ key : "select","name": "select" ,mode:"select"}
+						,{ key : "insert","name": "insert" , mode:"insert"}
+						,{ key : "update","name": "update" ,mode:"update"}
+					]
+				}
+				,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
+					,subMenu : [
+						{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
+						,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
+						,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
+						,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
+					]
+				}
+			]
+		}
+		
+		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type, {
+			headerOptions : {
+				redraw : false
+			}
+			,page :false
+			,height:'auto'
+			,autoResize :false
+			,tColItem : gridData.column
+			,tbodyItem :gridData.data
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						var cacheData = gridObj.getSelectItem(['name']);
+						key = sObj.mode;
+						
+						_self._createScriptSql({
+							gubunKey : key
+							,gubun : 'table'
+							,objName :  _self.selectMetadata['table']
+							,item : {
+								items:cacheData
+							}
+							,param_yn: sObj.param_yn
+						});
+						
+					},
+					items: contextItem
+				}
+			}
+		});
 	}
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
