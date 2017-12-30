@@ -40,11 +40,12 @@ function getHashCode (str){
         hash = ((hash<<5)-hash)+tmpChar;
         hash = hash & hash; 
     }
-    return ''+hash+'99';
+    return (hash+'').replace(/-/gi,'1_');
 }
 	
 function Plugin(element, options) {
 	this.selector = (typeof element=='object') ? element.selector : element;
+
 	this.contextId = 'dropdown-'+getHashCode(this.selector);
 	this.options = $.extend({}, defaults, options);
 	this.contextData = {};
@@ -63,6 +64,8 @@ function Plugin(element, options) {
 	this.addContext();
 	this.context = $('#'+this.contextId);
 
+	this.loadAfterEvt();
+
 	return this; 
 }
 
@@ -70,7 +73,21 @@ Plugin.prototype ={
 	init :function(){
 		var _this = this;
 		defaults = this.options;
-		id=_this.contextId;
+		
+	}
+	,initEvt : function (){
+		$(document).on('mousedown.pubcontext', 'html', function (e) {
+			if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
+				$('#pub-context-area .pub-context').fadeOut(defaults.fadeSpeed, function(){
+					var sEle = $(this);
+					sEle.css({display:''}).find('.pub-context-sub.drop-left').css('left','').removeClass('drop-left');
+				});
+			}
+		});
+	}
+	,loadAfterEvt : function(){
+		var _this = this;
+		var id=_this.contextId;
 
 		if(defaults.preventDoubleContext){
 			$(document).on('contextmenu.pubcontext'+_this.contextId, '#'+id+'_wrap .pub-context', function (e) {
@@ -79,21 +96,15 @@ Plugin.prototype ={
 		}
 
 		$(document).on('mouseenter.pubcontext'+this.contextId, '#'+id+'_wrap .pub-context-submenu', function(){
-			var $sub = $(this).find('.pub-context-sub:first'),
+			var sEle = $(this); 
+			var $sub = sEle.find('.pub-context-sub:first'),
 				subWidth = $sub.width(),
 				subLeft = $sub.offset().left,
 				collision = (subWidth+subLeft) > window.innerWidth;
+	
 			if(collision){
+				$sub.css('left', '-'+(subWidth/sEle.width()*100)+'%');
 				$sub.addClass('drop-left');
-			}
-		});
-	}
-	,initEvt : function (){
-		$(document).on('mousedown.pubcontext', 'html', function (e) {
-			if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
-				$('#pub-context-area .pub-context').fadeOut(defaults.fadeSpeed, function(){
-					$('#pub-context-area .pub-context').css({display:''}).find('.drop-left').removeClass('drop-left');
-				});
 			}
 		});
 	}
@@ -102,11 +113,11 @@ Plugin.prototype ={
 	}
 	,buildMenu : function (data, id, subMenu, depth){
 		var _self = this; 
-		var subClass = (subMenu) ? ' pub-context-sub' : ' pub-context-top',
+		var subClass = (subMenu) ? ' pub-context-sub' : 'pub-context pub-context-top',
 			compressed = defaults.compress ? ' compressed-context' : '',
 			$menuHtm = [];
 		
-		$menuHtm.push('<ul class="pub-context-menu pub-context' + subClass + compressed+'" id="' + id + '">');
+		$menuHtm.push('<ul class="pub-context-menu ' + subClass + compressed+'" id="' + id + '">');
  
 		var item ,linkTarget = '',itemKey , styleClass;
 		for(var i = 0; i<data.length; i++) {
@@ -132,9 +143,11 @@ Plugin.prototype ={
 			}
 
 			if (typeof item.subMenu !== 'undefined') {
-				$menuHtm.push('<li class="pub-context-submenu ui-context-item '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1">' + item.name + '</a>');
+				$menuHtm.push('<li class="pub-context-submenu pub-context-item '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1"><span class="pub-context-item-title">' + item.name +'</span><span class="pub-context-hotkey-empty"></span></a>');
 			} else {
-				$menuHtm.push('<li class="ui-context-item '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1">' + item.name + '</a>');
+				var hotkeyHtm = item.hotkey||'';
+				hotkeyHtm = hotkeyHtm !='' ?'<span class="pub-context-hotkey">'+ item.hotkey +'</span>':'';
+				$menuHtm.push('<li class="pub-context-item '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1"><span class="pub-context-item-title">' + item.name +'</span>'+hotkeyHtm+'</a>');
 			}
 
 			if (typeof item.subMenu != 'undefined') {
@@ -159,8 +172,8 @@ Plugin.prototype ={
 	,contextEvent : function (){
 		var _self = this,opt = _self.options;
 		
-		$('#'+_self.contextId+' .ui-context-item').off('click.'+this.contextId);
-		$('#'+_self.contextId+' .ui-context-item').on('click.'+this.contextId,function (e){
+		$('#'+_self.contextId+' .pub-context-item').off('click.'+this.contextId);
+		$('#'+_self.contextId+' .pub-context-item').on('click.'+this.contextId,function (e){
 			var clickEle=$(this);
 			
 			if(clickEle.hasClass('pub-context-submenu')){
