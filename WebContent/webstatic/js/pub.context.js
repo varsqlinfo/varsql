@@ -63,7 +63,7 @@ function Plugin(element, options) {
 	}
 		
 	this.addContext();
-	this.context = $('#'+this.contextId);
+	this.contextElement = $('#'+this.contextId);
 
 	this.loadAfterEvt();
 
@@ -136,7 +136,7 @@ Plugin.prototype ={
 		for(var i = 0; i< dateLen ; i++) {
 			item = data[i];
 			
-			styleClass = item.styleClass?item.styleClass:'';
+			styleClass = (item.styleClass?item.styleClass:'') + (item.disabled===true ?' disabled' :'');
 			
 			if (typeof item.divider !== 'undefined') {
 				$menuHtm.push('<li class="divider '+styleClass+'" context-key="divider"></li>');
@@ -174,22 +174,28 @@ Plugin.prototype ={
 
 		return $menuHtm.join('');
 	}
+	/**
+     * @method closeContextMenu
+     * @description close context menu
+     */
 	,closeContextMenu : function (){
 		$('#pub-context-area .pub-context-top').hide();
 		isContextView= false; 
 	}
 	/**
-	*
-	* 컨텍스트 메뉴 이벤트 처리. 
-	*/
+     * @method contextEvent
+     * @description context item event 
+     */
 	,contextEvent : function (){
 		var _this = this,opt = _this.options;
 		
 		$('#'+_this.contextId+' .pub-context-item').off('click.'+this.contextId);
 		$('#'+_this.contextId+' .pub-context-item').on('click.'+this.contextId,function (e){
 			var clickEle=$(this);
-			
-			if(clickEle.hasClass('pub-context-submenu')){
+
+			if(clickEle.hasClass('disabled')){
+				return ; 
+			}else if(clickEle.hasClass('pub-context-submenu')){
 				return ; 
 			}else{
 				skey = clickEle.attr('context-key');
@@ -210,6 +216,28 @@ Plugin.prototype ={
 			}
 		});
 	}
+	/**
+     * @method disableItem
+     * @description disabled item 
+     */
+	,disableItem : function (itemKey , depth){
+		this.contextElement.find('[context-key="'+depth+'_'+itemKey+'"]').addClass('disabled')
+	}
+	/**
+     * @method enableItem
+     * @description enabled item
+     */
+	,enableItem : function (itemKey , depth){
+		if(typeof itemKey !== 'undefined'){
+			this.contextElement.find('[context-key="'+depth+'_'+itemKey+'"]').removeClass('disabled');
+		}else{
+			this.contextElement.find("[context-key].disabled").removeClass('disabled');
+		}
+	}
+	/**
+     * @method addContext
+     * @description context menu 이벤트 처리.
+     */
 	,addContext : function (){
 		var _this = this; 
 		var id = _this.contextId
@@ -228,12 +256,28 @@ Plugin.prototype ={
 		pubContextElement.append($menu);
 		
 		_this.contextEvent();
-		
+
+		var disableFlag = $.isFunction(opt.disableItemKey)
+			,beforeSelectFlag = $.isFunction(opt.beforeSelect);
+
 		$(document).off('contextmenu.pubcontext'+this.contextId, _this.selector);
 		$(document).on('contextmenu.pubcontext'+this.contextId, _this.selector, function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			
+			if(disableFlag){
+				var disableItem = opt.disableItemKey.call(this , opt.items);
+				_this.enableItem();
+
+				var disableItemLen = disableItem.length , tmpItem; 
+				if(disableItemLen > 0){
+					for(var i =0 ; i < disableItemLen ;i++){
+						tmpItem = disableItem[i];
+						_this.disableItem(tmpItem.key , tmpItem.depth);
+					}
+				}
+			}
+
 			_this.closeContextMenu();
 
 			isContextView = true;
@@ -246,7 +290,7 @@ Plugin.prototype ={
 			
 			var $dd = $('#'+ id);
 			
-			if(jQuery.isFunction(opt.beforeSelect))	{
+			if(beforeSelectFlag){
 				opt.beforeSelect.call(this);
 			}
 

@@ -2224,7 +2224,7 @@ Plugin.prototype ={
 			eIdx =  colInfo.maxIdx;
 		}
 
-		if(sIdx < 0 || eIdx < 1) return ''; 
+		if(sIdx < 0 || eIdx < 0) return ''; 
 
 		var textArr = [];
 		var addRowFlag; 
@@ -2274,7 +2274,9 @@ Plugin.prototype ={
 			eIdx =  colInfo.maxIdx;
 		}
 
-		if(sIdx < 0 || eIdx < 1) return []; 
+		console.log(sIdx , eIdx)
+
+		if(sIdx < 0 || eIdx < 0) return []; 
 
 		var selectItem = [];
 		var addRowFlag; 

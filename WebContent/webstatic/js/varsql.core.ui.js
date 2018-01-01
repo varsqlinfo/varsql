@@ -1108,6 +1108,19 @@ _ui.leftDbObjectServiceMenu ={
 					beforeSelect :function (){
 						$(this).trigger('click');
 					}
+					,disableItemKey : function (items){
+						
+						console.log(gridObj.getSelectItem(['name']), gridObj.getSelectItem(['name']).length);
+						if(gridObj.getSelectItem(['name']).length < 1){
+							return [
+								{key :'sql_create' , depth :0	}
+								,{key :'mybatis-sql_create' , depth :0}	
+							]; 
+						}
+						
+						return [];
+						
+					}
 					,callback: function(key,sObj) {
 						
 						if(key =='copy'){
