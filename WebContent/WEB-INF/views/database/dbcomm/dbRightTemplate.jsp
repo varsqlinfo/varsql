@@ -3,16 +3,16 @@
 <div class="inner-layout-toolbar-area">
 	<div>
 		<div class="sql-btn-area">
-			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일  Ctrl+alt+n">
+			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일  Ctrl+Alt+N">
 				<span class="glyphicon glyphicon-file"></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장  Ctrl+shift+s">
+			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장  Ctrl+Shift+S">
 				<span class="glyphicon glyphicon-floppy-saved"></span>
 			</button>
 			<button type="button" class="btn btn-default btn-sm sql-execue-btn" title="실행  Ctrl+Enter">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-format-btn" title="쿼리 정리 Ctrl+Shift+f">
+			<button type="button" class="btn btn-default btn-sm sql-format-btn" title="쿼리 정리 Ctrl+Shift+F">
 				<span class="glyphicon glyphicon-align-left" aria-hidden="true" ></span>
 			</button>
 			<button type="button" class="btn btn-default btn-sm sql-send-btn" title="보내기">

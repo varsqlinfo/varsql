@@ -1069,12 +1069,12 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		var contextItem = [
-			{key : "copy" , "name": "복사"}
+			{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
 		];
 		
 		if(type == 'table'){
 			contextItem = [
-				{key : "copy" , "name": "복사"}
+				{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
 				,{divider:true}
 				,{key : "sql_create", "name": "sql생성" 
 					,subMenu: [
@@ -1109,8 +1109,6 @@ _ui.leftDbObjectServiceMenu ={
 						$(this).trigger('click');
 					}
 					,disableItemKey : function (items){
-						
-						console.log(gridObj.getSelectItem(['name']), gridObj.getSelectItem(['name']).length);
 						if(gridObj.getSelectItem(['name']).length < 1){
 							return [
 								{key :'sql_create' , depth :0	}
@@ -1266,23 +1264,23 @@ _ui.SQL = {
 		
 		$.pubContextMenu(_self.sqlEditorEle, {
 			items:[
-				{key : "undo" , "name": "실행취소"}
-				,{key : "redo" , "name": "다시 실행"}
+				{key : "undo" , "name": "실행취소" , hotkey :'Ctrl+Z'}
+				,{key : "redo" , "name": "다시 실행", hotkey :'Ctrl+Y'}
 				,{divider:true}
-				,{key : "copy" , "name": "복사"}
-				,{key : "cut" , "name": "잘라내기"}
+				,{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+				,{key : "cut" , "name": "잘라내기", hotkey :'Ctrl+X'}
 				//,{key : "paste" , "name": "뭍여넣기"}
 				,{key : "delete" , "name": "지우기"}
 				,{divider:true}
-				,{key : "msgSend" , "name": "메시지 보내기"}
-				,{key : "sqlFormat" , "name": "쿼리 정렬"}
+				,{key : "sqlFormat" , "name": "쿼리 정렬" , hotkey :'Ctrl+Shift+F'}
 				,{key : "upperLowerCase", "name": "대소문자변환" 
 					,subMenu: [
-						{ key : "upper","name": "대문자변환"}
-						,{ key : "lower","name": "소문자"}
+						{ key : "upper","name": "대문자변환",hotkey :'Ctrl+Shift+X'}
+						,{ key : "lower","name": "소문자" , hotkey :'Ctrl+Shift+Y'}
 						,{ key : "camel","name": "Camel Case"}
 					]
 				}
+				,{key : "msgSend" , "name": "메시지 보내기"}
     		]
 			,callback:function (key, item , evt){
 	    		var sObj = this.element;
@@ -1368,10 +1366,10 @@ _ui.SQL = {
 						case 83: // keyCode 83 is s
 							$('.sql-save-btn').trigger('click');
 							break;
-						case 88: // toUpperCase
+						case 88: // keycode 88 is x  toUpperCase
 							strUpperCase();
 							break;
-						case 89: // toLowerCase
+						case 89: //keycode 89 is y  toLowerCase
 							strLowerCase();
 							break;
 						default:
