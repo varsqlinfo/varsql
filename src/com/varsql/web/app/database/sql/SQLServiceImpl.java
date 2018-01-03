@@ -286,7 +286,8 @@ public class SQLServiceImpl{
 		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(reqSql);
 		
 		Connection conn = null;
-		SqlSourceResultVO result = new SqlSourceResultVO();
+		SqlSourceResultVO result = null;
+		sqlSource.setResult(new SqlSourceResultVO());
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
 			getRequestSqlData(sqlParamInfo,conn,sqlSource);
@@ -296,9 +297,6 @@ public class SQLServiceImpl{
 		}finally{
 			SQLUtil.close(conn);
 		}
-		
-		
-		
 		
 		if("csv".equals(exportType)){
 			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".csv",VarsqlConstants.CHAR_SET));

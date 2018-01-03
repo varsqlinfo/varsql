@@ -764,7 +764,7 @@ _ui.leftDbObjectServiceMenu ={
 								return ;
 							}
 							
-							if(key=='export_data'||key=='export_column'){
+							if(key=='export_data'){
 								_self._dataExport({
 									gubun:gubun
 									,gubunKey :key
@@ -836,7 +836,6 @@ _ui.leftDbObjectServiceMenu ={
 							,{key :'export', "name": "내보내기" 
 								,subMenu:[
 									{key : "export_data","name": "데이타 내보내기"}
-									,{key : "export_column","name": "컬럼정보 내보내기"}
 								]
 							}
 							,{divider:true}
