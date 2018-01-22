@@ -33,7 +33,6 @@
 <entry key="header.menu.help.help">도움말 항목</entry>
 <entry key="header.menu.help.info">VARSQL 정보</entry>
 
-
 <entry key="screen">화면</entry>
 <entry key="screen.user">사용자</entry>
 <entry key="screen.manager">매니저</entry>
@@ -45,7 +44,9 @@
 <entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
+<entry key="admin.menu.glossary">용어 관리</entry>
 
+									
 <!-- manage menu -->
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
 <entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
@@ -152,6 +153,10 @@
 <entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
+
+<entry key="admin.label.word">용어</entry>
+<entry key="admin.detail.word_en">영믄</entry>
+<entry key="admin.detail.word_abbr">약어</entry>
 
 <entry key="admin.userlist.search.head">사용자 검색</entry>
 <entry key="admin.managerlist.head">관리자 목록</entry>

@@ -14,11 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.common.util.CommUtil;
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.ConnectionFactory;
 import com.varsql.sql.util.SQLUtil;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.ResultConstants;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
 
 /**
@@ -36,38 +39,62 @@ public class AdminServiceImpl{
 	@Autowired
 	AdminDAO adminDAO ;
 	
-	public Map selectPageList(DataCommonVO paramMap) {
+	/**
+	 * 
+	 * @Method Name  : selectDblist
+	 * @Method 설명 : db 목록 보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 22. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
+	public ResponseResult selectDblist(SearchParameter searchParameter) {
 		
-		int totalcnt = adminDAO.selectPageTotalCnt(paramMap);
+		ResponseResult resultObject = new ResponseResult();
 		
-		Map json = new HashMap();
+		int totalcnt = adminDAO.selectDBTotalCnt(searchParameter);
+		
 		if(totalcnt > 0){
-			int page = paramMap.getInt("page",0);
-			int rows = paramMap.getInt("rows",10);
-			
-			int first = (page-1)*rows ;
-			
-			paramMap.put("first", first);
-			paramMap.put("rows", rows);
-			
-			json.put("paging", PagingUtil.getPageObject(totalcnt, page,rows));
-			json.put("result", adminDAO.selectPageList(paramMap));
+			resultObject.setItemList(adminDAO.selectDbList(searchParameter));
+		}else{
+			resultObject.setItemList(null);
 		}
+		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
-		return json;
+		return resultObject;
+	}
+		
+	/**
+	 * 
+	 * @Method Name  : selectDetailObject
+	 * @Method 설명 : db 정보 상세.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 22. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectDetailObject(DataCommonVO paramMap) {
+		ResponseResult resultObject = new ResponseResult();
+		
+		resultObject.setItemOne(adminDAO.selectDetailObject(paramMap));
+		return resultObject;
 	}
 	
-	public Map selectDetailObject(DataCommonVO paramMap) {
+	/**
+	 * 
+	 * @Method Name  : connectionCheck
+	 * @Method 설명 : 커넥션 체크. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 22. 
+	 * @변경이력  :
+	 * @param dcv
+	 * @return
+	 */
+	public ResponseResult connectionCheck(ParamMap dcv) {
 		
-		Map json = new HashMap();
-		json.put("result", adminDAO.selectDetailObject(paramMap));
-		return json;
-	}
-	
-	public Map connectionCheck(ParamMap dcv) {
-		
-		Map json = new HashMap();
-		
+		ResponseResult resultObject = new ResponseResult();
 		logger.debug("connection check object :  {}",dcv);
 		
 		String driver = dcv.getString("vdriver");
@@ -130,47 +157,58 @@ public class AdminServiceImpl{
 			SQLUtil.close(connChk , pstmt, null);
 		}
 		
-		json.put("result", result);
-		json.put("msg", failMessage);
+		resultObject.setMessageCode(result);
+		resultObject.setMessage(failMessage);
 		
-		return json;
+		return resultObject;
 		
 	}
-
-	public boolean insertVtconnectionInfo(DataCommonVO paramMap) {
+	
+	/**
+	 * 
+	 * @Method Name  : insertVtconnectionInfo
+	 * @Method 설명 : 정보 저장
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 22. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult saveVtconnectionInfo(DataCommonVO paramMap) {
 		
-		String vconid = adminDAO.selectVtconnectionMaxVal();
+		ResponseResult resultObject = new ResponseResult();
 		
-		try{
-			vconid=String.format("%05d", Integer.parseInt(vconid)+1);
-		}catch(Exception e){
-			vconid=String.format("%05d", 1);
-		}
+		SecurityUtil.setUserInfo(paramMap);
 		
-		paramMap.put("vconid", vconid);
-		
-		return adminDAO.insertVtconnectionInfo(paramMap) > 0;
-	}
-
-	public Map updateVtconnectionInfo(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		try {
-			
+		if("".equals(paramMap.getString("vconid"))){
+			String vconid = adminDAO.selectVtconnectionMaxVal();
+			try{
+				vconid=String.format("%05d", Integer.parseInt(vconid)+1);
+			}catch(Exception e){
+				vconid=String.format("%05d", 1);
+			}
+			paramMap.put("vconid", vconid);
+				
+			resultObject.setItemOne(adminDAO.insertVtconnectionInfo(paramMap));
+		}else{
 			int result =adminDAO.updateVtconnectionInfo(paramMap);
 			
 			if(result > 0 && "Y".equals(paramMap.getString("pollinit"))){
-				ConnectionFactory.getInstance().resetConnectionPool(paramMap.getString("vconid"));
-				json.put(ResultConstants.CODE,ResultConstants.CODE_VAL.SUCCESS);
+				try {
+					ConnectionFactory.getInstance().resetConnectionPool(paramMap.getString("vconid"));
+					resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
+				} catch (Exception e) {
+					resultObject.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+					resultObject.setMessage(e.getMessage());
+				}
 			}
-		} catch (Exception e) {
-			json.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-			json.put(ResultConstants.MESSAGE,e.getMessage());
 		}
-		
-		return json;
+		return resultObject;
 	}
 	
+	
 	public boolean deleteVtconnectionInfo(DataCommonVO paramMap) {
+		SecurityUtil.setUserInfo(paramMap);
 		return adminDAO.deleteVtconnectionInfo(paramMap) > 0;
 	}
 
@@ -188,11 +226,10 @@ public class AdminServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map selectDbDriverList(DataCommonVO paramMap) {
+	public ResponseResult selectDbDriverList(DataCommonVO paramMap) {
+		ResponseResult resultObject = new ResponseResult();
+		resultObject.setItemList(adminDAO.selectDbDriverList(paramMap));
 		
-		Map json = new HashMap();
-		json.put("result", adminDAO.selectDbDriverList(paramMap));
-		
-		return json;
+		return resultObject;
 	}
 }

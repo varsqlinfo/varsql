@@ -37,9 +37,10 @@
 			, ROLE 
 			, DESCRIPTION 
 			, ACCEPT_YN
-			, CRE_ID 
+			, REG_ID 
+			, REG_DT
 			, UPD_ID
-			, CRE_DT
+			, UPD_DT
 		) 
 		values(
 			#{viewid}
@@ -53,6 +54,7 @@
 			, #{description}
 			, #{acceptYn}
 			, #{creId}
+			, CURRENT TIMESTAMP
 			, #{creId}
 			, CURRENT TIMESTAMP
 		) 
@@ -90,16 +92,16 @@
 	<select id="userMapper.selectQnaTotalCnt" parameterType="java.util.Map" resultType="int">
 		select count(1) as totalcnt
 		from VTQNA a
-		where CRE_ID =#{uid}
+		where REG_ID =#{uid}
 		and DEL_YN !='Y'
 		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<!-- qna 목록보기 -->
 	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="dataCommonVO">
-		select a.*, a.CRE_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
+		select a.*, a.REG_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
 		from VTQNA a
-		where CRE_ID =#{uid}
+		where REG_ID =#{uid}
 		and DEL_YN !='Y'
 		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
 		order by QNAID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
@@ -107,7 +109,7 @@
 	
 	<!-- qna 상세보기 -->
 	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="dataCommonVO">
-		select a.*, a.CRE_DT as CHAR_CRE_DT 
+		select a.*, a.REG_DT as CHAR_CRE_DT 
 		from VTQNA a
 		where DEL_YN !='Y'
 		and QNAID=#{qnaid}
@@ -123,8 +125,8 @@
 			QNAID 
 			, TITLE 
 			, QUESTION 
-			, CRE_ID 
-			, CRE_DT 
+			, REG_ID 
+			, REG_DT 
 			, DEL_YN
 			, ANSWER
 		)
@@ -163,10 +165,10 @@
 				1=1
 			</when>
 			<when test="role=='MANAGER'">
-				a.VCONNID in (select VCONNID from VTDATABASE_MANAGER_ROLE where VIEWID = #{uid})
+				a.VCONNID in (select VCONNID from VTDATABASE_ROLE where VIEWID = #{uid} and ROLE_TYPE='U')
 			</when>
 			<when test="role=='USER'">
-				a.VCONNID in (select vconnid from VTDATABASE_USER_ROLE where VIEWID = #{uid} )
+				a.VCONNID in (select vconnid from VTDATABASE_ROLE where VIEWID = #{uid} and ROLE_TYPE='U' )
 			</when>
 	    	<otherwise>
 	      		1!=1

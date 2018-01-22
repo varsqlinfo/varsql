@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.common.util.StringUtil;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.util.VarsqlUtil;
@@ -72,6 +73,8 @@ public class ManagerMgmtServiceImpl{
 	
 	public Map updateManagerRole(DataCommonVO paramMap) {
 		
+		SecurityUtil.setUserInfo(paramMap);
+		
 		Map json = new HashMap();
 		json.put("result", managerMgmtDAO.updateManagerRole( paramMap));
 		
@@ -82,6 +85,8 @@ public class ManagerMgmtServiceImpl{
 		
 		Map json = new HashMap();
 			
+		SecurityUtil.setUserInfo(paramMap);
+		
 		json.put("result", managerMgmtDAO.selectDatabaseManager(paramMap));
 		
 		return json;

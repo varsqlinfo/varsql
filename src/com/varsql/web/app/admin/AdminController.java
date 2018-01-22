@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.common.util.SecurityUtil;
 import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -92,18 +96,11 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dblist")
-	public @ResponseBody Map dblist(
-			@RequestParam(value = VarsqlParamConstants.SEARCHVAL, required = false, defaultValue = "" )  String searchVal
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_NO, required = false, defaultValue = "1" )  int pageNo
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_ROW, required = false, defaultValue = "10" )  int rows
-			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody ResponseResult dblist(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 		
-		paramMap.put(VarsqlParamConstants.SEARCHVAL, searchVal);
-		paramMap.put(VarsqlParamConstants.SEARCH_NO, pageNo);
-		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
-		
-		return adminServiceImpl.selectPageList(paramMap);
+		return adminServiceImpl.selectDblist(searchParameter);
 	}
 	
 	/**
@@ -118,7 +115,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDriver")
-	public @ResponseBody Map dbDriver(@RequestParam(value = "dbtype", required = true)  String dbtype
+	public @ResponseBody ResponseResult dbDriver(@RequestParam(value = "dbtype", required = true)  String dbtype
 			
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -140,7 +137,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDetail")
-	public @ResponseBody Map dbDetail(@RequestParam(value = "vconid") String vconid) throws Exception {
+	public @ResponseBody ResponseResult dbDetail(@RequestParam(value = "vconid") String vconid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		
@@ -161,7 +158,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbConnectionCheck")
-	public @ResponseBody Map dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+	public @ResponseBody ResponseResult dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ParamMap dcv = HttpUtils.getServletRequestParam(req);
 		
 		return adminServiceImpl.connectionCheck(dcv);
@@ -188,7 +185,7 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbSave")
-	public @ResponseBody Map dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
+	public @ResponseBody ResponseResult dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
 			,@RequestParam(value = "vname" ,required = true,defaultValue = "")  String vname
 			,@RequestParam(value = "vurl",required = true,defaultValue = "")  String vurl
 			,@RequestParam(value = "vdriver",required = true,defaultValue = "")  String vdriver
@@ -217,15 +214,7 @@ public class AdminController{
 		dcv.put("vquery", vquery);
 		dcv.put("pollinit", pollinit);
 		
-		Map json = new HashMap();
-			
-		if("".equals(vconid)){
-			json.put("result", adminServiceImpl.insertVtconnectionInfo(dcv));
-		}else{
-			json.put("result", adminServiceImpl.updateVtconnectionInfo(dcv));
-		}
-			
-		return json;
+		return adminServiceImpl.saveVtconnectionInfo(dcv);
 	}
 	
 	/**

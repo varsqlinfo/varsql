@@ -128,38 +128,26 @@ var adminMain = {
 		sObj = $(sObj);
 		
 		$('#vconid').val(sObj.attr('conid'));
-		$.ajax({
-			type:'POST'
-			,data:{
+		VARSQL.req.ajax({
+			data:{
 				vconid:$('#vconid').val()
 			}
-			,url : '<c:url value="/admin/main/dbDetail" />'
-			,dataType:'JSON'
-			,success:function (response){
-				var result = response.result;
+			,url : '/admin/main/dbDetail'
+			,success:function (resData){
+				var item = resData.item;
 				
-				$('#vname').val(result.VNAME);
-				$('#vurl').val(result.VURL);
-				$('#vdriver').val(result.VDRIVER);
-				$('#vdbschema').val(result.VDBSCHEMA);
-				$('#vtype').val(result.VTYPE);
-				$('#vid').val(result.VID);
-				$('#vpw').val(result.VPW);
-				$('#vconnopt').val(result.VCONNOPT);
-				$('#vpoolopt').val(result.VPOOLOPT);
-				$('#vquery').val(result.VQUERY);
+				$('#vname').val(item.VNAME);
+				$('#vurl').val(item.VURL);
+				$('#vdriver').val(item.VDRIVER);
+				$('#vdbschema').val(item.VDBSCHEMA);
+				$('#vtype').val(item.VTYPE);
+				$('#vid').val(item.VID);
+				$('#vpw').val(item.VPW);
+				$('#vconnopt').val(item.VCONNOPT);
+				$('#vpoolopt').val(item.VPOOLOPT);
+				$('#vquery').val(item.VQUERY);
 				
 				$('#vtype').trigger('change');
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start ('dataViewAreaTd');
 			}
 		});
 	}
@@ -167,80 +155,50 @@ var adminMain = {
 		var _this = this;
 		
 		var param = {
-			page:no?no:1
+			pageNo : (no?no:1)
 			,'searchVal':$('#searchVal').val()
 		};
 		
-		$.ajax({
-			type:'POST'
-			,data:param
-			,url : '<c:url value="/admin/main/dblist" />'
-			,dataType:'JSON'
-			,success:function (response){
-				try{
+		VARSQL.req.ajax({
+			data:param
+			,url : '/admin/main/dblist'
+			,success:function (resData){
 					
-		    		var resultLen = response.result?response.result.length:0;
-		    		
-		    		if(resultLen==0){
-		    			$('#dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
-		    			$('#pageNavigation').pagingNav();
-		    			return ; 
-		    		}
-		    		var result = response.result;
-		    		
-		    		var strHtm = new Array();
-		    		var item; 
-		    		for(var i = 0 ;i < resultLen; i ++){
-		    			item = result[i];
-		    			strHtm.push('<a href="javascript:;" class="list-group-item" conid="'+item.VCONNID+'">'+item.VNAME);
-		    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
-		    		}
-		    		
-		    		$('#dbinfolist').html(strHtm.join(''));
-		    		
-		    		$('#dbinfolist .list-group-item').on('click',function (){
-		    			adminMain.clickDbInfo($(this));
-		    		});
-		    		
-		    		$('#pageNavigation').pagingNav(response.paging,adminMain.search);
-		    		
-				}catch(e){
-					$('#dataViewAreaTd').attr('color','red');
-					$("#dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + resultMsg);  
-				}
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start ('dataViewAreaTd');
+				var result = resData.items;
+	    		var resultLen = result.length;
+	    		
+	    		if(resultLen==0){
+	    			$('#dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
+	    			$('#pageNavigation').pagingNav();
+	    			return ; 
+	    		}
+	    		
+	    		var strHtm = new Array();
+	    		var item; 
+	    		for(var i = 0 ;i < resultLen; i ++){
+	    			item = result[i];
+	    			strHtm.push('<a href="javascript:;" class="list-group-item" conid="'+item.VCONNID+'">'+item.VNAME);
+	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
+	    		}
+	    		
+	    		$('#dbinfolist').html(strHtm.join(''));
+	    		
+	    		$('#dbinfolist .list-group-item').on('click',function (){
+	    			adminMain.clickDbInfo($(this));
+	    		});
+	    		
+	    		$('#pageNavigation').pagingNav(resData.page,adminMain.search);
 			}
 		});
 	}
 	,save : function (){
 		var _this = this; 
-		$.ajax({
-			type:'POST'
-			,data:$("#addForm").serialize()
-			,url : '<c:url value="/admin/main/dbSave" />'
-			,dataType:'JSON'
-			,success:function (response){
+		VARSQL.req.ajax({
+			data:$("#addForm").serialize()
+			,url : '/admin/main/dbSave'
+			,success:function (resData){
 				_this.search();
 				$('.addBtn').trigger("click");
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start ('dataViewAreaTd');
 			}
 		});
 	}
@@ -257,26 +215,16 @@ var adminMain = {
 			return ; 
 		}
 		
-		$.ajax({
+		VARSQL.req.ajax({
 			type:'POST'
 			,data: {
 				vconid : $('#vconid').val() 
 			}
-			,url : '<c:url value="/admin/main/dbDelete" />'
+			,url : '/admin/main/dbDelete'
 			,dataType:'JSON'
-			,success:function (response){
+			,success:function (resData){
 				_this.search();
 				$('#addBtn').trigger("click");
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start ('dataViewAreaTd');
 			}
 		});
 	}
@@ -291,50 +239,38 @@ var adminMain = {
 		
 		param.vdriver = $('#vdriver option:selected').attr('data-driver');
 		
-		$.ajax({
+		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : '<c:url value="/admin/main/dbConnectionCheck" />'
+			,url : '/admin/main/dbConnectionCheck'
 			,dataType:'JSON'
-			,success:function (response){
-				if(response.result =='success'){
+			,success:function (resData){
+				if(resData.messageCode =='success'){
 					alert('<spring:message code="msg.success" />');
 					return 
 				}else{
-					alert(response.result +'\n'+ response.msg);
+					alert(resData.messageCode  +'\n'+ resData.message);
 				}
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start('dataViewAreaTd');
 			}
 		});
 	}
 	// db driver list
 	,dbDriverLoad : function (val){
-		$.ajax({
-			type:'POST'
-			,data: {
+		VARSQL.req.ajax({
+			data: {
 				dbtype :val
 			}
-			,url : '<c:url value="/admin/main/dbDriver" />'
-			,dataType:'JSON'
-			,success:function (response){
-					
-	    		var resultLen = response.result?response.result.length:0;
+			,url : '/admin/main/dbDriver'
+			,success:function (resData){
+				
+				var result = resData.items;
+	    		var resultLen = result.length;
 	    		
 	    		if(resultLen==0){
 	    			$('#vdriver').empty();
 	    			return ; 
 	    		}
 	    		
-	    		var result = response.result;
 	    		var strHtm = [];
 	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
@@ -343,16 +279,6 @@ var adminMain = {
 	    		}
 	    		
 	    		$('#vdriver').empty().html(strHtm.join(''));
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start('dataViewAreaTd');
 			}
 		});
 	}

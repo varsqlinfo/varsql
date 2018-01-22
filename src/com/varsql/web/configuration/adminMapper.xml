@@ -4,21 +4,23 @@
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="adminMapper">
-
-	<select id="adminMapper.selectPageList" parameterType="java.util.Map" resultType="java.util.Map">
-		select * 
-		from VTCONNECTION 
-		where (VNAME like '%'||#{searchVal}||'%' or VURL like '%'||#{searchVal}||'%') 
-		order by VCONNID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
-	</select>
 	
-	<select id="adminMapper.selectPageTotalCnt" parameterType="java.util.Map" resultType="int">
+	<!--  db 목록 보기. -->
+	<select id="adminMapper.selectDBTotalCnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTCONNECTION 
-		where (VNAME like '%'||#{searchVal}||'%' or VURL like '%'||#{searchVal}||'%') 
+		where (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
 	</select>
 	
-	<select id="adminMapper.selectDetailObject" parameterType="java.util.Map" resultType="dataCommonVO">
+	<select id="adminMapper.selectDbList" parameterType="searchParameter" resultType="hashmap">
+		select * 
+		from VTCONNECTION 
+		where (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
+		order by VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
+	
+	<!-- db connection 정보 상세보기. -->	
+	<select id="adminMapper.selectDetailObject" parameterType="map" resultType="dataCommonVO">
 		select * 
 		from VTCONNECTION 
 		where VCONNID =#{vconid}
@@ -28,9 +30,10 @@
 		select max(VCONNID)as maxval from VTCONNECTION
 	</select>
 	
-	<insert id="adminMapper.insertVtconnectionInfo" parameterType="java.util.Map">
+	<insert id="adminMapper.insertVtconnectionInfo" parameterType="map">
 		insert into VTCONNECTION (
-			VNAME 
+			VCONNID
+			,VNAME 
 			,VURL 
 			,VDBSCHEMA 
 			,VDRIVER 
@@ -40,10 +43,13 @@
 			,VCONNOPT 
 			,VPOOLOPT
 			,VQUERY
-			,VCONNID
-		)
-		values (
-			#{vname}
+			,REG_ID
+			,REG_DT
+			,UPD_ID
+			,UPD_DT
+		)values (
+			#{vconid}
+			,#{vname}
 			,#{vurl} 
 			,#{vdbschema} 
 			,#{vdriver} 
@@ -53,11 +59,14 @@
 			,#{vconnopt}
 			,#{vpoolopt}
 			,#{vquery}
-			,#{vconid}
+			,#{uid}
+			,CURRENT TIMESTAMP
+			,#{uid}
+			,CURRENT TIMESTAMP
 		)
 	</insert>
 	
-	<update id="adminMapper.updateVtconnectionInfo" parameterType="java.util.Map">
+	<update id="adminMapper.updateVtconnectionInfo" parameterType="map">
 		update VTCONNECTION 
 		set 
 			VNAME =#{vname}
@@ -70,98 +79,104 @@
 			, VCONNOPT =#{vconnopt}
 			, VPOOLOPT =#{vpoolopt}
 			, VQUERY=#{vquery}
+			, UPD_ID = #{uid}
+			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconid}
 	</update>
 	
-	<delete id="adminMapper.deleteVtconnectionInfo" parameterType="java.util.Map">
+	<delete id="adminMapper.deleteVtconnectionInfo" parameterType="map">
 		delete from VTCONNECTION where VCONNID =#{vconid}
 	</delete>
 	
-	<select id="adminMapper.selectRoleUserTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.selectRoleUserTotalcnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from VTUSER
-		where ROLE = 'USER' 
+		where USER_ROLE = 'USER' 
 		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 	</select>
 
-	<select id="adminMapper.selectRoleUserList" parameterType="java.util.Map" resultType="java.util.Map">
-		select a.*, a.CRE_DT as CHAR_CRE_DT
+	<select id="adminMapper.selectRoleUserList" parameterType="map" resultType="hashmap">
+		select a.*, a.REG_DT as CHAR_CRE_DT
 		from VTUSER a
-		where ROLE = 'USER' 
+		where USER_ROLE = 'USER' 
 		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<select id="adminMapper.selectRoleManagerTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.selectRoleManagerTotalcnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from VTUSER
-		where ROLE = 'MANAGER' 
+		where USER_ROLE = 'MANAGER' 
 		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 	</select>
 
-	<select id="adminMapper.selectRoleManagerList" parameterType="java.util.Map" resultType="java.util.Map">
-		select a.*, a.CRE_DT as CHAR_CRE_DT
+	<select id="adminMapper.selectRoleManagerList" parameterType="map" resultType="hashmap">
+		select a.*, a.REG_DT as CHAR_CRE_DT
 		from VTUSER a
-		where ROLE = 'MANAGER' 
+		where USER_ROLE = 'MANAGER' 
 		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
 		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
 	</select>
 	
-	<update id="adminMapper.updateManagerRole" parameterType="java.util.Map">
+	<update id="adminMapper.updateManagerRole" parameterType="map">
 		update VTUSER 
 		set 
 		<choose>
 			<when test="mode=='add'">
-				ROLE = 'MANAGER'
+				USER_ROLE = 'MANAGER'
 			</when>
 	    	<otherwise>
-	      		ROLE = 'USER'
+	      		USER_ROLE = 'USER'
 	    	</otherwise>
 	  	</choose>
 		where VIEWID =#{viewid}
 	</update>
 	
-	<select id="adminMapper.selectDatabaseManager" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectDatabaseManager" parameterType="map" resultType="hashmap">
 		select * 
-		from VTUSER a left outer join VTDATABASE_MANAGER_ROLE b 
+		from VTUSER a left outer join VTDATABASE_ROLE b 
 		on a.VIEWID = b.VIEWID 
 		and b.VCONNID = #{vconid}
-		where ROLE = 'MANAGER' and (b.VCONNID = #{vconid} or b.VCONNID is null ) 
+		and b.ROLE_TYPE = 'M'
+		where USER_ROLE = 'MANAGER' and (b.VCONNID = #{vconid} or b.VCONNID is null ) 
 	</select>
 	
-	<delete id="adminMapper.deleteDbManager" parameterType="java.util.Map">
-		delete from VTDATABASE_MANAGER_ROLE
-		where VCONNID = #{vconid}
+	<delete id="adminMapper.deleteDbManager" parameterType="map">
+		delete from VTDATABASE_ROLE
+		where and b.ROLE_TYPE = 'M' 
+		and VCONNID = #{vconid}
 	</delete>
 	
-	<update id="adminMapper.updateDbManager" parameterType="java.util.Map">
-		insert into VTDATABASE_MANAGER_ROLE (VCONNID, VIEWID , UPD_DT)
+	<update id="adminMapper.updateDbManager" parameterType="map">
+		insert into VTDATABASE_ROLE (VCONNID, VIEWID , ROLE_TYPE, REG_ID, REG_DT)
 		values(
 			#{vconid}
 			, #{viewid}
+			, 'M'
+			, #{uid}
 			,CURRENT TIMESTAMP
 		)
 	</update>
 	
-	<select id="adminMapper.selectAllDbType" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectAllDbType" parameterType="map" resultType="hashmap">
 		select * from VTDBTYPE
 	</select>
 	
-	<select id="adminMapper.listDbMenuTotalcnt" parameterType="java.util.Map" resultType="int">
+	<select id="adminMapper.listDbMenuTotalcnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from VTMENU
 		where DB_TYPE  = #{db_type}
 		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
-	<select id="adminMapper.listDbMenu" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.listDbMenu" parameterType="map" resultType="hashmap">
 		select a.*
 		from VTMENU a
 		where DB_TYPE  = #{db_type}
 		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
-	<insert id="adminMapper.addDbMenu" parameterType="java.util.Map">
+	<insert id="adminMapper.addDbMenu" parameterType="map">
 		insert  into VTMENU (
 			DB_TYPE 
 			, MENU_ID 
@@ -191,7 +206,7 @@
 		)
 	</insert>
 	
-	<update id="adminMapper.moodifyDbMenu" parameterType="java.util.Map">
+	<update id="adminMapper.moodifyDbMenu" parameterType="map">
 		update VTMENU 
 		set 
 			DB_TYPE=#{db_type}
@@ -207,12 +222,12 @@
 		where MENU_ID =#{menu_id}
 	</update>
 	
-	<delete id="adminMapper.deleteDbMenu" parameterType="java.util.Map">
+	<delete id="adminMapper.deleteDbMenu" parameterType="map">
 		delete from VTMENU where MENU_ID =#{menu_id}
 	</delete>
 	
 	<!-- db driver list -->
-	<select id="adminMapper.selectDbDriverList" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="adminMapper.selectDbDriverList" parameterType="map" resultType="hashmap">
 		SELECT DRIVER_ID,DBTYPE,DBDRIVER,DRIVER_DESC
 		FROM VTDBTYPE_DRIVER
 		WHERE DBTYPE = #{db_type}

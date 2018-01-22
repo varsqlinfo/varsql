@@ -258,11 +258,12 @@ Plugin.prototype ={
 			, header :{height : 0, width : 0}
 			, footer :{height : 0, width : 0}
 			, navi :{height : 0, width : 0}
-			, scroll : {before:{},top :0 , left:0, startCol:0, endCol : 0,startRow : 0, endRow :0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, verticalHeight:0,horizontalWidth:0}
 			,aside :{items :[]}
 			,select : {}
 		};
 
+
+		_this._initScrollData();
 		_this._setRangeSelectInfo({},true);
 		
 		_this.setOptions(options, true);
@@ -277,6 +278,10 @@ Plugin.prototype ={
 		_this._windowResize();
 
 		return this;
+	}
+
+	,_initScrollData : function (){
+		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0,startRow : 0, endRow :0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, verticalHeight:0,horizontalWidth:0}; 
 	}
 	/**
      * @method _setGridWidth
@@ -722,6 +727,7 @@ Plugin.prototype ={
 
 		if(gridMode=='reDraw'){
 			_this._setRangeSelectInfo({}, true);
+
 			_this.calcDimension('reDraw');
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
@@ -1351,10 +1357,18 @@ Plugin.prototype ={
 			drawFlag = true; 
 		}
 
+		if(type =='reDraw'){
+			topVal=0; 
+			leftVal=0; 
+		}
+		
+		console.log(type, topVal, leftVal)
+
 		_this.moveHScroll({pos :leftVal, drawFlag:false});
+		_this.moveVScroll({pos :topVal, drawFlag:false});
 
 		if(beforeViewCount !=0 ){
-			_this.moveVScroll({pos :topVal, drawFlag:false});
+			
 			
 			if(type !='reDraw' && drawFlag){
 				_this.drawGrid();
@@ -1532,7 +1546,11 @@ Plugin.prototype ={
 	*/
 	,moveVScroll : function (moveObj){
 		var _this =this; 
-		if(!_this.config.scroll.vUse){ return ; }
+
+		if(!_this.config.scroll.vUse){ 
+			_this.config.scroll.viewIdx = 0; 
+			return ; 
+		}
 
 		var topVal = moveObj.pos 
 			,drawFlag = moveObj.drawFlag;
@@ -2136,7 +2154,12 @@ Plugin.prototype ={
 				var colLen = _this.config.dataInfo.colLen; 
 
 				var moveColIdx =(endCol+1 >= colLen? colLen-1: endCol+1);
+
+				console.log(moveColIdx , endCol , colLen , endRow , this.config.scroll.endFlag)
+
 				if(endCol+1 == colLen && evtKey==9){
+
+					
 					moveColIdx = 0; 
 					_this.moveHScroll({pos:0});
 
@@ -2147,6 +2170,7 @@ Plugin.prototype ={
 					endRow =(endRow+1 >=rowLen? rowLen : endRow+1);
 
 					if(endRow==rowLen){
+						_this.config.select.range.endRow
 						_this.moveVScroll({pos:'D'});
 					}
 				}else {
@@ -2204,9 +2228,13 @@ Plugin.prototype ={
 			case 13 : // enter
 			case 40 : { //down
 
-				if(!isScrollInside(endCol,'V')) return ; 
+				if(!isScrollInside(endCol,'V')) return ;
+
+				
 
 				var rowLen = _this.config.scroll.insideViewCount-1;
+
+				
 
 				var moveColIdx =(endRow+1 >=rowLen? rowLen : endRow+1);
 
@@ -2219,6 +2247,9 @@ Plugin.prototype ={
 				}else{
 					currViewIdx = _this.config.scroll.viewIdx+moveColIdx;
 				}
+
+				console.log(moveColIdx , currViewIdx)
+
 
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({
@@ -3004,9 +3035,8 @@ $.pubGrid = function (selector,options, args) {
 			_cacheObject = new Plugin(selector, options);
 			_datastore[selector] = _cacheObject;
 		}else{
-			
 			_cacheObject.setOptions(options);
-			_cacheObject.setData(_this.options.tbodyItem , 'reDraw');
+			_cacheObject.setData(options.tbodyItem , 'reDraw');
 		}
 		return _cacheObject; 
 	}
