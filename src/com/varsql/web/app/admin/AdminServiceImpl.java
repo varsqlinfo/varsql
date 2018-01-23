@@ -17,12 +17,14 @@ import com.varsql.common.util.CommUtil;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.db.ConnectionFactory;
 import com.varsql.sql.util.SQLUtil;
+import com.varsql.web.app.admin.beans.Vtconnection;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.ResultConstants;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  * 
@@ -89,22 +91,23 @@ public class AdminServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 22. 
 	 * @변경이력  :
-	 * @param dcv
+	 * @param vtConnection
 	 * @return
 	 */
-	public ResponseResult connectionCheck(ParamMap dcv) {
+	public ResponseResult connectionCheck(Vtconnection vtConnection) {
 		
 		ResponseResult resultObject = new ResponseResult();
-		logger.debug("connection check object :  {}",dcv);
 		
-		String driver = dcv.getString("vdriver");
-		String url = dcv.getString("vurl");
-		String username = dcv.getString("vid");
-		String pwd = dcv.getString("vpw");
-		String dbtype = dcv.getString("vtype");
+		logger.debug("connection check object :  {}" , VartechUtils.reflectionToString(vtConnection));
 		
-		String connection_opt = dcv.getString("vconnopt");
-		String validation_query = dcv.getString("vquery","");
+		String driver = vtConnection.getVdriver();
+		String url = vtConnection.getVurl();
+		String username = vtConnection.getVid();
+		String pwd = vtConnection.getVpw();
+		String dbtype = vtConnection.getVtype();
+		
+		String connection_opt = vtConnection.getVconnopt();
+		String validation_query = vtConnection.getVquery();
 		
 		Properties p =new Properties();
 		
@@ -171,31 +174,31 @@ public class AdminServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 22. 
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vtConnection
 	 * @return
 	 */
-	public ResponseResult saveVtconnectionInfo(DataCommonVO paramMap) {
+	public ResponseResult saveVtconnectionInfo(Vtconnection vtConnection) {
 		
 		ResponseResult resultObject = new ResponseResult();
 		
-		SecurityUtil.setUserInfo(paramMap);
+		vtConnection.setUserId(SecurityUtil.loginId());
 		
-		if("".equals(paramMap.getString("vconid"))){
-			String vconid = adminDAO.selectVtconnectionMaxVal();
+		if("".equals(vtConnection.getVconnid())){
+			String vconnid = adminDAO.selectVtconnectionMaxVal();
 			try{
-				vconid=String.format("%05d", Integer.parseInt(vconid)+1);
+				vconnid=String.format("%05d", Integer.parseInt(vconnid)+1);
 			}catch(Exception e){
-				vconid=String.format("%05d", 1);
+				vconnid=String.format("%05d", 1);
 			}
-			paramMap.put("vconid", vconid);
+			vtConnection.setVconnid(vconnid);
 				
-			resultObject.setItemOne(adminDAO.insertVtconnectionInfo(paramMap));
+			resultObject.setItemOne(adminDAO.insertVtconnectionInfo(vtConnection));
 		}else{
-			int result =adminDAO.updateVtconnectionInfo(paramMap);
+			int result =adminDAO.updateVtconnectionInfo(vtConnection);
 			
-			if(result > 0 && "Y".equals(paramMap.getString("pollinit"))){
+			if(result > 0 && "Y".equals(vtConnection.getVpoolopt())){
 				try {
-					ConnectionFactory.getInstance().resetConnectionPool(paramMap.getString("vconid"));
+					ConnectionFactory.getInstance().resetConnectionPool(vtConnection.getVconnid());
 					resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
 				} catch (Exception e) {
 					resultObject.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());

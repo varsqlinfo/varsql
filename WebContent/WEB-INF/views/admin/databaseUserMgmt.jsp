@@ -1,22 +1,53 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<style>
+.pub-multiselect-area {
+	user-select: none;
+	-o-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	overflow-x:hidden;	
+	overflow-y:auto;
+    border: 1px solid #cccccc;
+}
+
+.pub-multiselect-area ul,.pub-multiselect-area ol ,.pub-multiselect-area li{
+	list-style:none;
+}
+
+.pub-multiselect-area .selected {
+	background: #5353f7;
+    color: #fff;
+}
+
+.pub-multiselect-area{
+	padding: 5px;
+    padding-left: 10px;
+    margin: 0px;
+}
+
+
+.pub-select-item{
+	cursor:pointer;
+}
+
+</style>
 <script>
 $(document).ready(function (){
 	databaseUserMgmt.init();
 });
 
 var databaseUserMgmt = {
-	init :function (){
+	selectObj :{}
+	,init :function (){
 		var _self = this; 
 		_self.initEvt();
 		_self.search();
 	}
 	,initEvt:function(){
 		var _self = this; 
-		$('.btnSave').on('click',function (){
-			if(!confirm('<spring:message code="admin.databaseUserMgmt.adduser.confirm" />')) return ; 
-			_self.addDbManager();
-		});
 		
 		$('.searchBtn').on('click',function (){
 			_self.search();
@@ -27,6 +58,44 @@ var databaseUserMgmt = {
 				$('.searchBtn').trigger('click');
 			}
 		});
+		
+		$('.item-move').on('click',function (){
+			var moveItem = [];
+			var mode = $(this).attr('mode'); 
+			if(mode =='up'){
+				moveItem = _self.selectObj.targetMove()
+			}else{
+				moveItem = _self.selectObj.sourceMove();
+			}
+		});
+		
+		_self.selectObj= $.pubMultiselect('#source', {
+			targetSelector : '#target'
+			,addItemClass:'text_selected'
+			,useMultiSelect : true
+			,useDragMove : false
+			,useDragSort : false
+			,sourceItem : {
+				optVal : 'VIEWID'
+				,optTxt : 'UNAME'
+				,items : []
+			}
+			,targetItem : {
+				optVal : 'VIEWID'
+				,optTxt : 'UNAME'
+				,items : []
+			}
+			,compleateSourceMove : function (moveItem){
+				if($.isArray(moveItem)){
+					_self.addDbManager('down', moveItem);
+				}
+			}
+			,compleateTargetMove : function (moveItem){
+				if($.isArray(moveItem)){
+					_self.addDbManager('up', moveItem);
+				}
+			}
+		}); 
 	}
 	,search:function (no){
 		var _self = this; 
@@ -37,109 +106,94 @@ var databaseUserMgmt = {
 		};
 		
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
+			data:param
 			,url : {gubun:VARSQL.uri.admin, url:'/main/dblist'}
-			,dataType:'JSON'
-			,success:function (response){
-				try{
+			,success:function (resData){
 					
-		    		var resultLen = response.result?response.result.length:0;
+				var result = resData.items;
+	    		var resultLen = result.length;
+	    		
+	    		if(resultLen==0){
+	    			$('.dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
+	    			$('.pageNavigation').pagingNav();
+	    			return ; 
+	    		}
+	    		var strHtm = new Array();
+	    		var item; 
+	    		for(var i = 0 ;i < resultLen; i ++){
+	    			item = result[i];
+	    			strHtm.push('<a href="javascript:;" class="list-group-item db-list-item" data-conid="'+item.VCONNID+'">'+item.VNAME);
+	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
+	    		}
+	    		
+	    		$('.dbinfolist').html(strHtm.join(''));
+	    		
+	    		$('.db-list-item').on('click', function (){
+					var vconnID = $(this).data('conid');		
+	    			$('#vconnid').val(vconnID);
+	    			
+	    			_self.managerList(vconnID);
+	    		});
+	    		
+	    		$('.pageNavigation').pagingNav(resData.page,$.proxy( _self.search, _self ));
 		    		
-		    		if(resultLen==0){
-		    			$('.dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
-		    			$('.pageNavigation').pagingNav();
-		    			return ; 
-		    		}
-		    		var result = response.result;
-		    		
-		    		var strHtm = new Array();
-		    		var item; 
-		    		for(var i = 0 ;i < resultLen; i ++){
-		    			item = result[i];
-		    			strHtm.push('<a href="javascript:;" class="list-group-item db-list-item" conid="'+item.VCONNID+'">'+item.VNAME);
-		    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
-		    		}
-		    		
-		    		$('.dbinfolist').html(strHtm.join(''));
-		    		
-		    		$('.db-list-item').on('click', function (){
-		    			_self.managerList(this);
-		    		});
-		    		
-		    		$('.pageNavigation').pagingNav(response.paging,fnSearch);
-		    		
-				}catch(e){
-					$('.dataViewAreaTd').attr('color','red');
-					$(".dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + e.message);  
-				}
 			}
 		});
 	}
-	,addDbManager:function (){
-		if($('#vconid').val()==''){
+	,addDbManager : function (mode, moveItem){
+		var _self = this; 
+		
+		if($('#vconnid').val()==''){
 			alert('<spring:message code="msg.warning.select" />');
 			return ; 
 		}
 		
-		var reInfo = new Array();
-		$('.dataTableContent1').children().each(function (i, item){
-			reInfo.push($(item).val())
-		});
-
-		
 		var param ={
-			selectItem:reInfo.join(',')
-			,vconid:$('#vconid').val()
+			selectItem : moveItem.join(',')
+			,vconnid:$('#vconnid').val()
+			, mode : mode =='up'? 'del' : 'add'
 		};
 		
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
+			data:param
 			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/addDbManager'}
-			,dataType:'JSON'
-			,success:function (response){
-				
+			,success:function (resData){
+				_self.managerList(param.vconnid);
 			}
 		});
 	}
-	,managerList:function (sObj){
-		sObj = $(sObj);
-		$('#vconid').val(sObj.attr('conid'));
+	,managerList : function (vconnID){
+		var _self = this; 
+		
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:{
-				vconid:sObj.attr('conid')
+			data:{
+				vconnid: vconnID
 			}
 			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
-			,dataType:'JSON'
-			,success:function (response){
-				var resultLen = response.result?response.result.length:0;
+			,success:function (resData){
+				
+				var result = resData.items;
+	    		var resultLen = result.length;
 				
 				if(resultLen==0){
-	    			$('.dataTableContent1').html('<option><spring:message code="msg.nodata" /></option>');
-	    			$('.dataTableContent2').html('<option><spring:message code="msg.nodata" /></option>');
+	    			$('#source').html('<spring:message code="msg.nodata" />');
+	    			$('#target').html('<spring:message code="msg.nodata" />');
 	    			return ; 
 	    		}
-	    		var result = response.result;
 	    		
-	    		var strHtm1 = new Array(), strHtm2 = new Array();
+	    		var sourceItem = [], targetItem = [];
 	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
 	    			if(item.VCONNID){
-	    				strHtm1.push('	<option value="'+item.VIEWID+'">'+item.UNAME+' / '+item.DEPT_NM+'</option>');	
+	    				targetItem.push(item);	
 	    			}else{
-	    				strHtm2.push('	<option value="'+item.VIEWID+'">'+item.UNAME+' / '+item.DEPT_NM+'</option>');
+	    				sourceItem.push(item);
 	    			}
 	    		}
 	    		
-	    		$('.dataTableContent1').html(strHtm1.join(''));
-	    		$('.dataTableContent2').html(strHtm2.join(''));
-	    		
-	    		var aaa = new selectBoxMove('.dataTableContent2','.dataTableContent1');
-	    		aaa.init();
-				
+	    		_self.selectObj.setItem('source', sourceItem);
+	    		_self.selectObj.setItem('target', targetItem);
 			}
 		});
 	}
@@ -154,7 +208,7 @@ var databaseUserMgmt = {
     <!-- /.col-lg-12 -->
 </div>
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-xs-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
@@ -168,7 +222,7 @@ var databaseUserMgmt = {
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<input type="hidden" id="vconid" name="vconid" value="">
+				<input type="hidden" id="vconnid" name="vconnid" value="">
 				<div class="list-group dbinfolist" ></div>
 				<!-- /.list-group -->
 				<div class="pageNavigation"></div>
@@ -178,28 +232,27 @@ var databaseUserMgmt = {
 		<!-- /.panel -->
 	</div>
 	
-	<div class="col-sm-6">
+	<div class="col-xs-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<spring:message code="admin.managerlist.dbuser" />
-				<div class="pull-right">
-					<button type="button" class="btn btn-outline btn-primary btn-xs btnSave">
-						<spring:message code="btn.save" />
-					</button>
-				</div>
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="col-sm-12">
-					<select multiple class="form-control dataTableContent1" size="10">
-					  <option><spring:message code="msg.nodata" /></option>
-					</select>
+					<ul id="source" class="form-control" style="width:100%;height:200px;">
+					  <li><spring:message code="msg.nodata" /></li>
+					</ul>
+					
 				</div>
-				<div class="col-sm-12">&nbsp;</div>
+				<div class="col-sm-12" style="text-align:center;padding:10px;">
+					<a href="javascript:;" class="btn_m mb05 item-move" mode="down"><span class="glyphicon glyphicon-chevron-down"></span>추가</a>
+					<a href="javascript:;" class="btn_m mb05 item-move" mode="up"><span class="glyphicon glyphicon-chevron-up"></span>삭제</a>
+				</div>
 				<div class="col-sm-12">
-					<select multiple class="form-control dataTableContent2" size="10">
-					  <option><spring:message code="msg.nodata" /></option>
-					</select>
+					<ul id="target"  class="form-control" style="width:100%;height:200px;">
+					  <li><spring:message code="msg.nodata" /></li>
+					</ul>
 				</div>
 			</div>
 			<!-- /.panel-body -->

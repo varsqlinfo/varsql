@@ -2,6 +2,8 @@ package com.varsql.web.app.admin.managermgmt;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.common.beans.DataCommonVO;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -28,35 +33,21 @@ public class ManagerMgmtController{
 	ManagerMgmtServiceImpl managerMgmtServiceImpl; 
 	
 	@RequestMapping({"/userList"})
-	public @ResponseBody Map userList(@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
-			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
-		) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
-		paramMap.put("page", page);
-		paramMap.put("rows", rows);
-		paramMap.put("searchVal", searchVal);
-		
-		return managerMgmtServiceImpl.selectRoleUserList(paramMap);
+		return managerMgmtServiceImpl.selectRoleUserList(searchParameter);
 	}
 	
 	@RequestMapping({"/managerList"})
-	public @ResponseBody Map managerlist(@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
-			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
-			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	public @ResponseBody ResponseResult managerlist(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
-		paramMap.put("page", page);
-		paramMap.put("rows", rows);
-		paramMap.put("searchVal", searchVal);
-		
-		return managerMgmtServiceImpl.selectRoleManagerList(paramMap);
+		return managerMgmtServiceImpl.selectRoleManagerList(searchParameter);
 	}
 	
 	@RequestMapping({"/managerRoleMgmt"})
-	public @ResponseBody Map managerRoleMgmt(@RequestParam(value = "mode", required = true, defaultValue = "del" )  String mode
+	public @ResponseBody ResponseResult managerRoleMgmt(@RequestParam(value = "mode", required = true, defaultValue = "del" )  String mode
 			,@RequestParam(value = "viewid", required = true)  String viewid
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
@@ -68,23 +59,25 @@ public class ManagerMgmtController{
 	}
 	
 	@RequestMapping({"/addDbManager"})
-	public @ResponseBody Map addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
-			,@RequestParam(value = "vconid", required = true) String vconid
+	public @ResponseBody ResponseResult addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
+			,@RequestParam(value = "vconnid", required = true) String vconnid
+			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put("selectItem", selectItem);
-		paramMap.put("vconid", vconid);
+		paramMap.put("vconnid", vconnid);
+		paramMap.put("mode", mode);
 		
 		return managerMgmtServiceImpl.updateDbManager(paramMap);
 	}
 	
 	@RequestMapping({"/dbManagerList"})
-	public @ResponseBody Map dbManagerList(@RequestParam(value = "vconid", required = true) String vconid) throws Exception {
+	public @ResponseBody ResponseResult dbManagerList(@RequestParam(value = "vconnid", required = true) String vconnid) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		paramMap.put("vconid", vconid);
+		paramMap.put("vconnid", vconnid);
 		
 		return managerMgmtServiceImpl.selectDatabaseManager(paramMap);
 	}

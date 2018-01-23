@@ -7,25 +7,26 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
+import com.vartech.common.app.beans.SearchParameter;
 
 
 @Repository
 public class ManagerMgmtDAO extends BaseDAO{
 	
-	public int selectRoleUserTotalcnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("adminMapper.selectRoleUserTotalcnt", paramMap);
+	public int selectRoleUserTotalcnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("adminMapper.selectRoleUserTotalcnt", searchParameter);
 	}
 	
-	public List<Object> selectRoleUserList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("adminMapper.selectRoleUserList", paramMap);
+	public List<Object> selectRoleUserList(SearchParameter searchParameter) {
+		return getSqlSession().selectList("adminMapper.selectRoleUserList", searchParameter);
 	}
 	
-	public int selectRoleManagerTotalcnt(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("adminMapper.selectRoleManagerTotalcnt", paramMap);
+	public int selectRoleManagerTotalcnt(SearchParameter searchParameter) {
+		return getSqlSession().selectOne("adminMapper.selectRoleManagerTotalcnt", searchParameter);
 	}
 	
-	public List<Object> selectRoleManagerList(DataCommonVO paramMap) {
-		return getSqlSession().selectList("adminMapper.selectRoleManagerList", paramMap);
+	public List<Object> selectRoleManagerList(SearchParameter searchParameter) {
+		return getSqlSession().selectList("adminMapper.selectRoleManagerList", searchParameter);
 	}
 
 	public int updateManagerRole(DataCommonVO paramMap){
@@ -36,28 +37,12 @@ public class ManagerMgmtDAO extends BaseDAO{
 		return getSqlSession().selectList("adminMapper.selectDatabaseManager", paramMap);
 	}
 
-	public Object updateDbManager(String[] viewidArr, DataCommonVO paramMap) throws Exception {
-        SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
-        
-        boolean result = false; 
-        try {
-        	batchSqlSession.commit(false);
-        	
-        	batchSqlSession.delete("adminMapper.deleteDbManager",paramMap);
-        	
-            for(String id: viewidArr){
-            	paramMap.put("viewid", id);
-            	batchSqlSession.update("adminMapper.updateDbManager", paramMap);
-            }
-            batchSqlSession.commit();
-            result = true;
-        }catch(Exception e){
-        	batchSqlSession.rollback();
-        	throw e;
-        }finally{
-        	
-        	batchSqlSession.close();
-        }
-		return result;
+	public int updateDbManager(DataCommonVO paramMap) {
+		return getSqlSession().update("adminMapper.updateDbManager", paramMap);
+	}
+
+	public int deleteDbManager(DataCommonVO paramMap) {
+		return getSqlSession().update("adminMapper.deleteDbManager", paramMap);
+		
 	}
 }

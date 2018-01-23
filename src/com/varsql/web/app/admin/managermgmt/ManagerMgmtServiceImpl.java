@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import com.varsql.common.util.SecurityUtil;
 import com.varsql.common.util.StringUtil;
 import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.common.constants.ResultConstants;
 import com.varsql.web.util.VarsqlUtil;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
 
 /**
@@ -28,79 +31,133 @@ public class ManagerMgmtServiceImpl{
 	@Autowired
 	ManagerMgmtDAO managerMgmtDAO ;
 	
-	public Map selectRoleUserList(DataCommonVO paramMap) {
+	/**
+	 * 
+	 * @Method Name  : selectRoleUserList
+	 * @Method 설명 : 사용자 권한 목록보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
+	public ResponseResult selectRoleUserList(SearchParameter searchParameter) {
+		ResponseResult resultObject = new ResponseResult();
 		
-		int totalcnt = managerMgmtDAO.selectRoleUserTotalcnt(paramMap);
+		int totalcnt = managerMgmtDAO.selectRoleUserTotalcnt(searchParameter);
 		
-		Map json = new HashMap();
 		if(totalcnt > 0){
-			int page = paramMap.getInt("page",0);
-			int rows = paramMap.getInt("rows",10);
-			
-			int first = (page-1)*rows ;
-			
-			paramMap.put("first", first);
-			paramMap.put("rows", rows);
-			
-			json.put("paging", PagingUtil.getPageObject(totalcnt, page,rows));
-			json.put("result", managerMgmtDAO.selectRoleUserList(paramMap));
+			resultObject.setItemList(managerMgmtDAO.selectRoleUserList(searchParameter));
+		}else{
+			resultObject.setItemList(null);
 		}
+		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
-		return json;
+		return resultObject;
 		
 	}
 	
-	public Map selectRoleManagerList(DataCommonVO paramMap) {
+	/**
+	 * 
+	 * @Method Name  : selectRoleManagerList
+	 * @Method 설명 : 매니저 role 목록 보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
+	public ResponseResult selectRoleManagerList(SearchParameter searchParameter) {
 		
-		int totalcnt = managerMgmtDAO.selectRoleManagerTotalcnt(paramMap);
+		ResponseResult resultObject = new ResponseResult();
 		
-		Map json = new HashMap();
+		int totalcnt = managerMgmtDAO.selectRoleManagerTotalcnt(searchParameter);
+		
 		if(totalcnt > 0){
-			int page = paramMap.getInt("page",0);
-			int rows = paramMap.getInt("rows",10);
-			
-			int first = (page-1)*rows ;
-			
-			paramMap.put("first", first);
-			paramMap.put("rows", rows);
-			
-			json.put("paging", PagingUtil.getPageObject(totalcnt, page,rows));
-			json.put("result", managerMgmtDAO.selectRoleManagerList(paramMap));
+			resultObject.setItemList(managerMgmtDAO.selectRoleManagerList(searchParameter));
+		}else{
+			resultObject.setItemList(null);
 		}
+		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
-		return json;
+		return resultObject;
 	}
 	
-	public Map updateManagerRole(DataCommonVO paramMap) {
+	/**
+	 * 
+	 * @Method Name  : updateManagerRole
+	 * @Method 설명 : 매니저 role 등록 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult updateManagerRole(DataCommonVO paramMap) {
 		
 		SecurityUtil.setUserInfo(paramMap);
 		
-		Map json = new HashMap();
-		json.put("result", managerMgmtDAO.updateManagerRole( paramMap));
+		ResponseResult resultObject = new ResponseResult();
 		
-		return json;
+		resultObject.setItemOne(managerMgmtDAO.updateManagerRole( paramMap));
+		
+		return resultObject;
 	}
 	
-	public Map selectDatabaseManager(DataCommonVO paramMap) {
-		
-		Map json = new HashMap();
-			
+	/**
+	 * 
+	 * @Method Name  : selectDatabaseManager
+	 * @Method 설명 : 데이타 베이스 매니저 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectDatabaseManager(DataCommonVO paramMap) {
 		SecurityUtil.setUserInfo(paramMap);
 		
-		json.put("result", managerMgmtDAO.selectDatabaseManager(paramMap));
+		ResponseResult resultObject = new ResponseResult();
 		
-		return json;
+		resultObject.setItemList(managerMgmtDAO.selectDatabaseManager(paramMap));
+		
+		return resultObject;
 	}
-
-	public Map updateDbManager(DataCommonVO paramMap) {
-		Map json = new HashMap();
+	
+	/**
+	 * 
+	 * @Method Name  : updateDbManager
+	 * @Method 설명 : db 매니저 수정. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult updateDbManager(DataCommonVO paramMap) {
 		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
-		try{
-			json.put("result", managerMgmtDAO.updateDbManager( viewidArr, paramMap));
-		}catch(Exception e){
-			json.put("result", "error");
-			json.put("resultMsg", e.getMessage());
+		SecurityUtil.setUserInfo(paramMap);
+		
+		ResponseResult resultObject = new ResponseResult();
+		Map<String,String> addResultInfo = new HashMap<String,String>();
+		
+		if("del".equals(paramMap.getString("mode"))){
+			paramMap.put("viewidArr", viewidArr);
+			managerMgmtDAO.deleteDbManager(paramMap);
+		}else{
+			for(String id: viewidArr){
+	        	paramMap.put("viewid", id);
+	        	try{
+	        		managerMgmtDAO.updateDbManager(paramMap);
+	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        	}catch(Exception e){
+	        		addResultInfo.put(id,e.getMessage());
+	    		}
+	        }
+			
+			resultObject.setItemOne(addResultInfo);
 		}
-		return json;
+		
+		return resultObject;
 	}
 }

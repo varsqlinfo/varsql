@@ -76,15 +76,7 @@ var adminMain = {
 						  message: 'The url is required and cannot be empty'
 					  }
 				  }
-			  },
-			  vdriver: {
-				  message: 'The driver is not valid',
-				  validators: {
-					  notEmpty: {
-						  message: 'The driver is required and cannot be empty'
-					  }
-				  }
-			  },
+			  }
 			  /*
 			  vid: {
 				  validators: {
@@ -111,7 +103,7 @@ var adminMain = {
 	}
 	// 추가
 	,add : function (){
-		$('#vconid').val('');
+		$('#vconnid').val('');
 		$('#vname').val('');
 		$('#vdbschema').val('');
 		$('#vurl').val('');
@@ -127,10 +119,10 @@ var adminMain = {
 	,clickDbInfo : function (sObj){
 		sObj = $(sObj);
 		
-		$('#vconid').val(sObj.attr('conid'));
+		$('#vconnid').val(sObj.attr('conid'));
 		VARSQL.req.ajax({
 			data:{
-				vconid:$('#vconid').val()
+				vconnid:$('#vconnid').val()
 			}
 			,url : '/admin/main/dbDetail'
 			,success:function (resData){
@@ -197,8 +189,12 @@ var adminMain = {
 			data:$("#addForm").serialize()
 			,url : '/admin/main/dbSave'
 			,success:function (resData){
-				_this.search();
-				$('.addBtn').trigger("click");
+				if(VARSQL.req.validationCheck(resData)){
+					_this.search();
+					$('.addBtn').trigger("click");
+					
+				}
+				
 			}
 		});
 	}
@@ -206,7 +202,7 @@ var adminMain = {
 	,deleteInfo : function (){
 		var _this = this; 
 		
-		if($('#vconid').val()==''){
+		if($('#vconnid').val()==''){
 			$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
 			return ; 
 		}
@@ -218,7 +214,7 @@ var adminMain = {
 		VARSQL.req.ajax({
 			type:'POST'
 			,data: {
-				vconid : $('#vconid').val() 
+				vconnid : $('#vconnid').val() 
 			}
 			,url : '/admin/main/dbDelete'
 			,dataType:'JSON'
@@ -230,7 +226,7 @@ var adminMain = {
 	}
 	,connectionCheck : function (){
 		/*
-		if($('#vconid').val()==''){
+		if($('#vconnid').val()==''){
 			$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
 			return ; 
 		}
@@ -245,12 +241,15 @@ var adminMain = {
 			,url : '/admin/main/dbConnectionCheck'
 			,dataType:'JSON'
 			,success:function (resData){
-				if(resData.messageCode =='success'){
-					alert('<spring:message code="msg.success" />');
-					return 
-				}else{
-					alert(resData.messageCode  +'\n'+ resData.message);
+				if(VARSQL.req.validationCheck(resData)){
+					if(resData.messageCode =='success'){
+						alert('<spring:message code="msg.success" />');
+						return 
+					}else{
+						alert(resData.messageCode  +'\n'+ resData.message);
+					}	
 				}
+				
 			}
 		});
 	}
@@ -323,7 +322,7 @@ var adminMain = {
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal">
-					<input type="hidden" id="vconid" name="vconid">
+					<input type="hidden" id="vconnid" name="vconnid">
 					<input type="hidden" id="pollinit" name="pollinit" value="N">
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">

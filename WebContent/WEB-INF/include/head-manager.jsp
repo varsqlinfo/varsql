@@ -36,6 +36,9 @@
 <script src="${pageContextPath}/webstatic/js/varsql.core.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/pub.ep.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
+
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
 

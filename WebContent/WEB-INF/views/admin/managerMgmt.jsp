@@ -33,20 +33,18 @@ function fnSearch1(no){
 	};
 	
 	VARSQL.req.ajax({
-		type:'POST'
-		,data:param
+		data:param
 		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/userList'}
-		,dataType:'JSON'
-		,success:function (response){
+		,success:function (resData){
 				
-    		var resultLen = response.result?response.result.length:0;
+			var result = resData.items;
+    		var resultLen = result.length;
     		
     		if(resultLen==0){
     			$('.dataTableContent1').html('<tr><td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>');
     			$('.pageNavigation1').pagingNav();
     			return ; 
     		}
-    		var result = response.result;
     		
     		var strHtm = new Array();
     		var item;
@@ -65,18 +63,7 @@ function fnSearch1(no){
     		
     		fnManagerRoleEvent('add');
     		
-    		$('.pageNavigation1').pagingNav(response.paging,fnSearch1);
-			
-		}
-		,error :function (data, status, err){
-			$('.dataTableContent1').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('.dataTableContent1');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('.dataTableContent1');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('.dataTableContent1');
+    		$('.pageNavigation1').pagingNav(resData.paging,fnSearch1);
 		}
 	});
 }
@@ -88,20 +75,19 @@ function fnSearch2(no){
 	};
 	
 	VARSQL.req.ajax({
-		type:'POST'
-		,data:param
+		data:param
 		,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
 		,dataType:'JSON'
-		,success:function (response){
+		,success:function (resData){
 				
-    		var resultLen = response.result?response.result.length:0;
+			var result = resData.items;
+    		var resultLen = result.length;
     		
     		if(resultLen==0){
     			$('.dataTableContent2').html('<tr><td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>');
     			$('.pageNavigation2').pagingNav();
     			return ; 
     		}
-    		var result = response.result;
     		
     		var strHtm = new Array();
     		var item;
@@ -120,18 +106,8 @@ function fnSearch2(no){
     		
     		fnManagerRoleEvent('del');
     		
-    		$('.pageNavigation2').pagingNav(response.paging,fnSearch2);
+    		$('.pageNavigation2').pagingNav(resData.paging,fnSearch2);
 		
-		}
-		,error :function (data, status, err){
-			$('.dataTableContent2').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-			VARSQL.progress.end('.dataTableContent2');
-		}
-		,complete: function() { 
-			VARSQL.progress.end('.dataTableContent2');
-		}
-		,beforeSend: function() {
-			VARSQL.progress.start ('.dataTableContent2');
 		}
 	});
 }
@@ -149,23 +125,11 @@ function fnManagerRoleEvent(pType){
 			,mode:type
 		};
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
+			data:param
 			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/managerRoleMgmt'}
-			,dataType:'JSON'
-			,success:function (response){
+			,success:function (resData){
 				fnSearch1();	
 				fnSearch2();
-			}
-			,error :function (data, status, err){
-				$('#dataViewAreaTd').html("<font color='red'> errorMsg : "+ err +" resultMsg: "+ status+"</font>");
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,complete: function() { 
-				VARSQL.progress.end('dataViewAreaTd');
-			}
-			,beforeSend: function() {
-				VARSQL.progress.start ('dataViewAreaTd');
 			}
 		});
 	});

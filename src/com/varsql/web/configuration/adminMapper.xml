@@ -23,14 +23,16 @@
 	<select id="adminMapper.selectDetailObject" parameterType="map" resultType="dataCommonVO">
 		select * 
 		from VTCONNECTION 
-		where VCONNID =#{vconid}
+		where VCONNID =#{vconnid}
 	</select>
 	
+	<!-- max connection id -->
 	<select id="adminMapper.selectVtconnectionMaxVal" resultType="java.lang.String">
 		select max(VCONNID)as maxval from VTCONNECTION
 	</select>
 	
-	<insert id="adminMapper.insertVtconnectionInfo" parameterType="map">
+	<!--  insert connection info -->
+	<insert id="adminMapper.insertVtconnectionInfo" parameterType="vtConnection">
 		insert into VTCONNECTION (
 			VCONNID
 			,VNAME 
@@ -48,7 +50,7 @@
 			,UPD_ID
 			,UPD_DT
 		)values (
-			#{vconid}
+			#{vconnid}
 			,#{vname}
 			,#{vurl} 
 			,#{vdbschema} 
@@ -59,14 +61,15 @@
 			,#{vconnopt}
 			,#{vpoolopt}
 			,#{vquery}
-			,#{uid}
+			,#{userId}
 			,CURRENT TIMESTAMP
-			,#{uid}
+			,#{userId}
 			,CURRENT TIMESTAMP
 		)
 	</insert>
 	
-	<update id="adminMapper.updateVtconnectionInfo" parameterType="map">
+	<!--connection 업데이트. -->
+	<update id="adminMapper.updateVtconnectionInfo" parameterType="vtConnection">
 		update VTCONNECTION 
 		set 
 			VNAME =#{vname}
@@ -79,43 +82,46 @@
 			, VCONNOPT =#{vconnopt}
 			, VPOOLOPT =#{vpoolopt}
 			, VQUERY=#{vquery}
-			, UPD_ID = #{uid}
+			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
-		where VCONNID =#{vconid}
+		where VCONNID =#{vconnid}
 	</update>
 	
+	<!-- connection 삭제 -->
 	<delete id="adminMapper.deleteVtconnectionInfo" parameterType="map">
-		delete from VTCONNECTION where VCONNID =#{vconid}
+		delete from VTCONNECTION where VCONNID =#{vconnid}
 	</delete>
 	
-	<select id="adminMapper.selectRoleUserTotalcnt" parameterType="map" resultType="int">
+	<!-- user role을 가진 목록 보기. -->
+	<select id="adminMapper.selectRoleUserTotalcnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTUSER
 		where USER_ROLE = 'USER' 
-		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
-	</select>
-
-	<select id="adminMapper.selectRoleUserList" parameterType="map" resultType="hashmap">
-		select a.*, a.REG_DT as CHAR_CRE_DT
-		from VTUSER a
-		where USER_ROLE = 'USER' 
-		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
-		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
 	</select>
 	
-	<select id="adminMapper.selectRoleManagerTotalcnt" parameterType="map" resultType="int">
+	<select id="adminMapper.selectRoleUserList" parameterType="searchParameter" resultType="hashmap">
+		select a.*, a.REG_DT as CHAR_CRE_DT
+		from VTUSER a
+		where USER_ROLE = 'USER' 
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
+		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
+	
+	<!-- manager role을 가진 목록 보기. -->
+	<select id="adminMapper.selectRoleManagerTotalcnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTUSER
 		where USER_ROLE = 'MANAGER' 
-		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
 	</select>
 
-	<select id="adminMapper.selectRoleManagerList" parameterType="map" resultType="hashmap">
+	<select id="adminMapper.selectRoleManagerList" parameterType="searchParameter" resultType="hashmap">
 		select a.*, a.REG_DT as CHAR_CRE_DT
 		from VTUSER a
 		where USER_ROLE = 'MANAGER' 
-		and (UNAME like '%'||#{searchVal}||'%' or UID like '%'||#{searchVal}||'%') 
-		order by VIEWID desc OFFSET ${first} ROWS FETCH FIRST ${rows} ROWS ONLY
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
+		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<update id="adminMapper.updateManagerRole" parameterType="map">
@@ -136,21 +142,24 @@
 		select * 
 		from VTUSER a left outer join VTDATABASE_ROLE b 
 		on a.VIEWID = b.VIEWID 
-		and b.VCONNID = #{vconid}
+		and b.VCONNID = #{vconnid}
 		and b.ROLE_TYPE = 'M'
-		where USER_ROLE = 'MANAGER' and (b.VCONNID = #{vconid} or b.VCONNID is null ) 
+		where USER_ROLE = 'MANAGER' and (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
 	</select>
 	
 	<delete id="adminMapper.deleteDbManager" parameterType="map">
 		delete from VTDATABASE_ROLE
-		where and b.ROLE_TYPE = 'M' 
-		and VCONNID = #{vconid}
+		where ROLE_TYPE = 'M' 
+		and VCONNID = #{vconnid}
+		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
 	<update id="adminMapper.updateDbManager" parameterType="map">
 		insert into VTDATABASE_ROLE (VCONNID, VIEWID , ROLE_TYPE, REG_ID, REG_DT)
 		values(
-			#{vconid}
+			#{vconnid}
 			, #{viewid}
 			, 'M'
 			, #{uid}

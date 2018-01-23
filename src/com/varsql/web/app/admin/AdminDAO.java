@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.varsql.web.app.admin.beans.Vtconnection;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.dao.BaseDAO;
 import com.vartech.common.app.beans.SearchParameter;
@@ -38,12 +39,12 @@ public class AdminDAO extends BaseDAO{
 		return getSqlSession().selectOne("adminMapper.selectVtconnectionMaxVal");
 	}
 	
-	public int insertVtconnectionInfo(DataCommonVO paramMap){
-		return getSqlSession().insert("adminMapper.insertVtconnectionInfo", paramMap );
+	public int insertVtconnectionInfo(Vtconnection vtConnection){
+		return getSqlSession().insert("adminMapper.insertVtconnectionInfo", vtConnection );
 	}
 	
-	public int updateVtconnectionInfo(DataCommonVO paramMap){
-		return getSqlSession().update("adminMapper.updateVtconnectionInfo", paramMap);
+	public int updateVtconnectionInfo(Vtconnection vtConnection){
+		return getSqlSession().update("adminMapper.updateVtconnectionInfo", vtConnection);
 	}
 
 	public int deleteVtconnectionInfo(DataCommonVO paramMap) {

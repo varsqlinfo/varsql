@@ -12,6 +12,7 @@
 	</settings>
 	
 	<typeAliases>
+	  <typeAlias alias="vtConnection" type="com.varsql.web.app.admin.beans.Vtconnection"/>
 	  <typeAlias alias="dataCommonVO" type="com.varsql.web.common.beans.DataCommonVO"/>
 	  <typeAlias alias="preferencesInfo" type="com.varsql.web.app.database.beans.PreferencesInfo"/>
 	  <typeAlias alias="searchParameter" type="com.vartech.common.app.beans.SearchParameter"/>

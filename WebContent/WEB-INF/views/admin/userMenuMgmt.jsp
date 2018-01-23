@@ -83,11 +83,11 @@ function fnInit(){
 function fnClickDbInfo(sObj){
 	sObj = $(sObj);
 	
-	$('#vconid').val(sObj.attr('conid'));
+	$('#vconnid').val(sObj.attr('conid'));
 	$.ajax({
 		type:'POST'
 		,data:{
-			vconid:$('#vconid').val()
+			vconnid:$('#vconnid').val()
 		}
 		,url : '<c:url value="/admin/main/dbDetail" />'
 		,dataType:'JSON'
@@ -195,7 +195,7 @@ function fnSave(){
 
 function fnDelete(){
 	
-	if($('#vconid').val()==''){
+	if($('#vconnid').val()==''){
 		$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
 		return ; 
 	}
@@ -207,7 +207,7 @@ function fnDelete(){
 	$.ajax({
 		type:'POST'
 		,data: {
-			vconid : $('#vconid').val() 
+			vconnid : $('#vconnid').val() 
 		}
 		,url : '<c:url value="/admin/main/dbDelete" />'
 		,dataType:'JSON'
@@ -229,7 +229,7 @@ function fnDelete(){
 }
 
 function fnAdd(){
-	$('#vconid').val('');
+	$('#vconnid').val('');
 	$('#vname').val('');
 	$('#vurl').val('');
 	$('#vdriver').val('');
@@ -242,7 +242,7 @@ function fnAdd(){
 }
 
 function fnConnectionCheck(){
-	if($('#vconid').val()==''){
+	if($('#vconnid').val()==''){
 		$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
 		return ; 
 	}
@@ -250,7 +250,7 @@ function fnConnectionCheck(){
 	$.ajax({
 		type:'POST'
 		,data: {
-			vconid : $('#vconid').val() 
+			vconnid : $('#vconnid').val() 
 		}
 		,url : '<c:url value="/admin/main/dbConnectionCheck" />'
 		,dataType:'JSON'
@@ -319,7 +319,7 @@ function fnConnectionCheck(){
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal">
-					<input type="hidden" id="vconid" name="vconid">
+					<input type="hidden" id="vconnid" name="vconnid">
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>

@@ -251,6 +251,22 @@ _$base.req ={
 			}	
 		},option));
 	}
+	,validationCheck : function (resData){
+		if(resData.messageCode=='valid'){
+			var items = resData.items;
+			var objLen = items.length;
+			if(objLen >0){
+				var item;
+				for(var i=0; i <objLen; i++){
+					item = items[i];
+					alert(item.field + "\n"+ item.defaultMessage)
+					return false; 
+				}
+			}
+		}
+		
+		return true; 
+	}
 	,ajaxSubmit:function (formid , opts){
 		
 		var formObj = $(formid)

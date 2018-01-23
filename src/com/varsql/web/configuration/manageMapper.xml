@@ -9,7 +9,7 @@
 		select count(1) as totalcnt 
 		from VTUSER 
 		where 1=1
-		and ROLE not in
+		and USER_ROLE not in
 		<choose>
 			<when test="customParam.isAdmin">
 				('ADMIN') 
@@ -35,7 +35,7 @@
 		 	,to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
 		from VTUSER a
 		where 1=1
-		and ROLE not in
+		and USER_ROLE not in
 		<choose>
 			<when test="customParam.isAdmin">
 				('ADMIN') 
@@ -55,7 +55,7 @@
 	<update id="manageMapper.updateAccept" parameterType="map">
 		update VTUSER 
 		set 
-			ROLE =#{role}
+			USER_ROLE =#{role}
 			,ACCEPT_YN=#{acceptyn}
 		where VIEWID =#{viewid}
 	</update>

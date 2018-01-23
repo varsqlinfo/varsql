@@ -342,6 +342,7 @@ Plugin.prototype ={
 					_this.targetElement.empty().html(_this.getEmptyMessage());
 				}
 			}else{
+				_this.targetElement.empty();
 				_this.sourceElement.find(_opts.itemSelector).removeClass(_opts.addItemClass);
 			}
 		}

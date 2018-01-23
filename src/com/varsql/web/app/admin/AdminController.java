@@ -5,24 +5,28 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.common.util.SecurityUtil;
+import com.varsql.web.app.admin.beans.Vtconnection;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
-import com.varsql.web.common.constants.VarsqlParamConstants;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -98,7 +102,6 @@ public class AdminController{
 	@RequestMapping(value = "/main/dblist")
 	public @ResponseBody ResponseResult dblist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return adminServiceImpl.selectDblist(searchParameter);
 	}
@@ -132,16 +135,16 @@ public class AdminController{
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @Method 설명 : db정보 상세보기
-	 * @param vconid
+	 * @param vconnid
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDetail")
-	public @ResponseBody ResponseResult dbDetail(@RequestParam(value = "vconid") String vconid) throws Exception {
+	public @ResponseBody ResponseResult dbDetail(@RequestParam(value = "vconnid") String vconnid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		
-		dcv.put("vconid", vconid);
+		dcv.put("vconnid", vconnid);
 		
 		return adminServiceImpl.selectDetailObject(dcv);
 	}
@@ -153,15 +156,25 @@ public class AdminController{
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @Method 설명 :커넥션 체크
-	 * @param vconid
+	 * @param vconnid
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbConnectionCheck")
-	public @ResponseBody ResponseResult dbConnectionCheck(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		ParamMap dcv = HttpUtils.getServletRequestParam(req);
+	public @ResponseBody ResponseResult dbConnectionCheck(@Valid Vtconnection vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			resultObject = adminServiceImpl.connectionCheck(vtConnection);
+		}
 		
-		return adminServiceImpl.connectionCheck(dcv);
+		return resultObject;
 	}
 	
 	/**
@@ -171,7 +184,7 @@ public class AdminController{
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @Method 설명 : 정보 저장
-	 * @param vconid
+	 * @param vconnid
 	 * @param vname
 	 * @param vurl
 	 * @param vdriver
@@ -185,37 +198,22 @@ public class AdminController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbSave")
-	public @ResponseBody ResponseResult dbSave(@RequestParam(value = "vconid", required = false, defaultValue = "")  String vconid
-			,@RequestParam(value = "vname" ,required = true,defaultValue = "")  String vname
-			,@RequestParam(value = "vurl",required = true,defaultValue = "")  String vurl
-			,@RequestParam(value = "vdriver",required = true,defaultValue = "")  String vdriver
-			,@RequestParam(value = "vdbschema",required = true,defaultValue = "")  String vdbschema
-			,@RequestParam(value = "vtype",required = true,defaultValue = "")  String vtype
-			,@RequestParam(value = "vid")  String vid
-			,@RequestParam(value = "vpw")  String vpw
-			,@RequestParam(value = "vconnopt")  String vconnopt
-			,@RequestParam(value = "vpoolopt")  String vpoolopt
-			,@RequestParam(value = "vquery")  String vquery
-			,@RequestParam(value = "pollinit")  String pollinit
-			)throws Exception {
-			
-		DataCommonVO dcv = new DataCommonVO();
+	public @ResponseBody ResponseResult dbSave(@Valid Vtconnection vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			resultObject = adminServiceImpl.saveVtconnectionInfo(vtConnection);
+		}
 		
-		dcv.put("vconid", vconid);
-		dcv.put("vname", vname);
-		dcv.put("vdbschema", vdbschema);
-		dcv.put("vurl", vurl);
-		dcv.put("vdriver", vdriver);
-		dcv.put("vtype", vtype);
-		dcv.put("vid", vid);
-		dcv.put("vpw", vpw);
-		dcv.put("vconnopt", vconnopt);
-		dcv.put("vpoolopt", vpoolopt);
-		dcv.put("vquery", vquery);
-		dcv.put("pollinit", pollinit);
-		
-		return adminServiceImpl.saveVtconnectionInfo(dcv);
+		return  resultObject;
 	}
+	
 	
 	/**
 	 * 
@@ -224,16 +222,16 @@ public class AdminController{
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @Method 설명 : db 정보 삭제 
-	 * @param vconid
+	 * @param vconnid
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/main/dbDelete")
-	public @ResponseBody Map dbDelete(@RequestParam(value = "vconid")  String vconid) throws Exception {
+	public @ResponseBody Map dbDelete(@RequestParam(value = "vconnid")  String vconnid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
 		
-		dcv.put("vconid", vconid);
+		dcv.put("vconnid", vconnid);
 		
 		Map json = new HashMap();
 		json.put("result", adminServiceImpl.deleteVtconnectionInfo(dcv));
