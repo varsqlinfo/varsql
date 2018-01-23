@@ -134,17 +134,14 @@ var sqlLogStat ={
 		};
 		
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
+			data:param
 			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList'}
-			,dataType:'JSON'
-			,success:function (response){
+			,success:function (resData){
 					
-	    		var resultLen = response.result?response.result.length:0;
+				var result = resData.items;
+	    		var resultLen = result.length;
 	    		
-	    		var result = response.result;
-	    		
-	    		var strHtm = new Array();
+	    		var strHtm = [];
 	    		var item; 
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
@@ -204,14 +201,12 @@ var sqlLogStat ={
 		}
 		$('#detailDate').val(sObj);
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:{
+			data:{
 				vconnid:$('#vconnid').val()
 				,s_date:  sObj+' 00:00:00'
 				,e_date:  sObj+' 23:59:59'
 			}
 			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
-			,dataType:'JSON'
 			,success:function (response){
 				var items = response.items ||[]; 
 				
@@ -241,15 +236,13 @@ var sqlLogStat ={
 		}
 		var date = $('#detailDate').val(); 
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:{
+			data:{
 				vconnid:$('#vconnid').val()
 				,s_date:date+' 00:00:00'
 				,e_date:date+' 23:59:59'
 				,command_type :type
 			}
 			,url : {gubun:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
-			,dataType:'JSON'
 			,success:function (response){
 				var names = {}; 
 				
@@ -320,7 +313,7 @@ var sqlLogStat ={
 									 	<div class="input-group input-daterange">
 								            <span class="input-group-addon" style="padding:0px 12px;background:auto;border:0px;">
 								            	조회구분
-								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="2017-09-15"><select id="searchGubun" name="searchGubun" class="input-sm">
+								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}"><select id="searchGubun" name="searchGubun" class="input-sm">
 													<option value="7">주</option>
 													<option value="30">월</option>
 													<option value="90">분기</option>

@@ -60,7 +60,6 @@
 					<option value="500">500</option>
 					<option value="1000">1000</option>
 				</select>
-				<span class="glyphicon glyphicon-cog btn-sm" title="설정"></span>
 			</div>
 		 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
 		 	

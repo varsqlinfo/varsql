@@ -142,7 +142,7 @@
 			</otherwise>
 		</choose>
 		and (a.VNAME like '%'||#{keyword}||'%' or a.VURL like '%'||#{keyword}||'%') 
-		order  by a.VCONNID desc OFFSET ${first} ROWS FETCH FIRST ${last} ROWS ONLY
+		order  by a.VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<!-- db 사용자 목록. -->
@@ -155,12 +155,17 @@
 		where (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
 	</select>
 	
+	<!-- db 사용자 삭제. -->
 	<delete id="manageMapper.deleteDbUser" parameterType="map">
 		delete from VTDATABASE_ROLE
 		where ROLE_TYPE = 'U'
 		and VCONNID = #{vconnid}
+		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
+	<!-- db 사용자  등록 -->
 	<insert id="manageMapper.updateDbUser" parameterType="map">
 		insert into VTDATABASE_ROLE (VCONNID, VIEWID ,ROLE_TYPE, REG_ID ,REG_DT)
 		values(

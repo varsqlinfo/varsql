@@ -1361,15 +1361,11 @@ Plugin.prototype ={
 			topVal=0; 
 			leftVal=0; 
 		}
-		
-		console.log(type, topVal, leftVal)
 
 		_this.moveHScroll({pos :leftVal, drawFlag:false});
 		_this.moveVScroll({pos :topVal, drawFlag:false});
 
 		if(beforeViewCount !=0 ){
-			
-			
 			if(type !='reDraw' && drawFlag){
 				_this.drawGrid();
 			}

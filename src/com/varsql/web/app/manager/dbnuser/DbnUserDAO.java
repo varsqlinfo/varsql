@@ -32,28 +32,32 @@ public class DbnUserDAO extends BaseDAO{
 	public List<Object>  selectDbUserMappingList(DataCommonVO paramMap){
 		return getSqlSession().selectList("manageMapper.selectDbUserMappingList", paramMap);
 	}
-
-	public Object updateDbUser(String[] viewidArr, DataCommonVO paramMap) throws Exception {
-        SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
-        
-        boolean result = false; 
-        try {
-        	batchSqlSession.commit(false);
-        	
-        	batchSqlSession.delete("manageMapper.deleteDbUser",paramMap);
-        	
-            for(String id: viewidArr){
-            	paramMap.put("viewid", id);
-            	batchSqlSession.update("manageMapper.updateDbUser", paramMap);
-            }
-            batchSqlSession.commit();
-            result = true;
-        }catch(Exception e){
-        	batchSqlSession.rollback();
-        	throw e;
-        }finally{
-        	batchSqlSession.close();
-        }
-		return result;
+	
+	/**
+	 * 
+	 * @Method Name  : updateDbUser
+	 * @Method 설명 : db 사용자 등록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int updateDbUser( DataCommonVO paramMap){
+		return getSqlSession().update("manageMapper.updateDbUser", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteDbUser
+	 * @Method 설명 : db 사용자 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int deleteDbUser( DataCommonVO paramMap){
+		return getSqlSession().delete("manageMapper.deleteDbUser",paramMap);
 	}
 }

@@ -18,6 +18,7 @@ import com.varsql.web.app.manager.dbnuser.DbnUserServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.constants.UserConstants;
 import com.varsql.web.common.constants.VarsqlParamConstants;
+import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
@@ -40,11 +41,10 @@ public class SqlStatsController {
 	DbnUserServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"/dbList"})
-	public @ResponseBody Map dbList(HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
-		
 		
 		return dbnUserServiceImpl.selectdbList(searchParameter);
 	}

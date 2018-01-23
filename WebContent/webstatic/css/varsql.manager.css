@@ -516,3 +516,33 @@ ul.alert-dropdown {
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td{
 	vertical-align: middle;
 }
+
+.pub-multiselect-area {
+	user-select: none;
+	-o-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	overflow-x:hidden;	
+	overflow-y:auto;
+    border: 1px solid #cccccc;
+}
+
+.pub-multiselect-area ul,.pub-multiselect-area ol ,.pub-multiselect-area li{
+	list-style:none;
+}
+
+.pub-multiselect-area .selected {
+	background: #5353f7;
+    color: #fff;
+}
+
+.pub-multiselect-area{
+	padding: 5px;
+    padding-left: 10px;
+    margin: 0px;
+}
+.pub-select-item{
+	cursor:pointer;
+}

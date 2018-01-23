@@ -1,39 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<style>
-.pub-multiselect-area {
-	user-select: none;
-	-o-user-select: none;
-	-moz-user-select: none;
-	-khtml-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select:none;
-	overflow-x:hidden;	
-	overflow-y:auto;
-    border: 1px solid #cccccc;
-}
 
-.pub-multiselect-area ul,.pub-multiselect-area ol ,.pub-multiselect-area li{
-	list-style:none;
-}
-
-.pub-multiselect-area .selected {
-	background: #5353f7;
-    color: #fff;
-}
-
-.pub-multiselect-area{
-	padding: 5px;
-    padding-left: 10px;
-    margin: 0px;
-}
-
-
-.pub-select-item{
-	cursor:pointer;
-}
-
-</style>
 <script>
 $(document).ready(function (){
 	databaseUserMgmt.init();
@@ -185,6 +152,9 @@ var databaseUserMgmt = {
 	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
+	    			
+	    			item.UNAME =item.UNAME+'('+item.UEMAIL +')';
+	    			
 	    			if(item.VCONNID){
 	    				targetItem.push(item);	
 	    			}else{
@@ -243,7 +213,6 @@ var databaseUserMgmt = {
 					<ul id="source" class="form-control" style="width:100%;height:200px;">
 					  <li><spring:message code="msg.nodata" /></li>
 					</ul>
-					
 				</div>
 				<div class="col-sm-12" style="text-align:center;padding:10px;">
 					<a href="javascript:;" class="btn_m mb05 item-move" mode="down"><span class="glyphicon glyphicon-chevron-down"></span>추가</a>
