@@ -117,7 +117,7 @@ var passwordMain = {
 	,saveInfo : function (){
 		var _self = this;
 		
-		var params  =$('#writeForm').serializeJSON();
+		var params  =$('#passwordResetForm').serializeJSON();
 		
 		VARSQL.req.ajax({
 			url: {gubun:VARSQL.uri.user, url:'/preferences/passwordSave'},

@@ -1544,7 +1544,8 @@ Plugin.prototype ={
 		var _this =this; 
 
 		if(!_this.config.scroll.vUse){ 
-			_this.config.scroll.viewIdx = 0; 
+			_this.config.scroll.viewIdx = 0;
+			_this.element.body.css('margin-top',0);
 			return ; 
 		}
 

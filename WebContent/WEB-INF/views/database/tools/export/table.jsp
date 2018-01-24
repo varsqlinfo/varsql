@@ -308,6 +308,7 @@ var tableExport = {
 			,addItemClass:'text_selected'
 			,useMultiSelect : true
 			,duplicateCheck : true
+			,useDragMove :false
 			,sourceItem : {
 				optVal : 'TABLE_NAME'
 				,optTxt : 'TABLE_NAME'
@@ -330,12 +331,16 @@ var tableExport = {
 		var _self = this; 
 		
 		var tmpSourceItem = [] , paramSourceItem=${varsqlfn:objectToJson(columnInfo)}; 
+		
+		var userSettingColumn = _self.userSettring.columns;
+		userSettingColumn = $.isArray(userSettingColumn) &&  userSettingColumn.length > 0 ? userSettingColumn : paramSourceItem;
 
 		_self.selectColumnObj= $.pubMultiselect('#columnSource', {
 			targetSelector : '#columnTarget'
 			,addItemClass:'text_selected'
 			,useMultiSelect : true
 			,duplicateCheck : true
+			,useDragMove :false
 			,sourceItem : {
 				optVal : 'code'
 				,optTxt : 'code'
@@ -344,7 +349,7 @@ var tableExport = {
 			,targetItem : {
 				optVal : 'code'
 				,optTxt : 'code'
-				,items : (_self.userSettring.columns ||[])
+				,items : userSettingColumn
 				,click: function (e, sItem){
 					sItem.width = (sItem.width ||sItem.custom.width);
 					mappingFormVue.detailItem = sItem;
