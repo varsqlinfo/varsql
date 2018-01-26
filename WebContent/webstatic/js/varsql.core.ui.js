@@ -711,7 +711,7 @@ _ui.leftDbObjectServiceMenu ={
 				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
-					,{key :'REMARKS', label:'설명'}
+					,{key :'REMARKS', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{

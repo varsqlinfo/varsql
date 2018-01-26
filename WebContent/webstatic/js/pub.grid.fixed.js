@@ -55,6 +55,8 @@ var _initialized = false
 		,colFixedIndex : 0	// 고정 컬럼 
 		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
+		,colMaxWidth : 500  // 컬럼 최대 넓이
+		,oneCharWidth: 8
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
 
@@ -260,9 +262,8 @@ Plugin.prototype ={
 			, navi :{height : 0, width : 0}
 			,aside :{items :[]}
 			,select : {}
+			,dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
 		};
-
-
 		_this._initScrollData();
 		_this._setRangeSelectInfo({},true);
 		
@@ -670,12 +671,9 @@ Plugin.prototype ={
 			strHtm.push('<col id="'+id+i+'" style="'+tmpStyle.join('')+'" />');
 		}
 
-		_this.config.dataInfo = {
-			colLen : enableColCnt
-			,allColLen : endCol
-			,rowLen : _this.options.tbodyItem.length
-		}
-
+		_this.config.dataInfo.colLen = enableColCnt;
+		_this.config.dataInfo.allColLen= endCol;
+		
 		strHtm.push('</colgroup>');
 		
 		return strHtm.join('');	
@@ -731,6 +729,9 @@ Plugin.prototype ={
 			_this.calcDimension('reDraw');
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
+		
+		_this.config.dataInfo.rowLen= _this.options.tbodyItem.length;
+		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.rowLen-1;
 
 		_this.drawGrid(gridMode,true);
 		_this.setPage(pageInfo);
@@ -944,7 +945,7 @@ Plugin.prototype ={
 			}
 		}
 
-		if(this.options.tbodyItem.length > 0){
+		if(mode=='init' || this.options.tbodyItem.length > 0){
 			bodyHtm (this,mode,'left');
 			return bodyHtm (this,mode, 'cont');	
 		}
@@ -1581,8 +1582,6 @@ Plugin.prototype ={
 			itemIdx = topVal/(this.config.scroll.verticalHeight / (this.options.tbodyItem.length-this.config.scroll.viewCount));
 			itemIdx  = Math.round(itemIdx); 
 		}
-		
-		//console.log('asdfasdf : ',this.config.scroll.overflowVal, this.config.scroll.verticalHeight, this.config.scroll.endFlag,_topVal,' : ', itemIdx, this.options.tbodyItem.length , tmpRowHeight,this.config.scroll.viewCount )
 			
 		if(this.config.scroll.endFlag){
 			if(this.config.scroll.overflowVal > 0){
@@ -1805,12 +1804,23 @@ Plugin.prototype ={
      * @description 바디 이벤트 초기화.
      */
 	,_initHeaderEvent : function (){
-		var _this = this
-			 ,headerCol = _this.element.header.find('.pub-header-cont.sort-header');
+		var _this = this;
 		
 		var beforeClickObj; 
 		//headerCol.off('click.pubGridHeader.sort');
-		headerCol.on('click.pubGridHeader.sort',function (e){
+
+		_this.element.header.find('.pub-header-cont').on('click.pubGridHeader.select',function (e){
+			var selEle = $(this)
+				,col_idx = selEle.attr('col_idx');
+
+			_this._setRangeSelectInfo({
+				rangeInfo : {startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
+				,isSelect : true
+				,curr : (e.shiftKey?'add':'')
+			}, false , true);
+		});
+
+		_this.element.header.find('.pub-header-cont.sort-header').on('dblclick.pubGridHeader.sort',function (e){
 			var selEle = $(this)
 				,col_idx = selEle.attr('col_idx')
 				,sortType = selEle.attr('sort_type');
@@ -2152,22 +2162,23 @@ Plugin.prototype ={
 
 				var moveColIdx =(endCol+1 >= colLen? colLen-1: endCol+1);
 
-				console.log(moveColIdx , endCol , colLen , endRow , this.config.scroll.endFlag)
-
 				if(endCol+1 == colLen && evtKey==9){
-
-					
 					moveColIdx = 0; 
-					_this.moveHScroll({pos:0});
-
-					currViewIdx = (_this.config.scroll.viewIdx+1)+endRow;
 					
+					if((currViewIdx+endRow) == _this.config.dataInfo.lastRowIdx){ // 마지막일경우.
+						return ; 
+					}
+
+					_this.moveHScroll({pos:0});
+					currViewIdx = (_this.config.scroll.viewIdx+1)+endRow;
 					var rowLen = _this.config.scroll.insideViewCount-1;
 
 					endRow =(endRow+1 >=rowLen? rowLen : endRow+1);
 
 					if(endRow==rowLen){
-						_this.config.select.range.endRow
+						if(_this.config.dataInfo.lastRowIdx ==(_this.config.scroll.viewIdx+endRow+1)){
+							endRow = endRow+1
+						}
 						_this.moveVScroll({pos:'D'});
 					}
 				}else {
@@ -2196,27 +2207,28 @@ Plugin.prototype ={
 			case 38 : { //up
 
 				if(!isScrollInside(endCol,'V')) return ; 
-
 				
-				var moveColIdx =(endRow-1 >0? endRow-1: 0);
+				var moveRowIdx =(endRow-1 >0? endRow-1: 0);
 						
-				if(moveColIdx==0 && currViewIdx > 0){
+				if(moveRowIdx==0 && currViewIdx > 0){
 					_this.moveVScroll({pos:'U'});
 				}
 
 				if(this.config.scroll.endFlag){
-					currViewIdx = (_this.config.dataInfo.rowLen)-(_this.config.scroll.insideViewCount-moveColIdx);
+					currViewIdx = (_this.config.dataInfo.rowLen)-(_this.config.scroll.insideViewCount-moveRowIdx);
 				}else{
-					currViewIdx = _this.config.scroll.viewIdx+moveColIdx;
+					currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
 				}
+
+
 				
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({
-						rangeInfo : {endIdx : currViewIdx, startRow : moveColIdx ,endRow:moveColIdx}
+						rangeInfo : {endIdx : currViewIdx, startRow : moveRowIdx ,endRow:moveRowIdx}
 					}, false,true);
 				}else{
 					_this._setRangeSelectInfo({
-						rangeInfo : {startIdx :currViewIdx, endIdx : currViewIdx, startRow : moveColIdx ,endRow:moveColIdx, startCol:endCol, endCol:endCol}
+						rangeInfo : {startIdx :currViewIdx, endIdx : currViewIdx, startRow : moveRowIdx ,endRow:moveRowIdx, startCol:endCol, endCol:endCol}
 					}, true, true);
 				}
 
@@ -2226,47 +2238,46 @@ Plugin.prototype ={
 			case 40 : { //down
 
 				if(!isScrollInside(endCol,'V')) return ;
-
 				
-
 				var rowLen = _this.config.scroll.insideViewCount-1;
 
-				
+				if(this.config.scroll.endFlag){
+					rowLen = _this.config.scroll.insideViewCount;
+				}
 
-				var moveColIdx =(endRow+1 >=rowLen? rowLen : endRow+1);
-
-				if(moveColIdx==rowLen &&  (_this.config.scroll.viewIdx+moveColIdx) < _this.config.dataInfo.rowLen){
+				var moveRowIdx =(endRow+1 >=rowLen? rowLen : endRow+1);
+			
+				if(moveRowIdx==rowLen &&  (currViewIdx+moveRowIdx) < _this.config.dataInfo.rowLen){
 					_this.moveVScroll({pos:'D'});
+				}
+
+				if(this.config.scroll.endFlag){
+
+					if(_this.config.dataInfo.lastRowIdx < (currViewIdx+endRow+1)){
+						return ; 
+					}
+
+					if(moveRowIdx==rowLen){
+						moveRowIdx = moveRowIdx+1;
+					}
 				}
 
 				if(_this.config.scroll.insideViewCount != _this.config.scroll.viewCount && (_this.config.scroll.viewIdx+endRow+1) == _this.config.dataInfo.rowLen-1){
 					currViewIdx = _this.config.dataInfo.rowLen-1;
 				}else{
-					currViewIdx = _this.config.scroll.viewIdx+moveColIdx;
+					currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
 				}
-
-				console.log(moveColIdx , currViewIdx)
-
 
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({
-						rangeInfo : {endIdx : currViewIdx, startRow : moveColIdx ,endRow:moveColIdx}
+						rangeInfo : {endIdx : currViewIdx, startRow : moveRowIdx ,endRow:moveRowIdx}
 					}, false,true);
 				}else{
 					_this._setRangeSelectInfo({
-						rangeInfo : {startIdx : currViewIdx,endIdx : currViewIdx, startRow : moveColIdx ,endRow:moveColIdx, startCol:endCol, endCol:endCol}
+						rangeInfo : {startIdx : currViewIdx,endIdx : currViewIdx, startRow : moveRowIdx ,endRow:moveRowIdx, startCol:endCol, endCol:endCol}
 					}, true,true);
 				}
 
-				break; 
-			}
-			case 9 :{ // tab
-
-				if(endCol+1 == colLen && evtKey==9){
-					moveColIdx = 0; 
-					_this.moveHScroll({pos:0});
-				}
-				
 				break; 
 			}
 			default:{
@@ -2640,15 +2651,12 @@ Plugin.prototype ={
 		var _this = this
 			,resizeEle = _this.element.header.find('.pub-header-resizer');
 		if(flag===true){
-			resizeEle.css('cursor',_this.options.headerOptions.resize.cursor);
-			
-			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
-				var oe = e.originalEvent.touches;
 
+			function colResize(_this , sEle){
 				_this.drag = {};
-				_this.drag.pageX = oe ? oe[0].pageX : e.pageX;
-				_this.drag.ele = $(this);
-				_this.drag.ele.addClass('pubGrid-move-header')
+				
+				_this.drag.ele = sEle;
+				
 				_this.drag.resizeIdx = _this.drag.ele.attr('data-resize-idx');
 				_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
 				_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
@@ -2662,6 +2670,36 @@ Plugin.prototype ={
 					_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
 				}
 				_this.drag.gridBodyW = _this.config.body.width - _this.drag.colW;
+				return 
+			}
+
+			resizeEle.on('dblclick', function (e){
+				colResize(_this, $(this));
+
+				var selColItem = _this.options.tColItem[_this.drag.resizeIdx]; 
+				
+				var resizeW = selColItem.maxWidth ||0; 
+				if(isUndefined(selColItem.maxWidth)){
+					var len = _this.options.tbodyItem.length;
+
+					for(var i =0 ;i <len;i++){
+						resizeW = Math.max(_this.options.tbodyItem[i][selColItem.key].length,resizeW);
+					}
+					resizeW = resizeW*_this.options.headerOptions.oneCharWidth;
+					selColItem.maxWidth=resizeW; 
+				}
+
+				_this._setHeaderResize(e,_this, 'end' , Math.min(resizeW,_this.options.headerOptions.colMaxWidth ));
+			})
+
+			resizeEle.css('cursor',_this.options.headerOptions.resize.cursor);
+			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
+				var oe = e.originalEvent.touches;
+				
+				colResize(_this, $(this));
+
+				_this.drag.pageX = oe ? oe[0].pageX : e.pageX;
+				_this.drag.ele.addClass('pubGrid-move-header')
 								
 				// resize시 select안되게 처리 . cursor처리 
 				_$doc.attr("onselectstart", "return false");
@@ -2716,19 +2754,25 @@ Plugin.prototype ={
 	 * @param  mode {String} 그리드 모드
      * @description reisze 드래그 end
      */
-	,_setHeaderResize : function (e,_this , mode){
+	,_setHeaderResize : function (e,_this , mode, resizeW){
 
 		if (!_this.drag) return false;
 
 		var drag = _this.drag; 
-		
-		var oe = e.originalEvent.touches
-			,ox = oe ? oe[0].pageX : e.pageX;
-		
-		var w = drag.colW + (ox - drag.pageX);
+
+		var w = resizeW, ox; 
+
+		if(isUndefined(resizeW)){
+			var oe = e.originalEvent.touches;
+			
+			ox = oe ? oe[0].pageX : e.pageX;
+			
+			w = resizeW ||(drag.colW + (ox - drag.pageX));
+		}
 		
 		var minFlag = false; 
 		if(mode=='end'){
+			if(drag.width)
 			if(w <= _this.options.headerOptions.colMinWidth){
 				w =_this.options.headerOptions.colMinWidth;
 				minFlag =true; 
