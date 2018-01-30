@@ -56,7 +56,7 @@ var _initialized = false
 		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
 		,colMaxWidth : 500  // 컬럼 최대 넓이
-		,oneCharWidth: 8
+		,oneCharWidth: 9
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
 
@@ -135,7 +135,6 @@ function isUndefined(obj){
 function intValue(val){
 	return parseInt(val , 10);
 }
-
 
 var util= {
 	formatter : {
@@ -724,6 +723,8 @@ Plugin.prototype ={
 		}
 
 		if(gridMode=='reDraw'){
+
+			_this._setHeaderInitInfo();
 			_this._setRangeSelectInfo({}, true);
 
 			_this.calcDimension('reDraw');
@@ -736,6 +737,13 @@ Plugin.prototype ={
 		_this.drawGrid(gridMode,true);
 		_this.setPage(pageInfo);
 		
+	}
+	,_setHeaderInitInfo : function (){
+		var tci  = this.options.tColItem;
+
+		for(var i =0 ;i <tci.length; i++){
+			tci[i].maxWidth = -1; 
+		}
 	}
 	,setPage : function (pageInfo){
 		var _this =this;
@@ -2678,12 +2686,14 @@ Plugin.prototype ={
 
 				var selColItem = _this.options.tColItem[_this.drag.resizeIdx]; 
 				
-				var resizeW = selColItem.maxWidth ||0; 
-				if(isUndefined(selColItem.maxWidth)){
+				var resizeW = selColItem.maxWidth || -1; 
+
+				if(resizeW < 1){
 					var len = _this.options.tbodyItem.length;
 
 					for(var i =0 ;i <len;i++){
-						resizeW = Math.max(_this.options.tbodyItem[i][selColItem.key].length,resizeW);
+						var tmpVal = _this.options.tbodyItem[i][selColItem.key]; 
+						resizeW = Math.max((tmpVal||'').length,resizeW);
 					}
 					resizeW = resizeW*_this.options.headerOptions.oneCharWidth;
 					selColItem.maxWidth=resizeW; 

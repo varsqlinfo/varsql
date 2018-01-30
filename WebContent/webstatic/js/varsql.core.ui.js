@@ -2126,6 +2126,7 @@ _ui.SQL = {
 		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"json\"></span>JSON</li>");
 		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"insert\"></span>INSERT문</li>");
 		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"xml\"></span>XML</li>");
+		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"excel\"></span>Excel</li>");
 		strHtm.push("				</ul>");
 		strHtm.push("			</td>");
 		strHtm.push("		</tr>");
@@ -2485,7 +2486,10 @@ _ui.JAVA = {
 					codeStr.push(tabStr+'@Size(max='+columnSize+')'+newLine);
 				}
 				
-				codeStr.push(tabStr+'private '+tmpJavaType+' ' +tmpColumnNm +';'+newLine+newLine);
+				var colComment = item[VARSQLCont.tableColKey.COMMENT];
+				colComment = colComment!='' ?' //'+colComment :'';
+				
+				codeStr.push(tabStr+'private '+tmpJavaType+' ' +tmpColumnNm +';'+colComment+newLine+newLine);
 				
 				methodStr.push(tabStr+'public '+tmpJavaType+' ' + 'get' +tmpMethodNm +'(){'+newLine);
 				methodStr.push(tabStr+tabStr+'return this.'+tmpColumnNm+';'+newLine);

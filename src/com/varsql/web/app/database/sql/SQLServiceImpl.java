@@ -310,6 +310,9 @@ public class SQLServiceImpl{
 		}else if("xml".equals(exportType)){
 			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".xml",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , res.getOutputStream());
+		}else if("excel".equals(exportType)){
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".xlsx",VarsqlConstants.CHAR_SET));
+			DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , res.getOutputStream());
 		}
 	}
 	
