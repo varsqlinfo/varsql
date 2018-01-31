@@ -582,8 +582,6 @@ Plugin.prototype ={
 			,tci = opt.tColItem
 			,tciLen = tci.length;
 
-		//console.log(_this.config.gridWidth.main)
-		
 		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+opt.scroll.verticalWidth;
 
 			
@@ -1240,7 +1238,6 @@ Plugin.prototype ={
 			pubGridClass +=' left-cont-on';
 		}
 
-
 		if(this.options.tbodyItem.length < 1){
 			pubGridClass +=' pubGrid-no-item';
 		}
@@ -1371,8 +1368,17 @@ Plugin.prototype ={
 			leftVal=0; 
 		}
 
-		_this.moveHScroll({pos :leftVal, drawFlag:false});
-		_this.moveVScroll({pos :topVal, drawFlag:false});
+		console.log(leftVal ,opt.width , bodyW)
+		
+		var resizeFlag = false ,dragFlag = false; 
+
+		if(type=='resize'){
+			resizeFlag = true; 
+			dragFlag = true;
+		}
+
+		_this.moveHScroll({pos :leftVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
+		_this.moveVScroll({pos :topVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
 
 		if(beforeViewCount !=0 ){
 			if(type !='reDraw' && drawFlag){
@@ -1642,7 +1648,7 @@ Plugin.prototype ={
 	*/
 	,moveHScroll : function (moveObj){
 		var _this =this; 
-		if(!_this.config.scroll.hUse){ return ; }
+		if(!_this.config.scroll.hUse && moveObj.resizeFlag !== true){ return ; }
 
 		var leftVal = moveObj.pos 
 			,drawFlag = moveObj.drawFlag;
@@ -1668,6 +1674,8 @@ Plugin.prototype ={
 		this.config.scroll.hBarPosition = leftVal/hw*100; 
 		
 		this.calcViewCol(headerLeft);
+
+		console.log('headerLeft : ', headerLeft)
 
 		this.element.header.find('.pubGrid-header-cont-wrapper').css('left','-'+headerLeft+'px');
 		this.element.body.find('.pubGrid-body-cont-wrapper').css('left','-'+headerLeft+'px');
@@ -1820,12 +1828,20 @@ Plugin.prototype ={
 		_this.element.header.find('.pub-header-cont').on('click.pubGridHeader.select',function (e){
 			var selEle = $(this)
 				,col_idx = selEle.attr('col_idx');
+			
+			var curr ='' , initFlag = true ; 
+			if(e.shiftKey){
+				curr = 'add';
+				initFlag  = false; 
+			}else{
+				_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
+			}
 
 			_this._setRangeSelectInfo({
 				rangeInfo : {startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
 				,isSelect : true
-				,curr : (e.shiftKey?'add':'')
-			}, false , true);
+				,curr : curr
+			}, initFlag , true);
 		});
 
 		_this.element.header.find('.pub-header-cont.sort-header').on('dblclick.pubGridHeader.sort',function (e){
@@ -2227,8 +2243,6 @@ Plugin.prototype ={
 				}else{
 					currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
 				}
-
-
 				
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({

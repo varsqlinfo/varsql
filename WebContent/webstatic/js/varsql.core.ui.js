@@ -204,8 +204,6 @@ _ui.headerMenu ={
 		}else{
 			
 		}
-		
-		
 	}
 }
 
@@ -2098,8 +2096,9 @@ _ui.SQL = {
 		strHtm.push("				<table style=\"vertical-align: text-top;\" class=\"table table-striped table-bordered table-hover dataTable no-footer\" id=\"dataTables-example\">");
 		strHtm.push("					<thead>");
 		strHtm.push("						<tr role=\"row\">");
-		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 20px;\"><input type=\"checkbox\" name=\"columnCheck\" value=\"all\">all</th>");
-		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 150px;\">Column</th>");
+		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 40px;\"><input type=\"checkbox\" name=\"columnCheck\" value=\"all\">all</th>");
+		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 100px;\">Column</th>");
+		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 100px;\">Desc</th>");
 		strHtm.push("						</tr>");
 		strHtm.push("					</thead>");
 		strHtm.push("					<tbody class=\"dataTableContent1\">");
@@ -2107,8 +2106,9 @@ _ui.SQL = {
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
 			strHtm.push("						<tr class=\"gradeA add\">	");
-			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"columnCheck\" value=\""+item.name+"\"></td>	");
-			strHtm.push("							<td class=\"\">"+item.name+"</td>	");
+			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"columnCheck\" value=\""+item[VARSQLCont.tableColKey.NAME]+"\"></td>	");
+			strHtm.push("							<td class=\"\">"+item[VARSQLCont.tableColKey.NAME]+"</td>	");
+			strHtm.push("							<td class=\"\">"+(item[VARSQLCont.tableColKey.COMMENT]||'')+"</td>	");
 			strHtm.push("						</tr>");
 		}
 		strHtm.push("					</tbody>");
