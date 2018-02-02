@@ -118,10 +118,9 @@ var userMain = {
 			$('#connection_select_msg_wrapper').hide();
 			$(this).attr('load-flag','Y').removeClass('display-hidden');
 		});
-
 	}
 	,activeClose : function (){
-		$(this._connectionTab+'> .ui-state-active .tab-ui-close').trigger('click');
+		$(this._connectionTab+'> .ui-tab-item-active .tab-ui-close').trigger('click');
 	}
 }
 </script>

@@ -1558,7 +1558,7 @@ Plugin.prototype ={
 	,moveVScroll : function (moveObj){
 		var _this =this; 
 
-		if(!_this.config.scroll.vUse){ 
+		if(!_this.config.scroll.vUse && moveObj.resizeFlag !== true){ 
 			_this.config.scroll.viewIdx = 0;
 			_this.element.body.css('margin-top',0);
 			return ; 
