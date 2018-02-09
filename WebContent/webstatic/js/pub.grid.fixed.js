@@ -1368,17 +1368,15 @@ Plugin.prototype ={
 			leftVal=0; 
 		}
 
-		console.log(leftVal ,opt.width , bodyW)
-		
 		var resizeFlag = false ,dragFlag = false; 
 
 		if(type=='resize'){
 			resizeFlag = true; 
 			dragFlag = true;
 		}
-
-		_this.moveHScroll({pos :leftVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
+		
 		_this.moveVScroll({pos :topVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
+		_this.moveHScroll({pos :leftVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
 
 		if(beforeViewCount !=0 ){
 			if(type !='reDraw' && drawFlag){
@@ -1558,6 +1556,8 @@ Plugin.prototype ={
 	,moveVScroll : function (moveObj){
 		var _this =this; 
 
+		console.log('moveVScroll' ,moveObj)
+
 		if(!_this.config.scroll.vUse && moveObj.resizeFlag !== true){ 
 			_this.config.scroll.viewIdx = 0;
 			_this.element.body.css('margin-top',0);
@@ -1674,8 +1674,6 @@ Plugin.prototype ={
 		this.config.scroll.hBarPosition = leftVal/hw*100; 
 		
 		this.calcViewCol(headerLeft);
-
-		console.log('headerLeft : ', headerLeft)
 
 		this.element.header.find('.pubGrid-header-cont-wrapper').css('left','-'+headerLeft+'px');
 		this.element.body.find('.pubGrid-body-cont-wrapper').css('left','-'+headerLeft+'px');

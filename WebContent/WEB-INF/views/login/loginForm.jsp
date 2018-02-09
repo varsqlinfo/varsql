@@ -65,7 +65,10 @@ body {
 <script>
 $(document).ready(function (){
 	
-	$('#password')
+	if(localStorage.getItem('varsqlLoginID') && localStorage.getItem('varsqlLoginID') !=''){
+		$('#rememberMe').prop('checked',true);
+		$('#id').val(localStorage.getItem('varsqlLoginID'));
+	}
 	
 	$('#password').keydown(function(event) {
 		if(event.keyCode =='13'){
@@ -73,12 +76,21 @@ $(document).ready(function (){
 		}
 	});
 	
-	
 	$('.btn-login').on('click', function (){
-		$('#id').val($.trim($('#id').val()))
+		var loginID = $.trim($('#id').val()); 
+	
+		$('#id').val(loginID);
 		$('#password').val($.trim($('#password').val()))
+		
+		if($('#rememberMe').is(':checked')){
+			localStorage.setItem('varsqlLoginID', loginID);
+		}else{
+			localStorage.removeItem('varsqlLoginID');
+		}
 		document.f.submit();
 	});
+	
+	
 })
 </script>
 </head>
@@ -92,7 +104,7 @@ $(document).ready(function (){
 			<input class="form-control" id="password" name="password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
 			<div class="checkbox">
 				<label>
-					<input type="checkbox" value="remember-me"> Remember me
+					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me
 				</label>
 			</div>
 			<c:if test="${login=='fail'}">

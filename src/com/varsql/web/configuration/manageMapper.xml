@@ -180,7 +180,8 @@
 	<!-- sql 로그 통계 날짜별 통계  -->
 	<select id="manageMapper.selectSqlDateStat" parameterType="map" resultType="map">
 		select 
-			to_char(max(START_TIME),'yyyy-mm-dd') VIEW_DATE, CASE WHEN s_mm >= 10 then cast(S_MM AS CHAR(2)) else  '0'||CAST (S_MM AS CHAR(1)) END||'-'||CAST(CAST (S_DD AS CHAR(2))  AS VARCHAR(2)) X_COL
+			to_char(max(START_TIME),'yyyy-mm-dd') VIEW_DATE, CASE WHEN s_mm >= 10 then cast(S_MM AS CHAR(2)) else  '0'||CAST (S_MM AS CHAR(1)) END||'-'||
+			CASE WHEN S_DD >= 10 then cast(S_DD AS CHAR(2)) else  '0'||CAST (S_DD AS CHAR(1)) END X_COL
 			, count(1) as Y_COL 
 		from VTSQL_LOG a
 		where	VCONNID=#{vconnid}

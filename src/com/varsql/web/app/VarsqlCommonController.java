@@ -24,6 +24,14 @@ public class VarsqlCommonController {
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory
 			.getLogger(VarsqlCommonController.class);
+	
+	@RequestMapping({"","/"})
+	public ModelAndView welcome(HttpServletRequest req, HttpServletResponse res,
+			ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return new ModelAndView("redirect:/login", model);
+	}
+	
 
 
 	@RequestMapping(value = "/error401")
