@@ -1,7 +1,5 @@
 package com.varsql.app.database.web;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -15,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.service.DatabaseServiceImpl;
-import  com.varsql.db.beans.DatabaseParamInfo;
+import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ResponseResult;
 
 

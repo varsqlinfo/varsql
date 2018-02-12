@@ -4,7 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.varsql.configuration.Configuration;
+import com.varsql.core.configuration.Configuration;
 
 public class ContextLoaderListener  implements ServletContextListener{
 	public void contextInitialized(ServletContextEvent event)

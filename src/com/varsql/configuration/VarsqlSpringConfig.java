@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
-import com.varsql.constants.VarsqlConstants;
+import com.varsql.core.constants.VarsqlConstants;
 /**
  * 
 *-----------------------------------------------------------------------------

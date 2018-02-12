@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.util.VarsqlUtil;
-import com.varsql.common.util.SecurityUtil;
-import com.varsql.db.util.DbInstanceFactory;
-import com.varsql.db.beans.DatabaseInfo;
-import  com.varsql.db.beans.DatabaseParamInfo;
+import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.beans.DatabaseInfo;
+import com.varsql.core.db.beans.DatabaseParamInfo;
+import com.varsql.core.db.util.DbInstanceFactory;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**

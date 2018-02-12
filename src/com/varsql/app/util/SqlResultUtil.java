@@ -10,10 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.varsql.sql.builder.SqlSourceResultVO;
-import com.varsql.sql.resultset.handle.ResultSetHandle;
 import com.varsql.app.database.beans.SqlParamInfo;
-import com.varsql.sql.beans.GridColumnInfo;
+import com.varsql.core.sql.beans.GridColumnInfo;
+import com.varsql.core.sql.builder.SqlSourceResultVO;
+import com.varsql.core.sql.resultset.handle.ResultSetHandle;
 
 /**
  *날짜 관련 util

@@ -2,16 +2,11 @@ package com.varsql.app.manager.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.dao.BaseDAO;
-import com.varsql.app.user.beans.PasswordForm;
-import com.varsql.auth.Authority;
 import com.vartech.common.app.beans.SearchParameter;
 
 

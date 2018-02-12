@@ -1,6 +1,6 @@
 package com.varsql.app.database.beans;
 
-import  com.varsql.db.beans.DatabaseParamInfo;
+import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
  * 

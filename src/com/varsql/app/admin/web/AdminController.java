@@ -23,7 +23,7 @@ import com.varsql.app.admin.beans.Vtconnection;
 import com.varsql.app.admin.service.AdminServiceImpl;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
-import com.varsql.common.util.SecurityUtil;
+import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

@@ -13,9 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
-import  com.varsql.db.beans.DatabaseParamInfo;
-import com.vartech.common.app.beans.ParamMap;
-import com.vartech.common.utils.HttpUtils;
+import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
  * 

@@ -10,11 +10,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import com.varsql.auth.UserService;
-import com.varsql.auth.VarsqlAccessDeniedHandler;
-import com.varsql.auth.VarsqlAuthenticationProvider;
-import com.varsql.auth.VarsqlAuthenticationSuccessHandler;
-import com.varsql.configuration.VarsqlWebConfig;
+import com.varsql.core.auth.UserService;
+import com.varsql.core.auth.VarsqlAccessDeniedHandler;
+import com.varsql.core.auth.VarsqlAuthenticationProvider;
+import com.varsql.core.auth.VarsqlAuthenticationSuccessHandler;
+import com.varsql.core.configuration.VarsqlWebConfig;
 
 /**
  * 

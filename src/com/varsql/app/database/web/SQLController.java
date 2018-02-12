@@ -21,7 +21,7 @@ import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.service.SQLServiceImpl;
 import com.varsql.app.util.VarsqlUtil;
-import com.varsql.common.util.SecurityUtil;
+import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;

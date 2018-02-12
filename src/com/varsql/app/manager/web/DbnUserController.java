@@ -16,7 +16,7 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.service.DbnUserServiceImpl;
-import com.varsql.common.util.SecurityUtil;
+import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;

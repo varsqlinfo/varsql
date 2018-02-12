@@ -1,7 +1,6 @@
 package com.varsql.configuration;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -20,7 +18,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.varsql.app.common.constants.ResourceConfigConstants;
 import com.varsql.app.common.web.LoginController;
-import com.varsql.configuration.ConnectionInfo;
+import com.varsql.core.configuration.ConnectionInfo;
 
 /**
  * 
@@ -49,7 +47,7 @@ public class DataSourceConfig {
 	@Bean
 	public DataSource gainDataSource() {
 		
-		ConnectionInfo ci = com.varsql.configuration.Configuration.getInstance().getVarsqlDB();
+		ConnectionInfo ci = com.varsql.core.configuration.Configuration.getInstance().getVarsqlDB();
         
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(ci.getDriver());

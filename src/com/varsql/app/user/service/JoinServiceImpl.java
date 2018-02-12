@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.user.beans.JoinForm;
-import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.JoinDAO;
-import com.varsql.auth.Authority;
-import com.varsql.db.encryption.EncryptionFactory;
+import com.varsql.core.auth.Authority;
+import com.varsql.core.db.encryption.EncryptionFactory;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.encryption.EncryptDecryptException;
 
