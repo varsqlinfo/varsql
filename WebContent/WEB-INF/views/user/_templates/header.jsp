@@ -37,7 +37,11 @@
 					<sec:authentication	property="principal.fullname" /> <b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
-			        <%@ include file="/WEB-INF/include/screen.jspf"%>
+			        
+			        <jsp:include page="/WEB-INF/include/screen.jsp" flush="false">
+						<jsp:param name="popup_yn" value="y" />
+					</jsp:include>
+
 					<li>
 						<a href="javascript:;" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
 					</li>

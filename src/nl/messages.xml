@@ -184,6 +184,7 @@
 
 <entry key="user.edit.msgtitle">제목</entry>
 <entry key="user.edit.send_id">보낸사람</entry>
+<entry key="user.edit.recv_id">받는사람</entry>
 <entry key="user.edit.msgcont">내용</entry>
 <entry key="detail.view">상세보기</entry>
 <entry key="reg_dt">등록일</entry>

@@ -12,7 +12,7 @@
 	
 	<function>
 		<name>objectToJson</name>
-		<function-class>com.varsql.web.util.VarsqlUtil</function-class>
+		<function-class>com.varsql.app.util.VarsqlUtil</function-class>
 		<function-signature>
 			java.lang.String objectToString(java.lang.Object)
 		</function-signature>

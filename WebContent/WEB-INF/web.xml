@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>com.varsql.web.spring.config.VarsqlSpringMainConfig</param-value>
+    <param-value>com.varsql.configuration.VarsqlSpringMainConfig</param-value>
   </context-param>
 
 	<!-- encoding filter start -->
@@ -45,7 +45,7 @@
 	</listener>
 	
 	<listener>		
-		<listener-class>com.varsql.web.context.ContextLoaderListener</listener-class>
+		<listener-class>com.varsql.configuration.ContextLoaderListener</listener-class>
 	</listener>
 
 	<!-- Processes application requests -->
@@ -58,7 +58,7 @@
 	    </init-param>
 	    <init-param>
 	      <param-name>contextConfigLocation</param-name>
-	      <param-value>com.varsql.web.spring.config.VarsqlWebMvcConfig</param-value>
+	      <param-value>com.varsql.configuration.VarsqlWebMvcConfig</param-value>
 	    </init-param>
 	    <load-on-startup>1</load-on-startup>
 	  </servlet>

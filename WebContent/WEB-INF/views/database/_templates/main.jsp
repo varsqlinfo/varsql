@@ -89,6 +89,8 @@
 	</div>
 </body>
 
+
+
 <script>
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)}; 

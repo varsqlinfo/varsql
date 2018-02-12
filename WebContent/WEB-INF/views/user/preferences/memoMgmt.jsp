@@ -54,15 +54,13 @@
 				<div class="table-responsive">
 					<div id="dataTables-example_wrapper"
 						class="dataTables_wrapper form-inline" role="grid">
-						<table
+						<table :class="(message_type=='recv'?'view':'hidden')"
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th  style="width: 10px;"><div
-											class="text-center">
-											<input type="checkbox" id="allcheck" name="allcheck">
-										</div>
+									<th  style="width: 10px;">
+										<!-- <div class="text-center"><input type="checkbox" @click="allCheck(this)"></div> -->
 									</th>
 									<th style="width: 195px;">
 										<spring:message	code="user.edit.msgtitle" />
@@ -82,9 +80,37 @@
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td><input type="checkbox" :value="item.MEMO_ID" v-model="selectItem"></td>
 									<td><a href="javascript:;" @click="viewItem(item)"> {{item.MEMO_TITLE}} </a></td>
-									<td class="center">{{item.SEND_ID}}</td>
+									<td class="center">{{item.SEND_NM}}</td>
 									<td class="center">{{item.REG_DT}}</td>
-									<td class="center">{{item.UPD_DT}}</td>
+									<td class="center">{{item.VIEW_DT}}</td>
+								</tr>
+								<tr v-if="gridData.length === 0">
+									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<table :class="(message_type=='send'?'view':'hidden')"
+							class="table table-striped table-bordered table-hover dataTable no-footer"
+							id="dataTables-example">
+							<thead>
+								<tr role="row">
+									<th  style="width: 10px;">
+										<!-- <div class="text-center"><input type="checkbox" @click="allCheck(this)"></div> -->
+									</th>
+									<th style="width: 195px;">
+										<spring:message	code="user.edit.msgtitle" />
+									</th>
+									<th style="width: 150px;">
+										<spring:message	code="reg_dt" />
+									</th>
+								</tr>
+							</thead>
+							<tbody class="dataTableContent">
+								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
+									<td><input type="checkbox" :value="item.MEMO_ID" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="viewItem(item)"> {{item.MEMO_TITLE}} </a></td>
+									<td class="center">{{item.REG_DT}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
@@ -114,6 +140,16 @@
 					<div class="form-group">
 						<div class="col-sm-12">
 							<textarea class="form-control text required" rows="10" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
+						</div>
+					</div>
+					
+					<div class="form-group" :class="(message_type=='send'?'view':'hidden')">
+						<div class="col-sm-12">
+							<div style="height:100px;overflow:auto;border:1px solid #ddd;">
+							<div v-for="(item,index) in detailItem.RECV_USER">
+								 {{item.RECV_NM}} <span>(</span> {{item.UID}}<span>)</span>
+							</div>
+							</div>
 						</div>
 					</div>
 					
@@ -168,6 +204,9 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,viewItem : function (item){
 			this.detailItem = item;
+		}
+		,allCheck : function (sEle){
+			console.log($(sEle));
 		}
 		,search : function(no){
 			var _self = this; 

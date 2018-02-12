@@ -16,7 +16,7 @@
 					<sec:authentication property="principal.fullname" /> <b class="caret"></b>
 				</a>
 				<ul class="top-setting-menu dropdown-menu">
-					<%@ include file="/WEB-INF/include/screen.jspf"%>
+					<%@ include file="/WEB-INF/include/screen.jsp"%>
 					<li>
 						<a href="<c:url value="/logout" />">
 							<i class="fa fa-fw fa-power-off"></i>
