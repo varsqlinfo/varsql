@@ -39,7 +39,8 @@
 <entry key="screen.admin">관리자</entry>
 
 <!-- admin menu -->
-<entry key="admin.menu.database">Databse</entry>
+<entry key="admin.menu.database">Databse 관리</entry>
+<entry key="admin.menu.databaseoptmgmt">Databse 옵션 관리</entry>
 <entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
 <entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
 <entry key="admin.menu.report">Report</entry>

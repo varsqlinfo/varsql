@@ -5,6 +5,10 @@
     <li <c:if test="${fn:endsWith(originalURL,'/main')}">class="active"</c:if>>
         <a href="<c:url value="./main" />"><i class="fa fa-fw fa-dashboard"></i><spring:message code="admin.menu.database" /></a>
     </li>
+    
+    <li <c:if test="${fn:endsWith(originalURL,'/databaseOptMgmt')}">class="active"</c:if>>
+        <a href="<c:url value="./databaseOptMgmt" />"><i class="fa fa-fw fa-dashboard"></i><spring:message code="admin.menu.databaseoptmgmt" /></a>
+    </li>
     <li <c:if test="${fn:endsWith(originalURL,'/managerMgmt')}">class="active"</c:if>>
         <a href="<c:url value="./managerMgmt" />"><i class="fa fa-fw fa-dashboard"></i><spring:message code="admin.menu.managermgmt" /></a>
     </li>

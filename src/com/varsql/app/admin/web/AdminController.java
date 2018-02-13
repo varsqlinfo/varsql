@@ -55,7 +55,14 @@ public class AdminController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
-		return  new ModelAndView("/admin/adminMain",model);
+		return  new ModelAndView("/admin/databaseMgmt",model);
+	}
+	
+	@RequestMapping({"/databaseOptMgmt"})
+	public ModelAndView databaseOptMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		return  new ModelAndView("/admin/databaseOptMgmt",model);
 	}
 	
 	@RequestMapping(value = "/report")

@@ -2,10 +2,10 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <script>
 $(document).ready(function (){
-	adminMain.init();
+	databaseOptMgmt.init();
 });
 
-var adminMain = {
+var databaseOptMgmt = {
 	init : function (){
 		var _this = this; 
 		_this.search();
@@ -176,10 +176,10 @@ var adminMain = {
 	    		$('#dbinfolist').html(strHtm.join(''));
 	    		
 	    		$('#dbinfolist .list-group-item').on('click',function (){
-	    			adminMain.clickDbInfo($(this));
+	    			databaseOptMgmt.clickDbInfo($(this));
 	    		});
 	    		
-	    		$('#pageNavigation').pagingNav(resData.page,adminMain.search);
+	    		$('#pageNavigation').pagingNav(resData.page,databaseOptMgmt.search);
 			}
 		});
 	}
@@ -194,7 +194,6 @@ var adminMain = {
 					$('.addBtn').trigger("click");
 					
 				}
-				
 			}
 		});
 	}
@@ -287,7 +286,7 @@ var adminMain = {
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="admin.menu.database" /></h1>
+        <h1 class="page-header"><spring:message code="admin.menu.databaseoptmgmt" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -296,12 +295,9 @@ var adminMain = {
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
-					<input type="text" value="" id="searchVal" name="searchVal"
-						class="form-control"> <span
-						class="input-group-btn">
-						<button class="btn btn-default searchBtn" type="button">
-							<span class="glyphicon glyphicon-search"></span>
-						</button>
+					<input type="text" value="" id="searchVal" name="searchVal" class="form-control">
+					<span	class="input-group-btn">
+						<button class="btn btn-default searchBtn" type="button"> <span class="glyphicon glyphicon-search"></span></button>
 					</span>
 				</div>
 			</div>
