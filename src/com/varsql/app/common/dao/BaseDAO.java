@@ -1,4 +1,4 @@
-package com.varsql.app.dao;
+package com.varsql.app.common.dao;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;

@@ -68,6 +68,7 @@ var userMain = {
 			}
 			
 			if($('.db_sql_view_area').length < 1){
+				$(_self._userConnectionInfo).val('');
 				$('#connection_select_msg_wrapper').attr('data-init-msg','Y');
 				$('#connection_select_msg_wrapper').show();
 			}

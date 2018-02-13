@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.dao.BaseDAO;
+import com.varsql.app.common.dao.BaseDAO;
 import com.vartech.common.app.beans.SearchParameter;
 
 

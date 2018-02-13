@@ -18,7 +18,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.varsql.app.common.constants.ResourceConfigConstants;
 import com.varsql.app.common.web.LoginController;
-import com.varsql.core.configuration.ConnectionInfo;
+import com.varsql.core.connection.beans.ConnectionInfo;
 
 /**
  * 
@@ -41,11 +41,11 @@ public class DataSourceConfig {
 	@Autowired
 	private Environment env;
 
-	@Autowired
+	@Autowired	
 	private ApplicationContext applicationContext;
 
 	@Bean
-	public DataSource gainDataSource() {
+	public DataSource dataSource() {
 		
 		ConnectionInfo ci = com.varsql.core.configuration.Configuration.getInstance().getVarsqlDB();
         
@@ -64,17 +64,12 @@ public class DataSourceConfig {
 		return dataSource;
 	}
 
-	@Bean
-	public DataSourceTransactionManager gainTransactionManager() {
-		return new DataSourceTransactionManager(gainDataSource());
-	}
-
 	@Bean(name = "varsqlSessionFactoryBean")
 	public SqlSessionFactoryBean varsqlSqlSessionFactoryBean() throws Exception {
 		SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
 
-		factoryBean.setDataSource(gainDataSource());
+		factoryBean.setDataSource(dataSource());
 		factoryBean.setTypeAliasesPackage("com.varsql");
 		
 		factoryBean.setConfigLocation(
@@ -94,8 +89,7 @@ public class DataSourceConfig {
 	}
 	
 	@Bean(name = ResourceConfigConstants.APP_TRANSMANAGER)
-	public DataSourceTransactionManager transManagerTx() {
-		return new DataSourceTransactionManager(gainDataSource());
+	public DataSourceTransactionManager transactionManager() {
+		return new DataSourceTransactionManager(dataSource());
 	}
-
 }

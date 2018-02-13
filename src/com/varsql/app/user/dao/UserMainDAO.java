@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResourceConfigConstants;
-import com.varsql.app.dao.BaseDAO;
+import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.util.VarsqlUtil;

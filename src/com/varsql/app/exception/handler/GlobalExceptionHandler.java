@@ -1,7 +1,10 @@
 package com.varsql.app.exception.handler;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -9,12 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.varsql.app.exception.VarsqlAppException;
+import com.varsql.app.util.VarsqlUtil;
+import com.varsql.core.connection.pool.ConnectionCreateException;
+import com.varsql.core.connection.pool.ConnectionException;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
+import com.vartech.common.utils.VartechUtils;
 
 @ControllerAdvice
 @RestController
@@ -34,17 +40,15 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=SQLException.class)
-	public @ResponseBody ResponseResult sqlExceptionHandle(SQLException ex, HttpServletResponse response){
+	public void sqlExceptionHandle(SQLException ex, HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error("sqlExceptionHandle "+ getClass().getName(),ex);
-		
-		response.setContentType("application/json;charset=UTF-8");
-		response.setStatus(HttpStatus.OK.value());
 		
 		ResponseResult result = new ResponseResult();
 		result.setStatus(ResultConst.CODE.ERROR.toInt());
 		result.setMessage(ex.getMessage());
-		return result; 
+		
+		exceptionRequestHandle(request, response ,result);
 	}
 	
 	/**
@@ -59,17 +63,13 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=RuntimeException.class)
-	public @ResponseBody ResponseResult runtimeExceptionHandle(RuntimeException ex, HttpServletResponse response){
+	public void runtimeExceptionHandle(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error("runtimeExceptionHandle : ", getClass().getName(),ex);
-		
-		response.setContentType("application/json;charset=UTF-8");
-		response.setStatus(HttpStatus.OK.value());
-		
 		ResponseResult result = new ResponseResult();
-		result.setStatus(ResultConst.CODE.ERROR.toInt());
 		result.setMessage(ex.getMessage());
-		return result; 
+		
+		exceptionRequestHandle(request, response ,result);
 	}
 	
 	/**
@@ -84,32 +84,94 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
-	public @ResponseBody ResponseResult epptlExceptionHandle(VarsqlAppException ex, HttpServletResponse response){
+	public void epptlExceptionHandle(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
-		
-		response.setContentType("application/json;charset=UTF-8");
-		response.setStatus(HttpStatus.OK.value());
 		
 		ResponseResult result = new ResponseResult();
 		result.setStatus(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getErrorMessage());
-		return result; 
+		
+		exceptionRequestHandle(request, response ,result);
 	}
 	
-	@ExceptionHandler(value=Exception.class)
-	public @ResponseBody ResponseResult exceptionHandle(Exception ex, HttpServletResponse response){
+	/**
+	 * 
+	 * @Method Name  : connectionExceptionHandle
+	 * @Method 설명 : 커넥션 에러.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 13. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=ConnectionException.class)
+	public void connectionExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		
-		response.setContentType("application/json;charset=UTF-8");
-		response.setStatus(HttpStatus.OK.value());
-		
 		ResponseResult result = new ResponseResult();
-		result.setStatus(500);
-		result.setMessage(ex.getMessage());
-		return result; 
+		exceptionRequestHandle(request, response ,result,"connError");
 	}
 	
+	/**
+	 * @Method Name  : connectionCreateExceptionHandle
+	 * @Method 설명 :  커넥션 생성 에러
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 13. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=ConnectionCreateException.class)
+	public void connectionCreateExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(request, response ,result ,"connCreateError");
+	}
+	
+	@ExceptionHandler(value=Exception.class)
+	public void exceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(request, response ,result);
+	}
+	
+	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result ) {
+		exceptionRequestHandle(request ,response , result  , null);
+	}
+	
+	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
+		if(VarsqlUtil.isAjaxRequest(request)){
+			response.setContentType("application/json;charset=UTF-8");
+			response.setStatus(HttpStatus.OK.value());
+			result.setStatus(ResultConst.CODE.ERROR.toInt());
+			
+			Writer writer=null;
+			try {
+				writer = response.getWriter();
+				writer.write(VartechUtils.objectToString(result));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally{
+				if(writer!=null){ try {writer.close();} catch (IOException e) {}};
+			}
+		}else{
+			try {
+				response.sendRedirect(request.getContextPath()+"/error/"+pageName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
 }

@@ -30,6 +30,16 @@ public class VarsqlUtil {
 		return UUID.randomUUID().toString().replaceAll("-", ""); 
 	}
 	
+	public static boolean isAjaxRequest(HttpServletRequest request){
+		String headerInfo = request.getHeader("X-Requested-With");
+		
+		if("XMLHttpRequest".equals(headerInfo)){
+			return true;
+		}else{
+			return false; 
+		}
+	}
+	
 	public static String getVconnID (HttpServletRequest req){
 		return (String) req.getAttribute(VarsqlParamConstants.VCONNID); 
 	}

@@ -17,8 +17,8 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.core.common.util.CommUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.db.validation.Validation;
 import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -140,7 +140,7 @@ public class AdminServiceImpl{
 		try {
 			Class.forName(driver);
 			connChk = DriverManager.getConnection(url, p);
-			validation_query = validation_query != null && !"".equals(validation_query.trim()) ?validation_query :Validation.getInstance().validationQuery(dbtype);
+			validation_query = validation_query != null && !"".equals(validation_query.trim()) ?validation_query :ValidationProperty.getInstance().validationQuery(dbtype);
 			
 			pstmt=connChk.prepareStatement(validation_query);
 			pstmt.executeQuery();

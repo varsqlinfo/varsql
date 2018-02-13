@@ -2,7 +2,7 @@ package com.varsql.app.user.dao;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.app.dao.BaseDAO;
+import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.user.beans.JoinForm;
 
 

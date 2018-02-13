@@ -28,12 +28,6 @@ var _initialized = false
 		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
 		,number : {prefix :'$', suffix :'원' , fixed : 0}
 	}
-	,bigData : {
-		enabled: true
-		,gridCount : 30		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다.  auto 일 경우 화면 height 체크 해서 처리 한다. 
-		,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
-		,horizontalEnableCount : 20	// 컬럼 view 카운트. 20개 이상일경우 처리. 
-	}
 	,autoResize : {
 		enabled:true
 		,responsive : false // 리사이즈시 그리드 리사이즈 여부.
@@ -59,7 +53,9 @@ var _initialized = false
 		,oneCharWidth: 9
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
-
+	}
+	,bodyOptions : {
+		cellDblClick : false	// body td click
 	}
 	,scroll :{
 		lazyLoad : false // scroll 실시간으로 로드할지 여부 (속도에 영향으줌. )
@@ -130,6 +126,9 @@ function hasProperty(obj , key){
 
 function isUndefined(obj){
 	return typeof obj==='undefined';
+}
+function isFunction(obj){
+	return typeof obj==='function';
 }
 
 function intValue(val){
@@ -1368,19 +1367,17 @@ Plugin.prototype ={
 			leftVal=0; 
 		}
 
-		var resizeFlag = false ,dragFlag = false; 
-
 		if(type=='resize'){
-			resizeFlag = true; 
-			dragFlag = true;
-		}
-		
-		_this.moveVScroll({pos :topVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
-		_this.moveHScroll({pos :leftVal, drawFlag : dragFlag , resizeFlag : resizeFlag});
-
-		if(beforeViewCount !=0 ){
-			if(type !='reDraw' && drawFlag){
-				_this.drawGrid();
+			_this.moveVScroll({pos :topVal, drawFlag : false,resizeFlag:true});
+			_this.moveHScroll({pos :leftVal, drawFlag : false,resizeFlag:true});
+			_this.drawGrid();
+		}else{
+			_this.moveVScroll({pos :topVal, drawFlag : false});
+			_this.moveHScroll({pos :leftVal, drawFlag : false});
+			if(beforeViewCount !=0 ){
+				if(type !='reDraw' && drawFlag){
+					_this.drawGrid();
+				}
 			}
 		}
 	}
@@ -1556,7 +1553,7 @@ Plugin.prototype ={
 	,moveVScroll : function (moveObj){
 		var _this =this; 
 
-		console.log('moveVScroll' ,moveObj)
+		//console.log('moveVScroll' ,moveObj)
 
 		if(!_this.config.scroll.vUse && moveObj.resizeFlag !== true){ 
 			_this.config.scroll.viewIdx = 0;
@@ -1733,9 +1730,6 @@ Plugin.prototype ={
 			,currEnd : (endVal-1)
 			,total : this.options.tbodyItem.length
 		}))
-	}
-	,_getScrollOverHeight : function (idx , updown){
-		return idx* (this.options.bigData.gridCount)* this.config.rowHeight;
 	}
 	/**
      * @method resizeDraw
@@ -1930,8 +1924,7 @@ Plugin.prototype ={
      * @description 바디 이벤트 초기화.
      */
 	,_initBodyEvent : function (){
-		var _this = this
-			 ,rowClickFlag =false; 
+		var _this = this; 
 		
 		_this._setRangeSelectInfo({isMouseDown : false});
 		
@@ -2031,8 +2024,7 @@ Plugin.prototype ={
 			_this._setRangeSelectInfo({isMouseDown : false});
 		});
 	
-		if(_this.options.rowOptions.click !== false && typeof _this.options.rowOptions.click == 'function'){
-			rowClickFlag =true; 
+		if(isFunction(_this.options.rowOptions.click)){
 
 			var beforeRow; 
 			_this.element.body.on('click.pubgridrow','.pub-body-tr',function (e){
@@ -2049,6 +2041,20 @@ Plugin.prototype ={
 				beforeRow = selRow; 
 				
 				_this.options.rowOptions.click.call(selRow ,rowinfo , selItem);							
+			});
+		}
+
+		if(isFunction(_this.options.bodyOptions.cellDblClick)){
+			
+			_this.element.body.on('click.pubgridtd','.pub-body-td',function (e){
+				var selRow = $(this)
+					,tdInfo=selRow.data('grid-position');
+				
+				var rowIdx = _this.config.scroll.viewIdx+intValue(tdInfo.split(',')[0]);
+
+				var rowItem = _this.options.tbodyItem[rowIdx];
+								
+				_this.options.bodyOptions.cellDblClick.call(selRow ,rowIdx , rowItem);							
 			});
 		}
 				
