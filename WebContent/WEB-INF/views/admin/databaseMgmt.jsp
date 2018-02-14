@@ -1,5 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<style>
+.view-area{
+	display:none;
+}
+
+.view-area.on{
+	display:block;
+}
+</style>
 <script>
 $(document).ready(function (){
 	databaseMgmt.init();
@@ -20,6 +29,7 @@ var databaseMgmt = {
 			_this.add();
 		});
 		
+		
 		//add btn
 		$('.saveAndPoolInitBtn').click(function() {
 			if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
@@ -27,6 +37,20 @@ var databaseMgmt = {
 			$('#pollinit').val('Y');
 			$('.saveBtn').trigger('click');
 		});
+		
+		//add btn
+		$('.optSaveAndPoolInitBtn').click(function() {
+			if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
+			
+			$('#pollinit').val('Y');
+			$('.optSaveBtn').trigger('click');
+		});
+		
+		// 옵션 닫기.
+		$('.closeBtn').on('click',function() {
+			_this.viewAreaShow('view');
+		});
+		
 		// connection check
 		$('.connCheckBtn').click(function() {
 			_this.connectionCheck();
@@ -57,42 +81,35 @@ var databaseMgmt = {
 			},
 			fields: {
 			  vname: {
-				  validators: {
-					  notEmpty: {
-						  message: 'The name is required and cannot be empty'
-					  }
-				  }
+				  validators: {notEmpty: { message: 'The name is required and cannot be empty' }}
 			  },
 			  vdbschema: {
-				  validators: {
-					  notEmpty: {
-						  message: 'The schema is required and cannot be empty'
-					  }
-				  }
+				  validators: { notEmpty: { message: 'The schema is required and cannot be empty'} }
 			  },
 			  vurl: {
-				  validators: {
-					  notEmpty: {
-						  message: 'The url is required and cannot be empty'
-					  }
-				  }
+				  validators: {notEmpty: { message: 'The url is required and cannot be empty' } }
 			  }
-			  /*
-			  vid: {
-				  validators: {
-					  notEmpty: {
-						  message: 'The id is required and cannot be empty'
-					  }
-				  }
-			  },
-			  vpw: {
-				  validators: {
-					  notEmpty: {
-						  message: 'The password is required and cannot be empty'
-					  }
-				  }
-			  }
-			  */
+			}
+		}).on('success.form.bv', function(e) {
+			// Prevent form submission
+			e.preventDefault();
+
+			_this.save();
+		});
+		
+		
+		$('#optionsForm').bootstrapValidator({
+			message: 'This value is not valid',
+			feedbackIcons: {
+				valid: 'glyphicon glyphicon-ok',
+				invalid: 'glyphicon glyphicon-remove',
+				validating: 'glyphicon glyphicon-refresh'
+			},
+			fields: {
+			  maxActive : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
+			  ,minIdel : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
+			  ,timeout : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
+			  ,exportCount : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
 			}
 		}).on('success.form.bv', function(e) {
 			// Prevent form submission
@@ -111,12 +128,10 @@ var databaseMgmt = {
 		$('#vtype').val('');
 		$('#vid').val('');
 		$('#vpw').val('');
-		$('#vconnopt').val('');
-		$('#vpoolopt').val('');
 		$('#vquery').val('');
 		$('#pollinit').val('N');
 	}
-	,clickDbInfo : function (sObj){
+	,clickDbInfo : function (sObj , viewMode){
 		sObj = $(sObj);
 		
 		$('#vconnid').val(sObj.attr('conid'));
@@ -135,11 +150,15 @@ var databaseMgmt = {
 				$('#vtype').val(item.VTYPE);
 				$('#vid').val(item.VID);
 				$('#vpw').val(item.VPW);
-				$('#vconnopt').val(item.VCONNOPT);
-				$('#vpoolopt').val(item.VPOOLOPT);
 				$('#vquery').val(item.VQUERY);
 				
 				$('#vtype').trigger('change');
+				
+				// option
+				$('#maxActive').val(item.MAX_ACTIVE);
+				$('#minIdel').val(item.MIN_IDEL);
+				$('#timeout').val(item.TIMEOUT);
+				$('#exportCount').val(item.EXPORTCOUNT);
 			}
 		});
 	}
@@ -169,14 +188,22 @@ var databaseMgmt = {
 	    		var item; 
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
-	    			strHtm.push('<a href="javascript:;" class="list-group-item" conid="'+item.VCONNID+'">'+item.VNAME);
-	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
+	    			
+	    			strHtm.push('<a href="javascript:;" class="list-group-item" conid="'+item.VCONNID+'"><span class="clickItem" data-mode="view">'+item.VNAME+'</span>');
+	    			strHtm.push('<span class="clickItem pull-right glyphicon glyphicon-pencil" data-mode="option" style="width:80px;">옵션</span>');
+	    			strHtm.push('</a>');
 	    		}
 	    		
 	    		$('#dbinfolist').html(strHtm.join(''));
 	    		
-	    		$('#dbinfolist .list-group-item').on('click',function (){
-	    			databaseMgmt.clickDbInfo($(this));
+	    		$('#dbinfolist .clickItem').on('click',function (){
+	    			var sEle = $(this)
+	    				, mode = sEle.data('mode')
+	    				, conIdEle = sEle.closest('[conid]');
+	    			
+	    			_this.viewAreaShow(mode);
+	    			
+	    			_this.clickDbInfo(conIdEle,mode);
 	    		});
 	    		
 	    		$('#pageNavigation').pagingNav(resData.page,databaseMgmt.search);
@@ -185,16 +212,38 @@ var databaseMgmt = {
 	}
 	,save : function (){
 		var _this = this; 
+		
+		var addData = $("#addForm").serialize();
+		addData.vconnid= $('#vconnid').val();
+		addData.pollinit= $('#pollinit').val();
+		
 		VARSQL.req.ajax({
-			data:$("#addForm").serialize()
+			data : addData 
 			,url : '/admin/main/dbSave'
 			,success:function (resData){
 				if(VARSQL.req.validationCheck(resData)){
 					_this.search();
 					$('.addBtn').trigger("click");
-					
 				}
-				
+			}
+		});
+	}
+	// option save
+	,optionSave : function (){
+		var _this = this; 
+		
+		var addData = $("#addForm").serialize();
+		addData.vconnid= $('#vconnid').val();
+		addData.pollinit= $('#pollinit').val();
+		
+		VARSQL.req.ajax({
+			data : addData 
+			,url : '/admin/main/dbSave'
+			,success:function (resData){
+				if(VARSQL.req.validationCheck(resData)){
+					_this.search();
+					$('.addBtn').trigger("click");
+				}
 			}
 		});
 	}
@@ -224,13 +273,12 @@ var databaseMgmt = {
 			}
 		});
 	}
+	// edit element, options 처리.
+	,viewAreaShow :function (viewMode){
+		$('.view-area.on').removeClass('on');
+		$('.view-area[data-view-mode="'+viewMode+'"]').addClass('on');
+	}
 	,connectionCheck : function (){
-		/*
-		if($('#vconnid').val()==''){
-			$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
-			return ; 
-		}
-		*/
 		var param =  $("#addForm").serializeJSON();
 		
 		param.vdriver = $('#vdriver option:selected').attr('data-driver');
@@ -314,74 +362,117 @@ var databaseMgmt = {
 	</div>
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-7">
-		<div class="panel panel-default">
+		<div class="panel panel-default" >
 			<div class="panel-heading"><spring:message code="admin.form.header" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<form id="addForm" name="addForm" class="form-horizontal">
-					<div class="form-group">
-						<div class="col-sm-12">
-							<div class="pull-right">
-								<button type="button" class="btn btn-default addBtn"><spring:message code="btn.add"/></button>
-								<button type="submit" class="btn btn-default saveBtn"><spring:message code="btn.save"/></button>
-								<button type="button" class="btn btn-default saveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
-								<button type="button" class="btn btn-primary connCheckBtn"><spring:message code="btn.connnection.check"/></button>
-								<button type="button" class="btn btn-danger deleteBtn"><spring:message code="btn.delete"/></button>
-							</div>
-						</div>
-					</div>
+				<div class="view-area on" data-view-mode="view">
 					<input type="hidden" id="vconnid" name="vconnid">
 					<input type="hidden" id="pollinit" name="pollinit" value="N">
-					<div id="warningMsgDiv"></div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" id="vname" name="vname" value="">
+					<form id="addForm" name="addForm" class="form-horizontal">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<div class="pull-right">
+									<button type="button" class="btn btn-default addBtn"><spring:message code="btn.add"/></button>
+									<button type="submit" class="btn btn-default saveBtn"><spring:message code="btn.save"/></button>
+									<button type="button" class="btn btn-default saveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
+									<button type="button" class="btn btn-primary connCheckBtn"><spring:message code="btn.connnection.check"/></button>
+									<button type="button" class="btn btn-danger deleteBtn"><spring:message code="btn.delete"/></button>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" id="vdbschema" name="vdbschema" value="">
+						<div id="warningMsgDiv"></div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" id="vname" name="vname" value="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" id="vurl" name="vurl" value="">
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" id="vdbschema" name="vdbschema" value="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
-						<div class="col-sm-8">
-							<select class="form-control text required" id="vtype" name="vtype">
-								<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
-									<option value="${tmpInfo.URLPREFIX}" i18n="${tmpInfo.LANGKEY}">${tmpInfo.NAME}</option>
-								</c:forEach>
-							</select>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" id="vurl" name="vurl" value="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
-						<div class="col-sm-8">
-							<select class="form-control text required" id="vdriver" name="vdriver">
-							</select>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
+							<div class="col-sm-8">
+								<select class="form-control text required" id="vtype" name="vtype">
+									<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
+										<option value="${tmpInfo.URLPREFIX}" i18n="${tmpInfo.LANGKEY}">${tmpInfo.NAME}</option>
+									</c:forEach>
+								</select>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" id="vid" name="vid" value="">
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
+							<div class="col-sm-8">
+								<select class="form-control text required" id="vdriver" name="vdriver">
+								</select>
+							</div>
 						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" type="password" id="vpw" name="vpw" value="">
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" id="vid" name="vid" value="">
+							</div>
 						</div>
-					</div>
-				</form>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="password" id="vpw" name="vpw" value="">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="view-area" data-view-mode="option">
+					<form id="optionsForm" name="optionsForm" class="form-horizontal">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<div class="pull-right">
+									<button type="submit" class="btn btn-default optSaveBtn"><spring:message code="btn.save"/></button>
+									<button type="button" class="btn btn-default optSaveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
+									<button type="button" class="btn btn-default closeBtn"><spring:message code="btn.close"/></button>
+								</div>
+							</div>
+						</div>
+						<div id="optWarningMsgDiv"></div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.minidel" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="number" id="minIdle" name="minIdle" value="">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.maxactive" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="number" id="maxActive" name="maxActive" value="">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.timeout" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="number" id="timeout" name="timeout" value="">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.exportcount" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="number" id="exportCount" name="exportCount" value="">
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
 			<!-- /.panel-body -->
 		</div>

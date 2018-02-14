@@ -32,5 +32,7 @@
 <entry key="label.cancle">취소</entry>
 <entry key="label.delete">삭제</entry>
 
+<entry key="btn.close">닫기</entry>
+
 
 </properties>

@@ -14,7 +14,7 @@ if (typeof window != "undefined") {
 
 
 var  portalDefaultTemplate = {
-	'pageNavTemplate' : '<ul class="pagination">'
+	'pageNavTemplate' : '<div class="text-center"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
 		+'	<a @click="goPage(pageInfo.currPage - 1)">Previous</a>'
 		+'</li>'
@@ -25,7 +25,19 @@ var  portalDefaultTemplate = {
 		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
 		+'	<a @click="goPage(pageInfo.currPage + 1)">Next</a>'
 		+'</li>'
-	+'</ul>'
+		+'</ul></div>'
+	,'grid1Template' : '<div class="text-center"><ul class="pagination">'
+		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
+		+'	<a @click="goPage(pageInfo.currPage - 1)">Previous</a>'
+		+'</li>'
+		+'<li v-for="no in (pageInfo.currStartPage , pageInfo.currEndPage)">'
+		+'	<a v-if="no ==pageInfo.currPage">{{no}}</a>'
+		+'	<a v-if="no != pageInfo.currPage" @click="goPage(no)">{{no}}</a>'
+		+'</li>'
+		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
+		+'	<a @click="goPage(pageInfo.currPage + 1)">Next</a>'
+		+'</li>'
+	+'</ul></div>'
 };
 
 

@@ -694,3 +694,12 @@ padding-top: 5px;
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
 }
+
+.ui-widget-overlay {
+    background: #aaaaaa;
+    opacity: .3;
+    filter: Alpha(Opacity=.3);
+}
+.ui-widget-overlay {
+    position: none;
+}
