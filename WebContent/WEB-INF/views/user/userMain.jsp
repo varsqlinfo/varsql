@@ -10,8 +10,10 @@ var userMain = {
 	_userConnectionInfo :'#user_connection_info'
 	,_connectionTab :'#user_connection_info_tab'
 	,_connectionIframe :'#user_connection_info_iframe'
+	,iframeLoadTemplate : ''
 	,init : function (){
 		var _self = this; 
+		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html(); 
 		_self.evtInit();
 	}
 	,evtInit : function (){
@@ -27,8 +29,6 @@ var userMain = {
 				id : sEle.val()
 				,name : sEle.attr('vname')
 			});
-			
-			$('#connection_select_msg_wrapper').attr('data-init-msg','N');
 		});
 		
 		$(_self._connectionTab).on('click','.tab-ui-name',function (){
@@ -69,9 +69,17 @@ var userMain = {
 			
 			if($('.db_sql_view_area').length < 1){
 				$(_self._userConnectionInfo).val('');
-				$('#connection_select_msg_wrapper').attr('data-init-msg','Y');
-				$('#connection_select_msg_wrapper').show();
+				$('#connectionMsg').show();
 			}
+		});
+		
+		$(_self._connectionTab).on('click','.db-info-tab-ui-refresh',function (){
+			if(!confirm('새로고침 하시겠습니까?')) return ; 
+			var pObj = $(this).closest('[conuid]')
+				,sconid = pObj.attr('conuid');
+			pObj.find('.tab-ui-name').trigger('click');
+			
+			$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
 		});
 	}
 	// 탭정보 컨트롤
@@ -80,18 +88,14 @@ var userMain = {
 		var sconid = sItem.id;
 		var tabs = $('.tabs_'+sconid);
 		
+		$('#connectionMsg').hide();
+		
 		$( _self._connectionTab+'> .ui-tab-item-active').removeClass('ui-tab-item-active');
 		tabs.addClass('ui-tab-item-active');
-		$('.db_sql_view_area').hide();
+		$('.db_sql_view_area').css('z-index',1);
 		
 		if(tabs.length > 0){
-			var sIframeEle =$('.iframe_'+sconid); 
-			if(sIframeEle.attr('load-flag') =='Y'){
-				$('#connection_select_msg_wrapper').hide();
-				$('.iframe_'+sconid).show();
-			}else{
-				$('#connection_select_msg_wrapper').show();
-			}
+			$('#wrapper_'+sconid).css('z-index',100);
 			return ; 
 		}
 		
@@ -99,6 +103,7 @@ var userMain = {
 		
 		var strHtm='<li class="db-info-tab ui-tab-item ui-tab-item-active tabs_'+sconid+'">';
 		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(sItem.name)+'">';
+		strHtm+='		<a href="javascript:" class="db-info-tab-ui-refresh" title="refresh"><span class="fa fa-refresh"></span></a>&nbsp;';
 		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+sItem.name+'</a>&nbsp;';
 		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp;';
 		strHtm+='	</span>';
@@ -106,38 +111,50 @@ var userMain = {
 		
 		$(_self._connectionTab).append(strHtm);
 		
-		var _url = sItem.url; 
-		if(typeof _url ==='undefined'){
-			_url = VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;	
-		}
+		var _url = _self.getDbClientUrl(sconid);	
 		 
-		var strHtm = '<iframe class="db_sql_view_area iframe_'+sconid+' display-hidden" src="'+_url+'" style="width:100%;height:100%;" width="100%" height="100%" frameborder="0"></iframe>';
-		
+		var strHtm = '<div id="wrapper_'+sconid+'" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">'
+			+'<iframe class="iframe_'+sconid+'" src="'+_url+'" style="width:100%;height:100%;" frameborder="0"></iframe>'
+			+_self.iframeLoadTemplate+'</div>';
+			
 		$(_self._connectionIframe).append(strHtm);
 		
 		$('.iframe_'+sconid).load( function(){
-			$('#connection_select_msg_wrapper').hide();
-			$(this).attr('load-flag','Y').removeClass('display-hidden');
+			var iframeWrapperEle = $('#wrapper_'+sconid);
+			iframeWrapperEle.find('.connection_select_msg_wrapper').remove();
 		});
 	}
 	,activeClose : function (){
 		$(this._connectionTab+'> .ui-tab-item-active .tab-ui-close').trigger('click');
 	}
+	,getDbClientUrl : function (sconid){
+		return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
+	} 
 }
 </script>
 <!-- Page Heading -->
+<script id="iframeLoadTemplate" type="text/varsql">
+<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
+<tbody>
+	<tr>
+		<td style="text-align: center; font-size: 3em;">
+			<div class="var-load-frame">
+				<img src="${pageContextPath}/webstatic/css/images/loading.gif">
+				<div>db 정보를 로드중입니다.</div>
+			</div>
+		</td>
+	</tr>
+</tbody>
+</table>
+</script>
 
 <div class="col-lg-12 fill" style="height:100%;">
 	<div class="row fill" id="user_connection_info_iframe" style="height:100%;">
-		<table id="connection_select_msg_wrapper" data-init-msg="Y" style="width: 100%; height: 100%;">
+		<table id="connectionMsg"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">
-						<div class="var-db-select-text">접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>
-						<div class="var-load-frame">
-							<img src="${pageContextPath}/webstatic/css/images/loading.gif">
-							<div>db 정보를 로드중입니다.</div>
-						</div>
+						<div class="var-db-select-text">접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>	
 					</td>
 				</tr>
 			</tbody>

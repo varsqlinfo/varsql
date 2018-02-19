@@ -4,7 +4,21 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-//@author
+/**
+ * 
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: Vtconnection.java
+* @DESC		: 커넥션 정보. 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2018. 2. 19. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 public class Vtconnection{
 	@Size(max=5)
 	private String vconnid;
@@ -28,20 +42,11 @@ public class Vtconnection{
 	@Size(max=100)
 	private String vtype;
 
-	@Size(max=1000)
-	private String vquery;
-
 	@Size(max=100)
 	private String vid;
 
 	@Size(max=500)
 	private String vpw;
-
-	@Size(max=2000)
-	private String vconnopt;
-
-	@Size(max=2000)
-	private String vpoolopt;
 
 	private int vdbversion;
 
@@ -85,12 +90,6 @@ public class Vtconnection{
 	public void setVtype(String vtype){
 		this.vtype=vtype;
 	}
-	public String getVquery(){
-		return this.vquery;
-	}
-	public void setVquery(String vquery){
-		this.vquery=vquery;
-	}
 	public String getVid(){
 		return this.vid;
 	}
@@ -102,18 +101,6 @@ public class Vtconnection{
 	}
 	public void setVpw(String vpw){
 		this.vpw=vpw;
-	}
-	public String getVconnopt(){
-		return this.vconnopt;
-	}
-	public void setVconnopt(String vconnopt){
-		this.vconnopt=vconnopt;
-	}
-	public String getVpoolopt(){
-		return this.vpoolopt;
-	}
-	public void setVpoolopt(String vpoolopt){
-		this.vpoolopt=vpoolopt;
 	}
 	public int getVdbversion(){
 		return this.vdbversion;

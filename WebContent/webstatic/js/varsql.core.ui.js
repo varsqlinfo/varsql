@@ -24,6 +24,7 @@ var _g_options={
 	,getUriPrefix:function (uri){
 		return '/'+this.urlPrefix+(uri?uri:'');
 	}
+	,_opts :{}
 };
 
 VARSQL.ui.create = function (_opts){
@@ -31,10 +32,12 @@ VARSQL.ui.create = function (_opts){
 	_ui.base.sqlHints = VARSQLCont.dataType.sqlHints(_opts.dbtype);
 	_ui.base.mimetype = VARSQLCont.dataType.getMimeType(_opts.dbtype);
 	
+	_g_options._opts =_opts;
 	_ui.initContextMenu();
 	_ui.headerMenu.init(_opts);
 	_ui.leftDbObject.create(_opts);
 	_ui.layout.init(_opts);
+	
 }
 
 //context menu 초기화
@@ -1469,7 +1472,11 @@ _ui.SQL = {
 			,select: function( event, item ) {
 				var strHtm = [];
 				
-				if($('.recv_id_item[_recvid="'+item.VIEWID+'"]').length > 0 ) return false;
+				this.selectorElement.val('');
+				
+				if($('.recv_id_item[_recvid="'+item.VIEWID+'"]').length > 0 ) {
+					return false;
+				}
 				
 				strHtm.push('<div class="recv_id_item" _recvid="'+item.VIEWID+'">'+item.UNAME+'('+item.UID+')');
 				strHtm.push('<a href="javascript:;" class="pull-right">X</a></div>');

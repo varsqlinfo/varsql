@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.admin.beans.Vtconnection;
+import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.dao.AdminDAO;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
@@ -105,32 +106,10 @@ public class AdminServiceImpl{
 		String pwd = vtConnection.getVpw();
 		String dbtype = vtConnection.getVtype();
 		
-		String connection_opt = vtConnection.getVconnopt();
-		String validation_query = vtConnection.getVquery();
-		
 		Properties p =new Properties();
 		
 		p.setProperty("user", username);
 		p.setProperty("password", pwd);
-		
-		if(null != connection_opt && !"".equals(connection_opt)){
-			String [] tmpOpt = CommUtil.split(connection_opt, ";");
-			
-			String [] optVal = null;
-			String tmpKey = "";
-			for (int i = 0; i < tmpOpt.length; i++) {
-				
-				tmpKey=tmpOpt[i];
-				
-				if("".equals(tmpKey.trim())){
-					continue; 
-				}
-				
-				optVal = CommUtil.split(tmpKey, "=");
-				
-				p.setProperty(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ));
-			}
-		}
 		
 		String result = "";
 		String failMessage = "";
@@ -140,7 +119,7 @@ public class AdminServiceImpl{
 		try {
 			Class.forName(driver);
 			connChk = DriverManager.getConnection(url, p);
-			validation_query = validation_query != null && !"".equals(validation_query.trim()) ?validation_query :ValidationProperty.getInstance().validationQuery(dbtype);
+			String validation_query = ValidationProperty.getInstance().validationQuery(dbtype);
 			
 			pstmt=connChk.prepareStatement(validation_query);
 			pstmt.executeQuery();
@@ -195,7 +174,7 @@ public class AdminServiceImpl{
 		}else{
 			int result =adminDAO.updateVtconnectionInfo(vtConnection);
 			
-			if(result > 0 && "Y".equals(vtConnection.getVpoolopt())){
+			if(result > 0 && "Y".equals(vtConnection.getPollinit())){
 				try {
 					ConnectionFactory.getInstance().resetConnectionPool(vtConnection.getVconnid());
 					resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
@@ -232,6 +211,35 @@ public class AdminServiceImpl{
 		ResponseResult resultObject = new ResponseResult();
 		resultObject.setItemList(adminDAO.selectDbDriverList(paramMap));
 		
+		return resultObject;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : saveVtconnectionOptionInfo
+	 * @Method 설명 : connection option 정보 저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 19. 
+	 * @변경이력  :
+	 * @param vtconnectionOption
+	 * @return
+	 */
+	public ResponseResult saveVtconnectionOptionInfo(VtconnectionOption vtconnectionOption) {
+		ResponseResult resultObject = new ResponseResult();
+		
+		vtconnectionOption.setUserId(SecurityUtil.loginId());
+		
+		int result =adminDAO.updateVtconnectionOptionInfo(vtconnectionOption);
+			
+		if(result > 0 && "Y".equals(vtconnectionOption.getPollinit())){
+			try {
+				ConnectionFactory.getInstance().resetConnectionPool(vtconnectionOption.getVconnid());
+				resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
+			} catch (Exception e) {
+				resultObject.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+				resultObject.setMessage(e.getMessage());
+			}
+		}
 		return resultObject;
 	}
 }

@@ -20,11 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.admin.beans.Vtconnection;
+import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.service.AdminServiceImpl;
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.UserConstants;
-import com.varsql.core.common.util.SecurityUtil;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
@@ -217,6 +215,36 @@ public class AdminController{
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			resultObject = adminServiceImpl.saveVtconnectionInfo(vtConnection);
+		}
+		
+		return  resultObject;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbOptSave
+	 * @Method 설명 : 옵션정보 저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 19. 
+	 * @변경이력  :
+	 * @param vtconnectionOption
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/main/dbOptSave")
+	public @ResponseBody ResponseResult dbOptSave(@Valid VtconnectionOption vtconnectionOption, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			resultObject = adminServiceImpl.saveVtconnectionOptionInfo(vtconnectionOption);
 		}
 		
 		return  resultObject;

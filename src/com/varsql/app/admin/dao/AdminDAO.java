@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.admin.beans.Vtconnection;
+import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.dao.BaseDAO;
 import com.vartech.common.app.beans.SearchParameter;
@@ -57,5 +58,19 @@ public class AdminDAO extends BaseDAO{
 
 	public List selectDbDriverList(DataCommonVO paramMap) {
 		return getSqlSession().selectList("adminMapper.selectDbDriverList", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateVtconnectionOptionInfo
+	 * @Method 설명 : 옵션 정보 저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 19. 
+	 * @변경이력  :
+	 * @param vtconnectionOption
+	 * @return
+	 */
+	public int updateVtconnectionOptionInfo(VtconnectionOption vtconnectionOption) {
+		return getSqlSession().update("adminMapper.updateVtconnectionOptionInfo", vtconnectionOption);
 	}
 }

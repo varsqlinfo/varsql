@@ -107,7 +107,7 @@ var databaseMgmt = {
 			},
 			fields: {
 			  maxActive : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
-			  ,minIdel : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
+			  ,minIdle : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
 			  ,timeout : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
 			  ,exportCount : {validators: {callback :{message: '숫자만 가능합니다',callback: function(value, validator) {return !isNaN(value);}}}}
 			}
@@ -115,7 +115,7 @@ var databaseMgmt = {
 			// Prevent form submission
 			e.preventDefault();
 
-			_this.save();
+			_this.optionSave();
 		});
 	}
 	// 추가
@@ -128,7 +128,6 @@ var databaseMgmt = {
 		$('#vtype').val('');
 		$('#vid').val('');
 		$('#vpw').val('');
-		$('#vquery').val('');
 		$('#pollinit').val('N');
 	}
 	,clickDbInfo : function (sObj , viewMode){
@@ -156,9 +155,10 @@ var databaseMgmt = {
 				
 				// option
 				$('#maxActive').val(item.MAX_ACTIVE);
-				$('#minIdel').val(item.MIN_IDEL);
+				$('#minIdle').val(item.MIN_IDLE);
 				$('#timeout').val(item.TIMEOUT);
 				$('#exportCount').val(item.EXPORTCOUNT);
+				$('#vquery').val(item.VQUERY);
 			}
 		});
 	}
@@ -201,9 +201,9 @@ var databaseMgmt = {
 	    				, mode = sEle.data('mode')
 	    				, conIdEle = sEle.closest('[conid]');
 	    			
-	    			_this.viewAreaShow(mode);
-	    			
 	    			_this.clickDbInfo(conIdEle,mode);
+	    			
+	    			_this.viewAreaShow(mode);
 	    		});
 	    		
 	    		$('#pageNavigation').pagingNav(resData.page,databaseMgmt.search);
@@ -213,7 +213,7 @@ var databaseMgmt = {
 	,save : function (){
 		var _this = this; 
 		
-		var addData = $("#addForm").serialize();
+		var addData = $("#addForm").serializeJSON();
 		addData.vconnid= $('#vconnid').val();
 		addData.pollinit= $('#pollinit').val();
 		
@@ -232,15 +232,16 @@ var databaseMgmt = {
 	,optionSave : function (){
 		var _this = this; 
 		
-		var addData = $("#addForm").serialize();
+		var addData = $("#optionsForm").serializeJSON();
 		addData.vconnid= $('#vconnid').val();
 		addData.pollinit= $('#pollinit').val();
 		
 		VARSQL.req.ajax({
 			data : addData 
-			,url : '/admin/main/dbSave'
+			,url : '/admin/main/dbOptSave'
 			,success:function (resData){
 				if(VARSQL.req.validationCheck(resData)){
+					alert('저장되었습니다');
 					_this.search();
 					$('.addBtn').trigger("click");
 				}
@@ -268,8 +269,8 @@ var databaseMgmt = {
 			,url : '/admin/main/dbDelete'
 			,dataType:'JSON'
 			,success:function (resData){
+				$('.addBtn').trigger("click");
 				_this.search();
-				$('#addBtn').trigger("click");
 			}
 		});
 	}
@@ -446,7 +447,7 @@ var databaseMgmt = {
 						<div id="optWarningMsgDiv"></div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.minidel" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.minidle" /></label>
 							<div class="col-sm-8">
 								<input class="form-control text required" type="number" id="minIdle" name="minIdle" value="">
 							</div>
@@ -469,6 +470,12 @@ var databaseMgmt = {
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.exportcount" /></label>
 							<div class="col-sm-8">
 								<input class="form-control text required" type="number" id="exportCount" name="exportCount" value="">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vquery" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="text" id="vquery" name="vquery" value="">
 							</div>
 						</div>
 					</form>

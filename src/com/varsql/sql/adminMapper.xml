@@ -42,9 +42,6 @@
 			,VTYPE 
 			,VID 
 			,VPW
-			,VCONNOPT 
-			,VPOOLOPT
-			,VQUERY
 			,REG_ID
 			,REG_DT
 			,UPD_ID
@@ -58,9 +55,6 @@
 			,#{vtype}
 			,#{vid}
 			,#{vpw}
-			,#{vconnopt}
-			,#{vpoolopt}
-			,#{vquery}
 			,#{userId}
 			,CURRENT TIMESTAMP
 			,#{userId}
@@ -79,9 +73,20 @@
 			, VTYPE =#{vtype}
 			, VID =#{vid}
 			, VPW =#{vpw}
-			, VCONNOPT =#{vconnopt}
-			, VPOOLOPT =#{vpoolopt}
-			, VQUERY=#{vquery}
+			, UPD_ID = #{userId}
+			, UPD_DT =CURRENT TIMESTAMP 
+		where VCONNID =#{vconnid}
+	</update>
+	
+	<!--connection 옵션정보 업데이트. -->
+	<update id="adminMapper.updateVtconnectionOptionInfo" parameterType="vtconnectionOption">
+		update VTCONNECTION
+ 		set 
+ 			VQUERY = #{vquery}
+ 			, MAX_ACTIVE = #{maxActive}
+ 			, MIN_IDLE = #{minIdle}
+ 			, TIMEOUT = #{timeout}
+ 			, EXPORTCOUNT = #{exportCount}
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconnid}

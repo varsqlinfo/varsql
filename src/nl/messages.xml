@@ -156,7 +156,7 @@
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
 <entry key="admin.form.db.maxactive">Max Active</entry>
-<entry key="admin.form.db.minidel">Min Idel</entry>
+<entry key="admin.form.db.minidle">Min Idle</entry>
 <entry key="admin.form.db.timeout">Timeout</entry>
 <entry key="admin.form.db.exportcount">내보내기 카운트</entry>
 
