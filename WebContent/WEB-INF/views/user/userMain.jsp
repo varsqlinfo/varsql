@@ -6,14 +6,17 @@
 $(document).ready(function (){
 	userMain.init();
 })
+
 var userMain = {
 	_userConnectionInfo :'#user_connection_info'
 	,_connectionTab :'#user_connection_info_tab'
 	,_connectionIframe :'#user_connection_info_iframe'
 	,iframeLoadTemplate : ''
+	,tabItemTemplate : ''
 	,init : function (){
 		var _self = this; 
 		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html(); 
+		_self.tabItemTemplate = $('#tabItemTemplate').html(); 
 		_self.evtInit();
 	}
 	,evtInit : function (){
@@ -50,7 +53,7 @@ var userMain = {
 		$(_self._connectionTab).on('click','.tab-ui-close',function (){
 			var pObj = $(this).closest('[conuid]'); 
 			var tmpid = pObj.attr('conuid');
-			if(!confirm(unescape(pObj.attr('vname'))+' db를 닫으시겠습니까?')) return ; 
+			if(!confirm(pObj.attr('vname')+' db를 닫으시겠습니까?')) return ; 
 			
 			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
 			
@@ -61,7 +64,7 @@ var userMain = {
 			}
 			
 			$('.tabs_'+tmpid).remove();
-			$('.iframe_'+tmpid).remove();
+			$('#wrapper_'+tmpid).remove();
 			
 			if(viewElement.length > 0){
 				$(viewElement.find('.db-info-tab-item')).trigger('click');	
@@ -74,9 +77,16 @@ var userMain = {
 		});
 		
 		$(_self._connectionTab).on('click','.db-info-tab-ui-refresh',function (){
-			if(!confirm('새로고침 하시겠습니까?')) return ; 
 			var pObj = $(this).closest('[conuid]')
 				,sconid = pObj.attr('conuid');
+			
+			if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length) {
+				alert('로드중입니다.');
+				return ;
+			}
+			
+			if(!confirm('새로고침 하시겠습니까?')) return ;
+			
 			pObj.find('.tab-ui-name').trigger('click');
 			
 			$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
@@ -101,27 +111,14 @@ var userMain = {
 		
 		$('#connection_select_msg_wrapper').show();
 		
-		var strHtm='<li class="db-info-tab ui-tab-item ui-tab-item-active tabs_'+sconid+'">';
-		strHtm+='	<span class="ui-paddingl5-r5 " conuid="'+sconid+'" vname="'+escape(sItem.name)+'">';
-		strHtm+='		<a href="javascript:" class="db-info-tab-ui-refresh" title="refresh"><span class="fa fa-refresh"></span></a>&nbsp;';
-		strHtm+='		<a href="javascript:" class="db-info-tab-item tab-ui-name">'+sItem.name+'</a>&nbsp;';
-		strHtm+='		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp;';
-		strHtm+='	</span>';
-		strHtm+='</li>';
+		$(_self._connectionTab).append(VARSQL.util.renderHtml(_self.tabItemTemplate, sItem));
 		
-		$(_self._connectionTab).append(strHtm);
-		
-		var _url = _self.getDbClientUrl(sconid);	
+		sItem.url=_self.getDbClientUrl(sconid);
 		 
-		var strHtm = '<div id="wrapper_'+sconid+'" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">'
-			+'<iframe class="iframe_'+sconid+'" src="'+_url+'" style="width:100%;height:100%;" frameborder="0"></iframe>'
-			+_self.iframeLoadTemplate+'</div>';
-			
-		$(_self._connectionIframe).append(strHtm);
+		$(_self._connectionIframe).append(VARSQL.util.renderHtml(_self.iframeLoadTemplate, sItem));
 		
 		$('.iframe_'+sconid).load( function(){
-			var iframeWrapperEle = $('#wrapper_'+sconid);
-			iframeWrapperEle.find('.connection_select_msg_wrapper').remove();
+			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
 		});
 	}
 	,activeClose : function (){
@@ -133,19 +130,32 @@ var userMain = {
 }
 </script>
 <!-- Page Heading -->
+<script id="tabItemTemplate" type="text/varsql">
+<li class="db-info-tab ui-tab-item ui-tab-item-active tabs_{{id}}">
+	<span class="ui-paddingl5-r5 " conuid="{{id}}" vname="{{name}}">
+		<a href="javascript:" class="db-info-tab-ui-refresh" title="refresh"><span class="fa fa-refresh"></span></a>&nbsp
+		<a href="javascript:" class="db-info-tab-item tab-ui-name">{{name}}</a>&nbsp
+		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp
+	</span>
+</li>
+</script>
 <script id="iframeLoadTemplate" type="text/varsql">
-<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
-<tbody>
-	<tr>
-		<td style="text-align: center; font-size: 3em;">
-			<div class="var-load-frame">
-				<img src="${pageContextPath}/webstatic/css/images/loading.gif">
-				<div>db 정보를 로드중입니다.</div>
-			</div>
-		</td>
-	</tr>
-</tbody>
-</table>
+<div id="wrapper_{{id}}" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">
+	<iframe class="iframe_{{id}}" src="{{url}}" style="width:100%;height:100%;" frameborder="0"></iframe>
+
+	<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
+		<tbody>
+			<tr>
+				<td style="text-align: center; font-size: 3em;">
+					<div class="var-load-frame">
+						<img src="${pageContextPath}/webstatic/css/images/loading.gif">
+						<div>[{{name}}] db 정보를 로드중입니다.</div>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 </script>
 
 <div class="col-lg-12 fill" style="height:100%;">

@@ -363,7 +363,6 @@ _ui.leftDbObject ={
 				_self._click(_self.options.active, true);
 			}
 		})
-		
 	}
 	// db schema 그리기
 	,_grid:function (){
@@ -1272,7 +1271,12 @@ _ui.SQL = {
 				//,{key : "paste" , "name": "뭍여넣기"}
 				,{key : "delete" , "name": "지우기"}
 				,{divider:true}
-				,{key : "sqlFormat" , "name": "쿼리 정렬" , hotkey :'Ctrl+Shift+F'}
+				,{key : "sqlFormat" , "name": "쿼리 정렬"
+					,subMenu: [
+						{ key : "formatVarsql","name": "줄바꿈 정렬",hotkey :'Ctrl+Alt+F'}
+						,{ key : "formatUtil","name": "정렬" , hotkey :'Ctrl+Shift+F'}
+					]
+				}
 				,{key : "upperLowerCase", "name": "대소문자변환" 
 					,subMenu: [
 						{ key : "upper","name": "대문자변환",hotkey :'Ctrl+Shift+X'}
@@ -1326,7 +1330,10 @@ _ui.SQL = {
 					case 'msgSend':
 						$('.sql-send-btn').trigger('click');
 						break;
-					case 'sqlFormat':
+					case 'formatVarsql':
+						_self.sqlFormatData('varsql');
+						break;
+					case 'formatUtil':
 						$('.sql-format-btn').trigger('click');
 						break;
 					case 'upper':
@@ -1353,6 +1360,9 @@ _ui.SQL = {
 						case 78:
 							$('.sql-new-file').trigger('click');
 							break;
+						case 70: // 70 is f
+							_self.sqlFormatData('varsql');
+							break;
 						default:
 							break;
 					}
@@ -1375,7 +1385,6 @@ _ui.SQL = {
 						default:
 							break;
 					}
-					
 					return false; 
 				}
 				
@@ -2033,7 +2042,8 @@ _ui.SQL = {
 			,complete: _self.loadComplete
 		});  
 	}
-	,sqlFormatData :function (){
+	// sql format
+	,sqlFormatData :function (formatType){
 		var _self = this;
 		var sqlVal = _self.getSql('pos');
 		var tmpEditor =_self.getTextAreaObj(); 
@@ -2061,6 +2071,8 @@ _ui.SQL = {
 		var params =VARSQL.util.objectMerge (_g_options.param,{
 			'sql' :sqlVal
 		});
+		
+		params.formatType =formatType; 
 		
 		VARSQL.req.ajax({      
 		    type:"POST"

@@ -71,7 +71,12 @@ public class SQLServiceImpl{
 	 * @throws Exception
 	 */
 	public String sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
-		return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n";
+		if("varsql".equals(sqlParamInfo.getCustom().get("formatType"))){
+			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix(), VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n";
+		}else{
+			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n";
+		}
+		
 	}
 	
 	/**

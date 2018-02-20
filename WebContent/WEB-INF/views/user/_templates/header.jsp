@@ -96,15 +96,10 @@
 							var item = items[i];
 
 							strHtm.push('<li>');
-							strHtm
-									.push('    <a href="javascript:;" class="memo-item" _idx="'+i+'">');
+							strHtm.push('    <a href="javascript:;" class="memo-item" _idx="'+i+'">');
 							strHtm.push('         <div>');
-							strHtm
-									.push('             <i class="fa fa-envelope fa-fw"></i>'
-											+ item.MEMO_TITLE);
-							strHtm
-									.push('            <span class="pull-right text-muted small">'
-											+ item.REG_DT + '</span>');
+							strHtm.push('             <i class="fa fa-envelope fa-fw"></i>'	+ item.MEMO_TITLE);
+							strHtm.push('            <span class="pull-right text-muted small">'+ item.REG_DT + '</span>');
 							strHtm.push('		</div>');
 							strHtm.push('     </a>');
 							strHtm.push(' </li>');

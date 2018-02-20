@@ -14,7 +14,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<div>DB 생성 에러  입니다 </div>
+						<div>DB connection 생성 에러  입니다 </div>
 						<div>관리자에게 문의 하세요.</div>
 					</div>
 				</td>

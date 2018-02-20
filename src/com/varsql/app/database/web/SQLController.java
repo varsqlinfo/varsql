@@ -69,6 +69,7 @@ public class SQLController {
 	 */
 	@RequestMapping({"/sqlFormat"})
 	public @ResponseBody String sqlFormat(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		sqlParamInfo.addCustom("formatType", HttpUtils.getString(req, "formatType"));
 		return sQLServiceImpl.sqlFormat(sqlParamInfo);
 	}
 	
