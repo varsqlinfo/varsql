@@ -29,7 +29,7 @@ import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.constants.VarsqlConstants;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;

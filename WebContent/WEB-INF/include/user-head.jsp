@@ -41,7 +41,6 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/jquery.layout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>
-<!--  script src="${pageContextPath}/webstatic/js/plugins/contextMenu/jquery.contextMenu.js"></script -->
 
 <script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=<%=versionNum%>"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=<%=versionNum%>"></script>
@@ -61,7 +60,6 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=<%=versionNum%>"></script>
 
 <script>
-//VARSQL.loadResource([VARSQL.staticResource.get('jquery.contextMenu') ]);
 VARSQL.loadResource([VARSQL.staticResource.get('contextMenu') ]);
 //VARSQL.loadResource([VARSQL.staticResource.get('pubgrid') ]);\
 VARSQL.unload();

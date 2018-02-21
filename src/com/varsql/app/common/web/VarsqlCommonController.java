@@ -16,7 +16,19 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 
 /**
- * The Class OutsideController.
+ * 
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: VarsqlCommonController.java
+* @DESC		: 공통 컨트롤러 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2018. 2. 21. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 public class VarsqlCommonController {
@@ -57,8 +69,8 @@ public class VarsqlCommonController {
 			ModelAndView mav) throws Exception {
 		ResponseResult result = new ResponseResult();
 		result.setStatus(500);
-		result.setResultCode(1000);
-		result.setMessage("login");
+		result.setMessage("invalidLogin");
+		result.setResultCode(ResultConst.CODE.LOGIN_INVALID.toInt());
 		return result; 
 	}
 

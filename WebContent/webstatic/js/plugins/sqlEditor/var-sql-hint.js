@@ -64,13 +64,13 @@ VARSQLHints.tables = {};
     if (mode === "sql") mode = "text/x-sql";
     return CodeMirror.resolveMode(mode).keywords;
   }
-  
+
   function getIdentifierQuote(editor) {
     var mode = editor.doc.modeOption;
     if (mode === "sql") mode = "text/x-sql";
     return CodeMirror.resolveMode(mode).identifierQuote || "`";
   }
-  
+
   function getText(item) {
     return typeof item == "string" ? item : item.text;
   }
@@ -82,8 +82,9 @@ VARSQLHints.tables = {};
   }
 
   function parseTables(input) {
-	// ytkim modify; //  var result ={};
+   // ytkim modify; //  var result ={};
     var result =(tables||{});
+    
     if (isArray(input)) {
       for (var i = input.length - 1; i >= 0; i--) {
         var item = input[i]
@@ -108,13 +109,11 @@ VARSQLHints.tables = {};
   }
 
   function match(string, word) {
+  
+  if(word ==='undefined') return false; 
+  
     var len = string.length;
-    
-    if(word ==='undefined') return false; 
-    
     var sub = getText(word).substr(0, len);
-    
-    //console.log(string, word, sub, (string.toUpperCase() === sub.toUpperCase()))
     return string.toUpperCase() === sub.toUpperCase();
   }
 
@@ -204,8 +203,6 @@ VARSQLHints.tables = {};
       table = findTableByAlias(table, editor);
       if (table !== oldTable) alias = true;
     }
-    
-    //console.log(table);
 
     var columns = getTable(table);
     if (columns && columns.columns)
@@ -228,7 +225,7 @@ VARSQLHints.tables = {};
     return start;
   }
 
- function eachWord(lineText, f) {
+  function eachWord(lineText, f) {
     var words = lineText.split(/\s+/)
     for (var i = 0; i < words.length; i++)
       if (words[i]) f(words[i].replace(/[,;]/g, ''))
@@ -245,7 +242,7 @@ VARSQLHints.tables = {};
       start: Pos(0, 0),
       end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
     };
-    
+
     //add separator
     var indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV);
     while(indexOfSeparator != -1) {
@@ -257,7 +254,7 @@ VARSQLHints.tables = {};
 
     //find valid range
     var prevItem = null;
-    var current = editor.getCursor();
+    var current = editor.getCursor()
     for (var i = 0; i < separator.length; i++) {
       if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
         validRange = {start: prevItem, end: separator[i]};
@@ -266,18 +263,20 @@ VARSQLHints.tables = {};
       prevItem = separator[i];
     }
 
-    var query = doc.getRange(validRange.start, validRange.end, false);
-    
-    for (var i = 0; i < query.length; i++) {
-      var lineText = query[i];
-      eachWord(lineText, function(word) {
-        var wordUpperCase = word.toUpperCase();
-        if (wordUpperCase === aliasUpperCase && getTable(previousWord))
-          table = previousWord;
-        if (wordUpperCase !== CONS.ALIAS_KEYWORD)
-          previousWord = word;
-      });
-      if (table) break;
+    if (validRange.start) {
+      var query = doc.getRange(validRange.start, validRange.end, false);
+
+      for (var i = 0; i < query.length; i++) {
+        var lineText = query[i];
+        eachWord(lineText, function(word) {
+          var wordUpperCase = word.toUpperCase();
+          if (wordUpperCase === aliasUpperCase && getTable(previousWord))
+            table = previousWord;
+          if (wordUpperCase !== CONS.ALIAS_KEYWORD)
+            previousWord = word;
+        });
+        if (table) break;
+      }
     }
     return table;
   }
@@ -317,8 +316,8 @@ VARSQLHints.tables = {};
     if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
       start = nameCompletion(cur, token, result, editor);
     } else {
-      addMatches(result, search, tables, function(w) {return w;});
       addMatches(result, search, defaultTable, function(w) {return w;});
+      addMatches(result, search, tables, function(w) {return w;});
       if (!disableKeywords)
         addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
     }

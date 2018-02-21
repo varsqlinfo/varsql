@@ -19,7 +19,7 @@ import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.dao.ExportDAO;
 import com.varsql.app.database.dao.PreferencesDAO;
 import com.varsql.app.util.VarsqlUtil;
-import com.varsql.core.constants.VarsqlConstants;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.db.report.VarsqlReportConfig;
 import com.varsql.core.db.util.DbInstanceFactory;
 import com.vartech.common.app.beans.EnumMapperValue;

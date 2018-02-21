@@ -86,7 +86,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
-	public void epptlExceptionHandle(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
+	public void varsqlAppException(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		

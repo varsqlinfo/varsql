@@ -30,24 +30,17 @@ var _$base = {
 		,'database':'/database'
 		,'sql':'/sql'
 	}
+}
+,_defaultAjaxOption ={
+	method :'post'
+	,cache: false
+	,dataType: "json"
 };
 
 _$base.staticResource  ={
 	get:function (type){
 		return this[type];
 	}
-	,
-	'chart' : 
-		{
-			'js' : [
-			        '/webstatic/js/plugins/flot/jquery.flot.min.js',
-					'/webstatic/js/plugins/flot/jquery.flot.time.min.js',
-					'/webstatic/js/plugins/flot/jquery.flot.canvas.min.js',
-					'/webstatic/js/plugins/flot/jquery.flot.tooltip.js',
-					'/webstatic/js/plugins/flot/jquery.flot.axislabels.js',
-					'/webstatic/js/plugins/flot/jquery.flot.pie.min.js' 
-					]
-		}
 	,'juiChart' : 
 		{
 			'js' : [
@@ -55,15 +48,6 @@ _$base.staticResource  ={
 					'/webstatic/js/plugins/jui/chart.min.js',
 					]
 		}
-	,
-	'jqgrid' : {
-			'js' : [ 
-			         '/webstatic/js/jquery.jqGrid.min.js' 
-			       ]
-			,'css' : [ 
-			           '/webstatic/css/ui.jqgrid.css' 
-			        ]
-	}
 	,
 	'daterange':{
 		'js' : [
@@ -106,15 +90,6 @@ _$base.staticResource  ={
 		        ]
 	,'css' : [
 	          '/webstatic/css/pub.grid.css'
-	          ]
-	}
-	,
-	'jquery.contextMenu':{
-		'js' : [
-		        '/webstatic/js/plugins/contextMenu/jquery.contextMenu.js' 
-		        ]
-	,'css' : [
-	          '/webstatic/css/jquery.contextMenu.css'
 	          ]
 	}
 	,'pubAutocomplete':{
@@ -214,42 +189,55 @@ _$base.log={
  */
 _$base.req ={
 	ajax:function (option){
-		var loadSelector = option.loadSelector ?option.loadSelector :false;
-		var urlObj = option.url;
-		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
 		
-		$.ajax($.extend({}, {
-			type :'post'
-			,cache: false
-			,dataType: "json"
-			,beforeSend : function( xhr ) {
-				
-				if(loadSelector){
-					if(loadSelector=='#editorAreaTable'){
-						$('#sqlEditerPreloaderArea').show();
-					}
-					$(loadSelector).centerLoading({
-						contentClear:false 
-					});
+		var urlObj = option.url;
+		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url); 
+		
+		var loadSelector = option.loadSelector ?option.loadSelector :false;
+		
+		if(option.dataType == 'jsonp'){
+			option.timeout = option.timeout || 10000;
+		}
+		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option); 
+		
+		ajaxOpt.beforeSend = function (xhr){
+			if(loadSelector){
+				if(loadSelector=='#editorAreaTable'){
+					$('#sqlEditerPreloaderArea').show();
 				}
+				$(loadSelector).centerLoading({
+					contentClear:false 
+				});
 			}
-			,error : function (data, status, err){
-				if(loadSelector) {
-					if(loadSelector=='#editorAreaTable'){
-						$('#sqlEditerPreloaderArea').hide(1000);
-					}
-					$(loadSelector).centerLoadingClose();
+		}
+		
+		ajaxOpt.success =  function (data, status, jqXHR) {
+			if(data.resultCode== 401){
+				if(confirm(unescape('%uB85C%uADF8%uC544%uC6C3%20%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%0A%uB85C%uADF8%uC778%uCC3D%20%uC73C%uB85C%20%uC774%uB3D9%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
+					(top || window).location.href=VARSQL.contextPath;
 				}
+				return ; 
 			}
-			,complete: function (data, status, err){
-				if(loadSelector){
-					if(loadSelector=='#editorAreaTable'){
-						$('#sqlEditerPreloaderArea').hide(1000);
-					}
-					$(loadSelector).centerLoadingClose();
-				} 
-			}	
-		},option));
+			option.success.call(this, data, status, jqXHR);
+		}
+		
+		ajaxOpt.error = function (data, status, err){
+			if(loadSelector) {
+				if(loadSelector=='#editorAreaTable'){
+					$('#sqlEditerPreloaderArea').hide(1000);
+				}
+				$(loadSelector).centerLoadingClose();
+			}
+		}
+		
+		$.ajax(ajaxOpt).done(function (xhr){
+			if(loadSelector){
+				if(loadSelector=='#editorAreaTable'){
+					$('#sqlEditerPreloaderArea').hide(1000);
+				}
+				$(loadSelector).centerLoadingClose();
+			} 
+		})
 	}
 	,validationCheck : function (resData){
 		if(resData.messageCode=='valid'){

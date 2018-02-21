@@ -3,14 +3,6 @@ body {
     background-color: #dfdfdf;
 }
 
-
-/*
-* jqgrid css 수정. 
-*/
-.ui-jqgrid tr.jqgrow td {
-	white-space:nowrap;
-}
-
 .fill { 
     min-height: 100%;
     height: 100%;

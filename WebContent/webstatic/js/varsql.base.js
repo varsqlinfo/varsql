@@ -110,10 +110,10 @@ var DBTYPE_HINTS = {
 }
 
 var MIME_TYPE ={
-	mssql : 'text/x-mssql'
-	,mysql : 'text/x-mysql'
-	,mariadb : 'text/x-mariadb'
-	//,oracle : 'text/x-oracle'
+	MSSQL : 'text/x-mssql'
+	,MYSQL : 'text/x-mysql'
+	,MARIADB : 'text/x-mariadb'
+	,ORACLE : 'text/x-plsql'
 }
 
 var dataType = {};
