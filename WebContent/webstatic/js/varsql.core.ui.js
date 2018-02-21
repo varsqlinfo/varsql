@@ -1219,7 +1219,7 @@ _ui.SQL = {
 			};
 		})
 		
-		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
+		VARSQL.ui.editorObj =_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
@@ -1238,27 +1238,38 @@ _ui.SQL = {
 	,_initEvent :function (){
 		var _self = this;
 		
-		
+		//VARSQL.ui.editorObj.getCursor() 현재 선택된 커서 . 
+	
 		function strUpperCase(){
-			var sCursor = _self.getTextAreaObj().getCursor(true)
-			,eCursor = _self.getTextAreaObj().getCursor(false);
-		
-			_self.getTextAreaObj().replaceSelection(_self.getSql().toUpperCase());
-			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+			var selArr = VARSQL.ui.editorObj.getSelections(); 
+			
+			for(var i =0 ; i< selArr.length;i++){
+				selArr[i] = selArr[i].toUpperCase();
+			}
+			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
+			_self.getTextAreaObj().setSelections(selPosArr);
 		}
-		function strLowerCase(){
-			var sCursor = _self.getTextAreaObj().getCursor(true)
-			,eCursor = _self.getTextAreaObj().getCursor(false);
 		
-			_self.getTextAreaObj().replaceSelection(_self.getSql().toLowerCase());
-			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+		function strLowerCase(){
+			var selArr = VARSQL.ui.editorObj.getSelections(); 
+			
+			for(var i =0 ; i< selArr.length;i++){
+				selArr[i] = selArr[i].toLowerCase();
+			}
+			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
+			_self.getTextAreaObj().setSelections(selPosArr);
 		}
 		function strCamelCase(){
-			var sCursor = _self.getTextAreaObj().getCursor(true)
-			,eCursor = _self.getTextAreaObj().getCursor(false);
+			var selArr = VARSQL.ui.editorObj.getSelections(); 
 			
-			_self.getTextAreaObj().replaceSelection(convertCamel(_self.getSql()));
-			_self.getTextAreaObj().setSelection(sCursor, eCursor);
+			for(var i =0 ; i< selArr.length;i++){
+				selArr[i] = convertCamel(selArr[i]);
+			}
+			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
+			_self.getTextAreaObj().setSelections(selPosArr);
 		}
 		
 		$.pubContextMenu(_self.sqlEditorEle, {
