@@ -26,8 +26,7 @@ var userMain = {
 			
 			if(selectObj.val()=='') return ;
 			
-			var sEle =$(_self._userConnectionInfo+" option:selected"); 
-			
+			var sEle =$(_self._userConnectionInfo+" option:selected");
 			_self.tabCntl({
 				id : sEle.val()
 				,name : sEle.attr('vname')

@@ -47,11 +47,32 @@ _ui.initContextMenu  = function (){
             e.preventDefault();
         }, false);
     } else { // IE < 9
-        document.attachEvent('oncontextmenu', function() {
+        document.attachEvent('oncontextmenu', function(e) {
             window.event.returnValue = false;
         });
     }
 	
+	$(document).on('keydown',function (e) {
+		var evt =window.event || e; 
+		if(evt.ctrlKey){
+			var returnFlag = true; 
+			switch (evt.keyCode) {
+				case 83: // keyCode 83 is s
+					$('.sql-save-btn').trigger('click');
+					returnFlag = false;
+					break;
+				case 70: // 80 is f
+					returnFlag = false;
+					break; 
+				case 80: // 70 is f
+					returnFlag = false;
+					break; 
+				default:
+					break;
+			}
+			return returnFlag; 
+		}
+	});
 }
 
 // header 메뉴 처리.
@@ -64,22 +85,6 @@ _ui.headerMenu ={
 	}
 	,initEvt : function (){
 		var _self = this;
-		
-		$('body').on('keydown',function (e) {
-			var evt =window.event || e; 
-			
-			if(evt.ctrlKey){
-				if (evt.shiftKey) {
-					switch (evt.keyCode) {
-						case 83: // keyCode 83 is s
-							$('.sql-save-btn').trigger('click');
-							break;
-						default:
-							break;
-					}
-				}
-			}
-		});
 		
 		// header menu dropdown  init
 		$('.header-menu-top-label').headerDropdown();
@@ -162,9 +167,10 @@ _ui.headerMenu ={
 							break;
 					}
 					break;
-				}default:
-						break;
 				}
+				default:
+					break;
+			}
 		})
 	}
 	//header 메뉴 환경설정처리.
@@ -886,7 +892,6 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
 				,height:'auto'
-				,bigData : {enabled :false}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -967,7 +972,6 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#procedures',{
 				headerView:true
 				,height:'auto'
-				,bigData : {enabled :false}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -1018,7 +1022,6 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#functions',{
 				headerView:true
 				,height: 'auto'
-				,bigData : {enabled :false}
 				,page :false
 				,tColItem : [
 					{key :'FUNCTION_NAME', label:'Function',width:200, sort:true}
@@ -1219,7 +1222,7 @@ _ui.SQL = {
 			};
 		})
 		
-		VARSQL.ui.editorObj =_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
+		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
@@ -1238,8 +1241,6 @@ _ui.SQL = {
 	,_initEvent :function (){
 		var _self = this;
 		
-		//VARSQL.ui.editorObj.getCursor() 현재 선택된 커서 . 
-	
 		function strUpperCase(){
 			var selArr = VARSQL.ui.editorObj.getSelections(); 
 			
@@ -1377,11 +1378,9 @@ _ui.SQL = {
 						default:
 							break;
 					}
-				}
-				
-				if (evt.shiftKey) { // keyCode 70 is f
+				}else if (evt.shiftKey) { 
 					switch (evt.keyCode) {
-						case 70:
+						case 70: // keyCode 70 is f
 							$('.sql-format-btn').trigger('click');
 							break;
 						case 83: // keyCode 83 is s
@@ -1397,11 +1396,18 @@ _ui.SQL = {
 							break;
 					}
 					return false; 
-				}
-				
-				if (evt.keyCode == 13) { // keyCode 13 is Enter
-					$('.sql-execue-btn').trigger('click');
-					return false; // preventing default action
+				}else{
+					switch (evt.keyCode) {
+						case 83: // keyCode 83 is s
+							$('.sql-save-btn').trigger('click');
+							break;
+						case 13: // keyCode 13 is Enter
+							$('.sql-execue-btn').trigger('click');
+							break;
+						default:
+							break;
+					}
+					return false; 
 				}
 			}
 		});
@@ -2353,17 +2359,31 @@ _ui.SQL = {
 			height:'auto'
 			,autoResize : false
 			,page :false
-			,bigData : {
-				gridCount : 20		// 화면에 한꺼번에 그리드 할 데이타 gridcount * 3 이 한꺼번에 그려진다. 
-				,spaceUnitHeight : 100000	// 그리드 공백 높이 지정
-				,horizontalEnableCount : 50
-			}
 			,headerOptions:{
 				view:true
 				,displayLineNumber : true	 // 라인 넘버 보기.
 				,sort : true
 				,resize:{
 					enabled : true
+				}
+			}
+			,bodyOptions :{
+				cellDblClick : function (rowItem){
+					var startCursor = _self.getTextAreaObj().getCursor(true);
+					
+					var cellVal = rowItem.item[rowItem.keyItem.key];
+					
+					var addLineArr = cellVal.split(VARSQLCont.constants.newline)
+						,addLineCnt =addLineArr.length;
+					
+					_self.getTextAreaObj().replaceSelection(cellVal);
+					_self.getTextAreaObj().focus();
+					
+					if(addLineCnt > 1){
+						_self.getTextAreaObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
+					}else{
+						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch +cellVal.length})
+					}
 				}
 			}
 			,tColItem : pGridData.column

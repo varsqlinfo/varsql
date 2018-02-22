@@ -2046,15 +2046,18 @@ Plugin.prototype ={
 
 		if(isFunction(_this.options.bodyOptions.cellDblClick)){
 			
-			_this.element.body.on('click.pubgridtd','.pub-body-td',function (e){
+			_this.element.body.on('dblclick.pubgridtd','.pub-body-td',function (e){
 				var selRow = $(this)
-					,tdInfo=selRow.data('grid-position');
+					,tdInfo=selRow.data('grid-position')
+					,rowColArr  = tdInfo.split(',');
 				
-				var rowIdx = _this.config.scroll.viewIdx+intValue(tdInfo.split(',')[0]);
+				var rowIdx = _this.config.scroll.viewIdx+intValue(rowColArr[0])
+					,colIdx = intValue(rowColArr[1]); 
+
 
 				var rowItem = _this.options.tbodyItem[rowIdx];
 								
-				_this.options.bodyOptions.cellDblClick.call(selRow ,rowIdx , rowItem);							
+				_this.options.bodyOptions.cellDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : _this.options.tColItem[colIdx] } );
 			});
 		}
 				
