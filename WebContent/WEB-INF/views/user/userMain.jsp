@@ -1,7 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
-
 <script>
 $(document).ready(function (){
 	userMain.init();
@@ -13,6 +11,7 @@ var userMain = {
 	,_connectionIframe :'#user_connection_info_iframe'
 	,iframeLoadTemplate : ''
 	,tabItemTemplate : ''
+	,preferencesUrl : '<c:url value="/user/preferences?header=N" />'
 	,init : function (){
 		var _self = this; 
 		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html(); 
@@ -40,7 +39,6 @@ var userMain = {
 				userMain.tabCntl({
 					id : 'preferences'
 					,name : '환경설정'
-					,url : '<c:url value="/user/preferences?header=N" />'
 				});
 				return ; 
 				
@@ -112,7 +110,7 @@ var userMain = {
 		
 		$(_self._connectionTab).append(VARSQL.util.renderHtml(_self.tabItemTemplate, sItem));
 		
-		sItem.url=_self.getDbClientUrl(sconid);
+		sItem.url= _self.getDbClientUrl(sconid);
 		 
 		$(_self._connectionIframe).append(VARSQL.util.renderHtml(_self.iframeLoadTemplate, sItem));
 		
@@ -124,7 +122,11 @@ var userMain = {
 		$(this._connectionTab+'> .ui-tab-item-active .tab-ui-close').trigger('click');
 	}
 	,getDbClientUrl : function (sconid){
-		return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
+		if(sconid =='preferences'){
+			return this.preferencesUrl; 
+		}else{
+			return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
+		}
 	} 
 }
 </script>
@@ -147,7 +149,7 @@ var userMain = {
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<img src="${pageContextPath}/webstatic/css/images/loading.gif">
+						<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
 						<div>[{{name}}] db 정보를 로드중입니다.</div>
 					</div>
 				</td>
@@ -163,7 +165,7 @@ var userMain = {
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">
-						<div class="var-db-select-text">접속할 <img src="${pageContextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>	
+						<div class="var-db-select-text">접속할 <img src="${pageContext.request.contextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>	
 					</td>
 				</tr>
 			</tbody>

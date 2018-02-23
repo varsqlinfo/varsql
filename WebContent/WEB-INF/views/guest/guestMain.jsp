@@ -3,15 +3,12 @@
 <%@ page import=" java.util.*, java.io.*" %>
 <!doctype html>
 <HTML>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title><spring:message code="page.title.varsql"/></title>
 <head>
+<title><spring:message code="page.title.varsql"/></title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="">
-<meta name="author" content="">
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>

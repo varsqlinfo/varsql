@@ -1,10 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
-<meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="">
-<meta name="author" content="">
+<meta charset="utf-8">
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
@@ -36,9 +34,7 @@
 <%
 long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery.form.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/jquery.layout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>
 
@@ -49,7 +45,6 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=<%=versionNum%>"></script>
 
 <!-- sql editor -->
-<script src="${pageContextPath}/webstatic/js/plugins/mustache/mustache.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js"></script>

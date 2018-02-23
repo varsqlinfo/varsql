@@ -3,7 +3,6 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <html>
 <head>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <title>${left_db_object.connInfo.name}::<spring:message code="screen.user" /></title>
 <%@ include file="/WEB-INF/include/user-head.jsp"%>
 

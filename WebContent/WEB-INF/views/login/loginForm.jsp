@@ -1,13 +1,12 @@
-<!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
 <%@ page import=" java.util.*, java.io.*" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-
+<!DOCTYPE html>
 <HTML>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><spring:message code="page.title.varsql"/></title>
-<head>
+<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>

@@ -96,12 +96,8 @@
 							var item = items[i];
 
 							strHtm.push('<li>');
-							strHtm.push('    <a href="javascript:;" class="memo-item" _idx="'+i+'">');
-							strHtm.push('         <div>');
-							strHtm.push('             <i class="fa fa-envelope fa-fw"></i>'	+ item.MEMO_TITLE);
-							strHtm.push('            <span class="pull-right text-muted small">'+ item.REG_DT + '</span>');
-							strHtm.push('		</div>');
-							strHtm.push('     </a>');
+							strHtm.push('   <a href="javascript" class="memo-item" _idx="'+i+'" title="'+item.MEMO_TITLE+'"><span class="memo-text"><i class="fa fa-envelope fa-fw"></i><span>'+item.MEMO_TITLE+'</span></span>');
+							strHtm.push('   <span class="pull-right memo-date">'+ item.REG_DT + '</span></a>');
 							strHtm.push(' </li>');
 						}
 					} else {
@@ -147,16 +143,15 @@
 			}
 			if (_self.memoDialog === false) {
 				_self.memoDialog = $('#memoTemplate_view_dialog').dialog({
-					height : 350,
-					width : 640,
-					autoOpen : false,
-					modal : true,
-					buttons : {
+					height : 350
+					,width : 640
+					,modal: true
+					,buttons : {
 						"닫기" : function() {
 							_self.memoDialog.dialog("close");
 						}
-					},
-					close : function() {
+					}
+					,close : function() {
 						_self.memoDialog.dialog("close");
 					}
 				});

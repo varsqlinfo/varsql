@@ -4,7 +4,6 @@
 
 <html>
 <head>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <title><spring:message code="manager.home.title" /></title>
 <%@ include file="/WEB-INF/include/head-manager.jsp"%>
 </head>
