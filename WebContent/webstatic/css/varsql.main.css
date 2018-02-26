@@ -620,21 +620,25 @@ padding-top: 5px;
 	margin-bottom: 0px;
 }
 
-#memo_alert_area>li .memo-text{
+#memo_alert_area>li .memo-item{
+	height:25px;
+}
+
+#memo_alert_area>li .memo-item .memo-text{
 	display:block;
 	float:left;
-	max-width : calc(100% - 105px);
+	max-width : calc(100% - 115px);
 	white-space:nowrap;
 	overflow:hidden;
 	text-overflow:ellipsis; 
 }
-#memo_alert_area>li .memo-text>span{
+#memo_alert_area>li .memo-item  .memo-text>span{
 	padding-left:10px; 
 }
-#memo_alert_area>li .memo-date{
+#memo_alert_area>li .memo-item .memo-date{
 	font-size: 89%;
-	margin-top: -18px;
-    margin-right: -5px;
+	margin-top: 0px;
+    margin-right: -10px;
 }
 
 .sql-btn-area .btn-sm,.sql-btn-area .btn-group-sm>.btn {

@@ -96,7 +96,7 @@
 							var item = items[i];
 
 							strHtm.push('<li>');
-							strHtm.push('   <a href="javascript" class="memo-item" _idx="'+i+'" title="'+item.MEMO_TITLE+'"><span class="memo-text"><i class="fa fa-envelope fa-fw"></i><span>'+item.MEMO_TITLE+'</span></span>');
+							strHtm.push('   <a href="javascript:;" class="memo-item" _idx="'+i+'" title="'+item.MEMO_TITLE+'"><span class="memo-text"><i class="fa fa-envelope fa-fw"></i><span>'+item.MEMO_TITLE+'</span></span>');
 							strHtm.push('   <span class="pull-right memo-date">'+ item.REG_DT + '</span></a>');
 							strHtm.push(' </li>');
 						}

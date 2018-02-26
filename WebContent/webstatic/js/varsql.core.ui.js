@@ -42,6 +42,7 @@ VARSQL.ui.create = function (_opts){
 
 //context menu 초기화
 _ui.initContextMenu  = function (){
+	
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -72,6 +73,7 @@ _ui.initContextMenu  = function (){
 			}
 			return returnFlag; 
 		}
+		return true; 
 	});
 }
 
@@ -423,9 +425,6 @@ _ui.leftDbObject ={
 		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
 		    	}
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
 		});  
 	}
 	// 스키마 클릭. 
@@ -450,11 +449,6 @@ _ui.leftDbObject ={
 		    		$.extend({},{param:tmpParam} ,{menuData: resData.items})
 		    	);
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});
 	}
 };
@@ -610,11 +604,6 @@ _ui.leftDbObjectServiceMenu ={
 		    ,success:function (resData){
 		    	_self['_'+$contentId].call(_self,resData);
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
@@ -641,11 +630,6 @@ _ui.leftDbObjectServiceMenu ={
 		    	_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
 		    	_self[callMethod].call(_self,resData, param);
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});
 	}
 	// 컨텍스트 메뉴 sql 생성 부분 처리 .
@@ -679,11 +663,6 @@ _ui.leftDbObjectServiceMenu ={
 		    		_ui.SQL.addSqlEditContent(resData.item);
 		    	}
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});
 	}
 	// 데이타 내보내기
@@ -1228,7 +1207,7 @@ _ui.SQL = {
 			smartIndent: true,
 			lineNumbers: true,
 			height:'auto',
-			 lineWrapping: true,
+			lineWrapping: true,
 			matchBrackets : true,
 			autofocus: true,
 			extraKeys: {"Ctrl-Space": "autocomplete"},
@@ -1242,33 +1221,33 @@ _ui.SQL = {
 		var _self = this;
 		
 		function strUpperCase(){
-			var selArr = VARSQL.ui.editorObj.getSelections(); 
+			var selArr = _self.getTextAreaObj().getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = selArr[i].toUpperCase();
 			}
-			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			var selPosArr = _self.getTextAreaObj().listSelections(); 
 			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
 			_self.getTextAreaObj().setSelections(selPosArr);
 		}
 		
 		function strLowerCase(){
-			var selArr = VARSQL.ui.editorObj.getSelections(); 
+			var selArr = _self.getTextAreaObj().getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = selArr[i].toLowerCase();
 			}
-			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			var selPosArr = _self.getTextAreaObj().listSelections(); 
 			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
 			_self.getTextAreaObj().setSelections(selPosArr);
 		}
 		function strCamelCase(){
-			var selArr = VARSQL.ui.editorObj.getSelections(); 
+			var selArr = _self.getTextAreaObj().getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = convertCamel(selArr[i]);
 			}
-			var selPosArr = VARSQL.ui.editorObj.listSelections(); 
+			var selPosArr = _self.getTextAreaObj().listSelections(); 
 			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
 			_self.getTextAreaObj().setSelections(selPosArr);
 		}
@@ -1367,13 +1346,16 @@ _ui.SQL = {
 			var evt =window.event || e; 
 			
 			if(evt.ctrlKey){
+				var returnFlag = true; 
 				if (evt.altKey) { // keyCode 78 is n
 					switch (evt.keyCode) {
 						case 78:
 							$('.sql-new-file').trigger('click');
+							returnFlag = false; 
 							break;
 						case 70: // 70 is f
 							_self.sqlFormatData('varsql');
+							returnFlag = false; 
 							break;
 						default:
 							break;
@@ -1382,33 +1364,38 @@ _ui.SQL = {
 					switch (evt.keyCode) {
 						case 70: // keyCode 70 is f
 							$('.sql-format-btn').trigger('click');
+							returnFlag = false; 
 							break;
 						case 83: // keyCode 83 is s
 							$('.sql-save-btn').trigger('click');
+							returnFlag = false; 
 							break;
 						case 88: // keycode 88 is x  toUpperCase
 							strUpperCase();
+							returnFlag = false; 
 							break;
 						case 89: //keycode 89 is y  toLowerCase
 							strLowerCase();
+							returnFlag = false; 
 							break;
 						default:
 							break;
 					}
-					return false; 
 				}else{
 					switch (evt.keyCode) {
 						case 83: // keyCode 83 is s
 							$('.sql-save-btn').trigger('click');
+							returnFlag = false; 
 							break;
 						case 13: // keyCode 13 is Enter
 							$('.sql-execue-btn').trigger('click');
+							returnFlag = false; 
 							break;
 						default:
 							break;
 					}
-					return false; 
 				}
+				return returnFlag;
 			}
 		});
 		
@@ -1490,9 +1477,6 @@ _ui.SQL = {
 				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
 				    	response(data.items);
 					}
-					,error :function (data, status, err){
-						VARSQL.log.error(data, status, err);
-					}
 				});  
 			}
 			,select: function( event, item ) {
@@ -1572,6 +1556,7 @@ _ui.SQL = {
 			}
 		});
 	}
+	// sql result column typ
 	,viewResultColumnType : function (){
 		var _self = this; 
 		var columnTypeArr = _self._currnetQueryReusltData.column; 
@@ -1633,16 +1618,11 @@ _ui.SQL = {
 			
 			for(var key in data){
 				var tmpHtm='<tr class="sql-param-row">'
-					+'	<td>'
-					+'		<div><input type="text" class="sql-param-key" value="{{key}}" /></div>'
-					+'	</td>'
-					+'	<td>'
-					+'		<div><input type="text" class="sql-param-value" value="{{val}}"/></div>'
-					+'	</td>'
-					+'	<td>'
-					+'		<span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
-					+'	</td>'
-					+'	</tr>';
+					+'	<td><div><input type="text" class="sql-param-key" value="{{key}}" /></div></td>'
+					+'	<td><div><input type="text" class="sql-param-value" value="{{val}}"/></div></td>'
+					+'	<td><span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span></td>'
+					+'</tr>';
+				
 				paramHtm.push(Mustache.render(tmpHtm, {key: key , val : data[key]}));
 			}
 			
@@ -1653,16 +1633,10 @@ _ui.SQL = {
 			}
 		}else{
 			var paramHtm='<tr class="sql-param-row">'
-				+'	<td>'
-				+'		<div><input type="text" class="sql-param-key" /></div>'
-				+'	</td>'
-				+'	<td>'
-				+'		<div><input type="text" class="sql-param-value"/></div>'
-				+'	</td>'
-				+'	<td>'
-				+'		<span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
-				+'	</td>'
-				+'	</tr>';
+				+'	<td><div><input type="text" class="sql-param-key" /></div></td>'
+				+'	<td><div><input type="text" class="sql-param-value"/></div></td>'
+				+'	<td><span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span></td>'
+				+'</tr>';
 			
 			if(mode =='init'){
 				$('#sql_parameter_row_area').empty().html(paramHtm);	
@@ -1696,11 +1670,6 @@ _ui.SQL = {
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
 		    	
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});  
 	}
 	// sql 보내기.
@@ -1749,11 +1718,6 @@ _ui.SQL = {
 						    ,success:function (resData){
 						    	_self.memoDialog.dialog( "close" );
 							}
-							,error :function (data, status, err){
-								VARSQL.log.error(data, status, err);
-							}
-							,beforeSend: _self.loadBeforeSend
-							,complete: _self.loadComplete
 						});
 					}
 					,Cancel: function() {
@@ -1869,13 +1833,7 @@ _ui.SQL = {
 		    			});
 		    		}
 		    	})
-		    	
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});  
 	}
 	//텍스트 박스 object
@@ -1996,10 +1954,8 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({      
-		    type:"POST" 
-		    ,loadSelector : '#editorAreaTable'
+		    loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
-		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (responseData){
 		    	try{
@@ -2052,11 +2008,6 @@ _ui.SQL = {
 					VARSQL.log.info(e);
 				}		             
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});  
 	}
 	// sql format
@@ -2092,8 +2043,7 @@ _ui.SQL = {
 		params.formatType =formatType; 
 		
 		VARSQL.req.ajax({      
-		    type:"POST"
-		    ,loadSelector : '#editorAreaTable'
+		    loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
 		    ,dataType:'text'
 		    ,data:params 
@@ -2102,11 +2052,6 @@ _ui.SQL = {
 	    		tmpEditor.replaceSelection(res);
 	    		tmpEditor.setSelection(startSelection, {line:startSelection.line+linecnt,ch:0});
 			}
-			,error :function (data, status, err){
-				VARSQL.log.error(data, status, err);
-			}
-			,beforeSend: _self.loadBeforeSend
-			,complete: _self.loadComplete
 		});  
 	}
 	// export data download
@@ -2343,14 +2288,6 @@ _ui.SQL = {
 		editObj.focus();
 		
 	}
-	/*
-	,loadBeforeSend :function (){
-		
-	}
-	,loadComplete :function (){
-		
-	}
-	*/
 	// sql data grid
 	,setGridData: function (pGridData){
 		var _self = this; 
