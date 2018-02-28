@@ -43,18 +43,9 @@ public class VarsqlCommonController {
 		ModelMap model = mav.getModelMap();
 		return new ModelAndView("redirect:/login", model);
 	}
-	
 
-
-	@RequestMapping(value = "/error401")
-	public ModelAndView report(HttpServletRequest req, HttpServletResponse res,
-			ModelAndView mav) throws Exception {
-		ModelMap model = mav.getModelMap();
-		return new ModelAndView("/error/error401", model);
-	}
-	
 	@RequestMapping(value = "/invalidDatabase")
-	public @ResponseBody ResponseResult InvalidDatabase(HttpServletRequest req, HttpServletResponse res,
+	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res,
 			ModelAndView mav) throws Exception {
 		ResponseResult result = new ResponseResult();
 		result.setStatus(500);
@@ -64,6 +55,19 @@ public class VarsqlCommonController {
 		return result; 
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : invalidLogin
+	 * @Method 설명 : 로그인 유효하지 않을때.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 28. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/invalidLogin")
 	public @ResponseBody ResponseResult invalidLogin(HttpServletRequest req, HttpServletResponse res,
 			ModelAndView mav) throws Exception {
@@ -72,6 +76,26 @@ public class VarsqlCommonController {
 		result.setMessage("invalidLogin");
 		result.setResultCode(ResultConst.CODE.LOGIN_INVALID.toInt());
 		return result; 
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : helpPage
+	 * @Method 설명 : 도움말
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 2. 28. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/common/helpPage")
+	public ModelAndView helpPage(HttpServletRequest req, HttpServletResponse res,
+			ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return new ModelAndView("/commonPage/help/mainHelp", model);
 	}
 
 }

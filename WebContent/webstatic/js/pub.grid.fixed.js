@@ -2732,12 +2732,14 @@ Plugin.prototype ={
 				var resizeW = selColItem.maxWidth || -1; 
 
 				if(resizeW < 1){
-					var len = _this.options.tbodyItem.length
+					var tbodyItem = _this.options.tbodyItem
 						, beforeLen = -1
-						,tmpVal ,currLen ; 
+						,tmpVal ,currLen
+						,selColKey  =selColItem.key; 
+					
+					for(var i =0, len = tbodyItem.length ;i <len;i++){
+						tmpVal = tbodyItem[i][selColKey]+'';
 
-					for(var i =0 ;i <len;i++){
-						tmpVal = _this.options.tbodyItem[i][selColItem.key]
 						currLen = tmpVal.length;
 						if(currLen > beforeLen){
 							resizeW = Math.max(getCharLength(tmpVal||''),resizeW);

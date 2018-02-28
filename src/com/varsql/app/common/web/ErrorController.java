@@ -25,27 +25,40 @@ public class ErrorController {
 	public ModelAndView ModelAndView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView model = new ModelAndView();
 		
-		model.setViewName("/error/error403");
+		System.out.println("11111111111111111111111");
+		System.out.println("11111111111111111111111");
+		System.out.println("11111111111111111111111");
+		System.out.println("11111111111111111111111");
+		
+		model.setViewName("/commonPage/error/error403");
 		return model;
 	}
 	
 	@RequestMapping(value = "/error404")
-	public String error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return "/error/error404";
+	public ModelAndView error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/error404");
+		return model;
 	}
 	
 	@RequestMapping(value = "/error500")
-	public String error500(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return "/error/error500";
+	public ModelAndView error500(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/error500");
+		return model;
 	}
 	
 	@RequestMapping(value = "/connError")
-	public String connError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return "/error/connError";
+	public ModelAndView connError(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/connError");
+		return model;
 	}
 	
 	@RequestMapping(value = "/connCreateError")
-	public String connCreateError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return "/error/connCreateError";
+	public ModelAndView connCreateError(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/connCreateError");
+		return model;
 	}
 }

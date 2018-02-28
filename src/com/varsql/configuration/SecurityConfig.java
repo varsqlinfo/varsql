@@ -19,7 +19,7 @@ import com.varsql.core.configuration.VarsqlWebConfig;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
+* @PROJECT	: varsql
 * @NAME		: SecurityConfig.java
 * @DESC		: 스프링 시큐리티 처리.
 * @AUTHOR	: ytkim
@@ -107,16 +107,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            <security:intercept-url pattern="/**" access="isAuthenticated()"/>
 	 */
 	private void configureAuth(HttpSecurity http) throws Exception {
+		
 		http.authorizeRequests()
      		.antMatchers("/admin/**").hasAuthority("ADMIN")
      		.antMatchers("/manage/**").hasAnyAuthority("ADMIN","MANAGER")
      		.antMatchers("/user/**","/database/**").hasAnyAuthority("ADMIN","MANAGER","USER")
      		.antMatchers("/guest/**").hasAuthority("GUEST")
      		.antMatchers("/login","/join/**").anonymous()
-     		.antMatchers("/login_check","/api/**/error/**", "/favicon.ico","/webstatic/**","/index.jsp").permitAll()
+     		.antMatchers("/login_check","/api/**","/error/**", "/favicon.ico","/webstatic/**","/index.jsp").permitAll()
      		.antMatchers("/**").authenticated()
      		.anyRequest().authenticated().and()
-     		.exceptionHandling().accessDeniedPage(VarsqlWebConfig.newIntance().getPage403());
+     		.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
 	}
 	
 	/**
@@ -164,8 +165,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     @Bean
-    public VarsqlAccessDeniedHandler gainAccessDeniedHandler() {
-    	return new VarsqlAccessDeniedHandler();
+    public VarsqlAccessDeniedHandler accessDeniedHandler() {
+    	return new VarsqlAccessDeniedHandler(VarsqlWebConfig.newIntance().getPage403());
     }
     
     private void configureSSOFilter(HttpSecurity http) {

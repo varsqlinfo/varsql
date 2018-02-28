@@ -60,7 +60,7 @@ public class LoginController {
 		return new ModelAndView("/login/loginForm");
 	}
 	
-	@RequestMapping(value="/login", params="fail")
+	@RequestMapping(value="/login", params="mode")
 	public ModelAndView loginFailed(HttpServletRequest request, HttpServletResponse response , ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("login", "fail");

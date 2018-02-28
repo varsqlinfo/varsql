@@ -1,10 +1,9 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
-<%@ page import=" java.util.*, java.io.*" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!DOCTYPE html>
 <HTML>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <title><spring:message code="page.title.varsql"/></title>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
@@ -60,10 +59,26 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.error-msg{
+	color: #f5172c;
+}
 </style>
 <script>
 $(document).ready(function (){
 	
+	$('#id,#password').on('keypress' , function (e){
+		var keyCode = 0;
+		var shiftKey=false;
+		keyCode=e.keyCode;
+		shiftKey=e.shiftKey;
+		
+		if (((keyCode >= 65 && keyCode <= 90)&& !shiftKey)||((keyCode >= 97 && keyCode <= 122)&& shiftKey)){
+			$('.error-msg').empty().html("CapsLock이 켜져 있습니다");
+		}else{
+			$('.error-msg').empty().html("");
+		}
+	})
+	 
 	if(localStorage.getItem('varsqlLoginID') && localStorage.getItem('varsqlLoginID') !=''){
 		$('#rememberMe').prop('checked',true);
 		$('#id').val(localStorage.getItem('varsqlLoginID'));
@@ -88,13 +103,11 @@ $(document).ready(function (){
 		}
 		document.f.submit();
 	});
-	
-	
 })
 </script>
 </head>
 <body>
-	<div class="container">
+	<div class="container">[[${mode}]]
 		<form name="f" action="${varsqlLoginUrl}" method="post"
 			class="form-signin" role="form">
 			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
@@ -106,13 +119,12 @@ $(document).ready(function (){
 					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me
 				</label>
 			</div>
-			<c:if test="${login=='fail'}">
-				<div class="error">
-					<p>
-						<spring:message code="msg.login.fail" />
-					<p>
-				</div>
-			</c:if>
+			<div class="error">
+				<c:if test="${param.mode eq 'fail'}">
+					<p><spring:message code="msg.login.fail" /><p>
+				</c:if>
+				<div class="error-msg"></div>
+			</div>
 			<button class="btn btn-lg btn-primary btn-block btn-login" type="button">
 				<spring:message code="btn.login" />
 			</button>
