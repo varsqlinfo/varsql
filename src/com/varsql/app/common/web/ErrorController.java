@@ -24,12 +24,6 @@ public class ErrorController {
 	@RequestMapping(value = "/error403")
 	public ModelAndView ModelAndView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView model = new ModelAndView();
-		
-		System.out.println("11111111111111111111111");
-		System.out.println("11111111111111111111111");
-		System.out.println("11111111111111111111111");
-		System.out.println("11111111111111111111111");
-		
 		model.setViewName("/commonPage/error/error403");
 		return model;
 	}

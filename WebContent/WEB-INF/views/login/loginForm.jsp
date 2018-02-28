@@ -107,7 +107,7 @@ $(document).ready(function (){
 </script>
 </head>
 <body>
-	<div class="container">[[${mode}]]
+	<div class="container">
 		<form name="f" action="${varsqlLoginUrl}" method="post"
 			class="form-signin" role="form">
 			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
