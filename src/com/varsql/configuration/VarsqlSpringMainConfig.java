@@ -12,8 +12,8 @@ import org.springframework.core.env.Environment;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
-* @NAME		: GainSpringMainConfig.java
+* @PROJECT	: varsql
+* @NAME		: VarsqlSpringMainConfig.java
 * @DESC		: spring 설정.  
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------

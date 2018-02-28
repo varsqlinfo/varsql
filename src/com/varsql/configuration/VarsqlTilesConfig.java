@@ -17,8 +17,8 @@ import org.springframework.web.servlet.view.tiles3.TilesView;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
-* @NAME		: GainTilesConfig.java
+* @PROJECT	: varsql
+* @NAME		: VarsqlTilesConfig.java
 * @DESC		: 타일즈 설정. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------

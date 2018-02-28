@@ -26,7 +26,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableScheduling
 @EnableAspectJAutoProxy
 @EnableCaching
-@ComponentScan(basePackages = { "com.varsql.app" })
 public class ServiceConfig implements AsyncConfigurer {
     
     private final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
@@ -58,7 +57,7 @@ public class ServiceConfig implements AsyncConfigurer {
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(40);
         executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("GainExecutor-");
+        executor.setThreadNamePrefix("VarsqlExecutor-");
         executor.initialize();
         return executor;
     }

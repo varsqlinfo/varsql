@@ -23,7 +23,7 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
+* @PROJECT	: varsql
 * @NAME		: DataSourceConfig.java
 * @DESC		: db 설정. 
 * @AUTHOR	: ytkim

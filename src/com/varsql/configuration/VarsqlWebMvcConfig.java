@@ -21,8 +21,8 @@ import com.varsql.app.common.interceptor.DatabaseAuthInterceptor;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
-* @NAME		: GainWebMvcConfig.java
+* @PROJECT	: varsql
+* @NAME		: VarsqlWebMvcConfig.java
 * @DESC		: web 설정. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
@@ -95,20 +95,14 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
     public void addFormatters(FormatterRegistry formatterRegistry) {
         // add your custom formatters
     }
-    /*
-    /database/**" />
-	<bean id="databaseAuthInterceptor" class="com.varsql.web.common.interceptor.DatabaseAuthInterceptor">
-    */
+    
     @Override
 	public void addInterceptors(InterceptorRegistry registry) {
-	    //registry.addInterceptor(new RequestInterceptor());
-    	//registry.addInterceptor(virtualPortalBaseInterceptor()).addPathPatterns("/portal");
-    	
-	    registry.addInterceptor(DatabaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
+	    registry.addInterceptor(databaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
 	}
     
     @Bean
-    public DatabaseAuthInterceptor DatabaseAuthInterceptor() {
+    public DatabaseAuthInterceptor databaseAuthInterceptor() {
         return new DatabaseAuthInterceptor();
     }
 

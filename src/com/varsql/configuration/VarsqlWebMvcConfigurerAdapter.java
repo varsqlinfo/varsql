@@ -12,8 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * 
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
-* @NAME		: GainWebMvcConfigurerAdapter.java
+* @PROJECT	: varsql
+* @NAME		: VarsqlWebMvcConfigurerAdapter.java
 * @DESC		: base 웹 설정. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------

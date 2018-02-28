@@ -12,7 +12,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 /**
  * 
 *-----------------------------------------------------------------------------
-* @PROJECT	: gain
+* @PROJECT	: varsql
 * @NAME		: VarsqlSpringConfig.java
 * @DESC		: spring bean 설정. 
 * @AUTHOR	: ytkim
