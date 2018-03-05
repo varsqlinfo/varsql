@@ -242,7 +242,6 @@ _ui.layout = {
 			,	left:	1
 			,	right:	1
 			}
-
 			,center__paneSelector:	".ui-layout-center-area"
 			, west__paneSelector:	".ui-layout-left-area"
 			, north__paneSelector: ".ui-layout-header-area"

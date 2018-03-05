@@ -1,6 +1,7 @@
 package com.varsql.app.util;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +20,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.util.DbInstanceFactory;
 
@@ -139,6 +140,14 @@ public class VarsqlUtil {
 		res.setHeader("Content-Transfer-Encoding", "binary;");
 		res.setHeader("Pragma", "no-cache;");
 		res.setHeader("Expires", "-1;");
+	}
+	
+	public static String getCurrentTimestamp(){
+		return getCurrentTimestamp(System.currentTimeMillis());
+	}
+	
+	public static String getCurrentTimestamp(long time){
+		return new Timestamp(time).toString();
 	}
 }
 

@@ -22,14 +22,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.dao.SQLDAO;
 import com.varsql.app.util.SqlResultUtil;
 import com.varsql.app.util.VarsqlUtil;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -37,6 +38,7 @@ import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtil;
 import com.vartech.common.utils.StringUtil.EscapeType;
@@ -104,8 +106,24 @@ public class SQLServiceImpl{
 		
 		Connection conn = null;
 		SqlSourceResultVO ssrv =null; 
+		
+		long stddt = System.currentTimeMillis();
+		String[] mmddHH = DateUtils.dateformat("MM-dd-HH", stddt).split("-");
+		
+		SqlLogInfo sqlLogInfo= new SqlLogInfo();
+		sqlLogInfo.setVconnid(sqlParamInfo.getVconnid());
+		sqlLogInfo.setViewid(sqlParamInfo.getUserid());
+		sqlLogInfo.setStartTime(stddt);
+		
+		sqlLogInfo.setSMm(Integer.valueOf(mmddHH[0]));
+		sqlLogInfo.setSDd(Integer.valueOf(mmddHH[1]));
+		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
+		
+		sqlLogInfo.setLogSql(sqlParamInfo.getSql());
+		
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
+			conn.setAutoCommit(false);
 			for (SqlSource tmpSqlSource : sqlList) {
 				
 				ssrv = new SqlSourceResultVO();
@@ -119,10 +137,17 @@ public class SQLServiceImpl{
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
 				ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
-				sqlLogInsert(sqlParamInfo,tmpSqlSource , ssrv);
+				
+				sqlLogInfo.setLogSql(tmpSqlSource.getQuery());
+				sqlLogInfo.setCommandType(tmpSqlSource.getCommandType());
+				sqlLogInfo.setEndTime(System.currentTimeMillis());
+				sqlLogInsert(sqlLogInfo);
 			}
+			
 			result.setItemList(reLst);
+			conn.commit();
 		} catch (Exception e) {
+			conn.rollback();
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 			
@@ -130,6 +155,7 @@ public class SQLServiceImpl{
 			result.setItemList(reLst);
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
+			conn.setAutoCommit(true);
 			SQLUtil.close(conn);
 		}
 		
@@ -256,28 +282,13 @@ public class SQLServiceImpl{
 	 * @param tmpSqlSource
 	 * @param ssrv
 	 */
-	private void sqlLogInsert(SqlParamInfo sqlParamInfo, SqlSource tmpSqlSource, SqlSourceResultVO ssrv) {
+	private void sqlLogInsert(SqlLogInfo logInfo) {
 		try{
-	    	DataCommonVO logInfoMap = new DataCommonVO();
-	    	
-	    	java.sql.Timestamp stime = new java.sql.Timestamp(ssrv.getStarttime());
-	    	calendar.setTime(stime);
-	    	
-		    logInfoMap.put("vconnid", sqlParamInfo.getVconnid());
-		    logInfoMap.put("viewid", sqlParamInfo.getUserid());
-		    logInfoMap.put("start_time", stime);
-		    logInfoMap.put("s_mm", calendar.get(Calendar.MONTH)+1);
-		    logInfoMap.put("s_dd", calendar.get(Calendar.DATE));
-		    logInfoMap.put("s_hh", calendar.get(Calendar.HOUR_OF_DAY));
-		    logInfoMap.put("end_time", new java.sql.Timestamp(ssrv.getEndtime()));
-		    logInfoMap.put("delay_time", ssrv.getDelay());
-		    logInfoMap.put("log_sql", tmpSqlSource.getQuery());
-		    logInfoMap.put("result_count", ssrv.getResultCnt());
-		    logInfoMap.put("command_type", tmpSqlSource.getCommandType());
-		    
-		    sqlDAO.insertSqlUserLog(logInfoMap);
+			System.out.println(logInfo.getStartTime() +" :: " + logInfo.getEndTime() );
+		    sqlDAO.insertSqlUserLog(logInfo);
 	    }catch(Exception e){
-	    	e.printStackTrace();
+	    	logger.error(getClass().getName()+" sqlLogInsert {}", VartechUtils.reflectionToString(logInfo));
+	    	logger.error(getClass().getName()+" sqlLogInsert ", e);
 	    }
 	}
 

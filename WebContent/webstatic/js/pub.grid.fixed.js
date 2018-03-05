@@ -2701,28 +2701,29 @@ Plugin.prototype ={
 	,_headerResize :function (flag){
 		var _this = this
 			,resizeEle = _this.element.header.find('.pub-header-resizer');
-		if(flag===true){
 
-			function colResize(_this , sEle){
-				_this.drag = {};
-				
-				_this.drag.ele = sEle;
-				
-				_this.drag.resizeIdx = _this.drag.ele.attr('data-resize-idx');
-				_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
-				_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
-				
-				_this.drag.totColW = _this.drag.ele.closest('[data-header-info]').width();
-				
-				_this.drag.colW = _this.options.tColItem[_this.drag.resizeIdx].width;
-				if(_this.drag.isLeftContent){
-					_this.drag.gridW = _this.config.gridWidth.left - _this.drag.colW;
-				}else{
-					_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
-				}
-				_this.drag.gridBodyW = _this.config.body.width - _this.drag.colW;
-				return 
+		function colResize(_this , sEle){
+			_this.drag = {};
+			
+			_this.drag.ele = sEle;
+			
+			_this.drag.resizeIdx = _this.drag.ele.attr('data-resize-idx');
+			_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
+			_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
+			
+			_this.drag.totColW = _this.drag.ele.closest('[data-header-info]').width();
+			
+			_this.drag.colW = _this.options.tColItem[_this.drag.resizeIdx].width;
+			if(_this.drag.isLeftContent){
+				_this.drag.gridW = _this.config.gridWidth.left - _this.drag.colW;
+			}else{
+				_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
 			}
+			_this.drag.gridBodyW = _this.config.body.width - _this.drag.colW;
+			return 
+		}
+
+		if(flag===true){
 
 			resizeEle.on('dblclick', function (e){
 				colResize(_this, $(this));

@@ -6,13 +6,14 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.dao.BaseDAO;
+import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 
 @Repository
 public class SQLDAO extends BaseDAO{
-	public int insertSqlUserLog(ParamMap paramMap){
-		return getSqlSession().insert("sqlServiceMapper.insertSqlUserLog", paramMap );
+	public int insertSqlUserLog(SqlLogInfo logInfo){
+		return getSqlSession().insert("sqlServiceMapper.insertSqlUserLog", logInfo);
 	}
 
 	public int saveQueryInfo(SqlParamInfo sqlParamInfo) {
@@ -38,4 +39,5 @@ public class SQLDAO extends BaseDAO{
 	public int deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
 		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", sqlParamInfo );
 	}
+
 }

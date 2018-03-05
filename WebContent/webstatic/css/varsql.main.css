@@ -456,13 +456,16 @@ padding-top: 5px;
 
 .db-metadata-area{
 	padding-left: 0;
-	display:none;
+	z-index : 1;
 	height:100%;
+	width:100%;
+	position: absolute;
+	background: #fff;
 	/* margin-bottom: 20px; */
 }
 
 .db-metadata-area.show-display{
-	display:block;
+	z-index : 10;
 }
 
 .db-metadata-area-item {

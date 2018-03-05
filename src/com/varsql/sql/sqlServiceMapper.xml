@@ -23,15 +23,15 @@
 		values( 
 			#{vconnid}
 			, #{viewid}
-			, #{start_time}
-			, #{s_mm}
-			, #{s_dd}
-			, #{s_hh}
-			, #{end_time}
-			, #{delay_time}
-			, #{log_sql}
-			, #{result_count}
-			, #{command_type}
+			, #{startTime}
+			, #{sMm}
+			, #{sDd}
+			, #{sHh}
+			, #{endTime}
+			, #{delayTime}
+			, #{logSql}
+			, #{resultCount}
+			, #{commandType}
 		)
 	</insert>
 	
