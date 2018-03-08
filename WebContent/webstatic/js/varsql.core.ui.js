@@ -29,8 +29,7 @@ var _g_options={
 
 VARSQL.ui.create = function (_opts){
 	
-	_ui.base.sqlHints = VARSQLCont.dataType.sqlHints(_opts.dbtype);
-	_ui.base.mimetype = VARSQLCont.dataType.getMimeType(_opts.dbtype);
+	VARSQLCont.init(_opts.dbtype , _ui.base);
 	
 	_g_options._opts =_opts;
 	_ui.initContextMenu();
@@ -1223,7 +1222,7 @@ _ui.SQL = {
 			var selArr = _self.getTextAreaObj().getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
-				selArr[i] = selArr[i].toUpperCase();
+				selArr[i] = toUpperCase(selArr[i]);
 			}
 			var selPosArr = _self.getTextAreaObj().listSelections(); 
 			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
@@ -1234,7 +1233,7 @@ _ui.SQL = {
 			var selArr = _self.getTextAreaObj().getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
-				selArr[i] = selArr[i].toLowerCase();
+				selArr[i] = toLowerCase(selArr[i]);
 			}
 			var selPosArr = _self.getTextAreaObj().listSelections(); 
 			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
@@ -2518,13 +2517,13 @@ function queryParameter(flag, columnInfo , colNameCase){
 		}
 		return VARSQLCont.constants.queryParameterPrefix+colName+VARSQLCont.constants.queryParameterSuffix;
 	}else{
-		var tmpType = VARSQLCont.dataType.getDbType(dataType);
+		var tmpType = VARSQLCont.dataType.getDataTypeInfo(dataType);
 		
 		if(tmpType.isNum===true){
 			return 1;
 		}else{
-			//var colLen  = columnInfo.COLUMN_SIZE;
-			return tmpType.val; 
+			var defaultVal =tmpType.val;
+			return defaultVal==""?"'"+toLowerCase(colName)+"'" :defaultVal; 
 		}
 	}
 }
@@ -2546,14 +2545,22 @@ function convertCamel(camelStr){
     if(camelStr == '') {
         return camelStr;
     }
-    camelStr = camelStr.toLowerCase();
+    camelStr = toLowerCase(camelStr);
     // conversion
     var returnStr = camelStr.replace(/_(\w)/g, function(word) {
-        return word.toUpperCase();
+        return toUpperCase(word);
     });
     returnStr = returnStr.replace(/_/g, "");
     
     return returnStr; 
+}
+
+function toLowerCase(str){
+	return (str || '').toLowerCase()
+}
+
+function toUpperCase(str){
+	return (str || '').toUpperCase()
 }
 
 function copyStringToClipboard (prefix , copyText) {
@@ -2591,7 +2598,7 @@ function copyStringToClipboard (prefix , copyText) {
 }
 
 function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return toUpperCase(str.charAt(0)) + str.slice(1);
 }
 
 }(jQuery, window, document,VARSQL));
