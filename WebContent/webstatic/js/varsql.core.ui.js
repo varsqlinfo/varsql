@@ -1656,10 +1656,8 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({      
-		    type:"POST"
-		    ,loadSelector : '#editorAreaTable'
+		    loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
-		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
 		    	$('#sql_id').val(res.item);
@@ -1708,10 +1706,8 @@ _ui.SQL = {
 						};
 						
 						VARSQL.req.ajax({      
-						    type:"POST" 
-						    ,loadSelector : '#editorAreaTable'
+						    loadSelector : '#editorAreaTable'
 						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.varsql'}
-						    ,dataType:'json'
 						    ,data:params 
 						    ,success:function (resData){
 						    	_self.memoDialog.dialog( "close" );
@@ -1771,10 +1767,8 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({
-		    type:"POST"
-		    ,loadSelector : '#editorAreaTable'
+		    loadSelector : '#editorAreaTable'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
-		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
 		    	var items = res.items;
