@@ -1,7 +1,7 @@
 /**
  * pubGrid v0.0.1
  * ========================================================================
- * Copyright 2016 ytkim
+ * Copyright 2016 - 2018 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -15,9 +15,7 @@ var _initialized = false
 ,_$doc = $(document)
 ,_datastore = {}
 ,_defaults = {
-	fixed:false
-	,drag:false
-	,minWidth : 38
+	drag:false
 	,rowOptions:{
 		height: 22	// cell 높이
 		,click : false //row(tr) click event
@@ -33,7 +31,6 @@ var _initialized = false
 		,responsive : false // 리사이즈시 그리드 리사이즈 여부.
 		,threshold :150
 	}
-	,resizeGridWidthFixed : true	// 리사이즈시 그리드 리사이즈 여부.
 	,headerOptions : {
 		view : true	// header 보기 여부
 		,height: 23
@@ -43,9 +40,6 @@ var _initialized = false
 			enabled : true
 			,cursor : 'col-resize'
 		}
-		,displayLineNumber : false	 // 라인 넘버 보기.
-		,displayRowSelector : false	 // row selecotr checkbox 보기
-		,displayModifyInfo : false	 // 수정여부 보기
 		,colFixedIndex : 0	// 고정 컬럼 
 		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
@@ -53,13 +47,54 @@ var _initialized = false
 		,oneCharWidth: 7
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
+		,setting : {
+			enable : false
+			,enableSpeed : true 
+			,enableSearch : true
+			,click : false		// 직접 처리 할경우. function 으로 처리.
+			,speedMaxVal :10
+			,callback : function (item){
+				
+			}
+		}
+	}
+	,asideOptions :{
+		lineNumber : {
+			enable :false
+			,key : 'number'
+			,name : ''
+			,width : 40
+			,styleCss : ''	//css 
+		}
+		,rowSelector :{
+			enable :false
+			,key : 'chceck'
+			,name : 'chceck'
+			,width : 25
+		}
+		,modifyInfo :{
+			enable :false
+			,key : 'modify'
+			,name : 'modify'
+			,width : 10
+		}
 	}
 	,bodyOptions : {
 		cellDblClick : false	// body td click
 	}
 	,scroll :{
-		verticalWidth : 12
-		,horizontalHeight: 12
+		vertical : {
+			width : 12
+			,bgDelay : 200		// 스크롤 빈공간 mousedown delay
+			,btnDelay : 100		// 방향키 mousedown delay
+			,speed : 1			// 스크롤 스피드
+		}
+		,horizontal :{
+			height: 12
+			,bgDelay : 200		
+			,btnDelay : 100	// 방향키 버튼 속도.
+			,speed : 1			// 스크롤 스피드
+		}
 	}
 	,height: 200
 	,tColItem : [] //head item
@@ -221,7 +256,7 @@ function copyStringToClipboard (prefix , copyText) {
 	
 	function handler (event){
 		document.removeEventListener('copy', handler);
-		copyArea = null; 
+		copyArea = null;
 	}
 	document.addEventListener('copy', handler);
 
@@ -278,9 +313,12 @@ Plugin.prototype ={
 			, header :{height : 0, width : 0}
 			, footer :{height : 0, width : 0}
 			, navi :{height : 0, width : 0}
-			,aside :{items :[]}
-			,select : {}
-			,dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
+			, initSettingFlag :false
+			, aside :{items :[]}
+			, select : {}
+			, template: {}
+			, orginData: []
+			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
 		};
 		_this._initScrollData();
 		_this._setRangeSelectInfo({},true);
@@ -356,28 +394,16 @@ Plugin.prototype ={
 			_this.options.headerOptions.contextMenu =false; 
 		}
 		var asideItem = [];
-		if(_this.options.headerOptions.displayLineNumber ===true){
-			asideItem.push({
-				key : 'number'
-				,name : ''
-				,width : 40
-			});
+		if(_this.options.asideOptions.lineNumber.enable ===true){
+			asideItem.push(_this.options.asideOptions.lineNumber);
 		}
 
-		if(_this.options.headerOptions.displayRowSelector ===true){
-			asideItem.push({
-				key : 'chceck'
-				,name : 'check'
-				,width : 25
-			});
+		if(_this.options.asideOptions.rowSelector.enable ===true){
+			asideItem.push(_this.options.asideOptions.rowSelector);
 		}
 		
-		if(_this.options.headerOptions.displayModifyInfo ===true){
-			asideItem.push({
-				key : 'modify'
-				,name : ''
-				,width : 10
-			});
+		if(_this.options.asideOptions.modifyInfo.enable ===true){
+			asideItem.push(_this.options.asideOptions.modifyInfo);
 		}
 		
 		_this.config.aside.items = asideItem; 
@@ -451,7 +477,7 @@ Plugin.prototype ={
 		var tci = opt.tColItem
 			,thg = opt.theadGroup
 			,fixedColIdx = opt.headerOptions.colFixedIndex
-			,gridElementWidth =_this.config.body.width-(_this.config.gridWidth.aside+opt.scroll.verticalWidth)
+			,gridElementWidth =_this.config.body.width-(_this.config.gridWidth.aside+opt.scroll.vertical.width)
 			,tciItem,thgItem, rowItem, headItem
 			,headGroupInfo = [] ,groupInfo = [], rowSpanNum = {}, colSpanNum = {}
 			,leftHeaderGroupInfo = [] ,leftGroupInfo = [], rowSpanNum = {}, colSpanNum = {};
@@ -564,7 +590,8 @@ Plugin.prototype ={
 		var colWidth = Math.floor((gridElementWidth)/tci.length);
 		
 		var viewAllLabel= (opt.headerOptions.viewAllLabel ===true ?true :false); 
-
+		
+		var strHtm = [];
 		for(var j=0; j<tci.length; j++){
 			var tciItem = opt.tColItem[j];
 
@@ -584,8 +611,11 @@ Plugin.prototype ={
 			}else{
 				_this.config.gridWidth.main +=tciItem.width;
 			}
+
+			strHtm.push('<option value="'+tciItem.key+'">'+tciItem.label+'</option>');
 		}
 		
+		_this.config.template['searchField'] = strHtm.join('');
 		_this._calcElementWidth();
 	}
 	/**
@@ -601,8 +631,7 @@ Plugin.prototype ={
 			,tci = opt.tColItem
 			,tciLen = tci.length;
 
-		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+opt.scroll.verticalWidth;
-
+		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+opt.scroll.vertical.width;
 			
 		if(opt.headerOptions.colWidthFixed !== true){
 			var resizeFlag = _totW  < _gw ? true : false;
@@ -712,7 +741,7 @@ Plugin.prototype ={
 			data = pdata.items;
 			pageInfo = pdata.page; 
 		}
-
+		
 		if(data){
 			_this.options.tbodyItem = data
 		}
@@ -734,9 +763,13 @@ Plugin.prototype ={
 						break; 
 					}
 				}
-				
 				if(_idx != -1) _this.getSortList(_idx, _sortType);
 			}
+		}
+		if(gridMode == 'search'){
+			gridMode = 'reDraw';
+		}else{
+			_this.config.orginData = _this.options.tbodyItem;
 		}
 
 		if(gridMode=='reDraw'){
@@ -810,10 +843,45 @@ Plugin.prototype ={
      * @description header html 
      */
 	,getTemplateHtml : function (){
-		var _this = this;
+		var _this = this
+			,vArrowWidth = _this.options.scroll.vertical.width-2
+			,hArrowWidth = _this.options.scroll.horizontal.height-2;
+	
 
 		return '<div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect"  style="overflow:hidden;width:'+_this.config.body.width+'px;">'
 			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container" style="overflow:hidden;">'
+			+'    <div class="pubGrid-setting-wrapper"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
+			+'<g><path d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
+			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
+			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
+			+'		C22.247,0,21,1.247,21,2.78v5.052c0,0.812-0.447,1.481-1.197,1.792c-0.748,0.313-1.54,0.152-2.114-0.421l-3.571-3.571	'
+			+'		c-1.052-1.052-2.883-1.05-3.933,0l-4.553,4.553c-0.525,0.525-0.814,1.224-0.814,1.967c0,0.742,0.289,1.44,0.814,1.966l3.572,3.571	'
+			+'		c0.573,0.574,0.73,1.364,0.42,2.114S8.644,21,7.832,21H2.78C1.247,21,0,22.247,0,23.78v6.439C0,31.753,1.247,33,2.78,33h5.052	'
+			+'		c0.812,0,1.481,0.447,1.792,1.197s0.153,1.54-0.42,2.114l-3.572,3.571c-0.525,0.525-0.814,1.224-0.814,1.966	'
+			+'		c0,0.743,0.289,1.441,0.814,1.967l4.553,4.553c1.051,1.051,2.881,1.053,3.933,0l3.571-3.572c0.574-0.573,1.363-0.731,2.114-0.42	'
+			+'		c0.75,0.311,1.197,0.98,1.197,1.792v5.052c0,1.533,1.247,2.78,2.78,2.78h6.439c1.533,0,2.78-1.247,2.78-2.78v-5.052	'
+			+'		c0-0.812,0.447-1.481,1.197-1.792c0.751-0.312,1.54-0.153,2.114,0.42l3.571,3.572c1.052,1.052,2.883,1.05,3.933,0l4.553-4.553	'
+			+'		c0.525-0.525,0.814-1.224,0.814-1.967c0-0.742-0.289-1.44-0.814-1.966l-3.572-3.571c-0.573-0.574-0.73-1.364-0.42-2.114	'
+			+'		S45.356,33,46.168,33h5.052c1.533,0,2.78-1.247,2.78-2.78V23.78C54,22.247,52.753,21,51.22,21z M52,30.22	'
+			+'		C52,30.65,51.65,31,51.22,31h-5.052c-1.624,0-3.019,0.932-3.64,2.432c-0.622,1.5-0.295,3.146,0.854,4.294l3.572,3.571	'
+			+'		c0.305,0.305,0.305,0.8,0,1.104l-4.553,4.553c-0.304,0.304-0.799,0.306-1.104,0l-3.571-3.572c-1.149-1.149-2.794-1.474-4.294-0.854	'
+			+'		c-1.5,0.621-2.432,2.016-2.432,3.64v5.052C31,51.65,30.65,52,30.22,52H23.78C23.35,52,23,51.65,23,51.22v-5.052	'
+			+'		c0-1.624-0.932-3.019-2.432-3.64c-0.503-0.209-1.021-0.311-1.533-0.311c-1.014,0-1.997,0.4-2.761,1.164l-3.571,3.572	'
+			+'		c-0.306,0.306-0.801,0.304-1.104,0l-4.553-4.553c-0.305-0.305-0.305-0.8,0-1.104l3.572-3.571c1.148-1.148,1.476-2.794,0.854-4.294	'
+			+'		C10.851,31.932,9.456,31,7.832,31H2.78C2.35,31,2,30.65,2,30.22V23.78C2,23.35,2.35,23,2.78,23h5.052	'
+			+'		c1.624,0,3.019-0.932,3.64-2.432c0.622-1.5,0.295-3.146-0.854-4.294l-3.572-3.571c-0.305-0.305-0.305-0.8,0-1.104l4.553-4.553	'
+			+'		c0.304-0.305,0.799-0.305,1.104,0l3.571,3.571c1.147,1.147,2.792,1.476,4.294,0.854C22.068,10.851,23,9.456,23,7.832V2.78	'
+			+'		C23,2.35,23.35,2,23.78,2h6.439C30.65,2,31,2.35,31,2.78v5.052c0,1.624,0.932,3.019,2.432,3.64	'
+			+'		c1.502,0.622,3.146,0.294,4.294-0.854l3.571-3.571c0.306-0.305,0.801-0.305,1.104,0l4.553,4.553c0.305,0.305,0.305,0.8,0,1.104 '
+			+'		l-3.572,3.571c-1.148,1.148-1.476,2.794-0.854,4.294c0.621,1.5,2.016,2.432,3.64,2.432h5.052C51.65,23,52,23.35,52,23.78V30.22z"/>'
+			+'	<path d="M27,18c-4.963,0-9,4.037-9,9s4.037,9,9,9s9-4.037,9-9S31.963,18,27,18z M27,34c-3.859,0-7-3.141-7-7s3.141-7,7-7'
+			+'		s7,3.141,7,7S30.859,34,27,34z"/></g>'
+			+'</svg></div>'
+			+' 		 <div class="pubGrid-setting-area">'
+			+'		   <div class="pubGrid-search-area"><select name="pubgrid_srh_filed"><option>field</option></select><input type="text" name="pubgrid_srh_val" class="pubGrid-search-field"><button type="button" class="pubgrid-btn" data-setting-mode="search">검색</button></div>'
+			+'			    <div class="pubGrid-speed-area"><span>스크롤속도</span><select name="pubgrid_scr_speed"><option value="1">1</option></select><button type="button" class="pubgrid-btn" data-setting-mode="speed">설정</button></div>'
+			+' 		  </div>'
+			+'		</div>'
 			+' 		<div class="pubGrid-header-container-warpper">'
 			+' 		  <div id="'+_this.prefix+'_headerContainer" class="pubGrid-header-container">'
 			+' 			<div class="pubGrid-header-aside"><table class="pubGrid-header-aside-cont" style="width:'+_this.config.gridWidth.aside+'px;">#theaderAsideHtmlArea#</table></div>'
@@ -841,20 +909,25 @@ Plugin.prototype ={
 			+' 			</div>'
 			+' 		</div>'
 			+' 		<div id="'+_this.prefix+'_vscroll" class="pubGrid-vscroll">'
-			
-			+' 			<div class="pubGrid-vscroll-bar-area"><div class="pubGrid-vscroll-bar"></div></div>'
-			//+' 			<div class="pubGrid-vscroll-up">^</div>'
-			//+' 			<div class="pubGrid-vscroll-down">V</div>'
+			+'			<div class="pubGrid-scroll-top-area" style="height:23px;"></div>'
+			+' 			<div class="pubGrid-vscroll-bar-area">'
+			+'			  <div class="pubGrid-vscroll-bar-bg"></div>'
+			+' 			  <div class="pubGrid-vscroll-up pubGrid-vscroll-btn" data-pubgrid-btn="U"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"/></g></svg></div>'
+			+'			  <div class="pubGrid-vscroll-bar"></div>'
+			+' 			  <div class="pubGrid-vscroll-down pubGrid-vscroll-btn" data-pubgrid-btn="D"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"/></g></svg></div>'
+			+' 			</div>'
 			+' 		</div>'
 			+' 		<div id="'+_this.prefix+'_hscroll" class="pubGrid-hscroll">'
-			+'			<div class="pubGrid-scroll-aside-area" style="width:41px;"></div>'
-			+' 			<div class="pubGrid-hscroll-bar-area"><div class="pubGrid-hscroll-bar"></div></div>'
-			//+' 			<div class="pubGrid-hscroll-left"><</div>'
-			//+' 			<div class="pubGrid-hscroll-right">></div>'
+			+'			<div class="pubGrid-scroll-aside-area" style="width:'+(_this.config.gridWidth.aside+1)+'px;"></div>'
+			+' 			<div class="pubGrid-hscroll-bar-area">'
+			+'			  <div class="pubGrid-hscroll-bar-bg"></div>'
+			+' 			  <div class="pubGrid-hscroll-left pubGrid-hscroll-btn" data-pubgrid-btn="L"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="10,50 100,0 100,100" fill="#737171"/></g></svg></div>'
+			+'			  <div class="pubGrid-hscroll-bar"></div>'
+			+' 			  <div class="pubGrid-hscroll-right pubGrid-hscroll-btn" data-pubgrid-btn="R"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 0,100 90,50" fill="#737171"/></g></svg></div>'
+			+'			</div>'
 			+' 		</div> '
 			+' 	</div>'
 			+' 	<div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
-
 			+' 	</div>'
 			+' </div>';
 
@@ -867,13 +940,12 @@ Plugin.prototype ={
 		var strHtm = [], colGroupHtm=[];
 		
 		var items =_this.config.aside.items;
-
-
-		var tmpeElementBody = _this.element.body.find('.pubGrid-body-aside-cont')
+		
+		var tmpeElementBody = _this.element.body.find('.pubGrid-body-aside-cont');
 		
 		for(var i =0 ; i < _this.config.scroll.maxViewCount; i++){
 			if(tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
-				if(i > _this.config.scroll.viewCount){
+				if(i >= _this.config.scroll.viewCount){
 					tmpeElementBody.find('[rowinfo="'+i+'"]').hide();
 				}else{
 					tmpeElementBody.find('[rowinfo="'+i+'"]').show();
@@ -887,7 +959,7 @@ Plugin.prototype ={
 						colGroupHtm.push('<col style="width:'+item.width+'px;" />');
 					}
 					
-					strHtm.push('<td scope="col" class="pub-body-aside-td" data-aside-position="'+i+','+item.key+'"><div class="aside-content"></div></td>');
+					strHtm.push('<td scope="col" class="pub-body-aside-td" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
 				}
 				strHtm.push('</tr>');
 				firstFlag = false; 
@@ -994,7 +1066,7 @@ Plugin.prototype ={
 			tmpFormatter = this.options.formatter[type];
 		}
 
-		if($.isFunction(thiItem.formatter)){
+		if(isFunction(thiItem.formatter)){
 			itemVal = thiItem.formatter.call(null,{idx : _idx , colInfo:thiItem, item: rowItem , formatter : function (val, fixed , prefix , suffix){
 				fixed = isUndefined(fixed)?tmpFormatter.fixed :fixed;
 				prefix = isUndefined(prefix)?tmpFormatter.prefix :prefix;
@@ -1031,7 +1103,7 @@ Plugin.prototype ={
 		var _this = this
 			,cfg = _this.config
 			,tci = _this.options.tColItem
-			,hederOpt=_this.options.headerOptions;
+			,headerOpt=_this.options.headerOptions;
 
 		var strHtm = [];
 
@@ -1044,10 +1116,10 @@ Plugin.prototype ={
 		strHtm.push(_this._getColGroup(_this.prefix+'colHeader' , type));
 		
 		strHtm.push('<thead>');
-		if(headerInfo.length > 0 && hederOpt.view){
+		if(headerInfo.length > 0 && headerOpt.view){
 			var ghArr, ghItem;
 				
-			for(var i =0 ; i < headerInfo.length; i++){
+			for(var i =0, len=headerInfo.length ; i < len; i++){
 				ghArr = headerInfo[i];
 				strHtm.push('<tr class="pub-header-tr">');
 				for(var j=0 ; j <ghArr.length; j++){
@@ -1104,7 +1176,7 @@ Plugin.prototype ={
 		var _this = this
 			,tci = _this.options.tColItem
 			,tbi = _this.options.tbodyItem
-			,hederOpt=_this.options.headerOptions;
+			,headerOpt=_this.options.headerOptions;
 
 		if(drawMode =='init'){
 
@@ -1115,6 +1187,7 @@ Plugin.prototype ={
 			templateHtm = templateHtm.replace('#theaderLeftHtmlArea#',_this.theadHtml('left'));
 
 			_this.gridElement.empty().html(templateHtm);
+
 			_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
 			_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
 			
@@ -1128,13 +1201,20 @@ Plugin.prototype ={
 			_this.element.status = $('#'+_this.prefix+'_status');
 			_this.element.vScrollBar = $('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar');
 			_this.element.hScrollBar = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar');
-			
+
+			if(headerOpt.view===false){
+				_this.element.header.height(0).hide()
+				$('#'+_this.prefix+'_vscroll .pubGrid-scroll-top-area').hide();
+			}else{
+				
+			}
+		
 			_this.setElementDimensionAndMessage();
 			_this.calcDimension('init');
 
 			// resize 설정
 			_this._initHeaderEvent();
-			_this._headerResize(hederOpt.resize.enabled);
+			_this._headerResize(headerOpt.resize.enabled);
 			_this.scroll();
 			_this._initBodyEvent();
 			_this._setBodyEvent();
@@ -1236,6 +1316,7 @@ Plugin.prototype ={
      */
 	,setElementDimensionAndMessage : function (){
 		this.config.header.height = this.element.header.outerHeight();
+		var header_height = this.config.header.height; 
 
 		this.config.navi.height = 0;
 
@@ -1262,14 +1343,16 @@ Plugin.prototype ={
 		}
 
 		this.element.pubGrid.addClass(pubGridClass)
-		this.element.header.find('.pubGrid-header-aside-cont').css('line-height',this.config.header.height+'px').css('height',this.config.header.height+'px')
-		this.element.header.find('.aside-label-wrapper').css('height',this.config.header.height-1+'px');
+		this.element.header.find('.pubGrid-header-aside-cont').css({'line-height': header_height+'px' , 'height' : header_height+'px'})
+		this.element.header.find('.aside-label-wrapper').css('height',header_height-1+'px');
+
+		$('#'+this.prefix+'_vscroll .pubGrid-scroll-top-area').css({'line-height': header_height+'px' , 'height' : header_height+'px'});
 			
-		$('#'+this.prefix+'_vscroll').css('width', this.options.scroll.verticalWidth);
-		$('#'+this.prefix+'_hscroll').css('height', this.options.scroll.horizontalHeight).css('padding-left', (this.options.headerOptions.displayLineNumber ===true? 40 :0));
+		$('#'+this.prefix+'_vscroll').css({'width' : this.options.scroll.vertical.width , 'padding-top' :  header_height});
+		$('#'+this.prefix+'_hscroll').css({'height' : this.options.scroll.horizontal.height , 'padding-left' : this.config.gridWidth.aside});
 		
 		// empty message
-		if($.isFunction(this.options.message.empty)){
+		if(isFunction(this.options.message.empty)){
 			this.element.body.find('.pubGrid-empty-msg').empty().html(this.options.message.empty());	
 		}else{
 			this.element.body.find('.pubGrid-empty-msg .empty-text').empty().html(this.options.message.empty);
@@ -1305,12 +1388,12 @@ Plugin.prototype ={
 		var mainHeight = opt.height - this.config.navi.height;
 		_this.element.container.css('height',mainHeight);
 
-		var bodyH = mainHeight - this.config.header.height - this.config.footer.height - (hScrollFlag?this.options.scroll.horizontalHeight:0)
+		var  bodyW = (_this.config.body.width-this.options.scroll.vertical.width)
+			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false
+			, bodyH = mainHeight - this.config.header.height - this.config.footer.height
 			, itemTotHeight = _this.options.tbodyItem.length * _this.config.rowHeight
-			, vScrollFlag = itemTotHeight > bodyH ? true :false
-			, bodyW = (_this.config.body.width- (vScrollFlag?this.options.scroll.verticalWidth :0))
-			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false;
-			
+			, vScrollFlag = itemTotHeight > bodyH ? true :false;
+						
 		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main)+'px');
 		_this.element.header.find('.pubGrid-header-left-cont').css('width',(_this.config.gridWidth.left)+'px');
 		
@@ -1319,7 +1402,7 @@ Plugin.prototype ={
 		_this.element.body.find('.pubGrid-body-left').css('height',(opt.height)+'px');
 		_this.element.body.find('.pubGrid-empty-msg-area').css('line-height',(bodyH)+'px');
 
-		//console.log(vScrollFlag,mainHeight , this.config.header.height , this.config.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontalHeight:0))
+		//console.log(vScrollFlag,mainHeight , this.config.header.height , this.config.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontal.height:0))
 		
 		var beforeViewCount = _this.config.scroll.viewCount ; 
 		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.options.tbodyItem.length;
@@ -1332,12 +1415,14 @@ Plugin.prototype ={
 		var topVal = 0 ; 
 		if(vScrollFlag){
 			_this.config.scroll.vUse = true;
-			$('#'+_this.prefix+'_vscroll').css('padding-bottom',(hScrollFlag?(_this.options.scroll.horizontalHeight-1):0));
+			$('#'+_this.prefix+'_vscroll').css('padding-bottom',(hScrollFlag?(_this.options.scroll.horizontal.height-1):0));
 			$('#'+_this.prefix+'_vscroll').show();
 			
 			var scrollH = $('#'+_this.prefix+'_vscroll').find('.pubGrid-vscroll-bar-area').height();
-			var barHeight = (bodyH*(bodyH/(itemTotHeight)*100))/100; 
-			barHeight = barHeight < 25 ? 25 :barHeight;	
+			
+			var barHeight = (scrollH*(bodyH/(itemTotHeight)*100))/100; 
+			barHeight = barHeight < 25 ? 25 : ( barHeight > scrollH ?scrollH :barHeight);	
+
 			_this.config.scroll.vBarHeight = barHeight; 
 			_this.config.scroll.verticalHeight = scrollH - barHeight;
 			_this.config.scroll.oneRowMove = _this.config.scroll.verticalHeight/(_this.options.tbodyItem.length-this.config.scroll.viewCount);
@@ -1353,11 +1438,14 @@ Plugin.prototype ={
 		var leftVal =0;
 		if(hScrollFlag){
 			_this.config.scroll.hUse = true; 
-			$('#'+_this.prefix+'_hscroll').css('padding-right',(vScrollFlag?_this.options.scroll.verticalWidth:0));
+			$('#'+_this.prefix+'_hscroll').css('padding-right',(vScrollFlag?_this.options.scroll.vertical.width:0));
 			$('#'+_this.prefix+'_hscroll').show();
-			var hscrollW = bodyW-_this.config.gridWidth.aside; 
-			var barWidth = (hscrollW*(hscrollW/_this.config.gridWidth.total*100))/100; 
-			barWidth = barWidth < 25 ? 25 :barWidth;
+
+			var hscrollW = $('#'+_this.prefix+'_hscroll').find('.pubGrid-hscroll-bar-area').width();
+
+			var barWidth = (hscrollW*(bodyW/_this.config.gridWidth.total*100))/100; 
+			barWidth = barWidth < 25 ? 25 :( barWidth > hscrollW ?hscrollW :barWidth);
+
 			_this.config.scroll.hBarWidth = barWidth;
 			_this.config.scroll.hHiddenWidth = _this.config.gridWidth.main - hscrollW;
 			_this.config.scroll.horizontalWidth =$('#'+_this.prefix+'_hscroll').find('.pubGrid-hscroll-bar-area').width() - barWidth;
@@ -1420,21 +1508,23 @@ Plugin.prototype ={
 			}else{
 				delta = oe.wheelDelta;
 			};
-		
+
 			//delta > 0--up
 			if(_this.config.scroll.vUse){
-				_this.moveVScroll({pos :(delta > 0? 'U' :'D')});
+				_this.moveVScroll({pos :(delta > 0? 'U' :'D') , speed : _this.options.scroll.vertical.speed});
 			}else{
 				if(_this.config.scroll.hUse){
-					_this.moveHScroll({pos :(delta > 0?'L':'R')});
+					_this.moveHScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
 				}
 			}
 		});
 		
-		var scrollTimer , mouseDown = false;
+		var scrollTimer , mouseDown = false
+			,vBgDelay = _this.options.scroll.vertical.bgDelay
+			,hBgDelay = _this.options.scroll.horizontal.bgDelay;
 		
-		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-area').off('mousedown touchstart mouseup touchend');
-		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-area').on('mousedown touchstart',function(e) {
+		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-bg').off('mousedown touchstart mouseup touchend mouseleave');
+		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-bg').on('mousedown touchstart',function(e) {
 			mouseDown = true;
 			var evtY = e.offsetY;
 			var upFlag =evtY> _this.config.scroll.top ? false :true;
@@ -1462,17 +1552,17 @@ Plugin.prototype ={
 				if(mouseDown){
 					scrollTimer = setTimeout(function() {
 						scrollMove(pEvtY, pTop, vBarHeight, oneRowMove);
-					}, 200);
+					}, vBgDelay);
 				}
 			}scrollMove(evtY, _this.config.scroll.top, _this.config.scroll.vBarHeight, _this.config.scroll.oneRowMove);
 			
-		}).on('mouseup touchend',function(e) {
+		}).on('mouseup touchend mouseleave',function(e) {
 			mouseDown = false;
 			clearTimeout(scrollTimer);
 		});
 		
-		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-area').off('mousedown touchstart mouseup touchend');
-		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-area').on('mousedown touchstart',function(e) {
+		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-bg').off('mousedown touchstart mouseup touchend mouseleave');
+		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-bg').on('mousedown touchstart',function(e) {
 			mouseDown = true;
 			var evtX = e.offsetX;
 			var leftFlag =evtX > _this.config.scroll.left ? false :true;
@@ -1500,15 +1590,16 @@ Plugin.prototype ={
 				if(mouseDown){
 					scrollTimer = setTimeout(function() {
 						scrollMove(pEvtX, pLeft, hBarWidth, oneColMove);
-					}, 200);
+					}, hBgDelay);
 				}
 			}scrollMove(evtX,_this.config.scroll.left , _this.config.scroll.hBarWidth, _this.config.scroll.oneColMove);
 			
-		}).on('mouseup touchend',function(e) {
+		}).on('mouseup touchend mouseleave',function(e) {
 			mouseDown = false;
 			clearTimeout(scrollTimer);
 		});
-				
+		
+		// 스크롤 bar drag
 		_this.element.hScrollBar.off('touchstart.pubhscroll mousedown.pubhscroll');
 		_this.element.hScrollBar.on('touchstart.pubhscroll mousedown.pubhscroll',function (e){
 			e.stopPropagation();
@@ -1551,7 +1642,48 @@ Plugin.prototype ={
 			});
 
 			return true; 
-		})
+		}); 
+
+
+		// 가로 방향키
+		var scrollBtnTimer
+			,vBtnDelay = _this.options.scroll.vertical.btnDelay
+			,hBtnDelay = _this.options.scroll.horizontal.btnDelay;
+
+		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-btn').off('mousedown touchstart mouseup touchend mouseleave');
+		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-btn').on('mousedown touchstart',function(e) {
+			var sEle = $(this)
+				,mode = sEle.attr('data-pubgrid-btn');
+			
+			function scrollMove(mode){
+				_this.moveHScroll({pos :mode});
+
+				scrollBtnTimer = setTimeout(function() {
+					scrollMove(mode);
+				}, hBtnDelay);
+			}
+			scrollMove(mode);
+		}).on('mouseup touchend mouseleave',function(e) {
+			clearTimeout(scrollBtnTimer);
+		});
+		
+		//세로 방향키
+		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-btn').off('mousedown touchstart mouseup touchend mouseleave');
+		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-btn').on('mousedown touchstart',function(e) {
+			var sEle = $(this)
+				,mode = sEle.attr('data-pubgrid-btn');
+			
+			function scrollMove(mode){
+				_this.moveVScroll({pos :mode});
+
+				scrollBtnTimer = setTimeout(function() {
+					scrollMove(mode);
+				}, vBtnDelay);
+			}
+			scrollMove(mode);
+		}).on('mouseup touchend mouseleave',function(e) {
+			clearTimeout(scrollBtnTimer);
+		});
 	}
 	/**
 	* 세로 스크롤
@@ -1582,10 +1714,11 @@ Plugin.prototype ={
 		}
 
 		var topVal = moveObj.pos 
+			,speed = moveObj.speed || 1
 			,drawFlag = moveObj.drawFlag;
 
 		if(isNaN(topVal)){
-			topVal =_this.config.scroll.top+((topVal=='U'?-1:1) * _this.config.scroll.oneRowMove);
+			topVal =_this.config.scroll.top+((topVal=='U'?-1:1)* speed * _this.config.scroll.oneRowMove);
 		}
 		
 		var beforeEndFlag = _this.config.scroll.endFlag; 
@@ -1616,7 +1749,7 @@ Plugin.prototype ={
 			
 		if(this.config.scroll.endFlag){
 			if(this.config.scroll.overflowVal > 0){
-				var vHeight = (this.config.scroll.hUse?this.options.scroll.horizontalHeight:0);
+				var vHeight = (this.config.scroll.hUse?this.options.scroll.horizontal.height:0);
 				this.element.body.css('margin-top',(tmpRowHeight-this.config.scroll.overflowVal+2+vHeight)*-1); // 아래 조금 띄우기 위에서 +3 해줌. 
 			}
 		}else{
@@ -1681,7 +1814,7 @@ Plugin.prototype ={
 			}
 		}
 
-		var vWidth =(this.config.scroll.vUse ? this.options.scroll.verticalWidth :0) +1
+		var vWidth =(this.config.scroll.vUse ? this.options.scroll.vertical.width :0) +1
 			,hw = this.config.scroll.horizontalWidth;
 		leftVal = leftVal > 0 ? (leftVal >= hw ? hw : leftVal) : 0 ; 
 
@@ -1832,7 +1965,8 @@ Plugin.prototype ={
      * @description 바디 이벤트 초기화.
      */
 	,_initHeaderEvent : function (){
-		var _this = this;
+		var _this = this
+			,headerOpt = _this.options.headerOptions;
 		
 		var beforeClickObj; 
 		//headerCol.off('click.pubGridHeader.sort');
@@ -1884,8 +2018,128 @@ Plugin.prototype ={
 			_this.setData(_this.getSortList(col_idx, sortType) ,'sort');
 		});
 		
-		if(this.options.headerOptions.contextMenu !== false){
-			$.pubContextMenu(_this.element.header.find('.pubGrid-header-th'),this.options.headerOptions.contextMenu);			
+		if(headerOpt.contextMenu !== false){
+			$.pubContextMenu(_this.element.header.find('.pubGrid-header-th'),headerOpt.contextMenu);			
+		}
+		if(headerOpt.setting.enable ===true){
+			_this.setGridSettingInfo();
+		}
+	}
+	/**
+     * @method toggleSettingArea
+     * @description settring enable/disable
+     */
+	,toggleSettingArea : function (){
+		this.options.headerOptions.setting.enable = !this.options.headerOptions.setting.enable;
+		this.setGridSettingInfo(!this.options.headerOptions.setting.enable);
+	}
+	/**
+     * @method setGridSettingInfo
+     * @description grid setting info
+     */
+	,setGridSettingInfo : function (btnDisableFlag,layerEnableFlag ){
+		var _this = this
+			,headerOpt = _this.options.headerOptions;
+		
+		var settingWrapper = _this.element.container.find('.pubGrid-setting-wrapper'); 
+
+		if(layerEnableFlag===true){
+			settingWrapper.addClass('open');
+		}else{
+			settingWrapper.removeClass('open');
+		}
+		if(btnDisableFlag ===true){
+			settingWrapper.hide();
+		}else{
+			settingWrapper.show();
+		}
+
+		if(_this.config.initSettingFlag ===true){
+			return ; 
+		}
+		
+		// 한번만 초기화 하기 위해서 처리.
+		_this.config.initSettingFlag = true; 
+		// grid setting btn	
+		if(isFunction(headerOpt.setting.click)){
+			settingBtn.on('click', function (e){
+				headerOpt.setting.click.call(null,{evt :e , item :{}});	
+			});
+		}else{
+
+			settingWrapper.find('.pubGrid-setting').on('click', function (e){
+				if(settingWrapper.hasClass('open')){
+					settingWrapper.removeClass('open');
+				}else{
+					settingWrapper.addClass('open');
+				}				
+			});
+			
+			if(headerOpt.setting.enableSearch ===true){
+				settingWrapper.find('[name="pubgrid_srh_filed"]').empty().html(_this.config.template['searchField']);
+				settingWrapper.find('.pubGrid-search-area').show(); 
+			}
+
+			var settingVal = {};
+
+			if(headerOpt.setting.enableSpeed ===true){
+				settingWrapper.find('.pubGrid-speed-area').show();
+				
+				var strHtm = [];
+				strHtm.push('<option value="auto">자동</option>');
+				for(var i =1 ;i <=headerOpt.setting.speedMaxVal;i++){
+					strHtm.push('<option value="'+i+'">'+i+'</option>');
+				}
+				
+				settingWrapper.find('[name="pubgrid_scr_speed"]').empty().html(strHtm.join(''));
+			}
+			
+			var schFieldEle = settingWrapper.find('[name="pubgrid_srh_filed"]')
+				,schSelEle = settingWrapper.find('[name="pubgrid_srh_val"]');
+
+			schSelEle.on('keydown',function(e) {
+				if (e.keyCode == '13') {
+					settingWrapper.find('[data-setting-mode="search"]').trigger('click');
+					return false; 
+				}
+			});
+
+			settingWrapper.on('click','[data-setting-mode]',function (e){
+				var sEle = $(this)
+					,btnMode = sEle.data('setting-mode');
+
+				if('search' == btnMode){
+					var schField = schFieldEle.val()
+						,schVal = schSelEle.val();
+
+					settingVal.search = {
+						field : schField
+						,val : schVal
+					}
+					
+					var schArr = [];
+					var orgData = _this.config.orginData;
+
+					for(var i =0 , len  = _this.config.orginData.length; i < len;i++){
+						if(orgData[i][schField].indexOf(schVal) > -1){
+							schArr.push(orgData[i]);
+						}
+					}
+					_this.setData(schArr,'search');
+					
+				}else if('speed' == btnMode){
+					var speedVal = settingWrapper.find('[name="pubgrid_scr_speed"]').val();  
+
+					speedVal = isNaN(speedVal)? (speedVal=='auto'?speedVal:1) : intValue(speedVal);
+
+					_this.options.scroll.vertical.speed= speedVal;
+					settingVal.speed = speedVal;
+				}
+
+				if(isFunction(headerOpt.setting.callback)){
+					headerOpt.setting.callback.call(null,{evt :e , item : settingVal})
+				}
+			})
 		}
 	}
 	/**
@@ -2011,7 +2265,7 @@ Plugin.prototype ={
 			//_this.element.body.attr("onselectstart", "return false");
 			_this._setRangeSelectInfo({isMouseDown : true});
 
-			if($.isFunction(_this.options.tColItem[colIdx].colClick)){
+			if(isFunction(_this.options.tColItem[colIdx].colClick)){
 				_this.options.tColItem[colIdx].colClick.call(this,colIdx,{
 					r:selIdx
 					,c:colIdx
@@ -2099,6 +2353,9 @@ Plugin.prototype ={
 						console.log('Unable to copy', e);					
 					}					
 				}else if(evtKey==65){ // ctrl + a
+					if(	$(e.target).closest('#'+_this.prefix+'_pubGrid .pubGrid-setting-wrapper').length > 0){
+						return true; 	
+					}
 					_this.allItemSelect();
 					return false; 
 				}
@@ -2111,9 +2368,16 @@ Plugin.prototype ={
 				_this.gridKeyCtrl(e, evtKey);
 			}
 		});
-
-		$(document).on('mousedown.'+_this.prefix,'#'+_this.prefix+'_pubGrid',function (e){
+		
+		
+		//grid set focus
+		//$(document).on('mousedown.'+_this.prefix,'#'+_this.prefix+'_pubGrid',function (e){
+		$('#'+_this.prefix+'_pubGrid').on('mousedown.'+_this.prefix,function (e){
 			_this.config.focus = true; 
+
+			if(e.which !==2 && $(e.target).closest('#'+_this.prefix+'_pubGrid .pubGrid-setting-wrapper').length < 1){
+				_this.setGridSettingInfo(false, false);
+			}
 		})
 
 		$(document).on('mousedown.'+_this.prefix, 'html', function (e) {

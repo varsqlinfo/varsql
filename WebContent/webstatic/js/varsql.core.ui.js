@@ -691,6 +691,20 @@ _ui.leftDbObjectServiceMenu ={
 			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
+				,headerOptions:{
+					setting : {
+						enable : true
+						,click : false
+						,enableSearch : true
+						,enableSpeed : true
+						,callback : function (data){
+							console.log(data);
+						}
+					}
+				}
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
 				,page :false
 				,tColItem : [
 					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
@@ -727,6 +741,11 @@ _ui.leftDbObjectServiceMenu ={
 								_self._removeMetaCache(gubun,tmpName);
 								ele.attr('refresh','Y');
 								ele.trigger('click.pubgridrow');
+								return ; 
+							}
+							
+							if(key=='settingBtn'){
+								tableObj.toggleSettingArea();
 								return ; 
 							}
 							
@@ -823,6 +842,8 @@ _ui.leftDbObjectServiceMenu ={
 							}
 							,{divider:true}
 							,{key : "refresh" , "name": "새로고침"}
+							,{divider:true}
+							,{key : "settingBtn" , "name": "설정(활성/비활성)"}
 						]
 					}
 				}
@@ -869,6 +890,9 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
 				,height:'auto'
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -949,6 +973,9 @@ _ui.leftDbObjectServiceMenu ={
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#procedures',{
 				headerView:true
 				,height:'auto'
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
 				,autoResize :false
 				,page :false
 				,tColItem : [
@@ -998,6 +1025,9 @@ _ui.leftDbObjectServiceMenu ={
     				
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#functions',{
 				headerView:true
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
 				,height: 'auto'
 				,page :false
 				,tColItem : [
@@ -1076,6 +1106,9 @@ _ui.leftDbObjectServiceMenu ={
 		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type, {
 			headerOptions : {
 				redraw : false
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
 			,page :false
 			,height:'auto'
@@ -1568,11 +1601,13 @@ _ui.SQL = {
 			,page :false
 			,headerOptions:{
 				view:true
-				,displayLineNumber : true	 // 라인 넘버 보기.
 				,sort : true
 				,resize:{
 					enabled : true
 				}
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
 			,tColItem : [
 				{label: "NAME", key: "key"}
@@ -2290,11 +2325,13 @@ _ui.SQL = {
 			,page :false
 			,headerOptions:{
 				view:true
-				,displayLineNumber : true	 // 라인 넘버 보기.
 				,sort : true
 				,resize:{
 					enabled : true
 				}
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
