@@ -1285,8 +1285,7 @@ _ui.SQL = {
 		
 		$.pubContextMenu(_self.sqlEditorEle, {
 			items:[
-				{key : "undo" , "name": "실행취소" , hotkey :'Ctrl+Z'}
-				,{key : "redo" , "name": "다시 실행", hotkey :'Ctrl+Y'}
+				{key : "run" , "name": "실행" , hotkey :'Ctrl+Enter'}
 				,{divider:true}
 				,{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
 				,{key : "cut" , "name": "잘라내기", hotkey :'Ctrl+X'}
@@ -1312,6 +1311,9 @@ _ui.SQL = {
 	    		var sObj = this.element;
 	    		
 	    		switch (key) {
+		    		case 'run':
+		    			$('.sql-execue-btn').trigger('click');
+		    			break;
 					case 'undo':
 						_ui.SQL.getTextAreaObj().undo();
 						break;
@@ -2331,7 +2333,7 @@ _ui.SQL = {
 				}
 			}
 			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				lineNumber : {enable : true}				
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){

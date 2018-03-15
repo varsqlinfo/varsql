@@ -7,14 +7,31 @@
 */
 /*bootstrap conflict 막기위해 넣은 코드. */
 
-.pubGrid {
+.pubGrid *{
+	border-spacing:0;
+	border-collapse:collapse;
+}
+.pubGrid input{
+	line-height: normal;
+	margin: 0; 
+	padding:0;
+	border-spacing:0;
+	border-collapse:collapse;
+	-webkit-box-sizing: border-box !important;
+	-moz-box-sizing: border-box !important;
+	box-sizing: border-box !important;
+}
+.pubGrid{
 	position: relative;
 	border : 1px solid #bcbcbd;
 	font-size:12px;
+	border-spacing:0;
+	border-collapse:collapse;
 	-webkit-box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	box-sizing: content-box !important;
 }
+
 .pubGrid-container-wrapper {
 	user-select: none;
     touch-action: none;
@@ -410,7 +427,8 @@
 
 .pubGrid-search-area>input{
 	width:70px;
-	height:17px;
+    vertical-align: top;
+	height:23px;
 	margin-right:5px;
 }
 

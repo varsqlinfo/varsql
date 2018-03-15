@@ -263,7 +263,6 @@ function copyStringToClipboard (prefix , copyText) {
 	document.execCommand('copy');
 }
 
-
 function Plugin(element, options) {
 	this._initialize(element, options);
 	return this; 
@@ -2042,16 +2041,20 @@ Plugin.prototype ={
 			,headerOpt = _this.options.headerOptions;
 		
 		var settingWrapper = _this.element.container.find('.pubGrid-setting-wrapper'); 
-
+		
 		if(layerEnableFlag===true){
 			settingWrapper.addClass('open');
 		}else{
 			settingWrapper.removeClass('open');
 		}
-		if(btnDisableFlag ===true){
-			settingWrapper.hide();
+
+		if(btnDisableFlag == 'enable'){
 		}else{
-			settingWrapper.show();
+			if(btnDisableFlag ===true){
+				settingWrapper.hide();
+			}else{
+				settingWrapper.show();
+			}
 		}
 
 		if(_this.config.initSettingFlag ===true){
@@ -2120,8 +2123,10 @@ Plugin.prototype ={
 					var schArr = [];
 					var orgData = _this.config.orginData;
 
+					schVal = schVal.toLowerCase();
+
 					for(var i =0 , len  = _this.config.orginData.length; i < len;i++){
-						if(orgData[i][schField].indexOf(schVal) > -1){
+						if(orgData[i][schField].toLowerCase().indexOf(schVal) > -1){
 							schArr.push(orgData[i]);
 						}
 					}
@@ -2376,7 +2381,7 @@ Plugin.prototype ={
 			_this.config.focus = true; 
 
 			if(e.which !==2 && $(e.target).closest('#'+_this.prefix+'_pubGrid .pubGrid-setting-wrapper').length < 1){
-				_this.setGridSettingInfo(false, false);
+				_this.setGridSettingInfo('enable', false);
 			}
 		})
 

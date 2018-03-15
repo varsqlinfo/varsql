@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.DatabaseServiceImpl;
+import com.varsql.app.database.service.PreferencesServiceImpl;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -31,10 +33,17 @@ public class DatabaseController {
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
 	
+	@Autowired
+	private PreferencesServiceImpl preferencesServiceImpl;
+	
+	
 	@RequestMapping({"/","/main"})
-	public ModelAndView mainpage(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView mainpage(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(databaseParamInfo));
+		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(preferencesInfo));
+		
+		model.addAttribute(VarsqlParamConstants.USER_PREFERENCES, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo));
+		
 		return  new ModelAndView("/database/main",model);
 	}
 	
