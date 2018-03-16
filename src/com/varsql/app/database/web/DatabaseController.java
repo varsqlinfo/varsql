@@ -42,7 +42,9 @@ public class DatabaseController {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(preferencesInfo));
 		
-		model.addAttribute(VarsqlParamConstants.USER_PREFERENCES, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo));
+		preferencesInfo.setPrefKey("main.database.setting");
+		
+		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo, true));
 		
 		return  new ModelAndView("/database/main",model);
 	}

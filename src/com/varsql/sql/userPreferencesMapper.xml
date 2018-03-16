@@ -11,15 +11,7 @@
 		from VTPREFERENCES 
 		where VCONNID =#{vconnid}
 		and VIEWID =#{userid}
-		<choose>
-			<when test="prefKey =='main'">
-				and PREF_KEY like 'main.%'
-			</when>
-	    	<otherwise>
-	      		and PREF_KEY =#{prefKey}
-	    	</otherwise>
-	  	</choose>
-		
+		and PREF_KEY =#{prefKey}
 	</select>
 	
 	<!-- 환경설정 정보 등록 -->

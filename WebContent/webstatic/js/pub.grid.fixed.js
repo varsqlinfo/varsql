@@ -56,6 +56,13 @@ var _initialized = false
 			,callback : function (item){
 				
 			}
+			,configVal :{
+				search :{			// 검색
+					field : ''		// 검색 필드
+					,val : ''		// 검색어
+				}
+				,speed :''			// scroll speed
+			}
 		}
 	}
 	,asideOptions :{
@@ -87,12 +94,12 @@ var _initialized = false
 			width : 12
 			,bgDelay : 200		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
-			,speed : 1			// 스크롤 스피드
+			,speed :  'auto'	// 스크롤 스피드
 		}
 		,horizontal :{
 			height: 12
 			,bgDelay : 200		
-			,btnDelay : 100	// 방향키 버튼 속도.
+			,btnDelay : 100		// 방향키 버튼 속도.
 			,speed : 1			// 스크롤 스피드
 		}
 	}
@@ -782,6 +789,11 @@ Plugin.prototype ={
 		
 		_this.config.dataInfo.rowLen= _this.options.tbodyItem.length;
 		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.rowLen-1;
+
+
+		if(this.options.scroll.vertical.speed =='auto'){
+			this.options.scroll.vertical.speed = Math.ceil(_this.config.dataInfo.rowLen /100)
+		}
 
 		_this.drawGrid(gridMode,true);
 		_this.setPage(pageInfo);
@@ -2099,6 +2111,11 @@ Plugin.prototype ={
 			
 			var schFieldEle = settingWrapper.find('[name="pubgrid_srh_filed"]')
 				,schSelEle = settingWrapper.find('[name="pubgrid_srh_val"]');
+			
+			if(headerOpt.setting.configVal.search.field!=''){
+				schFieldEle.val(headerOpt.setting.configVal.search.field);
+			}
+			schSelEle.val(headerOpt.setting.configVal.search.val);
 
 			schSelEle.on('keydown',function(e) {
 				if (e.keyCode == '13') {
@@ -2134,9 +2151,6 @@ Plugin.prototype ={
 					
 				}else if('speed' == btnMode){
 					var speedVal = settingWrapper.find('[name="pubgrid_scr_speed"]').val();  
-
-					speedVal = isNaN(speedVal)? (speedVal=='auto'?speedVal:1) : intValue(speedVal);
-
 					_this.options.scroll.vertical.speed= speedVal;
 					settingVal.speed = speedVal;
 				}

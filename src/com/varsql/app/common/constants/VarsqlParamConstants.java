@@ -34,7 +34,7 @@ public interface VarsqlParamConstants {
 	public String DB_TABLE ="table";
 	
 	public String LEFT_DB_OBJECT ="left_db_object";
-	public String USER_PREFERENCES ="user_preferences";
+	public String DATABASE_SCREEN_SETTING ="database_screen_setting";
 	public String LEFT_TAB_MENU ="left_menu";
 	public String JSON_REUSLT ="result";
 	public String JSON_PAGING ="paging";

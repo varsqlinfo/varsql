@@ -76,6 +76,27 @@ _ui.initContextMenu  = function (){
 	});
 }
 
+// 환경 설정 관련
+_ui.preferences= {
+	save : function (prefInfo){
+		
+		prefInfo = VARSQL.util.objectMerge(_g_options._opts.screenSetting,prefInfo);
+		
+		var param = {
+			conuid : _g_options.param.conuid
+			,prefKey : 'main.database.setting'
+			,prefVal : JSON.stringify(prefInfo)
+		}
+		VARSQL.req.ajax({      
+			url:{gubun:VARSQL.uri.database, url:'/preferences/save.vsql'}
+			,data: param
+			,success:function (resData){
+				console.log(resData);
+			}
+		});
+	}
+}
+
 // header 메뉴 처리.
 _ui.headerMenu ={
 	preferencesDialog : ''
@@ -150,7 +171,7 @@ _ui.headerMenu ={
 							_self.exportInfo(menu_mode3);
 							break;
 						case 'setting':	//설정.
-							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/tools/preferences/main.vsql?conuid='+_g_options.param.conuid));
+							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main.vsql?conuid='+_g_options.param.conuid));
 							break;
 						default:
 							break;
@@ -410,10 +431,8 @@ _ui.leftDbObject ={
 		var params = _g_options.param;
 		
 		VARSQL.req.ajax({      
-		    type:"POST"
-		    ,loadSelector : '#db-page-wrapper'
+		    loadSelector : '#db-page-wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/userSettingInfo.varsql'}
-		    ,dataType:'json'
 		    ,data:params 
 		    ,success:function (res){
 		    	var sqlInfo = res.item;
@@ -437,10 +456,8 @@ _ui.leftDbObject ={
 		}
 		
 		VARSQL.req.ajax({      
-		    type:"POST"
-		    ,loadSelector : _ui.leftDbObjectServiceMenu.options.left_service_menu_contentId
+		    loadSelector : _ui.leftDbObjectServiceMenu.options.left_service_menu_contentId
 		    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
-		    ,dataType:'json'
 		    ,data:tmpParam
 		    ,success:function (resData){
 		    	_ui.leftDbObjectServiceMenu.create(
@@ -594,13 +611,12 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		VARSQL.req.ajax({      
-		    type:"POST"  
-		    ,loadSelector : _self.options.left_service_menu_contentId
-		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
-		    ,dataType:'json'
-		    ,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
-		    ,success:function (resData){
-		    	_self['_'+$contentId].call(_self,resData);
+			loadSelector : _self.options.left_service_menu_contentId
+			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+			,dataType:'json'
+			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
+			,success:function (resData){
+				_self['_'+$contentId].call(_self,resData);
 			}
 		});
 	}
@@ -618,15 +634,13 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		VARSQL.req.ajax({
-		    type:"POST"
-		    ,loadSelector : _self.options.metadata_content_area_wrapId
-		    ,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
-		    ,dataType:'json'
-		    ,async:false
-		    ,data:param
-		    ,success:function (resData){
-		    	_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
-		    	_self[callMethod].call(_self,resData, param);
+			loadSelector : _self.options.metadata_content_area_wrapId
+			,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
+			,async:false
+			,data:param
+			,success:function (resData){
+				_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
+				_self[callMethod].call(_self,resData, param);
 			}
 		});
 	}
@@ -650,16 +664,14 @@ _ui.leftDbObjectServiceMenu ={
 		var param =$.extend({},_self.options.param,{'gubun':'table',objectName:sObj.objName})
 		
 		VARSQL.req.ajax({
-		    type:"POST"
-		    ,url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
-		    ,dataType:'json'
-		    ,data:param
-		    ,success:function (resData){
-		    	if(sObj.gubunKey=='ddl_copy'){
-		    		_ui.text.copy(resData.item);
-		    	}else{
-		    		_ui.SQL.addSqlEditContent(resData.item);
-		    	}
+			url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
+			,data:param
+			,success:function (resData){
+				if(sObj.gubunKey=='ddl_copy'){
+					_ui.text.copy(resData.item);
+				}else{
+					_ui.SQL.addSqlEditContent(resData.item);
+				}
 			}
 		});
 	}
@@ -698,8 +710,9 @@ _ui.leftDbObjectServiceMenu ={
 						,enableSearch : true
 						,enableSpeed : true
 						,callback : function (data){
-							console.log(data);
+							_ui.preferences.save({tablesConfig : data.item});
 						}
+						,configVal : _g_options._opts.screenSetting.tablesConfig
 					}
 				}
 				,asideOptions :{
@@ -1502,9 +1515,7 @@ _ui.SQL = {
 				var params = { searchVal : request };
 				
 				VARSQL.req.ajax({      
-				    type:"POST"
-				    ,url:{gubun:VARSQL.uri.user, url:'/searchUserList.varsql'}
-				    ,dataType:'json'
+				    url:{gubun:VARSQL.uri.user, url:'/searchUserList.varsql'}
 				    ,data: params
 				    ,success:function (data){
 				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
@@ -1907,7 +1918,10 @@ _ui.SQL = {
 		$('.sql-param-row').each(function(i ,item){
 			var k = $(this).find('.sql-param-key').val()
 				,v=$(this).find('.sql-param-value').val();
-			sqlParam[k] = v;
+			
+			if($.trim(k) != ''){
+				sqlParam[k] = v;
+			}
 		})
 		return sqlParam; 
 	}

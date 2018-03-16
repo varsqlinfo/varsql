@@ -92,8 +92,10 @@
 
 <script>
 $(document).ready(function(){
-	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)}; 
-	VARSQL.ui.create($.extend({}, {param:{conuid:viewConnInfo.conuid},selector:'#leftDBList',dbtype:viewConnInfo.type}, viewConnInfo));
+	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)};
+	var opts = $.extend({param:{conuid:viewConnInfo.conuid},selector:'#leftDBList',dbtype:viewConnInfo.type}, viewConnInfo);
+	opts.screenSetting = ${database_screen_setting};
+	VARSQL.ui.create(opts);
 	
 	//varsqlMain.init();
 }); 

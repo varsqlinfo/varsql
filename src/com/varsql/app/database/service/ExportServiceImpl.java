@@ -42,7 +42,7 @@ public class ExportServiceImpl{
 	private ExportDAO exportDAO;
 	
 	@Autowired
-	private PreferencesDAO preferencesDAO ;
+	private PreferencesServiceImpl preferencesServiceImpl ;
 	/**
 	 * 
 	 * @Method Name  : selectConfigInfo
@@ -60,7 +60,7 @@ public class ExportServiceImpl{
 		
 		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta().getTables(preferencesInfo));
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
-		model.addAttribute("userSettingInfo",preferencesDAO.selectPreferencesInfo(preferencesInfo ,true));
+		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
 	}
 	
 	/**
@@ -85,11 +85,7 @@ public class ExportServiceImpl{
 		logger.info("databaseParamInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.info("settingInfo :{}", jsonString );
 		
-		if(preferencesDAO.selectPreferencesInfo(preferencesInfo)==null){
-			preferencesDAO.insertPreferencesInfo(preferencesInfo);
-		}else{
-			preferencesDAO.updatePreferencesInfo(preferencesInfo);
-		}
+		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 		
 		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
 		

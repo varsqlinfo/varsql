@@ -1,5 +1,7 @@
 package com.varsql.app.database.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.PreferencesServiceImpl;
+import com.vartech.common.app.beans.ResponseResult;
 
 @Controller
-@RequestMapping("/database/tools/preferences")
+@RequestMapping("/database/preferences")
 public class PreferencesController {
 
 	/** The Constant logger. */
@@ -21,10 +26,10 @@ public class PreferencesController {
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
 
-	@RequestMapping("/main")
+	@RequestMapping({"/main"})
 	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferencesMain",model);
+		return  new ModelAndView("/database/preferencesMain",model);
 	}
 	
 	/**
@@ -41,7 +46,7 @@ public class PreferencesController {
 	@RequestMapping("/generalSetting")
 	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferences/generalSetting",model);
+		return  new ModelAndView("/database/preferences/generalSetting",model);
 	}
 	
 	/**
@@ -58,7 +63,7 @@ public class PreferencesController {
 	@RequestMapping("/keySetting")
 	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferences/keySetting",model);
+		return  new ModelAndView("/database/preferences/keySetting",model);
 	}
 	
 	
@@ -77,7 +82,7 @@ public class PreferencesController {
 	@RequestMapping("/sqlFormatSetting")
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferences/sqlFormatSetting",model);
+		return  new ModelAndView("/database/preferences/sqlFormatSetting",model);
 	}
 	
 	/**
@@ -94,7 +99,7 @@ public class PreferencesController {
 	@RequestMapping("/codeEditerSetting")
 	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferences/codeEditerSetting",model);
+		return  new ModelAndView("/database/preferences/codeEditerSetting",model);
 	}
 	
 	/**
@@ -111,6 +116,24 @@ public class PreferencesController {
 	@RequestMapping("/exportSetting")
 	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/preferences/exportSetting",model);
+		return  new ModelAndView("/database/preferences/exportSetting",model);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : save
+	 * @Method 설명 : 설정 정보 저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 3. 16. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/save")
+	public @ResponseBody ResponseResult save(PreferencesInfo preferencesInfo, HttpServletRequest req) throws Exception {
+		return preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
+	}
+	
 }
