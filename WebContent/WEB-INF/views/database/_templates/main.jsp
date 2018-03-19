@@ -4,7 +4,7 @@
 <html>
 <head>
 <title>${left_db_object.connInfo.name}::<spring:message code="screen.user" /></title>
-<%@ include file="/WEB-INF/include/user-head.jsp"%>
+<%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 </head>
 <body>

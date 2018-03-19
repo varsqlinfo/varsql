@@ -47,21 +47,29 @@ var _initialized = false
 		,oneCharWidth: 7
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
-		,setting : {
-			enable : false
-			,enableSpeed : true 
-			,enableSearch : true
-			,click : false		// 직접 처리 할경우. function 으로 처리.
-			,speedMaxVal :10
-			,callback : function (item){
-				
+	}
+	,setting : {
+		enable : false
+		,enableSpeed : true 
+		,enableSearch : true
+		,click : false		// 직접 처리 할경우. function 으로 처리.
+		,speedMaxVal :10
+		,callback : function (item){
+			
+		}
+		,configVal :{
+			search :{			// 검색
+				field : ''		// 검색 필드
+				,val : ''		// 검색어
 			}
-			,configVal :{
-				search :{			// 검색
-					field : ''		// 검색 필드
-					,val : ''		// 검색어
+			,speed :-1			// scroll speed
+		}
+		,util : {
+			searchFilter : function (item, key,searchVal){
+				if(item[key].toLowerCase().indexOf(searchVal) > -1){
+					return true; 
 				}
-				,speed :''			// scroll speed
+				return false;
 			}
 		}
 	}
@@ -92,13 +100,13 @@ var _initialized = false
 	,scroll :{
 		vertical : {
 			width : 12
-			,bgDelay : 200		// 스크롤 빈공간 mousedown delay
+			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
 			,speed :  'auto'	// 스크롤 스피드
 		}
 		,horizontal :{
 			height: 12
-			,bgDelay : 200		
+			,bgDelay : 100		
 			,btnDelay : 100		// 방향키 버튼 속도.
 			,speed : 1			// 스크롤 스피드
 		}
@@ -133,29 +141,6 @@ var _initialized = false
 	if (agt.indexOf("phoenix") != -1) return 'phoenix'; 
 	if (agt.indexOf("skipstone") != -1) return 'skipStone'; 
 	if (agt.indexOf("netscape") != -1) return 'netscape'; 
-})())
-,_broswerVersion = ((function (){
-	if(_broswer != 'msie') return -1; 
-	var win = window;
-	var doc = win.document;
-	var input = doc.createElement ("input");
-  
-    if (win.ActiveXObject === undefined) return null;
-    if (!win.XMLHttpRequest) return 6;
-    if (!doc.querySelector){
-		return 7;
-	}
-    if (!doc.addEventListener){
-		return 8;
-	}
-    if (!win.atob){
-		return 9;
-	}
-
-    if (!input.dataset){
-		return 10;
-	}
-    return 11;
 })());
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -772,10 +757,35 @@ Plugin.prototype ={
 				if(_idx != -1) _this.getSortList(_idx, _sortType);
 			}
 		}
+		
 		if(gridMode == 'search'){
 			gridMode = 'reDraw';
 		}else{
+			var settingOpt = _this.options.setting; 
+
 			_this.config.orginData = _this.options.tbodyItem;
+
+			if(settingOpt.enable ===true  && settingOpt.enableSearch ===true){
+
+				var schField = settingOpt.configVal.search.field ||''
+					,schVal = settingOpt.configVal.search.val ||'';
+
+				if(schField != '' && schVal !=''){
+					var tbodyItem = _this.options.tbodyItem
+						,schArr =[];
+
+					schVal =schVal.toLowerCase();
+					
+					for(var i =0 , len  = tbodyItem.length; i < len;i++){
+						var tmpItem =tbodyItem[i]; 
+
+						if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
+							schArr.push(tmpItem);
+						}
+					}
+					_this.options.tbodyItem = schArr;
+				}
+			}
 		}
 
 		if(gridMode=='reDraw'){
@@ -790,14 +800,34 @@ Plugin.prototype ={
 		_this.config.dataInfo.rowLen= _this.options.tbodyItem.length;
 		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.rowLen-1;
 
-
-		if(this.options.scroll.vertical.speed =='auto'){
-			this.options.scroll.vertical.speed = Math.ceil(_this.config.dataInfo.rowLen /100)
-		}
+		_this.setScrollSpeed();
 
 		_this.drawGrid(gridMode,true);
 		_this.setPage(pageInfo);
+
+		if(_this.config.orginData != _this.options.tbodyItem){
+
+			$('#'+_this.prefix+'_settingBtn').attr('fill','red').attr('stroke','red');
+			//_this.element.body.find('.pubGrid-body-aside').addClass('onsetting');
+		}else{
+			$('#'+_this.prefix+'_settingBtn').removeAttr('fill').removeAttr('stroke');
+			//_this.element.body.find('.pubGrid-body-aside').removeClass('onsetting');
+		}
+
 		
+	}
+	/**
+     * @method setScrollSpeed
+     * @description 스크롤 스피드 셋팅
+     */
+	,setScrollSpeed : function (val){
+		if(!isUndefined(val) && !isNaN(val) && val > 0){
+			val= parseInt(val,10);
+		}else{
+			val = Math.ceil(this.config.dataInfo.rowLen /100);
+		}
+		this.options.scroll.vertical.speed =  val; 
+		return val;
 	}
 	,_setHeaderInitInfo : function (){
 		var tci  = this.options.tColItem;
@@ -862,7 +892,7 @@ Plugin.prototype ={
 		return '<div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect"  style="overflow:hidden;width:'+_this.config.body.width+'px;">'
 			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container" style="overflow:hidden;">'
 			+'    <div class="pubGrid-setting-wrapper"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
-			+'<g><path d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
+			+'<g><path id="'+_this.prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
 			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
 			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
 			+'		C22.247,0,21,1.247,21,2.78v5.052c0,0.812-0.447,1.481-1.197,1.792c-0.748,0.313-1.54,0.152-2.114-0.421l-3.571-3.571	'
@@ -1562,10 +1592,10 @@ Plugin.prototype ={
 
 				if(mouseDown){
 					scrollTimer = setTimeout(function() {
-						scrollMove(pEvtY, pTop, vBarHeight, oneRowMove);
+						scrollMove(pEvtY, pTop, vBarHeight, oneRowMove*_this.options.scroll.horizontal.speed);
 					}, vBgDelay);
 				}
-			}scrollMove(evtY, _this.config.scroll.top, _this.config.scroll.vBarHeight, _this.config.scroll.oneRowMove);
+			}scrollMove(evtY, _this.config.scroll.top, _this.config.scroll.vBarHeight, _this.config.scroll.oneRowMove *_this.options.scroll.horizontal.speed);
 			
 		}).on('mouseup touchend mouseleave',function(e) {
 			mouseDown = false;
@@ -2032,7 +2062,7 @@ Plugin.prototype ={
 		if(headerOpt.contextMenu !== false){
 			$.pubContextMenu(_this.element.header.find('.pubGrid-header-th'),headerOpt.contextMenu);			
 		}
-		if(headerOpt.setting.enable ===true){
+		if(_this.options.setting.enable ===true){
 			_this.setGridSettingInfo();
 		}
 	}
@@ -2041,8 +2071,8 @@ Plugin.prototype ={
      * @description settring enable/disable
      */
 	,toggleSettingArea : function (){
-		this.options.headerOptions.setting.enable = !this.options.headerOptions.setting.enable;
-		this.setGridSettingInfo(!this.options.headerOptions.setting.enable);
+		this.options.setting.enable = !this.options.setting.enable;
+		this.setGridSettingInfo(!this.options.setting.enable);
 	}
 	/**
      * @method setGridSettingInfo
@@ -2050,7 +2080,8 @@ Plugin.prototype ={
      */
 	,setGridSettingInfo : function (btnDisableFlag,layerEnableFlag ){
 		var _this = this
-			,headerOpt = _this.options.headerOptions;
+			,headerOpt = _this.options.headerOptions
+			,settingOpt = _this.options.setting; 
 		
 		var settingWrapper = _this.element.container.find('.pubGrid-setting-wrapper'); 
 		
@@ -2076,9 +2107,9 @@ Plugin.prototype ={
 		// 한번만 초기화 하기 위해서 처리.
 		_this.config.initSettingFlag = true; 
 		// grid setting btn	
-		if(isFunction(headerOpt.setting.click)){
+		if(isFunction(settingOpt.click)){
 			settingBtn.on('click', function (e){
-				headerOpt.setting.click.call(null,{evt :e , item :{}});	
+				settingOpt.click.call(null,{evt :e , item :{}});	
 			});
 		}else{
 
@@ -2090,19 +2121,19 @@ Plugin.prototype ={
 				}				
 			});
 			
-			if(headerOpt.setting.enableSearch ===true){
+			if(settingOpt.enableSearch ===true){
 				settingWrapper.find('[name="pubgrid_srh_filed"]').empty().html(_this.config.template['searchField']);
 				settingWrapper.find('.pubGrid-search-area').show(); 
 			}
 
 			var settingVal = {};
 
-			if(headerOpt.setting.enableSpeed ===true){
+			if(settingOpt.enableSpeed ===true){
 				settingWrapper.find('.pubGrid-speed-area').show();
 				
 				var strHtm = [];
-				strHtm.push('<option value="auto">자동</option>');
-				for(var i =1 ;i <=headerOpt.setting.speedMaxVal;i++){
+				strHtm.push('<option value="-1">auto</option>');
+				for(var i =1 ;i <=settingOpt.speedMaxVal;i++){
 					strHtm.push('<option value="'+i+'">'+i+'</option>');
 				}
 				
@@ -2112,10 +2143,10 @@ Plugin.prototype ={
 			var schFieldEle = settingWrapper.find('[name="pubgrid_srh_filed"]')
 				,schSelEle = settingWrapper.find('[name="pubgrid_srh_val"]');
 			
-			if(headerOpt.setting.configVal.search.field!=''){
-				schFieldEle.val(headerOpt.setting.configVal.search.field);
+			if(settingOpt.configVal.search.field!=''){
+				schFieldEle.val(settingOpt.configVal.search.field);
 			}
-			schSelEle.val(headerOpt.setting.configVal.search.val);
+			schSelEle.val(settingOpt.configVal.search.val);
 
 			schSelEle.on('keydown',function(e) {
 				if (e.keyCode == '13') {
@@ -2139,24 +2170,28 @@ Plugin.prototype ={
 					
 					var schArr = [];
 					var orgData = _this.config.orginData;
-
-					schVal = schVal.toLowerCase();
-
-					for(var i =0 , len  = _this.config.orginData.length; i < len;i++){
-						if(orgData[i][schField].toLowerCase().indexOf(schVal) > -1){
-							schArr.push(orgData[i]);
-						}
-					}
-					_this.setData(schArr,'search');
 					
+					if($.trim(schVal)!=''){
+						schVal = schVal.toLowerCase();
+
+						for(var i =0 , len  = orgData.length; i < len;i++){
+							if(settingOpt.util.searchFilter(orgData[i],schField,schVal)){
+								schArr.push(orgData[i]);
+							}
+						}
+						_this.setData(schArr,'search');	
+					}else{
+						_this.setData(_this.config.orginData,'search');	
+					}
+
+					settingOpt.configVal.search = settingVal.search;
+										
 				}else if('speed' == btnMode){
-					var speedVal = settingWrapper.find('[name="pubgrid_scr_speed"]').val();  
-					_this.options.scroll.vertical.speed= speedVal;
-					settingVal.speed = speedVal;
+					settingVal.speed = _this.setScrollSpeed(settingWrapper.find('[name="pubgrid_scr_speed"]').val());
 				}
 
-				if(isFunction(headerOpt.setting.callback)){
-					headerOpt.setting.callback.call(null,{evt :e , item : settingVal})
+				if(isFunction(settingOpt.callback)){
+					settingOpt.callback.call(null,{evt :e , item : settingVal})
 				}
 			})
 		}
@@ -3443,5 +3478,3 @@ $.pubGrid = function (selector,options, args) {
 };
 
 }(jQuery, window, document));
-
-

@@ -565,6 +565,10 @@
 	vertical-align: top;
 }
 
+.pubGrid-body-aside.onsetting {
+	background: #93e2db;
+}
+
 .pubGrid-header-aside ,.pubGrid-body-aside {
 	z-index:2;
 }

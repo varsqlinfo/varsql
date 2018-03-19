@@ -21,4 +21,5 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
 <script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=<%=versionNum%>"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=<%=versionNum%>"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=<%=versionNum%>"></script>
 

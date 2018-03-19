@@ -703,17 +703,17 @@ _ui.leftDbObjectServiceMenu ={
 			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
 				,autoResize :false
-				,headerOptions:{
-					setting : {
-						enable : true
-						,click : false
-						,enableSearch : true
-						,enableSpeed : true
-						,callback : function (data){
-							_ui.preferences.save({tablesConfig : data.item});
-						}
-						,configVal : _g_options._opts.screenSetting.tablesConfig
+				,headerOptions:{}
+				,setting : {
+					enable : true
+					,click : false
+					,enableSearch : true
+					,enableSpeed : true
+					,callback : function (data){
+						_ui.preferences.save({tablesConfig : data.item});
+						_g_options._opts.screenSetting.tablesConfig = data.item;
 					}
+					,configVal : _g_options._opts.screenSetting.tablesConfig
 				}
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				

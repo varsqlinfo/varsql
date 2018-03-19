@@ -5,7 +5,7 @@
 <html>
 <head>
 <title><spring:message code="user.home.title"/></title>
-<%@ include file="/WEB-INF/include/user-top-head.jsp"%>
+<%@ include file="/WEB-INF/include/database-top-head.jsp"%>
 </head>
 <body>
   <div id="wrapper">

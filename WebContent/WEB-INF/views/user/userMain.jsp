@@ -1,9 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <script>
-$(document).ready(function (){
-	userMain.init();
-})
 
 var userMain = {
 	_userConnectionInfo :'#user_connection_info'
@@ -129,6 +126,11 @@ var userMain = {
 		}
 	} 
 }
+
+$(document).ready(function (){
+	userMain.init();
+	VARSQL.unload();
+})
 </script>
 <!-- Page Heading -->
 <script id="tabItemTemplate" type="text/varsql">

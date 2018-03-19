@@ -284,7 +284,6 @@ public class SQLServiceImpl{
 	 */
 	private void sqlLogInsert(SqlLogInfo logInfo) {
 		try{
-			System.out.println(logInfo.getStartTime() +" :: " + logInfo.getEndTime() );
 		    sqlDAO.insertSqlUserLog(logInfo);
 	    }catch(Exception e){
 	    	logger.error(getClass().getName()+" sqlLogInsert {}", VartechUtils.reflectionToString(logInfo));

@@ -2,7 +2,6 @@
 <span class="copy-right">ytechinfo copy right</span>
 <script>
 $(document).ready(function (e){
-		return ; 
 	if (document.addEventListener) { // IE >= 9; other browsers
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();

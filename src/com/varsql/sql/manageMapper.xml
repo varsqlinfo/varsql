@@ -214,9 +214,14 @@
 			from VTSQL_LOG a
 			where	VCONNID=#{vconnid}
 			and START_TIME between #{s_date} and	#{e_date}
-			<if test="command_type != null and command_type != '' and !command_type.equalsIgnoreCase('ETC')">
-				AND COMMAND_TYPE =#{command_type}
-			</if>
+			<choose>
+				<when test="'all'.equalsIgnoreCase(command_type)">
+					
+				</when>
+		    	<otherwise>
+		      		AND COMMAND_TYPE =#{command_type}
+		    	</otherwise>
+		  	</choose>
 			group by VIEWID 
 			order by CNT desc	  
 			FETCH FIRST 5 ROWS ONLY

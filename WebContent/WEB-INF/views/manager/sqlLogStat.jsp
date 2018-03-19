@@ -216,7 +216,7 @@ var sqlLogStat ={
 					        data :items
 					    }]
 					});
-					_self.sqlUserRank(items[0].X_COL);
+					_self.sqlUserRank('all');
 				}else{
 					_self.sqlUserRank('');
 				}
