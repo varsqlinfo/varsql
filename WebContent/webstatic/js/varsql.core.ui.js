@@ -15,6 +15,17 @@ _ui.base ={
 	,sqlHints :{}	// sql hints
 };
 
+var _defaultOptions = {
+	tablesConfig :{
+			configVal :{search :{			// 검색
+				field : ''		// 검색 필드
+				,val : ''		// 검색어
+			}
+			,speed :-1			// scroll speed
+		}
+	}
+}
+
 var _g_options={
 	dbtype:''
 	,urlPrefix:''

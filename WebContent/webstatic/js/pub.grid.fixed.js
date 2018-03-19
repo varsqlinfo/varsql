@@ -346,9 +346,11 @@ Plugin.prototype ={
      */
 	,setOptions : function(options , firstFlag){
 		var _this = this; 
+		options.setting = options.setting ||{};
+		options.setting.configVal = objectMerge({search :{field : '',val : ''},speed :-1} ,options.setting.configVal);
 		
 		_this.options =objectMerge($.extend(true , {}, _defaults), options);
-					
+			
 		_this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
 
 		//_this.config.rowHeight = _this.options.rowOptions.height+1;	// border-box 수정. 2017-08-11
@@ -401,7 +403,6 @@ Plugin.prototype ={
 		for(var i =0 ; i < asideItem.length ;i++){
 			_this.config.gridWidth.aside += asideItem[i].width; 
 		}
-		
 		_this._setGridWidth();
 	}
 	,initScrollData : function (gridCount){
@@ -766,25 +767,26 @@ Plugin.prototype ={
 			_this.config.orginData = _this.options.tbodyItem;
 
 			if(settingOpt.enable ===true  && settingOpt.enableSearch ===true){
+				try{
+					var schField = settingOpt.configVal.search.field ||''
+						,schVal = settingOpt.configVal.search.val ||'';
 
-				var schField = settingOpt.configVal.search.field ||''
-					,schVal = settingOpt.configVal.search.val ||'';
+					if(schField != '' && schVal !=''){
+						var tbodyItem = _this.options.tbodyItem
+							,schArr =[];
 
-				if(schField != '' && schVal !=''){
-					var tbodyItem = _this.options.tbodyItem
-						,schArr =[];
+						schVal =schVal.toLowerCase();
+						
+						for(var i =0 , len  = tbodyItem.length; i < len;i++){
+							var tmpItem =tbodyItem[i]; 
 
-					schVal =schVal.toLowerCase();
-					
-					for(var i =0 , len  = tbodyItem.length; i < len;i++){
-						var tmpItem =tbodyItem[i]; 
-
-						if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
-							schArr.push(tmpItem);
+							if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
+								schArr.push(tmpItem);
+							}
 						}
+						_this.options.tbodyItem = schArr;
 					}
-					_this.options.tbodyItem = schArr;
-				}
+				}catch(e){}
 			}
 		}
 

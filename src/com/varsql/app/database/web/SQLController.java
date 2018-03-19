@@ -1,31 +1,19 @@
 package com.varsql.app.database.web;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.el.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.UserConstants;
-import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.service.SQLServiceImpl;
-import com.varsql.app.util.VarsqlUtil;
-import com.varsql.core.common.util.SecurityUtil;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
-import com.vartech.common.utils.VartechUtils;
 
 /**
  * 
