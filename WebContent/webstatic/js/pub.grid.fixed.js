@@ -99,13 +99,13 @@ var _initialized = false
 	}
 	,scroll :{
 		vertical : {
-			width : 12
+			width : 10
 			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
 			,speed :  'auto'	// 스크롤 스피드
 		}
 		,horizontal :{
-			height: 12
+			height: 10
 			,bgDelay : 100		
 			,btnDelay : 100		// 방향키 버튼 속도.
 			,speed : 1			// 스크롤 스피드
