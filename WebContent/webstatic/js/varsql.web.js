@@ -434,6 +434,11 @@ _$base.check = {
  * @description 페이지 빠져나가기
  */	
 _$base.unload =function (){
+	window.onbeforeunload = function (){
+		if(!VARSQL.confirm(VARSQL.messageLang('varsql.0001','페이지를 나가시겠습니까?'))){
+			return false;
+		}
+	}
 
 	// F5, ctrl + F5, ctrl + r 새로고침 막기
 	$(document).keydown(function (e) {
