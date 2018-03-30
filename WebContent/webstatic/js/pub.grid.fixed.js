@@ -40,6 +40,7 @@ var _initialized = false
 			enabled : true
 			,cursor : 'col-resize'
 		}
+		,isColSelectAll : true	// 전체 선택 여부.
 		,colFixedIndex : 0	// 고정 컬럼 
 		,colWidthFixed : false  // 넓이 고정 여부.
 		,colMinWidth : 50  // 컬럼 최소 넓이
@@ -808,15 +809,10 @@ Plugin.prototype ={
 		_this.setPage(pageInfo);
 
 		if(_this.config.orginData != _this.options.tbodyItem){
-
 			$('#'+_this.prefix+'_settingBtn').attr('fill','red').attr('stroke','red');
-			//_this.element.body.find('.pubGrid-body-aside').addClass('onsetting');
 		}else{
 			$('#'+_this.prefix+'_settingBtn').removeAttr('fill').removeAttr('stroke');
-			//_this.element.body.find('.pubGrid-body-aside').removeClass('onsetting');
 		}
-
-		
 	}
 	/**
      * @method setScrollSpeed
@@ -1464,15 +1460,24 @@ Plugin.prototype ={
 			var scrollH = $('#'+_this.prefix+'_vscroll').find('.pubGrid-vscroll-bar-area').height();
 			
 			var barHeight = (scrollH*(bodyH/(itemTotHeight)*100))/100; 
-			barHeight = barHeight < 25 ? 25 : ( barHeight > scrollH ?scrollH :barHeight);	
-
+			if(scrollH <25){
+				barHeight = 1;
+			}else{
+				barHeight = barHeight < 25 ? 25 : ( barHeight > scrollH ?scrollH :barHeight);	
+			}
+			
 			_this.config.scroll.vBarHeight = barHeight; 
 			_this.config.scroll.verticalHeight = scrollH - barHeight;
 			_this.config.scroll.oneRowMove = _this.config.scroll.verticalHeight/(_this.options.tbodyItem.length-this.config.scroll.viewCount);
 						
 			topVal = _this.config.scroll.verticalHeight* _this.config.scroll.vBarPosition/100;
+			
 			_this.element.vScrollBar.css('height',barHeight);
-
+			if(scrollH < 25){
+				_this.element.vScrollBar.hide();
+			}else{
+				_this.element.vScrollBar.show();
+			}
 		}else{
 			_this.config.scroll.vUse = false; 
 			$('#'+_this.prefix+'_vscroll').hide();
@@ -2014,25 +2019,27 @@ Plugin.prototype ={
 		var beforeClickObj; 
 		//headerCol.off('click.pubGridHeader.sort');
 		
-		// column select
-		_this.element.header.find('.pub-header-cont').on('click.pubGridHeader.select',function (e){
-			var selEle = $(this)
-				,col_idx = selEle.attr('col_idx');
-			
-			var curr ='' , initFlag = true ; 
-			if(e.shiftKey){
-				curr = 'add';
-				initFlag  = false; 
-			}else{
-				_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
-			}
+		if(headerOpt.isColSelectAll ===true){
+			// column select
+			_this.element.header.find('.pub-header-cont').on('click.pubGridHeader.select',function (e){
+				var selEle = $(this)
+					,col_idx = selEle.attr('col_idx');
+				
+				var curr ='' , initFlag = true ; 
+				if(e.ctrlKey){
+					curr = 'add';
+					initFlag  = false; 
+				}else{
+					_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
+				}
 
-			_this._setRangeSelectInfo({
-				rangeInfo : {startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
-				,isSelect : true
-				,curr : curr
-			}, initFlag , true);
-		});
+				_this._setRangeSelectInfo({
+					rangeInfo : {startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
+					,isSelect : true
+					,curr : curr
+				}, initFlag , true);
+			});
+		}
 		
 		// sort
 		_this.element.header.find('.pub-header-cont.sort-header').on('dblclick.pubGridHeader.sort',function (e){
@@ -3068,7 +3075,7 @@ Plugin.prototype ={
 
 						beforeLen= currLen;
 					}
-					resizeW = resizeW*_this.options.headerOptions.oneCharWidth;
+					resizeW = resizeW*_this.options.headerOptions.oneCharWidth+10;
 					selColItem.maxWidth=resizeW; 
 				}
 
