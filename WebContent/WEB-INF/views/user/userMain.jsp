@@ -129,7 +129,7 @@ var userMain = {
 
 $(document).ready(function (){
 	userMain.init();
-	VARSQL.unload();
+	//VARSQL.unload();
 })
 </script>
 <!-- Page Heading -->

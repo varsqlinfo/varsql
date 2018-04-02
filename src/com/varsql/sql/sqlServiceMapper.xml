@@ -72,8 +72,13 @@
 		and VIEWID = #{userid}
 	</update>
 	
+	<!-- query_cont map -->
+	<resultMap id="varsqlBoardClobMap" type="dataCommonVO">
+		<result column="QUERY_CONT" property="QUERY_CONT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
 	<!-- 사용자 sql 마지막 저장 정보  -->
-	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="sqlParamInfo" resultType="map">
+	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
@@ -91,7 +96,7 @@
 	</select>
 	
 	<!-- 사용자 sql 목록  -->
-	<select id="sqlServiceMapper.selectSqlList" parameterType="sqlParamInfo" resultType="map">
+	<select id="sqlServiceMapper.selectSqlList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
 		<bind name="pageStartNum" value="(customInfo.first-1)" />
 		select * from VTSQL_BOARD
 		where VCONNID = #{vconnid}

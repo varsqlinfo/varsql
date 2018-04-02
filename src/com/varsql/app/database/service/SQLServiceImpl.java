@@ -121,10 +121,13 @@ public class SQLServiceImpl{
 		
 		sqlLogInfo.setLogSql(sqlParamInfo.getSql());
 		
+		SqlSource tmpSqlSource =null;
+		int sqldx =0,sqlSize = sqlList.size(); 
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
 			conn.setAutoCommit(false);
-			for (SqlSource tmpSqlSource : sqlList) {
+			for (sqldx =0;sqldx <sqlSize; sqldx++) {
+				tmpSqlSource = sqlList.get(sqldx);
 				
 				ssrv = new SqlSourceResultVO();
 				reLst.add(ssrv);
@@ -150,9 +153,11 @@ public class SQLServiceImpl{
 			conn.rollback();
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
-			
-			ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
-			result.setItemList(reLst);
+						
+			result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+			result.addCustoms("errorQuery", sqldx);
+			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
+			result.setItemOne(tmpSqlSource);
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			conn.setAutoCommit(true);

@@ -3,16 +3,16 @@
 <div class="col-xs-9 fill">
 	<div class="row">
 		<div>
-			<button type="button" class="btn btn-default btn-sm sql-new-file" title="새 파일">
+			<button type="button" class="btn btn-default btn-sm sql_new_file" title="새 파일">
 				<span class="glyphicon glyphicon-file"></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-execue-btn" title="실행  Ctrl+Enter">
+			<button type="button" class="btn btn-default btn-sm sql_execue_btn" title="실행  Ctrl+Enter">
 				<span class="glyphicon glyphicon-play"></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-format-btn" title="쿼리 정리 Ctrl+Shift+f">
+			<button type="button" class="btn btn-default btn-sm sql_format_btn" title="쿼리 정리 Ctrl+Shift+f">
 				<span class="glyphicon glyphicon-align-left" aria-hidden="true" ></span>
 			</button>
-			<button type="button" class="btn btn-default btn-sm sql-save-btn" title="저장">
+			<button type="button" class="btn btn-default btn-sm sql_save_btn" title="저장">
 				<span class="glyphicon glyphicon-save"></span>
 			</button>
 		</div>
@@ -29,7 +29,7 @@
 									<input type="hidden" id="sql_id" name="sql_id" value="">
 							      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
 							      	<div class="input-group-btn"> 
-							      		<button class="btn btn-default sql-save-list-btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
+							      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
 								      		List
 								      	</button>
 									    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">

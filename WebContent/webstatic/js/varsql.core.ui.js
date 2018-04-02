@@ -69,7 +69,7 @@ _ui.initContextMenu  = function (){
 			var returnFlag = true; 
 			switch (evt.keyCode) {
 				case 83: // keyCode 83 is s
-					$('.sql-save-btn').trigger('click');
+					$('.sql_save_btn').trigger('click');
 					returnFlag = false;
 					break;
 				case 70: // 80 is f
@@ -137,10 +137,10 @@ _ui.headerMenu ={
 					
 					switch (menu_mode2) {
 						case 'new':	// 새파일
-							$('.sql-new-file').trigger('click');
+							$('.sql_new_file').trigger('click');
 							break;
 						case 'save': // 저장
-							$('.sql-save-btn').trigger('click');
+							$('.sql_save_btn').trigger('click');
 							break;
 						case 'close': // 닫기
 							var isInIFrame = (window.location != window.parent.location);
@@ -1192,6 +1192,7 @@ _ui.leftDbObjectServiceMenu ={
 _ui.SQL = {
 	sqlTextAreaObj:null
 	,sqlEditorEle:null
+	,sqlEditorSearchCursor : null
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
@@ -1256,13 +1257,13 @@ _ui.SQL = {
 			};
 		})
 		
-		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
+		VARSQL.ui.ddd = _self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
 			lineNumbers: true,
 			height:'auto',
-			lineWrapping: true,
+			lineWrapping: false,
 			matchBrackets : true,
 			autofocus: true,
 			extraKeys: {"Ctrl-Space": "autocomplete"},
@@ -1276,35 +1277,35 @@ _ui.SQL = {
 		var _self = this;
 		
 		function strUpperCase(){
-			var selArr = _self.getTextAreaObj().getSelections(); 
+			var selArr = _self.sqlTextAreaObj.getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = toUpperCase(selArr[i]);
 			}
-			var selPosArr = _self.getTextAreaObj().listSelections(); 
-			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
-			_self.getTextAreaObj().setSelections(selPosArr);
+			var selPosArr = _self.sqlTextAreaObj.listSelections(); 
+			_self.sqlTextAreaObj.replaceSelections(selArr,selPosArr);
+			_self.sqlTextAreaObj.setSelections(selPosArr);
 		}
 		
 		function strLowerCase(){
-			var selArr = _self.getTextAreaObj().getSelections(); 
+			var selArr = _self.sqlTextAreaObj.getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = toLowerCase(selArr[i]);
 			}
-			var selPosArr = _self.getTextAreaObj().listSelections(); 
-			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
-			_self.getTextAreaObj().setSelections(selPosArr);
+			var selPosArr = _self.sqlTextAreaObj.listSelections(); 
+			_self.sqlTextAreaObj.replaceSelections(selArr,selPosArr);
+			_self.sqlTextAreaObj.setSelections(selPosArr);
 		}
 		function strCamelCase(){
-			var selArr = _self.getTextAreaObj().getSelections(); 
+			var selArr = _self.sqlTextAreaObj.getSelections(); 
 			
 			for(var i =0 ; i< selArr.length;i++){
 				selArr[i] = convertCamel(selArr[i]);
 			}
-			var selPosArr = _self.getTextAreaObj().listSelections(); 
-			_self.getTextAreaObj().replaceSelections(selArr,selPosArr);
-			_self.getTextAreaObj().setSelections(selPosArr);
+			var selPosArr = _self.sqlTextAreaObj.listSelections(); 
+			_self.sqlTextAreaObj.replaceSelections(selArr,selPosArr);
+			_self.sqlTextAreaObj.setSelections(selPosArr);
 		}
 		
 		$.pubContextMenu(_self.sqlEditorEle, {
@@ -1336,31 +1337,31 @@ _ui.SQL = {
 	    		
 	    		switch (key) {
 		    		case 'run':
-		    			$('.sql-execue-btn').trigger('click');
+		    			$('.sql_execue_btn').trigger('click');
 		    			break;
 					case 'undo':
-						_ui.SQL.getTextAreaObj().undo();
+						_self.sqlTextAreaObj.undo();
 						break;
 					case 'redo':
-						_ui.SQL.getTextAreaObj().redo();
+						_self.sqlTextAreaObj.redo();
 						break;
 					case 'copy':
 						copyStringToClipboard('varsqleditor',_self.getSql());
 						break;
 					case 'cut':
-						var startCursor = _self.getTextAreaObj().getCursor(true);
+						var startCursor = _self.sqlTextAreaObj.getCursor(true);
 						copyStringToClipboard('varsqleditor',_self.getSql());
-						_self.getTextAreaObj().replaceSelection('');
+						_self.sqlTextAreaObj.replaceSelection('');
 						
-						_self.getTextAreaObj().focus();
-						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch})
+						_self.sqlTextAreaObj.focus();
+						_self.sqlTextAreaObj.setCursor({line: startCursor.line, ch: startCursor.ch})
 						break;
 					case 'paste':
 						
 						console.log('paste')
-						var startCursor = _self.getTextAreaObj().getCursor(true);
-						_self.getTextAreaObj().focus();
-						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch});
+						var startCursor = _self.sqlTextAreaObj.getCursor(true);
+						_self.sqlTextAreaObj.focus();
+						_self.sqlTextAreaObj.setCursor({line: startCursor.line, ch: startCursor.ch});
 						try{
 							document.execCommand('paste');
 						}catch(e){
@@ -1368,21 +1369,21 @@ _ui.SQL = {
 						}
 						break;
 					case 'delete':
-						var startCursor = _self.getTextAreaObj().getCursor(true);
-						_self.getTextAreaObj().replaceSelection('');
+						var startCursor = _self.sqlTextAreaObj.getCursor(true);
+						_self.sqlTextAreaObj.replaceSelection('');
 						
-						_self.getTextAreaObj().focus();
-						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch})
+						_self.sqlTextAreaObj.focus();
+						_self.sqlTextAreaObj.setCursor({line: startCursor.line, ch: startCursor.ch})
 						
 						break;
 					case 'msgSend':
-						$('.sql-send-btn').trigger('click');
+						$('.sql_send_btn').trigger('click');
 						break;
 					case 'formatVarsql':
 						_self.sqlFormatData('varsql');
 						break;
 					case 'formatUtil':
-						$('.sql-format-btn').trigger('click');
+						$('.sql_format_btn').trigger('click');
 						break;
 					case 'upper':
 						strUpperCase();
@@ -1407,7 +1408,7 @@ _ui.SQL = {
 				if (evt.altKey) { // keyCode 78 is n
 					switch (evt.keyCode) {
 						case 78:
-							$('.sql-new-file').trigger('click');
+							$('.sql_new_file').trigger('click');
 							returnFlag = false; 
 							break;
 						case 70: // 70 is f
@@ -1420,11 +1421,11 @@ _ui.SQL = {
 				}else if (evt.shiftKey) { 
 					switch (evt.keyCode) {
 						case 70: // keyCode 70 is f
-							$('.sql-format-btn').trigger('click');
+							$('.sql_format_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						case 83: // keyCode 83 is s
-							$('.sql-save-btn').trigger('click');
+							$('.sql_save_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						case 88: // keycode 88 is x  toUpperCase
@@ -1441,11 +1442,11 @@ _ui.SQL = {
 				}else{
 					switch (evt.keyCode) {
 						case 83: // keyCode 83 is s
-							$('.sql-save-btn').trigger('click');
+							$('.sql_save_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						case 13: // keyCode 13 is Enter
-							$('.sql-execue-btn').trigger('click');
+							$('.sql_execue_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						default:
@@ -1461,17 +1462,46 @@ _ui.SQL = {
 		})
 		
 		// sql 실행
-		$('.sql-execue-btn').on('click',function (evt){
+		$('.sql_execue_btn').on('click',function (evt){
 			_self.sqlData(evt);
 		});
 		
+		// 실행취소
+		$('.sql_undo_btn').on('click',function (evt){
+			_self.sqlTextAreaObj.undo();
+		});
+		
+		// 다시실행.
+		$('.sql_redo_btn').on('click',function (evt){
+			_self.sqlTextAreaObj.redo();
+		});
+		
 		// sql 보내기
-		$('.sql-send-btn').on('click',function (evt){
+		$('.sql_send_btn').on('click',function (evt){
 			_self.sqlSend(evt);
 		});
 		
+		// sql 보내기
+		$('.sql_find_btn').on('click',function (evt){
+			var sqlFindText = $('#sqlFindText').val();
+			_self.searchFindText(sqlFindText);
+		});
+		
+		// 자동 줄바꿈.
+		$('.sql_linewrapper_btn').on('click',function (evt){
+			var lineWrapping = _self.sqlTextAreaObj.getOption('lineWrapping');
+			
+			lineWrapping = !lineWrapping;
+			if(lineWrapping){
+				$(this).addClass('sql-btn-success');
+			}else{
+				$(this).removeClass('sql-btn-success');
+			}
+			_self.sqlTextAreaObj.setOption('lineWrapping',lineWrapping);
+		});
+		
 		// sql 포멧 정리.
-		$('.sql-format-btn').on('click',function (){
+		$('.sql_format_btn').on('click',function (){
 			_self.sqlFormatData();
 		});
 		
@@ -1498,7 +1528,7 @@ _ui.SQL = {
 		});
 		
 		// sql 정보 저장. 
-		$('.sql-save-btn').on('click',function (e){
+		$('.sql_save_btn').on('click',function (e){
 			_self.saveSql();
 		});
 		
@@ -1578,8 +1608,8 @@ _ui.SQL = {
 			}
 		});
 		
-		$('.sql-save-list-btn').dropdown();
-		$('.sql-save-list-btn').on('click',function (){
+		$('.sql_save_list_btn').dropdown();
+		$('.sql_save_list_btn').on('click',function (){
 			
 			if($('.sql-save-list-layer').attr('loadFlag') != 'Y'){
 				$('.varsql-dropdown').addClass('on');
@@ -1587,7 +1617,7 @@ _ui.SQL = {
 			}
 		});
 		
-		$('.sql-new-file').on('click',function (){
+		$('.sql_new_file').on('click',function (){
 			_self.setQueryInfo('clear');
 		});
 		
@@ -1610,6 +1640,19 @@ _ui.SQL = {
 				_self.viewResultColumnType();
 			}
 		});
+	}
+	// 검색.
+	,searchFindText : function (schTxt){
+		var _self = this; 
+		
+		var endPos = _self.sqlTextAreaObj.listSelections()[0].head;
+		
+		var cursor =_self.sqlTextAreaObj.getSearchCursor(schTxt, endPos);
+		_self.sqlEditorSearchCursor = cursor; 
+		
+		if(cursor.findNext()){
+			_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+		}
 	}
 	// sql result column typ
 	,viewResultColumnType : function (){
@@ -1793,7 +1836,7 @@ _ui.SQL = {
 		if(sItem=='clear'){
 			if(this.currentSqlData != this.getTextAreaObj().getValue()){
 				if(confirm('현재 쿼리를 저장 하시겠습니까?')){
-					$('.sql-save-btn').trigger('click');
+					$('.sql_save_btn').trigger('click');
 				}
 				
 			}
@@ -1861,7 +1904,7 @@ _ui.SQL = {
 		    		
 		    		if(mode=='view'){
 		    			_self.setQueryInfo(sItem);
-		    			$('.sql-save-list-btn').trigger('click');
+		    			$('.sql_save_list_btn').trigger('click');
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 
@@ -2013,39 +2056,46 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (responseData){
 		    	try{
-		    		var resData = responseData.items; 
-		    		var resultLen = resData.length;
+		    		var msgViewFlag =false,gridViewFlag = false;
 		    		
-		    		if(resultLen < 1 ){
-		    			resData.data = [{result:"데이타가 없습니다."}];
-		    			resData.column =[{label:'result',key:'result', align:'center'}];
-		    		}
-		    		
-		    		var msgViewFlag =false,gridViewFlag = false, item; 
 		    		var resultMsg = [];
-		    		var resultClass , tmpMsg;
 		    		
-	    			for(var i=0; i < resultLen; i++){
-	    				resultClass = 'success-log-message';
-	    				item = resData[i];
-	    				
-	    				tmpMsg= item.resultMessage;
-	    				if(item.resultType=='FAIL' || item.viewType=='msg'){
-	    					msgViewFlag = true;
-	    					
-	    					if(item.resultType=='FAIL'){
-		    					resultClass = 'error-log-message'; 
-	    					}
-	    				}
-	    				
-	    				if(item.viewType=='grid'){
-	    					gridViewFlag = true;
-	    					_self._currnetQueryReusltData =item;
-	    				}
-	    				    				
-	    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
-	    			}
-	    			
+		    		if(responseData.resultCode ==500){
+		    			msgViewFlag =true; 
+		    			resultMsg.push('<div class="error-log-message">#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+responseData.item.query));
+		    		}else{
+		    			var resData = responseData.items; 
+			    		var resultLen = resData.length;
+			    		
+			    		if(resultLen < 1 ){
+			    			resData.data = [{result:"데이타가 없습니다."}];
+			    			resData.column =[{label:'result',key:'result', align:'center'}];
+			    		}
+			    		
+			    		var item; 
+			    		var resultClass , tmpMsg;
+			    		
+		    			for(var i=resultLen-1; i>=0; i--){
+		    				resultClass = 'success-log-message';
+		    				item = resData[i];
+		    				
+		    				tmpMsg= item.resultMessage;
+		    				if(item.resultType=='FAIL' || item.viewType=='msg'){
+		    					msgViewFlag = true;
+		    					
+		    					if(item.resultType=='FAIL'){
+			    					resultClass = 'error-log-message'; 
+		    					}
+		    				}
+		    				
+		    				if(item.viewType=='grid'){
+		    					gridViewFlag = true;
+		    					_self._currnetQueryReusltData =item;
+		    				}
+		    				    				
+		    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
+		    			}
+		    		}
 	    			if(msgViewFlag){
 		    			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
     				}else{

@@ -12,14 +12,13 @@
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
-<%
-long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
+<link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.main.css?version=${css_ver}" rel="stylesheet" type="text/css">
+
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=<%=versionNum%>"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.web.js?version=<%=versionNum%>"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=<%=versionNum%>"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=${pubjs_ver}"></script>
 
