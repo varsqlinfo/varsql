@@ -105,6 +105,7 @@
 		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
 	</select>
 	
+	<!-- 'USER' role 사용자  목록. -->
 	<select id="adminMapper.selectRoleUserList" parameterType="searchParameter" resultType="hashmap">
 		select a.*, a.REG_DT as CHAR_CRE_DT
 		from VTUSER a
@@ -120,7 +121,8 @@
 		where USER_ROLE = 'MANAGER' 
 		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%') 
 	</select>
-
+	
+	<!-- 'MANAGER' role 사용자  목록. -->
 	<select id="adminMapper.selectRoleManagerList" parameterType="searchParameter" resultType="hashmap">
 		select a.*, a.REG_DT as CHAR_CRE_DT
 		from VTUSER a
@@ -129,6 +131,7 @@
 		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
+	<!-- 사용자 -> 매니저로  role 업데이트 -->
 	<update id="adminMapper.updateManagerRole" parameterType="map">
 		update VTUSER 
 		set 
@@ -143,6 +146,7 @@
 		where VIEWID =#{viewid}
 	</update>
 	
+	<!-- 매니저 목록 보기 -->
 	<select id="adminMapper.selectDatabaseManager" parameterType="map" resultType="hashmap">
 		select * 
 		from VTUSER a left outer join VTDATABASE_ROLE b 
@@ -152,6 +156,7 @@
 		where USER_ROLE = 'MANAGER' and (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
 	</select>
 	
+	<!-- db manager 삭제. -->
 	<delete id="adminMapper.deleteDbManager" parameterType="map">
 		delete from VTDATABASE_ROLE
 		where ROLE_TYPE = 'M' 
@@ -161,6 +166,7 @@
 		</foreach>
 	</delete>
 	
+	<!-- db 매니저 등록. -->
 	<update id="adminMapper.updateDbManager" parameterType="map">
 		insert into VTDATABASE_ROLE (VCONNID, VIEWID , ROLE_TYPE, REG_ID, REG_DT)
 		values(
@@ -172,10 +178,12 @@
 		)
 	</update>
 	
+	<!-- database type list -->
 	<select id="adminMapper.selectAllDbType" parameterType="map" resultType="hashmap">
 		select * from VTDBTYPE
 	</select>
 	
+	<!-- todo -->
 	<select id="adminMapper.listDbMenuTotalcnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt 
 		from VTMENU
@@ -183,6 +191,7 @@
 		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
+	<!-- todo -->
 	<select id="adminMapper.listDbMenu" parameterType="map" resultType="hashmap">
 		select a.*
 		from VTMENU a
@@ -190,6 +199,7 @@
 		and (MENU_NM like '%'||#{searchVal}||'%' or UNIQUE_ID like '%'||#{searchVal}||'%') 
 	</select>
 	
+	<!-- todo -->
 	<insert id="adminMapper.addDbMenu" parameterType="map">
 		insert  into VTMENU (
 			DB_TYPE 
@@ -220,6 +230,7 @@
 		)
 	</insert>
 	
+	<!-- todo -->
 	<update id="adminMapper.moodifyDbMenu" parameterType="map">
 		update VTMENU 
 		set 
@@ -236,6 +247,7 @@
 		where MENU_ID =#{menu_id}
 	</update>
 	
+	<!-- todo -->
 	<delete id="adminMapper.deleteDbMenu" parameterType="map">
 		delete from VTMENU where MENU_ID =#{menu_id}
 	</delete>

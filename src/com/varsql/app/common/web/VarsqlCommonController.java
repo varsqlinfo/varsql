@@ -55,6 +55,11 @@ public class VarsqlCommonController {
 		return result; 
 	}
 	
+	@RequestMapping(value = "/invalidDatabasePage")
+	public ModelAndView invalidDatabasePage(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		return new ModelAndView("/commonPage/error/invalidDatabase");
+	}
+	
 	/**
 	 * 
 	 * @Method Name  : invalidLogin

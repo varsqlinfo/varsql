@@ -87,22 +87,34 @@ public class DatabaseServiceImpl{
 		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
+		String gubun = databaseParamInfo.getGubun();
+		
 		try{
-			String gubun = databaseParamInfo.getGubun();
-			
 			if("tables".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getTables(databaseParamInfo));
-				
+				result.setItemList(dbMetaEnum.getDBMeta().getTablesAndColumns(databaseParamInfo));
 			}else if("views".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getViews(databaseParamInfo));
-				
+				result.setItemList(dbMetaEnum.getDBMeta().getViewsAndColumns(databaseParamInfo));
 			}else if("procedures".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getProcedures(databaseParamInfo));
 			}else if("functions".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getFunctions(databaseParamInfo));
 			}
 		}catch(Exception e){
-			logger.error("serviceMenu : ", e);
+			logger.error("dbObjectList : ", e);
+			try{
+				if("tables".equals(gubun)){
+					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
+				}else if("views".equals(gubun)){
+					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getViewsAndColumns(databaseParamInfo));
+				}else if("procedures".equals(gubun)){
+					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getProcedures(databaseParamInfo));
+				}else if("functions".equals(gubun)){
+					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getFunctions(databaseParamInfo));
+				}
+			}catch(Exception subE){
+				logger.error("dbObjectList : ", subE);
+			}
+			
 		}
 		
 		return result;

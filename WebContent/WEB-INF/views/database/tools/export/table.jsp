@@ -310,13 +310,13 @@ var tableExport = {
 			,duplicateCheck : true
 			,useDragMove :false
 			,sourceItem : {
-				optVal : 'TABLE_NAME'
-				,optTxt : 'TABLE_NAME'
+				optVal : 'name'
+				,optTxt : 'name'
 				,items : paramSourceItem
 			}
 			,targetItem : {
-				optVal : 'TABLE_NAME'
-				,optTxt : 'TABLE_NAME'
+				optVal : 'name'
+				,optTxt : 'name'
 				,items : (_self.userSettring.tables ||[])
 				,click: function (e, sItem){
 					//console.log(e,sEle);

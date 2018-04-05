@@ -22,6 +22,8 @@ function fnRefresh(){
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div>권한이 없습니다 </div>
 						<div>관리자에게 문의 하세요.</div>
+						<div>&nbsp;</div>
+						<div>&nbsp;</div>
 					</div>
 				</td>
 			</tr>

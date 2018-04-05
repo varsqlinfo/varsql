@@ -20,6 +20,7 @@ import com.varsql.app.exception.VarsqlAppException;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.connection.pool.ConnectionCreateException;
 import com.varsql.core.connection.pool.ConnectionException;
+import com.varsql.core.exception.VarsqlRuntimeException;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.VartechUtils;
@@ -87,6 +88,30 @@ public class GlobalExceptionHandler{
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
 	public void varsqlAppException(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		ResponseResult result = new ResponseResult();
+		result.setStatus(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
+		result.setMessageCode(ex.getMessageCode());
+		result.setMessage(ex.getErrorMessage());
+		
+		exceptionRequestHandle(request, response ,result);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : varsqlRuntimeException
+	 * @Method 설명 : runtime error
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 4. 5. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=VarsqlRuntimeException.class)
+	public void varsqlRuntimeException(VarsqlRuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		

@@ -591,7 +591,7 @@ _ui.leftDbObjectServiceMenu ={
 		if(typeof gubun !='undefined' && typeof key != 'undefined'){
 			delete this.metadataCache[gubun][key];  
 		}else if(typeof gubun !='undefined'){
-			delete this.metadataCache[gubun];
+			this.metadataCache[gubun] ={};
 		}else{
 			this._initCacheObject();
 		}
@@ -702,14 +702,25 @@ _ui.leftDbObjectServiceMenu ={
 			
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
-				tableHint[_item.TABLE_NAME] = {
-					columns:[]
-					,text :_item.TABLE_NAME
+				var tblName =_item.name;
+				var colList = _item.colList; 
+				
+				var colArr = [];
+				$.each(colList , function (j , colItem){
+					colArr.push(colItem.name);
+				});
+				
+				tableHint[tblName] = {
+					columns:colArr
+					,text :tblName
 				};
+				
+				_self._setMetaCache('table',tblName, {items:colList});
+				
 			})
-			
+						
 			// 테이블 hint;
-			VARSQLHints.setTableInfo( tableHint);
+			VARSQLHints.setTableInfo(tableHint);
 			
 			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#tables',{
 				height:'auto'
@@ -731,8 +742,8 @@ _ui.leftDbObjectServiceMenu ={
 				}
 				,page :false
 				,tColItem : [
-					{key :'TABLE_NAME', label:'Table', width:200, sort:true}
-					,{key :'REMARKS', label:'설명', sort:true}
+					{key :'name', label:'Table', width:200, sort:true}
+					,{key :'remarks', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
@@ -745,7 +756,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.table-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','objectName':item.TABLE_NAME}), '_tableMetadata', refresh);
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','objectName':item.name}), '_tableMetadata', refresh);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -754,7 +765,7 @@ _ui.leftDbObjectServiceMenu ={
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
 							var gubun='table'
-								,tmpName = sItem.TABLE_NAME;
+								,tmpName = sItem.name;
 							
 							if(key=='dataview'){
 								_ui.SQL._sqlData('select * from '+tmpName,false);
@@ -881,20 +892,22 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		
 		try{
+			var items = colData.items;
+			
 			var colArr = [];
-			$.each(colData.items , function (i , item){
+			$.each(items , function (i , item){
 				colArr.push(item.name);
 			});
 			
 			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
 			
     		var gridObj = {
-    			data:colData.items
+    			data:items
     			,column : [
 					{ label: '컬럼명', key: 'name',width:80 },
 					{ label: '데이타타입', key: 'typeAndLength' },
 					{ label: '널여부', key: 'nullable',width:45},
-					{ label: 'PK', key: 'primayKey',width:45},
+					{ label: 'Key', key: 'constraints',width:45},
 					{ label: '설명', key: 'comment',width:45}
 				]
     		};
@@ -909,7 +922,34 @@ _ui.leftDbObjectServiceMenu ={
 	,_views:function (resData ,reqParam){
 		var _self = this;
 		try{
+
+			var len = resData.items?resData.items.length:0;
+    		var strHtm = [];
+    		
 			var itemArr = resData.items;
+			var item;
+			
+			var tableHint = {};
+			$.each(itemArr , function (_idx, _item){
+				var tblName =_item.name;
+				var colList = _item.colList; 
+				
+				var colArr = [];
+				$.each(colList , function (j , colItem){
+					colArr.push(colItem.name);
+				});
+				
+				tableHint[tblName] = {
+					columns:colArr
+					,text :tblName
+				};
+				
+				_self._setMetaCache('view',tblName, {items:colList});
+				
+			})
+						
+			// 테이블 hint;
+			VARSQLHints.setTableInfo(tableHint);
 			
 			$.pubGrid(_self.options.left_service_menu_contentId+'>#views',{
 				headerView:true
@@ -920,8 +960,8 @@ _ui.leftDbObjectServiceMenu ={
 				,autoResize :false
 				,page :false
 				,tColItem : [
-					{key :'TABLE_NAME', label:'View', width:200, sort:true}
-					,{key :'REMARKS', label:'설명'}
+					{key :'name', label:'Table', width:200, sort:true}
+					,{key :'remarks', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
 				,rowOptions : {
@@ -930,7 +970,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.view-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','objectName':item.TABLE_NAME}), '_viewMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','objectName':item.name}), '_viewMetadata');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -939,7 +979,7 @@ _ui.leftDbObjectServiceMenu ={
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
 							var gubun='view'
-								,tmpName = sItem.TABLE_NAME;
+								,tmpName = sItem.name;
 							
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
@@ -979,7 +1019,7 @@ _ui.leftDbObjectServiceMenu ={
     				{ label: '컬럼명', key: 'name',width:80 },
 					{ label: '데이타타입', key: 'typeName' },
 					{ label: '널여부', key: 'nullable',width:45},
-					{ label: 'PK', key: 'primayKey',width:45},
+					{ label: 'Key', key: 'constraints',width:45},
 					{ label: '설명', key: 'comment',width:45}
 				]
     		};
@@ -2026,6 +2066,17 @@ _ui.SQL = {
 		
 		_self._sqlData(sqlVal,true);
 	}
+	,getSelectionStartPos : function(){
+		var std = this.sqlTextAreaObj.listSelections()[0].anchor
+		,end = this.sqlTextAreaObj.listSelections()[0].head;
+	
+		if(std.line < end.line){
+			std  = end;
+		}else if(std.line == end.line && std.ch > end.ch){
+			std  = end;
+		}
+		return std;
+	}
 	// sql 데이타 보기 
 	,_sqlData :function (sqlVal, paramFlag){
 		var _self = this;
@@ -2061,8 +2112,18 @@ _ui.SQL = {
 		    		var resultMsg = [];
 		    		
 		    		if(responseData.resultCode ==500){
+		    			
+		    			var errQuery = responseData.item.query; 
 		    			msgViewFlag =true; 
-		    			resultMsg.push('<div class="error-log-message">#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+responseData.item.query));
+		    			resultMsg.push('<div class="error-log-message">#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+errQuery));
+		    			
+		    			var stdPos = _self.getSelectionStartPos();
+		    			
+		    			var cursor =_self.sqlTextAreaObj.getSearchCursor(errQuery, stdPos);
+		    			
+		    			if(cursor.findNext()){
+		    				_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+		    			}
 		    		}else{
 		    			var resData = responseData.items; 
 			    		var resultLen = resData.length;
@@ -2121,21 +2182,14 @@ _ui.SQL = {
 		var tmpEditor =_self.getTextAreaObj(); 
 		sqlVal=$.trim(sqlVal);
 		
-		var startSelection , endSelection;
+		var startSelection;
 		
 		if('' == sqlVal){
 			startSelection = {line:0,ch:0};
 			tmpEditor.setSelection(startSelection, {line:10000,ch:0});
 			sqlVal  = tmpEditor.getValue();
 		}else{
-			startSelection = tmpEditor.listSelections()[0].anchor;
-			endSelection = tmpEditor.listSelections()[0].head;
-			
-			if(startSelection.line > endSelection.line){
-				startSelection  = endSelection;
-			}else if(startSelection.line == endSelection.line && startSelection.ch > endSelection.ch){
-				startSelection  = endSelection;
-			}
+			startSelection = _self.getSelectionStartPos();
 		}
 		
 		if(''== sqlVal) return ; 

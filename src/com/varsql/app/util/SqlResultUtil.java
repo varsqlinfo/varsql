@@ -13,7 +13,7 @@ import java.util.Map;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
-import com.varsql.core.sql.resultset.handle.ResultSetHandle;
+import com.varsql.core.sql.resultset.handler.ResultSetHandler;
 
 /**
  *날짜 관련 util
@@ -46,7 +46,7 @@ public class SqlResultUtil {
 		
 		rsmd = rs.getMetaData();
 		
-		ResultSetHandle resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandle();
+		ResultSetHandler resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];

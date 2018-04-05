@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-<title>connection create error</title>
+<title>invalid database error</title>
 <style>
 html, body{width:100%;height:100%;overflow:hidden;}
 </style>
@@ -14,8 +14,9 @@ html, body{width:100%;height:100%;overflow:hidden;}
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<div>DB connection 생성 에러  입니다 </div>
-						<div>관리자에게 문의 하세요.</div>
+						<div>유효하지 않은 데이타 베이스 입니다.</div>
+						<div><a href="javascript:;" onclick="fnFresh();">새로고침</a></div>
+						<div>전체 페이지를 새로고침 하세요.</div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
 					</div>
@@ -25,3 +26,12 @@ html, body{width:100%;height:100%;overflow:hidden;}
 	</table>
 </body>
 </html>
+<script>
+function fnFresh(){
+	var locationObj =window; 
+	if(parent.location != location){
+		locationObj = parent; 
+	}
+	locationObj.location.href='${pageContext.request.contextPath}/user';
+}
+</script>

@@ -92,7 +92,7 @@ public class ExportServiceImpl{
 		List<Map> tables = (List<Map>)settingInfo.get("tables");
 		List<Map> columns = (List<Map>)settingInfo.get("columns");
 		
-		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("TABLE_NAME")).toArray(String[]::new);
+		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 		
 		ExcelReport excelReport=VarsqlUtil.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns, settingInfo.getBoolean("sheetFlag"), tableNmArr);
 		

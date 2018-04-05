@@ -290,6 +290,10 @@ _$base.req ={
 			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;"><form name="varsql_hidden_down_form" id="varsql_hidden_down_form"  target="varsql_hidden_down_iframe"></form>'
 				+'<iframe name="varsql_hidden_down_iframe" id="varsql_hidden_down_iframe"  style="width:0px;height:px;display:none;"></iframe><div>';
 			$('body').append(strHtm);
+			
+			$('#varsql_hidden_down_iframe').on('load', function (e){
+				$('body').centerLoadingClose();
+			});
 		}
 		
 		var formObj = $('#varsql_hidden_down_form');
@@ -309,6 +313,10 @@ _$base.req ={
 		formObj.prop('method',tmpMethod);
 		formObj.prop('action',opts.url);
 		formObj.submit();
+		
+		$('body').centerLoading({contentClear:false});
+		
+		
 	}
 };
 
