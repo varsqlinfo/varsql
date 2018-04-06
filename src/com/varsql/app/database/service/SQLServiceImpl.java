@@ -31,6 +31,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -74,9 +75,9 @@ public class SQLServiceImpl{
 	 */
 	public String sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
 		if("varsql".equals(sqlParamInfo.getCustom().get("formatType"))){
-			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix(), VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n";
+			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix(), VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n";
 		}else{
-			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n";
+			return VarsqlFormatterUtil.format(sqlParamInfo.getSql(), MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n";
 		}
 		
 	}
@@ -96,7 +97,7 @@ public class SQLServiceImpl{
 		
 		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, VarsqlUtil.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
 		
 		List<SqlSource> sqlList = parseInfo.getItems();
 		

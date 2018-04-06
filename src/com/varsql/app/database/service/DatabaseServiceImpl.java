@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.util.DbInstanceFactory;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -43,7 +44,7 @@ public class DatabaseServiceImpl{
 		
 		DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
 		
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getDbInstanceFactory(dbinfo.getType());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
 		
 		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
 		json.put("schema", dbinfo.getSchema());
@@ -67,7 +68,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo) {
 		ResponseResult result = new ResponseResult();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getVconnid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		result.setItemList(dbMetaEnum.getDBMeta().getServiceMenu());
 		return result;
 	}
@@ -83,8 +84,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
-		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
 		String gubun = databaseParamInfo.getGubun();
@@ -103,13 +103,13 @@ public class DatabaseServiceImpl{
 			logger.error("dbObjectList : ", e);
 			try{
 				if("tables".equals(gubun)){
-					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
 				}else if("views".equals(gubun)){
-					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getViewsAndColumns(databaseParamInfo));
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getViewsAndColumns(databaseParamInfo));
 				}else if("procedures".equals(gubun)){
-					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getProcedures(databaseParamInfo));
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProcedures(databaseParamInfo));
 				}else if("functions".equals(gubun)){
-					result.setItemList(DbInstanceFactory.OTHER.getDBMeta().getFunctions(databaseParamInfo));
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctions(databaseParamInfo));
 				}
 			}catch(Exception subE){
 				logger.error("dbObjectList : ", subE);
@@ -131,13 +131,11 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo) {
-		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			
 			String gubun = databaseParamInfo.getGubun();
 			if("table".equals(gubun)){	//tableMetadata
 				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo , databaseParamInfo.getObjectName()));
@@ -165,8 +163,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult createDDL(DatabaseParamInfo databaseParamInfo) {
-		String connid =databaseParamInfo.getVconnid();
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		String gubun = databaseParamInfo.getGubun();
 		

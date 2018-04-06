@@ -22,8 +22,8 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.beans.DatabaseInfo;
-import com.varsql.core.db.util.DbInstanceFactory;
 
 public class VarsqlUtil {
 	
@@ -104,23 +104,6 @@ public class VarsqlUtil {
 		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
 		
 		return paramMap; 
-	}
-	
-	public static DbInstanceFactory getConnidToDbInstanceFactory(String connid){
-		try{
-			DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(connid);
-			return getDbInstanceFactory(dbinfo.getType());
-		}catch(Exception e){
-			return DbInstanceFactory.OTHER;
-		}
-	}
-	
-	public static DbInstanceFactory getDbInstanceFactory(String type){
-		try{
-			return DbInstanceFactory.valueOf(type);
-		}catch(Exception e){
-			return DbInstanceFactory.OTHER;
-		}
 	}
 	
 	/**

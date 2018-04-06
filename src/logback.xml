@@ -33,7 +33,7 @@
 		<appender-ref ref="FILEOUT" />
 	</logger>
 	
-	<logger name="com.varsql" level="info" additivity="false">
+	<logger name="com.varsql" level="debug" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILEOUT" />
 	</logger>

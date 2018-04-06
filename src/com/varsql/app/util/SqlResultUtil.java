@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.varsql.app.database.beans.SqlParamInfo;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
@@ -46,7 +47,7 @@ public class SqlResultUtil {
 		
 		rsmd = rs.getMetaData();
 		
-		ResultSetHandler resultsetHandle = VarsqlUtil.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
+		ResultSetHandler resultsetHandle = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];

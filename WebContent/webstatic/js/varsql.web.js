@@ -195,6 +195,8 @@ _$base.req ={
 		
 		var loadSelector = option.loadSelector ?option.loadSelector :false;
 		
+		console.log(loadSelector);
+		
 		if(option.dataType == 'jsonp'){
 			option.timeout = option.timeout || 10000;
 		}

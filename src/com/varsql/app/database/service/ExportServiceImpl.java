@@ -17,11 +17,11 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.dao.ExportDAO;
-import com.varsql.app.database.dao.PreferencesDAO;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
-import com.varsql.core.db.util.DbInstanceFactory;
 import com.vartech.common.app.beans.EnumMapperValue;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.utils.VartechUtils;
@@ -56,7 +56,7 @@ public class ExportServiceImpl{
 	 */
 	public void selectTableExportConfigInfo(PreferencesInfo preferencesInfo, ModelMap model) throws Exception {
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
-		DbInstanceFactory dbMetaEnum= VarsqlUtil.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
 		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta().getTables(preferencesInfo));
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
@@ -94,7 +94,7 @@ public class ExportServiceImpl{
 		
 		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 		
-		ExcelReport excelReport=VarsqlUtil.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns, settingInfo.getBoolean("sheetFlag"), tableNmArr);
+		ExcelReport excelReport=MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns, settingInfo.getBoolean("sheetFlag"), tableNmArr);
 		
 		String exportFileName =settingInfo.getString("exportName","table-spec");
 		

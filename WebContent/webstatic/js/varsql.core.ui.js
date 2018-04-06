@@ -624,7 +624,6 @@ _ui.leftDbObjectServiceMenu ={
 		VARSQL.req.ajax({      
 			loadSelector : _self.options.left_service_menu_contentId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
-			,dataType:'json'
 			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 			,success:function (resData){
 				_self['_'+$contentId].call(_self,resData);
