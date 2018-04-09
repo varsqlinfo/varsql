@@ -7,6 +7,12 @@
 */
 /*bootstrap conflict 막기위해 넣은 코드. */
 
+.pubGrid-wrapper div{
+	-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+
+}
 .pubGrid *{
 	border-spacing:0;
 	border-collapse:collapse;
@@ -21,6 +27,9 @@
 	-moz-box-sizing: border-box !important;
 	box-sizing: border-box !important;
 }
+
+
+
 .pubGrid{
 	position: relative;
 	border : 1px solid #bcbcbd;
@@ -169,7 +178,7 @@
 	position: relative;
     padding:0;	
 	width:100%;
-    padding-right: 4px;
+   /* padding-right: 4px;  //2018-03-30*/
 }
 
 .pubGrid-header-container .label-wrapper > .pub-header-label  {

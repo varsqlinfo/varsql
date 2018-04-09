@@ -1,7 +1,7 @@
 /*
 * Customize borders and shading to suit this nested layout
 */
-.ui-layout-container div{
+.ui-layout-container>div{
 	-webkit-box-sizing:  border-box !important;
 	-moz-box-sizing: border-box !important;
 	box-sizing: border-box !important;
@@ -140,4 +140,16 @@
 	width:100%;
 }	
 
+#sqlEditorWrap div {
+	-webkit-box-sizing: initial !important;
+	-moz-box-sizing: initial !important;
+	box-sizing: initial !important;
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
 

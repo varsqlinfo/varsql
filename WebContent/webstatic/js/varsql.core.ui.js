@@ -102,7 +102,7 @@ _ui.preferences= {
 			url:{gubun:VARSQL.uri.database, url:'/preferences/save.vsql'}
 			,data: param
 			,success:function (resData){
-				console.log(resData);
+				//console.log(resData);
 			}
 		});
 	}

@@ -887,7 +887,7 @@ Plugin.prototype ={
 			,hArrowWidth = _this.options.scroll.horizontal.height-2;
 	
 
-		return '<div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect"  style="overflow:hidden;width:'+_this.config.body.width+'px;">'
+		return '<div class="pubGrid-wrapper"><div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect"  style="overflow:hidden;width:'+_this.config.body.width+'px;">'
 			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container" style="overflow:hidden;">'
 			+'    <div class="pubGrid-setting-wrapper"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
 			+'<g><path id="'+_this.prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
@@ -968,7 +968,7 @@ Plugin.prototype ={
 			+' 	</div>'
 			+' 	<div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 			+' 	</div>'
-			+' </div>';
+			+' </div></div>';
 
 	}
 	,getTbodyAsideHtml : function (mode){
@@ -1425,7 +1425,7 @@ Plugin.prototype ={
 		_this.config.body.height = opt.height;
 		
 		var mainHeight = opt.height - this.config.navi.height;
-		_this.element.container.css('height',mainHeight);
+		_this.element.container.css('height',mainHeight-2);
 
 		var  bodyW = (_this.config.body.width-this.options.scroll.vertical.width)
 			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false
