@@ -81,6 +81,7 @@ var _initialized = false
 			,name : ''
 			,width : 40
 			,styleCss : ''	//css 
+			,isSelectRow:true
 		}
 		,rowSelector :{
 			enable :false
@@ -434,6 +435,10 @@ Plugin.prototype ={
 
 		if(!isNaN(headerHeight)){
 			cssStr.push('#'+_this.prefix+'_pubGrid .pubGrid-header-container th{height:'+headerHeight+'px;}');
+		}
+
+		if(_this.options.asideOptions.lineNumber.isSelectRow ===true){
+			cssStr.push('#'+_this.prefix+'_pubGrid .pubGrid-body-aside .pub-body-aside-td{cursor:pointer;}');
 		}
 		var styleId = _this.prefix+'_pubGridStyle'; 
 		var styleTag = document.getElementById(styleId);
@@ -2263,11 +2268,12 @@ Plugin.prototype ={
      * @description 바디 이벤트 초기화.
      */
 	,_initBodyEvent : function (){
-		var _this = this; 
+		var _this = this
+			,asideOpt = _this.options.asideOptions;
 		
 		_this._setRangeSelectInfo({isMouseDown : false});
 		
-		_this.element.body.on('mousedown.pubgridcol','.pub-body-td',function (e){
+		_this.element.body.find('.pubGrid-body').on('mousedown.pubgridcol','.pub-body-td',function (e){
 
 			if(e.which ===3){
 				return true; 
@@ -2362,11 +2368,36 @@ Plugin.prototype ={
 			//_this.element.body.removeClass('pubGrid-noselect');
 			_this._setRangeSelectInfo({isMouseDown : false});
 		});
+
+
+		if(asideOpt.lineNumber.isSelectRow === true){
+			// column select
+			_this.element.body.find('.pubGrid-body-aside').on('click.pubGridLine.select','.pub-body-aside-td',function (e){
+				var selEle = $(this)
+					,row_idx = selEle.closest('tr').attr('rowinfo');
+				
+				var curr ='' , initFlag = true ; 
+				if(e.ctrlKey){
+					curr = 'add';
+					initFlag  = false; 
+				}else{
+					_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
+				}
+
+				var rowIdx = _this.config.scroll.viewIdx+intValue(row_idx); 
+
+				_this._setRangeSelectInfo({
+					rangeInfo : {startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.scroll.endCol}
+					,isSelect : true
+					,curr : curr
+				}, initFlag , true);
+			});
+		}
 	
 		if(isFunction(_this.options.rowOptions.click)){
 
 			var beforeRow; 
-			_this.element.body.on('click.pubgridrow','.pub-body-tr',function (e){
+			_this.element.body.find('.pubGrid-body').on('click.pubgridrow','.pub-body-tr',function (e){
 				var selRow = $(this)
 					,rowinfo=selRow.attr('rowinfo');
 				
@@ -2379,13 +2410,13 @@ Plugin.prototype ={
 				selRow.addClass('active');
 				beforeRow = selRow; 
 				
-				_this.options.rowOptions.click.call(selRow ,rowinfo , selItem);							
+				 _this.options.rowOptions.click.call(selRow ,rowinfo , selItem);							
 			});
 		}
 
 		if(isFunction(_this.options.bodyOptions.cellDblClick)){
 			
-			_this.element.body.on('dblclick.pubgridtd','.pub-body-td',function (e){
+			_this.element.body.find('.pubGrid-body').on('dblclick.pubgridtd','.pubGrid-body>.pub-body-td',function (e){
 				var selRow = $(this)
 					,tdInfo=selRow.data('grid-position')
 					,rowColArr  = tdInfo.split(',');
