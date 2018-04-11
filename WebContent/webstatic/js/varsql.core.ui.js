@@ -622,7 +622,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		VARSQL.req.ajax({      
-			loadSelector : _self.options.left_service_menu_contentId
+			loadSelector : '.ui-layout-left-middle-area' //_self.options.left_service_menu_contentId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 			,success:function (resData){

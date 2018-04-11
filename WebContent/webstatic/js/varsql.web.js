@@ -201,13 +201,17 @@ _$base.req ={
 		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option); 
 		
 		ajaxOpt.beforeSend = function (xhr){
-			if(loadSelector){
+			if($(loadSelector).length > 0){
 				if(loadSelector=='#editorAreaTable'){
 					$('#sqlEditerPreloaderArea').show();
 				}
 				$(loadSelector).centerLoading({
 					contentClear:false 
 				});
+			}
+			
+			if($.isFunction(option.beforeSend)){
+				option.beforeSend(xhr);
 			}
 		}
 		
@@ -221,15 +225,6 @@ _$base.req ={
 			option.success.call(this, data, status, jqXHR);
 		}
 		
-		ajaxOpt.error = function (data, status, err){
-			if(loadSelector) {
-				if(loadSelector=='#editorAreaTable'){
-					$('#sqlEditerPreloaderArea').hide(1000);
-				}
-				$(loadSelector).centerLoadingClose();
-			}
-		}
-		
 		$.ajax(ajaxOpt).done(function (xhr){
 			if(loadSelector){
 				if(loadSelector=='#editorAreaTable'){
@@ -237,7 +232,14 @@ _$base.req ={
 				}
 				$(loadSelector).centerLoadingClose();
 			} 
-		})
+		}).fail(function (xhr){
+			if(loadSelector) {
+				if(loadSelector=='#editorAreaTable'){
+					$('#sqlEditerPreloaderArea').hide(1000);
+				}
+				$(loadSelector).centerLoadingClose();
+			}
+		});
 	}
 	,validationCheck : function (resData){
 		if(resData.messageCode=='valid'){
@@ -348,7 +350,7 @@ jQuery.fn.centerLoading = function(options) {
 
 	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;	
 		
-	var firstDiv = $('<div style="'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
+	var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
 	var centerLoading = $('<div style="background-repeat:no-repeat;"></div>');
 	centerLoading.css('background-image', 'url("'+config.loadingImg+'")')
 				.css('background-position', config.centerYn=='Y'?'center center':'')
@@ -756,23 +758,31 @@ _$base.util = {
 	 * @description object merge
 	 */	
 	,objectMerge : function () {
-		var dst = {},src ,p ,args = [].splice.call(arguments, 0);
-		
-		while (args.length > 0) {
-			src = args.splice(0, 1)[0];
-			if (Object.prototype.toString.call(src) == '[object Object]') {
-				for (p in src) {
-					if (src.hasOwnProperty(p)) {
-						if (Object.prototype.toString.call(src[p]) == '[object Object]') {
-							dst[p] = _$base.util.objectMerge(dst[p] || {}, src[p]);
-						} else {
-							dst[p] = src[p];
-						}
-					}
+		var objMergeRecursive = function (dst, src) {
+		    
+			for (var p in src) {
+				if (!src.hasOwnProperty(p)) {continue;}
+				
+				var srcItem = src[p] ;
+				if (srcItem=== undefined) {continue;}
+				
+				if ( typeof srcItem!== 'object' || srcItem=== null) {
+					dst[p] = srcItem;
+				} else if (typeof dst[p]!=='object' || dst[p] === null) {
+					dst[p] = objMergeRecursive(srcItem.constructor===Array ? [] : {}, srcItem);
+				} else {
+					objMergeRecursive(dst[p], srcItem);
 				}
 			}
+			return dst;
 		}
-		return dst;
+
+		var reval = arguments[0];
+		if (typeof reval !== 'object' || reval === null) {	return reval;}
+		for (var i = 1, il = arguments.length; i < il; i++) {
+			objMergeRecursive(reval, arguments[i]);
+		}
+		return reval;
 	}
 	,escapeHTML : function(html) {
 	    var fn=function(tag) {
