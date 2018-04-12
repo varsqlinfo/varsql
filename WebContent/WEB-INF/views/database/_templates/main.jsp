@@ -7,7 +7,7 @@
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 </head>
-<body>
+<body class="database-main">
 <c:set var="pageType" value="custom9"></c:set>
 <c:choose>
 	<%-- 패이지 공통으로 쓰이는게 아닐경우 custom으로 해서 처리 할것.  --%> 

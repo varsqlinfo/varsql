@@ -671,7 +671,7 @@ _ui.leftDbObjectServiceMenu ={
 	,_createDDL :function (sObj){
 		var _self = this; 
 		
-		var param =$.extend({},_self.options.param,{'gubun':'table',objectName:sObj.objName})
+		var param =$.extend({},_self.options.param,{'gubun':sObj.gubun ,objectName:sObj.objName})
 		
 		VARSQL.req.ajax({
 			url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
@@ -982,21 +982,27 @@ _ui.leftDbObjectServiceMenu ={
 							
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
-							key = sObj.mode;
-							
-							_self._createScriptSql({
-								gubunKey : key
-								,gubun : 'view'
-								,objName :  tmpName 
-								,item : cacheData
-								,param_yn: sObj.param_yn
-							});
+							if(key=='ddl_copy' || key=='ddl_paste'){
+								_self._createDDL({
+									gubunKey : key
+									,gubun : 'view'
+									,objName :  tmpName 
+								});
+								return ;
+							}
 						},
 						items: [
 							{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
 									,{ key : "select","name": "select column" ,mode:"select"}
+								]
+							}
+							,{divider:true}
+							,{key : "create_ddl_top","name": "DDL 보기" 
+								,subMenu:[
+									{key : "ddl_copy","name": "복사하기"}
+									,{key : "ddl_paste","name": "edit 영역에보기"}
 								]
 							}
 						]
