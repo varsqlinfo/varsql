@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.exception.DatabaseInvalidException;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseInfo;
@@ -41,16 +42,20 @@ public class DatabaseServiceImpl{
 		Map json = new HashMap();
 		String connid =databaseParamInfo.getConuid();
 		
-		
-		DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
-		
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
-		
-		json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
-		json.put("schema", dbinfo.getSchema());
-		json.put("conuid", dbinfo.getConnUUID());
-		json.put("type", dbinfo.getType());
-		json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(databaseParamInfo));
+		try{
+			DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
+			
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
+			
+			json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
+			json.put("schema", dbinfo.getSchema());
+			json.put("conuid", dbinfo.getConnUUID());
+			json.put("type", dbinfo.getType());
+			json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(databaseParamInfo));
+		}catch(Exception e){
+			logger.error("schemas {}" , e.getMessage());
+			throw new DatabaseInvalidException(e.getMessage());
+		}
 		
 		return json;
 	}
@@ -82,39 +87,40 @@ public class DatabaseServiceImpl{
 	 * @변경이력  :
 	 * @param databaseParamInfo
 	 * @return
+	 * @throws Exception 
 	 */
-	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
+	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
 		String gubun = databaseParamInfo.getGubun();
 		
 		try{
-			if("tables".equals(gubun)){
+			if("table".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getTablesAndColumns(databaseParamInfo));
-			}else if("views".equals(gubun)){
+			}else if("view".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getViewsAndColumns(databaseParamInfo));
-			}else if("procedures".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProcedures(databaseParamInfo));
-			}else if("functions".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getFunctions(databaseParamInfo));
+			}else if("procedure".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
+			}else if("function".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
 			}
 		}catch(Exception e){
 			logger.error("dbObjectList : ", e);
 			try{
-				if("tables".equals(gubun)){
+				if("table".equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
-				}else if("views".equals(gubun)){
+				}else if("view".equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getViewsAndColumns(databaseParamInfo));
-				}else if("procedures".equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProcedures(databaseParamInfo));
-				}else if("functions".equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctions(databaseParamInfo));
+				}else if("procedure".equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
+				}else if("function".equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
 				}
 			}catch(Exception subE){
 				logger.error("dbObjectList : ", subE);
+				throw subE; 
 			}
-			
 		}
 		
 		return result;
@@ -138,13 +144,13 @@ public class DatabaseServiceImpl{
 		try{
 			String gubun = databaseParamInfo.getGubun();
 			if("table".equals(gubun)){	//tableMetadata
-				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo , databaseParamInfo.getObjectName()));
+				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo,DBObjectType.TABLE, databaseParamInfo.getObjectName()));
 			}else if("view".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo	,databaseParamInfo.getObjectName()) );
+				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo,DBObjectType.VIEW, databaseParamInfo.getObjectName()) );
 			}else if("procedure".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProceduresMetadata( databaseParamInfo,databaseParamInfo.getObjectName()));
+				result.setItemList(dbMetaEnum.getDBMeta().getProceduresAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}else if("function".equals(gubun)){
-				result.setItemList(null);
+				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}
 		}catch(Exception e){
 			logger.error("serviceMenu : ", e);

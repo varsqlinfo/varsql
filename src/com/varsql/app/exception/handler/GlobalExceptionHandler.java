@@ -51,7 +51,7 @@ public class GlobalExceptionHandler{
 		result.setStatus(ResultConst.CODE.ERROR.toInt());
 		result.setMessage(ex.getMessage());
 		
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(request, response ,result,"connError");
 	}
 	
 	/**
@@ -172,7 +172,7 @@ public class GlobalExceptionHandler{
 	}
 	
 	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result ) {
-		exceptionRequestHandle(request ,response , result  , null);
+		exceptionRequestHandle(request ,response , result  , "connError");
 	}
 	
 	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
@@ -198,7 +198,5 @@ public class GlobalExceptionHandler{
 				e1.printStackTrace();
 			}
 		}
-		
-		
 	}
 }
