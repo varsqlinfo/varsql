@@ -2664,7 +2664,7 @@ _ui.text={
 		
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사"><div><pre id="data-copy-area"></pre></div></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="width-height100"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
