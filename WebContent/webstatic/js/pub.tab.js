@@ -22,9 +22,9 @@
 				prev :'pub-tab-left-arrow'
 				,next : 'pub-tab-right-arrow'
 			}
-			,addClass : 'service_menu_tab'	// tab li √ﬂ∞° ≈¨∑°Ω∫
+			,addClass : 'service_menu_tab'	// tab li Ï∂îÍ∞Ä ÌÅ¥ÎûòÏä§
 			,items:[]							// tab item
-			,click :function (item){			// tab click ø…º«
+			,click :function (item){			// tab click ÏòµÏÖò
 				
 			}
 			,itemKey :{							// item key mapping
@@ -36,6 +36,8 @@
         this.selector = (typeof element=='object') ? element.selector : element;
 		this.contextId = 'pubTab-'+new Date().getTime();
 		this.element = $(element);
+
+        options.width= isNaN(options.width) ?  this.element.width() : options.width
         this.options = $.extend({}, defaults, options);
 		
 		this.init();
