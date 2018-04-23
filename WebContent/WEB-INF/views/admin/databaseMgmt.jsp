@@ -51,6 +51,14 @@ var databaseMgmt = {
 			_this.viewAreaShow('view');
 		});
 		
+		$('.saveBtn').on('click',function() {
+			$('#addForm').submit();
+		});
+		
+		$('.optSaveBtn').on('click',function() {
+			$('#optionsForm').submit();
+		});
+		
 		// connection check
 		$('.connCheckBtn').click(function() {
 			_this.connectionCheck();
@@ -93,10 +101,8 @@ var databaseMgmt = {
 		}).on('success.form.bv', function(e) {
 			// Prevent form submission
 			e.preventDefault();
-
 			_this.save();
 		});
-		
 		
 		$('#optionsForm').bootstrapValidator({
 			message: 'This value is not valid',
@@ -370,12 +376,12 @@ var databaseMgmt = {
 				<div class="view-area on" data-view-mode="view">
 					<input type="hidden" id="vconnid" name="vconnid">
 					<input type="hidden" id="pollinit" name="pollinit" value="N">
-					<form id="addForm" name="addForm" class="form-horizontal">
+					<form id="addForm" name="addForm" class="form-horizontal" >
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div class="pull-right">
 									<button type="button" class="btn btn-default addBtn"><spring:message code="btn.add"/></button>
-									<button type="submit" class="btn btn-default saveBtn"><spring:message code="btn.save"/></button>
+									<button type="button" class="btn btn-default saveBtn"><spring:message code="btn.save"/></button>
 									<button type="button" class="btn btn-default saveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
 									<button type="button" class="btn btn-primary connCheckBtn"><spring:message code="btn.connnection.check"/></button>
 									<button type="button" class="btn btn-danger deleteBtn"><spring:message code="btn.delete"/></button>
@@ -434,11 +440,11 @@ var databaseMgmt = {
 					</form>
 				</div>
 				<div class="view-area" data-view-mode="option">
-					<form id="optionsForm" name="optionsForm" class="form-horizontal">
+					<form id="optionsForm" name="optionsForm" class="form-horizontal" onsubmit="return false;">
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div class="pull-right">
-									<button type="submit" class="btn btn-default optSaveBtn"><spring:message code="btn.save"/></button>
+									<button type="button" class="btn btn-default optSaveBtn"><spring:message code="btn.save"/></button>
 									<button type="button" class="btn btn-default optSaveAndPoolInitBtn"><spring:message code="btn.save.andpoolnit"/></button>
 									<button type="button" class="btn btn-default closeBtn"><spring:message code="btn.close"/></button>
 								</div>

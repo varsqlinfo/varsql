@@ -198,7 +198,7 @@ var guestMain ={
 		<!-- form start -->
 		<form name="guestForm" id="guestForm"
 			action="<c:url value="/guest/insQna" />" method="post"
-			class="form-horizontal well" role="form">
+			class="form-horizontal well" role="form" onsubmit="return false;">
 			<input type="hidden" name="qnaid" id="qnaid" value="">
 			<div class="form-group">
 				<label for="inputEmail3"><spring:message

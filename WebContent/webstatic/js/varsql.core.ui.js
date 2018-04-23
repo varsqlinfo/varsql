@@ -15,6 +15,10 @@ _ui.base ={
 	,sqlHints :{}	// sql hints
 };
 
+_ui.extension ={
+		
+}
+
 var _defaultOptions = {
 	tablesConfig :{
 			configVal :{search :{			// 검색
@@ -48,6 +52,7 @@ VARSQL.ui.create = function (_opts){
 	_ui.leftDbObject.create(_opts);
 	_ui.layout.init(_opts);
 	
+	_ui.extension = VARSQL.vender[_opts.dbtype];
 }
 
 //context menu 초기화
@@ -485,7 +490,7 @@ _ui.leftDbObject ={
  */
 _ui.leftDbObjectServiceMenu ={
 	initFlag : false
-	,metadataCache:false
+	,metadataCache : {}
 	,metaGridHeight :150
 	,options :{
 		selector:'#leftServiceMenu'
@@ -501,9 +506,10 @@ _ui.leftDbObjectServiceMenu ={
 	// 왼쪽 메뉴 생성 . 
 	,create: function (options){
 		var _self = this; 
-		_self._initCacheObject();
 		
 		_self.options = VARSQL.util.objectMerge(_self.options, options);
+		
+		_self._initCacheObject();
 		
 		if(_self.initFlag ===false){
 			_self._tabs();
@@ -516,11 +522,12 @@ _ui.leftDbObjectServiceMenu ={
 		_self.initFlag = true; 
 	}
 	,_initCacheObject : function (){
-		this.metadataCache = {
-			'table':{}
-			,'view':{}
-			,'procedure':{}
-			,'function':{}
+		var menuData = this.options.menuData;
+		
+		for(var i =0; i<menuData.length; i++){
+			var serviceObj = menuData[i];
+			var serviceNm =serviceObj.contentid; 
+			this.metadataCache[serviceNm] = {};
 		}
 		
 		this.selectMetadata = {}; // 선택한 메뉴 
@@ -547,7 +554,8 @@ _ui.leftDbObjectServiceMenu ={
 		
 		$.pubTab(_self.options.selector,{
 			items :data
-			,width:'auto'
+			,width : 'auto'
+			,overItemViewMode :'drop'
 			,addClass :'service_menu_tab'
 			,click : function (item){
 				var sObj = $(this);
@@ -621,12 +629,14 @@ _ui.leftDbObjectServiceMenu ={
 			$(_self.options.left_service_menu_contentId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
 		}
 		
+		var callMethod = _self.getCallMethod('_'+$contentId);
+		
 		VARSQL.req.ajax({      
 			loadSelector : '.ui-layout-left-middle-area' //_self.options.left_service_menu_contentId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 			,success:function (resData){
-				_self['_'+$contentId].call(_self,resData);
+				callMethod.call(_self,resData);
 			}
 		});
 	}
@@ -634,11 +644,13 @@ _ui.leftDbObjectServiceMenu ={
 	,_dbObjectMetadataList:function(param,callMethod,refresh){
 		var _self = this;
 		
+		var callMethod = _self.getCallMethod(callMethod);
+		
 		if(!refresh){
 			var cacheData = _self._getMetaCache(param.gubun,param.objectName);
 		
 			if(cacheData){
-				_self[callMethod].call(_self,cacheData, param);
+				callMethod.call(_self,cacheData, param);
 				return ; 
 			}
 		}
@@ -650,9 +662,19 @@ _ui.leftDbObjectServiceMenu ={
 			,data:param
 			,success:function (resData){
 				_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
-				_self[callMethod].call(_self,resData, param);
+				
+				callMethod.call(_self,resData, param);
 			}
 		});
+	}
+	,getCallMethod : function (methodName){
+		var callMethod  =_ui.extension[methodName];
+		
+		if(VARSQL.isUndefined(callMethod)){
+			callMethod = this[methodName];
+		}
+		
+		return callMethod;
 	}
 	// 컨텍스트 메뉴 sql 생성 부분 처리 .
 	,_createScriptSql :function (scriptObj){
@@ -693,11 +715,10 @@ _ui.leftDbObjectServiceMenu ={
 	,_table : function (resData, reqParam){
 		var _self = this;
 		try{
-    		var len = resData.items?resData.items.length:0;
-    		var strHtm = [];
-    		
+			var $$gubun = 'table';
 			var itemArr = resData.items;
-			var item;
+    		
+			var len = itemArr.length;
 			
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
@@ -714,14 +735,14 @@ _ui.leftDbObjectServiceMenu ={
 					,text :tblName
 				};
 				
-				_self._setMetaCache('table',tblName, {items:colList});
+				_self._setMetaCache($$gubun,tblName, {items:colList});
 				
 			})
 						
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 			
-			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#table',{
+			var tableObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#'+$$gubun,{
 				height:'auto'
 				,autoResize :false
 				,headerOptions:{}
@@ -755,7 +776,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.table-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'table','objectName':item.name}), '_tableMetadata', refresh);
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata', refresh);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -763,7 +784,7 @@ _ui.leftDbObjectServiceMenu ={
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun='table'
+							var gubun= $$gubun
 								,tmpName = sItem.name;
 							
 							if(key=='dataview'){
@@ -824,7 +845,7 @@ _ui.leftDbObjectServiceMenu ={
 							
 							_self._createScriptSql({
 								gubunKey : key
-								,gubun : 'table'
+								,gubun : $$gubun
 								,objName :  tmpName 
 								,item : cacheData
 								,param_yn: sObj.param_yn
@@ -921,9 +942,8 @@ _ui.leftDbObjectServiceMenu ={
 	,_view:function (resData ,reqParam){
 		var _self = this;
 		try{
-
+			var $$gubun = 'view';	
 			var len = resData.items?resData.items.length:0;
-    		var strHtm = [];
     		
 			var itemArr = resData.items;
 			var item;
@@ -943,14 +963,14 @@ _ui.leftDbObjectServiceMenu ={
 					,text :tblName
 				};
 				
-				_self._setMetaCache('view',tblName, {items:colList});
+				_self._setMetaCache($$gubun,tblName, {items:colList});
 				
 			})
 						
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 			
-			$.pubGrid(_self.options.left_service_menu_contentId+'>#view',{
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#'+$$gubun,{
 				headerView:true
 				,height:'auto'
 				,asideOptions :{
@@ -969,7 +989,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.view-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':'view','objectName':item.name}), '_viewMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -977,7 +997,7 @@ _ui.leftDbObjectServiceMenu ={
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun='view'
+							var gubun=$$gubun
 								,tmpName = sItem.name;
 							
 							var cacheData = _self._getMetaCache(gubun,tmpName);
@@ -985,7 +1005,7 @@ _ui.leftDbObjectServiceMenu ={
 							if(key=='ddl_copy' || key=='ddl_paste'){
 								_self._createDDL({
 									gubunKey : key
-									,gubun : 'view'
+									,gubun : $$gubun
 									,objName :  tmpName 
 								});
 								return ;
@@ -1038,7 +1058,6 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var strHtm = [];
     		var $$gubun = 'procedure'
     		
 			var itemArr = resData.items;
@@ -1049,7 +1068,7 @@ _ui.leftDbObjectServiceMenu ={
 				_self._setMetaCache($$gubun,_name, {items:colList});
 			})
 			
-			var procedureObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#procedure',{
+			var procedureObj = $.pubGrid(_self.options.left_service_menu_contentId+'>#'+$$gubun,{
 				headerView:true
 				,height:'auto'
 				,asideOptions :{
@@ -1070,7 +1089,7 @@ _ui.leftDbObjectServiceMenu ={
 		    			$('.procedure-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_procedureMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1138,7 +1157,6 @@ _ui.leftDbObjectServiceMenu ={
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var strHtm = [];
     		var $$gubun = 'function'
     		
 			var itemArr = resData.items;
@@ -1230,6 +1248,210 @@ _ui.leftDbObjectServiceMenu ={
     		};
 			
     		_self.setMetadataGrid(gridObj, 'function');
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+	,_index : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$gubun = 'index'
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_self._setMetaCache($$gubun,_name, {items:colList});
+			})
+		
+			var itemArr = resData.items;
+    				
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#'+$$gubun,{
+				headerView:true
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,height: 'auto'
+				,page :false
+				,tColItem : [
+					{key :'INDEX_NAME', label:'Index',width:200, sort:true}
+					,{key :'TABLE_NAME', label:'테이블명'}
+					,{key :'TABLESPACE_NAME', label:'Tablespace'}
+					,{key :'BUFFER_POOL', label:'버퍼풀'}
+					,{key :'INDEX_TYPE', label:'타입'}
+					,{key :'STATUS', label:'상태'}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			$('.function-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var gubun=$$gubun
+								,tmpName = sItem.name;
+							
+							var cacheData = _self._getMetaCache(gubun,tmpName);
+							
+							if(key =='copy'){
+								procedureObj.copyData();
+								return ; 
+							}
+							
+							if(key=='ddl_copy' || key=='ddl_paste'){
+								_self._createDDL({
+									gubunKey : key
+									,gubun : $$gubun
+									,objName :  tmpName 
+								});
+								return ;
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+							,{divider:true}
+							,{key : "create_ddl_top","name": "DDL 보기" 
+								,subMenu:[
+									{key : "ddl_copy","name": "복사하기"}
+									,{key : "ddl_paste","name": "edit 영역에보기"}
+								]
+							}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+	,_indexMetadata : function (colData ,reqParam){
+		var _self = this;
+		
+		try{
+    		var gridObj = {
+    			data:colData.items
+    			,column : [
+					{ label: '파라미터명', key: 'name',width:80 },
+					{ label: '데이타타입', key: 'dataType' },
+					{ label: 'IN, OUT', key: 'columnType',width:45},
+					{ label: '설명', key: 'comment',width:45},
+				]
+    		};
+			
+    		_self.setMetadataGrid(gridObj, 'index');
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+	
+	,_trigger : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$gubun = 'trigger';
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_self._setMetaCache($$gubun,_name, {items:colList});
+			})
+		
+			var itemArr = resData.items;
+    				
+			$.pubGrid(_self.options.left_service_menu_contentId+'>#'+$$gubun,{
+				headerView:true
+				,asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,height: 'auto'
+				,page :false
+				,tColItem : [
+					{key :'OBJECT_NAME', label:'Trigger',width:200, sort:true}
+					,{key :'TABLE_NAME', label:'테이블명'}
+					,{key :'EVENT', label:'Event'}
+					,{key :'STATUS', label:'Status'}
+					,{key :'CREATED', label:'CREATED'}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			$('.function-list-item.active').removeClass('active');
+		    			sObj.addClass('active');
+		    			
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var gubun=$$gubun
+								,tmpName = sItem.name;
+							
+							var cacheData = _self._getMetaCache(gubun,tmpName);
+							
+							if(key =='copy'){
+								procedureObj.copyData();
+								return ; 
+							}
+							
+							if(key=='ddl_copy' || key=='ddl_paste'){
+								_self._createDDL({
+									gubunKey : key
+									,gubun : $$gubun
+									,objName :  tmpName 
+								});
+								return ;
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+							,{divider:true}
+							,{key : "create_ddl_top","name": "DDL 보기" 
+								,subMenu:[
+									{key : "ddl_copy","name": "복사하기"}
+									,{key : "ddl_paste","name": "edit 영역에보기"}
+								]
+							}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+	,_triggerMetadata : function (colData ,reqParam){
+		var _self = this;
+		
+		try{
+    		var gridObj = {
+    			data:colData.items
+    			,column : [
+					{ label: '파라미터명', key: 'name',width:80 },
+					{ label: '데이타타입', key: 'dataType' },
+					{ label: 'IN, OUT', key: 'columnType',width:45},
+					{ label: '설명', key: 'comment',width:45},
+				]
+    		};
+			
+    		_self.setMetadataGrid(gridObj, 'index');
  		}catch(e){
 			VARSQL.log.info(e);
 		}

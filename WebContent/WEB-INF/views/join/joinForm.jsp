@@ -41,7 +41,7 @@
 <div class="container">
     <h3 class="page-header"><spring:message code="join.form.title"/></h3>
     <!-- form start -->
-    <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form">
+    <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form" onsubmit="return false;">
 
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="join.form.uid"/></label>
@@ -88,14 +88,14 @@
 
         <div class="form-group">
             <div class="col-sm-12 text-center">
-                <button type="submit" class="btn btn-info"><spring:message code="btn.join"/></button>
+                <button type="button" class="btn btn-info btn-join"><spring:message code="btn.join"/></button>
                 <button type="button" class="btn btn-default btnMain"><spring:message code="btn.main"/></button>
             </div>
         </div>
     </form>
     
     <div style="display:none;">
-		<form name="f" action="${varsqlLoginUrl}" method="post">
+		<form name="f" action="${varsqlLoginUrl}" method="post" onsubmit="return false;">
 				<input type="text" id="id" name="id" value=""> 
 				<input type="password" id="password" name="password" value="">
 		</form>
@@ -118,6 +118,10 @@ var joinForm = {
 	
 		$('.btnMain').click(function (){
 			location.href ='<c:url value="/" />';
+		});
+		
+		$('.btn-join').on('click',function (){
+			$('#joinForm').submit();
 		});
 		
 		var idChecVal = -1; 

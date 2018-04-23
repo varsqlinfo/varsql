@@ -87,7 +87,7 @@
 			<div class="panel-heading"><spring:message code="detail.view" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<form id="addForm" name="addForm" class="form-horizontal">
+				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="form-group">
 						<div class="col-sm-12">
 							<div class="form-control text required">{{detailItem.WORD}}</div>

@@ -131,7 +131,7 @@
 			<div class="panel-heading"><spring:message code="detail.view" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<form id="addForm" name="addForm" class="form-horizontal">
+				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="form-group">
 						<div class="col-sm-12">
 							<div class="form-control text required">{{detailItem.MEMO_TITLE}}</div>
@@ -139,10 +139,10 @@
 					</div>
 					<div class="form-group">
 						<div class="col-sm-12">
-							<textarea class="form-control text required" rows="10" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
+							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
 						</div>
 					</div>
-					
+					<div>받는사람</div>
 					<div class="form-group" :class="(message_type=='send'?'view':'hidden')">
 						<div class="col-sm-12">
 							<div style="height:100px;overflow:auto;border:1px solid #ddd;">
@@ -212,7 +212,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this; 
 			
 			var param = {
-				page:no?no:1
+				pageNo : (no?no:1)
 				,message_type : _self.message_type
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal

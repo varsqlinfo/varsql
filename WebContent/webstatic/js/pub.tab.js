@@ -8,19 +8,21 @@
  * demo : http://pub.moaview.com/
 */
 
-;(function ($, window, document, undefined) {
-"use strict";
+;(function ($, window, document) {
+	"use strict";
     var pluginName = "pubTab"
 		,_datastore = {}
 		,defaults = {
 			speed : 150
 			,width:300
+			,overItemViewMode : 'drop'
+			,moveZIndex : 100				// move 영역 z- index
 			,filter: function ($obj) {
 				// Modify $obj, Do not return
 			}
 			,icon :{
-				prev :'pub-tab-left-arrow'
-				,next : 'pub-tab-right-arrow'
+				prev :'pubTab-left-arrow'
+				,next : 'pubTab-right-arrow'
 			}
 			,addClass : 'service_menu_tab'	// tab li 추가 클래스
 			,items:[]							// tab item
@@ -37,7 +39,7 @@
 		this.contextId = 'pubTab-'+new Date().getTime();
 		this.element = $(element);
 
-        options.width= isNaN(options.width) ?  this.element.width() : options.width
+        options.width= isNaN(options.width) ?  this.element.width() : options.width;
         this.options = $.extend({}, defaults, options);
 		
 		this.init();
@@ -49,7 +51,7 @@
 		init :function(){
 			var _this =this; 
 
-			_this.config = {};
+			_this.config = {tabWidth :[]};
 			_this.draw();
 
 			_this.initEvt();
@@ -58,10 +60,10 @@
 		,initEvt : function (){
 			var _this = this; 
 
-			_this.element.find('.pub-tab-item-cont').on('click', function (e){
+			_this.element.on('click', '.pubTab-item-cont',function (e){
 				var sEle = $(this); 
 
-				_this.element.find('.pub-tab-item-cont.active').removeClass('active');
+				_this.element.find('.pubTab-item-cont.active').removeClass('active');
 				sEle.addClass('active')
 
 				if($.isFunction(_this.options.click)){
@@ -72,8 +74,8 @@
 				}
 			})
 			
-			var prevElement = _this.element.find('.pub-tab-prev')
-				, nextElement = this.element.find('.pub-tab-next');
+			var prevElement = _this.element.find('.pubTab-prev')
+				, nextElement = this.element.find('.pubTab-next');
 			
 			var prevTimerObj = null;
 			prevElement.on( "mouseenter", function (e){
@@ -109,6 +111,49 @@
 				clearTimeout(nextTimerObj);
 			});
 
+
+			if(_this.options.overItemViewMode =='drop'){
+
+				_this.element.find('.pubTab-drop-open-btn').on('click', function (e){
+					var sEle = $(this)
+						,tabArea=sEle.closest('.pubTab-move-area')
+					
+					if(tabArea.hasClass('pubTab-open')){
+						tabArea.removeClass('pubTab-open');
+					}else{
+						tabArea.addClass('pubTab-open');
+					}
+				});
+
+				_this.element.on('click', '.pubTab-drop-item',function (e){
+					var sEle = $(this)
+						,dataIdx = sEle.data('tab-idx')
+						,selItem =_this.config.tabWidth[dataIdx]; 
+
+					_this.element.find('.pubTab-item-cont.active').removeClass('active');
+					_this.element.find('.pubTab-item-cont[data-tab-idx="'+dataIdx+'"]').addClass('active');
+					var itemEndPoint = selItem.leftLast+_this.config.moveAreaWidth+2; 
+
+					var leftVal =0; 
+					if(itemEndPoint > _this.config.width){
+						leftVal = itemEndPoint - _this.config.width; 
+					}else{
+
+						var schLeft = _this.config.tabScrollElement.scrollLeft();
+						if(schLeft > schLeft.leftFront){
+							leftVal = schLeft.leftFront;
+						}
+					}
+					_this.config.tabScrollElement.scrollLeft(leftVal);
+
+					if($.isFunction(_this.options.click)){
+						_this.options.click.call(this,_this.options.items[dataIdx])
+					}
+
+					_this.element.find('.pubTab-move-area').removeClass('pubTab-open');
+				})
+			}
+
 			/*
 			prevElement.on('click', function (e){
 				var scrollLeft = _this.config.tabScrollElement.scrollLeft();
@@ -132,21 +177,33 @@
 			*/
 		}
 		,setWidth : function (val){
+			var _this = this; 
+			val = isNaN(val) ? _this.config.width :val;
+
+			$('#'+_this.contextId+'pubTab').css('width',val);
+			_this.config.tabScrollElement.css('width',val);
 			
-			val = val || this.options.width;
+			_this.config.width = val; 
 
-			val = val =='auto' ? this.element.width():val;
-
-			this.options.width = val; 
-			$('#'+this.contextId+'pub-tab').css('width',val);
-			this.config.tabScrollElement.css('width',val);
-
-			if(this.config.tabContainerElement.width() >= this.options.width){
-				$('#'+this.contextId+'pub-tab-move-space').show();
-				this.element.find('.pub-tab-move-area').show();
+			if(_this.config.totalWidth > val){
+				$('#'+_this.contextId+'pubTab-move-space').show();
+				_this.element.find('.pubTab-move-area').show();
+				/*
+				var tabWidthArr = _this.config.tabWidth;
+				var tmpIdx =tabWidthArr.length - 1;
+				for(; tmpIdx > 0;tmpIdx--){
+					if(tabWidthArr[tmpIdx].leftFront +_this.config.moveAreaWidth > val){
+						_this.element.find('.pubTab-item-cont[data-tab-idx="'+tmpIdx+'"]').addClass('pubTab-hide')
+					}else{
+						_this.element.find('.pubTab-item-cont[data-tab-idx="'+tmpIdx+'"]').removeClass('pubTab-hide');
+					}
+				}
+				*/
 			}else{
-				$('#'+this.contextId+'pub-tab-move-space').hide();
-				this.element.find('.pub-tab-move-area').hide();
+				_this.element.find('.pubTab-item-cont').removeClass('pubTab-hide');
+				$('#'+_this.contextId+'pubTab-move-space').hide();
+				_this.element.find('.pubTab-move-area').hide();
+				_this.config.tabContainerElement.css('left', '0px');
 			}
 		}
 		,destory:function (){
@@ -154,44 +211,83 @@
 		}
 		,draw : function (){
 			var _this = this
-				,items = _this.options.items
+				,_opts = _this.options
+				,items = _opts.items
 				,itemLen = items.length; 
 			
 			function tabItemHtml (){
 				var tabHtm = [];
-				var titleKey = _this.options.itemKey.title;
+				var titleKey = _opts.itemKey.title;
 				for(var i = 0 ;i < itemLen ;i++){
 					var item = items[i];
-					tabHtm.push('<li class="pub-tab-item '+(i+1==itemLen ? 'last':'')+'"><span class="pub-tab-item-cont '+_this.options.addClass+'" data-tab-idx="'+i+'">'+item[titleKey]+'</span></li>');
+					tabHtm.push('<li class="pubTab-item '+(i+1==itemLen ? 'last':'')+'"><span class="pubTab-item-cont '+_opts.addClass+'" data-tab-idx="'+i+'">'+item[titleKey]+'</span></li>');
+				}
+				return tabHtm.join('');
+			}
+
+			function dropItemHtml (){
+				var tabHtm = [];
+				var titleKey = _opts.itemKey.title;
+				for(var i = itemLen-1 ;i >= 0  ;i--){
+					var item = items[i];
+					tabHtm.push('<li class="pubTab-drop-item" data-tab-idx="'+i+'">'+item[titleKey]+'</li>');
 				}
 				return tabHtm.join('');
 			}
 
 			var strHtm = [];
-			strHtm.push('<div class="pub-tab-wrapper">');
-			strHtm.push('	<div id="'+_this.contextId+'pub-tab" class="pub-tab">');
-			strHtm.push('		<div id="'+_this.contextId+'pub-tab-scroll" class="pub-tab-scroll">');
-			strHtm.push('			<ul id="'+_this.contextId+'pub-tab-container" class="pub-tab-container">');
+			strHtm.push('<div class="pubTab-wrapper">');
+			strHtm.push('	<div id="'+_this.contextId+'pubTab" class="pubTab">');
+			strHtm.push('		<div id="'+_this.contextId+'pubTab-scroll" class="pubTab-scroll">');
+			strHtm.push('			<ul id="'+_this.contextId+'pubTab-container" class="pubTab-container">');
 			strHtm.push(tabItemHtml());
-			strHtm.push('			<li><div id="'+_this.contextId+'pub-tab-move-space"  style="display:none;">&nbsp;</div></li>');
+			strHtm.push('			<li><div id="'+_this.contextId+'pubTab-move-space"  style="display:none;">&nbsp;</div></li>');
 			strHtm.push('			</ul>');
 			strHtm.push('		</div> ');
-			strHtm.push('		<div class="pub-tab-move-area">');
-			strHtm.push('			<div class="pub-tab-move-dim"></div>');
-			strHtm.push('			<i class="pub-tab-prev '+_this.options.icon.prev+'"></i>');
-			strHtm.push('			<i class="pub-tab-next '+_this.options.icon.next+'"></i>');
+			strHtm.push('		<div class="pubTab-move-area" style="z-index:'+_opts.moveZIndex+';">');
+
+			
+			strHtm.push('		<span class="pubTab-drop-open-btn">');
+			strHtm.push('			<div class="pubTab-move-dim"></div>');
+			strHtm.push('			<i class="pubTab-prev '+_opts.icon.prev+'"></i>');
+			strHtm.push('			<i class="pubTab-next '+_opts.icon.next+'"></i>');
+			if(_opts.overItemViewMode =='drop'){
+				strHtm.push('		<ul id="'+_this.contextId+'DropItem" class="pubTab-drop-item-area">'+dropItemHtml()+'</ul>');
+			}
+
+			strHtm.push('</span>');
+				
+			
+			
 			strHtm.push('		</div>');
 			strHtm.push('	</div>');
 			strHtm.push('</div>');
 
 			_this.element.empty().html(strHtm.join(''));
 					
-			_this.config.tabContainerElement =  $('#'+_this.contextId+'pub-tab-container');
-			_this.config.tabScrollElement = $('#'+_this.contextId+'pub-tab-scroll');
+			_this.config.tabContainerElement =  $('#'+_this.contextId+'pubTab-container');
+			_this.config.tabScrollElement = $('#'+_this.contextId+'pubTab-scroll');
 
+			_this.config.moveAreaWidth  = this.element.find('.pubTab-move-area').width();
+			$('#'+_this.contextId+'pubTab-move-space').css('width',_this.config.moveAreaWidth);
 
-			$('#'+_this.contextId+'pub-tab-move-space').css('width',this.element.find('.pub-tab-move-area').width());
-			_this.setWidth();
+			_this.calcItemWidth();
+			_this.setWidth(_opts.width);
+		}
+		,calcItemWidth :function (){
+			var _this =this;
+			var containerW = 0; 
+			_this.config.tabContainerElement.find('.pubTab-item').each(function(i , item){
+				var itemW =$(item).outerWidth();
+				containerW +=itemW;
+				_this.config.tabWidth[i] = {
+					itemW : itemW
+					,leftFront : (containerW-itemW)
+					,leftLast : containerW
+				}
+			});
+
+			_this.config.totalWidth = containerW;
 		}
 		,setScrollInfo : function (){
 			this.config.scroll = {

@@ -39,7 +39,7 @@
 <div class="ui-layout-left-middle-area">
 	<div style="height:100%;width:100%;display:table;">
 		<div class="ui-tabs ui-widget" style="width:100%;display:table-row;">
-			<div id="leftServiceMenu" style="margin-right: 2px;"></div>
+			<div id="leftServiceMenu"></div>
 		</div>
 		<div id="left_service_menu_content" style="width:100%;height:100%;display:table-row;"></div>
 	</div>

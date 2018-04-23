@@ -2416,7 +2416,7 @@ Plugin.prototype ={
 
 		if(isFunction(_this.options.bodyOptions.cellDblClick)){
 			
-			_this.element.body.find('.pubGrid-body').on('dblclick.pubgridtd','.pubGrid-body>.pub-body-td',function (e){
+			_this.element.body.find('.pubGrid-body').on('dblclick.pubgridtd','.pub-body-td',function (e){
 				var selRow = $(this)
 					,tdInfo=selRow.data('grid-position')
 					,rowColArr  = tdInfo.split(',');

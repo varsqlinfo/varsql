@@ -318,7 +318,7 @@ function fnConnectionCheck(){
 			<div class="panel-heading"><spring:message code="admin.form.header" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<form id="addForm" name="addForm" class="form-horizontal">
+				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<input type="hidden" id="vconnid" name="vconnid">
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">

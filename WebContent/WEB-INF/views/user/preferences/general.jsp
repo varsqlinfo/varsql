@@ -44,7 +44,7 @@
 							<label class="col-sm-2 control-label"><spring:message code="join.form.dept"/></label>
 
 				            <div class="col-sm-10">
-				                <input type="text" class="form-control" id="udept" name="udept" value="${detailInfo.DEPT_NM}" placeholder="<spring:message code="join.form.dept"/>"/>
+				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.DEPT_NM}" placeholder="<spring:message code="join.form.dept"/>"/>
 				            </div>
 						</div>
 					</form>

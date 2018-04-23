@@ -143,6 +143,21 @@ _$base.confirm =function (opt){
 	return confirm(opt);
 };
 
+
+/**
+ * function check
+ */
+_$base.isFunction = function(obj){
+	return typeof obj==='function';
+};
+
+/**
+ * undefined check
+ */
+_$base.isUndefined = function(obj){
+	return typeof obj==='undefined';
+};
+
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){

@@ -26,7 +26,7 @@ response.setDateHeader ("Expires", -1);
 				</div>
 				
 				<div>
-					<form id="passwordResetForm" class="form-horizontal required-validate" method="post">
+					<form id="passwordResetForm" class="form-horizontal required-validate" method="post" onsubmit="return false;">
 						<div class="form-group">
 							<label class="col-lg-2 control-label"><spring:message code="user.form.password.current"/></label>
 							<div class="col-lg-10">

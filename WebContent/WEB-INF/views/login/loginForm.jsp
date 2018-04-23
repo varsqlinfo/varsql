@@ -109,7 +109,7 @@ $(document).ready(function (){
 <body>
 	<div class="container">
 		<form name="f" action="${varsqlLoginUrl}" method="post"
-			class="form-signin" role="form">
+			class="form-signin" role="form" onsubmit="return false;">
 			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
 			
 			<input class="form-control" id="id" name="id" type="text" placeholder="<spring:message code="login.form.id"/>"	autofocus autocomplete="off"> 

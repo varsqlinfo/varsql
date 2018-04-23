@@ -103,7 +103,7 @@
 						</div>
 					</div>
 					<div class="col-xs-5">
-						<form id="mappingForm" name="mappingForm" class="form-horizontal bv-form eportalForm">
+						<form id="mappingForm" name="mappingForm" class="form-horizontal bv-form eportalForm" onsubmit="return false;">
 							<div class="col-xs-12" style="padding:0px 0px 5px 0px;">
 								컬럼 상세정보
 							</div>

@@ -1,5 +1,6 @@
 package com.varsql.app.database.service;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -104,9 +105,16 @@ public class DatabaseServiceImpl{
 				result.setItemList(dbMetaEnum.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
 			}else if("function".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
+			}else if("index".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getIndex(databaseParamInfo));
+			}else if("trigger".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getTrigger(databaseParamInfo));
+			}else{
+				result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
 			}
 		}catch(Exception e){
-			logger.error("dbObjectList : ", e);
+			logger.error("dbObjectList serverName : [{}]",gubun);
+			logger.error("dbObjectList ", e);
 			try{
 				if("table".equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
@@ -116,9 +124,16 @@ public class DatabaseServiceImpl{
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
 				}else if("function".equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
+				}else if("index".equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getIndex(databaseParamInfo));
+				}else if("trigger".equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTrigger(databaseParamInfo));
+				}else{
+					result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
 				}
 			}catch(Exception subE){
-				logger.error("dbObjectList : ", subE);
+				logger.error("dbObjectList serverName : [{}]",gubun);
+				logger.error("dbObjectList ", subE);
 				throw subE; 
 			}
 		}
