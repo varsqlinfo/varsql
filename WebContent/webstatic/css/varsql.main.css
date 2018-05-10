@@ -1,7 +1,19 @@
+@charset "UTF-8";
+
 body {
-    font-size: 12px;
-    background-color: #dfdfdf;
+	font-size: 12px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transition: all 0.5s ease;
+	overflow:hidden; 
+	min-width:1024px;
+	margin:0px;
+	padding:0px;
+	background-color: #dfdfdf;
 }
+
+
 .database-main{
 	min-width: 900px;
 }
@@ -788,3 +800,130 @@ hr.dotline {
    padding:0px;
    border-right: 1px solid #8c7e7e;
 }
+
+/*  sql parameter area start */
+.sql-parameter-area{
+	display:none;
+	width:250px;
+	padding: 5px;
+	z-index:10;
+	height:100%;
+	position:absolute;
+	right:0px;
+	background:#e8f7e8;
+	overflow:auto;
+	top: 0px;
+	border: 1px solid #ddd;
+}
+
+.sql-parameter-area table th{
+	text-align:center;
+}
+.on.sql-parameter-area{
+	display:block;
+}
+
+.sql-parameter-area td{
+	padding-top:5px;
+}
+.sql-parameter-area td >div{
+	margin-right:5px;
+}
+
+.sql-parameter-area input{
+	width:100%;
+}	
+/*  sql parameter area end */
+
+/* varsql main layout start */
+.main-top-menu-wrapper{
+	z-index:10;
+	width:100%;
+	height:20px;
+	position:absolute;
+	height: 20px;
+	background: #dfdfdf;
+	margin-bottom: 1px;
+	border-bottom: 1px solid #BBB;
+}
+
+.main-body-wrapper{
+	height: calc(100% - 20px);
+	width:100%;
+	margin-top:20px;
+	z-index:9;
+}
+
+.varsql-dbodbject-schema-area{
+	position:relative;
+	height:40px;
+	width:100%;
+}
+
+.varsql-dbodbject-tab-area{
+	position:relative;
+	height:20px;
+	width:100%;
+}
+
+.varsql-dbodbject-cont-area{
+	width:100%;
+	height: calc(100% - 60px);
+	position:relative;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 20px);
+	position:relative;
+}
+
+.varsql-tab-area{
+	position:relative;
+	height:26px;
+	width:100%;
+	padding: 3px 0px 0px 3px;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 26px);
+	position:relative;
+}
+
+.varsql-toolbar-area{
+	position:relative;
+	width:100%;
+	height:62px;
+}
+
+.varsql-sqleditor-area{
+	position:relative;
+	width:100%;
+	height: calc(100% - 62px);
+}
+
+.lm_content{
+	background: #f0f4f0;
+}
+
+.lm_tab:hover, .lm_tab.lm_active {
+    background: #edf7f7;
+    color: #777777;
+}
+
+.pos-relative-w-h100{
+	width:100%;
+	height:100%;
+	position:relative;
+	-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+.CodeMirror {font-size:13px; width:100%; height:100%;
+-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+} 
+.CodeMirror-scroll {height: 100%;}
+/* varsql main layout end */

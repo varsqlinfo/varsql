@@ -2211,7 +2211,7 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({      
-		    loadSelector : '#editorAreaTable'
+		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,data:params 
 		    ,success:function (res){
@@ -2219,7 +2219,6 @@ _ui.SQL = {
 		    	_self.sqlSaveList();
 		    	_self.currentSqlData = params.sql;
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
-		    	
 			}
 		});  
 	}
@@ -2261,7 +2260,7 @@ _ui.SQL = {
 						};
 						
 						VARSQL.req.ajax({      
-						    loadSelector : '#editorAreaTable'
+						    loadSelector : '#sql_editor_wrapper'
 						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.varsql'}
 						    ,data:params 
 						    ,success:function (resData){
@@ -2322,7 +2321,7 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({
-		    loadSelector : '#editorAreaTable'
+		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
 		    ,data:params 
 		    ,success:function (res){
@@ -2370,7 +2369,7 @@ _ui.SQL = {
 		    			params['sqlId'] = sItem.SQL_ID;
 		    			VARSQL.req.ajax({
 		    			    type:"POST"
-		    			    ,loadSelector : '#editorAreaTable'
+		    			    ,loadSelector : '#sql_editor_wrapper'
 		    			    ,url:{gubun:VARSQL.uri.sql, url:'/base/delSqlSaveInfo.varsql'}
 		    			    ,dataType:'json'
 		    			    ,data:params 
@@ -2515,7 +2514,7 @@ _ui.SQL = {
 		});
 		
 		VARSQL.req.ajax({      
-		    loadSelector : '#editorAreaTable'
+		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
 		    ,data:params 
 		    ,success:function (responseData){
@@ -2614,7 +2613,7 @@ _ui.SQL = {
 		params.formatType =formatType; 
 		
 		VARSQL.req.ajax({      
-		    loadSelector : '#editorAreaTable'
+		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
 		    ,dataType:'text'
 		    ,data:params 

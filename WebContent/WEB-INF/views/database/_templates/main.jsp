@@ -7,110 +7,6 @@
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 
-<style>
-body {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    transition: all 0.5s ease;
-	overflow:hidden; 
-	min-width:1024px;
-	margin:0px;
-	padding:0px;
-	background: #fff;
-}
-
-.main-top-menu-wrapper{
-	z-index:10;
-	width:100%;
-	height:20px;
-	position:absolute;
-	height: 20px;
-	background: #dfdfdf;
-	margin-bottom: 1px;
-	border-bottom: 1px solid #BBB;
-}
-
-.main-body-wrapper{
-	height: calc(100% - 20px);
-	width:100%;
-	margin-top:20px;
-	z-index:9;
-}
-
-.varsql-dbodbject-schema-area{
-	position:relative;
-	height:40px;
-	width:100%;
-}
-
-.varsql-dbodbject-tab-area{
-	position:relative;
-	height:20px;
-	width:100%;
-}
-
-.varsql-dbodbject-cont-area{
-	width:100%;
-	height: calc(100% - 60px);
-	position:relative;
-}
-
-.varsql-tab-cont-area{
-	width:100%;
-	height: calc(100% - 20px);
-	position:relative;
-}
-
-.varsql-tab-area{
-	position:relative;
-	height:26px;
-	width:100%;
-	padding: 3px 0px 0px 3px;
-}
-
-.varsql-tab-cont-area{
-	width:100%;
-	height: calc(100% - 26px);
-	position:relative;
-}
-
-.varsql-toolbar-area{
-	position:relative;
-	width:100%;
-	height:62px;
-}
-
-.varsql-sqleditor-area{
-	position:relative;
-	width:100%;
-	height: calc(100% - 62px);
-}
-
-.lm_content{
-	background: #f0f4f0;
-}
-
-.lm_tab:hover, .lm_tab.lm_active {
-    background: #edf7f7;
-    color: #777777;
-}
-
-.pos-relative-w-h100{
-	width:100%;
-	height:100%;
-	position:relative;
-	-webkit-box-sizing: border-box !important;
-    -moz-box-sizing: border-box !important;
-    box-sizing: border-box !important;
-}
-.CodeMirror {font-size:13px; width:100%; height:100%;
--webkit-box-sizing: border-box !important;
-    -moz-box-sizing: border-box !important;
-    box-sizing: border-box !important;
-} 
-.CodeMirror-scroll {height: 100%;}
-</style>
 </head>
 <body class="database-main">
 <c:set var="pageType" value="custom9"></c:set>
@@ -329,8 +225,9 @@ $(document).ready(function(){
 						<option value="1000">1000</option>
 					</select>
 				</span>
+				<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
 			</div>
-		 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
+		 	
 		 	<div class="pull-right">
 			 	<div style="width:220px;display:inline-block;">
 					<div class="input-group input-group-sm">
@@ -353,6 +250,33 @@ $(document).ready(function(){
 	<div id="sql_editor_wrapper" class="varsql-sqleditor-area">
 		<div id="sql_editor_area" style="position:relative;height:100%;">
 			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+		</div>
+		<div id="sql_parameter_area" class="sql-parameter-area">
+			<table style="width:100%;">
+				<colgroup>
+					<col width="90px">
+					<col width="130px">
+					<col width="30px">
+			    </colgroup>
+				<thead>
+					<tr>
+						<th>Key</th>
+						<th>Value</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="sql_parameter_row_area">
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3" class="text-center">
+							<div class="margin-top5">
+								<button type="button" class="sql-param-add-btn btn btn-sm btn-default fa fa-plus"></button>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
 		</div>
 	</div>
 </div>
