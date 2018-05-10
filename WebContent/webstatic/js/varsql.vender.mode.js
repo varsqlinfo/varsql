@@ -16,7 +16,7 @@ var $oracle = {
 		try{
 			var itemArr = resData.items;
 			
-			var gaidbj = $.pubGrid(_self.options.left_service_menu_contentId+'>#package',{
+			var gaidbj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#package',{
 				height:'auto'
 				,autoResize :false
 				,headerOptions:{}

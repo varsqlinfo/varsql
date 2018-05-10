@@ -2074,7 +2074,7 @@ Plugin.prototype ={
 		});
 		
 		if(headerOpt.contextMenu !== false){
-			$.pubContextMenu(_this.element.header.find('.pubGrid-header-th'),headerOpt.contextMenu);			
+			$.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th',headerOpt.contextMenu);			
 		}
 		if(_this.options.setting.enable ===true){
 			_this.setGridSettingInfo();
@@ -3010,7 +3010,7 @@ Plugin.prototype ={
      */
 	,_setBodyEvent : function (){
 		if(this.options.rowOptions.contextMenu !== false){
-			$.pubContextMenu($('#'+this.prefix+'_bodyContainer .pub-body-tr'),this.options.rowOptions.contextMenu);			
+			$.pubContextMenu('#'+this.prefix+'_bodyContainer .pub-body-tr',this.options.rowOptions.contextMenu);			
 		}
 	}
 	/**
@@ -3450,10 +3450,10 @@ Plugin.prototype ={
 	,destory:function (){
 		try{
 			if($.isPlainObject (this.options.headerOptions.contextMenu)){
-				$.pubContextMenu(this.element.header.find('.pubGrid-header-th')).destory();		
+				$.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th').destory();		
 			}
 			if($.isPlainObject (this.options.rowOptions.contextMenu)){
-				$.pubContextMenu($('#'+this.prefix+'_bodyContainer .pub-body-tr')).destory();
+				$.pubContextMenu('#'+this.prefix+'_bodyContainer .pub-body-tr').destory();
 			}
 		}catch(e){};
 
@@ -3473,11 +3473,6 @@ Plugin.prototype ={
 };
 
 $.pubGrid = function (selector,options, args) {
-	
-	if(!selector || $(selector).length < 1){
-		return '['+selector + '] selector  not found '; 
-	}
-	
 	var _cacheObject = _datastore[selector]; 
 
 	if(isUndefined(options)){
@@ -3485,9 +3480,14 @@ $.pubGrid = function (selector,options, args) {
 	}
 	
 	if(isUndefined(_cacheObject)){
+		if(!selector || $(selector).length < 1){
+			return '['+selector + '] selector  not found '; 
+		}
+
 		_cacheObject = new Plugin(selector, options);
 		_datastore[selector] = _cacheObject;
-		return _cacheObject; 
+		
+		return _cacheObject;
 	}else if(typeof options==='object'){
 		var headerOpt = options.headerOptions ?options.headerOptions :{}
 			,reDrawFlag = typeof headerOpt.redraw==='boolean' ? headerOpt.redraw : _cacheObject.options.headerOptions.redraw; 
@@ -3500,7 +3500,7 @@ $.pubGrid = function (selector,options, args) {
 			_cacheObject.setOptions(options);
 			_cacheObject.setData(options.tbodyItem , 'reDraw');
 		}
-		return _cacheObject; 
+		return _cacheObject;
 	}
 
 	if(typeof options === 'string'){

@@ -118,12 +118,6 @@
 	box-shadow: none;
 }
 
-.pubTab-drop-area{
-	position: relative;
-	width:100%;
-	background:#fff;
-}
-
 .pubTab-drop-open-btn:hover{
 	background:#ddd;
 }

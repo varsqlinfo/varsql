@@ -23,13 +23,13 @@
            <button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
                <i class="fa fa-chevron-down"></i>
            </button>
-           <ul id="leftDBList" class="dropdown-menu slidedown">
+           <ul id="dbSchemaList" class="dropdown-menu slidedown">
            </ul>
        </div>
    </div>
 <!-- 	<div class="panel panel-default left-panel"> -->
 <!-- 		<div class="panel-default left-panel padding2"> -->
-<!-- 			<div id="leftDBList"> -->
+<!-- 			<div id="dbSchemaList"> -->
 <!-- 			</div> -->
 <!-- 		</div> -->
 <!-- 	</div> -->
@@ -39,9 +39,9 @@
 <div class="ui-layout-left-middle-area">
 	<div style="height:100%;width:100%;display:table;">
 		<div class="ui-tabs ui-widget" style="width:100%;display:table-row;">
-			<div id="leftServiceMenu"></div>
+			<div id="varsqlDbServiceMenu"></div>
 		</div>
-		<div id="left_service_menu_content" style="width:100%;height:100%;display:table-row;"></div>
+		<div id="dbServiceMenuContent" style="width:100%;height:100%;display:table-row;"></div>
 	</div>
 </div>
 <div class="ui-layout-left-bottom-area">

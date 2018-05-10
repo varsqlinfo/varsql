@@ -13,6 +13,9 @@
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+<link href="${pageContextPath}/webstatic/css/plugins/layout/goldenlayout-base.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/plugins/layout/goldenlayout-light-theme.css" rel="stylesheet" type="text/css">
+
 <link href="${pageContextPath}/webstatic/css/editor/codemirror.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/editor/show-hint.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.ep.css?version=${css_ver}" rel="stylesheet" type="text/css">
@@ -22,17 +25,9 @@
 <link href="${pageContextPath}/webstatic/css/varsql.main.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.main.layout.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
-
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/layout/jquery.layout.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=${pubjs_ver}"></script>
@@ -52,11 +47,10 @@
 
 <script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=${pubjs_ver}"></script>
 
 <script>
-VARSQL.loadResource([VARSQL.staticResource.get('contextMenu') ]);
-//VARSQL.loadResource([VARSQL.staticResource.get('pubgrid') ]);\
 VARSQL.unload();
 </script>
 

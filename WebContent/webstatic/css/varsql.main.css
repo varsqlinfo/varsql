@@ -121,14 +121,12 @@ body {
   border: 1px solid transparent;
 }
 
-#db-header {
+.db-header-menu-area {
   z-index :10px;
   height: 20px;
   width: 100%;
   background: #dfdfdf;
-  border-bottom: 0px solid #fff;
   margin-bottom:1px;
-  border-top: 0px solid #BBB;
   border-bottom: 1px solid #BBB;
 }
 
@@ -247,14 +245,10 @@ hr.dotline {
 }
 
 .replymargin30 {
-border-top: 1px solid #DDD;
-margin-top: 5px;
-padding-left: 50px;
-padding-top: 5px;
-}
-
-#dataGridAreaWrap {
-  background: #fff;
+	border-top: 1px solid #DDD;
+	margin-top: 5px;
+	padding-left: 50px;
+	padding-top: 5px;
 }
 
 .ui-connection-list{
@@ -267,8 +261,7 @@ padding-top: 5px;
 	height:20px;float:left;
 }
 #data_grid_result_tab_wrap{
-	height :25px;
-	 border-bottom: 1px solid #c7bdbd;
+	border-bottom: 1px solid #c7bdbd;
 }
 
 [data-init-msg="Y"] .var-load-frame{
@@ -290,8 +283,10 @@ padding-top: 5px;
 }
 
 .sql-result-tab{
-  list-style: none;
-  padding-left: 10px;
+	list-style: none;
+    padding: 0px;
+    margin: 0px;
+	padding-left: 10px;
 }
 
 .sql-result-tab> li{
@@ -302,9 +297,9 @@ padding-top: 5px;
 }
 
 .sql-result-tab>li.on{
-	 border-radius: 4px 4px 0 0;
-	 border: 1px solid #aaaaaa;
-	  border-bottom-width: 0;
+	border-radius: 4px 4px 0 0;
+	border: 1px solid #aaaaaa;
+	border-bottom-width: 0;
     background : #fff
 }
 
@@ -436,17 +431,17 @@ padding-top: 5px;
 	display:none;
 }
 
-#leftDBList{
+#dbSchemaList{
 	height:118px;
 	overflow-y:auto;
 	border: 1px solid #f1f1f1;
 	font-size :12px;
 }
-#leftDBList.dropdown-menu {
+#dbSchemaList.dropdown-menu {
 	padding:0px 0px;
 }
 
-#leftDBList>li>a {
+#dbSchemaList>li>a {
     padding: 3px 10px;
     clear: both;
     line-height: 1.42857143;
@@ -666,13 +661,6 @@ padding-top: 5px;
     line-height: 1.0;
     border-radius: 3px;
    margin-bottom: 2px;
-}
-
-#left_service_menu_content{
-	height:100%;
-}
-#metadata_content_area_wrap{
-	height:100%;
 }
 
 .margin-top5{

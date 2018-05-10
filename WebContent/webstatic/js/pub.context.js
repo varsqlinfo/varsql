@@ -10,6 +10,7 @@
 ;(function ($) {
 
 var pluginName = "pubContextMenu"
+	,_pubContextUid = 0
 	,initialized = false
 	,_datastore = {}
 	,pubContextElement= false
@@ -33,6 +34,14 @@ var pluginName = "pubContextMenu"
 		}
 	};
 
+function isUndefined(obj){
+	return typeof obj==='undefined';
+}
+
+function getUid(){
+	return pluginName +'_'+ (++_pubContextUid); 
+}
+
 function getHashCode (str){
     var hash = 0;
     if (str.length == 0) return hash;
@@ -44,13 +53,12 @@ function getHashCode (str){
     return (hash+'').replace(/-/gi,'1_');
 }
 	
-function Plugin(element, options) {
-	this.selector = (typeof element=='object') ? element.selector : element;
-
-	this.contextId = 'dropdown-'+getHashCode(this.selector);
+function Plugin(selector, options , uuid) {
+	this.selector = selector;
+	this.contextId = 'dropdown-pubcontext-'+getHashCode(selector);
 	this.options = $.extend({}, defaults, options);
 	this.contextData = {};
-	this.selectElement = $('');
+	this.selectElement;
 
 	if(pubContextElement ===false){
 		$('body').append('<div id="pub-context-area"></div>');
@@ -61,7 +69,7 @@ function Plugin(element, options) {
 		this.initEvt(); 
 		initialized = true; 
 	}
-		
+
 	this.addContext();
 	this.contextElement = $('#'+this.contextId);
 
@@ -264,6 +272,8 @@ Plugin.prototype ={
 		$(document).on('contextmenu.pubcontext'+this.contextId, _this.selector, function (e) {
 			e.preventDefault();
 			e.stopPropagation();
+
+			console.log('11111');
 			
 			if(disableFlag){
 				var disableItem = opt.disableItemKey.call(this , opt.items);
@@ -282,7 +292,9 @@ Plugin.prototype ={
 
 			isContextView = true;
 			//  이전 선택한 클래스 삭제 . 
-			_this.selectElement.removeClass(opt.selectCls);
+			if(_this.selectElement){
+				_this.selectElement.removeClass(opt.selectCls);
+			}
 
 			var clickObj = $(this); //$( e.target ).closest( e.data.selector );
 			clickObj.addClass(opt.selectCls);
@@ -337,33 +349,27 @@ Plugin.prototype ={
 	}
 };
 
+
 $[ pluginName ] = function (selector,options) {
+	var _cacheObject = _datastore[selector]; 
 
-	if(!selector){
-		return ; 
-	}
-	var jSelctor = (typeof selector=='object') ? selector.selector : selector;
-
-	var _cacheObject = _datastore[jSelctor];
-		
-	if(typeof options === 'undefined'){
-		return _cacheObject||{}; 
-	}
+	if(isUndefined(_cacheObject)){
 	
-	if(typeof _cacheObject === 'undefined'){
 		_cacheObject = new Plugin(selector, options);
-		_datastore[jSelctor] = _cacheObject;
+		_datastore[selector] = _cacheObject;
+		
 		return _cacheObject; 
 	}else if(typeof options==='object'){
+		
 		_cacheObject.destory();
 		_cacheObject = new Plugin(selector, options);
-		_datastore[jSelctor] = _cacheObject;
+		_datastore[selector] = _cacheObject;
 		return _cacheObject; 
 	}
 
 	if(typeof options === 'string'){
 		var callObj =_cacheObject[options]; 
-		if(typeof callObj ==='undefined'){
+		if(isUndefined(callObj)){
 			return options+' not found';
 		}else if(typeof callObj==='function'){
 			return _cacheObject[options].apply(_cacheObject,args);
@@ -372,7 +378,7 @@ $[ pluginName ] = function (selector,options) {
 		}
 	}
 
-	return _cacheObject;	
+	return _cacheObject;
 };
 
 })(jQuery);

@@ -331,7 +331,7 @@ _$base.req ={
 		formObj.prop('action',opts.url);
 		formObj.submit();
 		
-		$('body').centerLoading({contentClear:false});
+		//$('body').centerLoading({contentClear:false});
 		
 		
 	}

@@ -6,6 +6,111 @@
 <title>${left_db_object.connInfo.name}::<spring:message code="screen.user" /></title>
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
+
+<style>
+body {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transition: all 0.5s ease;
+	overflow:hidden; 
+	min-width:1024px;
+	margin:0px;
+	padding:0px;
+	background: #fff;
+}
+
+.main-top-menu-wrapper{
+	z-index:10;
+	width:100%;
+	height:20px;
+	position:absolute;
+	height: 20px;
+	background: #dfdfdf;
+	margin-bottom: 1px;
+	border-bottom: 1px solid #BBB;
+}
+
+.main-body-wrapper{
+	height: calc(100% - 20px);
+	width:100%;
+	margin-top:20px;
+	z-index:9;
+}
+
+.varsql-dbodbject-schema-area{
+	position:relative;
+	height:40px;
+	width:100%;
+}
+
+.varsql-dbodbject-tab-area{
+	position:relative;
+	height:20px;
+	width:100%;
+}
+
+.varsql-dbodbject-cont-area{
+	width:100%;
+	height: calc(100% - 60px);
+	position:relative;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 20px);
+	position:relative;
+}
+
+.varsql-tab-area{
+	position:relative;
+	height:26px;
+	width:100%;
+	padding: 3px 0px 0px 3px;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 26px);
+	position:relative;
+}
+
+.varsql-toolbar-area{
+	position:relative;
+	width:100%;
+	height:62px;
+}
+
+.varsql-sqleditor-area{
+	position:relative;
+	width:100%;
+	height: calc(100% - 62px);
+}
+
+.lm_content{
+	background: #f0f4f0;
+}
+
+.lm_tab:hover, .lm_tab.lm_active {
+    background: #edf7f7;
+    color: #777777;
+}
+
+.pos-relative-w-h100{
+	width:100%;
+	height:100%;
+	position:relative;
+	-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+.CodeMirror {font-size:13px; width:100%; height:100%;
+-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+} 
+.CodeMirror-scroll {height: 100%;}
+</style>
 </head>
 <body class="database-main">
 <c:set var="pageType" value="custom9"></c:set>
@@ -29,21 +134,12 @@
 		</div>
 	</c:when>
 	<c:otherwise>
-        <div class="ui-layout-header-area">
-			<div id="db-header" style="z-index:10;">
-				<div class="col-lg-12">
-					<tiles:insertAttribute name="header" />
-				</div>
+		<div class="main-top-menu-wrapper">
+			<div class="col-lg-12">
+				<tiles:insertAttribute name="header" />
 			</div>
 		</div>
-	
-		<div class="ui-layout-left-area">
-			<tiles:insertAttribute name="left" />
-		</div>
-	
-		<div class="ui-layout-center-area">
-			<tiles:insertAttribute name="rightContent" />
-		</div>
+		<div id="varsqlBodyWrapper" class="main-body-wrapper"></div>
       </c:otherwise>
 </c:choose>
 
@@ -88,12 +184,11 @@
 	</div>
 </body>
 
-
-
 <script>
+
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)};
-	var opts = $.extend({param:{conuid:viewConnInfo.conuid},selector:'#leftDBList',dbtype:viewConnInfo.type}, viewConnInfo);
+	var opts = $.extend({param:{conuid:viewConnInfo.conuid},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.screenSetting = ${database_screen_setting};
 	VARSQL.ui.create(opts);
 	
@@ -103,7 +198,176 @@ $(document).ready(function(){
 </script>
 
 </html>
+	
 
+<!-- component tempate -->
+<script id="dbObjectComponentTemplate" type="text/varsql-template">
+<div id="dbSchemaObjectArea" class="pos-relative-w-h100">
+	<div class="varsql-dbodbject-schema-area">
+		<div class="panel-heading">
+			<img src="/vsql/webstatic/imgs/Database.gif"/>
+			<span id="varsql_schema_name">schema명</span>
+			<div class="btn-group pull-right">
+				<button type="button" class="btn btn-default btn-xs refresh-schema-btn">
+					<i class="fa fa-refresh fa-fw"></i>
+				</button>
+		          
+				<button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
+					<i class="fa fa-chevron-down"></i>
+				</button>
+				<ul id="dbSchemaList" class="dropdown-menu slidedown">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- object tab area -->
+	<div id="varsqlDbServiceMenu" class="varsql-dbodbject-tab-area"></div>
+	<!-- object cont area -->
+	<div id="dbServiceMenuContent" class="varsql-dbodbject-cont-area"></div>			
+</div>
+</script>
+
+<!-- meta data 영역 -->
+<script id="dbMetadataComponentTemplate" type="text/varsql-template">
+<div class="pos-relative-w-h100">
+	<div id="varsqlDbServiceMenu" class="varsql-tab-area">asdfasdf</div>
+	
+	<div id="metadata_content_area_wrap" class="varsql-tab-cont-area"></div>			
+</div>
+</script>
+
+<script id="sqlEditorComponentTemplate" type="text/varsql-template">
+<div id="sqlEditorComponent" class="pos-relative-w-h100">
+	<div id="sqlEditorToolbar" class="varsql-toolbar-area">
+		<div class="sql-btn-area">
+			<ul>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql-btn-info  sql_execue_btn" title="실행  Ctrl+Enter">
+						<span class="fa fa-play"></span>
+					</a>
+				</li>
+				<li class="sql-btn-divider"></li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_new_file" title="새 파일  Ctrl+Alt+N">
+						<span class="fa fa-file-o"></span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_save_btn" title="저장  Ctrl+Shift+S">
+						<span class="fa fa-save"></span>
+					</a>
+				</li>
+				<li class="sql-btn-divider"></li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_undo_btn" title="실행취소  Ctrl+Z">
+						<span class="fa fa-undo" ></span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_redo_btn" title="다시실행  Ctrl+Y">
+						<span class="fa fa-repeat" ></span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql-btn-default sql_linewrapper_btn" title="자동 줄 바꿈 ">
+						<span class="fa fa-level-down" aria-hidden="true" ></span>
+					</a>
+				</li>
+				<li class="sql-btn-divider"></li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_format_btn" title="쿼리 정리 Ctrl+Shift+F">
+						<span class="fa fa-align-justify" aria-hidden="true" ></span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;" class="sql-edit-btn sql_send_btn" title="보내기">
+						<span class="fa fa-paper-plane-o"></span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div style="padding-bottom:3px;">
+			<div style="width:200px;float:left;">
+				<div class="input-group input-group-sm">
+					<input type="hidden" id="sql_id" name="sql_id" value="">
+			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
+			      	<div class="input-group-btn"> 
+			      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
+				      		List
+				      	</button>
+					    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">
+		                    <div class="panel-success">
+		                        <div class="panel-heading">
+		                            <input type="text" name="saveSqlSearch" id="saveSqlSearch"/>
+		                        </div>
+		                        <div class="save-sql-list-wrapper">
+		                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
+		                            </ul>
+		                        </div>
+		                        <div class="panel-footer">
+		                        	<div>
+			                            <input type="number" id="sql-save-list-no" name="sql-save-list-no" min="1" max="10000" size="2" value="1">/<span id="sql-save-list-pagecnt"></span>(<span id="sql-save-list-totalcnt"></span>)
+			                            <span style="padding-left:10px;">
+				                            <a href="javascript:;" class="sql-list-move-btn" _mode="p"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+				                            <a href="javascript:;" class="sql-list-move-btn" _mode="n"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			                            </span>
+		                            </div>
+		                        </div>
+		                    </div>
+					    </div> 
+					</div>
+			    </div>		
+			</div>
+			<div style="float:left;">
+				<span style="padding:10px 0px 0px 5px;display:inline-block; vertical-align:bottom;">
+					<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
+					LIMIT 
+		 
+					<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">
+						<option value="100" selected>100</option>
+						<option value="500">500</option>
+						<option value="1000">1000</option>
+					</select>
+				</span>
+			</div>
+		 	<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
+		 	<div class="pull-right">
+			 	<div style="width:220px;display:inline-block;">
+					<div class="input-group input-group-sm">
+				      	<input type="text" id="sqlFindText" name="sqlFindText" value="" class="form-control" placeholder="검색어">
+				      	<div class="input-group-btn"> 
+				      		<button class="btn btn-default sql_find_btn">find</button>
+						</div>
+						
+						 <span class="input-group-addon" style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
+						 	<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
+						 		<span class="fa fa-plus-square-o"></span>변수
+						 	</span>
+						 </span>
+				    </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+
+	<div id="sql_editor_wrapper" class="varsql-sqleditor-area">
+		<div id="sql_editor_area" style="position:relative;height:100%;">
+			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+		</div>
+	</div>
+</div>
+</script>
+
+<script id="sqlDataComponentTemplate" type="text/varsql-template">
+<div id="sqlDataComponent" class="pos-relative-w-h100">
+	<div id="data_grid_result_tab_wrap" class="varsql-tab-area"></div>
+	<div id="dataGridAreaWrap" class="varsql-tab-cont-area">
+		<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>
+		<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>
+		<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;bottom:0px;left:0px;top:0px;right:0px;"></iframe>
+	</div>
+</div>
+</script>
 
 
 

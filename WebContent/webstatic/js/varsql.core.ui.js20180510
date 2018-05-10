@@ -47,10 +47,10 @@ VARSQL.ui.create = function (_opts){
 	VARSQLCont.init(_opts.dbtype , _ui.base);
 	
 	_g_options._opts =_opts;
-	_ui.layout.init(_opts);
 	_ui.initContextMenu();
 	_ui.headerMenu.init(_opts);
 	_ui.leftDbObject.create(_opts);
+	_ui.layout.init(_opts);
 	
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
 }
@@ -270,176 +270,103 @@ _ui.layout = {
 		
 	}
 	,setLayout: function (){
-
-		var config = {
-		  settings: {
-		    hasHeaders: true,
-		    constrainDragToContainer: true,
-		    reorderEnabled: true,
-		    selectionEnabled: false,
-		    popoutWholeStack: false,
-		    blockedPopoutsThrowError: true,
-		    closePopoutsOnUnload: true,
-		    showPopoutIcon: false,
-		    showMaximiseIcon: true,
-		    showCloseIcon: false
-		  },
-		  dimensions: {
-		    borderWidth: 5,
-		    minItemHeight: 10,
-		    minItemWidth: 10,
-		    headerHeight: 20,
-		    dragProxyWidth: 300,
-		    dragProxyHeight: 200
-		  },
-		  labels: {
-		    close: 'close',
-		    maximise: 'maximise',
-		    minimise: 'minimise',
-		  },
-
-		  content: [{
-			type:'column'
-			,content : [
-				{
-				type: 'row',
-
-				content: [
-				{
-				  type: 'column',
-				  width:30 , 
-					
-				  content: [{
-
-					type: 'component',
-					height :60,
-					componentName: 'dbObjectComponent',
-					title:'serviceObject'
-				  }, {
-					type: 'component',
-					height: 40, 
-					componentName: 'dbMetadataComponent',
-					title: 'Meta'
-				  }]
-				},
-				{
-				  type: 'column',
-				  content: [{
-					type: 'component',
-					componentName: 'sqlEditorComponent',
-					title: 'Editor'
-				  }, {
-					type: 'component',
-					componentName: 'sqlDataComponent',
-					title: 'sql result'
-				  }]
-				}]
-			  }]
-		  }]
-		};
+		var _self = this; 
+		_self.layoutObj.mainLayout = $('body').layout({
+			inset: {
+				top:	0
+			,	bottom:	0
+			,	left:	1
+			,	right:	1
+			}
+			,center__paneSelector:	".ui-layout-center-area"
+			, west__paneSelector:	".ui-layout-left-area"
+			, north__paneSelector: ".ui-layout-header-area"
+			, west__size:	300 
+			, spacing_open:			5 // ALL panes
+			, spacing_closed:   8 // ALL panes
+			, north__spacing_open: 0
+			, resizerDblClickToggle: false
+			, center__maskIframesOnResize: true	
+			, center__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				_self.layoutObj.rightLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
+			} 
+			, west__onresize: function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				_self.layoutObj.leftLayout.resizeAll(obj1, obj2 ,obj3 ,obj4 ,obj5);
+			}
+		});
 		
-		var myLayout = new GoldenLayout(config, $('#varsqlBodyWrapper'));
-
-		myLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
-		    container.getElement().html($('#dbObjectComponentTemplate').html());
-			
-			var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				
-				var containerW =container.width-2
-					,containerH = container.height-60; 
-				
-				$.pubTab(_ui.leftDbObjectServiceMenu.options.selector).setWidth(containerW);
-				
-				$.pubGrid(_ui.leftDbObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width : containerW,height : containerH});
-				
-			});
-		});
-
-		myLayout.registerComponent( 'dbMetadataComponent', function( container, componentState ){
-		    container.getElement().html($('#dbMetadataComponentTemplate').html());
-
-			var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				
-				var containerW =container.width-2
-				,containerH = container.height; 
-				
+		_self.layoutObj.leftLayout = $('div.ui-layout-left-area').layout({
+			north__paneSelector: ".ui-layout-left-top-area"
+			, center__paneSelector: ".ui-layout-left-middle-area"
+			, south__paneSelector: ".ui-layout-left-bottom-area"
+			, north__size:    38
+			, north__resizable: false
+			, north__spacing_open: 0
+			, south__size:    150
+			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+			, spacing_closed:   8  // ALL panes
+			, resizerDblClickToggle: false
+			, center__onresize_end:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				try{
-					$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width : containerW,height : containerH});
+					if($('.db-metadata-area.show-display').length > 0){
+						
+						// tab 리지이즈						
+						$.pubTab(_ui.leftDbObjectServiceMenu.options.selector).setWidth(obj3.layoutWidth);
+						
+						$.pubGrid(_ui.leftDbObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width:obj3.layoutWidth,height:obj3.layoutHeight-25});
+					}
 				}catch(e){
-					//console.log(arguments)
+					console.log(arguments)
 				}
-			})
-		});
-
-
-		myLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
-		    container.getElement().html($('#sqlEditorComponentTemplate').html());
-		});
-
-		myLayout.registerComponent( 'sqlDataComponent', function( container, componentState ){
-
-			container.getElement().html($('#sqlDataComponentTemplate').html());
-
-		    var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				var containerW =container.width-2
-					,containerH = container.height -25; 
-				
+			}
+			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
 				try{
+					if($('.varsql-meta-cont-ele.on').length > 0){
+						$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width:obj3.resizerLength,height:obj3.layoutHeight});
+					}
+				}catch(e){
+					console.log(arguments)
+				}
+			}
+		});
+
+		_self.layoutObj.rightLayout = $('div.ui-layout-center-area').layout({
+			north__paneSelector: ".inner-layout-toolbar-area"
+			, center__paneSelector: ".inner-layout-sql-editor-area"
+			, south__paneSelector: ".inner-layout-result-area"
+			, north__size:    65
+			, north__resizable: false
+			, south__size:    100 
+			, spacing_open:   5  // ALL panes  //0 일경우 버튼 사라짐.
+			, spacing_closed:   8  // ALL panes
+			, north__spacing_open: 0
+			, south__maskIframesOnResize: true	
+			, resizerDblClickToggle: false
+			, center__onresize:  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				setSqlEditorHeight (obj3.layoutHeight)
+			}
+			,south__onresize_end :  function (obj1, obj2 ,obj3 ,obj4 ,obj5){
+				try{
+					var containerH = obj3.css.height-25;  
+				
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
+						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
 						
 						if(typeof $.pubGrid(_ui.SQL.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw)){
-							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
+							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width:obj3.resizerLength,height:containerH});
 						}
 					}
 				}catch(e){
 					console.log(e)
 				}
-			})
+			}
 		});
-
-
-		myLayout.on( 'stateChanged', function(){
-		    var state = JSON.stringify( myLayout.toConfig() );
-			//console.log(state);
-		  //  localStorage.setItem( 'savedState', state );
-		});
-
-		myLayout.on('tabCreated', function(tab){
-			
-			tab.closeElement.remove();
-			return ; 
-			tab.closeElement.off( 'click' ).click(function(){
-				if( confirm( 'You have unsaved changes, are you sure you want to close this tab' ) ) {
-					tab.contentItem.remove();
-				}
-			})
-		})
-
-
-		myLayout.init();
-
-
-		$(window).resize(function() {
-		  myLayout.updateSize();
-		})
-
 		
+		function setSqlEditorHeight (_h){
+			_ui.SQL.sqlEditorEle.css('height' ,_h);
+		}
+		setSqlEditorHeight($('#editorAreaTable').height())
+		_ui.SQL.sqlTextAreaObj.refresh();
 	}
 }
 
@@ -705,7 +632,7 @@ _ui.leftDbObjectServiceMenu ={
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
 		VARSQL.req.ajax({      
-			loadSelector : '#dbSchemaObjectArea'
+			loadSelector : '.ui-layout-left-middle-area' //_self.options.dbServiceMenuContentId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
 			,success:function (resData){

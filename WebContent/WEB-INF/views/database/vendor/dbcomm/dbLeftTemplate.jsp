@@ -13,15 +13,15 @@
 
 <div class="panel panel-default left-panel" style="min-height:600px;">
 	<div class="panel-default left-panel padding2">
-		<div id="leftDBList">
+		<div id="dbSchemaList">
 		</div>
 	</div>
 
 	<div class="ui-tabs ui-widget">
-		<ul id="leftServiceMenu" style="margin-right: 2px;">
+		<ul id="varsqlDbServiceMenu" style="margin-right: 2px;">
 			<li>db를 선택하시오.</li>
 		</ul>
-		<div id="left_service_menu_content" style="height:180px;"></div>
+		<div id="dbServiceMenuContent" style="height:180px;"></div>
 		<div id="metadata_content_area_wrap"><div id="metadata_content_area"></div></div>
 	</div>
 </div>
