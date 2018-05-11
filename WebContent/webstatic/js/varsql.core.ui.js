@@ -1350,11 +1350,11 @@ _ui.leftDbObjectServiceMenu ={
 				,page :false
 				,tColItem : [
 					{key :'INDEX_NAME', label:'Index',width:200, sort:true}
-					,{key :'TABLE_NAME', label:'테이블명'}
-					,{key :'TABLESPACE_NAME', label:'Tablespace'}
-					,{key :'BUFFER_POOL', label:'버퍼풀'}
-					,{key :'INDEX_TYPE', label:'타입'}
-					,{key :'STATUS', label:'상태'}
+					,{key :'TABLE_NAME', label:'테이블명', sort:true}
+					,{key :'INDEX_TYPE', label:'타입',sort:true}
+					,{key :'TABLESPACE_NAME', label:'Tablespace',sort:true}
+					,{key :'BUFFER_POOL', label:'버퍼풀',sort:true}
+					,{key :'STATUS', label:'상태' ,sort:true}
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
