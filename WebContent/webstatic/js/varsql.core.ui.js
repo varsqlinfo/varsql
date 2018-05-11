@@ -775,7 +775,7 @@ _ui.leftDbObjectServiceMenu ={
 				if(sObj.gubunKey=='ddl_copy'){
 					_ui.text.copy(resData.item);
 				}else{
-					_ui.SQL.addSqlEditContent(resData.item);
+					_ui.SQL.addSqlEditContent(resData.item , false);
 				}
 			}
 		});
@@ -2846,10 +2846,14 @@ _ui.SQL = {
 		_self.addSqlEditContent(reval.join(''));
 	}
 	// 에디터 영역에 값 넣기.
-	,addSqlEditContent :function (cont){
+	,addSqlEditContent :function (cont , suffixAddFlag){
 	
-		var _self = this
-			,insVal = cont +VARSQLCont.constants.querySuffix;
+		var _self = this;
+		var insVal = cont;
+		
+		if(suffixAddFlag !== false){
+			insVal = insVal +VARSQLCont.constants.querySuffix;
+		}
 		
 		var editObj =_self.getTextAreaObj()
 			,insLine = editObj.lastLine(); 
