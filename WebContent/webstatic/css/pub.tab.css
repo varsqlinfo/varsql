@@ -35,7 +35,7 @@
 }
 
 .pubTab-move-area{
-	z-index:100;
+	z-index:5;
 	position:absolute; 
 	right:0px;
 	top:0px;

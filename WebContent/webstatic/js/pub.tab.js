@@ -16,7 +16,7 @@
 			speed : 150
 			,width:300
 			,overItemViewMode : 'drop'
-			,moveZIndex : 100				// move 영역 z- index
+			,moveZIndex : 9				// move 영역 z- index
 			,filter: function ($obj) {
 				// Modify $obj, Do not return
 			}
