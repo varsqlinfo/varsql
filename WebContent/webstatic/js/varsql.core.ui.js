@@ -371,7 +371,7 @@ _ui.layout = {
 				}
 				
 				var containerW =container.width-2
-				,containerH = container.height; 
+				,containerH = container.height-28; 
 				
 				try{
 					$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width : containerW,height : containerH});
@@ -397,7 +397,7 @@ _ui.layout = {
 					return ; 
 				}
 				var containerW =container.width-2
-					,containerH = container.height -25; 
+					,containerH = container.height-28; 
 				
 				try{
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
