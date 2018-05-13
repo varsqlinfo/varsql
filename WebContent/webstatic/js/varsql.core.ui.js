@@ -21,7 +21,8 @@ _ui.extension ={
 
 var _defaultOptions = {
 	tablesConfig :{
-			configVal :{search :{			// 검색
+		configVal :{
+			search :{			// 검색
 				field : ''		// 검색 필드
 				,val : ''		// 검색어
 			}
@@ -50,9 +51,199 @@ VARSQL.ui.create = function (_opts){
 	_ui.layout.init(_opts);
 	_ui.initContextMenu();
 	_ui.headerMenu.init(_opts);
-	_ui.leftDbObject.create(_opts);
+	_ui.dbSchemaObject.create(_opts);
 	
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
+}
+
+//main layout 처리.
+_ui.layout = {
+	layoutObj :false
+	,contTabHeight : 28
+	,init : function(_opts){
+		var _self = this; 
+		_self.setLayout();
+		_self.initEvt();
+	}	
+	,initEvt : function (){
+		
+	}
+	,setLayout: function (){
+		var _self = this; 
+		
+		var config = {
+		  settings: {
+		    hasHeaders: true,
+		    constrainDragToContainer: true,
+		    reorderEnabled: true,
+		    selectionEnabled: false,
+		    popoutWholeStack: false,
+		    blockedPopoutsThrowError: true,
+		    closePopoutsOnUnload: true,
+		    showPopoutIcon: false,
+		    showMaximiseIcon: true,
+		    showCloseIcon: false
+		  },
+		  dimensions: {
+		    borderWidth: 5,
+		    minItemHeight: 10,
+		    minItemWidth: 10,
+		    headerHeight: 20,
+		    dragProxyWidth: 300,
+		    dragProxyHeight: 200
+		  },
+		  labels: {
+		    close: 'close',
+		    maximise: 'maximise',
+		    minimise: 'minimise',
+		  },
+
+		  content: [{
+			type:'column'
+			,content : [
+				{
+				type: 'row',
+
+				content: [
+				{
+				  type: 'column',
+				  width:30 , 
+					
+				  content: [{
+
+					type: 'component',
+					height :60,
+					componentName: 'dbObjectComponent',
+					title:'serviceObject'
+				  }, {
+					type: 'component',
+					height: 40, 
+					componentName: 'dbMetadataComponent',
+					title: 'Meta'
+				  }]
+				},
+				{
+				  type: 'column',
+				  content: [{
+					type: 'component',
+					componentName: 'sqlEditorComponent',
+					title: 'Editor'
+				  }, {
+					type: 'component',
+					componentName: 'sqlDataComponent',
+					title: 'sql result'
+				  }]
+				}]
+			  }]
+		  }]
+		};
+		
+		var varsqlLayout , savedState = localStorage.getItem( 'varsqlLayoutInfo' );
+
+		if( savedState !== null ) {
+			varsqlLayout = new GoldenLayout( JSON.parse( savedState ) ,$('#varsqlBodyWrapper') );
+		} else {
+			varsqlLayout = new GoldenLayout( config ,$('#varsqlBodyWrapper'));
+		}
+		
+		varsqlLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
+		    container.getElement().html($('#dbObjectComponentTemplate').html());
+			
+			var initResize = true; 
+			container.on('resize',function() {
+				if(initResize === true){
+					initResize = false; 
+					return ; 
+				}
+				
+				var containerW =container.width-2
+					,containerH = container.height-60; 
+				
+				try{
+					$.pubTab(_ui.dbSchemaObjectServiceMenu.options.selector).setWidth(containerW);
+				
+					$.pubGrid(_ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width : containerW,height : containerH});
+				}catch(e){
+					
+				}
+				
+			});
+		});
+
+		varsqlLayout.registerComponent( 'dbMetadataComponent', function( container, componentState ){
+		    container.getElement().html($('#dbMetadataComponentTemplate').html());
+
+			var initResize = true; 
+			container.on('resize',function() {
+				if(initResize === true){
+					initResize = false; 
+					return ; 
+				}
+				
+				var containerW =container.width-2
+				,containerH = container.height-_self.contTabHeight; 
+				
+				try{
+					$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width : containerW,height : containerH});
+				}catch(e){
+					//console.log(arguments)
+				}
+			})
+		});
+
+
+		varsqlLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
+		    container.getElement().html($('#sqlEditorComponentTemplate').html());
+		});
+
+		varsqlLayout.registerComponent( 'sqlDataComponent', function( container, componentState ){
+
+			container.getElement().html($('#sqlDataComponentTemplate').html());
+
+		    var initResize = true; 
+			container.on('resize',function() {
+				if(initResize === true){
+					initResize = false; 
+					return ; 
+				}
+				var containerW =container.width-2
+					,containerH = container.height-_self.contTabHeight; 
+				
+				try{
+					if($('#dataGridArea .pubGrid-body-container').length > 0){
+						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
+						
+						if(typeof $.pubGrid(_ui.SQL.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw)){
+							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
+						}
+					}
+				}catch(e){
+					console.log(e)
+				}
+			})
+		});
+		
+		varsqlLayout.init();
+
+		varsqlLayout.on( 'stateChanged', function(){
+			localStorage.setItem( 'varsqlLayoutInfo', JSON.stringify( varsqlLayout.toConfig() ) );
+		});
+
+		varsqlLayout.on('tabCreated', function(tab){
+			
+			tab.closeElement.remove();
+			return ; 
+			tab.closeElement.off( 'click' ).click(function(){
+				if( confirm( 'You have unsaved changes, are you sure you want to close this tab' ) ) {
+					tab.contentItem.remove();
+				}
+			})
+		})
+
+		$(window).resize(function() {
+			varsqlLayout.updateSize();
+		})
+	}
 }
 
 //context menu 초기화
@@ -254,199 +445,10 @@ _ui.headerMenu ={
 	}
 }
 
-// main layout 처리.
-_ui.layout = {
-	layoutObj :{
-		mainLayout :false
-		, leftLayout : false
-		, rightLayout : false
-	}
-	,init : function(_opts){
-		var _self = this; 
-		_self.setLayout();
-		_self.initEvt();
-	}	
-	,initEvt : function (){
-		
-	}
-	,setLayout: function (){
-
-		var config = {
-		  settings: {
-		    hasHeaders: true,
-		    constrainDragToContainer: true,
-		    reorderEnabled: true,
-		    selectionEnabled: false,
-		    popoutWholeStack: false,
-		    blockedPopoutsThrowError: true,
-		    closePopoutsOnUnload: true,
-		    showPopoutIcon: false,
-		    showMaximiseIcon: true,
-		    showCloseIcon: false
-		  },
-		  dimensions: {
-		    borderWidth: 5,
-		    minItemHeight: 10,
-		    minItemWidth: 10,
-		    headerHeight: 20,
-		    dragProxyWidth: 300,
-		    dragProxyHeight: 200
-		  },
-		  labels: {
-		    close: 'close',
-		    maximise: 'maximise',
-		    minimise: 'minimise',
-		  },
-
-		  content: [{
-			type:'column'
-			,content : [
-				{
-				type: 'row',
-
-				content: [
-				{
-				  type: 'column',
-				  width:30 , 
-					
-				  content: [{
-
-					type: 'component',
-					height :60,
-					componentName: 'dbObjectComponent',
-					title:'serviceObject'
-				  }, {
-					type: 'component',
-					height: 40, 
-					componentName: 'dbMetadataComponent',
-					title: 'Meta'
-				  }]
-				},
-				{
-				  type: 'column',
-				  content: [{
-					type: 'component',
-					componentName: 'sqlEditorComponent',
-					title: 'Editor'
-				  }, {
-					type: 'component',
-					componentName: 'sqlDataComponent',
-					title: 'sql result'
-				  }]
-				}]
-			  }]
-		  }]
-		};
-		
-		var myLayout = new GoldenLayout(config, $('#varsqlBodyWrapper'));
-
-		myLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
-		    container.getElement().html($('#dbObjectComponentTemplate').html());
-			
-			var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				
-				var containerW =container.width-2
-					,containerH = container.height-60; 
-				
-				$.pubTab(_ui.leftDbObjectServiceMenu.options.selector).setWidth(containerW);
-				
-				$.pubGrid(_ui.leftDbObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width : containerW,height : containerH});
-				
-			});
-		});
-
-		myLayout.registerComponent( 'dbMetadataComponent', function( container, componentState ){
-		    container.getElement().html($('#dbMetadataComponentTemplate').html());
-
-			var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				
-				var containerW =container.width-2
-				,containerH = container.height-28; 
-				
-				try{
-					$.pubGrid('#'+$('.varsql-meta-cont-ele.on').attr('id')).resizeDraw({width : containerW,height : containerH});
-				}catch(e){
-					//console.log(arguments)
-				}
-			})
-		});
-
-
-		myLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
-		    container.getElement().html($('#sqlEditorComponentTemplate').html());
-		});
-
-		myLayout.registerComponent( 'sqlDataComponent', function( container, componentState ){
-
-			container.getElement().html($('#sqlDataComponentTemplate').html());
-
-		    var initResize = true; 
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false; 
-					return ; 
-				}
-				var containerW =container.width-2
-					,containerH = container.height-28; 
-				
-				try{
-					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
-						
-						if(typeof $.pubGrid(_ui.SQL.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw)){
-							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
-						}
-					}
-				}catch(e){
-					console.log(e)
-				}
-			})
-		});
-
-
-		myLayout.on( 'stateChanged', function(){
-		    var state = JSON.stringify( myLayout.toConfig() );
-			//console.log(state);
-		  //  localStorage.setItem( 'savedState', state );
-		});
-
-		myLayout.on('tabCreated', function(tab){
-			
-			tab.closeElement.remove();
-			return ; 
-			tab.closeElement.off( 'click' ).click(function(){
-				if( confirm( 'You have unsaved changes, are you sure you want to close this tab' ) ) {
-					tab.contentItem.remove();
-				}
-			})
-		})
-
-
-		myLayout.init();
-
-
-		$(window).resize(function() {
-		  myLayout.updateSize();
-		})
-
-		
-	}
-}
-
 // 왼쪽 영역 처리.
-_ui.leftDbObject ={
+_ui.dbSchemaObject ={
 	options :{
-		selector:'#leftDbObjectWrap'
+		selector:'#dbSchemaObjectWrap'
 		,active: null
 		,db_object_list:[]
 		,param:{}
@@ -540,16 +542,16 @@ _ui.leftDbObject ={
 		tmpParam.schema = $(obj).attr('obj_nm');
 		
 		if(refreshFlag){
-			_ui.leftDbObjectServiceMenu.create({param:tmpParam});
+			_ui.dbSchemaObjectServiceMenu.create({param:tmpParam});
 			return ; 
 		}
 		
 		VARSQL.req.ajax({      
-		    loadSelector : _ui.leftDbObjectServiceMenu.options.dbServiceMenuContentId
+		    loadSelector : _ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId
 		    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
 		    ,data:tmpParam
 		    ,success:function (resData){
-		    	_ui.leftDbObjectServiceMenu.create(
+		    	_ui.dbSchemaObjectServiceMenu.create(
 		    		$.extend({},{param:tmpParam} ,{menuData: resData.items})
 		    	);
 			}
@@ -561,7 +563,7 @@ _ui.leftDbObject ={
  * 왼족 메뉴 셋팅
  * 테이블 , 스키마 , view 등등 
  */
-_ui.leftDbObjectServiceMenu ={
+_ui.dbSchemaObjectServiceMenu ={
 	initFlag : false
 	,metadataCache : {}
 	,metaGridHeight :150
@@ -1719,7 +1721,18 @@ _ui.SQL = {
 			lineWrapping: false,
 			matchBrackets : true,
 			autofocus: true,
-			extraKeys: {"Ctrl-Space": "autocomplete"},
+			extraKeys: {
+				"Ctrl-Space": "autocomplete"
+				,"Ctrl-F": function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-F" : function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-R" : function (){
+					// 검색 재정의
+				}
+			},
 			hintOptions: {tables:tableHint}
 		});
 		

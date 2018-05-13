@@ -273,8 +273,6 @@ Plugin.prototype ={
 			e.preventDefault();
 			e.stopPropagation();
 
-			console.log('11111');
-			
 			if(disableFlag){
 				var disableItem = opt.disableItemKey.call(this , opt.items);
 				_this.enableItem();

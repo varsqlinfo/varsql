@@ -895,12 +895,14 @@ hr.dotline {
 	position:relative;
 	width:100%;
 	height:62px;
+	min-width: 520px;
+	overflow:hidden;
 }
 
 .varsql-sqleditor-area{
 	position:relative;
 	width:100%;
-	height: calc(100% - 62px);
+	height: calc(100% - 65px);
 }
 
 .lm_content{
@@ -926,4 +928,9 @@ hr.dotline {
     box-sizing: border-box !important;
 } 
 .CodeMirror-scroll {height: 100%;}
+
+.pubGrid{
+	border-left: 0px solid #fff !important;
+    border-right: 0px solid #fff !important;
+}
 /* varsql main layout end */
