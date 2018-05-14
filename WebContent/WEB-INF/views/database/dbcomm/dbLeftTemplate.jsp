@@ -45,6 +45,6 @@
 	</div>
 </div>
 <div class="ui-layout-left-bottom-area">
-	<div id="metadata_content_area_wrap"></div>
+	<div id="metadataContentAreaWrap"></div>
 </div>
 

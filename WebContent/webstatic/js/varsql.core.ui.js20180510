@@ -497,8 +497,8 @@ _ui.leftDbObjectServiceMenu ={
 		,menuData:[]
 		,param:{}
 		,dbServiceMenuContentId:'#dbServiceMenuContent'
-		,metadata_content_area_wrapId:'#metadata_content_area_wrap'
-		,metadata_content_area_wrapEle:null
+		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
+		,metadataContentAreaWrapEle:null
 		,metadata_content_areaId:'#metadata_content_area'
 		,metadata_content_areaIdEle:null
 	}
@@ -534,10 +534,10 @@ _ui.leftDbObjectServiceMenu ={
 	}
 	,initElement :function (){
 		var _self = this;
-		_self.options.metadata_content_area_wrapEle = $(_self.options.metadata_content_area_wrapId);
+		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
 	}
 	,getMetaContentWrapEle:function (){
-		return this.options.metadata_content_area_wrapEle; 
+		return this.options.metadataContentAreaWrapEle; 
 	}
 	// 왼쪽 상단 텝 메뉴 그리기
 	,_tabs : function (){
@@ -656,7 +656,7 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		VARSQL.req.ajax({
-			loadSelector : _self.options.metadata_content_area_wrapId
+			loadSelector : _self.options.metadataContentAreaWrapId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 			,async:false
 			,data:param
@@ -1462,7 +1462,7 @@ _ui.leftDbObjectServiceMenu ={
 		//_self.getMetaContentWrapEle().empty();
 		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadata_content_areaId.replace('#', '')+'"></div>');
 		
-		var tmpEle = $(_self.options.metadata_content_area_wrapId+type);
+		var tmpEle = $(_self.options.metadataContentAreaWrapId+type);
 		
 		if(!tmpEle.hasClass('on')){
 			$('.varsql-meta-cont-ele.on').removeClass('on');
@@ -1470,10 +1470,10 @@ _ui.leftDbObjectServiceMenu ={
 		}
 		
 		if(tmpEle.length < 1){
-			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadata_content_area_wrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
+			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadataContentAreaWrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
 		}
 		
-		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type);
+		var gridObj = $.pubGrid(_self.options.metadataContentAreaWrapId+type);
 		
 		if(gridObj){
 			gridObj.setData(gridData.data,'reDraw');
@@ -1506,7 +1506,7 @@ _ui.leftDbObjectServiceMenu ={
 			]
 		}
 		
-		var gridObj = $.pubGrid(_self.options.metadata_content_area_wrapId+type, {
+		var gridObj = $.pubGrid(_self.options.metadataContentAreaWrapId+type, {
 			headerOptions : {
 				redraw : false
 			}

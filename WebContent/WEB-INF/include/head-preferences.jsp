@@ -14,7 +14,6 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tree.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">

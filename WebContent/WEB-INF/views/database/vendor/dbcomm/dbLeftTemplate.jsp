@@ -22,7 +22,7 @@
 			<li>db를 선택하시오.</li>
 		</ul>
 		<div id="dbServiceMenuContent" style="height:180px;"></div>
-		<div id="metadata_content_area_wrap"><div id="metadata_content_area"></div></div>
+		<div id="metadataContentAreaWrap"><div id="metadata_content_area"></div></div>
 	</div>
 </div>
 

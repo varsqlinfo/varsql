@@ -16,8 +16,6 @@
 
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
-
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
@@ -29,17 +27,8 @@
 </head>
 <body>
 
-<header class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#"><spring:message code="page.title.varsql"/></a>
-        </div>
-    </div>
-</header>
-<!--// header -->
-
 <div class="container">
-    <h3 class="page-header"><spring:message code="join.form.title"/></h3>
+    <h3 class="page-header"><spring:message code="page.title.varsql"/> <spring:message code="join.form.title"/></h3>
     <!-- form start -->
     <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form" onsubmit="return false;">
 

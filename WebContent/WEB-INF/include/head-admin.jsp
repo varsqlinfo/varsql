@@ -17,8 +17,6 @@
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css" rel="stylesheet" type="text/css">
-
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

@@ -22,8 +22,7 @@
 <link href="${pageContextPath}/webstatic/css/pub.tab.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.grid.fixed.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css?version=${css_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.main.layout.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>

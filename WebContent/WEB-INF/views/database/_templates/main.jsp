@@ -78,6 +78,21 @@
 	<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
 		<iframe src="" class="preferences-frame"></iframe>
 	</div>
+	
+	<div id="aboutVarsqlDialog" style="display:none;margin:0px;padding:0px;" title="Varsql정보">
+		<div style="position:absolute; width:32px;height:32px;">
+			<img src="${pageContextPath}/webstatic/vt/vt32.png">
+		</div>
+		<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
+			<code style="width:100%;padding:0px;margin:0px;color:#000;">
+				<div style="padding-top :10px;">
+					<div style="font-weight: bold;font-size: 14pt;">Varsql 정보</div>
+					<div style="padding-top:10px;">Version : 0.5</div>
+					<div style="padding-top:10px;">email : ytechinfo@gamil.com</div>
+				</div>
+			</code>
+		</div>
+	</div>
 </body>
 
 <script>
@@ -126,9 +141,9 @@ $(document).ready(function(){
 <!-- meta data 영역 -->
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div class="pos-relative-w-h100">
-	<div id="varsqlDbServiceMenu" class="varsql-tab-area">asdfasdf</div>
+	<div id="varsqlMetaServiceMenu" class="varsql-tab-area">asdfasdf</div>
 	
-	<div id="metadata_content_area_wrap" class="varsql-tab-cont-area"></div>			
+	<div id="metadataContentAreaWrap" class="varsql-tab-cont-area"></div>			
 </div>
 </script>
 

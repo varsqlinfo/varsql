@@ -13,6 +13,25 @@ body {
 	background-color: #dfdfdf;
 }
 
+body div{
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.user-select-on  *{
+-webkit-touch-callout: text !important; /* iOS Safari */
+    -webkit-user-select: text !important; /* Safari */
+     -khtml-user-select: text !important; /* Konqueror HTML */
+       -moz-user-select: text !important; /* Firefox */
+        -ms-user-select: text !important; /* Internet Explorer/Edge */
+            user-select: text !important; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
 
 .database-main{
 	min-width: 900px;
@@ -573,7 +592,62 @@ hr.dotline {
 	z-index:10;
 }
 
+.sql-editor-btn {
+	border:1px solid #cfcfcf;
+	background-color: #fff;
+}
+
+#sqlEditerPreloaderArea{
+	display:none; 
+}
+#sqlEditerPreloaderArea>.preloader-msg{
+	font-weight:bold; 
+}
+
 .open.dropdown-menu{display:block  !important;}
+
+/* Dropdown Content (Hidden by Default) */
+.varsql-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    z-index:100;
+    font-size:12px;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.varsql-dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.varsql-dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.varsql-dropdown.on .varsql-dropdown-content {
+    display: block;
+}
+
+.save-sql-list-wrapper{
+	height:115px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+/* sql list area */
+.save-sql-list{
+	margin:10px 10px 0px 10px;
+}
+
+.sql-save-list-layer{
+	padding :0px;
+	border-radius: 0px;
+	margin: 0px 0 0;
+}
 
 .ui-widget button {
     font-family: Verdana,Arial,sans-serif;
@@ -745,3 +819,138 @@ hr.dotline {
    padding:0px;
    border-right: 1px solid #8c7e7e;
 }
+
+/*  sql parameter area start */
+.sql-parameter-area{
+	display:none;
+	width:250px;
+	padding: 5px;
+	z-index:10;
+	height:100%;
+	position:absolute;
+	right:0px;
+	background:#e8f7e8;
+	overflow:auto;
+	top: 0px;
+	border: 1px solid #ddd;
+}
+
+.sql-parameter-area table th{
+	text-align:center;
+}
+.on.sql-parameter-area{
+	display:block;
+}
+
+.sql-parameter-area td{
+	padding-top:5px;
+}
+.sql-parameter-area td >div{
+	margin-right:5px;
+}
+
+.sql-parameter-area input{
+	width:100%;
+}	
+/*  sql parameter area end */
+
+/* varsql main layout start */
+.main-top-menu-wrapper{
+	z-index:10;
+	width:100%;
+	height:20px;
+	position:absolute;
+	height: 20px;
+	background: #dfdfdf;
+	margin-bottom: 1px;
+	border-bottom: 1px solid #BBB;
+}
+
+.main-body-wrapper{
+	height: calc(100% - 20px);
+	width:100%;
+	margin-top:20px;
+	z-index:9;
+}
+
+.varsql-dbodbject-schema-area{
+	position:relative;
+	height:40px;
+	width:100%;
+	min-width:230px;
+}
+
+.varsql-dbodbject-tab-area{
+	position:relative;
+	height:20px;
+	width:100%;
+}
+
+.varsql-dbodbject-cont-area{
+	width:100%;
+	height: calc(100% - 60px);
+	position:relative;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 20px);
+	position:relative;
+}
+
+.varsql-tab-area{
+	position:relative;
+	height:26px;
+	width:100%;
+	padding: 3px 0px 0px 3px;
+}
+
+.varsql-tab-cont-area{
+	width:100%;
+	height: calc(100% - 26px);
+	position:relative;
+}
+
+.varsql-toolbar-area{
+	position:relative;
+	width:100%;
+	height:62px;
+	min-width: 520px;
+	overflow:hidden;
+}
+
+.varsql-sqleditor-area{
+	position:relative;
+	width:100%;
+	height: calc(100% - 65px);
+}
+
+.lm_content{
+	background: #f0f4f0;
+}
+
+.lm_tab:hover, .lm_tab.lm_active {
+    background: #edf7f7;
+    color: #777777;
+}
+
+.pos-relative-w-h100{
+	width:100%;
+	height:100%;
+	position:relative;
+	-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+.CodeMirror {font-size:13px; width:100%; height:100%;
+-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+} 
+.CodeMirror-scroll {height: 100%;}
+
+.pubGrid{
+	border-left: 0px solid #fff !important;
+    border-right: 0px solid #fff !important;
+}
+/* varsql main layout end */
