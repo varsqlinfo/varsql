@@ -884,12 +884,14 @@ hr.dotline {
 	position:relative;
 	height:20px;
 	width:100%;
+	z-index:1;
 }
 
 .varsql-dbodbject-cont-area{
 	width:100%;
 	height: calc(100% - 60px);
 	position:relative;
+	z-index: 0;
 }
 
 .varsql-tab-cont-area{
@@ -954,3 +956,14 @@ hr.dotline {
     border-right: 0px solid #fff !important;
 }
 /* varsql main layout end */
+
+
+/* sql result btn start */
+.log_clear_btn{
+	display:none;
+}
+
+.sql-result-tab .on .log_clear_btn{
+	display:inline-block;
+}
+/* sql result btn end */

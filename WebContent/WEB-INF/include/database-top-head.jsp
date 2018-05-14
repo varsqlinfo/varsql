@@ -13,7 +13,7 @@
 <link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.main.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>

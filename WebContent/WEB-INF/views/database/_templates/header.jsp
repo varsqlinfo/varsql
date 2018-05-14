@@ -66,9 +66,15 @@
 						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
 					</li>
 				</ul>
-			</li> 
+			</li>
 			<li class="header-menu-item" data-menu-item="tool_setting">
 				<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
+			</li>
+			<li class="divider"></li>
+			<li class="header-menu-item" data-menu-item="tool_layout">
+				<a>
+					<span class="header-menu-item-text"><spring:message code="header.menu.tool.initlayout" /></span>
+				</a>
 			</li>
 		</ul>
 	</li>

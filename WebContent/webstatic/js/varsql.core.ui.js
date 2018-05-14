@@ -138,10 +138,18 @@ _ui.layout = {
 		  }]
 		};
 		
-		var varsqlLayout , savedState = localStorage.getItem( 'varsqlLayoutInfo' );
+		var varsqlLayout;
+		var savedState = _g_options._opts.screenSetting.layoutConfig;
+								
+		try{
+			savedState = JSON.parse( savedState ); 
+		}catch(e){
+			savedState = '';
+		}
 
-		if( savedState !== null ) {
-			varsqlLayout = new GoldenLayout( JSON.parse( savedState ) ,$('#varsqlBodyWrapper') );
+		if( !VARSQL.isUndefined(savedState) && '' != savedState) {
+			varsqlLayout = new GoldenLayout( savedState ,$('#varsqlBodyWrapper') );
+			//varsqlLayout = new GoldenLayout( savedState ,$('#varsqlBodyWrapper') );
 		} else {
 			varsqlLayout = new GoldenLayout( config ,$('#varsqlBodyWrapper'));
 		}
@@ -190,7 +198,6 @@ _ui.layout = {
 				}
 			})
 		});
-
 
 		varsqlLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
 		    container.getElement().html($('#sqlEditorComponentTemplate').html());
@@ -252,11 +259,26 @@ _ui.layout = {
 		$(window).resize(function() {
 			varsqlLayout.updateSize();
 		})
-
-		varsqlLayout.on( 'stateChanged', function(){
-			localStorage.setItem( 'varsqlLayoutInfo', JSON.stringify( varsqlLayout.toConfig() ) );
-		});
 		
+		var layoutSaveTimer; 
+		
+		var firstFlag = true;
+		
+		var idx = 0;
+		varsqlLayout.on( 'stateChanged', function(){
+			
+			if(firstFlag){
+				firstFlag = false; 
+				return ; 
+			}
+			clearTimeout(layoutSaveTimer);
+			
+			layoutSaveTimer = setTimeout(function() {
+				_ui.preferences.save({layoutConfig : JSON.stringify( varsqlLayout.toConfig())});
+				//console.log( JSON.stringify( varsqlLayout.toConfig() ) );
+				//localStorage.setItem( 'varsqlLayoutInfo',  JSON.stringify( varsqlLayout.toConfig() ));
+			}, 300);
+		});
 	}
 }
 
@@ -299,7 +321,7 @@ _ui.initContextMenu  = function (){
 
 // 환경 설정 관련
 _ui.preferences= {
-	save : function (prefInfo){
+	save : function (prefInfo , callback){
 		
 		prefInfo = VARSQL.util.objectMerge(_g_options._opts.screenSetting,prefInfo);
 		
@@ -312,6 +334,11 @@ _ui.preferences= {
 			url:{gubun:VARSQL.uri.database, url:'/preferences/save.vsql'}
 			,data: param
 			,success:function (resData){
+
+				if(VARSQL.isFunction(callback)){
+					callback.call(null, resData);
+					return ; 
+				}
 				//console.log(resData);
 			}
 		});
@@ -393,6 +420,13 @@ _ui.headerMenu ={
 							break;
 						case 'setting':	//설정.
 							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main.vsql?conuid='+_g_options.param.conuid));
+							break;
+						case 'layout':	//레이아웃 초기화
+							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?'))
+							_ui.preferences.save({layoutConfig : ''} , function (){
+								location.href = location.href; 
+								return ;
+							});
 							break;
 						default:
 							break;
@@ -1719,7 +1753,7 @@ _ui.SQL = {
 		resultTabHtm.push('<ul id="data_grid_result_tab" class="sql-result-tab">');
 		resultTabHtm.push('	<li tab_gubun="result" class="on"><a href="javascript:;">결과</a></li>');
 		resultTabHtm.push('	<li tab_gubun="columnType"><a href="javascript:;">컬럼타입</a></li>');
-		resultTabHtm.push('	<li tab_gubun="msg"><a href="javascript:;">메시지</a></li>');
+		resultTabHtm.push('	<li tab_gubun="msg"><a href="javascript:;"><span>메시지</span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>');
 		resultTabHtm.push('</ul>');
 		
 		$(_self.options.dataGridResultTabWrap).html(resultTabHtm.join(''));
@@ -2116,6 +2150,13 @@ _ui.SQL = {
 			_self.setQueryInfo('clear');
 		});
 		
+		// log 삭제.
+		$(_self.options.dataGridResultTabWrap+' .log_clear_btn').on('click',function (){
+			_self.getResultMsgAreaObj().empty();
+			return false; 
+		});
+		
+		// sql result tab click
 		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
 			var sObj = $(this);
 			var tab_gubun = sObj.attr('tab_gubun');

@@ -88,7 +88,7 @@
 				<div style="padding-top :10px;">
 					<div style="font-weight: bold;font-size: 14pt;">Varsql 정보</div>
 					<div style="padding-top:10px;">Version : 0.5</div>
-					<div style="padding-top:10px;">email : ytechinfo@gamil.com</div>
+					<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
 				</div>
 			</code>
 		</div>
@@ -181,7 +181,7 @@ $(document).ready(function(){
 				</li>
 				<li>
 					<a href="javascript:;" class="sql-edit-btn sql-btn-default sql_linewrapper_btn" title="자동 줄 바꿈 ">
-						<span class="fa fa-level-down" aria-hidden="true" ></span>
+						<span class="fa fa-dedent" aria-hidden="true" ></span>
 					</a>
 				</li>
 				<li class="sql-btn-divider"></li>

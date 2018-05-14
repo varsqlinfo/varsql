@@ -158,6 +158,10 @@ _$base.isUndefined = function(obj){
 	return typeof obj==='undefined';
 };
 
+_$base.isUndefined = function(obj){
+	return typeof obj==='undefined';
+};
+
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){
