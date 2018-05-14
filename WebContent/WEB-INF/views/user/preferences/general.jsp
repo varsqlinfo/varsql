@@ -35,15 +35,15 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label" for="inputError"><spring:message code="join.form.name" text="URL"/></label>
+							<label class="col-lg-2 control-label" for="inputError"><spring:message code="join.form.name" text="URL"/></label>
 							<div class="col-lg-10">
 								 <input type="text" class="form-control" id="uname" name="uname"  value="${detailInfo.UNAME}" placeholder="<spring:message code="join.form.name"/>"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label"><spring:message code="join.form.dept"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="join.form.dept"/></label>
 
-				            <div class="col-sm-10">
+				            <div class="col-lg-10">
 				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.DEPT_NM}" placeholder="<spring:message code="join.form.dept"/>"/>
 				            </div>
 						</div>
