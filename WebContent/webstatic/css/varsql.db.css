@@ -206,29 +206,33 @@ body div{
   background-color: #f0f4f0;
 }
 
-.db-nav {
+.db-header-menu-wrapper {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
 }
-.db-nav>li{
+.db-header-menu-wrapper>li{
 	float:left;
+	margin-right: 3px;
 }
-.db-nav>li>a {
+.db-header-menu-wrapper>li>a {
   position: relative;
   display: block;
   padding: 2px 15px;
   color: #8c8787;
   font-weight :bold;
-  line-height: 16px;
+  line-height: 1.2;
   text-decoration: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border:1px solid rgba(255, 255, 255, 0);;
 }
 
-.db-nav>li.open >a {
+.db-header-menu-wrapper>li.open >a,.db-header-menu-wrapper>li>a:hover , .db-header-menu-wrapper>li>a:active {
 	background-color: #f3f3f3;
-}
-.db-nav>li>a:hover , .db-nav>li>a:active {
-	background-color: #f3f3f3;
+	border:1px solid #d1d1d1;
+	border-radius: 3px;
 }
 
 .db-navbar {
@@ -536,18 +540,6 @@ hr.dotline {
 .success-log-message{
 	font-size:12px;color:#000099
 }
-
-.CodeMirror {
-  /*
-  min-height: 100px;
-  height: 100px;
-  */
-}
-
-.CodeMirror-vscrollbar{
-	display:block;
-}
-
 
 #editorAreaTable{
 	table-layout:fixed; 
@@ -861,11 +853,15 @@ hr.dotline {
 	height:20px;
 	position:absolute;
 	height: 20px;
-	background: #dfdfdf;
 	margin-bottom: 1px;
 	border-bottom: 1px solid #BBB;
+	background-image: -webkit-linear-gradient(#fffcfc,#dcdcdc);
+    background-image: -moz-linear-gradient(#fffcfc,#dcdcdc);
+    background-image: -ms-linear-gradient(#fffcfc,#dcdcdc);
+    background-image: -o-linear-gradient(#fffcfc,#dcdcdc);
+    background-image: linear-gradient(#fffcfc,#dcdcdc);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fffcfc', endColorstr='#dcdcdc', GradientType=0);
 }
-
 .main-body-wrapper{
 	height: calc(100% - 20px);
 	width:100%;
@@ -932,8 +928,15 @@ hr.dotline {
 }
 
 .lm_tab:hover, .lm_tab.lm_active {
-    background: #edf7f7;
+    background: ;
     color: #777777;
+    
+    background-image: -webkit-linear-gradient(#ffffff,#f3f3f3);
+    background-image: -moz-linear-gradient(#ffffff,#f3f3f3);
+    background-image: -ms-linear-gradient(#ffffff,#f3f3f3);
+    background-image: -o-linear-gradient(#ffffff,#f3f3f3);
+    background-image: linear-gradient(#ffffff,#f3f3f3);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#f3f3f3', GradientType=0);
 }
 
 .pos-relative-w-h100{

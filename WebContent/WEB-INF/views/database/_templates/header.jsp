@@ -1,6 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<ul class="db-nav db-header-menu-wrapper">
+<ul class="db-header-menu-wrapper">
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.file" /></a>
 		<ul class="dropdown-menu db-header-menu">
