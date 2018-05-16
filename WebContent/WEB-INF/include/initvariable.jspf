@@ -8,6 +8,7 @@
 <c:set var="pubjs_ver" value="<%=java.lang.Math.round(java.lang.Math.random() * 20000) %>" />
 <c:set var="pubjs_ver1" value="<%=com.varsql.app.common.constants.WebStaticResourceVersion.PUB_JS %>" />
 <c:set var="css_ver" value="<%=com.varsql.app.common.constants.WebStaticResourceVersion.VARSQL_CSS %>" />
+<c:set var="prettify_ver" value="<%=com.varsql.app.common.constants.WebStaticResourceVersion.PRETTIFY %>" />
 
 <script>
 var global_page_context_path ="${pageContextPath}"; 

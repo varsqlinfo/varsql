@@ -24,6 +24,8 @@
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
+<link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
+
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
@@ -43,6 +45,9 @@
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js?version=${codemirror_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/search.js?version=${codemirror_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/searchcursor.js?version=${codemirror_ver}"></script>
+
+<script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js?version=${prettify_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>

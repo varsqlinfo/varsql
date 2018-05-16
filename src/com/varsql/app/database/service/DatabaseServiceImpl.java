@@ -199,6 +199,10 @@ public class DatabaseServiceImpl{
 				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo	,databaseParamInfo.getObjectName()));
 			}else if("function".equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo,databaseParamInfo.getObjectName()));
+			}else if("index".equals(gubun)){
+				result.setItemOne(dbMetaEnum.getDDLScript().getIndex(databaseParamInfo,databaseParamInfo.getObjectName()));
+			}else if("trigger".equals(gubun)){
+				result.setItemOne(dbMetaEnum.getDDLScript().getTrigger(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}
 		}catch(Exception e){
 			logger.error("createDDL : ", e);

@@ -236,7 +236,7 @@
 			}
 
 			var strHtm = [];
-			strHtm.push('<div class="pubTab-wrapper">');
+			strHtm.push('<div class="pubTab-wrapper" style="'+(!isNaN(_opts.height) ? 'height:'+_opts.height+'px' :'')+'">');
 			strHtm.push('	<div id="'+_this.contextId+'pubTab" class="pubTab">');
 			strHtm.push('		<div id="'+_this.contextId+'pubTab-scroll" class="pubTab-scroll">');
 			strHtm.push('			<ul id="'+_this.contextId+'pubTab-container" class="pubTab-container">');
