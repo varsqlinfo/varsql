@@ -1392,7 +1392,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'index'
+    		var $$gubun = 'index';
     		
 			var itemArr = resData.items;
 			
@@ -1412,19 +1412,16 @@ _ui.dbSchemaObjectServiceMenu ={
 				,height: 'auto'
 				,page :false
 				,tColItem : [
-					{key :'INDEX_NAME', label:'Index',width:200, sort:true}
-					,{key :'TABLE_NAME', label:'테이블명', sort:true}
-					,{key :'INDEX_TYPE', label:'타입',sort:true}
-					,{key :'TABLESPACE_NAME', label:'Tablespace',sort:true}
-					,{key :'BUFFER_POOL', label:'버퍼풀',sort:true}
-					,{key :'STATUS', label:'상태' ,sort:true}
+					{key :'name', label:'Index',width:200, sort:true}
+					,{key :'tblName', label:'테이블명', sort:true}
+					,{key :'type', label:'타입',sort:true}
+					,{key :'tableSpace', label:'Tablespace',sort:true}
+					,{key :'bufferPool', label:'버퍼풀',sort:true}
+					,{key :'status', label:'상태' ,sort:true}
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
 					click : function (idx, item){
-						
-						return ;
-						
 						var sObj = $(this);
 		    			
 		    			$('.function-list-item.active').removeClass('active');
@@ -1481,10 +1478,9 @@ _ui.dbSchemaObjectServiceMenu ={
     		var gridObj = {
     			data:colData.items
     			,column : [
-					{ label: '파라미터명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'dataType' },
-					{ label: 'IN, OUT', key: 'columnType',width:45},
-					{ label: '설명', key: 'comment',width:45},
+					{ label: '컬럼명', key: 'name',width:80 },
+					{ label: 'POSITION', key: 'no',width:80 },
+					{ label: 'ASC OR DESC', key: 'ascOrdesc' },
 				]
     		};
 			
