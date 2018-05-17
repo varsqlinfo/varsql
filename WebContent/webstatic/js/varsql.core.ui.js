@@ -507,7 +507,8 @@ _ui.headerMenu ={
 
 // 왼쪽 영역 처리.
 _ui.dbSchemaObject ={
-	options :{
+	initObjectMenu : false
+	,options :{
 		selector:'#dbSchemaObjectWrap'
 		,active: null
 		,db_object_list:[]
@@ -535,12 +536,6 @@ _ui.dbSchemaObject ={
 	,initEvt : function (){
 		var _self = this;
 		
-		// schema refresh button 
-		$('.refresh-schema-btn').on('click', function (e){
-			if(_self.options.active){
-				_self._click(_self.options.active, true);
-			}
-		})
 	}
 	// db schema 그리기
 	,_grid:function (){
@@ -570,7 +565,7 @@ _ui.dbSchemaObject ={
 			_self.options.active.addClass('active');
 			_g_options.param.schema =_self.options.active.attr('obj_nm');
 			$('#varsql_schema_name').html(_g_options.param.schema);
-			_self._click(this);
+			_self._schemaClick(this);
 		});
 		
 		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_g_options.schema+'"]').trigger('click');
@@ -596,26 +591,27 @@ _ui.dbSchemaObject ={
 		});  
 	}
 	// 스키마 클릭. 
-	,_click:function (obj , refreshFlag){
+	,_schemaClick:function (obj , refreshFlag){
 		var _self = this;
 		var tmpParam = _self.options.param;
 		tmpParam.schema = $(obj).attr('obj_nm');
 		
-		if(refreshFlag){
-			_ui.dbSchemaObjectServiceMenu.create({param:tmpParam});
-			return ; 
+		if(_self.initObjectMenu === false){
+			VARSQL.req.ajax({      
+			    loadSelector : _ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId
+			    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
+			    ,data:tmpParam
+			    ,success:function (resData){
+			    	_self.initObjectMenu = true; 
+			    	
+			    	_self.options.objectServiceMenu = VARSQL.util.objectMerge({param:tmpParam} , {menuData: resData.items});
+			    	
+			    	_ui.dbSchemaObjectServiceMenu.create(_self.options.objectServiceMenu);
+				}
+			});
+		}else{
+			_ui.dbSchemaObjectServiceMenu.create(_self.options.objectServiceMenu);
 		}
-		
-		VARSQL.req.ajax({      
-		    loadSelector : _ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId
-		    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
-		    ,data:tmpParam
-		    ,success:function (resData){
-		    	_ui.dbSchemaObjectServiceMenu.create(
-		    		$.extend({},{param:tmpParam} ,{menuData: resData.items})
-		    	);
-			}
-		});
 	}
 };
 
@@ -645,6 +641,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		_self.options = VARSQL.util.objectMerge(_self.options, options);
 		
 		_self._initCacheObject();
+		_self.initElement();
 		
 		if(_self.initFlag ===false){
 			_self._tabs();
@@ -653,7 +650,6 @@ _ui.dbSchemaObjectServiceMenu ={
 			$($('.service_menu_tab')[0]).attr('refresh','Y').trigger('click');
 		}
 		
-		_self.initElement();
 		_self.initFlag = true; 
 	}
 	,_initCacheObject : function (){
@@ -670,11 +666,13 @@ _ui.dbSchemaObjectServiceMenu ={
 	,initElement :function (){
 		var _self = this;
 		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
+		_self.options.metadataContentAreaWrapEle.empty();
+		$(_self.options.dbServiceMenuContentId).empty();
 	}
 	,getMetaContentWrapEle:function (){
 		return this.options.metadataContentAreaWrapEle; 
 	}
-	// 왼쪽 상단 텝 메뉴 그리기
+	// object service 텝 메뉴 그리기
 	,_tabs : function (){
 		var _self = this; 
 	
@@ -1596,23 +1594,26 @@ _ui.dbSchemaObjectServiceMenu ={
 		var _self = this;
 		//_self.getMetaContentWrapEle().empty();
 		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadata_content_areaId.replace('#', '')+'"></div>');
+		var metaEleId =_self.options.metadataContentAreaWrapId+type; 
 		
-		var tmpEle = $(_self.options.metadataContentAreaWrapId+type);
+		var tmpEle = $(metaEleId);
 		
 		if(!tmpEle.hasClass('on')){
 			$('.varsql-meta-cont-ele.on').removeClass('on');
 			tmpEle.addClass('on');
 		}
 		
-		if(tmpEle.length < 1){
-			_self.getMetaContentWrapEle().append('<div id="'+ (_self.options.metadataContentAreaWrapId+type).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
-		}
+		var gridObj = $.pubGrid(metaEleId);
 		
-		var gridObj = $.pubGrid(_self.options.metadataContentAreaWrapId+type);
+		if(tmpEle.length < 1){
+			gridObj = gridObj ? gridObj.destory():false;
+			
+			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
+		}
 		
 		if(gridObj){
 			gridObj.setData(gridData.data,'reDraw');
-			return ; 
+			return ;
 		}
 		
 		var contextItem = [
@@ -1641,7 +1642,7 @@ _ui.dbSchemaObjectServiceMenu ={
 			]
 		}
 		
-		var gridObj = $.pubGrid(_self.options.metadataContentAreaWrapId+type, {
+		var gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {
 				redraw : false
 			}
