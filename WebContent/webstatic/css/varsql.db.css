@@ -892,15 +892,17 @@ hr.dotline {
 }
 
 .varsql-pubtab-area{
+	position:relative;
 	width:100%;
 	height: 20px;
-	position:relative;
+	z-index:1;
 }
 
 .varsql-pubtab-cont-area{
 	width:100%;
 	height: calc(100% - 20px);
 	position:relative;
+	z-index: 0;
 }
 
 .varsql-tab-area{
