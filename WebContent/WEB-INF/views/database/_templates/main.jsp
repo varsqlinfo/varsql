@@ -137,9 +137,9 @@ $(document).ready(function(){
 <!-- meta data 영역 -->
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div class="pos-relative-w-h100">
-	<div id="varsqlMetaServiceMenu" class="varsql-tab-area">asdfasdf</div>
+	<div id="metadataTabAreaWrap" class="varsql-pubtab-area"></div>
 	
-	<div id="metadataContentAreaWrap" class="varsql-tab-cont-area"></div>			
+	<div id="metadataContentAreaWrap" class="varsql-pubtab-cont-area"></div>			
 </div>
 </script>
 

@@ -560,11 +560,12 @@ hr.dotline {
   display: table-cell;
 }
 
-.varsql-meta-cont-ele{
+
+.varsql-meta-cont-ele, .varsql-meta-tab-ele{
 	height:100%;
 	display:none; 
 }
-.varsql-meta-cont-ele.on{
+.varsql-meta-cont-ele.on, .varsql-meta-tab-ele.on{
 	display:block; 
 }
 
@@ -890,7 +891,13 @@ hr.dotline {
 	z-index: 0;
 }
 
-.varsql-tab-cont-area{
+.varsql-pubtab-area{
+	width:100%;
+	height: 20px;
+	position:relative;
+}
+
+.varsql-pubtab-cont-area{
 	width:100%;
 	height: calc(100% - 20px);
 	position:relative;

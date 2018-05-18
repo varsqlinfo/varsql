@@ -623,12 +623,43 @@ _ui.dbSchemaObjectServiceMenu ={
 	initFlag : false
 	,metadataCache : {}
 	,metaGridHeight :150
+	,metaTabMenu :{
+		'table' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'view' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'procedure' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'function' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'package' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'trigger' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+		,'index' :[
+			{name: "Column", tab: "column"}
+			,{name: "DDL", tab: "ddl"}
+		]
+	}
 	,options :{
 		selector:'#varsqlDbServiceMenu'
 		,menuData:[]
 		,param:{}
 		,dbServiceMenuContentId:'#dbServiceMenuContent'
 		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
+		,metadataTabAreaWrapId:'#metadataTabAreaWrap'
 		,metadataContentAreaWrapEle:null
 		,metadata_content_areaId:'#metadata_content_area'
 		,metadata_content_areaIdEle:null
@@ -666,11 +697,15 @@ _ui.dbSchemaObjectServiceMenu ={
 	,initElement :function (){
 		var _self = this;
 		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
+		_self.options.metadataTabAreaWrapEle = $(_self.options.metadataTabAreaWrapId);
 		_self.options.metadataContentAreaWrapEle.empty();
 		$(_self.options.dbServiceMenuContentId).empty();
 	}
 	,getMetaContentWrapEle:function (){
 		return this.options.metadataContentAreaWrapEle; 
+	}
+	,getMetadataTabAreaWrapEle:function (){
+		return this.options.metadataTabAreaWrapEle; 
 	}
 	// object service 텝 메뉴 그리기
 	,_tabs : function (){
@@ -785,6 +820,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		var callMethod = _self.getCallMethod(callMethod);
 		
 		var metaEleId =_self.options.metadataContentAreaWrapId+objType; 
+		var metaTabId =_self.options.metadataTabAreaWrapId+objType; 
 		
 		var tmpEle = $(metaEleId);
 		
@@ -797,8 +833,23 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if(tmpEle.length < 1){
 			gridObj = gridObj ? gridObj.destory():false;
-			
 			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
+		}
+		
+		if( $(metaTabId).length < 1){
+			_self.getMetadataTabAreaWrapEle().append('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-meta-tab-ele on"></div>');
+			
+			$.pubTab(metaTabId,{
+				items : _self.metaTabMenu[objType]
+				,width : 'auto'
+				,height:20
+				,overItemViewMode :'drop'
+				,click : function (item){
+					var sObj = $(this);
+					console.log(item);
+				}
+			})
+			
 		}
 		
 		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 케쉬
@@ -1163,7 +1214,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		var metaEleId = _self.options.metadataContentAreaWrapId+'table'; 
 		var items = colData.items;
 		
-		if(dataLoadFlag===true){ // 데이타 세로 로드시 cache에 추가. 
+		if(reloadFlag===true){ // 데이타 세로 로드시 cache에 추가. 
 			var colArr = [];
 			$.each(items , function (i , item){
 				colArr.push(item.name);

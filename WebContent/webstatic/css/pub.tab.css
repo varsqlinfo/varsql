@@ -11,6 +11,7 @@
 	background: #fff;
     height: 25px;
     padding-top: 2px;
+	width:100%;
 	-webkit-box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	box-sizing: content-box !important;
@@ -24,6 +25,7 @@
 
 .pubTab{
 	position:relative;
+	width:100%;
 	border-bottom: 1px solid #bfb8b8;
 	margin-bottom: 2px;
 }
@@ -36,7 +38,7 @@
 
 .pubTab-move-area{
 	z-index:5;
-	position:absolute; 
+	position:absolute;
 	right:0px;
 	top:0px;
     margin-top: 1px;

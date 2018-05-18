@@ -14,7 +14,7 @@
 		,_datastore = {}
 		,defaults = {
 			speed : 150
-			,width:300
+			,width:'auto'
 			,overItemViewMode : 'drop'
 			,moveZIndex : 9				// move 영역 z- index
 			,filter: function ($obj) {
@@ -176,7 +176,24 @@
 			})
 			*/
 		}
-		,setWidth : function (val){
+		,refresh : function (){
+			var _this = this; 
+			var eleW = _this.element.width();
+
+			if(_this.config.totalWidth > eleW){
+				$('#'+_this.contextId+'pubTab-move-space').show();
+				_this.element.find('.pubTab-move-area').show();
+			}else{
+				_this.element.find('.pubTab-item-cont').removeClass('pubTab-hide');
+				$('#'+_this.contextId+'pubTab-move-space').hide();
+				_this.element.find('.pubTab-move-area').hide();
+				_this.config.tabContainerElement.css('left', '0px');
+			}
+
+		}
+		,setWidth : function (vasl){
+			this.refresh();
+			return ; 
 			var _this = this; 
 			val = isNaN(val) ? _this.config.width :val;
 
