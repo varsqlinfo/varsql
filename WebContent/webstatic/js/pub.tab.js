@@ -206,6 +206,10 @@
 				_this.config.tabContainerElement.css('left', '0px');
 			}
 		}
+		,getSelectItem : function(){
+			var sEle = this.element.find('.pubTab-item-cont.active'); 
+			return this.options.items[sEle.data('tab-idx')];
+		}
 		,destory:function (){
 			
 		}

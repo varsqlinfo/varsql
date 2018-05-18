@@ -49,6 +49,11 @@ VARSQLHints.tables = {};
 	  }
   }
   
+  VARSQLHints.isTableColumns = function (tableNm){
+	  tableNm = tableNm.toUpperCase();
+	  return typeof tables[tableNm] === 'undefined';
+  }
+  
   VARSQLHints.getHintsInfo = function (){
 	 return tables; 
   }

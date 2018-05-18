@@ -694,8 +694,11 @@ _ui.dbSchemaObjectServiceMenu ={
 			,click : function (item){
 				var sObj = $(this);
 				
-				var refresh = sObj.attr('refresh')=='Y'?true:false; 
+				var refresh = sObj.attr('refresh')=='Y'?true:false;
 				sObj.attr('refresh','N');
+				if(refresh===true){
+					_self._removeMetaCache(item.contentid);
+				}
 				_self._dbObjectList(item, refresh);
 			}
 		})
@@ -709,12 +712,11 @@ _ui.dbSchemaObjectServiceMenu ={
 			items:[
 			       {key:'refresh' ,name: '새로고침'},
     		]
-			,callback:function (key){
-	    		var sObj = this.element;
+			,callback:function (key, item){
+	    		var sEle = this.element;
 	    		
 	        	if(key=='refresh'){
-	        		_self._removeMetaCache();
-	        		sObj.attr('refresh','Y').trigger('click');
+	        		sEle.attr('refresh','Y').trigger('click');
 	        	}
 	    	}
 		});
@@ -776,15 +778,36 @@ _ui.dbSchemaObjectServiceMenu ={
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectMetadataList:function(param,callMethod,refresh){
-		var _self = this;
+		var _self = this
+			,objType = param.gubun
+			,objName = param.objectName; 
 		
 		var callMethod = _self.getCallMethod(callMethod);
 		
+		var metaEleId =_self.options.metadataContentAreaWrapId+objType; 
+		
+		var tmpEle = $(metaEleId);
+		
+		if(!tmpEle.hasClass('on')){
+			$('.varsql-meta-cont-ele.on').removeClass('on');
+			tmpEle.addClass('on');
+		}
+		
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(tmpEle.length < 1){
+			gridObj = gridObj ? gridObj.destory():false;
+			
+			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
+		}
+		
+		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 케쉬
+		
 		if(!refresh){
-			var cacheData = _self._getMetaCache(param.gubun,param.objectName);
+			var cacheData = _self._getMetaCache(objType,objName);
 		
 			if(cacheData){
-				callMethod.call(_self,cacheData, param);
+				callMethod.call(_self,cacheData, param , false);
 				return ; 
 			}
 		}
@@ -795,9 +818,102 @@ _ui.dbSchemaObjectServiceMenu ={
 			,async:false
 			,data:param
 			,success:function (resData){
-				_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
+				_self._setMetaCache(objType,objName, resData); // data cache
 				
-				callMethod.call(_self,resData, param);
+				callMethod.call(_self,resData, param , true);
+			}
+		});
+	}
+	// 메타 데이타 그리기.
+	,setMetadataGrid :function (gridData, type, reloadFlag){
+		var _self = this;
+		
+		var metaEleId =_self.options.metadataContentAreaWrapId+type; 
+		
+		var tmpEle = $(metaEleId);
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(gridObj){
+			gridObj.setData(gridData.data,'reDraw');
+			return ;
+		}
+		
+		var contextItem = [
+			{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+		];
+		
+		if(type == 'table'){
+			contextItem = [
+				{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+				,{divider:true}
+				,{key : "sql_create", "name": "sql생성" 
+					,subMenu: [
+						{ key : "select","name": "select" ,mode:"select"}
+						,{ key : "insert","name": "insert" , mode:"insert"}
+						,{ key : "update","name": "update" ,mode:"update"}
+					]
+				}
+				,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
+					,subMenu : [
+						{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
+						,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
+						,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
+						,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
+					]
+				}
+			]
+		}
+		
+		var gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {
+				redraw : false
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+			}
+			,page :false
+			,height:'auto'
+			,autoResize :false
+			,tColItem : gridData.column
+			,tbodyItem :gridData.data
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,disableItemKey : function (items){
+						if(gridObj.getSelectItem(['name']).length < 1){
+							return [
+								{key :'sql_create' , depth :0	}
+								,{key :'mybatis-sql_create' , depth :0}	
+							]; 
+						}
+						
+						return [];
+						
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						var cacheData = gridObj.getSelectItem(['name']);
+						key = sObj.mode;
+						
+						_self._createScriptSql({
+							gubunKey : key
+							,gubun : 'table'
+							,objName :  _self.selectMetadata['table']
+							,item : {
+								items:cacheData
+							}
+							,param_yn: sObj.param_yn
+						});
+						
+					},
+					items: contextItem
+				}
 			}
 		});
 	}
@@ -1042,35 +1158,103 @@ _ui.dbSchemaObjectServiceMenu ={
 		}
 	}
 	//테이블에 대한 메타 정보 보기 .
-	,_tableMetadata :function (colData ,reqParam){
+	,_tableMetadata :function (colData ,reqParam , reloadFlag){
 		var _self = this;
+		var metaEleId = _self.options.metadataContentAreaWrapId+'table'; 
+		var items = colData.items;
 		
-		try{
-			var items = colData.items;
-			
+		if(dataLoadFlag===true){ // 데이타 세로 로드시 cache에 추가. 
 			var colArr = [];
 			$.each(items , function (i , item){
 				colArr.push(item.name);
 			});
-			
 			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
-			
-    		var gridObj = {
-    			data:items
-    			,column : [
-					{ label: '컬럼명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'typeAndLength' },
-					{ label: '널여부', key: 'nullable',width:45},
-					{ label: 'Key', key: 'constraints',width:45},
-					{ label: '설명', key: 'comment',width:45}
-				]
-    		};
-			
-    		_self.selectMetadata['table'] = reqParam.objectName;
-    		_self.setMetadataGrid(gridObj, 'table');
- 		}catch(e){
-			VARSQL.log.info(e);
 		}
+		
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(gridObj){
+			gridObj.setData(items,'reDraw');
+			return ;
+		}
+		
+		var gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {
+				redraw : false
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+			}
+			,page :false
+			,height:'auto'
+			,autoResize :false
+			,tColItem : [
+				{ label: '컬럼명', key: 'name',width:80 },
+				{ label: '데이타타입', key: 'typeAndLength' },
+				{ label: '널여부', key: 'nullable',width:45},
+				{ label: 'Key', key: 'constraints',width:45},
+				{ label: '설명', key: 'comment',width:45}
+			]
+			,tbodyItem :items
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,disableItemKey : function (items){
+						if(gridObj.getSelectItem(['name']).length < 1){
+							return [
+								{key :'sql_create' , depth :0	}
+								,{key :'mybatis-sql_create' , depth :0}	
+							]; 
+						}
+						
+						return [];
+						
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						
+						var cacheData = gridObj.getSelectItem(['name']);
+						key = sObj.mode;
+						
+						_self._createScriptSql({
+							gubunKey : key
+							,gubun : 'table'
+							,objName :  _self.selectMetadata['table']
+							,item : {
+								items:cacheData
+							}
+							,param_yn: sObj.param_yn
+						});
+						
+					},
+					items: [
+						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						,{divider:true}
+						,{key : "sql_create", "name": "sql생성" 
+							,subMenu: [
+								{ key : "select","name": "select" ,mode:"select"}
+								,{ key : "insert","name": "insert" , mode:"insert"}
+								,{ key : "update","name": "update" ,mode:"update"}
+							]
+						}
+						,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
+							,subMenu : [
+								{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
+								,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
+								,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
+								,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
+							]
+						}
+					]
+				}
+			}
+		});
 	}
 	//view 정보 보기.
 	,_view:function (resData ,reqParam){
@@ -1588,112 +1772,6 @@ _ui.dbSchemaObjectServiceMenu ={
  		}catch(e){
 			VARSQL.log.info(e);
 		}
-	}
-	// 메타 데이타 그리기.
-	,setMetadataGrid :function (gridData, type){
-		var _self = this;
-		//_self.getMetaContentWrapEle().empty();
-		//_self.getMetaContentWrapEle().html('<div id="'+_self.options.metadata_content_areaId.replace('#', '')+'"></div>');
-		var metaEleId =_self.options.metadataContentAreaWrapId+type; 
-		
-		var tmpEle = $(metaEleId);
-		
-		if(!tmpEle.hasClass('on')){
-			$('.varsql-meta-cont-ele.on').removeClass('on');
-			tmpEle.addClass('on');
-		}
-		
-		var gridObj = $.pubGrid(metaEleId);
-		
-		if(tmpEle.length < 1){
-			gridObj = gridObj ? gridObj.destory():false;
-			
-			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
-		}
-		
-		if(gridObj){
-			gridObj.setData(gridData.data,'reDraw');
-			return ;
-		}
-		
-		var contextItem = [
-			{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
-		];
-		
-		if(type == 'table'){
-			contextItem = [
-				{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
-				,{divider:true}
-				,{key : "sql_create", "name": "sql생성" 
-					,subMenu: [
-						{ key : "select","name": "select" ,mode:"select"}
-						,{ key : "insert","name": "insert" , mode:"insert"}
-						,{ key : "update","name": "update" ,mode:"update"}
-					]
-				}
-				,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
-					,subMenu : [
-						{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
-						,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
-						,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
-						,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
-					]
-				}
-			]
-		}
-		
-		var gridObj = $.pubGrid(metaEleId, {
-			headerOptions : {
-				redraw : false
-			}
-			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-			}
-			,page :false
-			,height:'auto'
-			,autoResize :false
-			,tColItem : gridData.column
-			,tbodyItem :gridData.data
-			,rowOptions :{
-				contextMenu : {
-					beforeSelect :function (){
-						$(this).trigger('click');
-					}
-					,disableItemKey : function (items){
-						if(gridObj.getSelectItem(['name']).length < 1){
-							return [
-								{key :'sql_create' , depth :0	}
-								,{key :'mybatis-sql_create' , depth :0}	
-							]; 
-						}
-						
-						return [];
-						
-					}
-					,callback: function(key,sObj) {
-						
-						if(key =='copy'){
-							gridObj.copyData();
-							return ; 
-						}
-						var cacheData = gridObj.getSelectItem(['name']);
-						key = sObj.mode;
-						
-						_self._createScriptSql({
-							gubunKey : key
-							,gubun : 'table'
-							,objName :  _self.selectMetadata['table']
-							,item : {
-								items:cacheData
-							}
-							,param_yn: sObj.param_yn
-						});
-						
-					},
-					items: contextItem
-				}
-			}
-		});
 	}
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
