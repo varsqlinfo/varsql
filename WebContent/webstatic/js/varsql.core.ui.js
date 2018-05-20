@@ -654,9 +654,9 @@ _ui.dbSchemaObjectServiceMenu ={
 		]
 	}
 	,options :{
-		selector:'#varsqlDbServiceMenu'
-		,menuData:[]
+		menuData:[]
 		,param:{}
+		,serviceMenuTabId:'#varsqlDbServiceMenu'
 		,dbServiceMenuContentId:'#dbServiceMenuContent'
 		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
 		,metadataTabAreaWrapId:'#metadataTabAreaWrap'
@@ -676,20 +676,26 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if(_self.initFlag ===false){
 			_self._tabs();
-			$($('.service_menu_tab')[0]).trigger('click');
+			$.pubTab(_self.options.serviceMenuTabId).itemClick();
 		}else{
-			$($('.service_menu_tab')[0]).attr('refresh','Y').trigger('click');
+			$.pubTab(_self.options.serviceMenuTabId).itemClick(0, {'refresh':'Y'});
 		}
-		
 		_self.initFlag = true; 
 	}
 	,_initCacheObject : function (){
+		var _self = this;
 		var menuData = this.options.menuData;
 		
 		for(var i =0; i<menuData.length; i++){
 			var serviceObj = menuData[i];
 			var serviceNm =serviceObj.contentid; 
 			this.metadataCache[serviceNm] = {};
+			
+			var seviceGrid  =$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+serviceNm);
+			
+			if(!VARSQL.isUndefined(seviceGrid)){
+				seviceGrid.setData([],'reDraw');
+			}
 		}
 		
 		this.selectMetadata = {}; // 선택한 메뉴 
@@ -698,8 +704,9 @@ _ui.dbSchemaObjectServiceMenu ={
 		var _self = this;
 		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
 		_self.options.metadataTabAreaWrapEle = $(_self.options.metadataTabAreaWrapId);
-		_self.options.metadataContentAreaWrapEle.empty();
-		$(_self.options.dbServiceMenuContentId).empty();
+		
+		//_self.options.metadataContentAreaWrapEle.empty();
+		//$(_self.options.dbServiceMenuContentId).empty();
 	}
 	,getMetaContentWrapEle:function (){
 		return this.options.metadataContentAreaWrapEle; 
@@ -718,9 +725,9 @@ _ui.dbSchemaObjectServiceMenu ={
 		var item; 
 		
 		$(_self.options.dbServiceMenuContentId).empty();
-		$(_self.options.selector).empty();
+		$(_self.options.serviceMenuTabId).empty();
 		
-		$.pubTab(_self.options.selector,{
+		$.pubTab(_self.options.serviceMenuTabId,{
 			items :data
 			,width : 'auto'
 			,height:20
@@ -849,9 +856,21 @@ _ui.dbSchemaObjectServiceMenu ={
 					console.log(item);
 				}
 			})
-			
 		}
 		
+		$.pubTab(metaTabId).itemClick();
+		
+		
+		/***
+		 * 클릭 했을때 tab 부분 추가 할것. 
+		 */
+		
+		
+		
+		
+		
+		
+
 		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 케쉬
 		
 		if(!refresh){

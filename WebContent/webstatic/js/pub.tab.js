@@ -176,6 +176,16 @@
 			})
 			*/
 		}
+		,itemClick : function (idx, addAttr){
+			idx = isNaN(idx) ? 0 :idx; 
+			addAttr = addAttr || {};
+			var clickEle = $(this.element.find('.pubTab-item-cont').get(idx));
+			
+			for(var key in addAttr){
+				clickEle.attr(key , addAttr[key]);
+			}
+			clickEle.trigger('click')
+		}
 		,refresh : function (){
 			var _this = this; 
 			var eleW = _this.element.width();
