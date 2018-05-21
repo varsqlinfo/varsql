@@ -843,7 +843,13 @@ _ui.dbSchemaObjectServiceMenu ={
 			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
 		}
 		
-		if( $(metaTabId).length < 1){
+		var tmpMetaEle =$(metaTabId); 
+		if(!tmpMetaEle.hasClass('on')){
+			$('.varsql-meta-tab-ele.on').removeClass('on');
+			tmpMetaEle.addClass('on');
+		}
+		
+		if(tmpMetaEle.length < 1){
 			_self.getMetadataTabAreaWrapEle().append('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-meta-tab-ele on"></div>');
 			
 			$.pubTab(metaTabId,{
