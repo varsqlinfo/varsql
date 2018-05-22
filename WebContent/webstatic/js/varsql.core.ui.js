@@ -168,7 +168,7 @@ _ui.layout = {
 					,containerH = container.height-60; 
 				
 				try{
-					$.pubTab(_ui.dbSchemaObjectServiceMenu.options.selector).setWidth(containerW);
+					$.pubTab(_ui.dbSchemaObjectServiceMenu.options.serviceMenuTabId).refresh();
 				
 					$.pubGrid(_ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width : containerW,height : containerH});
 				}catch(e){
@@ -1662,7 +1662,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 			var itemArr = resData.items;
     				
-			$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var indexObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
 				headerView:true
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
@@ -1699,7 +1699,7 @@ _ui.dbSchemaObjectServiceMenu ={
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
 							if(key =='copy'){
-								procedureObj.copyData();
+								indexObj.copyData();
 								return ; 
 							}
 							
@@ -1764,7 +1764,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 			var itemArr = resData.items;
     				
-			$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
 				headerView:true
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
@@ -1800,7 +1800,7 @@ _ui.dbSchemaObjectServiceMenu ={
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
 							if(key =='copy'){
-								procedureObj.copyData();
+								triggerGridObj.copyData();
 								return ; 
 							}
 							
@@ -2342,6 +2342,25 @@ _ui.SQL = {
 			_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
 		}
 	}
+	,addGridDataToEditArea : function(rowItem){
+		var _self = this; 
+		
+		var startCursor = _self.getTextAreaObj().getCursor(true);
+		
+		var cellVal = rowItem.item[rowItem.keyItem.key];
+		
+		var addLineArr = cellVal.split(VARSQLCont.constants.newline)
+			,addLineCnt =addLineArr.length;
+		
+		_self.getTextAreaObj().replaceSelection(cellVal);
+		_self.getTextAreaObj().focus();
+		
+		if(addLineCnt > 1){
+			_self.getTextAreaObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
+		}else{
+			_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch +cellVal.length})
+		}
+	}
 	// sql result column typ
 	,viewResultColumnType : function (){
 		var _self = this; 
@@ -2369,6 +2388,11 @@ _ui.SQL = {
 				,{label: "TYPE", key: "dbType"}
 			]
 			,tbodyItem :columnTypeArr
+			,bodyOptions :{
+				cellDblClick : function (rowItem){
+					_self.addGridDataToEditArea(rowItem);
+				}
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -3117,21 +3141,7 @@ _ui.SQL = {
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					var startCursor = _self.getTextAreaObj().getCursor(true);
-					
-					var cellVal = rowItem.item[rowItem.keyItem.key];
-					
-					var addLineArr = cellVal.split(VARSQLCont.constants.newline)
-						,addLineCnt =addLineArr.length;
-					
-					_self.getTextAreaObj().replaceSelection(cellVal);
-					_self.getTextAreaObj().focus();
-					
-					if(addLineCnt > 1){
-						_self.getTextAreaObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
-					}else{
-						_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch +cellVal.length})
-					}
+					_self.addGridDataToEditArea(rowItem);
 				}
 			}
 			,tColItem : pGridData.column

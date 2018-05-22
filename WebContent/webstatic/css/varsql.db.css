@@ -325,10 +325,10 @@ hr.dotline {
 }
 
 .sql-result-tab> li{
-	float:left;
-	display: block;
+	display: table-cell;
     border: 1px solid transparent;
     font-weight: normal;
+    white-space: nowrap;
 }
 
 .sql-result-tab>li.on{
@@ -342,7 +342,7 @@ hr.dotline {
     position: relative;
     display: block;
     padding: 0px 10px 0px 10px;
-    line-height: 22px;
+    line-height: 19px;
     color: #000;
 }
 
@@ -914,7 +914,7 @@ hr.dotline {
 
 .varsql-tab-cont-area{
 	width:100%;
-	height: calc(100% - 26px);
+	height: calc(100% - 27px);
 	position:relative;
 }
 
