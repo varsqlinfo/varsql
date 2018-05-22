@@ -2349,6 +2349,8 @@ _ui.SQL = {
 		
 		var cellVal = rowItem.item[rowItem.keyItem.key];
 		
+		cellVal = cellVal+'';
+		
 		var addLineArr = cellVal.split(VARSQLCont.constants.newline)
 			,addLineCnt =addLineArr.length;
 		
