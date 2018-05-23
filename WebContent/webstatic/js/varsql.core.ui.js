@@ -1364,7 +1364,7 @@ _ui.dbSchemaObjectServiceMenu ={
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 			
-			$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
 				headerView:true
 				,height:'auto'
 				,asideOptions :{
@@ -1394,6 +1394,11 @@ _ui.dbSchemaObjectServiceMenu ={
 							var gubun=$$gubun
 								,tmpName = sItem.name;
 							
+							if(key =='copy'){
+								gridObj.copyData();
+								return ; 
+							}
+							
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
 							if(key=='ddl_copy' || key=='ddl_paste'){
@@ -1406,7 +1411,8 @@ _ui.dbSchemaObjectServiceMenu ={
 							}
 						},
 						items: [
-							{key : "sql_create", "name": "sql생성" 
+							{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+							,{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
 									,{ key : "select","name": "select column" ,mode:"select"}
@@ -1563,7 +1569,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 			var itemArr = resData.items;
     				
-			$.pubGrid(_self.options.dbServiceMenuContentId+'>#function',{
+			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#function',{
 				headerView:true
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
@@ -1597,7 +1603,7 @@ _ui.dbSchemaObjectServiceMenu ={
 							var cacheData = _self._getMetaCache(gubun,tmpName);
 							
 							if(key =='copy'){
-								procedureObj.copyData();
+								gridObj.copyData();
 								return ; 
 							}
 							
@@ -3203,7 +3209,7 @@ _ui.text={
 	clipboardObj :false
 	,clipBoardEle : false
 	,modalEle :false
-	,copy :function (copyString){
+	,copy :function (copyString, copyType){
 		var _this = this; 
 		
 		var strHtm = [];
@@ -3211,7 +3217,7 @@ _ui.text={
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
 			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="width-height100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql width-height100"></pre><div id="data-orgin--area" style="display:none;"></div></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql width-height100"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
@@ -3234,15 +3240,25 @@ _ui.text={
 			$($('[aria-describedby="data-copy-modal"] .ui-dialog-buttonset button.ui-button')[0]).addClass('varsql-copy-btn');
 			new Clipboard('.varsql-copy-btn', {
 			  text: function(trigger) {
-				  return $('#data-orgin--area').html();
+				  return $('#data-orgin-area').val();
 			  }
 			});
 		}else{
 			_this.modalEle.dialog( "open" );
 		}
 		
-		$('#data-copy-area').empty().html(copyString).removeClass('prettyprinted');
-		$('#data-orgin--area').empty().html(copyString);
+		var dataCopyArea = $('#data-copy-area'); 
+		dataCopyArea.empty().html(copyString).removeClass('prettyprinted');
+		
+		dataCopyArea.scrollTop(0);
+		
+		if(copyType=='java'){
+			dataCopyArea.removeClass('lang-sql').addClass('language-java');
+		}else{
+			dataCopyArea.removeClass('language-java').addClass('lang-sql');
+		}
+		
+		$('#data-orgin-area').val(copyString);
 		PR.prettyPrint();
 	}
 }
@@ -3279,7 +3295,7 @@ _ui.JAVA = {
 			var methodStr = [];
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
-				var tmpDbType = VARSQLCont.dataType.getDbType(item[VARSQLCont.tableColKey.DATA_TYPE])
+				var tmpDbType = VARSQLCont.dataType.getDataTypeInfo(item[VARSQLCont.tableColKey.DATA_TYPE])
 					,tmpJavaType=tmpDbType.javaType
 					,tmpColumnNm = convertCamel(item[VARSQLCont.tableColKey.NAME])
 					,tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
@@ -3331,7 +3347,7 @@ _ui.JAVA = {
 		else if(key=='java_valid'){
 			reval = javaCreate('valid');
 		}
-		_ui.text.copy(reval);
+		_ui.text.copy(reval , 'java');
 	}
 }
 	
