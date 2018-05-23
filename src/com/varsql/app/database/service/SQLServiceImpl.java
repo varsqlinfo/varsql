@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -61,6 +62,8 @@ public class SQLServiceImpl{
 	private SQLDAO sqlDAO ;
 	
 	private Calendar calendar = Calendar.getInstance();
+	
+	private SimpleDateFormat endDateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * 
@@ -152,6 +155,7 @@ public class SQLServiceImpl{
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
+			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 						

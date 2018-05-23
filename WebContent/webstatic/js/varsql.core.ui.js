@@ -29,6 +29,7 @@ var _defaultOptions = {
 			,speed :-1			// scroll speed
 		}
 	}
+	,dateFormat :'yyyy-MM-dd hh:mm:ss'
 }
 
 var _g_options={
@@ -1919,7 +1920,7 @@ _ui.SQL = {
 		// data grid araea
 		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
 		resultGridHtm.push('<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>');
-		resultGridHtm.push('<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;bottom:0px;left:0px;top:0px;right:0px;"></iframe>');
+		resultGridHtm.push('<div id="resultMsgAreaWrap"  class="sql-result-area user-select-on" tab_gubun="msg"></div>');
 		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
 	,_initEditor : function (){
@@ -2667,14 +2668,7 @@ _ui.SQL = {
 		var _self = this; 
 		
 		if(_self.resultMsgAreaObj==null){
-			var msgEle = $(_self.options.resultMsgAreaWrap).contents();
-			var msgStyle = '<style>body{margin:0px;}.error-log-message{font-size:12px;color:#dd4b39;padding-bottom: 3px;border-bottom: 1px solid #f1e4e4;}'
-				+'.success-log-message{	font-size:12px;color:#000099;padding-bottom: 3px;border-bottom: 1px solid #f1e4e4;}</style>';
-			
-			msgEle.find('head').html(msgStyle);
-			
-			_self.resultMsgAreaObj = msgEle.find('body');
-			_self.resultMsgAreaObj.attr('oncontextmenu', "return false");
+			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
 		}
 		return _self.resultMsgAreaObj; 
 	}
@@ -2794,7 +2788,7 @@ _ui.SQL = {
 		    			
 		    			var errQuery = responseData.item.query; 
 		    			msgViewFlag =true; 
-		    			resultMsg.push('<div class="error-log-message">#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+errQuery));
+		    			resultMsg.push('<div class="error-log-message"><span class="log-end-time">'+milli2str(responseData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+errQuery));
 		    			
 		    			var stdPos = _self.getSelectionStartPos();
 		    			
@@ -2833,7 +2827,7 @@ _ui.SQL = {
 		    					_self._currnetQueryReusltData =item;
 		    				}
 		    				    				
-		    				resultMsg.push('<div class="'+resultClass+'">#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
+		    				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
 		    			}
 		    		}
 	    			if(msgViewFlag){
@@ -3439,6 +3433,25 @@ function copyStringToClipboard (prefix , copyText) {
 	document.addEventListener('copy', handler);
 
 	document.execCommand('copy');
+}
+
+function milli2str(milliTime, format) {
+	
+	var inDate = new Date(milliTime);
+    var z = {
+        M: inDate.getMonth() + 1,
+        d: inDate.getDate(),
+        h: inDate.getHours(),
+        m: inDate.getMinutes(),
+        s: inDate.getSeconds()
+    };
+    format = format.replace(/(M+|d+|h+|m+|s+)/g, function(v) {
+        return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2)
+    });
+
+    return format.replace(/(y+)/g, function(v) {
+        return inDate.getFullYear().toString().slice(-v.length)
+    });
 }
 
 function capitalizeFirstLetter(str) {
