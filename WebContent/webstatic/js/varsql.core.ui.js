@@ -2175,6 +2175,12 @@ _ui.SQL = {
 			_self.searchFindText(sqlFindText);
 		});
 		
+		$('#sqlFindText').on('keydown',function(e) {
+			if (e.keyCode == '13') {
+				$('.sql_find_btn').trigger('click');
+			}
+		});
+		
 		// 자동 줄바꿈.
 		$('.sql_linewrapper_btn').on('click',function (evt){
 			var lineWrapping = _self.sqlTextAreaObj.getOption('lineWrapping');
@@ -2337,16 +2343,25 @@ _ui.SQL = {
 		});
 	}
 	// 검색.
-	,searchFindText : function (schTxt){
+	,searchFindText : function (schTxt , wrapSearch){
 		var _self = this; 
 		
-		var endPos = _self.sqlTextAreaObj.listSelections()[0].head;
+		var endPos = _self.getSelectionPosition(true);
 		
 		var cursor =_self.sqlTextAreaObj.getSearchCursor(schTxt, endPos);
 		_self.sqlEditorSearchCursor = cursor; 
 		
-		if(cursor.findNext()){
+		var isNext = cursor.find(false);
+		
+		if(wrapSearch===true && isNext===false){
+			alert('다음 문자열을 찾을수 없습니다.\n'+schTxt);
+			return ;
+		}
+		if(isNext){
 			_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+		}else{
+			_self.getTextAreaObj().setCursor({line: 0, ch: 0});
+			_self.searchFindText(schTxt, true);
 		}
 	}
 	,addGridDataToEditArea : function(rowItem){
@@ -2739,16 +2754,18 @@ _ui.SQL = {
 		
 		_self._sqlData(sqlVal,true);
 	}
-	,getSelectionStartPos : function(){
+	,getSelectionPosition : function(endFlag){
 		var std = this.sqlTextAreaObj.listSelections()[0].anchor
 		,end = this.sqlTextAreaObj.listSelections()[0].head;
-	
-		if(std.line < end.line){
-			std  = end;
+		
+		var isChange = false; 
+		if(std.line > end.line){
+			isChange = true; 
 		}else if(std.line == end.line && std.ch > end.ch){
-			std  = end;
+			isChange = true;
 		}
-		return std;
+		
+		return endFlag===true ? (isChange ? std :end ): (isChange ? end :std);
 	}
 	// sql 데이타 보기 
 	,_sqlData :function (sqlVal, paramFlag){
@@ -2790,7 +2807,7 @@ _ui.SQL = {
 		    			msgViewFlag =true; 
 		    			resultMsg.push('<div class="error-log-message"><span class="log-end-time">'+milli2str(responseData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+errQuery));
 		    			
-		    			var stdPos = _self.getSelectionStartPos();
+		    			var stdPos = _self.getSelectionPosition();
 		    			
 		    			var cursor =_self.sqlTextAreaObj.getSearchCursor(errQuery, stdPos);
 		    			
@@ -2862,7 +2879,7 @@ _ui.SQL = {
 			tmpEditor.setSelection(startSelection, {line:10000,ch:0});
 			sqlVal  = tmpEditor.getValue();
 		}else{
-			startSelection = _self.getSelectionStartPos();
+			startSelection = _self.getSelectionPosition();
 		}
 		
 		if(''== sqlVal) return ; 
@@ -2881,6 +2898,9 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	var linecnt = VARSQL.matchCount(res,VARSQLCont.constants.newline);
 	    		tmpEditor.replaceSelection(res);
+	    		
+	    		console.log(startSelection, linecnt , res);
+	    		
 	    		tmpEditor.setSelection(startSelection, {line:startSelection.line+linecnt,ch:0});
 			}
 		});  
@@ -3310,7 +3330,7 @@ _ui.JAVA = {
 				}
 				
 				var colComment = item[VARSQLCont.tableColKey.COMMENT];
-				colComment = colComment!='' ?' //'+colComment :'';
+				colComment = colComment !='' && colComment != null ?' //'+colComment :'';
 				
 				codeStr.push(tabStr+'private '+tmpJavaType+' ' +tmpColumnNm +';'+colComment+newLine+newLine);
 				
