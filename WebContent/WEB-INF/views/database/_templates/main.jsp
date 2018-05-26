@@ -6,7 +6,6 @@
 <title>${left_db_object.connInfo.name}::<spring:message code="screen.user" /></title>
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
-
 </head>
 <body class="database-main">
 <c:set var="pageType" value="custom9"></c:set>
@@ -40,59 +39,7 @@
 </c:choose>
 
 	
-	<div id="dbHiddenArea"></div>
-	
-	<div id="memoTemplate" style="display:none;" title="메시지 보내기">
-		<div style="margin: 0px -10px 0px -10px;">
-			<div class="col-xs-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<input type="text" id="recv_user_search" name="recv_user_search" class="form-control" placeholder="보낼사용자검색">
-						<div id="recv_autocomplete_area" class=""></div>
-					</div>
-					<!-- /.panel-heading -->
-					<div class="panel-body">
-						<div class="list-group memo-recv-id-cont" id="recvIdArr">
-						</div>
-					</div>
-					<!-- /.panel-body -->
-				</div>
-				<!-- /.panel -->
-			</div>
-			<!-- /.col-lg-4 -->
-			<div class="col-xs-6">
-				<div class="panel panel-default">
-					<!-- /.panel-heading -->
-					<div class="panel-body">
-						<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
-						<textarea id="memoContent" name="memoContent" class="form-control" rows="7" placeholder="내용"></textarea>
-					</div>
-					<!-- /.panel-body -->
-				</div>
-				<!-- /.panel -->
-			</div>
-			<!-- /.col-lg-8 -->
-		</div>
-	</div>
-	
-	<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
-		<iframe src="" class="preferences-frame"></iframe>
-	</div>
-	
-	<div id="aboutVarsqlDialog" style="display:none;margin:0px;padding:0px;" title="Varsql정보">
-		<div style="position:absolute; width:32px;height:32px;">
-			<img src="${pageContextPath}/webstatic/vt/vt32.png">
-		</div>
-		<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
-			<code style="width:100%;padding:0px;margin:0px;color:#000;">
-				<div style="padding-top :10px;">
-					<div style="font-weight: bold;font-size: 14pt;">Varsql 정보</div>
-					<div style="padding-top:10px;">Version : 0.5</div>
-					<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
-				</div>
-			</code>
-		</div>
-	</div>
+<%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>
 </body>
 
 <script>
@@ -240,13 +187,8 @@ $(document).ready(function(){
 			</div>
 		 	
 		 	<div class="pull-right">
-			 	<div style="width:220px;display:inline-block;">
+			 	<div style="width:50px;display:inline-block;">
 					<div class="input-group input-group-sm">
-				      	<input type="text" id="sqlFindText" name="sqlFindText" value="" class="form-control" placeholder="검색어">
-				      	<div class="input-group-btn"> 
-				      		<button class="btn btn-default sql_find_btn">find</button>
-						</div>
-						
 						 <span class="input-group-addon" style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
 						 	<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
 						 		<span class="fa fa-plus-square-o"></span>변수

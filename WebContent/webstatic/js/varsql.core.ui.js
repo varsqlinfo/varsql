@@ -404,6 +404,9 @@ _ui.headerMenu ={
 						case 'redo':	// 살리기
 							_ui.SQL.getTextAreaObj().redo();
 							break;
+						case 'find':	// 찾기
+							_ui.SQL.findTextOpen();
+							break;
 						case 'compare': //비교
 							alert('['+menu_mode2+'] 준비중입니다.');
 							break;
@@ -1873,6 +1876,7 @@ _ui.SQL = {
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
+	,findTextDialog : null
 	,currentSqlData :''
 	,_currnetQueryReusltData :{}
 	,options :{
@@ -2137,6 +2141,9 @@ _ui.SQL = {
 							$('.sql_execue_btn').trigger('click');
 							returnFlag = false; 
 							break;
+						case 70:
+							_self.findTextOpen();
+							returnFlag = false; 
 						default:
 							break;
 					}
@@ -2167,18 +2174,6 @@ _ui.SQL = {
 		// sql 보내기
 		$('.sql_send_btn').on('click',function (evt){
 			_self.sqlSend(evt);
-		});
-		
-		// sql 보내기
-		$('.sql_find_btn').on('click',function (evt){
-			var sqlFindText = $('#sqlFindText').val();
-			_self.searchFindText(sqlFindText);
-		});
-		
-		$('#sqlFindText').on('keydown',function(e) {
-			if (e.keyCode == '13') {
-				$('.sql_find_btn').trigger('click');
-			}
 		});
 		
 		// 자동 줄바꿈.
@@ -2342,26 +2337,104 @@ _ui.SQL = {
 			}
 		});
 	}
+	,findTextOpen : function(){
+		var _self = this;
+		if(_self.findTextDialog==null){
+			_self.findTextDialog = $('#editorFindTextDialog').dialog({
+				height: 280
+				,width: 280
+				,resizable: false
+				,modal: false
+				,close: function() {
+					_self.findTextDialog.dialog( "close" );
+				}
+			});
+			
+			$('#editorFindText').on('keydown',function(e) {
+				if (e.keyCode == '13') {
+					$('.find_text_btn').trigger('click');
+				}
+			});
+			
+			$('.find_text_btn').on('click',function (){
+				var findText = $('#editorFindText').val();
+				var replaceText = $('#editorReplaceText').val();
+				_self.searchFindText(findText, replaceText,false);
+			});
+			$('.find_replace_btn').on('click',function (){
+				var findText = $('#editorFindText').val();
+				var replaceText = $('#editorReplaceText').val();
+				
+				_self.searchFindText(findText, replaceText ,true);
+			});
+			$('.find_all_replace_btn').on('click',function (){
+				
+			});
+			$('.find_close_btn').on('click',function (){
+				_self.findTextDialog.dialog( "close" );
+			});
+		}
+		
+		_self.findTextDialog.dialog("open");
+	}
 	// 검색.
-	,searchFindText : function (schTxt , wrapSearch){
-		var _self = this; 
+	,searchFindText : function (orginTxt ,replaceTxt, replaceFlag, replaceAllFlag,wrapSearch){
+		var _self = this;
 		
-		var endPos = _self.getSelectionPosition(true);
+		var directionValue = $("input:radio[name=find-text-direction]:checked").val();
 		
-		var cursor =_self.sqlTextAreaObj.getSearchCursor(schTxt, endPos);
+		var findOpt={}
+		
+		$('input:checkbox[name=find-text-option]:checked').each(function() { 
+			findOpt[this.value] = true; 
+		});
+		
+		var isReverseFlag = directionValue =='down' ? false : true; 
+		
+		var findPos;
+		var wrapSearchPos; 
+		if(isReverseFlag){
+			wrapSearchPos = {line: 100000, ch: 100000};
+			findPos = _self.getSelectionPosition();
+		}else{
+			wrapSearchPos = {line: 0, ch: 0};
+			findPos = _self.getSelectionPosition(true);
+		}
+		var schTxt = orginTxt;
+		if(findOpt.regularSearch===true){
+			schTxt = new RegExp(schTxt,'i');
+		}
+		
+		if(replaceFlag){
+			if(_self.getSql().match(schTxt) != null){
+				_self.getTextAreaObj().replaceSelection(replaceTxt);
+			}
+		}
+		
+		var cursor =_self.sqlTextAreaObj.getSearchCursor(schTxt, findPos , {
+			caseFold : !findOpt.caseSearch
+		})
+		
 		_self.sqlEditorSearchCursor = cursor; 
 		
-		var isNext = cursor.find(false);
+		var isNext = cursor.find(isReverseFlag);
 		
 		if(wrapSearch===true && isNext===false){
-			alert('다음 문자열을 찾을수 없습니다.\n'+schTxt);
+			alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
 			return ;
 		}
+		
 		if(isNext){
 			_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
 		}else{
-			_self.getTextAreaObj().setCursor({line: 0, ch: 0});
-			_self.searchFindText(schTxt, true);
+			if(findOpt.wrapSearch===true){
+				_self.getTextAreaObj().setCursor(wrapSearchPos);
+				_self.searchFindText(orginTxt,replaceTxt,replaceFlag, replaceAllFlag, true);
+			}else{
+				alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
+				return ; 
+			}
+			
 		}
 	}
 	,addGridDataToEditArea : function(rowItem){

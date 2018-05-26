@@ -20,6 +20,7 @@
 <entry key="header.menu.edit.paste">붙여넣기</entry>
 <entry key="header.menu.edit.undo">실행취소</entry>
 <entry key="header.menu.edit.redo">다시실행</entry>
+<entry key="header.menu.edit.find">찾기</entry>
 <entry key="header.menu.edit.compare">쿼리 비교</entry>
 
 <entry key="header.menu.tool">도구</entry>

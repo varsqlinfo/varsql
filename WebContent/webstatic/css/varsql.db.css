@@ -914,7 +914,7 @@ hr.dotline {
 	position:relative;
 	width:100%;
 	height:62px;
-	min-width: 520px;
+	min-width: 380px;
 	overflow:hidden;
 }
 
@@ -978,3 +978,63 @@ hr.dotline {
 .success-log-message{	font-size:12px;color:#000099;padding-bottom: 3px;border-bottom: 1px solid #f1e4e4;}
 .log-end-time{font-size:12px;color:#000000;margin-right: 7px;}
 /*sql result msg end*/
+
+
+/*find-text start*/
+.find-text-area{
+	padding :3px;
+}
+.find-text-area>.rows{
+	padding-top:10px;
+	position:relative;
+}
+
+.find-text-label{
+	width: 100px;
+	display: inline-block;
+}
+
+.find-text-input-area{
+	display: inline-block;
+}
+
+.find-text-input-area input{
+	width: 160px;
+}
+.find-text-option-area{
+	list-style: none;
+    padding: 0px;
+    margin: 0px;
+	overflow:hidden;
+}
+
+.find-text-option-area li{
+	float:left;
+	width:60%;
+	 display:inline-block;
+}
+
+.find-text-option-area li:nth-child(odd){
+  width:40%;
+}
+
+
+.find-text-button{
+	list-style: none;
+    padding: 0px;
+    margin: 0px;
+	overflow:hidden;	
+}
+
+.find-text-button li{
+	float:left;
+	width:50%;
+	padding:3px 3px;
+}
+.find-text-button button{
+	width:100%;
+}
+/*find-text end*/
+
+
+

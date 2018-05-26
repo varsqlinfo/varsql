@@ -39,6 +39,12 @@
 					<span class="header-menu-item-key">Ctrl+Y</span>
 				</a>
 			</li>
+			<li class="header-menu-item" data-menu-item="edit_find">
+				<a>
+					<span class="header-menu-item-text"><spring:message code="header.menu.edit.find" /></span>
+					<span class="header-menu-item-key">Ctrl+F</span>
+				</a>
+			</li>
 			<li class="header-menu-item" data-menu-item="edit_compare">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.edit.compare" /></span>
