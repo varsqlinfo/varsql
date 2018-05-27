@@ -70,16 +70,41 @@
 		<div class="rows">
 			<div>방향</div>
 			<ul class="find-text-option-area">
-				<li><input type="radio" name="find-text-direction" value="down" checked>아래</li>
-				<li><input type="radio" name="find-text-direction" value="up">위</li>
+				<li>
+					<label class="checkbox-container">아래
+					  <input type="radio" name="find-text-direction" value="down" checked="checked">
+					  <span class="radiomark"></span>
+					</label>
+				</li>
+				<li>
+					<label class="checkbox-container">위
+					  <input type="radio" name="find-text-direction" value="up" checked="checked">
+					  <span class="radiomark"></span>
+					</label>
+				</li>
 			</ul>
 		</div>
 		<div class="rows">
 			<div>옵션</div>
 			<ul class="find-text-option-area">
-				<li><input type="checkbox" name="find-text-option" value="caseSearch">대소문자</li>
-				<li><input type="checkbox" name="find-text-option" value="wrapSearch" checked>끝에서 되돌리기</li>
-				<li><input type="checkbox" name="find-text-option" value="regularSearch">정규식</li>
+				<li>
+					<label class="checkbox-container">대소문자
+					  <input type="checkbox" name="find-text-option" value="caseSearch">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
+				<li>
+					<label class="checkbox-container">끝에서 되돌리기
+					  <input type="checkbox" name="find-text-option" value="wrapSearch">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
+				<li>
+					<label class="checkbox-container">정규식
+					  <input type="checkbox" name="find-text-option" value="regularSearch">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
 			</ul>
 		</div>
 		<div class="rows">

@@ -1036,5 +1036,41 @@ hr.dotline {
 }
 /*find-text end*/
 
+.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.checkbox-container input {
+	display:none;
+}
+.checkbox-container span {
+	position: absolute;
+    top: 0;
+    left: 0;
+    height:15px;
+    width: 15px;
+    background-color: #eee;
+}
+.checkmark {
+    border-radius: 0%;
+}
+.radiomark {
+	border-radius: 50%;
+}
+
+.checkbox-container:hover input ~ .checkmark, .checkbox-container:hover input ~ .radiomark{
+    background-color: #ccc;
+}
+
+.checkbox-container input:checked ~ .checkmark, .checkbox-container input:checked ~ .radiomark {
+    background-color: #2196F3;
+}
+
 
 

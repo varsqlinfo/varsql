@@ -2341,7 +2341,7 @@ _ui.SQL = {
 		var _self = this;
 		if(_self.findTextDialog==null){
 			_self.findTextDialog = $('#editorFindTextDialog').dialog({
-				height: 280
+				height: 285
 				,width: 280
 				,resizable: false
 				,modal: false
