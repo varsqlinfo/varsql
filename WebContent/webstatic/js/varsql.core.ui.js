@@ -1872,7 +1872,6 @@ _ui.SQL = {
 	sqlTextAreaObj:null
 	,sqlEditorSelector : '#sql_editor_area .CodeMirror.cm-s-default'
 	,sqlEditorEle:null
-	,sqlEditorSearchCursor : null
 	,resultMsgAreaObj:null
 	,dataGridSelectorWrapObj:null
 	,memoDialog : null
@@ -2368,7 +2367,10 @@ _ui.SQL = {
 				_self.searchFindText(findText, replaceText ,true);
 			});
 			$('.find_all_replace_btn').on('click',function (){
+				var findText = $('#editorFindText').val();
+				var replaceText = $('#editorReplaceText').val();
 				
+				_self.searchFindText(findText, replaceText ,false, true);
 			});
 			$('.find_close_btn').on('click',function (){
 				_self.findTextDialog.dialog( "close" );
@@ -2405,9 +2407,14 @@ _ui.SQL = {
 			schTxt = new RegExp(schTxt,'i');
 		}
 		
-		if(replaceFlag){
-			if(_self.getSql().match(schTxt) != null){
-				_self.getTextAreaObj().replaceSelection(replaceTxt);
+		if(replaceAllFlag ===true){ //  모두 바꾸기
+			findPos = {line: 0, ch: 0};
+			isReverseFlag = false; 
+		}else{
+			if(replaceFlag){
+				if(_self.getSql().match(schTxt) != null){
+					_self.getTextAreaObj().replaceSelection(replaceTxt);
+				}
 			}
 		}
 		
@@ -2415,7 +2422,26 @@ _ui.SQL = {
 			caseFold : !findOpt.caseSearch
 		})
 		
-		_self.sqlEditorSearchCursor = cursor; 
+		if(replaceAllFlag ===true){
+			var replaceCount =0; 
+			
+			var isNext = cursor.find(isReverseFlag);
+			
+			while(isNext){
+				replaceCount++;
+				_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+				_self.getTextAreaObj().replaceSelection(replaceTxt);
+				
+				isNext = cursor.find(isReverseFlag)
+			}
+			
+			if(!isNext){
+				alert('일치하는 내용이 '+replaceCount+'회 변경되었습니다.');
+			}
+			
+			return ; 
+		}
+		
 		
 		var isNext = cursor.find(isReverseFlag);
 		
@@ -2423,6 +2449,11 @@ _ui.SQL = {
 			alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
 			return ;
 		}
+		
+		if(replaceAllFlag ===true){
+			findPos = {line: 0, ch: 0};
+		}
+		
 		
 		if(isNext){
 			_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());

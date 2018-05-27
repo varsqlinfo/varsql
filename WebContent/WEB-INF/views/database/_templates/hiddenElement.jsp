@@ -78,7 +78,7 @@
 				</li>
 				<li>
 					<label class="checkbox-container">위
-					  <input type="radio" name="find-text-direction" value="up" checked="checked">
+					  <input type="radio" name="find-text-direction" value="up">
 					  <span class="radiomark"></span>
 					</label>
 				</li>
@@ -95,7 +95,7 @@
 				</li>
 				<li>
 					<label class="checkbox-container">끝에서 되돌리기
-					  <input type="checkbox" name="find-text-option" value="wrapSearch">
+					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
 					  <span class="checkmark"></span>
 					</label>
 				</li>
