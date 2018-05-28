@@ -552,7 +552,7 @@ hr.dotline {
   display: table-cell;
 }
 
-
+/* metadata start */
 .varsql-meta-cont-ele, .varsql-meta-tab-ele{
 	height:100%;
 	display:none; 
@@ -560,6 +560,19 @@ hr.dotline {
 .varsql-meta-cont-ele.on, .varsql-meta-tab-ele.on{
 	display:block; 
 }
+
+.varsql-meta-cont-ele{
+	
+}
+.varsql-pubtab-cont-area [data-meta-tab] {
+	height:100%;
+	display:none;
+}
+
+.varsql-pubtab-cont-area .on[data-meta-tab]{
+	display:block;
+}
+/* metadata tab end */
 
 .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br { border-bottom-right-radius: 0px;}
 .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {  border-bottom-left-radius: 0px; }
@@ -1036,6 +1049,7 @@ hr.dotline {
 }
 /*find-text end*/
 
+/* checkbox ,radio start */
 .checkbox-container {
     display: block;
     position: relative;
@@ -1071,6 +1085,5 @@ hr.dotline {
 .checkbox-container input:checked ~ .checkmark, .checkbox-container input:checked ~ .radiomark {
     background-color: #2196F3;
 }
-
-
+/* checkbox ,radio end */
 

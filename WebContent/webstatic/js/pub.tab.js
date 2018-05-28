@@ -335,7 +335,7 @@
 
 		var _cacheObject = _datastore[selector];
 
-		if(typeof options === undefined){
+		if(typeof options === 'undefined'){
 			return _cacheObject; 
 		}
 		
