@@ -509,7 +509,7 @@ _ui.headerMenu ={
 	}
 }
 
-// 왼쪽 영역 처리.
+// db schema object 처리.
 _ui.dbSchemaObject ={
 	initObjectMenu : false
 	,options :{
@@ -539,6 +539,7 @@ _ui.dbSchemaObject ={
 	// init left event 
 	,initEvt : function (){
 		var _self = this;
+		
 		
 	}
 	// db schema 그리기
@@ -681,10 +682,28 @@ _ui.dbSchemaObjectServiceMenu ={
 		if(_self.initFlag ===false){
 			_self._tabs();
 			$.pubTab(_self.options.serviceMenuTabId).itemClick();
+			_self.initEvt();
 		}else{
 			$.pubTab(_self.options.serviceMenuTabId).itemClick(0, {'refresh':'Y'});
 		}
 		_self.initFlag = true; 
+	}
+	,initEvt : function (){
+		var _self = this; 
+		
+		// ddl copy 
+		$(_self.options.metadataContentAreaWrapId).on('click','.ddl-copy', function (){
+			var sEle = $(this)
+				,mode = sEle.data('ddl-copy-mode');
+			
+			var copyTxt = sEle.closest('.ddl-view-area').find('textarea').val();
+			
+			if('copy'==mode){
+				copyStringToClipboard('ddlcopy' ,copyTxt);
+			}else{
+				_ui.SQL.addSqlEditContent(copyTxt , false);
+			}
+		})
 	}
 	,_initCacheObject : function (){
 		var _self = this;
@@ -768,36 +787,6 @@ _ui.dbSchemaObjectServiceMenu ={
 	    	}
 		});
 	}
-	// 메타 데이타 케쉬된값 꺼내기
-	,_getMetaCache:function (gubun, objecName, tabKey){
-		tabKey =tabKey||'column';
-		
-		console.log(gubun, objecName, tabKey)
-		console.log(this.metadataCache[gubun][objecName])
-		
-		var t =this.metadataCache[gubun][objecName][tabKey]; 
-		return t?t:null;
-	}
-	// 메타 데이타 셋팅하기.
-	,_setMetaCache:function (gubun, objecName, tabKey, data){
-		if(VARSQL.isUndefined(this.metadataCache[gubun][objecName])){
-			var objData = {};
-			objData[tabKey] = data; 
-			this.metadataCache[gubun][objecName] =objData;
-		}else{
-			this.metadataCache[gubun][objecName][tabKey]= data;
-		}
-	}
-	,_removeMetaCache:function (gubun, objecName){
-		
-		if(typeof gubun !='undefined' && typeof objecName != 'undefined'){
-			delete this.metadataCache[gubun][objecName];  
-		}else if(typeof gubun !='undefined'){
-			this.metadataCache[gubun] ={};
-		}else{
-			this._initCacheObject();
-		}
-	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
 		var _self = this;
@@ -842,7 +831,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		var callMethod = _self.getCallMethod(callMethod);
 		
-		var metaEleId =_self._getMetadataObjectEleId(objType) 
+		var metaEleId =_self._getMetadataObjectEleId(objType);
 		var metaTabId =_self.options.metadataTabAreaWrapId+objType;
 		
 		var tmpEle = $(metaEleId);
@@ -985,22 +974,6 @@ _ui.dbSchemaObjectServiceMenu ={
 				}
 			}
 		});
-	}
-	,getCallMethod : function (methodName){
-		var callMethod  =_ui.extension[methodName];
-		
-		if(VARSQL.isUndefined(callMethod)){
-			callMethod = this[methodName];
-		}
-		
-		return callMethod;
-	}
-	// 컨텍스트 메뉴 sql 생성 부분 처리 .
-	,_createScriptSql :function (scriptObj){
-		_ui.SQL.addCreateScriptSql(scriptObj);
-	}
-	,_createJavaProgram: function (scriptObj){
-		_ui.JAVA.createJavaProgram(scriptObj);
 	}
 	/**
 	 * @method _createDDL
@@ -1255,7 +1228,7 @@ _ui.dbSchemaObjectServiceMenu ={
 	// table tab control
 	,_tableTabCtrl : function (metaTabId, param , refreshFlag){
 		var _self =this; 
-		var tabObj = $.pubTab(metaTabId); 
+		var tabObj = $.pubTab(metaTabId);
 		
 		if(tabObj){
 			tabObj.itemClick();
@@ -1263,17 +1236,15 @@ _ui.dbSchemaObjectServiceMenu ={
 		}
 		
 		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key : "ddl"}
-			]
+			items : _self.metaTabMenu['table']
 			,width : 'auto'
 			,height:20
 			,overItemViewMode :'drop'
 			,click : function (item){
-				var sObj = $(this);
+				var tabEle= $(this)
+					,objectName = _self.selectMetadata['table'];
 				
-				var itemKey = item.key; 
+				var itemKey = item.key;
 				
 				var sEle = $(_self._getMetadataObjectEleId('table')+' [data-meta-tab="'+itemKey+'"]');
 		
@@ -1282,10 +1253,7 @@ _ui.dbSchemaObjectServiceMenu ={
 					sEle.addClass('on');
 				}
 				
-				var cacheData = _self._getMetaCache('table',param.objectName ,itemKey);
-				
-				
-				console.log('cacheData : ' , cacheData)
+				var cacheData = _self._getMetaCache('table', objectName, itemKey);
 		
 				if('column' == itemKey){
 					if(cacheData){
@@ -1303,22 +1271,20 @@ _ui.dbSchemaObjectServiceMenu ={
 					}else{
 						_self._createDDL({
 							gubun : 'table'
-							,objName :  param.objectName 
+							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView('table',itemKey, data);
 						});
 					}
 				}
 			}
-		})
+		}).itemClick();
 		
 	}
 	// ddl source view
 	,metadataDDLView : function (objectType, eleName, ddlSource){
-		var addHtml = '<pre class="user-select-on prettyprint lang-sql width-height100"></pre><textarea style="display:none;"></textarea></div>';
+		var addHtml = $('#ddlViewTemplate').html();
 		var metaEleInfo = this._getMetadataElement('table',eleName,addHtml);
-		
-		
 		var ele = $(metaEleInfo.eleId);
 		
 		ele.find('.prettyprint').empty().html(ddlSource).removeClass('prettyprinted');
@@ -1962,6 +1928,48 @@ _ui.dbSchemaObjectServiceMenu ={
 	//db url call 할때 앞에 uri 뭍이기
 	,_getPrefixUri:function (uri){
 		return _g_options.getUriPrefix(uri);
+	}
+	// 컨텍스트 메뉴 sql 생성 부분 처리 .
+	,_createScriptSql :function (scriptObj){
+		_ui.SQL.addCreateScriptSql(scriptObj);
+	}
+	,_createJavaProgram: function (scriptObj){
+		_ui.JAVA.createJavaProgram(scriptObj);
+	}
+	,getCallMethod : function (methodName){
+		var callMethod  =_ui.extension[methodName];
+		
+		if(VARSQL.isUndefined(callMethod)){
+			callMethod = this[methodName];
+		}
+		
+		return callMethod;
+	}
+	// 메타 데이타 케쉬된값 꺼내기
+	,_getMetaCache:function (gubun, objecName, tabKey){
+		tabKey =tabKey||'column';
+		
+		var t =this.metadataCache[gubun][objecName][tabKey]; 
+		return t?t:null;
+	}
+	// 메타 데이타 셋팅하기.
+	,_setMetaCache:function (gubun, objecName, tabKey, data){
+		if(VARSQL.isUndefined(this.metadataCache[gubun][objecName])){
+			var objData = {};
+			objData[tabKey] = data; 
+			this.metadataCache[gubun][objecName] =objData;
+		}else{
+			this.metadataCache[gubun][objecName][tabKey]= data;
+		}
+	}
+	,_removeMetaCache:function (gubun, objecName){
+		if(typeof gubun !='undefined' && typeof objecName != 'undefined'){
+			delete this.metadataCache[gubun][objecName];  
+		}else if(typeof gubun !='undefined'){
+			this.metadataCache[gubun] ={};
+		}else{
+			this._initCacheObject();
+		}
 	}
 };
 

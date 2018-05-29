@@ -117,3 +117,16 @@
 		</div>
 	</div>
 </div>
+
+<script id="ddlViewTemplate" type="text/varsql-template">
+<div class="ddl-view-area">
+	<div class="pull-right" style="padding:4px;position:relative;z-index:1;">
+		<!-- button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">띄워보기</button -->
+		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="paste">editor 붙여넣기</button>
+	</div>
+	<div  class="absolute-wh100per" style="padding-top:30px;z-index:0;">
+		<pre class="user-select-on prettyprint lang-sql width-height100"></pre>
+		<textarea style="display:none;"></textarea>
+	</div>
+</div>
+</script>
