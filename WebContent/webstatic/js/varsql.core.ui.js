@@ -755,6 +755,16 @@ _ui.dbSchemaObjectServiceMenu ={
 			items :data
 			,width : 'auto'
 			,height:20
+			,activeIcon :{
+				position : 'append'		//  활성시 html 추가 위치
+				,html : '<i class="fa fa-refresh" style="margin-left:5px;cursor:pointer;"></i>'		// 활성시 추가할 html
+				,click : function (item){
+					if(confirm('새로고침 하시겠습니까?')){
+						_self._removeMetaCache(item.contentid);
+						_self._dbObjectList(item, true);
+					}
+				}
+			}
 			,overItemViewMode :'drop'
 			,addClass :'service_menu_tab'
 			,click : function (item){
@@ -769,7 +779,7 @@ _ui.dbSchemaObjectServiceMenu ={
 			}
 		})
 		
-		_self._serviceMenuContextMenu();
+		//_self._serviceMenuContextMenu();
 	}
 	,_serviceMenuContextMenu : function (){
 		var _self = this;

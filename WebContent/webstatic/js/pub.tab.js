@@ -24,6 +24,11 @@
 				prev :'pubTab-left-arrow'
 				,next : 'pubTab-right-arrow'
 			}
+			,activeIcon :{
+				position : 'prev'		//  활성시 html 추가 위치
+				,html : ''				// 활성시 추가할 html
+				,click: false			// 클릭 이벤트.
+			}
 			,addClass : 'service_menu_tab'	// tab li 추가 클래스
 			,items:[]							// tab item
 			,click :function (item){			// tab click 옵션
@@ -60,17 +65,28 @@
 		,initEvt : function (){
 			var _this = this; 
 
-			_this.element.on('click', '.pubTab-item-cont',function (e){
-				var sEle = $(this); 
+			_this.element.on('click', '.pub-tab-item',function (e){
+				var sEle = $(this)
+					,itemEle = sEle.closest('.pubTab-item-cont');
 
 				_this.element.find('.pubTab-item-cont.active').removeClass('active');
-				sEle.addClass('active')
+				itemEle.addClass('active')
 
 				if($.isFunction(_this.options.click)){
-					var tabIdx = sEle.attr('data-tab-idx');
+					var tabIdx = itemEle.attr('data-tab-idx');
 
-					
-					_this.options.click.call(this,_this.options.items[tabIdx])
+					_this.options.click.call(itemEle,_this.options.items[tabIdx])
+				}
+			})
+
+			_this.element.on('click', '.pub-tab-icon-area',function (e){
+				var sEle = $(this)
+					,itemEle = sEle.closest('.pubTab-item-cont');
+
+				if($.isFunction(_this.options.activeIcon.click)){
+					var tabIdx = itemEle.attr('data-tab-idx');
+
+					_this.options.activeIcon.click.call(itemEle,_this.options.items[tabIdx])
 				}
 			})
 			
@@ -133,7 +149,7 @@
 					_this.element.find('.pubTab-item-cont.active').removeClass('active');
 					_this.element.find('.pubTab-item-cont[data-tab-idx="'+dataIdx+'"]').addClass('active');
 					var itemEndPoint = selItem.leftLast+_this.config.moveAreaWidth+2; 
-
+					
 					var leftVal =0; 
 					if(itemEndPoint > _this.config.width){
 						leftVal = itemEndPoint - _this.config.width; 
@@ -184,11 +200,13 @@
 			for(var key in addAttr){
 				clickEle.attr(key , addAttr[key]);
 			}
-			clickEle.trigger('click')
+			clickEle.find('.pub-tab-item').trigger('click')
 		}
 		,refresh : function (){
 			var _this = this; 
 			var eleW = _this.element.width();
+
+			_this.config.width = eleW;
 
 			if(_this.config.totalWidth > eleW){
 				$('#'+_this.contextId+'pubTab-move-space').show();
@@ -201,7 +219,7 @@
 			}
 
 		}
-		,setWidth : function (vasl){
+		,setWidth : function (val){
 			this.refresh();
 			return ; 
 			var _this = this; 
@@ -215,17 +233,7 @@
 			if(_this.config.totalWidth > val){
 				$('#'+_this.contextId+'pubTab-move-space').show();
 				_this.element.find('.pubTab-move-area').show();
-				/*
-				var tabWidthArr = _this.config.tabWidth;
-				var tmpIdx =tabWidthArr.length - 1;
-				for(; tmpIdx > 0;tmpIdx--){
-					if(tabWidthArr[tmpIdx].leftFront +_this.config.moveAreaWidth > val){
-						_this.element.find('.pubTab-item-cont[data-tab-idx="'+tmpIdx+'"]').addClass('pubTab-hide')
-					}else{
-						_this.element.find('.pubTab-item-cont[data-tab-idx="'+tmpIdx+'"]').removeClass('pubTab-hide');
-					}
-				}
-				*/
+			
 			}else{
 				_this.element.find('.pubTab-item-cont').removeClass('pubTab-hide');
 				$('#'+_this.contextId+'pubTab-move-space').hide();
@@ -248,10 +256,27 @@
 			
 			function tabItemHtml (){
 				var tabHtm = [];
+				var activeIcon =_opts.activeIcon; 
+				var prevFlag = false;
+				var addHtml = '';
+				if(activeIcon && activeIcon.html != '') {
+					prevFlag = activeIcon.position =='prev' ?true :false; 
+					addHtml = '<span class="pub-tab-icon-area">'+activeIcon.html+'</span>';
+				}
+
 				var titleKey = _opts.itemKey.title;
+				var item;
+				var itemHtm;
 				for(var i = 0 ;i < itemLen ;i++){
-					var item = items[i];
-					tabHtm.push('<li class="pubTab-item '+(i+1==itemLen ? 'last':'')+'"><span class="pubTab-item-cont '+_opts.addClass+'" data-tab-idx="'+i+'">'+item[titleKey]+'</span></li>');
+					item = items[i];
+					
+					if(prevFlag){
+						itemHtm = addHtml + '<span class="pub-tab-item">'+item[titleKey]+'</span>';
+					}else{
+						itemHtm = '<span class="pub-tab-item">'+item[titleKey]+'</span>'+addHtml;
+					}
+					
+					tabHtm.push('<li class="pubTab-item '+(i+1==itemLen ? 'last':'')+'"><div class="pubTab-item-cont '+_opts.addClass+'" data-tab-idx="'+i+'">'+itemHtm+'</div></li>');
 				}
 				return tabHtm.join('');
 			}

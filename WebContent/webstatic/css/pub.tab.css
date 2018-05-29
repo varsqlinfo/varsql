@@ -63,7 +63,6 @@
 }
 .pubTab-item{
 	vertical-align: baseline;
-	cursor : pointer; 
 	padding: 0px 5px 0px 0px;
 	display: table-cell;
 }
@@ -146,7 +145,7 @@
 	display:block;
 }
 
-.pubTab .pubTab-drop-item{
+.pubTab .pubTab-drop-item,.pubTab .pub-tab-item{
 	cursor:pointer;
 }
 .pubTab .pubTab-drop-item:hover {
@@ -155,4 +154,12 @@
 
 .pubTab-hide{
 	display:none;
+}
+
+.pub-tab-icon-area{
+	display:none;
+}
+
+.pubTab .active .pub-tab-icon-area{
+	display:inline-block;
 }
