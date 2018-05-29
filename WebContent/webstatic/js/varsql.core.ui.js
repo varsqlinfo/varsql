@@ -778,24 +778,6 @@ _ui.dbSchemaObjectServiceMenu ={
 				_self._dbObjectList(item, refresh);
 			}
 		})
-		
-		//_self._serviceMenuContextMenu();
-	}
-	,_serviceMenuContextMenu : function (){
-		var _self = this;
-		
-		$.pubContextMenu('.service_menu_tab', {
-			items:[
-			       {key:'refresh' ,name: '새로고침'},
-    		]
-			,callback:function (key, item){
-	    		var sEle = this.element;
-	    		
-	        	if(key=='refresh'){
-	        		sEle.attr('refresh','Y').trigger('click');
-	        	}
-	    	}
-		});
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
