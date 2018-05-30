@@ -1,5 +1,4 @@
-/*
-**
+/**
 *ytkim
 *varsql ui js
  */
@@ -2002,29 +2001,9 @@ _ui.SQL = {
 			return ;
 		}
 		$.extend(true,_self.options, options);
-		_self._createHtml();
+		
 		_self._initEditor();
 		_self._initEvent();
-	}
-	,_createHtml :function(){
-		var _self = this;
-		
-		var resultTabHtm = [],resultGridHtm=[];
-		
-		// data grid result tab
-		resultTabHtm.push('<ul id="data_grid_result_tab" class="sql-result-tab">');
-		resultTabHtm.push('	<li tab_gubun="result" class="on"><a href="javascript:;">결과</a></li>');
-		resultTabHtm.push('	<li tab_gubun="columnType"><a href="javascript:;">컬럼타입</a></li>');
-		resultTabHtm.push('	<li tab_gubun="msg"><a href="javascript:;"><span>메시지</span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>');
-		resultTabHtm.push('</ul>');
-		
-		$(_self.options.dataGridResultTabWrap).html(resultTabHtm.join(''));
-		
-		// data grid araea
-		resultGridHtm.push('<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>');
-		resultGridHtm.push('<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>');
-		resultGridHtm.push('<div id="resultMsgAreaWrap"  class="sql-result-area user-select-on" tab_gubun="msg"></div>');
-		$(_self.options.dataGridSelectorWrap).html(resultGridHtm.join(''));
 	}
 	,_initEditor : function (){
 		var _self = this;
@@ -3118,69 +3097,31 @@ _ui.SQL = {
 		var len = dataArr.length;
 		
 		var strHtm = [];
-		strHtm.push("	<table style=\"100%\" >");
-		strHtm.push("		<colgroup>");
-		strHtm.push("			<col width=\"310px\" />");
-		strHtm.push("			<col width=\"20px\" />");
-		strHtm.push("			<col width=\"*\" />");
-		strHtm.push("		</colgroup>");
-		strHtm.push("		<tr>");
-		strHtm.push("			<td>");
-		strHtm.push("			  <div style=\"height:225px;overflow-x:hidden;overflow-y:auto;\">");
-		strHtm.push("				<table style=\"vertical-align: text-top;\" class=\"table table-striped table-bordered table-hover dataTable no-footer\" id=\"dataTables-example\">");
-		strHtm.push("					<thead>");
-		strHtm.push("						<tr role=\"row\">");
-		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 40px;\"><input type=\"checkbox\" name=\"columnCheck\" value=\"all\">all</th>");
-		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 100px;\">Column</th>");
-		strHtm.push("							<th tabindex=\"0\" rowspan=\"1\" colspan=\"1\" style=\"width: 100px;\">Desc</th>");
-		strHtm.push("						</tr>");
-		strHtm.push("					</thead>");
-		strHtm.push("					<tbody class=\"dataTableContent1\">");
+		
 		var item;
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
 			strHtm.push("						<tr class=\"gradeA add\">	");
-			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"columnCheck\" value=\""+item[VARSQLCont.tableColKey.NAME]+"\"></td>	");
+			strHtm.push("							<td class=\"\"><input type=\"checkbox\" name=\"exportColumnCheckBox\" value=\""+item[VARSQLCont.tableColKey.NAME]+"\" checked=\"check\"></td>	");
 			strHtm.push("							<td class=\"\">"+item[VARSQLCont.tableColKey.NAME]+"</td>	");
 			strHtm.push("							<td class=\"\">"+(item[VARSQLCont.tableColKey.COMMENT]||'')+"</td>	");
 			strHtm.push("						</tr>");
 		}
-		strHtm.push("					</tbody>");
-		strHtm.push("				</table>");
-		strHtm.push("			  </div>");
-		strHtm.push("			</td>");
-		strHtm.push("			<td></td>");
-		strHtm.push("			<td style=\"vertical-align: text-top;\">");
-		strHtm.push("				<div>");
-		strHtm.push("					<label class=\"control-label\">LIMIT COUNT</label>");
-		strHtm.push("					<input class=\"\" id=\"exportCount\" name=\"exportCount\" value=\"1000\">");
-		strHtm.push("				</div>");
-		strHtm.push("				<ul>");
-		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"csv\" checked></span>CSV</li>");
-		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"json\"></span>JSON</li>");
-		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"insert\"></span>INSERT문</li>");
-		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"xml\"></span>XML</li>");
-		strHtm.push("					<li><span><input type=\"radio\" name=\"exportType\" value=\"excel\"></span>Excel</li>");
-		strHtm.push("				</ul>");
-		strHtm.push("			</td>");
-		strHtm.push("		</tr>");
-		strHtm.push("	</table>");
+		
 		
 		var modalEle = $('#data-export-modal'); 
 		if(modalEle.length > 0){
-			modalEle.empty();
-			modalEle.html(strHtm.join(''));
+			$('#exportColumnInfoArea').empty().html(strHtm.join(''));
+			 $("input:checkbox[name='exportColumnCheckBox'][value='all']").prop('checked',true); 
 		}else{
-			$(_g_options.hiddenArea).append('<div id=\"data-export-modal\" title="데이타 내보내기">'+strHtm.join('')+'</div>');
-			modalEle = $('#data-export-modal'); 
+			$(_g_options.hiddenArea).append(Mustache.render($('#dataExportTemplate').html(), {exportColumnInfo:strHtm.join('')}));
+			modalEle = $('#data-export-modal');
+			
+			var checkAllObj = $("input:checkbox[name='exportColumnCheckBox'][value='all']").prop('checked',true); 
+			checkAllObj.on('click',function (){
+				VARSQL.check.allCheck($(this),"input:checkbox[name='exportColumnCheckBox']");
+			});
 		}
-		
-		var checkAllObj = $("input:checkbox[name='columnCheck'][value='all']"); 
-		checkAllObj.on('click',function (){
-			VARSQL.check.allCheck($(this),"input:checkbox[name='columnCheck']");
-		});
-		
-		checkAllObj.trigger('click');
 		
 		modalEle.dialog({
 			height: 350
@@ -3192,7 +3133,7 @@ _ui.SQL = {
 
 					var params =VARSQL.util.objectMerge (_g_options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
-						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='columnCheck']:not([value='all'])").join(',')
+						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='exportColumnCheckBox']:not([value='all'])").join(',')
 						,objectName : tmpName
 						,limit: $('#exportCount').val()
 					});

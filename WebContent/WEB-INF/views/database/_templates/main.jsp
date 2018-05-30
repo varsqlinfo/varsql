@@ -58,7 +58,7 @@ $(document).ready(function(){
 </html>
 	
 
-<!-- component tempate -->
+<%--db object component template --%>
 <script id="dbObjectComponentTemplate" type="text/varsql-template">
 <div id="dbSchemaObjectArea" class="pos-relative-w-h100">
 	<div class="varsql-dbodbject-schema-area">
@@ -81,7 +81,7 @@ $(document).ready(function(){
 </div>
 </script>
 
-<!-- meta data 영역 -->
+<%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div class="pos-relative-w-h100">
 	<div id="metadataTabAreaWrap" class="varsql-pubtab-area"></div>
@@ -90,6 +90,7 @@ $(document).ready(function(){
 </div>
 </script>
 
+<%--sql editor component template --%>
 <script id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="sqlEditorComponent" class="pos-relative-w-h100">
 	<div id="sqlEditorToolbar" class="varsql-toolbar-area">
@@ -235,13 +236,20 @@ $(document).ready(function(){
 </div>
 </script>
 
+<%--query result component template --%>
 <script id="sqlDataComponentTemplate" type="text/varsql-template">
 <div id="sqlDataComponent" class="pos-relative-w-h100">
-	<div id="data_grid_result_tab_wrap" class="varsql-tab-area"></div>
+	<div id="data_grid_result_tab_wrap" class="varsql-tab-area">
+		<ul id="data_grid_result_tab" class="sql-result-tab">
+			<li tab_gubun="result" class="on"><a href="javascript:;">결과</a></li>
+			<li tab_gubun="columnType"><a href="javascript:;">컬럼타입</a></li>
+			<li tab_gubun="msg"><a href="javascript:;"><span>메시지</span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
+		</ul>
+	</div>
 	<div id="dataGridAreaWrap" class="varsql-tab-cont-area">
 		<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>
 		<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>
-		<iframe id="resultMsgAreaWrap" frameborder="0" class="sql-result-area" tab_gubun="msg" src="" style="width:100%;bottom:0px;left:0px;top:0px;right:0px;"></iframe>
+		<div id="resultMsgAreaWrap"  class="sql-result-area user-select-on" tab_gubun="msg"></div>		
 	</div>
 </div>
 </script>
