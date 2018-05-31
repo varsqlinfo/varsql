@@ -763,7 +763,7 @@ hr.dotline {
 }
 
 .sql-btn-area{
-	height:32px;
+	height:30px;
 	padding-top:2px;
 	display: table-row;
 }
@@ -930,9 +930,9 @@ hr.dotline {
 .varsql-toolbar-area{
 	position:relative;
 	width:100%;
-	height:62px;
+	height:65px;
 	min-width: 380px;
-	overflow:hidden;
+	/*overflow:hidden;*/
 }
 
 .varsql-sqleditor-area{
@@ -1053,7 +1053,47 @@ hr.dotline {
 }
 /*find-text end*/
 
-/* checkbox ,radio start */
+/* ddl copy start */
+.ddl-copy , .ddl-editor-paste{
+	padding:2px 10px;
+}
+/* ddl copy end */
+
+
+/*export dialog start*/
+.export-dialog-area{
+	width:100%;
+	height:100%;
+}
+.export-dialog-area>div{
+	float:left; 
+}
+
+.export-dialog-area .export-column-area{
+	width:60%;
+	height: 100%;
+    overflow: auto;
+	border: 1px solid #d0d0d8;
+}
+
+.export-dialog-area .export-type-area{
+	width: calc(40% - 15px);
+    height: 100%;
+    overflow: auto;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: 1px solid #c5caca;
+}
+
+.export-dialog-area .export-type{
+	margin: 10px 3px;
+	padding:0px;
+	list-style: none;
+}
+/*export dialog end*/
+
+
+/* common css start */
 .checkbox-container {
     display: block;
     position: relative;
@@ -1089,13 +1129,48 @@ hr.dotline {
 .checkbox-container input:checked ~ .checkmark, .checkbox-container input:checked ~ .radiomark {
     background-color: #2196F3;
 }
-/* checkbox ,radio end */
 
-/* ddl copy start */
-.ddl-copy , .ddl-editor-paste{
-	padding:2px 10px;
+.text-center{
+	text-align: center;
 }
-/* ddl copy end */
 
-
+.varsql-table {
+	width:100%;
+	height:100%;
+	border-collapse: collapse;
+	border: 1px solid #d0d0d8;
+}
+.varsql-table.border-zero{
+	border: 0px solid #d0d0d8;
+}
+.varsql-table.border-zero th:first-child, .varsql-table.border-zero td:first-child {
+	border-left: 0px solid #d0d0d8;
+}
+.varsql-table.border-zero th:last-child, .varsql-table.border-zero td:last-child {
+	border-right: 0px solid #d0d0d8;
+}
+.varsql-table th{
+	border: 1px solid #d0d0d8;
+	border-top: 0px solid #d0d0d8;
+	margin: 0;
+    padding: 0px 5px;
+    color: #000;
+	height:25px;
+    background-color: #f1f1f1;
+}
+.varsql-table td{
+	border: 1px solid #d0d0d8;
+	border-top: 0px solid #d0d0d8;
+	margin: 0;
+    padding: 0px 5px;
+    color: #000;
+	height:25px;
+}
+.varsql-table tr:even(odd){
+    background: #f3f6fa;
+}
+.varsql-table tr:hover{
+	background-color: #f1f1f1;
+}
+/* common css end */
 

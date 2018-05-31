@@ -132,85 +132,23 @@
 </div>
 </script>
 
-<style>
-.export-dialog-area{
-	width:100%;
-	height:100%;
-}
-.export-dialog-area>div{
-	float:left; 
-}
-
-.export-dialog-area .export-column-area{
-	width:60%;
-	height: 100%;
-    overflow: auto;
-	border: 1px solid #d0d0d8;
-}
-
-.export-dialog-area .export-type-area{
-	width: calc(40% - 15px);
-    height: 100%;
-    overflow: auto;
-    padding: 5px 10px;
-    margin-left: 10px;
-    border: 1px solid #c5caca;
-}
-
-.export-dialog-area .export-type{
-	margin: 10px 3px;
-	padding:0px;
-	list-style: none;
-}
-
-.varsql-table {
-	width:100%;
-	height:100%;
-	border-collapse: collapse;
-	border: 1px solid #d0d0d8;
-}
-.varsql-table.border-zero{
-	border: 0px solid #d0d0d8;
-}
-.varsql-table th{
-	border: 1px solid #d0d0d8;
-	border-top: 0px solid #d0d0d8;
-	margin: 0;
-    padding: 0;
-    color: #000;
-	height:25px;
-    background-color: #f1f1f1;
-}
-
-.varsql-table td{
-	border: 1px solid #d0d0d8;
-	border-top: 0px solid #d0d0d8;
-	margin: 0;
-    padding: 2px 3px;
-    color: #000;
-	height:25px;
-}
-
-.varsql-table tr:even(odd){
-    background: #f3f6fa;
-}
-.varsql-table tr:hover{
-	background-color: #f1f1f1;
-}
-</style>
-
 <%--data export template --%>
 <script id="dataExportTemplate" type="text/varsql-template">
 <div id="data-export-modal" title="데이타 내보내기">
 	<div class="export-dialog-area">
 		<div class="export-column-area">
 			<table class="varsql-table border-zero">
+				<colgroup>
+					<col style="width:50px;">
+					<col style="width:150px;">
+					<col style="width:*;">
+				</colgroup>
 				<thead>
 					<tr role="row">
-						<th tabindex="0" rowspan="1" colspan="1" style="width: 50px;"><input
+						<th class="text-center"><input
 							type="checkbox" name="exportColumnCheckBox" value="all">all</th>
-						<th tabindex="0" rowspan="1" colspan="1" style="width: 100px;">Column</th>
-						<th tabindex="0" rowspan="1" colspan="1" style="width: 100px;">Desc</th>
+						<th>Column</th>
+						<th>Desc</th>
 					</tr>
 				</thead>
 				<tbody id="exportColumnInfoArea" class="dataTableContent">
