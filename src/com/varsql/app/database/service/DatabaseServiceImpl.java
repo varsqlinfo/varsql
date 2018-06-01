@@ -108,7 +108,9 @@ public class DatabaseServiceImpl{
 			}else if("index".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getIndexAndMetadatas(databaseParamInfo));
 			}else if("trigger".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getTrigger(databaseParamInfo));
+				result.setItemList(dbMetaEnum.getDBMeta().getTriggers(databaseParamInfo));
+			}else if("sequence".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getSequences(databaseParamInfo));
 			}else{
 				result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
 			}
@@ -127,7 +129,9 @@ public class DatabaseServiceImpl{
 				}else if("index".equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getIndexAndMetadatas(databaseParamInfo));
 				}else if("trigger".equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTrigger(databaseParamInfo));
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTriggers(databaseParamInfo));
+				}else if("sequence".equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getSequences(databaseParamInfo));
 				}else{
 					result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
 				}
@@ -168,6 +172,8 @@ public class DatabaseServiceImpl{
 				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
 			}else if("index".equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getIndexAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
+			}else if("sequence".equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getSequences(databaseParamInfo));
 			}
 		}catch(Exception e){
 			logger.error("serviceMenu : ", e);
@@ -194,17 +200,19 @@ public class DatabaseServiceImpl{
 		
 		try{
 			if("table".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getTable(databaseParamInfo	,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getTable(databaseParamInfo));
 			}else if("view".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getView(databaseParamInfo,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getView(databaseParamInfo));
 			}else if("procedure".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo	,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo));
 			}else if("function".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo));
 			}else if("index".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getIndex(databaseParamInfo,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getIndex(databaseParamInfo));
 			}else if("trigger".equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getTrigger(databaseParamInfo,databaseParamInfo.getObjectName()));
+				result.setItemOne(dbMetaEnum.getDDLScript().getTrigger(databaseParamInfo));
+			}else if("sequence".equals(gubun)){
+				result.setItemOne(dbMetaEnum.getDDLScript().getSequence(databaseParamInfo));
 			}
 		}catch(Exception e){
 			logger.error("createDDL : ", e);

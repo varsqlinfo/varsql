@@ -2299,12 +2299,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
-					{key :'name', label:'Trigger',width:200, sort:true}
-					,{key :'tblName', label:'테이블명'}
-					,{key :'eventType', label:'타입'}
-					,{key :'timing', label:'timing'}
+					{key :'name', label:'Sequence',width:200, sort:true}
 					,{key :'status', label:'상태'}
-					,{key :'created', label:'CREATED'}
+					,{key :'created', label:'생성일자'}
+					,{key :'lastDdlTime', label:'수정수정'}
 					]
 				,tbodyItem :itemArr
 				,rowOptions :{
@@ -2422,7 +2420,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			,asideOptions :{lineNumber : {enable : true	,width : 30}}
 			,tColItem : [
 				{ label: 'Name', key: 'name',width:80 },
-				{ label: 'Value', key: 'value',width:80 },
+				{ label: 'Value', key: 'val',width:80 },
 			]
 			,tbodyItem :items
 			,rowOptions :{
