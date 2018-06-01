@@ -1027,8 +1027,6 @@ _ui.dbSchemaObjectServiceMenu ={
 		var addHtml = $('#ddlViewTemplate').html();
 		var metaEleInfo = this._getMetadataElement(objectType,eleName,addHtml);
 		
-		console.log(metaEleInfo);
-		
 		var ele = $(metaEleInfo.eleId);
 		
 		ele.find('.prettyprint').empty().html(ddlSource).removeClass('prettyprinted');
@@ -1098,9 +1096,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			VARSQLHints.setTableInfo(tableHint);
 			
 			var tableObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				height:'auto'
-				,autoResize :false
-				,headerOptions:{}
+				autoResize :false
 				,setting : {
 					enable : true
 					,click : false
@@ -1115,7 +1111,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,page :false
 				,tColItem : [
 					{key :'name', label:'Table', width:200, sort:true}
 					,{key :'remarks', label:'설명', sort:true}
@@ -1128,7 +1123,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 		    			var refresh = sObj.attr('refresh')=='Y'?true:false; 
 		    			sObj.attr('refresh','N');
 		    			
-		    			$('.table-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
 		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl', refresh);
@@ -1335,15 +1329,8 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 		}
 		
 		gridObj = $.pubGrid(metaEleId, {
-			headerOptions : {
-				redraw : false
-			}
-			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-			}
-			,page :false
-			,height:'auto'
-			,autoResize :false
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeAndLength' },
@@ -1440,7 +1427,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					,text :tblName
 				};
 				
-				_self._setMetaCache($$gubun,tblName, {items:colList});
+				_self._setMetaCache($$gubun,tblName,  'column', {items:colList});
 				
 			})
 						
@@ -1448,13 +1435,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQLHints.setTableInfo(tableHint);
 			
 			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				headerView:true
-				,height:'auto'
-				,asideOptions :{
+				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,autoResize :false
-				,page :false
 				,tColItem : [
 					{key :'name', label:'Table', width:200, sort:true}
 					,{key :'remarks', label:'설명', sort:true}
@@ -1463,7 +1446,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,rowOptions : {
 					click : function (idx, item){
 						var sObj = $(this);
-		    			$('.view-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
 		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
@@ -1500,9 +1482,11 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQL.log.info(e);
 		}
 	}
-	//table tab control
+	//view tab control
 	,_viewTabCtrl : function (metaTabId, param , refreshFlag){
 		var _self =this; 
+		
+		var $objType = 'view';
 		var tabObj = $.pubTab(metaTabId);
 		
 		if(tabObj){
@@ -1515,23 +1499,22 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				{name: "Column", key: "column"}
 				,{name: "DDL", key: "ddl"}
 			]
-			,width : 'auto'
 			,height:20
 			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
-					,objectName = _self.selectMetadata['view'];
+					,objectName = _self.selectMetadata[$objType];
 				
 				var itemKey = item.key;
 				
-				var sEle = $(_self._getMetadataObjectEleId('view')+' [data-meta-tab="'+itemKey+'"]');
+				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
 		
 				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId('view')+' .on[data-meta-tab]').removeClass('on');
+					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
 					sEle.addClass('on');
 				}
 				
-				var cacheData = _self._getMetaCache('view', objectName, itemKey);
+				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
 		
 				if('column' == itemKey){
 					if(cacheData){
@@ -1544,14 +1527,14 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					}
 				}else if('ddl' == itemKey){
 					if(cacheData){
-						_self.metadataDDLView('view',itemKey, cacheData);
+						_self.metadataDDLView($objType,itemKey, cacheData);
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : 'view'
+							gubun : $objType
 							,objName :  objectName
 						}, function (data){
-							_self.metadataDDLView('view',itemKey, data);
+							_self.metadataDDLView($objType,itemKey, data);
 						});
 					}
 				}
@@ -1561,8 +1544,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 	// view 메타 데이타 보기.
 	,_viewColumn :function (colData ,reqParam, eleName, reloadFlag){
 		var _self = this;
+		var $objType = 'view';
 		
-		var metaEleInfo = _self._getMetadataElement('view',eleName);
+		var metaEleInfo = _self._getMetadataElement($objType,eleName);
 		
 		var metaEleId = metaEleInfo.eleId; 
 		
@@ -1590,15 +1574,8 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		}
 		
 		gridObj = $.pubGrid(metaEleId, {
-			headerOptions : {
-				redraw : false
-			}
-			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-			}
-			,page :false
-			,height:'auto'
-			,autoResize :false
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeName' },
@@ -1632,8 +1609,8 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						
 						_self._createScriptSql({
 							gubunKey : key
-							,gubun : 'view'
-							,objName :  _self.selectMetadata['view']
+							,gubun : $objType
+							,objName :  _self.selectMetadata[$objType]
 							,item : {
 								items:cacheData
 							}
@@ -1657,24 +1634,20 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'procedure'
+    		var $$gubun = 'procedure';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, {items:colList});
+				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
 			})
 			
 			var procedureObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				headerView:true
-				,height:'auto'
-				,asideOptions :{
+				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,autoResize :false
-				,page :false
 				,tColItem : [
 					{key :'name', label:'Procedure',width:200, sort:true}
 					,{key :'status', label:'상태'}
@@ -1685,10 +1658,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					click : function (idx, item){
 						var sObj = $(this);
 		    			
-		    			$('.procedure-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1705,25 +1677,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 								procedureObj.copyData();
 								return ; 
 							}
-							
-							if(key=='ddl_copy' || key=='ddl_paste'){
-								_self._createDDL({
-									gubunKey : key
-									,gubun : $$gubun
-									,objName :  tmpName 
-								});
-								return ;
-							}
 						},
 						items: [
 							{key : "copy" , "name": "복사"}
-							,{divider:true}
-							,{key : "create_ddl_top","name": "DDL 보기" 
-								,subMenu:[
-									{key : "ddl_copy","name": "복사하기"}
-									,{key : "ddl_paste","name": "edit 영역에보기"}
-								]
-							}
 						]
 					}
 				}
@@ -1732,25 +1688,118 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQL.log.info(e);
 		}
 	}
-	//테이블에 대한 메타 정보 보기 .
-	,_procedureMetadata :function (colData ,reqParam){
-		var _self = this;
+	//procedure tab control
+	,_procedureTabCtrl : function (metaTabId, param , refreshFlag){
+		var _self =this; 
+		var tabObj = $.pubTab(metaTabId);
+		var $objType = 'procedure';
 		
-		try{
-    		var gridObj = {
-    			data:colData.items
-    			,column : [
-					{ label: '파라미터명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'dataType' },
-					{ label: 'IN, OUT', key: 'columnType',width:45},
-					{ label: '설명', key: 'comment',width:45},
-				]
-    		};
-			
-    		_self.setMetadataGrid(gridObj, 'procedure');
- 		}catch(e){
-			VARSQL.log.info(e);
+		if(tabObj){
+			tabObj.itemClick();
+			return ;
 		}
+		
+		$.pubTab(metaTabId,{
+			items : [
+				{name: "Column", key: "column"}
+				,{name: "DDL", key: "ddl"}
+			]
+			,width : 'auto'
+			,height:20
+			,overItemViewMode :'drop'
+			,click : function (item){
+				var tabEle= $(this)
+					,objectName = _self.selectMetadata[$objType];
+				
+				var itemKey = item.key;
+				
+				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
+		
+				if(!sEle.hasClass('on')){
+					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
+					sEle.addClass('on');
+				}
+				
+				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
+				
+				if('column' == itemKey){
+					if(cacheData){
+						_self._procedureColumn(cacheData, param, itemKey, false);
+						return ; 
+					}else{
+						_self._getMetadataInfo(param, function (resData, param){
+							_self._procedureColumn(resData, param, itemKey, true);
+						})
+					}
+				}else if('ddl' == itemKey){
+					if(cacheData){
+						_self.metadataDDLView($objType,itemKey, cacheData);
+						return ; 
+					}else{
+						_self._createDDL({
+							gubun : $objType
+							,objName :  objectName
+						}, function (data){
+							_self.metadataDDLView($objType,itemKey, data);
+						});
+					}
+				}
+			}
+		}).itemClick();
+	}
+	//procedure 대한 메타 정보 보기 .
+	,_procedureColumn :function (colData ,reqParam, eleName, reloadFlag){
+		var _self = this;
+ 		
+ 		var $objType = 'procedure';
+		
+		var metaEleInfo = _self._getMetadataElement($objType,eleName);
+		
+		var metaEleId = metaEleInfo.eleId; 
+		
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(metaEleInfo.isCreate ===true){
+			if(gridObj) gridObj.destory();
+		}
+		
+		var items = colData.items;
+		
+		gridObj = $.pubGrid(metaEleId);
+		
+		if(gridObj){
+			gridObj.setData(items,'reDraw');
+			return ;
+		}
+		
+		gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,tColItem : [
+				{ label: '파라미터명', key: 'name',width:80 },
+				{ label: '데이타타입', key: 'dataType' },
+				{ label: 'IN, OUT', key: 'columnType',width:45},
+				{ label: '설명', key: 'comment',width:45},
+			]
+			,tbodyItem :items
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+					},
+					items: [
+						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+					]
+				}
+			}
+		});
 	}
 })
 
@@ -1760,25 +1809,22 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'function'
+    		var $$gubun = 'function';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, {items:colList});
+				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
 			})
 		
 			var itemArr = resData.items;
     				
 			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#function',{
-				headerView:true
-				,asideOptions :{
+				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,height: 'auto'
-				,page :false
 				,tColItem : [
 					{key :'name', label:'Function',width:200, sort:true}
 					,{key :'status', label:'상태'}
@@ -1788,11 +1834,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,rowOptions :{
 					click : function (idx, item){
 						var sObj = $(this);
-		    			
-		    			$('.function-list-item.active').removeClass('active');
+						
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_functionMetadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1809,25 +1854,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 								gridObj.copyData();
 								return ; 
 							}
-							
-							if(key=='ddl_copy' || key=='ddl_paste'){
-								_self._createDDL({
-									gubunKey : key
-									,gubun : $$gubun
-									,objName :  tmpName 
-								});
-								return ;
-							}
 						},
 						items: [
 							{key : "copy" , "name": "복사"}
-							,{divider:true}
-							,{key : "create_ddl_top","name": "DDL 보기" 
-								,subMenu:[
-									{key : "ddl_copy","name": "복사하기"}
-									,{key : "ddl_paste","name": "edit 영역에보기"}
-								]
-							}
 						]
 					}
 				}
@@ -1836,24 +1865,117 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQL.log.info(e);
 		}
 	}
-	,_functionMetadata : function (colData ,reqParam){
+	//functio tab control
+	,_functionTabCtrl : function (metaTabId, param , refreshFlag){
+		var _self =this; 
+		var tabObj = $.pubTab(metaTabId);
+		var $objType = 'function';
+		
+		if(tabObj){
+			tabObj.itemClick();
+			return ;
+		}
+		
+		$.pubTab(metaTabId,{
+			items : [
+				{name: "Column", key: "column"}
+				,{name: "DDL", key: "ddl"}
+			]
+			,height:20
+			,overItemViewMode :'drop'
+			,click : function (item){
+				var tabEle= $(this)
+					,objectName = _self.selectMetadata[$objType];
+				
+				var itemKey = item.key;
+				
+				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
+		
+				if(!sEle.hasClass('on')){
+					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
+					sEle.addClass('on');
+				}
+				
+				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
+				
+				if('column' == itemKey){
+					if(cacheData){
+						_self._functionColumn(cacheData, param, itemKey, false);
+						return ; 
+					}else{
+						_self._getMetadataInfo(param, function (resData, param){
+							_self._functionColumn(resData, param, itemKey, true);
+						})
+					}
+				}else if('ddl' == itemKey){
+					if(cacheData){
+						_self.metadataDDLView($objType,itemKey, cacheData);
+						return ; 
+					}else{
+						_self._createDDL({
+							gubun : $objType
+							,objName :  objectName
+						}, function (data){
+							_self.metadataDDLView($objType,itemKey, data);
+						});
+					}
+				}
+			}
+		}).itemClick();
+	}
+	//functio 대한 메타 정보 보기 .
+	,_functionColumn :function (colData ,reqParam, eleName, reloadFlag){
 		var _self = this;
 		
-		try{
-    		var gridObj = {
-    			data:colData.items
-    			,column : [
-					{ label: '파라미터명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'dataType' },
-					{ label: 'IN, OUT', key: 'columnType',width:45},
-					{ label: '설명', key: 'comment',width:45},
-				]
-    		};
-			
-    		_self.setMetadataGrid(gridObj, 'function');
- 		}catch(e){
-			VARSQL.log.info(e);
+ 		var $objType = 'function';
+		
+		var metaEleInfo = _self._getMetadataElement($objType,eleName);
+		
+		var metaEleId = metaEleInfo.eleId; 
+		
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(metaEleInfo.isCreate ===true){
+			if(gridObj) gridObj.destory();
 		}
+		
+		var items = colData.items;
+		
+		gridObj = $.pubGrid(metaEleId);
+		
+		if(gridObj){
+			gridObj.setData(items,'reDraw');
+			return ;
+		}
+		
+		gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,tColItem : [
+				{ label: '파라미터명', key: 'name',width:80 },
+				{ label: '데이타타입', key: 'dataType' },
+				{ label: 'IN, OUT', key: 'columnType',width:45},
+				{ label: '설명', key: 'comment',width:45},
+			]
+			,tbodyItem :items
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+					},
+					items: [
+						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+					]
+				}
+			}
+		});
 	}
 })
 
@@ -1870,18 +1992,15 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, {items:colList});
+				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
 			})
 		
 			var itemArr = resData.items;
     				
 			var indexObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				headerView:true
-				,asideOptions :{
+				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,height: 'auto'
-				,page :false
 				,tColItem : [
 					{key :'name', label:'Index',width:200, sort:true}
 					,{key :'tblName', label:'테이블명', sort:true}
@@ -1894,11 +2013,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,rowOptions :{
 					click : function (idx, item){
 						var sObj = $(this);
-		    			
-		    			$('.function-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1915,25 +2032,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 								indexObj.copyData();
 								return ; 
 							}
-							
-							if(key=='ddl_copy' || key=='ddl_paste'){
-								_self._createDDL({
-									gubunKey : key
-									,gubun : $$gubun
-									,objName :  tmpName 
-								});
-								return ;
-							}
 						},
 						items: [
 							{key : "copy" , "name": "복사"}
-							,{divider:true}
-							,{key : "create_ddl_top","name": "DDL 보기" 
-								,subMenu:[
-									{key : "ddl_copy","name": "복사하기"}
-									,{key : "ddl_paste","name": "edit 영역에보기"}
-								]
-							}
 						]
 					}
 				}
@@ -1942,23 +2043,116 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQL.log.info(e);
 		}
 	}
-	,_indexMetadata : function (colData ,reqParam){
+	//index tab control
+	,_indexTabCtrl : function (metaTabId, param , refreshFlag){
+		var _self =this; 
+		var tabObj = $.pubTab(metaTabId);
+		var $objType = 'index';
+		
+		if(tabObj){
+			tabObj.itemClick();
+			return ;
+		}
+		
+		$.pubTab(metaTabId,{
+			items : [
+				{name: "Column", key: "column"}
+				,{name: "DDL", key: "ddl"}
+			]
+			,height:20
+			,overItemViewMode :'drop'
+			,click : function (item){
+				var tabEle= $(this)
+					,objectName = _self.selectMetadata[$objType];
+				
+				var itemKey = item.key;
+				
+				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
+		
+				if(!sEle.hasClass('on')){
+					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
+					sEle.addClass('on');
+				}
+				
+				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
+				
+				if('column' == itemKey){
+					if(cacheData){
+						_self._indexColumn(cacheData, param, itemKey, false);
+						return ; 
+					}else{
+						_self._indexColumn(param, function (resData, param){
+							_self._functionColumn(resData, param, itemKey, true);
+						})
+					}
+				}else if('ddl' == itemKey){
+					if(cacheData){
+						_self.metadataDDLView($objType,itemKey, cacheData);
+						return ; 
+					}else{
+						_self._createDDL({
+							gubun : $objType
+							,objName :  objectName
+						}, function (data){
+							_self.metadataDDLView($objType,itemKey, data);
+						});
+					}
+				}
+			}
+		}).itemClick();
+	}
+	// index column 정보.
+	,_indexColumn : function (colData ,reqParam, eleName, reloadFlag){
 		var _self = this;
 		
-		try{
-    		var gridObj = {
-    			data:colData.items
-    			,column : [
-					{ label: '컬럼명', key: 'name',width:80 },
-					{ label: 'POSITION', key: 'no',width:80 },
-					{ label: 'ASC OR DESC', key: 'ascOrdesc' },
-				]
-    		};
-			
-    		_self.setMetadataGrid(gridObj, 'index');
- 		}catch(e){
-			VARSQL.log.info(e);
+ 		var $objType = 'index';
+		
+		var metaEleInfo = _self._getMetadataElement($objType,eleName);
+		
+		var metaEleId = metaEleInfo.eleId; 
+		
+		var gridObj = $.pubGrid(metaEleId);
+		
+		if(metaEleInfo.isCreate ===true){
+			if(gridObj) gridObj.destory();
 		}
+		
+		var items = colData.items;
+		
+		gridObj = $.pubGrid(metaEleId);
+		
+		if(gridObj){
+			gridObj.setData(items,'reDraw');
+			return ;
+		}
+		
+		gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,tColItem : [
+				{ label: '컬럼명', key: 'name',width:80 },
+				{ label: 'POSITION', key: 'no',width:80 },
+				{ label: 'ASC OR DESC', key: 'ascOrdesc' },
+			]
+			,tbodyItem :items
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+					},
+					items: [
+						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+					]
+				}
+			}
+		});
 	}
 })
 
@@ -1979,30 +2173,27 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			})
 		
 			var itemArr = resData.items;
-    				
+			
 			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				headerView:true
-				,asideOptions :{
+				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
-				,height: 'auto'
-				,page :false
 				,tColItem : [
-					{key :'OBJECT_NAME', label:'Trigger',width:200, sort:true}
-					,{key :'TABLE_NAME', label:'테이블명'}
-					,{key :'EVENT', label:'Event'}
-					,{key :'STATUS', label:'Status'}
-					,{key :'CREATED', label:'CREATED'}
+					{key :'name', label:'Trigger',width:200, sort:true}
+					,{key :'tblName', label:'테이블명'}
+					,{key :'eventType', label:'타입'}
+					,{key :'timing', label:'timing'}
+					,{key :'status', label:'상태'}
+					,{key :'created', label:'CREATED'}
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
 					click : function (idx, item){
 						var sObj = $(this);
 		    			
-		    			$('.function-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'Metadata');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2046,24 +2237,50 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQL.log.info(e);
 		}
 	}
-	,_triggerMetadata : function (colData ,reqParam){
-		var _self = this;
+	//trigger tab control
+	,_triggerTabCtrl : function (metaTabId, param , refreshFlag){
+		var _self =this; 
+		var tabObj = $.pubTab(metaTabId);
+		var $objType = 'trigger';
 		
-		try{
-    		var gridObj = {
-    			data:colData.items
-    			,column : [
-					{ label: '파라미터명', key: 'name',width:80 },
-					{ label: '데이타타입', key: 'dataType' },
-					{ label: 'IN, OUT', key: 'columnType',width:45},
-					{ label: '설명', key: 'comment',width:45},
-				]
-    		};
-			
-    		_self.setMetadataGrid(gridObj, 'index');
- 		}catch(e){
-			VARSQL.log.info(e);
+		if(tabObj){
+			tabObj.itemClick();
+			return ;
 		}
+		
+		$.pubTab(metaTabId,{
+			items : [
+				{name: "DDL", key: "ddl"}
+			]
+			,height:20
+			,click : function (item){
+				var tabEle= $(this)
+					,objectName = _self.selectMetadata[$objType];
+				
+				var itemKey = item.key;
+				
+				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
+		
+				if(!sEle.hasClass('on')){
+					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
+					sEle.addClass('on');
+				}
+				
+				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
+				
+				if(cacheData){
+					_self.metadataDDLView($objType,itemKey, cacheData);
+					return ; 
+				}else{
+					_self._createDDL({
+						gubun : $objType
+						,objName :  objectName
+					}, function (data){
+						_self.metadataDDLView($objType,itemKey, data);
+					});
+				}
+			}
+		}).itemClick();
 	}
 })
 

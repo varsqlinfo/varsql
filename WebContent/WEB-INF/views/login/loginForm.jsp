@@ -64,6 +64,10 @@ body {
 }
 </style>
 <script>
+if(top != window){
+	top.location.href = location.href; 
+}
+
 $(document).ready(function (){
 	
 	$('#id,#password').on('keypress' , function (e){

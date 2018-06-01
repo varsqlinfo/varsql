@@ -113,7 +113,7 @@ var _initialized = false
 			,speed : 1			// 스크롤 스피드
 		}
 	}
-	,height: 200
+	,height: 'auto'
 	,tColItem : [] //head item
  	,theadGroup : [] // head group 
 	,tbodyItem : []  // body item
