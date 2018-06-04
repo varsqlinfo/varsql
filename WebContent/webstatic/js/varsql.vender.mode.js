@@ -180,6 +180,13 @@ var $oracle = {
 			}
 		});
 	}
+	,_packageMetaResize : function (){
+		var gridObj = $.pubGrid(this._getMetadataObjectEleId('package') + "column");
+		
+		if(gridObj){
+			gridObj.resizeDraw();
+		}
+	}
 }
 
 VARSQL.vender['ORACLE'] = $oracle;
