@@ -568,12 +568,15 @@ hr.dotline {
 	
 }
 .varsql-pubtab-cont-area [data-meta-tab] {
-	height:100%;
-	display:none;
+	height: 100%;
+    width: 100%;
+    position: absolute;
+    background: #f0f4f0;
+    z-index: 1;
 }
 
 .varsql-pubtab-cont-area .on[data-meta-tab]{
-	display:block;
+	z-index:10;
 }
 /* metadata tab end */
 

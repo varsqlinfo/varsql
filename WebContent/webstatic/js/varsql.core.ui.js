@@ -2256,7 +2256,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					{key :'name', label:'Sequence',width:200, sort:true}
 					,{key :'status', label:'상태'}
 					,{key :'created', label:'생성일자'}
-					,{key :'lastDdlTime', label:'수정수정'}
+					,{key :'lastDdlTime', label:'최종수정일'}
 					]
 				,tbodyItem :itemArr
 				,rowOptions :{
@@ -2373,7 +2373,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			headerOptions : {redraw : false}
 			,asideOptions :{lineNumber : {enable : true	,width : 30}}
 			,tColItem : [
-				{ label: 'Name', key: 'name',width:80 },
+				{ label: 'Name', key: 'name'},
 				{ label: 'Value', key: 'val',width:80 },
 			]
 			,tbodyItem :items

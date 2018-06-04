@@ -65,7 +65,7 @@
 		,initEvt : function (){
 			var _this = this; 
 
-			_this.element.on('click', '.pub-tab-item',function (e){
+			_this.element.on('click', '.pubTab-item-title',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item-cont');
 
@@ -79,7 +79,7 @@
 				}
 			})
 
-			_this.element.on('click', '.pub-tab-icon-area',function (e){
+			_this.element.on('click', '.pubTab-icon-area',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item-cont');
 
@@ -200,7 +200,7 @@
 			for(var key in addAttr){
 				clickEle.attr(key , addAttr[key]);
 			}
-			clickEle.find('.pub-tab-item').trigger('click')
+			clickEle.find('.pubTab-item-title').trigger('click')
 		}
 		,refresh : function (){
 			var _this = this; 
@@ -261,7 +261,7 @@
 				var addHtml = '';
 				if(activeIcon && activeIcon.html != '') {
 					prevFlag = activeIcon.position =='prev' ?true :false; 
-					addHtml = '<span class="pub-tab-icon-area">'+activeIcon.html+'</span>';
+					addHtml = '<span class="pubTab-icon-area">'+activeIcon.html+'</span>';
 				}
 
 				var titleKey = _opts.itemKey.title;
@@ -271,9 +271,9 @@
 					item = items[i];
 					
 					if(prevFlag){
-						itemHtm = addHtml + '<span class="pub-tab-item">'+item[titleKey]+'</span>';
+						itemHtm = addHtml + '<span class="pubTab-item-title">'+item[titleKey]+'</span>';
 					}else{
-						itemHtm = '<span class="pub-tab-item">'+item[titleKey]+'</span>'+addHtml;
+						itemHtm = '<span class="pubTab-item-title">'+item[titleKey]+'</span>'+addHtml;
 					}
 					
 					tabHtm.push('<li class="pubTab-item '+(i+1==itemLen ? 'last':'')+'"><div class="pubTab-item-cont '+_opts.addClass+'" data-tab-idx="'+i+'">'+itemHtm+'</div></li>');
