@@ -71,7 +71,6 @@
 }
 .pubTab-item-cont{
 	border: 1px solid #bfb8b8;
-	padding: 0px 5px;
 	border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 	border-bottom: 0px;
@@ -80,27 +79,26 @@
 .pubTab-item-cont.active{
 	background:#f1f1f1;
 }
-
-
 .pubTab-item-title{
 	display:table-cell;
+	padding: 0px 5px;
+	cursor:pointer;
 }
 .pubTab-icon-area{
 	display:none;
+	padding-right: 3px;
+    padding-top: 2px;
 }
 .pubTab .active .pubTab-icon-area{
 	display:table-cell;
 }
 
-.pubTab .pubTab-drop-item,.pubTab .pubTab-item-title{
+.pubTab .pubTab-drop-item{
 	cursor:pointer;
 }
 .pubTab .pubTab-drop-item:hover {
 	background-color: #ddd;
 }
-
-
-
 
 .pubTab-right-arrow , .pubTab-left-arrow{
 	padding: 0px;
