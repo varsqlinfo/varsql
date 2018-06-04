@@ -174,18 +174,9 @@ _ui.layout = {
 				}
 				
 				var containerW =container.width-2
-					,containerH = container.height-60; 
-				
+					, containerH = container.height-60; 
 				
 				_ui.dbSchemaObjectServiceMenu.resizeObjectArea({width : containerW,height : containerH});
-				
-				try{
-					$.pubTab(_ui.dbSchemaObjectServiceMenu.options.serviceMenuTabId).refresh();
-				
-					$.pubGrid(_ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId+'>#'+$('.db-metadata-area.show-display').attr('id')).resizeDraw({width : containerW,height : containerH});
-				}catch(e){
-					
-				}
 				
 			});
 		});
@@ -201,7 +192,7 @@ _ui.layout = {
 				}
 				
 				var containerW =container.width-2
-					,containerH = container.height-_self.contTabHeight; 
+					, containerH = container.height-_self.contTabHeight; 
 				
 				_ui.dbSchemaObjectServiceMenu.resizeMetaArea({width : containerW,height : containerH});
 				
@@ -716,18 +707,22 @@ _ui.dbSchemaObjectServiceMenu ={
 		return this.options.metadataTabAreaWrapEle; 
 	}
 	// resize object area
-	,resizeObjectArea : function (){
-		var resizeMethod = _self.getCallMethod('_'+_self.selectObjectMenu +'MetaResize');
-		resizeMethod.call(_self);
+	,resizeObjectArea : function (demention){
+		try{
+			// tab resize
+			$.pubTab(this.options.serviceMenuTabId).refresh();
+		}catch(e){};
+		
+		try{
+			// data resize
+			$.pubGrid(this.options.dbServiceMenuContentId+'>#'+this.selectObjectMenu).resizeDraw(demention);
+		}catch(e){};
+		
 	}
 	// meta 영역 resize
 	,resizeMetaArea : function (){
-		var _self =this; 
-		
-		var resizeMethod = _self.getCallMethod('_'+_self.selectObjectMenu +'MetaResize');
-		
-		resizeMethod.call(_self);
-		
+		var resizeMethod = this.getCallMethod('_'+this.selectObjectMenu +'MetaResize');
+		resizeMethod.call(this);
 	}
 	// object service 텝 메뉴 그리기
 	,_tabs : function (){
@@ -769,6 +764,8 @@ _ui.dbSchemaObjectServiceMenu ={
 				if(refresh===true){
 					_self._removeMetaCache(item.contentid);
 				}
+				
+				//_self.resizeObjectArea();
 				_self._dbObjectList(item, refresh);
 			}
 		})
