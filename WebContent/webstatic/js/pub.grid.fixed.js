@@ -636,16 +636,6 @@ Plugin.prototype ={
 			var remainderWidth = (_gw -_totW)/tciLen
 				, lastSpaceW = (_gw -_totW)-remainderWidth *tciLen;
 
-			if(opt.autoResize.responsive ===true){
-				resizeFlag = true; 
-
-				if(_this.config.body.width != 0){
-					var resizeW = (_gw-(_this.config.drawBeforeData.bodyWidth||0)); 
-					remainderWidth  = resizeW/tciLen;
-					lastSpaceW =resizeW - remainderWidth*tciLen;
-				}
-			}
-
 			if(resizeFlag){
 				var leftGridWidth = 0, mainGridWidth=0;
 				for(var j=0; j<tciLen; j++){
@@ -1414,8 +1404,6 @@ Plugin.prototype ={
 	, calcDimension : function (type , opt){
 		var _this = this; 
 		
-		_this.config.gridWidth.total = _this.config.gridWidth.aside+_this.config.gridWidth.left+ _this.config.gridWidth.main;
-
 		_this.config.drawBeforeData.bodyHeight = _this.config.body.height; 
 		
 		opt = opt||{height : (_this.options.height =='auto' ? _this.gridElement.parent().height() : _this.config.body.height )}; 
@@ -1424,7 +1412,33 @@ Plugin.prototype ={
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
+
+			if(type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
+				
+				var _totW = _this.config.gridWidth.total; 
+				var _reiszeW = (opt.width-this.options.scroll.vertical.width) -(_totW); 
+				var _currGridMain = _this.config.gridWidth.main;
+				var _addTotW =0, _addW = 0 ; 
+				
+				var colItems = _this.options.tColItem;
+
+				for(var i=0 ,colLen  = colItems.length; i<colLen; i++){
+					var colItem = colItems[i]; 
+					_addW = (_reiszeW*(colItem.width/_currGridMain*100)/100);
+					var colResizeW = colItem.width + _addW;
+					_addTotW += _addW;
+					
+					colItem.width = colResizeW;
+				
+					$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px').removeAttr('_width');
+					$('#'+_this.prefix+'colbody'+i).css('width',colResizeW+'px');
+				}
+
+				_this.config.gridWidth.main = _currGridMain +(_reiszeW);
+			}
 		}
+
+		_this.config.gridWidth.total = _this.config.gridWidth.aside+_this.config.gridWidth.left+ _this.config.gridWidth.main;
 
 		_this.config.body.width = opt.width;
 		_this.config.body.height = opt.height;
