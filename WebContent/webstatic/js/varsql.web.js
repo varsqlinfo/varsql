@@ -308,35 +308,34 @@ _$base.req ={
 			
 		
 		if($('#varsql_hidden_down_area').length < 1){
-			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;"><form name="varsql_hidden_down_form" id="varsql_hidden_down_form"  target="varsql_hidden_down_iframe"></form>'
-				+'<iframe name="varsql_hidden_down_iframe" id="varsql_hidden_down_iframe"  style="width:0px;height:px;display:none;"></iframe><div>';
+			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
+				+'<iframe id="varsql_hidden_down_iframe"  style="width:0px;height:px;display:none;" onload="$(\'body\').centerLoadingClose()"></iframe><div>';
 			$('body').append(strHtm);
-			
-			$('#varsql_hidden_down_iframe').on('load', function (e){
-				$('body').centerLoadingClose();
-			});
 		}
-		
-		var formObj = $('#varsql_hidden_down_form');
-		
-		formObj.empty();
 		
 		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
 		
-		var tmpVal, tmpIdName;
-		for(var key in tmpParam){
-			var tmpIdName ='varsql_download_'+key; 
-			tmpVal = tmpParam[key];
-			formObj.append('<input type="hidden" id="'+tmpIdName+'" name="'+key+'"/>')
-			$('#'+tmpIdName).val(((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal)));
-		}
+		var contHtm = [];
+		contHtm.push('<!doctype html><html><head>');
+		contHtm.push('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta charset="UTF-8" /></head><body>');
+		contHtm.push('<form action="'+opts.url+'" method="post" name="downloadForm">');
 		
-		formObj.prop('method',tmpMethod);
-		formObj.prop('action',opts.url);
-		formObj.submit();
+		var tmpVal;
+		for(var key in tmpParam){
+			tmpVal = tmpParam[key];
+			
+			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+				'key' : key ,val : (typeof tmpVal==='string' ?tmpVal:JSON.stringify(tmpVal))
+			}));
+			
+		}
+		contHtm.push('</form>');
+		contHtm.push('<script type="text/javascript">try{document.charset="utf-8";}catch(e){}document.downloadForm.submit();</'+'script>');
+		contHtm.push('</body></html>');
 		
 		//$('body').centerLoading({contentClear:false});
 		
+		document.getElementById('varsql_hidden_down_iframe').contentWindow.document.write(contHtm.join(''));
 		
 	}
 };

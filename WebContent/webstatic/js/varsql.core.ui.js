@@ -1081,17 +1081,17 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							
 							var cacheData = _self._getMetaCache(gubun,tmpName, 'column');
 							
-							if(key=='export_data'){
-								_self._dataExport();
-								return ;
-							}
-							
 							var params ={
 								gubun:gubun
 								,gubunKey :key
 								,objName : tmpName 
 								,item : cacheData
 							};
+							
+							if(key=='export_data'){
+								_self._dataExport(params);
+								return ;
+							}
 							
 							if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
 								_self._createJavaProgram(params);
