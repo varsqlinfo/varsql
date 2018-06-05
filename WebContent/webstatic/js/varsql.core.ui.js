@@ -2238,7 +2238,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				
 				for(var key in _item){
 					colList.push({
-						'name' : key
+						'name' : convertUnderscoreCase(key)
 						,'val' : _item[key]
 					})
 				}
@@ -3995,6 +3995,13 @@ function convertCamel(camelStr){
     returnStr = returnStr.replace(/_/g, "");
     
     return returnStr; 
+}
+//camel case -> underscorecase 변환
+function convertUnderscoreCase(str){
+	if(str == '') {
+		return str;
+	}
+	return str.split(/(?=[A-Z])/).join('_').toUpperCase(); 
 }
 
 function toLowerCase(str){
