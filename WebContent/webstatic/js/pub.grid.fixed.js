@@ -407,13 +407,6 @@ Plugin.prototype ={
 		}
 		_this._setGridWidth();
 	}
-	,initScrollData : function (gridCount){
-		this.config.scroll.endCol = this.options.tColItem.length-1;
-		this.config.scroll.endRow = this.options.tbodyItem.length;
-		this.config.scroll.totalHeight = this.options.tbodyItem.length * this.config.rowHeight; 
-
-		return this.config.scroll; 
-	}
 	/**
      * @method addStyleTag
 	 * @param options {Object} - 데이타 .
@@ -730,7 +723,7 @@ Plugin.prototype ={
 			pageInfo = pdata.page; 
 		}
 		
-		if(data){
+		if(data && data.length > 0){
 			_this.options.tbodyItem = data
 		}
 
@@ -1341,6 +1334,7 @@ Plugin.prototype ={
 			itemIdx++;
 		}
 
+	
 		_this._statusMessage(viewCount);
 		
 	}
@@ -1443,7 +1437,7 @@ Plugin.prototype ={
 					
 					colItem.width = colResizeW;
 				
-					$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px').removeAttr('_width');
+					$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px');
 					$('#'+_this.prefix+'colbody'+i).css('width',colResizeW+'px');
 				}
 
@@ -3238,7 +3232,6 @@ Plugin.prototype ={
 			_this.options.tColItem[drag.resizeIdx].width = w; 
 			
 			drag.colHeader.css('width',w+'px');
-			drag.colHeader.attr('_width',w);
 			$('#'+_this.prefix+'colbody'+drag.resizeIdx).css('width',w+'px');
 			
 			drag.ele.removeAttr('style');
