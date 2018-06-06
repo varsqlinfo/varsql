@@ -28,7 +28,7 @@ var _initialized = false
 	}
 	,autoResize : {
 		enabled:true
-		,responsive : false // 리사이즈시 그리드 리사이즈 여부.
+		,responsive : true // 리사이즈시 그리드 리사이즈 여부.
 		,threshold :150
 	}
 	,headerOptions : {
@@ -1412,14 +1412,23 @@ Plugin.prototype ={
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
-
-			if(type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
-				
+			
+			if(_this.config.body.width != opt.width && type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
+			
 				var _totW = _this.config.gridWidth.total; 
-				var _reiszeW = (opt.width-this.options.scroll.vertical.width) -(_totW); 
+				var _overW = (_totW+_this.options.scroll.vertical.width) - _this.config.body.width;
+	
+				if(_overW > 0){
+					_overW = (opt.width*(_overW/_this.config.body.width*100)/100);
+				}else{
+					_overW = 0; 
+				}
+				
+				var _reiszeW = (opt.width+_overW-_this.options.scroll.vertical.width) -(_totW); 
 				var _currGridMain = _this.config.gridWidth.main;
 				var _addTotW =0, _addW = 0 ; 
-				
+				_overW = _overW > 0 ? _overW : 0;
+
 				var colItems = _this.options.tColItem;
 
 				for(var i=0 ,colLen  = colItems.length; i<colLen; i++){
@@ -3221,7 +3230,7 @@ Plugin.prototype ={
 				_this.config.gridWidth.main = totalWidth;
 			}
 			
-			_this.config.body.width = drag.gridBodyW+w; 
+			//_this.config.body.width = drag.gridBodyW+w; // 2018-06-06 불필요 삭제 .
 			_this.options.tColItem[drag.resizeIdx].width = w; 
 			
 			drag.colHeader.css('width',w+'px');

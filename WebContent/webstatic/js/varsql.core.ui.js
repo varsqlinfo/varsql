@@ -1017,10 +1017,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			VARSQLHints.setTableInfo(tableHint);
 			
 			var tableObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
-				autoResize : {
-					responsive :true
-				}
-				,setting : {
+				setting : {
 					enable : true
 					,click : false
 					,enableSearch : true
