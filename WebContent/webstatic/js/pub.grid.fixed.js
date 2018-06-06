@@ -1401,14 +1401,16 @@ Plugin.prototype ={
 	 * @param  opt {Object}  옵션.
      * @description 그리드 수치 계산 . 
      */
-	, calcDimension : function (type , opt){
+	, calcDimension : function (type, opt){
 		var _this = this; 
 		
 		_this.config.drawBeforeData.bodyHeight = _this.config.body.height; 
 		
-		opt = opt||{height : (_this.options.height =='auto' ? _this.gridElement.parent().height() : _this.config.body.height )}; 
-		opt = $.extend(true, {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()},opt);
-		
+		if(type =='headerResize'){
+			opt = $.extend(true, {width : _this.config.body.width, height : _this.config.body.height},opt);
+		}else{
+			opt = $.extend(true, {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()},opt);
+		}
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
@@ -1423,6 +1425,8 @@ Plugin.prototype ={
 				}else{
 					_overW = 0; 
 				}
+
+				//console.log(_totW ,_overW)
 				
 				var _reiszeW = (opt.width+_overW-_this.options.scroll.vertical.width) -(_totW); 
 				var _currGridMain = _this.config.gridWidth.main;
@@ -1448,6 +1452,8 @@ Plugin.prototype ={
 		}
 
 		_this.config.gridWidth.total = _this.config.gridWidth.aside+_this.config.gridWidth.left+ _this.config.gridWidth.main;
+
+		//console.log(type,opt.width, _this.config.gridWidth.total , _this.config.gridWidth.aside,_this.config.gridWidth.left,_this.config.gridWidth.main)
 
 		_this.config.body.width = opt.width;
 		_this.config.body.height = opt.height;
@@ -3213,13 +3219,11 @@ Plugin.prototype ={
 			
 			w = resizeW ||(drag.colW + (ox - drag.pageX));
 		}
-		
-		var minFlag = false; 
+
 		if(mode=='end'){
-			if(drag.width)
+			
 			if(w <= _this.options.headerOptions.colMinWidth){
 				w =_this.options.headerOptions.colMinWidth;
-				minFlag =true; 
 			}
 			
 			var totalWidth = drag.gridW+w;
