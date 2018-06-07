@@ -779,18 +779,17 @@ Plugin.prototype ={
 			}
 		}
 
-		if(gridMode=='reDraw'){
+		_this.config.dataInfo.rowLen= _this.options.tbodyItem.length+1;
+		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.rowLen-2;
 
+		if(gridMode=='reDraw'){
 			_this._setHeaderInitInfo();
 			_this._setRangeSelectInfo({}, true);
 
 			_this.calcDimension('reDraw');
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
-		
-		_this.config.dataInfo.rowLen= _this.options.tbodyItem.length;
-		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.rowLen-1;
-
+				
 		_this.setScrollSpeed();
 
 		_this.drawGrid(gridMode,true);
@@ -1069,7 +1068,7 @@ Plugin.prototype ={
 			}
 		}
 
-		if(mode=='init' || this.options.tbodyItem.length > 0){
+		if(mode=='init' || this.config.dataInfo.rowLen > 0){
 			bodyHtm (this,mode,'left');
 			return bodyHtm (this,mode, 'cont');	
 		}
@@ -1291,7 +1290,7 @@ Plugin.prototype ={
 		}
 
 		for(var i =0 ; i < viewCount; i++){
-			tbiItem = tbi[itemIdx];
+			tbiItem = tbi[itemIdx]||{};
 		
 			var addEle;
 			for(var j =0 ; j < asideItem.length ;j++){
@@ -1333,8 +1332,13 @@ Plugin.prototype ={
 			}
 			itemIdx++;
 		}
-
-	
+		
+		if(itemIdx > this.config.dataInfo.rowLen -1){
+			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').hide();
+		}else{
+			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
+		}
+					
 		_this._statusMessage(viewCount);
 		
 	}
@@ -1366,7 +1370,7 @@ Plugin.prototype ={
 			pubGridClass +=' left-cont-on';
 		}
 
-		if(this.options.tbodyItem.length < 1){
+		if(this.config.dataInfo.rowLen < 1){
 			pubGridClass +=' pubGrid-no-item';
 		}
 
@@ -1458,7 +1462,7 @@ Plugin.prototype ={
 		var  bodyW = (_this.config.body.width-this.options.scroll.vertical.width)
 			, hScrollFlag = _this.config.gridWidth.total > bodyW  ? true : false
 			, bodyH = mainHeight - this.config.header.height - this.config.footer.height
-			, itemTotHeight = _this.options.tbodyItem.length * _this.config.rowHeight
+			, itemTotHeight = _this.config.dataInfo.rowLen * _this.config.rowHeight
 			, vScrollFlag = itemTotHeight > bodyH ? true :false;
 						
 		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main)+'px');
@@ -1472,7 +1476,7 @@ Plugin.prototype ={
 		//console.log(vScrollFlag,mainHeight , this.config.header.height , this.config.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontal.height:0))
 		
 		var beforeViewCount = _this.config.scroll.viewCount ; 
-		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.options.tbodyItem.length;
+		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.config.dataInfo.rowLen;
 		_this.config.scroll.overflowVal = bodyH % this.config.rowHeight; 
 
 		if(_this.config.scroll.overflowVal > 0){	// 화면에 다 보이는 row count
@@ -1496,7 +1500,7 @@ Plugin.prototype ={
 			
 			_this.config.scroll.vBarHeight = barHeight; 
 			_this.config.scroll.verticalHeight = scrollH - barHeight;
-			_this.config.scroll.oneRowMove = _this.config.scroll.verticalHeight/(_this.options.tbodyItem.length-this.config.scroll.viewCount);
+			_this.config.scroll.oneRowMove = _this.config.scroll.verticalHeight/(_this.config.dataInfo.rowLen-this.config.scroll.viewCount);
 						
 			topVal = _this.config.scroll.verticalHeight* _this.config.scroll.vBarPosition/100;
 			
@@ -1785,7 +1789,6 @@ Plugin.prototype ={
 
 		if(!_this.config.scroll.vUse && moveObj.resizeFlag !== true){ 
 			_this.config.scroll.viewIdx = 0;
-			_this.element.body.css('margin-top',0);
 			return ; 
 		}
 
@@ -1797,15 +1800,12 @@ Plugin.prototype ={
 			topVal =_this.config.scroll.top+((topVal=='U'?-1:1)* speed * _this.config.scroll.oneRowMove);
 		}
 		
-		var beforeEndFlag = _this.config.scroll.endFlag; 
 		var _topVal = topVal; 
-		this.config.scroll.endFlag = false; 
 		var barPos = 0 ; 
 
 		if( topVal> 0){
 			if(topVal >= this.config.scroll.verticalHeight ){
 				topVal = this.config.scroll.verticalHeight;
-				this.config.scroll.endFlag = true; 
 			}
 			barPos = topVal/this.config.scroll.verticalHeight*100; 
 		}else {
@@ -1819,22 +1819,10 @@ Plugin.prototype ={
 
 		if(topVal > 0){
 			var tmpRowHeight = this.config.rowHeight; 
-			itemIdx = topVal/(this.config.scroll.verticalHeight / (this.options.tbodyItem.length-this.config.scroll.viewCount));
+			itemIdx = topVal/(this.config.scroll.verticalHeight / (_this.config.dataInfo.rowLen-this.config.scroll.viewCount));
 			itemIdx  = Math.round(itemIdx); 
 		}
-			
-		if(this.config.scroll.endFlag){
-			if(this.config.scroll.overflowVal > 0){
-				var vHeight = (this.config.scroll.hUse?this.options.scroll.horizontal.height:0);
-				this.element.body.css('margin-top',(tmpRowHeight-this.config.scroll.overflowVal+2+vHeight)*-1); // 아래 조금 띄우기 위에서 +3 해줌. 
-			}
-		}else{
-			if(beforeEndFlag && !this.config.scroll.endFlag){
-				//itemIdx+=1;
-				this.element.body.css('margin-top',0);
-			}
-		}
-		
+					
 		this.config.scroll.vBarPosition = barPos;
 
 		if(drawFlag === false){
@@ -1957,7 +1945,7 @@ Plugin.prototype ={
 		this.element.status.empty().html(this.options.message.pageStatus({
 			currStart :startVal
 			,currEnd : (endVal-1)
-			,total : this.options.tbodyItem.length
+			,total : this.config.dataInfo.rowLen
 		}))
 	}
 	/**
@@ -2644,16 +2632,12 @@ Plugin.prototype ={
 				
 				var moveRowIdx =(endRow-1 >0? endRow-1: 0);
 						
-				if(moveRowIdx==0 && currViewIdx > 0){
+				if(endRow==0 && currViewIdx > 0){
 					_this.moveVScroll({pos:'U'});
 				}
-
-				if(this.config.scroll.endFlag){
-					currViewIdx = (_this.config.dataInfo.rowLen)-(_this.config.scroll.insideViewCount-moveRowIdx);
-				}else{
-					currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
-				}
 				
+				currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
+
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({
 						rangeInfo : {endIdx : currViewIdx, startRow : moveRowIdx ,endRow:moveRowIdx}
@@ -2672,33 +2656,13 @@ Plugin.prototype ={
 				if(!isScrollInside(endCol,'V')) return ;
 				
 				var rowLen = _this.config.scroll.insideViewCount-1;
-
-				if(this.config.scroll.endFlag){
-					rowLen = _this.config.scroll.insideViewCount;
-				}
-
-				var moveRowIdx =(endRow+1 >=rowLen? rowLen : endRow+1);
+				var moveRowIdx =(endRow >=rowLen? rowLen : endRow+1);
 			
-				if(moveRowIdx==rowLen &&  (currViewIdx+moveRowIdx) < _this.config.dataInfo.rowLen){
+				if(endRow==rowLen &&  (currViewIdx+moveRowIdx) < _this.config.dataInfo.rowLen){
 					_this.moveVScroll({pos:'D'});
 				}
 
-				if(this.config.scroll.endFlag){
-
-					if(_this.config.dataInfo.lastRowIdx < (currViewIdx+endRow+1)){
-						return ; 
-					}
-
-					if(moveRowIdx==rowLen){
-						moveRowIdx = moveRowIdx+1;
-					}
-				}
-
-				if(_this.config.scroll.insideViewCount != _this.config.scroll.viewCount && (_this.config.scroll.viewIdx+endRow+1) == _this.config.dataInfo.rowLen-1){
-					currViewIdx = _this.config.dataInfo.rowLen-1;
-				}else{
-					currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
-				}
+				currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
 
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({
@@ -2935,7 +2899,7 @@ Plugin.prototype ={
 			sCol= 0;
 			eCol= _this.options.tColItem.length-1;
 			sIdx= 0;
-			eIdx = _this.options.tbodyItem.length-1;
+			eIdx = _this.config.dataInfo.lastRowIdx;
 		}else{
 			var colInfo = _this.config.select;
 			sCol= colInfo.minCol;
@@ -2987,7 +2951,7 @@ Plugin.prototype ={
 		
 		if(allSelectFlag){
 			sIdx= 0;
-			eIdx = _this.options.tbodyItem.length-1;
+			eIdx = _this.config.dataInfo.rowLen-1;
 		}else{
 			var colInfo = _this.config.select;
 			sIdx= colInfo.minIdx;
@@ -3119,7 +3083,7 @@ Plugin.prototype ={
 						,tmpVal ,currLen
 						,selColKey  =selColItem.key; 
 					
-					for(var i =0, len = tbodyItem.length ;i <len;i++){
+					for(var i =0, len = _this.config.dataInfo.rowLen ;i <len;i++){
 						tmpVal = tbodyItem[i][selColKey]+'';
 
 						currLen = tmpVal.length;
