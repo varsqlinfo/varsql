@@ -2050,8 +2050,10 @@ Plugin.prototype ={
 					_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
 				}
 
+				var rangeKey = 'col'+col_idx;
+
 				_this._setRangeSelectInfo({
-					rangeInfo : {startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
+					rangeInfo : {_key : rangeKey, startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startRow : 0 ,endRow:_this.config.scroll.insideViewCount, startCol : col_idx,  endCol :col_idx}
 					,isSelect : true
 					,curr : curr
 				}, initFlag , true);
@@ -2299,8 +2301,10 @@ Plugin.prototype ={
 
 				var rowIdx = _this.config.scroll.viewIdx+intValue(row_idx); 
 
+				var rangeKey = 'row'+rowIdx;
+
 				_this._setRangeSelectInfo({
-					rangeInfo : {startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.scroll.endCol}
+					rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.scroll.endCol}
 					,isSelect : true
 					,curr : curr
 				}, initFlag , true);
@@ -2395,9 +2399,8 @@ Plugin.prototype ={
 					sEle.attr('data-select-idx',_this.config.select.curr);
 					sEle.addClass('col-active');
 
-					if(_this._isAllSelect()){
-						delete _this.config.select.unSelectPosition[selIdx+','+colIdx];
-					}
+					delete _this.config.select.unSelectPosition[selIdx+','+colIdx];
+					
 				}
 			}
 			
@@ -2453,7 +2456,7 @@ Plugin.prototype ={
 		// focus out
 		$(document).on('mousedown.'+_this.prefix, 'html', function (e) {
 			if(e.which !==2 && $(e.target).closest('#'+_this.prefix+'_pubGrid').length < 1){
-				_this.config.focus = false; 
+				_this.config.focus = false;
 			}
 		});
 				
@@ -2703,6 +2706,7 @@ Plugin.prototype ={
 		var	rangeInfo = selectInfo.rangeInfo;
 		
 		function setSelectInfo (cfgSelect, selectInfo){
+
 			for(var key in selectInfo){
 				if(key =='rangeInfo'){
 					;
@@ -2710,14 +2714,20 @@ Plugin.prototype ={
 					if(selectInfo[key]=='add'){
 						cfgSelect.curr+=1;
 						cfgSelect.range = rangeInfo;
-						cfgSelect.allRange.push(rangeInfo);
+						var rangeKey = rangeInfo._key ?  rangeInfo._key : cfgSelect.curr;
+						
+						if(_this.isRangeKey(rangeKey)){
+							rangeInfo.mode = 'remove';
+							delete cfgSelect.allRange[rangeKey];
+						}else{
+							cfgSelect.allRange[rangeKey] = rangeInfo;
+						}
 					}
 				}else{
 					cfgSelect[key] = selectInfo[key];
 				}
 			}
-			
-			console.log(cfgSelect)
+
 			return cfgSelect; 
 		}
 
@@ -2726,7 +2736,7 @@ Plugin.prototype ={
 			var initOpt = {
 				curr :0
 				,range : {startIdx : -1,endIdx : -1, startRow : -1 ,startCol : -1, endRow : -1, endCol : -1}
-				,allRange: []
+				,allRange:  {}
 				,isSelect : false
 				,isMouseDown:false
 				,unSelectPosition:{}
@@ -2736,7 +2746,7 @@ Plugin.prototype ={
 			};
 			setSelectInfo(initOpt, selectInfo);
 			cfgSelect = this.config.select = initOpt;
-			cfgSelect.allRange.push(cfgSelect.range);
+			cfgSelect.allRange[initOpt.curr] =cfgSelect.range;
 		}else{
 			setSelectInfo(cfgSelect, selectInfo);
 		}
@@ -2792,6 +2802,34 @@ Plugin.prototype ={
 
 		eRow = eRow > _this.config.scroll.viewCount ? _this.config.scroll.viewCount :eRow;
 
+		if(_this.config.select.range.mode == 'remove'){
+			for(var i = sRow ; i <= eRow ; i++){
+				for(var j=sCol ;j <= eCol; j++){
+					var rowCol = i+','+j; 
+					var currIdx = currViewIdx+i;
+					
+					var addEle;
+
+					
+					
+					if(_this._isFixedPostion(j)){
+						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+					}else{
+						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+					}
+					if(addEle==null) continue; 
+
+					_this.config.select.unSelectPosition[rowCol]='';
+
+					addEle.removeAttribute('data-select-idx');
+					addEle.classList.remove('col-active');
+					
+					addEle = null; 
+				}
+			}
+			return ; 
+		}
+
 		_this.element.body.find('.pub-body-td[data-select-idx="'+tmpCurr+'"].col-active').each(function (){
 			var sEle = $(this);
 			
@@ -2805,10 +2843,8 @@ Plugin.prototype ={
 			}
 		})
 
-		var rowIdx =-1; 
-
 		for(var i = sRow ; i <= eRow ; i++){
-			++rowIdx;
+
 			for(var j=sCol ;j <= eCol; j++){
 				var rowCol = i+','+j; 
 				var currIdx = currViewIdx+i;
@@ -2827,11 +2863,18 @@ Plugin.prototype ={
 				if(addEle==null) continue; 
 
 				addEle.setAttribute('data-select-idx',tmpCurr);
-				addEle.classList.add('col-active' );
+				addEle.classList.add('col-active');
 				
 				addEle = null; 
 			}
 		}
+	}
+	/**
+     * @method isRangeKey
+     * @description header , col 선택 여부 확인
+     */
+	,isRangeKey : function (key){
+		return this.config.select.allRange[key] ?true :false;
 	}
 	/**
      * @method isSelectPosition
@@ -2853,8 +2896,8 @@ Plugin.prototype ={
 
 				var allRange = this.config.select.allRange;
 
-				for(var i=0 ;i <allRange.length; i++){
-					var tmpRange = allRange[i];
+				for(var key in allRange){
+					var tmpRange = allRange[key];
 					
 					if(isSelRange(tmpRange, row , col)){
 						return true; 
