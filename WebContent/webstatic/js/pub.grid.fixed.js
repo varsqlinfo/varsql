@@ -2810,8 +2810,6 @@ Plugin.prototype ={
 					
 					var addEle;
 
-					
-					
 					if(_this._isFixedPostion(j)){
 						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
 					}else{
@@ -2843,11 +2841,18 @@ Plugin.prototype ={
 			}
 		})
 
+		var isRowSelect = _this.config.select.range._key.indexOf('row') == 0
+			,isColSelect = _this.config.select.range._key.indexOf('col') == 0;
+
 		for(var i = sRow ; i <= eRow ; i++){
 
 			for(var j=sCol ;j <= eCol; j++){
 				var rowCol = i+','+j; 
 				var currIdx = currViewIdx+i;
+
+				if(isRowSelect || isColSelect){
+					 delete _this.config.select.unSelectPosition[rowCol];
+				}
 
 				if(!_this.isSelectPosition(currIdx ,j, true)){
 					continue; 
