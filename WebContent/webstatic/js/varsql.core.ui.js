@@ -1245,8 +1245,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeAndLength' },
+				{ label: 'Key', key: 'constraints', align:'center', width:45},
+				{ label: '기본값', key: 'defaultVal',width:45},
 				{ label: '널여부', key: 'nullable',width:45},
-				{ label: 'Key', key: 'constraints',width:45},
 				{ label: '설명', key: 'comment',width:45}
 			]
 			,tbodyItem :items
@@ -3722,16 +3723,17 @@ _ui.SQL = {
 	,addSqlEditContent :function (cont , suffixAddFlag){
 	
 		var _self = this;
-		var insVal = cont;
+		
+		var insVal = VARSQLCont.constants.newline+cont;
 		
 		if(suffixAddFlag !== false){
 			insVal = insVal +VARSQLCont.constants.querySuffix;
 		}
 		
 		var editObj =_self.getTextAreaObj()
-			,insLine = editObj.lastLine(); 
+			,insLine = editObj.lastLine()+1; 
 		editObj.replaceRange(insVal, CodeMirror.Pos(insLine));
-		editObj.setSelection({line:insLine+1,ch:0}, {line:editObj.lastLine()+1,ch:0});
+		editObj.setSelection({line:insLine,ch:0}, {line:editObj.lastLine(),ch:0});
 		editObj.focus();
 		
 	}
