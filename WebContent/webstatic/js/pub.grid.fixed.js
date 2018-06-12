@@ -2840,10 +2840,14 @@ Plugin.prototype ={
 				sEle.removeClass('col-active');
 			}
 		})
-
-		var isRowSelect = _this.config.select.range._key.indexOf('row') == 0
-			,isColSelect = _this.config.select.range._key.indexOf('col') == 0;
-
+		
+		var rangeKey = _this.config.select.range._key; 
+		var isRowSelect =false,isColSelect = false;  
+		if(!isUndefined(rangeKey)){
+			isRowSelect = _this.config.select.range._key.indexOf('row') == 0;
+			isColSelect = _this.config.select.range._key.indexOf('col') == 0;
+		}
+		
 		for(var i = sRow ; i <= eRow ; i++){
 
 			for(var j=sCol ;j <= eCol; j++){
