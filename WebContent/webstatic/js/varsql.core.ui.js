@@ -1382,7 +1382,16 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 								return ; 
 							}
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache(gubun, tmpName);
+							
+							_self._createScriptSql({
+								gubunKey : key
+								,gubun : $$gubun
+								,objName :  _self.selectMetadata[$$gubun]
+								,item : {
+									items : cacheData.items
+								}
+							});
 						},
 						items: [
 							{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
