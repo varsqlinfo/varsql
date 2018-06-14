@@ -780,9 +780,12 @@ Plugin.prototype ={
 		}
 		
 		_this.config.dataInfo.orginRowLen = _this.options.tbodyItem.length;
-		_this.config.dataInfo.rowLen= _this.config.dataInfo.orginRowLen+1;
-		_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.orginRowLen-1;
 
+		if(_this.config.dataInfo.orginRowLen > 0){
+			_this.config.dataInfo.rowLen= _this.config.dataInfo.orginRowLen+1;
+			_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.orginRowLen-1;
+		}
+		
 		if(gridMode=='reDraw'){
 			_this._setHeaderInitInfo();
 			_this._setRangeSelectInfo({}, true);
@@ -1475,7 +1478,7 @@ Plugin.prototype ={
 		_this.element.body.find('.pubGrid-empty-msg-area').css('line-height',(bodyH)+'px');
 
 		//console.log(vScrollFlag,mainHeight , this.config.header.height , this.config.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontal.height:0))
-		
+
 		var beforeViewCount = _this.config.scroll.viewCount ; 
 		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.config.dataInfo.rowLen;
 		_this.config.scroll.overflowVal = bodyH % this.config.rowHeight; 
@@ -3427,19 +3430,69 @@ Plugin.prototype ={
      * @description 해제.
      */
 	,excelExport : function (opt){
+		
+		var _this = this
+			,cfg = _this.config
+			,tci = _this.options.tColItem
+			,tbi = _this.options.tbodyItem
+			,headerOpt=_this.options.headerOptions;
 
-		var downloadInfo =this.element.header.html();
 		
-		var cssText = '<style type="text/css">';
-		cssText += opt.style || '';
-        cssText += 'td {border:thin   solid #524848;border-collapse: collapse;}';
-        cssText += '</style>';
-		
-		downloadInfo = downloadInfo.replace('<tbody></tbody>', this.getTbodyHtml('all'));
+		var downloadInfo = [];
 
-		console.log(downloadInfo);
+		downloadInfo.push('<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head>');
+		downloadInfo.push('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta charset="UTF-8" />');
+		downloadInfo.push('<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->');
+	
+			
+		//style start	
+		downloadInfo.push('<style type="text/css">');
+		downloadInfo.push('th {border:thin solid #524848;border-collapse: collapse;background-color:#dedede;}');
+        downloadInfo.push('td {border:thin   solid #524848;border-collapse: collapse;}');
+		downloadInfo.push(opt.style || '');
+        downloadInfo.push('</style></head>');
+		//style end;
+
+		var headerInfo = cfg.headerInfo; 
 		
-		downloadInfo = cssText+downloadInfo;
+		downloadInfo.push('<body>');
+		downloadInfo.push('<table>');
+
+		if(headerInfo.length > 0 && headerOpt.view){
+			var ghArr, ghItem;
+				
+			for(var i =0, len=headerInfo.length ; i < len; i++){
+				ghArr = headerInfo[i];
+				downloadInfo.push('<tr class="pub-header-tr">');
+				for(var j=0 ; j <ghArr.length; j++){
+					ghItem = ghArr[j];
+					if(ghItem.view){
+						downloadInfo.push('	<th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+'>');
+						downloadInfo.push(ghItem.label);
+						downloadInfo.push('	</th>');					
+					}
+				}
+				downloadInfo.push('</tr>');
+			}
+		}
+		
+		for(var i =0 ; i < tbi.length; i++){
+			downloadInfo.push("<tr>");
+			var item = tbi[i];
+			for(var j =0 ; j < tci.length; j++){
+				var keyItem = tci[j];
+
+
+				downloadInfo.push("<td>");
+				downloadInfo.push(item[keyItem.key]);
+				downloadInfo.push("</td>");
+			}
+			downloadInfo.push("</tr>");
+		}
+		downloadInfo.push('</table>');
+		downloadInfo.push('</body></html>');
+				
+		downloadInfo = downloadInfo.join('');
 
 		if(!isUndefined(opt)){
 			if(opt.type=='download'){
@@ -3447,7 +3500,7 @@ Plugin.prototype ={
 					charset = opt.charset||"utf-8";
 
 				if (navigator.msSaveOrOpenBlob) {
-					var _blob = new Blob([downloadInfo], { type: "text/html" });
+					var _blob = new Blob([downloadInfo], { type: "text/html; charset=UTF-8" });
 					window.navigator.msSaveOrOpenBlob(_blob, fileName);
 				} else {
 					if (_broswer=='msie' && typeof isUndefined(Blob)) {
@@ -3464,11 +3517,11 @@ Plugin.prototype ={
 						frmTarget.charset = "utf-8";
 						frmTarget.focus();
 					} else {
-						var uri = "data:application/vnd.ms-excel;base64,"+window.btoa(unescape(encodeURIComponent(downloadInfo)))
+
+						var uri = "data:application/vnd.ms-excel;charset=UTF-8,%EF%BB%BF"+encodeURIComponent(downloadInfo)
 							,anchor = document.body.appendChild(document.createElement("a"));
 						
 						anchor.download = fileName;
-						//anchor.href = URL.createObjectURL( blob );
 						anchor.href = uri;
 						anchor.click();
 						document.body.removeChild(anchor);

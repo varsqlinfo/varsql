@@ -1097,7 +1097,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 								return ;
 							}
 							
-							key = sObj.mode;
+							params.sqlGenType = sObj.mode;
 							params.param_yn = sObj.param_yn;
 							_self._createScriptSql(params);
 						},
@@ -1275,10 +1275,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						}
 						
 						var cacheData = gridObj.getSelectItem(['name']);
-						key = sObj.mode;
 						
 						_self._createScriptSql({
 							gubunKey : key
+							,sqlGenType : sObj.mode
 							,gubun : 'table'
 							,objName :  _self.selectMetadata['table']
 							,item : {
@@ -1387,6 +1387,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 							
 							_self._createScriptSql({
 								gubunKey : key
+								,sqlGenType : sObj.mode
 								,gubun : $$gubun
 								,objName :  _self.selectMetadata[$$gubun]
 								,item : {
@@ -1533,10 +1534,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						
 						var cacheData = gridObj.getSelectItem(['name']);
-						key = sObj.mode;
 						
 						_self._createScriptSql({
 							gubunKey : key
+							,sqlGenType : sObj.mode
 							,gubun : $objType
 							,objName :  _self.selectMetadata[$objType]
 							,item : {
@@ -3606,21 +3607,20 @@ _ui.SQL = {
 	// 스크립트 내보내기
 	,addCreateScriptSql :function (scriptInfo){
 		var _self = this;
-		var gubunKey = scriptInfo.gubunKey
+		var sqlGenType = scriptInfo.sqlGenType
 			,gubun = scriptInfo.gubun
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
 			,param_yn  = scriptInfo.param_yn;
 		
-		
 		if(_g_options.schema != _g_options.param.schema){
 			tmpName = _g_options.param.schema+'.'+tmpName;
 		}
 				
-		gubunKey =gubunKey.split('|');
+		sqlGenType =sqlGenType.split('|');
 		
-		var key =gubunKey[0]
-			,keyMode = gubunKey[1];
+		var key =sqlGenType[0]
+			,keyMode = sqlGenType[1];
 		
 		param_yn = param_yn?param_yn:'N';
 		
@@ -3629,8 +3629,7 @@ _ui.SQL = {
 		var dataArr = data.items, tmpval , item;
 		
 		var len = dataArr.length;
-		
-		reval.push(VARSQLCont.constants.newline); // 첫라인 줄바꿈으로 시작.
+				
 		// select 모든것.
 		if(key=='selectStar'){
 			reval.push('select * from '+tmpName);
@@ -3724,14 +3723,19 @@ _ui.SQL = {
 	
 		var _self = this;
 		
+		cont = VARSQL.str.trim(cont);
+		
 		var insVal = VARSQLCont.constants.newline+cont;
 		
 		if(suffixAddFlag !== false){
 			insVal = insVal +VARSQLCont.constants.querySuffix;
 		}
 		
+		insVal =insVal+VARSQLCont.constants.newline;
+				
 		var editObj =_self.getTextAreaObj()
 			,insLine = editObj.lastLine()+1; 
+				
 		editObj.replaceRange(insVal, CodeMirror.Pos(insLine));
 		editObj.setSelection({line:insLine,ch:0}, {line:editObj.lastLine(),ch:0});
 		editObj.focus();

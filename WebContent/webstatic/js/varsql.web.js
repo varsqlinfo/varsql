@@ -690,6 +690,18 @@ function getParameter(url, param){
 	return rtnval; 
 }
 
+/**
+ * @method VARSQL.str
+ * @param str
+ * @description 글자 형식 처리. 
+ */
+_$base.str = {
+	trim : function(str) {
+		return str.replace(/^\s+|\s+$/gm,'');
+	}
+}
+
+
 _$base.util = {
 	/**
 	 * @method VARSQL.util.calcDate
