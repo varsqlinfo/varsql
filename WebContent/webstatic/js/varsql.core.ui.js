@@ -71,8 +71,9 @@ _ui.layout = {
 	,contTabHeight : 28
 	,init : function(_opts){
 		var _self = this; 
-		_self.setLayout();
 		_self.initEvt();
+		
+		_self.setLayout();
 	}	
 	,initEvt : function (){
 		
@@ -378,6 +379,21 @@ _ui.headerMenu ={
 							break;
 						case 'save': // 저장
 							$('.sql_save_btn').trigger('click');
+							break;
+						case 'newwin': // 새창 보기.
+							var popt = 'width='+screen.width-40+',height='+screen.height-40+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'; 
+							
+							var winObj = window.open('', _g_options._opts.conuid,popt);
+							
+							if(winObj && winObj.VARSQL){
+								winObj.focus();
+							}else{
+								try{
+									winObj.location.href = location.href;  
+									winObj.focus();
+								}catch(e){};
+							}
+							
 							break;
 						case 'close': // 닫기
 							var isInIFrame = (window.location != window.parent.location);

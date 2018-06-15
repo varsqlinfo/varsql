@@ -47,6 +47,7 @@
 	<listener>		
 		<listener-class>com.varsql.configuration.ContextLoaderListener</listener-class>
 	</listener>
+	<!-- cookie http only 설정. -->
 
 	<!-- Processes application requests -->
 	<servlet>
@@ -93,6 +94,10 @@
 	<!-- session timeout -->
 	<session-config>
 		<session-timeout>1440</session-timeout>
+		<cookie-config>
+			<http-only>true</http-only>
+		</cookie-config>
+		<tracking-mode>COOKIE</tracking-mode>
 	</session-config>
 
 	<welcome-file-list>
@@ -123,4 +128,6 @@
 		<exception-type>java.lang.NullPointerException</exception-type>
 		<location>/webstatic/error/error500.jsp</location>
 	</error-page>
+	
+	
 </web-app>

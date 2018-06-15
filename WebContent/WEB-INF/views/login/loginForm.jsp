@@ -115,6 +115,7 @@ $(document).ready(function (){
 		<form name="f" action="${varsqlLoginUrl}" method="post"
 			class="form-signin" role="form" onsubmit="return false;">
 			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
+			<sec:csrfInput/>
 			
 			<input class="form-control" id="id" name="id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off"> 
 			<input class="form-control" id="password" name="password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">

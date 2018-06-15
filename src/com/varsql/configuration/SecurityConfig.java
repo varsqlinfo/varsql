@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.varsql.core.auth.UserService;
@@ -36,79 +37,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
-		configureLogin(http);
 		configureHttpSecurity(http);
-	    configureLogout(http);
-	    configureAuth(http);
-	    configureSession(http);
-	    configureSSOFilter(http);
-	    
-        
     }
+	
 	private void configureHttpSecurity(HttpSecurity http) throws Exception {
 		http.headers()
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
-			.and()
-			.csrf().disable()
+		.and()
+			.csrf()
+			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+			.ignoringAntMatchers("/login/**")
+			.requireCsrfProtectionMatcher(new CsrfRequestMatcher())
+		.and()
+			//.addFilterBefore(new CsrfCookieGeneratorFilter(), CsrfFilter.class)
 			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint())
-			.and().httpBasic();
-	}
-	private void configureSession(HttpSecurity http) throws Exception {
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
-		/*
-		.invalidSessionUrl("/gainCommon/sessioninvalidation?error_code=1")
-		.sessionAuthenticationErrorUrl("/gainCommon/sessionin validation?error_code=2")
-		.maximumSessions(1)
-		.expiredUrl("/gainCommon/sessioninvalidation?error_code=3")
-		.maxSessionsPreventsLogin(true);
-		*/
-		
-	}
-	/**
-	 * 
-	* @Method	: configureLogin
-	* @Method설명	: 로그인 관련 처리.
-	* @작성일		: 2017. 3. 16.
-	* @AUTHOR	: ytkim
-	* @변경이력	: 
-	* @param http
-	* @throws Exception
-	 */
-	private void configureLogin(HttpSecurity http) throws Exception {
-		http.formLogin()
+		.and() //session
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+		.and() // login
+			.formLogin()
 	        .loginPage("/login")
 	        .loginProcessingUrl("/login_check")
 	        .usernameParameter("id")
 	        .passwordParameter("password")
 	        .failureUrl("/login?mode=fail")
 	        .successHandler(new VarsqlAuthenticationSuccessHandler())
-	        .permitAll().and();
-		
-	}
-	
-	/**
-	 * 
-	* @Method	: configureAuth
-	* @Method설명	: url 관련 권한 처리.
-	* @작성일		: 2017. 3. 16.
-	* @AUTHOR	: ytkim
-	* @변경이력	: 
-	* @param http
-	* @throws Exception
-	* 
-	* 
-	* <security:intercept-url pattern="/error/**" access="permitAll" />
-	            <security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
-	            <security:intercept-url pattern="/manage/**" access="hasAnyRole('MANAGER','ADMIN')"/>
-	            <security:intercept-url pattern="/user/**" access="hasAnyRole('USER','MANAGER','ADMIN')"/>
-	            <security:intercept-url pattern="/database/**" access="hasAnyRole('USER','MANAGER','ADMIN')"/>
-	            <security:intercept-url pattern="/guest/**" access="!hasAnyRole('USER','MANAGER','ADMIN')"/>
-	            <security:intercept-url pattern="/**" access="isAuthenticated()"/>
-	 */
-	private void configureAuth(HttpSecurity http) throws Exception {
-		
-		http.authorizeRequests()
+	        .permitAll()
+	    .and() // auth
+		    .authorizeRequests()
      		.antMatchers("/admin/**").hasAuthority("ADMIN")
      		.antMatchers("/manage/**").hasAnyAuthority("ADMIN","MANAGER")
      		.antMatchers("/user/**","/database/**").hasAnyAuthority("ADMIN","MANAGER","USER")
@@ -117,26 +73,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      		.antMatchers("/login_check","/api/**","/error/**", "/favicon.ico","/webstatic/**","/index.jsp").permitAll()
      		.antMatchers("/**").authenticated()
      		.anyRequest().authenticated().and()
-     		.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
-	}
-	
-	/**
-	 * 
-	* @Method	: configureLogout
-	* @Method설명	: 로그아웃 처리.
-	* @작성일		: 2017. 3. 16.
-	* @AUTHOR	: ytkim
-	* @변경이력	: 
-	* @param http
-	* @throws Exception
-	 */
-	private void configureLogout(HttpSecurity http) throws Exception {
-		http.logout()
-        .logoutUrl("/logout")
-        .logoutSuccessUrl("/login")
-        .invalidateHttpSession(true)
-        .deleteCookies("JSESSIONID").permitAll().and();
-		
+     		.exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+     	.and() //log out
+	     	.logout()
+	        .logoutUrl("/logout")
+	        .logoutSuccessUrl("/login")
+	        .invalidateHttpSession(true)
+	        .deleteCookies("JSESSIONID").permitAll()
+		.and()
+			.httpBasic();				
 	}
 	
 	@Bean
@@ -168,10 +113,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public VarsqlAccessDeniedHandler accessDeniedHandler() {
     	return new VarsqlAccessDeniedHandler(VarsqlWebConfig.newIntance().getPage403());
     }
-    
-    private void configureSSOFilter(HttpSecurity http) {
-    	
-	}
     
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

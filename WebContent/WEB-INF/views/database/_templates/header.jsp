@@ -17,6 +17,12 @@
 				</a>
 			</li>
 			<li class="divider"></li>
+			<li class="header-menu-item" data-menu-item="file_newwin">
+				<a>
+					<span class="header-menu-item-text"><spring:message code="header.menu.file.newwin" /></span>
+				</a>
+			</li>
+			<li class="divider"></li>
 			<li class="header-menu-item" data-menu-item="file_close">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.close" /></span>
@@ -96,7 +102,3 @@
 		</ul>
 	</li>
 </ul>
-
-<div class="pull-right"><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}" target="_new"><span class="glyphicon glyphicon-new-window"></span></a></div>
-				
-

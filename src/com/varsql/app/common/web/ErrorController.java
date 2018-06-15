@@ -28,6 +28,13 @@ public class ErrorController {
 		return model;
 	}
 	
+	@RequestMapping(value = "/page403csrf")
+	public ModelAndView page403csrf(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/page403csrf");
+		return model;
+	}
+	
 	@RequestMapping(value = "/error404")
 	public ModelAndView error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView model = new ModelAndView();

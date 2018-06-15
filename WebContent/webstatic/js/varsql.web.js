@@ -203,6 +203,12 @@ _$base.log={
 	}
 };
 
+
+
+var $$csrf_token = $("meta[name='_csrf']").attr("content");
+var $$csrf_header = $("meta[name='_csrf_header']").attr("content");
+var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content");
+
 /**
  * ajax 요청
  */
@@ -220,6 +226,8 @@ _$base.req ={
 		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option); 
 		
 		ajaxOpt.beforeSend = function (xhr){
+			xhr.setRequestHeader($$csrf_header, $$csrf_token);
+			
 			if($(loadSelector).length > 0){
 				if(loadSelector=='#editorAreaTable'){
 					$('#sqlEditerPreloaderArea').show();
@@ -321,6 +329,12 @@ _$base.req ={
 		contHtm.push('<form action="'+opts.url+'" method="post" name="downloadForm">');
 		
 		var tmpVal;
+		
+		var token = {};
+		contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+			'key' : $$csrf_param ,val :$$csrf_token
+		}));
+		
 		for(var key in tmpParam){
 			tmpVal = tmpParam[key];
 			
@@ -424,6 +438,16 @@ _$base.progress = {
 };
 
 _$base.isDataEmpty =function (opt){
+	return $.isEmptyObject(opt); 
+};
+
+/**
+ add csrf html
+ */
+_$base.addCsrfElement =function (eleSelector){
+	$(eleSelector).append(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+		'key' : $$csrf_param ,val :$$csrf_token
+	}));
 	return $.isEmptyObject(opt); 
 };
 
