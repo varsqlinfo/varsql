@@ -359,6 +359,16 @@ _ui.headerMenu ={
 		
 		// header menu dropdown  init
 		$('.header-menu-top-label').headerDropdown();
+		$('.header-menu-top-label').on('mouseenter',function (e){
+			var sEle = $(this);
+			var eleOpen = $('.db-header-menu-wrapper>li.open'); 
+			if(eleOpen.length > 0){
+				if(eleOpen != sEle){
+					eleOpen.removeClass('open');
+				}
+				sEle.closest('li').addClass('open');
+			}
+		})
 		
 		$('.db-header-menu-wrapper').on('click', '.header-menu-item', function (e){
 			var dataMenuItem = $(this).attr('data-menu-item');
@@ -3546,7 +3556,9 @@ _ui.SQL = {
 		    ,dataType:'text'
 		    ,data:params 
 		    ,success:function (res){
-		    	var linecnt = VARSQL.matchCount(res,VARSQLCont.constants.newline);
+		    	res = VARSQL.str.trim(res)
+		    	
+		    	var linecnt = VARSQL.matchCount(res,VARSQLCont.constants.newline)+1;
 	    		tmpEditor.replaceSelection(res);
 	    		
 	    		tmpEditor.setSelection(startSelection, {line:startSelection.line+linecnt,ch:0});
@@ -3692,7 +3704,7 @@ _ui.SQL = {
 				
 				tmpval = queryParameter(param_yn, item, keyMode);
 				
-				if(item[VARSQLCont.tableColKey.PRIMAY_KEY] =='YES'){
+				if(item[VARSQLCont.tableColKey.CONSTRAINTS] =='PK'){
 					keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 				}else{
 					if(!firstFlag){
@@ -3717,7 +3729,7 @@ _ui.SQL = {
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
 				
-				if(item[VARSQLCont.tableColKey.PRIMAY_KEY] == 'YES'){
+				if(item[VARSQLCont.tableColKey.CONSTRAINTS] == 'PK'){
 					tmpval = queryParameter(param_yn, item, keyMode);
 					
 					keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);

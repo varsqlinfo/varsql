@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.UserService;
 import com.varsql.core.auth.VarsqlAccessDeniedHandler;
@@ -47,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-			.ignoringAntMatchers("/login/**")
+			.ignoringAntMatchers("/login/**","/logout")
 			.requireCsrfProtectionMatcher(new CsrfRequestMatcher())
 		.and()
 			//.addFilterBefore(new CsrfCookieGeneratorFilter(), CsrfFilter.class)
@@ -80,6 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        .logoutSuccessUrl("/login")
 	        .invalidateHttpSession(true)
 	        .deleteCookies("JSESSIONID").permitAll()
+	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 		.and()
 			.httpBasic();				
 	}

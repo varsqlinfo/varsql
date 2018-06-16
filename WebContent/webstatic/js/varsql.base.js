@@ -104,6 +104,7 @@ var TABLE_COL_KEYS ={
 	,DATA_TYPE :'dataType'
 	,NULLABLE :'nullable'
 	,PRIMAY_KEY :'primayKey'
+	,CONSTRAINTS :'constraints'
 	,COMMENT :'comment'
 	,SIZE :'length'
 }

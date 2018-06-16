@@ -721,6 +721,9 @@ function getParameter(url, param){
  */
 _$base.str = {
 	trim : function(str) {
+		return str.replace(/(^\s*)|(\s*$)/gi,'');
+	}
+	,allLineTrim : function(str) {
 		return str.replace(/^\s+|\s+$/gm,'');
 	}
 }
