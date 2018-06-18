@@ -2,7 +2,7 @@
 <div id="dbHiddenArea"></div>
 
 <%--메모 보내기 다이얼로그 --%>
-<div id="memoTemplate" style="display:none;" title="메시지 보내기">
+<div id="memoTemplate" style="display:none;overflow: hidden;" title="메시지 보내기">
 	<div style="margin: 0px -10px 0px -10px;">
 		<div class="col-xs-6">
 			<div class="panel panel-default">
@@ -21,17 +21,10 @@
 		</div>
 		<!-- /.col-lg-4 -->
 		<div class="col-xs-6">
-			<div class="panel panel-default">
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
-					<textarea id="memoContent" name="memoContent" class="form-control" rows="7" placeholder="내용"></textarea>
-				</div>
-				<!-- /.panel-body -->
-			</div>
-			<!-- /.panel -->
+			<!-- /.panel-heading -->
+			<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
+			<textarea id="memoContent" name="memoContent" class="form-control" style="height: 210px;" placeholder="내용"></textarea>
 		</div>
-		<!-- /.col-lg-8 -->
 	</div>
 </div>
 

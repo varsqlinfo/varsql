@@ -663,7 +663,7 @@ hr.dotline {
 }
 
 .memo-recv-id-cont{
-	height:125px;
+	height:160px;
 	width: 250px;
 	overflow:auto; 
 	margin-bottom: 0px;
@@ -932,7 +932,7 @@ hr.dotline {
 .varsql-toolbar-area{
 	position:relative;
 	width:100%;
-	height:65px;
+	height:60px;
 	min-width: 380px;
 	/*overflow:hidden;*/
 }
@@ -940,7 +940,7 @@ hr.dotline {
 .varsql-sqleditor-area{
 	position:relative;
 	width:100%;
-	height: calc(100% - 65px);
+	height: calc(100% - 60px);
 }
 
 .lm_content{
@@ -966,6 +966,9 @@ hr.dotline {
 	-webkit-box-sizing: border-box !important;
     -moz-box-sizing: border-box !important;
     box-sizing: border-box !important;
+}
+.CodeMirror *{
+	box-sizing: content-box;
 }
 .CodeMirror {font-size:13px; width:100%; height:100%;
 -webkit-box-sizing: border-box !important;

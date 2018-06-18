@@ -142,18 +142,18 @@ $(document).ready(function(){
 			</ul>
 		</div>
 		<div style="padding-bottom:3px;">
-			<div style="width:200px;float:left;">
+			<div style="width:210px;float:left;padding: 3px 5px 0px;">
 				<div class="input-group input-group-sm">
 					<input type="hidden" id="sql_id" name="sql_id" value="">
-			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" class="form-control" placeholder="새파일명">
-			      	<div class="input-group-btn"> 
-			      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button">
+			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명" style="padding:2px;width:155px;">
+			      	<span> 
+			      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button" style="line-height:15px;">
 				      		List
 				      	</button>
 					    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">
 		                    <div class="panel-success">
 		                        <div class="panel-heading">
-		                            <input type="text" name="saveSqlSearch" id="saveSqlSearch"/>
+		                            <input type="text" name="saveSqlSearch" id="saveSqlSearch" style="width:100%;"/>
 		                        </div>
 		                        <div class="save-sql-list-wrapper">
 		                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
@@ -170,7 +170,7 @@ $(document).ready(function(){
 		                        </div>
 		                    </div>
 					    </div> 
-					</div>
+					</span>
 			    </div>		
 			</div>
 			<div style="float:left;">
@@ -189,13 +189,11 @@ $(document).ready(function(){
 		 	
 		 	<div class="pull-right">
 			 	<div style="width:50px;display:inline-block;">
-					<div class="input-group input-group-sm">
-						 <span class="input-group-addon" style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
-						 	<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
-						 		<span class="fa fa-plus-square-o"></span>변수
-						 	</span>
-						 </span>
-				    </div>
+					<span style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
+						<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
+							<span class="fa fa-plus-square-o"></span>변수
+						</span>
+					</span>
 			    </div>
 			</div>
 		</div>
