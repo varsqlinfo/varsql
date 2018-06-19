@@ -16,6 +16,7 @@
 			speed : 150
 			,width:'auto'
 			,overItemViewMode : 'drop'
+			,dropItemHeight :'auto'		//drop item height
 			,moveZIndex : 9				// move 영역 z- index
 			,filter: function ($obj) {
 				// Modify $obj, Do not return
@@ -224,8 +225,10 @@
 		* set drop item height 
 		*/
 		,setDropHeight : function (h){
+			if(isNaN(h)){
+				return this
+			}
 			this.config.dropItemAreaElement.css('max-height',h+'px');
-
 			return this; 
 		}
 		/**
@@ -339,6 +342,7 @@
 
 			_this.calcItemWidth();
 			_this.setWidth(_opts.width);
+			_this.setDropHeight(_opts.dropItemHeight)
 		}
 		,calcItemWidth :function (){
 			var _this =this;

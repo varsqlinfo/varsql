@@ -766,7 +766,8 @@ _ui.dbSchemaObjectServiceMenu ={
 		$.pubTab(_self.options.serviceMenuTabId,{
 			items :data
 			,width : 'auto'
-			,height:20
+			,height : 20
+			,dropItemHeight : $(_self.options.dbServiceMenuContentId).height() -10
 			,activeIcon :{
 				position : 'append'		//  활성시 html 추가 위치
 				,html : '<i class="fa fa-refresh" style="cursor:pointer;"></i>'		// 활성시 추가할 html
