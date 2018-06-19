@@ -156,47 +156,29 @@ body div{
   border: 1px solid transparent;
 }
 
-.db-header-menu-area {
-  z-index :10px;
-  height: 20px;
-  width: 100%;
-  background: #dfdfdf;
-  margin-bottom:1px;
-  border-bottom: 1px solid #BBB;
-}
-
 .db-header-menu{
-  position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
     display: none;
     float: left;
     min-width: 200px;
     padding: 0px 0px;
     margin: 0px 0 0;
     font-size: 12px;
-    text-align: left;
-    list-style: none;
-    background-color: #fff;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0,0,0,.15);
-    border-radius: 0px;
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
 }
 
 .db-header-menu .divider {
+	clear: both;
     height: 1px;
     margin: 0px 0;
     overflow: hidden;
     background-color: #e5e5e5;
 }
 
+.db-header-menu .header-menu-item{
+	clear: both;
+}
+
 .db-header-menu .header-menu-item-text {
-	
+	float:left;
 }
 .db-header-menu .header-menu-item-key {
 	float: right;
@@ -231,6 +213,18 @@ body div{
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   border:1px solid rgba(255, 255, 255, 0);;
+}
+
+.db-header-menu>li>a, .header-dropdown-submenu .dropdown-menu>li>a {
+	display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.4;
+    height: 22px;
+    color: #333;
+    cursor:pointer;
+    white-space: nowrap;
 }
 
 .db-header-menu-wrapper>li.open >a,.db-header-menu-wrapper>li>a:hover , .db-header-menu-wrapper>li>a:active {
@@ -860,7 +854,7 @@ hr.dotline {
 
 /* varsql main layout start */
 .main-top-menu-wrapper{
-	z-index:10;
+	z-index:1000;
 	width:100%;
 	height:20px;
 	position:absolute;

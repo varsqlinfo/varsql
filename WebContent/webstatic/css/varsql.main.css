@@ -133,15 +133,6 @@ body {
   border: 1px solid transparent;
 }
 
-.db-header-menu-area {
-  z-index :10px;
-  height: 20px;
-  width: 100%;
-  background: #dfdfdf;
-  margin-bottom:1px;
-  border-bottom: 1px solid #BBB;
-}
-
 .db-header-menu{
   position: absolute;
     top: 100%;
