@@ -145,7 +145,7 @@ $(document).ready(function(){
 			<div style="width:210px;float:left;padding: 3px 5px 0px;">
 				<div class="input-group input-group-sm">
 					<input type="hidden" id="sql_id" name="sql_id" value="">
-			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명" style="padding:2px;width:155px;">
+			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명" style="padding:2px;width:155px;height:23px;">
 			      	<span> 
 			      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button" style="line-height:15px;">
 				      		List

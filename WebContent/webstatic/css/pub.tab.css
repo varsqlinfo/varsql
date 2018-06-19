@@ -141,29 +141,37 @@
 .pubTab-drop-open-btn:hover{
 	background:#ddd;
 }
-.pubTab .pubTab-drop-item-area{
+.pubTab .pubTab-drop-item-wrapper{
 	display:none;
 	position: absolute;
     top: 100%;
     right: 0;
 	left: auto;
+    max-height: 300px;
+    overflow: auto;
     z-index: 1000;
-    padding: 3px 5px 2px 5px;
-    margin: 0px 0 0 0;
-    font-size: 14px;
-    text-align: left;
-    list-style: none;
     background-color: #fff;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     border: 1px solid #ccc;
     border: 1px solid rgba(0,0,0,.15);
-	
 }
-.pubTab .pubTab-open .pubTab-drop-item-area{
+
+.pubTab .pubTab-open .pubTab-drop-item-wrapper{
 	display:block;
 }
 
+.pubTab .pubTab-drop-item-area{
+	margin: 0px 0 0 0;
+    font-size: 14px;
+	padding:0px;
+    text-align: left;
+	background-color: #fff;
+    list-style: none;
+}
+.pubTab .pubTab-drop-item-area >li{
+	padding: 0px 5px 1px 5px;
+}
 
 .pubTab-hide{
 	display:none;

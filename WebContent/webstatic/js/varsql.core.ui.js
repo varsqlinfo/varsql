@@ -736,7 +736,7 @@ _ui.dbSchemaObjectServiceMenu ={
 	,resizeObjectArea : function (demention){
 		try{
 			// tab resize
-			$.pubTab(this.options.serviceMenuTabId).refresh();
+			$.pubTab(this.options.serviceMenuTabId).refresh().setDropHeight(demention.height-10);
 		}catch(e){};
 		
 		try{
