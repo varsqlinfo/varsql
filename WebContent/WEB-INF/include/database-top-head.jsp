@@ -15,7 +15,7 @@
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
-<script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=${pubjs_ver}"></script>

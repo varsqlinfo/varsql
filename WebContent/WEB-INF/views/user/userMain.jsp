@@ -111,7 +111,7 @@ var userMain = {
 		 
 		$(_self._connectionIframe).append(VARSQL.util.renderHtml(_self.iframeLoadTemplate, sItem));
 		
-		$('.iframe_'+sconid).load( function(){
+		$('.iframe_'+sconid).on('load',function(){
 			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
 		});
 	}

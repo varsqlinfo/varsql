@@ -156,13 +156,30 @@ body div{
   border: 1px solid transparent;
 }
 
+.open > .db-header-menu {
+    display: block;
+}
+
 .db-header-menu{
+	position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
     display: none;
     float: left;
+    list-style: none;
+    background-color: #fff;
     min-width: 200px;
     padding: 3px 0px;
     margin: 0px 0 0;
     font-size: 12px;
+    border-radius: 0px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.db-header-menu .dropdown-menu{
+    border-radius: 0px;
 }
 
 .db-header-menu .divider {
@@ -171,6 +188,47 @@ body div{
     margin: 0px 0;
     overflow: hidden;
     background-color: #e5e5e5;
+}
+
+.db-header-menu.pull-right {
+  right: 0;
+  left: auto;
+}
+.db-header-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+.db-header-menu > li > a:hover,
+.db-header-menu > li > a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+.db-header-menu > .active > a,
+.db-header-menu > .active > a:hover,
+.db-header-menu > .active > a:focus {
+  color: #fff;
+  text-decoration: none;
+  background-color: #428bca;
+  outline: 0;
+}
+.db-header-menu > .disabled > a,
+.db-header-menu > .disabled > a:hover,
+.db-header-menu > .disabled > a:focus {
+  color: #777;
+}
+.db-header-menu > .disabled > a:hover,
+.db-header-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 
 .db-header-menu .header-menu-item{
@@ -215,7 +273,7 @@ body div{
   border:1px solid rgba(255, 255, 255, 0);;
 }
 
-.db-header-menu>li>a, .header-dropdown-submenu .dropdown-menu>li>a {
+.db-header-menu>li>a, .header-dropdown-submenu .db-header-menu>li>a {
 	display: block;
     padding: 3px 13px;
     clear: both;
@@ -284,6 +342,7 @@ hr.dotline {
 	padding-top: 5px;
 }
 
+
 .ui-connection-list{
 	width:260px;float:left;
 }
@@ -293,65 +352,7 @@ hr.dotline {
 .ui-connection-tabs-wrap{
 	height:20px;float:left;
 }
-#data_grid_result_tab_wrap{
-	border-bottom: 1px solid #c7bdbd;
-}
 
-[data-init-msg="Y"] .var-load-frame{
-	display:none;
-}
-
-[data-init-msg="N"] .var-db-select-text{
-	display:none;
-}
-
-.alram-count{
-    position: absolute;
-    top: -6px;
-    right: 11px;
-    text-align: center;
-    font-size: 9px;
-    padding: 2px 3px;
-    line-height: .9;
-}
-
-.sql-result-tab{
-	list-style: none;
-    padding: 0px;
-    margin: 0px;
-	padding-left: 10px;
-}
-
-.sql-result-tab> li{
-	display: table-cell;
-    border: 1px solid transparent;
-    font-weight: normal;
-    white-space: nowrap;
-}
-
-.sql-result-tab>li.on{
-	border-radius: 4px 4px 0 0;
-	border: 1px solid #aaaaaa;
-	border-bottom-width: 0;
-    background : #fff
-}
-
-.sql-result-tab>li>a {
-    position: relative;
-    display: block;
-    padding: 0px 10px 0px 10px;
-    line-height: 19px;
-    color: #000;
-}
-
-
-.sql-result-area{
-	height:100%;
-	display:none;
-}
-.sql-result-area.on{
-	display:block;
-}
 .connection-ui-tabs {
 	position: relative;/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
 }
@@ -412,6 +413,66 @@ hr.dotline {
 }
 .ui-tab-item-active a{
 	color: #000;
+}
+
+#data_grid_result_tab_wrap{
+	border-bottom: 1px solid #c7bdbd;
+}
+
+[data-init-msg="Y"] .var-load-frame{
+	display:none;
+}
+
+[data-init-msg="N"] .var-db-select-text{
+	display:none;
+}
+
+.alram-count{
+    position: absolute;
+    top: -6px;
+    right: 11px;
+    text-align: center;
+    font-size: 9px;
+    padding: 2px 3px;
+    line-height: .9;
+}
+
+.sql-result-tab{
+	list-style: none;
+    padding: 0px;
+    margin: 0px;
+	padding-left: 10px;
+}
+
+.sql-result-tab> li{
+	display: table-cell;
+    border: 1px solid transparent;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.sql-result-tab>li.on{
+	border-radius: 4px 4px 0 0;
+	border: 1px solid #aaaaaa;
+	border-bottom-width: 0;
+    background : #fff
+}
+
+.sql-result-tab>li>a {
+    position: relative;
+    display: block;
+    padding: 0px 10px 0px 10px;
+    line-height: 19px;
+    color: #000;
+}
+
+
+.sql-result-area{
+	height:100%;
+	display:none;
+}
+.sql-result-area.on{
+	display:block;
 }
 
 .ui-paddingl5-r5{
@@ -719,9 +780,6 @@ hr.dotline {
 	width:100%;height:100%;position:absolute;left:0px;top:0px;right:0px;bottom:0px;border:0px;
 }
 
-.header-dropdown-submenu > a:after {
-  content: "";
-}
 .header-dropdown-submenu {
   position: relative;
 }
@@ -741,12 +799,13 @@ hr.dotline {
 }
 
 .header-dropdown-submenu > a:after {
-  float: right;
-  margin-top: 6px;
-  margin-right: -10px;
-  border-left: 4px dashed;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+	content: "";
+	float: right;
+	margin-top: 6px;
+	margin-right: -5px;
+	border-left: 4px dashed;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
 }
 
 .ui-widget-overlay {

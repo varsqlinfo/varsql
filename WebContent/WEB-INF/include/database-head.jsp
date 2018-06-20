@@ -26,7 +26,7 @@
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
 
-<script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>

@@ -3,7 +3,7 @@
 <ul class="db-header-menu-wrapper">
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.file" /></a>
-		<ul class="dropdown-menu db-header-menu">
+		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="file_new">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.new" /></span>
@@ -32,7 +32,7 @@
 	</li>
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.edit" /></a>
-		<ul class="dropdown-menu db-header-menu">
+		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="edit_undo">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.edit.undo" /></span>
@@ -60,7 +60,7 @@
 	</li>
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.tool" /></a>
-		<ul class="dropdown-menu db-header-menu">
+		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="tool_import">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.import" /></span>
@@ -92,7 +92,7 @@
 	</li>
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.help" /></a>
-		<ul class="dropdown-menu db-header-menu">
+		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="help_help">
 				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
 			</li>
