@@ -236,25 +236,6 @@
 		*/
 		,setWidth : function (val){
 			this.refresh();
-			return ; 
-			var _this = this; 
-			val = isNaN(val) ? _this.config.width :val;
-
-			$('#'+_this.contextId+'pubTab').css('width',val);
-			_this.config.tabScrollElement.css('width',val);
-			
-			_this.config.width = val; 
-
-			if(_this.config.totalWidth > val){
-				$('#'+_this.contextId+'pubTab-move-space').show();
-				_this.element.find('.pubTab-move-area').show();
-			
-			}else{
-				_this.element.find('.pubTab-item-cont').removeClass('pubTab-hide');
-				$('#'+_this.contextId+'pubTab-move-space').hide();
-				_this.element.find('.pubTab-move-area').hide();
-				_this.config.tabContainerElement.css('left', '0px');
-			}
 			return this; 
 		}
 		,getSelectItem : function(){
