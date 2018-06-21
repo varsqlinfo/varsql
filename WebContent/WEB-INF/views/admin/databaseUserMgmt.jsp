@@ -67,8 +67,10 @@ var databaseUserMgmt = {
 	,search:function (no){
 		var _self = this; 
 		
+		console.log(this , no)
+		
 		var param = {
-			page:no?no:1
+			pageNo : (no?no:1)
 			,'searchVal':$('#searchVal').val()
 		};
 		
@@ -93,7 +95,7 @@ var databaseUserMgmt = {
 	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
 	    		}
 	    		
-	    		$('.dbinfolist').html(strHtm.join(''));
+	    		$('.dbinfolist').empty().html(strHtm.join(''));
 	    		
 	    		$('.db-list-item').on('click', function (){
 					var vconnID = $(this).data('conid');		
@@ -136,6 +138,7 @@ var databaseUserMgmt = {
 			data:{
 				vconnid: vconnID
 			}
+			,loadSelector: '#main-content'
 			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
 			,success:function (resData){
 				

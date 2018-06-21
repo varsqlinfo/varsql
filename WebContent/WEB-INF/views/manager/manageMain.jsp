@@ -88,7 +88,7 @@
 							</tbody>
 						</table>
 						
-						<page-navigation :page-info="pageInfo" callback="goPage"></page-navigation>
+						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
 			</div>
@@ -143,7 +143,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this; 
 			
 			var param = {
-				page:no?no:1
+				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};

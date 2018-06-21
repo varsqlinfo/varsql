@@ -124,12 +124,14 @@ _ui.layout = {
 					type: 'component',
 					height :60,
 					componentName: 'dbObjectComponent',
-					title:'serviceObject'
+					title:'serviceObject',
+					isClosable :false
 				  }, {
 					type: 'component',
 					height: 40, 
 					componentName: 'dbMetadataComponent',
-					title: 'Meta'
+					title: 'Meta',
+					isClosable :false
 				  }]
 				},
 				{
@@ -137,11 +139,13 @@ _ui.layout = {
 				  content: [{
 					type: 'component',
 					componentName: 'sqlEditorComponent',
-					title: 'Editor'
+					title: 'Editor',
+					isClosable :false
 				  }, {
 					type: 'component',
 					componentName: 'sqlDataComponent',
-					title: 'sql result'
+					title: 'sql result',
+					isClosable :false
 				  }]
 				}]
 			  }]
@@ -166,6 +170,7 @@ _ui.layout = {
 		
 		varsqlLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
 		    container.getElement().html($('#dbObjectComponentTemplate').html());
+		    container.$isVarComponentRemove = true;  
 			
 			var initResize = true; 
 			container.on('resize',function() {
@@ -184,6 +189,7 @@ _ui.layout = {
 
 		varsqlLayout.registerComponent( 'dbMetadataComponent', function( container, componentState ){
 		    container.getElement().html($('#dbMetadataComponentTemplate').html());
+		    container.$isVarComponentRemove = true; 
 
 			var initResize = true; 
 			container.on('resize',function() {
@@ -202,6 +208,7 @@ _ui.layout = {
 
 		varsqlLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
 		    container.getElement().html($('#sqlEditorComponentTemplate').html());
+		    container.$isVarComponentRemove = true; 
 		    
 		    var initResize = true; 
 			container.on('resize',function() {
@@ -220,6 +227,7 @@ _ui.layout = {
 		varsqlLayout.registerComponent( 'sqlDataComponent', function( container, componentState ){
 
 			container.getElement().html($('#sqlDataComponentTemplate').html());
+			container.$isVarComponentRemove = true; 
 
 		    var initResize = true; 
 			container.on('resize',function() {
@@ -244,15 +252,24 @@ _ui.layout = {
 			})
 		});
 		
+		
+		varsqlLayout.on( 'componentCreated', function( component ){
+			if(component.container.$isVarComponentRemove ===true){
+				component.container.tab.closeElement.remove();
+			}
+		});
+		
 		varsqlLayout.on('tabCreated', function(tab){
 			
 			tab.closeElement.remove();
 			return ; 
+			/*
 			tab.closeElement.off( 'click' ).click(function(){
 				if( confirm( 'You have unsaved changes, are you sure you want to close this tab' ) ) {
 					tab.contentItem.remove();
 				}
 			})
+			*/
 		})
 		
 		varsqlLayout.init();

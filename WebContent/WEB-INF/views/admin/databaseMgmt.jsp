@@ -80,6 +80,16 @@ var databaseMgmt = {
 			_this.dbDriverLoad(this.value);
 		});
 		
+		$('#dbinfolist').on('click','.clickItem',function (){
+			var sEle = $(this)
+				, mode = sEle.data('mode')
+				, conIdEle = sEle.closest('[conid]');
+			
+			_this.clickDbInfo(conIdEle,mode);
+			
+			_this.viewAreaShow(mode);
+		});
+		
 		$('#addForm').bootstrapValidator({
 			message: 'This value is not valid',
 			feedbackIcons: {
@@ -200,18 +210,7 @@ var databaseMgmt = {
 	    			strHtm.push('</a>');
 	    		}
 	    		
-	    		$('#dbinfolist').html(strHtm.join(''));
-	    		
-	    		$('#dbinfolist .clickItem').on('click',function (){
-	    			var sEle = $(this)
-	    				, mode = sEle.data('mode')
-	    				, conIdEle = sEle.closest('[conid]');
-	    			
-	    			_this.clickDbInfo(conIdEle,mode);
-	    			
-	    			_this.viewAreaShow(mode);
-	    		});
-	    		
+	    		$('#dbinfolist').empty().html(strHtm.join(''));
 	    		$('#pageNavigation').pagingNav(resData.page,databaseMgmt.search);
 			}
 		});

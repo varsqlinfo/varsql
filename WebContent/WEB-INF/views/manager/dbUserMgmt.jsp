@@ -65,7 +65,7 @@ var dbUserMgmt ={
 		var _self = this; 
 		
 		var param = {
-			page:no?no:1
+			pageNo: (no?no:1)
 			,'searchVal':$('#searchVal').val()
 		};
 		

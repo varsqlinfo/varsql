@@ -33,7 +33,7 @@ var qnaMgmt ={
 	,search : function (no){
 		var _self = this; 
 		var param = {
-			page:no?no:1
+			pageNo: (no?no:1)
 			,rows:$('#rowDataSize').val()
 			,'searchVal':$('#searchVal').val()
 			,'answerYn' : $('input:radio[name=answerYn]:checked').val()
