@@ -67,8 +67,6 @@ var databaseUserMgmt = {
 	,search:function (no){
 		var _self = this; 
 		
-		console.log(this , no)
-		
 		var param = {
 			pageNo : (no?no:1)
 			,'searchVal':$('#searchVal').val()

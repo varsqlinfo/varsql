@@ -85,6 +85,9 @@ var databaseMgmt = {
 				, mode = sEle.data('mode')
 				, conIdEle = sEle.closest('[conid]');
 			
+			$('.clickItem.active').removeClass('active');
+			sEle.addClass('active');
+			
 			_this.clickDbInfo(conIdEle,mode);
 			
 			_this.viewAreaShow(mode);
@@ -157,6 +160,8 @@ var databaseMgmt = {
 			,url : '/admin/main/dbDetail'
 			,success:function (resData){
 				var item = resData.item;
+				
+				$('#selectDbInfo').empty().html(' ['+item.VNAME+']');
 				
 				$('#vname').val(item.VNAME);
 				$('#vurl').val(item.VURL);
@@ -345,7 +350,7 @@ var databaseMgmt = {
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row">
+<div class="row" id="varsqlVueArea">
 	<div class="col-lg-5">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -369,7 +374,7 @@ var databaseMgmt = {
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-7">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="admin.form.header" /></div>
+			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="view-area on" data-view-mode="view">
