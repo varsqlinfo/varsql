@@ -30,6 +30,8 @@
 <entry key="header.menu.tool.export.specification">테이블 명세서</entry>
 <entry key="header.menu.tool.export.data">데이타</entry>
 <entry key="header.menu.tool.setting">설정</entry>
+<entry key="header.menu.tool.show.plugin">컴포넌트보기</entry>
+<entry key="header.menu.tool.show.glossary">용어집</entry>
 <entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
 
 <entry key="header.menu.help">도움말</entry>

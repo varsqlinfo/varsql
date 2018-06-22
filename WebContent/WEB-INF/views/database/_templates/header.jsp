@@ -83,6 +83,20 @@
 				<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
 			</li>
 			<li class="divider"></li>
+			<li class="header-dropdown-submenu">
+				<a href="javascript:;">
+					<span class="header-menu-item-text"><spring:message code="header.menu.tool.show.plugin" /></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="header-menu-item" data-menu-item="tool_show_glossary">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.glossary" /></span></a>
+					</li>
+					<!-- li class="header-menu-item" data-menu-item="tool_export_data">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
+					</li -->
+				</ul>
+			</li>
+			<li class="divider"></li>
 			<li class="header-menu-item" data-menu-item="tool_layout">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.initlayout" /></span>

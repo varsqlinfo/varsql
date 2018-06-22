@@ -65,6 +65,8 @@ VARSQL.ui.create = function (_opts){
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
 }
 
+// layoutObject
+var varsqlLayout={};
 //main layout 처리.
 _ui.layout = {
 	layoutObj :false
@@ -152,7 +154,6 @@ _ui.layout = {
 		  }]
 		};
 		
-		var varsqlLayout;
 		var savedState = _g_options._opts.screenSetting.layoutConfig;
 								
 		try{
@@ -258,19 +259,6 @@ _ui.layout = {
 				component.container.tab.closeElement.remove();
 			}
 		});
-		
-		varsqlLayout.on('tabCreated', function(tab){
-			
-			tab.closeElement.remove();
-			return ; 
-			/*
-			tab.closeElement.off( 'click' ).click(function(){
-				if( confirm( 'You have unsaved changes, are you sure you want to close this tab' ) ) {
-					tab.contentItem.remove();
-				}
-			})
-			*/
-		})
 		
 		varsqlLayout.init();
 		
@@ -467,6 +455,9 @@ _ui.headerMenu ={
 						case 'setting':	//설정.
 							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main.vsql?conuid='+_g_options.param.conuid));
 							break;
+						case 'show':	//추가 항목 보기.
+							_self.addComponent(menu_mode3);
+							break;
 						case 'layout':	//레이아웃 초기화
 							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?'))
 							_ui.preferences.save({layoutConfig : ''} , function (){
@@ -506,6 +497,19 @@ _ui.headerMenu ={
 				default:
 					break;
 			}
+		})
+	}
+	,addComponent : function (componentName){
+		
+		if(VARSQL.isUndefined(varsqlLayout._components[componentName])){
+			varsqlLayout.registerComponent( componentName, function( container, componentState ){
+			    container.getElement().html('asdfasdf');
+			});
+		}
+		varsqlLayout.root.contentItems[ 0 ].addChild({
+		    type: 'component',
+		    componentName: componentName,
+		    componentState: { text: 'asdfasfd' }
 		})
 	}
 	//header 메뉴 환경설정처리.
