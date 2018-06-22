@@ -87,14 +87,20 @@ var dbUserMgmt ={
 	    		var item; 
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
-	    			strHtm.push('<a href="javascript:;" class="list-group-item db-list-item" data-conid="'+item.VCONNID+'">'+item.VNAME);
-	    			strHtm.push('<span class="pull-right text-muted small"><!--em>4 minutes ago</em--></span></a>');
+	    			strHtm.push('<a href="javascript:;" class="list-group-item db-list-item" data-conid="'+item.VCONNID+'">'+item.VNAME +'</a>');
 	    		}
 	    		
 	    		$('#dbinfolist').html(strHtm.join(''));
 	    		
 	    		$('.db-list-item').on('click', function (){
-	    			var vconnID = $(this).data('conid');		
+	    			
+	    			var sEle = $(this);
+	    			$('.db-list-item.active').removeClass('active');	
+	    			
+	    			sEle.addClass('active');
+	    			
+					var vconnID = sEle.data('conid');	
+					
 	    			$('#vconnid').val(vconnID);
 	    			_self.dbUserList(vconnID);
 	    		});

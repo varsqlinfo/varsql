@@ -85,8 +85,8 @@ var databaseMgmt = {
 				, mode = sEle.data('mode')
 				, conIdEle = sEle.closest('[conid]');
 			
-			$('.clickItem.active').removeClass('active');
-			sEle.addClass('active');
+			$('#dbinfolist [conid].active').removeClass('active');
+			conIdEle.addClass('active');
 			
 			_this.clickDbInfo(conIdEle,mode);
 			
