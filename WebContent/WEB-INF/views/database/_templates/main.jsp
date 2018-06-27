@@ -252,5 +252,14 @@ $(document).ready(function(){
 </div>
 </script>
 
+<%--glossary component template --%>
+<script id="glossaryComponentTemplate" type="text/varsql-template">
+	<div class="pos-relative-w-h100">
+		<div>검색어<input type="text" id="glossarySearchTxt" value=""></div>
+		<div>변환<input type="text" id="glossaryConvertTxt" value=""></div>
+		<div id="glossaryResultArea"></div>
+	</div>
+</script>
+
 
 

@@ -273,7 +273,7 @@ body div{
   border:1px solid rgba(255, 255, 255, 0);;
 }
 
-.db-header-menu>li>a, .header-dropdown-submenu .db-header-menu>li>a {
+.db-header-menu>li>a, .header-dropdown-submenu .dropdown-menu>li>a {
 	display: block;
     padding: 3px 13px;
     clear: both;

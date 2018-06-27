@@ -56,10 +56,14 @@ VARSQL.ui.create = function (_opts){
 	
 	VARSQLCont.init(_opts.dbtype , _ui.base);
 	
+	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
+	
 	_g_options._opts =_opts;
-	_ui.layout.init(_opts);
 	_ui.initContextMenu();
 	_ui.headerMenu.init(_opts);
+	
+	_ui.layout.init(_opts);
+	
 	_ui.dbSchemaObject.create(_opts);
 	
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
@@ -111,18 +115,15 @@ _ui.layout = {
 		  },
 
 		  content: [{
-			type:'column'
+			type:'row'
 			,content : [
 				{
 				type: 'row',
-
 				content: [
 				{
 				  type: 'column',
 				  width:30 , 
-					
 				  content: [{
-
 					type: 'component',
 					height :60,
 					componentName: 'dbObjectComponent',
@@ -199,11 +200,10 @@ _ui.layout = {
 					return ; 
 				}
 				
-				var containerW =container.width-2
-					, containerH = container.height-_self.contTabHeight; 
+				var containerW =container.width-2 
+					,containerH = container.height-_self.contTabHeight; 
 				
 				_ui.dbSchemaObjectServiceMenu.resizeMetaArea({width : containerW,height : containerH});
-				
 			})
 		});
 
@@ -253,6 +253,26 @@ _ui.layout = {
 			})
 		});
 		
+		varsqlLayout.registerComponent('pluginComponent', function( container, componentState ){
+			
+			console.log(componentState);
+			
+			container.getElement().html($('#'+componentState.templateID).html());
+			
+			var initResize = true; 
+			container.on('resize',function() {
+				if(initResize === true){
+					initResize = false; 
+					return ; 
+				}
+				var resizeFn = componentState.resizeComponent; 
+				if(VARSQL.isFunction(resizeFn)){
+					resizeFn.call(_self, {
+						width : container.width , height : container.height
+					});
+				}
+			})
+		});
 		
 		varsqlLayout.on( 'componentCreated', function( component ){
 			if(component.container.$isVarComponentRemove ===true){
@@ -456,14 +476,21 @@ _ui.headerMenu ={
 							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main.vsql?conuid='+_g_options.param.conuid));
 							break;
 						case 'show':	//추가 항목 보기.
-							_self.addComponent(menu_mode3);
+							if(menu_mode3 =='glossary'){
+								_self.addComponent({
+									nm : 'glossary'
+									,templateID:'glossaryComponentTemplate'
+									,resizeComponent : ''
+								});
+							}
 							break;
 						case 'layout':	//레이아웃 초기화
-							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?'))
-							_ui.preferences.save({layoutConfig : ''} , function (){
-								location.href = location.href; 
-								return ;
-							});
+							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?')){
+								_ui.preferences.save({layoutConfig : ''} , function (){
+									location.href = location.href; 
+									return ;
+								});
+							}
 							break;
 						default:
 							break;
@@ -499,17 +526,12 @@ _ui.headerMenu ={
 			}
 		})
 	}
-	,addComponent : function (componentName){
-		
-		if(VARSQL.isUndefined(varsqlLayout._components[componentName])){
-			varsqlLayout.registerComponent( componentName, function( container, componentState ){
-			    container.getElement().html('asdfasdf');
-			});
-		}
+	,addComponent : function (addItemInfo){
 		varsqlLayout.root.contentItems[ 0 ].addChild({
-		    type: 'component',
-		    componentName: componentName,
-		    componentState: { text: 'asdfasfd' }
+			title: addItemInfo.nm
+		    ,type: 'component'
+		    ,componentName: 'pluginComponent'
+		    ,componentState: addItemInfo
 		})
 	}
 	//header 메뉴 환경설정처리.
@@ -572,7 +594,6 @@ _ui.dbSchemaObject ={
 			return ;
 		}
 		
-		$.extend(true,_g_options, _opts);
 		$.extend(true,_self.options, _opts);
 		
 		_self._grid();

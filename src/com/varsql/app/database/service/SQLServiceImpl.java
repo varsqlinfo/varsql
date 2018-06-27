@@ -165,8 +165,10 @@ public class SQLServiceImpl{
 			result.setItemOne(tmpSqlSource);
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
-			conn.setAutoCommit(true);
-			SQLUtil.close(conn);
+			if(conn !=null){
+				conn.setAutoCommit(true);
+				SQLUtil.close(conn);
+			}
 		}
 		
 		return  result;
