@@ -253,11 +253,12 @@ _ui.layout = {
 			})
 		});
 		
-		varsqlLayout.registerComponent('pluginComponent', function( container, componentState ){
+		varsqlLayout.registerComponent('pluginComponent', function( container, componentInfo ){
 			
-			console.log(componentState);
 			
-			container.getElement().html($('#'+componentState.templateID).html());
+			var componentObj = _ui.component[componentInfo.key]; 
+			
+			container.getElement().html(componentObj.template());
 			
 			var initResize = true; 
 			container.on('resize',function() {
@@ -265,7 +266,7 @@ _ui.layout = {
 					initResize = false; 
 					return ; 
 				}
-				var resizeFn = componentState.resizeComponent; 
+				var resizeFn = componentObj.resize; 
 				if(VARSQL.isFunction(resizeFn)){
 					resizeFn.call(_self, {
 						width : container.width , height : container.height
@@ -368,6 +369,17 @@ _ui.preferences= {
 				//console.log(resData);
 			}
 		});
+	}
+}
+
+_ui.component = {
+	glossary : {
+		template : function (){
+			return $('#glossaryComponentTemplate').html();
+		}
+		,resize : function (dimension){
+			console.log(dimension);
+		}
 	}
 }
 
@@ -479,8 +491,7 @@ _ui.headerMenu ={
 							if(menu_mode3 =='glossary'){
 								_self.addComponent({
 									nm : 'glossary'
-									,templateID:'glossaryComponentTemplate'
-									,resizeComponent : ''
+									,key : 'glossary'
 								});
 							}
 							break;

@@ -256,7 +256,11 @@ $(document).ready(function(){
 <script id="glossaryComponentTemplate" type="text/varsql-template">
 	<div class="pos-relative-w-h100">
 		<div>검색어<input type="text" id="glossarySearchTxt" value=""></div>
-		<div>변환<input type="text" id="glossaryConvertTxt" value=""></div>
+		<div>
+			<input type="text" id="glossaryConvertTxt" value="">
+			<button type="button" class="btn btn-default" title="변환"><span class="fa fa-retweet"></span></button>
+			<button type="button" class="btn btn-default" title="지우기"><span class="fa fa-trash-o"></span></button>
+		</div>
 		<div id="glossaryResultArea"></div>
 	</div>
 </script>
