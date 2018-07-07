@@ -94,6 +94,11 @@ public class ExportServiceImpl{
 		
 		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 		
+		for(String str : tableNmArr){
+			System.out.println(str +" :: "+ tableNmArr);
+		}
+		
+		System.out.println(" tables ::: "+ tables);
 		ExcelReport excelReport=MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns, settingInfo.getBoolean("sheetFlag"), tableNmArr);
 		
 		String exportFileName =settingInfo.getString("exportName","table-spec");

@@ -74,13 +74,13 @@ public class SqlResultUtil {
 			
 			columnInfo.setAlign("left");
 			
-			columnNumberTypeFlag.add(false);
+			boolean isNumber = false; 
 			
 			if(columnType == Types.INTEGER||columnType ==Types.NUMERIC||columnType ==Types.BIGINT||columnType ==Types.DECIMAL
 					||columnType ==Types.DOUBLE||columnType ==Types.FLOAT||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
 				columns_type[i - 1] = "number";
 				columnInfo.setAlign("right");
-				columnNumberTypeFlag.add(true);
+				isNumber = true;
 			}else if(columnType == Types.DATE ){
 				columns_type[i - 1] = "date";
 			}else if(columnType == Types.TIME ){
@@ -102,6 +102,8 @@ public class SqlResultUtil {
 			}else{
 				columns_type[i - 1] = "string";
 			}
+			
+			columnNumberTypeFlag.add(isNumber);
 			
 			columnInfo.setType(columns_type[i - 1]);
 			columnInfoList.add(columnInfo);
