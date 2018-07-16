@@ -70,11 +70,10 @@ VARSQL.ui.create = function (_opts){
 }
 
 // layoutObject
-var varsqlLayout={};
-//main layout 처리.
 _ui.layout = {
 	layoutObj :false
 	,contTabHeight : 28
+	,mainObj :{} //main layout 처리.
 	,init : function(_opts){
 		var _self = this; 
 		_self.initEvt();
@@ -125,13 +124,15 @@ _ui.layout = {
 				  width:30 , 
 				  content: [{
 					type: 'component',
+					id : 'dbObject',
 					height :60,
 					componentName: 'dbObjectComponent',
 					title:'serviceObject',
 					isClosable :false
 				  }, {
 					type: 'component',
-					height: 40, 
+					height: 40,
+					id : 'dbMetadata',
 					componentName: 'dbMetadataComponent',
 					title: 'Meta',
 					isClosable :false
@@ -141,11 +142,13 @@ _ui.layout = {
 				  type: 'column',
 				  content: [{
 					type: 'component',
+					id : 'sqlEditor',
 					componentName: 'sqlEditorComponent',
 					title: 'Editor',
 					isClosable :false
 				  }, {
 					type: 'component',
+					id : 'sqlData',
 					componentName: 'sqlDataComponent',
 					title: 'sql result',
 					isClosable :false
@@ -162,7 +165,8 @@ _ui.layout = {
 		}catch(e){
 			savedState = '';
 		}
-
+			
+		var varsqlLayout ={};
 		if( !VARSQL.isUndefined(savedState) && '' != savedState) {
 			varsqlLayout = new GoldenLayout( savedState ,$('#varsqlBodyWrapper') );
 			//varsqlLayout = new GoldenLayout( savedState ,$('#varsqlBodyWrapper') );
@@ -306,6 +310,52 @@ _ui.layout = {
 				//localStorage.setItem( 'varsqlLayoutInfo',  JSON.stringify( varsqlLayout.toConfig() ));
 			}, 300);
 		});
+		
+		_self.mainObj = varsqlLayout;
+	}
+	
+	,setActiveTab : function (tabKey){
+		var varsqlLayout =this.mainObj; 
+		
+		var items = varsqlLayout.root.getItemsById(tabKey);
+		
+		if(items.length > 0){
+			var contentItem= items[0];
+			contentItem.tab.header.parent.setActiveContentItem(contentItem);
+			return true; 
+		}
+		
+		return false; 
+	}
+	// add custom component
+	,addComponent : function (addItemInfo){
+		
+		var varsqlLayout =this.mainObj; 
+		
+		if(this.setActiveTab(addItemInfo.key)){
+			return ; 
+		}
+		
+		var pluginItem = varsqlLayout.root._$getItemsByProperty('componentName','pluginComponent');
+		
+		var plugLen = pluginItem.length; 
+		if(plugLen > 0){
+			(pluginItem[plugLen-1].parent).addChild({
+				title: addItemInfo.nm
+			    ,type: 'component'
+			    ,id : addItemInfo.key
+			    ,componentName: 'pluginComponent'
+			    ,componentState: addItemInfo
+			})
+		}else{
+			varsqlLayout.root.contentItems[0].addChild({
+				title: addItemInfo.nm
+			    ,type: 'component'
+			    ,id : addItemInfo.key
+			    ,componentName: 'pluginComponent'
+			    ,componentState: addItemInfo
+			})
+		}
 	}
 }
 
@@ -372,10 +422,20 @@ _ui.preferences= {
 	}
 }
 
+
+// 추가 component 
 _ui.component = {
-	glossary : {
+	'glossary' : {
 		template : function (){
 			return $('#glossaryComponentTemplate').html();
+		}
+		,resize : function (dimension){
+			console.log(dimension);
+		}
+	}
+	,'history' : {
+		template : function (){
+			return $('#historyComponentTemplate').html();
 		}
 		,resize : function (dimension){
 			console.log(dimension);
@@ -488,12 +548,26 @@ _ui.headerMenu ={
 							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main.vsql?conuid='+_g_options.param.conuid));
 							break;
 						case 'show':	//추가 항목 보기.
+							
+							var componentInfo; 
 							if(menu_mode3 =='glossary'){
-								_self.addComponent({
+								componentInfo ={
 									nm : 'glossary'
 									,key : 'glossary'
-								});
+								}; 
 							}
+							
+							if(menu_mode3 =='history'){
+								componentInfo ={
+									nm : 'history'
+									,key : 'history'
+								};
+							}
+							
+							if(!VARSQL.isUndefined(componentInfo)) {
+								_ui.layout.addComponent(componentInfo);
+							}
+							
 							break;
 						case 'layout':	//레이아웃 초기화
 							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?')){
@@ -535,14 +609,6 @@ _ui.headerMenu ={
 				default:
 					break;
 			}
-		})
-	}
-	,addComponent : function (addItemInfo){
-		varsqlLayout.root.contentItems[ 0 ].addChild({
-			title: addItemInfo.nm
-		    ,type: 'component'
-		    ,componentName: 'pluginComponent'
-		    ,componentState: addItemInfo
 		})
 	}
 	//header 메뉴 환경설정처리.
@@ -878,6 +944,8 @@ _ui.dbSchemaObjectServiceMenu ={
 		var tmpMetaEle =$(metaTabId); 
 		$('.varsql-meta-tab-ele.on').removeClass('on');
 		
+		_ui.layout.setActiveTab('dbMetadata');
+		
 		if(tmpMetaEle.length < 1){
 			_self.getMetadataTabAreaWrapEle().append('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-meta-tab-ele on"></div>');
 		}else{
@@ -921,6 +989,8 @@ _ui.dbSchemaObjectServiceMenu ={
 			,objName = param.objectName; 
 		
 		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
+		
+		_ui.layout.setActiveTab('dbMetadata');
 		
 		var refreshFlag = true; 
 		if(!refresh){
@@ -3505,6 +3575,8 @@ _ui.SQL = {
 			,sqlParam : JSON.stringify(sqlParam)
 		});
 		
+		_ui.layout.setActiveTab('sqlData');
+		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
@@ -3572,6 +3644,10 @@ _ui.SQL = {
 	    			}
 	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
     				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
+    				
+    				
+    				
+    				
     				
 		 		}catch(e){
 					VARSQL.log.info(e);

@@ -264,6 +264,12 @@ $(document).ready(function(){
 		<div id="glossaryResultArea"></div>
 	</div>
 </script>
+<%-- history component template --%>
+<script id="historyComponentTemplate" type="text/varsql-template">
+	<div class="pos-relative-w-h100">
+		history
+	</div>
+</script>
 
 
 

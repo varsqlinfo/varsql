@@ -61,11 +61,13 @@
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.tool" /></a>
 		<ul class="db-header-menu">
+			<%-- <!-- 가져오기 -->
 			<li class="header-menu-item" data-menu-item="tool_import">
 				<a>
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.import" /></span>
 				</a>
 			</li> 
+			 --%>
 			<li class="header-dropdown-submenu">
 				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.export" /></span>
@@ -90,6 +92,9 @@
 				<ul class="dropdown-menu">
 					<li class="header-menu-item" data-menu-item="tool_show_glossary">
 						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.glossary" /></span></a>
+					</li>
+					<li class="header-menu-item" data-menu-item="tool_show_history">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.history" /></span></a>
 					</li>
 					<!-- li class="header-menu-item" data-menu-item="tool_export_data">
 						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
