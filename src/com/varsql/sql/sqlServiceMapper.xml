@@ -17,6 +17,7 @@
 			, END_TIME
 			, DELAY_TIME
 			, LOG_SQL
+			, USR_IP
 			, RESULT_COUNT
 			, COMMAND_TYPE
 		)
@@ -30,6 +31,7 @@
 			, #{endTime}
 			, #{delayTime}
 			, #{logSql}
+			, #{usrIp}
 			, #{resultCount}
 			, #{commandType}
 		)

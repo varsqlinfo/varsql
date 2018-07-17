@@ -43,7 +43,7 @@ public class SQLController {
 	 */
 	@RequestMapping({"/sqlData"})
 	public @ResponseBody ResponseResult sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
-		return sQLServiceImpl.sqlData(sqlParamInfo);
+		return sQLServiceImpl.sqlData(sqlParamInfo, req);
 	}
 	
 	/**

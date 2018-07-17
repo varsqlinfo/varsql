@@ -121,6 +121,7 @@
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
+		and a.USE_YN = 'Y'
 		and (a.VNAME like '%'||#{keyword}||'%' or a.VURL like '%'||#{keyword}||'%') 
 	</select>
 	
@@ -141,6 +142,7 @@
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
+		and a.USE_YN = 'Y'
 		and (a.VNAME like '%'||#{keyword}||'%' or a.VURL like '%'||#{keyword}||'%') 
 		order  by a.VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>

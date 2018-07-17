@@ -159,7 +159,8 @@
 	<select id="userMapper.selectUserDbUseList" parameterType="java.util.Map" resultType="java.util.Map">
 		select  VCONNID, VTYPE, VNAME
 		from VTCONNECTION a
-		where
+		where a.USE_YN = 'Y'
+		and 
 		<choose>
 			<when test="role=='ADMIN'">
 				1=1

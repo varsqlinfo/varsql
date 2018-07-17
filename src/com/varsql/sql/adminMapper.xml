@@ -9,13 +9,15 @@
 	<select id="adminMapper.selectDBTotalCnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTCONNECTION 
-		where (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
+		where USE_YN = 'Y'
+		and (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
 	</select>
 	
 	<select id="adminMapper.selectDbList" parameterType="searchParameter" resultType="hashmap">
 		select * 
 		from VTCONNECTION 
-		where (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
+		where USE_YN = 'Y' 
+		AND (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
 		order by VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
@@ -23,7 +25,8 @@
 	<select id="adminMapper.selectDetailObject" parameterType="map" resultType="dataCommonVO">
 		select * 
 		from VTCONNECTION 
-		where VCONNID =#{vconnid}
+		where USE_YN = 'Y'
+		AND VCONNID =#{vconnid}
 	</select>
 	
 	<!-- max connection id -->
@@ -46,6 +49,7 @@
 			,REG_DT
 			,UPD_ID
 			,UPD_DT
+			,USE_YN
 		)values (
 			#{vconnid}
 			,#{vname}
@@ -59,6 +63,7 @@
 			,CURRENT TIMESTAMP
 			,#{userId}
 			,CURRENT TIMESTAMP
+			,'Y'
 		)
 	</insert>
 	
@@ -94,7 +99,11 @@
 	
 	<!-- connection 삭제 -->
 	<delete id="adminMapper.deleteVtconnectionInfo" parameterType="map">
-		delete from VTCONNECTION where VCONNID =#{vconnid}
+		update VTCONNECTION
+ 		set 
+ 			USE_YN = 'N'
+ 			,VPW ='empty'
+		where VCONNID =#{vconnid}
 	</delete>
 	
 	<!-- user role을 가진 목록 보기. -->

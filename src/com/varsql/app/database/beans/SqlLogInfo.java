@@ -20,29 +20,31 @@ import com.varsql.app.util.VarsqlUtil;
 *-----------------------------------------------------------------------------
  */
 public class SqlLogInfo{
-	private String vconnid; //null
+	private String vconnid; //connid
 
-	private String viewid; //null
+	private String viewid; //view id
 
-	private String startTime; //null
-	private long startTimeMillis; //null
+	private String startTime; // start time
+	private long startTimeMillis; // start time millis
 
-	private int sMm; //null
+	private int sMm; //	start month
 
-	private int sDd; //null
+	private int sDd; // start day
 
-	private int sHh; //null
+	private int sHh; // start hour
 
-	private String endTime; //null
-	private long endTimeMillis; //null
+	private String endTime; // end time
+	private long endTimeMillis; // end millis
 
-	private int delayTime; //null
+	private int delayTime; // delay time
 
-	private String logSql; //null
+	private String logSql; // log sql
 
-	private double resultCount; //null
+	private double resultCount; //result count
 
-	private String commandType; //null
+	private String commandType; // execute query command
+	
+	private String usrIp; // client ip
 
 	public String getVconnid(){
 		return this.vconnid;
@@ -114,5 +116,11 @@ public class SqlLogInfo{
 	}
 	public void setCommandType(String commandType){
 		this.commandType=commandType;
+	}
+	public String getUsrIp() {
+		return usrIp;
+	}
+	public void setUsrIp(String usrIp) {
+		this.usrIp = usrIp;
 	}
 }

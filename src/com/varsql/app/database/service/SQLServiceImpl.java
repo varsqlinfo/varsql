@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -93,10 +94,11 @@ public class SQLServiceImpl{
 	 * @작성일   : 2015. 4. 9. 
 	 * @변경이력  :
 	 * @param sqlParamInfo
+	 * @param req 
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult sqlData(SqlParamInfo sqlParamInfo) throws Exception {
+	public ResponseResult sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		
 		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
@@ -124,6 +126,7 @@ public class SQLServiceImpl{
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 		
 		sqlLogInfo.setLogSql(sqlParamInfo.getSql());
+		sqlLogInfo.setUsrIp(VarsqlUtil.getClientIP(req));
 		
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size(); 
