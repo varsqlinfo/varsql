@@ -258,12 +258,10 @@ _ui.layout = {
 		});
 		
 		varsqlLayout.registerComponent('pluginComponent', function( container, componentInfo ){
-			
-			
 			var componentObj = _ui.component[componentInfo.key]; 
 			
 			container.getElement().html(componentObj.template());
-			
+					
 			var initResize = true; 
 			container.on('resize',function() {
 				if(initResize === true){
@@ -272,7 +270,7 @@ _ui.layout = {
 				}
 				var resizeFn = componentObj.resize; 
 				if(VARSQL.isFunction(resizeFn)){
-					resizeFn.call(_self, {
+					resizeFn.call(null, {
 						width : container.width , height : container.height
 					});
 				}
@@ -280,8 +278,22 @@ _ui.layout = {
 		});
 		
 		varsqlLayout.on( 'componentCreated', function( component ){
+			
 			if(component.container.$isVarComponentRemove ===true){
 				component.container.tab.closeElement.remove();
+			}
+			
+			if(component.componentName =='pluginComponent'){
+				var componentInfo = component.config.componentState;
+				
+				var componentObj = _ui.component[componentInfo.key]; 
+				
+				var initFn = componentObj.init;
+				
+				if(VARSQL.isFunction(initFn)){
+					initFn.call(componentObj);
+				}
+				
 			}
 		});
 		
@@ -422,18 +434,45 @@ _ui.preferences= {
 	}
 }
 
+//추가 component 
+_ui.component = {};
 
-// 추가 component 
-_ui.component = {
+//glossary component
+_ui.utils.copy(_ui.component,{
 	'glossary' : {
-		template : function (){
+		selector :'#glossaryComponentArea'
+		,init : function (){
+			this.initEvt();		
+		}
+		,initEvt : function (){
+			var _self = this;
+			
+			$(_self.selector+' #glossarySearchTxt').on('keydown', function (e){
+				if (e.keyCode == '13') {
+					_self.search();
+				}
+			})
+			
+			$(_self.selector+' .glossary-search-btn').on('click', function (e){
+				_self.search();
+			})
+		}
+		,search :  function (){
+			var _self = this;
+			var schVal = $(_self.selector+' #glossarySearchTxt').val();
+		}
+		,template : function (){
 			return $('#glossaryComponentTemplate').html();
 		}
 		,resize : function (dimension){
 			console.log(dimension);
 		}
 	}
-	,'history' : {
+})
+
+// history component
+_ui.utils.copy(_ui.component,{
+	'history' : {
 		template : function (){
 			return $('#historyComponentTemplate').html();
 		}
@@ -441,7 +480,8 @@ _ui.component = {
 			console.log(dimension);
 		}
 	}
-}
+})
+
 
 // header 메뉴 처리.
 _ui.headerMenu ={

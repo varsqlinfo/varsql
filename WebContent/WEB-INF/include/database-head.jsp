@@ -23,6 +23,7 @@
 <link href="${pageContextPath}/webstatic/css/pub.grid.fixed.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.component.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
 

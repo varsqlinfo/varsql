@@ -254,14 +254,20 @@ $(document).ready(function(){
 
 <%--glossary component template --%>
 <script id="glossaryComponentTemplate" type="text/varsql-template">
-	<div class="pos-relative-w-h100">
-		<div>검색어<input type="text" id="glossarySearchTxt" value=""></div>
-		<div>
-			<input type="text" id="glossaryConvertTxt" value="">
-			<button type="button" class="btn btn-default" title="변환"><span class="fa fa-retweet"></span></button>
-			<button type="button" class="btn btn-default" title="지우기"><span class="fa fa-trash-o"></span></button>
+	<div id="glossaryComponentArea" class="pos-relative-w-h100">
+		<div class="glossary-search-area">
+			<div>
+				검색어<input type="text" id="glossarySearchTxt" value="">
+				<button type="button" class="btn btn-default glossary-search-btn" title="조회"><span class="fa fa-retweet"></span></button>
+				</div>
+			<div>
+				<input type="text" id="glossaryConvertTxt" value="">
+				<button type="button" class="btn btn-default" title="변환"><span class="fa fa-retweet"></span></button>
+				<button type="button" class="btn btn-default" title="지우기"><span class="fa fa-trash-o"></span></button>
+			</div>
 		</div>
-		<div id="glossaryResultArea"></div>
+
+		<div id="glossaryResultArea" class="glossary-result-area"></div>
 	</div>
 </script>
 <%-- history component template --%>

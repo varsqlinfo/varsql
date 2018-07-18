@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+#glossaryComponentArea .glossary-search-area{
+	height:50px;
+	width: 100%;
+}
+
+#glossaryComponentArea .glossary-result-area{
+	width: 100%;
+    height: calc(100% - 50px);
+}
