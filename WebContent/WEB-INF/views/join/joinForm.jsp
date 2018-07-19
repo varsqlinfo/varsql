@@ -15,7 +15,7 @@
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>

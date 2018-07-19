@@ -62,6 +62,13 @@ public class ManagerController {
 		return new ModelAndView("/manager/qnaMgmt",model);
 	}
 	
+	@RequestMapping({"/glossaryMgmt"})
+	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		return new ModelAndView("/manager/glossaryMgmt",model);
+	}
+	
 	@RequestMapping({"/sqlLogStat"})
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();

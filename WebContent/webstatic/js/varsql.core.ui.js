@@ -460,6 +460,8 @@ _ui.utils.copy(_ui.component,{
 		,search :  function (){
 			var _self = this;
 			var schVal = $(_self.selector+' #glossarySearchTxt').val();
+			
+			
 		}
 		,template : function (){
 			return $('#glossaryComponentTemplate').html();

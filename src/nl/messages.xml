@@ -58,6 +58,7 @@
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
 <entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
 <entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manage.menu.glossary"><![CDATA[용어집]]></entry>
 <entry key="manage.menu.logmgmt">로그 통계</entry>
 <entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
 <entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
@@ -193,6 +194,10 @@
 <entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
 
 
+<entry key="manage.glossary.word">용어</entry>
+<entry key="manage.glossary.word_en">영문명</entry>
+<entry key="manage.glossary.word_abbr">영문약어명</entry>
+<entry key="manage.glossary.desc">설명</entry>
 
 <entry key="user.edit.msgtitle">제목</entry>
 <entry key="user.edit.send_id">보낸사람</entry>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="glossaryMapper">
+
+	<select id="glossaryMapper.selectGlossaryTotalcnt" parameterType="searchParameter" resultType="int">
+		select count(1) as totalcnt 
+		from VTGLOSSARY 
+		where 1=1
+		and (WORD like '%'||#{keyword}||'%' or WORD_EN like '%'||#{keyword}||'%') 
+	</select>
+
+	<select id="glossaryMapper.selectGlossaryList" parameterType="searchParameter" resultType="map">
+		select 
+			WORD
+			,WORD_EN
+			,WORD_ABBR
+			,WORD_DESC
+			,REG_ID
+			,REG_DT
+			,UPD_ID
+			,UPD_DT
+		 	,to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
+		from VTGLOSSARY a
+		where 1=1
+		and (WORD like '%'||#{keyword}||'%' or WORD_EN like '%'||#{keyword}||'%') 
+		order by WORD_IDX desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
+	</select>
+	
+	<insert id="glossaryMapper.insertGlossaryInfo" parameterType="map">
+		insert  into VTGLOSSARY (
+			WORD_IDX
+			, WORD
+			, WORD_EN
+			, WORD_ABBR
+			, WORD_DESC 
+			, REG_ID
+			, REG_DT
+			, UPD_ID
+			, UPD_DT
+		) 
+		values (
+			#{wordIdx}
+			, #{word}
+			, #{wordEn}
+			, #{wordAbbr}
+			, #{wordDesc} 
+			, #{userId}
+			, #{userId}
+		)
+	</insert>
+	
+	<update id="glossaryMapper.updateGlossaryInfo" parameterType="map">
+		update VTGLOSSARY 
+		set 
+			USER_ROLE =#{role}
+			,ACCEPT_YN=#{acceptyn}
+		where WORD_IDX =#{wordIdx}
+	</update>
+	
+	<delete id="glossaryMapper.deleteGlossaryInfo" parameterType="map">
+		delete from VTGLOSSARY where WORD_IDX =#{wordIdx}
+	</delete>
+</mapper>
