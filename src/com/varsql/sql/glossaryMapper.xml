@@ -14,7 +14,8 @@
 
 	<select id="glossaryMapper.selectGlossaryList" parameterType="searchParameter" resultType="map">
 		select 
-			WORD
+			WORD_IDX
+			,WORD
 			,WORD_EN
 			,WORD_ABBR
 			,WORD_DESC
@@ -26,7 +27,7 @@
 		from VTGLOSSARY a
 		where 1=1
 		and (WORD like '%'||#{keyword}||'%' or WORD_EN like '%'||#{keyword}||'%') 
-		order by WORD_IDX desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
+		order by WORD_IDX desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<insert id="glossaryMapper.insertGlossaryInfo" parameterType="map">
@@ -37,12 +38,10 @@
 			, WORD_ABBR
 			, WORD_DESC 
 			, REG_ID
-			, REG_DT
 			, UPD_ID
-			, UPD_DT
 		) 
 		values (
-			#{wordIdx}
+			(select (nvl(max(WORD_IDX),0)+1) as maxval from VTGLOSSARY)
 			, #{word}
 			, #{wordEn}
 			, #{wordAbbr}
@@ -54,10 +53,14 @@
 	
 	<update id="glossaryMapper.updateGlossaryInfo" parameterType="map">
 		update VTGLOSSARY 
-		set 
-			USER_ROLE =#{role}
-			,ACCEPT_YN=#{acceptyn}
-		where WORD_IDX =#{wordIdx}
+		set
+			WORD = #{word}
+			, WORD_EN = #{wordEn}
+			, WORD_ABBR = #{wordAbbr}
+			, WORD_DESC = #{wordDesc}
+			, UPD_ID = #{userId}
+			, UPD_DT =current_date
+		where WORD_IDX = #{wordIdx}
 	</update>
 	
 	<delete id="glossaryMapper.deleteGlossaryInfo" parameterType="map">

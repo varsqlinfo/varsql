@@ -333,7 +333,10 @@ _ui.layout = {
 		
 		if(items.length > 0){
 			var contentItem= items[0];
-			contentItem.tab.header.parent.setActiveContentItem(contentItem);
+			
+			if(!contentItem.tab.isActive){
+				contentItem.tab.header.parent.setActiveContentItem(contentItem);
+			}
 			return true; 
 		}
 		

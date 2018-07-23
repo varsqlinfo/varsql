@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 body {
+	font-family: "낡은고딕", 'malgun gothic', sans-serif !important;	
 	font-size: 12px;
     height: 100%;
     width: 100%;
@@ -11,6 +12,7 @@ body {
 	margin:0px;
 	padding:0px;
 	background-color: #dfdfdf;
+    color: #333;
 }
 
 body div{
@@ -1022,6 +1024,7 @@ hr.dotline {
 }
 .CodeMirror *{
 	box-sizing: content-box;
+	font-family: Consolas;
 }
 .CodeMirror {font-size:13px; width:100%; height:100%;
 -webkit-box-sizing: border-box !important;
@@ -1229,5 +1232,25 @@ hr.dotline {
 .varsql-table tr:hover{
 	background-color: #f1f1f1;
 }
+.varsql-ellip {
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+}
 /* common css end */
+
+/*pubGrid custom start*/
+.lm_content .pubGrid {
+    border-bottom: 0px solid;
+}
+
+.lm_content #sqlDataComponent  .pubGrid {
+    border-top: 0px solid;
+}
+/*pubGrid custom end*/
+
+
 

@@ -167,18 +167,12 @@
 <entry key="admin.form.db.timeout">Timeout</entry>
 <entry key="admin.form.db.exportcount">내보내기 카운트</entry>
 
-<entry key="admin.label.word">용어</entry>
-<entry key="admin.detail.word_en">영믄</entry>
-<entry key="admin.detail.word_abbr">약어</entry>
-
 <entry key="admin.userlist.search.head">사용자 검색</entry>
 <entry key="admin.managerlist.head">관리자 목록</entry>
 
 <entry key="admin.managerlist.dbuser">데이타 베이스 관리 매니저</entry>
 
 <entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
-
-
 
 <entry key="manage.userlist.head">사용자 목록</entry>
 <entry key="manage.userlist.name">이름</entry>
@@ -196,7 +190,7 @@
 
 <entry key="manage.glossary.word">용어</entry>
 <entry key="manage.glossary.word_en">영문명</entry>
-<entry key="manage.glossary.word_abbr">영문약어명</entry>
+<entry key="manage.glossary.word_abbr">약어명</entry>
 <entry key="manage.glossary.desc">설명</entry>
 
 <entry key="user.edit.msgtitle">제목</entry>

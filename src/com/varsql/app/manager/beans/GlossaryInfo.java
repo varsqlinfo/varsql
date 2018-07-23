@@ -19,8 +19,7 @@ import org.hibernate.validator.constraints.NotBlank;
 *-----------------------------------------------------------------------------
  */
 public class GlossaryInfo{
-	@Size(max=10)
-	private int wordIdx;
+	private String wordIdx;
 
 	@NotBlank
 	@Size(max=500)
@@ -39,10 +38,10 @@ public class GlossaryInfo{
 
 	private String userId;
 
-	public int getWordIdx(){
+	public String getWordIdx(){
 		return this.wordIdx;
 	}
-	public void setWordIdx(int wordIdx){
+	public void setWordIdx(String wordIdx){
 		this.wordIdx=wordIdx;
 	}
 	public String getWord(){

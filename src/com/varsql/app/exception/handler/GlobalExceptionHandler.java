@@ -48,7 +48,7 @@ public class GlobalExceptionHandler{
 		logger.error("sqlExceptionHandle "+ getClass().getName(),ex);
 		
 		ResponseResult result = new ResponseResult();
-		result.setStatus(ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(ResultConst.CODE.ERROR.toInt());
 		result.setMessage(ex.getMessage());
 		
 		exceptionRequestHandle(request, response ,result,"connError");
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler{
 		logger.error(getClass().getName(),ex);
 		
 		ResponseResult result = new ResponseResult();
-		result.setStatus(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getErrorMessage());
 		
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler{
 		logger.error(getClass().getName(),ex);
 		
 		ResponseResult result = new ResponseResult();
-		result.setStatus(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getErrorMessage());
 		
@@ -179,7 +179,7 @@ public class GlobalExceptionHandler{
 		if(VarsqlUtil.isAjaxRequest(request)){
 			response.setContentType("application/json;charset=UTF-8");
 			response.setStatus(HttpStatus.OK.value());
-			result.setStatus(ResultConst.CODE.ERROR.toInt());
+			result.setResultCode(ResultConst.CODE.ERROR.toInt());
 			
 			Writer writer=null;
 			try {

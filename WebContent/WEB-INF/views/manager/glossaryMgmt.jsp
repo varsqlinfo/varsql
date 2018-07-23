@@ -23,8 +23,8 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup="search()">
-								 <span class="input-group-btn">
+								<input type="text" v-model="searchVal" class="form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
 									</button>
@@ -38,35 +38,33 @@
 						class="dataTables_wrapper form-inline" role="grid">
 						<table
 							class="table table-striped table-bordered table-hover dataTable no-footer"
-							id="dataTables-example">
+							id="dataTables-example" style="table-layout:fixed;">
+							<colgroup>
+								<col style="width:50px;">
+								<col style="width:100px;">
+								<col style="width:100px;">
+								<col style="width:80px;">
+								<col style="width:*;">
+								<col style="width:140px;">
+							</colgroup>
 							<thead>
 								<tr role="row">
-									<th style="width: 10px;"><div
-											class="text-center">
-											<input type="checkbox" id="allcheck" name="allcheck">
-										</div>
-									</th>
-									<th style="width: 150px;">
-										<spring:message	code="manage.glossary.word" />
-									</th>
-									<th style="width: 150px;">
-										<spring:message	code="manage.glossary.word_en" />
-									</th>
-									<th style="width: 150px;">
-										<spring:message	code="manage.glossary.word_abbr" />
-									</th>
-									<th style="width: 200px;">
-										<spring:message	code="manage.glossary.desc" />
-									</th>
+									<th>&nbsp;</th>
+									<th class="text-center"><spring:message	code="manage.glossary.word" /></th>
+									<th class="text-center"><spring:message	code="manage.glossary.word_en" /></th>
+									<th class="text-center"><spring:message	code="manage.glossary.word_abbr" /></th>
+									<th class="text-center"><spring:message	code="manage.glossary.desc" /></th>
+									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.WORD_IDX" v-model="selectItem"></td>
-									<td>{{item.WORD}}</td>
-									<td>{{item.WORD_EN}}</td>
-									<td>{{item.WORD_ABBR}}</td>
-									<td>{{item.DESC}}</td>
+									<td>{{item.WORD_IDX}}</td>
+									<td :title="item.WORD"><a href="javascript:;" @click="itemView(item)"> {{item.WORD}}</a></td>
+									<td :title="item.WORD_EN"><div class="text-ellipsis">{{item.WORD_EN}}</div></td>
+									<td :title="item.WORD_ABBR">{{item.WORD_ABBR}}</td>
+									<td :title="item.WORD_DESC"><div class="text-ellipsis">{{item.WORD_DESC}}</div></td>
+									<td>{{item.CHAR_CRE_DT}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
@@ -83,7 +81,50 @@
 	</div>
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-5">
-		
+		<div class="panel panel-default" >
+			<div class="panel-heading"><spring:message code="manage.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<input type="hidden" v-model="detailItem.wordIdx">
+				<form id="addForm" name="addForm" class="form-horizontal" >
+					<div class="form-group">
+						<div class="col-sm-12">
+							<div class="pull-right">
+								<button type="button" class="btn btn-default" @click="fieldClear()"><spring:message code="btn.add"/></button>
+								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
+								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+							</div>
+						</div>
+					</div>
+					<div id="warningMsgDiv"></div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word" /></label>
+						<div class="col-sm-8">
+							<input class="form-control text required" v-model="detailItem.word">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_en" /></label>
+						<div class="col-sm-8">
+							<input class="form-control text required" v-model="detailItem.wordEn">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_abbr" /></label>
+						<div class="col-sm-8">
+							<input class="form-control text required" v-model="detailItem.wordAbbr">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.desc" /></label>
+						<div class="col-sm-8">
+							<textarea class="form-control text" rows="3" v-model="detailItem.wordDesc" style="width:100%;"></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- /.panel-body -->
+		</div>
 	</div>
 </div>
 <!-- /.row -->
@@ -97,68 +138,112 @@ VarsqlAPP.vueServiceBean( {
 		,searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
-		,detailItem :{}
-		,selectItem :[]
+		,detailItem :{
+			word :''
+			, wordEn :''
+			, wordAbbr :''
+			, wordDesc : '' 
+			, wordIdx:''
+			
+		}
+		,isViewMode : false
 	}
 	,methods:{
-		acceptYn : function(obj){
-			var _self = this; 
-			var selectItem = _self.selectItem;
-			
-			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQL.alert('<spring:message code="msg.data.select" />');
-				return ; 
-			}
-			
-			if(!confirm(obj=='Y'?'<spring:message code="msg.accept.msg" />':'<spring:message code="msg.denial.msg" />')){
-				return ; 
-			}
-			
-			var param = {
-				acceptyn:obj
-				,selectItem:selectItem.join(',')
+		// 추가.
+		fieldClear : function (){
+			this.isViewMode = false;
+			this.detailItem = {
+				wordIdx:''
+				, word :''
+				, wordEn :''
+				, wordAbbr :''
+				, wordDesc : '' 
 			};
-			
-			this.$ajax({
-				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
-				,success:function (response){
-					_self.search();
-				}
-			});
 		}
+		// 상세
+		,itemView : function (item){
+			this.isViewMode = true;
+			this.detailItem = {
+				wordIdx : item.WORD_IDX
+				, word : item.WORD
+				, wordEn : item.WORD_EN
+				, wordAbbr :item.WORD_ABBR
+				, wordDesc : item.WORD_DESC
+			};
+		}
+		// 검색
 		,search : function(no){
-			var _self = this; 
+			var _self = this;
 			
 			var param = {
 				pageNo: (no?no:1)
-				,rows: _self.list_count
+				,countPerPage : _self.list_count
 				,'searchVal':_self.searchVal
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/userList'}
+				url:{gubun:VARSQL.uri.manager, url:'/glossary/list'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.items || [];
 					_self.pageInfo = resData.page;
 				}
 			})
 		}
-		,initPassword :function(sItem){
-			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/initPassword'}
-				,data : sItem
+		// 저장
+		,saveInfo : function (){
+			var _self = this;
+			
+			var param = this.detailItem;
+			
+			_self.$ajax({
+				url:{gubun:VARSQL.uri.manager, url:'/glossary/save'}
+				,data : param
 				,success: function(resData) {
-					sItem.INITPW = resData.item;
+					if(resData.status != 200){
+						if(resData.messageCode=='valid'){
+							var items = resData.items;
+							objLen = items.length;
+							if(objLen >0){
+								var item;
+								for(var i=0; i <objLen; i++){
+									item = items[i];
+									alert(item.field + "\n"+ item.defaultMessage)
+									return ; 
+								}
+							}
+						}else{
+							var message = resData.messageCode; 
+							alert(resData.messageCode +'\n'+ resData.message);
+							return ; 
+						}
+					}
 					
-					setTimeout(function (){
-						sItem.INITPW ='';
-					}, 5000);
-					
-					alert('변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.');
+					_self.fieldClear();
+					_self.search();
 				}
 			})
+		}
+		// 삭제.
+		,deleteInfo : function(){
+			var _self = this; 
+			
+			if(!confirm('['+_self.detailItem.word +'] 삭제하시겠습니까?')){
+				return ; 
+			}
+			
+			var param = {
+				wordIdx : _self.detailItem.wordIdx
+			};
+			
+			this.$ajax({
+				data:param
+				,url : {gubun:VARSQL.uri.manager, url:'/glossary/delete'}
+				,success:function (response){
+					_self.fieldClear();
+					_self.search();
+				}
+			});
 		}
 	}
 });
