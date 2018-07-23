@@ -16,26 +16,27 @@ if (typeof window != "undefined") {
 var  portalDefaultTemplate = {
 	'pageNavTemplate' : '<div class="text-center"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage - 1)">Previous</a>'
+		+'	<a @click="goPage(pageInfo.currPage - 1)">«</a>'
 		+'</li>'
-		+'<li v-for="no in (pageInfo.currStartPage , pageInfo.currEndPage)">'
+		+'<li v-for="no in range(pageInfo.currStartPage , pageInfo.currEndPage)" :class="no ==pageInfo.currPage?\'active\':\'\'">'
 		+'	<a v-if="no ==pageInfo.currPage">{{no}}</a>'
 		+'	<a v-if="no != pageInfo.currPage" @click="goPage(no)">{{no}}</a>'
 		+'</li>'
 		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage + 1)">Next</a>'
+		+'	<a @click="goPage(pageInfo.currPage + 1)">»</a>'
 		+'</li>'
 		+'</ul></div>'
+		
 	,'grid1Template' : '<div class="text-center"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage - 1)">Previous</a>'
+		+'	<a @click="goPage(pageInfo.currPage - 1)">«</a>'
 		+'</li>'
-		+'<li v-for="no in (pageInfo.currStartPage , pageInfo.currEndPage)">'
+		+'<li v-for="no in range(pageInfo.currStartPage , pageInfo.currEndPage)">'
 		+'	<a v-if="no ==pageInfo.currPage">{{no}}</a>'
 		+'	<a v-if="no != pageInfo.currPage" @click="goPage(no)">{{no}}</a>'
 		+'</li>'
 		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage + 1)">Next</a>'
+		+'	<a @click="goPage(pageInfo.currPage + 1)">»</a>'
 		+'</li>'
 	+'</ul></div>'
 };
@@ -101,7 +102,19 @@ Vue.component('page-navigation', {
 		,callback : String
 	}
 	,methods: {
-		goPage : function (pageNo) {
+		range : function (start, end) {
+			
+			if(typeof start ==='undefined') return [];
+			
+			var reArr = [];
+			
+			for(start ; start <= end;start++){
+				reArr.push(start);
+			}
+			
+			return reArr;
+		}
+		,goPage : function (pageNo) {
 
 			if(pageNo < 1){
 				pageNo =1; 
