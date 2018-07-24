@@ -16,6 +16,19 @@ import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.PreferencesServiceImpl;
 import com.vartech.common.app.beans.ResponseResult;
 
+/**
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: PreferencesController.java
+* @DESC		: 환경설정 정보. 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2018. 7. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 @Controller
 @RequestMapping("/database/preferences")
 public class PreferencesController {

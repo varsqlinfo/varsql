@@ -29,6 +29,7 @@ var _$base = {
 		,'guest':'/guest'
 		,'database':'/database'
 		,'sql':'/sql'
+		,'plugin':'/plugin'
 	}
 }
 ,_defaultAjaxOption ={

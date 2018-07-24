@@ -242,7 +242,7 @@
 			var sEle = this.element.find('.pubTab-item-cont.active'); 
 			return this.options.items[sEle.data('tab-idx')];
 		}
-		,destory:function (){
+		,destroy:function (){
 			
 		}
 		,draw : function (){
@@ -364,7 +364,7 @@
 			_datastore[selector] = _cacheObject;
 			return _cacheObject; 
 		}else if(typeof options==='object'){
-			_cacheObject.destory();
+			_cacheObject.destroy();
 			_cacheObject = new Plugin(selector, options);
 			_datastore[selector] = _cacheObject;
 			return _cacheObject; 

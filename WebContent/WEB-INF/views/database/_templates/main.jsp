@@ -257,17 +257,20 @@ $(document).ready(function(){
 	<div id="glossaryComponentArea" class="pos-relative-w-h100">
 		<div class="glossary-search-area">
 			<div>
-				검색어<input type="text" id="glossarySearchTxt" value="">
-				<button type="button" class="btn btn-default glossary-search-btn" title="조회"><span class="fa fa-retweet"></span></button>
-				</div>
+				<span>검색</span>
+				<input type="text" id="glossarySearchTxt" placeholder="Search...">
+				<button type="button" class="btn btn-default glossary-search-btn" title="조회"><span class="fa fa-search"></span></button>
+			</div>
 			<div>
+				<button type="button" class="btn btn-default glossary-convert-camelcase" title="변환"><span class="fa fa-retweet"></span></button>
+				<button type="button" class="btn btn-default glossary-convert-clear" title="지우기"><span class="fa fa-trash-o"></span></button>
 				<input type="text" id="glossaryConvertTxt" value="">
-				<button type="button" class="btn btn-default" title="변환"><span class="fa fa-retweet"></span></button>
-				<button type="button" class="btn btn-default" title="지우기"><span class="fa fa-trash-o"></span></button>
 			</div>
 		</div>
 
-		<div id="glossaryResultArea" class="glossary-result-area"></div>
+		<div class="glossary-result-area">
+			<div id="glossaryResultArea" class="pos-relative-w-h100"></div>
+		</div>
 	</div>
 </script>
 <%-- history component template --%>

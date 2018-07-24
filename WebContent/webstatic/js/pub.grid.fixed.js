@@ -3533,16 +3533,16 @@ Plugin.prototype ={
 		}
 	}
 	/**
-     * @method destory
+     * @method destroy
      * @description 해제.
      */
-	,destory:function (){
+	,destroy:function (){
 		try{
 			if($.isPlainObject (this.options.headerOptions.contextMenu)){
-				$.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th').destory();		
+				$.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th').destroy();		
 			}
 			if($.isPlainObject (this.options.rowOptions.contextMenu)){
-				$.pubContextMenu('#'+this.prefix+'_bodyContainer .pub-body-tr').destory();
+				$.pubContextMenu('#'+this.prefix+'_bodyContainer .pub-body-tr').destroy();
 			}
 		}catch(e){};
 
@@ -3582,7 +3582,7 @@ $.pubGrid = function (selector,options, args) {
 			,reDrawFlag = typeof headerOpt.redraw==='boolean' ? headerOpt.redraw : _cacheObject.options.headerOptions.redraw; 
 
 		if(reDrawFlag===true){
-			_cacheObject.destory();
+			_cacheObject.destroy();
 			_cacheObject = new Plugin(selector, options);
 			_datastore[selector] = _cacheObject;
 		}else{

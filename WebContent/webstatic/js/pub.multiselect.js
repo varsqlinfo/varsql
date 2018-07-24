@@ -614,29 +614,24 @@ Plugin.prototype ={
 		var selectElement =_this.getSelectElement(_this.targetElement);
 		var selectLen = selectElement.length;  
 
-		if(len ==0) return ; 
-
+		if(selectLen < 1) return ; 
+		
+		var selectClass =this.options.selectClass; 
 		if(type=='up'){
-			var len = selectElement.length; 
-			var selectClass =this.options.selectClass; 
-
-			for(var i =0 ;i <len ;i++){
+			for(var i =0 ;i <selectLen ;i++){
 				var currItem = $(selectElement[i])
 					,prevItem = $(currItem.prev());
 
-				if(!prevItem.hasClass(selectClass) && currItem.hasClass(selectClass)) {
+				if(!prevItem.hasClass(selectClass)) {
 					currItem.after(prevItem);
 				}
 			}
 		}else{
-			var len = selectElement.length; 
-			var selectClass =this.options.selectClass; 
-
-			for(var i =len-1 ;i >=0 ;i--){
+			for(var i =selectLen-1 ;i >=0 ;i--){
 				var currItem = $(selectElement[i])
 					,nextItem = $(currItem.next());
 
-				if(!nextItem.hasClass(selectClass) && currItem.hasClass(selectClass)) {
+				if(!nextItem.hasClass(selectClass)) {
 					currItem.before(nextItem);
 				}
 			}
@@ -883,7 +878,7 @@ Plugin.prototype ={
 			//_this.sourceElement.empty().html(strHtm.join(''));
 		}
 	}
-	,destory:function (){
+	,destroy:function (){
 		//$(document).off('contextmenu.pubcontext', this.element).off('click', '.context-event');
 	}
 	/**

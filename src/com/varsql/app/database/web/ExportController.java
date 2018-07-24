@@ -20,8 +20,8 @@ import com.varsql.core.db.beans.DatabaseParamInfo;
  * 
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: ToolsController.java
-* @DESC		: 메뉴 도구 처리. 
+* @NAME		: ExportController.java
+* @DESC		: export 처리. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

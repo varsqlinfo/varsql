@@ -329,7 +329,7 @@ Plugin.prototype ={
 			$dd.css({top : offTop , left: offLeft}).fadeIn(opt.fadeSpeed);
 		});
 	}
-	,destory:function (){
+	,destroy:function (){
 		
 		$('#'+this.contextId+'_wrap').find('*').off();
 		
@@ -359,7 +359,7 @@ $[ pluginName ] = function (selector,options) {
 		return _cacheObject; 
 	}else if(typeof options==='object'){
 		
-		_cacheObject.destory();
+		_cacheObject.destroy();
 		_cacheObject = new Plugin(selector, options);
 		_datastore[selector] = _cacheObject;
 		return _cacheObject; 

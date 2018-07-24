@@ -257,11 +257,12 @@ _ui.layout = {
 			})
 		});
 		
+		// plugin component reg
 		varsqlLayout.registerComponent('pluginComponent', function( container, componentInfo ){
 			var componentObj = _ui.component[componentInfo.key]; 
 			
 			container.getElement().html(componentObj.template());
-					
+			
 			var initResize = true; 
 			container.on('resize',function() {
 				if(initResize === true){
@@ -270,13 +271,14 @@ _ui.layout = {
 				}
 				var resizeFn = componentObj.resize; 
 				if(VARSQL.isFunction(resizeFn)){
-					resizeFn.call(null, {
+					resizeFn.call(componentObj, {
 						width : container.width , height : container.height
 					});
 				}
 			})
 		});
 		
+		// component create
 		varsqlLayout.on( 'componentCreated', function( component ){
 			
 			if(component.container.$isVarComponentRemove ===true){
@@ -284,7 +286,13 @@ _ui.layout = {
 			}
 			
 			if(component.componentName =='pluginComponent'){
+				
 				var componentInfo = component.config.componentState;
+				
+				if(componentInfo.isDynamicAdd == true){
+					delete componentInfo.isDynamicAdd;
+					return ; 
+				} 
 				
 				var componentObj = _ui.component[componentInfo.key]; 
 				
@@ -293,7 +301,19 @@ _ui.layout = {
 				if(VARSQL.isFunction(initFn)){
 					initFn.call(componentObj);
 				}
+			}
+		});
+		
+		// item destroy
+		varsqlLayout.on('itemDestroyed', function( component ){
+			if(component.componentName =='pluginComponent'){
+				var componentInfo = component.config.componentState;
+				var componentObj = _ui.component[componentInfo.key]; 
+				var destroyFn = componentObj.destroy;
 				
+				if(VARSQL.isFunction(destroyFn)){
+					destroyFn.call(componentObj);
+				}
 			}
 		});
 		
@@ -353,7 +373,10 @@ _ui.layout = {
 		
 		var pluginItem = varsqlLayout.root._$getItemsByProperty('componentName','pluginComponent');
 		
-		var plugLen = pluginItem.length; 
+		var plugLen = pluginItem.length;
+		
+		addItemInfo.isDynamicAdd = true;
+		
 		if(plugLen > 0){
 			(pluginItem[plugLen-1].parent).addChild({
 				title: addItemInfo.nm
@@ -369,7 +392,14 @@ _ui.layout = {
 			    ,id : addItemInfo.key
 			    ,componentName: 'pluginComponent'
 			    ,componentState: addItemInfo
+			    ,width: 100
 			})
+		}
+		
+		var componentObj = _ui.component[addItemInfo.key]; 
+		var initFn = componentObj.init;
+		if(VARSQL.isFunction(initFn)){
+			initFn.call(componentObj);
 		}
 	}
 }
@@ -431,7 +461,6 @@ _ui.preferences= {
 					callback.call(null, resData);
 					return ; 
 				}
-				//console.log(resData);
 			}
 		});
 	}
@@ -444,33 +473,103 @@ _ui.component = {};
 _ui.utils.copy(_ui.component,{
 	'glossary' : {
 		selector :'#glossaryComponentArea'
+		,gridObj : false
 		,init : function (){
-			this.initEvt();		
+			var _self = this;
+			
+			_self.initEvt();
+			
+			_self.gridObj = $.pubGrid('#glossaryResultArea', {
+				headerOptions : {redraw : false}
+				,asideOptions :{lineNumber : {enable : true	,width : 30}}
+				,tColItem : [
+					{ label: '용어', key: 'WORD',width:80 },
+					{ label: '영문명', key: 'WORD_EN' },
+					{ label: '약어', key: 'WORD_ABBR', width:45},
+					{ label: '설명', key: 'WORD_DESC',width:45},
+				]
+				,tbodyItem :[]
+				,bodyOptions : {
+					cellDblClick : function (cellInfo){
+						
+						var selKey =cellInfo.keyItem.key;
+						
+						if(selKey != 'WORD' && selKey !='WORD_DESC'){
+							
+							var variableText = $(_self.selector+' #glossaryConvertTxt').val();
+							
+							var val =cellInfo.item[selKey]; 
+							
+							val = val.split(' ').join('_');
+							
+							if($.trim(variableText)==''){
+								variableText = val;
+							}else{
+								variableText = variableText+'_'+val;
+							}
+							
+							$(_self.selector+' #glossaryConvertTxt').val(variableText);
+						}
+					}
+				}
+			});
 		}
 		,initEvt : function (){
 			var _self = this;
 			
+			// enter 검색.
 			$(_self.selector+' #glossarySearchTxt').on('keydown', function (e){
 				if (e.keyCode == '13') {
 					_self.search();
 				}
 			})
 			
+			// 검색
 			$(_self.selector+' .glossary-search-btn').on('click', function (e){
 				_self.search();
+			})
+			
+			// 변환
+			$(_self.selector+' .glossary-convert-camelcase').on('click', function (e){
+				$(_self.selector+' #glossaryConvertTxt').val(convertCamel($(_self.selector+' #glossaryConvertTxt').val()));
+			})
+			// 지우기
+			$(_self.selector+' .glossary-convert-clear').on('click', function (e){
+				$(_self.selector+' #glossaryConvertTxt').val('');
 			})
 		}
 		,search :  function (){
 			var _self = this;
 			var schVal = $(_self.selector+' #glossarySearchTxt').val();
 			
+			schVal = $.trim(schVal);
 			
+			if(schVal.length < 1){
+				return ; 
+			}
+			
+			var params ={
+				keyword : schVal
+			}
+			
+			VARSQL.req.ajax({      
+			    loadSelector : _self.selector
+			    ,url:{gubun:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
+			    ,data : params 
+			    ,success:function (res){
+			    	_self.gridObj.setData(res.items,'reDraw');
+				}
+			});
 		}
 		,template : function (){
 			return $('#glossaryComponentTemplate').html();
 		}
 		,resize : function (dimension){
-			console.log(dimension);
+			dimension.height = dimension.height - $(this.selector+' .glossary-search-area').height(); 
+			this.gridObj.resizeDraw(dimension);
+		}
+		,destroy: function (){
+			this.gridObj.destroy()
 		}
 	}
 })
@@ -897,15 +996,15 @@ _ui.dbSchemaObjectServiceMenu ={
 		return this.options.metadataTabAreaWrapEle; 
 	}
 	// resize object area
-	,resizeObjectArea : function (demention){
+	,resizeObjectArea : function (dimension){
 		try{
 			// tab resize
-			$.pubTab(this.options.serviceMenuTabId).refresh().setDropHeight(demention.height-10);
+			$.pubTab(this.options.serviceMenuTabId).refresh().setDropHeight(dimension.height-10);
 		}catch(e){};
 		
 		try{
 			// data resize
-			$.pubGrid(this.options.dbServiceMenuContentId+'>#'+this.selectObjectMenu).resizeDraw(demention);
+			$.pubGrid(this.options.dbServiceMenuContentId+'>#'+this.selectObjectMenu).resizeDraw(dimension);
 		}catch(e){};
 		
 	}
@@ -1414,7 +1513,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;
@@ -1506,7 +1605,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			}
 		});
 	}
-	,_tableMetaResize : function (demention){
+	,_tableMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this._getMetadataObjectEleId('table') + "column");
 		
 		if(gridObj){
@@ -1677,7 +1776,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;
@@ -1891,7 +1990,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;
@@ -2074,7 +2173,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;
@@ -2259,7 +2358,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;
@@ -2562,7 +2661,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;

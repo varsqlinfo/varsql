@@ -21,7 +21,17 @@ import com.vartech.common.app.beans.ResponseResult;
 
 
 /**
- * The Class OutsideController.
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: DatabaseController.java
+* @DESC		: database controller
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2018. 7. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/database")

@@ -4,14 +4,15 @@
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="glossaryMapper">
-
+	<!-- 용어 검색 카운트 -->
 	<select id="glossaryMapper.selectGlossaryTotalcnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTGLOSSARY 
 		where 1=1
 		and (WORD like '%'||#{keyword}||'%' or WORD_EN like '%'||#{keyword}||'%') 
 	</select>
-
+	
+	<!-- 용어 검색 -->
 	<select id="glossaryMapper.selectGlossaryList" parameterType="searchParameter" resultType="map">
 		select 
 			WORD_IDX
@@ -30,6 +31,7 @@
 		order by WORD_IDX desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
+	<!-- 용어 등록 -->
 	<insert id="glossaryMapper.insertGlossaryInfo" parameterType="map">
 		insert  into VTGLOSSARY (
 			WORD_IDX
@@ -51,6 +53,7 @@
 		)
 	</insert>
 	
+	<!-- 용어 수정 -->
 	<update id="glossaryMapper.updateGlossaryInfo" parameterType="map">
 		update VTGLOSSARY 
 		set
@@ -63,7 +66,22 @@
 		where WORD_IDX = #{wordIdx}
 	</update>
 	
+	<!-- 용어 삭제 -->
 	<delete id="glossaryMapper.deleteGlossaryInfo" parameterType="map">
 		delete from VTGLOSSARY where WORD_IDX =#{wordIdx}
 	</delete>
+	
+	
+	<!-- 용어 사용자 검색 -->
+	<select id="glossaryMapper.selectGlossarySearchList" parameterType="searchParameter" resultType="map">
+		select 
+			WORD_IDX
+			,WORD
+			,WORD_EN
+			,WORD_ABBR
+			,WORD_DESC
+		from VTGLOSSARY a
+		where 1=1
+		and (WORD like '%'||#{keyword}||'%' or WORD_EN like '%'||#{keyword}||'%') 
+	</select>
 </mapper>

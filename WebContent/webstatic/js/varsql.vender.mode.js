@@ -138,7 +138,7 @@ var $oracle = {
 		var gridObj = $.pubGrid(metaEleId);
 		
 		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destory();
+			if(gridObj) gridObj.destroy();
 		}
 		
 		var items = colData.items;

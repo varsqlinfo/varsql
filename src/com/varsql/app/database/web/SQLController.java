@@ -18,7 +18,7 @@ import com.vartech.common.utils.HttpUtils;
 /**
  * 
  * @FileName  : SQLController.java
- * @프로그램 설명 : databse관련 공통으로 처리할 controller
+ * @프로그램 설명 :  sql 관련 공통으로 처리할 controller
  * @Date      : 2015. 6. 22. 
  * @작성자      : ytkim
  * @변경이력 :
