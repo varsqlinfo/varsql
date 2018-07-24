@@ -140,6 +140,7 @@ _ui.layout = {
 				},
 				{
 				  type: 'column',
+				  width: 70,
 				  content: [{
 					type: 'component',
 					id : 'sqlEditor',
@@ -259,8 +260,8 @@ _ui.layout = {
 		
 		// plugin component reg
 		varsqlLayout.registerComponent('pluginComponent', function( container, componentInfo ){
-			var componentObj = _ui.component[componentInfo.key]; 
 			
+			var componentObj = _ui.component[componentInfo.key]; 
 			container.getElement().html(componentObj.template());
 			
 			var initResize = true; 
@@ -286,7 +287,6 @@ _ui.layout = {
 			}
 			
 			if(component.componentName =='pluginComponent'){
-				
 				var componentInfo = component.config.componentState;
 				
 				if(componentInfo.isDynamicAdd == true){
@@ -294,13 +294,7 @@ _ui.layout = {
 					return ; 
 				} 
 				
-				var componentObj = _ui.component[componentInfo.key]; 
-				
-				var initFn = componentObj.init;
-				
-				if(VARSQL.isFunction(initFn)){
-					initFn.call(componentObj);
-				}
+				_self.initPluginComponent(componentInfo);
 			}
 		});
 		
@@ -345,7 +339,7 @@ _ui.layout = {
 		
 		_self.mainObj = varsqlLayout;
 	}
-	
+	// tab active
 	,setActiveTab : function (tabKey){
 		var varsqlLayout =this.mainObj; 
 		
@@ -373,12 +367,12 @@ _ui.layout = {
 		
 		var pluginItem = varsqlLayout.root._$getItemsByProperty('componentName','pluginComponent');
 		
-		var plugLen = pluginItem.length;
+		var pluginLen = pluginItem.length;
 		
 		addItemInfo.isDynamicAdd = true;
 		
-		if(plugLen > 0){
-			(pluginItem[plugLen-1].parent).addChild({
+		if(pluginLen > 0){
+			(pluginItem[pluginLen-1].parent).addChild({
 				title: addItemInfo.nm
 			    ,type: 'component'
 			    ,id : addItemInfo.key
@@ -392,11 +386,18 @@ _ui.layout = {
 			    ,id : addItemInfo.key
 			    ,componentName: 'pluginComponent'
 			    ,componentState: addItemInfo
-			    ,width: 100
 			})
 		}
 		
-		var componentObj = _ui.component[addItemInfo.key]; 
+		this.initPluginComponent(addItemInfo);
+		
+		if(pluginLen < 1){
+			varsqlLayout.root.getItemsById(addItemInfo.key)[0].container.setSize(250);
+		}
+	}
+	// plugin component 초기화
+	,initPluginComponent : function (itemInfo){
+		var componentObj = _ui.component[itemInfo.key]; 
 		var initFn = componentObj.init;
 		if(VARSQL.isFunction(initFn)){
 			initFn.call(componentObj);

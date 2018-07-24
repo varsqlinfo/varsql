@@ -1,15 +1,19 @@
 @charset "UTF-8";
 
-#glossaryComponentArea .glossary-search-area{
+#glossaryComponentArea .glossary-search-area-wrapper{
 	position: relative;
-	height:50px;
+	height:55px;
 	width: 100%;
+}
+
+#glossaryComponentArea .glossary-search-area{
+	padding:2px 0px 1px 0px;
 }
 
 #glossaryComponentArea .glossary-result-area{
 	position: relative;
 	width: 100%;
-    height: calc(100% - 50px);
+    height: calc(100% - 55px);
 }
 
 #glossaryComponentArea #glossarySearchTxt{

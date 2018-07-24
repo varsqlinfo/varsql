@@ -255,16 +255,16 @@ $(document).ready(function(){
 <%--glossary component template --%>
 <script id="glossaryComponentTemplate" type="text/varsql-template">
 	<div id="glossaryComponentArea" class="pos-relative-w-h100">
-		<div class="glossary-search-area">
-			<div>
+		<div class="glossary-search-area-wrapper">
+			<div class="glossary-search-area">
 				<span>검색</span>
-				<input type="text" id="glossarySearchTxt" placeholder="Search...">
+				<input type="text" id="glossarySearchTxt" class="input-text" placeholder="Search...">
 				<button type="button" class="btn btn-default glossary-search-btn" title="조회"><span class="fa fa-search"></span></button>
 			</div>
-			<div>
+			<div class="glossary-convert-area">
 				<button type="button" class="btn btn-default glossary-convert-camelcase" title="변환"><span class="fa fa-retweet"></span></button>
 				<button type="button" class="btn btn-default glossary-convert-clear" title="지우기"><span class="fa fa-trash-o"></span></button>
-				<input type="text" id="glossaryConvertTxt" value="">
+				<input type="text" id="glossaryConvertTxt" class="input-text">
 			</div>
 		</div>
 
