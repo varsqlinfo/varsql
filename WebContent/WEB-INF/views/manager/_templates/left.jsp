@@ -25,11 +25,9 @@
 			<li>
                <a href="<c:url value="./sqlLogStat" />"><spring:message code="manage.menu.sqllogmgmt" /></a>
             </li>
-            <!-- 
             <li>
-               <a href="<c:url value="./userLogStat" />"><spring:message code="manage.menu.userlogmgmt" /></a>
+               <a href="<c:url value="./sqlLogHistory" />"><spring:message code="manage.menu.sqllog" /></a>
             </li>
-             -->
 		</ul>
 	</li>
 </ul>

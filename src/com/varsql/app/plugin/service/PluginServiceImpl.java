@@ -40,6 +40,8 @@ public class PluginServiceImpl{
 	 */
 	public ResponseResult glossarySearch(ParamMap param) {
 		ResponseResult result = new ResponseResult();
+		
+		param.put("keyword", param.getString("keyword").toUpperCase());
 		result.setItemList(pluginDAO.selectGlossarySearch(param));
 		return result;
 	}

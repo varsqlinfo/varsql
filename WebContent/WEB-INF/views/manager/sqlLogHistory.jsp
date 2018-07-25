@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.glossary" /></h1>
+        <h1 class="page-header"><spring:message code="manage.menu.sqllog" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -40,26 +40,27 @@
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
+								<col style="width:100px;">
+								<col style="width:*;">
 								<col style="width:50px;">
 								<col style="width:100px;">
-								<col style="width:100px;">
-								<col style="width:80px;">
-								<col style="width:*;">
+								<col style="width:140px">
 								<col style="width:140px;">
+								<col style="width:50px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th>&nbsp;</th>
-									<th class="text-center"><spring:message	code="manage.glossary.word" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.word_en" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.word_abbr" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.desc" /></th>
-									<th class="text-center"><spring:message	code="reg_dt" /></th>
+									<th class="text-center"><spring:message	code="manage.log.command" /></th>
+									<th class="text-center"><spring:message	code="manage.log.query" /></th>
+									<th class="text-center"><spring:message	code="id" /></th>
+									<th class="text-center"><spring:message	code="ip" /></th>
+									<th class="text-center"><spring:message	code="std_dt" /></th>
+									<th class="text-center"><spring:message	code="end_dt" /></th>
+									<th class="text-center"><spring:message	code="manage.log.delay" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td>{{item.WORD_IDX}}</td>
 									<td :title="item.WORD"><a href="javascript:;" @click="itemView(item)"> {{item.WORD}}</a></td>
 									<td :title="item.WORD_EN"><div class="text-ellipsis">{{item.WORD_EN}}</div></td>
 									<td :title="item.WORD_ABBR">{{item.WORD_ABBR}}</td>

@@ -78,11 +78,13 @@ public class ManagerController {
 		return new ModelAndView("/manager/sqlLogStat",model);
 	}
 	
-	@RequestMapping({"/userLogStat"})
-	public ModelAndView userLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+	@RequestMapping({"/sqlLogHistory"})
+	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		return new ModelAndView("/manager/userLogStat",model);
+		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
+		model.addAttribute("currentDate", DateUtils.getCurrentDate());
+		return new ModelAndView("/manager/sqlLogHistory",model);
 	}
 	
 	@RequestMapping({"/userList"})
