@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class SqlResultUtil {
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];
+		String [] viewColumnsKey = new String[count];
 		String [] columns_type = new String[count];
 		
 		int columnType=-1;
@@ -60,10 +62,21 @@ public class SqlResultUtil {
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
 		String columnName = "";
 		
+		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
+		
 		for (int i = 1; i <= count; i++) {
-			columnName=columns_key[i - 1] = rsmd.getColumnName(i);
+			columnName= rsmd.getColumnName(i);
 			columnType = rsmd.getColumnType(i);
 			columnTypeName = rsmd.getColumnTypeName(i);
+			
+			if(columnKeyCheck.containsKey(columnName)){
+				int idxVal =columnKeyCheck.get(columnName)+1; 
+				columnKeyCheck.put(columnName, idxVal);
+				columnName = columnName+"_"+idxVal;
+			}else{
+				columnKeyCheck.put(columnName, 0);
+			}
+			columns_key[i - 1] = columnName; 
 			
 			columnInfo = new GridColumnInfo();
 			columnInfo.setLabel(columnName);
@@ -109,6 +122,8 @@ public class SqlResultUtil {
 			columnInfoList.add(columnInfo);
 		}
 		
+		columnKeyCheck = null; 
+		
 		int first = 0,last = maxRow;
 		
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
@@ -121,32 +136,32 @@ public class SqlResultUtil {
 		while (rs.next()) {
 			
 			columns = new LinkedHashMap(count);
-			for (int i = 1; i <= count; i++) {				
-				columnName = columns_key[i-1];
-				tmpColumnType = columns_type[i-1]; 
+			for (int colIdx = 1; colIdx <= count; colIdx++) {				
+				columnName = columns_key[colIdx-1];
+				tmpColumnType = columns_type[colIdx-1]; 
 				
 				if("number".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getNumber(rs, columnName));
+					columns.put(columnName,resultsetHandle.getNumber(rs, colIdx));
 				}else if("string".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getString(rs, columnName));
+					columns.put(columnName,resultsetHandle.getString(rs, colIdx));
 				}else if( "clob".equals(tmpColumnType)){
-					columns.put(columnName , resultsetHandle.getClob(rs, columnName));
+					columns.put(columnName , resultsetHandle.getClob(rs, colIdx));
 				}else if( "blob".equals(tmpColumnType)){
-					columns.put(columnName , resultsetHandle.getBlob(rs, columnName));
+					columns.put(columnName , resultsetHandle.getBlob(rs, colIdx));
 				}else if("timestamp".equals(tmpColumnType)){
-					columns.put(columnName, resultsetHandle.getTimeStamp(rs, columnName));
+					columns.put(columnName, resultsetHandle.getTimeStamp(rs, colIdx));
 				}else if("date".equals(tmpColumnType)){
-					columns.put(columnName, resultsetHandle.getDate(rs, columnName));
+					columns.put(columnName, resultsetHandle.getDate(rs, colIdx));
 				}else if("time".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getTime(rs, columnName));
+					columns.put(columnName,resultsetHandle.getTime(rs, colIdx));
 				}else if("sqlxml".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getSQLXML(rs, columnName));
+					columns.put(columnName,resultsetHandle.getSQLXML(rs, colIdx));
 				}else if("binary".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getBinary(rs, columnName));
+					columns.put(columnName,resultsetHandle.getBinary(rs, colIdx));
 				}else if("nclob".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getNCLOB(rs, columnName));
+					columns.put(columnName,resultsetHandle.getNCLOB(rs, colIdx));
 				}else{
-					columns.put(columnName,resultsetHandle.getObject(rs, columnName));
+					columns.put(columnName,resultsetHandle.getObject(rs, colIdx));
 				}
 			}
 			rows.add(columns);
