@@ -133,5 +133,25 @@ public class SqlStatsController {
 		
 		return sqlStatsServiceImpl.dbSqlDayUserRank(paramMap);
 	}
+	/**
+	 * @Method Name  : logList
+	 * @Method 설명 :
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 7. 26. 
+	 * @변경이력  :
+	 * @param vconid
+	 * @param s_date
+	 * @param e_date
+	 * @param command_type
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/logList"})
+	public @ResponseBody ResponseResult logList(HttpServletRequest req) throws Exception {
+		
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		
+		return sqlStatsServiceImpl.selectLogSearch(searchParameter);
+	}
 	
 }

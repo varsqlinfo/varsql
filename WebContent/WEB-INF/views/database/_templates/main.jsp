@@ -254,7 +254,7 @@ $(document).ready(function(){
 
 <%--glossary component template --%>
 <script id="glossaryComponentTemplate" type="text/varsql-template">
-	<div id="glossaryComponentArea" class="pos-relative-w-h100">
+	<div id="glossaryPluginArea" class="pos-relative-w-h100">
 		<div class="glossary-search-area-wrapper">
 			<div class="glossary-search-area">
 				<span>검색</span>
@@ -274,9 +274,16 @@ $(document).ready(function(){
 	</div>
 </script>
 <%-- history component template --%>
-<script id="historyComponentTemplate" type="text/varsql-template">
-	<div class="pos-relative-w-h100">
-		history
+<script id="historyPluginAreaTemplate" type="text/varsql-template">
+	<div id="historyPluginArea"  class="history-search-area-wrapper">
+		<div class="history-search-area">
+			<span>검색</span>
+			<input type="text" id="historySearchTxt" class="input-text" placeholder="Search...">
+			<button type="button" class="btn btn-default history-search-btn" title="조회"><span class="fa fa-search"></span></button>
+		</div>
+	</div>
+
+	<div id="historyResultArea" class="history-result-area">
 	</div>
 </script>
 

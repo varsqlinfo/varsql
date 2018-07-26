@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.dao.BaseDAO;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.SearchParameter;
 
 /**
 *-----------------------------------------------------------------------------
@@ -35,6 +36,10 @@ public class PluginDAO extends BaseDAO{
 	 */
 	public List selectGlossarySearch(ParamMap param) {
 		return  getSqlSession().selectList("glossaryMapper.selectGlossarySearchList", param);
+	}
+
+	public List selectUserHistorySearch(SearchParameter param) {
+		return  getSqlSession().selectList("sqlStatsMapper.selectUserHistorySearch", param);
 	}
 	
 	

@@ -9,10 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.plugin.service.PluginServiceImpl;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -56,5 +59,25 @@ public class PluginController {
 		ParamMap param = HttpUtils.getServletRequestParam(req);
 		
 		return pluginServiceImpl.glossarySearch(param);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : historySearch
+	 * @Method 설명 : sql history search. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 7. 26. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/historySearch")
+	public @ResponseBody ResponseResult historySearch(HttpServletRequest req) throws Exception {
+		SearchParameter param = HttpUtils.getSearchParameter(req);
+		
+		param.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		
+		return pluginServiceImpl.historySearch(param);
 	}
 }

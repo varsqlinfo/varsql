@@ -473,7 +473,7 @@ _ui.component = {};
 //glossary component
 _ui.utils.copy(_ui.component,{
 	'glossary' : {
-		selector :'#glossaryComponentArea'
+		selector :'#glossaryPluginArea'
 		,gridObj : false
 		,init : function (){
 			var _self = this;
@@ -578,11 +578,61 @@ _ui.utils.copy(_ui.component,{
 // history component
 _ui.utils.copy(_ui.component,{
 	'history' : {
-		template : function (){
-			return $('#historyComponentTemplate').html();
+		selector :'#historyPluginArea'
+		,init : function (){
+			var _self = this;
+			_self.initEvt();
+		}
+		,initEvt : function (){
+			var _self = this;
+			// enter 검색.
+			$(_self.selector+' #historySearchTxt').on('keydown', function (e){
+				if (e.keyCode == '13') {
+					_self.search();
+				}
+			})
+			// 검색
+			$(_self.selector+' .history-search-btn').on('click', function (e){
+				_self.search();
+			})
+		}
+		,search :  function (no){
+			var _self = this;
+			var schVal = $(_self.selector+' #historySearchTxt').val();
+			
+			schVal = $.trim(schVal);
+			
+			var params ={
+				searchVal : schVal
+				,pageNo: (no?no:1)
+				,countPerPage : 10
+				,'searchVal':schVal
+				,conuid : _g_options.param.conuid
+			}
+			
+			VARSQL.req.ajax({      
+			    loadSelector : _self.selector
+			    ,url:{gubun:VARSQL.uri.plugin, url:'/historySearch.varsql'}
+			    ,data : params 
+			    ,success:function (res){
+			    	var items = res.items; 
+			    	var itemLen =items.length; 
+			    	if(itemLen> 0){
+			    		var strHtm = [];
+			    		for(var i =0 ;i < itemLen; i++){
+			    			strHtm.push('<div>'+item.LOG_SQL+'</div>');
+			    		}
+			    		$(_self.selector+' #historyResultArea').empty().html();
+			    	}
+				}
+			});
+		}
+		,template : function (){
+			return $('#historyPluginAreaTemplate').html();
 		}
 		,resize : function (dimension){
-			console.log(dimension);
+		}
+		,destroy: function (){
 		}
 	}
 })
@@ -3735,8 +3785,14 @@ _ui.SQL = {
 		    		if(responseData.resultCode ==500){
 		    			
 		    			var errQuery = responseData.item.query; 
-		    			msgViewFlag =true; 
-		    			resultMsg.push('<div class="error-log-message"><span class="log-end-time">'+milli2str(responseData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , responseData.message+'<br/>sql line : ['+responseData.customs.errorQuery+'] query: '+errQuery));
+		    			msgViewFlag =true;
+		    			
+		    			var logValEle = $('<div><div class="error-log-area"><span class="log-end-time">'+milli2str(responseData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+responseData.message+'</span><br/>sql line : <span class="error-line">['+responseData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+		    			logValEle.find('.log-query').text(errQuery);
+		    			
+		    			resultMsg.push(logValEle.html());
+		    			logValEle.empty();
+		    			logValEle= null; 
 		    			
 		    			var stdPos = _self.getSelectionPosition();
 		    			
@@ -3789,10 +3845,6 @@ _ui.SQL = {
 	    			}
 	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
     				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
-    				
-    				
-    				
-    				
     				
 		 		}catch(e){
 					VARSQL.log.info(e);

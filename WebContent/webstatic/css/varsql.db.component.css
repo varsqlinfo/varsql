@@ -1,25 +1,50 @@
 @charset "UTF-8";
 
-#glossaryComponentArea .glossary-search-area-wrapper{
+/* glossary start */
+#glossaryPluginArea .glossary-search-area-wrapper{
 	position: relative;
 	height:55px;
 	width: 100%;
 }
 
-#glossaryComponentArea .glossary-search-area{
+#glossaryPluginArea .glossary-search-area{
 	padding:2px 0px 1px 0px;
 }
 
-#glossaryComponentArea .glossary-result-area{
+#glossaryPluginArea .glossary-result-area{
 	position: relative;
 	width: 100%;
     height: calc(100% - 55px);
 }
 
-#glossaryComponentArea #glossarySearchTxt{
+#glossaryPluginArea #glossarySearchTxt{
 	width: calc(100% - 70px);
 }
 
-#glossaryComponentArea #glossaryConvertTxt{
+#glossaryPluginArea #glossaryConvertTxt{
 	width: calc(100% - 80px);
 }
+/* glossary end */
+
+/**/
+#historyPluginArea .history-search-area-wrapper{
+	position: relative;
+	height:30px;
+	width: 100%;
+}
+
+#historyPluginArea .history-search-area{
+	padding:2px 0px 1px 0px;
+}
+
+#historyPluginArea .history-result-area{
+	position: relative;
+	width: 100%;
+    height: calc(100% - 30px);
+    overflow:auto;
+}
+
+#historyPluginArea #historySearchTxt{
+	width: calc(100% - 70px);
+}
+/**/

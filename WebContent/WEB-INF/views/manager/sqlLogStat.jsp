@@ -9,7 +9,6 @@ var sqlLogStat ={
 	init:function (){
 		VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
 		var _self = this; 
-		_self.dblist();
 		_self.initEvt();
 		_self.initChart();
 	}
@@ -126,36 +125,10 @@ var sqlLogStat ={
 		$('#searchGubun').on('change',function (){
 			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+$('#searchGubun').val()));
 		});
-	}
-	,dblist:function (no){
-		var _self = this; 
-		var param = {
-			pageNo: (no?no:1)
-		};
 		
-		VARSQL.req.ajax({
-			data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList'}
-			,success:function (resData){
-					
-				var result = resData.items;
-	    		var resultLen = result.length;
-	    		
-	    		var strHtm = [];
-	    		var item; 
-	    		for(var i = 0 ;i < resultLen; i ++){
-	    			item = result[i];
-	    			strHtm.push('<option value="'+item.VCONNID+'">'+item.VNAME+ '</option>');
-	    		}
-	    		
-	    		$('#dbinfolist').html(strHtm.join(''));
-	    		
-	    		$('#dbinfolist').on('change',function (){
-	    			_self.dbStatsInfo(this);
-	    		})
-	    		$('#dbinfolist').trigger('change');
-			}
-		});
+		$('#dbinfolist').on('change',function (){
+			_self.dbStatsInfo(this);
+		})
 	}
 	,dbStatsInfo:function (sObj){
 		var _self = this; 
@@ -306,7 +279,11 @@ var sqlLogStat ={
 							 	<div class="col-sm-3">
 								 	<input type="hidden" id="vconnid" name="vconnid" value="">
 								 	<input type="hidden" id="detailDate" name="detailDate" value="">
-									<select id="dbinfolist" class="form-control input-sm"></select>
+									<select id="dbinfolist" class="form-control input-sm">
+										<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
+											<option value="${tmpInfo.VCONNID}">${tmpInfo.VNAME}</option>
+										</c:forEach>
+									</select>
 								</div>
 								<div class="col-xs-9">
 								 	<div class="form-group col-xs-8">

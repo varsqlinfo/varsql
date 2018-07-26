@@ -45,7 +45,7 @@
 			</otherwise>
 		</choose>
 		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%')
-		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
+		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<delete id="manageMapper.deleteUserInfo" parameterType="map">
@@ -94,7 +94,7 @@
 			</choose>
 		</if>
 		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
-		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
+		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<update id="manageMapper.updateQnaAnswerContent" parameterType="map">
@@ -143,8 +143,11 @@
 			</otherwise>
 		</choose>
 		and a.USE_YN = 'Y'
-		and (a.VNAME like '%'||#{keyword}||'%' or a.VURL like '%'||#{keyword}||'%') 
-		order  by a.VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+		
+		<if test='!"Y".equalsIgnoreCase(customParam.allYn)'>
+			and (a.VNAME like '%'||#{keyword}||'%' or a.VURL like '%'||#{keyword}||'%') 
+			order  by a.VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+		</if>
 	</select>
 	
 	<!-- db 사용자 목록. -->
@@ -179,55 +182,4 @@
 		)
 	</insert>
 	
-	<!-- sql 로그 통계 날짜별 통계  -->
-	<select id="manageMapper.selectSqlDateStat" parameterType="map" resultType="map">
-		select 
-			to_char(max(START_TIME),'yyyy-mm-dd') VIEW_DATE, CASE WHEN s_mm >= 10 then cast(S_MM AS CHAR(2)) else  '0'||CAST (S_MM AS CHAR(1)) END||'-'||
-			CASE WHEN S_DD >= 10 then cast(S_DD AS CHAR(2)) else  '0'||CAST (S_DD AS CHAR(1)) END X_COL
-			, count(1) as Y_COL 
-		from VTSQL_LOG a
-		where	VCONNID=#{vconnid}
-		and START_TIME between #{s_date} and	#{e_date}
-		group by S_MM , S_DD
-		order by S_MM, S_DD
-	</select>
-	
-	<!-- 
-	sql 로그 통계 날짜별 통계
-	select ,insert ,update	,delete	,create,alter,drop
-	  -->
-	<select id="manageMapper.selectSqlDayStat" parameterType="map" resultType="map">
-		select 
-			COMMAND_TYPE X_COL, count(1) as Y_COL
-		from VTSQL_LOG a
-		where	VCONNID=#{vconnid}
-		and START_TIME between #{s_date} and	#{e_date}
-		group by COMMAND_TYPE
-	</select>
-	
-	<!-- 
-		날짜별 top 5 
-	 -->
-	<select id="manageMapper.selectSqlDayUserRank" parameterType="map" resultType="map">
-		select b.UNAME label , CNT as DATA from 
-		(
-			select 
-				VIEWID, count(1) cnt 
-			from VTSQL_LOG a
-			where	VCONNID=#{vconnid}
-			and START_TIME between #{s_date} and	#{e_date}
-			<choose>
-				<when test="'all'.equalsIgnoreCase(command_type)">
-					
-				</when>
-		    	<otherwise>
-		      		AND COMMAND_TYPE =#{command_type}
-		    	</otherwise>
-		  	</choose>
-			group by VIEWID 
-			order by CNT desc	  
-			FETCH FIRST 5 ROWS ONLY
-		) a , VTUSER b
-		where a.VIEWID = b.VIEWID
-	</select>
 </mapper>

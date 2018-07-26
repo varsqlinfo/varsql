@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.manager.dao.SqlStatsDAO;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.PagingUtil;
 
 @Service
 public class SqlStatsServiceImpl{
@@ -66,6 +69,31 @@ public class SqlStatsServiceImpl{
 		json.put("result", sqlStatsDAO.dbSqlDayUserRank(paramMap));
 		
 		return json;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectLogSearch
+	 * @Method 설명 : log 검색. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 7. 26. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
+	public ResponseResult selectLogSearch(SearchParameter searchParameter) {
+		ResponseResult resultObject = new ResponseResult();
+		
+		int totalcnt = sqlStatsDAO.selectLogSearchTotalCnt(searchParameter);
+		
+		if(totalcnt > 0){
+			resultObject.setItemList(sqlStatsDAO.selectLogSearch(searchParameter));
+		}else{
+			resultObject.setItemList(null);
+		}
+		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
+		
+		return resultObject;
 	}
 
 }

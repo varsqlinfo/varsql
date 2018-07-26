@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.varsql.app.plugin.dao.PluginDAO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 
 /**
 *-----------------------------------------------------------------------------
@@ -43,6 +44,13 @@ public class PluginServiceImpl{
 		
 		param.put("keyword", param.getString("keyword").toUpperCase());
 		result.setItemList(pluginDAO.selectGlossarySearch(param));
+		return result;
+	}
+
+	public ResponseResult historySearch(SearchParameter param) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemList(pluginDAO.selectUserHistorySearch(param));
 		return result;
 	}
 }

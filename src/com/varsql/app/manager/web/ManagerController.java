@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.manager.service.DbnUserServiceImpl;
 import com.varsql.app.manager.service.ManagerServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
+import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.DateUtils;
@@ -35,6 +38,9 @@ public class ManagerController {
 	
 	@Autowired
 	ManagerServiceImpl managerServiceImpl;
+	
+	@Autowired
+	DbnUserServiceImpl dbnUserServiceImpl;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -75,6 +81,14 @@ public class ManagerController {
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
 		model.addAttribute("currentDate", DateUtils.getCurrentDate());
+		
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam("allYn", "Y");
+		
+		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		
 		return new ModelAndView("/manager/sqlLogStat",model);
 	}
 	
@@ -82,8 +96,13 @@ public class ManagerController {
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
-		model.addAttribute("currentDate", DateUtils.getCurrentDate());
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam("allYn", "Y");
+		
+		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		
 		return new ModelAndView("/manager/sqlLogHistory",model);
 	}
 	

@@ -205,8 +205,10 @@
 <entry key="reg_dt">등록일</entry>
 <entry key="view_dt">확인일</entry>
 <entry key="upd_dt">수정일</entry>
-<entry key="std_dt">시작일</entry>
-<entry key="end_dt">시작일</entry>
+<entry key="std_day">시작일</entry>
+<entry key="end_day">종료일</entry>
+<entry key="std_time">시작시간</entry>
+<entry key="end_time">종료시간</entry>
 
 <entry key="id">ID</entry>
 <entry key="ip">IP</entry>
