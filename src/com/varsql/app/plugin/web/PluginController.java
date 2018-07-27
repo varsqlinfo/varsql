@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.plugin.service.PluginServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -76,6 +77,7 @@ public class PluginController {
 	public @ResponseBody ResponseResult historySearch(HttpServletRequest req) throws Exception {
 		SearchParameter param = HttpUtils.getSearchParameter(req);
 		
+		param.addCustomParam("conuid", SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get("conuid"))));
 		param.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return pluginServiceImpl.historySearch(param);

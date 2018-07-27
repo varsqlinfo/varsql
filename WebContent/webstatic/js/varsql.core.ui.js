@@ -281,7 +281,6 @@ _ui.layout = {
 		
 		// component create
 		varsqlLayout.on( 'componentCreated', function( component ){
-			
 			if(component.container.$isVarComponentRemove ===true){
 				component.container.tab.closeElement.remove();
 			}
@@ -289,12 +288,16 @@ _ui.layout = {
 			if(component.componentName =='pluginComponent'){
 				var componentInfo = component.config.componentState;
 				
+				componentInfo.isComponentInit = true; 
+				
 				if(componentInfo.isDynamicAdd == true){
 					delete componentInfo.isDynamicAdd;
 					return ; 
 				} 
 				
-				_self.initPluginComponent(componentInfo);
+				if(component.tab.isActive){
+					_self.initPluginComponent(componentInfo);
+				}
 			}
 		});
 		
@@ -309,6 +312,29 @@ _ui.layout = {
 					destroyFn.call(componentObj);
 				}
 			}
+		});
+		
+		varsqlLayout.on( 'stackCreated', function( stack ){
+			var items = stack.contentItems;
+			
+			for(var i =0 ;i < items.length; i++){
+				var item = items[i];
+				if(item.componentName == 'pluginComponent'){
+					item.config.componentState.initFlag = false; 
+					item.config.componentState.isComponentInit = false; 
+				}
+			}
+			
+		    stack.on( 'activeContentItemChanged', function( contentItem ){
+		    	
+		    	if(contentItem.componentName =='pluginComponent'){
+			    	var componentInfo = contentItem.config.componentState;
+			    	
+			    	if(componentInfo.isComponentInit ===true && componentInfo.initFlag !== true){
+						_self.initPluginComponent(componentInfo);
+					}
+		    	}
+		    });
 		});
 		
 		varsqlLayout.init();
@@ -397,6 +423,7 @@ _ui.layout = {
 	}
 	// plugin component 초기화
 	,initPluginComponent : function (itemInfo){
+		itemInfo.initFlag = true; 
 		var componentObj = _ui.component[itemInfo.key]; 
 		var initFn = componentObj.init;
 		if(VARSQL.isFunction(initFn)){
@@ -603,8 +630,7 @@ _ui.utils.copy(_ui.component,{
 			schVal = $.trim(schVal);
 			
 			var params ={
-				searchVal : schVal
-				,pageNo: (no?no:1)
+				pageNo: (no?no:1)
 				,countPerPage : 10
 				,'searchVal':schVal
 				,conuid : _g_options.param.conuid
@@ -620,9 +646,10 @@ _ui.utils.copy(_ui.component,{
 			    	if(itemLen> 0){
 			    		var strHtm = [];
 			    		for(var i =0 ;i < itemLen; i++){
+			    			var item = items[i];
 			    			strHtm.push('<div>'+item.LOG_SQL+'</div>');
 			    		}
-			    		$(_self.selector+' #historyResultArea').empty().html();
+			    		$(_self.selector+' #historyResultArea').empty().html(strHtm.join(''));
 			    	}
 				}
 			});
@@ -873,7 +900,6 @@ _ui.dbSchemaObject ={
 		
 		_self.initEvt();
 		
-		_self._userSettingInfo();
 	}
 	// init left event 
 	,initEvt : function (){
@@ -912,25 +938,6 @@ _ui.dbSchemaObject ={
 		
 		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_g_options.schema+'"]').trigger('click');
 		
-	}
-	// 사용자 셋팅 정보 가져오기.
-	,_userSettingInfo : function (){
-		var _self = this;
-		var params = _g_options.param;
-		
-		VARSQL.req.ajax({      
-		    loadSelector : '#db-page-wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/userSettingInfo.varsql'}
-		    ,data:params 
-		    ,success:function (res){
-		    	var sqlInfo = res.item;
-		    	if(sqlInfo){
-		    		_ui.SQL.setQueryInfo(sqlInfo);
-		    	}else{
-		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
-		    	}
-			}
-		});  
 	}
 	// 스키마 클릭. 
 	,_schemaClick:function (obj , refreshFlag){
@@ -2800,6 +2807,7 @@ _ui.SQL = {
 		
 		_self._initEditor();
 		_self._initEvent();
+		_self._userSettingInfo();
 	}
 	,_initEditor : function (){
 		var _self = this;
@@ -2837,6 +2845,25 @@ _ui.SQL = {
 		});
 		
 		_self.sqlEditorEle = $(_self.sqlEditorSelector);
+	}
+	// 사용자 셋팅 정보 가져오기.
+	,_userSettingInfo : function (){
+		var _self = this;
+		var params = _g_options.param;
+		
+		VARSQL.req.ajax({      
+		    loadSelector : '#db-page-wrapper'
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/userSettingInfo.varsql'}
+		    ,data:params 
+		    ,success:function (res){
+		    	var sqlInfo = res.item;
+		    	if(sqlInfo){
+		    		_ui.SQL.setQueryInfo(sqlInfo);
+		    	}else{
+		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
+		    	}
+			}
+		});  
 	}
 	//이벤트 초기화 
 	,_initEvent :function (){

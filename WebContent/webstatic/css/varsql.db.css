@@ -998,6 +998,8 @@ hr.dotline {
 
 .lm_content{
 	background: #f0f4f0;
+	width: 100%;
+    height: 100%;
 }
 
 .lm_tab:hover, .lm_tab.lm_active {

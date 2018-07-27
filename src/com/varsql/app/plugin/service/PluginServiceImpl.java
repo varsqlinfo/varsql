@@ -50,6 +50,8 @@ public class PluginServiceImpl{
 	public ResponseResult historySearch(SearchParameter param) {
 		ResponseResult result = new ResponseResult();
 		
+		System.out.println("param : "+ param);
+		
 		result.setItemList(pluginDAO.selectUserHistorySearch(param));
 		return result;
 	}
