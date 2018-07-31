@@ -73,7 +73,7 @@
 				, to_char( a.END_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_ENDDT
 		from VTSQL_LOG a
 		where 1=1
-		and VCONNID=#{customParam.conuid}
+		and VCONNID=#{customParam.vconnid}
 		and LOG_SQL like '%'||#{keyword}||'%' 
 		order by START_TIME desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
