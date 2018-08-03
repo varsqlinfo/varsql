@@ -105,6 +105,9 @@ var _initialized = false
 			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
 			,speed :  'auto'	// 스크롤 스피드
+			,onUpdate : function (item){	// 스크롤 업데이트. 
+				return true; 
+			}
 		}
 		,horizontal :{
 			height: 10
@@ -704,6 +707,9 @@ Plugin.prototype ={
 		
 		return strHtm.join('');	
 	}
+	,addData : function (pData){
+		this.setData(pData, 'addData');
+	}
 	/**
      * @method setData
 	 * @param data {Array} - 데이타
@@ -724,7 +730,11 @@ Plugin.prototype ={
 		}
 		
 		if(data && data.length > 0){
-			_this.options.tbodyItem = data
+			if(gridMode == 'addData'){
+				_this.options.tbodyItem = _this.options.tbodyItem.concat(data);	
+			}else{
+				_this.options.tbodyItem = data;
+			}
 		}
 
 		if(gridMode =='init'){
@@ -786,17 +796,20 @@ Plugin.prototype ={
 			_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.orginRowLen-1;
 		}
 		
-		if(gridMode=='reDraw'){
+		if(gridMode=='reDraw' || gridMode == 'addData'){
 			_this._setHeaderInitInfo();
 			_this._setRangeSelectInfo({}, true);
 
-			_this.calcDimension('reDraw');
+			_this.calcDimension(gridMode);
 			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
 				
 		_this.setScrollSpeed();
+		
+		if(gridMode != 'addData'){
+			_this.drawGrid(gridMode,true);
+		}
 
-		_this.drawGrid(gridMode,true);
 		_this.setPage(pageInfo);
 
 		if(_this.config.orginData != _this.options.tbodyItem){
@@ -1787,7 +1800,8 @@ Plugin.prototype ={
 	* 세로 스크롤 이동.
 	*/
 	,moveVScroll : function (moveObj){
-		var _this =this; 
+		var _this =this
+			,opt = _this.options; 
 
 		//console.log('moveVScroll' ,moveObj)
 
@@ -1816,6 +1830,12 @@ Plugin.prototype ={
 			topVal = 0;
 			barPos = 0 ; 
 		}
+
+		if(moveObj.drawFlag !== false && isFunction(opt.scroll.vertical.onUpdate)){
+			if(opt.scroll.vertical.onUpdate.call(null, {position : barPos}) === false){
+				return ; 
+			}
+		}
 		
 		this._setScrollBarTopPosition(topVal);
 		
@@ -1826,10 +1846,10 @@ Plugin.prototype ={
 			itemIdx = topVal/(this.config.scroll.verticalHeight / (_this.config.dataInfo.rowLen-this.config.scroll.viewCount));
 			itemIdx  = Math.round(itemIdx); 
 		}
-					
+
 		this.config.scroll.vBarPosition = barPos;
 
-		if(drawFlag === false){
+		if(moveObj.drawFlag === false){
 			this.config.scroll.viewIdx = itemIdx; 
 			return ; 
 		}
@@ -2505,6 +2525,8 @@ Plugin.prototype ={
 			,endCol = _this.config.select.range.endCol
 			,currViewIdx = _this.config.scroll.viewIdx;
 
+		var rangeInfo = _this.config.select.range;
+
 		function isScrollInside(endCol, mode){ // mode === H:horizontal , V=vertical
 			var scrObj = _this.config.scroll
 				,tmpEndIdx = _this.config.select.range.endIdx;
@@ -2660,13 +2682,32 @@ Plugin.prototype ={
 				if(!isScrollInside(endCol,'V')) return ;
 				
 				var rowLen = _this.config.scroll.insideViewCount-1;
-				var moveRowIdx =(endRow >=rowLen? rowLen : endRow+1);
-			
-				if(endRow==rowLen &&  (currViewIdx+moveRowIdx) < _this.config.dataInfo.rowLen){
+				//var moveRowIdx =(endRow >=rowLen? rowLen : endRow+1);
+
+				
+				var moveRowIdx = (rangeInfo.startRow +1);
+
+				if(moveRowIdx >= _this.config.dataInfo.orginRowLen){
+					return ; 
+				}
+				var tmpModeIdx = (moveRowIdx -_this.config.scroll.viewIdx); 
+
+				if(tmpModeIdx == rowLen){
 					_this.moveVScroll({pos:'D'});
 				}
 
-				currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
+				tmpModeIdx = (moveRowIdx -_this.config.scroll.viewIdx); 
+
+
+				if(tmpModeIdx > 0){
+					currViewIdx = _this.config.scroll.viewIdx + tmpModeIdx;
+				}else{
+					currViewIdx = _this.config.scroll.viewIdx;
+				}
+				
+				//currViewIdx = _this.config.scroll.viewIdx+moveRowIdx;
+
+				//console.log('asdf ',(rangeInfo.startRow+1) -_this.config.scroll.viewIdx, endRow , rowLen , currViewIdx ,moveRowIdx ,_this.config.dataInfo.orginRowLen)
 
 				if(evt.shiftKey){
 					_this._setRangeSelectInfo({

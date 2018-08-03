@@ -37,7 +37,21 @@ public class PluginDAO extends BaseDAO{
 	public List selectGlossarySearch(ParamMap param) {
 		return  getSqlSession().selectList("glossaryMapper.selectGlossarySearchList", param);
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserHistoryTotalCnt
+	 * @Method 설명 : history 조회
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 7. 24. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public int selectUserHistoryTotalCnt(SearchParameter param) {
+		return  getSqlSession().selectOne("sqlStatsMapper.selectUserHistoryTotalCnt", param);
+	}
+	
 	public List selectUserHistorySearch(SearchParameter param) {
 		return  getSqlSession().selectList("sqlStatsMapper.selectUserHistorySearch", param);
 	}

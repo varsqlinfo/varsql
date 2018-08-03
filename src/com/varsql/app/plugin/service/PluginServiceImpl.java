@@ -50,7 +50,9 @@ public class PluginServiceImpl{
 	public ResponseResult historySearch(SearchParameter param) {
 		ResponseResult result = new ResponseResult();
 		
-		System.out.println("param : "+ param);
+		if(param.getPageNo() ==1){
+			result.addCustoms("totalCount", pluginDAO.selectUserHistoryTotalCnt(param));
+		}
 		
 		result.setItemList(pluginDAO.selectUserHistorySearch(param));
 		return result;

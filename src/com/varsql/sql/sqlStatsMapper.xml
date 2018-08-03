@@ -79,6 +79,16 @@
 	</select>
 	
 	
+	<!-- user log total count-->
+	<select id="sqlStatsMapper.selectUserHistoryTotalCnt" parameterType="searchParameter" resultType="map">
+		select count(1) TOTAL_CNT
+		from VTSQL_LOG a
+		where 1=1
+		and VCONNID=#{customParam.conuid}
+		and VIEWID=#{customParam.uid}
+		and LOG_SQL like '%'||#{keyword}||'%' 
+	</select>
+	
 	<!-- user log list-->
 	<select id="sqlStatsMapper.selectUserHistorySearch" parameterType="searchParameter" resultType="map">
 		select a.* 

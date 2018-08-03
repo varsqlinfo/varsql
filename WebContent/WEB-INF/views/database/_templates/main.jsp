@@ -283,8 +283,8 @@ $(document).ready(function(){
 				<button type="button" class="btn btn-default history-search-btn" title="조회"><span class="fa fa-search"></span></button>
 			</div>
 		</div>
-	
-		<div id="historyResultArea" class="history-result-area">
+		<div class="history-result-area">
+			<div id="historyResultArea" class="pos-relative-w-h100"></div>
 		</div>
 	</div>
 </script>

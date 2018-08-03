@@ -579,6 +579,9 @@ _ui.layout = {
 				}else if(componentName =='dbObjectComponent'){
 					componentInfo.initFlag = true; 
 					_ui.dbSchemaObject.init();
+				}else if(componentName =='sqlDataComponent'){
+					componentInfo.initFlag = true;
+					_ui.sqlDataArea.init();
 				}
 			}
 		});
@@ -619,6 +622,9 @@ _ui.layout = {
 					}else if(componentName =='dbObjectComponent'){
 						componentInfo.initFlag = true; 
 						_ui.dbSchemaObject.init();
+					}else if(componentName =='sqlDataComponent'){
+						componentInfo.initFlag = true;
+						_ui.sqlDataArea.init();
 					}
 		    	}
 		    });
@@ -824,7 +830,7 @@ _ui.registerPlugin({
 			return $('#glossaryComponentTemplate').html();
 		}
 		,resize : function (dimension){
-			dimension.height = dimension.height - $(this.selector+' .glossary-search-area').height(); 
+			dimension.height = dimension.height - $(this.selector+' .glossary-search-area-wrapper').height(); 
 			this.gridObj.resizeDraw(dimension);
 		}
 		,destroy: function (){
@@ -837,6 +843,9 @@ _ui.registerPlugin({
 _ui.registerPlugin({
 	'history' : {
 		selector :'#historyPluginArea'
+		,gridObj :false
+		,pageNo :1
+		,scrollEndFlag : true
 		,init : function (){
 			var _self = this;
 			_self.initEvt();
@@ -853,15 +862,52 @@ _ui.registerPlugin({
 			$(_self.selector+' .history-search-btn').on('click', function (e){
 				_self.search();
 			})
+			
+			_self.gridObj = $.pubGrid('#historyResultArea', {
+				headerOptions : {redraw : false}
+				,asideOptions :{lineNumber : {enable : true	,width : 30}}
+				,tColItem : [
+					{ label: 'SQL', key: 'LOG_SQL'},
+					{ label: '시작시간', key: 'VIEW_STARTDT' },
+					{ label: '종료시간', key: 'VIEW_ENDDT', width:45},
+					{ label: '걸린시간', key: 'DELAY_TIME',width:45},
+				]
+				,tbodyItem :[]
+				,bodyOptions : {
+					cellDblClick : function (cellInfo){
+						
+						var selKey =cellInfo.keyItem.key;
+						
+						if(selKey == 'LOG_SQL'){
+							var val =cellInfo.item[selKey]; 
+							_ui.SQL.addSqlEditContent(val , false);
+						}
+					}
+				}
+				,scroll :{
+					vertical : {
+						onUpdate : function (item){	// 스크롤 업데이트. 
+							if(_this.scrollEndFlag !==true && item.position > 90){
+								_self.pageNo = _self.pageNo+1;
+								_self.search('scroll');
+							}
+						}
+					}
+				}
+			});
 		}
-		,search :  function (no){
+		,search :  function (mode){
 			var _self = this;
 			var schVal = $(_self.selector+' #historySearchTxt').val();
 			
 			schVal = $.trim(schVal);
 			
+			if(mode=='scroll'){
+				_self.pageNo = 1;
+			}
+			
 			var params ={
-				pageNo: (no?no:1)
+				pageNo: _self.pageNo
 				,countPerPage : 10
 				,'searchVal':schVal
 				,conuid : _g_options.param.conuid
@@ -875,12 +921,10 @@ _ui.registerPlugin({
 			    	var items = res.items; 
 			    	var itemLen =items.length; 
 			    	if(itemLen> 0){
-			    		var strHtm = [];
-			    		for(var i =0 ;i < itemLen; i++){
-			    			var item = items[i];
-			    			strHtm.push('<div>'+item.LOG_SQL+'</div>');
-			    		}
-			    		$(_self.selector+' #historyResultArea').empty().html(strHtm.join(''));
+			    		_self.scrollEndFlag = false; 
+			    		_self.gridObj.setData(res.items);
+			    	}else{
+			    		_self.scrollEndFlag = true; 
 			    	}
 				}
 			});
@@ -889,6 +933,8 @@ _ui.registerPlugin({
 			return $('#historyPluginAreaTemplate').html();
 		}
 		,resize : function (dimension){
+			dimension.height = dimension.height - $(this.selector+' .history-search-area-wrapper').height(); 
+			this.gridObj.resizeDraw(dimension);
 		}
 		,destroy: function (){
 		}
@@ -2792,24 +2838,15 @@ _ui.SQL = {
 	sqlTextAreaObj:null
 	,sqlEditorSelector : '#sql_editor_area .CodeMirror.cm-s-default'
 	,sqlEditorEle:null
-	,resultMsgAreaObj:null
-	,dataGridSelectorWrapObj:null
 	,memoDialog : null
 	,findTextDialog : null
 	,currentSqlData :''
-	,_currnetQueryReusltData :{}
 	,options :{
 		selector:'#sqlExecuteArea'
-		,dataGridSelector:'#dataGridArea'
-		,dataColumnTypeSelector:'#dataColumnTypeArea'
-		,dataGridSelectorWrap:'#dataGridAreaWrap'
-		,resultMsgAreaWrap:'#resultMsgAreaWrap'
-		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
 		,preloaderArea :'#sqlEditerPreloaderArea'
 		,limitCnt:'#limitRowCnt'
 		,conuidObj:'#conuid'
 		,active: null
-		,dbtype:'db2'
 		,cancel: "input,textarea,button,select,option"
 		,distance: 1
 		,delay: 0
@@ -3231,33 +3268,6 @@ _ui.SQL = {
 		$('.sql_new_file').on('click',function (){
 			_self.setQueryInfo('clear');
 		});
-		
-		// log 삭제.
-		$(_self.options.dataGridResultTabWrap+' .log_clear_btn').on('click',function (){
-			_self.getResultMsgAreaObj().empty();
-			return false; 
-		});
-		
-		// sql result tab click
-		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
-			var sObj = $(this);
-			var tab_gubun = sObj.attr('tab_gubun');
-			
-			if(sObj.hasClass('on')){
-				return ;
-			}
-			
-			$(_self.options.dataGridResultTabWrap+' [tab_gubun]').removeClass('on');
-			sObj.addClass('on');
-			
-			// data grid araea
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('on');
-			
-			if(tab_gubun == 'columnType'){
-				_self.viewResultColumnType();
-			}
-		});
 	}
 	,findTextOpen : function(){
 		var _self = this;
@@ -3408,57 +3418,6 @@ _ui.SQL = {
 		}else{
 			_self.getTextAreaObj().setCursor({line: startCursor.line, ch: startCursor.ch +cellVal.length})
 		}
-	}
-	// sql result column typ
-	,viewResultColumnType : function (){
-		var _self = this; 
-		var columnTypeArr = _self._currnetQueryReusltData.column; 
-		if(_self._currnetQueryReusltData.viewType != 'grid'){
-			columnTypeArr = [];
-		}
-		
-		var gridObj= $.pubGrid(_self.options.dataColumnTypeSelector,{
-			height:'auto'
-			,autoResize : false
-			,page :false
-			,headerOptions:{
-				view:true
-				,sort : true
-				,resize:{
-					enabled : true
-				}
-			}
-			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-			}
-			,tColItem : [
-				{label: "NAME", key: "key"}
-				,{label: "TYPE", key: "dbType"}
-			]
-			,tbodyItem :columnTypeArr
-			,bodyOptions :{
-				cellDblClick : function (rowItem){
-					_self.addGridDataToEditArea(rowItem);
-				}
-			}
-			,rowOptions :{
-				contextMenu : {
-					beforeSelect :function (){
-						$(this).trigger('click');
-					}
-					,callback: function(key,sObj) {
-						if(key =='copy'){
-							gridObj.copyData();
-							return ; 
-						}
-						
-					},
-					items: [
-						{key : "copy" , "name": "복사"}
-					]
-				}
-			}
-		});
 	}
 	// sql 파라미터 셋팅. 
 	,addParamTemplate : function (mode, data){
@@ -3693,24 +3652,6 @@ _ui.SQL = {
 	,getTextAreaObj:function(){
 		return this.sqlTextAreaObj; 
 	}
-	//data grid area
-	,getDataGridWrapObj:function(){
-		var _self = this; 
-		
-		if(_self.dataGridSelectorWrapObj==null){
-			_self.dataGridSelectorWrapObj = $(_self.options.dataGridSelectorWrap );
-		}
-		return _self.dataGridSelectorWrapObj;
-	}
-	//result message area
-	,getResultMsgAreaObj:function(){
-		var _self = this; 
-		
-		if(_self.resultMsgAreaObj==null){
-			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
-		}
-		return _self.resultMsgAreaObj; 
-	}
 	,getSql: function (mode){
 		var _self = this;
 		var textObj = _self.getTextAreaObj(); 
@@ -3815,85 +3756,12 @@ _ui.SQL = {
 			,sqlParam : JSON.stringify(sqlParam)
 		});
 		
-		_ui.layout.setActiveTab('sqlData');
-		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
 		    ,data:params 
-		    ,success:function (responseData){
-		    	try{
-		    		var msgViewFlag =false,gridViewFlag = false;
-		    		
-		    		var resultMsg = [];
-		    		
-		    		if(responseData.resultCode ==500){
-		    			
-		    			var errQuery = responseData.item.query; 
-		    			msgViewFlag =true;
-		    			
-		    			var logValEle = $('<div><div class="error-log-area"><span class="log-end-time">'+milli2str(responseData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+responseData.message+'</span><br/>sql line : <span class="error-line">['+responseData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
-		    			logValEle.find('.log-query').text(errQuery);
-		    			
-		    			resultMsg.push(logValEle.html());
-		    			logValEle.empty();
-		    			logValEle= null; 
-		    			
-		    			var stdPos = _self.getSelectionPosition();
-		    			
-		    			var cursor =_self.sqlTextAreaObj.getSearchCursor(errQuery, stdPos);
-		    			
-		    			if(cursor.findNext()){
-		    				_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
-		    			}
-		    		}else{
-		    			var resData = responseData.items; 
-			    		var resultLen = resData.length;
-			    		
-			    		if(resultLen < 1 ){
-			    			resData.data = [{result:"데이타가 없습니다."}];
-			    			resData.column =[{label:'result',key:'result', align:'center'}];
-			    		}
-			    		
-			    		var item; 
-			    		var resultClass , tmpMsg;
-			    		
-		    			for(var i=resultLen-1; i>=0; i--){
-		    				resultClass = 'success-log-message';
-		    				item = resData[i];
-		    				
-		    				tmpMsg= item.resultMessage;
-		    				if(item.resultType=='FAIL' || item.viewType=='msg'){
-		    					msgViewFlag = true;
-		    					
-		    					if(item.resultType=='FAIL'){
-			    					resultClass = 'error-log-message'; 
-		    					}
-		    				}
-		    				
-		    				if(item.viewType=='grid'){
-		    					gridViewFlag = true;
-		    					_self._currnetQueryReusltData =item;
-		    				}
-		    				    				
-		    				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
-		    			}
-		    		}
-	    			if(msgViewFlag){
-		    			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
-    				}else{
-	    				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
-	    			}
-	    			
-	    			if(gridViewFlag){
-	    				_self.setGridData(_self._currnetQueryReusltData);
-	    			}
-	    			_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
-    				_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
-    				
-		 		}catch(e){
-					VARSQL.log.info(e);
-				}		             
+		    ,success:function (resData){
+		    	_ui.sqlDataArea.viewResult(resData)             
 			}
 		});  
 	}
@@ -4031,6 +3899,184 @@ _ui.SQL = {
 		editObj.focus();
 		
 	}
+};
+
+/**
+ * sql data area
+ */
+_ui.sqlDataArea =  {
+	_currnetQueryReusltData :{}
+	,resultMsgAreaObj:null
+	,options :{
+		dataGridSelector:'#dataGridArea'
+		,dataColumnTypeSelector:'#dataColumnTypeArea'
+		,dataGridSelectorWrap:'#dataGridAreaWrap'
+		,resultMsgAreaWrap:'#resultMsgAreaWrap'
+		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
+		,active: null
+		,delay: 0
+	}
+	,init : function (){
+		this.initEvt();
+	}
+	,initEvt : function (){
+		var _self = this; 
+		
+		// log 삭제.
+		$(_self.options.dataGridResultTabWrap+' .log_clear_btn').on('click',function (){
+			_self.getResultMsgAreaObj().empty();
+			return false; 
+		});
+		
+		// sql result tab click
+		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
+			var sObj = $(this);
+			var tab_gubun = sObj.attr('tab_gubun');
+			
+			if(sObj.hasClass('on')){
+				return ;
+			}
+			
+			$(_self.options.dataGridResultTabWrap+' [tab_gubun]').removeClass('on');
+			sObj.addClass('on');
+			
+			// data grid araea
+			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
+			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('on');
+			
+			if(tab_gubun == 'columnType'){
+				_self.viewResultColumnType();
+			}
+		});
+	}
+	// 결과 보기.
+	,viewResult : function (resultData){
+		var _self = this;
+		
+		_ui.layout.setActiveTab('sqlData');
+		
+		var msgViewFlag =false,gridViewFlag = false;
+		
+		var resultMsg = [];
+		
+		if(resultData.resultCode ==500){
+			
+			var errQuery = resultData.item.query; 
+			msgViewFlag =true;
+			
+			var logValEle = $('<div><div class="error-log-area"><span class="log-end-time">'+milli2str(resultData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+resultData.message+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+			logValEle.find('.log-query').text(errQuery);
+			
+			resultMsg.push(logValEle.html());
+			logValEle.empty();
+			logValEle= null; 
+			
+			var stdPos = _ui.SQL.getSelectionPosition();
+			
+			var cursor =_ui.SQL.sqlTextAreaObj.getSearchCursor(errQuery, stdPos);
+			
+			if(cursor.findNext()){
+				_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+			}
+		}else{
+			var resData = resultData.items; 
+    		var resultLen = resData.length;
+    		
+    		if(resultLen < 1 ){
+    			resData.data = [{result:"데이타가 없습니다."}];
+    			resData.column =[{label:'result',key:'result', align:'center'}];
+    		}
+    		
+    		var item; 
+    		var resultClass , tmpMsg;
+    		
+			for(var i=resultLen-1; i>=0; i--){
+				resultClass = 'success-log-message';
+				item = resData[i];
+				
+				tmpMsg= item.resultMessage;
+				if(item.resultType=='FAIL' || item.viewType=='msg'){
+					msgViewFlag = true;
+					
+					if(item.resultType=='FAIL'){
+    					resultClass = 'error-log-message'; 
+					}
+				}
+				
+				if(item.viewType=='grid'){
+					gridViewFlag = true;
+					_self._currnetQueryReusltData =item;
+				}
+				    				
+				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
+			}
+		}
+		
+		if(msgViewFlag){
+			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
+		}else{
+			$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
+		}
+		
+		if(gridViewFlag){
+			_self.setGridData(_self._currnetQueryReusltData);
+		}
+		
+		_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
+		_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
+	}
+	// sql result column typ
+	,viewResultColumnType : function (){
+		var _self = this; 
+		var _currnetQueryReusltData = _self._currnetQueryReusltData;
+		var columnTypeArr = _currnetQueryReusltData.column; 
+		if(_currnetQueryReusltData.viewType != 'grid'){
+			columnTypeArr = [];
+		}
+		
+		var gridObj= $.pubGrid(_self.options.dataColumnTypeSelector,{
+			height:'auto'
+			,autoResize : false
+			,page :false
+			,headerOptions:{
+				view:true
+				,sort : true
+				,resize:{
+					enabled : true
+				}
+			}
+			,asideOptions :{
+				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+			}
+			,tColItem : [
+				{label: "NAME", key: "key"}
+				,{label: "TYPE", key: "dbType"}
+			]
+			,tbodyItem :columnTypeArr
+			,bodyOptions :{
+				cellDblClick : function (rowItem){
+					_ui.SQL.addGridDataToEditArea(rowItem);
+				}
+			}
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+						
+					},
+					items: [
+						{key : "copy" , "name": "복사"}
+					]
+				}
+			}
+		});
+	}
 	// sql data grid
 	,setGridData: function (pGridData){
 		var _self = this; 
@@ -4051,7 +4097,7 @@ _ui.SQL = {
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					_self.addGridDataToEditArea(rowItem);
+					_ui.SQL.addGridDataToEditArea(rowItem);
 				}
 			}
 			,tColItem : pGridData.column
@@ -4075,7 +4121,16 @@ _ui.SQL = {
 			}
 		});
 	}
-};
+	//result message area
+	,getResultMsgAreaObj:function(){
+		var _self = this; 
+		
+		if(_self.resultMsgAreaObj==null){
+			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
+		}
+		return _self.resultMsgAreaObj; 
+	}
+}
 
 _ui.progress = {
 	start:function (divObj){

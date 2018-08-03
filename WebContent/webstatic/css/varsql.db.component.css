@@ -41,7 +41,6 @@
 	position: relative;
 	width: 100%;
     height: calc(100% - 30px);
-    overflow:auto;
 }
 
 #historyPluginArea #historySearchTxt{
