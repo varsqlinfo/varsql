@@ -3976,7 +3976,7 @@ _ui.sqlDataArea =  {
 			var cursor =_ui.SQL.sqlTextAreaObj.getSearchCursor(errQuery, stdPos);
 			
 			if(cursor.findNext()){
-				_self.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
+				_ui.SQL.sqlTextAreaObj.setSelection(cursor.from(), cursor.to());
 			}
 		}else{
 			var resData = resultData.items; 
