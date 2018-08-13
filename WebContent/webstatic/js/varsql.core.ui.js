@@ -887,7 +887,7 @@ _ui.registerPlugin({
 				,scroll :{
 					vertical : {
 						onUpdate : function (item){	// 스크롤 업데이트. 
-							if(_self.scrollEndFlag !==true && item.position > 90){
+							if(_self.scrollEndFlag !==true && item.position > 80){
 								_self.pageNo = _self.pageNo+1;
 								_self.search('scroll');
 							}

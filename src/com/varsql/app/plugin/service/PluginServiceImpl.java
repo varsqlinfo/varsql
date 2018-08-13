@@ -46,15 +46,30 @@ public class PluginServiceImpl{
 		result.setItemList(pluginDAO.selectGlossarySearch(param));
 		return result;
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : historySearch
+	 * @Method 설명 : user sql history search
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 7. 24. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
 	public ResponseResult historySearch(SearchParameter param) {
 		ResponseResult result = new ResponseResult();
 		
 		if(param.getPageNo() ==1){
-			result.addCustoms("totalCount", pluginDAO.selectUserHistoryTotalCnt(param));
+			int totalcnt = pluginDAO.selectUserHistoryTotalCnt(param);
+			result.addCustoms("totalCount", totalcnt);
+			
+			if(totalcnt > 0){
+				result.setItemList(pluginDAO.selectUserHistorySearch(param));
+			}
+		}else{
+			result.setItemList(pluginDAO.selectUserHistorySearch(param));
 		}
-		
-		result.setItemList(pluginDAO.selectUserHistorySearch(param));
 		return result;
 	}
 }
