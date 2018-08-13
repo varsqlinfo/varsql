@@ -24,6 +24,7 @@ import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
+import com.varsql.app.database.beans.SqlUserHistoryInfo;
 import com.varsql.app.database.dao.SQLDAO;
 import com.varsql.app.util.SqlResultUtil;
 import com.varsql.app.util.VarsqlUtil;
@@ -124,6 +125,8 @@ public class SQLServiceImpl{
 		
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size(); 
+		
+		String errorMsg = "";
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
 			conn.setAutoCommit(false);
@@ -132,7 +135,6 @@ public class SQLServiceImpl{
 				
 				ssrv = new SqlSourceResultVO();
 				reLst.add(ssrv);
-				
 				tmpSqlSource.setResult(ssrv);
 				ssrv.setStarttime(System.currentTimeMillis());
 				
@@ -142,9 +144,11 @@ public class SQLServiceImpl{
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
 				ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 				
+				sqlLogInfo.setStartTime(ssrv.getStarttime());
 				sqlLogInfo.setLogSql(tmpSqlSource.getQuery());
 				sqlLogInfo.setCommandType(tmpSqlSource.getCommandType());
 				sqlLogInfo.setEndTime(System.currentTimeMillis());
+				
 				sqlLogInsert(sqlLogInfo);
 			}
 			
@@ -160,6 +164,8 @@ public class SQLServiceImpl{
 			result.addCustoms("errorLine", sqldx);
 			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 			result.setItemOne(tmpSqlSource);
+			
+			errorMsg = e.getMessage();
 			logger.error(getClass().getName()+"sqlData", e);
 		}finally{
 			if(conn !=null){
@@ -167,6 +173,22 @@ public class SQLServiceImpl{
 				SQLUtil.close(conn);
 			}
 		}
+		
+		long enddt = System.currentTimeMillis(); 
+		
+		SqlUserHistoryInfo  sqlUserHistoryInfo= new SqlUserHistoryInfo();
+		
+		sqlUserHistoryInfo.setVconnid(sqlLogInfo.getVconnid());
+		sqlUserHistoryInfo.setViewid(sqlLogInfo.getViewid());
+		sqlUserHistoryInfo.setHistoryId(VartechUtils.generateUUID());
+		sqlUserHistoryInfo.setStartTime(VarsqlUtil.getCurrentTimestamp(stddt));
+		sqlUserHistoryInfo.setEndTime(VarsqlUtil.getCurrentTimestamp(enddt));
+		sqlUserHistoryInfo.setDelayTime((int) ((enddt- stddt)/1000));
+		sqlUserHistoryInfo.setLogSql(sqlParamInfo.getSql());
+		sqlUserHistoryInfo.setUsrIp(sqlLogInfo.getUsrIp());
+		sqlUserHistoryInfo.setErrorLog(errorMsg);
+		
+		sqlDAO.insertUserHistory(sqlUserHistoryInfo);
 		
 		return  result;
 	}

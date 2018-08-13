@@ -323,12 +323,13 @@
 	</insert>
 	
 	<!-- 메시지 확인 날짜 업데이트-->
-	<insert id="userMapper.updateMemoViewDate" parameterType="map">
+	<update id="userMapper.updateMemoViewDate" parameterType="map">
 		update VTMEMO_USER 
 		set 
 			VIEW_DT = CURRENT TIMESTAMP
 		where RECV_ID = #{uid}
 		and MEMO_ID = #{memo_id}
-	</insert>
+	</update>
+	
 	
 </mapper>

@@ -887,7 +887,7 @@ _ui.registerPlugin({
 				,scroll :{
 					vertical : {
 						onUpdate : function (item){	// 스크롤 업데이트. 
-							if(_this.scrollEndFlag !==true && item.position > 90){
+							if(_self.scrollEndFlag !==true && item.position > 90){
 								_self.pageNo = _self.pageNo+1;
 								_self.search('scroll');
 							}
@@ -902,13 +902,13 @@ _ui.registerPlugin({
 			
 			schVal = $.trim(schVal);
 			
-			if(mode=='scroll'){
+			if(mode != 'scroll'){
 				_self.pageNo = 1;
 			}
 			
 			var params ={
 				pageNo: _self.pageNo
-				,countPerPage : 10
+				,countPerPage : _self.gridObj.getViewRow()
 				,'searchVal':schVal
 				,conuid : _g_options.param.conuid
 			}
@@ -920,9 +920,15 @@ _ui.registerPlugin({
 			    ,success:function (res){
 			    	var items = res.items; 
 			    	var itemLen =items.length; 
+			    	
+			    	if(_self.pageNo ==1){
+			    		_self.gridObj.setData(res.items);
+			    	}else{
+			    		_self.gridObj.addData(res.items);
+			    	}
+			    	
 			    	if(itemLen> 0){
 			    		_self.scrollEndFlag = false; 
-			    		_self.gridObj.setData(res.items);
 			    	}else{
 			    		_self.scrollEndFlag = true; 
 			    	}

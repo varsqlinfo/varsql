@@ -18,6 +18,7 @@
 	  <typeAlias alias="preferencesInfo" type="com.varsql.app.database.beans.PreferencesInfo"/>
 	  <typeAlias alias="searchParameter" type="com.vartech.common.app.beans.SearchParameter"/>
 	  <typeAlias alias="sqlParamInfo" type="com.varsql.app.database.beans.SqlParamInfo"/>
+	  <typeAlias alias="sqlUserHistoryInfo" type="com.varsql.app.database.beans.SqlUserHistoryInfo"/>
 	  <typeAlias alias="userForm" type="com.varsql.app.user.beans.UserForm"/>
 	  <typeAlias alias="joinForm" type="com.varsql.app.user.beans.JoinForm"/>
 	  <typeAlias alias="passwordForm" type="com.varsql.app.user.beans.PasswordForm"/>

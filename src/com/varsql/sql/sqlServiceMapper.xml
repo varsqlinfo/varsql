@@ -113,4 +113,57 @@
 		where SQL_ID = #{sqlId}
 	</delete>
 	
+	
+	<!-- 사용자 로그 저장.  -->
+	<insert id="sqlServiceMapper.insertUserHistory" parameterType="sqlUserHistoryInfo">
+		insert  into VTSQL_HISTORY (
+			VCONNID
+			, VIEWID
+			, HISTORYID
+			, START_TIME
+			, END_TIME
+			, DELAY_TIME
+			, LOG_SQL
+			, USR_IP
+			, ERROR_LOG 
+		) 
+		values(
+			#{vconnid}
+			, #{viewid}
+			, #{historyId}
+			, #{startTime}
+			, #{endTime}
+			, #{delayTime}
+			, #{logSql}
+			, #{usrIp}
+			, #{errorLog} 
+		)
+	</insert>
+	
+	<!-- user log total count-->
+	<select id="sqlServiceMapper.selectUserHistoryTotalCnt" parameterType="searchParameter" resultType="int">
+		select count(1) TOTAL_CNT
+		from VTSQL_HISTORY a
+		where 1=1
+		and VCONNID=#{customParam.conuid}
+		and VIEWID=#{customParam.uid}
+		and LOG_SQL like '%'||#{keyword}||'%' 
+	</select>
+	
+	<resultMap id="varsqlUserClobMap" type="hashmap">
+		<result column="LOG_SQL" property="LOG_SQL" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<!-- user log list-->
+	<select id="sqlServiceMapper.selectUserHistorySearch" parameterType="searchParameter" resultMap="varsqlUserClobMap">
+		select a.* 
+				, to_char( a.START_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_STARTDT
+				, to_char( a.END_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_ENDDT
+		from VTSQL_HISTORY a
+		where 1=1
+		and VCONNID=#{customParam.conuid}
+		and VIEWID=#{customParam.uid}
+		and LOG_SQL like '%'||#{keyword}||'%' 
+		order by START_TIME desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
 </mapper>

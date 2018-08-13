@@ -1021,6 +1021,14 @@ Plugin.prototype ={
 			}
 		}
 	}
+
+	/**
+	* @method getRowCount
+	* @description view row count
+	*/
+	,getViewRow: function (){
+		return this.config.body.viewRowCount;
+	}
 	/**
      * @method getTbodyHtml
 	 * @description body html  만들기
@@ -1472,6 +1480,7 @@ Plugin.prototype ={
 
 		_this.config.body.width = opt.width;
 		_this.config.body.height = opt.height;
+		_this.config.body.viewRowCount = Math.ceil(opt.height/this.config.rowHeight);
 		
 		var mainHeight = opt.height - this.config.navi.height;
 		_this.element.container.css('height',mainHeight-2);

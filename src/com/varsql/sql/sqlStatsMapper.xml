@@ -77,28 +77,4 @@
 		and LOG_SQL like '%'||#{keyword}||'%' 
 		order by START_TIME desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
-	
-	
-	<!-- user log total count-->
-	<select id="sqlStatsMapper.selectUserHistoryTotalCnt" parameterType="searchParameter" resultType="map">
-		select count(1) TOTAL_CNT
-		from VTSQL_LOG a
-		where 1=1
-		and VCONNID=#{customParam.conuid}
-		and VIEWID=#{customParam.uid}
-		and LOG_SQL like '%'||#{keyword}||'%' 
-	</select>
-	
-	<!-- user log list-->
-	<select id="sqlStatsMapper.selectUserHistorySearch" parameterType="searchParameter" resultType="map">
-		select a.* 
-				, to_char( a.START_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_STARTDT
-				, to_char( a.END_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_ENDDT
-		from VTSQL_LOG a
-		where 1=1
-		and VCONNID=#{customParam.conuid}
-		and VIEWID=#{customParam.uid}
-		and LOG_SQL like '%'||#{keyword}||'%' 
-		order by START_TIME desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
-	</select>
 </mapper>

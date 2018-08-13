@@ -49,11 +49,11 @@ public class PluginDAO extends BaseDAO{
 	 * @return
 	 */
 	public int selectUserHistoryTotalCnt(SearchParameter param) {
-		return  getSqlSession().selectOne("sqlStatsMapper.selectUserHistoryTotalCnt", param);
+		return  getSqlSession().selectOne("sqlServiceMapper.selectUserHistoryTotalCnt", param);
 	}
 	
 	public List selectUserHistorySearch(SearchParameter param) {
-		return  getSqlSession().selectList("sqlStatsMapper.selectUserHistorySearch", param);
+		return  getSqlSession().selectList("sqlServiceMapper.selectUserHistorySearch", param);
 	}
 	
 	
