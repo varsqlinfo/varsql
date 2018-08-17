@@ -521,10 +521,10 @@ _ui.layout = {
 				
 				try{
 					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid(_ui.SQL.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
+						$.pubGrid(_ui.sqlDataArea.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
 						
-						if(typeof $.pubGrid(_ui.SQL.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw)){
-							$.pubGrid(_ui.SQL.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
+						if(typeof $.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector).resizeDraw)){
+							$.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
 						}
 					}
 				}catch(e){
