@@ -206,9 +206,9 @@ _$base.log={
 
 
 
-var $$csrf_token = $("meta[name='_csrf']").attr("content");
-var $$csrf_header = $("meta[name='_csrf_header']").attr("content");
-var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content");
+var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
+var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
+var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
 
 /**
  * ajax 요청
