@@ -1,4 +1,5 @@
 package com.varsql.app.database.service;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +25,22 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
 import com.vartech.common.app.beans.EnumMapperValue;
+import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.utils.VartechUtils;
 
 /**
- * 
- * @FileName  : AdminServiceImpl.java
- * @Date      : 2014. 8. 18. 
- * @작성자      : ytkim
- * @변경이력 :
- * @프로그램 설명 :
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ExportServiceImpl.java
+* @DESC		: export service 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2018. 8. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Service
 public class ExportServiceImpl{
@@ -42,7 +50,8 @@ public class ExportServiceImpl{
 	private ExportDAO exportDAO;
 	
 	@Autowired
-	private PreferencesServiceImpl preferencesServiceImpl ;
+	private PreferencesServiceImpl preferencesServiceImpl;
+	
 	/**
 	 * 
 	 * @Method Name  : selectConfigInfo
@@ -54,14 +63,21 @@ public class ExportServiceImpl{
 	 * @param model
 	 * @throws Exception
 	 */
-	public void selectTableExportConfigInfo(PreferencesInfo preferencesInfo, ModelMap model) throws Exception {
-		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
+	public void selectExportConfigInfo(PreferencesInfo preferencesInfo, ModelMap model) throws Exception {
+		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
+	}
+	
+	public void selectExportTableInfo(PreferencesInfo preferencesInfo, ModelMap model, boolean tableColumnInfoFlag) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
 		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta().getTables(preferencesInfo));
-		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
-		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
+		
+		if(tableColumnInfoFlag){
+			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
+		}
 	}
+	
+	
 	
 	/**
 	 * 
@@ -76,14 +92,14 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception 
 	 */
-	public void tableExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+	public void tableSpecExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
 		
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		
 		String jsonString = preferencesInfo.getPrefVal();
 		
-		logger.info("databaseParamInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
-		logger.info("settingInfo :{}", jsonString );
+		logger.debug("tableSpecExport :{}", VartechUtils.reflectionToString(preferencesInfo));
+		logger.debug("settingInfo :{}", jsonString );
 		
 		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 		
@@ -94,11 +110,6 @@ public class ExportServiceImpl{
 		
 		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 		
-		for(String str : tableNmArr){
-			System.out.println(str +" :: "+ tableNmArr);
-		}
-		
-		System.out.println(" tables ::: "+ tables);
 		ExcelReport excelReport=MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns, settingInfo.getBoolean("sheetFlag"), tableNmArr);
 		
 		String exportFileName =settingInfo.getString("exportName","table-spec");
@@ -108,5 +119,42 @@ public class ExportServiceImpl{
 		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
 		
 		excelReport.write(res.getOutputStream());
+	}
+	
+	/**
+	 * @Method Name  : tableDDLExport
+	 * @Method 설명 : 테이블 ddl 내보내기
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 8. 24. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param res
+	 * @throws Exception 
+	 */
+	public void tableDDLExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+		String jsonString = preferencesInfo.getPrefVal();
+		
+		logger.debug("tableDDLExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
+		logger.debug("settingInfo :{}", jsonString );
+		
+		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
+		
+		List<Map> tables = (List<Map>)settingInfo.get("tables");
+		
+		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
+		
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		
+		String ddlScript = dbMetaEnum.getDDLScript().getTable(preferencesInfo, tableNmArr);
+		
+		String exportFileName =settingInfo.getString("exportName","table-ddl");
+		
+		exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
+		
+		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
+		
+		VarsqlUtil.textDownload(res.getOutputStream(), ddlScript);
+		
 	}
 }

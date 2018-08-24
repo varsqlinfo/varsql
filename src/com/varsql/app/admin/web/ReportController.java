@@ -8,7 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 /**
- * The Class OutsideController.
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ReportController.java
+* @DESC		: 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2018. 8. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/admin")

@@ -26,6 +26,7 @@
 <entry key="header.menu.tool.import">Import</entry>
 <entry key="header.menu.tool.export">Export</entry>
 <entry key="header.menu.tool.export.specification">Table spec</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
 <entry key="header.menu.tool.export.data">Data</entry>
 <entry key="header.menu.tool.setting">Preferences</entry>
 <entry key="header.menu.tool.initlayout">Init Layout</entry>

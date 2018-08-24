@@ -1,7 +1,5 @@
 package com.varsql.app.admin.web;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -21,7 +19,17 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * The Class OutsideController.
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ManagerMgmtController.java
+* @DESC		: 매니저 관리
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2018. 8. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/admin/managerMgmt")

@@ -76,9 +76,9 @@
 					<li class="header-menu-item" data-menu-item="tool_export_spec">
 						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.specification" /></span></a>
 					</li>
-					<!-- li class="header-menu-item" data-menu-item="tool_export_data">
-						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
-					</li -->
+					<li class="header-menu-item" data-menu-item="tool_export_ddl">
+						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.ddl" /></span></a>
+					</li>
 				</ul>
 			</li>
 			<li class="header-menu-item" data-menu-item="tool_setting">

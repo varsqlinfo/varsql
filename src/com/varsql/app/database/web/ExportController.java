@@ -11,13 +11,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
- * 
- * 
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: ExportController.java
@@ -39,22 +38,120 @@ public class ExportController {
 	
 	@Autowired
 	private ExportServiceImpl exportServiceImpl;
-
-	@RequestMapping("/main")
-	public ModelAndView exportMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	
+	/**
+	 * 
+	 * @Method Name  : specMain
+	 * @Method 설명 : 명세서
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/specMain")
+	public ModelAndView specMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/tools/exportMain",model);
+		return  new ModelAndView("/database/tools/exportMain/spec/specMain",model);
 	}
 	
-	@RequestMapping("/table")
-	public ModelAndView table(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	/**
+	 * 
+	 * @Method Name  : specTable
+	 * @Method 설명 : 테이블 명세서 화면보기
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/spec/table")
+	public ModelAndView specTable(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
-		exportServiceImpl.selectTableExportConfigInfo(preferencesInfo, model);
-		return  new ModelAndView("/database/tools/export/table",model);
+		
+		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
+		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
+		return  new ModelAndView("/database/tools/export/spec/tableSpec",model);
 	}
-	
-	@RequestMapping("/tableExport")
+	/**
+	 * 
+	 * @Method Name  : tableExport
+	 * @Method 설명 : 테이블 명세서 다운로드.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param req
+	 * @param res
+	 * @throws Exception
+	 */
+	@RequestMapping("/spec/tableExport")
 	public void tableExport(PreferencesInfo preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
-		exportServiceImpl.tableExport(preferencesInfo, res);
+		exportServiceImpl.tableSpecExport(preferencesInfo, res);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : ddlMain
+	 * @Method 설명 : ddl 메인
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ddlMain")
+	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return  new ModelAndView("/database/tools/exportMain/ddl/ddlMain",model);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : ddlTable
+	 * @Method 설명 : table ddl 화면보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ddl/table")
+	public ModelAndView ddlTable(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		ModelMap model = mav.getModelMap();
+		
+		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
+		
+		return  new ModelAndView("/database/tools/export/ddl/tableDdl",model);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : ddlTableExport
+	 * @Method 설명 : ddl table export
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ddl/tableExport")
+	public void ddlTableExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+		exportServiceImpl.tableDDLExport(preferencesInfo, res);
+	}
+
 }

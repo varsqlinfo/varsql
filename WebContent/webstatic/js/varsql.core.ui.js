@@ -307,9 +307,9 @@ _ui.headerMenu ={
 		var _self = this; 
 		
 		if(type=='spec'){
-			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/main?conuid='+_g_options.param.conuid));
-		}else{
-			
+			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
+		}else if(type=='ddl'){
+			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
 		}
 	}
 }

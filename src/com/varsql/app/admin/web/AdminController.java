@@ -31,7 +31,17 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * The Class OutsideController.
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: AdminController.java
+* @DESC		: admin 관리
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2018. 8. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/admin")

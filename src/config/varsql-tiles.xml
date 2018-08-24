@@ -59,11 +59,11 @@
     </definition>
     
     <!-- export main -->
-    <definition name="/database/tools/exportMain" template="/WEB-INF/views/database/tools/export/_templates/toolsMain.jsp"></definition>
+    <definition name="/database/tools/exportMain/*/*" template="/WEB-INF/views/database/tools/export/{1}/{2}.jsp"></definition>
     
     <!-- export 하위 페이지. -->
-    <definition name="/database/tools/export/**" template="/WEB-INF/views/database/tools/export/_templates/toolsEditMain.jsp">
-        <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}.jsp" />
+    <definition name="/database/tools/export/*/*" template="/WEB-INF/views/database/tools/export/_templates/toolsEditMain.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}/{2}.jsp" />
     </definition>
     
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp">

@@ -1,7 +1,11 @@
 package com.varsql.app.util;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -124,6 +128,26 @@ public class VarsqlUtil {
 		res.setHeader("Pragma", "no-cache;");
 		res.setHeader("Expires", "-1;");
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : textDownload
+	 * @Method 설명 : 텍스트 다운로드.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 24. 
+	 * @변경이력  :
+	 * @param output
+	 * @param cont
+	 * @throws IOException
+	 */
+	public static void textDownload(OutputStream output, String cont) throws IOException{
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
+		out.write(cont);
+		out.newLine();
+		out.close();
+	}
+	
+	
 	
 	public static String getCurrentTimestamp(){
 		return getCurrentTimestamp(System.currentTimeMillis());

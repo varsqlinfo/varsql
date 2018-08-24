@@ -19,12 +19,17 @@ import com.varsql.app.util.VarsqlUtil;
 
 
 /**
- * 
- * @FileName  : UserMenuMgmtController.java
- * @프로그램 설명 :
- * @Date      : 2015. 4. 16. 
- * @작성자      : ytkim
- * @변경이력 :
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: UserMenuMgmtController.java
+* @DESC		: 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2015. 4. 16. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/admin/userMenu")
