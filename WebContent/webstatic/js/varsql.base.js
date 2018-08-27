@@ -122,7 +122,15 @@ var DEFINE_INFO = {
 	,ORACLE : { 
 		type : 'text/x-plsql'
 		,hint : set('VARCHAR2,NVARCHAR2,NCHAR2')
-		,dataType :{'91' :{val : 'sysdate'}, '92' :{val : 'sysdate'}}
+		,setDataType :  function (pdto){
+			pdto['VARCHAR2'] = VARSQL.util.objectMerge({},pdto['12'],{name:'VARCHAR2'});
+			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
+			pdto['NCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
+			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
+			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
+			
+			return pdto; 
+		}
 	}
 	,H2 : { 
 		type : 'text/x-mariadb'
@@ -133,9 +141,32 @@ var DEFINE_INFO = {
 }
 var defaultInfo = DEFINE_INFO['DEFAULT'];
 
+// vendor 정보 얻기.
 function getDBTypeObj (dbType , field){
 	var dbTypeInfo = DEFINE_INFO[dbType] || defaultInfo;
-	return dbTypeInfo[field] || defaultInfo.field;
+	
+	if(typeof field ==='undefined') {
+		return dbTypeInfo;
+	}else{
+		return dbTypeInfo[field] || defaultInfo.field;
+	}
+}
+
+// set db type 
+function setDtoInfo (dbType , pdto){
+	var dbTypeInfo = getDBTypeObj (dbType);
+	try{
+		return dbTypeInfo.setDataType(pdto);
+	}catch(e){}
+}
+
+// db data typename 을 키로 셋팅.
+function setNameKeyMapping (pdto){
+	for(var key  in pdto){
+		var item = pdto[key];
+		pdto[item.name] =item; 
+	}
+	return pdto;
 }
 
 var dataType = {};
@@ -155,8 +186,10 @@ VARSQLCont.init  = function (dbType, uiBase){
 	uiBase.sqlHints = DEFAULT_HINTS.concat(getDBTypeObj(dbType , 'hint'));
 	uiBase.mimetype =getDBTypeObj(dbType , 'type');
 	
-	_dto= VARSQL.util.objectMerge(_dto,getDBTypeObj(dbType , 'dataType'));
+	setDtoInfo(dbType, _dto);
+	_dto = setNameKeyMapping (_dto); // name 을 키로 등록. 
 	
+	_this._dto = _dto;
 	_this.dataType = dataType;
 	_this.constants = _constants;
 	_this.tableColKey = TABLE_COL_KEYS;
