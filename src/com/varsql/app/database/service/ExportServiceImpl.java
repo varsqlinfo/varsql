@@ -21,6 +21,7 @@ import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.dao.ExportDAO;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
@@ -77,6 +78,45 @@ public class ExportServiceImpl{
 		}
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : selectExportDbObjectInfo
+	 * @Method 설명 : db object info
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 8. 29. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param mode
+	 * @param model
+	 * @return
+	 * @throws Exception 
+	 */
+	public String selectExportDbObjectInfo(PreferencesInfo preferencesInfo, String mode, ModelMap model) throws Exception{
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		
+		String viewPage =  mode;
+		
+		if(DBObjectType.TABLE.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getTables(preferencesInfo));
+		}else if(DBObjectType.VIEW.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getViews(preferencesInfo));
+		}else if(DBObjectType.PROCEDURE.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getProcedures(preferencesInfo));
+		}else if(DBObjectType.FUNCTION.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getFunctions(preferencesInfo));
+		}else if(DBObjectType.INDEX.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getIndexs(preferencesInfo));
+		}else if(DBObjectType.TRIGGER.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getTriggers(preferencesInfo));
+		}else if(DBObjectType.SEQUENCE.getObjName().equals(mode)){
+			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getSequences(preferencesInfo));
+		}else{
+			viewPage = "all";
+		}
+		
+		return viewPage; 
+	}
 	
 	
 	/**

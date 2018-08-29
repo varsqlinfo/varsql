@@ -1,5 +1,9 @@
 package com.varsql.app.database.web;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,12 +12,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
+import com.varsql.app.exception.DatabaseInvalidException;
+import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.DBObjectType;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
@@ -112,6 +122,10 @@ public class ExportController {
 	@RequestMapping("/ddlMain")
 	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		model.put("exportServiceMenu", dbMetaEnum.getDBMeta().getServiceMenu());
+		
 		return  new ModelAndView("/database/tools/exportMain/ddl/ddlMain",model);
 	}
 	
@@ -128,13 +142,13 @@ public class ExportController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddl/table")
-	public ModelAndView ddlTable(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	@RequestMapping("/ddl/{mode}")
+	public ModelAndView ddlTable(PreferencesInfo preferencesInfo,@PathVariable String mode, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		
-		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
+		String viewPage = exportServiceImpl.selectExportDbObjectInfo(preferencesInfo, mode, model); 
 		
-		return  new ModelAndView("/database/tools/export/ddl/tableDdl",model);
+		return  new ModelAndView("/database/tools/export/ddl/"+viewPage+"Ddl",model);
 	}
 	
 	/**

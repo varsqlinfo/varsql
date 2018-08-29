@@ -97,19 +97,19 @@ public class DatabaseServiceImpl{
 		String gubun = databaseParamInfo.getGubun();
 		
 		try{
-			if("table".equals(gubun)){
+			if(DBObjectType.TABLE.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getTablesAndColumns(databaseParamInfo));
-			}else if("view".equals(gubun)){
+			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getViewsAndColumns(databaseParamInfo));
-			}else if("procedure".equals(gubun)){
+			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
-			}else if("function".equals(gubun)){
+			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
-			}else if("index".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getIndexAndMetadatas(databaseParamInfo));
-			}else if("trigger".equals(gubun)){
+			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getIndexsAndMetadatas(databaseParamInfo));
+			}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getTriggers(databaseParamInfo));
-			}else if("sequence".equals(gubun)){
+			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getSequences(databaseParamInfo));
 			}else{
 				result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
@@ -118,19 +118,19 @@ public class DatabaseServiceImpl{
 			logger.error("dbObjectList serverName : [{}]",gubun);
 			logger.error("dbObjectList ", e);
 			try{
-				if("table".equals(gubun)){
+				if(DBObjectType.TABLE.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTablesAndColumns(databaseParamInfo));
-				}else if("view".equals(gubun)){
+				}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getViewsAndColumns(databaseParamInfo));
-				}else if("procedure".equals(gubun)){
+				}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProceduresAndMetadatas(databaseParamInfo));
-				}else if("function".equals(gubun)){
+				}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo));
-				}else if("index".equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getIndexAndMetadatas(databaseParamInfo));
-				}else if("trigger".equals(gubun)){
+				}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
+					result.setItemList(MetaControlBean.OTHER.getDBMeta().getIndexsAndMetadatas(databaseParamInfo));
+				}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTriggers(databaseParamInfo));
-				}else if("sequence".equals(gubun)){
+				}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
 					result.setItemList(MetaControlBean.OTHER.getDBMeta().getSequences(databaseParamInfo));
 				}else{
 					result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionService(databaseParamInfo, "gubun", List.class, null));
@@ -162,17 +162,17 @@ public class DatabaseServiceImpl{
 		
 		try{
 			String gubun = databaseParamInfo.getGubun();
-			if("table".equals(gubun)){	//tableMetadata
+			if(DBObjectType.TABLE.getObjName().equals(gubun)){	//tableMetadata
 				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo,DBObjectType.TABLE, databaseParamInfo.getObjectName()));
-			}else if("view".equals(gubun)){
+			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getColumns(databaseParamInfo,DBObjectType.VIEW, databaseParamInfo.getObjectName()) );
-			}else if("procedure".equals(gubun)){
+			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getProceduresAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if("function".equals(gubun)){
+			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getFunctionsAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if("index".equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getIndexAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if("sequence".equals(gubun)){
+			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
+				result.setItemList(dbMetaEnum.getDBMeta().getIndexsAndMetadatas(databaseParamInfo,databaseParamInfo.getObjectName()));
+			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
 				result.setItemList(dbMetaEnum.getDBMeta().getSequences(databaseParamInfo));
 			}
 		}catch(Exception e){
@@ -199,19 +199,19 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			if("table".equals(gubun)){
+			if(DBObjectType.TABLE.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getTable(databaseParamInfo));
-			}else if("view".equals(gubun)){
+			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getView(databaseParamInfo));
-			}else if("procedure".equals(gubun)){
+			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo));
-			}else if("function".equals(gubun)){
+			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo));
-			}else if("index".equals(gubun)){
+			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getIndex(databaseParamInfo));
-			}else if("trigger".equals(gubun)){
+			}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getTrigger(databaseParamInfo));
-			}else if("sequence".equals(gubun)){
+			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
 				result.setItemOne(dbMetaEnum.getDDLScript().getSequence(databaseParamInfo));
 			}
 		}catch(Exception e){

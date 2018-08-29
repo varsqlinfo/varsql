@@ -24,13 +24,15 @@
 
 <script>
 $('.pub-main-body').on('selectstart', function (e){
-	return false; 	
+	return false;
 })
+
 var toolMain = {
 	init : function (){
 		var treeItem = [];
 		treeItem.push({id:'top'	,pid:''	,name:'preferences-top'});
 		treeItem.push({id:'1',pid:'top',name:'<spring:message code="label.table" />',url:'<c:url value="/database/tools/export/ddl/table.vsql?conuid=${param.conuid}" />'});
+		treeItem.push({id:'2',pid:'top',name:'<spring:message code="label.view" />',url:'<c:url value="/database/tools/export/ddl/view.vsql?conuid=${param.conuid}" />'});
 		//treeItem.push({id:'2',pid:'top',name:'<spring:message code="label.view" />',url:'<c:url value="/tools/preferences/sqlFormatSetting.vsql?conuid=${param.conuid}" />'});	
 
 		$.pubTree("#preferences_area", {
