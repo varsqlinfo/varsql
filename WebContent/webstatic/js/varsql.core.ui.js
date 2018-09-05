@@ -3121,6 +3121,11 @@ _ui.SQL = {
 			$('#sql_parameter_area').removeClass('on');
 		})
 		
+		// 에디터 mouse focus 이동.
+		_self.sqlEditorEle.on('mouseenter', function(e){
+			_self.sqlTextAreaObj.focus();
+		})
+		
 		// sql 실행
 		$('.sql_execue_btn').on('click',function (evt){
 			_self.sqlData(evt);
@@ -3178,7 +3183,6 @@ _ui.SQL = {
 		// param add
 		$('.sql-param-add-btn').on('click',function (e){
 			_self.addParamTemplate('add');
-			
 		});
 		
 		// sql 정보 저장. 

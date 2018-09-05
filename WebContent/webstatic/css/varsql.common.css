@@ -33,3 +33,8 @@ body {
   max-width: calc(100% - 20px);
   overflow: hidden;
 }
+
+.error{
+	color: red;
+	font-weight: bold;
+}

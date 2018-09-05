@@ -210,9 +210,38 @@
 <entry key="end_day">종료일</entry>
 <entry key="std_time">시작시간</entry>
 <entry key="end_time">종료시간</entry>
+<entry key="file_name">파일명</entry>
 
+<entry key="up">위</entry>
+<entry key="down">아래</entry>
+
+<entry key="column">컬럼 </entry>
+<entry key="column_name">컬럼명 </entry>
 <entry key="id">ID</entry>
 <entry key="ip">IP</entry>
+<entry key="size">크기</entry>
 
+<!-- export table spec -->
+<entry key="msg.export.spec.step1">내보내기 정보</entry>
+<entry key="msg.export.spec.step2">테이블 선택</entry>
+<entry key="msg.export.spec.step3">완료</entry>
+<entry key="msg.export.spec.multi.sheet">다중시트여부</entry>
+<entry key="msg.export.spec.sheet.single">단일</entry>
+<entry key="msg.export.spec.sheet.multi">멀티</entry>
+<entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
+
+<!-- export ddl info-->
+<entry key="msg.export.ddl.info">내보내기 정보</entry>
+<entry key="msg.export.ddl.step1">object 선택</entry>
+<entry key="msg.export.ddl.step2">상세선택</entry>
+<entry key="msg.export.ddl.step3">완료</entry>
+<entry key="msg.export.multi.file">다중파일여부</entry>
+<entry key="msg.export.multi.file.single">한파일</entry>
+<entry key="msg.export.multi.file.multi">object별 파일</entry>
+<entry key="msg.select.object">선택된 object</entry>
+<entry key="msg.export.ddl.object.select">내보내기할 object 를 선택하세요.</entry>
+<entry key="msg.export.ddl.object.nodata">object를 선택해주세요..</entry>
+
+<entry key="complete">완료</entry>
 
 </properties>

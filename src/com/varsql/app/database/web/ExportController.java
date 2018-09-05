@@ -1,9 +1,5 @@
 package com.varsql.app.database.web;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,14 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
-import com.varsql.app.exception.DatabaseInvalidException;
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
@@ -63,32 +56,22 @@ public class ExportController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/specMain")
-	public ModelAndView specMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView specMain(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		
 		ModelMap model = mav.getModelMap();
+		
+		logger.debug("export specMain : {} ", preferencesInfo);
+		
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
+		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
+		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
+		
+		
+		
 		return  new ModelAndView("/database/tools/exportMain/spec/specMain",model);
 	}
 	
-	/**
-	 * 
-	 * @Method Name  : specTable
-	 * @Method 설명 : 테이블 명세서 화면보기
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 8. 24. 
-	 * @변경이력  :
-	 * @param preferencesInfo
-	 * @param mav
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping("/spec/table")
-	public ModelAndView specTable(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
-		ModelMap model = mav.getModelMap();
-		
-		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
-		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
-		return  new ModelAndView("/database/tools/export/spec/tableSpec",model);
-	}
+	
 	/**
 	 * 
 	 * @Method Name  : tableExport

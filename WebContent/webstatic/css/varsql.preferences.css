@@ -9,29 +9,77 @@
 	background: #fff;
 }
 
+.preferences {
+	padding: 10px;
+	height:100%;
+}
+
+.preferences .left-nav{
+	height:100%;
+	border-right: 1px solid #000;
+}
+
+.preferences ul{
+	list-style: none;
+    padding: 0px;
+}
+
+.preferences .process-step-area{
+	height:100%;
+}
+
+.preferences .process-step-area .process-step-btn-area{
+	position:absolute;right:0px;bottom:0px;
+}
+
+.preferences .left-nav ul li > a{
+	
+}
+
+.preferences .ddl-object-select-area{
+	border: 1px solid #cccccc;
+	padding-left:5px;
+}
+
+.preferences .ddl-object-select-area .no-data{
+	padding-top:10px;
+	text-align: center;
+}
+
+.preferences .left-nav ul li > a:hover,
+.preferences .left-nav ul li.active > a,
+.preferences .ddl-object-info ul li > a:hover,
+.preferences .ddl-object-select-area li.active,
+.preferences .ddl-object-info ul li.active > a{background-color: #c6ece8;}
+
+.preferences .left-nav ul li > a,
+.preferences .ddl-object-info ul li > a {background-color: inherit;}
+
 .preferences .row, .preferences .col {
 	overflow: hidden;
 	position: absolute;
 }
-.preferences .row {
-	left: 0;
-	right: 0;
+
+.preferences .ddl-object-info ul {
+	list-style: none;
+    padding: 0px;
 }
 
-.preferences .col {
-	top: 0;
-	bottom: 0;
+.preferences .ddl-object-info ul {
+	list-style: none;
+    padding: 0px;
 }
 
-.preferences .scroll-y {
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-}
 
 .setting-body{
 	background: #fff;
 	overflow: auto;
 }
+.preferences .scroll-y {
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 
 .preferences .header {
 	color: #eee;
@@ -109,13 +157,9 @@
 	border-bottom:1px solid #aaa;
 }
 
-.process-step{display:none;}
-[data-curr-step="1"] .process-step[data-step="1"]{display:block;}
-[data-curr-step="2"] .process-step[data-step="2"]{display:block;}
-[data-curr-step="3"] .process-step[data-step="3"]{display:block;}
-[data-curr-step="4"] .process-step[data-step="4"]{display:block;}
-[data-curr-step="5"] .process-step[data-step="5"]{display:block;}
-[data-curr-step="6"] .process-step[data-step="6"]{display:block;}
-[data-curr-step="7"] .process-step[data-step="7"]{display:block;}
-[data-curr-step="8"] .process-step[data-step="8"]{display:block;}
-[data-curr-step="9"] .process-step[data-step="9"]{display:block;}
+.process-step{
+	display:none;
+}
+.process-step.active{
+	display:block;
+}

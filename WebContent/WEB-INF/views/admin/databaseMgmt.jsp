@@ -15,7 +15,8 @@ $(document).ready(function (){
 });
 
 var databaseMgmt = {
-	init : function (){
+	detailItem : {}
+	,init : function (){
 		var _this = this; 
 		_this.search();
 		_this.add();
@@ -148,11 +149,15 @@ var databaseMgmt = {
 		$('#vid').val('');
 		$('#vpw').val('');
 		$('#pollinit').val('N');
+		this.detailItem = {};
 	}
 	,clickDbInfo : function (sObj , viewMode){
+		var _this = this;
 		sObj = $(sObj);
 		
 		$('#vconnid').val(sObj.attr('conid'));
+		
+		var currentVtype=$('#vtype').val(); 
 		VARSQL.req.ajax({
 			data:{
 				vconnid:$('#vconnid').val()
@@ -161,6 +166,7 @@ var databaseMgmt = {
 			,success:function (resData){
 				var item = resData.item;
 				
+				_this.detailItem = item; 
 				$('#selectDbInfo').empty().html(' ['+item.VNAME+']');
 				
 				$('#vname').val(item.VNAME);
@@ -172,14 +178,17 @@ var databaseMgmt = {
 				$('#vpw').val(item.VPW);
 				$('#vquery').val(item.VQUERY);
 				
-				$('#vtype').trigger('change');
-				
 				// option
 				$('#maxActive').val(item.MAX_ACTIVE);
 				$('#minIdle').val(item.MIN_IDLE);
 				$('#timeout').val(item.TIMEOUT);
 				$('#exportCount').val(item.EXPORTCOUNT);
 				$('#vquery').val(item.VQUERY);
+				
+				if(item.VTYPE != currentVtype){
+					$('#vtype').trigger('change');	
+				}
+				
 			}
 		});
 	}
@@ -314,6 +323,7 @@ var databaseMgmt = {
 	}
 	// db driver list
 	,dbDriverLoad : function (val){
+		var _this = this; 
 		VARSQL.req.ajax({
 			data: {
 				dbtype :val
@@ -333,7 +343,11 @@ var databaseMgmt = {
 	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
-	    			strHtm.push('<option value="'+item.DRIVER_ID+'" data-driver="'+item.DBDRIVER+'">'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
+	    			var selected = '';
+	    			if(_this.detailItem.VDRIVER ==item.DRIVER_ID){
+	    				selected = 'selected';
+	    			}
+	    			strHtm.push('<option value="'+item.DRIVER_ID+'" data-driver="'+item.DBDRIVER+'" '+selected+'>'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
 	    		}
 	    		
 	    		$('#vdriver').empty().html(strHtm.join(''));
