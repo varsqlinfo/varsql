@@ -3803,13 +3803,13 @@ _ui.SQL = {
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
-		    ,dataType:'text'
 		    ,data:params 
 		    ,success:function (res){
-		    	res = VARSQL.str.trim(res)
+		    	var formatSql = res.item; 
+		    	formatSql = VARSQL.str.trim(formatSql)
 		    	
-		    	var linecnt = VARSQL.matchCount(res,VARSQLCont.constants.newline)+1;
-	    		tmpEditor.replaceSelection(res);
+		    	var linecnt = VARSQL.matchCount(formatSql,VARSQLCont.constants.newline)+1;
+	    		tmpEditor.replaceSelection(formatSql);
 	    		
 	    		tmpEditor.setSelection(startSelection, {line:startSelection.line+linecnt,ch:0});
 			}
