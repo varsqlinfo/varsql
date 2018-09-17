@@ -1,14 +1,13 @@
 package com.varsql.app.database.service;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.varsql.core.db.report.VarsqlReportConfig;
 import com.vartech.common.app.beans.EnumMapperValue;
 import com.vartech.common.app.beans.ResponseResult;
@@ -91,31 +91,37 @@ public class ExportServiceImpl{
 	 * @return
 	 * @throws Exception 
 	 */
-	public String selectExportDbObjectInfo(PreferencesInfo preferencesInfo, String mode, ModelMap model) throws Exception{
+	public ResponseResult selectExportDbObjectInfo(DatabaseParamInfo databaseParam) throws Exception {
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParam.getConuid());
 		
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		Map customParam = databaseParam.getCustom(); 
 		
-		String viewPage =  mode;
+		String ddlObjInfo = String.valueOf(customParam.get("ddlObjInfo"));
 		
-		if(DBObjectType.TABLE.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getTables(preferencesInfo));
-		}else if(DBObjectType.VIEW.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getViews(preferencesInfo));
-		}else if(DBObjectType.PROCEDURE.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getProcedures(preferencesInfo));
-		}else if(DBObjectType.FUNCTION.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getFunctions(preferencesInfo));
-		}else if(DBObjectType.INDEX.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getIndexs(preferencesInfo));
-		}else if(DBObjectType.TRIGGER.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getTriggers(preferencesInfo));
-		}else if(DBObjectType.SEQUENCE.getObjName().equals(mode)){
-			model.addAttribute("exportInfo", dbMetaEnum.getDBMeta().getSequences(preferencesInfo));
-		}else{
-			viewPage = "all";
+		String[] objArr =ddlObjInfo.split(",");
+		
+		ResponseResult result = new ResponseResult();
+		
+		for (int i = 0; i < objArr.length; i++) {
+			String mode = objArr[i];
+			if(DBObjectType.TABLE.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getTables(databaseParam));
+			}else if(DBObjectType.VIEW.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getViews(databaseParam));
+			}else if(DBObjectType.PROCEDURE.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getProcedures(databaseParam));
+			}else if(DBObjectType.FUNCTION.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getFunctions(databaseParam));
+			}else if(DBObjectType.INDEX.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getIndexs(databaseParam));
+			}else if(DBObjectType.TRIGGER.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getTriggerMetadata(databaseParam));
+			}else if(DBObjectType.SEQUENCE.getObjName().equals(mode)){
+				result.addCustoms(mode, dbMetaEnum.getDBMeta().getSequenceMetadata(databaseParam));
+			}
 		}
 		
-		return viewPage; 
+		return result;
 	}
 	
 	
@@ -171,7 +177,7 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception 
 	 */
-	public void tableDDLExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+	public void ddlExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
 		String jsonString = preferencesInfo.getPrefVal();
 		
 		logger.debug("tableDDLExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
@@ -179,12 +185,26 @@ public class ExportServiceImpl{
 		
 		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
 		
-		List<Map> tables = (List<Map>)settingInfo.get("tables");
+		Map<String, List<Map>> exportInfo = (Map<String, List<Map>>)settingInfo.get("exportInfo");
 		
-		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
-		
+		Iterator<String> iter =exportInfo.keySet().iterator();
 		
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		
+		while(iter.hasNext()){
+			String objectName = iter.next();
+			
+			List<Map> objList =  exportInfo.get(objList);
+			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
+			
+			
+			
+		}
+		
+		
+		
+		
+		
 		
 		String ddlScript = dbMetaEnum.getDDLScript().getTable(preferencesInfo, tableNmArr);
 		
@@ -197,4 +217,6 @@ public class ExportServiceImpl{
 		VarsqlUtil.textDownload(res.getOutputStream(), ddlScript);
 		
 	}
+
+	
 }

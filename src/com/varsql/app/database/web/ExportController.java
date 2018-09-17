@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.PreferencesConstants;
@@ -18,6 +19,8 @@ import com.varsql.app.database.service.ExportServiceImpl;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseParamInfo;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.HttpUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -114,7 +117,7 @@ public class ExportController {
 	
 	/**
 	 * 
-	 * @Method Name  : ddlTable
+	 * @Method Name  : ddl db object info
 	 * @Method 설명 : table ddl 화면보기.
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 8. 24. 
@@ -125,14 +128,13 @@ public class ExportController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddl/{mode}")
-	public ModelAndView ddlTable(PreferencesInfo preferencesInfo,@PathVariable String mode, ModelAndView mav, HttpServletRequest req) throws Exception {
-		ModelMap model = mav.getModelMap();
-		
-		String viewPage = exportServiceImpl.selectExportDbObjectInfo(preferencesInfo, mode, model); 
-		
-		return  new ModelAndView("/database/tools/export/ddl/"+viewPage+"Ddl",model);
+	@RequestMapping("/ddl/objInfo")
+	public @ResponseBody ResponseResult objInfo(DatabaseParamInfo paramInfo, HttpServletRequest req) throws Exception {
+		paramInfo.setCustom(HttpUtils.getServletRequestParam(req));
+		return  exportServiceImpl.selectExportDbObjectInfo(paramInfo);
 	}
+
+	
 	
 	/**
 	 * 
@@ -146,9 +148,9 @@ public class ExportController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddl/tableExport")
-	public void ddlTableExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
-		exportServiceImpl.tableDDLExport(preferencesInfo, res);
+	@RequestMapping("/ddl/export")
+	public void ddlExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+		exportServiceImpl.ddlExport(preferencesInfo, res);
 	}
 
 }

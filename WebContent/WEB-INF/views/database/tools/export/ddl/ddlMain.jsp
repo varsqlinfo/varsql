@@ -75,7 +75,7 @@
 					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.object" /></div>
 					<ul class="ddl-object-select-area">
 						<template v-for="(objInfo,key) in selectObjectItems">
-						   <li class="ddl-object-info">
+						   <li class="ddl-object-info" @click="setSelectObject(objInfo)">
 						   		<a href="javascript:;" :title="objInfo.name">{{ objInfo.name }}</a>
 						   	</li> 
 						</template>
@@ -94,9 +94,9 @@
 				</div>
 				<div class="col-xs-1 text-center padding0">
 					<div style="position:relative;top:100px;">
-						<a href="javascript:;" @click="selectTableObj.sourceMove()"><span class="glyphicon glyphicon-forward"></span></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.sourceMove()"><span class="glyphicon glyphicon-forward"></span></a>
 						<br/>
-						<a href="javascript:;" @click="selectTableObj.targetMove()"><span class="glyphicon glyphicon-backward"></span></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.targetMove()"><span class="glyphicon glyphicon-backward"></span></a>
 					</div>
 				</div>
 				<div class="col-xs-4 padding0">
@@ -107,9 +107,9 @@
 						</ul>
 					</div>
 					<div class="pull-right">
-						<a href="javascript:;" @click="selectTableObj.move('up')"><spring:message code="up" /></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.move('up')"><spring:message code="up" /></a>
 						<span style="padding-left:10px;"></span>
-						<a href="javascript:;" @click="selectTableObj.move('down')"><spring:message code="down" /></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.move('down')"><spring:message code="down" /></a>
 						<span style="padding-right:10px;"></span>
 					</div>
 				</div>
@@ -130,9 +130,11 @@ VarsqlAPP.vueServiceBean({
 	,data: {
 		step : 1
 		,endStep : 3
-		,selectTableObj : []
-		,selectColumnObj : []
-		,selectObjectItems :{} 
+		,selectObjectName : ''
+		,selectDbObjectInfo : []
+		,selectObjectItems :{}
+		,objExportInfo : {}
+		,selectExportInfo : {}
 		,detailItem :{}
 		,exportObject : ${varsqlfn:objectToJson( exportServiceMenu)}
 	}
@@ -144,21 +146,80 @@ VarsqlAPP.vueServiceBean({
 		,moveStep : function (mode){
 			if(mode == 'prev'){
 				if(this.step > 1){
-					this.step -= 1;
+					this.selectStep(this.step-1);
 				}
 			}else if(mode == 'next'){
 				if(this.step < this.endStep){
-					this.step += 1;
+					this.selectStep(this.step+1);
 				}
 			}
 		}
 		// step 선택
 		,selectStep : function (step){
+			var _self = this; 
+			
 			this.step = step;
+			
+			if(this.step != 3){
+				return ; 
+			}
+			
+			var objItem = _self.selectObjectItems;
+			
+			var dbObjType = [];
+			for(var key in objItem){
+				
+				if(typeof _self.objExportInfo[key] ==='undefined'){
+					dbObjType.push(key);
+				} 
+			}
+			
+			if(dbObjType.length < 1){
+				return ; 
+			}
+				
+			var param = {
+				conuid : '${param.conuid}'
+				,ddlObjInfo : dbObjType.join(',')
+			}
+			
+			VARSQL.req.ajax({
+				url:{gubun:VARSQL.uri.database, url:'/tools/export/ddl/objInfo.vsql'}
+				,data: param
+				,loadSelector : '.preferences-body'
+				,success:function (resData){
+					var objItem = resData.customs;
+					
+					for(var key in objItem){
+						_self.objExportInfo[key] = objItem[key]; 
+					}
+				}
+			});
 		}
 		// 완료
 		,complete : function (){
 			var _self = this; 
+			
+			var info = $("#firstConfigForm").serializeJSON();
+			
+			_self.selectExportInfo[_self.selectObjectName]  = _self.selectDbObjectInfo.getTargetItem();
+			
+			var prefVal = {
+				exportName : _self.export_name
+				,sheetFlag : _self.sheet_flag
+				,exportInfo : _self.selectExportInfo
+			};
+			
+			var param = {
+				prefVal : JSON.stringify(prefVal)
+				,conuid : '${param.conuid}'
+			};
+			
+			VARSQL.req.download({
+				type: 'post'
+				,url: {gubun:VARSQL.uri.database, url:'/tools/export/ddl/export.vsql'}
+				,params : param
+			});
 			
 			//_self.exportInfo();
 		}
@@ -180,8 +241,6 @@ VarsqlAPP.vueServiceBean({
 			var prefVal = {
 				exportName : _self.export_name
 				,sheetFlag : _self.sheet_flag
-				,tables : _self.selectTableObj.getTargetItem()
-				,columns: _self.selectColumnObj.getTargetItem()
 			};
 			
 			var param = {
@@ -195,13 +254,25 @@ VarsqlAPP.vueServiceBean({
 				,params : param
 			});
 		}
-		// table select info
-		,setTableSelect: function (){
-			var _self = this; 
+		//object list
+		,setSelectObject : function (sObj){
+			var _self =this; 
 			
-			var tmpSourceItem = [] , paramSourceItem=${varsqlfn:objectToJson(tableInfo)}; 
+			var objName = sObj.contentid; 
+			
+			if(_self.selectObjectName != ''){
+				_self.selectExportInfo[_self.selectObjectName]  = _self.selectDbObjectInfo.getTargetItem();
+			}
+			
+			_self.selectObjectName = objName;
+			
+			var sObjInfo = _self.objExportInfo[objName];
+			
+			var targetInfo = _self.selectExportInfo[objName] || sObjInfo;
+			
+			var tmpSourceItem = [] , paramSourceItem=sObjInfo; 
 
-			_self.selectTableObj= $.pubMultiselect('#source', {
+			_self.selectDbObjectInfo= $.pubMultiselect('#source', {
 				targetSelector : '#target'
 				,addItemClass:'text_selected'
 				,useMultiSelect : true
@@ -215,7 +286,7 @@ VarsqlAPP.vueServiceBean({
 				,targetItem : {
 					optVal : 'name'
 					,optTxt : 'name'
-					,items : (_self.userSetting.tables ||[])
+					,items : targetInfo
 					,click: function (e, sItem){
 						//console.log(e,sEle);
 					}

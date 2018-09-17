@@ -1284,9 +1284,16 @@ _ui.dbSchemaObjectServiceMenu ={
 			,async:false
 			,data:param
 			,success:function (resData){
-				_self._setMetaCache(param.gubun,param.objectName, resData); // data cache
+				var result = resData.list;
 				
-				callbackFn.call(_self,resData, param);
+				if(result.length > 0){
+					var callData=result;
+					if(param.gubun=='table' || param.gubun=='view'){
+						callData = result[0].colList
+					}
+					_self._setMetaCache(param.gubun,param.objectName, callData); // data cache
+					callbackFn.call(_self,resData, callData);
+				}
 			}
 		});
 	}
