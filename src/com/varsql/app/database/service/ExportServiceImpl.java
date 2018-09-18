@@ -71,7 +71,7 @@ public class ExportServiceImpl{
 	public void selectExportTableInfo(PreferencesInfo preferencesInfo, ModelMap model, boolean tableColumnInfoFlag) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
-		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta().getTables(preferencesInfo));
+		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta(DBObjectType.TABLE.getObjName(),preferencesInfo));
 		
 		if(tableColumnInfoFlag){
 			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
@@ -104,21 +104,7 @@ public class ExportServiceImpl{
 		
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			if(DBObjectType.TABLE.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getTables(databaseParam));
-			}else if(DBObjectType.VIEW.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getViews(databaseParam));
-			}else if(DBObjectType.PROCEDURE.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getProcedures(databaseParam));
-			}else if(DBObjectType.FUNCTION.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getFunctions(databaseParam));
-			}else if(DBObjectType.INDEX.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getIndexs(databaseParam));
-			}else if(DBObjectType.TRIGGER.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getTriggerMetadata(databaseParam));
-			}else if(DBObjectType.SEQUENCE.getObjName().equals(mode)){
-				result.addCustoms(mode, dbMetaEnum.getDBMeta().getSequenceMetadata(databaseParam));
-			}
+			result.addCustoms(mode, dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(mode).getObjName() , databaseParam));
 		}
 		
 		return result;
@@ -194,9 +180,18 @@ public class ExportServiceImpl{
 		while(iter.hasNext()){
 			String objectName = iter.next();
 			
-			List<Map> objList =  exportInfo.get(objList);
+			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 			
+			String ddlScript = dbMetaEnum.getDDLScript().getTable(preferencesInfo, objNmArr);
+			
+			String exportFileName =settingInfo.getString("exportName","table-ddl");
+			
+			exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
+			
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
+			
+			VarsqlUtil.textDownload(res.getOutputStream(), ddlScript);
 			
 			
 		}
@@ -206,15 +201,7 @@ public class ExportServiceImpl{
 		
 		
 		
-		String ddlScript = dbMetaEnum.getDDLScript().getTable(preferencesInfo, tableNmArr);
 		
-		String exportFileName =settingInfo.getString("exportName","table-ddl");
-		
-		exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
-		
-		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
-		
-		VarsqlUtil.textDownload(res.getOutputStream(), ddlScript);
 		
 	}
 

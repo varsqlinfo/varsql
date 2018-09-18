@@ -42,13 +42,9 @@ var _defaultOptions = {
 
 var _g_options={
 	dbtype:''
-	,urlPrefix:''
 	,param:{}
 	,hiddenArea : '#dbHiddenArea'
 	,downloadForm : '#downloadForm'
-	,getUriPrefix:function (uri){
-		return '/'+this.urlPrefix+(uri?uri:'');
-	}
 	,_opts :{}
 };
 
@@ -1351,10 +1347,6 @@ _ui.dbSchemaObjectServiceMenu ={
 	// 데이타 내보내기
 	,_dataExport : function (exportObj){
 		_ui.SQL.exportDataDownload(exportObj);
-	}
-	//db url call 할때 앞에 uri 뭍이기
-	,_getPrefixUri:function (uri){
-		return _g_options.getUriPrefix(uri);
 	}
 	// 컨텍스트 메뉴 sql 생성 부분 처리 .
 	,_createScriptSql :function (scriptObj){

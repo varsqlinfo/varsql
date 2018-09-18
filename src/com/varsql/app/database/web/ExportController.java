@@ -110,7 +110,7 @@ public class ExportController {
 		ModelMap model = mav.getModelMap();
 		
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
-		model.put("exportServiceMenu", dbMetaEnum.getDBMeta().getServiceMenu());
+		model.put("exportServiceMenu", dbMetaEnum.getServiceMenu());
 		
 		return  new ModelAndView("/database/tools/exportMain/ddl/ddlMain",model);
 	}

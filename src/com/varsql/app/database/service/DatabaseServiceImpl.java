@@ -1,9 +1,7 @@
 package com.varsql.app.database.service;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,11 +47,10 @@ public class DatabaseServiceImpl{
 			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
 			
-			json.put("urlPrefix", dbMetaEnum.getDBMeta().getUrlPrefix(connid));
 			json.put("schema", dbinfo.getSchema());
 			json.put("conuid", dbinfo.getConnUUID());
 			json.put("type", dbinfo.getType());
-			json.put("db_object_list", dbMetaEnum.getDBMeta().getSchemas(databaseParamInfo));
+			json.put("db_object_list", dbMetaEnum.getSchemas(databaseParamInfo));
 		}catch(Exception e){
 			logger.error("schemas {}" , e.getMessage());
 			throw new DatabaseInvalidException(e.getMessage());
@@ -76,7 +73,7 @@ public class DatabaseServiceImpl{
 	public ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo) {
 		ResponseResult result = new ResponseResult();
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
-		result.setItemList(dbMetaEnum.getDBMeta().getServiceMenu());
+		result.setItemList(dbMetaEnum.getServiceMenu());
 		return result;
 	}
 	
@@ -98,48 +95,12 @@ public class DatabaseServiceImpl{
 		String gubun = databaseParamInfo.getGubun();
 		
 		try{
-			
-			MethodUtils.invokeMethod(dbMetaEnum.getDBMeta(), "getTableMetadata" , databaseParamInfo);
-			
-			
-			if(DBObjectType.TABLE.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getTableMetadata(databaseParamInfo));
-			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getViewMetadata(databaseParamInfo));
-			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProcedureMetadata(databaseParamInfo));
-			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getFunctionMetadata(databaseParamInfo));
-			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getIndexMetadata(databaseParamInfo));
-			}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getTriggerMetadata(databaseParamInfo));
-			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getSequenceMetadata(databaseParamInfo));
-			}else{
-				result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionMetadata(databaseParamInfo, "gubun", List.class, null));
-			}
+			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
 		}catch(Exception e){
-			logger.error("dbObjectList serverName : [{}]",gubun);
+			logger.error("dbObjectList gubun : [{}]",gubun);
 			logger.error("dbObjectList ", e);
 			try{
-				if(DBObjectType.TABLE.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTableMetadata(databaseParamInfo));
-				}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getViewMetadata(databaseParamInfo));
-				}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getProcedureMetadata(databaseParamInfo));
-				}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getFunctionMetadata(databaseParamInfo));
-				}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getIndexMetadata(databaseParamInfo));
-				}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getTriggerMetadata(databaseParamInfo));
-				}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
-					result.setItemList(MetaControlBean.OTHER.getDBMeta().getSequenceMetadata(databaseParamInfo));
-				}else{
-					result.setItemList((List) dbMetaEnum.getDBMeta().getExtensionMetadata(databaseParamInfo, "gubun", List.class, null));
-				}
+				result.setItemList(MetaControlBean.OTHER.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
 			}catch(Exception subE){
 				logger.error("dbObjectList serverName : [{}]",gubun);
 				logger.error("dbObjectList ", subE);
@@ -167,21 +128,9 @@ public class DatabaseServiceImpl{
 		
 		try{
 			String gubun = databaseParamInfo.getGubun();
-			if(DBObjectType.TABLE.getObjName().equals(gubun)){	//tableMetadata
-				result.setItemList(dbMetaEnum.getDBMeta().getTableMetadata( databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getViewMetadata( databaseParamInfo, databaseParamInfo.getObjectName()) );
-			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getProcedureMetadata(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getFunctionMetadata(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getIndexMetadata(databaseParamInfo,databaseParamInfo.getObjectName()));
-			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
-				result.setItemList(dbMetaEnum.getDBMeta().getSequenceMetadata(databaseParamInfo));
-			}
+			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
-			logger.error("serviceMenu : ", e);
+			logger.error("dbObjectMetadataList : ", e);
 		}
 		return result;
 	}
