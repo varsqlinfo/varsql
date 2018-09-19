@@ -19,6 +19,7 @@ import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.dao.ExportDAO;
 import com.varsql.app.util.VarsqlUtil;
+import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
@@ -166,7 +167,7 @@ public class ExportServiceImpl{
 	public void ddlExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
 		String jsonString = preferencesInfo.getPrefVal();
 		
-		logger.debug("tableDDLExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
+		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
 		
 		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
@@ -177,33 +178,26 @@ public class ExportServiceImpl{
 		
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
+		StringBuilder allDDLScript = new StringBuilder();
 		while(iter.hasNext()){
 			String objectName = iter.next();
 			
+			allDDLScript.append("--------- "+objectName+" start----------").append(BlankConstants.NEW_LINE);
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 			
-			String ddlScript = dbMetaEnum.getDDLScript().getTable(preferencesInfo, objNmArr);
-			
-			String exportFileName =settingInfo.getString("exportName","table-ddl");
-			
-			exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
-			
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
-			
-			VarsqlUtil.textDownload(res.getOutputStream(), ddlScript);
-			
+			allDDLScript.append(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo, objNmArr));
+			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE);
 			
 		}
 		
+		String exportFileName =settingInfo.getString("exportName","export-ddl");
 		
+		exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
 		
+		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
 		
-		
-		
-		
+		VarsqlUtil.textDownload(res.getOutputStream(), allDDLScript.toString());
 		
 	}
-
-	
 }

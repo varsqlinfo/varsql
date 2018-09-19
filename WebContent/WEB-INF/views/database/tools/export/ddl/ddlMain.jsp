@@ -233,27 +233,6 @@ VarsqlAPP.vueServiceBean({
 				delete this.selectObjectItems[objInfo.contentid];
 			}
 		}
-		,exportInfo : function (){
-			var _self = this; 
-			
-			var info = $("#firstConfigForm").serializeJSON();
-			
-			var prefVal = {
-				exportName : _self.export_name
-				,sheetFlag : _self.sheet_flag
-			};
-			
-			var param = {
-				prefVal : JSON.stringify(prefVal)
-				,conuid : '${param.conuid}'
-			};
-			
-			VARSQL.req.download({
-				type: 'post'
-				,url: {gubun:VARSQL.uri.database, url:'/tools/export/spec/tableExport.vsql'}
-				,params : param
-			});
-		}
 		//object list
 		,setSelectObject : function (sObj){
 			var _self =this; 

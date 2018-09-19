@@ -127,8 +127,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			String gubun = databaseParamInfo.getGubun();
-			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("dbObjectMetadataList : ", e);
 		}
@@ -148,26 +147,10 @@ public class DatabaseServiceImpl{
 	public ResponseResult createDDL(DatabaseParamInfo databaseParamInfo) {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
-		String gubun = databaseParamInfo.getGubun();
-		
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			if(DBObjectType.TABLE.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getTable(databaseParamInfo));
-			}else if(DBObjectType.VIEW.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getView(databaseParamInfo));
-			}else if(DBObjectType.PROCEDURE.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getProcedure(databaseParamInfo));
-			}else if(DBObjectType.FUNCTION.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getFunction(databaseParamInfo));
-			}else if(DBObjectType.INDEX.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getIndex(databaseParamInfo));
-			}else if(DBObjectType.TRIGGER.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getTrigger(databaseParamInfo));
-			}else if(DBObjectType.SEQUENCE.getObjName().equals(gubun)){
-				result.setItemOne(dbMetaEnum.getDDLScript().getSequence(databaseParamInfo));
-			}
+			result.setItemOne(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("createDDL : ", e);
 		}
