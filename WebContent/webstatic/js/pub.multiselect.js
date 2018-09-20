@@ -253,21 +253,25 @@ Plugin.prototype ={
 			tmpSourceItem.items = items;
 			len = tmpSourceItem.items.length;
 			var pageMaxVal = _opts.pageInfo.max; 
-			for(var i=0 ;i < len; i++){
-				tmpItem = tmpSourceItem.items[i];
-				var tmpSelctOptVal = tmpItem[valKey]; 
-				var selectFlag = false; 
-				for(var j = 1 ;j <=pageMaxVal; j++){
-					if(typeof _this.addItemList[j][tmpSelctOptVal] !=='undefined') {
-						selectFlag = true; 
-						continue; 
+			
+			if(len > 0){
+				for(var i=0 ;i < len; i++){
+					tmpItem = tmpSourceItem.items[i];
+					var tmpSelctOptVal = tmpItem[valKey]; 
+					var selectFlag = false; 
+					for(var j = 1 ;j <=pageMaxVal; j++){
+						if(typeof _this.addItemList[j][tmpSelctOptVal] !=='undefined') {
+							selectFlag = true; 
+							continue; 
+						}
 					}
+	
+					strHtm.push(_this.getItemHtml(type,tmpSelctOptVal, tmpItem , selectFlag));
+					_this.config.itemKey.sourceIdx[tmpSelctOptVal] = i;
 				}
-
-				strHtm.push(_this.getItemHtml(type,tmpSelctOptVal, tmpItem , selectFlag));
-				_this.config.itemKey.sourceIdx[tmpSelctOptVal] = i;
+			}else{
+				strHtm.push(_this.getEmptyMessage());
 			}
-
 			_this.sourceElement.empty().html(strHtm.join(''));
 			
 			_this._setDragOpt();
@@ -342,7 +346,7 @@ Plugin.prototype ={
 					_this.targetElement.empty().html(_this.getEmptyMessage());
 				}
 			}else{
-				_this.targetElement.empty();
+				_this.targetElement.empty().html(_this.getEmptyMessage());
 				_this.sourceElement.find(_opts.itemSelector).removeClass(_opts.addItemClass);
 			}
 		}

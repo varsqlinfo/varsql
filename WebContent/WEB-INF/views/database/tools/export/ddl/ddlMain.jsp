@@ -60,7 +60,8 @@
 					<ul>
 						<template v-for="(objInfo,index) in exportObject">
 						   <li>
-						   		<a href="javascript:;" :title="objInfo.name" @click="selectItem(objInfo)"><input type="checkbox">{{ objInfo.name }}</a>
+						   		<input type="checkbox" :id="'check'+objInfo.contentid" @click="selectItem(objInfo)">
+								<label :for="'check'+objInfo.contentid" :title="objInfo.name">{{ objInfo.name }}</label>
 						   	</li> 
 						</template>
 					</ul>
@@ -75,7 +76,7 @@
 					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.object" /></div>
 					<ul class="ddl-object-select-area">
 						<template v-for="(objInfo,key) in selectObjectItems">
-						   <li class="ddl-object-info" @click="setSelectObject(objInfo)">
+						   <li class="ddl-object-info" :class="objInfo.isActive===true?'active' :''" @click="setSelectObject(objInfo)">
 						   		<a href="javascript:;" :title="objInfo.name">{{ objInfo.name }}</a>
 						   	</li> 
 						</template>
@@ -130,17 +131,26 @@ VarsqlAPP.vueServiceBean({
 	,data: {
 		step : 1
 		,endStep : 3
-		,selectObjectName : ''
+		,selectExportObject : ''
 		,selectDbObjectInfo : []
 		,selectObjectItems :{}
 		,objExportInfo : {}
 		,selectExportInfo : {}
 		,detailItem :{}
-		,exportObject : ${varsqlfn:objectToJson( exportServiceMenu)}
+		,exportObject : []
 	}
 	,methods:{
 		init : function (){
+			var exportInfoArr = ${varsqlfn:objectToJson( exportServiceMenu)};
 			
+			for(var i =0, len = exportInfoArr.length; i<len; i++){
+				var item = exportInfoArr[i];
+				
+				item._isSelect = false; 
+				item.isActive = false; 
+			}
+			
+			this.exportObject = exportInfoArr;
 		}
 		//이전 , 다음
 		,moveStep : function (mode){
@@ -188,11 +198,22 @@ VarsqlAPP.vueServiceBean({
 				,data: param
 				,loadSelector : '.preferences-body'
 				,success:function (resData){
-					var objItem = resData.customs;
+					var customItem = resData.customs;
+					
+					var firstFlag = true; 
+					
+					var selectKeyInfo; 
 					
 					for(var key in objItem){
-						_self.objExportInfo[key] = objItem[key]; 
+						_self.objExportInfo[key] = $.isArray(customItem[key])?customItem[key] : [];
+						if(firstFlag){
+							selectKeyInfo =key;
+						}
+						
+						firstFlag = false; 
 					}
+					
+					_self.setSelectObject(_self.selectObjectItems[selectKeyInfo]);
 				}
 			});
 		}
@@ -202,7 +223,7 @@ VarsqlAPP.vueServiceBean({
 			
 			var info = $("#firstConfigForm").serializeJSON();
 			
-			_self.selectExportInfo[_self.selectObjectName]  = _self.selectDbObjectInfo.getTargetItem();
+			_self.selectExportInfo[_self.selectExportObject.contentid]  = _self.selectDbObjectInfo.getTargetItem();
 			
 			var prefVal = {
 				exportName : _self.export_name
@@ -227,23 +248,31 @@ VarsqlAPP.vueServiceBean({
 		,selectItem : function (objInfo){
 			objInfo._isSelect = objInfo._isSelect ? false :true; 
 			
+			objInfo.isActive = false; 
+			
 			if(objInfo._isSelect){
 				this.selectObjectItems[objInfo.contentid] =objInfo
 			}else{
 				delete this.selectObjectItems[objInfo.contentid];
+				delete this.selectExportInfo[objInfo.contentid];
 			}
 		}
 		//object list
 		,setSelectObject : function (sObj){
+			
+			console.log(sObj);
 			var _self =this; 
+			
+			sObj.isActive = true; 
 			
 			var objName = sObj.contentid; 
 			
-			if(_self.selectObjectName != ''){
-				_self.selectExportInfo[_self.selectObjectName]  = _self.selectDbObjectInfo.getTargetItem();
+			if(_self.selectExportObject != ''){
+				_self.selectExportObject.isActive = false; 
+				_self.selectExportInfo[_self.selectExportObject.contentid]  = _self.selectDbObjectInfo.getTargetItem();
 			}
 			
-			_self.selectObjectName = objName;
+			_self.selectExportObject = sObj;
 			
 			var sObjInfo = _self.objExportInfo[objName];
 			
@@ -266,9 +295,9 @@ VarsqlAPP.vueServiceBean({
 					optVal : 'name'
 					,optTxt : 'name'
 					,items : targetInfo
-					,click: function (e, sItem){
-						//console.log(e,sEle);
-					}
+				}
+				,pageInfo : {
+					emptyMessage : 'no_data'
 				}
 			}); 
 		}

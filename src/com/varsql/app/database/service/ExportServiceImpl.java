@@ -72,7 +72,7 @@ public class ExportServiceImpl{
 	public void selectExportTableInfo(PreferencesInfo preferencesInfo, ModelMap model, boolean tableColumnInfoFlag) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
-		model.addAttribute("tableInfo",dbMetaEnum.getDBMeta(DBObjectType.TABLE.getObjName(),preferencesInfo));
+		model.addAttribute("tableInfo",dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjName(),preferencesInfo));
 		
 		if(tableColumnInfoFlag){
 			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
@@ -187,7 +187,7 @@ public class ExportServiceImpl{
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 			
 			allDDLScript.append(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo, objNmArr));
-			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE);
+			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
 			
 		}
 		

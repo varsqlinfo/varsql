@@ -17,6 +17,12 @@
     border: 1px solid #cccccc;
 }
 
+.pub-multiselect-area .empty-message {
+    text-align: center;
+    padding-top: 10px;
+    font-size: 10pt;
+}
+
 .pub-multiselect-area ul,.pub-multiselect-area ol ,.pub-multiselect-area li{
 	list-style:none;
 }

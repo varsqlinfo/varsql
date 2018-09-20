@@ -145,7 +145,7 @@ public class SQLServiceImpl{
 				
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
-				ssrv.setResultMessage((ssrv.getDelay())/1000.0 +" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
+				ssrv.setResultMessage((ssrv.getDelay())+" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 				
 				sqlLogInfo.setStartTime(ssrv.getStarttime());
 				sqlLogInfo.setLogSql(tmpSqlSource.getQuery());
