@@ -24,6 +24,9 @@
 <entry key="header.menu.edit.find">찾기</entry>
 <entry key="header.menu.edit.compare">쿼리 비교</entry>
 
+<entry key="header.menu.search">검색</entry>
+<entry key="header.menu.search.find">찾기</entry>
+
 <entry key="header.menu.tool">도구</entry>
 <entry key="header.menu.tool.import">가져오기</entry>
 <entry key="header.menu.tool.export">내보내기</entry>

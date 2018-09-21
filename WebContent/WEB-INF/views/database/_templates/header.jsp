@@ -59,6 +59,17 @@
 		</ul>
 	</li>
 	<li class="dropdown">
+		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.search" /></a>
+		<ul class="db-header-menu">
+			<li class="header-menu-item" data-menu-item="search_find">
+				<a>
+					<span class="header-menu-item-text"><spring:message code="header.menu.search.find" /></span>
+					<span class="header-menu-item-key">Ctrl+F</span>
+				</a>
+			</li>
+		</ul>
+	</li>
+	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.tool" /></a>
 		<ul class="db-header-menu">
 			<%-- <!-- 가져오기 -->

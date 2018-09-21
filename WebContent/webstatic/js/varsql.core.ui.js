@@ -182,11 +182,17 @@ _ui.headerMenu ={
 						case 'redo':	// 살리기
 							_ui.SQL.getTextAreaObj().redo();
 							break;
-						case 'find':	// 찾기
-							_ui.SQL.findTextOpen();
-							break;
 						case 'compare': //비교
 							alert('['+menu_mode2+'] 준비중입니다.');
+							break;
+						default:
+							break;
+					}
+					break;
+				}case 'search':{    
+					switch (menu_mode2) {
+						case 'find':	// 찾기
+							_ui.SQL.findTextOpen();
 							break;
 						default:
 							break;
@@ -1457,6 +1463,15 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					,{key :'remarks', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
+				,bodyOptions :{
+					cellDblClick : function (rowItem){
+						var selKey =rowItem.keyItem.key;
+						
+						if(selKey == 'name' ){
+							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
+						}
+					}
+				}
 				,rowOptions :{
 					click : function (idx, item){
 						var sObj = $(this);
@@ -3318,6 +3333,8 @@ _ui.SQL = {
 				_self.findTextDialog.dialog( "close" );
 			});
 		}
+		
+		$('#editorFindText').val(_self.getSql());
 		
 		_self.findTextDialog.dialog("open");
 	}
