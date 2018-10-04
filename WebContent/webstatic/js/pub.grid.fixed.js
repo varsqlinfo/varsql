@@ -609,6 +609,7 @@ Plugin.prototype ={
 			strHtm.push('<option value="'+tciItem.key+'">'+tciItem.label+'</option>');
 		}
 		
+		_this.config.itemColumnCount = tci.length; 
 		_this.config.template['searchField'] = strHtm.join('');
 		_this._calcElementWidth();
 	}
@@ -2336,7 +2337,7 @@ Plugin.prototype ={
 				var rangeKey = 'row'+rowIdx;
 
 				_this._setRangeSelectInfo({
-					rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.scroll.endCol}
+					rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.itemColumnCount}
 					,isSelect : true
 					,curr : curr
 				}, initFlag , true);
