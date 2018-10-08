@@ -253,7 +253,7 @@ _ui.headerMenu ={
 							
 							
 							if(_self.dialogObj['dbInfo']){
-								_self.dialogObj['dbInfo'].open();
+								_self.dialogObj['dbInfo'].dialog( "open" );
 								return ; 
 							}
 							
