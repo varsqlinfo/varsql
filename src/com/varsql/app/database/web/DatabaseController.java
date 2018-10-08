@@ -132,4 +132,21 @@ public class DatabaseController {
 		return databaseServiceImpl.createDDL(databaseParamInfo);
 		
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbInfo
+	 * @Method 설명 : db 정보
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 10. 8. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/dbInfo")
+	public @ResponseBody ResponseResult dbInfo(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+		return databaseServiceImpl.dbInfo(databaseParamInfo);
+	}
 }

@@ -47,6 +47,17 @@
 	</div>
 </div>
 
+<%--db 정보 --%>
+<div id="aboutDbInfoDialog" style="display:none;margin:0px;padding:0px;" title="DB Info">
+	<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
+		<div style="padding-top :10px;">
+			<div style="font-weight: bold;font-size: 14pt;">DB info</div>
+			<div style="padding-top:10px;" id="epHeaderDialogDbInfo"></div>
+			<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
+		</div>
+	</div>
+</div>
+
 <%--editor 문자 찾기 다이얼로그. --%>
 <div id="editorFindTextDialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="찾기">
 	<div class="find-text-area">

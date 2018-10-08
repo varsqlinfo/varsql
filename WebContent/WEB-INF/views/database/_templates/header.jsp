@@ -126,6 +126,9 @@
 			<li class="header-menu-item" data-menu-item="help_help">
 				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
 			</li>
+			<li class="header-menu-item" data-menu-item="help_dbinfo">
+				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.dbinfo" /></span></a>
+			</li>
 			<li class="header-menu-item" data-menu-item="help_info">
 				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.info" /></span></a>
 			</li>

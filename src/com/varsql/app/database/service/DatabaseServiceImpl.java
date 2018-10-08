@@ -156,4 +156,27 @@ public class DatabaseServiceImpl{
 		}
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbInfo
+	 * @Method 설명 : db 정보
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 10. 8. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 * @return
+	 */
+	public ResponseResult dbInfo(DatabaseParamInfo databaseParamInfo) {
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		
+		ResponseResult result = new ResponseResult();
+		
+		try{
+			result.setItemOne(dbMetaEnum.getDBInfo(databaseParamInfo));
+		}catch(Exception e){
+			logger.error("createDDL : ", e);
+		}
+		return result;
+	}
 }

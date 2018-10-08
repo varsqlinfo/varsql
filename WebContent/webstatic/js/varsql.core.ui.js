@@ -102,6 +102,7 @@ _ui.initContextMenu  = function (){
 //header 메뉴 처리.
 _ui.headerMenu ={
 	preferencesDialog : ''
+	,dialogObj : {}
 	,init : function(){
 		var _self = this;
 		
@@ -247,6 +248,55 @@ _ui.headerMenu ={
 					switch (menu_mode2) {
 						case 'help':	//도움말
 							alert('['+menu_mode2+'] 준비중입니다.');
+							break;
+						case 'dbinfo':	//정보 보기.
+							
+							
+							if(_self.dialogObj['dbInfo']){
+								_self.dialogObj['dbInfo'].open();
+								return ; 
+							}
+							
+							
+							var param = {
+								conuid : _g_options.param.conuid
+							}
+							VARSQL.req.ajax({      
+								url:{gubun:VARSQL.uri.database, url:'/dbInfo.vsql'}
+								,data: param
+								,success:function (resData){
+									var item = resData.item; 
+									
+									var strHtm =[];
+									
+									strHtm.push(' '+ item.VERSIONINFO + '<br/>');
+									strHtm.push('<br/><span style="font-weight:bold;">--- more information ---</span><br/>');
+									
+									for(var key in item){
+										if(key != 'VERSIONINFO'){
+											//strHtm.push(key+' : '+item[key]+ '<br/>');
+											strHtm.push(item[key]+ '<br/>');
+										}
+									}
+								
+									$('#epHeaderDialogDbInfo').html(strHtm.join(''));
+									
+									_self.dialogObj['dbInfo'] = $('#aboutDbInfoDialog').dialog({
+										height: 300
+										,width: 500
+										,modal: true
+										,buttons: {
+											Ok:function (){
+												_self.dialogObj['dbInfo'].dialog( "close" );
+											}
+										}
+										,close: function() {
+											_self.dialogObj['dbInfo'].dialog( "close" );
+										}
+									});
+								}
+							});
+							
 							break;
 						case 'info':	//정보 보기.
 							var aboutDialog = $('#aboutVarsqlDialog').dialog({

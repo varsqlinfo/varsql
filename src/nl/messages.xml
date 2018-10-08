@@ -41,6 +41,7 @@
 
 <entry key="header.menu.help">도움말</entry>
 <entry key="header.menu.help.help">도움말 항목</entry>
+<entry key="header.menu.help.dbinfo">DB 정보</entry>
 <entry key="header.menu.help.info">VARSQL 정보</entry>
 
 <entry key="screen">화면</entry>
