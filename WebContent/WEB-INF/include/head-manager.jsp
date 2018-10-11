@@ -15,6 +15,8 @@
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 
+<link href="${pageContextPath}/webstatic/css/prettify/prettify.css" rel="stylesheet" type="text/css">
+
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -36,6 +38,9 @@
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
+
+<script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
 
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>

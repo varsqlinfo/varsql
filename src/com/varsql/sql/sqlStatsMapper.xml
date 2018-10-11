@@ -66,12 +66,18 @@
 		and LOG_SQL like '%'||#{keyword}||'%' 
 	</select>
 	
+	
+	<resultMap id="clobResultMap" type="HashMap">
+		<result column="LOG_SQL" property="LOG_SQL" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
 	<!-- log search count -->
-	<select id="sqlStatsMapper.selectLogSearch" parameterType="searchParameter" resultType="map">
+	<select id="sqlStatsMapper.selectLogSearch" parameterType="searchParameter" resultMap="clobResultMap">
 		select a.* 
+				,(select uname ||'('||UID||')' from VTUSER where VIEWID=a.VIEWID) as U_NM_ID
 				, to_char( a.START_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_STARTDT
 				, to_char( a.END_TIME,'YYYY-MM-DD HH24:MI:SS') as VIEW_ENDDT
-		from VTSQL_LOG a
+		from VTSQL_HISTORY a
 		where 1=1
 		and VCONNID=#{customParam.vconnid}
 		and LOG_SQL like '%'||#{keyword}||'%' 

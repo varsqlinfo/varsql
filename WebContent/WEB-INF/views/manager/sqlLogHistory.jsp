@@ -46,16 +46,14 @@
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
-								<col style="width:75px;">
 								<col style="width:*;">
-								<col style="width:70px;">
-								<col style="width:100px;">
+								<col style="width:120px;">
+								<col style="width:120px;">
 								<col style="width:130px;">
 								<col style="width:50px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manage.log.command" /></th>
 									<th class="text-center"><spring:message	code="manage.log.query" /></th>
 									<th class="text-center"><spring:message	code="id" /></th>
 									<th class="text-center"><spring:message	code="ip" /></th>
@@ -65,10 +63,9 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td :title="item.COMMAND_TYPE"> {{item.COMMAND_TYPE}}</a></td>
-									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis">{{item.LOG_SQL}}</div></a></td>
-									<td :title="item.VIEWID">{{item.VIEWID}}</td>
-									<td :title="item.USR_IP"><div class="text-ellipsis">{{item.USR_IP}}</div></td>
+									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis ellipsis10">{{item.LOG_SQL}}</div></a></td>
+									<td :title="item.U_NM_ID"><div class="text-ellipsis ellipsis5">{{item.U_NM_ID}}</div></td>
+									<td :title="item.USR_IP"><div class="text-ellipsis ellipsis5">{{item.USR_IP}}</div></td>
 									<td>
 										{{item.VIEW_STARTDT}}<br>{{item.VIEW_ENDDT}}
 									</td>
@@ -96,8 +93,22 @@
 				<form id="addForm" name="addForm" class="form-horizontal" >
 					<div class="form-group">
 						<div class="col-lg-12">
-							<textarea class="form-control text" rows="10" v-model="detailItem.LOG_SQL" style="width:100%;"></textarea>
+							IP : {{detailItem.USR_IP}}
 						</div>
+						<div class="col-lg-12">
+							<div style="padding-top:10px;">SQL</div>
+							<div style="height:200px;">
+								<pre id="epLogSqlArea" class="user-select-on prettyprint lang-sql" style="width:100%;height:100%;"></pre>
+							</div>
+						</div>
+						
+						<div class="col-lg-12">
+							<div style="padding-top:10px;">ERROR LOG</div>
+							<div style="height:200px;">
+								<textarea id="epSqlErrorArea" v-model="detailItem.ERROR_LOG" style="width:100%;height:100%;"></textarea>
+							</div>
+						</div>
+						
 					</div>
 				</form>
 			</div>
@@ -131,7 +142,13 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 상세
 		,itemView : function (item){
+			var ele = $('#epLogSqlArea');
+			
 			this.detailItem = item;
+			
+			ele.empty().html(item.LOG_SQL);
+			ele.removeClass('prettyprinted');
+			PR.prettyPrint();
 		}
 		// 검색
 		,search : function(no){

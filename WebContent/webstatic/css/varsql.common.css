@@ -34,6 +34,14 @@ body {
   overflow: hidden;
 }
 
+.text-ellipsis.ellipsis10 {
+  max-width: calc(100% - 10px);
+}
+
+.text-ellipsis.ellipsis5 {
+  max-width: calc(100% - 5px);
+}
+
 .error{
 	color: red;
 	font-weight: bold;
