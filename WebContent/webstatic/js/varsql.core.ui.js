@@ -3983,6 +3983,7 @@ _ui.SQL = {
 _ui.sqlDataArea =  {
 	_currnetQueryReusltData :{}
 	,resultMsgAreaObj:null
+	,initDataGridContextFlag : false // data grid context 초기화 여부
 	,options :{
 		dataGridSelector:'#dataGridArea'
 		,dataColumnTypeSelector:'#dataColumnTypeArea'
@@ -4178,24 +4179,60 @@ _ui.sqlDataArea =  {
 			}
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
-			,rowOptions :{
-				contextMenu : {
-					beforeSelect :function (){
-						$(this).trigger('click');
-					}
-					,callback: function(key,sObj) {
-						if(key =='copy'){
-							gridObj.copyData();
-							return ; 
-						}
-						
-					},
-					items: [
-						{key : "copy" , "name": "복사"}
-					]
-				}
-			}
 		});
+		
+		
+		if(_self.initDataGridContextFlag===false) {
+			_self.initDataGridContextFlag= true; 
+			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector+' .pubGrid-body-container', {
+				items: [
+					{key : "copy" , "name": "복사"}
+					,{key : "download" , "name": "다운로드"
+						,subMenu : [
+							{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
+							,{divider : true}
+							,{ key : "download_excel","name": "EXCEL" ,mode:"excel"}
+							,{ key : "download_csv","name": "CSV" ,mode:"csv" }
+							,{ key : "download_xml","name": "XML" ,mode:"xml"}
+							,{ key : "download_json","name": "json" ,mode:"json"}
+						]
+					}
+				]
+				,callback: function(key,sObj) {
+					if(key =='copy'){
+						$.pubGrid(_self.options.dataGridSelector).copyData();
+						return ; 
+					}
+					
+					if(key.indexOf('download_') > -1){
+						
+						
+						var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
+						var isSelect = $("#"+sqlGridResultSelect).is(":checked");
+						
+						console.log(isSelect);
+						
+						var selData = $.pubGrid(_self.options.dataGridSelector).getData({isSelect:isSelect, dataType:'json'});
+						var mode = sObj.mode; 
+						
+						var params =VARSQL.util.objectMerge (_g_options.param,{
+							exportType :mode 
+							,headerInfo : JSON.stringify(selData.header)
+							,gridData : JSON.stringify(selData.data)
+						});
+						
+						
+						
+						VARSQL.req.download({
+							type: 'post'
+							,url: {gubun:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
+							,params: params
+						});
+						return 
+					}
+				}
+			});
+		}
 	}
 	//result message area
 	,getResultMsgAreaObj:function(){

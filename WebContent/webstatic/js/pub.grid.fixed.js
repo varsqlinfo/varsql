@@ -2991,11 +2991,77 @@ Plugin.prototype ={
 		}			
 	}
 	/**
+	* @method getData
+    * @description data 구하기.
+	*/
+	,getData : function (opt){
+		var _this = this; 
+			
+		opt = objectMerge({isSelect :false,dataType : 'text'} ,opt);
+		
+		var dataType =opt.dataType; 
+		if(opt.isSelect===true){
+			return _this.selectData(dataType);
+		}else{
+
+			var tbodyItem = _this.options.tbodyItem;
+			var tColItem = _this.options.tColItem;
+
+			var tbodyLen = tbodyItem.length
+				,tColLen = tColItem.length;
+			
+			var returnVal = [];
+			var keyInfo ={};
+			for(var i = 0; i < tbodyLen; i++){
+				var item = tbodyItem[i];
+				var rowText = [];
+				var rowItem = {};
+
+				for(var j=0 ;j < tColLen; j++){
+					var colItem = tColItem[j];
+					if(colItem.hidden===true) continue;
+				
+					var tmpKey = colItem.key; 
+
+					var tmpVal = _this.valueFormatter( i, colItem,item,null,true); 
+					if(dataType=='json'){
+						keyInfo[j] = colItem;
+						rowItem[tmpKey] = tmpVal;
+					}else{
+						rowText.push(tmpVal);
+					}
+				}
+
+				if(dataType=='json'){
+					returnVal.push(rowItem);
+				}else{
+					returnVal.push(rowText.join('\t'));
+				}
+			}
+		
+			if(dataType=='json'){
+				var reKeyInfo =[];
+				for(var key in keyInfo){
+					reKeyInfo.push(keyInfo[key]);
+				}
+
+				return {
+					header : reKeyInfo
+					,data : returnVal
+				}
+			}else{
+				return returnVal.join('\n');
+			}
+		}
+	}
+	/**
      * @method selectData
      * @description select data 구하기.
      */
-	,selectData : function () {
+	,selectData : function (dataType) {
 		var _this = this; 
+
+		dataType = dataType||'text';
 		
 		var sCol,eCol,sIdx,eIdx , chkFn;
 
@@ -3016,33 +3082,64 @@ Plugin.prototype ={
 
 		if(sIdx < 0 || eIdx < 0) return ''; 
 
-		var textArr = [];
-		var addRowFlag; 
-		for(var i = sIdx ; i <= eIdx ; i++){
-			var item = _this.options.tbodyItem[i];
+		var returnVal = [];
+		var addRowFlag;
 
-			var rowText = [];
+		var tbodyItem = _this.options.tbodyItem;
+		var tColItem = _this.options.tColItem;
+
+		var keyInfo ={};
+		for(var i = sIdx ; i <= eIdx ; i++){
+			var item = tbodyItem[i];
+
+			var rowText = [], rowItem = {};
 			addRowFlag = false; 
+
 			for(var j=sCol ;j <= eCol; j++){
+				var colItem = tColItem[j];
+
+				if(colItem.hidden===true) continue;
 				
-				if(_this.options.tColItem[j].hidden===true) continue; 
-				
-				if(allSelectFlag && !_this.isAllSelectUnSelectPosition( i,j)){
+				var tmpKey = colItem.key; 
+
+				if((allSelectFlag && !_this.isAllSelectUnSelectPosition( i,j)) || _this.isSelectPosition(i,j)) {
 					addRowFlag = true;
-					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
-				}else if(_this.isSelectPosition( i,j)){
-					addRowFlag = true;
-					rowText.push(_this.valueFormatter( i, _this.options.tColItem[j],item,null,true)); 
+					 
+					if(dataType=='json'){
+						keyInfo[j] = colItem;
+						rowItem[tmpKey] = _this.valueFormatter( i, colItem,item,null,true);
+					}else{
+						rowText.push(_this.valueFormatter( i, colItem,item,null,true));
+					}
 				}else{
-					rowText.push(''); 
+					rowText.push('');
+					rowItem[tmpKey] = '';
 				}
 			}
+
 			if(addRowFlag){
-				textArr.push(rowText.join('\t'));
+				if(dataType=='json'){
+					returnVal.push(rowItem);
+				}else{
+					returnVal.push(rowText.join('\t'));
+				}
 			}
 		}
+		if(dataType=='json'){
+			var reKeyInfo =[];
 
-		return textArr.join('\n');
+			for(var key in keyInfo){
+				reKeyInfo.push(keyInfo[key]);
+			}
+
+			return {
+				header : reKeyInfo
+				,data : returnVal
+			}
+		}else{
+			return returnVal.join('\n');
+		}
+		
 	}
 	/**
      * @method getSelectItem

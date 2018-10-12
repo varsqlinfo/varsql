@@ -152,10 +152,6 @@
 	padding-left: 20px;
 }
 
-.pub-context .pub-context-header {
-	cursor: default;
-}
-
 .pub-context .pub-context-submenu .pub-context-menu {
 	display: none;
 }
@@ -196,5 +192,19 @@
 	margin: 3px 1px;
 }
 .compressed-context .pub-context-header{
-	padding:1px 13px;
+	
+    color: #401d1d;
+}
+.pub-context .pub-context-header {
+	cursor: default;
+	color: #444040;
+	padding: 3px 7px;
+}
+
+.pub-context input[type=checkbox], .pub-context input[type=radio] {
+    vertical-align: baseline;
+    position: relative;
+    top: 3px;
+    margin: 0 3px 0 0;
+    padding: 0px;
 }

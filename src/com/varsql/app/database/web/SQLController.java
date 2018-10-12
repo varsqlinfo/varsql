@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.database.beans.SqlGridDownloadInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.service.SQLServiceImpl;
 import com.vartech.common.app.beans.ResponseResult;
@@ -141,6 +142,23 @@ public class SQLController {
 	@RequestMapping({"/delSqlSaveInfo"})
 	public @ResponseBody ResponseResult delSqlSaveInfo(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		return sQLServiceImpl.deleteSqlSaveInfo(sqlParamInfo);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : gridDownload
+	 * @Method 설명 : grid data download
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 10. 12. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @param req
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping({"/gridDownload"})
+	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
+		sQLServiceImpl.gridDownload(sqlGridDownloadInfo, response);
 	}
 	
 }

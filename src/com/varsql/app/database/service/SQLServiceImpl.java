@@ -1,4 +1,5 @@
 package com.varsql.app.database.service;
+import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.database.beans.SqlGridDownloadInfo;
 import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.beans.SqlUserHistoryInfo;
@@ -33,6 +36,7 @@ import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -464,6 +468,30 @@ public class SQLServiceImpl{
 	    	result.setMessageCode(e.getMessage());
 	    }
 		return result; 
+	}
+
+	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletResponse res) throws IOException {
+		String exportType = sqlGridDownloadInfo.getExportType();
+		
+		List<GridColumnInfo> columnInfo = Arrays.asList(VartechUtils.stringToObject(sqlGridDownloadInfo.getHeaderInfo(), GridColumnInfo[].class , true));
+		List<Map> downloadData = VartechUtils.stringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
+		
+		String downloadName = "grid-data-download"; 
+		
+		if("csv".equals(exportType)){
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
+			DataExportUtil.toCSVWrite(downloadData, columnInfo, res.getOutputStream());
+		}else if("json".equals(exportType)){
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
+			new ObjectMapper().writeValue(res.getOutputStream(), downloadData);
+		}else if("xml".equals(exportType)){
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
+			DataExportUtil.toXmlWrite(downloadData, columnInfo , res.getOutputStream());
+		}else if("excel".equals(exportType)){
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
+			DataExportUtil.toExcelWrite(downloadData,columnInfo , res.getOutputStream());
+		}
+		
 	}
 	
 }

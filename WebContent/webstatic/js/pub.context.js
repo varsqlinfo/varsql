@@ -155,6 +155,11 @@ Plugin.prototype ={
 				$menuHtm.push('<li class="pub-context-header '+styleClass+'" context-key="header">' + item.header + '</li>');
 				continue; 
 			}
+
+			if(item.checkbox ===true){
+				$menuHtm.push('<li class="pub-context-header '+styleClass+'" context-key="checkbox"><label for="pubContext_'+item.key+'"><input type="checkbox" id="pubContext_'+item.key+'" /> <span>'+item.name+'</span></label></li>');
+				continue; 
+			}
 			
 			itemKey = depth+'_'+item.key; 
 			_this.contextData[itemKey] = item;
@@ -241,6 +246,13 @@ Plugin.prototype ={
 		}else{
 			this.contextElement.find("[context-key].disabled").removeClass('disabled');
 		}
+	}
+	/**
+     * @method getCheckBoxId
+     * @description get checkbox id
+     */
+	,getCheckBoxId : function (chkid){
+		return 'pubContext_'+chkid;
 	}
 	/**
      * @method addContext
