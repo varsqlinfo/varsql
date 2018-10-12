@@ -4182,7 +4182,7 @@ _ui.sqlDataArea =  {
 		});
 		
 		
-		if(_self.initDataGridContextFlag===false) {
+		if(_self.initDataGridContextFlag===false) { // grid context menu 처리. 
 			_self.initDataGridContextFlag= true; 
 			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector+' .pubGrid-body-container', {
 				items: [
@@ -4205,12 +4205,8 @@ _ui.sqlDataArea =  {
 					}
 					
 					if(key.indexOf('download_') > -1){
-						
-						
 						var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
 						var isSelect = $("#"+sqlGridResultSelect).is(":checked");
-						
-						console.log(isSelect);
 						
 						var selData = $.pubGrid(_self.options.dataGridSelector).getData({isSelect:isSelect, dataType:'json'});
 						var mode = sObj.mode; 
@@ -4220,8 +4216,6 @@ _ui.sqlDataArea =  {
 							,headerInfo : JSON.stringify(selData.header)
 							,gridData : JSON.stringify(selData.data)
 						});
-						
-						
 						
 						VARSQL.req.download({
 							type: 'post'
