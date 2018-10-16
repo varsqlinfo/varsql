@@ -2337,7 +2337,7 @@ Plugin.prototype ={
 				var rangeKey = 'row'+rowIdx;
 
 				_this._setRangeSelectInfo({
-					rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.itemColumnCount}
+					rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startRow : row_idx ,endRow:row_idx, startCol : 0,  endCol :_this.config.itemColumnCount-1}
 					,isSelect : true
 					,curr : curr
 				}, initFlag , true);
@@ -2811,17 +2811,17 @@ Plugin.prototype ={
 			currInfo[key] = rangeInfo[key];
 		}
 
-		cfgSelect.minIdx =  ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
-		cfgSelect.maxIdx =  Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
+		cfgSelect.minIdx = ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
+		cfgSelect.maxIdx = Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
 
-		cfgSelect.minCol =  (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
+		cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
 		cfgSelect.maxCol = Math.max(cfgSelect.maxCol ,currInfo.endCol , currInfo.startCol); 
 
 		if(isUndefined(rangeInfo)) return ; 
 
-		currInfo.minIdx =   Math.min(currInfo.startIdx, currInfo.endIdx)
-		currInfo.maxIdx =  Math.max(currInfo.endIdx ,currInfo.startIdx);
-		currInfo.minCol =  Math.min( currInfo.endCol , currInfo.startCol);
+		currInfo.minIdx = Math.min(currInfo.startIdx, currInfo.endIdx)
+		currInfo.maxIdx = Math.max(currInfo.endIdx ,currInfo.startIdx);
+		currInfo.minCol = Math.min( currInfo.endCol , currInfo.startCol);
 		currInfo.maxCol = Math.max( currInfo.endCol , currInfo.startCol);
 		
 		if(tdSelectFlag){

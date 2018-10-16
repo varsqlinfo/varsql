@@ -390,12 +390,12 @@ jQuery.fn.centerLoading = function(options) {
 
 	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;	
 		
-	var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
+	//var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
+	var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:100%; height:'+h+';" class="centerLoading"></div>');
 	var centerLoading = $('<div style="background-repeat:no-repeat;"></div>');
 	centerLoading.css('background-image', 'url("'+config.loadingImg+'")')
 				.css('background-position', config.centerYn=='Y'?'center center':'')
 				.css('height', h)
-				.css('width',w)
 				.css('cursor', config.cursor);
 	
 	firstDiv.html(centerLoading);

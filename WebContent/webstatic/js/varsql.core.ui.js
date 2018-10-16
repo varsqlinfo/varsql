@@ -1542,9 +1542,12 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							var gubun= $$gubun
 								,tmpName = sItem.name;
 							
-							if(key=='dataview'){
+							if(key=='dataview_all'){
 								_ui.SQL._sqlData('select * from '+tmpName,false);
 								return ; 
+							}else if(key=='dataview_count'){
+								_ui.SQL._sqlData('select count(1) CNT from '+tmpName,false);
+								return ;
 							}
 							
 							if(key=='refresh'){
@@ -1589,13 +1592,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						},
 						items: [
 							
-							{key : "dataview" , "name": "데이타 보기"}
+							{key : "dataview" , "name": "데이타 보기"
+								,subMenu: [
+									{ key : "dataview_all","name": "데이터" , mode: "selectStar"}
+									,{ key : "dataview_count","name": "카운트" ,mode:"selectCount"}
+								]
+							}
 							,{key : "copy" , "name": "복사"}
 							,{divider:true}
 							,{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
 									,{ key : "select","name": "select column" ,mode:"select"}
+									,{ key : "selectCount","name": "select count" ,mode:"selectCount"}
 									,{ key : "insert","name": "insert" , mode:"insert"}
 									,{ key : "update","name": "update" ,mode:"update"}
 									,{ key : "delete","name": "delete" ,mode:"delete"}
@@ -1844,10 +1853,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
-					{key :'name', label:'Table', width:200, sort:true}
+					{key :'name', label:'View', width:200, sort:true}
 					,{key :'remarks', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
+				,bodyOptions :{
+					cellDblClick : function (rowItem){
+						var selKey =rowItem.keyItem.key;
+						
+						if(selKey == 'name' ){
+							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
+						}
+					}
+				}
 				,rowOptions : {
 					click : function (idx, item){
 						var sObj = $(this);
@@ -4445,13 +4463,13 @@ function generateSQL(scriptInfo){
 	
 	var len = dataArr.length;
 			
-	// select 모든것.
-	if(key=='selectStar'){
+	if(key=='selectStar'){ // select 모든것.
 		reval.push('select * from '+tmpName);
-		
+	
+	}else if(key=='selectCount'){// count query 
+		reval.push('select count(1) from '+tmpName);
 	}
-	// select 컬럼 값
-	else if(key=='select'){
+	else if(key=='select'){ // select 컬럼 값
 		reval.push('select ');
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
@@ -4461,8 +4479,7 @@ function generateSQL(scriptInfo){
 		reval.push(' from '+tmpName);
 	
 	}
-	// insert 문
-	else if(key=='insert'){
+	else if(key=='insert'){ // insert 문
 		reval.push('insert into '+tmpName+' (');
 		var valuesStr = [];
 		for(var i=0; i < len; i++){
@@ -4478,9 +4495,8 @@ function generateSQL(scriptInfo){
 		}
 		reval.push(' )'+VARSQLCont.constants.newline +'values( '+ valuesStr.join('')+' )');
 		
-	}
-	// update 문
-	else if(key=='update'){
+	} 
+	else if(key=='update'){ // update 문
 		reval.push('update '+tmpName+VARSQLCont.constants.newline+' set ');
 		
 		var keyStr = [];
@@ -4505,8 +4521,7 @@ function generateSQL(scriptInfo){
 		if(keyStr.length > 0) reval.push(VARSQLCont.constants.newline+'where '+keyStr.join(' and '));
 		
 	}
-	// delete 문
-	else if(key=='delete'){
+	else if(key=='delete'){ // delete 문
 		reval.push('delete from '+tmpName);
 		
 		var item;
@@ -4526,8 +4541,7 @@ function generateSQL(scriptInfo){
 		if(keyStr.length > 0) reval.push(VARSQLCont.constants.newline+'where '+keyStr.join(' and '));
 		
 	}
-	// drop 문
-	else if(key=='drop'){
+	else if(key=='drop'){ // drop 문
 		reval.push('drop table '+tmpName);
 	}
 	
