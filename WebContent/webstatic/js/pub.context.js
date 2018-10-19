@@ -78,6 +78,12 @@ function Plugin(selector, options , uuid) {
 	return this; 
 }
 
+$(document).on('mousedown.pubcontext', 'html', function (e) {
+	if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
+		$('#pub-context-area .pub-context').css({display:''}).find('.pub-context-sub.drop-left').css('left','').removeClass('drop-left');
+	}
+});
+
 Plugin.prototype ={
 	init :function(){
 		var _this = this;
@@ -85,14 +91,7 @@ Plugin.prototype ={
 	}
 	,initEvt : function (){
 		var _this = this; 
-		$(document).on('mousedown.pubcontext', 'html', function (e) {
-			if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
-				$('#pub-context-area .pub-context').fadeOut(_this.options.fadeSpeed, function(){
-					var sEle = $(this);
-					sEle.css({display:''}).find('.pub-context-sub.drop-left').css('left','').removeClass('drop-left');
-				});
-			}
-		});
+		
 	}
 	,loadAfterEvt : function(){
 		var _this = this;
