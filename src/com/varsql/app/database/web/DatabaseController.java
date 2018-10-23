@@ -15,6 +15,7 @@ import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.DatabaseServiceImpl;
 import com.varsql.app.database.service.PreferencesServiceImpl;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -51,6 +52,7 @@ public class DatabaseController {
 	public ModelAndView mainpage(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute(VarsqlParamConstants.LEFT_DB_OBJECT, databaseServiceImpl.schemas(preferencesInfo));
+		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());
 		
 		preferencesInfo.setPrefKey("main.database.setting");
 		

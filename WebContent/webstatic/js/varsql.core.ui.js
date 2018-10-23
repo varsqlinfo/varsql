@@ -57,9 +57,15 @@ VARSQL.ui.create = function (_opts){
 	_g_options._opts =_opts;
 	_ui.initContextMenu();
 	_ui.headerMenu.init();
+	_ui.initEditorOpt();
 	
 	_ui.layout.init(_opts);
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
+}
+
+_ui.initEditorOpt = function (){
+	CodeMirror.keyMap.default["Shift-Tab"] = "indentLess";
+	CodeMirror.keyMap.default["Tab"] = "indentMore";
 }
 
 //context menu 초기화
@@ -2970,6 +2976,8 @@ _ui.SQL = {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
+			autoCloseBrackets: true,
+			indentUnit : 4,
 			lineNumbers: true,
 			height:'auto',
 			lineWrapping: false,

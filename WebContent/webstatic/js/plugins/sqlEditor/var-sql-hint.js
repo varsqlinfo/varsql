@@ -115,8 +115,8 @@ VARSQLHints.tables = {};
 
   function match(string, word) {
   
-  if(word ==='undefined') return false; 
-  
+    if(word ==='undefined') return false; 
+    
     var len = string.length;
     var sub = getText(word).substr(0, len);
     return string.toUpperCase() === sub.toUpperCase();
@@ -139,6 +139,7 @@ VARSQLHints.tables = {};
   }
 
   function cleanName(name) {
+	  
     // Get rid name from identifierQuote and preceding dot(.)
     if (name.charAt(0) == ".") {
       name = name.substr(1);
@@ -146,17 +147,21 @@ VARSQLHints.tables = {};
     // replace doublicated identifierQuotes with single identifierQuotes
     // and remove single identifierQuotes
     var nameParts = name.split(identifierQuote+identifierQuote);
-    for (var i = 0; i < nameParts.length; i++)
-      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote,"g"), "");
+    
+    for (var i = 0; i < nameParts.length; i++){
+    	nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote,"gi"), "");
+    }
+    
     return nameParts.join(identifierQuote);
   }
 
   function insertIdentifierQuotes(name) {
+	  
     var nameParts = getText(name).split(".");
     for (var i = 0; i < nameParts.length; i++)
       nameParts[i] = identifierQuote +
         // doublicate identifierQuotes
-        nameParts[i].replace(new RegExp(identifierQuote,"g"), identifierQuote+identifierQuote) +
+        nameParts[i].replace(new RegExp(identifierQuote,"gi"), identifierQuote+identifierQuote) +
         identifierQuote;
     var escaped = nameParts.join(".");
     if (typeof name == "string") return escaped;
@@ -166,6 +171,7 @@ VARSQLHints.tables = {};
   }
 
   function nameCompletion(cur, token, result, editor) {
+	  
     // Try to complete table, column names and return start position of completion
     var useIdentifierQuotes = false;
     var nameParts = [];
@@ -184,13 +190,12 @@ VARSQLHints.tables = {};
         token = editor.getTokenAt(Pos(cur.line, token.start));
       }
     }
-
     // Try to complete table names
     var string = nameParts.join(".");
     addMatches(result, string, tables, function(w) {
       return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
     });
-
+    
     // Try to complete columns from defaultTable
     addMatches(result, string, defaultTable, function(w) {
       return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
@@ -233,7 +238,7 @@ VARSQLHints.tables = {};
   function eachWord(lineText, f) {
     var words = lineText.split(/\s+/)
     for (var i = 0; i < words.length; i++)
-      if (words[i]) f(words[i].replace(/[,;]/g, ''))
+      if (words[i]) f(words[i].replace(/[,;]/gi, ''))
   }
 
   function findTableByAlias(alias, editor) {
@@ -319,13 +324,26 @@ VARSQLHints.tables = {};
       search = "";
     }
     if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
-      start = nameCompletion(cur, token, result, editor);
-    } else {
-      addMatches(result, search, defaultTable, function(w) {return w;});
-      addMatches(result, search, tables, function(w) {return w;});
-      if (!disableKeywords)
-        addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
-    }
+        start = nameCompletion(cur, token, result, editor);
+      } else {
+        addMatches(result, search, defaultTable, function(w) {return {text:w, className: "CodeMirror-hint-table CodeMirror-hint-default-table"};});
+        addMatches(
+            result,
+            search,
+            tables,
+            function(w) {
+                if (typeof w === 'object') {
+                    w.className =  "CodeMirror-hint-table";
+                } else {
+                    w = {text: w, className: "CodeMirror-hint-table"};
+                }
+
+                return w;
+            }
+        );
+        if (!disableKeywords)
+          addMatches(result, search, keywords, function(w) {return {text: w.toUpperCase(), className: "CodeMirror-hint-keyword"};});
+      }
 
     return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};
   });
