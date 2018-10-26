@@ -556,10 +556,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				try{
-					_ui.SQL.sqlTextAreaObj.refresh();
-				}catch(e){};
-				
+				_ui.SQL.refresh();
 			});
 		});
 
@@ -976,13 +973,15 @@ _ui.registerPlugin({
 			    ,url:{gubun:VARSQL.uri.plugin, url:'/historySearch.varsql'}
 			    ,data : params 
 			    ,success:function (res){
-			    	var items = res.items; 
+			    	
+			    	var items = res.items ||[]; 
+			    	
 			    	var itemLen =items.length; 
 			    	
 			    	if(_self.pageNo ==1){
-			    		_self.gridObj.setData(res.items);
+			    		_self.gridObj.setData(items);
 			    	}else{
-			    		_self.gridObj.addData(res.items);
+			    		_self.gridObj.addData(items);
 			    	}
 			    	
 			    	if(itemLen> 0){
@@ -1045,9 +1044,16 @@ _ui.dbSchemaObject ={
 	
 		var strHtm = [];
 		var item; 
+		var activeClass = '';
+		
+		var toUpperSchema = _g_options.schema.toUpperCase(); 
 		for (var i=0; i<len ; i++ ){
 			item = data[i];
-			strHtm.push('<li><a href=\"javascript:;\" class=\"db-list-group-item\" obj_nm='+item+'>'+item+'</a></li>');
+			activeClass = '';
+	 		if (toUpperSchema === item.toUpperCase()) {
+				activeClass='active';
+			}
+			strHtm.push('<li><a href="javascript:;" class="db-list-group-item '+activeClass+'" obj_nm="'+item+'">'+item+'</a></li>');
 		}
 									
 		$(_self.options.selector).html(strHtm.join(''));
@@ -1065,7 +1071,7 @@ _ui.dbSchemaObject ={
 			_self._schemaClick(this);
 		});
 		
-		$(_self.options.selector+' .db-list-group-item[obj_nm="'+_g_options.schema+'"]').trigger('click');
+		$(_self.options.selector+' .db-list-group-item.active').trigger('click');
 		
 	}
 	// 스키마 클릭. 
@@ -2999,6 +3005,14 @@ _ui.SQL = {
 		});
 		
 		_self.sqlEditorEle = $(_self.sqlEditorSelector);
+	}
+	,refresh : function (){
+		var _self = this;
+		try{
+			_self.sqlTextAreaObj.refresh();
+		}catch(e){
+			console.log('editor refresh error')
+		}
 	}
 	// 사용자 셋팅 정보 가져오기.
 	,_userSettingInfo : function (){

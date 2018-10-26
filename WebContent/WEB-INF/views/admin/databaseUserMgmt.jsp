@@ -96,7 +96,7 @@ var databaseUserMgmt = {
 	    		
 	    		$('.db-list-item').on('click', function (){
 	    			var sEle = $(this);
-	    			$('.db-list-item.active').removeClass('.active');	
+	    			$('.db-list-item.active').removeClass('active');	
 	    			sEle.addClass('active');
 	    			
 					var vconnID = sEle.data('conid');	
@@ -139,7 +139,7 @@ var databaseUserMgmt = {
 			data:{
 				vconnid: vconnID
 			}
-			,loadSelector: '#main-content'
+			,loadSelector: '.manage-user-detail'
 			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
 			,success:function (resData){
 				
@@ -212,7 +212,7 @@ var databaseUserMgmt = {
 				<spring:message code="admin.managerlist.dbuser" />
 			</div>
 			<!-- /.panel-heading -->
-			<div class="panel-body">
+			<div class="panel-body manage-user-detail">
 				<div class="col-sm-12">
 					<ul id="source" class="form-control" style="width:100%;height:200px;">
 					  <li><spring:message code="msg.nodata" /></li>
