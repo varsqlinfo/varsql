@@ -1130,7 +1130,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if(_self.initFlag ===false){
 			_self._tabs();
-			$.pubTab(_self.options.serviceMenuTabId).itemClick();
+			$.pubTab(_self.options.serviceMenuTabId).itemClick(0);
 			_self.initEvt();
 		}else{
 			$.pubTab(_self.options.serviceMenuTabId).itemClick(0, {'refresh':'Y'});
@@ -2935,9 +2935,11 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
  * sql 데이타 그리드
  */
 _ui.SQL = {
-	sqlTextAreaObj:null
-	,sqlEditorSelector : '#sql_editor_area .CodeMirror.cm-s-default'
-	,sqlEditorEle:null
+	sqlTextAreaObj : null
+	,sqlFileTabObj : null	// sql file tab list
+	,allSqlEditorObj : {}	 // sql editor  object
+	,sqlEditorSelector : '#sql_editor_area'
+	,sqlEditorEle : null
 	,memoDialog : null
 	,findTextDialog : null
 	,currentSqlData :''
@@ -2965,44 +2967,46 @@ _ui.SQL = {
 		
 		_self._initEditor();
 		_self._initEvent();
-		_self._userSettingInfo();
+		_self._initTab();
+		_self.sqlSaveList();
+		
+	}
+	// init editor tab 
+	,_initTab : function (){
+		var _self = this; 
+		
+		// tab-item 
+		_self.sqlFileTabObj = $.pubTab('#varsqlSqlFileTab',{
+			items : []
+			,width:'auto'
+			,activeIcon :{
+				position : 'last'		//  활성시 html 추가 위치
+				,html : '<i class="fa fa-remove"></i>'		// 활성시 추가할 html
+				,click : function (item, idx){
+					_self.sqlFileTabObj.removeItem(idx);
+					
+					_self.allSqlEditorObj[item.SQL_ID].toTextArea();
+
+					$('[data-editor-id="'+item.SQL_ID+'"]').remove();
+				}
+			}
+			,overItemViewMode :'drop'
+			,click : function (item){
+				$('.sql-editor-item.active').removeClass('active');
+				$('[data-editor-id="'+item.SQL_ID+'"]').addClass('active');
+				
+				_self.sqlTextAreaObj = _self.allSqlEditorObj[item.SQL_ID];
+				
+				 $('#sqlFileId').val(item.SQL_ID);
+			}
+			,itemKey :{							// item key mapping
+				title :'GUERY_TITLE'
+				,id : 'SQL_ID'
+			}
+		})
 	}
 	,_initEditor : function (){
 		var _self = this;
-		
-		var tableHint = {};
-		$.each(_ui.base.sqlHints , function (_idx, _item){
-			tableHint[_item] = {
-				colums:[]
-				,text :_item
-			};
-		})
-		
-		_self.sqlTextAreaObj = CodeMirror.fromTextArea(document.getElementById(_self.options.selector.replace('#', '')), {
-			mode: _ui.base.mimetype,
-			indentWithTabs: true,
-			smartIndent: true,
-			autoCloseBrackets: true,
-			indentUnit : 4,
-			lineNumbers: true,
-			height:'auto',
-			lineWrapping: false,
-			matchBrackets : true,
-			autofocus: true,
-			extraKeys: {
-				"Ctrl-Space": "autocomplete"
-				,"Ctrl-F": function (){
-					// 검색 재정의
-				}
-				,"Shift-Ctrl-F" : function (){
-					// 검색 재정의
-				}
-				,"Shift-Ctrl-R" : function (){
-					// 검색 재정의
-				}
-			},
-			hintOptions: {tables:tableHint}
-		});
 		
 		_self.sqlEditorEle = $(_self.sqlEditorSelector);
 	}
@@ -3014,25 +3018,7 @@ _ui.SQL = {
 			console.log('editor refresh error')
 		}
 	}
-	// 사용자 셋팅 정보 가져오기.
-	,_userSettingInfo : function (){
-		var _self = this;
-		var params = _g_options.param;
-		
-		VARSQL.req.ajax({      
-		    loadSelector : '#db-page-wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/userSettingInfo.varsql'}
-		    ,data:params 
-		    ,success:function (res){
-		    	var sqlInfo = res.item;
-		    	if(sqlInfo){
-		    		_ui.SQL.setQueryInfo(sqlInfo);
-		    	}else{
-		    		$('#saveSqlTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyymmdd')+'query');
-		    	}
-			}
-		});  
-	}
+	
 	//이벤트 초기화 
 	,_initEvent :function (){
 		var _self = this;
@@ -3225,10 +3211,12 @@ _ui.SQL = {
 			$('#sql_parameter_area').removeClass('on');
 		})
 		
+		/*
 		// 에디터 mouse focus 이동.
 		_self.sqlEditorEle.on('mouseenter', function(e){
-			_self.sqlTextAreaObj.focus();
+			//_self.sqlTextAreaObj.focus();
 		})
+		*/
 		
 		// sql 실행
 		$('.sql_execue_btn').on('click',function (evt){
@@ -3294,17 +3282,28 @@ _ui.SQL = {
 			_self.saveSql();
 		});
 		
-		$('#sql-save-list-no').keydown(function(e) {
+		$('#sqlFileSearchTxt').keydown(function(e) {
 			if (e.keyCode == '13') {
-				_self.sqlSaveList($('#sql-save-list-no').val());
+				_self.sqlSaveList();
 			}
 		});
 		
-		$('#saveSqlSearch').keydown(function(e) {
-			if (e.keyCode == '13') {
-				_self.sqlSaveList(1);
+		// sql file list view
+		$('#sql_filelist_view_btn').on('click', function (){
+			var sEle = $(this);
+			var sEditorWrapperEle = $('#sql_editor_wrapper'); 
+			
+			if(sEditorWrapperEle.hasClass('sql-flielist-active')){
+				sEditorWrapperEle.removeClass('sql-flielist-active');
+			}else{
+				sEditorWrapperEle.addClass('sql-flielist-active');
 			}
-		});
+			
+			if(sEle.attr('loadFlag') != 'Y'){
+				_self.sqlSaveList();
+				sEle.attr('loadFlag','Y');
+			}
+		})
 		
 		$.pubAutocomplete('#recv_user_search' , {
 			minLength : 0
@@ -3350,37 +3349,25 @@ _ui.SQL = {
 			}
 		});
 		
-		// sql 정보 목록 이동. 
-		$('.sql-list-move-btn').on('click',function (e){
-			var mode = $(this).attr('_mode');
-			
-			var pageNo = $('#sql-save-list-no').val();
-			var lastPage = $('#sql-save-list-pagecnt').html(); 
-			
-			pageNo = parseInt(pageNo, 10);
-			if(mode=='p'){
-				pageNo = pageNo -1; 
-			}else{
-				pageNo = pageNo +1;
-			}
-			
-			if(pageNo > 0 && pageNo <= lastPage){
-				_self.sqlSaveList(pageNo);
-				return ; 
-			}
-		});
-		
-		$('.sql_save_list_btn').dropdown();
-		$('.sql_save_list_btn').on('click',function (){
-			
-			if($('.sql-save-list-layer').attr('loadFlag') != 'Y'){
-				$('.varsql-dropdown').addClass('on');
-				_self.sqlSaveList();
-			}
-		});
-		
 		$('.sql_new_file').on('click',function (){
-			_self.setQueryInfo('clear');
+			/*
+			 sItem = {
+				SQL_ID:''
+				, GUERY_TITLE:(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
+				,QUERY_CONT:'',SQL_PARAM :''
+			}
+			
+			
+			 */
+			
+			_self.saveSql({
+				'sql' : ''
+				,'sqlTitle' : (VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
+				,'sqlId' : $('#sqlFileId').val()
+				,'sqlParam' : JSON.stringify(_self.getSqlParam())
+			})
+			
+			//_self.setQueryInfo('clear');
 		});
 	}
 	,findTextOpen : function(){
@@ -3582,22 +3569,27 @@ _ui.SQL = {
 		
 	}
 	// save sql
-	,saveSql : function (){
+	,saveSql : function (item){
 		var _self = this; 
 		
-		var params =VARSQL.util.objectMerge (_g_options.param,{
-			'sql' :_self.getTextAreaObj().getValue()
-			,'sqlTitle' : $('#saveSqlTitle').val()
-			,'sqlId' : $('#sql_id').val()
-			,'sqlParam' : JSON.stringify(_self.getSqlParam())
-		});
+		var params;
+		
+		if(item){
+			params = VARSQL.util.objectMerge (_g_options.param,item);
+		}else{
+			params =VARSQL.util.objectMerge (_g_options.param,{
+				'sql' :_self.getTextAreaObj().getValue()
+				,'sqlId' : $('#sqlFileId').val()
+				,'sqlParam' : JSON.stringify(_self.getSqlParam())
+			});
+		}	
 		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,data:params 
 		    ,success:function (res){
-		    	$('#sql_id').val(res.item);
+		    	$('#sqlFileId').val(res.item);
 		    	_self.sqlSaveList();
 		    	_self.currentSqlData = params.sql;
 		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
@@ -3680,7 +3672,7 @@ _ui.SQL = {
 				,QUERY_CONT:'',SQL_PARAM :''
 			}
 		}
-		$('#sql_id').val(sItem.SQL_ID);
+		$('#sqlFileId').val(sItem.SQL_ID);
 		$('#saveSqlTitle').val(sItem.GUERY_TITLE);
 		this.getTextAreaObj().setValue(sItem.QUERY_CONT);
 		this.getTextAreaObj().setHistory({done:[],undone:[]});
@@ -3693,13 +3685,13 @@ _ui.SQL = {
 		this.currentSqlData =  sItem.QUERY_CONT;
 	}
 	// 저장된 sql 목록 보기.
-	,sqlSaveList : function (pageNo){
+	,sqlSaveList : function (){
 		var _self = this; 
 		
 		var params =VARSQL.util.objectMerge (_g_options.param,{
-			searchVal : $('#saveSqlSearch').val()
-			,page : pageNo ? pageNo : $('#sql-save-list-no').val()
-			,countPerPage : 5
+			searchVal : $('#sqlFileSearchTxt').val()
+			,page : 1
+			,countPerPage : 1000
 		});
 		
 		VARSQL.req.ajax({
@@ -3713,23 +3705,24 @@ _ui.SQL = {
 		    		,len = items.length;
 		    	
 		    	if(items.length > 0){
+		    		var tabItem = [];
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
 		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right save-list-item" _mode="del">삭제</a></li>');
+		    			
+		    			if(item.TAB_YN =='Y'){
+		    				tabItem.push(item);
+		    			}
 		    		}
+		    		_self.sqlFileTabObj.setItems(tabItem);
 		    	}else{
 		    		strHtm.push('<li>no data</li>')
 		    	}
 		    	
-		    	$('#saveSqlList').empty().html(strHtm.join(''));
+		    	$('#sql_filelist_area').empty().html(strHtm.join(''));
 		    	
-		    	$('.sql-save-list-layer').attr('loadFlag' ,'Y');
-		    	$('#sql-save-list-no').val(paging.currPage); 
-		    	$('#sql-save-list-pagecnt').html(paging.totalPage); 
-		    	$('#sql-save-list-totalcnt').html(paging.totalCount); 
-		    	
-		    	$('#saveSqlList .save-list-item').on('click', function (e){
+		    	$('#sql_filelist_area .save-list-item').on('click', function (e){
 		    		var sObj = $(this)
 		    			, mode = sObj.attr('_mode')
 		    			, idx = sObj.closest('[_idx]').attr('_idx');
@@ -3737,15 +3730,75 @@ _ui.SQL = {
 		    		var sItem =items[idx]; 
 		    		
 		    		if(mode=='view'){
-		    			_self.setQueryInfo(sItem);
-		    			$('.sql_save_list_btn').trigger('click');
+		    			
+		    			$('.sql-editor-item.active').removeClass('active');
+		    			
+		    			var editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+
+		    			if(editorEle.length  < 1){
+		    				$('#sql_editor_area').append('<div class="sql-editor-item" data-editor-id="'+sItem.SQL_ID+'"><textarea id="ta_'+sItem.SQL_ID+'" name="ta_'+sItem.SQL_ID+'" class="sql-editor-text"></textarea></div>');
+
+		    				editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+		    			}
+
+		    			_self.sqlFileTabObj.itemClick(sItem);
+
+		    			editorEle.addClass('active');
+
+		    			if(editorEle.attr('data-load-yn')=='Y'){
+		    				return ; 
+		    			}
+
+		    			editorEle.attr('data-load-yn','Y');
+
+		    			$('#ta_'+sItem.SQL_ID).val(sItem.QUERY_CONT);
+
+		    			_self.sqlFileTabObj.addItem(sItem);
+		    			
+		    			var tableHint = {};
+		    			$.each(_ui.base.sqlHints , function (_idx, _item){
+		    				tableHint[_item] = {
+		    					colums:[]
+		    					,text :_item
+		    				};
+		    			})
+		    			
+		    			var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sItem.SQL_ID), {
+		    				mode: _ui.base.mimetype,
+		    				indentWithTabs: true,
+		    				smartIndent: true,
+		    				autoCloseBrackets: true,
+		    				indentUnit : 4,
+		    				lineNumbers: true,
+		    				height:'auto',
+		    				lineWrapping: false,
+		    				matchBrackets : true,
+		    				autofocus: true,
+		    				extraKeys: {
+		    					"Ctrl-Space": "autocomplete"
+		    					,"Ctrl-F": function (){
+		    						// 검색 재정의
+		    					}
+		    					,"Shift-Ctrl-F" : function (){
+		    						// 검색 재정의
+		    					}
+		    					,"Shift-Ctrl-R" : function (){
+		    						// 검색 재정의
+		    					}
+		    				},
+		    				hintOptions: {tables:tableHint}
+		    			});
+
+		    			_self.allSqlEditorObj[sItem.SQL_ID] = editor;
+		    			
+		    			_self.sqlTextAreaObj = editor;
+		    			
+		    			//_self.setQueryInfo(sItem);
+		    		
+		    			
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 
-		    			}
-		    			
-		    			if(sItem.SQL_ID == $('#sql_id').val()){
-		    				_self.setQueryInfo('clear');
 		    			}
 		    			
 		    			params['sqlId'] = sItem.SQL_ID;
@@ -3762,7 +3815,7 @@ _ui.SQL = {
 		    		}
 		    	})
 			}
-		});  
+		});
 	}
 	//텍스트 박스 object
 	,getTextAreaObj:function(){

@@ -39,13 +39,15 @@
 	
 	<!-- 사용자 sql 정보 저장  -->
 	<insert id="sqlServiceMapper.saveQueryInfo" parameterType="sqlParamInfo">
-		insert  into VTSQL_BOARD (
+		insert  into VTSQL_SQLFILE (
 			VIEWID
 			, VCONNID
 			, SQL_ID
 			, GUERY_TITLE
 			, QUERY_CONT
 			, SQL_PARAM
+			, VIEW_YN
+			, TAB_YN
 			, REG_DT
 			, UPD_DT
 		) 
@@ -56,6 +58,8 @@
 			, #{sqlTitle}
 			, #{sql}
 			, #{sqlParam}
+			,'Y'
+			,'Y'
 			, CURRENT TIMESTAMP
 			, CURRENT TIMESTAMP
 		)
@@ -63,15 +67,45 @@
 	
 	<!-- 사용자 sql 정보 업데이트  -->
 	<update id="sqlServiceMapper.updateQueryInfo" parameterType="sqlParamInfo">
-		update VTSQL_BOARD 
+		update VTSQL_SQLFILE 
 		set
-			 GUERY_TITLE = #{sqlTitle}
-			, QUERY_CONT = #{sql}
-			, UPD_DT = CURRENT TIMESTAMP
-			, SQL_PARAM =#{sqlParam}
+		<choose>
+			<when test="customInfo != null and 'title'.equalsIgnoreCase(customInfo.mode)">
+				GUERY_TITLE = #{sqlTitle}
+			</when>
+			<when test="customInfo != null and 'viewyn'.equalsIgnoreCase(customInfo.mode)">
+				VIEW_YN = 'Y'
+				,TAB_YN ='Y'
+			</when>
+			<otherwise>
+				 QUERY_CONT = #{sql}
+				, UPD_DT = CURRENT TIMESTAMP
+				, SQL_PARAM =#{sqlParam}
+			</otherwise>
+		</choose>
 		where sql_id = #{sqlId}
 		and VCONNID = #{vconnid}
 		and VIEWID = #{userid}
+	</update>
+	
+	<!-- 사용자  editor 활성화 정보 업데이트. -->
+	<update id="sqlServiceMapper.updateSqlFileViewYInfo" parameterType="sqlParamInfo">
+		update VTSQL_SQLFILE 
+		set
+			VIEW_YN = 'N'
+		where VCONNID = #{vconnid} 
+		and VIEWID = #{userid}
+		and VIEW_YN = 'Y' 
+	</update>
+	
+	<!-- tab 비활성화 -->
+	<update id="sqlServiceMapper.updateSqlFileTabDisableInfo" parameterType="sqlParamInfo">
+		update VTSQL_SQLFILE 
+		set
+			TAB_YN ='N'
+		where VCONNID = #{vconnid} 
+		and VIEWID = #{userid}
+		and VIEW_YN = 'Y' 
 	</update>
 	
 	<!-- query_cont map -->
@@ -79,19 +113,10 @@
 		<result column="QUERY_CONT" property="QUERY_CONT" jdbcType="CLOB" javaType="java.lang.String"/>
 	</resultMap>
 	
-	<!-- 사용자 sql 마지막 저장 정보  -->
-	<select id="sqlServiceMapper.selectLastSqlInfo" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
-		select * from VTSQL_BOARD
-		where VCONNID = #{vconnid}
-		and VIEWID = #{userid}
-		order by upd_dt desc
-		FETCH FIRST 1 ROWS ONLY
-	</select>
-	
 	<!-- 사용자 sql 목록 토탈 카운트 -->
 	<select id="sqlServiceMapper.selectSqlListTotalCnt" parameterType="sqlParamInfo" resultType="int">
 		select count(1) as TOTALCNT 
-		from VTSQL_BOARD
+		from VTSQL_SQLFILE
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
 		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
@@ -100,7 +125,7 @@
 	<!-- 사용자 sql 목록  -->
 	<select id="sqlServiceMapper.selectSqlList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
 		<bind name="pageStartNum" value="(customInfo.first-1)" />
-		select * from VTSQL_BOARD
+		select * from VTSQL_SQLFILE
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
 		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
@@ -109,7 +134,7 @@
 	
 	<!-- sql 저장 정보 삭제 .  -->
 	<delete id="sqlServiceMapper.deleteSqlSaveInfo" parameterType="sqlParamInfo">
-		delete from VTSQL_BOARD
+		delete from VTSQL_SQLFILE
 		where SQL_ID = #{sqlId}
 	</delete>
 	

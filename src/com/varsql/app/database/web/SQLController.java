@@ -101,21 +101,8 @@ public class SQLController {
 		sqlParamInfo.setCustomInfo(HttpUtils.getServletRequestParam(req));
 		
 		return sQLServiceImpl.saveQuery(sqlParamInfo);
-	
 	}
-	/**
-	 * 사용자 정보 셋팅
-	 * @param vconnid
-	 * @param req
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping({"/userSettingInfo"})
-	public @ResponseBody ResponseResult userSettingInfo(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
-		return sQLServiceImpl.userSettingInfo(sqlParamInfo);
-	}
-	
+		
 	/**
 	 * sql 저장 목록 보기.
 	 * @param vconnid

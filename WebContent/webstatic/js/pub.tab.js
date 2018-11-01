@@ -15,6 +15,9 @@
 		,defaults = {
 			speed : 150
 			,width:'auto'
+			,autoMove : false
+			,itemPadding: 5
+			,leftMargin : 30	// 왼쪽에 item 있을경우 더 이동할 space
 			,overItemViewMode : 'drop'
 			,dropItemHeight :'auto'		//drop item height
 			,moveZIndex : 9				// move 영역 z- index
@@ -26,7 +29,8 @@
 				,next : 'pubTab-right-arrow'
 			}
 			,activeIcon :{
-				position : 'prev'		//  활성시 html 추가 위치
+				overView : false		// mouseover icon view  여부
+				,position : 'prev'		//  활성시 html 추가 위치
 				,html : ''				// 활성시 추가할 html
 				,click: false			// 클릭 이벤트.
 			}
@@ -35,10 +39,32 @@
 			,click :function (item){			// tab click 옵션
 				
 			}
+			,removeItem : false	// remove callback 옵션
 			,itemKey :{							// item key mapping
 				title :'name'
+				,id :'id'
 			}
 		};
+
+	function objectMerge() {
+		var dst = {},src ,p ,args = [].splice.call(arguments, 0);
+		
+		while (args.length > 0) {
+			src = args.splice(0, 1)[0];
+			if (Object.prototype.toString.call(src) == '[object Object]') {
+				for (p in src) {
+					if (src.hasOwnProperty(p)) {
+						if (Object.prototype.toString.call(src[p]) == '[object Object]') {
+							dst[p] = objectMerge(dst[p] || {}, src[p]);
+						} else {
+							dst[p] = src[p];
+						}
+					}
+				}
+			}
+		}
+		return dst;
+	}
         
     function Plugin(element, options) {
         this.selector = (typeof element=='object') ? element.selector : element;
@@ -46,12 +72,20 @@
 		this.element = $(element);
 
         options.width= isNaN(options.width) ?  this.element.width() : options.width;
-        this.options = $.extend({}, defaults, options);
-		
+        this.options = objectMerge({}, defaults, options);
+	
 		this.init();
 	
 		return this; 
     }
+
+	function arrayRemove(array, value){
+		var index = null;
+		while ((index = array.indexOf(value)) !== -1){
+			array.splice(index, 1);
+		}
+		return array;
+	}
 
 	$(document).on('mousedown.pubtab', 'html', function (e) {
 		if(e.which !==2 && $(e.target).closest('.pubTab-drop-item-wrapper').length < 1){
@@ -63,81 +97,108 @@
 		init :function(){
 			var _this =this; 
 
-			_this.config = {tabWidth :[]};
+			_this._setConfigInfo();
 			_this.draw();
 
 			_this.initEvt();
+		}
+		,_setConfigInfo : function (){
+			this.config = {tabWidth :[] , tabHistory : [] , tabIdx : 0};
+
+			var _opts = this.options; 
+
+			var activeIcon =_opts.activeIcon; 
+			var prevFlag = false;
+			var addHtml = '';
+			if(activeIcon && activeIcon.html != '') {
+				prevFlag = activeIcon.position =='prev' ?true :false; 
+				addHtml = '<span class="pubTab-icon-area">'+activeIcon.html+'</span>';
+			}
+
+			this.config.icon ={
+				prevFlag : prevFlag
+				,html : addHtml
+				,hoverHideCls : (activeIcon.overView === false ? 'pubTab-icon-hover-hide' : '')
+			}
 
 		}
 		,initEvt : function (){
-			var _this = this; 
+			var _this = this
+				,opts = _this.options;
 
 			_this.element.on('click', '.pubTab-item-title',function (e){
 				var sEle = $(this)
-					,itemEle = sEle.closest('.pubTab-item-cont');
+					,itemEle = sEle.closest('.pubTab-item');
 
-				_this.element.find('.pubTab-item-cont.active').removeClass('active');
-				itemEle.addClass('active')
+				var beforeEle = _this.element.find('.pubTab-item.active');
+				
+				if(beforeEle.length > 0){
+					beforeEle.removeClass('active');
+				}
 
-				if($.isFunction(_this.options.click)){
-					var tabIdx = itemEle.attr('data-tab-idx');
+				_this._setHistory(itemEle.attr('data-tab-id'));
+				
+				itemEle.addClass('active');
 
-					_this.options.click.call(itemEle,_this.options.items[tabIdx])
+				var tabIdx = itemEle.index();
+
+				_this.movePosition(tabIdx);
+				
+				if($.isFunction(opts.click)){
+					opts.click.call(itemEle,opts.items[tabIdx])
 				}
 			})
 
 			_this.element.on('click', '.pubTab-icon-area',function (e){
 				var sEle = $(this)
-					,itemEle = sEle.closest('.pubTab-item-cont');
+					,itemEle = sEle.closest('.pubTab-item');
 
-				if($.isFunction(_this.options.activeIcon.click)){
-					var tabIdx = itemEle.attr('data-tab-idx');
+				if($.isFunction(opts.activeIcon.click)){
+					var itemIdx = itemEle.index();
 
-					_this.options.activeIcon.click.call(itemEle,_this.options.items[tabIdx])
+					opts.activeIcon.click.call(itemEle,opts.items[itemIdx], itemIdx);
 				}
 			})
 			
-			var prevElement = _this.element.find('.pubTab-prev')
-				, nextElement = this.element.find('.pubTab-next');
-			
-			var prevTimerObj = null;
-			prevElement.on( "mouseenter", function (e){
-				var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-				function movePrev(){
-					_this.config.tabScrollElement.scrollLeft(scrollLeft-10);
-					prevTimerObj = setTimeout(function(){
-						scrollLeft = _this.config.tabScrollElement.scrollLeft();
-						movePrev()
-					}, _this.options.speed);
-				}
+			if(opts.autoMove) {
+				var prevTimerObj = null;
+				_this.element.on( "mouseenter", '.pubTab-prev' ,function (e){
+					var scrollLeft = _this.config.tabScrollElement.scrollLeft();
+					function movePrev(){
+						_this.config.tabScrollElement.scrollLeft(scrollLeft-10);
+						prevTimerObj = setTimeout(function(){
+							scrollLeft = _this.config.tabScrollElement.scrollLeft();
+							movePrev()
+						}, opts.speed);
+					}
 
-				movePrev();	
-			}).on( "mouseleave", function (e){
-				clearTimeout(prevTimerObj);
-			});
-			
-			var nextTimerObj = null;
-			nextElement.on( "mouseenter", function (e){
-				var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-				function moveNext(){
-					_this.config.tabScrollElement.scrollLeft(scrollLeft+10);
-					nextTimerObj = setTimeout(function(){
-						scrollLeft = _this.config.tabScrollElement.scrollLeft();
-						moveNext()
-					}, _this.options.speed);
-				}
+					movePrev();	
+				}).on( "mouseleave", function (e){
+					clearTimeout(prevTimerObj);
+				});
 				
-				prevElement.show();
-				
-				moveNext();	
-			}).on( "mouseleave", function (e){
-				clearTimeout(nextTimerObj);
-			});
+				var nextTimerObj = null;
+				_this.element.on( "mouseenter", '.pubTab-next' ,function (e){
+					var scrollLeft = _this.config.tabScrollElement.scrollLeft();
+					function moveNext(){
+						_this.config.tabScrollElement.scrollLeft(scrollLeft+10);
+						nextTimerObj = setTimeout(function(){
+							scrollLeft = _this.config.tabScrollElement.scrollLeft();
+							moveNext()
+						}, opts.speed);
+					}
+					
+					prevElement.show();
+					
+					moveNext();	
+				}).on( "mouseleave", function (e){
+					clearTimeout(nextTimerObj);
+				});
+			}
 
+			if(opts.overItemViewMode =='drop'){
 
-			if(_this.options.overItemViewMode =='drop'){
-
-				_this.element.find('.pubTab-drop-open-btn').on('click', function (e){
+				_this.element.on('click.pubtab.drop.btn','.pubTab-drop-open-btn', function (e){
 					e.preventDefault();
 					e.stopPropagation();
 
@@ -151,69 +212,151 @@
 					}
 				});
 
-				_this.config.dropItemAreaElement.on('click', '.pubTab-drop-item',function (e){
+				_this.element.on('click.pubtab.drop.item', '.pubTab-drop-item',function (e){
 					e.preventDefault();
 					e.stopPropagation();
 
-					var sEle = $(this)
-						,dataIdx = sEle.data('tab-idx')
-						,selItem =_this.config.tabWidth[dataIdx]; 
-
-					_this.element.find('.pubTab-item-cont.active').removeClass('active');
-					_this.element.find('.pubTab-item-cont[data-tab-idx="'+dataIdx+'"]').addClass('active');
-					var itemEndPoint = selItem.leftLast+_this.config.moveAreaWidth+2; 
-					
-					var leftVal =0; 
-					if(itemEndPoint > _this.config.width){
-						leftVal = itemEndPoint - _this.config.width; 
-					}else{
-
-						var schLeft = _this.config.tabScrollElement.scrollLeft();
-						if(schLeft > schLeft.leftFront){
-							leftVal = schLeft.leftFront;
-						}
-					}
-					_this.config.tabScrollElement.scrollLeft(leftVal);
+					var sEle = $(this);
 
 					$(_this.element.find('.pubTab-move-area')).removeClass('pubTab-open');
 
-					if($.isFunction(_this.options.click)){
-						_this.options.click.call(this,_this.options.items[dataIdx])
-					}		
+					var tabIdx = opts.items.length - sEle.index()-1;
+
+					$(_this.element.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-title').trigger('click');	
 				})
 			}
-
-			/*
-			prevElement.on('click', function (e){
-				var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-				
-				_this.config.tabScrollElement.scrollLeft(scrollLeft-10);
-
-				if(scrollLeft-20 < 0){
-					prevElement.hide();
-				}
-
-			})
-
-			nextElement.on('click', function (e){
-				var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-				_this.config.tabScrollElement.scrollLeft(scrollLeft+10);
-
-				if(scrollLeft > 0){
-					prevElement.show();
-				}
-			})
-			*/
 		}
-		,itemClick : function (idx, addAttr){
-			idx = isNaN(idx) ? 0 :idx; 
+		,_setHistory : function (tabid){
+			var idx = this.config.tabHistory.indexOf(tabid);
+			this.config.tabHistory = arrayRemove(this.config.tabHistory, tabid);
+			this.config.tabHistory.push(tabid);
+		}
+		,itemClick : function (item, addAttr){
+			var idx  = item ;
+			if(typeof item ==='object'){
+				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
+			}
+
+			item = isNaN(idx) ? 0 :idx; 
 			addAttr = addAttr || {};
-			var clickEle = $(this.element.find('.pubTab-item-cont').get(idx));
+			var clickEle = $(this.element.find('.pubTab-item').get(idx));
 			
 			for(var key in addAttr){
 				clickEle.attr(key , addAttr[key]);
 			}
-			clickEle.find('.pubTab-item-title').trigger('click')
+			
+			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+		}
+		/**
+		 * @method movePosition
+		 * @description item move
+		 */
+		,movePosition : function(dataIdx){
+			var _this = this;
+
+			var tabWidthItem =_this.config.tabWidth[dataIdx]; 
+
+			var selItem = _this.options.items[dataIdx];
+
+			var itemEndPoint = tabWidthItem.leftLast+_this.config.moveAreaWidth+30; 
+						
+			var schLeft = _this.config.tabScrollElement.scrollLeft();
+			var leftVal =0;
+
+			if(schLeft >= tabWidthItem.leftFront){
+				leftVal = tabWidthItem.leftFront-_this.options.leftMargin;
+			}else if(itemEndPoint <= (schLeft +_this.config.width)){
+				return ;
+			}else{
+				if(itemEndPoint > _this.config.width){
+					leftVal = itemEndPoint - _this.config.width; 
+				}
+			}
+
+			_this.config.tabScrollElement.scrollLeft((leftVal>0?leftVal:0));
+		}
+		/**
+		 * @method setItems
+		 * @description set items
+		 */
+		,setItems : function (items){
+			this.options.items = items;
+			this.draw();
+		}
+		/**
+		 * @method addItem
+		 * @description item add
+		 */
+		,addItem : function(item , idx){
+			if(isNaN(idx)){
+				idx = this.options.items.length;
+				this.options.items.push(item);
+			}else{
+				if(idx > this.options.items.length){
+					idx = this.options.items.length;
+				}
+				this.options.items.splice(idx, 0, item);
+			}
+			
+			var itemHtm = this._getTabItemHtml(item)
+				,dropHtm = this._getDropItemHtml(item); 
+
+			var tabItem = this.element.find('.pubTab-item'); 
+			if(tabItem.length < 1){
+				this.config.tabContainerElement.prepend(itemHtm);
+				this.element.find('.pubTab-drop-item-area').prepend(dropHtm)
+			}else{
+				if(idx < 1){
+					$(tabItem.get(0)).before(itemHtm);
+				}else {
+					$(tabItem.get(idx-1)).after(itemHtm);
+				}
+
+				$(this.element.find('.pubTab-drop-item').get(0)).before(dropHtm);
+			}
+			
+			//this.draw();
+			this.calcItemWidth();
+			this.movePosition(idx);
+
+			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+		}
+		/**
+		 * @method removeItem
+		 * @description item remove
+		 */
+		,removeItem : function(idx){
+			var reval = this.options.items.splice(idx, 1);
+
+			if(typeof reval ==='undefined' && reval.length < 1){
+				return ;
+			}
+			reval = reval[0];
+				
+			this.element.find('.pubTab-item[data-tab-id="'+reval._tabid+'"]').remove();
+			this.element.find('.pubTab-drop-item[data-tab-id="'+reval._tabid+'"]').remove();
+
+			this.config.tabHistory = arrayRemove(this.config.tabHistory, reval._tabid);
+
+			var viewTabId;
+			if(this.config.tabHistory.length > 0){1
+				viewTabId =	this.config.tabHistory[this.config.tabHistory.length -1];
+			}else{
+				viewTabId =	(this.options.items[0]||{})._tabid;
+			}
+			
+			if(viewTabId){
+				this.element.find('.pubTab-item[data-tab-id="'+viewTabId+'"]').find('.pubTab-item-title').trigger('click');
+			}
+
+			this.calcItemWidth();
+			this.refresh();
+
+			if($.isFunction(this.options.removeItem)){
+				this.options.removeItem.call(null,reval);
+			}
+
+			return reval;
 		}
 		,refresh : function (){
 			var _this = this; 
@@ -225,7 +368,7 @@
 				$('#'+_this.contextId+'pubTab-move-space').show();
 				_this.element.find('.pubTab-move-area').show();
 			}else{
-				_this.element.find('.pubTab-item-cont').removeClass('pubTab-hide');
+				_this.element.find('.pubTab-item').removeClass('pubTab-hide');
 				$('#'+_this.contextId+'pubTab-move-space').hide();
 				_this.element.find('.pubTab-move-area').hide();
 				_this.config.tabContainerElement.css('left', '0px');
@@ -251,11 +394,37 @@
 			return this; 
 		}
 		,getSelectItem : function(){
-			var sEle = this.element.find('.pubTab-item-cont.active'); 
-			return this.options.items[sEle.data('tab-idx')];
+			var sEle = this.element.find('.pubTab-item.active'); 
+			return this.options.items[sEle.index()];
 		}
 		,destroy:function (){
 			
+		}
+		// tab  item template
+		,_getTabItemHtml : function (item){
+			
+			var cfgIcon = this.config.icon; 
+			var _opts = this.options;
+
+			if(item[_opts.itemKey.id]){
+				item._tabid = item[_opts.itemKey.id];
+			}else{
+				this.config.tabIdx++;
+				item._tabid = 'tab_'+this.config.tabIdx;
+			}
+
+			var itemHtm ='';
+			if(cfgIcon.prevFlag===true){
+				itemHtm = cfgIcon.html + '<span class="pubTab-item-title">'+item[_opts.itemKey.title]+'</span>';
+			}else{
+				itemHtm = '<span class="pubTab-item-title">'+item[_opts.itemKey.title]+'</span>'+cfgIcon.html;
+			}
+			
+			return '<li class="pubTab-item" data-tab-id="'+item._tabid+'"><div class="pubTab-item-cont '+cfgIcon.hoverHideCls+' '+_opts.addClass+'" >'+itemHtm+'</div></li>';
+		}
+		//drop item template
+		,_getDropItemHtml : function (item){
+			return '<li class="pubTab-drop-item" data-tab-id="'+item._tabid+'">'+item[this.options.itemKey.title]+'</li>'
 		}
 		,draw : function (){
 			var _this = this
@@ -265,39 +434,22 @@
 			
 			function tabItemHtml (){
 				var tabHtm = [];
-				var activeIcon =_opts.activeIcon; 
-				var prevFlag = false;
-				var addHtml = '';
-				if(activeIcon && activeIcon.html != '') {
-					prevFlag = activeIcon.position =='prev' ?true :false; 
-					addHtml = '<span class="pubTab-icon-area">'+activeIcon.html+'</span>';
-				}
-
-				var titleKey = _opts.itemKey.title;
+					
 				var item;
 				var itemHtm;
 				for(var i = 0 ;i < itemLen ;i++){
-					item = items[i];
-					
-					if(prevFlag){
-						itemHtm = addHtml + '<span class="pubTab-item-title">'+item[titleKey]+'</span>';
-					}else{
-						itemHtm = '<span class="pubTab-item-title">'+item[titleKey]+'</span>'+addHtml;
-					}
-					
-					tabHtm.push('<li class="pubTab-item '+(i+1==itemLen ? 'last':'')+'"><div class="pubTab-item-cont '+_opts.addClass+'" data-tab-idx="'+i+'">'+itemHtm+'</div></li>');
+					tabHtm.push(_this._getTabItemHtml(items[i]));
 				}
 				return tabHtm.join('');
 			}
 
 			function dropItemHtml (){
-				var tabHtm = [];
-				var titleKey = _opts.itemKey.title;
+				var dropHtml = [];
+				
 				for(var i = itemLen-1 ;i >= 0  ;i--){
-					var item = items[i];
-					tabHtm.push('<li class="pubTab-drop-item" data-tab-idx="'+i+'">'+item[titleKey]+'</li>');
+					dropHtml.push(_this._getDropItemHtml(items[i]));
 				}
-				return tabHtm.join('');
+				return dropHtml.join('');
 			}
 
 			var strHtm = [];
@@ -311,7 +463,6 @@
 			strHtm.push('		</div> ');
 			strHtm.push('		<div class="pubTab-move-area" style="z-index:'+_opts.moveZIndex+';">');
 
-			
 			strHtm.push('		<span class="pubTab-drop-open-btn">');
 			strHtm.push('			<div class="pubTab-move-dim"></div>');
 			strHtm.push('			<i class="pubTab-prev '+_opts.icon.prev+'"></i>');
@@ -341,7 +492,7 @@
 			var _this =this;
 			var containerW = 0; 
 			_this.config.tabContainerElement.find('.pubTab-item').each(function(i , item){
-				var itemW =$(item).outerWidth();
+				var itemW =$(item).outerWidth() + _this.options.itemPadding;
 				containerW +=itemW;
 				_this.config.tabWidth[i] = {
 					itemW : itemW

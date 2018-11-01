@@ -388,7 +388,16 @@ public class SQLServiceImpl{
 				sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
 			    sqlDAO.saveQueryInfo(sqlParamInfo);
 			}else{
-				sqlDAO.updateQueryInfo(sqlParamInfo);
+				
+				if("viewyn".equals(sqlParamInfo.getCustom().get("mode"))){
+					sqlDAO.updateSqlFileViewYInfo(sqlParamInfo); 
+				}
+				
+				if("tabyn".equals(sqlParamInfo.getCustom().get("mode"))){
+					sqlDAO.updateSqlFileTabDisableInfo(sqlParamInfo); 
+				}else{
+					sqlDAO.updateQueryInfo(sqlParamInfo);
+				}
 			}
 			
 			result.setItemOne(sqlParamInfo.getSqlId());
@@ -400,22 +409,6 @@ public class SQLServiceImpl{
 		return result; 
 	}
 	
-	/**
-	 * 사용자 셋팅 정보 읽기
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult userSettingInfo(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		try{
-			result.setItemOne(sqlDAO.selectLastSqlInfo(sqlParamInfo));
-	    }catch(Exception e){
-	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
-	    	logger.error(getClass().getName()+"userSettingInfo", e);
-	    	result.setMessageCode(e.getMessage());
-	    }
-		return result; 
-	}
 	/**
 	 * 사용자 sql 목록 보기.
 	 * @param sqlParamInfo

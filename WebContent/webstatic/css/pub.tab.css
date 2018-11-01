@@ -76,25 +76,38 @@
 	border-bottom: 0px;
 }
 
-.pubTab-item-cont.active{
+.pubTab-item.active .pubTab-item-cont{
 	background:#f1f1f1;
 }
 .pubTab-item-title{
 	display:table-cell;
 	padding: 0px 5px;
 	cursor:pointer;
+	white-space: nowrap;
 }
 .pubTab-icon-area{
-	display:none;
+    display: table-cell;
+    visibility: hidden;
 	padding-right: 3px;
     margin-top: 2px;
 }
-.pubTab .active .pubTab-icon-area{
-	display:table-cell;
+.pubTab .pubTab-item-cont:hover .pubTab-icon-area{
+	visibility: visible;
+}
+
+.pubTab .pubTab-item-cont.pubTab-icon-hover-hide .pubTab-icon-area{
+	visibility: hidden;
+	display:none;
+}
+
+.pubTab .active .pubTab-item-cont .pubTab-icon-area{
+    visibility: visible;
+    display: table-cell;
 }
 
 .pubTab .pubTab-drop-item{
 	cursor:pointer;
+	white-space: nowrap;
 }
 .pubTab .pubTab-drop-item:hover {
 	background-color: #ddd;

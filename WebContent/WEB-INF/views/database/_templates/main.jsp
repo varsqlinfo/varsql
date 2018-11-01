@@ -90,6 +90,55 @@ $(document).ready(function(){
 </div>
 </script>
 
+<style>
+
+.varql-sqlfile-tab{
+	display:block;
+	position: relative;
+    height: 20px;
+	float:left;
+	margin-left: 5px;
+	width:calc(100% - 200px);
+}
+
+.varsql-sqleditor-area .varsql-file-save-list{
+	display:none;
+	width:200px;
+	position:relative;
+	height:100%;
+	float:left;
+	overflow: auto;
+}
+
+.varsql-sqleditor-area.sql-flielist-active .varsql-file-save-list{
+	display:block;
+}
+
+.varsql-sqleditor-area.sql-flielist-active #sql_editor_area{
+	margin-left:200px
+}
+
+.varsql-sqleditor-area .sql-editor-text{
+	display:none;
+}
+
+.varsql-sqleditor-area .sql-editor-item{
+	z-index:0;
+	position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+.varsql-sqleditor-area .sql-editor-item.active{
+	z-index:1;
+}
+
+
+
+
+</style>
 <%--sql editor component template --%>
 <script id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="sqlEditorComponent" class="pos-relative-w-h100">
@@ -141,52 +190,21 @@ $(document).ready(function(){
 				</li>
 			</ul>
 		</div>
-		<div style="padding-bottom:3px;">
-			<div style="width:210px;float:left;padding: 3px 5px 0px;">
-				<div class="input-group input-group-sm">
-					<input type="hidden" id="sql_id" name="sql_id" value="">
-			      	<input type="text" id="saveSqlTitle" name="saveSqlTitle" value="" placeholder="새파일명" style="padding:2px;width:155px;height:23px;">
-			      	<span> 
-			      		<button class="btn btn-default sql_save_list_btn" bgiframe="true" data-toggle="dropdown" data-target=".sql-save-list-layer" type="button" style="line-height:15px;">
-				      		List
-				      	</button>
-					    <div class="dropdown-menu sql-save-list-layer" role="menu" style="width:250px;">
-		                    <div class="panel-success">
-		                        <div class="panel-heading">
-		                            <input type="text" name="saveSqlSearch" id="saveSqlSearch" style="width:100%;"/>
-		                        </div>
-		                        <div class="save-sql-list-wrapper">
-		                            <ul id="saveSqlList" class="list-unstyled save-sql-list">
-		                            </ul>
-		                        </div>
-		                        <div class="panel-footer">
-		                        	<div>
-			                            <input type="number" id="sql-save-list-no" name="sql-save-list-no" min="1" max="10000" size="2" value="1">/<span id="sql-save-list-pagecnt"></span>(<span id="sql-save-list-totalcnt"></span>)
-			                            <span style="padding-left:10px;">
-				                            <a href="javascript:;" class="sql-list-move-btn" _mode="p"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
-				                            <a href="javascript:;" class="sql-list-move-btn" _mode="n"><span class="glyphicon glyphicon-chevron-right"></span></a>
-			                            </span>
-		                            </div>
-		                        </div>
-		                    </div>
-					    </div> 
-					</span>
-			    </div>		
-			</div>
-			<div style="float:left;">
-				<span style="padding:10px 0px 0px 5px;display:inline-block; vertical-align:bottom;">
+		<div class="varql-sqlfile-list-wrapper" style="padding-bottom:3px;">
+			<span style="float:left;">
+				<span style="padding:0px 5px 0px 0px;display:inline-block; vertical-align:bottom;">
 					<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
 					LIMIT 
-		 
 					<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">
 						<option value="100" selected>100</option>
 						<option value="500">500</option>
 						<option value="1000">1000</option>
 					</select>
 				</span>
-				<span id="sqlEditerPreloaderArea"><img src="<c:url value="/webstatic/imgs/preloader.gif"/>"><span class="preloader-msg"></span></span>
+				<button type="button" id="sql_filelist_view_btn" class="btn btn-default" style="line-height:15px;">SQL</button>
+			</span>
+			<div id="varsqlSqlFileTab" class="varql-sqlfile-tab">
 			</div>
-		 	
 		 	<div class="pull-right">
 			 	<div style="width:50px;display:inline-block;">
 					<span style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
@@ -200,8 +218,16 @@ $(document).ready(function(){
 	</div>
 
 	<div id="sql_editor_wrapper" class="varsql-sqleditor-area">
+		<div class="varsql-file-save-list">
+			<div style="padding:5px;">
+				<input type="hidden" id="sqlFileId">
+				<input type="text" id="sqlFileSearchTxt" class="form-control input-sm">
+			</div>
+			<ul id="sql_filelist_area"></ul>
+		</div>
+				
 		<div id="sql_editor_area" style="position:relative;height:100%;">
-			<textarea rows="10" style="display: none;" id="sqlExecuteArea"></textarea>
+			<div class="sql-editor-item" data-editor-id="empty"><textarea id="sqlEmptyEditor" name="sqlEmptyEditor" class="sql-editor-text"></textarea></div>
 		</div>
 		<div id="sql_parameter_area" class="sql-parameter-area">
 			<table style="width:100%;">
