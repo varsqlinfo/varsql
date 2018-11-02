@@ -400,7 +400,7 @@ public class SQLServiceImpl{
 				}
 			}
 			
-			result.setItemOne(sqlParamInfo.getSqlId());
+			result.setItemOne(sqlParamInfo);
 			
 	    }catch(Exception e){
 	    	logger.error(getClass().getName()+"saveQuery", e);

@@ -346,6 +346,11 @@
 		 * @description item remove
 		 */
 		,removeItem : function(idx){
+			var idx  = item;
+			if(typeof item ==='object'){
+				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
+			}
+
 			var reval = this.options.items.splice(idx, 1);
 
 			if(typeof reval ==='undefined' && reval.length < 1){

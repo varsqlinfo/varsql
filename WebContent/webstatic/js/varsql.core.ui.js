@@ -3585,10 +3585,16 @@ _ui.SQL = {
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,data:params 
 		    ,success:function (res){
-		    	$('#sqlFileId').val(res.item);
-		    	_self.sqlSaveList();
+		    	var item = res.item; 
+		    	
+		    	$('#sqlFileId').val(item.sqlId);
 		    	_self.currentSqlData = params.sql;
-		    	//$(_self.options.preloaderArea +' .preloader-msg').html('저장되었습니다.');
+		    	
+		    	_self.loadEditor({
+		    		"SQL_ID":item.sqlId
+		    		,"GUERY_TITLE":params.sqlTitle
+		    		,"QUERY_CONT":params.sql
+		    	});
 			}
 		});  
 	}
@@ -3686,8 +3692,6 @@ _ui.SQL = {
 		
 		var params =VARSQL.util.objectMerge (_g_options.param,{
 			searchVal : $('#sqlFileSearchTxt').val()
-			,page : 1
-			,countPerPage : 1000
 		});
 		
 		VARSQL.req.ajax({
@@ -3716,7 +3720,6 @@ _ui.SQL = {
 		    				enableItem = item; 
 		    			}
 		    		}
-		    		
 		    		
 		    		if(tabItem.length > 0){
 		    			_self.sqlFileTabObj.setItems(tabItem);
@@ -3755,6 +3758,12 @@ _ui.SQL = {
 		    			    ,dataType:'json'
 		    			    ,data:params 
 		    			    ,success:function (res){
+		    			    	_self.sqlFileTabObj.removeItem(sItem);
+		    			    	
+		    			    	
+		    			    	
+		    			    	
+		    			    	
 		    			    	_self.sqlSaveList();
 		    			    }
 		    			});
