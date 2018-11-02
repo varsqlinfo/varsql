@@ -418,24 +418,7 @@ public class SQLServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			
-			int totalcnt = sqlDAO.selectSqlListTotalCnt(sqlParamInfo);
-			
-			int pageNo = sqlParamInfo.getCustomInfo().getInt("page", 1);
-			int countPerPage = sqlParamInfo.getCustomInfo().getInt("countPerPage", 10);
-
-			if(totalcnt > 0){
-				
-				int first = (pageNo - 1) * countPerPage + 1;
-				int last = first + countPerPage - 1;
-				sqlParamInfo.addCustomInfo("first", Integer.valueOf(first));
-				sqlParamInfo.addCustomInfo("last", Integer.valueOf(last));
-				sqlParamInfo.addCustomInfo("rows", countPerPage);
-				result.setItemList(sqlDAO.selectSqlList(sqlParamInfo));
-			}else{
-				result.setItemList(null);
-			}
-			result.setPage(PagingUtil.getPageObject(totalcnt, pageNo,countPerPage));
+			result.setItemList(sqlDAO.selectSqlList(sqlParamInfo));
 	    }catch(Exception e){
 	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
 	    	logger.error(getClass().getName()+"saveQuery", e);

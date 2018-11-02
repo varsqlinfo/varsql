@@ -106,10 +106,16 @@ $(document).ready(function(){
 	width:200px;
 	position:relative;
 	height:100%;
+	padding: 5px;
 	float:left;
 	overflow: auto;
+	border: 1px solid #e8cece;
+    border-left: 0px solid #ffffff;
 }
-
+.varsql-sqleditor-area .varsql-file-save-list ul{
+	margin:0px;
+	padding:0px;	
+}
 .varsql-sqleditor-area.sql-flielist-active .varsql-file-save-list{
 	display:block;
 }

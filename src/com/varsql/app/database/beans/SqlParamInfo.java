@@ -31,8 +31,6 @@ public class SqlParamInfo extends DatabaseParamInfo{
 	
 	private String columnInfo;
 	
-	private ParamMap customInfo;
-	
 	public SqlParamInfo(){
 		super();
 	}
@@ -93,21 +91,5 @@ public class SqlParamInfo extends DatabaseParamInfo{
 
 	public void setSqlTitle(String sqlTitle) {
 		this.sqlTitle = sqlTitle;
-	}
-	
-	public ParamMap getCustomInfo() {
-		return customInfo;
-	}
-
-	public void setCustomInfo(ParamMap customInfo) {
-		this.customInfo = customInfo;
-	}
-	
-	public void addCustomInfo(String key , Object value) {
-		if(this.customInfo ==null){
-			this.customInfo =  new ParamMap();
-		}
-		
-		this.customInfo.put(key, value);
 	}
 }

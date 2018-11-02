@@ -97,9 +97,7 @@ public class SQLController {
 	 */
 	@RequestMapping({"/saveQuery"})
 	public @ResponseBody ResponseResult saveQuery( SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
-		
-		sqlParamInfo.setCustomInfo(HttpUtils.getServletRequestParam(req));
-		
+		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sQLServiceImpl.saveQuery(sqlParamInfo);
 	}
 		
@@ -114,7 +112,7 @@ public class SQLController {
 	@RequestMapping({"/sqlList"})
 	public @ResponseBody ResponseResult sqlList(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
 		
-		sqlParamInfo.setCustomInfo(HttpUtils.getServletRequestParam(req));
+		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		
 		return sQLServiceImpl.selectSqlList(sqlParamInfo);
 	}

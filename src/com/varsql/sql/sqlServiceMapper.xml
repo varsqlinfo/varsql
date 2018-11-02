@@ -70,10 +70,10 @@
 		update VTSQL_SQLFILE 
 		set
 		<choose>
-			<when test="customInfo != null and 'title'.equalsIgnoreCase(customInfo.mode)">
+			<when test="custom != null and 'title'.equalsIgnoreCase(custom.mode)">
 				GUERY_TITLE = #{sqlTitle}
 			</when>
-			<when test="customInfo != null and 'viewyn'.equalsIgnoreCase(customInfo.mode)">
+			<when test="custom != null and 'viewyn'.equalsIgnoreCase(custom.mode)">
 				VIEW_YN = 'Y'
 				,TAB_YN ='Y'
 			</when>
@@ -119,17 +119,16 @@
 		from VTSQL_SQLFILE
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
-		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
+		and GUERY_TITLE like '%'||#{custom.searchVal}||'%' 
 	</select>
 	
 	<!-- 사용자 sql 목록  -->
 	<select id="sqlServiceMapper.selectSqlList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
-		<bind name="pageStartNum" value="(customInfo.first-1)" />
 		select * from VTSQL_SQLFILE
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
-		and GUERY_TITLE like '%'||#{customInfo.searchVal}||'%' 
-		order by upd_dt desc OFFSET ${pageStartNum}-1 ROWS FETCH FIRST ${customInfo.rows} ROWS ONLY
+		and GUERY_TITLE like '%'||#{custom.searchVal}||'%' 
+		order by GUERY_TITLE asc  
 	</select>
 	
 	<!-- sql 저장 정보 삭제 .  -->

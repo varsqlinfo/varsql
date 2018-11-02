@@ -2992,12 +2992,7 @@ _ui.SQL = {
 			}
 			,overItemViewMode :'drop'
 			,click : function (item){
-				$('.sql-editor-item.active').removeClass('active');
-				$('[data-editor-id="'+item.SQL_ID+'"]').addClass('active');
-				
-				_self.sqlTextAreaObj = _self.allSqlEditorObj[item.SQL_ID];
-				
-				 $('#sqlFileId').val(item.SQL_ID);
+				 _self.loadEditor(item, false);
 			}
 			,itemKey :{							// item key mapping
 				title :'GUERY_TITLE'
@@ -3363,8 +3358,8 @@ _ui.SQL = {
 			_self.saveSql({
 				'sql' : ''
 				,'sqlTitle' : (VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
-				,'sqlId' : $('#sqlFileId').val()
-				,'sqlParam' : JSON.stringify(_self.getSqlParam())
+				,'sqlId' : ''
+				,'sqlParam' : ''
 			})
 			
 			//_self.setQueryInfo('clear');
@@ -3581,6 +3576,7 @@ _ui.SQL = {
 				'sql' :_self.getTextAreaObj().getValue()
 				,'sqlId' : $('#sqlFileId').val()
 				,'sqlParam' : JSON.stringify(_self.getSqlParam())
+				,'mode' : 'query'
 			});
 		}	
 		
@@ -3706,6 +3702,8 @@ _ui.SQL = {
 		    	
 		    	if(items.length > 0){
 		    		var tabItem = [];
+		    		var editorHtml = [];
+		    		var enableItem;
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
 		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
@@ -3714,8 +3712,17 @@ _ui.SQL = {
 		    			if(item.TAB_YN =='Y'){
 		    				tabItem.push(item);
 		    			}
+		    			if(item.VIEW_YN=='Y'){
+		    				enableItem = item; 
+		    			}
 		    		}
-		    		_self.sqlFileTabObj.setItems(tabItem);
+		    		
+		    		
+		    		if(tabItem.length > 0){
+		    			_self.sqlFileTabObj.setItems(tabItem);
+		    			enableItem = enableItem ? enableItem : tabItem[0];
+			    		_self.loadEditor(enableItem, false);
+		    		}
 		    	}else{
 		    		strHtm.push('<li>no data</li>')
 		    	}
@@ -3731,68 +3738,7 @@ _ui.SQL = {
 		    		
 		    		if(mode=='view'){
 		    			
-		    			$('.sql-editor-item.active').removeClass('active');
-		    			
-		    			var editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
-
-		    			if(editorEle.length  < 1){
-		    				$('#sql_editor_area').append('<div class="sql-editor-item" data-editor-id="'+sItem.SQL_ID+'"><textarea id="ta_'+sItem.SQL_ID+'" name="ta_'+sItem.SQL_ID+'" class="sql-editor-text"></textarea></div>');
-
-		    				editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
-		    			}
-
-		    			_self.sqlFileTabObj.itemClick(sItem);
-
-		    			editorEle.addClass('active');
-
-		    			if(editorEle.attr('data-load-yn')=='Y'){
-		    				return ; 
-		    			}
-
-		    			editorEle.attr('data-load-yn','Y');
-
-		    			$('#ta_'+sItem.SQL_ID).val(sItem.QUERY_CONT);
-
-		    			_self.sqlFileTabObj.addItem(sItem);
-		    			
-		    			var tableHint = {};
-		    			$.each(_ui.base.sqlHints , function (_idx, _item){
-		    				tableHint[_item] = {
-		    					colums:[]
-		    					,text :_item
-		    				};
-		    			})
-		    			
-		    			var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sItem.SQL_ID), {
-		    				mode: _ui.base.mimetype,
-		    				indentWithTabs: true,
-		    				smartIndent: true,
-		    				autoCloseBrackets: true,
-		    				indentUnit : 4,
-		    				lineNumbers: true,
-		    				height:'auto',
-		    				lineWrapping: false,
-		    				matchBrackets : true,
-		    				autofocus: true,
-		    				extraKeys: {
-		    					"Ctrl-Space": "autocomplete"
-		    					,"Ctrl-F": function (){
-		    						// 검색 재정의
-		    					}
-		    					,"Shift-Ctrl-F" : function (){
-		    						// 검색 재정의
-		    					}
-		    					,"Shift-Ctrl-R" : function (){
-		    						// 검색 재정의
-		    					}
-		    				},
-		    				hintOptions: {tables:tableHint}
-		    			});
-
-		    			_self.allSqlEditorObj[sItem.SQL_ID] = editor;
-		    			
-		    			_self.sqlTextAreaObj = editor;
-		    			
+		    			_self.loadEditor(sItem);
 		    			//_self.setQueryInfo(sItem);
 		    		
 		    			
@@ -3816,6 +3762,73 @@ _ui.SQL = {
 		    	})
 			}
 		});
+	}
+	,loadEditor : function (sItem, tabAddFlag){
+		var _self = this; 
+		
+		var editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+		
+		if(editorEle.length  < 1){
+			$(_self.sqlEditorSelector).append('<div class="sql-editor-item" data-editor-id="'+sItem.SQL_ID+'"><textarea id="ta_'+sItem.SQL_ID+'" name="ta_'+sItem.SQL_ID+'" class="sql-editor-text"></textarea></div>');
+			editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+		}
+		
+		if(editorEle.hasClass('active')){
+			return ; 
+		}
+		
+		_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
+		_self.sqlFileTabObj.setActive(sItem);
+		
+		$('#sqlFileId').val(sItem.SQL_ID);
+		$('.sql-editor-item.active').removeClass('active');
+		editorEle.addClass('active');
+
+		if(editorEle.attr('data-load-yn')=='Y'){
+			_self.sqlTextAreaObj = _self.allSqlEditorObj[sItem.SQL_ID];
+			return ; 
+		}
+
+		editorEle.attr('data-load-yn','Y');
+
+		$('#ta_'+sItem.SQL_ID).val(sItem.QUERY_CONT);
+		
+		var tableHint = {};
+		$.each(_ui.base.sqlHints , function (_idx, _item){
+			tableHint[_item] = {
+				colums:[]
+				,text :_item
+			};
+		})
+		
+		var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sItem.SQL_ID), {
+			mode: _ui.base.mimetype,
+			indentWithTabs: true,
+			smartIndent: true,
+			autoCloseBrackets: true,
+			indentUnit : 4,
+			lineNumbers: true,
+			height:'auto',
+			lineWrapping: false,
+			matchBrackets : true,
+			autofocus: true,
+			extraKeys: {
+				"Ctrl-Space": "autocomplete"
+				,"Ctrl-F": function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-F" : function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-R" : function (){
+					// 검색 재정의
+				}
+			},
+			hintOptions: {tables:tableHint}
+		});
+		
+		_self.sqlTextAreaObj = editor;
+		_self.allSqlEditorObj[sItem.SQL_ID] = editor;
 	}
 	//텍스트 박스 object
 	,getTextAreaObj:function(){

@@ -42,7 +42,7 @@
 			,removeItem : false	// remove callback 옵션
 			,itemKey :{							// item key mapping
 				title :'name'
-				,id :'id'
+				,id :'_tabid'
 			}
 		};
 
@@ -120,7 +120,6 @@
 				,html : addHtml
 				,hoverHideCls : (activeIcon.overView === false ? 'pubTab-icon-hover-hide' : '')
 			}
-
 		}
 		,initEvt : function (){
 			var _this = this
@@ -129,21 +128,11 @@
 			_this.element.on('click', '.pubTab-item-title',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item');
-
-				var beforeEle = _this.element.find('.pubTab-item.active');
 				
-				if(beforeEle.length > 0){
-					beforeEle.removeClass('active');
-				}
-
-				_this._setHistory(itemEle.attr('data-tab-id'));
-				
-				itemEle.addClass('active');
-
 				var tabIdx = itemEle.index();
 
-				_this.movePosition(tabIdx);
-				
+				_this.setActive(opts.items[tabIdx]);
+
 				if($.isFunction(opts.click)){
 					opts.click.call(itemEle,opts.items[tabIdx])
 				}
@@ -232,12 +221,13 @@
 			this.config.tabHistory.push(tabid);
 		}
 		,itemClick : function (item, addAttr){
-			var idx  = item ;
+			var idx  = item;
 			if(typeof item ==='object'){
 				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
 			}
 
-			item = isNaN(idx) ? 0 :idx; 
+			idx = isNaN(idx) ? 0 :idx; 
+
 			addAttr = addAttr || {};
 			var clickEle = $(this.element.find('.pubTab-item').get(idx));
 			
@@ -246,6 +236,22 @@
 			}
 			
 			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+		}
+		,setActive: function (item){
+
+			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+			
+			if(tabEle.hasClass('active')){
+				return ; 
+			}
+
+			this.element.find('.pubTab-item.active').removeClass('active');
+
+			this._setHistory(tabEle.attr('data-tab-id'));
+			
+			tabEle.addClass('active');
+
+			this.movePosition(tabEle.index());
 		}
 		/**
 		 * @method movePosition
@@ -287,7 +293,19 @@
 		 * @method addItem
 		 * @description item add
 		 */
-		,addItem : function(item , idx){
+		,addItem : function(addInfo){
+			var item = addInfo.item
+				,idx = addInfo.idx 
+				,enabled =addInfo.enabled; 
+
+			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+
+			if(tabEle.length > 0){
+				if(item.active===false)
+				tabEle.find('.pubTab-item-title').trigger('click');
+				return; 
+			}
+
 			if(isNaN(idx)){
 				idx = this.options.items.length;
 				this.options.items.push(item);
@@ -315,11 +333,13 @@
 				$(this.element.find('.pubTab-drop-item').get(0)).before(dropHtm);
 			}
 			
-			//this.draw();
 			this.calcItemWidth();
-			this.movePosition(idx);
 
-			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+			if(enabled !== false){
+				//this.draw();
+				this.movePosition(idx);
+				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+			}
 		}
 		/**
 		 * @method removeItem
