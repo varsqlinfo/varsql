@@ -3357,7 +3357,7 @@ _ui.SQL = {
 		$('.sql_new_file').on('click',function (){
 			_self.saveSqlFile({
 				'sql' : ''
-				,'sqlTitle' : (VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
+				,'sqlTitle' : 'Noname'
 				,'sqlId' : ''
 				,'sqlParam' : ''
 			}, 'newfile')
@@ -3712,8 +3712,9 @@ _ui.SQL = {
 		    		var enableItem;
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
-		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
-		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="del">삭제</a></li>');
+		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item text-ellipsis" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
+		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="del" title="삭제"><i class="fa fa-remove"></i></a>');
+		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="setting" title="설정" style="margin-right:5px;"><i class="fa fa-gear"></i></a></li>');
 		    			
 		    			if(item.TAB_YN =='Y'){
 		    				tabItem.push(item);
@@ -3747,6 +3748,8 @@ _ui.SQL = {
 		    			
 		    			_self.loadEditor(sItem);
 		    			//_self.setQueryInfo(sItem);
+		    		}else if(mode=='setting'){
+		    			
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 

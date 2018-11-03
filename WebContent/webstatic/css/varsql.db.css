@@ -987,6 +987,7 @@ hr.dotline {
 	width:100%;
 	height:60px;
 	min-width: 380px;
+	border-bottom: 1px solid #cccccc;
 	/*overflow:hidden;*/
 }
 

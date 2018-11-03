@@ -109,8 +109,7 @@ $(document).ready(function(){
 	padding: 5px;
 	float:left;
 	overflow: auto;
-	border: 1px solid #e8cece;
-    border-left: 0px solid #ffffff;
+	border-right: 1px solid #cccccc;
 }
 .varsql-sqleditor-area .varsql-file-save-list ul{
 	margin:0px;
@@ -144,10 +143,19 @@ $(document).ready(function(){
 .varsql-toolbar-area .pubTab-wrapper {
 	background: inherit;
 }
+
+.varsql-toolbar-area .pubTab {
+	border-bottom: 0px solid #bfb8b8
+}
     
 .varsql-toolbar-area .pubTab-item.active .pubTab-item-cont{
 	background:#ffffff;
 }
+
+.text-ellipsis.sql-flielist-item{
+	max-width: calc(100% - 50px)
+} 
+
 </style>
 <%--sql editor component template --%>
 <script id="sqlEditorComponentTemplate" type="text/varsql-template">
@@ -200,7 +208,7 @@ $(document).ready(function(){
 				</li>
 			</ul>
 		</div>
-		<div class="varql-sqlfile-list-wrapper" style="padding-bottom:3px;">
+		<div class="varql-sqlfile-list-wrapper" style="padding-top:3px;">
 			<span style="float:left;">
 				<span style="padding:0px 5px 0px 0px;display:inline-block; vertical-align:bottom;">
 					<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
