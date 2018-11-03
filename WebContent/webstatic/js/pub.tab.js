@@ -17,6 +17,7 @@
 			,width:'auto'
 			,autoMove : false
 			,itemPadding: 5
+			,height : '22px'
 			,leftMargin : 30	// 왼쪽에 item 있을경우 더 이동할 space
 			,overItemViewMode : 'drop'
 			,dropItemHeight :'auto'		//drop item height
@@ -345,7 +346,7 @@
 		 * @method removeItem
 		 * @description item remove
 		 */
-		,removeItem : function(idx){
+		,removeItem : function(item){
 			var idx  = item;
 			if(typeof item ==='object'){
 				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
@@ -364,7 +365,7 @@
 			this.config.tabHistory = arrayRemove(this.config.tabHistory, reval._tabid);
 
 			var viewTabId;
-			if(this.config.tabHistory.length > 0){1
+			if(this.config.tabHistory.length > 0){
 				viewTabId =	this.config.tabHistory[this.config.tabHistory.length -1];
 			}else{
 				viewTabId =	(this.options.items[0]||{})._tabid;
@@ -478,10 +479,10 @@
 			}
 
 			var strHtm = [];
-			strHtm.push('<div class="pubTab-wrapper" style="'+(!isNaN(_opts.height) ? 'height:'+_opts.height+'px' :'')+'">');
+			strHtm.push('<div class="pubTab-wrapper">');
 			strHtm.push('	<div id="'+_this.contextId+'pubTab" class="pubTab">');
 			strHtm.push('		<div id="'+_this.contextId+'pubTab-scroll" class="pubTab-scroll">');
-			strHtm.push('			<ul id="'+_this.contextId+'pubTab-container" class="pubTab-container">');
+			strHtm.push('			<ul id="'+_this.contextId+'pubTab-container" class="pubTab-container" style="height:'+_opts.height+'">');
 			strHtm.push(tabItemHtml());
 			strHtm.push('			<li><div id="'+_this.contextId+'pubTab-move-space"  style="display:none;">&nbsp;</div></li>');
 			strHtm.push('			</ul>');

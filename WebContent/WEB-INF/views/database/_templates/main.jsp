@@ -141,9 +141,13 @@ $(document).ready(function(){
 	z-index:1;
 }
 
-
-
-
+.varsql-toolbar-area .pubTab-wrapper {
+	background: inherit;
+}
+    
+.varsql-toolbar-area .pubTab-item.active .pubTab-item-cont{
+	background:#ffffff;
+}
 </style>
 <%--sql editor component template --%>
 <script id="sqlEditorComponentTemplate" type="text/varsql-template">

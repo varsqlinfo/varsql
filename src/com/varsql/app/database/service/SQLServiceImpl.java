@@ -385,17 +385,18 @@ public class SQLServiceImpl{
 		try{
 			
 			if("".equals(sqlParamInfo.getSqlId())){
+				sqlDAO.updateSqlFileViewDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
 				sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
 			    sqlDAO.saveQueryInfo(sqlParamInfo);
 			}else{
 				
-				if("viewyn".equals(sqlParamInfo.getCustom().get("mode"))){
-					sqlDAO.updateSqlFileViewYInfo(sqlParamInfo); 
-				}
-				
-				if("tabyn".equals(sqlParamInfo.getCustom().get("mode"))){
+				if("delTab".equals(sqlParamInfo.getCustom().get("mode"))){
 					sqlDAO.updateSqlFileTabDisableInfo(sqlParamInfo); 
 				}else{
+					if("addTab".equals(sqlParamInfo.getCustom().get("mode"))){
+						sqlDAO.updateSqlFileViewDisable(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
+					}
+					
 					sqlDAO.updateQueryInfo(sqlParamInfo);
 				}
 			}

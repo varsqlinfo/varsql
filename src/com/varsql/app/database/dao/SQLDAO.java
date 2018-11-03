@@ -69,8 +69,8 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateSqlFileViewYInfo(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().update("sqlServiceMapper.updateSqlFileViewYInfo", sqlParamInfo);
+	public int updateSqlFileViewDisable(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().update("sqlServiceMapper.updateSqlFileViewDisable", sqlParamInfo);
 	}
 	
 	/**

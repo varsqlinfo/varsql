@@ -2938,7 +2938,8 @@ _ui.SQL = {
 	sqlTextAreaObj : null
 	,sqlFileTabObj : null	// sql file tab list
 	,allSqlEditorObj : {}	 // sql editor  object
-	,sqlEditorSelector : '#sql_editor_area'
+	,sqlEditorSelector : '#sql_editor_area' 
+	,sqlEditorInitTab : false  // sql editor init tab 
 	,sqlEditorEle : null
 	,memoDialog : null
 	,findTextDialog : null
@@ -2968,7 +2969,7 @@ _ui.SQL = {
 		_self._initEditor();
 		_self._initEvent();
 		_self._initTab();
-		_self.sqlSaveList();
+		_self.sqlFileList();
 		
 	}
 	// init editor tab 
@@ -2980,19 +2981,28 @@ _ui.SQL = {
 			items : []
 			,width:'auto'
 			,activeIcon :{
-				position : 'last'		//  활성시 html 추가 위치
+				overView : true
+				,position : 'last'		//  활성시 html 추가 위치
 				,html : '<i class="fa fa-remove"></i>'		// 활성시 추가할 html
 				,click : function (item, idx){
 					_self.sqlFileTabObj.removeItem(idx);
 					
-					_self.allSqlEditorObj[item.SQL_ID].toTextArea();
-
-					$('[data-editor-id="'+item.SQL_ID+'"]').remove();
+					if(_self.allSqlEditorObj[item.SQL_ID]){
+						_self.allSqlEditorObj[item.SQL_ID].toTextArea();
+						$('[data-editor-id="'+item.SQL_ID+'"]').remove();
+					}
+					_self.saveSqlFile({
+						sqlId : item.SQL_ID
+					},'delTab');
 				}
 			}
 			,overItemViewMode :'drop'
 			,click : function (item){
-				 _self.loadEditor(item, false);
+				_self.loadEditor(item, false);
+				 
+				_self.saveSqlFile({
+					sqlId : item.SQL_ID
+				},'addTab');
 			}
 			,itemKey :{							// item key mapping
 				title :'GUERY_TITLE'
@@ -3274,12 +3284,12 @@ _ui.SQL = {
 		
 		// sql 정보 저장. 
 		$('.sql_save_btn').on('click',function (e){
-			_self.saveSql();
+			_self.saveSqlFile();
 		});
 		
 		$('#sqlFileSearchTxt').keydown(function(e) {
 			if (e.keyCode == '13') {
-				_self.sqlSaveList();
+				_self.sqlFileList();
 			}
 		});
 		
@@ -3295,7 +3305,7 @@ _ui.SQL = {
 			}
 			
 			if(sEle.attr('loadFlag') != 'Y'){
-				_self.sqlSaveList();
+				_self.sqlFileList();
 				sEle.attr('loadFlag','Y');
 			}
 		})
@@ -3345,24 +3355,12 @@ _ui.SQL = {
 		});
 		
 		$('.sql_new_file').on('click',function (){
-			/*
-			 sItem = {
-				SQL_ID:''
-				, GUERY_TITLE:(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
-				,QUERY_CONT:'',SQL_PARAM :''
-			}
-			
-			
-			 */
-			
-			_self.saveSql({
+			_self.saveSqlFile({
 				'sql' : ''
 				,'sqlTitle' : (VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_query')
 				,'sqlId' : ''
 				,'sqlParam' : ''
-			})
-			
-			//_self.setQueryInfo('clear');
+			}, 'newfile')
 		});
 	}
 	,findTextOpen : function(){
@@ -3561,27 +3559,28 @@ _ui.SQL = {
 				$('#sql_parameter_row_area').append(paramHtm);
 			}
 		}
-		
 	}
 	// save sql
-	,saveSql : function (item){
+	,saveSqlFile : function (item , mode){
 		var _self = this; 
 		
 		var params;
+		mode = mode || 'query';
 		
-		if(item){
-			params = VARSQL.util.objectMerge (_g_options.param,item);
-		}else{
+		if(mode=='query'){
 			params =VARSQL.util.objectMerge (_g_options.param,{
 				'sql' :_self.getTextAreaObj().getValue()
 				,'sqlId' : $('#sqlFileId').val()
 				,'sqlParam' : JSON.stringify(_self.getSqlParam())
-				,'mode' : 'query'
+				,'mode' : mode
 			});
-		}	
+		}else{
+			params = VARSQL.util.objectMerge (_g_options.param,item);
+			params.mode = mode;
+		}
 		
 		VARSQL.req.ajax({      
-		    loadSelector : '#sql_editor_wrapper'
+		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
 		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,data:params 
 		    ,success:function (res){
@@ -3590,11 +3589,14 @@ _ui.SQL = {
 		    	$('#sqlFileId').val(item.sqlId);
 		    	_self.currentSqlData = params.sql;
 		    	
-		    	_self.loadEditor({
-		    		"SQL_ID":item.sqlId
-		    		,"GUERY_TITLE":params.sqlTitle
-		    		,"QUERY_CONT":params.sql
-		    	});
+		    	if('newfile' == mode){
+			    	_self.loadEditor({
+			    		isNewSqlFile : true
+			    		,"SQL_ID":item.sqlId
+			    		,"GUERY_TITLE":params.sqlTitle
+			    		,"QUERY_CONT":params.sql
+			    	});
+		    	}
 			}
 		});  
 	}
@@ -3687,7 +3689,7 @@ _ui.SQL = {
 		this.currentSqlData =  sItem.QUERY_CONT;
 	}
 	// 저장된 sql 목록 보기.
-	,sqlSaveList : function (){
+	,sqlFileList : function (){
 		var _self = this; 
 		
 		var params =VARSQL.util.objectMerge (_g_options.param,{
@@ -3710,8 +3712,8 @@ _ui.SQL = {
 		    		var enableItem;
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
-		    			strHtm.push('<li _idx="'+i+'"><a href="javascript:;" class="save-list-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
-		    			strHtm.push('<a href="javascript:;" class="pull-right save-list-item" _mode="del">삭제</a></li>');
+		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
+		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="del">삭제</a></li>');
 		    			
 		    			if(item.TAB_YN =='Y'){
 		    				tabItem.push(item);
@@ -3721,7 +3723,7 @@ _ui.SQL = {
 		    			}
 		    		}
 		    		
-		    		if(tabItem.length > 0){
+		    		if(tabItem.length > 0 && _self.sqlEditorInitTab===false){
 		    			_self.sqlFileTabObj.setItems(tabItem);
 		    			enableItem = enableItem ? enableItem : tabItem[0];
 			    		_self.loadEditor(enableItem, false);
@@ -3730,12 +3732,14 @@ _ui.SQL = {
 		    		strHtm.push('<li>no data</li>')
 		    	}
 		    	
+		    	_self.sqlEditorInitTab =true; // tab init 여부 셋팅. 
 		    	$('#sql_filelist_area').empty().html(strHtm.join(''));
 		    	
-		    	$('#sql_filelist_area .save-list-item').on('click', function (e){
-		    		var sObj = $(this)
-		    			, mode = sObj.attr('_mode')
-		    			, idx = sObj.closest('[_idx]').attr('_idx');
+		    	$('#sql_filelist_area .sql-flielist-item').on('click', function (e){
+		    		var sEle = $(this)
+		    			, mode = sEle.attr('_mode')
+		    			, itemArea = sEle.closest('.sql-flie-item-area')
+		    			, idx = itemArea.attr('_idx');
 		    		
 		    		var sItem =items[idx]; 
 		    		
@@ -3743,8 +3747,6 @@ _ui.SQL = {
 		    			
 		    			_self.loadEditor(sItem);
 		    			//_self.setQueryInfo(sItem);
-		    		
-		    			
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 
@@ -3758,13 +3760,8 @@ _ui.SQL = {
 		    			    ,dataType:'json'
 		    			    ,data:params 
 		    			    ,success:function (res){
+		    			    	itemArea.remove();
 		    			    	_self.sqlFileTabObj.removeItem(sItem);
-		    			    	
-		    			    	
-		    			    	
-		    			    	
-		    			    	
-		    			    	_self.sqlSaveList();
 		    			    }
 		    			});
 		    		}
@@ -3786,12 +3783,19 @@ _ui.SQL = {
 			return ; 
 		}
 		
-		_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
-		_self.sqlFileTabObj.setActive(sItem);
-		
 		$('#sqlFileId').val(sItem.SQL_ID);
 		$('.sql-editor-item.active').removeClass('active');
 		editorEle.addClass('active');
+		
+		_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
+		
+		if(tabAddFlag!==false){
+			_self.saveSqlFile({
+				sqlId : sItem.SQL_ID
+			},'addTab');// tab 정보 추가.
+		}
+		
+		_self.sqlFileTabObj.setActive(sItem);
 
 		if(editorEle.attr('data-load-yn')=='Y'){
 			_self.sqlTextAreaObj = _self.allSqlEditorObj[sItem.SQL_ID];

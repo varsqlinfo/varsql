@@ -69,17 +69,17 @@
 	<update id="sqlServiceMapper.updateQueryInfo" parameterType="sqlParamInfo">
 		update VTSQL_SQLFILE 
 		set
+			UPD_DT = CURRENT TIMESTAMP
 		<choose>
 			<when test="custom != null and 'title'.equalsIgnoreCase(custom.mode)">
-				GUERY_TITLE = #{sqlTitle}
+				, GUERY_TITLE = #{sqlTitle}
 			</when>
-			<when test="custom != null and 'viewyn'.equalsIgnoreCase(custom.mode)">
-				VIEW_YN = 'Y'
-				,TAB_YN ='Y'
+			<when test="custom != null and 'addTab'.equalsIgnoreCase(custom.mode)">
+				,TAB_YN  = 'Y'
+				,VIEW_YN = 'Y'
 			</when>
 			<otherwise>
-				 QUERY_CONT = #{sql}
-				, UPD_DT = CURRENT TIMESTAMP
+				, QUERY_CONT = #{sql}
 				, SQL_PARAM =#{sqlParam}
 			</otherwise>
 		</choose>
@@ -89,7 +89,7 @@
 	</update>
 	
 	<!-- 사용자  editor 활성화 정보 업데이트. -->
-	<update id="sqlServiceMapper.updateSqlFileViewYInfo" parameterType="sqlParamInfo">
+	<update id="sqlServiceMapper.updateSqlFileViewDisable" parameterType="sqlParamInfo">
 		update VTSQL_SQLFILE 
 		set
 			VIEW_YN = 'N'
@@ -103,9 +103,10 @@
 		update VTSQL_SQLFILE 
 		set
 			TAB_YN ='N'
+			,VIEW_YN ='N'
 		where VCONNID = #{vconnid} 
 		and VIEWID = #{userid}
-		and VIEW_YN = 'Y' 
+		and sql_id = #{sqlId}
 	</update>
 	
 	<!-- query_cont map -->
