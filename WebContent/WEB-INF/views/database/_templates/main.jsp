@@ -153,7 +153,7 @@ $(document).ready(function(){
 }
 
 .text-ellipsis.sql-flielist-item{
-	max-width: calc(100% - 50px)
+	max-width: calc(100% - 50px);
 } 
 
 </style>

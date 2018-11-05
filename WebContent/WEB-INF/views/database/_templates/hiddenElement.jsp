@@ -122,6 +122,19 @@
 	</div>
 </div>
 
+<%--editor 문자 찾기 다이얼로그. --%>
+<div id="editorNewSqlFileDialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="Sql File">
+	<div class="new-sqlfile-area" style="padding:10px;">
+		<div>
+			<label class="sqlfile-name-label">File</label>
+		</div>
+		<div class="sqlfile-name-input-area">
+			<input type="hidden" id="editorSqlFileId" name="editorSqlFileId">
+			<input type="text" id="editorSqlFileNameText" class="form-control input-sm" placeholder="new file name">
+		</div>
+	</div>
+</div>
+
 <%--ddl view template --%>
 <script id="ddlViewTemplate" type="text/varsql-template">
 <div class="ddl-view-area">

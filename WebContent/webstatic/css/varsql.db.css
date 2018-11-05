@@ -526,7 +526,7 @@ hr.dotline {
 }
 
 #dbSchemaList{
-	height:118px;
+	max-height: 118px;
 	overflow-y:auto;
 	border: 1px solid #f1f1f1;
 	font-size :12px;

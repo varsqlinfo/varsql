@@ -302,8 +302,10 @@
 			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 
 			if(tabEle.length > 0){
-				if(item.active===false)
-				tabEle.find('.pubTab-item-title').trigger('click');
+				if(enabled !== false){
+					tabEle.find('.pubTab-item-title').trigger('click');
+				}
+				
 				return; 
 			}
 
@@ -341,6 +343,33 @@
 				this.movePosition(idx);
 				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
 			}
+		}
+		/**
+		 * @method updateItem
+		 * @description item update
+		 */
+		,updateItem : function (modInfo){
+			var item = modInfo.item
+				,enabled =modInfo.enabled; 
+
+			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+
+			if(tabEle.length > 0){
+
+				this.options.items[tabEle.index()] = objectMerge(this.options.items[tabEle.index()], item);
+				
+
+				tabEle.find('.pubTab-item-title').empty().html(item[this.options.itemKey.title]);
+
+				
+				if(enabled !== false){
+					tabEle.find('.pubTab-item-title').trigger('click');
+				}
+				
+				return; 
+			}else{
+				this.addItem(modInfo);
+			}	
 		}
 		/**
 		 * @method removeItem

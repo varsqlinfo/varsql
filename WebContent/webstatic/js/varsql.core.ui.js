@@ -2937,6 +2937,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 _ui.SQL = {
 	sqlTextAreaObj : null
 	,sqlFileTabObj : null	// sql file tab list
+	,sqlFileNameDialogEle : null // sql file name dialog
 	,allSqlEditorObj : {}	 // sql editor  object
 	,sqlEditorSelector : '#sql_editor_area' 
 	,sqlEditorInitTab : false  // sql editor init tab 
@@ -2970,7 +2971,47 @@ _ui.SQL = {
 		_self._initEvent();
 		_self._initTab();
 		_self.sqlFileList();
+		_self._initDialog();
+	}
+	,_initDialog : function (){
+		var _self = this; 
 		
+		// sql 파일명 생성 수정 dialog
+		if(_self.sqlFileNameDialogEle==null){
+			_self.sqlFileNameDialogEle = $('#editorNewSqlFileDialog').dialog({
+				height: 200
+				,width: 280
+				,resizable: false
+				,modal: true
+				,autoOpen : false
+				,close: function() {
+					_self.sqlFileNameDialogEle.dialog( "close" );
+				}
+				,buttons: {
+					"저장":function (){
+						var nameTxt = $('#editorSqlFileNameText').val(); 
+						if($.trim(nameTxt)==''){
+							alert('sql명을 입력해주세요.');
+							return ;
+						}
+						
+						var sqlFileId = $('#editorSqlFileId').val();
+						
+						var mode = sqlFileId =='' ? 'newfile' :'title';
+						
+						_self.saveSqlFile({
+							'sqlId' : $('#editorSqlFileId').val()
+							,'sqlTitle' : $('#editorSqlFileNameText').val()
+						}, mode)
+						
+						_self.sqlFileNameDialogEle.dialog( "close" );
+					}
+					,Cancel: function() {
+						_self.sqlFileNameDialogEle.dialog( "close" );
+					}
+				}
+			});
+		}
 	}
 	// init editor tab 
 	,_initTab : function (){
@@ -3355,12 +3396,10 @@ _ui.SQL = {
 		});
 		
 		$('.sql_new_file').on('click',function (){
-			_self.saveSqlFile({
-				'sql' : ''
-				,'sqlTitle' : 'Noname'
-				,'sqlId' : ''
-				,'sqlParam' : ''
-			}, 'newfile')
+			 $('#editorSqlFileNameText').val('');
+			 $('#editorSqlFileId').val('');
+			 
+			_self.sqlFileNameDialogEle.dialog("open");
 		});
 	}
 	,findTextOpen : function(){
@@ -3451,10 +3490,12 @@ _ui.SQL = {
 			caseFold : !findOpt.caseSearch
 		})
 		
+		var isNext;
+			
 		if(replaceAllFlag ===true){
 			var replaceCount =0; 
 			
-			var isNext = cursor.find(isReverseFlag);
+			isNext = cursor.find(isReverseFlag);
 			
 			while(isNext){
 				replaceCount++;
@@ -3471,7 +3512,7 @@ _ui.SQL = {
 			return ; 
 		}
 		
-		var isNext = cursor.find(isReverseFlag);
+		isNext = cursor.find(isReverseFlag);
 		
 		if(wrapSearch===true && isNext===false){
 			alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
@@ -3577,7 +3618,16 @@ _ui.SQL = {
 		}else{
 			params = VARSQL.util.objectMerge (_g_options.param,item);
 			params.mode = mode;
+			
+			if (mode=='title'){
+				_self.sqlFileTabObj.updateItem({item:{
+					"SQL_ID":item.sqlId
+		    		,"GUERY_TITLE":item.sqlTitle
+				}, enabled:false});
+			}
 		}
+		
+		
 		
 		VARSQL.req.ajax({      
 		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
@@ -3749,7 +3799,10 @@ _ui.SQL = {
 		    			_self.loadEditor(sItem);
 		    			//_self.setQueryInfo(sItem);
 		    		}else if(mode=='setting'){
-		    			
+		    			$('#editorSqlFileId').val(sItem.SQL_ID);
+						$('#editorSqlFileNameText').val(sItem.GUERY_TITLE);
+						
+						_self.sqlFileNameDialogEle.dialog("open");
 		    		}else{
 		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
 		    				return ; 
