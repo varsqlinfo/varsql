@@ -59,6 +59,34 @@ public class SQLDAO extends BaseDAO{
 		return getSqlSession().update("sqlServiceMapper.updateQueryInfo", sqlParamInfo );
 	}
 	
+
+	/**
+	 * 
+	 * @Method Name  : insertSqlFileTabInfo
+	 * @Method 설명 : insert sql tab info
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 7. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 */
+	public int insertSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().update("sqlServiceMapper.insertSqlFileTabInfo", sqlParamInfo);
+		
+	}
+	/**
+	 * 
+	 * @Method Name  : deleteSqlFileTabInfo
+	 * @Method 설명 : delete sql file tab info
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 7. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public int deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().delete("sqlServiceMapper.deleteSqlFileTabInfo", sqlParamInfo);
+	}
+	
 	/**
 	 * 
 	 * @Method Name  : updateSqlFileViewYInfo
@@ -69,30 +97,26 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateSqlFileViewDisable(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().update("sqlServiceMapper.updateSqlFileViewDisable", sqlParamInfo);
+	public int updateSqlFileTabDisable(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().update("sqlServiceMapper.updateSqlFileTabDisable", sqlParamInfo);
 	}
 	
 	/**
 	 * 
-	 * @Method Name  : updateSqlFileTabDisableInfo
-	 * @Method 설명 : tab disable
+	 * @Method Name  : updateSqlFileTabEnable
+	 * @Method 설명 : tab enable
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 11. 1. 
 	 * @변경이력  :
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateSqlFileTabDisableInfo(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().update("sqlServiceMapper.updateSqlFileTabDisableInfo", sqlParamInfo);
+	public int updateSqlFileTabEnable(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().update("sqlServiceMapper.updateSqlFileTabEnable", sqlParamInfo);
 	}
 
-	public int selectSqlListTotalCnt(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().selectOne("sqlServiceMapper.selectSqlListTotalCnt", sqlParamInfo );
-	}
-	
-	public List selectSqlList(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().selectList("sqlServiceMapper.selectSqlList", sqlParamInfo );
+	public List selectSqlFileList(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectList("sqlServiceMapper.selectSqlFileList", sqlParamInfo );
 	}
 	
 	public int deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
@@ -109,5 +133,9 @@ public class SQLDAO extends BaseDAO{
 			// exception 상광없이 돌아야 함으로 처리. 
 			return -1; 
 		}
+	}
+
+	public List selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectList("sqlServiceMapper.selectSqlFileTabList", sqlParamInfo );
 	}
 }

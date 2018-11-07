@@ -2940,7 +2940,6 @@ _ui.SQL = {
 	,sqlFileNameDialogEle : null // sql file name dialog
 	,allSqlEditorObj : {}	 // sql editor  object
 	,sqlEditorSelector : '#sql_editor_area' 
-	,sqlEditorInitTab : false  // sql editor init tab 
 	,sqlEditorEle : null
 	,memoDialog : null
 	,findTextDialog : null
@@ -2970,7 +2969,7 @@ _ui.SQL = {
 		_self._initEditor();
 		_self._initEvent();
 		_self._initTab();
-		_self.sqlFileList();
+		_self.sqlFileTabList();
 		_self._initDialog();
 	}
 	,_initDialog : function (){
@@ -3043,7 +3042,7 @@ _ui.SQL = {
 				 
 				_self.saveSqlFile({
 					sqlId : item.SQL_ID
-				},'addTab');
+				},'viewTab');
 			}
 			,itemKey :{							// item key mapping
 				title :'GUERY_TITLE'
@@ -3625,9 +3624,10 @@ _ui.SQL = {
 		    		,"GUERY_TITLE":item.sqlTitle
 				}, enabled:false});
 			}
+			var selectTabItem = _self.sqlFileTabObj.getSelectItem()||{};
+			params.prevTabId = selectTabItem.SQL_ID ||'';
+			
 		}
-		
-		
 		
 		VARSQL.req.ajax({      
 		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
@@ -3738,6 +3738,35 @@ _ui.SQL = {
 		
 		this.currentSqlData =  sItem.QUERY_CONT;
 	}
+	// sql file tab list
+	,sqlFileTabList : function (){
+		var _self = this; 
+		
+		VARSQL.req.ajax({
+		    loadSelector : '#sql_editor_wrapper'
+		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFileTab.varsql'}
+		    ,data:_g_options.param 
+		    ,success:function (res){
+		    	var items = res.items
+		    		,len = items.length;
+		    	
+		    	if(len > 0){
+		    		_self.sqlFileTabObj.setItems(items);
+		    		var enableItem; 
+		    		for(var i =0 ;i <len; i++){
+		    			var item = items[i];
+		    			if(item.VIEW_YN=='Y'){
+		    				enableItem = item ; 
+		    				break; 
+		    			}
+		    		}
+		    		
+		    		enableItem = enableItem ? enableItem : items[0];
+		    		_self.loadEditor(enableItem, false);
+		    	}
+			}
+		});
+	}
 	// 저장된 sql 목록 보기.
 	,sqlFileList : function (){
 		var _self = this; 
@@ -3757,33 +3786,16 @@ _ui.SQL = {
 		    		,len = items.length;
 		    	
 		    	if(items.length > 0){
-		    		var tabItem = [];
-		    		var editorHtml = [];
-		    		var enableItem;
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
 		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item text-ellipsis" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="del" title="삭제"><i class="fa fa-remove"></i></a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="setting" title="설정" style="margin-right:5px;"><i class="fa fa-gear"></i></a></li>');
-		    			
-		    			if(item.TAB_YN =='Y'){
-		    				tabItem.push(item);
-		    			}
-		    			if(item.VIEW_YN=='Y'){
-		    				enableItem = item; 
-		    			}
-		    		}
-		    		
-		    		if(tabItem.length > 0 && _self.sqlEditorInitTab===false){
-		    			_self.sqlFileTabObj.setItems(tabItem);
-		    			enableItem = enableItem ? enableItem : tabItem[0];
-			    		_self.loadEditor(enableItem, false);
 		    		}
 		    	}else{
 		    		strHtm.push('<li>no data</li>')
 		    	}
 		    	
-		    	_self.sqlEditorInitTab =true; // tab init 여부 셋팅. 
 		    	$('#sql_filelist_area').empty().html(strHtm.join(''));
 		    	
 		    	$('#sql_filelist_area .sql-flielist-item').on('click', function (e){
@@ -3845,7 +3857,7 @@ _ui.SQL = {
 		
 		_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
 		
-		if(tabAddFlag!==false){
+		if(tabAddFlag !==false){
 			_self.saveSqlFile({
 				sqlId : sItem.SQL_ID
 			},'addTab');// tab 정보 추가.

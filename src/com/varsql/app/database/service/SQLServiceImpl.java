@@ -385,18 +385,21 @@ public class SQLServiceImpl{
 		try{
 			
 			if("".equals(sqlParamInfo.getSqlId())){
-				sqlDAO.updateSqlFileViewDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
+				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
 				sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
 			    sqlDAO.saveQueryInfo(sqlParamInfo);
 			}else{
+				String mode = String.valueOf(sqlParamInfo.getCustom().get("mode")); 
 				
-				if("delTab".equals(sqlParamInfo.getCustom().get("mode"))){
-					sqlDAO.updateSqlFileTabDisableInfo(sqlParamInfo); 
+				if("addTab".equals(mode)){
+					sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
+					sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
+				}else if("delTab".equals(mode)){
+					sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+				}else if("viewTab".equals(mode)){
+					sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
+					sqlDAO.updateSqlFileTabEnable(sqlParamInfo);
 				}else{
-					if("addTab".equals(sqlParamInfo.getCustom().get("mode"))){
-						sqlDAO.updateSqlFileViewDisable(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
-					}
-					
 					sqlDAO.updateQueryInfo(sqlParamInfo);
 				}
 			}
@@ -415,14 +418,14 @@ public class SQLServiceImpl{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public ResponseResult selectSqlList(SqlParamInfo sqlParamInfo) {
+	public ResponseResult selectSqlFileList(SqlParamInfo sqlParamInfo) {
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemList(sqlDAO.selectSqlList(sqlParamInfo));
+			result.setItemList(sqlDAO.selectSqlFileList(sqlParamInfo));
 	    }catch(Exception e){
 	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
-	    	logger.error(getClass().getName()+"saveQuery", e);
+	    	logger.error(getClass().getName()+"selectSqlFileList", e);
 	    	result.setMessageCode(e.getMessage());
 	    }
 		return result; 
@@ -469,6 +472,29 @@ public class SQLServiceImpl{
 			DataExportUtil.toExcelWrite(downloadData,columnInfo , res.getOutputStream());
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectSqlFileTabList
+	 * @Method 설명 : sql file tab list
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 7. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
+		
+		try{
+			result.setItemList(sqlDAO.selectSqlFileTabList(sqlParamInfo));
+	    }catch(Exception e){
+	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+	    	logger.error(getClass().getName()+"selectSqlFileTabList", e);
+	    	result.setMessageCode(e.getMessage());
+	    }
+		return result; 
 	}
 	
 }

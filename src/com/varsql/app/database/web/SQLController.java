@@ -114,7 +114,15 @@ public class SQLController {
 		
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		
-		return sQLServiceImpl.selectSqlList(sqlParamInfo);
+		return sQLServiceImpl.selectSqlFileList(sqlParamInfo);
+	}
+	
+	@RequestMapping({"/sqlFileTab"})
+	public @ResponseBody ResponseResult sqlFileTab(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		
+		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
+		
+		return sQLServiceImpl.selectSqlFileTabList(sqlParamInfo);
 	}
 	/**
 	 * sql 정보 삭제 하기.
