@@ -112,6 +112,14 @@
 		)
 	</insert>
 	
+	<!-- sql tab 앞에 정보 업데이트.  -->
+	<update id="sqlServiceMapper.updateSqlFileTabPrevSqlIdInfo" parameterType="sqlParamInfo">
+		update VTSQL_SQLFILE_TAB
+			set PREV_SQL_ID = (select max(PREV_SQL_ID) from VTSQL_SQLFILE_TAB where VCONNID = #{vconnid} and SQL_ID = #{sqlId})
+		where VCONNID = #{vconnid}
+		and PREV_SQL_ID = #{sqlId}
+	</update>
+	
 	<!-- sql tab 정보  삭제. -->
 	<delete id="sqlServiceMapper.deleteSqlFileTabInfo" parameterType="sqlParamInfo">
 		delete from VTSQL_SQLFILE_TAB
@@ -127,12 +135,20 @@
 	
 	<!-- 사용자 sql 목록  -->
 	<select id="sqlServiceMapper.selectSqlFileTabList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
-		select a.* , b.VIEW_YN
-		from VTSQL_SQLFILE a, VTSQL_SQLFILE_TAB b 
-		where a.SQL_ID = b.SQL_ID
-		and b.VCONNID = #{vconnid}
-		and b.VIEWID = #{userid}
-		order by b.PREV_SQL_ID 
+		with e1(SQL_ID, VIEW_YN,  PREV_SQL_ID, lev, VCONNID) as ( 
+			select a.SQL_ID, a.VIEW_YN,a.PREV_SQL_ID, 0 , a.VCONNID
+			from   VTSQL_SQLFILE_TAB a
+			where  (PREV_SQL_ID is null or PREV_SQL_ID='')
+			and a.VCONNID = #{vconnid}
+			union all 
+			select e2.SQL_ID, e2.VIEW_YN, e2.PREV_SQL_ID,lev+1 , e2.VCONNID
+			from   VTSQL_SQLFILE_TAB e2, e1
+			where  e2.PREV_SQL_ID =e1.SQL_ID
+			and e2.VCONNID = #{vconnid}
+		) 
+		select * from e1 c, VTSQL_SQLFILE a
+		where c.SQL_ID = a.SQL_ID
+		and c.VCONNID = #{vconnid}
 	</select>
 	
 	<select id="sqlServiceMapper.selectSqlFileList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">

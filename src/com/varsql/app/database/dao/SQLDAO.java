@@ -3,9 +3,11 @@ package com.varsql.app.database.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.database.beans.SqlLogInfo;
@@ -83,8 +85,14 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
+	
+	@Transactional
 	public int deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().delete("sqlServiceMapper.deleteSqlFileTabInfo", sqlParamInfo);
+		SqlSession sqlSession = getSqlSession();
+		
+		sqlSession.update("sqlServiceMapper.updateSqlFileTabPrevSqlIdInfo",sqlParamInfo);
+		
+		return sqlSession.delete("sqlServiceMapper.deleteSqlFileTabInfo", sqlParamInfo);
 	}
 	
 	/**

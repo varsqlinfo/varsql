@@ -442,6 +442,8 @@ public class SQLServiceImpl{
 		try{
 			result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
 			
+			sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+			
 	    }catch(Exception e){
 	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
 	    	logger.error(getClass().getName()+"deleteSqlSaveInfo", e);

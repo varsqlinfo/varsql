@@ -291,6 +291,20 @@
 			this.draw();
 		}
 		/**
+		 * @method isAddItem
+		 * @description item add
+		 */
+		,isItem : function (item){
+			var tabEle;
+			if(typeof item ==='object'){
+				tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+			}else{
+				tabEle= this.element.find('.pubTab-item[data-tab-id="'+item+'"]');
+			}
+
+			return tabEle.length > 0 ? true : false; 
+		}
+		/**
 		 * @method addItem
 		 * @description item add
 		 */
@@ -306,7 +320,7 @@
 					tabEle.find('.pubTab-item-title').trigger('click');
 				}
 				
-				return; 
+				return false; 
 			}
 
 			if(isNaN(idx)){
@@ -343,6 +357,8 @@
 				this.movePosition(idx);
 				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
 			}
+
+			return true;
 		}
 		/**
 		 * @method updateItem
@@ -369,7 +385,49 @@
 				return; 
 			}else{
 				this.addItem(modInfo);
-			}	
+			}
+		}
+		/**
+		 * @method getLastItem
+		 * @description get item
+		 */
+		,getFirstItem : function (){
+			if(this.options.items.length > 0){
+				return this.options.items[0];
+			}
+			return {};
+		}
+
+		/**
+		 * @method getLastItem
+		 * @description get item
+		 */
+		,getLastItem : function (){
+			if(this.options.items.length > 0){
+				return this.options.items[this.options.items.length -1];
+			}
+			return {};
+		}
+		/**
+		 * @method getItem
+		 * @description get item
+		 */
+		,getItem : function(itemId , mode){
+			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+itemId+'"]');
+			var itemEle;
+			if(mode == 'prev'){
+				itemEle = tabEle.prev('[data-tab-id]');
+			}else if(mode == 'next'){
+				itemEle = tabEle.next('[data-tab-id]');
+			}else{
+				itemEle = tabEle; 
+			}
+			
+			if(itemEle.length > 0){
+				return this.options.items[itemEle.index()];
+			}
+
+			return {};
 		}
 		/**
 		 * @method removeItem
