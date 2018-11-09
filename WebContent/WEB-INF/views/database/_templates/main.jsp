@@ -127,13 +127,23 @@ $(document).ready(function(){
 	display:none;
 }
 
-.varsql-sqleditor-area .sql-editor-item{
+.varsql-sqleditor-area .sql-editor-item, .varsql-sqleditor-area .sql-editor-empty-item{
 	z-index:0;
 	position: absolute;
     width: 100%;
     height: 100%;
     top: 0px;
     left: 0px;
+}
+
+.varsql-sqleditor-area .sql-editor-empty-item > p{
+	text-align: center;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+	
 }
 
 .varsql-sqleditor-area .sql-editor-item.active{
@@ -245,7 +255,14 @@ $(document).ready(function(){
 		</div>
 				
 		<div id="sql_editor_area" style="position:relative;height:100%;">
-			<div class="sql-editor-item" data-editor-id="empty"><textarea id="sqlEmptyEditor" name="sqlEmptyEditor" class="sql-editor-text"></textarea></div>
+			<div class="sql-editor-empty-item">
+	 			<p class="msg-text">
+					<a href="javascript:;" class="sql_new_file">
+						<button type="button" class="btn btn-default"><span class="fa fa-file-o"></span></button>새파일
+					</a>
+					<br>새 파일을 클릭하시면 쿼리를 실행하실수 있는 에디터가 열립니다.
+				</p>
+			</div>
 		</div>
 		<div id="sql_parameter_area" class="sql-parameter-area">
 			<table style="width:100%;">

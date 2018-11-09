@@ -3020,6 +3020,8 @@ _ui.SQL = {
 			this.allSqlEditorObj[item.SQL_ID].toTextArea();
 			$('[data-editor-id="'+item.SQL_ID+'"]').remove();
 		}
+		
+		this.sqlTextAreaObj = {};
 	}
 	// init editor tab 
 	,_initTab : function (){

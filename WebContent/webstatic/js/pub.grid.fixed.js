@@ -730,7 +730,7 @@ Plugin.prototype ={
 			pageInfo = pdata.page; 
 		}
 		
-		if(data && data.length > 0){
+		if(data){
 			if(gridMode == 'addData'){
 				_this.options.tbodyItem = _this.options.tbodyItem.concat(data);	
 			}else{
@@ -789,7 +789,7 @@ Plugin.prototype ={
 				}catch(e){}
 			}
 		}
-		
+
 		_this.config.dataInfo.orginRowLen = _this.options.tbodyItem.length;
 
 		if(_this.config.dataInfo.orginRowLen > 0){
@@ -1275,10 +1275,12 @@ Plugin.prototype ={
 		}
 
 		if(tbi.length < 1){
+			_this.element.body.find('.pubGrid-body-aside-cont').css({'visibility' :'hidden'})
 			_this.element.body.find('.pubGrid-body-cont-wrapper').hide();
 			_this.element.body.find('.pubGrid-empty-msg-area').show();
 			return ; 
 		}else{
+			_this.element.body.find('.pubGrid-body-aside-cont').css({'visibility' :'visible'});
 			_this.element.body.find('.pubGrid-body-cont-wrapper').show();
 			_this.element.body.find('.pubGrid-empty-msg-area').hide();
 		}
@@ -1365,8 +1367,7 @@ Plugin.prototype ={
 			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
 		}
 					
-		_this._statusMessage(viewCount);
-		
+		_this._statusMessage(viewCount);	
 	}
 	/**
      * @method setElementDimensionAndMessage
@@ -1606,7 +1607,6 @@ Plugin.prototype ={
 			
 		_this.element.body.off('mousewheel DOMMouseScroll');
 		_this.element.body.on('mousewheel DOMMouseScroll', function(e) {
-			e.preventDefault();
 			var oe = e.originalEvent;
 			var delta = 0;
 		
@@ -1618,9 +1618,11 @@ Plugin.prototype ={
 
 			//delta > 0--up
 			if(_this.config.scroll.vUse){
+				e.preventDefault();
 				_this.moveVScroll({pos :(delta > 0? 'U' :'D') , speed : _this.options.scroll.vertical.speed});
 			}else{
 				if(_this.config.scroll.hUse){
+					e.preventDefault();
 					_this.moveHScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
 				}
 			}
