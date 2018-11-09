@@ -3,6 +3,8 @@ package com.varsql.app.database.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.ResultContext;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,8 @@ import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.beans.SqlUserHistoryInfo;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.sort.TreeDataSort;
 
 @Repository
 public class SQLDAO extends BaseDAO{
@@ -142,8 +146,40 @@ public class SQLDAO extends BaseDAO{
 			return -1; 
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : selectSqlFileTabList
+	 * @Method 설명 : sql editor tab 정보.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 9. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
 	public List selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
-		return getSqlSession().selectList("sqlServiceMapper.selectSqlFileTabList", sqlParamInfo );
+		
+		class TabListResultHandler implements ResultHandler<Map> {
+			
+			TreeDataSort tds = new TreeDataSort("SQL_ID", "PREV_SQL_ID");
+			
+			@Override
+			public void handleResult(ResultContext<? extends Map> paramResultContext) {
+				
+				System.out.println("paramResultContext.getResultObject() : "+ paramResultContext.getResultObject());
+				tds.sortTreeData(paramResultContext.getResultObject());
+			}
+			
+			public List getResultList(){
+				return tds.getSortList();
+			}
+		}
+
+		TabListResultHandler reportResultHandler = new TabListResultHandler();
+		getSqlSession().select("sqlServiceMapper.selectSqlFileTabList", sqlParamInfo , reportResultHandler);
+		return reportResultHandler.getResultList(); 
 	}
 }
+
+
+
