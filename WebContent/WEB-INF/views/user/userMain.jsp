@@ -2,6 +2,8 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <script>
 
+VARSQL.unload();
+
 var userMain = {
 	_userConnectionInfo :'#user_connection_info'
 	,_connectionTab :'#user_connection_info_tab'

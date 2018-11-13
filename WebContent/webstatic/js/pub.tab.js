@@ -388,7 +388,7 @@
 			}
 		}
 		/**
-		 * @method getLastItem
+		 * @method getFirstItem
 		 * @description get item
 		 */
 		,getFirstItem : function (){
@@ -441,7 +441,7 @@
 
 			var reval = this.options.items.splice(idx, 1);
 
-			if(typeof reval ==='undefined' && reval.length < 1){
+			if(reval && reval.length < 1){
 				return ;
 			}
 			reval = reval[0];

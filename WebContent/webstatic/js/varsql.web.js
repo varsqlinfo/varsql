@@ -257,7 +257,12 @@ _$base.req ={
 				}
 				return ; 
 			}
-			option.success.call(this, data, status, jqXHR);
+			try{
+				option.success.call(this, data, status, jqXHR);
+			}catch(e){
+				$(loadSelector).centerLoadingClose();
+				console.log(e);
+			}
 		}
 		
 		$.ajax(ajaxOpt).done(function (xhr){
@@ -272,7 +277,7 @@ _$base.req ={
 				if(loadSelector=='#editorAreaTable'){
 					$('#sqlEditerPreloaderArea').hide(1000);
 				}
-				$(loadSelector).centerLoadingClose();
+				
 			}
 		});
 	}

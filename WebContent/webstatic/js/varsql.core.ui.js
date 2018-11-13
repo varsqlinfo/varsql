@@ -3020,8 +3020,6 @@ _ui.SQL = {
 			this.allSqlEditorObj[item.SQL_ID].toTextArea();
 			$('[data-editor-id="'+item.SQL_ID+'"]').remove();
 		}
-		
-		this.sqlTextAreaObj = {};
 	}
 	// init editor tab 
 	,_initTab : function (){
@@ -3624,19 +3622,16 @@ _ui.SQL = {
 			params = VARSQL.util.objectMerge (_g_options.param,item);
 			params.mode = mode;
 			
-			var prevItemInfo = _self.sqlFileTabObj.getSelectItem()||{};
-			
 			if (mode=='title'){
-				_self.sqlFileTabObj.updateItem({item:{
-					"SQL_ID":item.sqlId
-		    		,"GUERY_TITLE":item.sqlTitle
-				}, enabled:false});
+				if(_self.sqlFileTabObj.isItem(item.sqlId)){
+					_self.sqlFileTabObj.updateItem({item:{
+						"SQL_ID":item.sqlId
+			    		,"GUERY_TITLE":item.sqlTitle
+					}, enabled:false});
+				}; 
 			}else if('newfile' == mode){
-				prevItemInfo = _self.sqlFileTabObj.getLastItem();
+				params.prevTabId = (_self.sqlFileTabObj.getLastItem().SQL_ID ||'');
 			}
-			
-			params.prevTabId = prevItemInfo.SQL_ID ||'';
-			
 		}
 		
 		VARSQL.req.ajax({      
@@ -3645,9 +3640,6 @@ _ui.SQL = {
 		    ,data:params 
 		    ,success:function (res){
 		    	var item = res.item; 
-		    	
-		    	$('#sqlFileId').val(item.sqlId);
-		    	_self.currentSqlData = params.sql;
 		    	
 		    	if('newfile' == mode){
 			    	_self.loadEditor({
@@ -3749,7 +3741,7 @@ _ui.SQL = {
 		    		}
 		    		
 		    		enableItem = enableItem ? enableItem : items[0];
-		    		_self.loadEditor(enableItem);
+		    		_self.loadEditor(enableItem, false);
 		    	}
 			}
 		});
@@ -3823,7 +3815,7 @@ _ui.SQL = {
 			}
 		});
 	}
-	,loadEditor : function (sItem, tabAddFlag){
+	,loadEditor : function (sItem, viewTabSaveFlag){
 		var _self = this; 
 		
 		var editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
@@ -3844,15 +3836,20 @@ _ui.SQL = {
 		var isTabItem =_self.sqlFileTabObj.isItem(sItem.SQL_ID); 
 		
 		if(!isTabItem){
+			var lastItem = _self.sqlFileTabObj.getLastItem();
+			
 			_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
 			
 			_self.saveSqlFile({
 				sqlId : sItem.SQL_ID
+				, prevTabId : (lastItem.SQL_ID ||'')
 			},'addTab');// tab 정보 추가.
 		}else{
-			_self.saveSqlFile({
-				sqlId : sItem.SQL_ID
-			},'viewTab');
+			if(viewTabSaveFlag !== false){
+				_self.saveSqlFile({
+					sqlId : sItem.SQL_ID
+				},'viewTab');
+			}
 		}
 		
 		_self.sqlFileTabObj.setActive(sItem);

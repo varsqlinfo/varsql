@@ -90,83 +90,6 @@ $(document).ready(function(){
 </div>
 </script>
 
-<style>
-
-.varql-sqlfile-tab{
-	display:block;
-	position: relative;
-    height: 20px;
-	float:left;
-	margin-left: 5px;
-	width:calc(100% - 200px);
-}
-
-.varsql-sqleditor-area .varsql-file-save-list{
-	display:none;
-	width:200px;
-	position:relative;
-	height:100%;
-	padding: 5px;
-	float:left;
-	overflow: auto;
-	border-right: 1px solid #cccccc;
-}
-.varsql-sqleditor-area .varsql-file-save-list ul{
-	margin:0px;
-	padding:0px;	
-}
-.varsql-sqleditor-area.sql-flielist-active .varsql-file-save-list{
-	display:block;
-}
-
-.varsql-sqleditor-area.sql-flielist-active #sql_editor_area{
-	margin-left:200px
-}
-
-.varsql-sqleditor-area .sql-editor-text{
-	display:none;
-}
-
-.varsql-sqleditor-area .sql-editor-item, .varsql-sqleditor-area .sql-editor-empty-item{
-	z-index:0;
-	position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-}
-
-.varsql-sqleditor-area .sql-editor-empty-item > p{
-	text-align: center;
-    position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-	
-}
-
-.varsql-sqleditor-area .sql-editor-item.active{
-	z-index:1;
-}
-
-.varsql-toolbar-area .pubTab-wrapper {
-	background: inherit;
-}
-
-.varsql-toolbar-area .pubTab {
-	border-bottom: 0px solid #bfb8b8
-}
-    
-.varsql-toolbar-area .pubTab-item.active .pubTab-item-cont{
-	background:#ffffff;
-}
-
-.text-ellipsis.sql-flielist-item{
-	max-width: calc(100% - 50px);
-} 
-
-</style>
 <%--sql editor component template --%>
 <script id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="sqlEditorComponent" class="pos-relative-w-h100">
@@ -251,7 +174,9 @@ $(document).ready(function(){
 				<input type="hidden" id="sqlFileId">
 				<input type="text" id="sqlFileSearchTxt" class="form-control input-sm">
 			</div>
-			<ul id="sql_filelist_area"></ul>
+			<div class="scroll-area">
+				<ul id="sql_filelist_area"></ul>
+			</div>
 		</div>
 				
 		<div id="sql_editor_area" style="position:relative;height:100%;">
