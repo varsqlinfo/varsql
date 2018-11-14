@@ -117,6 +117,7 @@
 		update VTSQL_SQLFILE_TAB
 			set PREV_SQL_ID = (select max(PREV_SQL_ID) from VTSQL_SQLFILE_TAB where VCONNID = #{vconnid} and SQL_ID = #{sqlId})
 		where VCONNID = #{vconnid}
+		and VIEWID = #{userid}
 		and PREV_SQL_ID = #{sqlId}
 	</update>
 	

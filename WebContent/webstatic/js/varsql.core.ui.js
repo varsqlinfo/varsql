@@ -376,7 +376,7 @@ _ui.headerMenu ={
 _ui.preferences= {
 	save : function (prefInfo , callback){
 		
-		prefInfo = VARSQL.util.objectMerge(_g_options._opts.screenSetting,prefInfo);
+		prefInfo = VARSQL.util.objectMerge({} ,_g_options._opts.screenSetting,prefInfo);
 		
 		var param = {
 			conuid : _g_options.param.conuid
@@ -3612,14 +3612,14 @@ _ui.SQL = {
 		mode = mode || 'query';
 		
 		if(mode=='query'){
-			params =VARSQL.util.objectMerge (_g_options.param,{
+			params =VARSQL.util.objectMerge ({},_g_options.param,{
 				'sql' :_self.getTextAreaObj().getValue()
 				,'sqlId' : $('#sqlFileId').val()
 				,'sqlParam' : JSON.stringify(_self.getSqlParam())
 				,'mode' : mode
 			});
 		}else{
-			params = VARSQL.util.objectMerge (_g_options.param,item);
+			params = VARSQL.util.objectMerge ({},_g_options.param,item);
 			params.mode = mode;
 			
 			if (mode=='title'){
@@ -3750,7 +3750,7 @@ _ui.SQL = {
 	,sqlFileList : function (){
 		var _self = this; 
 		
-		var params =VARSQL.util.objectMerge (_g_options.param,{
+		var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 			searchVal : $('#sqlFileSearchTxt').val()
 		});
 		
@@ -3996,7 +3996,7 @@ _ui.SQL = {
 			}
 		}
 		
-		var params =VARSQL.util.objectMerge (_g_options.param,{
+		var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 			'sql' :sqlVal
 			,'limit' : $(_self.options.limitCnt).val()
 			,sqlParam : JSON.stringify(sqlParam)
@@ -4030,7 +4030,7 @@ _ui.SQL = {
 		
 		if(''== sqlVal) return ; 
 		
-		var params =VARSQL.util.objectMerge (_g_options.param,{
+		var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 			'sql' :sqlVal
 		});
 		
@@ -4095,7 +4095,7 @@ _ui.SQL = {
 				"내보내기":function (){
 					if(!confirm('내보내기 하시겠습니까?')) return ; 
 
-					var params =VARSQL.util.objectMerge (_g_options.param,{
+					var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='exportColumnCheckBox']:not([value='all'])").join(',')
 						,objectName : tmpName
@@ -4381,7 +4381,7 @@ _ui.sqlDataArea =  {
 						var selData = $.pubGrid(_self.options.dataGridSelector).getData({isSelect:isSelect, dataType:'json'});
 						var mode = sObj.mode; 
 						
-						var params =VARSQL.util.objectMerge (_g_options.param,{
+						var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 							exportType :mode 
 							,headerInfo : JSON.stringify(selData.header)
 							,gridData : JSON.stringify(selData.data)
