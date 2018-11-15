@@ -47,6 +47,10 @@ body div{
 	text-align:center;
 }
 
+.ui-front {
+	z-index:2000;	
+}
+
 #user-header {
   padding-top:10px;
   position: absolute;
@@ -530,6 +534,7 @@ hr.dotline {
 	overflow-y:auto;
 	border: 1px solid #f1f1f1;
 	font-size :12px;
+	z-index:500;
 }
 #dbSchemaList.dropdown-menu {
 	padding:0px 0px;
@@ -817,16 +822,12 @@ hr.dotline {
     position: none;
 }
 
-.sql-btn-area{
-	height:30px;
-	padding-top:2px;
-	display: table-row;
-}
 .sql-btn-area>ul{
     padding: 0px;
     margin: 0px;
-    display: table-cell;
     vertical-align: middle;
+    height: 30px;
+    
 }
 .sql-btn-area>ul>li {
 	float:left; 
@@ -835,7 +836,7 @@ hr.dotline {
 }
 
 .sql-edit-btn{
-    padding: 4px 5px 4px 5px;
+    padding: 2px 5px;
     font-size: 14px;
     border:1px solid transparent;
     border-radius: 2px;
@@ -870,11 +871,11 @@ hr.dotline {
 }
  
 .sql-btn-area li.sql-btn-divider{
-   height: 21px;
-   width: 1px;
-   overflow: hidden;
-   padding:0px;
-   border-right: 1px solid #8c7e7e;
+    height: 20px;
+    width: 1px;
+    overflow: hidden;
+    margin-top: 6px;
+    border-right: 1px solid #8c7e7e;
 }
 
 /*  sql parameter area start */
@@ -988,6 +989,7 @@ hr.dotline {
 	height:60px;
 	min-width: 380px;
 	border-bottom: 1px solid #cccccc;
+	padding : 2px 3px;
 	/*overflow:hidden;*/
 }
 
@@ -1269,5 +1271,10 @@ hr.dotline {
 }
 /*pubGrid custom end*/
 
+/* editor button disabled */
 
-
+[data-sql-editor-menu="y"].disable {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6;
+}

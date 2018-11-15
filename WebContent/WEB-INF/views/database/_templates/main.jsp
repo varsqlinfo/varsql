@@ -97,47 +97,47 @@ $(document).ready(function(){
 		<div class="sql-btn-area">
 			<ul>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql-btn-info  sql_execue_btn" title="실행  Ctrl+Enter">
+					<button href="javascript:;" class="sql-edit-btn sql-btn-info sql_execue_btn" data-sql-editor-menu="y" title="실행  Ctrl+Enter">
 						<span class="fa fa-play"></span>
-					</a>
+					</button>
 				</li>
 				<li class="sql-btn-divider"></li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_new_file" title="새 파일  Ctrl+Alt+N">
+					<button href="javascript:;" class="sql-edit-btn sql_new_file" title="새 파일  Ctrl+Alt+N">
 						<span class="fa fa-file-o"></span>
-					</a>
+					</button>
 				</li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_save_btn" title="저장  Ctrl+Shift+S">
+					<button href="javascript:;" class="sql-edit-btn sql_save_btn" data-sql-editor-menu="y" title="저장  Ctrl+Shift+S">
 						<span class="fa fa-save"></span>
-					</a>
+					</button>
 				</li>
 				<li class="sql-btn-divider"></li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_undo_btn" title="실행취소  Ctrl+Z">
+					<button href="javascript:;" class="sql-edit-btn sql_undo_btn" data-sql-editor-menu="y" title="실행취소  Ctrl+Z">
 						<span class="fa fa-undo" ></span>
-					</a>
+					</button>
 				</li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_redo_btn" title="다시실행  Ctrl+Y">
+					<button href="javascript:;" class="sql-edit-btn sql_redo_btn" data-sql-editor-menu="y" title="다시실행  Ctrl+Y">
 						<span class="fa fa-repeat" ></span>
-					</a>
+					</button>
 				</li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql-btn-default sql_linewrapper_btn" title="자동 줄 바꿈 ">
+					<button href="javascript:;" class="sql-edit-btn sql-btn-default sql_linewrapper_btn" data-sql-editor-menu="y" title="자동 줄 바꿈 ">
 						<span class="fa fa-dedent" aria-hidden="true" ></span>
-					</a>
+					</button>
 				</li>
 				<li class="sql-btn-divider"></li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_format_btn" title="쿼리 정리 Ctrl+Shift+F">
+					<button href="javascript:;" class="sql-edit-btn sql_format_btn" data-sql-editor-menu="y" title="쿼리 정리 Ctrl+Shift+F">
 						<span class="fa fa-align-justify" aria-hidden="true" ></span>
-					</a>
+					</button>
 				</li>
 				<li>
-					<a href="javascript:;" class="sql-edit-btn sql_send_btn" title="보내기">
+					<button href="javascript:;" class="sql-edit-btn sql_send_btn" title="보내기">
 						<span class="fa fa-paper-plane-o"></span>
-					</a>
+					</button>
 				</li>
 			</ul>
 		</div>

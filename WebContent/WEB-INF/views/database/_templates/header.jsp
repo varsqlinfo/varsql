@@ -5,26 +5,27 @@
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.file" /></a>
 		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="file_new">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.new" /></span>
 					<span class="header-menu-item-key">Ctrl+Shift+N</span>
 				</a>
 			</li>
-			<li class="header-menu-item" data-menu-item="file_save">
-				<a>
+			
+			<li class="header-menu-item" data-menu-item="file_save" data-sql-editor-menu="y">
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.save" /></span>
 					<span class="header-menu-item-key">Ctrl+Shift+S</span>
 				</a>
 			</li>
 			<li class="divider"></li>
 			<li class="header-menu-item" data-menu-item="file_newwin">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.newwin" /></span>
 				</a>
 			</li>
 			<li class="divider"></li>
 			<li class="header-menu-item" data-menu-item="file_close">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.close" /></span>
 				</a>
 			</li>
@@ -33,26 +34,20 @@
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.edit" /></a>
 		<ul class="db-header-menu">
-			<li class="header-menu-item" data-menu-item="edit_undo">
-				<a>
+			<li class="header-menu-item" data-menu-item="edit_undo" data-sql-editor-menu="y">
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.edit.undo" /></span>
 					<span class="header-menu-item-key">Ctrl+Z</span>
 				</a>
 			</li>
-			<li class="header-menu-item" data-menu-item="edit_redo">
-				<a>
+			<li class="header-menu-item" data-menu-item="edit_redo" data-sql-editor-menu="y">
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.edit.redo" /></span>
 					<span class="header-menu-item-key">Ctrl+Y</span>
 				</a>
 			</li>
-			<li class="header-menu-item" data-menu-item="edit_find">
-				<a>
-					<span class="header-menu-item-text"><spring:message code="header.menu.edit.find" /></span>
-					<span class="header-menu-item-key">Ctrl+F</span>
-				</a>
-			</li>
 			<li class="header-menu-item" data-menu-item="edit_compare">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.edit.compare" /></span>
 				</a>
 			</li>
@@ -61,8 +56,8 @@
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.search" /></a>
 		<ul class="db-header-menu">
-			<li class="header-menu-item" data-menu-item="search_find">
-				<a>
+			<li class="header-menu-item" data-menu-item="search_find" data-sql-editor-menu="y">
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.search.find" /></span>
 					<span class="header-menu-item-key">Ctrl+F</span>
 				</a>
@@ -74,7 +69,7 @@
 		<ul class="db-header-menu">
 			<%-- <!-- 가져오기 -->
 			<li class="header-menu-item" data-menu-item="tool_import">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.import" /></span>
 				</a>
 			</li> 
@@ -85,15 +80,15 @@
 				</a>
 				<ul class="dropdown-menu">
 					<li class="header-menu-item" data-menu-item="tool_export_spec">
-						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.specification" /></span></a>
+						<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.specification" /></span></a>
 					</li>
 					<li class="header-menu-item" data-menu-item="tool_export_ddl">
-						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.ddl" /></span></a>
+						<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.ddl" /></span></a>
 					</li>
 				</ul>
 			</li>
 			<li class="header-menu-item" data-menu-item="tool_setting">
-				<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
+				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
 			</li>
 			<li class="divider"></li>
 			<li class="header-dropdown-submenu">
@@ -102,10 +97,10 @@
 				</a>
 				<ul class="dropdown-menu">
 					<li class="header-menu-item" data-menu-item="tool_show_glossary">
-						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.glossary" /></span></a>
+						<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.glossary" /></span></a>
 					</li>
 					<li class="header-menu-item" data-menu-item="tool_show_history">
-						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.history" /></span></a>
+						<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.show.history" /></span></a>
 					</li>
 					<!-- li class="header-menu-item" data-menu-item="tool_export_data">
 						<a><span class="header-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
@@ -114,7 +109,7 @@
 			</li>
 			<li class="divider"></li>
 			<li class="header-menu-item" data-menu-item="tool_layout">
-				<a>
+				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.tool.initlayout" /></span>
 				</a>
 			</li>
@@ -124,13 +119,13 @@
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.help" /></a>
 		<ul class="db-header-menu">
 			<li class="header-menu-item" data-menu-item="help_help">
-				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
+				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
 			</li>
 			<li class="header-menu-item" data-menu-item="help_dbinfo">
-				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.dbinfo" /></span></a>
+				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.help.dbinfo" /></span></a>
 			</li>
 			<li class="header-menu-item" data-menu-item="help_info">
-				<a><span class="header-menu-item-text"><spring:message code="header.menu.help.info" /></span></a>
+				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.help.info" /></span></a>
 			</li>
 		</ul>
 	</li>

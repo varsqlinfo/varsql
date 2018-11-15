@@ -83,7 +83,8 @@
 }
 
 .varsql-sqleditor-area.sql-flielist-active #sql_editor_area{
-	margin-left:200px
+	margin-left:200px;
+	overflow:hidden;
 }
 
 .varsql-sqleditor-area .sql-editor-text{
