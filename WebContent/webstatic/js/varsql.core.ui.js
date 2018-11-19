@@ -612,17 +612,9 @@ _ui.layout = {
 				var containerW =container.width-2
 					,containerH = container.height-_self.contTabHeight; 
 				
-				try{
-					if($('#dataGridArea .pubGrid-body-container').length > 0){
-						$.pubGrid(_ui.sqlDataArea.options.dataGridSelector).resizeDraw({width : containerW,height : containerH});
-						
-						if(typeof $.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector)!=='undefined' && $.isFunction($.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector).resizeDraw)){
-							$.pubGrid(_ui.sqlDataArea.options.dataColumnTypeSelector).resizeDraw({width: containerW ,height : containerH});
-						}
-					}
-				}catch(e){
-					console.log(e)
-				}
+				_ui.sqlDataArea.resize({
+					width : containerW , height : containerH
+				});
 			})
 		});
 		
@@ -3058,13 +3050,14 @@ _ui.SQL = {
 			delete this.allSqlEditorObj[item.SQL_ID];
 			this.setSqlEditorInfo(item);
 		}
-		
+		_ui.sqlDataArea.removeDataGridEle(item);
 		if(this.getSqlEditorObj() ===false){
 			this.setSqlEditorBtnDisable();
 		}
 	}
 	,setSqlEditorBtnDisable :  function(){
 		$('[data-sql-editor-menu="y"]').attr('disabled',true).addClass('disable');
+		_ui.sqlDataArea.initGridSelector();
 	}
 	,setSqlEditorBtnEnable :  function(){
 		$('[data-sql-editor-menu="y"]').removeAttr('disabled').removeClass('disable');
@@ -3886,6 +3879,8 @@ _ui.SQL = {
 		if(editorEle.length  < 1){
 			$(_self.sqlEditorSelector).append('<div class="sql-editor-item" data-editor-id="'+sItem.SQL_ID+'"><textarea id="ta_'+sItem.SQL_ID+'" name="ta_'+sItem.SQL_ID+'" class="sql-editor-text"></textarea></div>');
 			editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+			
+			_ui.sqlDataArea.addDataGridEle(sItem);
 		}
 		
 		if(editorEle.hasClass('active')){
@@ -3918,6 +3913,8 @@ _ui.SQL = {
 		}
 		
 		_self.sqlFileTabObj.setActive(sItem);
+		_ui.sqlDataArea.setGridSelector(sItem); 
+		
 		if(editorEle.attr('data-load-yn')=='Y'){
 			_self.setSqlEditorInfo(sItem);
 			return ; 
@@ -4227,6 +4224,9 @@ _ui.SQL = {
  */
 _ui.sqlDataArea =  {
 	_currnetQueryReusltData :{}
+	,resizeDimension : {} 	// resize 수치
+	,currnetDataGridSelector : false
+	,currnetDataGridColumnSelector :false
 	,resultMsgAreaObj:null
 	,initDataGridContextFlag : false // data grid context 초기화 여부
 	,options :{
@@ -4239,6 +4239,7 @@ _ui.sqlDataArea =  {
 		,delay: 0
 	}
 	,init : function (){
+		this.initGridSelector();
 		this.initEvt();
 	}
 	,initEvt : function (){
@@ -4266,10 +4267,41 @@ _ui.sqlDataArea =  {
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
 			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('on');
 			
-			if(tab_gubun == 'columnType'){
-				_self.viewResultColumnType();
-			}
 		});
+	}
+	// init grid selector 
+	,initGridSelector : function (){
+		//this.setGridSelector({SQL_ID : 'empty'});
+		
+		$('.sql-data-grid-item[data-result-grid-id="empty"]').empty().addClass('active');
+		$('.sql-data-grid-column-item[data-grid-column-id="empty]').empty().addClass('active');
+		this.currnetDataGridSelector = '.sql-data-grid-item[data-result-grid-id="empty"]';
+		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="empty"]';
+		
+	}
+	// add data grid element
+	,addDataGridEle : function(item){
+		$(this.options.dataGridSelector).append('<div class="sql-data-grid-item" data-result-grid-id="'+item.SQL_ID+'"></div>');
+		$(this.options.dataColumnTypeSelector).append('<div class="sql-data-grid-column-item" data-grid-column-id="'+item.SQL_ID+'"></div>');
+		this.setGridSelector(item);
+	}
+	//remove data grid element
+	,removeDataGridEle : function(item){
+		$(this.options.dataGridSelector).find('.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]').remove();
+		$(this.options.dataColumnTypeSelector).find('.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]').remove();
+	}
+	,setGridSelector :  function (item){
+		// grid
+		this.currnetDataGridSelector = '.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]';
+		$('.sql-data-grid-item[data-result-grid-id].active').removeClass('active');
+		$('.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]').addClass('active');
+		
+		//grid column
+		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]';
+		$('.sql-data-grid-column-item[data-grid-column-id].active').removeClass('active');
+		$('.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]').addClass('active');
+		
+		this.resize(this.resizeDimension);
 	}
 	// 결과 보기.
 	,viewResult : function (resultData){
@@ -4342,10 +4374,85 @@ _ui.sqlDataArea =  {
 		
 		if(gridViewFlag){
 			_self.setGridData(_self._currnetQueryReusltData);
+			_self.viewResultColumnType();
 		}
 		
 		_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
 		_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
+	}
+	// sql data grid
+	,setGridData: function (pGridData){
+		var _self = this; 
+		
+		$.pubGrid(_self.currnetDataGridSelector,{
+			height:'auto'
+			,autoResize : false
+			,page :false
+			,headerOptions:{
+				view:true
+				,sort : true
+				,resize:{
+					enabled : true
+				}
+			}
+			,asideOptions :{
+				lineNumber : {enable : true}				
+			}
+			,bodyOptions :{
+				cellDblClick : function (rowItem){
+					_ui.SQL.addGridDataToEditArea(rowItem);
+				}
+			}
+			,tColItem : pGridData.column
+			,tbodyItem :pGridData.data
+		});
+		
+		
+		if(_self.initDataGridContextFlag===false) { // grid context menu 처리. 
+			_self.initDataGridContextFlag= true; 
+			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector, {
+				items: [
+					{key : "copy" , "name": "복사"}
+					,{key : "download" , "name": "다운로드"
+						,subMenu : [
+							{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
+							,{divider : true}
+							,{ key : "download_excel","name": "EXCEL" ,mode:"excel"}
+							,{ key : "download_csv","name": "CSV" ,mode:"csv" }
+							,{ key : "download_xml","name": "XML" ,mode:"xml"}
+							,{ key : "download_json","name": "json" ,mode:"json"}
+						]
+					}
+				]
+				,callback: function(key,sObj) {
+					if(key =='copy'){
+						$.pubGrid(_self.currnetDataGridSelector).copyData();
+						return ; 
+					}
+					
+					if(key.indexOf('download_') > -1){
+						var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
+						var isSelect = $("#"+sqlGridResultSelect).is(":checked");
+						
+						var selData = $.pubGrid(_self.currnetDataGridSelector).getData({isSelect:isSelect, dataType:'json'});
+						var mode = sObj.mode; 
+						
+						var params =VARSQL.util.objectMerge ({}, _g_options.param,{
+							exportType :mode 
+							,headerInfo : JSON.stringify(selData.header)
+							,gridData : JSON.stringify(selData.data)
+						});
+						
+						VARSQL.req.download({
+							type: 'post'
+							,url: {gubun:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
+							,params: params
+						});
+						return 
+					}
+				}
+			});
+		}
 	}
 	// sql result column typ
 	,viewResultColumnType : function (){
@@ -4356,7 +4463,9 @@ _ui.sqlDataArea =  {
 			columnTypeArr = [];
 		}
 		
-		var gridObj= $.pubGrid(_self.options.dataColumnTypeSelector,{
+		console.log(_self.currnetDataGridColumnSelector , $('._self.currnetDataGridColumnSelector').length ,$('._self.currnetDataGridColumnSelector').is(':visible'))
+		
+		$.pubGrid(_self.currnetDataGridColumnSelector,{
 			height:'auto'
 			,autoResize : false
 			,page :false
@@ -4387,7 +4496,7 @@ _ui.sqlDataArea =  {
 					}
 					,callback: function(key,sObj) {
 						if(key =='copy'){
-							gridObj.copyData();
+							$.pubGrid(_self.currnetDataGridColumnSelector).copyData();
 							return ; 
 						}
 						
@@ -4399,85 +4508,6 @@ _ui.sqlDataArea =  {
 			}
 		});
 	}
-	// sql data grid
-	,setGridData: function (pGridData){
-		var _self = this; 
-		
-		
-		//grid active 시키고  그리기. 
-		
-		
-		
-		var gridObj = $.pubGrid(_self.options.dataGridSelector,{
-			height:'auto'
-			,autoResize : false
-			,page :false
-			,headerOptions:{
-				view:true
-				,sort : true
-				,resize:{
-					enabled : true
-				}
-			}
-			,asideOptions :{
-				lineNumber : {enable : true}				
-			}
-			,bodyOptions :{
-				cellDblClick : function (rowItem){
-					_ui.SQL.addGridDataToEditArea(rowItem);
-				}
-			}
-			,tColItem : pGridData.column
-			,tbodyItem :pGridData.data
-		});
-		
-		
-		if(_self.initDataGridContextFlag===false) { // grid context menu 처리. 
-			_self.initDataGridContextFlag= true; 
-			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector+' .pubGrid-body-container', {
-				items: [
-					{key : "copy" , "name": "복사"}
-					,{key : "download" , "name": "다운로드"
-						,subMenu : [
-							{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
-							,{divider : true}
-							,{ key : "download_excel","name": "EXCEL" ,mode:"excel"}
-							,{ key : "download_csv","name": "CSV" ,mode:"csv" }
-							,{ key : "download_xml","name": "XML" ,mode:"xml"}
-							,{ key : "download_json","name": "json" ,mode:"json"}
-						]
-					}
-				]
-				,callback: function(key,sObj) {
-					if(key =='copy'){
-						$.pubGrid(_self.options.dataGridSelector).copyData();
-						return ; 
-					}
-					
-					if(key.indexOf('download_') > -1){
-						var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
-						var isSelect = $("#"+sqlGridResultSelect).is(":checked");
-						
-						var selData = $.pubGrid(_self.options.dataGridSelector).getData({isSelect:isSelect, dataType:'json'});
-						var mode = sObj.mode; 
-						
-						var params =VARSQL.util.objectMerge ({}, _g_options.param,{
-							exportType :mode 
-							,headerInfo : JSON.stringify(selData.header)
-							,gridData : JSON.stringify(selData.data)
-						});
-						
-						VARSQL.req.download({
-							type: 'post'
-							,url: {gubun:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
-							,params: params
-						});
-						return 
-					}
-				}
-			});
-		}
-	}
 	//result message area
 	,getResultMsgAreaObj:function(){
 		var _self = this; 
@@ -4486,6 +4516,23 @@ _ui.sqlDataArea =  {
 			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
 		}
 		return _self.resultMsgAreaObj; 
+	}
+	,resize : function (dimension){
+		if(!dimension.width){
+			return ; 
+		}
+		this.resizeDimension = dimension;
+		try{
+			$.pubGrid(this.currnetDataGridSelector).resizeDraw(dimension);
+		}catch(e){
+			//console.log(e)
+		}
+		
+		try{
+			$.pubGrid(this.currnetDataGridColumnSelector).resizeDraw(dimension);
+		}catch(e){
+			//console.log(e)
+		}
 	}
 }
 

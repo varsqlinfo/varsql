@@ -142,3 +142,31 @@
 } 
 
 /*editor end*/
+
+
+/* sql data grid area start*/
+.sql-result-area .sql-data-grid-item{
+	position: absolute;
+	z-index:0;
+	width: 100%;
+	height:100%;
+	background: #f0f4f0;
+}
+
+.sql-result-area .sql-data-grid-item.active{
+	z-index:1;
+}
+
+.sql-result-area .sql-data-grid-column-item{
+	position: absolute;
+	z-index:0;
+	width: 100%;
+	height:100%;
+	background: #f0f4f0;
+}
+
+.sql-result-area .sql-data-grid-column-item.active{
+	z-index:1;
+}
+
+/* sql data grid area end*/

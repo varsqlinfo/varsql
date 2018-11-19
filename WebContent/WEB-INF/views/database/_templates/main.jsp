@@ -230,9 +230,14 @@ $(document).ready(function(){
 			<li tab_gubun="msg"><a href="javascript:;"><span>메시지</span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
 		</ul>
 	</div>
+	
 	<div id="dataGridAreaWrap" class="varsql-tab-cont-area">
-		<div id="dataGridArea" class="sql-result-area on" tab_gubun="result"></div>
-		<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType"></div>
+		<div id="dataGridArea" class="sql-result-area on" tab_gubun="result">
+			<div class="sql-data-grid-item" data-result-grid-id="empty"></div>
+		</div>
+		<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType">
+			<div class="sql-data-grid-column-item" data-grid-column-id="empty"></div>
+		</div>
 		<div id="resultMsgAreaWrap"  class="sql-result-area user-select-on" tab_gubun="msg"></div>		
 	</div>
 </div>
