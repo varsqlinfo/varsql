@@ -61,6 +61,7 @@
 	display: table;
     padding: 0px 2px 0px 2px;
 }
+
 .pubTab-item{
 	vertical-align: baseline;
 	padding: 0px 5px 0px 0px;
@@ -70,6 +71,13 @@
 	-khtml-opacity: 0.8;
 	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 	filter: alpha(opacity=80);
+}
+
+.pubTab-item .pub-title-ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+  overflow: hidden;
 }
 
 .pubTab-item.active{
@@ -83,30 +91,45 @@
 .pubTab-item.last {
     padding: 0px 0px;
 }
-.pubTab-item-cont{
+
+.pubTab-item-cont-wrapper{
 	border: 1px solid #bfb8b8;
 	border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 	border-bottom: 0px;
+}
+.pubTab-item-cont{
+	/*display:table-row;*/
+	padding :0px 3px 0px 3px;
 }
 
 .pubTab-item.active .pubTab-item-cont{
 	background:#f1f1f1;
 }
 .pubTab-item-title{
-	display:table-cell;
+	display:inline-block;
 	padding: 0px 5px;
 	cursor:pointer;
 	white-space: nowrap;
+	display:table-cell;
 }
-.pubTab-icon-area{
-    display: table-cell;
+.pubTab .pubTab-icon-area{
+	display:table-cell;
     visibility: hidden;
 	padding-right: 3px;
-    margin-top: 2px;
+    margin-top: 0px;
+	vertical-align: middle;
 }
+.pubTab .pubTab-icon-area .pubTab-icon{
+	cursor:pointer;
+}
+.pubTab .pubTab-icon-area .pubTab-icon:hover{
+	color:#13daf5;
+}
+
 .pubTab .pubTab-item-cont:hover .pubTab-icon-area{
 	visibility: visible;
+	display:table-cell;
 }
 
 .pubTab .pubTab-item-cont.pubTab-icon-hover-hide .pubTab-icon-area{
@@ -116,15 +139,8 @@
 
 .pubTab .active .pubTab-item-cont .pubTab-icon-area{
     visibility: visible;
-    display: table-cell;
-}
+	display:table-cell;
 
-.pubTab .pubTab-drop-item{
-	cursor:pointer;
-	white-space: nowrap;
-}
-.pubTab .pubTab-drop-item:hover {
-	background-color: #ddd;
 }
 
 .pubTab-right-arrow , .pubTab-left-arrow{
@@ -175,7 +191,8 @@
     right: 0;
 	left: auto;
     max-height: 300px;
-    overflow: auto;
+    overflow-y: auto;
+	overflow-x: hidden;
     z-index: 1000;
     background-color: #fff;
     -webkit-background-clip: padding-box;
@@ -198,6 +215,18 @@
 }
 .pubTab .pubTab-drop-item-area >li{
 	padding: 0px 5px 1px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+    overflow: hidden;
+}
+
+.pubTab .pubTab-drop-item{
+	cursor:pointer;
+	white-space: nowrap;
+}
+.pubTab .pubTab-drop-item:hover {
+	background-color: #ddd;
 }
 
 .pubTab-hide{

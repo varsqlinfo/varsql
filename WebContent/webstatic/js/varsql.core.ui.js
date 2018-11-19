@@ -591,7 +591,10 @@ _ui.layout = {
 					return ; 
 				}
 				
-				_ui.SQL.refresh();
+				var containerW =container.width-2
+				, containerH = container.height-60; 
+				
+				_ui.SQL.refresh({width : containerW,height : containerH});
 			});
 		});
 
@@ -3070,11 +3073,13 @@ _ui.SQL = {
 	,_initTab : function (){
 		var _self = this; 
 		
-		var beforeClickSqlId; 
+		var beforeClickSqlId;
 		// tab-item 
 		_self.sqlFileTabObj = $.pubTab('#varsqlSqlFileTab',{
 			items : []
 			,width:'auto'
+			,itemMaxWidth: 100
+			,dropItemWidth : '100px'
 			,activeIcon :{
 				overView : true
 				,position : 'last'		//  활성시 html 추가 위치
@@ -3104,10 +3109,16 @@ _ui.SQL = {
 		
 		_self.sqlEditorEle = $(_self.sqlEditorSelector);
 	}
-	,refresh : function (){
+	,refresh : function (dimension){
 		var _self = this;
 		try{
 			_self.getSqlEditorObj().refresh();
+		}catch(e){
+			console.log('editor refresh error')
+		}
+		
+		try{
+			_self.sqlFileTabObj.refresh().setDropHeight(dimension.height-10);
 		}catch(e){
 			console.log('editor refresh error')
 		}
@@ -3149,7 +3160,8 @@ _ui.SQL = {
 			_self.getSqlEditorObj().setSelections(selPosArr);
 		}
 		
-		$.pubContextMenu(_self.sqlEditorSelector, {
+		// editor context menu
+		$.pubContextMenu(_self.sqlEditorSelector +' .sql-editor-item:not([data-editor-id="empty"])', {
 			items:[
 				{key : "run" , "name": "실행" , hotkey :'Ctrl+Enter'}
 				,{divider:true}
@@ -3818,7 +3830,7 @@ _ui.SQL = {
 		    	if(items.length > 0){
 		    		for(var i =0 ;i <len; i++){
 		    			var item = items[i];
-		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item text-ellipsis" _mode="view">'+item.GUERY_TITLE+'&nbsp;</a>');
+		    			strHtm.push('<li class="sql-flie-item-area" _idx="'+i+'"><a href="javascript:;" class="sql-flielist-item text-ellipsis" _mode="view" title="'+item.GUERY_TITLE+'">'+item.GUERY_TITLE+'</a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="del" title="삭제"><i class="fa fa-remove"></i></a>');
 		    			strHtm.push('<a href="javascript:;" class="pull-right sql-flielist-item" _mode="setting" title="설정" style="margin-right:5px;"><i class="fa fa-gear"></i></a></li>');
 		    		}
@@ -3956,8 +3968,6 @@ _ui.SQL = {
 	}
 	//텍스트 박스 object
 	,getSqlEditorObj:function(){
-		console.log('this.allSqlEditorObj ', this.allSqlEditorObj);
-		console.log('this.currentSqlEditorInfo ', this.currentSqlEditorInfo);
 		
 		if(this.currentSqlEditorInfo  && this.currentSqlEditorInfo.editor){
 			return this.currentSqlEditorInfo.editor;
@@ -4018,9 +4028,7 @@ _ui.SQL = {
 					}
 				}, 500);	
 			}
-			
 			return flag; 
-			
 		}
 		
 		return true; 

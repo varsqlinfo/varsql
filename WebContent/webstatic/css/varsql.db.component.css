@@ -91,7 +91,7 @@
 	display:none;
 }
 
-.varsql-sqleditor-area .sql-editor-item, .varsql-sqleditor-area .sql-editor-empty-item{
+.varsql-sqleditor-area .sql-editor-item, .varsql-sqleditor-area .sql-editor-item[data-editor-id="empty"]{
 	z-index:0;
 	position: absolute;
     width: 100%;
@@ -100,7 +100,7 @@
     left: 0px;
 }
 
-.varsql-sqleditor-area .sql-editor-empty-item > p{
+.varsql-sqleditor-area .sql-editor-item[data-editor-id="empty"] > p{
 	text-align: center;
     position: relative;
     top: 50%;
@@ -118,6 +118,10 @@
 	background: inherit;
 }
 
+.varsql-toolbar-area .pubTab .pubTab-icon-area .pubTab-icon:hover{
+	color:#f31111;
+}
+
 .varsql-toolbar-area .pubTab {
 	border-bottom: 0px solid #bfb8b8
 }
@@ -125,9 +129,16 @@
 .varsql-toolbar-area .pubTab-item.active .pubTab-item-cont{
 	background:#ffffff;
 }
+.varsql-toolbar-area .pubTab-item .pubTab-item-title{
+	padding-top:2px;
+}
+
+.varsql-toolbar-area .pubTab-item .pubTab-icon-area{
+	margin-top:2px;
+}
 
 .text-ellipsis.sql-flielist-item{
-	max-width: calc(100% - 50px);
+	max-width: calc(100% - 35px);
 } 
 
 /*editor end*/

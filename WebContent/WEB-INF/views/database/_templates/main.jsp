@@ -180,7 +180,7 @@ $(document).ready(function(){
 		</div>
 				
 		<div id="sql_editor_area" style="position:relative;height:100%;">
-			<div class="sql-editor-empty-item">
+			<div class="sql-editor-item" data-editor-id="empty">
 	 			<p class="msg-text">
 					<a href="javascript:;" class="sql_new_file">
 						<button type="button" class="btn btn-default"><span class="fa fa-file-o"></span></button>새파일

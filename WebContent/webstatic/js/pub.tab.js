@@ -15,12 +15,14 @@
 		,defaults = {
 			speed : 150
 			,width:'auto'
+			,itemMaxWidth : -1
 			,autoMove : false
 			,itemPadding: 5
 			,height : '22px'
 			,leftMargin : 30	// 왼쪽에 item 있을경우 더 이동할 space
 			,overItemViewMode : 'drop'
 			,dropItemHeight :'auto'		//drop item height
+			,dropItemWidth :'auto'		//drop item width
 			,moveZIndex : 9				// move 영역 z- index
 			,filter: function ($obj) {
 				// Modify $obj, Do not return
@@ -113,7 +115,7 @@
 			var addHtml = '';
 			if(activeIcon && activeIcon.html != '') {
 				prevFlag = activeIcon.position =='prev' ?true :false; 
-				addHtml = '<span class="pubTab-icon-area">'+activeIcon.html+'</span>';
+				addHtml = '<span class="pubTab-icon-area"><span class="pubTab-icon">'+activeIcon.html+'</span></span>';
 			}
 
 			this.config.icon ={
@@ -126,7 +128,7 @@
 			var _this = this
 				,opts = _this.options;
 
-			_this.element.on('click', '.pubTab-item-title',function (e){
+			_this.element.on('click', '.pubTab-item-cont ',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item');
 				
@@ -139,9 +141,12 @@
 				}
 			})
 
-			_this.element.on('click', '.pubTab-icon-area',function (e){
+			_this.element.on('click', '.pubTab-icon',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item');
+
+				e.preventDefault();
+				e.stopPropagation();
 
 				if($.isFunction(opts.activeIcon.click)){
 					var itemIdx = itemEle.index();
@@ -212,7 +217,7 @@
 
 					var tabIdx = opts.items.length - sEle.index()-1;
 
-					$(_this.element.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-title').trigger('click');	
+					$(_this.element.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-cont ').trigger('click');	
 				})
 			}
 		}
@@ -236,7 +241,7 @@
 				clickEle.attr(key , addAttr[key]);
 			}
 			
-			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-cont ').trigger('click');
 		}
 		,setActive: function (item){
 
@@ -317,7 +322,7 @@
 
 			if(tabEle.length > 0){
 				if(enabled !== false){
-					tabEle.find('.pubTab-item-title').trigger('click');
+					tabEle.find('.pubTab-item-cont ').trigger('click');
 				}
 				
 				return false; 
@@ -355,7 +360,7 @@
 			if(enabled !== false){
 				//this.draw();
 				this.movePosition(idx);
-				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-title').trigger('click');
+				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-cont ').trigger('click');
 			}
 
 			return true;
@@ -374,10 +379,10 @@
 
 				this.options.items[tabEle.index()] = objectMerge(this.options.items[tabEle.index()], item);
 				
-				tabEle.find('.pubTab-item-title').empty().html(item[this.options.itemKey.title]);
+				tabEle.find('.pubTab-item-cont ').empty().html(item[this.options.itemKey.title]);
 				
 				if(enabled !== false){
-					tabEle.find('.pubTab-item-title').trigger('click');
+					tabEle.find('.pubTab-item-cont ').trigger('click');
 				}
 				this.calcItemWidth();
 				
@@ -467,7 +472,7 @@
 			}
 			
 			if(viewTabId){
-				this.element.find('.pubTab-item[data-tab-id="'+viewTabId+'"]').find('.pubTab-item-title').trigger('click');
+				this.element.find('.pubTab-item[data-tab-id="'+viewTabId+'"]').find('.pubTab-item-cont ').trigger('click');
 			}
 
 			this.calcItemWidth();
@@ -532,19 +537,28 @@
 				this.config.tabIdx++;
 				item._tabid = 'tab_'+this.config.tabIdx;
 			}
+		
+			var title = item[_opts.itemKey.title];
+			
+			var titleTag = '<span class="pubTab-item-title">'+title+'</span>';
+			if(!isNaN(_opts.itemMaxWidth) && _opts.itemMaxWidth > 0){
+				titleTag = '<span class="pubTab-item-title pub-title-ellipsis" style="max-width:'+(_opts.itemMaxWidth)+'px">'+title+'</span>';
+				//titleTag = '<span class="pubTab-item-title">'+title+'</span>';
+			}
 
 			var itemHtm ='';
 			if(cfgIcon.prevFlag===true){
-				itemHtm = cfgIcon.html + '<span class="pubTab-item-title">'+item[_opts.itemKey.title]+'</span>';
+				itemHtm = cfgIcon.html + titleTag;
 			}else{
-				itemHtm = '<span class="pubTab-item-title">'+item[_opts.itemKey.title]+'</span>'+cfgIcon.html;
+				itemHtm = titleTag+cfgIcon.html;
 			}
 			
-			return '<li class="pubTab-item" data-tab-id="'+item._tabid+'"><div class="pubTab-item-cont '+cfgIcon.hoverHideCls+' '+_opts.addClass+'" >'+itemHtm+'</div></li>';
+			return '<li class="pubTab-item" data-tab-id="'+item._tabid+'" title="'+title+'"> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+cfgIcon.hoverHideCls+' '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
 		}
 		//drop item template
 		,_getDropItemHtml : function (item){
-			return '<li class="pubTab-drop-item" data-tab-id="'+item._tabid+'">'+item[this.options.itemKey.title]+'</li>'
+			var title = item[this.options.itemKey.title]; 
+			return '<li class="pubTab-drop-item" data-tab-id="'+item._tabid+'" title="'+title+'">'+title+'</li>'
 		}
 		,draw : function (){
 			var _this = this
@@ -588,7 +602,7 @@
 			strHtm.push('			<i class="pubTab-prev '+_opts.icon.prev+'"></i>');
 			strHtm.push('			<i class="pubTab-next '+_opts.icon.next+'"></i>');
 			if(_opts.overItemViewMode =='drop'){
-				strHtm.push('		<div id="'+_this.contextId+'DropItem" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
+				strHtm.push('		<div id="'+_this.contextId+'DropItem" style="width:'+_opts.dropItemWidth+'" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
 			}
 
 			strHtm.push('</span>');
