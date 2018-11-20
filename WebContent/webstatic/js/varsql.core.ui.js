@@ -4272,11 +4272,11 @@ _ui.sqlDataArea =  {
 	// init grid selector 
 	,initGridSelector : function (){
 		//this.setGridSelector({SQL_ID : 'empty'});
+		$('.sql-data-grid-column-item[data-grid-column-id="empty]').empty().addClass('active');
+		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="empty"]';
 		
 		$('.sql-data-grid-item[data-result-grid-id="empty"]').empty().addClass('active');
-		$('.sql-data-grid-column-item[data-grid-column-id="empty]').empty().addClass('active');
 		this.currnetDataGridSelector = '.sql-data-grid-item[data-result-grid-id="empty"]';
-		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="empty"]';
 		
 	}
 	// add data grid element
@@ -4463,7 +4463,12 @@ _ui.sqlDataArea =  {
 			columnTypeArr = [];
 		}
 		
-		console.log(_self.currnetDataGridColumnSelector , $('._self.currnetDataGridColumnSelector').length ,$('._self.currnetDataGridColumnSelector').is(':visible'))
+		var gridObj = $.pubGrid(_self.currnetDataGridColumnSelector);
+		
+		if(gridObj){
+			gridObj.setData(columnTypeArr,'reDraw');
+			return ; 
+		}
 		
 		$.pubGrid(_self.currnetDataGridColumnSelector,{
 			height:'auto'

@@ -473,10 +473,14 @@ hr.dotline {
 
 .sql-result-area{
 	height:100%;
-	display:none;
+    z-index: 0;
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
 }
 .sql-result-area.on{
-	display:block;
+	visibility: visible;
+    z-index: 1;
 }
 
 .ui-paddingl5-r5{

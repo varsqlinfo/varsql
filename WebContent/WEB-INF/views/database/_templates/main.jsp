@@ -235,7 +235,7 @@ $(document).ready(function(){
 		<div id="dataGridArea" class="sql-result-area on" tab_gubun="result">
 			<div class="sql-data-grid-item" data-result-grid-id="empty"></div>
 		</div>
-		<div id="dataColumnTypeArea" class="sql-result-area on" tab_gubun="columnType">
+		<div id="dataColumnTypeArea" class="sql-result-area" tab_gubun="columnType">
 			<div class="sql-data-grid-column-item" data-grid-column-id="empty"></div>
 		</div>
 		<div id="resultMsgAreaWrap"  class="sql-result-area user-select-on" tab_gubun="msg"></div>		
