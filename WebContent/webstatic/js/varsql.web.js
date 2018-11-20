@@ -50,16 +50,6 @@ _$base.staticResource  ={
 					]
 		}
 	,
-	'daterange':{
-		'js' : [
-		        '/webstatic/js/plugins/daterange/moment.js'
-		        ,'/webstatic/js/plugins/daterange/daterangepicker.js'
-		        ]
-		,'css' : [
-		          '/webstatic/css/plugins/daterange/daterangepicker-bs3.css'
-		          ]
-	}
-	,
 	'datepicker':{
 		'js' : [
 		        '/webstatic/js/plugins/datepicker/bootstrap-datepicker.js'
@@ -67,36 +57,6 @@ _$base.staticResource  ={
 		,'css' : [
 	          '/webstatic/css/datepicker/datepicker.css'
 	          ]
-	}
-	,
-	'jqueryui':{
-		'js' : [
-		       
-		        ]
-		,'css' : [
-	          '/webstatic/css/jquery-ui.min.css'
-	          ,'/webstatic/css/jquery-ui-custom.css'
-	          ]
-	}
-	,
-	'contextMenu':{
-		'js' : [
-		       '/webstatic/js/pub.context.js' 
-		        ]
-	}
-	,
-	'pubgrid':{
-		'js' : [
-		        '/webstatic/js/pub.grid.js' 
-		        ]
-	,'css' : [
-	          '/webstatic/css/pub.grid.css'
-	          ]
-	}
-	,'pubAutocomplete':{
-		'js' : [
-		        '/webstatic/js/pub.autocomplete.js' 
-		        ]
 	}
 };
 

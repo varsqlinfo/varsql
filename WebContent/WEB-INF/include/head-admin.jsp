@@ -8,9 +8,6 @@
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- datatables CSS -->
-<link href="${pageContextPath}/webstatic/css/plugins/dataTables.bootstrap.css" rel="stylesheet">
-
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -37,7 +34,6 @@
 
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/sb-admin-2.js" type="text/javascript"></script>
 
 <!-- Metis Menu Plugin JavaScript -->
 <script src="${pageContextPath}/webstatic/js/plugins/metisMenu/metisMenu.min.js"></script>
