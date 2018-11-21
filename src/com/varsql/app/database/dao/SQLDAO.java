@@ -89,7 +89,6 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	
 	@Transactional
 	public int deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
 		SqlSession sqlSession = getSqlSession();

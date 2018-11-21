@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DataCommonVO;
@@ -380,36 +381,32 @@ public class SQLServiceImpl{
 	 * 쿼리 저장. 
 	 * @param sqlParamInfo
 	 */
+	@Transactional(rollbackFor=Exception.class)
 	public ResponseResult saveQuery(SqlParamInfo sqlParamInfo) {
 		ResponseResult result = new ResponseResult();
-		try{
+		
+		if("".equals(sqlParamInfo.getSqlId())){
+			sqlDAO.updateSqlFileTabDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
+			sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
+		    sqlDAO.saveQueryInfo(sqlParamInfo);
+		}else{
+			String mode = String.valueOf(sqlParamInfo.getCustom().get("mode")); 
 			
-			if("".equals(sqlParamInfo.getSqlId())){
-				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
-				sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
-			    sqlDAO.saveQueryInfo(sqlParamInfo);
+			if("addTab".equals(mode)){
+				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
+				sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
+			}else if("delTab".equals(mode)){
+				sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+			}else if("viewTab".equals(mode)){
+				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
+				sqlDAO.updateSqlFileTabEnable(sqlParamInfo);
 			}else{
-				String mode = String.valueOf(sqlParamInfo.getCustom().get("mode")); 
-				
-				if("addTab".equals(mode)){
-					sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
-					sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
-				}else if("delTab".equals(mode)){
-					sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
-				}else if("viewTab".equals(mode)){
-					sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
-					sqlDAO.updateSqlFileTabEnable(sqlParamInfo);
-				}else{
-					sqlDAO.updateQueryInfo(sqlParamInfo);
-				}
+				sqlDAO.updateQueryInfo(sqlParamInfo);
 			}
+		}
+		
+		result.setItemOne(sqlParamInfo);
 			
-			result.setItemOne(sqlParamInfo);
-			
-	    }catch(Exception e){
-	    	logger.error(getClass().getName()+"saveQuery", e);
-	    	result.setMessageCode(e.getMessage());
-	    }
 		return result; 
 	}
 	
