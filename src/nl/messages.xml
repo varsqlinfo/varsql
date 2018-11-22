@@ -104,6 +104,7 @@
 <entry key="user.form.password.confirm">확인 비밀번호</entry>
 
 <!-- button message -->
+<entry key="btn.search">조회</entry>
 <entry key="btn.save">저장</entry>
 <entry key="btn.delete">삭제</entry>
 <entry key="btn.add">추가</entry>
@@ -113,12 +114,38 @@
 <entry key="btn.accept">수락</entry>
 <entry key="btn.denial">거부</entry>
 
-
 <entry key="btn.profile">프로파일</entry>
 <entry key="btn.setting">셋팅</entry>
 <entry key="btn.signup">회원가입</entry>
 <entry key="btn.logout">로그아웃</entry>
 <entry key="btn.search">검색</entry>
+
+<!-- toolbar button -->
+<entry key="btn.toolbar.execute">실행</entry>
+<entry key="btn.toolbar.newfile">새 파일</entry>
+<entry key="btn.toolbar.save">저장</entry>
+<entry key="btn.toolbar.undo">실행취소</entry>
+<entry key="btn.toolbar.redo">다시실행</entry>
+<entry key="btn.toolbar.linewrapper">자동 줄 바꿈</entry>
+<entry key="btn.toolbar.format">쿼리 정리 </entry>
+<entry key="btn.toolbar.send">메시지보내기 </entry>
+<entry key="btn.toolbar.parameter">변수 </entry>
+
+<!-- sql result button -->
+<entry key="btn.resultarea.tab.grid">결과</entry>
+<entry key="btn.resultarea.tab.column">컬럼</entry>
+<entry key="btn.resultarea.tab.log">로그</entry>
+
+<!-- 용어 사전 button -->
+<entry key="btn.glossary.search">조회</entry>
+<entry key="btn.glossary.convert">변경</entry>
+<entry key="btn.glossary.remove">지우기</entry>
+
+<!-- editor msg -->
+<entry key="msg.editor.newfile">새파일</entry>
+<entry key="msg.editor.info">새 파일을 클릭하시면 쿼리를 실행하실수 있는 에디터가 열립니다.</entry>
+
+
 
 <entry key="msg.email.empty">이메일을 입력하세요</entry>
 <entry key="msg.title.empty">제목을 입력하세요</entry>

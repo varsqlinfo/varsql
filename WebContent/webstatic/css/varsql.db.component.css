@@ -5,6 +5,7 @@
 	position: relative;
 	height:55px;
 	width: 100%;
+	padding-left: 3px;
 }
 
 #glossaryPluginArea .glossary-search-area{
@@ -18,7 +19,7 @@
 }
 
 #glossaryPluginArea #glossarySearchTxt{
-	width: calc(100% - 70px);
+	width: calc(100% - 40px);
 }
 
 #glossaryPluginArea #glossaryConvertTxt{
@@ -34,7 +35,7 @@
 }
 
 #historyPluginArea .history-search-area{
-	padding:2px 0px 1px 0px;
+	padding: 2px 3px;
 }
 
 #historyPluginArea .history-result-area{
@@ -44,7 +45,7 @@
 }
 
 #historyPluginArea #historySearchTxt{
-	width: calc(100% - 70px);
+	width: calc(100% - 40px);
 }
 /**/
 
@@ -55,7 +56,7 @@
     height: 20px;
 	float:left;
 	margin-left: 5px;
-	width:calc(100% - 200px);
+	width:calc(100% - 220px);
 }
 
 .varsql-sqleditor-area .varsql-file-save-list{
@@ -139,7 +140,13 @@
 
 .text-ellipsis.sql-flielist-item{
 	max-width: calc(100% - 35px);
-} 
+}
+
+.varsql-toolbar-area .sql-filelist-view-btn.active{
+	color: #fff;
+    background-color: #6bb2ef;
+    border-color: #c6d7e6;
+}
 
 /*editor end*/
 

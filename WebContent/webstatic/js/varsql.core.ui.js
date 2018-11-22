@@ -3073,6 +3073,7 @@ _ui.SQL = {
 					_self.deleteEditorInfo(item);
 					_self.saveSqlFile({
 						sqlId : item.SQL_ID
+						,len : _self.sqlFileTabObj.getItemLength()
 					},'delTab');
 				}
 			}
@@ -3175,7 +3176,7 @@ _ui.SQL = {
 	    		
 	    		switch (key) {
 		    		case 'run':
-		    			$('.sql_execue_btn').trigger('click');
+		    			$('.sql_execute_btn').trigger('click');
 		    			break;
 					case 'undo':
 						_self.getSqlEditorObj().undo();
@@ -3284,7 +3285,7 @@ _ui.SQL = {
 							returnFlag = false; 
 							break;
 						case 13: // keyCode 13 is Enter
-							$('.sql_execue_btn').trigger('click');
+							$('.sql_execute_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						case 70:
@@ -3310,7 +3311,7 @@ _ui.SQL = {
 		*/
 		
 		// sql 실행
-		$('.sql_execue_btn').on('click',function (evt){
+		$('.sql_execute_btn').on('click',function (evt){
 			_self.sqlData(evt);
 		});
 		
@@ -3392,9 +3393,11 @@ _ui.SQL = {
 			if(sEditorWrapperEle.hasClass('sql-flielist-active')){
 				sqlFileConfig.enable = false; 
 				sEditorWrapperEle.removeClass('sql-flielist-active');
+				sEle.removeClass('active');
 			}else{
 				sqlFileConfig.enable = true; 
 				sEditorWrapperEle.addClass('sql-flielist-active');
+				sEle.addClass('active');
 			}
 			
 			if(_g_options._opts.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){

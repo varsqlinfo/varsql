@@ -396,7 +396,19 @@ public class SQLServiceImpl{
 				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
 				sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
 			}else if("delTab".equals(mode)){
-				sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+				int tabLen = -1; 
+				try{
+					tabLen = Integer.parseInt(String.valueOf(sqlParamInfo.getCustom().get("len")));
+				}catch(Exception e){
+					tabLen = -1;
+				}
+				
+				if(tabLen ==0){
+					sqlDAO.deleteAllSqlFileTabInfo(sqlParamInfo);
+				}else{
+					sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+				}
+				
 			}else if("viewTab".equals(mode)){
 				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
 				sqlDAO.updateSqlFileTabEnable(sqlParamInfo);

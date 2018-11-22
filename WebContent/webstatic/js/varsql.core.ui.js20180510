@@ -1717,7 +1717,7 @@ _ui.SQL = {
 	    		
 	    		switch (key) {
 		    		case 'run':
-		    			$('.sql_execue_btn').trigger('click');
+		    			$('.sql_execute_btn').trigger('click');
 		    			break;
 					case 'undo':
 						_self.sqlTextAreaObj.undo();
@@ -1826,7 +1826,7 @@ _ui.SQL = {
 							returnFlag = false; 
 							break;
 						case 13: // keyCode 13 is Enter
-							$('.sql_execue_btn').trigger('click');
+							$('.sql_execute_btn').trigger('click');
 							returnFlag = false; 
 							break;
 						default:
@@ -1842,7 +1842,7 @@ _ui.SQL = {
 		})
 		
 		// sql 실행
-		$('.sql_execue_btn').on('click',function (evt){
+		$('.sql_execute_btn').on('click',function (evt){
 			_self.sqlData(evt);
 		});
 		

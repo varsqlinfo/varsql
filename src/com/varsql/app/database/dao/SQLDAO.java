@@ -100,6 +100,20 @@ public class SQLDAO extends BaseDAO{
 	
 	/**
 	 * 
+	 * @Method Name  : deleteAllSqlFileTabInfo
+	 * @Method 설명 : 사용자 file tab 정보 전부 삭제 . 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 22. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public int deleteAllSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().delete("sqlServiceMapper.deleteAllSqlFileTabInfo", sqlParamInfo);
+	}
+	
+	/**
+	 * 
 	 * @Method Name  : updateSqlFileViewYInfo
 	 * @Method 설명 : 쿼리 viewyn N으로 처리.
 	 * @작성자   : ytkim

@@ -97,46 +97,46 @@ $(document).ready(function(){
 		<div class="sql-btn-area">
 			<ul>
 				<li>
-					<button href="javascript:;" class="sql-edit-btn sql-btn-info sql_execue_btn" data-sql-editor-menu="y" title="실행  Ctrl+Enter">
-						<span class="fa fa-play"></span>
+					<button class="sql-edit-btn sql-btn-info sql_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
+						<i class="fa fa-play"></i>
 					</button>
 				</li>
 				<li class="sql-btn-divider"></li>
 				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_new_file" title="새 파일  Ctrl+Alt+N">
-						<span class="fa fa-file-o"></span>
+					<button class="sql-edit-btn sql_new_file" title="<spring:message code="btn.toolbar.newfile" /> Ctrl+Alt+N">
+						<i class="fa fa-file-o"></i>
 					</button>
 				</li>
 				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_save_btn" data-sql-editor-menu="y" title="저장  Ctrl+Shift+S">
-						<span class="fa fa-save"></span>
-					</button>
-				</li>
-				<li class="sql-btn-divider"></li>
-				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_undo_btn" data-sql-editor-menu="y" title="실행취소  Ctrl+Z">
-						<span class="fa fa-undo" ></span>
-					</button>
-				</li>
-				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_redo_btn" data-sql-editor-menu="y" title="다시실행  Ctrl+Y">
-						<span class="fa fa-repeat" ></span>
-					</button>
-				</li>
-				<li>
-					<button href="javascript:;" class="sql-edit-btn sql-btn-default sql_linewrapper_btn" data-sql-editor-menu="y" title="자동 줄 바꿈 ">
-						<span class="fa fa-dedent" aria-hidden="true" ></span>
+					<button class="sql-edit-btn sql_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+Shift+S">
+						<i class="fa fa-save"></i>
 					</button>
 				</li>
 				<li class="sql-btn-divider"></li>
 				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_format_btn" data-sql-editor-menu="y" title="쿼리 정리 Ctrl+Shift+F">
-						<span class="fa fa-align-justify" aria-hidden="true" ></span>
+					<button class="sql-edit-btn sql_undo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.undo" /> Ctrl+Z">
+						<i class="fa fa-undo" ></i>
 					</button>
 				</li>
 				<li>
-					<button href="javascript:;" class="sql-edit-btn sql_send_btn" title="보내기">
-						<span class="fa fa-paper-plane-o"></span>
+					<button class="sql-edit-btn sql_redo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.redo" /> Ctrl+Y">
+						<i class="fa fa-repeat" ></i>
+					</button>
+				</li>
+				<li>
+					<button class="sql-edit-btn sql-btn-default sql_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.linewrapper" />">
+						<i class="fa fa-dedent" aria-hidden="true" ></i>
+					</button>
+				</li>
+				<li class="sql-btn-divider"></li>
+				<li>
+					<button class="sql-edit-btn sql_format_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.format" /> Ctrl+Shift+F">
+						<i class="fa fa-align-justify" aria-hidden="true" ></i>
+					</button>
+				</li>
+				<li>
+					<button class="sql-edit-btn sql_send_btn" title="<spring:message code="btn.toolbar.send" />">
+						<i class="fa fa-paper-plane-o"></i>
 					</button>
 				</li>
 			</ul>
@@ -152,7 +152,7 @@ $(document).ready(function(){
 						<option value="1000">1000</option>
 					</select>
 				</span>
-				<button type="button" id="sql_filelist_view_btn" class="btn btn-default" style="line-height:15px;">SQL</button>
+				<button type="button" id="sql_filelist_view_btn" class="btn btn-default sql-filelist-view-btn" style="line-height:15px;"><i class="fa fa-bars" style="margin-right:3px;"></i>파일</button></button>
 			</span>
 			<div id="varsqlSqlFileTab" class="varql-sqlfile-tab">
 			</div>
@@ -160,7 +160,7 @@ $(document).ready(function(){
 			 	<div style="width:50px;display:inline-block;">
 					<span style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
 						<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
-							<span class="fa fa-plus-square-o"></span>변수
+							<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
 						</span>
 					</span>
 			    </div>
@@ -178,14 +178,13 @@ $(document).ready(function(){
 				<ul id="sql_filelist_area"></ul>
 			</div>
 		</div>
-				
 		<div id="sql_editor_area" style="position:relative;height:100%;">
 			<div class="sql-editor-item" data-editor-id="empty">
 	 			<p class="msg-text">
 					<a href="javascript:;" class="sql_new_file">
-						<button type="button" class="btn btn-default"><span class="fa fa-file-o"></span></button>새파일
+						<button type="button" class="btn btn-default"><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" /> 
 					</a>
-					<br>새 파일을 클릭하시면 쿼리를 실행하실수 있는 에디터가 열립니다.
+					<br><spring:message code="msg.editor.info" />
 				</p>
 			</div>
 		</div>
@@ -225,9 +224,9 @@ $(document).ready(function(){
 <div id="sqlDataComponent" class="pos-relative-w-h100">
 	<div id="data_grid_result_tab_wrap" class="varsql-tab-area">
 		<ul id="data_grid_result_tab" class="sql-result-tab">
-			<li tab_gubun="result" class="on"><a href="javascript:;">결과</a></li>
-			<li tab_gubun="columnType"><a href="javascript:;">컬럼타입</a></li>
-			<li tab_gubun="msg"><a href="javascript:;"><span>메시지</span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
+			<li tab_gubun="result" class="on"><a href="javascript:;"><spring:message code="btn.resultarea.tab.grid"/></a></li>
+			<li tab_gubun="columnType"><a href="javascript:;"<spring:message code="btn.resultarea.tab.column"/></a></li>
+			<li tab_gubun="msg"><a href="javascript:;"><span><spring:message code="btn.resultarea.tab.log"/></span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
 		</ul>
 	</div>
 	
@@ -248,13 +247,12 @@ $(document).ready(function(){
 	<div id="glossaryPluginArea" class="pos-relative-w-h100">
 		<div class="glossary-search-area-wrapper">
 			<div class="glossary-search-area">
-				<span>검색</span>
 				<input type="text" id="glossarySearchTxt" class="input-text" placeholder="Search...">
-				<button type="button" class="btn btn-default glossary-search-btn" title="조회"><span class="fa fa-search"></span></button>
+				<button type="button" class="btn btn-default glossary-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
 			</div>
 			<div class="glossary-convert-area">
-				<button type="button" class="btn btn-default glossary-convert-camelcase" title="변환"><span class="fa fa-retweet"></span></button>
-				<button type="button" class="btn btn-default glossary-convert-clear" title="지우기"><span class="fa fa-trash-o"></span></button>
+				<button type="button" class="btn btn-default glossary-convert-camelcase" title="<spring:message code="btn.glossary.convert"/>"><span class="fa fa-retweet"></span></button>
+				<button type="button" class="btn btn-default glossary-convert-clear" title="<spring:message code="btn.glossary.remove"/>"><span class="fa fa-trash-o"></span></button>
 				<input type="text" id="glossaryConvertTxt" class="input-text">
 			</div>
 		</div>
@@ -269,9 +267,8 @@ $(document).ready(function(){
 	<div id="historyPluginArea" class="pos-relative-w-h100">
 		<div class="history-search-area-wrapper">
 			<div class="history-search-area">
-				<span>검색</span>
 				<input type="text" id="historySearchTxt" class="input-text" placeholder="Search...">
-				<button type="button" class="btn btn-default history-search-btn" title="조회"><span class="fa fa-search"></span></button>
+				<button type="button" class="btn btn-default history-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
 			</div>
 		</div>
 		<div class="history-result-area">

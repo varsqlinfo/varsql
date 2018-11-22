@@ -296,8 +296,8 @@
 			this.draw();
 		}
 		/**
-		 * @method isAddItem
-		 * @description item add
+		 * @method isItem
+		 * @description item check
 		 */
 		,isItem : function (item){
 			var tabEle;
@@ -432,6 +432,13 @@
 			}
 
 			return {};
+		}
+		/**
+		 * @method getItemLength
+		 * @description tab item length
+		 */
+		,getItemLength : function (){
+			return this.options.items.length;
 		}
 		/**
 		 * @method removeItem

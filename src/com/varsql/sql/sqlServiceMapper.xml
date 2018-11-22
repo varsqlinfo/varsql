@@ -115,7 +115,7 @@
 	<!-- sql tab 앞에 정보 업데이트.  -->
 	<update id="sqlServiceMapper.updateSqlFileTabPrevSqlIdInfo" parameterType="sqlParamInfo">
 		update VTSQL_SQLFILE_TAB
-			set PREV_SQL_ID = (select max(PREV_SQL_ID) from VTSQL_SQLFILE_TAB where VCONNID = #{vconnid} and SQL_ID = #{sqlId})
+			set PREV_SQL_ID = (select max(PREV_SQL_ID) from VTSQL_SQLFILE_TAB where VCONNID = #{vconnid} and VIEWID = #{userid} and SQL_ID = #{sqlId})
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
 		and PREV_SQL_ID = #{sqlId}
@@ -127,6 +127,13 @@
 		where VCONNID = #{vconnid} 
 		and VIEWID = #{userid}
 		and SQL_ID = #{sqlId}
+	</delete>
+	
+	<!-- 사용자 tab 정보  전부 삭제.  -->
+	<delete id="sqlServiceMapper.deleteAllSqlFileTabInfo" parameterType="sqlParamInfo">
+		delete from VTSQL_SQLFILE_TAB
+		where VCONNID = #{vconnid} 
+		and VIEWID = #{userid}
 	</delete>
 	
 	<!-- query_cont map -->
