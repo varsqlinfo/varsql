@@ -91,7 +91,7 @@ $(document).ready(function(){
 </script>
 
 <%--sql editor component template --%>
-<script id="sqlEditorComponentTemplate" type="text/varsql-template">
+<scri1pt id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="sqlEditorComponent" class="pos-relative-w-h100">
 	<div id="sqlEditorToolbar" class="varsql-toolbar-area">
 		<div class="sql-btn-area">
@@ -188,32 +188,17 @@ $(document).ready(function(){
 				</p>
 			</div>
 		</div>
-		<div id="sql_parameter_area" class="sql-parameter-area">
-			<table style="width:100%;">
-				<colgroup>
-					<col width="90px">
-					<col width="130px">
-					<col width="30px">
-			    </colgroup>
-				<thead>
-					<tr>
-						<th>Key</th>
-						<th>Value</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="sql_parameter_row_area">
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="3" class="text-center">
-							<div class="margin-top5">
-								<button type="button" class="sql-param-add-btn btn btn-sm btn-default fa fa-plus"></button>
-							</div>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
+		<div id="sql_parameter_wrapper" class="sql-parameter-area">
+			<div class="sql-param-header">
+				<span class="key">Key</span>
+				<span class="val">Value</span>
+		    </div>
+			<div id="sql_parameter_area" class="sql-param-body">
+
+			</div>
+			<div class="sql-param-footer margin-top5">
+				<button type="button" class="sql-param-add-btn btn btn-sm btn-default fa fa-plus"></button>
+			</div>
 		</div>
 	</div>
 </div>

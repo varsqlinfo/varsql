@@ -2959,6 +2959,7 @@ _ui.SQL = {
 	,sqlFileNameDialogEle : null // sql file name dialog
 	,allSqlEditorObj : {}	 // sql editor  object
 	,sqlEditorSelector : '#sql_editor_area' 
+	,sqlParameterSelector : '#sql_parameter_area' 
 	,sqlEditorEle : null
 	,memoDialog : null
 	,findTextDialog : null
@@ -3300,7 +3301,7 @@ _ui.SQL = {
 		});
 		
 		_self.sqlEditorEle.on('click', function(e){
-			$('#sql_parameter_area').removeClass('on');
+			$('#sql_parameter_wrapper').removeClass('on');
 		})
 		
 		/*
@@ -3350,15 +3351,15 @@ _ui.SQL = {
 		
 		// 메개변수 처리. 
 		$('#sql_parameter_toggle_btn').on('click',function (){
-			if($('#sql_parameter_area').hasClass('on')){
-				$('#sql_parameter_area').removeClass('on');
+			if($('#sql_parameter_wrapper').hasClass('on')){
+				$('#sql_parameter_wrapper').removeClass('on');
 			}else{
-				$('#sql_parameter_area').addClass('on');
+				$('#sql_parameter_wrapper').addClass('on');
 			}
 		});
 		
 		// sql 파라미터 삭제. 
-		$('#sql_parameter_area').on('click','.sql-param-del-btn',function (e){
+		$('#sql_parameter_wrapper').on('click','.sql-param-del-btn',function (e){
 			//if(confirm('삭제 하시겠습니까?')){
 			$(this).closest('.sql-param-row').remove();
 			//}
@@ -3636,31 +3637,31 @@ _ui.SQL = {
 			}
 			
 			for(var key in data){
-				var tmpHtm='<tr class="sql-param-row">'
-					+'	<td><div><input type="text" class="sql-param-key" value="{{key}}" /></div></td>'
-					+'	<td><div><input type="text" class="sql-param-value" value="{{val}}"/></div></td>'
-					+'	<td><span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span></td>'
-					+'</tr>';
+				var tmpHtm='<div class="sql-param-row">'
+					+'	<span class="key"><input type="text" class="sql-param-key" value="{{key}}" /></span>'
+					+'	<span class="val"><input type="text" class="sql-param-value" value="{{val}}"/></span>'
+					+'	<span class="remove"><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
+					+'</div>';
 				
 				paramHtm.push(Mustache.render(tmpHtm, {key: key , val : data[key]}));
 			}
 			
 			if('init_data' ==mode){
-				$('#sql_parameter_row_area').empty().html(paramHtm.join(''));	
+				$('.sql-parameter-item.active').empty().html(paramHtm.join(''));	
 			}else{
-				$('#sql_parameter_row_area').append(paramHtm.join(''));
+				$('.sql-parameter-item.active').append(paramHtm.join(''));
 			}
 		}else{
-			var paramHtm='<tr class="sql-param-row">'
-				+'	<td><div><input type="text" class="sql-param-key" /></div></td>'
-				+'	<td><div><input type="text" class="sql-param-value"/></div></td>'
-				+'	<td><span><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span></td>'
-				+'</tr>';
+			var paramHtm='<div class="sql-param-row">'
+				+'	<span class="key"><input type="text" class="sql-param-key" /></span>'
+				+'	<span class="val"><input type="text" class="sql-param-value" /></span>'
+				+'	<span class="remove"><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
+				+'</div>';
 			
 			if(mode =='init'){
-				$('#sql_parameter_row_area').empty().html(paramHtm);	
+				$('.sql-parameter-item.active').empty().html(paramHtm);	
 			}else{
-				$('#sql_parameter_row_area').append(paramHtm);
+				$('.sql-parameter-item.active').append(paramHtm);
 			}
 		}
 	}
@@ -3884,12 +3885,14 @@ _ui.SQL = {
 	,loadEditor : function (sItem, viewTabSaveFlag){
 		var _self = this; 
 		
-		var editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+		var sqlId = sItem.SQL_ID; 
+		var editorEle = $('[data-editor-id="'+sqlId+'"]');
 		
 		if(editorEle.length  < 1){
-			$(_self.sqlEditorSelector).append('<div class="sql-editor-item" data-editor-id="'+sItem.SQL_ID+'"><textarea id="ta_'+sItem.SQL_ID+'" name="ta_'+sItem.SQL_ID+'" class="sql-editor-text"></textarea></div>');
-			editorEle = $('[data-editor-id="'+sItem.SQL_ID+'"]');
+			$(_self.sqlEditorSelector).append('<div class="sql-editor-item" data-editor-id="'+sqlId+'"><textarea id="ta_'+sqlId+'" name="ta_'+sqlId+'" class="sql-editor-text"></textarea></div>');
+			editorEle = $('.sql-editor-item[data-editor-id="'+sqlId+'"]');
 			
+			$(_self.sqlParameterSelector).append('<tbody class="sql-parameter-item" data-parameter-id="'+sqlId+'"></tbody>');
 			_ui.sqlDataArea.addDataGridEle(sItem);
 		}
 		
@@ -3897,11 +3900,16 @@ _ui.SQL = {
 			return ; 
 		}
 		
-		$('#sqlFileId').val(sItem.SQL_ID);
+		$('#sqlFileId').val(sqlId);
+		// editor active
 		$('.sql-editor-item.active').removeClass('active');
 		editorEle.addClass('active');
 		
-		var isTabItem =_self.sqlFileTabObj.isItem(sItem.SQL_ID); 
+		// parameter active
+		$('.sql-parameter-item.active').removeClass('active');
+		$('.sql-parameter-item[data-parameter-id="'+sqlId+'"]').addClass('active');
+		
+		var isTabItem =_self.sqlFileTabObj.isItem(sqlId); 
 		
 		if(!isTabItem){
 			var lastItem = _self.sqlFileTabObj.getLastItem();
@@ -3909,7 +3917,7 @@ _ui.SQL = {
 			_self.sqlFileTabObj.addItem({item:sItem,enabled:false});
 			
 			_self.saveSqlFile({
-				sqlId : sItem.SQL_ID
+				sqlId : sqlId
 				, prevTabId : (lastItem.SQL_ID ||'')
 			},'addTab');// tab 정보 추가.
 			
@@ -3917,7 +3925,7 @@ _ui.SQL = {
 		}else{
 			if(viewTabSaveFlag !== false){
 				_self.saveSqlFile({
-					sqlId : sItem.SQL_ID
+					sqlId : sqlId
 				},'viewTab');
 			}
 		}
@@ -3929,14 +3937,22 @@ _ui.SQL = {
 			_self.setSqlEditorInfo(sItem);
 			return ; 
 		}
-
+		
 		editorEle.attr('data-load-yn','Y');
-
-		$('#ta_'+sItem.SQL_ID).val(sItem.QUERY_CONT);
+		
+		
+		$('#ta_'+sqlId).val(sItem.QUERY_CONT);
+		
+		// tab item setting
+		try{
+			_self.addParamTemplate('init_data',$.parseJSON(sItem.SQL_PARAM));
+		}catch(e){
+			_self.addParamTemplate('init_data',{'':''});
+		}
 		
 		var tableHint = {};
 		
-		var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sItem.SQL_ID), {
+		var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sqlId), {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
 			smartIndent: true,
@@ -3962,7 +3978,7 @@ _ui.SQL = {
 			hintOptions: {tables:tableHint}
 		});
 		
-		_self.allSqlEditorObj[sItem.SQL_ID] = editor;
+		_self.allSqlEditorObj[sqlId] = editor;
 		_self.setSqlEditorInfo(sItem);
 	}
 	// set editor
@@ -4020,14 +4036,14 @@ _ui.SQL = {
 			
 			if(flag == false){
 				_self.addParamTemplate('data',addParam);
-				$('#sql_parameter_area').addClass('on');
+				$('#sql_parameter_wrapper').addClass('on');
 				
 				var loopCnt = 0; 
 				var loopInter = setInterval(function (){
 					if((loopCnt+1)%2==1){
-						$('#sql_parameter_area').css('background-color','#ffb3b3');
+						$('#sql_parameter_wrapper').css('background-color','#ffb3b3');
 					}else{
-						$('#sql_parameter_area').css('background-color','');
+						$('#sql_parameter_wrapper').css('background-color','');
 					}
 					++loopCnt;
 					if(loopCnt > 3){

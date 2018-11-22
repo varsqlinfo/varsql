@@ -101,6 +101,31 @@
     left: 0px;
 }
 
+.varsql-sqleditor-area .sql-parameter-item{
+	display:none;
+}
+.varsql-sqleditor-area .sql-parameter-item .key, .varsql-sqleditor-area .sql-param-header .key{
+	width:85px;
+	display: inline-block;
+    padding-right: 5px;
+    padding-top: 2px;
+}
+
+.varsql-sqleditor-area .sql-parameter-item .val, .varsql-sqleditor-area .sql-param-header .val{
+	width:140px;
+	display: inline-block;
+    padding-right: 5px;
+}
+
+.varsql-sqleditor-area .sql-parameter-item .remove{
+	display: inline-block;
+}
+
+
+.varsql-sqleditor-area .sql-parameter-item.active{
+	display:block;
+}
+
 .varsql-sqleditor-area .sql-editor-item[data-editor-id="empty"] > p{
 	text-align: center;
     position: relative;
