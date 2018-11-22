@@ -28,16 +28,7 @@ _ui.extension ={
 }
 
 var _defaultOptions = {
-	tablesConfig :{
-		configVal :{
-			search :{			// 검색
-				field : ''		// 검색 필드
-				,val : ''		// 검색어
-			}
-			,speed :-1			// scroll speed
-		}
-	}
-	,dateFormat :'yyyy-MM-dd hh:mm:ss'
+	dateFormat :'yyyy-MM-dd hh:mm:ss'
 }
 
 var _g_options={
@@ -411,7 +402,7 @@ _ui.headerMenu ={
 _ui.preferences= {
 	save : function (prefInfo , callback){
 		
-		prefInfo = VARSQL.util.objectMerge({} ,_g_options._opts.screenSetting,prefInfo);
+		prefInfo = VARSQL.util.objectMerge(_g_options._opts.screenSetting, prefInfo);
 		
 		var param = {
 			conuid : _g_options.param.conuid
@@ -2999,6 +2990,7 @@ _ui.SQL = {
 		_self._initTab();
 		_self.sqlFileTabList();
 		_self._initDialog();
+		
 	}
 	,_initDialog : function (){
 		var _self = this; 
@@ -3387,22 +3379,37 @@ _ui.SQL = {
 			}
 		});
 		
+		if(VARSQL.isUndefined(_g_options._opts.screenSetting.sqlFileConfig)){
+			VARSQL.util.objectMerge (_g_options._opts.screenSetting,{sqlFileConfig:{enable :false}});
+		}
+		
 		// sql file list view
 		$('#sql_filelist_view_btn').on('click', function (){
 			var sEle = $(this);
 			var sEditorWrapperEle = $('#sql_editor_wrapper'); 
 			
+			var sqlFileConfig = {enable :false};
 			if(sEditorWrapperEle.hasClass('sql-flielist-active')){
+				sqlFileConfig.enable = false; 
 				sEditorWrapperEle.removeClass('sql-flielist-active');
 			}else{
+				sqlFileConfig.enable = true; 
 				sEditorWrapperEle.addClass('sql-flielist-active');
+			}
+			
+			if(_g_options._opts.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){
+				_ui.preferences.save({sqlFileConfig :  sqlFileConfig});
 			}
 			
 			if(sEle.attr('loadFlag') != 'Y'){
 				_self.sqlFileList();
 				sEle.attr('loadFlag','Y');
 			}
-		})
+		});
+		
+		if(_g_options._opts.screenSetting.sqlFileConfig.enable ===true){
+			$('#sql_filelist_view_btn').trigger('click');
+		}
 		
 		$.pubAutocomplete('#recv_user_search' , {
 			minLength : 0

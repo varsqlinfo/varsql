@@ -164,8 +164,6 @@ public class SQLDAO extends BaseDAO{
 			
 			@Override
 			public void handleResult(ResultContext<? extends Map> paramResultContext) {
-				
-				System.out.println("paramResultContext.getResultObject() : "+ paramResultContext.getResultObject());
 				tds.sortTreeData(paramResultContext.getResultObject());
 			}
 			
