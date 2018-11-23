@@ -101,29 +101,87 @@
     left: 0px;
 }
 
-.varsql-sqleditor-area .sql-parameter-item{
+.varsql-sqleditor-area .sql-parameter-wrapper{
+	display:none;
+	width:250px;
+	padding: 5px;
+	z-index:10;
+	height:100%;
+	position:absolute;
+	right:0px;
+	background:#e8f7e8;
+	top: 0px;
+	border: 1px solid #ddd;
+}
+
+.varsql-sqleditor-area .sql-parameter-wrapper.on{
+	display:block;
+}
+
+.varsql-sqleditor-area .sql-parameter-area input{
+	width:100%;
+}	
+
+.varsql-sqleditor-area .sql-param-header{
+	display:table-row;
+}
+.varsql-sqleditor-area .sql-param-header .key{
+	width:80px;
+	display: table-cell;
+    text-align: center;
+    font-weight: bold;
+}
+.varsql-sqleditor-area .sql-param-header .val{
+	width:120px;
+	display: table-cell;
+    text-align: center;
+    font-weight: bold;
+}
+
+.varsql-sqleditor-area .sql-param-header .add-btn{
+	width:30px;
+	display: table-cell;
+    text-align: center;
+    font-weight: bold;
+}
+
+.varsql-sqleditor-area .sql-param-body{
+	height:calc(100% - 20px);
+	overflow:auto;
+	position:relative;
+}
+.varsql-sqleditor-area .sql-parameter-area{
 	display:none;
 }
-.varsql-sqleditor-area .sql-parameter-item .key, .varsql-sqleditor-area .sql-param-header .key{
-	width:85px;
-	display: inline-block;
-    padding-right: 5px;
-    padding-top: 2px;
-}
 
-.varsql-sqleditor-area .sql-parameter-item .val, .varsql-sqleditor-area .sql-param-header .val{
-	width:140px;
-	display: inline-block;
-    padding-right: 5px;
-}
-
-.varsql-sqleditor-area .sql-parameter-item .remove{
-	display: inline-block;
-}
-
-
-.varsql-sqleditor-area .sql-parameter-item.active{
+.varsql-sqleditor-area .sql-parameter-area.active{
 	display:block;
+}
+
+.varsql-sqleditor-area .sql-parameter-area .sql-param-row{
+	margin-top:3px;
+}
+
+.varsql-sqleditor-area .sql-parameter-area .key{
+	width:80px;
+	display: table-cell;
+	padding-right:3px;
+}
+
+.varsql-sqleditor-area .sql-parameter-area .val{
+	width:120px;
+	display: table-cell;
+	padding-right:3px;
+}
+
+.varsql-sqleditor-area .sql-parameter-area .remove{
+	display: table-cell;
+	width:30px;
+	vertical-align: top;
+}
+
+.varsql-sqleditor-area .sql-param-footer{
+	text-align:center;
 }
 
 .varsql-sqleditor-area .sql-editor-item[data-editor-id="empty"] > p{
@@ -165,6 +223,7 @@
 
 .text-ellipsis.sql-flielist-item{
 	max-width: calc(100% - 35px);
+	min-width: calc(100% - 35px);
 }
 
 .varsql-toolbar-area .sql-filelist-view-btn.active{

@@ -143,7 +143,7 @@
 	
 	<!-- 사용자 sql 목록  -->
 	<select id="sqlServiceMapper.selectSqlFileTabList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
-		select vsf.SQL_ID, vsf.VIEW_YN, vsf.PREV_SQL_ID, vsf.VCONNID , a.QUERY_CONT, a.GUERY_TITLE
+		select vsf.SQL_ID, vsf.VIEW_YN, vsf.PREV_SQL_ID, vsf.VCONNID , a.QUERY_CONT, a.GUERY_TITLE, a.SQL_PARAM
 		from   VTSQL_SQLFILE_TAB vsf , VTSQL_SQLFILE a
 		where vsf.SQL_ID = a.SQL_ID
 		and vsf.VCONNID = #{vconnid}

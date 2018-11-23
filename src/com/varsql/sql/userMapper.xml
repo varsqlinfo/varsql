@@ -183,7 +183,7 @@
 		from VTUSER
 		WHERE ACCEPT_YN ='Y'
 		and USER_ROLE not in ('ADMIN')
-		and UID like '%'||#{searchVal}||'%' 
+		and (UID like '%'||#{searchVal}||'%' or UNAME like '%'||#{searchVal}||'%') 
 	</select>
 	
 	<!-- 신규 메시지 조회  -->
