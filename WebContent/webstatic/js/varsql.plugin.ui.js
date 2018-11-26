@@ -50,7 +50,6 @@ _pluginUI.chart = {
 		
 		return false; 
 	}
-	
 }
 
 VARSQL.pluginUI = _pluginUI;

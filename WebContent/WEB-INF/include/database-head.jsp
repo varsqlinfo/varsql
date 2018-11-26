@@ -37,6 +37,7 @@
 <script src="${pageContextPath}/webstatic/js/varsql.base.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.core.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.vender.mode.js?version=${pubjs_ver}"></script>
 
 <!-- sql editor -->

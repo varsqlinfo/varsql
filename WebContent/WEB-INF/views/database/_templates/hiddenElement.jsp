@@ -1,13 +1,14 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <div id="dbHiddenArea"></div>
 
 <%--메모 보내기 다이얼로그 --%>
-<div id="memoTemplate" style="display:none;overflow: hidden;" title="메시지 보내기">
+<div id="memoTemplate" style="display:none;overflow: hidden;" title="<spring:message code="msg.sendmsg.title" />">
 	<div style="margin: 0px -10px 0px -10px;">
 		<div class="col-xs-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<input type="text" id="recv_user_search" name="recv_user_search" class="form-control" placeholder="보낼사용자검색">
+					<input type="text" id="recv_user_search" name="recv_user_search" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
 					<div id="recv_autocomplete_area" class=""></div>
 				</div>
 				<!-- /.panel-heading -->
@@ -22,14 +23,20 @@
 		<!-- /.col-lg-4 -->
 		<div class="col-xs-6">
 			<!-- /.panel-heading -->
-			<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="제목" style="margin-bottom:5px;">
-			<textarea id="memoContent" name="memoContent" class="form-control" style="height: 210px;" placeholder="내용"></textarea>
+			<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="<spring:message code="title" />" style="margin-bottom:5px;">
+			<textarea id="memoContent" name="memoContent" class="form-control" style="height: 210px;" placeholder="<spring:message code="content" />"></textarea>
 		</div>
 	</div>
 </div>
 
+<div id="confirmTemplateTemplate" style="display:none;overflow: hidden;" title="Confirm">
+	<div style="margin: 0px -10px 0px -10px;">
+		<div>저장하고 닫으시겠습니까?</div>
+	</div>
+</div>
+
 <%--설정 --%>
-<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="환경설정">
+<div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="<spring:message code="preferences" />">
 	<iframe src="" class="preferences-frame"></iframe>
 </div>
 

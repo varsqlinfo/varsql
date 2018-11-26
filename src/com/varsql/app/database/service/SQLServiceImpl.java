@@ -396,30 +396,75 @@ public class SQLServiceImpl{
 				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
 				sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.  
 			}else if("delTab".equals(mode)){
-				int tabLen = -1; 
-				try{
-					tabLen = Integer.parseInt(String.valueOf(sqlParamInfo.getCustom().get("len")));
-				}catch(Exception e){
-					tabLen = -1;
-				}
-				
-				if(tabLen ==0){
-					sqlDAO.deleteAllSqlFileTabInfo(sqlParamInfo);
-				}else{
-					sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
-				}
-				
+				deleteSqlFileTabInfo(sqlParamInfo);
 			}else if("viewTab".equals(mode)){
 				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
 				sqlDAO.updateSqlFileTabEnable(sqlParamInfo);
 			}else{
 				sqlDAO.updateQueryInfo(sqlParamInfo);
+				
+				if("query_del".equals(mode)){
+					deleteSqlFileTabInfo(sqlParamInfo);
+				}
 			}
 		}
 		
 		result.setItemOne(sqlParamInfo);
 			
 		return result; 
+	}
+	
+	private void deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+		try{
+			int tabLen = -1; 
+			try{
+				tabLen = Integer.parseInt(String.valueOf(sqlParamInfo.getCustom().get("len")));
+			}catch(Exception e){
+				tabLen = -1;
+			}
+			
+			if(tabLen ==0){
+				sqlDAO.deleteAllSqlFileTabInfo(sqlParamInfo);
+			}else{
+				sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+			}
+		}catch(Exception e){
+			throw e; 
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @Method Name  : saveAllQuery
+	 * @Method 설명 : sql 파일 모두저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult saveAllQuery(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
+		Map<String,Object> customParam = (Map<String,Object>)sqlParamInfo.getCustom();
+		
+		String sqlIdStr = String.valueOf(customParam.get("sqlIdArr"));
+		
+		String[] sqlIdArr= sqlIdStr.split(";");
+		Map<String , Integer> reval = new HashMap<String , Integer>();
+		for (int i = 0; i < sqlIdArr.length; i++) {
+			String sqlId = sqlIdArr[i];
+			
+			sqlParamInfo.setSqlId(sqlId);
+			sqlParamInfo.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
+			sqlParamInfo.setSql(String.valueOf(customParam.get(sqlId)));
+			
+			reval.put(sqlId, sqlDAO.updateQueryInfo(sqlParamInfo));
+		}
+		
+		result.setItemOne(reval);
+		
+		return result;
 	}
 	
 	/**
@@ -451,7 +496,7 @@ public class SQLServiceImpl{
 		try{
 			result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
 			
-			sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
+			deleteSqlFileTabInfo(sqlParamInfo);
 			
 	    }catch(Exception e){
 	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
@@ -508,4 +553,19 @@ public class SQLServiceImpl{
 		return result; 
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : sqlFileDetailInfo
+	 * @Method 설명 : sql file 상세보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult sqlFileDetailInfo(SqlParamInfo sqlParamInfo) {
+		ResponseResult result = new ResponseResult();
+		result.setItemOne(sqlDAO.selectSqlFileDetailInfo(sqlParamInfo));
+		return result; 
+	}
 }

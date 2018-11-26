@@ -22,7 +22,11 @@ body {
 	display:none;
 }
 .display-on{
-	display:block
+	display:block;
+}
+
+.position-rel{
+	position:relative
 }
 
 .text-ellipsis {

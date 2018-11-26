@@ -14,6 +14,12 @@
 			<li class="header-menu-item" data-menu-item="file_save" data-sql-editor-menu="y">
 				<a href="javascript:;">
 					<span class="header-menu-item-text"><spring:message code="header.menu.file.save" /></span>
+					<span class="header-menu-item-key">Ctrl+S</span>
+				</a>
+			</li>
+			<li class="header-menu-item" data-menu-item="file_allsave" data-sql-editor-menu="y">
+				<a href="javascript:;">
+					<span class="header-menu-item-text"><spring:message code="header.menu.file.allsave" /></span>
 					<span class="header-menu-item-key">Ctrl+Shift+S</span>
 				</a>
 			</li>

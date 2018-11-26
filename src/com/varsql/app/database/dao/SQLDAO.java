@@ -190,6 +190,20 @@ public class SQLDAO extends BaseDAO{
 		getSqlSession().select("sqlServiceMapper.selectSqlFileTabList", sqlParamInfo , reportResultHandler);
 		return reportResultHandler.getResultList(); 
 	}
+
+	/**
+	 * 
+	 * @Method Name  : selectSqlFileDetailInfo
+	 * @Method 설명 : sql 상세보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public Map selectSqlFileDetailInfo(SqlParamInfo sqlParamInfo) {
+		return getSqlSession().selectOne("sqlServiceMapper.selectSqlFileDetailInfo", sqlParamInfo);
+	}
 }
 
 

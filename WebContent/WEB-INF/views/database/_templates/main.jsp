@@ -108,8 +108,13 @@ $(document).ready(function(){
 					</button>
 				</li>
 				<li>
-					<button class="sql-edit-btn sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+Shift+S">
+					<button class="sql-edit-btn sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+S">
 						<i class="fa fa-save"></i>
+					</button>
+				</li>
+				<li>
+					<button class="sql-edit-btn sql_toolbar_allsave_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.allsave" /> Ctrl+Shift+S">
+						<i class="fa fa-save-all"></i>
 					</button>
 				</li>
 				<li class="sql-btn-divider"></li>

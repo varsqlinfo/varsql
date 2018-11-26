@@ -49,8 +49,65 @@
 }
 /**/
 
-/*editor start*/
-.varql-sqlfile-tab{
+/*editor component start*/
+
+.varsql-toolbar-area .sql-btn-area>ul{
+    padding: 0px;
+    margin: 0px;
+    vertical-align: middle;
+    height: 30px;
+    
+}
+.varsql-toolbar-area .sql-btn-area>ul>li {
+	float:left; 
+	list-style: none;
+	padding : 0px 3px 0px 3px; 
+}
+
+.varsql-toolbar-area .sql-edit-btn{
+    padding: 2px 5px;
+    font-size: 14px;
+    border:1px solid transparent;
+    border-radius: 2px;
+	color: inherit;
+	background: transparent;
+	cursor: pointer;
+	position:relative;
+}
+.varsql-toolbar-area .sql-edit-btn:hover{
+	background-color: #dfdfdf;  
+	background: #dfdfdf;
+	color: #000000;
+}
+
+.varsql-toolbar-area .sql-btn-info {
+    color: #000;
+    background-color: #a8e0f1;
+    border-color: #a8e0f1;
+}
+
+.varsql-toolbar-area .sql-btn-info:hover{
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
+.varsql-toolbar-area .sql-btn-success {
+    color: #333;
+    background-color: #afb8ef;
+    border-color: #afb8ef;
+    border:1px solid #b59d9d;
+}
+ 
+.varsql-toolbar-area .sql-btn-area li.sql-btn-divider{
+    height: 20px;
+    width: 1px;
+    overflow: hidden;
+    margin-top: 6px;
+    border-right: 1px solid #8c7e7e;
+}
+
+.varsql-toolbar-area .varql-sqlfile-tab{
 	display:block;
 	position: relative;
     height: 20px;

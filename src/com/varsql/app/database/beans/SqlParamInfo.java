@@ -12,14 +12,14 @@ import com.vartech.common.app.beans.ParamMap;
  */
 public class SqlParamInfo extends DatabaseParamInfo{
 	
-	// sql
-	private String sql;
-	                                                                                                                                                                             
 	// sql_id
 	private String sqlId;
 	
 	// sql_id
 	private String sqlTitle;
+	
+	// sql
+	private String sql;
 	
 	// limit count
 	private int limit;

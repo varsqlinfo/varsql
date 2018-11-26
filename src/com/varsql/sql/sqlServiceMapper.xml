@@ -151,12 +151,23 @@
 		order by vsf.PREV_SQL_ID asc
 	</select>
 	
+	<!-- sql file list -->
 	<select id="sqlServiceMapper.selectSqlFileList" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
-		select * from VTSQL_SQLFILE
+		select 
+			 SQL_ID, GUERY_TITLE
+		from VTSQL_SQLFILE
 		where VCONNID = #{vconnid}
 		and VIEWID = #{userid}
 		and GUERY_TITLE like '%'||#{custom.searchVal}||'%' 
 		order by GUERY_TITLE asc  
+	</select>
+	
+	<!--  sql file detail info -->
+	<select id="sqlServiceMapper.selectSqlFileDetailInfo" parameterType="sqlParamInfo" resultMap="varsqlBoardClobMap">
+		select * from VTSQL_SQLFILE
+		where VCONNID = #{vconnid}
+		and VIEWID = #{userid}
+		and SQL_ID = #{sqlId}
 	</select>
 	
 	<!-- sql 저장 정보 삭제 .  -->

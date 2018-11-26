@@ -100,6 +100,42 @@ public class SQLController {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sQLServiceImpl.saveQuery(sqlParamInfo);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : saveAllQuery
+	 * @Method 설명 : sql 모두 저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/saveAllQuery"})
+	public @ResponseBody ResponseResult saveAllQuery( SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
+		return sQLServiceImpl.saveAllQuery(sqlParamInfo);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : sqlFileDetailInfo
+	 * @Method 설명 : sql file 상세보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26. 
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/sqlFileDetailInfo"})
+	public @ResponseBody ResponseResult sqlFileDetailInfo( SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
+		return sQLServiceImpl.sqlFileDetailInfo(sqlParamInfo);
+	}
 		
 	/**
 	 * sql 저장 목록 보기.
