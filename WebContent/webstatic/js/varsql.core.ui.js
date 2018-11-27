@@ -219,7 +219,7 @@ _ui.headerMenu ={
 							_ui.SQL.redo();
 							break;
 						case 'compare': //비교
-							alert('['+menu_mode2+'] 준비중입니다.');
+							VARSQLUI.alert.open('['+menu_mode2+'] 준비중입니다.');
 							break;
 						default:
 							break;
@@ -237,7 +237,7 @@ _ui.headerMenu ={
 				}case 'tool':{           
 					switch (menu_mode2) {
 						case 'import':	//가져오기
-							alert('['+menu_mode2+'] 준비중입니다.');
+							VARSQLUI.alert.open('['+menu_mode2+'] 준비중입니다.');
 							break;
 						case 'export':	//내보내기
 							_self.exportInfo(menu_mode3);
@@ -282,7 +282,7 @@ _ui.headerMenu ={
 				}case 'help':{           
 					switch (menu_mode2) {
 						case 'help':	//도움말
-							alert('['+menu_mode2+'] 준비중입니다.');
+							VARSQLUI.alert.open('['+menu_mode2+'] 준비중입니다.');
 							break;
 						case 'dbinfo':	//정보 보기.
 							
@@ -1043,7 +1043,7 @@ _ui.dbSchemaObject ={
 		var _opts = _g_options._opts; 
 		
 		if(!_opts.dbtype) {
-			alert('dbtype empty');
+			VARSQLUI.alert.open('dbtype empty');
 			return ;
 		}
 		
@@ -2983,7 +2983,7 @@ _ui.SQL = {
 		
 		var options ={dbtype:_g_options._opts.dbtype}; 
 		if(!options.dbtype) {
-			alert('dbtype empty');
+			VARSQLUI.alert.open('dbtype empty');
 			return ;
 		}
 		
@@ -3014,7 +3014,7 @@ _ui.SQL = {
 					"저장":function (){
 						var nameTxt = $('#editorSqlFileNameText').val(); 
 						if($.trim(nameTxt)==''){
-							alert('sql명을 입력해주세요.');
+							VARSQLUI.alert.open('sql명을 입력해주세요.');
 							return ;
 						}
 						
@@ -3637,7 +3637,7 @@ _ui.SQL = {
 			}
 			
 			if(!isNext){
-				alert('일치하는 내용이 '+replaceCount+'회 변경되었습니다.');
+				VARSQLUI.alert.open('일치하는 내용이 '+replaceCount+'회 변경되었습니다.');
 			}
 			
 			return ; 
@@ -3646,7 +3646,7 @@ _ui.SQL = {
 		isNext = cursor.find(isReverseFlag);
 		
 		if(wrapSearch===true && isNext===false){
-			alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
+			VARSQLUI.alert.open('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
 			return ;
 		}
 		
@@ -3661,7 +3661,7 @@ _ui.SQL = {
 				_self.getSqlEditorObj().setCursor(wrapSearchPos);
 				_self.searchFindText(orginTxt,replaceTxt,replaceFlag, replaceAllFlag, true);
 			}else{
-				alert('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
+				VARSQLUI.alert.open('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
 				return ; 
 			}
 		}
@@ -3857,7 +3857,7 @@ _ui.SQL = {
 						var recvEle = $('.recv_id_item[_recvid]');
 						
 						if(recvEle.length < 1) {
-							alert('보낼 사람을 선택하세요.');
+							VARSQLUI.alert.open('보낼 사람을 선택하세요.');
 							return ; 
 						}
 						
@@ -4744,14 +4744,14 @@ _ui.progress = {
 			$("."+modalcls +'dialog-modal').css('height',obj.outerHeight());
 			$("."+modalcls +'dialog-modal').show();
 		}catch(e){
-			alert(e);
+			VARSQLUI.alert.open(e);
 		}
 	},
 	end :function (divObj){
 		try{
 			$('.'+divObj.replace(/^[.#]/, '') +'dialog-modal').hide();
 		}catch(e){
-			alert(e);
+			VARSQLUI.alert.open(e);
 		}
 	}
 };
