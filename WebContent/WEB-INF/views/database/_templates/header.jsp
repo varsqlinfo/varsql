@@ -93,9 +93,12 @@
 					</li>
 				</ul>
 			</li>
+			<!-- 
 			<li class="header-menu-item" data-menu-item="tool_setting">
 				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
 			</li>
+			 -->
+			 
 			<li class="divider"></li>
 			<li class="header-dropdown-submenu">
 				<a href="javascript:;">
@@ -124,9 +127,11 @@
 	<li class="dropdown">
 		<a href="javascript:;" class="header-menu-top-label" data-toggle="header-dropdown"><spring:message code="header.menu.help" /></a>
 		<ul class="db-header-menu">
+			<!-- 
 			<li class="header-menu-item" data-menu-item="help_help">
 				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
 			</li>
+			 -->
 			<li class="header-menu-item" data-menu-item="help_dbinfo">
 				<a href="javascript:;"><span class="header-menu-item-text"><spring:message code="header.menu.help.dbinfo" /></span></a>
 			</li>

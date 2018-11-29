@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.manager.service.DbnUserServiceImpl;
-import com.varsql.app.manager.service.ManagerServiceImpl;
+import com.varsql.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
@@ -35,9 +35,6 @@ public class ManagerController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
-	
-	@Autowired
-	ManagerServiceImpl managerServiceImpl;
 	
 	@Autowired
 	DbnUserServiceImpl dbnUserServiceImpl;
@@ -104,34 +101,5 @@ public class ManagerController {
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
 		
 		return new ModelAndView("/manager/sqlLogHistory",model);
-	}
-	
-	@RequestMapping({"/userList"})
-	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		
-		return managerServiceImpl.selectUserList(searchParameter);
-	}
-	
-	@RequestMapping({"/acceptYn"})
-	public @ResponseBody ResponseResult updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
-			,@RequestParam(value = "selectItem", required = true )  String selectItem
-			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
-		
-		paramMap.put("acceptyn", acceptyn);
-		paramMap.put("selectItem", selectItem);
-		
-		return managerServiceImpl.updateAccept(paramMap);
-	}
-	
-	@RequestMapping({"/initPassword"})
-	public @ResponseBody ResponseResult initPassword(@RequestParam(value = "VIEWID", required = true )  String viewid) throws Exception {
-		
-		PasswordForm userForm = new PasswordForm();
-		
-		userForm.setViewid(viewid);
-		
-		return managerServiceImpl.initPassword(userForm);
 	}
 }

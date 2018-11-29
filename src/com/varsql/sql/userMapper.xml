@@ -7,8 +7,9 @@
 	
 	<!-- 사용자 정보 상세 보기. -->
 	<select id="userMapper.selectUserDetail" parameterType="string" resultType="dataCommonVO">
-		select * 
-		from VTUSER 
+		select VIEWID, UID, UNAME, ORG_NM
+			, DEPT_NM, UEMAIL, DESCRIPTION
+		from VTUSER
 		where viewid =#{viewid}
 	</select>
 	
@@ -331,5 +332,19 @@
 		and MEMO_ID = #{memo_id}
 	</update>
 	
+	<!-- select user db info -->
+	<select id="userMapper.selectUserDbInfo" parameterType="string" resultType="map">
+		select b.* , a.VNAME from VTCONNECTION a 
+		,(
+			SELECT VCONNID
+				,SUM(case role_type when 'U' then 1 else 0 end) USER_CHK
+				,SUM(case role_type when 'M' then 1 else 0 end) MSG_CHK
+			from VTDATABASE_ROLE 
+			where VIEWID = #{viewid}
+			group by VCONNID
+		)b 
+		where a.VCONNID = b.VCONNID
+		and a.USE_YN = 'Y'
+	</select>
 	
 </mapper>

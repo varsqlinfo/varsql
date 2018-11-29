@@ -817,16 +817,6 @@ hr.dotline {
 	border-bottom: 4px solid transparent;
 }
 
-.ui-widget-overlay {
-    background: #aaaaaa;
-    opacity: .3;
-    filter: Alpha(Opacity=.3);
-}
-.ui-widget-overlay {
-    position: none;
-}
-
-
 /* varsql main layout start */
 .main-top-menu-wrapper{
 	z-index:1000;

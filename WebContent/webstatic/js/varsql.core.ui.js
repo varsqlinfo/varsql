@@ -3048,7 +3048,10 @@ _ui.SQL = {
 		this.sqlFileTabObj.removeItem(item);
 		
 		if(this.allTabSqlEditorObj[item.SQL_ID]){
-			this.allTabSqlEditorObj[item.SQL_ID].editor.toTextArea();
+			if(this.allTabSqlEditorObj[item.SQL_ID].editor){
+				this.allTabSqlEditorObj[item.SQL_ID].editor.toTextArea();
+			}
+			
 			$('.sql-editor-item[data-editor-id="'+item.SQL_ID+'"]').remove();
 			$('.sql-parameter-area[data-parameter-id="'+item.SQL_ID+'"]').remove();
 			
@@ -3070,7 +3073,6 @@ _ui.SQL = {
 	,_initTab : function (){
 		var _self = this; 
 		
-		var beforeClickSqlId;
 		// tab-item 
 		_self.sqlFileTabObj = $.pubTab('#varsqlSqlFileTab',{
 			items : []
@@ -3127,10 +3129,9 @@ _ui.SQL = {
 			,overItemViewMode :'drop'
 			,click : function (item){
 				var sqlId =item.SQL_ID; 
-				if(sqlId != beforeClickSqlId){
+				
 					_self.loadEditor(item);
-					beforeClickSqlId = sqlId; 
-				}
+				
 			}
 			,itemKey :{							// item key mapping
 				title :'GUERY_TITLE'
@@ -3772,11 +3773,13 @@ _ui.SQL = {
 		    	if(mode=='title' || 'newfile' == mode){
 		    		_self.sqlFileList();
 		    		if('newfile' == mode){
-		    			_self.loadEditor({
+		    			var  newfileItem = {
 		    				"SQL_ID":item.sqlId
 		    				,"GUERY_TITLE":params.sqlTitle
 		    				,"QUERY_CONT": ''
-		    			});
+		    			}
+		    			_self.addTabSqlEditorInfo(newfileItem);
+		    			_self.loadEditor(newfileItem);
 		    		}
 		    	}else if(mode=='query'){
 		    		var currentEditorInfo = _self.currentSqlEditorInfo;

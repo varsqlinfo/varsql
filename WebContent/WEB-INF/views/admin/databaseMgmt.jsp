@@ -188,7 +188,6 @@ var databaseMgmt = {
 				if(item.VTYPE != currentVtype){
 					$('#vtype').trigger('change');	
 				}
-				
 			}
 		});
 	}

@@ -73,7 +73,7 @@
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td><input type="checkbox" :value="item.VIEWID" v-model="selectItem"></td>
-									<td>{{item.UNAME}}</td>
+									<td><a href="javascript:;" @click="detailView(item)">{{item.UNAME}}</a></td>
 									<td>{{item.UID}}</td>
 									<td class="center">{{item.CHAR_CRE_DT}}</td>
 									<td class="center">{{item.ACCEPT_YN}}</td>
@@ -97,9 +97,55 @@
 		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-12 -->
+	
+	<div id="detailInfo" class="display-off" title="상세보기">
+		<table style="width:100%;">
+			<tr>
+				<th>ID</th><td>{{clickItem.UNAME}}</td>
+			</tr>
+			<tr>
+				<th>UID</th><td>{{clickItem.UID}}</td>
+			</tr>
+			<tr>
+				<th>EMAIL</th><td>{{clickItem.UEMAIL}}</td>
+			</tr>
+			<tr>
+				<th>ORG</th><td>{{clickItem.ORG_NM}}</td>
+			</tr>
+			<tr>
+				<th>DEPT</th><td>{{clickItem.DEPT_NM}}</td>
+			</tr>
+			<tr>
+				<th>DESC</th><td>{{clickItem.DESCRIPTION}}</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div>DB 정보</div>
+					<div>
+						<table>
+							<tbody class="dataTableContent">
+								<tr v-for="(item,index) in clickItemDbList" class="gradeA" :class="(index%2==0?'add':'even')">
+									<td>{{item.VNAME}}</td>
+									<td>{{item.USER_CHK > 0?'Y':'N'}}</td>
+									<td>{{item.MSG_CHK > 0?'Y':'N'}}</td>
+								</tr>
+								<tr v-if="clickItemDbList.length === 0">
+									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 </div>
 <!-- /.row -->
+<style>
+.ui-front { z-index: 2000}
 
+</style>
 <script>
 
 VarsqlAPP.vueServiceBean( {
@@ -111,9 +157,29 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem :{}
 		,selectItem :[]
+		,clickItem :{}
+		,clickItemDbList :[]
 	}
+	
 	,methods:{
-		acceptYn : function(obj){
+		init : function(){
+			var _self =this; 
+			_self.detailDialog = $('#detailInfo').dialog({
+				height: 300
+				,width: 500
+				,modal: true
+				,autoOpen :false
+				,buttons: {
+					Cancel: function() {
+						_self.detailDialog.dialog( "close" );
+					}
+				}
+				,close: function() {
+					_self.detailDialog.dialog( "close" );
+				}
+			});
+		}
+		,acceptYn : function(obj){
 			var _self = this; 
 			var selectItem = _self.selectItem;
 			
@@ -133,7 +199,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/acceptYn'}
+				,url : {gubun:VARSQL.uri.manager, url:'/user/acceptYn'}
 				,success:function (response){
 					_self.search();
 				}
@@ -149,7 +215,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/userList'}
+				url:{gubun:VARSQL.uri.manager, url:'/user/userList'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;
@@ -157,9 +223,26 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
+		// 상세보기
+		,detailView : function(item){
+			var _self = this; 
+			
+			this.$ajax({
+				url:{gubun:VARSQL.uri.manager, url:'/user/userDetail'}
+				,data : item
+				,loadSelector : '#main-content'
+				,success: function(resData) {
+					_self.clickItem =resData.item;
+					_self.clickItemDbList =resData.items;
+					
+					_self.detailDialog.dialog("open");
+				}
+			})
+		}
+		// pasword 초기화
 		,initPassword :function(sItem){
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/initPassword'}
+				url:{gubun:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
 					sItem.INITPW = resData.item;

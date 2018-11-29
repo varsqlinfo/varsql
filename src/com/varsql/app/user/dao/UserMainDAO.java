@@ -194,4 +194,18 @@ public class UserMainDAO extends BaseDAO{
         }
 		return !rollbackFlag;
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserDetailInfo
+	 * @Method 설명 : 사용자 권한 있는 db 정보 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 29. 
+	 * @변경이력  :
+	 * @param userForm
+	 * @return
+	 */
+	public List selectUserDbInfo(String viewid) {
+		return getSqlSession().selectList("userMapper.selectUserDbInfo", viewid);
+	}
 }

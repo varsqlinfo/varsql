@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.manager.dao.ManagerDAO;
 import com.varsql.app.user.beans.PasswordForm;
+import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.UserMainDAO;
 import com.varsql.core.auth.Authority;
 import com.varsql.core.common.util.SecurityUtil;
@@ -33,7 +34,7 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class ManagerServiceImpl{
+public class UserMgmtServiceImpl{
 	
 	@Autowired
 	ManagerDAO manageDAO;
@@ -108,6 +109,25 @@ public class ManagerServiceImpl{
 		passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordInfo));
 		result.setResultCode(userMainDAO.updatePasswordInfo(passwordForm));
 		result.setItemOne(passwordInfo);
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : userDetail
+	 * @Method 설명 : 사용자 정보 상세.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 29. 
+	 * @변경이력  :
+	 * @param userForm
+	 * @return
+	 */
+	public ResponseResult userDetail(UserForm userForm) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemOne(userMainDAO.selectUserDetail(userForm.getViewid()));
+		result.setItemList(userMainDAO.selectUserDbInfo(userForm.getViewid()));
 		
 		return result;
 	}

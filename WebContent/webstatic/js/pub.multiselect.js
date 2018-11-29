@@ -39,7 +39,7 @@ var pluginName = "pubMultiselect"
 		,currPage : 1
 		,selector : '#page_area'
 		,pageNumKey : 'pageNo'
-		,emptyMessage : '드래그 해서 추가하세요.'
+		,emptyMessage : '더블클릭해서 추가하세요'
 	}
 	,itemSelector :'.pub-select-item'
 	,addItemClass :'selected'	// add item class
