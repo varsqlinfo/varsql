@@ -205,7 +205,25 @@ public class UserMainDAO extends BaseDAO{
 	 * @param userForm
 	 * @return
 	 */
-	public List selectUserDbInfo(String viewid) {
-		return getSqlSession().selectList("userMapper.selectUserDbInfo", viewid);
+	public List selectUserDbInfo(ParamMap param) {
+		return getSqlSession().selectList("userMapper.selectUserDbInfo", param);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteUserDbAuth
+	 * @Method 설명 : 사용자 db 권한 삭제. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 30. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public int deleteUserDbAuth(ParamMap param) {
+		return getSqlSession().delete("userMapper.deleteUserDbAuth", param);
+	}
+
+	public int selectDbManagerCheck(ParamMap param) {
+		return getSqlSession().selectOne("userMapper.selectDbManagerCheck", param);
 	}
 }

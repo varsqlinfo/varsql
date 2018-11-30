@@ -12,6 +12,7 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.db.encryption.EncryptionFactory;
+import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.encryption.EncryptDecryptException;
@@ -120,14 +121,42 @@ public class UserMgmtServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 11. 29. 
 	 * @변경이력  :
-	 * @param userForm
+	 * @param param
 	 * @return
 	 */
-	public ResponseResult userDetail(UserForm userForm) {
+	public ResponseResult userDetail(ParamMap param) {
 		ResponseResult result = new ResponseResult();
 		
-		result.setItemOne(userMainDAO.selectUserDetail(userForm.getViewid()));
-		result.setItemList(userMainDAO.selectUserDbInfo(userForm.getViewid()));
+		result.setItemOne(userMainDAO.selectUserDetail(param.getString("viewid")));
+		result.setItemList(userMainDAO.selectUserDbInfo(param));
+		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
+		
+		return result;
+	}
+
+	/**
+	 * 
+	 * @Method Name  : removeAuth
+	 * @Method 설명 : 권한 지우기
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 30. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public ResponseResult removeAuth(ParamMap param) {
+		ResponseResult result = new ResponseResult();
+		
+		if(SecurityUtil.isAdmin()){
+			result.setItemOne(userMainDAO.deleteUserDbAuth(param));
+		}else{
+			param.put("userId", SecurityUtil.loginInfo().getUid());
+			
+			int cnt = userMainDAO.selectDbManagerCheck(param);
+			if(cnt > 0){
+				result.setItemOne(userMainDAO.deleteUserDbAuth(param));
+			}
+		}
 		
 		return result;
 	}

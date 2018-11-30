@@ -22,14 +22,15 @@
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/pub.ep.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
@@ -37,6 +38,6 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
+
 
 

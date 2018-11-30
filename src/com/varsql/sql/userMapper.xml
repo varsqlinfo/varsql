@@ -21,7 +21,7 @@
 	</select>
 	
 	<!-- 사용자 view id max val -->
-	<select id="userMapper.selectUserMaxVal" resultType="java.lang.String">
+	<select id="userMapper.selectUserMaxVal" resultType="string">
 		select max(viewid)as maxval from VTUSER 
 	</select>
 	
@@ -90,7 +90,7 @@
 	</update>
 	
 	<!-- qna 총 수 -->
-	<select id="userMapper.selectQnaTotalCnt" parameterType="java.util.Map" resultType="int">
+	<select id="userMapper.selectQnaTotalCnt" parameterType="map" resultType="int">
 		select count(1) as totalcnt
 		from VTQNA a
 		where REG_ID =#{uid}
@@ -99,7 +99,7 @@
 	</select>
 	
 	<!-- qna 목록보기 -->
-	<select id="userMapper.selectQna" parameterType="java.util.Map" resultType="dataCommonVO">
+	<select id="userMapper.selectQna" parameterType="map" resultType="dataCommonVO">
 		select a.*, a.REG_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
 		from VTQNA a
 		where REG_ID =#{uid}
@@ -109,7 +109,7 @@
 	</select>
 	
 	<!-- qna 상세보기 -->
-	<select id="userMapper.selectDetailQna" parameterType="java.util.Map" resultType="dataCommonVO">
+	<select id="userMapper.selectDetailQna" parameterType="map" resultType="dataCommonVO">
 		select a.*, a.REG_DT as CHAR_CRE_DT 
 		from VTQNA a
 		where DEL_YN !='Y'
@@ -117,11 +117,11 @@
 	</select>
 	
 	<!-- qna 상세보기 -->
-	<select id="userMapper.selectQnaMaxVal" parameterType="java.util.Map" resultType="java.lang.String">
+	<select id="userMapper.selectQnaMaxVal" parameterType="map" resultType="string">
 		select max(QNAID)as MAXVAL from VTQNA
 	</select>
 	
-	<insert id="userMapper.insertQnaInfo" parameterType="java.util.Map">
+	<insert id="userMapper.insertQnaInfo" parameterType="map">
 		insert  into VTQNA (
 			QNAID 
 			, TITLE 
@@ -142,7 +142,7 @@
 		)
 	</insert>
 	
-	<update id="userMapper.updateQnaInfo" parameterType="java.util.Map">
+	<update id="userMapper.updateQnaInfo" parameterType="map">
 		update VTQNA
 		set
 			TITLE =#{title}
@@ -150,14 +150,14 @@
 		where QNAID=#{qnaid}
 	</update>
 	
-	<update id="userMapper.deleteQnaInfo" parameterType="java.util.Map">
+	<update id="userMapper.deleteQnaInfo" parameterType="map">
 		update VTQNA 
 		set
 			DEL_YN ='Y'
 		where QNAID=#{qnaid}
 	</update>
 	
-	<select id="userMapper.selectUserDbUseList" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="userMapper.selectUserDbUseList" parameterType="map" resultType="map">
 		select  VCONNID, VTYPE, VNAME
 		from VTCONNECTION a
 		where a.USE_YN = 'Y'
@@ -292,7 +292,7 @@
 	</delete>
 	
 	<!-- 메시지 정보 보내기  -->
-	<insert id="userMapper.insertSendSqlInfo" parameterType="java.util.Map">
+	<insert id="userMapper.insertSendSqlInfo" parameterType="map">
 		insert  into VTMEMO (
 			MEMO_ID
 			, MEMO_TITLE
@@ -310,7 +310,7 @@
 	</insert>
 	
 	<!-- 메시지 보낸 사람과 받는 사람 등록. -->
-	<insert id="userMapper.insertSendUserInfo" parameterType="java.util.Map">
+	<insert id="userMapper.insertSendUserInfo" parameterType="map">
 		insert  into VTMEMO_USER (
 			MEMO_ID
 			,SEND_ID
@@ -333,18 +333,48 @@
 	</update>
 	
 	<!-- select user db info -->
-	<select id="userMapper.selectUserDbInfo" parameterType="string" resultType="map">
-		select b.* , a.VNAME from VTCONNECTION a 
-		,(
-			SELECT VCONNID
-				,SUM(case role_type when 'U' then 1 else 0 end) USER_CHK
-				,SUM(case role_type when 'M' then 1 else 0 end) MSG_CHK
-			from VTDATABASE_ROLE 
-			where VIEWID = #{viewid}
-			group by VCONNID
-		)b 
+	<select id="userMapper.selectUserDbInfo" parameterType="map" resultType="map">
+		select b.* , a.VNAME , 
+			(select count(1) from VTDATABASE_ROLE subt 
+			 where subt.VCONNID = a.VCONNID and role_type='M' 
+			 and subt.VIEWID = #{userId} 
+			) MANAGER_CNT
+		from VTCONNECTION a 
+			,(
+				SELECT VCONNID
+					,SUM(case role_type when 'U' then 1 else 0 end) USER_CHK
+					,SUM(case role_type when 'M' then 1 else 0 end) MSG_CHK
+					, max(VIEWID) as VIEWID
+				from VTDATABASE_ROLE 
+				where VIEWID = #{viewid}
+				group by VCONNID
+			)b 
 		where a.VCONNID = b.VCONNID
 		and a.USE_YN = 'Y'
 	</select>
 	
+	<!-- db 사용자 권한 제거. -->
+	<delete id="userMapper.deleteUserDbAuth" parameterType="map">
+		delete from VTDATABASE_ROLE
+		where 1=1
+		<choose>
+			<when test='"M".equalsIgnoreCase(mode)'>
+				and ROLE_TYPE = 'M'
+			</when>
+			<otherwise>
+				and ROLE_TYPE = 'U'
+			</otherwise>
+		</choose>
+		and VCONNID = #{vconnid}
+		and VIEWID  = #{viewid}
+	</delete>
+	
+	<!-- db manager check -->
+	<select id="userMapper.selectDbManagerCheck" parameterType="map" resultType="int">
+		select count(1)  cnt
+		from VTDATABASE_ROLE 
+		where VCONNID = #{vconnid} 
+		and role_type='M' 
+		and VIEWID = #{userId} 
+	</select>
 </mapper>

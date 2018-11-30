@@ -99,51 +99,128 @@
 	<!-- /.col-lg-12 -->
 	
 	<div id="detailInfo" class="display-off" title="상세보기">
-		<table style="width:100%;">
-			<tr>
-				<th>ID</th><td>{{clickItem.UNAME}}</td>
-			</tr>
-			<tr>
-				<th>UID</th><td>{{clickItem.UID}}</td>
-			</tr>
-			<tr>
-				<th>EMAIL</th><td>{{clickItem.UEMAIL}}</td>
-			</tr>
-			<tr>
-				<th>ORG</th><td>{{clickItem.ORG_NM}}</td>
-			</tr>
-			<tr>
-				<th>DEPT</th><td>{{clickItem.DEPT_NM}}</td>
-			</tr>
-			<tr>
-				<th>DESC</th><td>{{clickItem.DESCRIPTION}}</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<div>DB 정보</div>
-					<div>
-						<table>
-							<tbody class="dataTableContent">
-								<tr v-for="(item,index) in clickItemDbList" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td>{{item.VNAME}}</td>
-									<td>{{item.USER_CHK > 0?'Y':'N'}}</td>
-									<td>{{item.MSG_CHK > 0?'Y':'N'}}</td>
-								</tr>
-								<tr v-if="clickItemDbList.length === 0">
-									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</td>
-			</tr>
+		<table class="user-detail-info table table-striped table-bordered table-hover dataTable no-footer">
+			<colgroup>
+				<col style="width:120px">
+				<col style="width:*">
+			</colgroup>
+			<tbody class="dataTableContent">
+				<tr>
+					<th>ID</th><td>{{clickItem.UNAME}}</td>
+				</tr>
+				<tr>
+					<th>UID</th><td>{{clickItem.UID}}</td>
+				</tr>
+				<tr>
+					<th>EMAIL</th><td>{{clickItem.UEMAIL}}</td>
+				</tr>
+				<tr>
+					<th>ORG</th><td>{{clickItem.ORG_NM}}</td>
+				</tr>
+				<tr>
+					<th>DEPT</th><td>{{clickItem.DEPT_NM}}</td>
+				</tr>
+				<tr>
+					<th>DESC</th><td>{{clickItem.DESCRIPTION}}</td>
+				</tr>
+				<tr>
+					<th valign="top" style="vertical-align: top;">
+						<div>권한 있는 DB 목록</div>
+					</th>
+					<td style="padding:0px;">
+						<div>
+							<table class="fixed_headers" style="background:#ffffff;">
+								<thead>
+									<tr>
+										<th>DB</th>
+										<th>사용자 </th>
+										<th>매니저</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(item,index) in clickItemDbList">
+										<td><div class="text-ellipsis ellipsis5" style="width:150px;">{{item.VNAME}}</div></td>
+										<td class="align-center">
+											<template v-if="item.USER_CHK > 0 && (item.MANAGER_CNT > 0 || clickItemCustom.isAdmin) ">
+												<button type="button" @click="removeAuth(item, 'U')">제거</button>
+											</template>
+											<template v-else-if="item.USER_CHK > 0">
+												Y
+											</template>
+											<template v-else>N</template>
+										</td>
+										<td class="align-center">
+											<template v-if="clickItemCustom.isAdmin && item.MSG_CHK > 0">
+												<button type="button" @click="removeAuth(item, 'M')">제거</button>
+											</template>
+											<template v-else-if="item.MSG_CHK> 0">
+												Y
+											</template>
+											<template v-else>N</template>
+										</td>
+									</tr>
+									<tr v-if="clickItemDbList.length === 0">
+										<td colspan="10" style="width:100%;"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
-
 </div>
 <!-- /.row -->
 <style>
 .ui-front { z-index: 2000}
+
+.user-detail-info {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0px;
+}
+#detailInfo{
+	overflow:hidden;
+}
+
+.fixed_headers {
+	width: 350px;
+	table-layout: fixed;
+}
+.fixed_headers th {
+	text-align:center;
+}
+.fixed_headers th,
+.fixed_headers td {
+	padding: 5px;
+	border :1px solid #dddddd;
+}
+.fixed_headers td:nth-child(1),
+.fixed_headers th:nth-child(1) {
+	min-width: 160px;
+}
+.fixed_headers td:nth-child(2),
+.fixed_headers th:nth-child(2) {
+	min-width: 95px;
+}
+.fixed_headers td:nth-child(3),
+.fixed_headers th:nth-child(3) {
+	width: 95px;
+}
+.fixed_headers thead {
+	background-color: #e1e1e1;
+    color: #090909;
+}
+.fixed_headers thead tr {
+	display: block;
+	position: relative;
+}
+.fixed_headers tbody {
+	display: block;
+	overflow: auto;
+	height: 100px;
+}
 
 </style>
 <script>
@@ -165,7 +242,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self =this; 
 			_self.detailDialog = $('#detailInfo').dialog({
-				height: 300
+				height: 440
 				,width: 500
 				,modal: true
 				,autoOpen :false
@@ -234,6 +311,7 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					_self.clickItem =resData.item;
 					_self.clickItemDbList =resData.items;
+					_self.clickItemCustom =resData.customs;
 					
 					_self.detailDialog.dialog("open");
 				}
@@ -252,6 +330,34 @@ VarsqlAPP.vueServiceBean( {
 					}, 5000);
 					
 					alert('변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.');
+				}
+			})
+		}
+		,removeAuth : function (item, mode){
+			var confirmMsg =this.clickItem.UNAME +'님의 ['+item.VNAME+']'; 
+			if(mode=='M'){
+				confirmMsg+=' 매니저 권한을 삭제 하시겠습니까?';
+			}else{
+				confirmMsg+=' 사용자 권한을 삭제 하시겠습니까?';
+			}
+			
+			if(!confirm(confirmMsg)){
+				return ; 
+			}
+			
+			var param = VARSQL.util.objectMerge({},item);
+			param.mode = mode; 
+			this.$ajax({
+				url:{gubun:VARSQL.uri.manager, url:'/user/removeAuth'}
+				,data : param
+				,success: function(resData) {
+					if(resData.item > 0){
+						if(mode=='M'){
+							item.MSG_CHK = 0;
+						}else{
+							item.USER_CHK = 0;
+						}
+					}
 				}
 			})
 		}
