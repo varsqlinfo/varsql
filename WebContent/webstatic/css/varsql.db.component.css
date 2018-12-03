@@ -175,6 +175,9 @@
 	display:block;
 }
 
+.CodeMirror-hints {
+    z-index: 1000;
+}
 .varsql-sqleditor-area .sql-parameter-area input{
 	width:100%;
 }	

@@ -16,6 +16,7 @@ import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.dao.AdminDAO;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
+import com.varsql.common.util.StringUtil;
 import com.varsql.core.common.util.CommUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
@@ -161,7 +162,7 @@ public class AdminServiceImpl{
 		
 		vtConnection.setUserId(SecurityUtil.loginId());
 		
-		if("".equals(vtConnection.getVconnid())){
+		if(vtConnection.getVconnid()==null || "".equals(StringUtil.allTrim(vtConnection.getVconnid()))){
 			String vconnid = adminDAO.selectVtconnectionMaxVal();
 			try{
 				vconnid=String.format("%05d", Integer.parseInt(vconnid)+1);

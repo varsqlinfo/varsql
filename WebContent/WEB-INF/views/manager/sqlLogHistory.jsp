@@ -51,6 +51,7 @@
 								<col style="width:120px;">
 								<col style="width:130px;">
 								<col style="width:50px;">
+								<col style="width:50px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
@@ -58,16 +59,25 @@
 									<th class="text-center"><spring:message	code="id" /></th>
 									<th class="text-center"><spring:message	code="ip" /></th>
 									<th class="text-center"><spring:message	code="std_time" /><br><spring:message code="end_time" /></th>
+									<th class="text-center">결과</th>
 									<th class="text-center"><spring:message	code="manage.log.delay" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
-								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
+								<tr v-for="(item,index) in gridData" class="gradeA" :class="(item.ERROR_LOG && item.ERROR_LOG != '')?'error-row':(index%2==0?'add':'even')">
 									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis ellipsis10">{{item.LOG_SQL}}</div></a></td>
 									<td :title="item.U_NM_ID"><div class="text-ellipsis ellipsis5">{{item.U_NM_ID}}</div></td>
 									<td :title="item.USR_IP"><div class="text-ellipsis ellipsis5">{{item.USR_IP}}</div></td>
 									<td>
 										{{item.VIEW_STARTDT}}<br>{{item.VIEW_ENDDT}}
+									</td>
+									<td>
+										<template v-if="(item.ERROR_LOG && item.ERROR_LOG != '')">
+											<div class="text-center"><i class="fa fa-close"></i></div>
+										</template>
+										<template v-else>
+											<div class="text-center"><i class="fa fa-check"></i></div>
+										</template>
 									</td>
 									<td>{{item.DELAY_TIME}}</td>
 								</tr>

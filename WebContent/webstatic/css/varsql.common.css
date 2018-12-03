@@ -51,6 +51,10 @@ body {
 	font-weight: bold;
 }
 
+table>tbody>tr.error-row>td, table>tbody>tr.error-row>th {
+    background: #f7d5d5 !important;
+}
+
 .ui-widget-overlay {
     background: #aaaaaa;
     opacity: .3;

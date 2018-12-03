@@ -160,7 +160,7 @@
 										</td>
 									</tr>
 									<tr v-if="clickItemDbList.length === 0">
-										<td colspan="10" style="width:100%;"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+										<td colspan="10" style="width:100%;min-width: 345px;border: 0px;"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 									</tr>
 								</tbody>
 							</table>

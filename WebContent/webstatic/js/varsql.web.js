@@ -828,6 +828,12 @@ _$base.util = {
 		for(b=i=0; c=s.charCodeAt(i++); b+=c >>11?2:c>>7?2:1);
 		return b;
 	}
+	
+	// camel 변환
+	,convertCamel : _fnConvertCamel
+	,convertUnderscoreCase : _fnConvertUnderscoreCase
+	,toLowerCase: _fnToLowerCase
+	,toUpperCase : _fnToUpperCase
 }
 
 /**
@@ -1028,6 +1034,37 @@ function contains(arr , element) {
 		}
 	}
 	return false;
+}
+
+//camel 변환
+function _fnConvertCamel(camelStr){
+	
+    if(camelStr == '') {
+        return camelStr;
+    }
+    camelStr = _fnToLowerCase(camelStr);
+    // conversion
+    var returnStr = camelStr.replace(/_(\w)/g, function(word) {
+        return _fnToUpperCase(word);
+    });
+    returnStr = returnStr.replace(/_/g, "");
+    
+    return returnStr; 
+}
+//camel case -> underscorecase 변환
+function _fnConvertUnderscoreCase(str){
+	if(str == '') {
+		return str;
+	}
+	return str.split(/(?=[A-Z])/).join('_').toUpperCase(); 
+}
+
+function _fnToLowerCase(str){
+	return (str || '').toLowerCase()
+}
+
+function _fnToUpperCase(str){
+	return (str || '').toUpperCase()
 }
 
 window.VARSQL = _$base; 
