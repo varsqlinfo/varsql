@@ -17,6 +17,7 @@
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 
+<script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
 
@@ -32,8 +33,11 @@
 
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
+
+
 
 
 

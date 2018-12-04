@@ -208,6 +208,10 @@ VarsqlAPP.vueServiceBean = function (opts){
 	
 	opts = VARSQL.util.objectMerge({},defaultOpt,opts);
 	
+	if(opts.validateCheck ===true){
+		Vue.use(VeeValidate)
+	}
+	
 	var vueObj = new Vue(opts);
 	
 	$(opts.el).removeClass('display-off')

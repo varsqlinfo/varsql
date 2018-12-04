@@ -64,22 +64,25 @@
 							</div>
 						</div>
 						<div id="warningMsgDiv"></div>
-						<div class="form-group">
+						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" v-model="detailItem.VNAME">
+								<input type="text" v-model="detailItem.VNAME" v-validate="'required'" name="NAME" class="form-control" />
+								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" :class="errors.has('SCHEMA') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" id="vdbschema" name="vdbschema" v-model="detailItem.VDBSCHEMA">
+								<input type="text" v-model="detailItem.VDBSCHEMA" v-validate="'required'" name="SCHEMA" class="form-control" />
+								<div v-if="errors.has('SCHEMA')" class="help-block">{{ errors.first('SCHEMA') }}</div>
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" :class="errors.has('URL') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" id="vurl" name="vurl" value="" v-model="detailItem.VURL">
+								<input type="text" v-model="detailItem.VURL" v-validate="'required'" name="URL" class="form-control" />
+								<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
 							</div>
 						</div>
 						<div class="form-group">
@@ -174,9 +177,9 @@
 <!-- /.row -->
 
 <script>
-
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
+	,validateCheck : true 
 	,data: {
 		list_count :10
 		,searchVal : ''
@@ -236,6 +239,9 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,save : function (mode){
 			var _this = this; 
+			var isValid = _this.isValidate();
+			
+			
 			
 			var poolInitVal = 'N';
 			if(mode=='poolInit'){
@@ -374,6 +380,11 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
+		,isValidate : function (e) {
+			this.$validator.validateAll().then(function (result){
+				return result; 
+			});
+        }
 	}
 });
 </script>

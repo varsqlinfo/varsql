@@ -19,6 +19,7 @@
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css" rel="stylesheet" type="text/css">
 
+<script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
