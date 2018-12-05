@@ -43,7 +43,7 @@ public class VtconnectionOption{
 	
 	@NotNull
 	@Range(min=-1, max=100000000)
-	private Integer exportCount;
+	private Integer exportcount;
 	
 	@Size(max=1000)
 	private String vquery;
@@ -76,7 +76,7 @@ public class VtconnectionOption{
 		return maxActive;
 	}
 
-	public void setMaxActive(int maxActive) {
+	public void setMaxActive(Integer maxActive) {
 		this.maxActive = maxActive;
 	}
 
@@ -84,7 +84,7 @@ public class VtconnectionOption{
 		return minIdle;
 	}
 
-	public void setMinIdle(int minIdle) {
+	public void setMinIdle(Integer minIdle) {
 		this.minIdle = minIdle;
 	}
 
@@ -92,23 +92,23 @@ public class VtconnectionOption{
 		return timeout;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
 	}
 
-	public int getExportCount() {
-		return exportCount;
-	}
-
-	public void setExportCount(int exportCount) {
-		this.exportCount = exportCount;
-	}
-	
 	public String getVquery(){
 		return this.vquery;
 	}
 	public void setVquery(String vquery){
 		this.vquery=vquery;
+	}
+
+	public Integer getExportcount() {
+		return exportcount;
+	}
+
+	public void setExportcount(Integer exportcount) {
+		this.exportcount = exportcount;
 	}
 
 }

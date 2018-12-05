@@ -48,11 +48,13 @@ public class Vtconnection{
 	@Size(max=500)
 	private String vpw;
 
-	private int vdbversion;
+	private String vdbversion;
 
 	private String userId;
 	
 	private String pollinit;
+	
+	private String useYn;
 
 	public String getVconnid(){
 		return this.vconnid;
@@ -102,10 +104,10 @@ public class Vtconnection{
 	public void setVpw(String vpw){
 		this.vpw=vpw;
 	}
-	public int getVdbversion(){
+	public String getVdbversion(){
 		return this.vdbversion;
 	}
-	public void setVdbversion(int vdbversion){
+	public void setVdbversion(String vdbversion){
 		this.vdbversion=vdbversion;
 	}
 	
@@ -120,6 +122,12 @@ public class Vtconnection{
 	}
 	public void setPollinit(String pollinit) {
 		this.pollinit = pollinit;
+	}
+	public String getUseYn() {
+		return useYn;
+	}
+	public void setUseYn(String useYn) {
+		this.useYn = useYn;
 	}
 
 }

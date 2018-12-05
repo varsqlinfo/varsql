@@ -197,6 +197,7 @@
 <entry key="admin.form.db.vurl">Url</entry>
 <entry key="admin.form.db.databasename">스키마명</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
+<entry key="admin.form.db.useyn">사용여부</entry>
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>

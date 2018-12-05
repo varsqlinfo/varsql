@@ -9,23 +9,41 @@
 	<select id="adminMapper.selectDBTotalCnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
 		from VTCONNECTION 
-		where USE_YN = 'Y'
+		where DEL_YN = 'N'
 		and (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
 	</select>
 	
 	<select id="adminMapper.selectDbList" parameterType="searchParameter" resultType="hashmap">
-		select * 
+		select 
+			VCONNID
+			, VNAME
 		from VTCONNECTION 
-		where USE_YN = 'Y' 
+		where DEL_YN = 'N'
 		AND (VNAME like '%'||#{keyword}||'%' or VURL like '%'||#{keyword}||'%') 
 		order by VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<!-- db connection 정보 상세보기. -->	
 	<select id="adminMapper.selectDetailObject" parameterType="map" resultType="dataCommonVO">
-		select * 
+		select 
+			VCONNID
+			, VNAME
+			, VDBSCHEMA
+			, VURL
+			, VDRIVER
+			, '' as VPW
+			, VTYPE
+			, VQUERY
+			, VID
+			, MAX_ACTIVE
+			, MIN_IDLE
+			, TIMEOUT
+			, EXPORTCOUNT
+			, VCONNOPT
+			, VPOOLOPT
+			, VDBVERSION 
 		from VTCONNECTION 
-		where USE_YN = 'Y'
+		where DEL_YN = 'N'
 		AND VCONNID =#{vconnid}
 	</select>
 	
@@ -45,11 +63,11 @@
 			,VTYPE 
 			,VID 
 			,VPW
+			,USE_YN
 			,REG_ID
 			,REG_DT
 			,UPD_ID
 			,UPD_DT
-			,USE_YN
 		)values (
 			#{vconnid}
 			,#{vname}
@@ -59,11 +77,11 @@
 			,#{vtype}
 			,#{vid}
 			,#{vpw}
+			,#{useYn}
 			,#{userId}
 			,CURRENT TIMESTAMP
 			,#{userId}
 			,CURRENT TIMESTAMP
-			,'Y'
 		)
 	</insert>
 	
@@ -77,7 +95,10 @@
 			, VDRIVER =#{vdriver} 
 			, VTYPE =#{vtype}
 			, VID =#{vid}
-			, VPW =#{vpw}
+			<if  test='null != vpw and !"".equals(vpw)'>
+				, VPW =#{vpw}
+			</if>
+			, USE_YN = #{useYn} 
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconnid}
@@ -91,7 +112,7 @@
  			, MAX_ACTIVE = #{maxActive}
  			, MIN_IDLE = #{minIdle}
  			, TIMEOUT = #{timeout}
- 			, EXPORTCOUNT = #{exportCount}
+ 			, EXPORTCOUNT = #{exportcount}
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconnid}
@@ -102,6 +123,7 @@
 		update VTCONNECTION
  		set 
  			USE_YN = 'N'
+ 			,DEL_YN = 'Y'
  			,VPW ='empty'
 		where VCONNID =#{vconnid}
 	</delete>

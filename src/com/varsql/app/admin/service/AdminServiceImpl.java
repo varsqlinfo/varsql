@@ -16,8 +16,6 @@ import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.dao.AdminDAO;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
-import com.varsql.common.util.StringUtil;
-import com.varsql.core.common.util.CommUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
@@ -25,6 +23,7 @@ import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
+import com.vartech.common.utils.StringUtil;
 import com.vartech.common.utils.VartechUtils;
 
 /**

@@ -8,6 +8,10 @@
 .view-area.on{
 	display:block;
 }
+.list-group-item a{
+	color : #000;
+}
+
 </style>
 <!-- Page Heading -->
 <div class="row">
@@ -30,11 +34,16 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="list-group" id="dbinfolist">
-					<a href="javascript:;" class="list-group-item" v-for="(item,index) in gridData">
-						<span class="clickItem" @click="itemView(item,'view')">{{item.VNAME}}</span>
-	    				<span class="clickItem pull-right glyphicon glyphicon-pencil" @click="itemView(item,'opt')"  style="width:80px;">옵션</span>
-	    			</a>
-	    			
+					<template v-for="(item,index) in gridData">
+						<div class="list-group-item">
+							<a href="javascript:;" @click="itemView(item,'view')">
+								<span class="clickItem" >{{item.VNAME}}</span>
+							</a>
+							<a href="javascript:;" @click="itemView(item,'opt')" style="float:right;">
+			    				<span class="clickItem pull-right glyphicon glyphicon-pencil" style="width:60px;">옵션</span>
+			    			</a>
+		    			</div>
+	    			</template>
 	    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
 				</div>
 				
@@ -86,6 +95,35 @@
 							</div>
 						</div>
 						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" id="vid" name="vid" value="" v-model="detailItem.VID">
+							</div>
+						</div>
+						
+						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
+							<div class="col-sm-8">
+								<input v-model="detailItem.VPW" v-validate="" name="password" type="password" class="form-control" placeholder="Password" ref="password">
+								<input v-validate="'required|confirmed:password'" name="password_confirmation" type="password" class="form-control" placeholder="Password, Again" data-vv-as="password">
+							    <div class="help-block" v-if="errors.has('password')">
+							      {{ errors.first('password') }}
+							    </div>
+							    <div class="help-block" v-if="errors.has('password_confirmation')">
+							      {{ errors.first('password_confirmation') }}
+							    </div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.useyn" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.USE_YN" checked>Y</label>
+								<label><input type="radio" name="useyn" value="N" v-model="detailItem.USE_YN" >N</label>
+							</div>
+						</div>
+						
+						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
 							<div class="col-sm-8">
 								<select class="form-control text required" v-model="detailItem.VTYPE" @change="dbDriverLoad(detailItem.VTYPE)">
@@ -100,22 +138,9 @@
 							<div class="col-sm-8">
 								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.VDRIVER">
 									<template href="javascript:;" class="list-group-item" v-for="(item,index) in driverList">
-										<option :value="item.DRIVER_ID" data-driver="{{item.DBDRIVER}}" selected="{{detailItem.VDRIVER==item.DRIVER_ID?true:false}}">{{item.DRIVER_DESC}}({{item.DBDRIVER}})</option>
+										<option :value="item.DRIVER_ID" :data-driver="item.DBDRIVER" selected="{{detailItem.VDRIVER==item.DRIVER_ID?true:(detailItem.VDRIVER==''&& index==0?true:false)}}">{{item.DRIVER_DESC}}({{item.DBDRIVER}}) {{detailItem.VDRIVER==item.DRIVER_ID?true:false}}</option>
 					    			</template>
 								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
-							<div class="col-sm-8">
-								<input class="form-control text required" id="vid" name="vid" value="" v-model="detailItem.VID">
-							</div>
-						</div>
-						
-						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
-							<div class="col-sm-8">
-								<input class="form-control text required" type="password" id="vpw" name="vpw" value="" v-model="detailItem.VPW">
 							</div>
 						</div>
 					</form>
@@ -127,7 +152,7 @@
 								<div class="pull-right">
 									<button type="button" class="btn btn-default" @click="optionSave()"><spring:message code="btn.save"/></button>
 									<button type="button" class="btn btn-default" @click="optionSave('poolInit')"><spring:message code="btn.save.andpoolnit"/></button>
-									<button type="button" class="btn btn-default" @click="viewAreaShow('opt')"><spring:message code="btn.close"/></button>
+									<button type="button" class="btn btn-default" @click="viewArea('view')"><spring:message code="btn.close"/></button>
 								</div>
 							</div>
 						</div>
@@ -191,7 +216,7 @@ VarsqlAPP.vueServiceBean( {
 	}
 	,methods:{
 		init : function(){
-			
+			this.setDetailItem();
 		}
 		,search : function(no){
 			var _self = this; 
@@ -213,7 +238,7 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 상세보기
 		,itemView : function(item, mode){
-			var _self = this; 
+			var _self = this;
 			
 			var param = {
 				vconnid : item.VCONNID
@@ -228,43 +253,65 @@ VarsqlAPP.vueServiceBean( {
 			this.$ajax({
 				url : {gubun:VARSQL.uri.admin, url:'/main/dbDetail'}
 				,data : param
-				,loadSelector : '#main-content'
+				,loadSelector : '#varsqlVueArea'
 				,success: function(resData) {
-					_self.detailItem =resData.item;
+					var item  =resData.item; 
+					
+					if(item.VTYPE != _self.detailItem.VTYPE){
+						_self.dbDriverLoad(item.VTYPE);
+					}
+					
+					_self.setDetailItem(item);
 				}
 			})
 		}
 		,setDetailItem : function (item){
-			this.detailItem = item; 
+			if(VARSQL.isUndefined(item)){
+				this.detailItem ={
+					EXPORTCOUNT: 1000
+					,MAX_ACTIVE: 5
+					,MIN_IDLE: 2
+					,TIMEOUT: 18000
+					,VDBSCHEMA: ""
+					,VDRIVER: ""
+					,USE_YN: "Y"
+					,VID: ""
+					,VNAME: ""
+					,VPOOLOPT: ""
+					,VPW: ""
+					,VQUERY: ""
+					,VTYPE: ""
+					,VURL: ""
+				}
+			}else{
+				this.detailItem = item;	
+			}
+			 
 		}
 		,save : function (mode){
 			var _this = this; 
-			var isValid = _this.isValidate();
 			
-			
-			
-			var poolInitVal = 'N';
-			if(mode=='poolInit'){
-				if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
-				poolInitVal = 'Y';
-			}
-			
-			var param = {};
-			
-			var saveItem = this.detailItem; 
-			for(var key in saveItem){
-				param[VARSQL.util.convertCamel(key)] = saveItem[key];
-			}
-			saveItem.poolInit = poolInitVal;
-			
-			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbSave'}
-				,data : param 
-				,success:function (resData){
-					if(VARSQL.req.validationCheck(resData)){
-						_this.search();
-						_this.setDetailItem({});
+			this.$validator.validateAll().then(function (result){
+				if(result){
+					var poolInitVal = 'N';
+					if(mode=='poolInit'){
+						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
+						poolInitVal = 'Y';
 					}
+					
+					var param = _this.getParamVal();
+					param.poolInit = poolInitVal;
+					
+					_this.$ajax({
+						url : {gubun:VARSQL.uri.admin, url:'/main/dbSave'}
+						,data : param 
+						,success:function (resData){
+							if(VARSQL.req.validationCheck(resData)){
+								_this.search();
+								_this.setDetailItem();
+							}
+						}
+					});
 				}
 			});
 		}
@@ -272,26 +319,38 @@ VarsqlAPP.vueServiceBean( {
 		,optionSave : function (mode){
 			var _this = this; 
 			
-			var poolInit = 'N';
-			if(mode=='poolInit'){
-				if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ;
-				poolInit = 'Y';
-			}
-			
-			var param = VARSQL.util.objectMerge({},this.detailItem);
-			param.mode = poolInit; 
-			
-			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbOptSave'}
-				,data : param 
-				,success:function (resData){
-					if(VARSQL.req.validationCheck(resData)){
-						alert('저장되었습니다');
-						_this.search();
-						_this.setDetailItem({});
+			this.$validator.validateAll().then(function (result){
+				if(result){
+					var poolInitVal = 'N';
+					if(mode=='poolInit'){
+						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
+						poolInitVal = 'Y';
 					}
+					
+					var param = _this.getParamVal();
+					
+					param.poolInit = poolInitVal;
+					
+					_this.$ajax({
+						url : {gubun:VARSQL.uri.admin, url:'/main/dbOptSave'}
+						,data : param 
+						,success:function (resData){
+							if(VARSQL.req.validationCheck(resData)){
+								_this.search();
+								_this.setDetailItem();
+							}
+						}
+					});
 				}
 			});
+		}
+		,getParamVal : function (){
+			var param = {};
+			var saveItem = this.detailItem; 
+			for(var key in saveItem){
+				param[VARSQL.util.convertCamel(key)] = saveItem[key];
+			}
+			return param; 
 		}
 		// 정보 삭제 .
 		,deleteInfo : function (){
@@ -312,7 +371,7 @@ VarsqlAPP.vueServiceBean( {
 					vconnid : _this.detailItem.VCONNID
 				}
 				,success:function (resData){
-					_this.setDetailItem({});
+					_this.setDetailItem();
 					_this.search();
 				}
 			});
@@ -322,7 +381,7 @@ VarsqlAPP.vueServiceBean( {
 			this.viewMode = mode;
 		}
 		,connectionCheck : function (){
-			var param =  $("#addForm").serializeJSON();
+			var param = this.getParamVal();
 			
 			param.vdriver = $('#vdriver option:selected').attr('data-driver');
 			
@@ -347,8 +406,12 @@ VarsqlAPP.vueServiceBean( {
 			var param = {
 				dbtype :val
 			}; 
-			VARSQL.req.ajax({
-				
+			
+			if(VARSQL.isUndefined(_this.detailItem.VCONNID) || _this.detailItem.VCONNID==''){
+				_this.detailItem.VDRIVER = '';
+			}
+			
+			this.$ajax({
 				url : {gubun:VARSQL.uri.admin, url:'/main/dbDriver'}
 				,data : param 
 				,success:function (resData){
@@ -361,30 +424,16 @@ VarsqlAPP.vueServiceBean( {
 		    			return ; 
 		    		}
 		    		
+		    		if(_this.detailItem.VDRIVER==''){
+		    			_this.detailItem.VDRIVER = resData.items[0].DRIVER_ID
+		    		}
+		    		
 		    		_this.driverList = result;
 		    		
 		    		return ; 
-		    		
-		    		var strHtm = [];
-		    		var item;
-		    		for(var i = 0 ;i < resultLen; i ++){
-		    			item = result[i];
-		    			var selected = '';
-		    			if(_this.detailItem.VDRIVER ==item.DRIVER_ID){
-		    				selected = 'selected';
-		    			}
-		    			strHtm.push('<option value="'+item.DRIVER_ID+'" data-driver="'+item.DBDRIVER+'" '+selected+'>'+item.DRIVER_DESC+'('+item.DBDRIVER+')</option>');
-		    		}
-		    		
-		    		$('#vdriver').empty().html(strHtm.join(''));
 				}
 			});
 		}
-		,isValidate : function (e) {
-			this.$validator.validateAll().then(function (result){
-				return result; 
-			});
-        }
 	}
 });
 </script>
