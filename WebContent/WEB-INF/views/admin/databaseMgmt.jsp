@@ -104,8 +104,8 @@
 						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
-								<input v-model="detailItem.VPW" v-validate="" name="password" type="password" class="form-control" placeholder="Password" ref="password">
-								<input v-validate="'required|confirmed:password'" name="password_confirmation" type="password" class="form-control" placeholder="Password, Again" data-vv-as="password">
+								<input v-model="detailItem.VPW" v-validate="'confirmed:password_confirmation'" name="password" type="password" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
+								<input v-validate="" name="password_confirmation" type="password" class="form-control" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 							    <div class="help-block" v-if="errors.has('password')">
 							      {{ errors.first('password') }}
 							    </div>

@@ -137,7 +137,6 @@
 <entry key="btn.toolbar.format">쿼리 정리 </entry>
 <entry key="btn.toolbar.send">메시지보내기 </entry>
 <entry key="btn.toolbar.parameter">변수 </entry>
-<entry key="btn.toolbar.parameter">변수 </entry>
 
 <!-- tool msg -->
 <entry key="msg.sendmsg.title">메시지 보내기 </entry>
@@ -181,6 +180,8 @@
 <entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
 <entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
 <entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
+<entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
+<entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
 
 
 <entry key="msg.select.value">선택된 값</entry>
@@ -258,6 +259,9 @@
 <entry key="end_time">종료시간</entry>
 <entry key="file_name">파일명</entry>
 <entry key="preferences">환경설정</entry>
+
+<entry key="block">차단</entry>
+<entry key="release">해제</entry>
 
 <entry key="up">위</entry>
 <entry key="down">아래</entry>

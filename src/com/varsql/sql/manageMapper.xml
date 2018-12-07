@@ -52,12 +52,22 @@
 		delete from VTUSER where VIEWID =#{viewid}
 	</delete>
 	
+	<!-- 사용자 접근 yn -->
 	<update id="manageMapper.updateAccept" parameterType="map">
 		update VTUSER 
 		set 
 			USER_ROLE =#{role}
 			,ACCEPT_YN=#{acceptyn}
 		where VIEWID =#{viewid}
+	</update>
+	
+	<!-- 사용자  차단  yn -->
+	<update id="manageMapper.updateBlockYn" parameterType="map">
+		update VTUSER 
+		set 
+			BLOCK_YN=#{blockYn}
+		where VIEWID =#{userid}
+		and USER_ROLE in ('USER','GUEST')
 	</update>
 	
 	<select id="manageMapper.selectQnaMgmtTotalCnt" parameterType="searchParameter" resultType="int">

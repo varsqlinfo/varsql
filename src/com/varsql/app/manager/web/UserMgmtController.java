@@ -42,7 +42,19 @@ public class UserMgmtController {
 		return userMgmtServiceImpl.selectUserList(searchParameter);
 	}
 	
-	@RequestMapping({"/acceptYn"})
+	/**
+	 * 
+	 * @Method Name  : updAcceptYn
+	 * @Method 설명 : 접근 권한 셋팅
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 12. 7. 
+	 * @변경이력  :
+	 * @param acceptyn
+	 * @param selectItem
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/acceptYn", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
 			,@RequestParam(value = "selectItem", required = true )  String selectItem
 			) throws Exception {
@@ -52,6 +64,30 @@ public class UserMgmtController {
 		paramMap.put("selectItem", selectItem);
 		
 		return userMgmtServiceImpl.updateAccept(paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : blockYn
+	 * @Method 설명 : 사용자 차뎐 여부. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 12. 7. 
+	 * @변경이력  :
+	 * @param acceptyn
+	 * @param selectItem
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/blockYn", method=RequestMethod.POST)
+	public @ResponseBody ResponseResult blockYn(@RequestParam(value = "userid", required = true )  String userid
+			,@RequestParam(value = "blockYn", required = true )  String blockYn
+			) throws Exception {
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("userid", userid);
+		paramMap.put("blockYn", "N".equals(blockYn)?"N":"Y");
+		
+		return userMgmtServiceImpl.updateBlockYn(paramMap);
 	}
 	
 	/**

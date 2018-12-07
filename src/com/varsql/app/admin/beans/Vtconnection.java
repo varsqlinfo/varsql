@@ -47,6 +47,9 @@ public class Vtconnection{
 
 	@Size(max=500)
 	private String vpw;
+	
+	@Size(max=500)
+	private String confirmPw;
 
 	private String vdbversion;
 

@@ -21,7 +21,18 @@ public class ManagerDAO extends BaseDAO{
 	public List<Object> selectUserList(SearchParameter searchParameter) {
 		return getSqlSession().selectList("manageMapper.selectUserList", searchParameter);
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : updateAccept
+	 * @Method 설명 : 접근 여부 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 12. 7. 
+	 * @변경이력  :
+	 * @param viewidArr
+	 * @param paramMap
+	 * @return
+	 */
 	public boolean updateAccept(String[] viewidArr, DataCommonVO paramMap){
         SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
         
@@ -37,5 +48,19 @@ public class ManagerDAO extends BaseDAO{
         	batchSqlSession.close();
         }
 		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateBlockYn
+	 * @Method 설명 : 사용자 차단 여부 
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 12. 7. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int updateBlockYn(DataCommonVO paramMap) {
+		return getSqlSession().update("manageMapper.updateBlockYn", paramMap);
 	}
 }

@@ -4,6 +4,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.varsql.app.user.beans.valid.ValidPassword;
+
 public class PasswordForm {
 	
 	private String viewid;

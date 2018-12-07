@@ -62,4 +62,11 @@ public class ErrorController {
 		model.setViewName("/commonPage/error/connCreateError");
 		return model;
 	}
+	
+	@RequestMapping(value = "/blockUser")
+	public ModelAndView blockUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/blockUser");
+		return model;
+	}
 }

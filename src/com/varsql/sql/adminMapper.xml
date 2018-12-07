@@ -32,6 +32,8 @@
 			, VURL
 			, VDRIVER
 			, '' as VPW
+			, '' as CONFIRM_PW
+			, USE_YN
 			, VTYPE
 			, VQUERY
 			, VID
@@ -288,5 +290,12 @@
 		SELECT DRIVER_ID,DBTYPE,DBDRIVER,DRIVER_DESC
 		FROM VTDBTYPE_DRIVER
 		WHERE DBTYPE = #{db_type}
+	</select>
+	
+	<!-- password check 를위해 password get -->
+	<select id="adminMapper.selectDbPassword" parameterType="vtConnection" resultType="string">
+		SELECT VPW
+		FROM VTCONNECTION
+		WHERE VCONNID = #{vconnid}
 	</select>
 </mapper>

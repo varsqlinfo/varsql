@@ -124,6 +124,17 @@
 					<th>DESC</th><td>{{clickItem.DESCRIPTION}}</td>
 				</tr>
 				<tr>
+					<th>차단</th>
+					<td>
+						<template v-if="clickItem.BLOCK_YN=='N'">
+							<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
+						</template>
+						<template v-else>
+							<button type="button" class="btn btn-xs btn-info" @click="userBlock('N')"><spring:message code="release"/></button>
+						</template>
+					</td>
+				</tr>
+				<tr>
 					<th valign="top" style="vertical-align: top;">
 						<div>권한 있는 DB 목록</div>
 					</th>
@@ -242,7 +253,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self =this; 
 			_self.detailDialog = $('#detailInfo').dialog({
-				height: 440
+				height: 490
 				,width: 500
 				,modal: true
 				,autoOpen :false
@@ -279,6 +290,30 @@ VarsqlAPP.vueServiceBean( {
 				,url : {gubun:VARSQL.uri.manager, url:'/user/acceptYn'}
 				,success:function (response){
 					_self.search();
+				}
+			});
+		}
+		,userBlock : function(mode){
+			var _self = this; 
+			var clickItem = _self.clickItem;
+			
+			if(!confirm(mode=='Y'?'<spring:message code="msg.confirm.block.y" />':'<spring:message code="msg.confirm.block.n" />')){
+				return ; 
+			}
+			
+			var param = {
+				userid : clickItem.VIEWID
+				,blockYn: mode
+			}
+			
+			this.$ajax({
+				data:param
+				,url : {gubun:VARSQL.uri.manager, url:'/user/blockYn'}
+				,success:function (resData){
+					
+					if(resData.item > 0){
+						clickItem.BLOCK_YN = mode; 
+					}
 				}
 			});
 		}

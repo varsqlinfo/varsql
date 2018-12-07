@@ -161,4 +161,22 @@ public class UserMgmtServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : updateBlockYn
+	 * @Method 설명 : 차단  y & n
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 12. 7. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult updateBlockYn(DataCommonVO paramMap) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemOne(manageDAO.updateBlockYn(paramMap));
+		
+		return result;
+	}
+	
 }

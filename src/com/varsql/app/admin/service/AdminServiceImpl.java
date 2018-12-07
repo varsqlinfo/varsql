@@ -106,6 +106,10 @@ public class AdminServiceImpl{
 		String pwd = vtConnection.getVpw();
 		String dbtype = vtConnection.getVtype();
 		
+		if(!"".equals(vtConnection.getVconnid()) && (pwd ==null || "".equals(pwd))){
+			pwd = adminDAO.selectDbPassword(vtConnection);
+		}
+		
 		Properties p =new Properties();
 		
 		p.setProperty("user", username);

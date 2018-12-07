@@ -14,6 +14,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.UserService;
 import com.varsql.core.auth.VarsqlAccessDeniedHandler;
+import com.varsql.core.auth.VarsqlAuthenticationFailHandler;
 import com.varsql.core.auth.VarsqlAuthenticationProvider;
 import com.varsql.core.auth.VarsqlAuthenticationSuccessHandler;
 import com.varsql.core.configuration.VarsqlWebConfig;
@@ -61,8 +62,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        .loginProcessingUrl("/login_check")
 	        .usernameParameter("id")
 	        .passwordParameter("password")
-	        .failureUrl("/login?mode=fail")
+	        //.failureUrl("/login?mode=fail")
 	        .successHandler(new VarsqlAuthenticationSuccessHandler())
+	        .failureHandler(new VarsqlAuthenticationFailHandler())
 	        .permitAll()
 	    .and() // auth
 		    .authorizeRequests()

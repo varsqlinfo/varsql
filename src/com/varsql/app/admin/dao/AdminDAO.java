@@ -73,4 +73,8 @@ public class AdminDAO extends BaseDAO{
 	public int updateVtconnectionOptionInfo(VtconnectionOption vtconnectionOption) {
 		return getSqlSession().update("adminMapper.updateVtconnectionOptionInfo", vtconnectionOption);
 	}
+
+	public String selectDbPassword(Vtconnection vtConnection) {
+		return getSqlSession().selectOne("adminMapper.selectDbPassword",vtConnection);
+	}
 }
