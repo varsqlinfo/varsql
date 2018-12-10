@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,6 +13,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.UserService;
 import com.varsql.core.auth.VarsqlAccessDeniedHandler;
 import com.varsql.core.auth.VarsqlAuthenticationFailHandler;
@@ -37,19 +39,28 @@ import com.varsql.core.configuration.VarsqlWebConfig;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
+	
+	@Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+            .antMatchers("/webstatic/**","/error/**","/favicon.ico");
+    }
+	
+	
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		configureHttpSecurity(http);
     }
 	
 	private void configureHttpSecurity(HttpSecurity http) throws Exception {
+		
 		http.headers()
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
 		.and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-			.ignoringAntMatchers("/login/**","/logout","/webstatic/**")
+			.ignoringAntMatchers("/login/**","/logout","/webstatic/**","/error/**","/favicon.ico")
 			.requireCsrfProtectionMatcher(new CsrfRequestMatcher())
 		.and()
 			//.addFilterBefore(new CsrfCookieGeneratorFilter(), CsrfFilter.class)
@@ -68,12 +79,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        .permitAll()
 	    .and() // auth
 		    .authorizeRequests()
-     		.antMatchers("/admin/**").hasAuthority("ADMIN")
-     		.antMatchers("/manage/**").hasAnyAuthority("ADMIN","MANAGER")
-     		.antMatchers("/user/**","/database/**").hasAnyAuthority("ADMIN","MANAGER","USER")
-     		.antMatchers("/guest/**").hasAuthority("GUEST")
+     		.antMatchers("/admin/**").hasAuthority(Authority.ADMIN.name())
+     		.antMatchers("/manage/**").hasAnyAuthority(Authority.ADMIN.name(),Authority.MANAGER.name())
+     		.antMatchers("/user/**","/database/**").hasAnyAuthority(Authority.ADMIN.name(),Authority.MANAGER.name(),Authority.USER.name())
+     		.antMatchers("/guest/**").hasAuthority(Authority.GUEST.name())
      		.antMatchers("/login","/join/**").anonymous()
-     		.antMatchers("/login_check","/api/**","/error/**", "/favicon.ico","/webstatic/**","/index.jsp").permitAll()
+     		.antMatchers("/login_check","/index.jsp").permitAll()
      		.antMatchers("/**").authenticated()
      		.anyRequest().authenticated().and()
      		.exceptionHandling().accessDeniedHandler(accessDeniedHandler())
