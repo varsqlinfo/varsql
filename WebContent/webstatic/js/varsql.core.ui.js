@@ -4594,12 +4594,18 @@ _ui.sqlDataArea =  {
 				cellDblClick : function (rowItem){
 					_ui.SQL.addGridDataToEditArea(rowItem);
 				}
+				,valueFilter : function (headerItem, bodyItem){
+					if(headerItem.dbType=='CLOB'){
+						var reval = bodyItem[headerItem.key]; 
+						return (reval||'').substring(0,2000);
+					}
+					return false; 
+				}
 			}
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});
-		
-		
+				
 		if(_self.initDataGridContextFlag===false) { // grid context menu 처리. 
 			_self.initDataGridContextFlag= true; 
 			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector, {
