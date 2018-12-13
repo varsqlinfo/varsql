@@ -202,9 +202,12 @@
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
+<entry key="admin.form.db.lazyloadyn">Async 로드</entry>
+<entry key="admin.form.db.basetableyn">Base 테이블 사용여부</entry>
 <entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
+
 
 <entry key="admin.form.db.maxactive">Max Active</entry>
 <entry key="admin.form.db.minidle">Min Idle</entry>

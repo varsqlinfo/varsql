@@ -106,6 +106,10 @@ var $oracle = {
 						_self._packageColumn(cacheData, param, itemKey, false);
 						return ; 
 					}else{
+						
+						param.objectName = objectName; 
+						param.cacheKey = itemKey;
+						
 						_self._getMetadataInfo(param, function (resData, param){
 							_self._packageColumn(resData, param, itemKey, true);
 						})

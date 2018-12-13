@@ -50,6 +50,7 @@ public class DatabaseServiceImpl{
 			json.put("schema", dbinfo.getSchema());
 			json.put("conuid", dbinfo.getConnUUID());
 			json.put("type", dbinfo.getType());
+			json.put("lazyload", dbinfo.isLazyLoad());
 			json.put("db_object_list", dbMetaEnum.getSchemas(databaseParamInfo));
 		}catch(Exception e){
 			logger.error("schemas {}" , e.getMessage());
@@ -95,12 +96,21 @@ public class DatabaseServiceImpl{
 		String gubun = databaseParamInfo.getGubun();
 		
 		try{
-			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+			System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
+			if(DBObjectType.TABLE.getObjName().equals(gubun) && databaseParamInfo.isLazyLoad()){
+				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
+					result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+				} else {
+					result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+				}
+			}else{
+				result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+			}
 		}catch(Exception e){
 			logger.error("dbObjectList gubun : [{}]",gubun);
 			logger.error("dbObjectList ", e);
 			try{
-				result.setItemList(MetaControlBean.OTHER.getDBMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+				result.setItemList(MetaControlBean.OTHER.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
 			}catch(Exception subE){
 				logger.error("dbObjectList serverName : [{}]",gubun);
 				logger.error("dbObjectList ", subE);
@@ -127,7 +137,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemList(dbMetaEnum.getDBMeta(DBObjectType.getDBObjectType(databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("dbObjectMetadataList : ", e);
 		}

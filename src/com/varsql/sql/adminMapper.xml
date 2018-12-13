@@ -44,6 +44,8 @@
 			, VCONNOPT
 			, VPOOLOPT
 			, VDBVERSION 
+			, BASETABLE_YN
+			, LAZYLOAD_YN
 		from VTCONNECTION 
 		where DEL_YN = 'N'
 		AND VCONNID =#{vconnid}
@@ -66,6 +68,8 @@
 			,VID 
 			,VPW
 			,USE_YN
+			,BASETABLE_YN
+			,LAZYLOAD_YN
 			,REG_ID
 			,REG_DT
 			,UPD_ID
@@ -80,6 +84,8 @@
 			,#{vid}
 			,#{vpw}
 			,#{useYn}
+			,#{basetableYn}
+			,#{lazyloadYn}
 			,#{userId}
 			,CURRENT TIMESTAMP
 			,#{userId}
@@ -100,7 +106,9 @@
 			<if  test='null != vpw and !"".equals(vpw)'>
 				, VPW =#{vpw}
 			</if>
-			, USE_YN = #{useYn} 
+			, USE_YN = #{useYn}
+			, BASETABLE_YN = #{basetableYn}
+			, LAZYLOAD_YN = #{lazyloadYn}
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconnid}

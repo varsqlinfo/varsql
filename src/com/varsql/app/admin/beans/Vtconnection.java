@@ -57,7 +57,17 @@ public class Vtconnection{
 	
 	private String pollinit;
 	
+	@NotBlank
+	@Size(max=1)
 	private String useYn;
+	
+	@NotBlank
+	@Size(max=1)
+	private String basetableYn;
+
+	@NotBlank
+	@Size(max=1)
+	private String lazyloadYn;
 
 	public String getVconnid(){
 		return this.vconnid;
@@ -132,5 +142,18 @@ public class Vtconnection{
 	public void setUseYn(String useYn) {
 		this.useYn = useYn;
 	}
+	public String getBasetableYn() {
+		return basetableYn;
+	}
+	public void setBasetableYn(String basetableYn) {
+		this.basetableYn = basetableYn;
+	}
+	public String getLazyloadYn() {
+		return lazyloadYn;
+	}
+	public void setLazyloadYn(String lazyloadYn) {
+		this.lazyloadYn = lazyloadYn;
+	}
+	
 
 }

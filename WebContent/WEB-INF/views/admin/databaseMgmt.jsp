@@ -138,9 +138,23 @@
 							<div class="col-sm-8">
 								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.VDRIVER">
 									<template href="javascript:;" class="list-group-item" v-for="(item,index) in driverList">
-										<option :value="item.DRIVER_ID" :data-driver="item.DBDRIVER" selected="{{detailItem.VDRIVER==item.DRIVER_ID?true:(detailItem.VDRIVER==''&& index==0?true:false)}}">{{item.DRIVER_DESC}}({{item.DBDRIVER}}) {{detailItem.VDRIVER==item.DRIVER_ID?true:false}}</option>
+										<option :value="item.DRIVER_ID" :data-driver="item.DBDRIVER" selected="{{detailItem.VDRIVER==item.DRIVER_ID?true:(detailItem.VDRIVER==''&& index==0?true:false)}}">{{item.DRIVER_DESC}}({{item.DBDRIVER}})</option>
 					    			</template>
 								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.lazyloadyn" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="lazyloadyn" value="Y" v-model="detailItem.LAZYLOAD_YN" checked>Y</label>
+								<label><input type="radio" name="lazyloadyn" value="N" v-model="detailItem.LAZYLOAD_YN" >N</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.basetableyn" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="basetableyn" value="Y" v-model="detailItem.BASETABLE_YN" checked>Y</label>
+								<label><input type="radio" name="basetableyn" value="N" v-model="detailItem.BASETABLE_YN" >N</label>
 							</div>
 						</div>
 					</form>
@@ -307,6 +321,10 @@ VarsqlAPP.vueServiceBean( {
 						,data : param 
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
+								if(resData.resultCode != 200){
+									alert(resData.message);
+									return ; 
+								}
 								_this.search();
 								_this.setDetailItem();
 							}

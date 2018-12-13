@@ -45,7 +45,6 @@ VARSQL.ui.create = function (_opts){
 	
 	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
 	
-	_g_options._opts =_opts;
 	_ui.initContextMenu();
 	_ui.headerMenu.init();
 	_ui.initEditorOpt();
@@ -182,7 +181,7 @@ _ui.headerMenu ={
 						case 'newwin': // 새창 보기.
 							var popt = 'width='+screen.width-40+',height='+screen.height-40+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'; 
 							
-							var winObj = window.open('', _g_options._opts.conuid,popt);
+							var winObj = window.open('', _g_options.conuid,popt);
 							
 							if(winObj && winObj.VARSQL){
 								winObj.focus();
@@ -405,7 +404,7 @@ _ui.headerMenu ={
 _ui.preferences= {
 	save : function (prefInfo , callback){
 		
-		prefInfo = VARSQL.util.objectMerge(_g_options._opts.screenSetting, prefInfo);
+		prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
 		
 		var param = {
 			conuid : _g_options.param.conuid
@@ -521,7 +520,7 @@ _ui.layout = {
 		  }]
 		};
 		
-		var savedState = _g_options._opts.screenSetting.layoutConfig;
+		var savedState = _g_options.screenSetting.layoutConfig;
 								
 		try{
 			savedState = JSON.parse( savedState ); 
@@ -1040,14 +1039,14 @@ _ui.dbSchemaObject ={
 	,init :function (){
 		var _self = this;
 		
-		var _opts = _g_options._opts; 
+		var _opts = _g_options; 
 		
-		if(!_opts.dbtype) {
+		if(!_g_options.dbtype) {
 			VARSQLUI.alert.open('dbtype empty');
 			return ;
 		}
 		
-		$.extend(true,_self.options, _opts);
+		VARSQL.util.objectMerge(_self.options, _opts);
 		
 		_self._grid();
 		_self.initEvt();
@@ -1130,6 +1129,7 @@ _ui.dbSchemaObject ={
 _ui.dbSchemaObjectServiceMenu ={
 	initFlag : false
 	,metadataCache : {}
+	,metaInfoLoadComplete : true
 	,selectObjectMenu : 'table'
 	,options :{
 		menuData:[]
@@ -1333,20 +1333,43 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
+		
+		var param =VARSQL.util.objectMerge({},_self.options.param,{'gubun':$contentId}); 
+		
 		VARSQL.req.ajax({      
 			loadSelector : '#dbSchemaObjectArea'
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
-			,data:$.extend(true,_self.options.param,{'gubun':$contentId}) 
+			,data : param 
 			,success:function (resData){
 				callMethod.call(_self,resData);
 			}
 		});
+		
+		if(_g_options.lazyload === true){
+			param.custom = {allMetadata : "Y"};
+			
+			VARSQL.req.ajax({      
+				url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+				,data : param 
+				,success:function (resData){
+					resData.refreshFlag = false; 
+					callMethod.call(_self,resData);
+				}
+			});
+		}
+		
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectMetadataList : function(param,callMethod,refresh){
+		
 		var _self = this
 			,objType = param.gubun
 			,objName = param.objectName; 
+		
+		if(_self.metaInfoLoadComplete===false){
+			alert('로드중입니다.');
+			return ; 
+		}
 		
 		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
 		
@@ -1366,22 +1389,32 @@ _ui.dbSchemaObjectServiceMenu ={
 	// meta data 가져오기.
 	,_getMetadataInfo : function (param , callbackFn){
 		var _self =this; 
+		
+		_self.metaInfoLoadComplete = false;
+		
 		VARSQL.req.ajax({
 			loadSelector : _self.options.metadataContentAreaWrapId
 			,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
-			,async:false
 			,data:param
 			,success:function (resData){
-				var result = resData.list;
+				
+				_self.metaInfoLoadComplete = true;
+				
+				var result = resData.items;
 				
 				if(result.length > 0){
 					var callData=result;
 					if(param.gubun=='table' || param.gubun=='view'){
-						callData = result[0].colList
+						if(result.length > 0){
+							callData = result[0].colList;
+						}
 					}
-					_self._setMetaCache(param.gubun,param.objectName, callData); // data cache
-					callbackFn.call(_self,resData, callData);
+					_self._setMetaCache(param.gubun,param.objectName, param.cacheKey,{items:callData}); 
+					callbackFn.call(_self,{items:callData}, param);
 				}
+			}
+			,error: function (jqXHR, exception) {
+				_self.metaInfoLoadComplete = true;
 			}
 		});
 	}
@@ -1525,9 +1558,11 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 				
 				_self._setMetaCache($$gubun, tblName, 'column', {items:colList});
 			})
-						
+			
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
+			
+			if(resData.refreshFlag===false) return ; 
 			
 			var tableObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
 				setting : {
@@ -1537,9 +1572,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					,enableSpeed : true
 					,callback : function (data){
 						_ui.preferences.save({tablesConfig : data.item});
-						_g_options._opts.screenSetting.tablesConfig = data.item;
+						_g_options.screenSetting.tablesConfig = data.item;
 					}
-					,configVal : _g_options._opts.screenSetting.tablesConfig
+					,configVal : _g_options.screenSetting.tablesConfig
 				}
 				,asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
@@ -1713,12 +1748,14 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 				}
 				
 				var cacheData = _self._getMetaCache('table', objectName, itemKey);
-		
+				
 				if('column' == itemKey){
-					if(cacheData){
+					if(cacheData && $.isArray(cacheData.items)){
 						_self._tableColumn(cacheData, param, itemKey, false);
 						return ; 
 					}else{
+						param.objectName = objectName; 
+						param.cacheKey = itemKey;
 						_self._getMetadataInfo(param, function (resData, param){
 							_self._tableColumn(resData, param, itemKey, true);
 						})
@@ -1982,12 +2019,14 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				}
 				
 				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-		
+				
 				if('column' == itemKey){
 					if(cacheData){
 						_self._viewColumn(cacheData, param, itemKey, false);
 						return ; 
 					}else{
+						param.objectName = objectName; 
+						param.cacheKey = itemKey;
 						_self._getMetadataInfo(param, function (resData, param){
 							_self._viewColumn(resData, param, itemKey, true);
 						})
@@ -2201,6 +2240,8 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						_self._procedureColumn(cacheData, param, itemKey, false);
 						return ; 
 					}else{
+						param.objectName = objectName; 
+						param.cacheKey = itemKey;
 						_self._getMetadataInfo(param, function (resData, param){
 							_self._procedureColumn(resData, param, itemKey, true);
 						})
@@ -2384,6 +2425,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						_self._functionColumn(cacheData, param, itemKey, false);
 						return ; 
 					}else{
+						
+						param.objectName = objectName; 
+						param.cacheKey = itemKey;
+						
 						_self._getMetadataInfo(param, function (resData, param){
 							_self._functionColumn(resData, param, itemKey, true);
 						})
@@ -2981,7 +3026,7 @@ _ui.SQL = {
 	,init:function (options){
 		var _self = this; 
 		
-		var options ={dbtype:_g_options._opts.dbtype}; 
+		var options ={dbtype:_g_options.dbtype}; 
 		if(!options.dbtype) {
 			VARSQLUI.alert.open('dbtype empty');
 			return ;
@@ -3012,21 +3057,7 @@ _ui.SQL = {
 				}
 				,buttons: {
 					"저장":function (){
-						var nameTxt = $('#editorSqlFileNameText').val(); 
-						if($.trim(nameTxt)==''){
-							VARSQLUI.alert.open('sql명을 입력해주세요.');
-							return ;
-						}
-						
-						var sqlFileId = $('#editorSqlFileId').val();
-						
-						var mode = sqlFileId =='' ? 'newfile' :'title';
-						
-						_self.saveSqlFile({
-							'sqlId' : $('#editorSqlFileId').val()
-							,'sqlTitle' : $('#editorSqlFileNameText').val()
-						}, mode)
-						
+						_self.sqlFileNameSave();						
 						_self.sqlFileNameDialogEle.dialog( "close" );
 					}
 					,Cancel: function() {
@@ -3034,11 +3065,38 @@ _ui.SQL = {
 					}
 				}
 			});
+			
+			// sql file 생성
+			$('#editorSqlFileNameText').keydown(function(e) {
+				if (e.keyCode == '13') {
+					e.preventDefault();
+					_self.sqlFileNameSave();						
+					_self.sqlFileNameDialogEle.dialog( "close" );
+					return false; 
+				}
+			});
 		}
 	}
+	// file name 저장.
+	,sqlFileNameSave : function (){
+		var nameTxt = $('#editorSqlFileNameText').val(); 
+		if($.trim(nameTxt)==''){
+			VARSQLUI.alert.open('sql명을 입력해주세요.');
+			return ;
+		}
+		
+		var sqlFileId = $('#editorSqlFileId').val();
+		
+		this.saveSqlFile({
+			'sqlId' : sqlFileId
+			,'sqlTitle' : nameTxt
+		}, (sqlFileId =='' ? 'newfile' :'title'))
+	}
+	// 실행 취소
 	,undo :function (){
 		this.getSqlEditorObj().undo();
 	} 
+	// 되살리기
 	,redo :function (){
 		this.getSqlEditorObj().redo();
 	} 
@@ -3243,7 +3301,6 @@ _ui.SQL = {
 						
 						console.log('paste')
 						var startCursor = _self.getSqlEditorObj().getCursor(true);
-						_self.getSqlEditorObj().focus();
 						_self.getSqlEditorObj().setCursor({line: startCursor.line, ch: startCursor.ch});
 						try{
 							document.execCommand('paste');
@@ -3275,6 +3332,7 @@ _ui.SQL = {
 					default:
 						break;
 				}
+	    		_self.editorFocus();
 	    	}
 		});
 	
@@ -3338,22 +3396,13 @@ _ui.SQL = {
 			}
 		});
 		
-		// editor focus 이동.
-		_self.sqlEditorEle.on('mouseenter', function(e){
-			_self.getSqlEditorObj().focus();
-		})
-		
-		_self.sqlEditorEle.on('click', function(e){
-			$('#sql_parameter_wrapper').removeClass('on');
-		})
-		
 		// sql 실행
 		$('.sql_toolbar_execute_btn').on('click',function (evt){
 			_self.sqlData(evt);
 		});
 		
 		// 새파일 
-		$('.sql_toolbar_new_file').on('click',function (){
+		$('.sql_toolbar_new_file, .sql_new_file').on('click',function (){
 			 $('#editorSqlFileNameText').val('');
 			 $('#editorSqlFileId').val('');
 			 
@@ -3386,7 +3435,7 @@ _ui.SQL = {
 			var startCursor = _self.getSqlEditorObj().getCursor(true);
 			_self.getSqlEditorObj().replaceSelection('');
 			
-			_self.getSqlEditorObj().focus();
+			_self.editorFocus();
 			_self.getSqlEditorObj().setCursor({line: startCursor.line, ch: startCursor.ch})
 		});
 		
@@ -3444,16 +3493,15 @@ _ui.SQL = {
 			_self.addParamTemplate('add');
 		});
 		
-		// sql 정보 저장. 
-		
+		// sql file search 
 		$('#sqlFileSearchTxt').keydown(function(e) {
 			if (e.keyCode == '13') {
 				_self.sqlFileList();
 			}
 		});
 		
-		if(VARSQL.isUndefined(_g_options._opts.screenSetting.sqlFileConfig)){
-			VARSQL.util.objectMerge (_g_options._opts.screenSetting,{sqlFileConfig:{enable :false}});
+		if(VARSQL.isUndefined(_g_options.screenSetting.sqlFileConfig)){
+			VARSQL.util.objectMerge (_g_options.screenSetting,{sqlFileConfig:{enable :false}});
 		}
 		
 		// sql file list view
@@ -3472,7 +3520,7 @@ _ui.SQL = {
 				sEle.addClass('active');
 			}
 			
-			if(_g_options._opts.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){
+			if(_g_options.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){
 				_ui.preferences.save({sqlFileConfig :  sqlFileConfig});
 			}
 			
@@ -3482,7 +3530,7 @@ _ui.SQL = {
 			}
 		});
 		
-		if(_g_options._opts.screenSetting.sqlFileConfig.enable ===true){
+		if(_g_options.screenSetting.sqlFileConfig.enable ===true){
 			$('#sql_filelist_view_btn').trigger('click');
 		}
 		
@@ -3529,6 +3577,9 @@ _ui.SQL = {
 				return item.UNAME+'('+matchData+')';
 			}
 		});
+	}
+	,editorFocus : function (){
+		this.getSqlEditorObj().focus();
 	}
 	// editor selection text copy
 	,selectionTextCopy: function (){
@@ -3680,7 +3731,7 @@ _ui.SQL = {
 			,addLineCnt =addLineArr.length;
 		
 		_self.getSqlEditorObj().replaceSelection(cellVal);
-		_self.getSqlEditorObj().focus();
+		_self.editorFocus();
 		
 		if(addLineCnt > 1){
 			_self.getSqlEditorObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
