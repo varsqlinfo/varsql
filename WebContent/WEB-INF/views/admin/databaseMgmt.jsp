@@ -280,6 +280,7 @@ VarsqlAPP.vueServiceBean( {
 			})
 		}
 		,setDetailItem : function (item){
+			
 			if(VARSQL.isUndefined(item)){
 				this.detailItem ={
 					EXPORTCOUNT: 1000
@@ -296,6 +297,8 @@ VarsqlAPP.vueServiceBean( {
 					,VQUERY: ""
 					,VTYPE: ""
 					,VURL: ""
+					,BASETABLE_YN: 'Y'
+					,LAZYLOAD_YN: 'N'
 				}
 			}else{
 				this.detailItem = item;	
