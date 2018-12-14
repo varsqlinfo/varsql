@@ -118,8 +118,13 @@ VARSQLHints.tables = {};
     if(word ==='undefined') return false; 
     
     var len = string.length;
+    
+    // 포함 하는 문자 찾게 수정. 
+    return getText(word).toUpperCase().indexOf(string.toUpperCase()) > -1;
+    /*
     var sub = getText(word).substr(0, len);
     return string.toUpperCase() === sub.toUpperCase();
+    */
   }
 
   function addMatches(result, search, wordlist, formatter) {
@@ -250,9 +255,16 @@ VARSQLHints.tables = {};
     var separator = [];
     var validRange = {
       start: Pos(0, 0),
-      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+      end :editor.getCursor(true)
+      //end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
     };
-
+    
+//    console.log({from:Pos(0, 0), to:editor.getCursor(true)})
+//    
+//    var query = doc.getRange({from: Pos(0, 0), to:editor.getCursor(true)});
+//    
+//    
+   
     //add separator
     var indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV);
     while(indexOfSeparator != -1) {
