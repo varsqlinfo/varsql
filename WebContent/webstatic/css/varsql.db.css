@@ -654,17 +654,6 @@ hr.dotline {
     color: #222222;
 }
 
-.centerLoading{
-	background-color:#aaaaaa;
-	opacity:0.3;
-	z-index:10;
-}
-
-.sql-editor-btn {
-	border:1px solid #cfcfcf;
-	background-color: #fff;
-}
-
 #sqlEditerPreloaderArea{
 	display:none; 
 }

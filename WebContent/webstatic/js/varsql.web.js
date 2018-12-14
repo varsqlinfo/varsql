@@ -352,25 +352,28 @@ jQuery.fn.centerLoading = function(options) {
 	h = config.height==0?this.height():config.height;
 
 	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;	
-		
-	//var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:'+w+'px; height:'+h+';" class="centerLoading"></div>');
-	var firstDiv = $('<div style="z-index:100;'+(!config.contentClear?"position:absolute;":"")+'width:100%; height:'+h+';" class="centerLoading"></div>');
-	var centerLoading = $('<div style="background-repeat:no-repeat;"></div>');
-	centerLoading.css('background-image', 'url("'+config.loadingImg+'")')
-				.css('background-position', config.centerYn=='Y'?'center center':'')
-				.css('height', h)
-				.css('cursor', config.cursor);
 	
-	firstDiv.html(centerLoading);
-
-	if(!config.contentClear){
-		this.prepend(firstDiv);
+	var loadStr = '<div class="centerLoading" style="z-index:100;position:absolute;width:100%; height:100%;">'
+	if(config.content){
+		if(config.centerYn=='Y'){
+			loadStr +='<div style="margin: 0;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">'+ config.content+'</div>';
+		}else{
+			loadStr += config.content;
+		}
 	}else{
-		this.html(firstDiv);
+		loadStr +='<div style="height:100%;background-repeat:no-repeat;cursor:'+config.cursor+';background-image:url('+config.loadingImg+');background-position:'+(config.centerYn=='Y'?'center center':'')+'"></div>';
 	}
-
-	if(config.content != ""){
-		centerLoading.appendTo(config.content);
+	loadStr +='</div>';
+	
+	if(!config.contentClear){
+		this.prepend(loadStr);
+	}else{
+		this.html(loadStr);
+	}
+	
+	if (this.css('position') != 'relative') {
+		this.css('position','relative');
+		this.attr('var-loading-postion','relative');
 	}
 	
 	config.action == 'slide'?jQuery(this).slideDown('slow') : config.action == 'fade'?jQuery(this).fadeIn('slow'):jQuery(this).show();
@@ -380,6 +383,9 @@ jQuery.fn.centerLoading = function(options) {
 
 jQuery.fn.centerLoadingClose= function(options) {
 	this.find('.centerLoading').remove();
+	if(this.attr('var-loading-postion')=='relative'){
+		this.removeAttr('var-loading-postion');
+	}
 };
 
 _$base.progress = {

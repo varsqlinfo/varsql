@@ -63,6 +63,12 @@ table>tbody>tr.error-row>td, table>tbody>tr.error-row>th {
 .ui-widget-overlay {
     position: none;
 }
+
+.centerLoading{
+	background-color:#d3caca;
+	opacity:0.3;
+	z-index:100;
+}
 /*
 .ui-dialog {
     position: absolute;

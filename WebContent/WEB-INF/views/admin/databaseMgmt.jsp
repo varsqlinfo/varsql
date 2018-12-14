@@ -54,8 +54,8 @@
 		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-4 -->
-	<div class="col-lg-7">
-		<div class="panel panel-default" >
+	<div class="col-lg-7" >
+		<div class="panel panel-default detail_area_wrapper" >
 			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin:left:10px;font-weight:bold;">{{detailItem.VNAME}}</span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
@@ -267,7 +267,7 @@ VarsqlAPP.vueServiceBean( {
 			this.$ajax({
 				url : {gubun:VARSQL.uri.admin, url:'/main/dbDetail'}
 				,data : param
-				,loadSelector : '#varsqlVueArea'
+				,loadSelector : '.detail_area_wrapper'
 				,success: function(resData) {
 					var item  =resData.item; 
 					
