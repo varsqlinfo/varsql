@@ -39,7 +39,7 @@ public class AdminServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
 	
 	@Autowired
-	AdminDAO adminDAO ;
+	AdminDAO adminDAO;
 	
 	/**
 	 * 

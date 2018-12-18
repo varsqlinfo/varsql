@@ -119,3 +119,10 @@ table>tbody>tr.error-row>td, table>tbody>tr.error-row>th {
 	color: #2b2b2b;
 }
 */
+
+
+#main-content .page-header {
+    padding-bottom: 10px;
+    margin: 20px 0 5px;
+    border-bottom: 1px solid #eee;
+}

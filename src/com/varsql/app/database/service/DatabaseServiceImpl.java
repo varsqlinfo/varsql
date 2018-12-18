@@ -96,7 +96,7 @@ public class DatabaseServiceImpl{
 		String gubun = databaseParamInfo.getGubun();
 		
 		try{
-			System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
+			//System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
 			if(DBObjectType.TABLE.getObjName().equals(gubun) && databaseParamInfo.isLazyLoad()){
 				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
 					result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));

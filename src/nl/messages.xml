@@ -66,6 +66,7 @@
 <entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
 <entry key="manage.menu.glossary"><![CDATA[용어집]]></entry>
 <entry key="manage.menu.logmgmt">로그</entry>
+<entry key="manage.menu.dbcomparemgmt">DB 비교</entry>
 <entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
 <entry key="manage.menu.sqllog">SQL 로그</entry>
 <entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>

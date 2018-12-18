@@ -1652,7 +1652,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 								return ;
 							}
 							
-							if(key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
+							if(key=='java_column' || key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
 								_self._createJavaProgram(params);
 								return ;
 							}
@@ -1684,7 +1684,8 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							}
 							,{key : "create_java","name": "java 모델생성" 
 								,subMenu:[
-									{key : "java_camel_case_naming","name": "Camel case naming"}
+									{key : "java_column","name": "컬럼명"}
+									,{key : "java_camel_case_naming","name": "Camel case naming"}
 									,{key : "java_json","name": "json형식"}
 									,{key : "java_valid","name": "우효성 체크 Bean"}
 									]
@@ -4912,9 +4913,16 @@ _ui.JAVA = {
 			for(var i=0; i < len; i++){
 				item = dataArr[i];
 				var tmpDbType = VARSQLCont.dataType.getDataTypeInfo(item[VARSQLCont.tableColKey.TYPE_NAME])
-					,tmpJavaType=tmpDbType.javaType
-					,tmpColumnNm = convertCamel(item[VARSQLCont.tableColKey.NAME])
-					,tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
+					,tmpJavaType=tmpDbType.javaType;
+				
+				var tmpColumnNm,tmpMethodNm; 
+				if(createType =='column'){
+					tmpColumnNm = item[VARSQLCont.tableColKey.NAME];
+					tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
+				}else{
+					tmpColumnNm = convertCamel(item[VARSQLCont.tableColKey.NAME]);
+					tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
+				}
 				
 				if(createType =='json'){
 					codeStr.push(tabStr+'@JsonProperty("'+tmpColumnNm +'")'+newLine);
@@ -4962,6 +4970,10 @@ _ui.JAVA = {
 		// java valid
 		else if(key=='java_valid'){
 			reval = javaCreate('valid');
+		}
+		// java column
+		else if(key=='java_column'){
+			reval = javaCreate('column');
 		}
 		_ui.text.copy(reval , 'java');
 	}

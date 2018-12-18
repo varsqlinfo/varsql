@@ -63,6 +63,15 @@ _$base.alert = {
 	}
 }
 
+_$base.toast = {
+	template : function (opt){
+		
+	}
+	,open : function (msgOpt){
+		return alert(msgOpt);
+	}
+}
+
 window.VARSQLUI = _$base; 
 })(VARSQL, jQuery);
 

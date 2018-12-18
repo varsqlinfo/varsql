@@ -72,6 +72,21 @@ public class ManagerController {
 		return new ModelAndView("/manager/glossaryMgmt",model);
 	}
 	
+	@RequestMapping({"/dbCompareMgmt"})
+	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam("allYn", "Y");
+		
+		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		
+		return new ModelAndView("/manager/dbCompareMgmt",model);
+	}
+	
 	@RequestMapping({"/sqlLogStat"})
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();

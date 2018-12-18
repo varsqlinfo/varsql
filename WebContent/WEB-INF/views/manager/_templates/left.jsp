@@ -14,6 +14,9 @@
     <li class="<c:if test="${fn:endsWith(originalURL,'/glossaryMgmt')}"> active</c:if>">
         <a href="<c:url value="./glossaryMgmt" />"><i class="fa fa-th-list"></i><spring:message code="manage.menu.glossary" /></a>
     </li>
+    <li class="<c:if test="${fn:endsWith(originalURL,'/dbCompareMgmt')}"> active</c:if>">
+        <a href="<c:url value="./dbCompareMgmt" />"><i class="fa fa-exchange"></i><spring:message code="manage.menu.dbcomparemgmt" /></a>
+    </li>
     
     <li class="dropdown<c:if test="${fn:endsWith(originalURL,'/report')}"> active</c:if>">
 		<a href="#" data-toggle="collapse" data-target="#log-sub-menu">
