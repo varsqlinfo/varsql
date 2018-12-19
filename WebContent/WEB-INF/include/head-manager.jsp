@@ -13,6 +13,9 @@
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+
+<link href="${pageContextPath}/webstatic/css/pub.grid.fixed.css" rel="stylesheet" type="text/css">
+
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
@@ -34,11 +37,13 @@
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js"></script>
 
 
 

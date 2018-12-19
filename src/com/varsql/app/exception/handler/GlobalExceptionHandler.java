@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -171,8 +172,17 @@ public class GlobalExceptionHandler{
 		exceptionRequestHandle(request, response ,result);
 	}
 	
+	@ExceptionHandler(value=MissingServletRequestParameterException.class)
+	public void missingServletRequestParameterExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(request, response ,result, "error403");
+	}
+	
 	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result ) {
-		exceptionRequestHandle(request ,response , result  , "connError");
+		exceptionRequestHandle(request ,response , result  , "error500");
 	}
 	
 	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {

@@ -61,4 +61,16 @@ public class DbDiffController {
 		
 		return dbDiffServiceImpl.objectTypeList(paramMap);
 	}
+	
+	@RequestMapping({"/objectList"})
+	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid") String vconnid ,
+			@RequestParam(value = "objectType") String objectType ,HttpServletRequest req) throws Exception {
+		
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
+		
+		paramMap.put("vconnid", vconnid);
+		paramMap.put("objectType", objectType);
+		
+		return dbDiffServiceImpl.objectList(paramMap);
+	}
 }

@@ -20,5 +20,6 @@
 
 <script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=${pubjs_ver}"></script>
 

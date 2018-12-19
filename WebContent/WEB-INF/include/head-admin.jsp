@@ -32,6 +32,7 @@
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>

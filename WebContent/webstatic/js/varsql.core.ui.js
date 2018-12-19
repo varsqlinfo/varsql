@@ -1712,7 +1712,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					}
 				}
 			});
-			}catch(e){
+		}catch(e){
 			VARSQL.log.info(e);
 		}
 	}

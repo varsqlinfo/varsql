@@ -47,7 +47,7 @@ public class VtconnectionRVO{
 
 	private String VPOOLOPT;
 
-	private int VDBVERSION;
+	private String VDBVERSION;
 
 	private String REG_DT;
 
@@ -57,13 +57,13 @@ public class VtconnectionRVO{
 
 	private String UPD_ID;
 
-	private char USE_YN;
+	private String USE_YN;
 
-	private char DEL_YN;
+	private String DEL_YN;
 
-	private char BASETABLE_YN;
+	private String BASETABLE_YN;
 
-	private char LAZYLOAD_YN;
+	private String LAZYLOAD_YN;
 
 	public String getVCONNID(){
 		return this.VCONNID;
@@ -155,10 +155,10 @@ public class VtconnectionRVO{
 	public void setVPOOLOPT(String VPOOLOPT){
 		this.VPOOLOPT=VPOOLOPT;
 	}
-	public int getVDBVERSION(){
+	public String getVDBVERSION(){
 		return this.VDBVERSION;
 	}
-	public void setVDBVERSION(int VDBVERSION){
+	public void setVDBVERSION(String VDBVERSION){
 		this.VDBVERSION=VDBVERSION;
 	}
 	public String getREG_DT(){
@@ -185,30 +185,31 @@ public class VtconnectionRVO{
 	public void setUPD_ID(String UPD_ID){
 		this.UPD_ID=UPD_ID;
 	}
-	public char getUSE_YN(){
-		return this.USE_YN;
+	public String getUSE_YN() {
+		return USE_YN;
 	}
-	public void setUSE_YN(char USE_YN){
-		this.USE_YN=USE_YN;
+	public void setUSE_YN(String uSE_YN) {
+		USE_YN = uSE_YN;
 	}
-	public char getDEL_YN(){
-		return this.DEL_YN;
+	public String getDEL_YN() {
+		return DEL_YN;
 	}
-	public void setDEL_YN(char DEL_YN){
-		this.DEL_YN=DEL_YN;
+	public void setDEL_YN(String dEL_YN) {
+		DEL_YN = dEL_YN;
 	}
-	public char getBASETABLE_YN(){
-		return this.BASETABLE_YN;
+	public String getBASETABLE_YN() {
+		return BASETABLE_YN;
 	}
-	public void setBASETABLE_YN(char BASETABLE_YN){
-		this.BASETABLE_YN=BASETABLE_YN;
+	public void setBASETABLE_YN(String bASETABLE_YN) {
+		BASETABLE_YN = bASETABLE_YN;
 	}
-	public char getLAZYLOAD_YN(){
-		return this.LAZYLOAD_YN;
+	public String getLAZYLOAD_YN() {
+		return LAZYLOAD_YN;
 	}
-	public void setLAZYLOAD_YN(char LAZYLOAD_YN){
-		this.LAZYLOAD_YN=LAZYLOAD_YN;
+	public void setLAZYLOAD_YN(String lAZYLOAD_YN) {
+		LAZYLOAD_YN = lAZYLOAD_YN;
 	}
+	
 
 }
 

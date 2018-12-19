@@ -30,6 +30,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
