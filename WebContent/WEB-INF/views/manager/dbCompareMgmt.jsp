@@ -64,13 +64,19 @@
 						<div class="panel panel-default">
 							<div class="panel-body">	
 								<div class="col-xs-6">
-									<div class="row" style="border:1px solid #f1f1f1;">
-										asdf
+									<div style="margin:3px;">
+										컬럼
+										<div id="sourceColumn" class="row" style="height:200px;">
+										
+										</div>
 									</div>
 								</div>
 								<div class="col-xs-6">
-									<div class="row" style="border:1px solid #f1f1f1;">
-										asdf
+									<div style="margin:3px;">
+										컬럼
+										<div id="targetColumn" class="row" style="height:200px;">
+										
+										</div>
 									</div>
 								</div>
 							</div>
@@ -191,16 +197,20 @@ VarsqlAPP.vueServiceBean( {
 			var compareResult = [];
 			
 			var sourceColList , targetColList;
+			var compareLog;
+			var compareFlag = false; 
 			for(var key in sourceNameMap){
 				
-				
+				compareLog = [];
+				compareFlag = false; 
 				if(targetNameMap.hasOwnProperty(key)){
-					compareResult.push(key +' start ---------');
-					sourceItem = sourceNameMap[key];
+					compareLog.push(key +' start ---------');
+					if(sourceItem) sourceItem = sourceNameMap[key];
 					targetItem = targetNameMap[key];
 					
 					if(sourceItem.remarks != targetItem.remarks){
-						compareResult.push('테이블의 설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetNameMap[key].remark);
+						compareFlag = true; 
+						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetNameMap[key].remark);
 					}
 					
 					sourceColList = sourceItem.colList; 
@@ -210,20 +220,64 @@ VarsqlAPP.vueServiceBean( {
 					var targetColLen = targetColList.length;
 					
 					if(sourceColLen != targetColLen){
-						compareResult.push('테이블 컬럼 카운트가 다릅니다. 대상 : '+sourceColLen+ ' 타켓 : '+targetColLen);
+						compareFlag = true; 
+						compareLog.push('테이블 컬럼 카운트가 다릅니다. 대상 : '+sourceColLen+ ' 타켓 : '+targetColLen);
 					}
 					
 					var maxColLen = Math.max(sourceColLen,targetColLen);
 					
+					var sourceColMap = {};
+					var targetColMap = {};
+					var sourceColItem, targetColItem;
 					for(var i =0 ; i< maxColLen; i++){
-						
+						sourceColItem = sourceColList[i];
+						if(sourceColItem) sourceColMap[sourceColItem.name] = sourceColItem;
+					
+						targetColItem= targetColList[i];
+						if(targetColItem) targetColMap[targetColItem.name] = targetColItem;
 					}
 					
-					compareResult.push(key +' end ---------');
+					for(var key in sourceColMap){
+						sourceColItem = sourceColMap[key];
+						targetColItem = targetColMap[key];
+						
+						delete targetColMap[key];
+						
+						if(sourceColItem != targetColItem){
+							if(targetColItem){
+								for(var colItemKey in sourceColItem){
+									if(sourceColItem[colItemKey] !=targetColItem[colItemKey]){
+										compareFlag = true; 
+										compareLog.push(colItemKey +' 대상 : '+sourceColItem[colItemKey]+ ' 타켓 : '+targetColItem[colItemKey]);
+									}
+								}
+							}else{
+								compareFlag = true; 
+								compareLog.push('대상 테이블에 ['+key+ '] 컬럼이 존재 하지 않습니다.');
+							}
+						}
+					}
+					
+					for(var key in targetColMap){
+						compareFlag = true; 
+						compareLog.push('타켓 테이블에 ['+key+ '] 컬럼이 존재 하지 않습니다.');
+					}
+					
+					compareLog.push(key +' end ---------');
+					
+					if(compareFlag){
+						compareResult.push(compareLog.join('\n'))
+					}
 				}else {
 					compareResult.push('대상에 '+key+' 테이블이 존재 하지 않습니다 ');
 				}
 				
+				delete targetNameMap[key];
+			}
+			
+			for(var key in targetNameMap){
+				compareFlag = true; 
+				compareLog.push('타켓에 ['+key+ '] 테이블이 존재 하지 않습니다.');
 			}
 			
 			return compareResult.join('\n');
@@ -255,12 +309,43 @@ VarsqlAPP.vueServiceBean( {
 						click : function (idx, item){
 							var sObj = $(this);
 							
-							var refresh = sObj.attr('refresh')=='Y'?true:false; 
-							sObj.attr('refresh','N');
-							
-							sObj.addClass('active');
-							
-							_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl', refresh);
+							$.pubGrid('#sourceColumn', {
+								headerOptions : {redraw : false}
+								,asideOptions :{lineNumber : {enable : true	,width : 30}}
+								,tColItem : [
+									{ label: '컬럼명', key: 'name',width:80 },
+									{ label: '데이타타입', key: 'typeAndLength' },
+									{ label: 'Key', key: 'constraints', align:'center', width:45},
+									{ label: '기본값', key: 'defaultVal',width:45},
+									{ label: '널여부', key: 'nullable',width:45},
+									{ label: '설명', key: 'comment',width:45}
+								]
+								,tbodyItem : item.colList
+								,scroll :{
+									vertical : {
+										onUpdate : function (item){
+											$.pubGrid('#targetColumn').moveVScrollPosition(item.position,'',false);
+										}
+									}
+									,horizontal :{
+										onUpdate : function (item){ 
+											$.pubGrid('#targetColumn').moveHScrollPosition(item.position,'',false);
+										}
+									}
+								}
+							});
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.position,'',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.position,'',false);
+							}
 						}
 					}
 				});
@@ -285,14 +370,36 @@ VarsqlAPP.vueServiceBean( {
 					,tbodyItem :itemArr
 					,rowOptions :{
 						click : function (idx, item){
-							var sObj = $(this);
 							
-							var refresh = sObj.attr('refresh')=='Y'?true:false; 
-							sObj.attr('refresh','N');
+							$.pubGrid('#targetColumn', {
+								headerOptions : {redraw : false}
+								,asideOptions :{lineNumber : {enable : true	,width : 30}}
+								,tColItem : [
+									{ label: '컬럼명', key: 'name',width:80 },
+									{ label: '데이타타입', key: 'typeAndLength' },
+									{ label: 'Key', key: 'constraints', align:'center', width:45},
+									{ label: '기본값', key: 'defaultVal',width:45},
+									{ label: '널여부', key: 'nullable',width:45},
+									{ label: '설명', key: 'comment',width:45}
+								]
+								,tbodyItem : item.colList
+								,rowOptions :{
+									
+								}
+							});
 							
-							sObj.addClass('active');
-							
-							_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl', refresh);
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.position, '',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.position,'',false);
+							}
 						}
 					}
 				});

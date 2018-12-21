@@ -3538,8 +3538,9 @@ _ui.SQL = {
 		$.pubAutocomplete('#recv_user_search' , {
 			minLength : 0
 			,itemkey : 'UID'
-			,addSelector:'#recv_autocomplete_area'
+			,viewAreaSelector:'#recv_autocomplete_area'
 			,autoClose:false
+			,searchDelay : 100
 			,autocompleteTemplate : function (baseHtml){
 				return '<div class="">'+baseHtml+'</div>';
 			}

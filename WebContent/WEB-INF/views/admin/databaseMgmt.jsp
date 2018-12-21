@@ -64,11 +64,11 @@
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div class="pull-right">
-									<button type="button" class="btn btn-default" @click="setDetailItem({})"><spring:message code="btn.add"/></button>
+									<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
 									<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
-									<button type="button" class="btn btn-default" @click="save('poolInit')"><spring:message code="btn.save.andpoolnit"/></button>
-									<button type="button" class="btn btn-primary" @click="connectionCheck()"><spring:message code="btn.connnection.check"/></button>
-									<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+									<button type="button" class="btn btn-default" @click="save('poolInit')" :class="detailFlag===false?'hidden':''"><spring:message code="btn.save.andpoolnit"/></button>
+									<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
+									<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
 								</div>
 							</div>
 						</div>
@@ -221,6 +221,7 @@ VarsqlAPP.vueServiceBean( {
 	,validateCheck : true 
 	,data: {
 		list_count :10
+		,detailFlag :false
 		,searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
@@ -282,6 +283,7 @@ VarsqlAPP.vueServiceBean( {
 		,setDetailItem : function (item){
 			
 			if(VARSQL.isUndefined(item)){
+				this.detailFlag = false;
 				this.detailItem ={
 					EXPORTCOUNT: 1000
 					,MAX_ACTIVE: 5
@@ -301,6 +303,7 @@ VarsqlAPP.vueServiceBean( {
 					,LAZYLOAD_YN: 'N'
 				}
 			}else{
+				this.detailFlag = true; 
 				this.detailItem = item;	
 			}
 			 

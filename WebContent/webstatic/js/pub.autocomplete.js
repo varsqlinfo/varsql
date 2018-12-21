@@ -15,13 +15,15 @@
 		,pubElement= false
         ,defaults = {
 			_currMode : 'default'
-			,addSelector : false
+			,viewAreaSelector : false
+			,useFilter : true
 			,minLength: 1
 			,autoClose : true
 			,itemkey : 'title'
 			,height : 200
 			,selectCls : 'selected'
 			,emptyMessage : 'no data'
+			,searchDelay : -1
 			,items :[]
 			,charZeroConfig : false
 			,filter : function (itemVal , searchVal) {
@@ -134,7 +136,8 @@
 					}
 				}
 			});
-
+			
+			var searchTimeout; 
 			_this.selectorElement.on('keyup.pubAutocomplete' , function (e){
 				var isWordCharacter = e.key.length === 1;
 				var isBackspaceOrDelete = (e.keyCode == 8 || e.keyCode == 46);
@@ -149,7 +152,16 @@
 						return ; 
 					}
 					
-					_this.gridItems('default',searchVal);
+					if(_this.options.searchDelay !== -1){
+						if(searchTimeout) window.clearTimeout(searchTimeout); 
+						searchTimeout = window.setTimeout(function (){ // 검색어 완성시 검색 할수 있게 지연처리.
+							_this.gridItems('default',searchVal);	
+						}, _this.options.searchDelay ); 
+					}else{
+						console.log(')searchVal ', searchVal)
+						_this.gridItems('default',searchVal);	
+					}
+					
 				}
 			});
 
@@ -181,7 +193,7 @@
 
 					pubAutocompleteWrapper.css('width',_width+'px');
 
-					if(_this.options.addSelector ===false){
+					if(_this.options.viewAreaSelector ===false){
 						pubAutocompleteWrapper.css({ 'left': position.left+'px' 
 							,'top':(position.top+_this.selectorElement.outerHeight())+'px'
 						})
@@ -211,6 +223,8 @@
 						this.options.charZeroConfig.initEvt.call(this);
 					}
 				}
+			}else{
+				this.hide();
 			}
 		}
 		/**
@@ -282,8 +296,8 @@
 
 				allTemplateHtm.push('</div>');
 
-				if(_this.options.addSelector !==false){
-					$(_this.options.addSelector).empty().html(allTemplateHtm.join(''));
+				if(_this.options.viewAreaSelector !==false){
+					$(_this.options.viewAreaSelector).empty().html(allTemplateHtm.join(''));
 				}else{
 					pubElement.append(allTemplateHtm.join(''));
 				}
@@ -427,8 +441,9 @@
 			if(len > 0){
 				var renderFn = _this._getOptionValue('renderItem')
 					,filterFn = _this._getOptionValue('filter')
-					,hilightTemplate = _this._getOptionValue('hilightTemplate');
-
+					,hilightTemplate = _this._getOptionValue('hilightTemplate')
+					,useFilter = _this._getOptionValue('useFilter'); 
+				
 				var tmpSearchVal = searchVal.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 				var re = new RegExp("(" + tmpSearchVal.split(' ').join('|') + ")", "gi");
 
@@ -438,6 +453,9 @@
 					if(searchVal==''){
 						emptyFlag = false; 
 						strHtm.push('<li class="pub-autocomplete-item" data-idx="'+i+'" data-val="'+escape(itemVal)+'">'+renderFn(itemVal,item)+'</li>');
+					}else if(useFilter===false){
+						emptyFlag = false; 
+						strHtm.push('<li class="pub-autocomplete-item" data-idx="'+i+'" data-val="'+escape(itemVal)+'">'+renderFn(_this.getHilightTemplateData(re, itemVal,hilightTemplate),item)+'</li>');
 					}else{
 						if(filterFn(itemVal , searchVal)){
 							emptyFlag = false; 
@@ -460,15 +478,19 @@
 		 * @description 결과 없을때 보여줄 메소드
 		 */	
 		,viewEmptyMessage : function (msg){
-			 if(msg){
-				this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html(msg); 
-			 }else{
-				if($.isFunction(this._getOptionValue('emptyMessage'))){
-					this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html('<li>'+this._getOptionValue('emptyMessage').call(this)+'</li>'); 
+			if(this._getOptionValue('emptyMessage') ===false){
+				this.hide();
+			}else{
+				if(msg){
+					this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html(msg); 
 				}else{
-					this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html('<li>'+this._getOptionValue('emptyMessage')+'</li>'); 
+					if($.isFunction(this._getOptionValue('emptyMessage'))){
+						this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html('<li>'+this._getOptionValue('emptyMessage').call(this)+'</li>'); 
+					}else{
+						this.autocompleteEle.find('.pub-autocomplete-item-area').empty().html('<li>'+this._getOptionValue('emptyMessage')+'</li>'); 
+					}
 				}
-			 }
+			}
 		}
 		/**
 		 * @method selectItem
