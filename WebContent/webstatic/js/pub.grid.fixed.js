@@ -20,6 +20,7 @@ var _initialized = false
 		height: 22	// cell 높이
 		,click : false //row(tr) click event
 		,contextMenu : false // row(tr) contextmenu event
+		,addStyle : false	// 추가할 style method
 	}
 	,useDefaultFormatter :false
 	,formatter :{
@@ -39,6 +40,7 @@ var _initialized = false
 		,resize:{	// resize 여부
 			enabled : true
 			,cursor : 'col-resize'
+			,update : false	// 변경시 콜랙 함수
 		}
 		,isColSelectAll : true	// 전체 선택 여부.
 		,colFixedIndex : 0	// 고정 컬럼 
@@ -48,6 +50,7 @@ var _initialized = false
 		,oneCharWidth: 7
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
+		
 	}
 	,setting : {
 		enable : false
@@ -316,6 +319,7 @@ Plugin.prototype ={
 			, template: {}
 			, orginData: []
 			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
+			, rowOpt :{}
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -406,6 +410,8 @@ Plugin.prototype ={
 			asideItem.push(_this.options.asideOptions.modifyInfo);
 		}
 		
+		_this.config.rowOpt.isAddStyle = isFunction(_this.options.rowOptions.addStyle);
+
 		_this.config.aside.items = asideItem; 
 		for(var i =0 ; i < asideItem.length ;i++){
 			_this.config.gridWidth.aside += asideItem[i].width; 
@@ -1324,9 +1330,15 @@ Plugin.prototype ={
 
 			return false; 
 		}
+
+		var fnAddStyle = _this.options.rowOptions.addStyle; 
 		
 		for(var i =0 ; i < viewCount; i++){
 			tbiItem = tbi[itemIdx] ||{};
+			
+			if(_this.config.rowOpt.isAddStyle){
+				$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont [rowinfo="'+i+'"]').setAttribute('style', (fnAddStyle.call(null,tbiItem)||''));
+			}
 			
 			var overRowFlag = (itemIdx >= this.config.dataInfo.orginRowLen)
 			var addEle;
@@ -3435,29 +3447,13 @@ Plugin.prototype ={
 		}
 
 		if(mode=='end'){
-			
-			if(w <= _this.options.headerOptions.colMinWidth){
-				w =_this.options.headerOptions.colMinWidth;
+			_this.setHeaderWidth(drag.resizeIdx , w , drag.colHeader);
+
+			if(isFunction(_this.options.headerOptions.resize.update)){
+				_this.options.headerOptions.resize.update.call(null , {index:drag.resizeIdx , width: w});
 			}
-			
-			var totalWidth = drag.gridW+w;
-			
-			if(_this.drag.isLeftContent){
-				_this.config.gridWidth.left = totalWidth;
-			}else{
-				_this.config.gridWidth.main = totalWidth;
-			}
-			
-			//_this.config.body.width = drag.gridBodyW+w; // 2018-06-06 불필요 삭제 .
-			_this.options.tColItem[drag.resizeIdx].width = w; 
-			
-			drag.colHeader.css('width',w+'px');
-			$('#'+_this.prefix+'colbody'+drag.resizeIdx).css('width',w+'px');
-			
 			drag.ele.removeAttr('style');
 
-			_this.calcDimension('headerResize');
-			
 		}else{
 			var w = drag.totColW + (ox - drag.pageX);
 
@@ -3465,6 +3461,37 @@ Plugin.prototype ={
 				drag.ele.css('left',w);
 			}
 		}
+	}
+	/**
+     * @method setHeaderWidth
+	 * @param  idx : heder index
+	 * @param  w : width
+	 * @param  colHeaderEle , header element
+     * @description 페이징 하기.
+     */
+	,setHeaderWidth : function (idx,w, colHeaderEle){
+		if(w <= this.options.headerOptions.colMinWidth){
+			w =this.options.headerOptions.colMinWidth;
+		}
+		
+		if(this.drag.isLeftContent){
+			this.config.gridWidth.left = this.config.gridWidth.left-this.options.tColItem[idx].width + w;
+		}else{
+			this.config.gridWidth.main = this.config.gridWidth.main-this.options.tColItem[idx].width + w;
+		}
+		
+		//_this.config.body.width = drag.gridBodyW+w; // 2018-06-06 불필요 삭제 .
+		this.options.tColItem[idx].width = w; 
+		
+		if(colHeaderEle){
+			colHeaderEle.css('width',w+'px');
+		}else{
+			$('#'+this.prefix+'colHeader'+idx).css('width',w+'px');
+		}
+
+		$('#'+this.prefix+'colbody'+idx).css('width',w+'px');
+
+		this.calcDimension('headerResize');
 	}
 	/**
      * @method pageNav

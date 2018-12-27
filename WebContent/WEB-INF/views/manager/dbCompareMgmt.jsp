@@ -9,30 +9,27 @@
     <!-- /.col-lg-12 -->
 </div>
 	
+	
+	    			
 <div class="row" id="varsqlVueArea">
+
 	<div class="col-xs-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				대상
 				<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:30%">
 					<option value="">선택</option>
-					<template href="javascript:;" class="list-group-item" v-for="(item,index) in dbList">
-						<option :value="item.VCONNID">{{item.VNAME}}</option>
-	    			</template>
+						<option  v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
 				</select>
 				타켓
 				<select class="input-sm" v-model="diffItem.target" style="width:30%">
 					<option value="">선택</option>
-					<template href="javascript:;" class="list-group-item" v-for="(item,index) in dbList">
-						<option :value="item.VCONNID">{{item.VNAME}}</option>
-	    			</template>
+					<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
 				</select>
 				오브젝트
 				<select class="input-sm" v-model="diffItem.objectType" style="width:10%">
 					<option value="">선택</option>
-					<template href="javascript:;" class="list-group-item" v-for="(item,index) in objectList">
-						<option :value="item.contentid">{{item.name}}</option>
-	    			</template>
+					<option v-for="(item,index) in objectList" :value="item.contentid">{{item.name}}</option>
 				</select>
 				<button @click="objectListSearch()" type="button" class="btn btn-sm btn-primary" style="margin-bottom: 3px">
 					조회
@@ -40,7 +37,7 @@
 			</div>
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-xs-7">
+					<div class="col-xs-6">
 						<div class="panel panel-default">
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
@@ -62,7 +59,8 @@
 							</div>
 						</div>
 						<div class="panel panel-default">
-							<div class="panel-body">	
+							<div style="font-weight:bold;">{{compareObjectName}}&nbsp;</div>
+							<div class="panel-body" style="padding-top:0px;">	
 								<div class="col-xs-6">
 									<div style="margin:3px;">
 										컬럼
@@ -82,13 +80,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-5">
+					<div class="col-xs-6" style="padding-left:0px;">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								비교 결과
 							</div>
 							<div class="panel-body" >	
-								<pre v-html="compareResult" style="height:400px;overflow:auto;">
+								<pre v-html="compareResult" id="compareResultArea" style="height:400px;overflow:auto;">
 								
 								</pre>
 							</div>
@@ -113,9 +111,15 @@ VarsqlAPP.vueServiceBean( {
 			,target :''
 			,objectType : ''
 		}
+		,compareObjectName :'select'
 		,objectList : []
 		,sourceItems : false	// 원천 item 목록.
 		,targetItems : false
+		,compareItem : {
+			sourceNameMap : {}
+			, targetNameMap : {}
+			, objectColNameMap :{}
+		}
 	}
 	,computed: {
 		compareResult : function (){
@@ -128,8 +132,17 @@ VarsqlAPP.vueServiceBean( {
 	}
 	,methods:{
 		init : function(){
+			var _self = this;
 			
+			$('#compareResultArea').on('click','.table-name' , function (e){
+				var sEle = $(this);
+				
+				var tblName = sEle.data('table-name');
+				
+				_self.tableObjectMetaView(tblName);
+			})
 		}
+		// db object search.
 		,objectListSearch : function(no){
 			var _self = this; 
 			
@@ -149,7 +162,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			_self.targetItems = false;
-			_self.targetItems = false;
+			_self.sourceItems = false;
 			
 			var objectType = diffItem.objectType; 
 			// source data load
@@ -178,23 +191,31 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
+		// 테이블 비교
 		,tableCompare : function (){
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
 			
 			var maxLen = Math.max(sourceItems.length,targetItems.length);
 			
-			var sourceNameMap = {}, targetNameMap={};
+			var sourceNameMap = {}, targetNameMap={}, targetCompareNameMap={};
 			var sourceItem, targetItem;
 			for(var i =0 ;i < maxLen; i++){
 				sourceItem = sourceItems[i];
 				if(sourceItem) sourceNameMap[sourceItem.name] = sourceItem;
 				
 				targetItem = targetItems[i];
-				if(targetItem) targetNameMap[targetItem.name] = targetItem; 
+				if(targetItem) {
+					targetCompareNameMap[targetItem.name] = targetItem;
+					targetNameMap[targetItem.name] = targetItem;
+				}
 			}
 			
+			this.compareItem.sourceNameMap = sourceNameMap; 
+			this.compareItem.targetNameMap = targetNameMap;
+			
 			var compareResult = [];
+			var objectColNameMap = {};
 			
 			var sourceColList , targetColList;
 			var compareLog;
@@ -203,14 +224,14 @@ VarsqlAPP.vueServiceBean( {
 				
 				compareLog = [];
 				compareFlag = false; 
-				if(targetNameMap.hasOwnProperty(key)){
-					compareLog.push(key +' start ---------');
+				if(targetCompareNameMap.hasOwnProperty(key)){
+					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a>테이블 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
 					if(sourceItem) sourceItem = sourceNameMap[key];
-					targetItem = targetNameMap[key];
+					targetItem = targetCompareNameMap[key];
 					
 					if(sourceItem.remarks != targetItem.remarks){
 						compareFlag = true; 
-						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetNameMap[key].remark);
+						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetCompareNameMap[key].remark +'\n');
 					}
 					
 					sourceColList = sourceItem.colList; 
@@ -221,7 +242,7 @@ VarsqlAPP.vueServiceBean( {
 					
 					if(sourceColLen != targetColLen){
 						compareFlag = true; 
-						compareLog.push('테이블 컬럼 카운트가 다릅니다. 대상 : '+sourceColLen+ ' 타켓 : '+targetColLen);
+						compareLog.push('컬럼 카운트  대상 : '+sourceColLen+ ' 타켓 : '+targetColLen+' \n');
 					}
 					
 					var maxColLen = Math.max(sourceColLen,targetColLen);
@@ -229,55 +250,72 @@ VarsqlAPP.vueServiceBean( {
 					var sourceColMap = {};
 					var targetColMap = {};
 					var sourceColItem, targetColItem;
+					var colNameMap = {};
 					for(var i =0 ; i< maxColLen; i++){
 						sourceColItem = sourceColList[i];
-						if(sourceColItem) sourceColMap[sourceColItem.name] = sourceColItem;
+						if(sourceColItem){
+							sourceColMap[sourceColItem.name] = sourceColItem;
+							colNameMap[sourceColItem.name] = '';
+						}
 					
 						targetColItem= targetColList[i];
-						if(targetColItem) targetColMap[targetColItem.name] = targetColItem;
+						if(targetColItem){
+							targetColMap[targetColItem.name] = targetColItem;
+							colNameMap[targetColItem.name] = '';
+						}
 					}
 					
-					for(var key in sourceColMap){
-						sourceColItem = sourceColMap[key];
-						targetColItem = targetColMap[key];
+					objectColNameMap[key] = colNameMap; // table columun name 저장. 
+					
+					for(var sourceColKey in sourceColMap){
+						sourceColItem = sourceColMap[sourceColKey];
+						targetColItem = targetColMap[sourceColKey];
 						
-						delete targetColMap[key];
+						delete targetColMap[sourceColKey];
 						
 						if(sourceColItem != targetColItem){
 							if(targetColItem){
+								var firstFlag = true;
+								var addFlag = false; 
 								for(var colItemKey in sourceColItem){
-									if(sourceColItem[colItemKey] !=targetColItem[colItemKey]){
-										compareFlag = true; 
-										compareLog.push(colItemKey +' 대상 : '+sourceColItem[colItemKey]+ ' 타켓 : '+targetColItem[colItemKey]);
+									if($.trim(sourceColItem[colItemKey]) != $.trim(targetColItem[colItemKey])){
+										addFlag = true; 
+										compareFlag = true;
+										compareLog.push((firstFlag===true ? '  컬럼 : '+sourceColKey+' \t ' : '')+colItemKey +' 대상 : ['+sourceColItem[colItemKey]+ '] 타켓 : ]'+targetColItem[colItemKey]+'],  ');
+										
+										firstFlag = false;
 									}
 								}
+								if(addFlag) compareLog.push('\n');
 							}else{
 								compareFlag = true; 
-								compareLog.push('대상 테이블에 ['+key+ '] 컬럼이 존재 하지 않습니다.');
+								compareLog.push('대상 테이블에 ['+sourceColKey+ '] 컬럼이 존재 하지 않습니다.\n');
 							}
 						}
 					}
 					
-					for(var key in targetColMap){
+					for(var targetColKey in targetColMap){
 						compareFlag = true; 
-						compareLog.push('타켓 테이블에 ['+key+ '] 컬럼이 존재 하지 않습니다.');
+						compareLog.push('타켓 테이블에 ['+targetColKey+ '] 컬럼이 존재 하지 않습니다.\n');
 					}
 					
-					compareLog.push(key +' end ---------');
+					compareLog.push('</div>');
 					
 					if(compareFlag){
-						compareResult.push(compareLog.join('\n'))
+						compareResult.push(compareLog.join(''))
 					}
 				}else {
-					compareResult.push('대상에 '+key+' 테이블이 존재 하지 않습니다 ');
+					compareResult.push('대상에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 ');
 				}
 				
-				delete targetNameMap[key];
+				delete targetCompareNameMap[key];
 			}
 			
-			for(var key in targetNameMap){
+			this.compareItem.objectColNameMap =objectColNameMap;
+			
+			for(var key in targetCompareNameMap){
 				compareFlag = true; 
-				compareLog.push('타켓에 ['+key+ '] 테이블이 존재 하지 않습니다.');
+				compareLog.push('타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.\n');
 			}
 			
 			return compareResult.join('\n');
@@ -297,6 +335,13 @@ VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#targetObjectMeta').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
 					,asideOptions :{
 						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 					}
@@ -309,31 +354,7 @@ VarsqlAPP.vueServiceBean( {
 						click : function (idx, item){
 							var sObj = $(this);
 							
-							$.pubGrid('#sourceColumn', {
-								headerOptions : {redraw : false}
-								,asideOptions :{lineNumber : {enable : true	,width : 30}}
-								,tColItem : [
-									{ label: '컬럼명', key: 'name',width:80 },
-									{ label: '데이타타입', key: 'typeAndLength' },
-									{ label: 'Key', key: 'constraints', align:'center', width:45},
-									{ label: '기본값', key: 'defaultVal',width:45},
-									{ label: '널여부', key: 'nullable',width:45},
-									{ label: '설명', key: 'comment',width:45}
-								]
-								,tbodyItem : item.colList
-								,scroll :{
-									vertical : {
-										onUpdate : function (item){
-											$.pubGrid('#targetColumn').moveVScrollPosition(item.position,'',false);
-										}
-									}
-									,horizontal :{
-										onUpdate : function (item){ 
-											$.pubGrid('#targetColumn').moveHScrollPosition(item.position,'',false);
-										}
-									}
-								}
-							});
+							_self.tableObjectMetaView(item);
 						}
 					}
 					,scroll :{
@@ -360,6 +381,13 @@ VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#sourceObjectMeta').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
 					,asideOptions :{
 						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 					}
@@ -370,24 +398,7 @@ VarsqlAPP.vueServiceBean( {
 					,tbodyItem :itemArr
 					,rowOptions :{
 						click : function (idx, item){
-							
-							$.pubGrid('#targetColumn', {
-								headerOptions : {redraw : false}
-								,asideOptions :{lineNumber : {enable : true	,width : 30}}
-								,tColItem : [
-									{ label: '컬럼명', key: 'name',width:80 },
-									{ label: '데이타타입', key: 'typeAndLength' },
-									{ label: 'Key', key: 'constraints', align:'center', width:45},
-									{ label: '기본값', key: 'defaultVal',width:45},
-									{ label: '널여부', key: 'nullable',width:45},
-									{ label: '설명', key: 'comment',width:45}
-								]
-								,tbodyItem : item.colList
-								,rowOptions :{
-									
-								}
-							});
-							
+							_self.tableObjectMetaView(item);
 						}
 					}
 					,scroll :{
@@ -401,6 +412,172 @@ VarsqlAPP.vueServiceBean( {
 								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.position,'',false);
 							}
 						}
+					}
+				});
+			}
+		}
+		// 테이블  column 비교. 
+		, tableObjectMetaView:  function (viewItem){
+			
+			var tblName = viewItem;
+			if(typeof viewItem==='object'){
+				tblName = viewItem.name;
+			}
+			
+			this.compareObjectName = tblName;
+			
+			var sourceItem = this.compareItem.sourceNameMap[tblName]||{}; 
+			var targetItem = this.compareItem.targetNameMap[tblName] ||{};
+			
+			var sourceColList = sourceItem.colList||[];
+			var targetColList = targetItem.colList||[];
+			
+			var compareSourceColList =sourceColList;
+			var compareTargetColList =targetColList;
+			
+			if(sourceColList.length > 0  && targetColList.length > 0){
+				
+				compareSourceColList =[];
+				compareTargetColList =[];
+				
+				var maxLen = Math.max(sourceColList.length,targetColList.length);
+				
+				var sourceColMap={};
+				var targetColMap={};
+				
+				var colNameMap = {};
+				
+				for(var i =0 ; i < maxLen; i++){
+					var sourceColItem = sourceColList[i];
+					if(sourceColItem){
+						sourceColMap[sourceColItem.name] = sourceColItem;
+						colNameMap[sourceColItem.name] = '';
+					}
+				
+					var targetColItem= targetColList[i];
+					if(targetColItem){
+						targetColMap[targetColItem.name] = targetColItem;
+						colNameMap[targetColItem.name] = '';
+					}
+				}
+				
+				for(var key in colNameMap){
+					var sourceCol = sourceColMap[key]||{'__ne' :true};
+					var targetCol = targetColMap[key]||{'__ne' :true};
+					
+					for(var colKey in sourceCol){
+						if($.trim(sourceCol[colKey]) != $.trim(targetCol[colKey])){
+							sourceCol[colKey+'_ne'] = true;
+							targetCol[colKey+'_ne'] = true
+							sourceCol['__ne'] = true;
+							targetCol['__ne'] = true
+						}
+					}
+					
+					compareSourceColList.push(sourceCol);
+					compareTargetColList.push(targetCol);
+				}
+			}
+			
+			var errorFormatter =  function (item){
+				if(item.item[item.colInfo.key +'_ne']){
+					return '<span style="color:red;">'+item.item[item.colInfo.key]+'</span>';
+				}else{
+					if(typeof item.item[item.colInfo.key] ==='undefined'){
+						return '<span style="color:red;">empty</span>';;
+					}else{
+						return item.item[item.colInfo.key];
+					}
+				}
+			}
+			
+			var sourceColumnGridObj = $.pubGrid('#sourceColumn');
+			if(sourceColumnGridObj){
+				sourceColumnGridObj.setData(compareSourceColList,'reDraw');
+			}else{
+				$.pubGrid('#sourceColumn', {
+					asideOptions :{lineNumber : {enable : true	,width : 30}}
+					,tColItem : [
+						{ label: '컬럼명', key: 'name',width:80 , render : 'html',formatter : errorFormatter},
+						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
+						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
+						{ label: '기본값', key: 'defaultVal',width:45 , render : 'html',formatter : errorFormatter},
+						{ label: '널여부', key: 'nullable',width:45 , render : 'html',formatter : errorFormatter},
+						{ label: '설명', key: 'comment',width:45 , render : 'html',formatter : errorFormatter}
+					]
+					,rowOptions :{
+						addStyle :function (a){
+							return a['__ne'] ? 'background:#fbdcdc;' :'';
+						}
+					}
+					,tbodyItem : compareSourceColList
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#targetColumn').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#targetColumn').moveVScrollPosition(item.position,'',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#targetColumn').moveHScrollPosition(item.position,'',false);
+							}
+						}
+					}
+					,message : {
+						empty : '테이블이 존재 하지 않습니다.'
+					}
+				});
+			}
+			
+			var targetColumnGridObj = $.pubGrid('#targetColumn');
+			
+			if(targetColumnGridObj){
+				targetColumnGridObj.setData(compareTargetColList,'reDraw');
+			}else{
+				$.pubGrid('#targetColumn', {
+					asideOptions :{lineNumber : {enable : true	,width : 30}}
+					,tColItem : [
+						{ label: '컬럼명', key: 'name',width:80, render : 'html',formatter : errorFormatter},
+						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
+						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
+						{ label: '기본값', key: 'defaultVal',width:45, render : 'html',formatter : errorFormatter},
+						{ label: '널여부', key: 'nullable',width:45, render : 'html',formatter : errorFormatter},
+						{ label: '설명', key: 'comment',width:45, render : 'html',formatter : errorFormatter}
+					]
+					,rowOptions :{
+						addStyle :function (a){
+							return a['__ne'] ? 'background:#fbdcdc;' :'';
+						}
+					}
+					,tbodyItem : compareTargetColList
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#sourceColumn').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#sourceColumn').moveVScrollPosition(item.position,'',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#sourceColumn').moveHScrollPosition(item.position,'',false);
+							}
+						}
+					}
+					,message : {
+						empty : '테이블이 존재 하지 않습니다.'
 					}
 				});
 			}

@@ -546,3 +546,6 @@ ul.alert-dropdown {
 .pub-select-item{
 	cursor:pointer;
 }
+.column-compare-log{
+	padding-left:10px;
+}
