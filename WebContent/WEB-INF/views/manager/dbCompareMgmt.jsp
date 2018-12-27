@@ -281,7 +281,7 @@ VarsqlAPP.vueServiceBean( {
 									if($.trim(sourceColItem[colItemKey]) != $.trim(targetColItem[colItemKey])){
 										addFlag = true; 
 										compareFlag = true;
-										compareLog.push((firstFlag===true ? '  컬럼 : '+sourceColKey+' \t ' : '')+colItemKey +' 대상 : ['+sourceColItem[colItemKey]+ '] 타켓 : ]'+targetColItem[colItemKey]+'],  ');
+										compareLog.push((firstFlag===true ? '  컬럼 : '+sourceColKey+' \t ' : '')+colItemKey +' 대상 : ['+sourceColItem[colItemKey]+ '] 타켓 : ['+targetColItem[colItemKey]+'], ');
 										
 										firstFlag = false;
 									}
