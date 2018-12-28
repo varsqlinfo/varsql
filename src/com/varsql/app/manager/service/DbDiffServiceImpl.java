@@ -94,14 +94,7 @@ public class DbDiffServiceImpl{
 					, vtConnRVO.getVDBVERSION()));
 			
 			dpi.setGubun(paramMap.getString("objectType"));
-			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
-			
-			System.out.println("111111111111111111111111");
-			System.out.println(dpi);
-			System.out.println("111111111111111111111111");
-			
-			
 			resultObject.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(dpi.getGubun()).getObjName(), dpi));
 		}
 		

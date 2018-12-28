@@ -1,6 +1,32 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
+<style>
+
+[data-compare-area="grid"]{
+	display:block;
+}
+[data-compare-mode="text"] [data-compare-area="grid"]{
+	display:none;
+}
+
+[data-compare-area="text"]{
+	display:none;
+}
+
+[data-compare-mode="text"] [data-compare-area="text"]{
+	display:block;
+}
+
+.CodeMirror-merge, .CodeMirror-merge .CodeMirror {
+    height: 650px;
+}
+
+.CodeMirror-merge {
+    box-sizing: content-box;
+}
+
+</style>
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
@@ -8,8 +34,6 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-	
-	
 	    			
 <div class="row" id="varsqlVueArea">
 
@@ -19,7 +43,7 @@
 				대상
 				<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:30%">
 					<option value="">선택</option>
-						<option  v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+					<option  v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
 				</select>
 				타켓
 				<select class="input-sm" v-model="diffItem.target" style="width:30%">
@@ -37,8 +61,8 @@
 			</div>
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-xs-6">
-						<div class="panel panel-default">
+					<div class="col-xs-5">
+						<div class="panel panel-default" style="height:250px;padding-bottom:10px;margin-bottom:10px;">
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
 									<div style="margin:3px;">
@@ -58,37 +82,42 @@
 								</div>
 							</div>
 						</div>
-						<div class="panel panel-default">
-							<div style="font-weight:bold;">{{compareObjectName}}&nbsp;</div>
-							<div class="panel-body" style="padding-top:0px;">	
-								<div class="col-xs-6">
-									<div style="margin:3px;">
-										컬럼
-										<div id="sourceColumn" class="row" style="height:200px;">
-										
-										</div>
-									</div>
-								</div>
-								<div class="col-xs-6">
-									<div style="margin:3px;">
-										컬럼
-										<div id="targetColumn" class="row" style="height:200px;">
-										
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6" style="padding-left:0px;">
-						<div class="panel panel-default">
-							<div class="panel-heading">
+						<div>
+							<div class="panel-heading" style="padding:3px;">
 								비교 결과
 							</div>
-							<div class="panel-body" >	
+							<div class="panel-body" style="padding: 0px;">	
 								<pre v-html="compareResult" id="compareResultArea" style="height:400px;overflow:auto;">
 								
 								</pre>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-7" style="padding-left:0px;">
+						<div class="panel panel-default" style="padding-left: 0px; height: 685px;">
+							비교상세 : <span style="font-weight: bold;padding-left:5px;">{{compareObjectName}}&nbsp;</span>
+							<div class="panel-body" style="padding: 5px;" :data-compare-mode="diffItem.objectType != 'table'?'text':''">	
+								<div data-compare-area="grid">
+									<div class="col-xs-6">
+										<div style="margin:3px;">
+											<div class="row">컬럼</div>
+											<div id="sourceColumn" class="row" style="height:550px;">
+											
+											</div>
+										</div>
+									</div>
+									<div class="col-xs-6">
+										<div style="margin:3px;">
+											<div class="row">컬럼</div>
+											<div id="targetColumn" class="row" style="height:550px;">
+											
+											</div>
+										</div>
+									</div>
+								</div>
+								<div data-compare-area="text">
+									<div id="compareTextArea" style="height: 650px;"></div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -111,7 +140,7 @@ VarsqlAPP.vueServiceBean( {
 			,target :''
 			,objectType : ''
 		}
-		,compareObjectName :'select'
+		,compareObjectName :''
 		,objectList : []
 		,sourceItems : false	// 원천 item 목록.
 		,targetItems : false
@@ -124,7 +153,12 @@ VarsqlAPP.vueServiceBean( {
 	,computed: {
 		compareResult : function (){
 			if(this.sourceItems !==false && this.targetItems !== false){
-				return this[this.diffItem.objectType+'Compare'].call(this);
+				var compareFn = this[this.diffItem.objectType+'Compare'];
+				if(compareFn){
+					return compareFn.call(this);
+				}else{
+					return this.otherCompare.call(this);
+				}
 			}
 			
 			return '';
@@ -141,9 +175,17 @@ VarsqlAPP.vueServiceBean( {
 				
 				_self.tableObjectMetaView(tblName);
 			})
+			
+			$('#compareResultArea').on('click','.object-name' , function (e){
+				var sEle = $(this);
+				
+				var objName = sEle.data('object-name');
+				
+				_self.otherMetaView(objName);
+			})
 		}
 		// db object search.
-		,objectListSearch : function(no){
+		,objectListSearch : function(){
 			var _self = this; 
 			
 			var diffItem = _self.diffItem;
@@ -174,7 +216,14 @@ VarsqlAPP.vueServiceBean( {
 					,objectType : objectType
 				}
 				,success: function(resData) {
-					_self[objectType+'ObjectView'].call(_self, resData,'source');
+					
+					var objViewFn = _self[objectType+'ObjectView'];
+					
+					if(objViewFn){
+						objViewFn.call(_self, resData,'source');
+					}else{
+						_self.otherObjectView.call(_self, resData,'source');
+					}
 				}
 			})
 			
@@ -187,7 +236,13 @@ VarsqlAPP.vueServiceBean( {
 					,objectType : objectType
 				}
 				,success: function(resData) {
-					_self[objectType+'ObjectView'].call(_self, resData,'target');
+					var objViewFn = _self[objectType+'ObjectView'];
+					
+					if(objViewFn){
+						objViewFn.call(_self, resData,'target');
+					}else{
+						_self.otherObjectView.call(_self, resData,'target');
+					}
 				}
 			})
 		}
@@ -314,7 +369,6 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 			
 			for(var key in targetCompareNameMap){
-				compareFlag = true; 
 				compareLog.push('타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.\n');
 			}
 			
@@ -582,6 +636,196 @@ VarsqlAPP.vueServiceBean( {
 				});
 			}
 		}
+		,otherObjectView  : function (resData, mode){
+			var _self = this; 
+			
+			if(mode=='source'){
+				var itemArr = resData.items;
+				this.sourceItems = itemArr;
+				$.pubGrid('#sourceObjectMeta',{
+					setting : {
+						enable : true
+						,click : false
+						,enableSearch : true
+						,enableSpeed : true
+					}
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#targetObjectMeta').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
+					,asideOptions :{
+						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					}
+					,tColItem : [
+						{key :'name', label:'Table', width:200, sort:true}
+						,{key :'remarks', label:'설명', sort:true}
+					]
+					,tbodyItem :itemArr
+					,rowOptions :{
+						click : function (idx, item){
+							var sObj = $(this);
+							
+							_self.otherMetaView(item);
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.position,'',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.position,'',false);
+							}
+						}
+					}
+				});
+			}else{
+				var itemArr = resData.items; 
+				this.targetItems = itemArr;
+				
+				$.pubGrid('#targetObjectMeta',{
+					setting : {
+						enable : true
+						,click : false
+						,enableSearch : true
+						,enableSpeed : true
+					}
+					,headerOptions:{
+						resize:{
+							update :  function (item){
+								$.pubGrid('#sourceObjectMeta').setHeaderWidth(item.index , item.width);
+							}
+						}
+					}
+					,asideOptions :{
+						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					}
+					,tColItem : [
+						{key :'name', label:'Table', width:200, sort:true}
+						,{key :'remarks', label:'설명', sort:true}
+					]
+					,tbodyItem :itemArr
+					,rowOptions :{
+						click : function (idx, item){
+							_self.otherMetaView(item);
+						}
+					}
+					,scroll :{
+						vertical : {
+							onUpdate : function (item){
+								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.position, '',false);
+							}
+						}
+						,horizontal :{
+							onUpdate : function (item){ 
+								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.position,'',false);
+							}
+						}
+					}
+				});
+			}
+		}
+		,otherCompare : function (){
+			var sourceItems =this.sourceItems
+			,targetItems = this.targetItems;
+		
+			var maxLen = Math.max(sourceItems.length,targetItems.length);
+			
+			var sourceNameMap = {}, targetNameMap={}, targetCompareNameMap={};
+			var sourceItem, targetItem;
+			for(var i =0 ;i < maxLen; i++){
+				sourceItem = sourceItems[i];
+				if(sourceItem) sourceNameMap[sourceItem.name] = sourceItem;
+				
+				targetItem = targetItems[i];
+				if(targetItem) {
+					targetCompareNameMap[targetItem.name] = targetItem;
+					targetNameMap[targetItem.name] = targetItem;
+				}
+			}
+			
+			this.compareItem.sourceNameMap = sourceNameMap; 
+			this.compareItem.targetNameMap = targetNameMap;
+			
+			var compareResult = [];
+			var objectColNameMap = {};
+			
+			var sourceColList , targetColList;
+			var compareLog;
+			var compareFlag = false; 
+			for(var key in sourceNameMap){
+				
+				compareLog = [];
+				compareFlag = false; 
+				if(targetCompareNameMap.hasOwnProperty(key)){
+					compareLog.push('<a href="javascript:;" class="table-info object-name" data-object-name="'+key+'">'+key +'</a> 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
+					if(sourceItem) sourceItem = sourceNameMap[key];
+					targetItem = targetCompareNameMap[key];
+					
+					if(sourceItem.remarks != targetItem.remarks){
+						compareFlag = true; 
+						compareLog.push('설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetCompareNameMap[key].remark +'\n');
+					}
+					
+					compareLog.push('</div>');
+					
+					if(compareFlag){
+						compareResult.push(compareLog.join(''))
+					}
+				}else {
+					compareResult.push('대상에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 ');
+				}
+				
+				delete targetCompareNameMap[key];
+			}
+			
+			this.compareItem.objectColNameMap =objectColNameMap;
+			
+			for(var key in targetCompareNameMap){
+				compareLog.push('타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.\n');
+			}
+			
+			return compareResult.join('\n');
+		}
+		,otherMetaView :  function (viewItem){
+			var objName = viewItem;
+			if(typeof viewItem==='object'){
+				objName = viewItem.name;
+			}
+			
+			this.compareObjectName = objName;
+			
+			var sourceItem = this.compareItem.sourceNameMap[objName]||{}; 
+			var targetItem = this.compareItem.targetNameMap[objName] ||{};
+			
+			var compareEle =document.getElementById('compareTextArea'); 
+			compareEle.innerHTML = '';
+			
+			var mergeView = CodeMirror.MergeView(compareEle, {
+				value: objName,
+				orig: objName,
+				lineNumbers: true,
+				mode: "text/x-sql",
+				highlightDifferences: true,
+				connect: 'align',
+				collapseIdentical: false
+			});
+			
+// 			var height = 650; 
+// 			if (mergeView.leftOriginal()){
+// 				mergeView.leftOriginal().setSize(null, height);
+// 			}
+// 			mergeView.editor().setSize(null, height);
+// 			if (mergeView.rightOriginal()){
+// 				mergeView.rightOriginal().setSize(null, height);
+// 			}
+			
+		}
 		,sourceChange : function (val){
 			var _self = this; 
 			
@@ -599,87 +843,31 @@ VarsqlAPP.vueServiceBean( {
 	}
 });
 
-
-(function (){
-
-	function getClass(val) {
-		return Object.prototype.toString.call(val)
-			.match(/^\[object\s(.*)\]$/)[1];
-	};
-
-	function getType(val) {
-
-		if (val === undefined) return 'undefined';
-		if (val === null) return 'null';
-
-		var type = typeof val;
-
-		if (type === 'object'){
-			type = getClass(val).toLowerCase();
-		}
-
-		if (type === 'number') {
-			return (val.toString().indexOf('.') > 0) ? 'float' : 'integer';
-		}
-
-		return type;
-	};
-
-	function equal(a, b) {
-		if (a !== b) {
-			var atype = getType(a), btype = getType(b);
-
-			if (atype === btype)
-				return _equal.hasOwnProperty(atype) ? _equal[atype](a, b) : _equal.other(a, b);
-
-			return false;
-		}
-
-		return true;
+function mergeViewHeight(mergeView) {
+	  function editorHeight(editor) {
+	    if (!editor) return 0;
+	    return editor.getScrollInfo().height;
+	  }
+	  return Math.max(editorHeight(mergeView.leftOriginal()),
+	                  editorHeight(mergeView.editor()),
+	                  editorHeight(mergeView.rightOriginal()));
 	}
 
-	var _equal = {
-		'array' : function(a, b) {
-			if (a === b)
-				return true;
-			if (a.length !== b.length)
-				return false;
-			for (var i = 0; i < a.length; i++){
-				if(!equal(a[i], b[i])) return false;
-			};
-			return true;
-		}
-		,'object' : function(a, b) {
-			if (a === b)
-				return true;
-			for (var i in a) {
-				if (b.hasOwnProperty(i)) {
-					if (!equal(a[i],b[i])) return false;
-				} else {
-					return false;
-				}
-			}
+	function resize(mergeView) {
+	  var height = mergeViewHeight(mergeView);
+	  
+	  console.log('height : ', height);
+	  for(;;) {
+	    if (mergeView.leftOriginal())
+	      mergeView.leftOriginal().setSize(null, height);
+	    mergeView.editor().setSize(null, height);
+	    if (mergeView.rightOriginal())
+	      mergeView.rightOriginal().setSize(null, height);
 
-			for (var i in b) {
-				if (!a.hasOwnProperty(i)) {
-					return false;
-				}
-			}
-			return true;
-		}
-		,'date' : function(a, b) {
-			return a.getTime() === b.getTime();
-		}
-		,'regexp' : function(a, b) {
-			return a.toString() === b.toString();
-		}
-		,'other' : function (a, b){
-			return a==b; 
-		}
+	    var newHeight = mergeViewHeight(mergeView);
+	    if (newHeight >= height) break;
+	    else height = newHeight;
+	  }
+	  mergeView.wrap.style.height = height + "px";
 	}
-
-	window.VARSQLCompare = function (a,b){
-		return equal(a,b);
-	};
-	})()
 </script>

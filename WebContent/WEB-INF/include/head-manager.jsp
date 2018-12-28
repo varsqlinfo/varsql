@@ -22,6 +22,9 @@
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css" rel="stylesheet" type="text/css">
 
+<link href="${pageContextPath}/webstatic/css/editor/codemirror.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/editor/merge.css" rel="stylesheet" type="text/css">
+
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
@@ -42,6 +45,11 @@
 
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
+
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/diff/diff_match_patch.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/merge/merge.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js"></script>
 
