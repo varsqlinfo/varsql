@@ -24,6 +24,8 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.beans.BaseObjectInfo;
+import com.varsql.core.db.beans.DDLCreateOption;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.varsql.core.db.report.VarsqlReportConfig;
 import com.vartech.common.app.beans.EnumMapperValue;
@@ -179,6 +181,7 @@ public class ExportServiceImpl{
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
 		StringBuilder allDDLScript = new StringBuilder();
+		DDLCreateOption ddlOption = new DDLCreateOption();
 		while(iter.hasNext()){
 			String objectName = iter.next();
 			
@@ -186,7 +189,12 @@ public class ExportServiceImpl{
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 			
-			allDDLScript.append(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo, objNmArr));
+			List<BaseObjectInfo> ddlList = dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo,ddlOption, objNmArr);
+			
+			for (BaseObjectInfo baseObjectInfo : ddlList) {
+				allDDLScript.append(baseObjectInfo.getCreateScript());
+			}
+			
 			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
 			
 		}

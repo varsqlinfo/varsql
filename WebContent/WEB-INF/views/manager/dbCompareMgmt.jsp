@@ -251,6 +251,8 @@ VarsqlAPP.vueServiceBean( {
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
 			
+			var compareColKey = ['name','typeAndLength','constraints','defaultVal','nullable','comment'];
+			var compareColKeyLength =compareColKey.length;
 			var maxLen = Math.max(sourceItems.length,targetItems.length);
 			
 			var sourceNameMap = {}, targetNameMap={}, targetCompareNameMap={};
@@ -286,7 +288,7 @@ VarsqlAPP.vueServiceBean( {
 					
 					if(sourceItem.remarks != targetItem.remarks){
 						compareFlag = true; 
-						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetCompareNameMap[key].remark +'\n');
+						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : ['+sourceNameMap[key].remarks + '] 타켓 : ['+targetCompareNameMap[key].remarks +'] \n');
 					}
 					
 					sourceColList = sourceItem.colList; 
@@ -332,7 +334,9 @@ VarsqlAPP.vueServiceBean( {
 							if(targetColItem){
 								var firstFlag = true;
 								var addFlag = false; 
-								for(var colItemKey in sourceColItem){
+								var colItemKey;
+								for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
+									colItemKey = compareColKey[colKeyIdx];
 									if($.trim(sourceColItem[colItemKey]) != $.trim(targetColItem[colItemKey])){
 										addFlag = true; 
 										compareFlag = true;

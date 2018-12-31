@@ -1434,16 +1434,17 @@ _ui.dbSchemaObjectServiceMenu ={
 			url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
 			,data:param
 			,success:function (resData){
-					
-				_self._setMetaCache(param.gubun, param.objectName, 'ddl', resData.item);
+				
+				var item = resData.item||{};
+				_self._setMetaCache(param.gubun, param.objectName, 'ddl', item.createScript);
 				
 				if(VARSQL.isFunction(callbackFn)){
-					callbackFn.call(_self, resData.item);
+					callbackFn.call(_self, item.createScript);
 				}else{
 					if(sObj.gubunKey=='ddl_copy'){
-						_ui.text.copy(resData.item);
+						_ui.text.copy(item.createScript);
 					}else{
-						_ui.SQL.addSqlEditContent(resData.item , false);
+						_ui.SQL.addSqlEditContent(item.createScript, false);
 					}
 				}
 			}
