@@ -36,12 +36,18 @@
 </div>
 	    			
 <div class="row" id="varsqlVueArea">
-	<div  style="z-index:100;position:absolute;width:100%; height:100%;">
-		<table>
-			
+	<div :class="loading==true?'':'hidden'" style="z-index:100;position:absolute;width:100%; height:100%;">
+		<div style="width:100%;height:100%;background-color: #d3caca;opacity: 0.3;position: absolute;top: 0px;left: 0px;"></div>
+		<table style="z-index:1001;height:100%;width:100%;">
+			<tr>
+				<td>
+					<div style="text-align:center;">
+						<div>로드중입니다.</div>
+						<img src="/vsql/webstatic/imgs/progressLoader.gif">
+    				</div>
+				</td>
+			</tr>
 		</table>
-		<div style="height:100%;background-repeat:no-repeat;background-image:url(${pageContext.request.contextPath}/webstatic/imgs/progressLoader.gif);background-position:center center;    background-color: #d3caca;
-    opacity: 0.3;"></div>
 	</div>
 	
 	<div class="col-xs-12">
@@ -147,6 +153,7 @@ VarsqlAPP.vueServiceBean( {
 			,target :''
 			,objectType : ''
 		}
+		,loading:false
 		,compareObjectName :''
 		,objectList : []
 		,sourceItems : false	// 원천 item 목록.
@@ -161,6 +168,8 @@ VarsqlAPP.vueServiceBean( {
 		compareResult : function (){
 			if(this.sourceItems !==false && this.targetItems !== false){
 				var compareFn = this[this.diffItem.objectType+'Compare'];
+				
+				this.loading =false; 
 				if(compareFn){
 					return compareFn.call(this);
 				}else{
@@ -210,6 +219,7 @@ VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 			
+			this.loading =true; 
 			_self.targetItems = false;
 			_self.sourceItems = false;
 			
