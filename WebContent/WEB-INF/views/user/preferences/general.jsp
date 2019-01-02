@@ -109,7 +109,7 @@ var generalMain = {
 		var params  =$('#writeForm').serializeJSON();
 		
 		VARSQL.req.ajax({
-			url: {gubun:VARSQL.uri.user, url:'/preferences/userInfoSave'},
+			url: {type:VARSQL.uri.user, url:'/preferences/userInfoSave'},
 			cache: false,
 			type:"post",
 			data:params,

@@ -93,26 +93,26 @@ public class DatabaseServiceImpl{
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();
-		String gubun = databaseParamInfo.getGubun();
+		String objectType = databaseParamInfo.getObjectType();
 		
 		try{
 			//System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
-			if(DBObjectType.TABLE.getObjName().equals(gubun) && databaseParamInfo.isLazyLoad()){
+			if(DBObjectType.TABLE.getObjName().equals(objectType) && databaseParamInfo.isLazyLoad()){
 				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
-					result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+					result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjName(),databaseParamInfo));
 				} else {
-					result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+					result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(objectType).getObjName(),databaseParamInfo));
 				}
 			}else{
-				result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+				result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjName(),databaseParamInfo));
 			}
 		}catch(Exception e){
-			logger.error("dbObjectList gubun : [{}]",gubun);
+			logger.error("dbObjectList objectType : [{}]",objectType);
 			logger.error("dbObjectList ", e);
 			try{
-				result.setItemList(MetaControlBean.OTHER.getDBObjectMeta(DBObjectType.getDBObjectType(gubun).getObjName(),databaseParamInfo));
+				result.setItemList(MetaControlBean.OTHER.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjName(),databaseParamInfo));
 			}catch(Exception subE){
-				logger.error("dbObjectList serverName : [{}]",gubun);
+				logger.error("dbObjectList serverName : [{}]",objectType);
 				logger.error("dbObjectList ", subE);
 				throw subE; 
 			}
@@ -137,7 +137,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(databaseParamInfo.getObjectType()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("dbObjectMetadataList : ", e);
 		}
@@ -160,7 +160,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemOne(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( databaseParamInfo.getGubun()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemOne(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( databaseParamInfo.getObjectType()).getObjName(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("createDDL : ", e);
 		}

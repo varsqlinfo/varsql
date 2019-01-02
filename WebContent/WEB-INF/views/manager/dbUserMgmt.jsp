@@ -71,7 +71,7 @@ var dbUserMgmt ={
 		
 		VARSQL.req.ajax({
 			data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbList'}
+			,url : {type:VARSQL.uri.manager, url:'/dbnuser/dbList'}
 			,success:function (resData){
 					
 				var result = resData.items;
@@ -116,7 +116,7 @@ var dbUserMgmt ={
 			data:{
 				vconnid : vconnID
 			}
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/dbnUserMappingList'}
+			,url : {type:VARSQL.uri.manager, url:'/dbnuser/dbnUserMappingList'}
 			,success:function (resData){
 				var result = resData.items;
 	    		var resultLen = result.length;
@@ -162,7 +162,7 @@ var dbUserMgmt ={
 		
 		VARSQL.req.ajax({
 			data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/dbnuser/addDbUser'}
+			,url : {type:VARSQL.uri.manager, url:'/dbnuser/addDbUser'}
 			,success:function (response){
 				_self.dbUserList(param.vconnid);
 			}

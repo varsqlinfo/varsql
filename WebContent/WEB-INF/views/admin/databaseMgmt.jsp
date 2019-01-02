@@ -243,7 +243,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dblist'}
+				url : {type:VARSQL.uri.admin, url:'/main/dblist'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;
@@ -266,7 +266,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbDetail'}
+				url : {type:VARSQL.uri.admin, url:'/main/dbDetail'}
 				,data : param
 				,loadSelector : '.detail_area_wrapper'
 				,success: function(resData) {
@@ -283,6 +283,7 @@ VarsqlAPP.vueServiceBean( {
 		,setDetailItem : function (item){
 			
 			if(VARSQL.isUndefined(item)){
+				this.viewMode = 'view';
 				this.detailFlag = false;
 				this.detailItem ={
 					EXPORTCOUNT: 1000
@@ -323,7 +324,7 @@ VarsqlAPP.vueServiceBean( {
 					param.poolInit = poolInitVal;
 					
 					_this.$ajax({
-						url : {gubun:VARSQL.uri.admin, url:'/main/dbSave'}
+						url : {type:VARSQL.uri.admin, url:'/main/dbSave'}
 						,data : param 
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
@@ -356,7 +357,7 @@ VarsqlAPP.vueServiceBean( {
 					param.poolInit = poolInitVal;
 					
 					_this.$ajax({
-						url : {gubun:VARSQL.uri.admin, url:'/main/dbOptSave'}
+						url : {type:VARSQL.uri.admin, url:'/main/dbOptSave'}
 						,data : param 
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
@@ -390,7 +391,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbDelete'}
+				url : {type:VARSQL.uri.admin, url:'/main/dbDelete'}
 				,data: {
 					vconnid : _this.detailItem.VCONNID
 				}
@@ -410,7 +411,7 @@ VarsqlAPP.vueServiceBean( {
 			param.vdriver = $('#vdriver option:selected').attr('data-driver');
 			
 			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}
+				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}
 				,data:param
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
@@ -436,7 +437,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			this.$ajax({
-				url : {gubun:VARSQL.uri.admin, url:'/main/dbDriver'}
+				url : {type:VARSQL.uri.admin, url:'/main/dbDriver'}
 				,data : param 
 				,success:function (resData){
 					

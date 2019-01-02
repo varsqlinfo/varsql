@@ -42,7 +42,7 @@ var qnaMgmt ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.manager, url:'/qnaMgmtList'}
+			,url : {type:VARSQL.uri.manager, url:'/qnaMgmtList'}
 			,dataType:'JSON'
 			,success:function (response){
 				try{
@@ -105,7 +105,7 @@ var qnaMgmt ={
 			VARSQL.req.ajax({
 				type:'POST'
 				,data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/updQna'}
+				,url : {type:VARSQL.uri.manager, url:'/updQna'}
 				,dataType:'JSON'
 				,success:function (response){
 					if(response.result){

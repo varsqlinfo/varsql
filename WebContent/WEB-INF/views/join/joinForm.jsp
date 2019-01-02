@@ -117,7 +117,7 @@ var joinForm = {
 			var tmpVal = $(this).val(); 
 			
 			VARSQL.req.ajax({
-				url: {gubun:VARSQL.uri.join, url:'/idCheck'},
+				url: {type:VARSQL.uri.join, url:'/idCheck'},
 				data:{
 					uid : tmpVal
 				},
@@ -217,7 +217,7 @@ var joinForm = {
 		var params  =$('#joinForm').serializeJSON();
 		
 		VARSQL.req.ajax({
-			url: {gubun:VARSQL.uri.join, url:'/save'},
+			url: {type:VARSQL.uri.join, url:'/save'},
 			cache: false,
 			type:"post",
 			data:params,

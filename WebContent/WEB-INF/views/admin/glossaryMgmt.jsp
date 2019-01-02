@@ -140,7 +140,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				data:param
-				,url:{gubun:VARSQL.uri.user, url:'/preferences/deleteMsg'}
+				,url : {type:VARSQL.uri.user, url:'/preferences/deleteMsg'}
 				,success:function (response){
 					_self.search();
 				}
@@ -160,7 +160,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.user, url:'/preferences/listMsg'}
+				url : {type:VARSQL.uri.user, url:'/preferences/listMsg'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;

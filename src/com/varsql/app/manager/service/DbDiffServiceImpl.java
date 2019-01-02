@@ -1,23 +1,22 @@
 package com.varsql.app.manager.service;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.common.beans.VtconnectionRVO;
 import com.varsql.app.common.dao.CommonDAO;
-import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.UUIDUtil;
-import com.varsql.core.configuration.Configuration;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.beans.BaseObjectInfo;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
+import com.varsql.core.db.beans.ddl.DDLCreateOption;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
-import com.vartech.common.utils.VartechReflectionUtils;
-import com.vartech.common.utils.VartechUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -37,11 +36,13 @@ public class DbDiffServiceImpl{
 	
 	@Autowired
 	CommonDAO commonDAO;
-	/** 
+	
+	/**
+	 * 
 	 * @Method Name  : objectTypeList
-	 * @Method 설명 : db 사용자 목록.
+	 * @Method 설명 : db object type list (table , view 등등) 
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 1. 23. 
+	 * @작성일   : 2019. 1. 2. 
 	 * @변경이력  :
 	 * @param paramMap
 	 * @return
@@ -93,9 +94,25 @@ public class DbDiffServiceImpl{
 					, vtConnRVO.getLAZYLOAD_YN()
 					, vtConnRVO.getVDBVERSION()));
 			
-			dpi.setGubun(paramMap.getString("objectType"));
+			String objectType = paramMap.getString("objectType"); 
+			dpi.setObjectType(objectType);
+			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
-			resultObject.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(dpi.getGubun()).getObjName(), dpi));
+			String objectName = DBObjectType.getDBObjectType(objectType).getObjName(); 
+			if(DBObjectType.TABLE.getObjName().equals(objectName)){
+				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectName, dpi));
+			}else{
+				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectName, dpi);
+				
+				String[] objectNameArr = new String[objectList.size()];
+				
+				int idx =0 ; 
+				for(BaseObjectInfo boi : objectList){
+					objectNameArr[idx] =boi.getName();
+					++idx;
+				}
+				resultObject.setItemList(dbMetaEnum.getDDLScript(objectName, dpi, new DDLCreateOption(), objectNameArr));
+			}
 		}
 		
 		return resultObject;

@@ -219,7 +219,7 @@ VarsqlAPP.vueServiceBean({
 			
 			VARSQL.req.download({
 				type: 'post'
-				,url: {gubun:VARSQL.uri.database, url:'/tools/export/spec/tableExport.vsql'}
+				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport.vsql'}
 				,params : param
 			});
 		}

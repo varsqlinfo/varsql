@@ -172,7 +172,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/stats/logList'}
+				url : {type:VARSQL.uri.manager, url:'/stats/logList'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items || [];

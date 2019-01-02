@@ -287,7 +287,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/user/acceptYn'}
+				,url : {type:VARSQL.uri.manager, url:'/user/acceptYn'}
 				,success:function (response){
 					_self.search();
 				}
@@ -308,7 +308,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/user/blockYn'}
+				,url : {type:VARSQL.uri.manager, url:'/user/blockYn'}
 				,success:function (resData){
 					
 					if(resData.item > 0){
@@ -327,7 +327,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/user/userList'}
+				url : {type:VARSQL.uri.manager, url:'/user/userList'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;
@@ -340,7 +340,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this; 
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/user/userDetail'}
+				url : {type:VARSQL.uri.manager, url:'/user/userDetail'}
 				,data : item
 				,loadSelector : '#main-content'
 				,success: function(resData) {
@@ -355,7 +355,7 @@ VarsqlAPP.vueServiceBean( {
 		// pasword 초기화
 		,initPassword :function(sItem){
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/user/initPassword'}
+				url : {type:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
 					sItem.INITPW = resData.item;
@@ -383,7 +383,7 @@ VarsqlAPP.vueServiceBean( {
 			var param = VARSQL.util.objectMerge({},item);
 			param.mode = mode; 
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/user/removeAuth'}
+				url : {type:VARSQL.uri.manager, url:'/user/removeAuth'}
 				,data : param
 				,success: function(resData) {
 					if(resData.item > 0){

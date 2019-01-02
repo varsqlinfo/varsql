@@ -74,7 +74,7 @@ var databaseUserMgmt = {
 		
 		VARSQL.req.ajax({
 			data:param
-			,url : {gubun:VARSQL.uri.admin, url:'/main/dblist'}
+			,url : {type:VARSQL.uri.admin, url:'/main/dblist'}
 			,success:function (resData){
 					
 				var result = resData.items;
@@ -126,7 +126,7 @@ var databaseUserMgmt = {
 		
 		VARSQL.req.ajax({
 			data:param
-			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/addDbManager'}
+			,url : {type:VARSQL.uri.admin, url:'/managerMgmt/addDbManager'}
 			,success:function (resData){
 				_self.managerList(param.vconnid);
 			}
@@ -140,7 +140,7 @@ var databaseUserMgmt = {
 				vconnid: vconnID
 			}
 			,loadSelector: '.manage-user-detail'
-			,url : {gubun:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
+			,url : {type:VARSQL.uri.admin, url:'/managerMgmt/dbManagerList'}
 			,success:function (resData){
 				
 				var result = resData.items;

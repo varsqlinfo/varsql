@@ -36,19 +36,26 @@
 </div>
 	    			
 <div class="row" id="varsqlVueArea">
-
+	<div  style="z-index:100;position:absolute;width:100%; height:100%;">
+		<table>
+			
+		</table>
+		<div style="height:100%;background-repeat:no-repeat;background-image:url(${pageContext.request.contextPath}/webstatic/imgs/progressLoader.gif);background-position:center center;    background-color: #d3caca;
+    opacity: 0.3;"></div>
+	</div>
+	
 	<div class="col-xs-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				대상
 				<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:30%">
 					<option value="">선택</option>
-					<option  v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+					<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
 				</select>
 				타켓
 				<select class="input-sm" v-model="diffItem.target" style="width:30%">
 					<option value="">선택</option>
-					<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+					<option v-for="(item,index) in dbList" v-if="diffItem.source != item.VCONNID" :value="item.VCONNID">{{item.VNAME}}</option>
 				</select>
 				오브젝트
 				<select class="input-sm" v-model="diffItem.objectType" style="width:10%">
@@ -209,7 +216,7 @@ VarsqlAPP.vueServiceBean( {
 			var objectType = diffItem.objectType; 
 			// source data load
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/diff/objectList'}
+				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
 				,loadSelector : '#sourceObjectMeta'
 				,data :  {
 					vconnid : diffItem.source 
@@ -229,7 +236,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			// target data load
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/diff/objectList'}
+				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
 				,loadSelector : '#targetObjectMeta'
 				,data :  {
 					vconnid : diffItem.target 
@@ -283,7 +290,8 @@ VarsqlAPP.vueServiceBean( {
 				compareFlag = false; 
 				if(targetCompareNameMap.hasOwnProperty(key)){
 					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a>테이블 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
-					if(sourceItem) sourceItem = sourceNameMap[key];
+					
+					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 					
 					if(sourceItem.remarks != targetItem.remarks){
@@ -364,7 +372,7 @@ VarsqlAPP.vueServiceBean( {
 						compareResult.push(compareLog.join(''))
 					}
 				}else {
-					compareResult.push('대상에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 ');
+					compareResult.push('<span style="color:#f60b0b;">대상에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 </span>');
 				}
 				
 				delete targetCompareNameMap[key];
@@ -373,11 +381,10 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 			
 			for(var key in targetCompareNameMap){
-				compareLog.push('타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.\n');
+				compareResult.push('<span style="color:#b55e34;">타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.</span>');
 			}
 			
 			return compareResult.join('\n');
-			
 		}
 		// 테이블 데이터 비교.
 		,tableObjectView : function (resData, mode){
@@ -736,7 +743,7 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,otherCompare : function (){
 			var sourceItems =this.sourceItems
-			,targetItems = this.targetItems;
+				,targetItems = this.targetItems;
 		
 			var maxLen = Math.max(sourceItems.length,targetItems.length);
 			
@@ -768,7 +775,7 @@ VarsqlAPP.vueServiceBean( {
 				compareFlag = false; 
 				if(targetCompareNameMap.hasOwnProperty(key)){
 					compareLog.push('<a href="javascript:;" class="table-info object-name" data-object-name="'+key+'">'+key +'</a> 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
-					if(sourceItem) sourceItem = sourceNameMap[key];
+					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 					
 					if(sourceItem.remarks != targetItem.remarks){
@@ -782,7 +789,7 @@ VarsqlAPP.vueServiceBean( {
 						compareResult.push(compareLog.join(''))
 					}
 				}else {
-					compareResult.push('대상에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 ');
+					compareResult.push('<span style="color:#f60b0b;">대상에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 </span>');
 				}
 				
 				delete targetCompareNameMap[key];
@@ -791,7 +798,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 			
 			for(var key in targetCompareNameMap){
-				compareLog.push('타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.\n');
+				compareResult.push('<span style="color:#b55e34;">타켓에 [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.</span>');
 			}
 			
 			return compareResult.join('\n');
@@ -805,14 +812,14 @@ VarsqlAPP.vueServiceBean( {
 			this.compareObjectName = objName;
 			
 			var sourceItem = this.compareItem.sourceNameMap[objName]||{}; 
-			var targetItem = this.compareItem.targetNameMap[objName] ||{};
+			var targetItem = this.compareItem.targetNameMap[objName]||{};
 			
 			var compareEle =document.getElementById('compareTextArea'); 
 			compareEle.innerHTML = '';
 			
 			var mergeView = CodeMirror.MergeView(compareEle, {
-				value: objName,
-				orig: objName,
+				value: (sourceItem.createScript||''),
+				orig: (targetItem.createScript||''),
 				lineNumbers: true,
 				mode: "text/x-sql",
 				highlightDifferences: true,
@@ -834,7 +841,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this; 
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/diff/objectType'}
+				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}
 				,data : {
 					vconnid : val
 				}
@@ -847,31 +854,4 @@ VarsqlAPP.vueServiceBean( {
 	}
 });
 
-function mergeViewHeight(mergeView) {
-	  function editorHeight(editor) {
-	    if (!editor) return 0;
-	    return editor.getScrollInfo().height;
-	  }
-	  return Math.max(editorHeight(mergeView.leftOriginal()),
-	                  editorHeight(mergeView.editor()),
-	                  editorHeight(mergeView.rightOriginal()));
-	}
-
-	function resize(mergeView) {
-	  var height = mergeViewHeight(mergeView);
-	  
-	  console.log('height : ', height);
-	  for(;;) {
-	    if (mergeView.leftOriginal())
-	      mergeView.leftOriginal().setSize(null, height);
-	    mergeView.editor().setSize(null, height);
-	    if (mergeView.rightOriginal())
-	      mergeView.rightOriginal().setSize(null, height);
-
-	    var newHeight = mergeViewHeight(mergeView);
-	    if (newHeight >= height) break;
-	    else height = newHeight;
-	  }
-	  mergeView.wrap.style.height = height + "px";
-	}
 </script>

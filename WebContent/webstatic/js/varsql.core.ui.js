@@ -296,7 +296,7 @@ _ui.headerMenu ={
 								conuid : _g_options.param.conuid
 							}
 							VARSQL.req.ajax({      
-								url:{gubun:VARSQL.uri.database, url:'/dbInfo.vsql'}
+								url:{type:VARSQL.uri.database, url:'/dbInfo.vsql'}
 								,data: param
 								,success:function (resData){
 									var item = resData.item; 
@@ -412,7 +412,7 @@ _ui.preferences= {
 			,prefVal : JSON.stringify(prefInfo)
 		}
 		VARSQL.req.ajax({      
-			url:{gubun:VARSQL.uri.database, url:'/preferences/save.vsql'}
+			url:{type:VARSQL.uri.database, url:'/preferences/save.vsql'}
 			,data: param
 			,success:function (resData){
 
@@ -897,7 +897,7 @@ _ui.registerPlugin({
 			
 			VARSQL.req.ajax({      
 			    loadSelector : _self.selector
-			    ,url:{gubun:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
+			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
 			    ,data : params 
 			    ,success:function (res){
 			    	_self.gridObj.setData(res.items,'reDraw');
@@ -993,7 +993,7 @@ _ui.registerPlugin({
 			
 			VARSQL.req.ajax({      
 			    loadSelector : _self.selector
-			    ,url:{gubun:VARSQL.uri.plugin, url:'/historySearch.varsql'}
+			    ,url:{type:VARSQL.uri.plugin, url:'/historySearch.varsql'}
 			    ,data : params 
 			    ,success:function (res){
 			    	
@@ -1106,7 +1106,7 @@ _ui.dbSchemaObject ={
 		if(_self.initObjectMenu === false){
 			VARSQL.req.ajax({      
 			    loadSelector : _ui.dbSchemaObjectServiceMenu.options.dbServiceMenuContentId
-			    ,url:{gubun:VARSQL.uri.database, url:'/serviceMenu.varsql'}
+			    ,url:{type:VARSQL.uri.database, url:'/serviceMenu.varsql'}
 			    ,data:tmpParam
 			    ,success:function (resData){
 			    	_self.initObjectMenu = true; 
@@ -1142,7 +1142,6 @@ _ui.dbSchemaObjectServiceMenu ={
 		,metadata_content_areaId:'#metadata_content_area'
 		,metadata_content_areaIdEle:null
 	}
-	,_metaCacheGubun : ''
 	// 왼쪽 메뉴 생성 . 
 	,create: function (options){
 		var _self = this; 
@@ -1333,12 +1332,11 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
-		
-		var param =VARSQL.util.objectMerge({},_self.options.param,{'gubun':$contentId}); 
+		var param =VARSQL.util.objectMerge({},_self.options.param,{'objectType':$contentId}); 
 		
 		VARSQL.req.ajax({      
 			loadSelector : '#dbSchemaObjectArea'
-			,url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+			,url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data : param 
 			,success:function (resData){
 				callMethod.call(_self,resData);
@@ -1349,7 +1347,7 @@ _ui.dbSchemaObjectServiceMenu ={
 			param.custom = {allMetadata : "Y"};
 			
 			VARSQL.req.ajax({      
-				url:{gubun:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+				url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 				,data : param 
 				,success:function (resData){
 					resData.refreshFlag = false; 
@@ -1363,7 +1361,7 @@ _ui.dbSchemaObjectServiceMenu ={
 	,_dbObjectMetadataList : function(param,callMethod,refresh){
 		
 		var _self = this
-			,objType = param.gubun
+			,objType = param.objectType
 			,objName = param.objectName; 
 		
 		if(_self.metaInfoLoadComplete===false){
@@ -1394,7 +1392,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		VARSQL.req.ajax({
 			loadSelector : _self.options.metadataContentAreaWrapId
-			,url:{gubun:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
+			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 			,data:param
 			,success:function (resData){
 				
@@ -1404,12 +1402,14 @@ _ui.dbSchemaObjectServiceMenu ={
 				
 				if(result.length > 0){
 					var callData=result;
-					if(param.gubun=='table' || param.gubun=='view'){
+					var objectType = param.objectType;
+					
+					if('table' == objectType || 'view' == param.objectType){
 						if(result.length > 0){
 							callData = result[0].colList;
 						}
 					}
-					_self._setMetaCache(param.gubun,param.objectName, param.cacheKey,{items:callData}); 
+					_self._setMetaCache(objectType,param.objectName, param.cacheKey,{items:callData}); 
 					callbackFn.call(_self,{items:callData}, param);
 				}
 			}
@@ -1428,15 +1428,15 @@ _ui.dbSchemaObjectServiceMenu ={
 	,_createDDL :function (sObj, callbackFn){
 		var _self = this; 
 		
-		var param =$.extend({},_self.options.param,{'gubun':sObj.gubun ,objectName:sObj.objName});
+		var param =$.extend({},_self.options.param,{'objectType':sObj.objectType ,objectName:sObj.objName});
 		
 		VARSQL.req.ajax({
-			url:{gubun:VARSQL.uri.database, url:'/createDDL.varsql'}
+			url:{type:VARSQL.uri.database, url:'/createDDL.varsql'}
 			,data:param
 			,success:function (resData){
 				
 				var item = resData.item||{};
-				_self._setMetaCache(param.gubun, param.objectName, 'ddl', item.createScript);
+				_self._setMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
 				
 				if(VARSQL.isFunction(callbackFn)){
 					callbackFn.call(_self, item.createScript);
@@ -1504,27 +1504,27 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 	}
 	// 메타 데이타 케쉬된값 꺼내기
-	,_getMetaCache:function (gubun, objecName, tabKey){
+	,_getMetaCache:function (objectType, objecName, tabKey){
 		tabKey =tabKey||'column';
 		
-		var t =this.metadataCache[gubun][objecName][tabKey]; 
+		var t =this.metadataCache[objectType][objecName][tabKey]; 
 		return t?t:null;
 	}
 	// 메타 데이타 셋팅하기.
-	,_setMetaCache:function (gubun, objecName, tabKey, data){
-		if(VARSQL.isUndefined(this.metadataCache[gubun][objecName])){
+	,_setMetaCache:function (objectType, objecName, tabKey, data){
+		if(VARSQL.isUndefined(this.metadataCache[objectType][objecName])){
 			var objData = {};
 			objData[tabKey] = data; 
-			this.metadataCache[gubun][objecName] =objData;
+			this.metadataCache[objectType][objecName] =objData;
 		}else{
-			this.metadataCache[gubun][objecName][tabKey]= data;
+			this.metadataCache[objectType][objecName][tabKey]= data;
 		}
 	}
-	,_removeMetaCache:function (gubun, objecName){
-		if(typeof gubun !='undefined' && typeof objecName != 'undefined'){
-			delete this.metadataCache[gubun][objecName];  
-		}else if(typeof gubun !='undefined'){
-			this.metadataCache[gubun] ={};
+	,_removeMetaCache:function (objectType, objecName){
+		if(typeof objectType !='undefined' && typeof objecName != 'undefined'){
+			delete this.metadataCache[objectType][objecName];  
+		}else if(typeof objectType !='undefined'){
+			this.metadataCache[objectType] ={};
 		}else{
 			this._initCacheObject();
 		}
@@ -1537,7 +1537,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 	
 		var _self = this;
 		try{
-			var $$gubun = 'table';
+			var $$objectType = 'table';
 			var itemArr = resData.items;
 			
 			var len = itemArr.length;
@@ -1557,7 +1557,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					,text :tblName
 				};
 				
-				_self._setMetaCache($$gubun, tblName, 'column', {items:colList});
+				_self._setMetaCache($$objectType, tblName, 'column', {items:colList});
 			})
 			
 			// 테이블 hint;
@@ -1565,7 +1565,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			
 			if(resData.refreshFlag===false) return ; 
 			
-			var tableObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var tableObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				setting : {
 					enable : true
 					,click : false
@@ -1603,7 +1603,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 		    			
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl', refresh);
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl', refresh);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1611,8 +1611,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun= $$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
 							if(key=='dataview_all'){
 								_ui.SQL._sqlData('select * from '+tmpName,false);
@@ -1623,7 +1622,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							}
 							
 							if(key=='refresh'){
-								_self._removeMetaCache(gubun,tmpName);
+								_self._removeMetaCache($$objectType,tmpName);
 								ele.attr('refresh','Y');
 								ele.trigger('click.pubgridrow');
 								return ; 
@@ -1639,10 +1638,10 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 								return ; 
 							}
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName, 'column');
+							var cacheData = _self._getMetaCache($$objectType,tmpName, 'column');
 							
 							var params ={
-								gubun:gubun
+								objectType : $$objectType
 								,gubunKey :key
 								,objName : tmpName 
 								,item : cacheData
@@ -1768,7 +1767,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : 'table'
+							objectType : 'table'
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView('table',itemKey, data);
@@ -1893,7 +1892,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 	_view:function (resData ,reqParam){
 		var _self = this;
 		try{
-			var $$gubun = 'view';	
+			var $$objectType = 'view';	
 			var len = resData.items?resData.items.length:0;
     		
 			var itemArr = resData.items;
@@ -1914,14 +1913,14 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					,text :tblName
 				};
 				
-				_self._setMetaCache($$gubun,tblName,  'column', {items:colList});
+				_self._setMetaCache($$objectType,tblName,  'column', {items:colList});
 				
 			})
 						
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 			
-			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -1944,7 +1943,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						var sObj = $(this);
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1952,21 +1951,20 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
 							if(key =='copy'){
 								gridObj.copyData();
 								return ; 
 							}
 							
-							var cacheData = _self._getMetaCache(gubun, tmpName);
+							var cacheData = _self._getMetaCache($$objectType, tmpName);
 							
 							_self._createScriptSql({
 								gubunKey : key
 								,sqlGenType : sObj.mode
-								,gubun : $$gubun
-								,objName :  _self.selectMetadata[$$gubun]
+								,objectType : $$objectType
+								,objName :  _self.selectMetadata[$$objectType]
 								,item : {
 									items : cacheData.items
 								}
@@ -2039,7 +2037,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $objType
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView($objType,itemKey, data);
@@ -2117,7 +2115,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						_self._createScriptSql({
 							gubunKey : key
 							,sqlGenType : sObj.mode
-							,gubun : $objType
+							,objectType : $objType
 							,objName :  _self.selectMetadata[$objType]
 							,item : {
 								items:cacheData
@@ -2149,17 +2147,17 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'procedure';
+    		var $$objectType = 'procedure';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
+				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
 			})
 			
-			var procedureObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var procedureObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -2175,7 +2173,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		    			
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2183,10 +2181,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache($$objectType,tmpName);
 							
 							if(key =='copy'){
 								procedureObj.copyData();
@@ -2254,7 +2251,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $objType
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView($objType,itemKey, data);
@@ -2333,19 +2330,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'function';
+    		var $$objectType = 'function';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
+				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
 			})
 		
 			var itemArr = resData.items;
     				
-			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#function',{
+			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -2361,7 +2358,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2369,10 +2366,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache($$objectType,tmpName);
 							
 							if(key =='copy'){
 								gridObj.copyData();
@@ -2441,7 +2437,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $objType
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView($objType,itemKey, data);
@@ -2520,19 +2516,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'index';
+    		var $$objectType = 'index';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, 'column', {items:colList});
+				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
 			})
 		
 			var itemArr = resData.items;
     				
-			var indexObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var indexObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -2550,7 +2546,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						var sObj = $(this);
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2558,10 +2554,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache($$objectType,tmpName);
 							
 							if(key =='copy'){
 								indexObj.copyData();
@@ -2626,7 +2621,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $objType
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView($objType,itemKey, data);
@@ -2704,19 +2699,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-    		var $$gubun = 'trigger';
+    		var $$objectType = 'trigger';
     		
 			var itemArr = resData.items;
 			
 			$.each(itemArr , function (_idx, _item){
 				var _name =_item.name;
 				var colList = _item.colList; 
-				_self._setMetaCache($$gubun,_name, {items:colList});
+				_self._setMetaCache($$objectType,_name, {items:colList});
 			})
 		
 			var itemArr = resData.items;
 			
-			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -2735,7 +2730,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		    			
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2743,10 +2738,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache($$objectType,tmpName);
 							
 							if(key =='copy'){
 								triggerGridObj.copyData();
@@ -2799,7 +2793,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					return ; 
 				}else{
 					_self._createDDL({
-						gubun : $objType
+						objectType : $objType
 						,objName :  objectName
 					}, function (data){
 						_self.metadataDDLView($objType,itemKey, data);
@@ -2823,7 +2817,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		var _self = this;
 		try{
 			var len = resData.items?resData.items.length:0;
-			var $$gubun = 'sequence';
+			var $$objectType = 'sequence';
 			
 			var itemArr = resData.items;
 			
@@ -2838,12 +2832,12 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 					})
 				}
 				
-				_self._setMetaCache($$gubun,_name, 'info', {items:colList});
+				_self._setMetaCache($$objectType,_name, 'info', {items:colList});
 			})
 			
 			var itemArr = resData.items;
 			
-			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$gubun,{
+			var triggerGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -2860,7 +2854,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						
 						sObj.addClass('active');
 						
-						_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+						_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2868,10 +2862,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-							,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
-							var cacheData = _self._getMetaCache(gubun,tmpName);
+							var cacheData = _self._getMetaCache($$objectType,tmpName);
 							
 							if(key =='copy'){
 								triggerGridObj.copyData();
@@ -2929,7 +2922,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $objType
 							,objName :  objectName
 						}, function (data){
 							_self.metadataDDLView($objType,itemKey, data);
@@ -3549,7 +3542,7 @@ _ui.SQL = {
 				var params = { searchVal : request };
 				
 				VARSQL.req.ajax({      
-				    url:{gubun:VARSQL.uri.user, url:'/searchUserList.varsql'}
+				    url:{type:VARSQL.uri.user, url:'/searchUserList.varsql'}
 				    ,data: params
 				    ,success:function (data){
 				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
@@ -3819,7 +3812,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var item = res.item; 
@@ -3871,7 +3864,7 @@ _ui.SQL = {
 			
 			VARSQL.req.ajax({      
 				loadSelector : '#sql_editor_wrapper'
-			    ,url:{gubun:VARSQL.uri.sql, url:'/base/saveAllQuery.varsql'}
+			    ,url:{type:VARSQL.uri.sql, url:'/base/saveAllQuery.varsql'}
 			    ,data : params
 			    ,success:function (resData){
 			    	
@@ -3933,7 +3926,7 @@ _ui.SQL = {
 						
 						VARSQL.req.ajax({      
 						    loadSelector : '#sql_editor_wrapper'
-						    ,url:{gubun:VARSQL.uri.user, url:'/sendSql.varsql'}
+						    ,url:{type:VARSQL.uri.user, url:'/sendSql.varsql'}
 						    ,data:params 
 						    ,success:function (resData){
 						    	_self.memoDialog.dialog( "close" );
@@ -3961,7 +3954,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFileTab.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileTab.varsql'}
 		    ,data:_g_options.param 
 		    ,success:function (res){
 		    	var items = res.items
@@ -3997,7 +3990,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var items = res.items;
@@ -4036,7 +4029,7 @@ _ui.SQL = {
 		    				params['sqlId'] = sqlId;
 		    				VARSQL.req.ajax({
 			    			    loadSelector : '#sql_editor_wrapper'
-			    			    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFileDetailInfo.varsql'}
+			    			    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileDetailInfo.varsql'}
 			    			    ,data:params
 			    			    ,success:function (res){
 			    			    	_self.addTabSqlEditorInfo(res.item);
@@ -4057,7 +4050,7 @@ _ui.SQL = {
 		    			params['sqlId'] = sqlId;
 		    			VARSQL.req.ajax({
 		    				loadSelector : '#sql_editor_wrapper'
-		    			    ,url:{gubun:VARSQL.uri.sql, url:'/base/delSqlSaveInfo.varsql'}
+		    			    ,url:{type:VARSQL.uri.sql, url:'/base/delSqlSaveInfo.varsql'}
 		    			    ,data:params 
 		    			    ,success:function (res){
 		    			    	itemArea.remove();
@@ -4324,7 +4317,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
 		    ,data:params 
 		    ,success:function (resData){
 		    	_ui.sqlDataArea.viewResult(resData)             
@@ -4357,7 +4350,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{gubun:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var formatSql = res.item; 
@@ -4372,9 +4365,8 @@ _ui.SQL = {
 	// export data download
 	,exportDataDownload : function (exportInfo){
 		var key = exportInfo.downloadType
-		,gubun = exportInfo.gubun
-		,tmpName = exportInfo.objName
-		,data = exportInfo.item;
+			,tmpName = exportInfo.objName
+			,data = exportInfo.item;
 		
 		var dataArr = data.items;
 		var len = dataArr.length;
@@ -4422,7 +4414,7 @@ _ui.SQL = {
 
 					VARSQL.req.download({
 						type: 'post'
-						,url: {gubun:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
+						,url: {type:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
 						,params:params
 					});
 				}
@@ -4697,7 +4689,7 @@ _ui.sqlDataArea =  {
 						
 						VARSQL.req.download({
 							type: 'post'
-							,url: {gubun:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
+							,url: {type:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
 							,params: params
 						});
 						return 
@@ -4885,7 +4877,6 @@ _ui.JAVA = {
 	createJavaProgram : function (scriptInfo){
 		var _self = this;
 		var key = scriptInfo.gubunKey
-			,gubun = scriptInfo.gubun
 			,tmpName = scriptInfo.objName
 			,data = scriptInfo.item
 			
@@ -4988,7 +4979,6 @@ _ui.JAVA = {
  */
 function generateSQL(scriptInfo){
 	var sqlGenType = scriptInfo.sqlGenType
-		,gubun = scriptInfo.gubun
 		,tmpName = scriptInfo.objName
 		,data = scriptInfo.item
 		,param_yn  = scriptInfo.param_yn;

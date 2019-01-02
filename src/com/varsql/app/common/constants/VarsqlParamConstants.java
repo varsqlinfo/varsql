@@ -29,7 +29,6 @@ public interface VarsqlParamConstants {
 	
 	public String DB_TYPE ="dbtype";
 	public String DB_SCHEMA ="schema";
-	public String DB_GUBUN ="gubun";
 	public String DB_OBJECT_NAME ="name";
 	public String DB_TABLE ="table";
 	

@@ -76,7 +76,7 @@ var guestMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url : {gubun:VARSQL.uri.guest, url:'/detailQna'}
+			,url : {type:VARSQL.uri.guest, url:'/detailQna'}
 			,dataType:'JSON'
 			,success:function (response){
 				var item = response.result?response.result:{};
@@ -112,7 +112,7 @@ var guestMain ={
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:param
-			,url :{gubun:VARSQL.uri.guest, url:'/qnaList'}
+			,url :{type:VARSQL.uri.guest, url:'/qnaList'}
 			,dataType:'JSON'
 			,success:function (response){
 				try{

@@ -77,11 +77,11 @@ _$base.getContextPathUrl =function (url){
 	return url?_$base.contextPath+url:_$base.contextPath;
 }
 
-_$base.url = function (gubun , url){
+_$base.url = function (type , url){
 	if(url !== undefined){
-		return _$base.getContextPathUrl(gubun+ url);
+		return _$base.getContextPathUrl(type+ url);
 	}else{
-		return _$base.getContextPathUrl(gubun);
+		return _$base.getContextPathUrl(type);
 	}
 };
 
@@ -175,7 +175,7 @@ _$base.req ={
 	ajax:function (option){
 		
 		var urlObj = option.url;
-		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url); 
+		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url); 
 		
 		var loadSelector = option.loadSelector ?option.loadSelector :false;
 		
@@ -262,7 +262,7 @@ _$base.req ={
 			,urlObj = opts.url
 			,inputStr = [];
 		
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);  
 		
 		var tmpVal;
 		for(var key in tmpParam){
@@ -292,7 +292,7 @@ _$base.req ={
 			$('body').append(strHtm);
 		}
 		
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.gubun, urlObj.url);  
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);  
 		
 		var contHtm = [];
 		contHtm.push('<!doctype html><html><head>');
@@ -490,10 +490,10 @@ _$base.unload =function (){
  */
 _$base.loadResource = function (resource, type){
 	var _self = _$base; 
-	function _load(_url , gubun){
+	function _load(_url , type){
 		_url = _self.getContextPathUrl(_url);
 		try{
-			if(gubun == 'js'){
+			if(type == 'js'){
 				$('head').append($('<script src="'+_url+'"><\/script>'));
 			}else{
 				$('head').append('<link rel="stylesheet" href="'+_url+'">');
@@ -560,93 +560,6 @@ _$base.endsWith = function(str ,searchString, position) {
     var lastIndex = subjectString.indexOf(searchString, position);
     return lastIndex !== -1 && lastIndex === position;
 };
-
-/**
-* url open 메소드
-* view 필수 항복  url, type , options{gubun:'menu , portlet, sso 등등'}
-* ex : 
-* domino ex : portalUICntl.page.view("comm.prototype",'domino',{gubun:'portlet', target:'contentArea'});
-* popup ex : portalUICntl.page.view("http://devportal01.amorepacific.com/",'popup',{gubun:'menu', name:'popup name', mehtod:'get or post',viewOption:'toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400'});
-* location ex : portalUICntl.page.view("http://devportal01.amorepacific.com/",'location',{gubun:'menu'});
-* dominoPopup ex : portalUICntl.page.view("/bbs/app.nsf/0/?opendocument",'dominoPopup',{argv:'&type=1&aa=ss', feathers:{width:'800',height:'500'},langpack:{langpack:"bbs.comm", langprefix:"BBS.COMM"});
-* 
-*/
-_$base.link ={
-	view : function(url, type, options){
-		var _self = this; 
-		if(_defaultOption.openType.iframe== type){
-			_self._iframe(url, options);
-		}else if(_defaultOption.openType.popup== type){
-			_self._popup(url, options);
-		}else{
-			_self._location(url);
-		}
-	}
-	,_location:function (url){
-		location.href=url;
-	}
-	,_popup:function (url, options){
-		var targetId = '_$base_'+_$base.generateUUID().replace(/-/g,''); 
-		var tmpParam = options.param?options.param:{};
-		var tmpMethod = options.method?options.method:'get';
-		var tmpPopOption = options.viewOption?options.viewOption:'';
-		var tmpName ='AP_'+(options.name?( options.name.replace(/[ \{\}\[\]\/?.,;:|\)*~`!^\-+┼<>@\#$%&\'\"\\(\=]/gi,'') ):targetId.replace(/-/g,''));
-		
-		tmpParam=getParameter(url , tmpParam);
-		var urlIdx = url.indexOf('?');
-		var openUrl = urlIdx > 0 ?url.substring(0,urlIdx):url;
-		
-		// get method
-		if(_defaultOption.httpMethod.get ==tmpMethod){
-			tmpParam=paramToArray(tmpParam);
-			
-			openUrl= (tmpParam.length > 0) ?(openUrl+'?'+tmpParam.join('&')):url;
-			
-			try{
-				var myWindow=window.open(openUrl,tmpName, tmpPopOption);
-				myWindow.focus();
-			}catch(e){}
-		}else{  // post method
-			var inputStr = [];
-			
-			inputStr.push('<form action="'+openUrl+'" method="post" id="'+targetId+'" name="'+targetId+'">');
-			
-			var tmpVal;
-			for(var key in tmpParam){
-				tmpVal = tmpParam[key];
-				inputStr.push('<input type="hidden" name="'+key+'" value=\''+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'\'/>');
-			}
-			inputStr.push('</form>');
-			inputStr.push('<script type="text/javascript">document.'+targetId+'.submit();</script>');
-			
-			var tmpPopupObj=window.open('about:blank', tmpName, tmpPopOption);
-
-			try{
-				tmpPopupObj.document.write(inputStr.join(''));
-				tmpPopupObj.focus();
-			}catch(e){
-				_$base.log.info(inputStr.join(''))
-				_$base.log.error(e);
-			}
-		}
-	}
-	,_iframe:function (url,options){
-		var tmpiframe =$(options.target);
-		var tmpParam = options.param?options.param:{};
-		tmpParam=getParameter(url , tmpParam);
-		
-		var urlIdx = url.indexOf('?');
-		var openUrl = urlIdx > 0 ?url.substring(0,urlIdx):url;
-		
-		tmpParam=paramToArray(tmpParam);
-		openUrl= (tmpParam.length > 0) ?(openUrl+'?'+tmpParam.join('&')):url;
-		
-		tmpiframe.attr('src', openUrl);
-		var cstyle=tmpiframe.attr('style');
-		tmpiframe =tmpiframe.attr('style', cstyle+';'+ options.viewOption);
-	}
-}
-
 
 //array으로 변환
 function paramToArray(param){

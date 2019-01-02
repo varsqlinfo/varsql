@@ -182,7 +182,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/glossary/list'}
+				url : {type:VARSQL.uri.manager, url:'/glossary/list'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items || [];
@@ -197,7 +197,7 @@ VarsqlAPP.vueServiceBean( {
 			var param = this.detailItem;
 			
 			_self.$ajax({
-				url:{gubun:VARSQL.uri.manager, url:'/glossary/save'}
+				url : {type:VARSQL.uri.manager, url:'/glossary/save'}
 				,data : param
 				,success: function(resData) {
 					if(resData.status != 200){
@@ -238,7 +238,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				data:param
-				,url : {gubun:VARSQL.uri.manager, url:'/glossary/delete'}
+				,url : {type:VARSQL.uri.manager, url:'/glossary/delete'}
 				,success:function (response){
 					_self.fieldClear();
 					_self.search();

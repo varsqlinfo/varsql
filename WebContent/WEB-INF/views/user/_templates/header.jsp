@@ -81,7 +81,7 @@
 			VARSQL.req.ajax({
 				type : "POST",
 				url : {
-					gubun : VARSQL.uri.user,
+					type : VARSQL.uri.user,
 					url : '/message.vsql'
 				},
 				dataType : 'json',
@@ -126,7 +126,7 @@
 				VARSQL.req.ajax({
 					type : "POST",
 					url : {
-						gubun : VARSQL.uri.user,
+						type : VARSQL.uri.user,
 						url : '/updMsgViewDt.vsql'
 					},
 					dataType : 'json',

@@ -105,7 +105,6 @@ public class DatabaseController {
 	 * @param req
 	 * @param vconnid
 	 * @param schema
-	 * @param gubun
 	 * @return
 	 * @throws Exception
 	 */
