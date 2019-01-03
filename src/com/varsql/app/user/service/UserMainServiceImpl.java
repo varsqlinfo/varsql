@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.UserForm;
@@ -186,6 +187,89 @@ public class UserMainServiceImpl{
 		
 		result.setItemOne(userMainDAO.deleteUserMsg(viewidArr,paramMap));
 		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectQna
+	 * @Method 설명 : qna list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectQna(SearchParameter searchParameter) {
+		
+		ResponseResult result = new ResponseResult();
+		
+		int totalcnt = userMainDAO.selectQnaTotalCnt(searchParameter);
+		
+		if(totalcnt > 0){
+			result.setItemList(userMainDAO.selectQna(searchParameter));
+		}else{
+			result.setItemList(null);
+		}
+		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
+		
+		return result;
+	}
+	/**
+	 * 
+	 * @Method Name  : insertQnaInfo
+	 * @Method 설명 : qna 등록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 29. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult saveQnaInfo(DataCommonVO paramMap, boolean insFlag) {
+		
+		ResponseResult result = new ResponseResult();
+		
+		if(insFlag){
+			paramMap.put("qnaid", VarsqlUtil.generateUUID());
+			
+			result.setItemOne(userMainDAO.insertQnaInfo(paramMap) );
+		}else{
+			result.setItemOne(userMainDAO.updateQnaInfo(paramMap) );
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteQnaInfo
+	 * @Method 설명 : qna 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult deleteQnaInfo(DataCommonVO paramMap) {
+		ResponseResult result = new ResponseResult();
+		result.setItemOne(userMainDAO.deleteQnaInfo(paramMap));
+		return result;
+	}
+	
+
+	/**
+	 * 
+	 * @Method Name  : selectDetailQna
+	 * @Method 설명 :  q&a 상세보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectDetailQna(DataCommonVO paramMap) {
+		ResponseResult result = new ResponseResult();
+		result.setItemOne( userMainDAO.selectDetailQna(paramMap));
 		return result;
 	}
 }

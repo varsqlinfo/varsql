@@ -226,4 +226,88 @@ public class UserMainDAO extends BaseDAO{
 	public int selectDbManagerCheck(ParamMap param) {
 		return getSqlSession().selectOne("userMapper.selectDbManagerCheck", param);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectQnaTotalCnt
+	 * @Method 설명 : qna total count
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int selectQnaTotalCnt(SearchParameter paramMap) {
+		return getSqlSession().selectOne("userMapper.selectQnaTotalCnt", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectQna
+	 * @Method 설명 : q&a list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public List selectQna(SearchParameter paramMap) {
+		return getSqlSession().selectList("userMapper.selectQna", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectDetailQna
+	 * @Method 설명 : qna 상세
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public Object selectDetailQna(DataCommonVO paramMap) {
+		return getSqlSession().selectOne("userMapper.selectDetailQna", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : insertQnaInfo
+	 * @Method 설명 : qna 등록
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int insertQnaInfo(DataCommonVO paramMap){
+		return getSqlSession().insert("userMapper.insertQnaInfo", paramMap );
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteQnaInfo
+	 * @Method 설명 : qna 삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int deleteQnaInfo(DataCommonVO paramMap){
+		return getSqlSession().delete("userMapper.deleteQnaInfo", paramMap );
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateQnaInfo
+	 * @Method 설명 : qna 업데이트
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 3. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int updateQnaInfo(DataCommonVO paramMap){
+		return getSqlSession().update("userMapper.updateQnaInfo", paramMap );
+	}
 }

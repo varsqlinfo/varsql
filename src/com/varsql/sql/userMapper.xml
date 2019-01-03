@@ -90,22 +90,22 @@
 	</update>
 	
 	<!-- qna 총 수 -->
-	<select id="userMapper.selectQnaTotalCnt" parameterType="map" resultType="int">
+	<select id="userMapper.selectQnaTotalCnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt
 		from VTQNA a
-		where REG_ID =#{uid}
+		where REG_ID =#{customParam.uid}
 		and DEL_YN !='Y'
-		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
+		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
 	</select>
 	
 	<!-- qna 목록보기 -->
-	<select id="userMapper.selectQna" parameterType="map" resultType="dataCommonVO">
+	<select id="userMapper.selectQna" parameterType="searchParameter" resultType="dataCommonVO">
 		select a.*, a.REG_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
 		from VTQNA a
-		where REG_ID =#{uid}
+		where REG_ID =#{customParam.uid}
 		and DEL_YN !='Y'
-		and (TITLE like '%'||#{searchVal}||'%' or QUESTION like '%'||#{searchVal}||'%') 
-		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${rows} ROWS ONLY
+		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
+		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
 	
 	<!-- qna 상세보기 -->
@@ -116,11 +116,7 @@
 		and QNAID=#{qnaid}
 	</select>
 	
-	<!-- qna 상세보기 -->
-	<select id="userMapper.selectQnaMaxVal" parameterType="map" resultType="string">
-		select max(QNAID)as MAXVAL from VTQNA
-	</select>
-	
+	<!-- qna 정보 등록. -->
 	<insert id="userMapper.insertQnaInfo" parameterType="map">
 		insert  into VTQNA (
 			QNAID 
@@ -132,10 +128,10 @@
 			, ANSWER
 		)
 		values(
-			#{qnaid}
-			, #{title}
-			, #{question}
-			, #{cre_id}
+			#{QNAID}
+			, #{TITLE}
+			, #{QUESTION}
+			, #{CRE_ID}
 			, CURRENT TIMESTAMP
 			, 'N'
 			, ''
@@ -145,16 +141,18 @@
 	<update id="userMapper.updateQnaInfo" parameterType="map">
 		update VTQNA
 		set
-			TITLE =#{title}
-			,QUESTION =#{question}
-		where QNAID=#{qnaid}
+			TITLE =#{TITLE}
+			,QUESTION =#{QUESTION}
+		where QNAID=#{QNAID}
 	</update>
 	
+	<!-- q&a 정보 삭제. -->
 	<update id="userMapper.deleteQnaInfo" parameterType="map">
 		update VTQNA 
 		set
 			DEL_YN ='Y'
-		where QNAID=#{qnaid}
+		where QNAID=#{QNAID}
+		and ANSWER !=''
 	</update>
 	
 	<select id="userMapper.selectUserDbUseList" parameterType="map" resultType="map">

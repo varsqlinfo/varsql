@@ -15,7 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.user.service.UserMainServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -30,7 +35,7 @@ public class GuestController {
 	private static final Logger logger = LoggerFactory.getLogger(GuestController.class);
 	
 	@Autowired
-	private GuestServiceImpl guestServiceImpl;
+	private UserMainServiceImpl userMainServiceImpl;
 
 	@RequestMapping({""})
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -43,24 +48,15 @@ public class GuestController {
 	}
 	
 	@RequestMapping(value = "/qnaList")
-	public @ResponseBody Map qnalist(HttpServletRequest req 
-			,@RequestParam(value = "searchVal", required = false, defaultValue = "" )  String searchVal
-			,@RequestParam(value = "page", required = false, defaultValue = "1" )  int page
-			,@RequestParam(value = "rows", required = false, defaultValue = "10" )  int rows
-		) throws Exception {
+	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
 	
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put("page", page);
-		paramMap.put("rows", rows);
-		paramMap.put("searchVal", searchVal);
-	
-		paramMap.put("uid", SecurityUtil.loginId(req));
-		
-		return guestServiceImpl.selectQna(paramMap);
+		return userMainServiceImpl.selectQna(searchParameter);
 	}
 	
 	@RequestMapping(value="/insQna")
-	public ModelAndView qna(HttpServletRequest req 
+	public @ResponseBody ResponseResult qna(HttpServletRequest req 
 			,@RequestParam(value = "title", required = true)  String title
 			,@RequestParam(value = "question", required = false )  String question) throws Exception {
 		
@@ -70,25 +66,20 @@ public class GuestController {
 		paramMap.put("question", question);
 		paramMap.put("cre_id", SecurityUtil.loginId(req));
 		
-		guestServiceImpl.insertQnaInfo(paramMap);
-		
-		return  new ModelAndView("redirect:/guest/");
+		return userMainServiceImpl.saveQnaInfo(paramMap, true);
 	}
 	
 	@RequestMapping(value="/delQna")
-	public ModelAndView qnaDelete(@RequestParam(value = "qnaid")  String qnaid) throws Exception {
+	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid")  String qnaid) throws Exception {
 		
 		DataCommonVO dcv = new DataCommonVO();
-		
 		dcv.put("qnaid", qnaid);
 		
-		guestServiceImpl.deleteQnaInfo(dcv);
-		
-		return new ModelAndView("redirect:/guest/");
+		return userMainServiceImpl.deleteQnaInfo(dcv);
 	}
 	
 	@RequestMapping(value="/updQna")
-	public ModelAndView qnaUpdate(HttpServletRequest req 
+	public @ResponseBody ResponseResult qnaUpdate(HttpServletRequest req 
 			,@RequestParam(value = "qnaid")  String qnaid
 			,@RequestParam(value = "title", required = true)  String title
 			,@RequestParam(value = "question", required = false )  String question) throws Exception {
@@ -100,20 +91,16 @@ public class GuestController {
 		paramMap.put("question", question);
 		paramMap.put("cre_id", SecurityUtil.loginId(req));
 		
-		guestServiceImpl.updateQnaInfo(paramMap);
-		
-		return new ModelAndView("redirect:/guest/");
+		return userMainServiceImpl.saveQnaInfo(paramMap, false);
 	}
 	
 	@RequestMapping(value = "/detailQna")
-	public @ResponseBody Map dbDetail(@RequestParam(value = "qnaid") String qnaid) throws Exception {
+	public @ResponseBody ResponseResult dbDetail(@RequestParam(value = "qnaid") String qnaid) throws Exception {
 		
 		DataCommonVO paramMap = new DataCommonVO();
 		
 		paramMap.put("qnaid", qnaid);
 		
-		return guestServiceImpl.selectDetailQna(paramMap);
+		return userMainServiceImpl.selectDetailQna(paramMap);
 	}
-	
-	
 }

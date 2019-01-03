@@ -1846,7 +1846,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						_self._createScriptSql({
 							gubunKey : key
 							,sqlGenType : sObj.mode
-							,gubun : 'table'
+							,objectType : 'table'
 							,objName :  _self.selectMetadata['table']
 							,item : {
 								items:cacheData

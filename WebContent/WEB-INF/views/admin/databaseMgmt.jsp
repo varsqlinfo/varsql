@@ -21,7 +21,7 @@
     <!-- /.col-lg-12 -->
 </div>
 <div class="row" id="varsqlVueArea">
-	<div class="col-lg-5">
+	<div class="col-xs-5">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
@@ -54,7 +54,7 @@
 		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-4 -->
-	<div class="col-lg-7" >
+	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
 			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin:left:10px;font-weight:bold;">{{detailItem.VNAME}}</span></div>
 			<!-- /.panel-heading -->

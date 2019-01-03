@@ -15,6 +15,13 @@
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
+
+
+<script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
+
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 
@@ -22,206 +29,39 @@
 
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet" type="text/css">
 
-<script>
-$(document).ready(function (){
-	guestMain.init();
-});
-
-var guestMain ={
-	init:function (){
-		var _self = this; 
-		_self.initEvt();
-		_self.search();
-	}
-	,initEvt : function (){
-		var _self = this; 
-		$('.btnMain').click(function (){
-			location.href ='${varsqlLogoutUrl}';
-		});
-		
-		//search
-		$('.searchBtn').click(function() {
-			_self.search();
-		});
-		
-		$('#searchVal').keydown(function() {
-			if(event.keyCode =='13') _self.search();
-		});
-		
-		$('#guestForm').bootstrapValidator({
-			message: 'This value is not valid',
-			feedbackIcons: {
-				valid: 'glyphicon glyphicon-ok',
-				invalid: 'glyphicon glyphicon-remove',
-				validating: 'glyphicon glyphicon-refresh'
-			}
-		});
-	}
-	,initQnaBtn : function (){
-		var _self = this; 
-		$('.modifyBtn').click(function (){
-			_self.modifyInfo();
-		});
-		
-		$('.deleteBtn').click(function (){
-			_self.deleteInfo();
-		});
-	}
-	,modifyInfo : function(){
-		
-		var param = {
-			qnaid:$('.open').attr('qnaid')
-		};
-			
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
-			,url : {type:VARSQL.uri.guest, url:'/detailQna'}
-			,dataType:'JSON'
-			,success:function (response){
-				var item = response.result?response.result:{};
-				
-				$('#title').val(item.TITLE);
-				$('#question').val(item.QUESTION);
-				$('#title').focus();
-				$('#qnaid').val(item.QNAID);
-				
-				$('#guestForm').attr('action','<c:url value="/guest/updQna" />');
-				
-			}
-		});
-	}
-	,deleteInfo : function(){
-		
-		if(!confirm('<spring:message code="msg.delete.confirm"/>')){
-			return ; 	
-		}
-		$('#qnaid').val($('.open').attr('qnaid'));
-		
-		$('#guestForm').attr('action','<c:url value="/guest/delQna" />');
-		
-		document.guestForm.submit();
-	}
-	,search : function (no){
-		var _self = guestMain; 
-		var param = {
-			page:no?no:1
-			,'searchVal':$('#searchVal').val()
-		};
-		
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
-			,url :{type:VARSQL.uri.guest, url:'/qnaList'}
-			,dataType:'JSON'
-			,success:function (response){
-				try{
-					
-		    		var resultLen = response.result?response.result.length:0;
-		    		
-		    		if(resultLen==0){
-		    			$('#contentArea').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
-		    			$('.pageNavigation').pagingNav();
-		    			return ; 
-		    		}
-		    		var result = response.result;
-		    		
-		    		var strHtm = new Array();
-		    		var item; 
-		    		var answerflag; 
-		    		for(var i = 0 ;i < resultLen; i ++){
-		    			item = result[i];
-		    			answerflag = item.ANSWER; 
-		    			
-		    			if(i!=0){
-		    				strHtm.push('<hr class="dotline">');
-		    			}
-		    			
-		    			strHtm.push(' <strong class="primary-font">'+ item.TITLE+'</strong> ');
-		    			strHtm.push('<div class="btn-group pull-right" qnaid="'+item.QNAID+'">');
-		    			strHtm.push('<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">');
-		    			strHtm.push('    <i class="fa fa-chevron-down"></i>');
-		    			strHtm.push('</button>');
-		    			strHtm.push('<ul class="dropdown-menu slidedown">');
-		    			if(!answerflag){
-		    				strHtm.push(' <li><a href="javascript:;" class="modifyBtn">Modify</a></li>');
-		    			}
-		    			strHtm.push('    <li><a href="javascript:;"  class="deleteBtn">Delete</a></li>');
-		    			strHtm.push('</ul>');
-		    			strHtm.push('</div>');
-		    			strHtm.push('<div>'+item.CHAR_CRE_DT+'</div>');
-		    			strHtm.push('<p>'+ item.QUESTION+'</p>');
-		    			
-		    			if(answerflag){
-			    			strHtm.push('	<div class="replymargin30">');
-			    			strHtm.push(' <strong class="primary-font"><spring:message code="guest.form.answer"/></strong> ');
-			    			strHtm.push(' <small class="pull-right text-muted">');
-			    			strHtm.push('     <i class="fa fa-clock-o fa-fw"></i> '+item.CHAR_UPD_DT);
-			    			strHtm.push(' </small>');
-			    			strHtm.push('     <p>'+ item.ANSWER+'</p>');
-			    			strHtm.push('	</div>');
-		    			}
-		    		}
-		    		
-		    		$('#contentArea').html(strHtm.join(''));
-		    		
-		    		_self.initQnaBtn();
-		    		
-		    		$('.pageNavigation').pagingNav(response.paging,_self.search);
-		    		
-				}catch(e){
-					$('#dataViewAreaTd').attr('color','red');
-					$("#dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + resultMsg);  
-				}
-			}
-		});
-	}
-}
-</script>	
 </head>
 <body>
+	<header class="navbar navbar-default">
+	    <div class="container">
+	        <div class="navbar-header">
+	            <a class="navbar-brand" href="javascript:;"><spring:message code="guest.title"/></a>
+	        </div>
+	    </div>
+	</header>
 
-<header class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#"><spring:message code="guest.title"/></a>
-        </div>
-    </div>
-</header>
-<!--// header -->
-
-	<div class="container">
+	<div class="container" id="varsqlVueArea">
 		<h3 class="page-header">
 			<sec:authentication property="principal.fullname" />
 			<spring:message code="guest.message" />
 		</h3>
 		<!-- form start -->
-		<form name="guestForm" id="guestForm"
-			action="<c:url value="/guest/insQna" />" method="post"
-			class="form-horizontal well" role="form" onsubmit="return false;">
-			<input type="hidden" name="qnaid" id="qnaid" value="">
-			<div class="form-group">
-				<label for="inputEmail3"><spring:message
-						code="guest.form.title" /></label> <input type="text" class="form-control"
-					id="title" name="title"
-					placeholder="<spring:message code="guest.form.title" />" required
-					data-bv-notempty-message="<spring:message code="msg.title.empty" />" />
+		<form name="guestForm" id="guestForm" action="<c:url value="/guest/insQna" />" method="post" class="form-horizontal well" role="form">
+								
+			<div class="form-group"  :class="errors.has('TITLE') ? 'has-error' :''">
+				<label><spring:message code="guest.form.title" /></label> 
+				<input type="text" class="form-control" v-model="detailItem.TITLE" placeholder="<spring:message code="guest.form.title" />" v-validate="'required'" name="TITLE" class="form-control" />
+				<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
 			</div>
-			<div class="form-group">
-				<label for="nickname"><spring:message
-						code="guest.form.question" /></label>
-				<textarea id="question" name="question" class="form-control"
-					rows="3" placeholder="<spring:message code="guest.form.question"/>"
-					required
-					data-bv-notempty-message="<spring:message code="msg.contactus.empty" />"></textarea>
+			<div class="form-group" :class="errors.has('QUESTION') ? 'has-error' :''">
+				<label><spring:message code="guest.form.question" /></label>
+				<textarea v-model="detailItem.QUESTION" class="form-control" rows="3" placeholder="<spring:message code="guest.form.question"/>" v-validate="'required'" name="QUESTION"></textarea>
+				<div v-if="errors.has('QUESTION')" class="help-block">{{errors.first('QUESTION')}}</div>
 			</div>
 
 			<div class="form-group">
 				<div class="col-sm-12 text-center">
-					<button type="submit" class="btn btn-info">
-						<spring:message code="btn.contact" />
-					</button>
-					<button type="button" class="btn btn-default btnMain">
+					<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
+					<button type="button" @click="goMain()" class="btn btn-default">
 						<spring:message code="btn.login.screen" />
 					</button>
 				</div>
@@ -233,10 +73,10 @@ var guestMain ={
 			<div class="panel-heading">
 				<spring:message code="guest.form.question" />
 				<div class="input-group">
-					<input id="searchVal" type="text" class="form-control input-sm"
+					<input type="text" class="form-control input-sm"
 						placeholder="<spring:message code="msg.search.placeholder" />"> <span
-						class="input-group-btn">
-						<button class="btn btn-warning btn-sm searchBtn">
+						class="input-group-btn" v-model="searchVal" class="form-control" @keydown.enter="search()">
+						<button type="button" class="btn btn-warning btn-sm searchBtn"  @click="search()">
 							<spring:message code="btn.search" />
 						</button>
 					</span>
@@ -244,10 +84,118 @@ var guestMain ={
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div id="contentArea"></div>
-				<div class="pageNavigation"></div>
+				<div v-for="(item,index) in gridData">
+					
+					<hr v-if="index!=0" class="dotline">
+	    			
+					<strong class="primary-font">{{item.TITLE}}</strong> 
+	    			<div class="btn-group pull-right" qnaid="{{item.QNAID}}">
+	    			<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+	    			    <i class="fa fa-chevron-down"></i>
+	    			</button>
+	    			<ul class="dropdown-menu slidedown">
+	    				<li v-if="item.ANSWER==''"><a href="javascript:;" class="modifyBtn" @click="qnaModify(item)">Modify</a></li>
+	    			    <li><a href="javascript:;"  class="deleteBtn" @click="deleteInfo(item)">Delete</a></li>
+	    			</ul>
+	    			</div>
+	    			<div>{{item.CHAR_CRE_DT}}</div>
+	    			<p>{{item.QUESTION}}</p>
+	    			
+	    			<template v-if="item.ANSWER">
+		    			<div class="replymargin30">
+							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
+							<small class="pull-right text-muted">
+								<i class="fa fa-clock-o fa-fw"></i> {{item.CHAR_UPD_DT);
+							</small>
+							<p>{{ item.ANSWER}}</p>
+		    			</div>
+	    			</template>
+    			</div>
+    			
+    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
+				
+				<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
+
+
+<script>
+VarsqlAPP.vueServiceBean( {
+	el: '#varsqlVueArea'
+	,validateCheck : true 
+	,data: {
+		list_count :10
+		,searchVal : ''
+		,pageInfo : {}
+		,gridData :  []
+		,detailItem :{}
+	}
+	,methods:{
+		init : function(){
+			//this.setDetailItem();
+		}
+		,search : function(no){
+			var _self = this; 
+			
+			var param = {
+				pageNo: (no?no:1)
+				,rows: _self.list_count
+				,'searchVal':_self.searchVal
+			};
+			
+			this.$ajax({
+				url :{type:VARSQL.uri.guest, url:'/qnaList'}
+				,data : param
+				,success: function(resData) {
+					_self.gridData = resData.items;
+					_self.pageInfo = resData.page;
+				}
+			})
+		}
+		,save : function (mode){
+			var _this = this; 
+			
+			this.$validator.validateAll().then(function (result){
+				if(result){
+					
+					var param = _this.detailItem
+					
+					_this.$ajax({
+						url : {type:VARSQL.uri.guest, url:'/insQna'}
+						,data : param 
+						,success:function (resData){
+							if(VARSQL.req.validationCheck(resData)){
+								if(resData.resultCode != 200){
+									alert(resData.message);
+									return ; 
+								}
+								_this.search();
+							}
+						}
+					});
+				}
+			});
+		}
+		,qnaModify : function (item){
+			this.detailItem = item; 
+		}
+		,deleteInfo : function(){
+			
+			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
+				return ; 	
+			}
+			$('#qnaid').val($('.open').attr('qnaid'));
+			
+			$('#guestForm').attr('action','<c:url value="/guest/delQna" />');
+			
+			document.guestForm.submit();
+		}
+		,goMain : function (){
+			location.href ='${varsqlLogoutUrl}';
+		}
+	}
+});
+</script>

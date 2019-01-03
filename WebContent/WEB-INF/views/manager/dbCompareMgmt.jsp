@@ -34,23 +34,27 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-	    			
+	    			 
 <div class="row" id="varsqlVueArea">
-	<div :class="loading==true?'':'hidden'" style="z-index:100;position:absolute;width:100%; height:100%;">
-		<div style="width:100%;height:100%;background-color: #d3caca;opacity: 0.3;position: absolute;top: 0px;left: 0px;"></div>
-		<table style="z-index:1001;height:100%;width:100%;">
-			<tr>
-				<td>
-					<div style="text-align:center;">
-						<div>로드중입니다.</div>
-						<img src="/vsql/webstatic/imgs/progressLoader.gif">
-    				</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-	
 	<div class="col-xs-12">
+		<div :class="loading==true?'':'hidden'" style="z-index:100;position:absolute;width:98%; height:100%;">
+			<div style="width:100%;height:100%;background-color: #d3caca;opacity: 0.5;position: absolute;top: 0px;left: 0px;"></div>
+			
+			<div style="width:100%;height:100%;opacity: 1;position: absolute;top: 0px;left: 0px;">
+				<table style="z-index:1001;height:100%;width:100%;">
+					<tr>
+						<td>
+							<div style="text-align: center;">
+								<div style="width: 200px; padding: 5px 10px 5px 10px; background-color: #ffffff; line-height: 15pt; margin: auto;">
+									<span>데이터를 로드중입니다.</span><br>
+									<span><img src="/vsql/webstatic/imgs/progressLoader.gif"></span>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				대상

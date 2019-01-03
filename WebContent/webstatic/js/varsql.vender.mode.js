@@ -13,7 +13,7 @@ VARSQL.vender = {};
 var $oracle = {
 	_package : function (resData, reqParam){
 		var _self = this;
-		var $$gubun = 'package';
+		var $$objectType = 'package';
 		
 		try{
 			var itemArr = resData.items;
@@ -37,16 +37,15 @@ var $oracle = {
 		    			$('.table-list-item.active').removeClass('active');
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'gubun':$$gubun,'objectName':item.name}), '_'+$$gubun+'TabCtrl');
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{objectType:$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
-							var gubun=$$gubun
-								,tmpName = sItem.name;
+							var tmpName = sItem.name;
 							
 							if(key=='refresh'){
-								_self._removeMetaCache(gubun,tmpName);
+								_self._removeMetaCache($$objectType,tmpName);
 								ele.attr('refresh','Y');
 								ele.trigger('click.pubgridrow');
 								return ; 
@@ -72,7 +71,7 @@ var $oracle = {
 	,_packageTabCtrl : function (metaTabId, param , refreshFlag){
 		var _self =this; 
 		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'package';
+		var $$objectType = 'package';
 		
 		if(tabObj){
 			tabObj.itemClick();
@@ -88,18 +87,18 @@ var $oracle = {
 			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
+					,objectName = _self.selectMetadata[$$objectType];
 				
 				var itemKey = item.key;
 				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
+				var sEle = $(_self._getMetadataObjectEleId($$objectType)+' [data-meta-tab="'+itemKey+'"]');
 		
 				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
+					$(_self._getMetadataObjectEleId($$objectType)+' .on[data-meta-tab]').removeClass('on');
 					sEle.addClass('on');
 				}
 				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
+				var cacheData = _self._getMetaCache($$objectType, objectName, itemKey);
 				
 				if('column' == itemKey){
 					if(cacheData){
@@ -116,14 +115,14 @@ var $oracle = {
 					}
 				}else if('ddl' == itemKey){
 					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
+						_self.metadataDDLView($$objectType,itemKey, cacheData);
 						return ; 
 					}else{
 						_self._createDDL({
-							gubun : $objType
+							objectType : $$objectType
 							,objName :  objectName
 						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
+							_self.metadataDDLView($$objectType,itemKey, data);
 						});
 					}
 				}
@@ -133,9 +132,9 @@ var $oracle = {
 	//패키지에 대한 메타 정보 보기 .
 	,_packageColumn :function (colData ,reqParam){
 		var _self = this;
- 		var $objType = 'package';
+ 		var $$objectType = 'package';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
+		var metaEleInfo = _self._getMetadataElement($$objectType,eleName);
 		
 		var metaEleId = metaEleInfo.eleId; 
 		
