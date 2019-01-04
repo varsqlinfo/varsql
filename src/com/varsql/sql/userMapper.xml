@@ -100,24 +100,26 @@
 	
 	<!-- qna 목록보기 -->
 	<select id="userMapper.selectQna" parameterType="searchParameter" resultType="dataCommonVO">
-		select a.*, a.REG_DT as CHAR_CRE_DT , a.UPD_DT as CHAR_UPD_DT 
+		select a.*
+			, to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
+			, to_char(a.UPD_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_UPD_DT
 		from VTQNA a
 		where REG_ID =#{customParam.uid}
 		and DEL_YN !='Y'
 		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
-		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
+		order by a.REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
 	</select>
 	
 	<!-- qna 상세보기 -->
-	<select id="userMapper.selectDetailQna" parameterType="map" resultType="dataCommonVO">
-		select a.*, a.REG_DT as CHAR_CRE_DT 
+	<select id="userMapper.selectDetailQna" parameterType="qnaInfo" resultType="dataCommonVO">
+		select a.*, to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT 
 		from VTQNA a
 		where DEL_YN !='Y'
 		and QNAID=#{qnaid}
 	</select>
 	
 	<!-- qna 정보 등록. -->
-	<insert id="userMapper.insertQnaInfo" parameterType="map">
+	<insert id="userMapper.insertQnaInfo" parameterType="qnaInfo">
 		insert  into VTQNA (
 			QNAID 
 			, TITLE 
@@ -128,31 +130,32 @@
 			, ANSWER
 		)
 		values(
-			#{QNAID}
-			, #{TITLE}
-			, #{QUESTION}
-			, #{CRE_ID}
+			#{qnaid}
+			, #{title}
+			, #{question}
+			, #{userid}
 			, CURRENT TIMESTAMP
 			, 'N'
 			, ''
 		)
 	</insert>
 	
-	<update id="userMapper.updateQnaInfo" parameterType="map">
+	<update id="userMapper.updateQnaInfo" parameterType="qnaInfo">
 		update VTQNA
 		set
-			TITLE =#{TITLE}
-			,QUESTION =#{QUESTION}
-		where QNAID=#{QNAID}
+			TITLE =#{title}
+			,QUESTION =#{question}
+		where QNAID=#{qnaid}
 	</update>
 	
 	<!-- q&a 정보 삭제. -->
-	<update id="userMapper.deleteQnaInfo" parameterType="map">
+	<update id="userMapper.deleteQnaInfo" parameterType="qnaInfo">
 		update VTQNA 
 		set
 			DEL_YN ='Y'
-		where QNAID=#{QNAID}
-		and ANSWER !=''
+		where QNAID=#{qnaid}
+		and REG_ID = #{userid}
+		and length(ANSWER) = 0
 	</update>
 	
 	<select id="userMapper.selectUserDbUseList" parameterType="map" resultType="map">

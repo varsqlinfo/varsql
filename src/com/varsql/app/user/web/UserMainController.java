@@ -14,12 +14,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.user.beans.PasswordForm;
+import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.service.UserMainServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
@@ -204,6 +206,28 @@ public class UserMainController {
 	}
 	
 	/**
+	 * 
+	 * @Method Name  : qna
+	 * @Method 설명 : qna 관리
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 4. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/preferences/qna"})
+	public ModelAndView qna(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		
+		return  new ModelAndView("/user/preferences/qna", model);
+	}
+	
+	/**
 	 * @Method Name  : preferenceslistMsg
 	 * @Method 설명 : 메시지 목록보기
 	 * @작성자   : ytkim
@@ -299,5 +323,63 @@ public class UserMainController {
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.updateMemoViewDate(paramMap);
+	}
+	
+	@RequestMapping(value = "/qnaList")
+	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+	
+		return userMainServiceImpl.selectQna(searchParameter);
+	}
+	
+	@RequestMapping(value="/insQna")
+	public @ResponseBody ResponseResult qna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		
+		
+		if(result.hasErrors()){
+			for(ObjectError errorVal : result.getAllErrors()){
+				logger.warn("###  GuestController qna check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			qnaInfo.setUserid(SecurityUtil.loginId());
+			resultObject = userMainServiceImpl.saveQnaInfo(qnaInfo, true);
+		}
+		
+		return resultObject; 
+	}
+	
+	@RequestMapping(value="/delQna")
+	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
+		
+		QnAInfo qnaInfo = new QnAInfo();
+		qnaInfo.setQnaid(qnaid);
+		
+		qnaInfo.setUserid(SecurityUtil.loginId());
+		
+		return userMainServiceImpl.deleteQnaInfo(qnaInfo);
+	}
+	
+	@RequestMapping(value="/updQna")
+	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		
+		if(result.hasErrors()){
+			for(ObjectError errorVal : result.getAllErrors()){
+				logger.warn("###  GuestController qna check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			qnaInfo.setUserid(SecurityUtil.loginId());
+			resultObject = userMainServiceImpl.saveQnaInfo(qnaInfo, false);
+		}
+		
+		return resultObject; 
 	}
 }

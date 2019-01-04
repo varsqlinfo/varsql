@@ -1,7 +1,6 @@
 package com.varsql.app.database.beans;
 
 import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.vartech.common.app.beans.ParamMap;
 
 /**
  * 

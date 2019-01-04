@@ -11,6 +11,7 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResourceConfigConstants;
 import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.user.beans.PasswordForm;
+import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
@@ -265,8 +266,8 @@ public class UserMainDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public Object selectDetailQna(DataCommonVO paramMap) {
-		return getSqlSession().selectOne("userMapper.selectDetailQna", paramMap);
+	public Object selectDetailQna(QnAInfo qnaInfo) {
+		return getSqlSession().selectOne("userMapper.selectDetailQna", qnaInfo);
 	}
 	
 	/**
@@ -279,8 +280,8 @@ public class UserMainDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int insertQnaInfo(DataCommonVO paramMap){
-		return getSqlSession().insert("userMapper.insertQnaInfo", paramMap );
+	public int insertQnaInfo(QnAInfo qnaInfo){
+		return getSqlSession().insert("userMapper.insertQnaInfo", qnaInfo );
 	}
 	
 	/**
@@ -293,8 +294,8 @@ public class UserMainDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int deleteQnaInfo(DataCommonVO paramMap){
-		return getSqlSession().delete("userMapper.deleteQnaInfo", paramMap );
+	public int deleteQnaInfo(QnAInfo qnaInfo){
+		return getSqlSession().delete("userMapper.deleteQnaInfo", qnaInfo );
 	}
 	
 	/**
@@ -307,7 +308,7 @@ public class UserMainDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int updateQnaInfo(DataCommonVO paramMap){
-		return getSqlSession().update("userMapper.updateQnaInfo", paramMap );
+	public int updateQnaInfo(QnAInfo qnaInfo){
+		return getSqlSession().update("userMapper.updateQnaInfo", qnaInfo );
 	}
 }

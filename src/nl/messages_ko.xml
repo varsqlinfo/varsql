@@ -24,7 +24,7 @@
 
 <!-- guest  -->
 <entry key="guest.title">환영합니다.</entry>
-<entry key="guest.message"><![CDATA[님 아직 권한이 처리 되지 않았습니다</br> 관리자에게 문의하시기 바랍니다.]]></entry>
+<entry key="guest.message"><![CDATA[님 아직 권한이 처리 되지 않았습니다<br/> 관리자에게 문의하시기 바랍니다.]]></entry>
 <entry key="btn.login.screen">로그인 화면</entry>
 
 <!-- join form -->

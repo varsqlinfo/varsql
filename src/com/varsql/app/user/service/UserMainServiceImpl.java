@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.user.beans.PasswordForm;
+import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.UserMainDAO;
 import com.varsql.app.util.VarsqlUtil;
@@ -225,16 +226,15 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult saveQnaInfo(DataCommonVO paramMap, boolean insFlag) {
+	public ResponseResult saveQnaInfo(QnAInfo qnaInfo, boolean insFlag) {
 		
 		ResponseResult result = new ResponseResult();
 		
 		if(insFlag){
-			paramMap.put("qnaid", VarsqlUtil.generateUUID());
-			
-			result.setItemOne(userMainDAO.insertQnaInfo(paramMap) );
+			qnaInfo.setQnaid(VarsqlUtil.generateUUID());
+			result.setItemOne(userMainDAO.insertQnaInfo(qnaInfo) );
 		}else{
-			result.setItemOne(userMainDAO.updateQnaInfo(paramMap) );
+			result.setItemOne(userMainDAO.updateQnaInfo(qnaInfo) );
 		}
 		
 		return result;
@@ -250,9 +250,9 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult deleteQnaInfo(DataCommonVO paramMap) {
+	public ResponseResult deleteQnaInfo(QnAInfo qnaInfo) {
 		ResponseResult result = new ResponseResult();
-		result.setItemOne(userMainDAO.deleteQnaInfo(paramMap));
+		result.setItemOne(userMainDAO.deleteQnaInfo(qnaInfo));
 		return result;
 	}
 	
@@ -267,9 +267,9 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult selectDetailQna(DataCommonVO paramMap) {
+	public ResponseResult selectDetailQna(QnAInfo qnaInfo) {
 		ResponseResult result = new ResponseResult();
-		result.setItemOne( userMainDAO.selectDetailQna(paramMap));
+		result.setItemOne( userMainDAO.selectDetailQna(qnaInfo));
 		return result;
 	}
 }

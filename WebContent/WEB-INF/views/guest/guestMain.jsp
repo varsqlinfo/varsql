@@ -11,8 +11,6 @@
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
@@ -45,37 +43,34 @@
 			<spring:message code="guest.message" />
 		</h3>
 		<!-- form start -->
-		<form name="guestForm" id="guestForm" action="<c:url value="/guest/insQna" />" method="post" class="form-horizontal well" role="form">
-								
-			<div class="form-group"  :class="errors.has('TITLE') ? 'has-error' :''">
+		<form class="form-horizontal" onsubmit="return false; ">
+			<div class="form-group" :class="errors.has('TITLE') ? 'has-error' :''">
 				<label><spring:message code="guest.form.title" /></label> 
-				<input type="text" class="form-control" v-model="detailItem.TITLE" placeholder="<spring:message code="guest.form.title" />" v-validate="'required'" name="TITLE" class="form-control" />
+				<input type="text" v-model="detailItem.TITLE"  v-validate="'required'" name="TITLE" class="form-control" />
 				<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
 			</div>
 			<div class="form-group" :class="errors.has('QUESTION') ? 'has-error' :''">
 				<label><spring:message code="guest.form.question" /></label>
-				<textarea v-model="detailItem.QUESTION" class="form-control" rows="3" placeholder="<spring:message code="guest.form.question"/>" v-validate="'required'" name="QUESTION"></textarea>
+				<textarea v-model="detailItem.QUESTION" rows="3" v-validate="'required'" name="QUESTION" class="form-control"></textarea>
 				<div v-if="errors.has('QUESTION')" class="help-block">{{errors.first('QUESTION')}}</div>
 			</div>
 
 			<div class="form-group">
 				<div class="col-sm-12 text-center">
+					<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="btn.add"/></button>
 					<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
-					<button type="button" @click="goMain()" class="btn btn-default">
-						<spring:message code="btn.login.screen" />
-					</button>
+					<button type="button" @click="goMain()" class="btn btn-default"><spring:message code="btn.login.screen" /></button>
 				</div>
 			</div>
 		</form>
 		<!--/form-->
 
-		<div class="chat-panel panel panel-default">
+		<div class="row panel panel-default">
 			<div class="panel-heading">
 				<spring:message code="guest.form.question" />
 				<div class="input-group">
-					<input type="text" class="form-control input-sm"
-						placeholder="<spring:message code="msg.search.placeholder" />"> <span
-						class="input-group-btn" v-model="searchVal" class="form-control" @keydown.enter="search()">
+					<input type="text" v-model="searchVal" @keydown.enter="search()" class="form-control input-sm" placeholder="<spring:message code="msg.search.placeholder" />"> 
+					<span class="input-group-btn"  class="form-control">
 						<button type="button" class="btn btn-warning btn-sm searchBtn"  @click="search()">
 							<spring:message code="btn.search" />
 						</button>
@@ -86,17 +81,17 @@
 			<div class="panel-body">
 				<div v-for="(item,index) in gridData">
 					
-					<hr v-if="index!=0" class="dotline">
+					<hr v-if="index!=0" class="dotline" />
 	    			
 					<strong class="primary-font">{{item.TITLE}}</strong> 
-	    			<div class="btn-group pull-right" qnaid="{{item.QNAID}}">
-	    			<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-	    			    <i class="fa fa-chevron-down"></i>
-	    			</button>
-	    			<ul class="dropdown-menu slidedown">
-	    				<li v-if="item.ANSWER==''"><a href="javascript:;" class="modifyBtn" @click="qnaModify(item)">Modify</a></li>
-	    			    <li><a href="javascript:;"  class="deleteBtn" @click="deleteInfo(item)">Delete</a></li>
-	    			</ul>
+	    			<div class="btn-group pull-right" v-if="item.ANSWER==''">
+		    			<button type="button" class="btn btn-default btn-xs" @click="qnaModify(item)">
+		    			    <i class="fa fa-edit"></i>
+		    			</button>
+		    			
+		    			<button type="button" class="btn btn-primary btn-xs" style="margin-left:10px" @click="deleteInfo(item)">
+		    			    <i class="fa fa-trash-o"></i>
+		    			</button>
 	    			</div>
 	    			<div>{{item.CHAR_CRE_DT}}</div>
 	    			<p>{{item.QUESTION}}</p>
@@ -105,7 +100,7 @@
 		    			<div class="replymargin30">
 							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
 							<small class="pull-right text-muted">
-								<i class="fa fa-clock-o fa-fw"></i> {{item.CHAR_UPD_DT);
+								<i class="fa fa-clock-o fa-fw"></i>{{item.CHAR_UPD_DT}}
 							</small>
 							<p>{{ item.ANSWER}}</p>
 		    			</div>
@@ -118,24 +113,21 @@
 			</div>
 		</div>
 	</div>
-</body>
-</html>
-
-
+	
 <script>
-VarsqlAPP.vueServiceBean( {
+VarsqlAPP.vueServiceBean({
 	el: '#varsqlVueArea'
-	,validateCheck : true 
+	,validateCheck : true
 	,data: {
-		list_count :10
-		,searchVal : ''
+		searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
-		,detailItem :{}
+		,detailItem : {}
+		,isDetailFlag :false
 	}
 	,methods:{
 		init : function(){
-			//this.setDetailItem();
+			this.qnaModify();
 		}
 		,search : function(no){
 			var _self = this; 
@@ -156,12 +148,17 @@ VarsqlAPP.vueServiceBean( {
 			})
 		}
 		,save : function (mode){
-			var _this = this; 
+			var _this = this;
 			
 			this.$validator.validateAll().then(function (result){
 				if(result){
 					
-					var param = _this.detailItem
+					var param ={};
+					var saveItem = _this.detailItem;
+					
+					for(var key in saveItem){
+						param[VARSQL.util.convertCamel(key)] = saveItem[key];
+					}
 					
 					_this.$ajax({
 						url : {type:VARSQL.uri.guest, url:'/insQna'}
@@ -172,6 +169,7 @@ VarsqlAPP.vueServiceBean( {
 									alert(resData.message);
 									return ; 
 								}
+								_this.qnaModify();
 								_this.search();
 							}
 						}
@@ -180,18 +178,34 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,qnaModify : function (item){
-			this.detailItem = item; 
+			
+			if(VARSQL.isUndefined(item)){
+				this.detailItem = {
+					TITLE : ''
+					,QUESTION :''
+				}
+				this.isDetailFlag = false;
+			}else{
+				this.isDetailFlag = true; 
+				this.detailItem = item;	
+			}
 		}
-		,deleteInfo : function(){
+		,deleteInfo : function(item){
+			var _this = this;
 			
 			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
 				return ; 	
 			}
-			$('#qnaid').val($('.open').attr('qnaid'));
 			
-			$('#guestForm').attr('action','<c:url value="/guest/delQna" />');
-			
-			document.guestForm.submit();
+			this.$ajax({
+				url : {type:VARSQL.uri.guest, url:'/delQna'}
+				,data : {
+					qnaid : item.QNAID
+				}
+				,success:function (resData){
+					_this.search();
+				}
+			});
 		}
 		,goMain : function (){
 			location.href ='${varsqlLogoutUrl}';
@@ -199,3 +213,7 @@ VarsqlAPP.vueServiceBean( {
 	}
 });
 </script>
+</body>
+</html>
+
+

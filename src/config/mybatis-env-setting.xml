@@ -12,6 +12,7 @@
 	</settings>
 	
 	<typeAliases>
+	  <typeAlias alias="qnaInfo" type="com.varsql.app.user.beans.QnAInfo"/>
 	  <typeAlias alias="vtconnectionRVO" type="com.varsql.app.common.beans.VtconnectionRVO"/>
 	  <typeAlias alias="vtConnection" type="com.varsql.app.admin.beans.Vtconnection"/>
 	  <typeAlias alias="vtconnectionOption" type="com.varsql.app.admin.beans.VtconnectionOption"/>

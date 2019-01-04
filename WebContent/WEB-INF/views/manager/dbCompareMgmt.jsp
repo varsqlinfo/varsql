@@ -439,12 +439,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.position,'',false);
+								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}
@@ -483,12 +483,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.position, '',false);
+								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}
@@ -600,12 +600,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetColumn').moveVScrollPosition(item.position,'',false);
+								$.pubGrid('#targetColumn').moveVScrollPosition(item.scrollTop,'',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#targetColumn').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#targetColumn').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}
@@ -646,12 +646,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceColumn').moveVScrollPosition(item.position,'',false);
+								$.pubGrid('#sourceColumn').moveVScrollPosition(item.scrollTop,'',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#sourceColumn').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#sourceColumn').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}
@@ -699,12 +699,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.position,'',false);
+								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}
@@ -743,12 +743,12 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.position, '',false);
+								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.position,'',false);
+								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
 							}
 						}
 					}

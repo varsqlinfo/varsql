@@ -20,7 +20,7 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row" id="varsqlVueArea">
+<div class="row display-off" id="varsqlVueArea">
 	<div class="col-xs-5">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -56,11 +56,11 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin:left:10px;font-weight:bold;">{{detailItem.VNAME}}</span></div>
+			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin-left:10px;font-weight:bold;">{{detailItem.VNAME}}</span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="view-area" :class="viewMode=='view'?'on':''">
-					<form id="addForm" name="addForm" class="form-horizontal" >
+					<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div class="pull-right">

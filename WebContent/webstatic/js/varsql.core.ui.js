@@ -823,8 +823,7 @@ _ui.registerPlugin({
 			_self.initEvt();
 			
 			_self.gridObj = $.pubGrid('#glossaryResultArea', {
-				headerOptions : {redraw : false}
-				,asideOptions :{lineNumber : {enable : true	,width : 30}}
+				asideOptions :{lineNumber : {enable : true	,width : 30}}
 				,tColItem : [
 					{ label: '용어', key: 'WORD',width:80 },
 					{ label: '영문명', key: 'WORD_EN' },
@@ -942,8 +941,7 @@ _ui.registerPlugin({
 			})
 			
 			_self.gridObj = $.pubGrid('#historyResultArea', {
-				headerOptions : {redraw : false}
-				,asideOptions :{lineNumber : {enable : true	,width : 30}}
+				asideOptions :{lineNumber : {enable : true	,width : 30}}
 				,tColItem : [
 					{ label: 'SQL', key: 'LOG_SQL'},
 					{ label: '시작시간', key: 'VIEW_STARTDT' },
@@ -965,7 +963,7 @@ _ui.registerPlugin({
 				,scroll :{
 					vertical : {
 						onUpdate : function (item){	// 스크롤 업데이트. 
-							if(_self.scrollEndFlag !==true && item.position > 80){
+							if(_self.scrollEndFlag !==true && item.barPosition > 80){
 								_self.pageNo = _self.pageNo+1;
 								_self.search('scroll');
 							}
@@ -1609,6 +1607,17 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
+						/*	//editor 없을대 처리, 경고창으로 대체 함. 
+						,disableItemKey : function (items){
+							if(!_ui.SQL.getSqlEditorObj()){
+								return [
+									{key :'sql_create' , depth :0	}
+									,{key :'mybatis-sql_create' , depth :0}	
+								]; 
+							}
+							return [];
+						}
+						*/
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
 							var tmpName = sItem.name;
@@ -3112,6 +3121,7 @@ _ui.SQL = {
 		}
 		_ui.sqlDataArea.removeDataGridEle(item);
 		if(this.sqlFileTabObj.getItemLength() < 1){
+			this.currentSqlEditorInfo= null; 
 			this.setSqlEditorBtnDisable();
 		}
 	}
@@ -3199,10 +3209,10 @@ _ui.SQL = {
 	}
 	,refresh : function (dimension){
 		var _self = this;
-		try{
-			_self.getSqlEditorObj().refresh();
-		}catch(e){
-			console.log('editor refresh error')
+
+		var editorObj = _self.getSqlEditorObj();
+		if(editorObj){
+			editorObj.refresh();
 		}
 		
 		try{
@@ -4434,7 +4444,8 @@ _ui.SQL = {
 	}
 	// 에디터 영역에 값 넣기.
 	,addSqlEditContent :function (cont , suffixAddFlag){
-	
+		
+		
 		var _self = this;
 		
 		cont = VARSQL.str.trim(cont);
@@ -4447,9 +4458,15 @@ _ui.SQL = {
 		
 		insVal =insVal+VARSQLCont.constants.newline;
 				
-		var editObj =_self.getSqlEditorObj()
-			,insLine = editObj.lastLine()+1; 
-				
+		var editObj =_self.getSqlEditorObj();
+		
+		if(!editObj){
+			VARSQLUI.alert.open('에디터 창이 없습니다.\n새파일을 클릭후에 추가해주세요.');
+			return ; 
+		}
+		
+		var insLine = editObj.lastLine()+1; 
+		
 		editObj.replaceRange(insVal, CodeMirror.Pos(insLine));
 		editObj.setSelection({line:insLine,ch:0}, {line:editObj.lastLine(),ch:0});
 		editObj.focus();

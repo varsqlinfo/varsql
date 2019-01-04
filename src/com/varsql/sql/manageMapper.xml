@@ -104,7 +104,7 @@
 			</choose>
 		</if>
 		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
-		order by QNAID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+		order by a.REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
 	<update id="manageMapper.updateQnaAnswerContent" parameterType="map">
