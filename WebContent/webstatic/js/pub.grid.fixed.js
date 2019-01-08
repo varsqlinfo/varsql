@@ -70,7 +70,8 @@ var _initialized = false
 		}
 		,util : {
 			searchFilter : function (item, key,searchVal){
-				if(item[key].toLowerCase().indexOf(searchVal) > -1){
+				var itemVal = (item[key]||'');
+				if(itemVal.toLowerCase().indexOf(searchVal) > -1){
 					return true; 
 				}
 				return false;
