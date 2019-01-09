@@ -209,6 +209,11 @@ _$base.req ={
 					(top || window).location.href=VARSQL.contextPath;
 				}
 				return ; 
+			}else if(resultCode == 412){
+				if(confirm(unescape('%uC720%uD6A8%uD558%uC9C0%uC54A%uC740%20%uC694%uCCAD%uC785%uB2C8%uB2E4.%20%uC0C8%uB85C%uACE0%uCE6D%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
+					(top || window).location.href=VARSQL.contextPath;
+				}
+				return ; 
 			}else if(resultCode == 2000){
 				if(confirm(unescape('%uC720%uD6A8%uD558%uC9C0%uC54A%uC740%20database%20%uC785%uB2C8%uB2E4.%0A%uBA54%uC778%20%uD398%uC774%uC9C0%uB85C%20%uC774%uB3D9%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
 					(top || window).location.href=VARSQL.contextPath;
