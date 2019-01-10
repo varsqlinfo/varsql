@@ -102,7 +102,8 @@
 	<select id="userMapper.selectQna" parameterType="searchParameter" resultType="dataCommonVO">
 		select a.*
 			, to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
-			, to_char(a.UPD_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_UPD_DT
+			, to_char(a.ANSWER_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_ANSWER_DT
+			,IFNULL(ANSWER_ID,'N') ANSWER_YN
 		from VTQNA a
 		where REG_ID =#{customParam.uid}
 		and DEL_YN !='Y'
@@ -126,8 +127,6 @@
 			, QUESTION 
 			, REG_ID 
 			, REG_DT 
-			, DEL_YN
-			, ANSWER
 		)
 		values(
 			#{qnaid}
@@ -135,17 +134,19 @@
 			, #{question}
 			, #{userid}
 			, CURRENT TIMESTAMP
-			, 'N'
-			, ''
 		)
 	</insert>
 	
+	<!-- qna 업데이트 -->
 	<update id="userMapper.updateQnaInfo" parameterType="qnaInfo">
 		update VTQNA
 		set
 			TITLE =#{title}
 			,QUESTION =#{question}
+			,UPD_DT = CURRENT TIMESTAMP
 		where QNAID=#{qnaid}
+		and REG_ID = #{userid}
+		and ANSWER_ID IS NULL
 	</update>
 	
 	<!-- q&a 정보 삭제. -->
@@ -155,7 +156,7 @@
 			DEL_YN ='Y'
 		where QNAID=#{qnaid}
 		and REG_ID = #{userid}
-		and length(ANSWER) = 0
+		and ANSWER_ID IS NULL
 	</update>
 	
 	<select id="userMapper.selectUserDbUseList" parameterType="map" resultType="map">

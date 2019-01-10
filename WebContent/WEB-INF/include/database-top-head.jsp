@@ -2,9 +2,6 @@
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
-<link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
-<link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
-
 <link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">

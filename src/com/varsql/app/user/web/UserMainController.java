@@ -325,6 +325,17 @@ public class UserMainController {
 		return userMainServiceImpl.updateMemoViewDate(paramMap);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : qnalist
+	 * @Method 설명 : qna list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
@@ -333,10 +344,22 @@ public class UserMainController {
 		return userMainServiceImpl.selectQna(searchParameter);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : qna
+	 * @Method 설명 : qna 정보 등록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaInfo
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/insQna")
-	public @ResponseBody ResponseResult qna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult insQna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
-		
 		
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
@@ -353,6 +376,18 @@ public class UserMainController {
 		return resultObject; 
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : qnaDelete
+	 * @Method 설명 : qna  삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaid
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/delQna")
 	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
 		
@@ -364,6 +399,19 @@ public class UserMainController {
 		return userMainServiceImpl.deleteQnaInfo(qnaInfo);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : qnaUpdate
+	 * @Method 설명 : qna 수정. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaInfo
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/updQna")
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();

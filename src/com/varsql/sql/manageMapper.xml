@@ -77,10 +77,10 @@
 		<if test="customParam.answerYn != null and !customParam.answerYn.equalsIgnoreCase('ALL')">
 			<choose>
 				<when test="customParam.answerYn.equalsIgnoreCase('Y')">
-					AND ANSWER !=''
+					and ANSWER_ID IS not NULL
 				</when>
 				<otherwise>
-					AND ANSWER =''
+					and ANSWER_ID IS NULL
 				</otherwise>
 			</choose>
 		</if>
@@ -89,17 +89,17 @@
 	
 	<select id="manageMapper.selectQnaMgmtList" parameterType="searchParameter" resultType="dataCommonVO">
 		select a.*, b.UNAME,to_char( a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
-			,to_char(a.UPD_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_UPD_DT
+			,to_char(a.ANSWER_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_ANSWER_DT
 		from VTQNA a , VTUSER b
 		where a.REG_ID = b.VIEWID
 		and DEL_YN !='Y'
 		<if test="customParam.answerYn != null and !customParam.answerYn.equalsIgnoreCase('ALL')">
 			<choose>
 				<when test="customParam.answerYn.equalsIgnoreCase('Y')">
-					AND ANSWER !=''
+					and ANSWER_ID IS not NULL
 				</when>
 				<otherwise>
-					AND ANSWER =''
+					and ANSWER_ID IS NULL
 				</otherwise>
 			</choose>
 		</if>
@@ -107,12 +107,12 @@
 		order by a.REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
-	<update id="manageMapper.updateQnaAnswerContent" parameterType="map">
+	<update id="manageMapper.updateQnaAnswerContent" parameterType="qnaInfo">
 		update VTQNA
 		set
 			ANSWER =#{answer}
-			,UPD_ID =#{cre_id}
-			,UPD_DT = CURRENT TIMESTAMP
+			,ANSWER_ID =#{userid}
+			,ANSWER_DT = CURRENT TIMESTAMP
 		where QNAID=#{qnaid}
 	</update>
 	

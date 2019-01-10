@@ -201,6 +201,18 @@ _$base.req ={
 			}
 		}
 		
+		ajaxOpt.error = function (xhr){
+			if (xhr.readyState == 4) {
+				// xhr.status , xhr.statusText check
+			}else if (xhr.readyState == 0) { // connection refused , access denied
+				alert(unescape('%uC5F0%uACB0%uC774%uAC70%uBD80%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%uAD00%uB9AC%uC790%uC5D0%uAC8C%20%uBB38%uC758%uD558%uC138%uC694.'));
+				$(loadSelector).centerLoadingClose();
+				return ;
+			}else {
+				//Other errors	
+			}
+		}
+		
 		ajaxOpt.success =  function (data, status, jqXHR) {
 			var resultCode = data.resultCode;  
 		

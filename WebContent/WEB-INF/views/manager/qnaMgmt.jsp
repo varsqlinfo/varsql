@@ -1,126 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<script>
-$(document).ready(function (){
-	qnaMgmt.init();
-});
 
-var qnaMgmt ={
-	init:function (){
-		var _self = this; 
-		_self.initEvt();
-		_self.search();
-	}
-	,initEvt:function (){
-		var _self = this; 
-		//search
-		$('.searchBtn').click(function() {
-			_self.search();
-		});
-		
-		$('#searchVal').keydown(function() {
-			if(event.keyCode =='13') _self.search();
-		});
-		
-		$('#rowDataSize').change(function() {
-			_self.search();
-		});
-		
-		$('input:radio[name=answerYn]').on('click',function (){
-			_self.search();
-		})
-	}
-	,search : function (no){
-		var _self = this; 
-		var param = {
-			pageNo: (no?no:1)
-			,rows:$('#rowDataSize').val()
-			,'searchVal':$('#searchVal').val()
-			,'answerYn' : $('input:radio[name=answerYn]:checked').val()
-		};
-		
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:param
-			,url : {type:VARSQL.uri.manager, url:'/qnaMgmtList'}
-			,dataType:'JSON'
-			,success:function (response){
-				try{
-					
-		    		var resultLen = response.result?response.result.length:0;
-		    		
-		    		if(resultLen==0){
-		    			$('#contentArea').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
-		    			$('.pageNavigation').pagingNav();
-		    			return ; 
-		    		}
-		    		var result = response.result;
-		    		
-		    		var strHtm = new Array();
-		    		var item; 
-		    		var answerflag; 
-		    		for(var i = 0 ;i < resultLen; i ++){
-		    			item = result[i];
-		    			answerflag = item.ANSWER; 
-		    			
-		    			if(i!=0){
-		    				strHtm.push('<div><hr class="dotline"></div>');
-		    			}
-		    			
-		    			strHtm.push('<strong class="primary-font">'+ item.TITLE+'</strong>');
-		    			strHtm.push('<div class="btn-group pull-right">');
-		    			strHtm.push('</div>');
-		    			strHtm.push('<div><a>'+item.UNAME+'</a>&nbsp;'+item.CHAR_CRE_DT+'</div>');
-		    			strHtm.push('<div><p>'+ item.QUESTION+'</p></div>');
-		    			
-	    				strHtm.push('<div class="form-group">');
-	    				strHtm.push('	<label>Answer ('+item.CHAR_UPD_DT+')</label>');
-	    				strHtm.push('	<textarea class="form-control answerTextArea '+item.QNAID+'" rows="3">'+(answerflag?item.ANSWER:'')+'</textarea>');
-	    				strHtm.push('</div>');
-	    				strHtm.push('<div class="text-right"><button type="button" class="btn btn-xs btn-primary btnReply" qnaid="'+item.QNAID+'">Save</button></div>');
-	    				
-		    		}
-		    		
-		    		$('#contentArea').html(strHtm.join(''));
-		    		
-		    		qnaMgmt.btnReplyEvent();
-		    		
-		    		$('.pageNavigation').pagingNav(response.paging,qnaMgmt.search);
-		    		
-				}catch(e){
-					$('#dataViewAreaTd').attr('color','red');
-					$("#dataViewAreaTd").val("errorMsg : "+e+"\nargs : " + resultMsg);  
-				}
-			}
-		});
-	}
-	,btnReplyEvent : function(){
-		
-		$('.btnReply').click(function (){
-			var tmpQnaId = $(this).attr('qnaid');
-			var param ={
-				qnaid:tmpQnaId
-				,answer:$('.'+tmpQnaId).val()
-			};
-			VARSQL.req.ajax({
-				type:'POST'
-				,data:param
-				,url : {type:VARSQL.uri.manager, url:'/updQna'}
-				,dataType:'JSON'
-				,success:function (response){
-					if(response.result){
-						alert('<spring:message code="msg.save.success" />');
-						return ; 
-					}else{
-						alert('<spring:message code="msg.save.fail" />');
-						return ; 
-					}
-				}
-			});
-		});
-	}
-}	
-</script>
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
@@ -128,14 +8,14 @@ var qnaMgmt ={
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row">
+<div class="row display-off" id="varsqlVueArea">
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-sm-6">
-						<label> <select name="rowDataSize" id="rowDataSize"
+						<label> <select v-model="list_count"
 							aria-controls="dataTables-example" class="form-control input-sm"><option
 									value="10">10</option>
 								<option value="25">25</option>
@@ -144,33 +24,48 @@ var qnaMgmt ={
 						</label> 
 						<label class="radio-inline">답변여부</label> 
 						<label class="radio-inline"> 
-							<input type="radio"	name="answerYn" value="ALL" checked>ALL
+							<input type="radio"	name="answerYn" v-model="answerYn" value="ALL" checked>ALL
 						</label> 
 						<label class="radio-inline"> 
-							<input type="radio"	name="answerYn" value="Y">Y
+							<input type="radio"	name="answerYn" v-model="answerYn" value="Y">Y
 						</label> 
 						<label class="radio-inline"> 
-							<input type="radio" name="answerYn" value="N">N
+							<input type="radio" name="answerYn" v-model="answerYn" value="N">N
 						</label>
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchVal" name="searchVal"
-									class="form-control"
-									onkeydown="" placeholder="<spring:message code="msg.search.placeholder" />"> <span
-									class="input-group-btn">
-									<button class="btn btn-default searchBtn" type="button">
-										<span class="glyphicon glyphicon-search"></span>
-									</button>
+							
+								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="msg.search.placeholder" />">
+								<span class="input-group-btn">
+									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="row">
-					<div id="contentArea" class="col-sm-12"></div>
-					<div class="pageNavigation"></div>
+					<div class="col-sm-12">
+						<template v-for="(item,index) in gridData">
+							
+		    				<div v-if="index != 0"><hr class="dotline"></div>
+		    			
+							<strong class="primary-font">{{ item.TITLE}}</strong>
+							<div class="btn-group pull-right">
+							</div>
+							<div><a>{{item.UNAME}}</a>&nbsp;{{item.CHAR_CRE_DT}}</div>
+							<div><p>{{ item.QUESTION}}</p></div>
+							
+							<div class="form-group">
+								<label>Answer ({{item.CHAR_ANSWER_DT}})</label>
+								<textarea class="form-control answerTextArea" rows="3">{{item.ANSWER||''}}</textarea>
+							</div>
+							<div class="text-right"><button type="button" class="btn btn-xs btn-primary" @click="save(item)">Save</button></div>
+		    			</template>
+		    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
+					</div>
+					<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 				</div>
 			</div>
 			<!-- /.panel-body -->
@@ -179,3 +74,75 @@ var qnaMgmt ={
 	</div>
 </div>
 <!-- /.row -->
+
+
+<script>
+VarsqlAPP.vueServiceBean({
+	el: '#varsqlVueArea'
+	,validateCheck : true
+	,data: {
+		searchVal : ''
+		,list_count :10
+		,answerYn :'ALL'
+		,pageInfo : {}
+		,gridData :  []
+		,detailItem : {}
+		,isDetailFlag :false
+	}
+	,watch : {
+		answerYn : function (val){
+			this.search();
+		}
+	}
+	,methods:{
+		search : function(no){
+			var _self = this; 
+			
+			var param = {
+				pageNo: (no?no:1)
+				,rows: _self.list_count
+				,'searchVal' : _self.searchVal
+				,answerYn : _self.answerYn
+			};
+			
+			this.$ajax({
+				url :{type:VARSQL.uri.manager, url:'/qnaMgmtList'}
+				,data : param
+				,success: function(resData) {
+					_self.gridData = resData.items;
+					_self.pageInfo = resData.page;
+				}
+			})
+		}
+		,save : function (item){
+			var _this = this;
+			var param ={};
+			
+			for(var key in item){
+				param[VARSQL.util.convertCamel(key)] = item[key];
+			}
+			
+			_this.$ajax({
+				url : {type:VARSQL.uri.manager, url:'/updQna'}
+				,data : param 
+				,success:function (resData){
+					if(VARSQL.req.validationCheck(resData)){
+						if(resData.resultCode != 200){
+							alert(resData.message);
+							return ; 
+						}
+						
+						if(resData.item > 0){
+							alert('<spring:message code="msg.save.success" />');
+							return ; 
+						}else{
+							alert('<spring:message code="msg.save.fail" />');
+							return ; 
+						}
+					}
+				}
+			});
+		}
+	}
+});
+</script>

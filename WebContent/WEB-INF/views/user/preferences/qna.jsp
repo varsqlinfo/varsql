@@ -52,7 +52,7 @@
 							<div class="pull-right">
 								<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="btn.add"/></button>
 								<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
-								<button type="button" v-if="isDetailFlag" @click="deleteInfo()" class="btn btn-default"><spring:message code="btn.delete" /></button>
+								<button type="button" v-if="isDetailFlag && detailItem.ANSWER_YN == 'N'" @click="deleteInfo()" class="btn btn-default"><spring:message code="btn.delete" /></button>
 							</div>
 						</div>
 					</div>
@@ -73,7 +73,10 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<div class="col-xs-12"><label class="control-label"><spring:message code="guest.form.answer" /></label></div>
+						<div class="col-xs-12">
+							<label class="control-label"><spring:message code="guest.form.answer" /></label>
+							<span v-if="detailItem.ANSWER_YN != 'N'">({{detailItem.CHAR_ANSWER_DT}})</span>
+						</div>
 						<div class="col-xs-12">
 							<pre style="height:200px;overflow:auto;">{{detailItem.ANSWER}}</pre>
 						</div>

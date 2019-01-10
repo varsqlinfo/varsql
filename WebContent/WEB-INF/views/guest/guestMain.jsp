@@ -96,11 +96,11 @@
 	    			<div>{{item.CHAR_CRE_DT}}</div>
 	    			<p>{{item.QUESTION}}</p>
 	    			
-	    			<template v-if="item.ANSWER">
+	    			<template v-if="item.ANSWER_YN != 'N'">
 		    			<div class="replymargin30">
 							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
 							<small class="pull-right text-muted">
-								<i class="fa fa-clock-o fa-fw"></i>{{item.CHAR_UPD_DT}}
+								<i class="fa fa-clock-o fa-fw"></i>{{item.CHAR_ANSWER_DT}}
 							</small>
 							<p>{{ item.ANSWER}}</p>
 		    			</div>
