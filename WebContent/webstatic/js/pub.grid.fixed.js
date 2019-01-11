@@ -105,7 +105,8 @@ var _initialized = false
 		,valueFilter : false	// cell value filter
 	}
 	,scroll :{
-		vertical : {
+		isPreventDefault : true	// 이벤트 전파 여부.	
+		,vertical : {
 			width : 10
 			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
@@ -1651,12 +1652,25 @@ Plugin.prototype ={
 
 			//delta > 0--up
 			if(_this.config.scroll.vUse){
-				e.preventDefault();
 				_this.moveVerticalScroll({pos :(delta > 0? 'U' :'D') , speed : _this.options.scroll.vertical.speed});
+
+				if(_this.options.scroll.isPreventDefault === true){
+					
+					e.preventDefault();
+				}else if(_this.config.scroll.top != 0 && _this.config.scroll.top != _this.config.scroll.verticalHeight){
+					e.preventDefault();
+				}
 			}else{
 				if(_this.config.scroll.hUse){
-					e.preventDefault();
 					_this.moveHorizontalScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
+					
+					if(_this.options.scroll.isPreventDefault===true){
+						e.preventDefault();
+					}else{
+						if(_this.config.scroll.left != 0 && _this.config.scroll.left != _this.config.scroll.horizontalWidth){
+							e.preventDefault();
+						}
+					}
 				}
 			}
 		});

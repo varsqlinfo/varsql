@@ -26,6 +26,26 @@
     box-sizing: content-box;
 }
 
+aside#resizable, section#content{
+	box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+aside#resizable { width: 40%; height: 700px; padding: 0.5em; float:left;}
+aside#resizable h3 { text-align: center; margin: 0; }
+
+section#content{width:calc(100% - 42%);height:700px; margin-left: 5px; vertical-align: top; float:left;}
+section#content:after{content:"";display:block;clear:both;}
+
+/* jquery UI override */
+.ui-resizable-e:hover, .ui-resizable-e:active{background-color:#aaaaab; cursor:col-resize;}
+.resizable-helper { z-index: 1000; width: 1px; height: 100%; position: absolute; top: 0px; left: 610.016px; border: 3px dotted rgb(58, 80, 232); display: none;}
+
+.ui-widget-content a {
+    color: #428bca;
+}
+
 </style>
 <!-- Page Heading -->
 <div class="row">
@@ -76,9 +96,10 @@
 					조회
 				</button>
 			</div>
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-xs-5">
+			<div class="panel-body" id="compareArea">
+				<div class="row" style="position: relative;">
+					<div id="resizeHelper" class="resizable-helper"></div>
+					<aside id="resizable" class="ui-widget-content">
 						<div class="panel panel-default" style="height:250px;padding-bottom:10px;margin-bottom:10px;">
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
@@ -109,8 +130,8 @@
 								</pre>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-7" style="padding-left:0px;">
+					</aside>
+					<section id="content">
 						<div class="panel panel-default" style="padding-left: 0px; height: 685px;">
 							비교상세 : <span style="font-weight: bold;padding-left:5px;">{{compareObjectName}}&nbsp;</span>
 							<div class="panel-body" style="padding: 5px;" :data-compare-mode="diffItem.objectType != 'table'?'text':''">	
@@ -137,7 +158,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</section>
 				</div>
 			</div>
 		</div>
@@ -203,6 +224,55 @@ VarsqlAPP.vueServiceBean( {
 				
 				_self.otherMetaView(objName);
 			})
+			
+			var helperEle = $('#resizeHelper');
+			
+			var minW = 10, maxW = 90; 
+			var compareWidth;
+			$( "#resizable" ).resizable({
+	            handles: "e",
+	            helper :'aa',
+	            containment : '#compareArea',
+	            start : function ( e, ui){
+	            	ui.helper.remove();
+	            	compareWidth = $('#compareArea').width(); 
+					helperEle.show()
+					helperEle.css('left', ui.size.width+'px');
+				}
+	            ,resize: function( e, ui){
+	            	
+	            	if(compareWidth < ui.size.width ){
+	            		helperEle.css('left', compareWidth+'px');
+	            	}else{
+	            		helperEle.css('left', ui.size.width +'px');
+	            	}
+	            }
+	            ,stop : function (e, ui){
+	            	helperEle.hide()
+					var currentWidth = ui.size.width;
+					var totWidth = compareWidth;
+					var currWidthPercent = currentWidth /totWidth*100;
+					
+					if(minW > currWidthPercent){
+						currWidthPercent = minW;
+					}else if(maxW <currWidthPercent){
+						currWidthPercent = maxW;
+					}
+					
+					$('#resizable').css({
+						left : '0px'
+						,"width" : currWidthPercent+'%'
+						,'height' :'100%'
+					});
+	                $("#content").css("width",  (100-(currWidthPercent+2)) +"%");
+	                
+	                if($.pubGrid('#sourceObjectMeta')) $.pubGrid('#sourceObjectMeta').resizeDraw();
+	                if($.pubGrid('#targetObjectMeta')) $.pubGrid('#targetObjectMeta').resizeDraw();
+	                if($.pubGrid('#sourceColumn')) $.pubGrid('#sourceColumn').resizeDraw();
+	                if($.pubGrid('#targetColumn')) $.pubGrid('#targetColumn').resizeDraw();
+	                
+				}
+	        });
 		}
 		// db object search.
 		,objectListSearch : function(){
@@ -386,7 +456,7 @@ VarsqlAPP.vueServiceBean( {
 						compareResult.push(compareLog.join(''))
 					}
 				}else {
-					compareResult.push('<span style="color:#f60b0b;">대상에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 </span>');
+					compareResult.push('<span style="color:#f60b0b;">타켓에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 </span>');
 				}
 				
 				delete targetCompareNameMap[key];
@@ -395,7 +465,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 			
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">타켓에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.</span>');
+				compareResult.push('<span style="color:#b55e34;">대상에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.</span>');
 			}
 			
 			return compareResult.join('\n');
@@ -574,6 +644,7 @@ VarsqlAPP.vueServiceBean( {
 			if(sourceColumnGridObj){
 				sourceColumnGridObj.setData(compareSourceColList,'reDraw');
 			}else{
+				
 				$.pubGrid('#sourceColumn', {
 					asideOptions :{lineNumber : {enable : true	,width : 30}}
 					,tColItem : [
@@ -598,10 +669,12 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isPreventDefault : false
+						,vertical : {
 							onUpdate : function (item){
 								$.pubGrid('#targetColumn').moveVScrollPosition(item.scrollTop,'',false);
 							}
+							,speed : 5
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
@@ -620,6 +693,7 @@ VarsqlAPP.vueServiceBean( {
 			if(targetColumnGridObj){
 				targetColumnGridObj.setData(compareTargetColList,'reDraw');
 			}else{
+				
 				$.pubGrid('#targetColumn', {
 					asideOptions :{lineNumber : {enable : true	,width : 30}}
 					,tColItem : [
@@ -644,10 +718,12 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isPreventDefault :false
+						,vertical : {
 							onUpdate : function (item){
 								$.pubGrid('#sourceColumn').moveVScrollPosition(item.scrollTop,'',false);
 							}
+							,speed : 5
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
