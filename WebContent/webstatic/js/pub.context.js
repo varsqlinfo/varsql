@@ -1,7 +1,7 @@
 /**
  * pubContextMenu: v0.0.1
  * ========================================================================
- * Copyright 2016 ytkim
+ * Copyright 2016-2019 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -80,7 +80,7 @@ function Plugin(selector, options , uuid) {
 
 $(document).on('mousedown.pubcontext', 'html', function (e) {
 	if(e.which !==2 && $(e.target).closest('#pub-context-area').length < 1){
-		$('#pub-context-area .pub-context').css({display:''}).find('.pub-context-sub.drop-left').css('left','').removeClass('drop-left');
+		$('#pub-context-area .pub-context-top').css({display:''}).find('.pub-context-sub.drop-left').css('left','').removeClass('drop-left');
 	}
 });
 
@@ -98,7 +98,7 @@ Plugin.prototype ={
 		var id=_this.contextId;
 
 		if(_this.options.preventDoubleContext){
-			$(document).on('contextmenu.pubcontext'+_this.contextId, '#'+id+'_wrap .pub-context', function (e) {
+			$(document).on('contextmenu.pubcontext'+_this.contextId, '#'+id+'_wrap .pub-context-top', function (e) {
 				e.preventDefault();
 			});
 		}
@@ -133,7 +133,7 @@ Plugin.prototype ={
 	}
 	,buildMenu : function (data, id, subMenu, depth){
 		var _this = this; 
-		var subClass = (subMenu) ? ' pub-context-sub' : 'pub-context pub-context-top',
+		var subClass = (subMenu) ? ' pub-context-sub' : ' pub-context-top',
 			compressed = _this.options.compress ? ' compressed-context' : '',
 			$menuHtm = [];
 		

@@ -1,12 +1,10 @@
 /*
- * pub.context.css: 0.0.1
+ * pub.context.css: 1.0.0
  * ========================================================================
- * Copyright 2015 ytkim
+ * Copyright 2016-2019 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
 */
-
-
 .pub-context-header {
 	display: block;
 	padding: 3px 15px;
@@ -30,7 +28,6 @@
 	list-style: none;
 	background-color: #ffffff;
 	border: 1px solid #ccc;
-	border: 1px solid rgba(0, 0, 0, 0.2);
 	font-size: 12px;
 	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -45,79 +42,44 @@
 	left: auto;
 }
 .pub-context-menu .divider {
-	*width: 100%;
+	width: 100%;
 	height: 1px;
 	margin: 9px 1px;
-	margin: -5px 0 5px;
+	margin: 3px 0px 3px;
 	overflow: hidden;
 	border-bottom: 1px solid #ddd;
 }
 .pub-context-menu a {
 	display: block;
-	padding: 3px 20px;
+	padding: 0px 20px 0px 14px;
 	clear: both;
 	font-weight: normal;
 	line-height: 20px;
 	color: #333333;
 	white-space: nowrap;
 	text-decoration: none;
+	border: 1px solid #ffffff;
+	outline: none;
 }
-.pub-context-menu li > a:hover, .pub-context-menu li > a:focus, .pub-context-submenu:hover > a {
-	color: #ffffff;
+.pub-context-menu li > a:hover, .pub-context-submenu:hover > a {
+	color: #000000;
 	text-decoration: none;
-	background-color: #0088cc;
-	background-color: #0081c2;
-	background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
-	background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
-	background-image: -o-linear-gradient(top, #0088cc, #0077b3);
-	background-image: linear-gradient(to bottom, #0088cc, #0077b3);
-	background-repeat: repeat-x;
-	filter: progid: dximagetransform.microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
+    background-color: #f7f5f5;
+    border: 1px solid #a4e3cf;
+	outline: none;
 }
 .pub-context-menu .active > a, .pub-context-menu .active > a:hover {
 	color: #ffffff;
 	text-decoration: none;
-	background-color: #0088cc;
-	background-color: #0081c2;
-	background-image: linear-gradient(to bottom, #0088cc, #0077b3);
-	background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
-	background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
-	background-image: -o-linear-gradient(top, #0088cc, #0077b3);
-	background-repeat: repeat-x;
-	outline: 0;
-	filter: progid
-	: dximagetransform.microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
+    background-color: #f7f5f5;
+    border: 1px solid #a4e3cf;
+	outline: none;
 }
-.pub-context-menu .disabled > a, .pub-context-menu .disabled > a:hover {
+
+.pub-context-menu .disabled > a{
 	color: #999999;
 }
-.pub-context-menu .disabled > a:hover {
-	text-decoration: none;
-	cursor: default;
-	background-color: transparent;
-}
-.open {
-	*z-index: 1000;
-}
-.open > .pub-context-menu {
-	display: block;
-}
-.pull-right > .pub-context-menu {
-	right: 0;
-	left: auto;
-}
-.dropup .caret, .navbar-fixed-bottom .dropdown .caret {
-	border-top: 0;
-	border-bottom: 4px solid #000000;
-	content: "\2191";
-}
-.dropup .pub-context-menu, .navbar-fixed-bottom .dropdown .pub-context-menu {
-	top: auto;
-	bottom: 100%;
-	margin-bottom: 1px;
-}
+
 .pub-context-submenu {
 	position: relative;
 }
@@ -139,27 +101,23 @@
 	margin-top: -13px;
 	margin-right: -10px;
 	border-color: transparent;
-	border-left-color: #cccccc;
+	border-left-color: #989494;
 	border-style: solid;
 	border-width: 5px 0 5px 5px;
 	content: " ";
 }
 .pub-context-submenu:hover > a:after {
-	border-left-color: #ffffff;
-}
-.dropdown .pub-context-menu .pub-context-header {
-	padding-right: 20px;
-	padding-left: 20px;
+	border-left-color: #716e6e;
 }
 
-.pub-context .pub-context-submenu .pub-context-menu {
+.pub-context-top .pub-context-submenu .pub-context-menu {
 	display: none;
 }
-.pub-context .pub-context-submenu:hover > .pub-context-menu {
+.pub-context-top .pub-context-submenu:hover > .pub-context-menu {
 	display: block;
 }
 
-.pub-context .pub-context-submenu.disabled .pub-context-menu{
+.pub-context-top .pub-context-submenu.disabled .pub-context-menu{
 	display: none;
 }
 .pub-context-item-title{
@@ -182,26 +140,20 @@
 	text-align: right;
 	display:table-cell;
 }
-.compressed-context a{
-	padding-left: 14px;
-	padding-top: 0;
-	padding-bottom: 0;
-	font-size: 12px;
-}
-.compressed-context .divider{
-	margin: 3px 1px;
-}
-.compressed-context .pub-context-header{
-	
-    color: #401d1d;
-}
 .pub-context .pub-context-header {
 	cursor: default;
 	color: #444040;
 	padding: 3px 7px;
 }
 
-.pub-context input[type=checkbox], .pub-context input[type=radio] {
+.pub-context-menu label{
+	display: inline-block; 
+    max-width: 100%;
+    margin-bottom: 0px;
+    font-weight: bold;
+}
+
+.pub-context-menu input[type=checkbox], .pub-context input[type=radio] {
     vertical-align: baseline;
     position: relative;
     top: 3px;
