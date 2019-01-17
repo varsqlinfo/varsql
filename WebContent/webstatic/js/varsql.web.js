@@ -388,11 +388,11 @@ jQuery.fn.centerLoading = function(options) {
 		this.html(loadStr);
 	}
 	
-	if (this.css('position') != 'relative') {
+	var cssPosition = this.css('position'); 
+	if (cssPosition != 'relative' &&  cssPosition != 'absolute') {
 		this.css('position','relative');
 		this.attr('var-loading-postion','relative');
 	}
-	
 	config.action == 'slide'?jQuery(this).slideDown('slow') : config.action == 'fade'?jQuery(this).fadeIn('slow'):jQuery(this).show();
 	
 	return this;
@@ -401,6 +401,7 @@ jQuery.fn.centerLoading = function(options) {
 jQuery.fn.centerLoadingClose= function(options) {
 	this.find('.centerLoading').remove();
 	if(this.attr('var-loading-postion')=='relative'){
+		this.css('position','');
 		this.removeAttr('var-loading-postion');
 	}
 };
