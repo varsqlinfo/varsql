@@ -32,17 +32,25 @@
 						<div class="form-group">
 							<label class="col-xs-3 control-label"><spring:message code="file_name" /></label>
 							<div class="col-xs-9 padding0">
-								<input class="form-control text required input-sm" id="export_name" name="export_name" value="table_spec" >
+								<input class="form-control text required input-sm" name="exportName" v-model="userSetting.exportName" value="table_spec">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.multi.sheet" /></label>
+							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.table.definition" /></label>
+							<div class="col-xs-9">
+								<label class="checkbox-inline"> 
+									<input type="checkbox" name="addTableDefinitionFlag" v-model="userSetting.addTableDefinitionFlag" value="true"><spring:message code="addflag" /> 
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.column.multi.sheet" /></label>
 							<div class="col-xs-9">
 								<label class="radio-inline"> 
-									<input type="radio" name="sheet_flag" value="false" checked><spring:message code="msg.export.spec.sheet.single" /> 
+									<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="false" checked><spring:message code="single" /> 
 								</label>
 								<label class="radio-inline"> 
-									<input type="radio" name="sheet_flag" value="true"> <spring:message code="msg.export.spec.sheet.multi" />
+									<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="true"> <spring:message code="multiple" />
 								</label>
 							</div>
 						</div>
@@ -162,7 +170,7 @@ VarsqlAPP.vueServiceBean({
 		,endStep : 3
 		,selectTableObj : []
 		,selectColumnObj : []
-		,userSetting : ${userSettingInfo}
+		,userSetting : VARSQL.util.objectMerge({exportName:'table_spec',sheetFlag:'false'},${userSettingInfo})
 		,detailItem :{}
 	}
 	,methods:{
@@ -206,8 +214,9 @@ VarsqlAPP.vueServiceBean({
 			var info = $("#firstConfigForm").serializeJSON();
 			
 			var prefVal = {
-				exportName : _self.export_name
-				,sheetFlag : _self.sheet_flag
+				exportName : _self.userSetting.exportName
+				,sheetFlag : _self.userSetting.sheetFlag
+				,addTableDefinitionFlag : _self.userSetting.addTableDefinitionFlag
 				,tables : _self.selectTableObj.getTargetItem()
 				,columns: _self.selectColumnObj.getTargetItem()
 			};
@@ -217,6 +226,7 @@ VarsqlAPP.vueServiceBean({
 				,conuid : '${param.conuid}'
 			};
 			
+			console.log(prefVal);
 			VARSQL.req.download({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport.vsql'}
@@ -226,9 +236,6 @@ VarsqlAPP.vueServiceBean({
 		,setUserConfigInfo : function (){
 			var _self = this; 
 			
-			$('#export_name').val((_self.userSetting.exportName ||'table-spec'));
-			$('[name="sheet_flag"][value="'+_self.userSetting.sheetFlag+'"]').prop('checked',true);
-
 			_self.setTableSelect();
 			_self.setColumnSelect();
 			

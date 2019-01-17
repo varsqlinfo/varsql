@@ -34,18 +34,7 @@
 						<div class="form-group">
 							<label class="col-xs-3 control-label"><spring:message code="file_name" /></label>
 							<div class="col-xs-9 padding0">
-								<input class="form-control text required input-sm" id="export_name" name="export_name" value="table_spec" >
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-xs-3 control-label"><spring:message code="msg.export.multi.file" /></label>
-							<div class="col-xs-9">
-								<label class="radio-inline"> 
-									<input type="radio" name="sheet_flag" value="false" checked><spring:message code="msg.export.multi.file.single" /> 
-								</label>
-								<label class="radio-inline"> 
-									<input type="radio" name="sheet_flag" value="true"> <spring:message code="msg.export.multi.file.multi" />
-								</label>
+								<input class="form-control text required input-sm" name="export_name" v-model="downloadConfig.exportName">
 							</div>
 						</div>
 					</form>
@@ -131,6 +120,9 @@ VarsqlAPP.vueServiceBean({
 	,data: {
 		step : 1
 		,endStep : 3
+		,downloadConfig :{
+			exportName : 'ddlInfo'
+		}
 		,selectExportObject : ''
 		,selectDbObjectInfo : []
 		,selectObjectItems :{}
@@ -226,8 +218,7 @@ VarsqlAPP.vueServiceBean({
 			_self.selectExportInfo[_self.selectExportObject.contentid]  = _self.selectDbObjectInfo.getTargetItem();
 			
 			var prefVal = {
-				exportName : _self.export_name
-				,sheetFlag : _self.sheet_flag
+				exportName : _self.downloadConfig.exportName
 				,exportInfo : _self.selectExportInfo
 			};
 			
@@ -260,7 +251,6 @@ VarsqlAPP.vueServiceBean({
 		//object list
 		,setSelectObject : function (sObj){
 			
-			console.log(sObj);
 			var _self =this; 
 			
 			sObj.isActive = true; 

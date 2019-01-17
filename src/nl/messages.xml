@@ -271,6 +271,10 @@
 <entry key="up">위</entry>
 <entry key="down">아래</entry>
 
+<entry key="single">단일 </entry>
+<entry key="multiple">다중 </entry>
+<entry key="addflag">추가여부 </entry>
+<entry key="delflag">삭제여부 </entry>
 <entry key="column">컬럼 </entry>
 <entry key="column_name">컬럼명 </entry>
 <entry key="id">ID</entry>
@@ -281,9 +285,8 @@
 <entry key="msg.export.spec.step1">내보내기 정보</entry>
 <entry key="msg.export.spec.step2">테이블 선택</entry>
 <entry key="msg.export.spec.step3">완료</entry>
-<entry key="msg.export.spec.multi.sheet">다중시트여부</entry>
-<entry key="msg.export.spec.sheet.single">단일</entry>
-<entry key="msg.export.spec.sheet.multi">멀티</entry>
+<entry key="msg.export.spec.table.definition">테이블정의서 </entry>
+<entry key="msg.export.spec.column.multi.sheet">컬럼다중시트여부</entry>
 <entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
 
 <!-- export ddl info-->
