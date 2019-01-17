@@ -920,13 +920,16 @@ hr.dotline {
     box-sizing: border-box !important;
 }
 .CodeMirror *{
-	box-sizing: content-box;
 	font-family: Consolas;
 }
-.CodeMirror {font-size:13px; width:100%; height:100%;
--webkit-box-sizing: border-box !important;
+.CodeMirror {
+	width:100%; 
+	height:100%;
+	/*
+	-webkit-box-sizing: border-box !important;
     -moz-box-sizing: border-box !important;
     box-sizing: border-box !important;
+    */
 } 
 .CodeMirror-scroll {height: 100%;}
 
