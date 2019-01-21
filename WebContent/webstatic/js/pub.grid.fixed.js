@@ -320,7 +320,7 @@ Plugin.prototype ={
 			, select : {}
 			, template: {}
 			, orginData: []
-			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
+			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0, beforeItemLen : 0}
 			, rowOpt :{}
 		};
 		_this.eleCache = {};
@@ -342,7 +342,7 @@ Plugin.prototype ={
 	}
 
 	,_initScrollData : function (){
-		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0,startRow : 0, endRow :0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, verticalHeight:0,horizontalWidth:0}; 
+		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0,startRow : 0, endRow :0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, verticalHeight:0,horizontalWidth:0, bodyHeight:0}; 
 	}
 	/**
      * @method _setGridWidth
@@ -368,8 +368,6 @@ Plugin.prototype ={
 
 		//_this.config.rowHeight = _this.options.rowOptions.height+1;	// border-box 수정. 2017-08-11
 		_this.config.rowHeight = _this.options.rowOptions.height;
-
-		_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 
 		if(_this.options.rowOptions.contextMenu !== false && typeof _this.options.rowOptions.contextMenu == 'object'){
 			var _cb = _this.options.rowOptions.contextMenu.callback; 
@@ -742,6 +740,7 @@ Plugin.prototype ={
 		
 		if(data){
 			if(gridMode == 'addData'){
+				_this.config.dataInfo.beforeItemLen = _this.options.tbodyItem.length;
 				_this.options.tbodyItem = _this.options.tbodyItem.concat(data);	
 			}else{
 				_this.options.tbodyItem = data;
@@ -799,7 +798,7 @@ Plugin.prototype ={
 				}catch(e){}
 			}
 		}
-
+		
 		_this.config.dataInfo.orginRowLen = _this.options.tbodyItem.length;
 
 		if(_this.config.dataInfo.orginRowLen > 0){
@@ -812,11 +811,10 @@ Plugin.prototype ={
 			_this._setRangeSelectInfo({}, true);
 
 			_this.calcDimension(gridMode);
-			_this.config.drawBeforeData = {}; // 이전 값을 가지고 있기 위한 객체
 		}
 				
 		_this.setScrollSpeed();
-		
+
 		if(gridMode != 'addData'){
 			_this.drawGrid(gridMode,true);
 		}
@@ -1462,9 +1460,7 @@ Plugin.prototype ={
      */
 	, calcDimension : function (type, opt){
 		var _this = this; 
-		
-		_this.config.drawBeforeData.bodyHeight = _this.config.body.height; 
-		
+				
 		if(type =='headerResize'){
 			opt = $.extend(true, {width : _this.config.body.width, height : _this.config.body.height},opt);
 		}else{
@@ -1540,6 +1536,7 @@ Plugin.prototype ={
 		var beforeViewCount = _this.config.scroll.viewCount ; 
 		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.config.dataInfo.rowLen;
 		_this.config.scroll.overflowVal = bodyH % this.config.rowHeight; 
+		_this.config.scroll.bodyHeight = bodyH;
 
 		if(_this.config.scroll.overflowVal > 0){	// 화면에 다 보이는 row count
 			_this.config.scroll.insideViewCount = _this.config.scroll.viewCount-1; 
@@ -1602,6 +1599,8 @@ Plugin.prototype ={
 		//_this.calcViewCol(leftVal);
 		if(_this.config.scroll.maxViewCount <_this.config.scroll.viewCount  ) _this.config.scroll.maxViewCount = _this.config.scroll.viewCount;
 		
+		
+				
 		var drawFlag =false; 
 
 		if(type !='init' && ( beforeViewCount != _this.config.scroll.viewCount )){
@@ -1615,6 +1614,10 @@ Plugin.prototype ={
 		if(type =='reDraw'){
 			topVal=0; 
 			leftVal=0; 
+		}else if(type == 'addData'){
+			if(_this.config.scroll.vUse){
+				topVal = _this.config.scroll.viewIdx * _this.config.scroll.oneRowMove;
+			}
 		}
 
 		if(type=='resize'){
@@ -1655,7 +1658,6 @@ Plugin.prototype ={
 				_this.moveVerticalScroll({pos :(delta > 0? 'U' :'D') , speed : _this.options.scroll.vertical.speed});
 
 				if(_this.options.scroll.isPreventDefault === true){
-					
 					e.preventDefault();
 				}else if(_this.config.scroll.top != 0 && _this.config.scroll.top != _this.config.scroll.verticalHeight){
 					e.preventDefault();
