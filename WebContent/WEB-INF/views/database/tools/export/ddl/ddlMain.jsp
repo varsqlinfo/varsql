@@ -239,6 +239,8 @@ VarsqlAPP.vueServiceBean({
 		,selectItem : function (objInfo){
 			objInfo._isSelect = objInfo._isSelect ? false :true; 
 			
+			
+			
 			objInfo.isActive = false; 
 			
 			if(objInfo._isSelect){
@@ -247,6 +249,8 @@ VarsqlAPP.vueServiceBean({
 				delete this.selectObjectItems[objInfo.contentid];
 				delete this.selectExportInfo[objInfo.contentid];
 			}
+			
+			console.log(objInfo , this.selectObjectItems)
 		}
 		//object list
 		,setSelectObject : function (sObj){

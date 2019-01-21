@@ -186,14 +186,16 @@ public class ExportServiceImpl{
 		while(iter.hasNext()){
 			String objectName = iter.next();
 			
-			allDDLScript.append("--------- "+objectName+" start----------").append(BlankConstants.NEW_LINE);
+			allDDLScript.append("--------- "+objectName+" start----------").append(BlankConstants.NEW_LINE_TWO);
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
+			
+			preferencesInfo.setObjectType(DBObjectType.getDBObjectType( objectName).name());
 			
 			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo,ddlOption, objNmArr);
 			
 			for (DDLInfo ddlInfo : ddlList) {
-				allDDLScript.append(ddlInfo.getCreateScript());
+				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE);
 			}
 			
 			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
