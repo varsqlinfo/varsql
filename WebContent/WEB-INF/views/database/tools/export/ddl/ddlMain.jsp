@@ -177,6 +177,8 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			if(dbObjType.length < 1){
+				var item = _self.selectObjectItems[Object.keys(_self.selectObjectItems)[0]];
+				_self.setSelectObject(item);
 				return ; 
 			}
 				
@@ -213,13 +215,16 @@ VarsqlAPP.vueServiceBean({
 		,complete : function (){
 			var _self = this; 
 			
-			var info = $("#firstConfigForm").serializeJSON();
-			
 			_self.selectExportInfo[_self.selectExportObject.contentid]  = _self.selectDbObjectInfo.getTargetItem();
 			
+			var exportInfo = {};
+			for(var key in _self.selectObjectItems){
+				exportInfo[key] = _self.selectExportInfo[key];
+			}
+			
 			var prefVal = {
-				exportName : _self.downloadConfig.exportName
-				,exportInfo : _self.selectExportInfo
+				"exportName" : _self.downloadConfig.exportName
+				,"exportInfo" : exportInfo
 			};
 			
 			var param = {
@@ -239,18 +244,13 @@ VarsqlAPP.vueServiceBean({
 		,selectItem : function (objInfo){
 			objInfo._isSelect = objInfo._isSelect ? false :true; 
 			
-			
-			
 			objInfo.isActive = false; 
 			
 			if(objInfo._isSelect){
 				this.selectObjectItems[objInfo.contentid] =objInfo
 			}else{
 				delete this.selectObjectItems[objInfo.contentid];
-				delete this.selectExportInfo[objInfo.contentid];
 			}
-			
-			console.log(objInfo , this.selectObjectItems)
 		}
 		//object list
 		,setSelectObject : function (sObj){
@@ -263,7 +263,7 @@ VarsqlAPP.vueServiceBean({
 			
 			if(_self.selectExportObject != ''){
 				_self.selectExportObject.isActive = false; 
-				_self.selectExportInfo[_self.selectExportObject.contentid]  = _self.selectDbObjectInfo.getTargetItem();
+				_self.selectExportInfo[_self.selectExportObject.contentid] = _self.selectDbObjectInfo.getTargetItem();
 			}
 			
 			_self.selectExportObject = sObj;
