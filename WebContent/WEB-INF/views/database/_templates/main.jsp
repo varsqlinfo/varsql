@@ -171,6 +171,8 @@ $(document).ready(function(){
 						<option value="100" selected>100</option>
 						<option value="500">500</option>
 						<option value="1000">1000</option>
+						<option value="5000">5000</option>
+						<option value="10000">10000</option>
 					</select>
 				</span>
 				<button type="button" id="sql_filelist_view_btn" class="btn btn-default sql-filelist-view-btn" style="line-height:15px;"><i class="fa fa-bars" style="margin-right:3px;"></i>파일</button></button>

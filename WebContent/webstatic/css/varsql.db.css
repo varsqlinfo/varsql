@@ -902,13 +902,20 @@ hr.dotline {
 .lm_tab:hover, .lm_tab.lm_active {
     background: ;
     color: #777777;
-    
     background-image: -webkit-linear-gradient(#ffffff,#f3f3f3);
     background-image: -moz-linear-gradient(#ffffff,#f3f3f3);
     background-image: -ms-linear-gradient(#ffffff,#f3f3f3);
     background-image: -o-linear-gradient(#ffffff,#f3f3f3);
     background-image: linear-gradient(#ffffff,#f3f3f3);
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#f3f3f3', GradientType=0);
+}
+
+.lm_splitter.lm_horizontal .lm_drag_handle {
+    left: 0px !important;
+}
+
+.lm_splitter.lm_vertical .lm_drag_handle {
+    top: 0px !important;
 }
 
 .pos-relative-w-h100{
