@@ -269,8 +269,8 @@
     margin: 0;
     border-spacing: 0;
     border-collapse: collapse;
-	border-right: 1px solid #e4e4ea;
-    border-bottom: 1px solid #e4e4ea;
+	border-right: 1px solid #d5d5d8;
+    border-bottom: 1px solid #d5d5d8;
 }
 
 .pubGrid-container [rowinfo="0"]>td {
@@ -456,6 +456,7 @@
 .pubGrid-hscroll-bar{
 	position: absolute;
     top: 0px;
+	left:0px;
     width: 100px;
     margin :0px 10px 0px 10px;
     height: 100%;
@@ -594,9 +595,10 @@
 	border-right:0px solid #8e8b8b;
 }
 
-.left-cont-on .pubGrid-header-left , .left-cont-on .pubGrid-body-left{
-	border-right:1px solid #bcbcbd;
+.pubGrid-wrapper .left-cont-on .pubGrid-header-left-cont, .pubGrid-wrapper .left-cont-on .pubGrid-body-left-cont{
+	border-right:1px solid #848486;
 }
+
 .pubGrid-body-aside .pub-body-aside-td  .aside-content {
     text-align: center;
 }

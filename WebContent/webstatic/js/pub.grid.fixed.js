@@ -472,7 +472,7 @@ Plugin.prototype ={
      * @method _setThead
      * @description 헤더 label 셋팅.
      */
-	,_setThead : function (){
+	,_setThead : function (calcFlag){
 		var _this = this
 			,opt = _this.options;
 			
@@ -512,21 +512,29 @@ Plugin.prototype ={
 				}else{
 					headItem=thgItem[tmpThgIdx];
 
-					tmpColIdx +=(headItem['colspan'] || 1);
-					headItem['r'] = i;
-					headItem['c'] = j;
-					headItem['view'] = true;
-					headItem['sort'] = tciItem.sort===true ? true : opt.headerOptions.sort;
-					headItem['colSpanIdx'] = beforeColSpanIdx+1;
-					headItem['colspanhtm'] = 'scope="col"';
-					headItem['rowspanhtm'] ='';
-					headItem['label'] = headItem.label ? headItem.label : tciItem.label;
-					
-					if(headItem.colspan){
-						headItem['colSpanIdx'] = headItem['colSpanIdx']+headItem.colspan-1;
-						headItem['colspanhtm'] = ' scope="colgroup" colspan="'+headItem.colspan+'" ';
+					if(calcFlag !== false){
+						tmpColIdx +=(headItem['colspan'] || 1);
+						headItem['r'] = i;
+						headItem['c'] = j;
+						headItem['view'] = true;
+						headItem['sort'] = tciItem.sort===true ? true : opt.headerOptions.sort;
+						headItem['colSpanIdx'] = beforeColSpanIdx+1;
+						headItem['colspanhtm'] = 'scope="col"';
+						headItem['rowspanhtm'] ='';
+						headItem['label'] = headItem.label ? headItem.label : tciItem.label;
 						
-						colSpanNum[i][j]= j+headItem.colspan; 
+						if(headItem.colspan){
+							headItem['colSpanIdx'] = headItem['colSpanIdx']+headItem.colspan-1;
+							headItem['colspanhtm'] = ' scope="colgroup" colspan="'+headItem.colspan+'" ';
+							
+							colSpanNum[i][j]= j+headItem.colspan; 
+						}
+
+						if(headItem.rowspan){
+							headItem['rowspanhtm'] += ' scope="col" rowspan="'+headItem.rowspan+'" ';
+							rowSpanNum[j] = i+ headItem.rowspan -1;
+						}
+						beforeColSpanIdx = headItem['colSpanIdx'];
 					}
 
 					if(currentColSpanIdx > j){
@@ -539,18 +547,12 @@ Plugin.prototype ={
 							tmpThgIdx +=1;		
 						}
 					}
-
-					if(headItem.rowspan){
-						headItem['rowspanhtm'] += ' scope="col" rowspan="'+headItem.rowspan+'" ';
-						rowSpanNum[j] = i+ headItem.rowspan -1;
-					}
-					beforeColSpanIdx = headItem['colSpanIdx'];
 				}
 				//console.log(i, 'headItem', headItem)
 				//console.log(j+' ;; '+rowSpanNum[j] +' : '+headItem.view, headItem);
 
 				if(headItem.view==true){
-					sortHeaderInfo[j] = {r:i,key:tciItem.key}
+					sortHeaderInfo[j] = {r:i,key:tciItem.key};
 					headItem['resizeIdx'] =headItem.colSpanIdx; 
 
 					if(headItem.c < fixedColIdx){
@@ -591,11 +593,11 @@ Plugin.prototype ={
 
 		var colWidth = Math.floor((gridElementWidth)/tci.length);
 		
-		var viewAllLabel= (opt.headerOptions.viewAllLabel ===true ?true :false); 
-		
-		var strHtm = [];
+		var viewAllLabel = calcFlag===false ? false : (opt.headerOptions.viewAllLabel ===true ?true :false); 
+
+		var strHtm = [], leftWidth=0, mainWidth=0;
 		for(var j=0; j<tci.length; j++){
-			var tciItem = opt.tColItem[j];
+			var tciItem = tci[j];
 
 			if(viewAllLabel){
 				tciItem.width = tciItem.label.length* 11; 
@@ -609,17 +611,25 @@ Plugin.prototype ={
 			opt.tColItem[j] = tciItem;
 
 			if(_this._isFixedPostion(j)){
-				_this.config.gridWidth.left +=tciItem.width;
+				leftWidth +=tciItem.width;
 			}else{
-				_this.config.gridWidth.main +=tciItem.width;
+				mainWidth +=tciItem.width;
 			}
 
 			strHtm.push('<option value="'+tciItem.key+'">'+tciItem.label+'</option>');
 		}
+		_this.config.gridWidth.left = leftWidth;
+		_this.config.gridWidth.main = mainWidth;
 		
 		_this.config.itemColumnCount = tci.length; 
+		
+		if(calcFlag === false){
+			return ; 
+		}
+		
 		_this.config.template['searchField'] = strHtm.join('');
 		_this._calcElementWidth();
+		
 	}
 	/**
      * @method _calcElementWidth
@@ -659,10 +669,6 @@ Plugin.prototype ={
 				_this.config.gridWidth.main =mainGridWidth+lastSpaceW; 
 			}
 		}
-
-		_this.config.body.height = opt.height;
-		
-		//console.log(_this.config.gridWidth, gridElementWidth, _w );
 	}
 	/**
      * @method _setTfoot
@@ -716,6 +722,11 @@ Plugin.prototype ={
 		
 		return strHtm.join('');	
 	}
+	/**
+     * @method addData
+	 * @param data {Array} - 데이타
+     * @description 데이타 add
+     */
 	,addData : function (pData){
 		this.setData(pData, 'addData');
 	}
@@ -725,12 +736,14 @@ Plugin.prototype ={
 	 * @param gridMode {String} - 그리드 모드 
      * @description 데이타 그리기
      */
-	,setData :function (pdata, gridMode){
+	,setData :function (pdata, mode){
 		var _this = this
 			,opt = _this.options
 			,tci = opt.tColItem;
 		var data = pdata;
 		var pageInfo = opt.page;
+
+		var gridMode = mode.split('_')[0];
 
 		gridMode = gridMode||'reDraw';
 		if(!$.isArray(pdata)){
@@ -816,7 +829,7 @@ Plugin.prototype ={
 		_this.setScrollSpeed();
 
 		if(gridMode != 'addData'){
-			_this.drawGrid(gridMode,true);
+			_this.drawGrid(mode,true);
 		}
 
 		_this.setPage(pageInfo);
@@ -944,7 +957,7 @@ Plugin.prototype ={
 			+' 		  </div>'
 			+' 		</div>'		
 
-			+' 		<div id="'+_this.prefix+'_bodyContainer" class="pubGrid-body-container-warpper">'
+			+' 		<div id="'+_this.prefix+'_bodyContainer" class="pubGrid-body-container-warpper" style="height:'+_this.config.body.height+'px">'
 			+' 			<div class="pubGrid-body-container">'
 			+' 				<div class="pubGrid-body-aside"><table style="width:'+_this.config.gridWidth.aside+'px;" class="pubGrid-body-aside-cont"></table></div>'
 			+' 				<div class="pubGrid-body-left"><table style="width:'+_this.config.gridWidth.left+'px;" class="pubGrid-body-left-cont"></table></div>'
@@ -1042,9 +1055,17 @@ Plugin.prototype ={
      * @method getTbodyHtml
 	 * @description body html  만들기
      */
-	,getTbodyHtml : function(mode){
-		this.getTbodyAsideHtml(mode);
+	,getTbodyHtml : function(pMode){
 
+		pMode = pMode||'';
+		var modeInfo =pMode.split('_');
+		var mode = modeInfo[0];
+		var subMode = modeInfo[1] ||'';
+		
+		if(subMode !='colfixed'){
+			this.getTbodyAsideHtml(mode);
+		}
+		
 		function bodyHtm (_this , mode , type){
 			var clickFlag = false
 				,tci = _this.options.tColItem
@@ -1067,7 +1088,7 @@ Plugin.prototype ={
 			
 			for(var i =0 ; i < _this.config.scroll.maxViewCount; i++){
 
-				if(tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
+				if(mode != 'init' && tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
 					if(i >= _this.config.scroll.viewCount){
 						tmpeElementBody.find('[rowinfo="'+i+'"]').hide();
 					}else{
@@ -1090,7 +1111,7 @@ Plugin.prototype ={
 				var bodyHtm = '';
 				bodyHtm +=_this._getColGroup(_this.prefix+'colbody', type);
 				bodyHtm += '<tbody class="pubGrid-body-tbody" data-start-idx="0">'+strHtm.join('')+'</tbody>';
-
+				
 				tmpeElementBody.empty().html(bodyHtm);
 				
 			}else{
@@ -1212,6 +1233,23 @@ Plugin.prototype ={
 
 		return idx < this.options.headerOptions.colFixedIndex ? true : false ; 
 	}
+	/**
+     * @method setColFixedIndex
+	 * @param  idx {Number} header column index
+     * @description 고정 컬럼 
+     */
+	,setColFixedIndex : function (idx){
+		this.options.headerOptions.colFixedIndex = idx; 
+		this._setThead(false);
+		this.setData(this.options.tbodyItem, 'init_colFixed')
+	}
+	/**
+     * @method getColFixedIndex
+     * @description get column fixed index 
+     */
+	,getColFixedIndex : function (){
+		return this.options.headerOptions.colFixedIndex;
+	}
 	,theadAsideHtml : function (){
 		var _this = this
 		
@@ -1238,54 +1276,67 @@ Plugin.prototype ={
 	 * @param  type {String} 그리드 타입.
      * @description foot 데이타 셋팅
      */
-	,drawGrid : function (drawMode, unconditionallyFlag){
+	,drawGrid : function (pMode, unconditionallyFlag){
 		var _this = this
 			,tci = _this.options.tColItem
 			,tbi = _this.options.tbodyItem
 			,headerOpt=_this.options.headerOptions;
 
+		pMode = pMode||'';
+		var drawModeInfo =pMode.split('_');
+
+		var drawMode = drawModeInfo[0];
+		var subMode = drawModeInfo[1]||'';
+
 		if(drawMode =='init'){
-
-			// header html 만들기
-			var templateHtm = _this.getTemplateHtml();
-			templateHtm = templateHtm.replace('#theaderAsideHtmlArea#',_this.theadAsideHtml('aside'));
-			templateHtm = templateHtm.replace('#theaderHtmlArea#',_this.theadHtml('cont'));
-			templateHtm = templateHtm.replace('#theaderLeftHtmlArea#',_this.theadHtml('left'));
-
-			_this.gridElement.empty().html(templateHtm);
-
-			_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
-			_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
+						
+			if(subMode ==''){
+				var templateHtm = _this.getTemplateHtml();
+				templateHtm = templateHtm.replace('#theaderAsideHtmlArea#',_this.theadAsideHtml('aside'));
+				templateHtm = templateHtm.replace('#theaderLeftHtmlArea#',_this.theadHtml('left'));
+				templateHtm = templateHtm.replace('#theaderHtmlArea#',_this.theadHtml('cont'));
 			
-			_this.element.container = $('#'+_this.prefix+'_container');
-			_this.element.left = $('#'+_this.prefix+'_left');
-			_this.element.header= $('#'+_this.prefix+'_headerContainer');
-			_this.element.body = $('#'+_this.prefix +'_bodyContainer');
-			_this.element.footer = $('#'+_this.prefix +'_footerContainer');
+				_this.gridElement.empty().html(templateHtm);
 
-			_this.element.navi = $('#'+_this.prefix+'_navigation');
-			_this.element.status = $('#'+_this.prefix+'_status');
-			_this.element.vScrollBar = $('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar');
-			_this.element.hScrollBar = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar');
-
-			if(headerOpt.view===false){
-				_this.element.header.height(0).hide()
-				$('#'+_this.prefix+'_vscroll .pubGrid-scroll-top-area').hide();
-			}else{
+				_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
+				_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
 				
+				_this.element.container = $('#'+_this.prefix+'_container');
+				_this.element.left = $('#'+_this.prefix+'_left');
+				_this.element.header= $('#'+_this.prefix+'_headerContainer');
+				_this.element.body = $('#'+_this.prefix +'_bodyContainer');
+				_this.element.footer = $('#'+_this.prefix +'_footerContainer');
+
+				_this.element.navi = $('#'+_this.prefix+'_navigation');
+				_this.element.status = $('#'+_this.prefix+'_status');
+				_this.element.vScrollBar = $('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar');
+				_this.element.hScrollBar = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar');
+				
+				// header html 만들기
+				if(headerOpt.view===false){
+					_this.element.header.height(0).hide()
+					$('#'+_this.prefix+'_vscroll .pubGrid-scroll-top-area').hide();
+				}
+
+				_this.setElementDimensionAndMessage();
+				_this.calcDimension('init');
+				
+				_this._initHeaderEvent();
+				_this._headerResize(headerOpt.resize.enabled);
+				_this.scroll();
+
+				_this._initBodyEvent();
+				_this._setBodyEvent();
+				_this.getTbodyHtml('init');
+			}else{
+				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
+				_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
+				
+				_this._headerResize(headerOpt.resize.enabled);
+				_this.getTbodyHtml('init_colfixed');
+				
+				_this.calcDimension('colfixed');
 			}
-		
-			_this.setElementDimensionAndMessage();
-			_this.calcDimension('init');
-
-			// resize 설정
-			_this._initHeaderEvent();
-			_this._headerResize(headerOpt.resize.enabled);
-			_this.scroll();
-			_this._initBodyEvent();
-			_this._setBodyEvent();
-
-			_this.getTbodyHtml('init');
 		}
 
 		if(tbi.length < 1){
@@ -1442,11 +1493,13 @@ Plugin.prototype ={
 		$('#'+this.prefix+'_vscroll').css({'width' : this.options.scroll.vertical.width , 'padding-top' :  header_height});
 		$('#'+this.prefix+'_hscroll').css({'height' : this.options.scroll.horizontal.height , 'padding-left' : this.config.gridWidth.aside});
 		
-		// empty message
-		if(isFunction(this.options.message.empty)){
-			this.element.body.find('.pubGrid-empty-msg').empty().html(this.options.message.empty());	
-		}else{
-			this.element.body.find('.pubGrid-empty-msg .empty-text').empty().html(this.options.message.empty);
+		if(this.options.tbodyItem.length < 1){
+			// empty message
+			if(isFunction(this.options.message.empty)){
+				this.element.body.find('.pubGrid-empty-msg').empty().html(this.options.message.empty());	
+			}else{
+				this.element.body.find('.pubGrid-empty-msg .empty-text').empty().html(this.options.message.empty);
+			}
 		}
 		
 		this.calcViewCol(0);
@@ -1528,8 +1581,8 @@ Plugin.prototype ={
 		
 		_this.element.body.find('.pubGrid-body-cont').css('width',(_this.config.gridWidth.main)+'px');
 		_this.element.body.find('.pubGrid-body-left-cont').css('width',(_this.config.gridWidth.left)+'px');
-		_this.element.body.find('.pubGrid-body-left').css('height',(opt.height)+'px');
 		_this.element.body.find('.pubGrid-empty-msg-area').css('line-height',(bodyH)+'px');
+		_this.element.body.css('height',(bodyH)+'px');
 
 		//console.log(vScrollFlag,mainHeight , this.config.header.height , this.config.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontal.height:0))
 
@@ -2153,7 +2206,7 @@ Plugin.prototype ={
 		
 		if(headerOpt.isColSelectAll ===true){
 			// column select
-			_this.element.header.find('.pub-header-cont').on('click.pubGridHeader.select',function (e){
+			_this.element.header.on('click.pubGridHeader.select','.pub-header-cont',function (e){
 				var selEle = $(this)
 					,col_idx = selEle.attr('col_idx');
 				
@@ -2176,7 +2229,7 @@ Plugin.prototype ={
 		}
 		
 		// sort
-		_this.element.header.find('.pub-header-cont.sort-header').on('dblclick.pubGridHeader.sort',function (e){
+		_this.element.header.on('dblclick.pubGridHeader.sort','.pub-header-cont.sort-header',function (e){
 			var selEle = $(this)
 				,col_idx = selEle.attr('col_idx')
 				,sortType = selEle.attr('sort_type');
@@ -2246,6 +2299,9 @@ Plugin.prototype ={
 		if(_this.config.initSettingFlag ===true){
 			return ; 
 		}
+
+
+		
 		
 		// 한번만 초기화 하기 위해서 처리.
 		_this.config.initSettingFlag = true; 
@@ -2255,7 +2311,7 @@ Plugin.prototype ={
 				settingOpt.click.call(null,{evt :e , item :{}});	
 			});
 		}else{
-
+			
 			settingWrapper.find('.pubGrid-setting').on('click', function (e){
 				if(settingWrapper.hasClass('open')){
 					settingWrapper.removeClass('open');
