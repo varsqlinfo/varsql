@@ -399,7 +399,7 @@
 }
 
 .pubGrid-setting-wrapper{
-	position:absolute;left:3px;top:2px;z-index:10;display:none;
+	position:absolute;left:7px;top:2px;z-index:10;display:none;
 }
 .pubGrid-setting{
 	cursor:pointer;
@@ -441,11 +441,19 @@
 	margin-right:5px;
 }
 
-.pubGrid-speed-area>select{
-	width:50px;
+.pubGrid-setting-area select {
 	height:23px;
 	margin:0 5px;
 }
+
+.pubGrid-search-area>select{
+	margin:0px 5px 0px 0px;
+}
+
+.pubGrid-speed-area>select{
+	width:50px;
+}
+
 .pubGrid-setting-area .pubgrid-btn{
 	background-color:#ffffff;
 	border: 1px solid #ddd;
@@ -595,7 +603,7 @@
 	border-right:0px solid #8e8b8b;
 }
 
-.pubGrid-wrapper .left-cont-on .pubGrid-header-left-cont, .pubGrid-wrapper .left-cont-on .pubGrid-body-left-cont{
+.pubGrid-wrapper .pubGrid-header-left-cont, .pubGrid-wrapper .pubGrid-body-left-cont{
 	border-right:1px solid #848486;
 }
 

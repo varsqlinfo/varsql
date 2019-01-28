@@ -4640,9 +4640,17 @@ _ui.sqlDataArea =  {
 		var _self = this; 
 		
 		$.pubGrid(_self.currnetDataGridSelector,{
-			height:'auto'
+			setting : {
+				enable : true
+				,click : false
+				,enableSearch : true
+				,enableSpeed : true
+				,enableColumnFix : true
+				,callback : function (data){
+					
+				}
+			}
 			,autoResize : false
-			,page :false
 			,headerOptions:{
 				view:true
 				,sort : true
