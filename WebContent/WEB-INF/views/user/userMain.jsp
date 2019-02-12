@@ -177,7 +177,7 @@ $(document).ready(function (){
 	</div>
 </div>
 <div id="memoTemplate_view_dialog" style="display:none;" title="메시지">
-	<div style="margin: 0px -10px 0px -10px;">
-		<textarea id="memo_content" name="memo_content" class="form-control" rows="12" placeholder="내용"></textarea>
+	<div class="memo-view-area">
+		<textarea id="memo_content" name="memo_content" placeholder="내용"></textarea>
 	</div>
 </div>

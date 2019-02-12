@@ -2,8 +2,8 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!-- Brand and toggle get grouped for better mobile display -->
 
-<div class="">
-	<div class="ui-connection-list">
+
+	<div class="user-connection-list-area">
 		<label>Connect to : </label> 
 		
 		<select id="user_connection_info">
@@ -14,16 +14,14 @@
 		</select>
 	</div>
 	
-	<div class="ui-connection-tabs-wrap">
-		<div class="connection-ui-tabs">
-			<ul class="connection-ui-tabs-nav" id="user_connection_info_tab">
-			</ul>
-		</div>
+	<div class="connection-tab-area">
+		<ul class="connection-tab" id="user_connection_info_tab">
+		</ul>
 	</div>
 	
-	<div class="pull-right">
+	<div class="user-right-menu-area">
 		<!-- Top Menu Items -->
-		<ul class="navbar-top-links navbar-right">
+		<ul class="user-right-menu">
 			<li class="dropdown">
 		        <a href="javascript:;" class="dropdown-toggle ui-memo-btn" data-toggle="dropdown" >
 		            <i class="fa fa-bell-o fa-fw"></i>
@@ -33,7 +31,7 @@
 		        </ul>
 		    </li>
 			<li class="dropdown">
-				<a href="#" class="dropdown-toggle"	data-toggle="dropdown"> 
+				<a href="#" class="dropdown-toggle user-profile text-ellipsis"	data-toggle="dropdown"> 
 					<sec:authentication	property="principal.fullname" /> <b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
@@ -90,13 +88,17 @@
 					var items = res.items;
 					var paging = res.paging;
 					var strHtm = [], len = items.length;
-					$('.alram-count').html(len);
+					if(len > 0){
+						$('.alram-count').addClass('on').html(len);
+					}else{
+						$('.alram-count').removeClass('on');
+					}
 					if (len > 0) {
 						for (var i = 0; i < len; i++) {
 							var item = items[i];
 
 							strHtm.push('<li>');
-							strHtm.push('   <a href="javascript:;" class="memo-item" _idx="'+i+'" title="'+item.MEMO_TITLE+'"><span class="memo-text"><i class="fa fa-envelope fa-fw"></i><span>'+item.MEMO_TITLE+'</span></span>');
+							strHtm.push('   <a href="javascript:;" class="memo-item" _idx="'+i+'" title="'+item.MEMO_TITLE+'"><span class="memo-text text-ellipsis"><i class="fa fa-envelope fa-fw"></i><span>'+item.MEMO_TITLE+'</span></span>');
 							strHtm.push('   <span class="pull-right memo-date">'+ item.REG_DT + '</span></a>');
 							strHtm.push(' </li>');
 						}

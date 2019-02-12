@@ -8,12 +8,10 @@
 <%@ include file="/WEB-INF/include/database-top-head.jsp"%>
 </head>
 <body>
-  <div id="wrapper">
+  <div>
   <!-- Navigation -->
   	<div id="user-header">
-	    <nav class="user-navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
-	        <tiles:insertAttribute name="header" />
-	    </nav>
+	    <tiles:insertAttribute name="header" />
 	</div>
   	<div id="user-page-wrapper">
 		<tiles:insertAttribute name="body" />

@@ -22,6 +22,7 @@ var pluginName = "pubContextMenu"
 			// Modify $obj, Do not return
 		}
 		,bgiframe:true
+		,theme : 'light'
 		,above: 'auto'
 		,preventDoubleContext: true
 		,compress: true
@@ -134,10 +135,9 @@ Plugin.prototype ={
 	,buildMenu : function (data, id, subMenu, depth){
 		var _this = this; 
 		var subClass = (subMenu) ? ' pub-context-sub' : ' pub-context-top',
-			compressed = _this.options.compress ? ' compressed-context' : '',
 			$menuHtm = [];
 		
-		$menuHtm.push('<ul class="pub-context-menu ' + subClass + compressed+'" id="' + id + '">');
+		$menuHtm.push('<ul class="pub-context-menu ' + subClass +'" id="' + id + '">');
  
 		var dateLen =data.length,item ,linkTarget = '',itemKey , styleClass;
 		for(var i = 0; i< dateLen ; i++) {
@@ -247,6 +247,22 @@ Plugin.prototype ={
 		}
 	}
 	/**
+     * @method setTheme
+     * @description set theme
+     */
+	,setTheme : function (themeName){
+		$('#'+this.contextId+'_wrap').removeClass('pub-theme-'+this.options.theme);
+		this.options.theme = themeName;
+		$('#'+this.contextId+'_wrap').addClass('pub-theme-'+themeName);
+	}
+	/**
+     * @method getTheme
+     * @description get theme
+     */
+	,getTheme : function (){
+		return this.options.theme;
+	}
+	/**
      * @method getCheckBoxId
      * @description get checkbox id
      */
@@ -264,7 +280,7 @@ Plugin.prototype ={
 			,$menu =_this.buildMenu(opt.items, id, false, 0)
 			,selector = _this.selector;
 		
-		$menu = '<div id="'+id+'_wrap" onselectstart="return false" draggable="false">'+$menu+'</div>';
+		$menu = '<div id="'+id+'_wrap" class="'+opt.theme+'" onselectstart="return false" draggable="false">'+$menu+'</div>';
 		
 		var contextMenu  = $('#'+id+'_wrap'); 
 

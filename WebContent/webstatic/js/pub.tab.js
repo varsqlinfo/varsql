@@ -529,9 +529,6 @@
 			var sEle = this.element.find('.pubTab-item.active'); 
 			return this.options.items[sEle.index()];
 		}
-		,destroy:function (){
-			
-		}
 		// tab  item template
 		,_getTabItemHtml : function (item){
 			
@@ -650,6 +647,25 @@
 			this.config.scroll = {
 				width : this.config.tabContainerElement.width() - _this.config.tabScrollElement.width()	
 			} 
+		}
+		/**
+		 * @method setTheme
+		 * @description set theme
+		 */
+		,setTheme : function (themeName){
+			this.element.removeClass('pub-theme-'+this.options.theme);
+			this.options.theme = themeName;
+			this.element.addClass('pub-theme-'+themeName);
+		}
+		/**
+		 * @method getTheme
+		 * @description get theme
+		 */
+		,getTheme : function (){
+			return this.options.theme;
+		}
+		,destroy:function (){
+			
 		}
 	};
 

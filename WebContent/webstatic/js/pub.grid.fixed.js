@@ -125,6 +125,7 @@ var _initialized = false
 			,speed : 1			// 스크롤 스피드
 		}
 	}
+	,theme : 'light'
 	,height: 'auto'
 	,tColItem : [] //head item
  	,theadGroup : [] // head group 
@@ -844,9 +845,11 @@ Plugin.prototype ={
 		_this.setPage(pageInfo);
 
 		if(_this.config.orginData != _this.options.tbodyItem){
-			$('#'+_this.prefix+'_settingBtn').attr('fill','red').attr('stroke','red');
+			_this.gridElement.find('.pubGrid-setting').addClass('search-on');
+			//$('#'+_this.prefix+'_settingBtn').attr('fill','red').attr('stroke','red');
 		}else{
-			$('#'+_this.prefix+'_settingBtn').removeAttr('fill').removeAttr('stroke');
+			_this.gridElement.find('.pubGrid-setting').removeClass('search-on');
+			//$('#'+_this.prefix+'_settingBtn').removeAttr('fill').removeAttr('stroke');
 		}
 	}
 	/**
@@ -1043,7 +1046,7 @@ Plugin.prototype ={
 		if(mode=='init'){
 			var bodyHtm = '';
 			bodyHtm += '<colgroup>'+colGroupHtm.join('')+'</colgroup>';
-			bodyHtm += '<tbody class="pubGrid-body-tbody" data-start-idx="0">'+strHtm.join('')+'</tbody>';
+			bodyHtm += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
 			tmpeElementBody.empty().html(bodyHtm);
 		}else{
 			strHtm = strHtm.join('');
@@ -1119,7 +1122,7 @@ Plugin.prototype ={
 			if(mode=='init'){
 				var bodyHtm = '';
 				bodyHtm +=_this._getColGroup(_this.prefix+'colbody', type);
-				bodyHtm += '<tbody class="pubGrid-body-tbody" data-start-idx="0">'+strHtm.join('')+'</tbody>';
+				bodyHtm += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
 				
 				tmpeElementBody.empty().html(bodyHtm);
 				
@@ -3800,6 +3803,22 @@ Plugin.prototype ={
 			,'currStartPage' : currStartPage ,'currEndPage' : currEndPage
 			,'totalCount' : totalCount ,'totalPage' : totalPage
 		};
+	}
+	/**
+     * @method setTheme
+     * @description set theme
+     */
+	,setTheme : function (themeName){
+		this.gridElement.removeClass('pub-theme-'+this.options.theme);
+		this.options.theme = themeName;
+		this.gridElement.addClass('pub-theme-'+themeName);
+	}
+	/**
+     * @method getTheme
+     * @description get theme
+     */
+	,getTheme : function (){
+		return this.options.theme;
 	}
 	/**
      * @method excelExport

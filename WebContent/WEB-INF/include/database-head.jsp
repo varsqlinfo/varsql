@@ -16,9 +16,7 @@
 
 <link href="${pageContextPath}/webstatic/css/editor/codemirror.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/editor/show-hint.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.ep.css?version=${css_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.tab.css?version=${css_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.grid.fixed.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.db.component.css?version=${css_ver}" rel="stylesheet" type="text/css">
