@@ -8,8 +8,6 @@
 <%@ include file="/WEB-INF/include/database-top-head.jsp"%>
 </head>
 <body>
-  <div>
-  <!-- Navigation -->
   	<div id="user-header">
 	    <tiles:insertAttribute name="header" />
 	</div>
@@ -20,13 +18,6 @@
     <div class="user-main-footer">
     	<tiles:insertAttribute name="footer" />
     </div>
-    <!-- /#page-wrapper -->
-    <%--
-    <div id="footer">
-      <tiles:insertAttribute name="footer" />
-    </div>
-     --%>
-  </div>
 </body>
 </html>
 

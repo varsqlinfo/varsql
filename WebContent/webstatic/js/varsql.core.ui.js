@@ -1244,13 +1244,14 @@ _ui.dbSchemaObjectServiceMenu ={
 			,width : 'auto'
 			,height : 20
 			,dropItemHeight : $(_self.options.dbServiceMenuContentId).height() -10
-			,activeIcon :{
-				position : 'append'		//  활성시 html 추가 위치
-				,html : '<i class="fa fa-refresh" style="cursor:pointer;"></i>'		// 활성시 추가할 html
-				,click : function (item){
-					if(confirm('새로고침 하시겠습니까?')){
-						_self._removeMetaCache(item.contentid);
-						_self._dbObjectList(item, true);
+			,titleIcon :{
+				left :{
+					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					,click : function (item, idx){
+						if(confirm('새로고침 하시겠습니까?')){
+							_self._removeMetaCache(item.contentid);
+							_self._dbObjectList(item, true);
+						}
 					}
 				}
 			}
@@ -3142,58 +3143,59 @@ _ui.SQL = {
 			,width:'auto'
 			,itemMaxWidth: 100
 			,dropItemWidth : '100px'
-			,activeIcon :{
-				overView : true
-				,position : 'last'		//  활성시 html 추가 위치
-				,html : '<i class="fa fa-remove"></i>'		// 활성시 추가할 html
-				,click : function (item, idx){
-					var sqlId =item.SQL_ID; 
-					
-					var editorObj= _self.allTabSqlEditorObj[sqlId];
-					item = editorObj.item;
-					
-					var param = {sqlId : sqlId};
-					
-					if(item._isChange===true){
-						var dialogObj = VARSQLUI.dialog.open('#confirmTemplateTemplate',{
-							height: 150
-							,width: 300
-							,modal: true
-							,autoOpen:true
-							,buttons: {
-								"저장 후 닫기":function (){
-									param.sql = editorObj.editor.getValue();
-									_self.deleteEditorInfo(item);
-									param.len =_self.sqlFileTabObj.getItemLength();
-									_self.saveSqlFile(param ,'query_del');
+				
+			,titleIcon :{
+				right :{
+					html : '<i class="fa fa-remove"></i>'
+					,click : function (item, idx){
+						var sqlId =item.SQL_ID; 
+						
+						var editorObj= _self.allTabSqlEditorObj[sqlId];
+						item = editorObj.item;
+						
+						var param = {sqlId : sqlId};
+						
+						if(item._isChange===true){
+							var dialogObj = VARSQLUI.dialog.open('#confirmTemplateTemplate',{
+								height: 150
+								,width: 300
+								,modal: true
+								,autoOpen:true
+								,buttons: {
+									"저장 후 닫기":function (){
+										param.sql = editorObj.editor.getValue();
+										_self.deleteEditorInfo(item);
+										param.len =_self.sqlFileTabObj.getItemLength();
+										_self.saveSqlFile(param ,'query_del');
+										dialogObj.dialog( "close" );
+									}
+									,"닫기":function (){
+										_self.deleteEditorInfo(item);
+										param.len =_self.sqlFileTabObj.getItemLength();
+										_self.saveSqlFile(param ,'delTab');
+										dialogObj.dialog( "close" );
+									}
+									,"취소": function() {
+										dialogObj.dialog( "close" );
+									}
+								}
+								,close: function() {
 									dialogObj.dialog( "close" );
 								}
-								,"닫기":function (){
-									_self.deleteEditorInfo(item);
-									param.len =_self.sqlFileTabObj.getItemLength();
-									_self.saveSqlFile(param ,'delTab');
-									dialogObj.dialog( "close" );
-								}
-								,"취소": function() {
-									dialogObj.dialog( "close" );
-								}
-							}
-							,close: function() {
-								dialogObj.dialog( "close" );
-							}
-						})
-					}else{
-						_self.deleteEditorInfo(item);
-						param.len =_self.sqlFileTabObj.getItemLength();
-						_self.saveSqlFile(param ,'delTab');
+							})
+						}else{
+							_self.deleteEditorInfo(item);
+							param.len =_self.sqlFileTabObj.getItemLength();
+							_self.saveSqlFile(param ,'delTab');
+						}
 					}
 				}
-			}
+			}	
 			,overItemViewMode :'drop'
 			,click : function (item){
 				var sqlId =item.SQL_ID; 
 				
-					_self.loadEditor(item);
+				_self.loadEditor(item);
 				
 			}
 			,itemKey :{							// item key mapping

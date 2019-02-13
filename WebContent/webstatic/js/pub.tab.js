@@ -27,15 +27,19 @@
 			,filter: function ($obj) {
 				// Modify $obj, Do not return
 			}
-			,icon :{
-				prev :'pubTab-left-arrow'
-				,next : 'pubTab-right-arrow'
-			}
-			,activeIcon :{
-				overView : false		// mouseover icon view  여부
-				,position : 'prev'		//  활성시 html 추가 위치
-				,html : ''				// 활성시 추가할 html
-				,click: false			// 클릭 이벤트.
+			,titleIcon :{
+				left :{
+					overView : true		// mouseover icon view  여부
+					,visible :true		// 기본 보이기 여부.
+					,html : ''				// 활성시 추가할 html
+					,click: false			// 클릭 이벤트.
+				}
+				,right : {
+					overView : true		// mouseover icon view  여부
+					,visible :true
+					,html : ''				// 활성시 추가할 html
+					,click: false			// 클릭 이벤트.
+				}
 			}
 			,addClass : 'service_menu_tab'	// tab li 추가 클래스
 			,items:[]							// tab item
@@ -72,9 +76,9 @@
     function Plugin(element, options) {
         this.selector = (typeof element=='object') ? element.selector : element;
 		this.contextId = 'pubTab-'+new Date().getTime();
-		this.element = $(element);
+		this.tabElement = $(element);
 
-        options.width= isNaN(options.width) ?  this.element.width() : options.width;
+        options.width= isNaN(options.width) ?  this.tabElement.width() : options.width;
         this.options = objectMerge({}, defaults, options);
 	
 		this.init();
@@ -107,28 +111,35 @@
 		}
 		,_setConfigInfo : function (){
 			this.config = {tabWidth :[] , tabHistory : [] , tabIdx : 0};
+			this.element = {}
 
 			var _opts = this.options; 
 
-			var activeIcon =_opts.activeIcon; 
-			var prevFlag = false;
+			var titleIcon =_opts.titleIcon; 
+			
 			var addHtml = '';
-			if(activeIcon && activeIcon.html != '') {
-				prevFlag = activeIcon.position =='prev' ?true :false; 
-				addHtml = '<span class="pubTab-icon-area"><span class="pubTab-icon">'+activeIcon.html+'</span></span>';
+
+			var iconInfo ={left :{} , right:{}};
+
+			if(titleIcon){
+				if(titleIcon.left && titleIcon.left.html != ''){
+					console.log(titleIcon.left.visible);
+					iconInfo.left.html =  '<span class="pubTab-icon-area '+(titleIcon.left.visible === false ? 'hide' : '')+' '+(titleIcon.left.overView === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+titleIcon.left.html+'</span></span>';
+				}
+				
+				if(titleIcon.right && titleIcon.right.html != ''){
+					iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.visible === false ? 'hide' : '')+' '+(titleIcon.right.overView === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
+				}
 			}
 
-			this.config.icon ={
-				prevFlag : prevFlag
-				,html : addHtml
-				,hoverHideCls : (activeIcon.overView === false ? 'pubTab-icon-hover-hide' : '')
-			}
+			this.config.icon = iconInfo;
 		}
 		,initEvt : function (){
 			var _this = this
-				,opts = _this.options;
+				, opts = _this.options
+				, titleIcon =opts.titleIcon; 
 
-			_this.element.on('click', '.pubTab-item-cont',function (e){
+			_this.tabElement.on('click.pubtab.item', '.pubTab-item-cont',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item');
 				
@@ -141,59 +152,45 @@
 				}
 			})
 
-			_this.element.on('click', '.pubTab-icon',function (e){
+			_this.tabElement.on('click.pubtab.icon', '.pubTab-icon',function (e){
 				var sEle = $(this)
 					,itemEle = sEle.closest('.pubTab-item');
 
 				e.preventDefault();
 				e.stopPropagation();
-
-				if($.isFunction(opts.activeIcon.click)){
-					var itemIdx = itemEle.index();
-
-					opts.activeIcon.click.call(itemEle,opts.items[itemIdx], itemIdx);
+				
+				var callfn;
+				var iconPos = sEle.attr('data-posistion'); 
+				if(iconPos=='left'){
+					callfn = titleIcon.left.click;
+				}else if(iconPos=='right'){
+					callfn = titleIcon.right.click;
 				}
+
+				if($.isFunction(callfn)){
+					var itemIdx = itemEle.index();
+					callfn.call(itemEle,opts.items[itemIdx], itemIdx);
+				}
+				return false; 
 			})
 			
-			if(opts.autoMove) {
-				var prevTimerObj = null;
-				_this.element.on( "mouseenter", '.pubTab-prev' ,function (e){
-					var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-					function movePrev(){
-						_this.config.tabScrollElement.scrollLeft(scrollLeft-10);
-						prevTimerObj = setTimeout(function(){
-							scrollLeft = _this.config.tabScrollElement.scrollLeft();
-							movePrev()
-						}, opts.speed);
-					}
+			_this.tabElement.on('mousewheel DOMMouseScroll','.pubTab-scroll', function(e) {
+				var oe = e.originalEvent;
+				var delta = 0;
+			
+				if (oe.detail) {
+					delta = oe.detail * -40;
+				}else{
+					delta = oe.wheelDelta;
+				};
 
-					movePrev();	
-				}).on( "mouseleave", function (e){
-					clearTimeout(prevTimerObj);
-				});
-				
-				var nextTimerObj = null;
-				_this.element.on( "mouseenter", '.pubTab-next' ,function (e){
-					var scrollLeft = _this.config.tabScrollElement.scrollLeft();
-					function moveNext(){
-						_this.config.tabScrollElement.scrollLeft(scrollLeft+10);
-						nextTimerObj = setTimeout(function(){
-							scrollLeft = _this.config.tabScrollElement.scrollLeft();
-							moveNext()
-						}, opts.speed);
-					}
-					
-					prevElement.show();
-					
-					moveNext();	
-				}).on( "mouseleave", function (e){
-					clearTimeout(nextTimerObj);
-				});
-			}
-
+				//delta > 0--up
+				_this._moveContainerPos( _this.element.tabScrollElement.scrollLeft() + (delta > 0?-10 :10) );
+			});
+						
 			if(opts.overItemViewMode =='drop'){
 
-				_this.element.on('click.pubtab.drop.btn','.pubTab-drop-open-btn', function (e){
+				_this.tabElement.on('click.pubtab.drop.btn','.pubTab-drop-open-btn', function (e){
 					e.preventDefault();
 					e.stopPropagation();
 
@@ -207,17 +204,17 @@
 					}
 				});
 
-				_this.element.on('click.pubtab.drop.item', '.pubTab-drop-item',function (e){
+				_this.tabElement.on('click.pubtab.drop.item', '.pubTab-drop-item',function (e){
 					e.preventDefault();
 					e.stopPropagation();
 
 					var sEle = $(this);
 
-					$(_this.element.find('.pubTab-move-area')).removeClass('pubTab-open');
+					$(_this.tabElement.find('.pubTab-move-area')).removeClass('pubTab-open');
 
 					var tabIdx = opts.items.length - sEle.index()-1;
 
-					$(_this.element.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-cont').trigger('click');	
+					$(_this.tabElement.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-cont').trigger('click');	
 				})
 			}
 		}
@@ -229,29 +226,29 @@
 		,itemClick : function (item, addAttr){
 			var idx  = item;
 			if(typeof item ==='object'){
-				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
+				idx = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
 			}
 
 			idx = isNaN(idx) ? 0 :idx; 
 
 			addAttr = addAttr || {};
-			var clickEle = $(this.element.find('.pubTab-item').get(idx));
+			var clickEle = $(this.tabElement.find('.pubTab-item').get(idx));
 			
 			for(var key in addAttr){
 				clickEle.attr(key , addAttr[key]);
 			}
 			
-			$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
+			$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
 		}
 		,setActive: function (item){
 
-			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 			
 			if(tabEle.hasClass('active')){
 				return ; 
 			}
 
-			this.element.find('.pubTab-item.active').removeClass('active');
+			this.tabElement.find('.pubTab-item.active').removeClass('active');
 
 			this._setHistory(tabEle.attr('data-tab-id'));
 			
@@ -270,9 +267,9 @@
 
 			var selItem = _this.options.items[dataIdx];
 
-			var itemEndPoint = tabWidthItem.leftLast+_this.config.moveAreaWidth+30; 
+			var itemEndPoint = tabWidthItem.leftLast+_this.config.moveAreaWidth; 
 						
-			var schLeft = _this.config.tabScrollElement.scrollLeft();
+			var schLeft = _this.element.tabScrollElement.scrollLeft();
 			var leftVal =0;
 
 			if(schLeft >= tabWidthItem.leftFront){
@@ -284,8 +281,23 @@
 					leftVal = itemEndPoint - _this.config.width; 
 				}
 			}
+			
+			_this._moveContainerPos(leftVal);
+			//_this.element.tabScrollElement.scrollLeft((leftVal>0?leftVal:0));
+		}
+		/**
+		*  move container left position;
+		*/
+		,_moveContainerPos : function (val){
 
-			_this.config.tabScrollElement.scrollLeft((leftVal>0?leftVal:0));
+			val = (val>0?val:0);
+			this.element.tabScrollElement.scrollLeft(val);
+			
+			/*
+			this.element.tabContainerElement.css({
+				'left' : '-'+val+'px'
+			})
+			*/
 		}
 		/**
 		 * @method setItems
@@ -302,9 +314,9 @@
 		,isItem : function (item){
 			var tabEle;
 			if(typeof item ==='object'){
-				tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+				tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 			}else{
-				tabEle= this.element.find('.pubTab-item[data-tab-id="'+item+'"]');
+				tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item+'"]');
 			}
 
 			return tabEle.length > 0 ? true : false; 
@@ -318,7 +330,7 @@
 				,idx = addInfo.idx 
 				,enabled =addInfo.enabled; 
 
-			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 
 			if(tabEle.length > 0){
 				if(enabled !== false){
@@ -341,10 +353,10 @@
 			var itemHtm = this._getTabItemHtml(item)
 				,dropHtm = this._getDropItemHtml(item); 
 
-			var tabItem = this.element.find('.pubTab-item'); 
+			var tabItem = this.tabElement.find('.pubTab-item'); 
 			if(tabItem.length < 1){
-				this.config.tabContainerElement.prepend(itemHtm);
-				this.element.find('.pubTab-drop-item-area').prepend(dropHtm)
+				this.element.tabContainerElement.prepend(itemHtm);
+				this.tabElement.find('.pubTab-drop-item-area').prepend(dropHtm)
 			}else{
 				if(idx < 1){
 					$(tabItem.get(0)).before(itemHtm);
@@ -352,7 +364,7 @@
 					$(tabItem.get(idx-1)).after(itemHtm);
 				}
 
-				$(this.element.find('.pubTab-drop-item').get(0)).before(dropHtm);
+				$(this.tabElement.find('.pubTab-drop-item').get(0)).before(dropHtm);
 			}
 			
 			this.calcItemWidth();
@@ -360,7 +372,7 @@
 			if(enabled !== false){
 				//this.draw();
 				this.movePosition(idx);
-				$(this.element.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
+				$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
 			}
 
 			return true;
@@ -373,7 +385,7 @@
 			var item = modInfo.item
 				,enabled =modInfo.enabled; 
 
-			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 
 			if(tabEle.length > 0){
 
@@ -417,7 +429,7 @@
 		 * @description get item
 		 */
 		,getItem : function(itemId , mode){
-			var tabEle= this.element.find('.pubTab-item[data-tab-id="'+itemId+'"]');
+			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+itemId+'"]');
 			var itemEle;
 			if(mode == 'prev'){
 				itemEle = tabEle.prev('[data-tab-id]');
@@ -447,12 +459,12 @@
 		,removeItem : function(item){
 			var idx = item;
 			if(typeof item ==='object'){
-				var removeEle = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]'); 
+				var removeEle = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]'); 
 
 				if(removeEle.length < 1){
 					return ; 
 				}
-				idx = this.element.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
+				idx = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
 			}
 
 			if(isNaN(idx) || idx < 0 || idx > this.options.items.length){
@@ -466,8 +478,8 @@
 			}
 			reval = reval[0];
 				
-			this.element.find('.pubTab-item[data-tab-id="'+reval._tabid+'"]').remove();
-			this.element.find('.pubTab-drop-item[data-tab-id="'+reval._tabid+'"]').remove();
+			this.tabElement.find('.pubTab-item[data-tab-id="'+reval._tabid+'"]').remove();
+			this.tabElement.find('.pubTab-drop-item[data-tab-id="'+reval._tabid+'"]').remove();
 
 			this.config.tabHistory = arrayRemove(this.config.tabHistory, reval._tabid);
 
@@ -479,7 +491,7 @@
 			}
 			
 			if(viewTabId){
-				this.element.find('.pubTab-item[data-tab-id="'+viewTabId+'"]').find('.pubTab-item-cont').trigger('click');
+				this.tabElement.find('.pubTab-item[data-tab-id="'+viewTabId+'"]').find('.pubTab-item-cont').trigger('click');
 			}
 
 			this.calcItemWidth();
@@ -492,18 +504,18 @@
 		}
 		,refresh : function (){
 			var _this = this; 
-			var eleW = _this.element.width();
+			var eleW = _this.tabElement.width();
 
 			_this.config.width = eleW;
 
 			if(_this.config.totalWidth > eleW){
 				$('#'+_this.contextId+'pubTab-move-space').show();
-				_this.element.find('.pubTab-move-area').show();
+				_this.tabElement.find('.pubTab-move-area').show();
 			}else{
-				_this.element.find('.pubTab-item').removeClass('pubTab-hide');
+				_this.tabElement.find('.pubTab-item').removeClass('pubTab-hide');
 				$('#'+_this.contextId+'pubTab-move-space').hide();
-				_this.element.find('.pubTab-move-area').hide();
-				_this.config.tabContainerElement.css('left', '0px');
+				_this.tabElement.find('.pubTab-move-area').hide();
+				_this.element.tabContainerElement.css('left', '0px');
 			}
 
 			return this; 
@@ -513,9 +525,9 @@
 		*/
 		,setDropHeight : function (h){
 			if(isNaN(h)){
-				return this
+				return this;
 			}
-			this.config.dropItemAreaElement.css('max-height',h+'px');
+			this.element.dropItemAreaElement.css('max-height',h+'px');
 			return this; 
 		}
 		/**
@@ -526,7 +538,7 @@
 			return this; 
 		}
 		,getSelectItem : function(){
-			var sEle = this.element.find('.pubTab-item.active'); 
+			var sEle = this.tabElement.find('.pubTab-item.active'); 
 			return this.options.items[sEle.index()];
 		}
 		// tab  item template
@@ -551,13 +563,17 @@
 			}
 
 			var itemHtm ='';
-			if(cfgIcon.prevFlag===true){
-				itemHtm = cfgIcon.html + titleTag;
-			}else{
-				itemHtm = titleTag+cfgIcon.html;
+			if(cfgIcon.left && cfgIcon.left.html){
+				itemHtm += cfgIcon.left.html;
+			}
+
+			itemHtm += titleTag;
+
+			if(cfgIcon.right && cfgIcon.right.html){
+				itemHtm += cfgIcon.right.html;
 			}
 			
-			return '<li class="pubTab-item" data-tab-id="'+item._tabid+'" title="'+title+'"> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+cfgIcon.hoverHideCls+' '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
+			return '<li class="pubTab-item" data-tab-id="'+item._tabid+'" title="'+title+'"> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
 		}
 		//drop item template
 		,_getDropItemHtml : function (item){
@@ -603,8 +619,7 @@
 
 			strHtm.push('		<span class="pubTab-drop-open-btn">');
 			strHtm.push('			<div class="pubTab-move-dim"></div>');
-			strHtm.push('			<i class="pubTab-prev '+_opts.icon.prev+'"></i>');
-			strHtm.push('			<i class="pubTab-next '+_opts.icon.next+'"></i>');
+			strHtm.push('			<i class="pubTab-more-button"></i>');
 			if(_opts.overItemViewMode =='drop'){
 				strHtm.push('		<div id="'+_this.contextId+'DropItem" style="width:'+_opts.dropItemWidth+'" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
 			}
@@ -614,12 +629,13 @@
 			strHtm.push('	</div>');
 			strHtm.push('</div>');
 
-			_this.element.empty().html(strHtm.join(''));
+			_this.tabElement.empty().html(strHtm.join(''));
 					
-			_this.config.tabContainerElement =  $('#'+_this.contextId+'pubTab-container');
-			_this.config.tabScrollElement = $('#'+_this.contextId+'pubTab-scroll');
-			_this.config.dropItemAreaElement = $('#'+_this.contextId+'DropItem');;
-			_this.config.moveAreaWidth  = this.element.find('.pubTab-move-area').width();
+			_this.element.tabContainerElement =  $('#'+_this.contextId+'pubTab-container');
+			_this.element.tabScrollElement = $('#'+_this.contextId+'pubTab-scroll');
+			_this.element.dropItemAreaElement = $('#'+_this.contextId+'DropItem');
+
+			_this.config.moveAreaWidth  = this.tabElement.find('.pubTab-move-area').width();
 			$('#'+_this.contextId+'pubTab-move-space').css('width',_this.config.moveAreaWidth);
 
 			_this.calcItemWidth();
@@ -629,7 +645,7 @@
 		,calcItemWidth :function (){
 			var _this =this;
 			var containerW = 0; 
-			_this.config.tabContainerElement.find('.pubTab-item').each(function(i , item){
+			_this.element.tabContainerElement.find('.pubTab-item').each(function(i , item){
 				var itemW =$(item).outerWidth() + _this.options.itemPadding;
 				containerW +=itemW;
 				_this.config.tabWidth[i] = {
@@ -645,7 +661,7 @@
 		}
 		,setScrollInfo : function (){
 			this.config.scroll = {
-				width : this.config.tabContainerElement.width() - _this.config.tabScrollElement.width()	
+				width : this.element.tabContainerElement.width() - _this.element.tabScrollElement.width()	
 			} 
 		}
 		/**
@@ -653,9 +669,9 @@
 		 * @description set theme
 		 */
 		,setTheme : function (themeName){
-			this.element.removeClass('pub-theme-'+this.options.theme);
+			this.tabElement.removeClass('pub-theme-'+this.options.theme);
 			this.options.theme = themeName;
-			this.element.addClass('pub-theme-'+themeName);
+			this.tabElement.addClass('pub-theme-'+themeName);
 		}
 		/**
 		 * @method getTheme

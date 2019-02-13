@@ -10,11 +10,12 @@ var userMain = {
 	,_connectionIframe :'#user_connection_info_iframe'
 	,iframeLoadTemplate : ''
 	,tabItemTemplate : ''
+	,tabObj : ''
 	,preferencesUrl : '<c:url value="/user/preferences?header=N" />'
 	,init : function (){
 		var _self = this; 
 		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html(); 
-		_self.tabItemTemplate = $('#tabItemTemplate').html(); 
+		_self.initTab();
 		_self.evtInit();
 	}
 	,evtInit : function (){
@@ -25,68 +26,75 @@ var userMain = {
 			if(selectObj.val()=='') return ;
 			
 			var sEle =$(_self._userConnectionInfo+" option:selected");
-			_self.tabCntl({
-				id : sEle.val()
-				,name : sEle.attr('vname')
-			});
+			
+			_self.tabObj.addItem({item:{
+				conuid : sEle.val()
+				,'name' : sEle.attr('vname')
+			}});
 		});
 		
 		$(_self._connectionTab).on('click','.tab-ui-name',function (){
 			var tmpid = $(this).closest('[conuid]').attr('conuid');
 			
 			if(tmpid=='preferences'){
-				userMain.tabCntl({
-					id : 'preferences'
-					,name : '환경설정'
-				});
+				_self.tabObj.addItem({item:{
+					conuid : 'preferences'
+					,'name' : '환경설정'
+				}});
 				return ; 
-				
 			}
+			
 			$(_self._userConnectionInfo).val(tmpid);
 			$(_self._userConnectionInfo).trigger( "change" );
 		});
+	}
+	,initTab : function (){
+		var _self =this; 
 		
-		$(_self._connectionTab).on('click','.tab-ui-close',function (){
-			var pObj = $(this).closest('[conuid]'); 
-			var tmpid = pObj.attr('conuid');
-			if(!confirm(pObj.attr('vname')+' db를 닫으시겠습니까?')) return ; 
-			
-			var tmpDbTabInfo = $(this).closest('.db-info-tab'); 
-			
-			var viewElement = $(tmpDbTabInfo.prev());
-			
-			if(viewElement.length < 1){
-				viewElement= $(tmpDbTabInfo.next());
+		_self.tabObj = $.pubTab('#connection_tab',{
+			items :[]
+			,height : 20
+			,dropItemHeight : 'auto'
+			,itemKey :{							// item key mapping
+				title :'name'
+				,id :'conuid'
 			}
-			
-			$('.tabs_'+tmpid).remove();
-			$('#wrapper_'+tmpid).remove();
-			
-			if(viewElement.length > 0){
-				$(viewElement.find('.db-info-tab-item')).trigger('click');	
+			,titleIcon :{
+				left :{
+					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					,click : function (item, idx){
+						var sconid = item.conuid;
+					
+						if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length) {
+							alert('로드중입니다.');
+							return ;
+						}
+						
+						if(!confirm('새로고침 하시겠습니까?')) return ;
+						
+						$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
+					}
+				}
+				,right :{
+					html :  '<i class="fa fa-close" style="cursor:pointer;"></i>'
+					,click : function (item, idx){
+						var tmpid = item.conuid;
+						
+						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ; 
+						
+						if(_self.tabObj.getItemLength() < 1){
+							$(_self._userConnectionInfo).val('');
+							$('#connectionMsg').show();
+						}
+					}
+				}
 			}
-			
-			if($('.db_sql_view_area').length < 1){
-				$(_self._userConnectionInfo).val('');
-				$('#connectionMsg').show();
+			,overItemViewMode :'drop'
+			,addClass :'service_menu_tab'
+			,click : function (item){
+				console.log(item);
 			}
-		});
-		
-		$(_self._connectionTab).on('click','.db-info-tab-ui-refresh',function (){
-			var pObj = $(this).closest('[conuid]')
-				,sconid = pObj.attr('conuid');
-			
-			if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length) {
-				alert('로드중입니다.');
-				return ;
-			}
-			
-			if(!confirm('새로고침 하시겠습니까?')) return ;
-			
-			pObj.find('.tab-ui-name').trigger('click');
-			
-			$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
-		});
+		})
 	}
 	// 탭정보 컨트롤
 	,tabCntl:function (sItem){
@@ -176,8 +184,8 @@ $(document).ready(function (){
 		</table>
 	</div>
 </div>
-<div id="memoTemplate_view_dialog" style="display:none;" title="메시지">
+<div id="memoTemplate_view_dialog" style="display:none;">
 	<div class="memo-view-area">
-		<textarea id="memo_content" name="memo_content" placeholder="내용"></textarea>
+		<textarea id="memo_content" name="memo_content"></textarea>
 	</div>
 </div>
