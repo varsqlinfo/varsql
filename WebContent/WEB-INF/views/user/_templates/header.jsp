@@ -64,10 +64,9 @@ var userHeader = {
 			_self.messageLoad();
 		})
 		$('.preferences').on('click', function(e) {
-			userMain.tabCntl({
-				id : 'preferences'
+			userMain.addTabInfo({
+				conuid : 'preferences'
 				,name : '환경설정'
-				,url : '<c:url value="/user/preferences?header=N" />'
 			});
 		})
 	},

@@ -123,7 +123,6 @@
 
 			if(titleIcon){
 				if(titleIcon.left && titleIcon.left.html != ''){
-					console.log(titleIcon.left.visible);
 					iconInfo.left.html =  '<span class="pubTab-icon-area '+(titleIcon.left.visible === false ? 'hide' : '')+' '+(titleIcon.left.overView === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+titleIcon.left.html+'</span></span>';
 				}
 				
@@ -240,8 +239,25 @@
 			
 			$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
 		}
-		,setActive: function (item){
+		/**
+		 * @method isActive
+		 * @description item active 체크.
+		 */
+		,isActive : function (item){
+			var tabEle;
+			if(typeof item ==='object'){
+				tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"].active');
+			}else{
+				tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item+'"].active');
+			}
 
+			return tabEle.length > 0 ? true : false; 
+		}
+		/**
+		 * @method setActive
+		 * @description set item active 
+		 */
+		,setActive: function (item){
 			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 			
 			if(tabEle.hasClass('active')){
@@ -249,11 +265,8 @@
 			}
 
 			this.tabElement.find('.pubTab-item.active').removeClass('active');
-
 			this._setHistory(tabEle.attr('data-tab-id'));
-			
 			tabEle.addClass('active');
-
 			this.movePosition(tabEle.index());
 		}
 		/**
@@ -282,22 +295,15 @@
 				}
 			}
 			
-			_this._moveContainerPos(leftVal);
-			//_this.element.tabScrollElement.scrollLeft((leftVal>0?leftVal:0));
+			_this._moveContainerPos(leftVal);			
 		}
 		/**
-		*  move container left position;
+		* @method _moveContainerPos
+		* @description move container left position;
 		*/
 		,_moveContainerPos : function (val){
-
 			val = (val>0?val:0);
 			this.element.tabScrollElement.scrollLeft(val);
-			
-			/*
-			this.element.tabContainerElement.css({
-				'left' : '-'+val+'px'
-			})
-			*/
 		}
 		/**
 		 * @method setItems

@@ -1255,7 +1255,6 @@ _ui.dbSchemaObjectServiceMenu ={
 					}
 				}
 			}
-			,overItemViewMode :'drop'
 			,addClass :'service_menu_tab'
 			,click : function (item){
 				var sObj = $(this);
@@ -1744,7 +1743,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			]
 			,width : 'auto'
 			,height:20
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
 					,objectName = _self.selectMetadata['table'];
@@ -2014,7 +2012,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,{name: "DDL", key: "ddl"}
 			]
 			,height:20
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
 					,objectName = _self.selectMetadata[$objType];
@@ -2228,7 +2225,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			]
 			,width : 'auto'
 			,height:20
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
 					,objectName = _self.selectMetadata[$objType];
@@ -2412,7 +2408,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,{name: "DDL", key: "ddl"}
 			]
 			,height:20
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
 					,objectName = _self.selectMetadata[$objType];
@@ -2600,7 +2595,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 				,{name: "DDL", key: "ddl"}
 			]
 			,height:20
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)
 					,objectName = _self.selectMetadata[$objType];
@@ -3191,7 +3185,6 @@ _ui.SQL = {
 					}
 				}
 			}	
-			,overItemViewMode :'drop'
 			,click : function (item){
 				var sqlId =item.SQL_ID; 
 				

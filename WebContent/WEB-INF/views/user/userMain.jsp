@@ -20,6 +20,7 @@ var userMain = {
 	}
 	,evtInit : function (){
 		var _self = this; 
+		
 		$(_self._userConnectionInfo).on('change',function (){
 			var selectObj = $(this);
 			
@@ -27,25 +28,12 @@ var userMain = {
 			
 			var sEle =$(_self._userConnectionInfo+" option:selected");
 			
-			_self.tabObj.addItem({item:{
+			var sItemInfo = {
 				conuid : sEle.val()
 				,'name' : sEle.attr('vname')
-			}});
-		});
-		
-		$(_self._connectionTab).on('click','.tab-ui-name',function (){
-			var tmpid = $(this).closest('[conuid]').attr('conuid');
+			};
 			
-			if(tmpid=='preferences'){
-				_self.tabObj.addItem({item:{
-					conuid : 'preferences'
-					,'name' : '환경설정'
-				}});
-				return ; 
-			}
-			
-			$(_self._userConnectionInfo).val(tmpid);
-			$(_self._userConnectionInfo).trigger( "change" );
+			_self.addTabInfo(sItemInfo);
 		});
 	}
 	,initTab : function (){
@@ -82,6 +70,11 @@ var userMain = {
 						
 						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ; 
 						
+						_self.tabObj.removeItem(item);
+						
+						$('.tabs_'+tmpid).remove();
+						$('#wrapper_'+tmpid).remove();
+						
 						if(_self.tabObj.getItemLength() < 1){
 							$(_self._userConnectionInfo).val('');
 							$('#connectionMsg').show();
@@ -89,33 +82,32 @@ var userMain = {
 					}
 				}
 			}
-			,overItemViewMode :'drop'
-			,addClass :'service_menu_tab'
 			,click : function (item){
-				console.log(item);
+				var sconid = item.conuid; 
+				
+				$(_self._userConnectionInfo).val(sconid);
+				$(_self._userConnectionInfo).trigger('change');
+				
+				$('.db_sql_view_area').css('z-index',1);
+				$('#wrapper_'+sconid).css('z-index',100);
+				return ; 
 			}
 		})
 	}
-	// 탭정보 컨트롤
-	,tabCntl:function (sItem){
-		var _self = this;
-		var sconid = sItem.id;
-		var tabs = $('.tabs_'+sconid);
+	// add tab
+	,addTabInfo : function (sItem){
+		var _self =this;		
 		
-		$('#connectionMsg').hide();
+		var sconid = sItem.conuid; 
 		
-		$( _self._connectionTab+'> .ui-tab-item-active').removeClass('ui-tab-item-active');
-		tabs.addClass('ui-tab-item-active');
-		$('.db_sql_view_area').css('z-index',1);
-		
-		if(tabs.length > 0){
-			$('#wrapper_'+sconid).css('z-index',100);
+		if(_self.tabObj.isItem(sconid)){
+			_self.tabObj.setActive(sItem);
 			return ; 
 		}
 		
-		$('#connection_select_msg_wrapper').show();
+		_self.tabObj.addItem({item:sItem});
 		
-		$(_self._connectionTab).append(VARSQL.util.renderHtml(_self.tabItemTemplate, sItem));
+		$('#connection_select_msg_wrapper').show();
 		
 		sItem.url= _self.getDbClientUrl(sconid);
 		 
@@ -124,9 +116,8 @@ var userMain = {
 		$('.iframe_'+sconid).on('load',function(){
 			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
 		});
-	}
-	,activeClose : function (){
-		$(this._connectionTab+'> .ui-tab-item-active .tab-ui-close').trigger('click');
+		
+		$('#connectionMsg').hide();
 	}
 	,getDbClientUrl : function (sconid){
 		if(sconid =='preferences'){
@@ -137,24 +128,16 @@ var userMain = {
 	} 
 }
 
-$(document).ready(function (){
+$(function (){
 	userMain.init();
-	//VARSQL.unload();
 })
+
 </script>
 <!-- Page Heading -->
-<script id="tabItemTemplate" type="text/varsql">
-<li class="db-info-tab ui-tab-item ui-tab-item-active tabs_{{id}}">
-	<span class="ui-paddingl5-r5 " conuid="{{id}}" vname="{{name}}">
-		<a href="javascript:" class="db-info-tab-ui-refresh" title="refresh"><span class="fa fa-refresh"></span></a>&nbsp
-		<a href="javascript:" class="db-info-tab-item tab-ui-name">{{name}}</a>&nbsp
-		<a href="javascript:" class="db-info-tab-item-close tab-ui-close">X</a>&nbsp
-	</span>
-</li>
-</script>
+
 <script id="iframeLoadTemplate" type="text/varsql">
-<div id="wrapper_{{id}}" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">
-	<iframe class="iframe_{{id}}" src="{{url}}" style="width:100%;height:100%;" frameborder="0"></iframe>
+<div id="wrapper_{{conuid}}" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">
+	<iframe class="iframe_{{conuid}}" src="{{url}}" style="width:100%;height:100%;" frameborder="0"></iframe>
 
 	<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
 		<tbody>
