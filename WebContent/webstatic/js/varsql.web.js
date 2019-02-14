@@ -188,9 +188,6 @@ _$base.req ={
 			xhr.setRequestHeader($$csrf_header, $$csrf_token);
 			
 			if($(loadSelector).length > 0){
-				if(loadSelector=='#editorAreaTable'){
-					$('#sqlEditerPreloaderArea').show();
-				}
 				$(loadSelector).centerLoading({
 					contentClear:false 
 				});
@@ -242,17 +239,11 @@ _$base.req ={
 		
 		$.ajax(ajaxOpt).done(function (xhr){
 			if(loadSelector){
-				if(loadSelector=='#editorAreaTable'){
-					$('#sqlEditerPreloaderArea').hide(1000);
-				}
 				$(loadSelector).centerLoadingClose();
 			} 
 		}).fail(function (xhr){
 			if(loadSelector) {
-				if(loadSelector=='#editorAreaTable'){
-					$('#sqlEditerPreloaderArea').hide(1000);
-				}
-				
+				$(loadSelector).centerLoadingClose();
 			}
 		});
 	}

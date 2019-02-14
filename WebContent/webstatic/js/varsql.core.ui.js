@@ -3013,7 +3013,6 @@ _ui.SQL = {
 	,currentSqlData :''
 	,options :{
 		selector:'#sqlExecuteArea'
-		,preloaderArea :'#sqlEditerPreloaderArea'
 		,limitCnt:'#limitRowCnt'
 		,conuidObj:'#conuid'
 		,active: null
@@ -4846,8 +4845,8 @@ _ui.text={
 		
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
-			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="width-height100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql width-height100"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
+			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql wh100"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
