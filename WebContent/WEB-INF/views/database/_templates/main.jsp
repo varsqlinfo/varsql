@@ -7,36 +7,11 @@
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 </head>
-<body class="database-main">
-<c:set var="pageType" value="custom9"></c:set>
-<c:choose>
-	<%-- 패이지 공통으로 쓰이는게 아닐경우 custom으로 해서 처리 할것.  --%> 
-	<c:when test="${pageType=='custom'}">
-		<div id="wrapper">
-			<!-- Page Heading -->
-			<div id="db-header">
-				<div class="col-lg-12">
-					<tiles:insertAttribute name="header" />
-				</div>
-			</div>
-			<div id="db-page-wrapper" style="height:750px;"><!-- to do 수정할것 필히. -->
-				<div class="container-fluid fill row" style="margin-right: 0px; ">
-					<div class="row fill">
-						<tiles:insertAttribute name="body" />
-					</div>
-				</div>
-			</div>
-		</div>
-	</c:when>
-	<c:otherwise>
-		<div class="main-top-menu-wrapper">
-			<div class="col-lg-12">
-				<tiles:insertAttribute name="header" />
-			</div>
-		</div>
-		<div id="varsqlBodyWrapper" class="main-body-wrapper"></div>
-      </c:otherwise>
-</c:choose>
+<body class="varsql-main">
+<div class="varsql-menu-wrapper">
+	<tiles:insertAttribute name="header" />
+</div>
+<div id="varsqlBodyWrapper" class="varsql-body-wrapper"></div>
 
 	
 <%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>

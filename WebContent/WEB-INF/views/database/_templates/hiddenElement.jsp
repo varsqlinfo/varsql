@@ -37,7 +37,7 @@
 
 <%--설정 --%>
 <div id="preferencesTemplate" style="display:none;margin:0px;padding:0px;" title="<spring:message code="preferences" />">
-	<iframe src="" class="preferences-frame"></iframe>
+	<iframe src="" class="frame-wh100"></iframe>
 </div>
 
 <%--varsql 정보 --%>
@@ -66,18 +66,18 @@
 </div>
 
 <%--editor 문자 찾기 다이얼로그. --%>
-<div id="editorFindTextDialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="찾기">
+<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="찾기">
 	<div class="find-text-area">
-		<div>
-			<div>
+		<ul class="find-text">
+			<li>
 				<label class="find-text-label">Find</label>
 				<span class="find-text-input-area"><input type="text" id="editorFindText" name="editorFindText"></span>
-			</div>
-			</div>
+			</li>
+			<li>
 				<label class="find-text-label">Replace with</label>
 				<span class="find-text-input-area"><input type="text" id="editorReplaceText" name="editorReplaceText"></span>
-			<div>
-		</div>
+			</li>
+		</ul>
 		<div class="rows">
 			<div>방향</div>
 			<ul class="find-text-option-area">

@@ -3,8 +3,6 @@
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
 
-<link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
-
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.bootstrap.css" rel="stylesheet">
 
@@ -17,8 +15,7 @@
 <link href="${pageContextPath}/webstatic/css/editor/codemirror.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/editor/show-hint.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.db.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.db.component.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
