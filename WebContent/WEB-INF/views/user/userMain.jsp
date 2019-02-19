@@ -85,11 +85,16 @@ var userMain = {
 			,click : function (item){
 				var sconid = item.conuid; 
 				
-				$(_self._userConnectionInfo).val(sconid);
-				$(_self._userConnectionInfo).trigger('change');
-				
 				$('.db_sql_view_area').css('z-index',1);
 				$('#wrapper_'+sconid).css('z-index',100);
+				
+				if(sconid =='preferences'){
+					$(_self._userConnectionInfo).val('');
+					return ; 
+				}
+				
+				$(_self._userConnectionInfo).val(sconid);
+				
 				return ; 
 			}
 		})

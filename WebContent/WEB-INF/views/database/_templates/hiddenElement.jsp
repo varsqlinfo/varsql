@@ -149,7 +149,7 @@
 		<!-- button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">띄워보기</button -->
 		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">복사</button>
 	</div>
-	<div  class="absolute-wh100" style="padding-top:30px;z-index:0;">
+	<div  class="wh100-absolute" style="padding-top:30px;z-index:0;">
 		<pre class="user-select-on prettyprint lang-sql wh100"></pre>
 		<textarea style="display:none;"></textarea>
 	</div>

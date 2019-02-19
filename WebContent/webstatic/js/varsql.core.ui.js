@@ -426,7 +426,7 @@ _ui.preferences= {
 // layoutObject
 _ui.layout = {
 	layoutObj :false
-	,contTabHeight : 28
+	,contTabHeight : 25
 	,mainObj :{} //main layout 처리.
 	,init : function(_opts){
 		var _self = this; 
@@ -545,7 +545,7 @@ _ui.layout = {
 				}
 				
 				var containerW =container.width-2
-					, containerH = container.height-60; 
+					, containerH = container.height-50; 
 				
 				_ui.dbSchemaObjectServiceMenu.resizeObjectArea({width : containerW,height : containerH});
 				
@@ -812,7 +812,7 @@ _ui.registerPlugin = function ( regItem){
 //glossary component
 _ui.registerPlugin({
 	'glossary' : {
-		selector :'#glossaryPluginArea'
+		selector :'#pluginGlossary'
 		,gridObj : false
 		,init : function (){
 			var _self = this;
@@ -916,7 +916,7 @@ _ui.registerPlugin({
 // history component
 _ui.registerPlugin({
 	'history' : {
-		selector :'#historyPluginArea'
+		selector :'#pluginHistory'
 		,gridObj :false
 		,pageNo :1
 		,scrollEndFlag : true
@@ -1231,10 +1231,27 @@ _ui.dbSchemaObjectServiceMenu ={
 		var len = data.length; 
 	
 		if(len < 1) return ; 
-		var item; 
 		
-		$(_self.options.dbServiceMenuContentId).empty();
 		$(_self.options.serviceMenuTabId).empty();
+				
+		var strHtm = [];
+		var metaStrHtm = [];
+		var metaTabStrHtm = [];
+		var item;
+		for(var i=0; i < len; i++){
+			item = data[i];
+			var contentid = item.contentid; 
+			
+			var metaEleId =_self._getMetadataObjectEleId(contentid);
+			var metaTabId =_self.options.metadataTabAreaWrapId+contentid;
+			strHtm.push('<div id="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'"></div>'); // object element
+			metaTabStrHtm.push('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-tab-content '+(i==0?'tab-on':'')+'"></div>'); // metadata tab
+			metaStrHtm.push('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-tab-group '+(i==0?'on':'')+'"></div>'); 	// metadata tab content
+		}
+		
+		$(_self.options.dbServiceMenuContentId).empty().html(strHtm.join(''));
+		_self.getMetaContentWrapEle().empty().html(metaStrHtm.join(''));
+		_self.getMetadataTabAreaWrapEle().empty().html(metaTabStrHtm.join(''));
 		
 		$.pubTab(_self.options.serviceMenuTabId,{
 			items :data
@@ -1270,67 +1287,60 @@ _ui.dbSchemaObjectServiceMenu ={
 			}
 		})
 	}
+	// service object ele create
+	,getServiceObjectEle : function (contentId){
+		var _self = this;
+		
+		var activeObj = $(_self.options.dbServiceMenuContentId+'>#'+contentId);
+		
+		if(activeObj.hasClass('tab-on')){
+			return activeObj;
+		}
+		
+		$(_self.options.dbServiceMenuContentId+'> .tab-on').removeClass('tab-on');
+		
+		activeObj.addClass('tab-on');
+		
+		_self.getCallMethod('_'+contentId +'MetaResize').call(_self);
+		
+		var dimension = {width:$(_self.options.dbServiceMenuContentId).width() , height:$(_self.options.dbServiceMenuContentId).height()};
+		
+		var serviceGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+contentId); 
+		
+		if(serviceGridObj){
+			serviceGridObj.resizeDraw(dimension);
+		}
+				
+		return  activeObj; 
+	} 
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
 		var _self = this;
 		var $contentId = selObj.contentid;
 		
-		var activeObj = $(_self.options.dbServiceMenuContentId+'>#'+$contentId);
-		
-		$(_self.options.dbServiceMenuContentId+'>'+' .show-display').removeClass('show-display');
-		
-		// 현재 창 사이즈 구하기.
-		var dimension = {width:$(_self.options.dbServiceMenuContentId).width() , height:$(_self.options.dbServiceMenuContentId).height()};
+		_self.getServiceObjectEle($contentId);
 		
 		var metaEleId =_self._getMetadataObjectEleId($contentId);
 		var tmpEle = $(metaEleId);
 		
-		$('.varsql-meta-cont-ele.on').removeClass('on');
-		if(tmpEle.length < 1){
-			_self.getMetaContentWrapEle().append('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-meta-cont-ele on"></div>');
-		}else{
-			if(!tmpEle.hasClass('on')){
-				tmpEle.addClass('on');
-			}
+		if(!tmpEle.hasClass('on')){
+			$(_self.options.metadataContentAreaWrapId+' .varsql-tab-group.on').removeClass('on');
+			tmpEle.addClass('on');
 		}
 		
 		var metaTabId =_self.options.metadataTabAreaWrapId+$contentId;
-		var tmpMetaEle =$(metaTabId); 
-		$('.varsql-meta-tab-ele.on').removeClass('on');
+		var tmpMetaEle =$(metaTabId);
+		
+		$(metaTabId +' .on').removeClass('on');
 		
 		_ui.layout.setActiveTab('dbMetadata');
-		
-		if(tmpMetaEle.length < 1){
-			_self.getMetadataTabAreaWrapEle().append('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-meta-tab-ele on"></div>');
-		}else{
-			if(!tmpMetaEle.hasClass('on')){
-				tmpMetaEle.addClass('on');
-			}
-		}
-		
-		if(activeObj.length > 0){
-			activeObj.addClass('show-display');
-			
-			var resizeMethod = _self.getCallMethod('_'+$contentId +'MetaResize');
-			
-			resizeMethod.call(_self);
-			
-			if(refresh){
-				//activeObj.empty();
-			}else{
-				$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$contentId).resizeDraw(dimension);
-				return ; 
-			}
-		}else{
-			$(_self.options.dbServiceMenuContentId).append('<div id="'+$contentId+'" class="db-metadata-area show-display"></div>');
-		}
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
 		var param =VARSQL.util.objectMerge({},_self.options.param,{'objectType':$contentId}); 
 		
 		VARSQL.req.ajax({      
-			loadSelector : '#dbSchemaObjectArea'
+			loadSelector : '#pluginSchemaObject'
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data : param 
 			,success:function (resData){
@@ -1457,7 +1467,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if($(metaEleId).length < 1){
 			isCreate = true; 
-			$(objectEleId).append('<div id="'+ (metaEleId).replace('#', '') +'" data-meta-tab="'+(eleName)+'"  class="varsql-meta-cont-tab-ele on">'+addHtml+'</div>');
+			$(objectEleId).append('<div id="'+ (metaEleId).replace('#', '') +'" data-meta-tab="'+(eleName)+'"  class="varsql-tab-group on">'+addHtml+'</div>');
 		}
 		
 		return {
@@ -4510,8 +4520,8 @@ _ui.sqlDataArea =  {
 			sObj.addClass('on');
 			
 			// data grid araea
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('on');
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('on');
+			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('tab-on');
+			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('tab-on');
 			
 		});
 	}
@@ -4564,7 +4574,7 @@ _ui.sqlDataArea =  {
 			var errQuery = resultData.item.query; 
 			msgViewFlag =true;
 			
-			var logValEle = $('<div><div class="error-log-area"><span class="log-end-time">'+milli2str(resultData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+resultData.message+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(resultData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+resultData.message+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 			
 			resultMsg.push(logValEle.html());
@@ -4591,7 +4601,7 @@ _ui.sqlDataArea =  {
     		var resultClass , tmpMsg;
     		
 			for(var i=resultLen-1; i>=0; i--){
-				resultClass = 'success-log-message';
+				resultClass = 'success';
 				item = resData[i];
 				
 				tmpMsg= item.resultMessage;
@@ -4599,7 +4609,7 @@ _ui.sqlDataArea =  {
 					msgViewFlag = true;
 					
 					if(item.resultType=='FAIL'){
-    					resultClass = 'error-log-message'; 
+    					resultClass = 'error'; 
 					}
 				}
 				
