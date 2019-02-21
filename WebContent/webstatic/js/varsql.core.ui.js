@@ -282,12 +282,10 @@ _ui.headerMenu ={
 							break;
 						case 'dbinfo':	//정보 보기.
 							
-							
 							if(_self.dialogObj['dbInfo']){
 								_self.dialogObj['dbInfo'].dialog( "open" );
 								return ; 
 							}
-							
 							
 							var param = {
 								conuid : _g_options.param.conuid
@@ -1131,8 +1129,9 @@ _ui.dbSchemaObjectServiceMenu ={
 		,param:{}
 		,serviceMenuTabId:'#varsqlDbServiceMenu'
 		,dbServiceMenuContentId:'#dbServiceMenuContent'
-		,metadataContentAreaWrapId:'#metadataContentAreaWrap'
-		,metadataTabAreaWrapId:'#metadataTabAreaWrap'
+		,metadataContentEleId:'#metadataContent'
+		,metadataTabEleId:'#metadataTab'
+		,metadataTabContentEleId:'#metadataTabContent'
 		,metadataContentAreaWrapEle:null
 		,metadata_content_areaId:'#metadata_content_area'
 		,metadata_content_areaIdEle:null
@@ -1148,18 +1147,18 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if(_self.initFlag ===false){
 			_self._tabs();
-			$.pubTab(_self.options.serviceMenuTabId).itemClick(0);
 			_self.initEvt();
-		}else{
-			$.pubTab(_self.options.serviceMenuTabId).itemClick(0, {'refresh':'Y'});
 		}
+		
+		$.pubTab(_self.options.serviceMenuTabId).itemClick(0);
+		
 		_self.initFlag = true; 
 	}
 	,initEvt : function (){
 		var _self = this; 
 		
 		// ddl copy 
-		$(_self.options.metadataContentAreaWrapId).on('click','.ddl-copy', function (){
+		$(_self.options.metadataContentEleId).on('click','.ddl-copy', function (){
 			var sEle = $(this)
 				,mode = sEle.data('ddl-copy-mode');
 			
@@ -1178,11 +1177,11 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		for(var i =0; i<menuData.length; i++){
 			var serviceObj = menuData[i];
-			var serviceNm =serviceObj.contentid;
+			var contentid =serviceObj.contentid;
 			
-			this.metadataCache[serviceNm] = {};
+			this.metadataCache[contentid] = {initFlag:false}; // 초기화 여부 
 			
-			var seviceGrid  =$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+serviceNm);
+			var seviceGrid  =$.pubGrid(_self.options.dbServiceMenuContentId+'>#'+contentid);
 			
 			if(!VARSQL.isUndefined(seviceGrid)){
 				seviceGrid.setData([],'reDraw');
@@ -1193,8 +1192,8 @@ _ui.dbSchemaObjectServiceMenu ={
 	}
 	,initElement :function (){
 		var _self = this;
-		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataContentAreaWrapId);
-		_self.options.metadataTabAreaWrapEle = $(_self.options.metadataTabAreaWrapId);
+		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataTabContentEleId);
+		_self.options.metadataTabAreaWrapEle = $(_self.options.metadataTabEleId);
 		
 		//_self.options.metadataContentAreaWrapEle.empty();
 		//$(_self.options.dbServiceMenuContentId).empty();
@@ -1243,15 +1242,27 @@ _ui.dbSchemaObjectServiceMenu ={
 			var contentid = item.contentid; 
 			
 			var metaEleId =_self._getMetadataObjectEleId(contentid);
-			var metaTabId =_self.options.metadataTabAreaWrapId+contentid;
+			var metaTabId =_self.options.metadataTabEleId+contentid;
+			metaEleId  = (metaEleId).replace('#', '');
+			
 			strHtm.push('<div id="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'"></div>'); // object element
-			metaTabStrHtm.push('<div id="'+ (metaTabId).replace('#', '') +'" class="varsql-tab-content '+(i==0?'tab-on':'')+'"></div>'); // metadata tab
-			metaStrHtm.push('<div id="'+ (metaEleId).replace('#', '') +'" class="varsql-tab-group '+(i==0?'on':'')+'"></div>'); 	// metadata tab content
+			
+			metaStrHtm.push('<div data-meta-contentid="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'">');
+			metaStrHtm.push('	<div id="'+ (metaTabId).replace('#', '') +'" class="object-meta-tab"></div>');
+			metaStrHtm.push('	<div id="'+ metaEleId +'" class="object-meta-tab-content">');
+			var metaTabList = item.tabList;
+			
+			for(var j =0 ;j <metaTabList.length; j++){
+				var tabItem = metaTabList[j];
+				metaStrHtm.push('	<div id="'+(metaEleId)+tabItem.tabid+'" data-meta-tab="'+tabItem.tabid+'" class="varsql-tab-group"></div>');
+			}
+			metaStrHtm.push('	</div>');
+			metaStrHtm.push('</div>	');
+										
 		}
 		
 		$(_self.options.dbServiceMenuContentId).empty().html(strHtm.join(''));
-		_self.getMetaContentWrapEle().empty().html(metaStrHtm.join(''));
-		_self.getMetadataTabAreaWrapEle().empty().html(metaTabStrHtm.join(''));
+		$(_self.options.metadataContentEleId).empty().html(metaStrHtm.join(''));
 		
 		$.pubTab(_self.options.serviceMenuTabId,{
 			items :data
@@ -1269,71 +1280,46 @@ _ui.dbSchemaObjectServiceMenu ={
 					}
 				}
 			}
-			,addClass :'service_menu_tab'
 			,click : function (item){
 				var sObj = $(this);
 				
-				var refresh = sObj.attr('refresh')=='Y'?true:false;
-				sObj.attr('refresh','N');
-				
 				_self.selectObjectMenu = item.contentid;
 				
-				if(refresh===true){
-					_self._removeMetaCache(item.contentid);
-				}
-				
-				//_self.resizeObjectArea();
-				_self._dbObjectList(item, refresh);
+				_self._dbObjectList(item, !_self.isObjectCache(item.contentid));
 			}
 		})
 	}
-	// service object ele create
-	,getServiceObjectEle : function (contentId){
-		var _self = this;
-		
-		var activeObj = $(_self.options.dbServiceMenuContentId+'>#'+contentId);
-		
-		if(activeObj.hasClass('tab-on')){
-			return activeObj;
-		}
-		
-		$(_self.options.dbServiceMenuContentId+'> .tab-on').removeClass('tab-on');
-		
-		activeObj.addClass('tab-on');
-		
-		_self.getCallMethod('_'+contentId +'MetaResize').call(_self);
-		
-		var dimension = {width:$(_self.options.dbServiceMenuContentId).width() , height:$(_self.options.dbServiceMenuContentId).height()};
-		
-		var serviceGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+contentId); 
-		
-		if(serviceGridObj){
-			serviceGridObj.resizeDraw(dimension);
-		}
-				
-		return  activeObj; 
-	} 
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
 	,_dbObjectList:function(selObj,refresh){
 		var _self = this;
 		var $contentId = selObj.contentid;
 		
-		_self.getServiceObjectEle($contentId);
+		var activeObj = $(_self.options.dbServiceMenuContentId+'>#'+$contentId);
 		
-		var metaEleId =_self._getMetadataObjectEleId($contentId);
-		var tmpEle = $(metaEleId);
-		
-		if(!tmpEle.hasClass('on')){
-			$(_self.options.metadataContentAreaWrapId+' .varsql-tab-group.on').removeClass('on');
-			tmpEle.addClass('on');
+		if(!activeObj.hasClass('tab-on')){
+			// tab 전환.
+			$(_self.options.dbServiceMenuContentId+'> .tab-on').removeClass('tab-on');
+			activeObj.addClass('tab-on');
+			
+			var metaContEle = $(_self.options.metadataContentEleId +' [data-meta-contentid="'+$contentId+'"]');
+			
+			if(!metaContEle.hasClass('tab-on')){
+				$(_self.options.metadataContentEleId +' .tab-on[data-meta-contentid]').removeClass('tab-on');
+				metaContEle.addClass('tab-on');
+			}
+					
+			_ui.layout.setActiveTab('dbMetadata');
+			_self.getCallMethod('_'+$contentId +'MetaResize').call(_self);
 		}
 		
-		var metaTabId =_self.options.metadataTabAreaWrapId+$contentId;
-		var tmpMetaEle =$(metaTabId);
+		var serviceGridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#'+$contentId);
 		
-		$(metaTabId +' .on').removeClass('on');
-		
-		_ui.layout.setActiveTab('dbMetadata');
+		if(!refresh && serviceGridObj){
+			var dimension = {width:$(_self.options.dbServiceMenuContentId).width() , height:$(_self.options.dbServiceMenuContentId).height()};
+			serviceGridObj.resizeDraw(dimension);
+			
+			return ; 
+		}
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
@@ -1344,6 +1330,7 @@ _ui.dbSchemaObjectServiceMenu ={
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data : param 
 			,success:function (resData){
+				_self.setObjectInitFlag($contentId);
 				callMethod.call(_self,resData);
 			}
 		});
@@ -1387,7 +1374,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		}
 		
 		var callMethod = _self.getCallMethod(callMethod);
-		callMethod.call(_self, _self.options.metadataTabAreaWrapId+objType , param , refreshFlag);
+		callMethod.call(_self, _self.options.metadataTabEleId+objType , param , refreshFlag);
 	}
 	// meta data 가져오기.
 	,_getMetadataInfo : function (param , callbackFn){
@@ -1396,7 +1383,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		_self.metaInfoLoadComplete = false;
 		
 		VARSQL.req.ajax({
-			loadSelector : _self.options.metadataContentAreaWrapId
+			loadSelector : _self.options.metadataTabContentEleId
 			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 			,data:param
 			,success:function (resData){
@@ -1456,7 +1443,7 @@ _ui.dbSchemaObjectServiceMenu ={
 		});
 	}
 	,_getMetadataObjectEleId : function (objectType){
-		return this.options.metadataContentAreaWrapId+objectType; 
+		return this.options.metadataTabContentEleId+objectType; 
 	}
 	// meta element check
 	, _getMetadataElement :  function(objectType, eleName, addHtml){
@@ -1467,7 +1454,9 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		if($(metaEleId).length < 1){
 			isCreate = true; 
-			$(objectEleId).append('<div id="'+ (metaEleId).replace('#', '') +'" data-meta-tab="'+(eleName)+'"  class="varsql-tab-group on">'+addHtml+'</div>');
+			$(objectEleId).append('<div id="'+ metaEleId.replace('#', '') +'" data-meta-tab="'+(eleName)+'"  class="varsql-tab-group on">'+addHtml+'</div>');
+		}else{
+			if(addHtml)	$(metaEleId).empty().html(addHtml);
 		}
 		
 		return {
@@ -1507,6 +1496,14 @@ _ui.dbSchemaObjectServiceMenu ={
 		ele.scrollTop(0);
 		PR.prettyPrint();
 		
+	}
+	// object cache check
+	,isObjectCache : function (objectType){
+		return (this.metadataCache[objectType]||{}).initFlag===false ? false :true; 
+	}
+	//set  object initflag 
+	,setObjectInitFlag : function (objectType){
+		this.metadataCache[objectType].initFlag=true; 
 	}
 	// 메타 데이타 케쉬된값 꺼내기
 	,_getMetaCache:function (objectType, objecName, tabKey){
@@ -1603,12 +1600,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					click : function (idx, item){
 						var sObj = $(this);
 						
-		    			var refresh = sObj.attr('refresh')=='Y'?true:false; 
-		    			sObj.attr('refresh','N');
-		    			
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl', refresh);
+		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1635,13 +1629,6 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							}else if(key=='dataview_count'){
 								_ui.SQL._sqlData('select count(1) CNT from '+tmpName,false);
 								return ;
-							}
-							
-							if(key=='refresh'){
-								_self._removeMetaCache($$objectType,tmpName);
-								ele.attr('refresh','Y');
-								ele.trigger('click.pubgridrow');
-								return ; 
 							}
 							
 							if(key=='settingBtn'){
@@ -4853,7 +4840,7 @@ _ui.text={
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
 			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql wh100"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({

@@ -75,10 +75,10 @@ public class ExportServiceImpl{
 	public void selectExportTableInfo(PreferencesInfo preferencesInfo, ModelMap model, boolean tableColumnInfoFlag) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
-		model.addAttribute("tableInfo",dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjName(),preferencesInfo));
+		model.addAttribute("tableInfo",dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(),preferencesInfo));
 		
 		if(tableColumnInfoFlag){
-			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
+			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 		}
 	}
 	
@@ -108,7 +108,7 @@ public class ExportServiceImpl{
 		
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			result.addCustoms(mode, dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(mode).getObjName() , databaseParam));
+			result.addCustoms(mode, dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(mode).getObjectTypeId() , databaseParam));
 		}
 		
 		return result;
@@ -192,7 +192,7 @@ public class ExportServiceImpl{
 			
 			preferencesInfo.setObjectType(DBObjectType.getDBObjectType( objectName).name());
 			
-			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjName(),preferencesInfo,ddlOption, objNmArr);
+			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjectTypeId(),preferencesInfo,ddlOption, objNmArr);
 			
 			for (DDLInfo ddlInfo : ddlList) {
 				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE);

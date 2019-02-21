@@ -144,11 +144,7 @@
 				
 				var tabIdx = itemEle.index();
 
-				_this.setActive(opts.items[tabIdx]);
-
-				if($.isFunction(opts.click)){
-					opts.click.call(itemEle,opts.items[tabIdx])
-				}
+				_this.itemClick(tabIdx);
 			})
 
 			_this.tabElement.on('click.pubtab.icon', '.pubTab-icon',function (e){
@@ -222,7 +218,7 @@
 			this.config.tabHistory = arrayRemove(this.config.tabHistory, tabid);
 			this.config.tabHistory.push(tabid);
 		}
-		,itemClick : function (item, addAttr){
+		,itemClick : function (item, customInfo){
 			var idx  = item;
 			if(typeof item ==='object'){
 				idx = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]').index();
@@ -230,14 +226,18 @@
 
 			idx = isNaN(idx) ? 0 :idx; 
 
-			addAttr = addAttr || {};
+			customInfo = customInfo || {};
 			var clickEle = $(this.tabElement.find('.pubTab-item').get(idx));
 			
-			for(var key in addAttr){
-				clickEle.attr(key , addAttr[key]);
+			var opts = this.options; 
+
+			this.setActive(opts.items[idx]);
+			
+			if($.isFunction(opts.click)){
+				opts.click.call(clickEle,opts.items[idx], customInfo);
 			}
 			
-			$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
+			//$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
 		}
 		/**
 		 * @method isActive

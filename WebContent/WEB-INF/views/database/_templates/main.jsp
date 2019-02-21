@@ -57,9 +57,7 @@ $(document).ready(function(){
 <%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div id="pluginObjectMeta" class="varsql-plugin-wrapper">
-	<div id="metadataTabAreaWrap" class="object-meta-tab"></div>
-	
-	<div id="metadataContentAreaWrap" class="object-meta-tab-content"></div>	
+	<div id="metadataContent"></div>	
 </div>
 </script>
 
@@ -197,12 +195,6 @@ $(document).ready(function(){
 	</div>
 </div>
 </script>
-
-
-object-meta-tab"></div>
-	
-	<div id="metadataContentAreaWrap" class="sql-result-tab-content"></div>	
-</div>
 
 <%--query result component template --%>
 <script id="sqlDataComponentTemplate" type="text/varsql-template">

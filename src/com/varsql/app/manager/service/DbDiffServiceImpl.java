@@ -98,11 +98,11 @@ public class DbDiffServiceImpl{
 			dpi.setObjectType(objectType);
 			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
-			String objectName = DBObjectType.getDBObjectType(objectType).getObjName(); 
-			if(DBObjectType.TABLE.getObjName().equals(objectName)){
-				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectName, dpi));
+			String objectId = DBObjectType.getDBObjectType(objectType).getObjectTypeId(); 
+			if(DBObjectType.TABLE.getObjectTypeId().equals(objectId)){
+				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
 			}else{
-				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectName, dpi);
+				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);
 				
 				String[] objectNameArr = new String[objectList.size()];
 				
@@ -111,7 +111,7 @@ public class DbDiffServiceImpl{
 					objectNameArr[idx] =boi.getName();
 					++idx;
 				}
-				resultObject.setItemList(dbMetaEnum.getDDLScript(objectName, dpi, new DDLCreateOption(), objectNameArr));
+				resultObject.setItemList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectNameArr));
 			}
 		}
 		
