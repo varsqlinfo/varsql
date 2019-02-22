@@ -52,6 +52,8 @@ public class DatabaseServiceImpl{
 			json.put("type", dbinfo.getType());
 			json.put("lazyload", dbinfo.isLazyLoad());
 			json.put("db_object_list", dbMetaEnum.getSchemas(databaseParamInfo));
+			json.put("serviceObject", dbMetaEnum.getServiceMenu());
+			
 		}catch(Exception e){
 			logger.error("schemas {}" , e.getMessage());
 			throw new DatabaseInvalidException(e.getMessage());

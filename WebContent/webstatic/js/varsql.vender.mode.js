@@ -18,7 +18,7 @@ var $oracle = {
 		try{
 			var itemArr = resData.items;
 			
-			var gridObj = $.pubGrid(_self.options.dbServiceMenuContentId+'>#package',{
+			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#package',{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}

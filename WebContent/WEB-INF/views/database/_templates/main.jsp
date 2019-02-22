@@ -48,16 +48,16 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<!-- object tab area -->
-	<div id="varsqlDbServiceMenu" class="db-object-tab"></div>
+	<div id="pluginSchemaObjectTab" class="db-object-tab"></div>
 	<!-- object cont area -->
-	<div id="dbServiceMenuContent" class="db-object-tab-content"></div>			
+	<div id="pluginSchemaObjectTabContent" class="db-object-tab-content"></div>			
 </div>
 </script>
 
 <%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div id="pluginObjectMeta" class="varsql-plugin-wrapper">
-	<div id="metadataContent"></div>	
+	<div id="pluginObjectMetaContent"></div>	
 </div>
 </script>
 
