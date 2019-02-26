@@ -16,6 +16,7 @@
 			speed : 150
 			,width:'auto'
 			,itemMaxWidth : -1
+			,activeFirstItem : true	//로드시 첫번째 item 활성화 여부
 			,autoMove : false
 			,itemPadding: 5
 			,height : '22px'
@@ -108,6 +109,12 @@
 			_this.draw();
 
 			_this.initEvt();
+
+			if(this.options.activeFirstItem===true && this.getItemLength() > 0){
+				setTimeout(function (){
+					_this.itemClick();
+				},100);
+			}
 		}
 		,_setConfigInfo : function (){
 			this.config = {tabWidth :[] , tabHistory : [] , tabIdx : 0};
@@ -255,7 +262,7 @@
 		}
 		/**
 		 * @method setActive
-		 * @description set item active 
+		 * @description set active item  
 		 */
 		,setActive: function (item){
 			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
@@ -268,6 +275,18 @@
 			this._setHistory(tabEle.attr('data-tab-id'));
 			tabEle.addClass('active');
 			this.movePosition(tabEle.index());
+		}
+		/**
+		 * @method getActive
+		 * @description get active item  
+		 */
+		,getActive : function(){
+			var sEle = this.tabElement.find('.pubTab-item.active'); 
+			var idx = sEle.index(); 
+			return {
+				idx : idx
+				,item : this.options.items[idx]
+			};
 		}
 		/**
 		 * @method movePosition

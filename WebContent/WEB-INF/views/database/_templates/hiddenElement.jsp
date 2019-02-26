@@ -144,7 +144,7 @@
 
 <%--ddl view template --%>
 <script id="ddlViewTemplate" type="text/varsql-template">
-<div class="ddl-view-area">
+<div class="pretty-view-area">
 	<div class="pull-right" style="padding:4px;position:relative;z-index:1;">
 		<!-- button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">띄워보기</button -->
 		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">복사</button>

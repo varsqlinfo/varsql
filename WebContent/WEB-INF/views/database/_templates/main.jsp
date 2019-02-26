@@ -17,10 +17,11 @@
 <%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>
 </body>
 
+<c:set var="screenConfigInfo" value="${screen_config_info}"/>
 <script>
 
 $(document).ready(function(){
-	var viewConnInfo = ${varsqlfn:objectToJson(left_db_object)};
+	var viewConnInfo = ${varsqlfn:objectToJson(screenConfigInfo)};
 	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.screenSetting = ${database_screen_setting};
 	VARSQL.ui.create(opts);
@@ -31,20 +32,23 @@ $(document).ready(function(){
 </script>
 
 </html>
-	
-
 <%--db object component template --%>
 <script id="dbObjectComponentTemplate" type="text/varsql-template">
 <div id="pluginSchemaObject" class="varsql-plugin-wrapper">
 	<div class="db-schema">
 		<img src="/vsql/webstatic/imgs/Database.gif"/>
-		<span id="varsql_schema_name">schema명</span>
+		<span id="varsql_schema_name">${screenConfigInfo.schema}</span>
 		<div class="btn-group pull-right">
-			<button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
-				<i class="fa fa-chevron-down"></i>
-			</button>
-			<ul id="dbSchemaList" class="dropdown-menu slidedown">
-			</ul>
+			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">
+				<button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
+					<i class="fa fa-chevron-down"></i>
+				</button>
+				<ul id="dbSchemaList" class="dropdown-menu slidedown">
+					<c:forEach var="item" items="${screenConfigInfo.schemaList}" varStatus="status">
+						<li><a href="javascript:;" class="db-list-group-item ${screenConfigInfo.schema == item ? 'active' :''}" obj_nm="${item}">${item}</a></li>
+					</c:forEach>
+				</ul>
+			</c:if>
 		</div>
 	</div>
 	<!-- object tab area -->
@@ -62,7 +66,7 @@ $(document).ready(function(){
 </script>
 
 <%--sql editor component template --%>
-<script id="sqlEditorComponentTemplate" type="text/varsql-template">
+<scrip1t id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="pluginSqlEditor" class="varsql-plugin-wrapper">
 	<div class="sql-editor-toolbar">
 		<ul>
@@ -152,13 +156,9 @@ $(document).ready(function(){
 		<div id="varsqlSqlFileTab" class="sqlfile-tab"></div>
 
 	 	<div class="float-right">
-		 	<div style="width:50px;display:inline-block;">
-				<span style="background:#f7f3f300;background-color:#f7f3f300;border:0px;">
-					<span id="sql_parameter_toggle_btn" class="sql-edit-btn" style="cursor:pointer;padding: initial;font-size: inherit;">
-						<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
-					</span>
-				</span>
-		    </div>
+			<button id="sql_parameter_toggle_btn" data-sql-editor-menu="y" class="sql-edit-btn sql-parameter-btn disable">
+				<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
+			</button>
 		</div>
 	</div>
 

@@ -51,7 +51,7 @@ public class DatabaseServiceImpl{
 			json.put("conuid", dbinfo.getConnUUID());
 			json.put("type", dbinfo.getType());
 			json.put("lazyload", dbinfo.isLazyLoad());
-			json.put("db_object_list", dbMetaEnum.getSchemas(databaseParamInfo));
+			json.put("schemaList", dbMetaEnum.getSchemas(databaseParamInfo));
 			json.put("serviceObject", dbMetaEnum.getServiceMenu());
 			
 		}catch(Exception e){

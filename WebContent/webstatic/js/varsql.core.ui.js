@@ -5,6 +5,79 @@
 ;(function($, window, document, VARSQL) {
 "use strict";
 
+var _defaultOptions = {
+	dateFormat :'yyyy-MM-dd hh:mm:ss'
+}
+
+// 전역 변수 
+var _g_options={
+	dbtype:''
+	,param:{}
+	,hiddenArea : '#dbHiddenArea'
+	,downloadForm : '#downloadForm'
+	,_opts :{}
+	,serviceObject : []
+	,screenSetting : {}
+};
+
+// cache
+var _g_cache_store ={}
+	,_g_cache_obj_meta_store ={};
+var _g_cache = {
+	get :function (key){
+		return _g_cache_store[key];
+	}
+	,set : function (key , val){
+		_g_cache_store[key] = val;
+	}
+	// object cache check
+	,isSOMetaInitCache : function (objectType){
+		return (_g_cache_obj_meta_store[objectType]||{}).initFlag===false ? false :true; 
+	}
+	,initSOMetaCacheObject : function (){
+		var _self = this;
+		var serviceObject = _g_options.serviceObject;
+		
+		for(var i =0; i<serviceObject.length; i++){
+			var serviceObj = serviceObject[i];
+			var contentid =serviceObj.contentid;
+			
+			_g_cache_obj_meta_store[contentid] = {initFlag:false}; // 초기화 여부 
+		}
+	}
+	//set  object initflag 
+	,setSOMetaInitFlag : function (objectType){
+		_g_cache_obj_meta_store[objectType].initFlag=true; 
+	}
+	// 메타 데이타 케쉬된값 꺼내기
+	,getSOMetaCache:function (objectType, objecName, tabKey){
+		tabKey =tabKey||'column';
+		
+		var t =_g_cache_obj_meta_store[objectType][objecName][tabKey]; 
+		return t?t:null;
+	}
+	// 메타 데이타 셋팅하기.
+	,setSOMetaCache:function (objectType, objecName, tabKey, data){
+		if(VARSQL.isUndefined(_g_cache_obj_meta_store[objectType][objecName])){
+			var objData = {};
+			objData[tabKey] = data; 
+			_g_cache_obj_meta_store[objectType][objecName] =objData;
+		}else{
+			_g_cache_obj_meta_store[objectType][objecName][tabKey]= data;
+		}
+	}
+	// remove service object meta cache
+	,removeSOMetaCache:function (objectType, objecName){
+		if(typeof objectType !='undefined' && typeof objecName != 'undefined'){
+			delete _g_cache_obj_meta_store[objectType][objecName];  
+		} else if (typeof objectType !='undefined'){
+			_g_cache_obj_meta_store[objectType] ={};
+		} else {
+			this.initSOMetaCacheObject();
+		}
+	}
+}
+
 VARSQL.ui = VARSQL.ui||{};
 
 var _ui = {};
@@ -18,6 +91,24 @@ _ui.utils = {
 	}
 }
 
+_ui.pluginProxy = {
+	createScriptSql :function (scriptObj){
+		_ui.SQL.addCreateScriptSql(scriptObj);
+	}
+	,createJavaProgram: function (scriptObj){
+		_ui.JAVA.createJavaProgram(scriptObj);
+	}
+}
+
+//컨텍스트 메뉴 sql 생성 부분 처리 .
+_ui.addDbServiceObject = function (objectKey, objectInfo){
+	_ui.utils.copy(_ui.dbSchemaObject,objectInfo);
+}
+
+_ui.addODbServiceObjectMetadata = function (objectKey, objectInfo){
+	_ui.utils.copy(_ui.dbObjectMetadata,objectInfo);
+}
+
 _ui.base ={
 	mimetype : ''	// editor mime type
 	,sqlHints :{}	// sql hints
@@ -26,18 +117,6 @@ _ui.base ={
 _ui.extension ={
 	
 }
-
-var _defaultOptions = {
-	dateFormat :'yyyy-MM-dd hh:mm:ss'
-}
-
-var _g_options={
-	dbtype:''
-	,param:{}
-	,hiddenArea : '#dbHiddenArea'
-	,downloadForm : '#downloadForm'
-	,_opts :{}
-};
 
 VARSQL.ui.create = function (_opts){
 	
@@ -97,9 +176,21 @@ var _selector = {
 
 function _getSelector(key,type, suffixKey){
 	type = type|| 'element';
-	return _selector[type][key] + (suffixKey ? (_selector['subffix'][suffixKey]||''):'' ); 
+	return _selector[type][key] + (suffixKey ? (_selector['subffix'][suffixKey]||suffixKey):'' ); 
 }
 
+/**
+ * 파라미터 얻기.
+ * @returns
+ */
+function _getParam(){
+	var arr = [{},_g_options.param];
+	for(var i = 0 ; i<arguments.length; i++){
+		arr.push(arguments[i]);
+	}
+	
+	return VARSQL.util.objectMerge.apply(null ,arr);
+}
 //context menu 초기화
 _ui.initContextMenu  = function (){
 	
@@ -440,14 +531,14 @@ _ui.headerMenu ={
 _ui.preferences= {
 	save : function (prefInfo , callback){
 		
-		prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
+		prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo); 
 		
 		var param = {
 			conuid : _g_options.param.conuid
 			,prefKey : 'main.database.setting'
 			,prefVal : JSON.stringify(prefInfo)
 		}
-		VARSQL.req.ajax({      
+		VARSQL.req.ajax({
 			url:{type:VARSQL.uri.database, url:'/preferences/save.vsql'}
 			,data: param
 			,success:function (resData){
@@ -460,7 +551,6 @@ _ui.preferences= {
 		});
 	}
 }
-
 
 // layoutObject
 _ui.layout = {
@@ -505,7 +595,6 @@ _ui.layout = {
 		    maximise: 'maximise',
 		    minimise: 'minimise',
 		  },
-
 		  content: [{
 			type:'row'
 			,content : [
@@ -585,7 +674,7 @@ _ui.layout = {
 				var containerW =container.width-2
 					, containerH = container.height-50; 
 				
-				_ui.dbSchemaObjectServiceMenu.resizeObjectArea({width : containerW,height : containerH});
+				_ui.dbSchemaObject.resizeObjectArea({width : containerW,height : containerH});
 				
 			});
 		});
@@ -604,7 +693,7 @@ _ui.layout = {
 				var containerW =container.width-2 
 					,containerH = container.height-_self.contTabHeight; 
 				
-				_ui.dbSchemaObjectServiceMenu.resizeMetaArea({width : containerW,height : containerH});
+				_ui.dbObjectMetadata.resizeMetaArea({width : containerW,height : containerH});
 			})
 		});
 
@@ -750,7 +839,7 @@ _ui.layout = {
 			}else if(componentName =='sqlDataComponent'){
 				_ui.sqlDataArea.init();
 			}else if(componentName =='dbMetadataComponent'){
-				_ui.dbSchemaObjectServiceMenu.init();
+				_ui.dbObjectMetadata.init();
 			}
 		}
 		
@@ -856,228 +945,15 @@ _ui.registerPlugin = function ( regItem){
 	_ui.utils.copy(_ui.component,regItem);
 }
 
-//glossary component
-_ui.registerPlugin({
-	'glossary' : {
-		selector :'#pluginGlossary'
-		,gridObj : false
-		,init : function (){
-			var _self = this;
-			
-			_self.initEvt();
-			
-			_self.gridObj = $.pubGrid('#glossaryResultArea', {
-				asideOptions :{lineNumber : {enable : true	,width : 30}}
-				,tColItem : [
-					{ label: '용어', key: 'WORD',width:80 },
-					{ label: '영문명', key: 'WORD_EN' },
-					{ label: '약어', key: 'WORD_ABBR', width:45},
-					{ label: '설명', key: 'WORD_DESC',width:45},
-				]
-				,tbodyItem :[]
-				,bodyOptions : {
-					cellDblClick : function (cellInfo){
-						
-						var selKey =cellInfo.keyItem.key;
-						
-						if(selKey != 'WORD' && selKey !='WORD_DESC'){
-							
-							var variableText = $(_self.selector+' #glossaryConvertTxt').val();
-							
-							var val =cellInfo.item[selKey]; 
-							
-							val = val.split(' ').join('_');
-							
-							if($.trim(variableText)==''){
-								variableText = val;
-							}else{
-								variableText = variableText+'_'+val;
-							}
-							
-							$(_self.selector+' #glossaryConvertTxt').val(variableText);
-						}
-					}
-				}
-			});
-		}
-		,initEvt : function (){
-			var _self = this;
-			
-			// enter 검색.
-			$(_self.selector+' #glossarySearchTxt').on('keydown', function (e){
-				if (e.keyCode == '13') {
-					_self.search();
-				}
-			})
-			
-			// 검색
-			$(_self.selector+' .glossary-search-btn').on('click', function (e){
-				_self.search();
-			})
-			
-			// 변환
-			$(_self.selector+' .glossary-convert-camelcase').on('click', function (e){
-				$(_self.selector+' #glossaryConvertTxt').val(convertCamel($(_self.selector+' #glossaryConvertTxt').val()));
-			})
-			// 지우기
-			$(_self.selector+' .glossary-convert-clear').on('click', function (e){
-				$(_self.selector+' #glossaryConvertTxt').val('');
-			})
-		}
-		,search :  function (){
-			var _self = this;
-			var schVal = $(_self.selector+' #glossarySearchTxt').val();
-			
-			schVal = $.trim(schVal);
-			
-			if(schVal.length < 1){
-				return ; 
-			}
-			
-			var params ={
-				keyword : schVal
-			}
-			
-			VARSQL.req.ajax({      
-			    loadSelector : _self.selector
-			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
-			    ,data : params 
-			    ,success:function (res){
-			    	_self.gridObj.setData(res.items,'reDraw');
-				}
-			});
-		}
-		,template : function (){
-			return $('#glossaryComponentTemplate').html();
-		}
-		,resize : function (dimension){
-			dimension.height = dimension.height - $(this.selector+' .glossary-search-area-wrapper').height(); 
-			this.gridObj.resizeDraw(dimension);
-		}
-		,destroy: function (){
-			this.gridObj.destroy()
-		}
-	}
-})
-
-// history component
-_ui.registerPlugin({
-	'history' : {
-		selector :'#pluginHistory'
-		,gridObj :false
-		,pageNo :1
-		,scrollEndFlag : true
-		,init : function (){
-			var _self = this;
-			_self.initEvt();
-		}
-		,initEvt : function (){
-			var _self = this;
-			// enter 검색.
-			$(_self.selector+' #historySearchTxt').on('keydown', function (e){
-				if (e.keyCode == '13') {
-					_self.search();
-				}
-			})
-			// 검색
-			$(_self.selector+' .history-search-btn').on('click', function (e){
-				_self.search();
-			})
-			
-			_self.gridObj = $.pubGrid('#historyResultArea', {
-				asideOptions :{lineNumber : {enable : true	,width : 30}}
-				,tColItem : [
-					{ label: 'SQL', key: 'LOG_SQL'},
-					{ label: '시작시간', key: 'VIEW_STARTDT' },
-					{ label: '종료시간', key: 'VIEW_ENDDT', width:45},
-					{ label: '걸린시간', key: 'DELAY_TIME',width:45},
-				]
-				,tbodyItem :[]
-				,bodyOptions : {
-					cellDblClick : function (cellInfo){
-						
-						var selKey =cellInfo.keyItem.key;
-						
-						if(selKey == 'LOG_SQL'){
-							var val =cellInfo.item[selKey]; 
-							_ui.SQL.addSqlEditContent(val , false);
-						}
-					}
-				}
-				,scroll :{
-					vertical : {
-						onUpdate : function (item){	// 스크롤 업데이트. 
-							if(_self.scrollEndFlag !==true && item.barPosition > 80){
-								_self.pageNo = _self.pageNo+1;
-								_self.search('scroll');
-							}
-						}
-					}
-				}
-			});
-		}
-		,search :  function (mode){
-			var _self = this;
-			var schVal = $(_self.selector+' #historySearchTxt').val();
-			
-			schVal = $.trim(schVal);
-			
-			if(mode != 'scroll'){
-				_self.pageNo = 1;
-			}
-			
-			var params ={
-				pageNo: _self.pageNo
-				,countPerPage : _self.gridObj.getViewRow()
-				,'searchVal':schVal
-				,conuid : _g_options.param.conuid
-			}
-			
-			VARSQL.req.ajax({      
-			    loadSelector : _self.selector
-			    ,url:{type:VARSQL.uri.plugin, url:'/historySearch.varsql'}
-			    ,data : params 
-			    ,success:function (res){
-			    	
-			    	var items = res.items ||[]; 
-			    	
-			    	var itemLen =items.length; 
-			    	
-			    	if(_self.pageNo ==1){
-			    		_self.gridObj.setData(items);
-			    	}else{
-			    		_self.gridObj.addData(items);
-			    	}
-			    	
-			    	if(itemLen> 0){
-			    		_self.scrollEndFlag = false; 
-			    	}else{
-			    		_self.scrollEndFlag = true; 
-			    	}
-				}
-			});
-		}
-		,template : function (){
-			return $('#historyPluginAreaTemplate').html();
-		}
-		,resize : function (dimension){
-			dimension.height = dimension.height - $(this.selector+' .history-search-area-wrapper').height(); 
-			this.gridObj.resizeDraw(dimension);
-		}
-		,destroy: function (){
-		}
-	}
-})
-
 // db schema object 처리.
 _ui.dbSchemaObject ={
 	initObjectMenu : false
+	,selectObjectMenu : 'table'
 	,options :{
 		selector:'#dbSchemaList'
-		,objectTypeTabEleId:'#varsqlObjectTypeTab'
-		,objectTypeTabContentEleId:'#varsqlObjectTypeTabContent'
-		,active: null
-		,db_object_list:[]
+		,objectTypeTabEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB)
+		,objectTypeTabContentEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB_CONT)
+		,schemaList:[]
 		,param:{}
 	}
 	,init :function (){
@@ -1090,9 +966,10 @@ _ui.dbSchemaObject ={
 			return ;
 		}
 		
+		_g_cache.initSOMetaCacheObject();
+		
 		VARSQL.util.objectMerge(_self.options, _opts);
 		
-		_self._grid();
 		_self._initObjectTypeTab();
 		_self.initEvt();
 		
@@ -1101,17 +978,20 @@ _ui.dbSchemaObject ={
 	,initEvt : function (){
 		var _self = this;
 		
+		var schemaObjEleId = _getSelector('schemaObject',_selectorType.PLUGIN); 
 		// 스키마 클릭.
-		$(_self.options.selector+' .db-list-group-item').on('click', function (){
-			
-			if(_self.options.active) _self.options.active.removeClass('active');
+		$(schemaObjEleId+' .db-list-group-item').on('click', function (){
 			
 			var sEle = $(this);
-			sEle.addClass('active');
+			
+			if(sEle.hasClass('active')){
+				return ; 
+			}else{
+				$(schemaObjEleId+' .db-list-group-item.active').removeClass('active');
+				sEle.addClass('active');
+			}
 			
 			_g_options.param.schema =sEle.attr('obj_nm');
-			
-			_self.options.active =sEle;
 			
 			$('#varsql_schema_name').html(_g_options.param.schema);
 			
@@ -1120,47 +1000,50 @@ _ui.dbSchemaObject ={
 			
 			var schemaInfo = {
 	    		param : tmpParam
-	    	}; 
+	    	};
 			
-			_ui.dbSchemaObjectServiceMenu.init(schemaInfo);
+			_g_cache.initSOMetaCacheObject();
+			
+			$.pubTab(_self.options.objectTypeTabEleId).itemClick(0);
+			
 		});
-		
-		$(_self.options.selector+' .db-list-group-item.active').trigger('click');
-	}
-	// db schema 그리기
-	,_grid:function (){
-		var _self = this;
-		
-		var data = _self.options.db_object_list;
-		var len = data.length; 
-	
-		if(len < 1) return ; 
-	
-		var strHtm = [];
-		var item; 
-		var activeClass = '';
-		
-		var toUpperSchema = _g_options.schema.toUpperCase(); 
-		for (var i=0; i<len ; i++ ){
-			item = data[i];
-			activeClass = '';
-	 		if (toUpperSchema === item.toUpperCase()) {
-				activeClass='active';
-			}
-			strHtm.push('<li><a href="javascript:;" class="db-list-group-item '+activeClass+'" obj_nm="'+item+'">'+item+'</a></li>');
-		}
-									
-		$(_self.options.selector).html(strHtm.join(''));
-		
-		if(len > 1){
-			$('.db-schema-list-btn').show();
-		}
 	}
 	// db object type tab 
 	,_initObjectTypeTab : function (){
 		var _self = this; 
-	
+		
+		_self._initObjectTabContentEle();
+		
+		$.pubTab(_self.options.objectTypeTabEleId ,{
+			items : _g_options.serviceObject
+			,dropItemHeight : $(_self.options.objectTypeTabContentEleId).height() -10
+			,titleIcon :{
+				left :{
+					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					,click : function (item, idx){
+						if(confirm('새로고침 하시겠습니까?')){
+							_self.getObjectTypeData(item, true);
+						}
+					}
+				}
+			}
+			,click : function (item){
+				var sObj = $(this);
+				
+				_self.selectObjectMenu = item.contentid;
+				
+				_self.getObjectTypeData(item);
+			}
+		});
+	}
+	/**
+	 * init object tab content element
+	 */
+	,_initObjectTabContentEle : function (){
+		var _self = this; 
+		
 		var data = _g_options.serviceObject;
+		
 		var len = data.length; 
 		
 		if(len < 1) return ; 
@@ -1174,34 +1057,9 @@ _ui.dbSchemaObject ={
 		}
 		
 		$(_self.options.objectTypeTabContentEleId).empty().html(strHtm.join(''));
-		
-		$.pubTab(_self.options.objectTypeTabEleId,{
-			items :data
-			,width : 'auto'
-			,dropItemHeight : $(_self.options.objectTypeTabContentEleId).height() -10
-			,titleIcon :{
-				left :{
-					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
-					,click : function (item, idx){
-						if(confirm('새로고침 하시겠습니까?')){
-							_self._removeMetaCache(item.contentid);
-							_self._dbObjectList(item, true);
-						}
-					}
-				}
-			}
-			,click : function (item){
-				var sObj = $(this);
-				
-				_self.selectObjectMenu = item.contentid;
-				
-				//_self._dbObjectList(item, !_self.isObjectCache(item.contentid));
-				_self._dbObjectList(item, true);
-			}
-		})
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
-	,_dbObjectList:function(selObj,refresh){
+	,getObjectTypeData:function(selObj,refresh){
 		var _self = this;
 		var $contentId = selObj.contentid;
 				
@@ -1221,20 +1079,22 @@ _ui.dbSchemaObject ={
 			}
 		}
 		
-		if(!refresh){
+		var objectInitFlag = _g_cache.isSOMetaInitCache($contentId);
+		
+		if(refresh !== true && objectInitFlag){
 			return ; 
 		}
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
-		var param =VARSQL.util.objectMerge({},_self.options.param,{'objectType':$contentId});
+		var param =_getParam({'objectType':$contentId});
 		
 		VARSQL.req.ajax({      
 			loadSelector : _getSelector('schemaObject',_selectorType.PLUGIN)
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
 			,data : param 
 			,success:function (resData){
-				_self.setObjectInitFlag($contentId);
+				_g_cache.setSOMetaInitFlag($contentId, true);
 				callMethod.call(_self,resData);
 			}
 		});
@@ -1254,311 +1114,16 @@ _ui.dbSchemaObject ={
 	}
 	// resize object area
 	,resizeObjectArea : function (dimension){
-		try{
-			// tab resize
-			$.pubTab(this.options.objectTypeTabEleId).refresh().setDropHeight(dimension.height-10);
-		}catch(e){};
-		
-		try{
-			// data resize
-			$.pubGrid(this.options.objectTypeTabContentEleId+'>#'+this.selectObjectMenu).resizeDraw(dimension);
-		}catch(e){};
-		
-	}
-};
-
-/**
- * db object metadata
- */
-_ui.dbObjectMetadata= {
-	options :{
-		
-	}
-	,init : function (){
-		this.createTemplate();
-	}
-	,createTemplate : function (){
-		var data = _g_options.serviceObject;
-		var len = data.length; 
-		
-		if(len < 1) return ; 
-		
-		var metaStrHtm = [];
-		var item;
-		for(var i=0; i < len; i++){
-			item = data[i];
-			var contentid = item.contentid; 
-			
-			var metaEleId =_self._getMetadataObjectEleId(contentid);
-			var metaTabId =_self.options.metadataTabEleId+contentid;
-			metaEleId  = (metaEleId).replace('#', '');
-			
-			metaStrHtm.push('<div data-meta-contentid="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'">');
-			metaStrHtm.push('	<div id="'+ (metaTabId).replace('#', '') +'" class="object-meta-tab"></div>');
-			metaStrHtm.push('	<div id="'+ metaEleId +'" class="object-meta-tab-content">');
-			var metaTabList = item.tabList;
-			
-			for(var j =0 ;j <metaTabList.length; j++){
-				var tabItem = metaTabList[j];
-				metaStrHtm.push('	<div id="'+(metaEleId)+tabItem.tabid+'" data-meta-tab="'+tabItem.tabid+'" class="varsql-tab-group"></div>');
-			}
-			metaStrHtm.push('	</div>');
-			metaStrHtm.push('</div>	');
+		// tab resize
+		var tabObj =$.pubTab(this.options.objectTypeTabEleId);
+		if(tabObj){
+			tabObj.refresh().setDropHeight(dimension.height-10);
 		}
 		
-		$(_self.options.metadataContentEleId).empty().html(metaStrHtm.join(''));
-	}
-}
-
-/*
- * 왼족 메뉴 셋팅
- * 테이블 , 스키마 , view 등등 
- */
-_ui.dbSchemaObjectServiceMenu ={
-	initFlag : false
-	,metadataCache : {}
-	,metaInfoLoadComplete : true
-	,selectObjectMenu : 'table'
-	,options :{
-		serviceObject:[]
-		,param:{}
-		,metadataContentEleId:'#metadataContent'
-		,metadataTabEleId:'#metadataTab'
-		,metadataTabContentEleId:'#metadataTabContent'
-		,metadataContentAreaWrapEle:null
-		,metadata_content_areaId:'#metadata_content_area'
-		,metadata_content_areaIdEle:null
-	}
-	// 왼쪽 메뉴 생성 . 
-	,create: function (options){
-		var _self = this; 
-		
-		_self.options = VARSQL.util.objectMerge(_self.options, options);
-		_self.init();
-		_self.initEvt();
-		
-		var data = _self.options.serviceObject;
-		var len = data.length; 
-		
-		if(len < 1) return ; 
-		
-		var metaStrHtm = [];
-		var item;
-		for(var i=0; i < len; i++){
-			item = data[i];
-			var contentid = item.contentid; 
-			
-			var metaEleId =_self._getMetadataObjectEleId(contentid);
-			var metaTabId =_self.options.metadataTabEleId+contentid;
-			metaEleId  = (metaEleId).replace('#', '');
-			
-			metaStrHtm.push('<div data-meta-contentid="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'">');
-			metaStrHtm.push('	<div id="'+ (metaTabId).replace('#', '') +'" class="object-meta-tab"></div>');
-			metaStrHtm.push('	<div id="'+ metaEleId +'" class="object-meta-tab-content">');
-			var metaTabList = item.tabList;
-			
-			for(var j =0 ;j <metaTabList.length; j++){
-				var tabItem = metaTabList[j];
-				metaStrHtm.push('	<div id="'+(metaEleId)+tabItem.tabid+'" data-meta-tab="'+tabItem.tabid+'" class="varsql-tab-group"></div>');
-			}
-			metaStrHtm.push('	</div>');
-			metaStrHtm.push('</div>	');
+		var gridObj = $.pubGrid(this.options.objectTypeTabContentEleId+'>#'+this.selectObjectMenu);
+		if(gridObj){
+			gridObj.resizeDraw(dimension);
 		}
-		
-		$(_self.options.metadataContentEleId).empty().html(metaStrHtm.join(''));
-		
-	}
-	,init : function (schemaInfo){
-		
-		if(schemaInfo){
-			this.options = VARSQL.util.objectMerge(this.options, schemaInfo);
-		}
-		
-		this._initCacheObject();
-		this.initElement();
-		
-		$.pubTab(this.options.objectTypeTabEleId).itemClick(0);
-	}
-	,initEvt : function (){
-		var _self = this; 
-		
-		// ddl copy 
-		$(_self.options.metadataContentEleId).on('click','.ddl-copy', function (){
-			var sEle = $(this)
-				,mode = sEle.data('ddl-copy-mode');
-			
-			var copyTxt = sEle.closest('.ddl-view-area').find('textarea').val();
-			
-			if('copy'==mode){
-				copyStringToClipboard('ddlcopy' ,copyTxt);
-			}else{
-				_ui.SQL.addSqlEditContent(copyTxt , false);
-			}
-		})
-	}
-	,_initCacheObject : function (){
-		var _self = this;
-		var serviceObject = this.options.serviceObject;
-		
-		for(var i =0; i<serviceObject.length; i++){
-			var serviceObj = serviceObject[i];
-			var contentid =serviceObj.contentid;
-			
-			this.metadataCache[contentid] = {initFlag:false}; // 초기화 여부 
-			
-			var seviceGrid  =$.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+contentid);
-			
-			if(!VARSQL.isUndefined(seviceGrid)){
-				seviceGrid.setData([],'reDraw');
-			}
-		}
-		
-		this.selectMetadata = {}; // 선택한 메뉴 
-	}
-	,initElement :function (){
-		var _self = this;
-		_self.options.metadataContentAreaWrapEle = $(_self.options.metadataTabContentEleId);
-		_self.options.metadataTabAreaWrapEle = $(_self.options.metadataTabEleId);
-		
-	}
-	,getMetaContentWrapEle:function (){
-		return this.options.metadataContentAreaWrapEle; 
-	}
-	,getMetadataTabAreaWrapEle:function (){
-		return this.options.metadataTabAreaWrapEle; 
-	}
-	
-	// meta 영역 resize
-	,resizeMetaArea : function (){
-		var resizeMethod = this.getCallMethod('_'+this.selectObjectMenu +'MetaResize');
-		resizeMethod.call(this);
-	}
-	
-	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
-	,_dbObjectMetadataList : function(param,callMethod,refresh){
-		
-		var _self = this
-			,objType = param.objectType
-			,objName = param.objectName; 
-		
-		if(_self.metaInfoLoadComplete===false){
-			alert('로드중입니다.');
-			return ; 
-		}
-		
-		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
-		
-		_ui.layout.setActiveTab('dbMetadata');
-		
-		var refreshFlag = true; 
-		if(!refresh){
-			var cacheData = _self._getMetaCache(objType,objName);
-			if(cacheData){
-				refreshFlag = false; 
-			}
-		}
-		
-		var callMethod = _self.getCallMethod(callMethod);
-		callMethod.call(_self, _self.options.metadataTabEleId+objType , param , refreshFlag);
-	}
-	// meta data 가져오기.
-	,_getMetadataInfo : function (param , callbackFn){
-		var _self =this; 
-		
-		_self.metaInfoLoadComplete = false;
-		
-		VARSQL.req.ajax({
-			loadSelector : _self.options.metadataTabContentEleId
-			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
-			,data:param
-			,success:function (resData){
-				
-				_self.metaInfoLoadComplete = true;
-				
-				var result = resData.items;
-				
-				if(result.length > 0){
-					var callData=result;
-					var objectType = param.objectType;
-					
-					if('table' == objectType || 'view' == param.objectType){
-						if(result.length > 0){
-							callData = result[0].colList;
-						}
-					}
-					_self._setMetaCache(objectType,param.objectName, param.cacheKey,{items:callData}); 
-					callbackFn.call(_self,{items:callData}, param);
-				}
-			}
-			,error: function (jqXHR, exception) {
-				_self.metaInfoLoadComplete = true;
-			}
-		});
-	}
-	/**
-	 * @method _createDDL
-	 * @param name 
-	 * @param val 
-	 * @param options 
-	 * @description create ddl
-	 */	
-	,_createDDL :function (sObj, callbackFn){
-		var _self = this; 
-		
-		var param =$.extend({},_self.options.param,{'objectType':sObj.objectType ,objectName:sObj.objName});
-		
-		VARSQL.req.ajax({
-			url:{type:VARSQL.uri.database, url:'/createDDL.varsql'}
-			,data:param
-			,success:function (resData){
-				
-				var item = resData.item||{};
-				_self._setMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
-				
-				if(VARSQL.isFunction(callbackFn)){
-					callbackFn.call(_self, item.createScript);
-				}else{
-					if(sObj.gubunKey=='ddl_copy'){
-						_ui.text.copy(item.createScript);
-					}else{
-						_ui.SQL.addSqlEditContent(item.createScript, false);
-					}
-				}
-			}
-		});
-	}
-	,_getMetadataObjectEleId : function (objectType){
-		return this.options.metadataTabContentEleId+objectType; 
-	}
-	// meta element check
-	, _getMetadataElement :  function(objectType, eleName, addHtml){
-		var objectEleId =this._getMetadataObjectEleId(objectType); 
-		var metaEleId = objectEleId+eleName;
-		
-		var isCreate = false; 
-		
-		if($(metaEleId).length < 1){
-			isCreate = true; 
-			$(objectEleId).append('<div id="'+ metaEleId.replace('#', '') +'" data-meta-tab="'+(eleName)+'"  class="varsql-tab-group on">'+addHtml+'</div>');
-		}else{
-			if(addHtml)	$(metaEleId).empty().html(addHtml);
-		}
-		
-		return {
-			eleId :metaEleId 
-			,isCreate : isCreate
-		} 
-	}
-	// 데이타 내보내기
-	,_dataExport : function (exportObj){
-		_ui.SQL.exportDataDownload(exportObj);
-	}
-	// 컨텍스트 메뉴 sql 생성 부분 처리 .
-	,_createScriptSql :function (scriptObj){
-		_ui.SQL.addCreateScriptSql(scriptObj);
-	}
-	,_createJavaProgram: function (scriptObj){
-		_ui.JAVA.createJavaProgram(scriptObj);
 	}
 	,getCallMethod : function (methodName){
 		var callMethod  =_ui.extension[methodName];
@@ -1569,57 +1134,13 @@ _ui.dbSchemaObjectServiceMenu ={
 		
 		return callMethod;
 	}
-	// ddl source view
-	,metadataDDLView : function (objectType, eleName, ddlSource){
-		var addHtml = $('#ddlViewTemplate').html();
-		var metaEleInfo = this._getMetadataElement(objectType,eleName,addHtml);
-		
-		var ele = $(metaEleInfo.eleId);
-		
-		ele.find('.prettyprint').empty().html(ddlSource).removeClass('prettyprinted');
-		ele.find('textarea').val(ddlSource);
-		ele.scrollTop(0);
-		PR.prettyPrint();
-		
-	}
-	// object cache check
-	,isObjectCache : function (objectType){
-		return (this.metadataCache[objectType]||{}).initFlag===false ? false :true; 
-	}
-	//set  object initflag 
-	,setObjectInitFlag : function (objectType){
-		this.metadataCache[objectType].initFlag=true; 
-	}
-	// 메타 데이타 케쉬된값 꺼내기
-	,_getMetaCache:function (objectType, objecName, tabKey){
-		tabKey =tabKey||'column';
-		
-		var t =this.metadataCache[objectType][objecName][tabKey]; 
-		return t?t:null;
-	}
-	// 메타 데이타 셋팅하기.
-	,_setMetaCache:function (objectType, objecName, tabKey, data){
-		if(VARSQL.isUndefined(this.metadataCache[objectType][objecName])){
-			var objData = {};
-			objData[tabKey] = data; 
-			this.metadataCache[objectType][objecName] =objData;
-		}else{
-			this.metadataCache[objectType][objecName][tabKey]= data;
-		}
-	}
-	,_removeMetaCache:function (objectType, objecName){
-		if(typeof objectType !='undefined' && typeof objecName != 'undefined'){
-			delete this.metadataCache[objectType][objecName];  
-		}else if(typeof objectType !='undefined'){
-			this.metadataCache[objectType] ={};
-		}else{
-			this._initCacheObject();
-		}
-	}
+	,getObjectMetadata : function (param,refresh){
+		_ui.dbObjectMetadata.getServiceObjectMetadata(param,refresh);
+	} 
 };
 
-//테이블 정보보기.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
+//table
+_ui.addDbServiceObject('table',{
 	_table : function (resData, reqParam){
 	
 		var _self = this;
@@ -1644,7 +1165,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					,text :tblName
 				};
 				
-				_self._setMetaCache($$objectType, tblName, 'column', {items:colList});
+				_g_cache.setSOMetaCache($$objectType, tblName, 'column', {items:colList});
 			})
 			
 			// 테이블 hint;
@@ -1665,7 +1186,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 					,configVal : _g_options.screenSetting.tablesConfig
 				}
 				,asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					lineNumber : {enable : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
 					{key :'name', label:'Table', width:200, sort:true}
@@ -1687,7 +1208,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						
 		    			sObj.addClass('active');
 		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1726,7 +1247,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 								return ; 
 							}
 							
-							var cacheData = _self._getMetaCache($$objectType,tmpName, 'column');
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
 							
 							var params ={
 								objectType : $$objectType
@@ -1741,13 +1262,13 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 							}
 							
 							if(key=='java_column' || key=='java_camel_case_naming'|| key=='java_json' || key =='java_valid'){
-								_self._createJavaProgram(params);
+								_ui.pluginProxy.createJavaProgram(params);
 								return ;
 							}
 							
 							params.sqlGenType = sObj.mode;
 							params.param_yn = sObj.param_yn;
-							_self._createScriptSql(params);
+							_ui.pluginProxy.createScriptSql(params);
 						},
 						items: [
 							
@@ -1804,79 +1325,701 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			VARSQL.log.info(e);
 		}
 	}
+})
 
-	// table tab control
-	,_tableTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
+// view object grid
+_ui.addDbServiceObject('view',{
+	_view:function (resData ,reqParam){
+		var _self = this;
+		try{
+			var $$objectType = 'view';	
+			var len = resData.items?resData.items.length:0;
+    		
+			var itemArr = resData.items;
+			var item;
+			
+			var tableHint = {};
+			$.each(itemArr , function (_idx, _item){
+				var tblName =_item.name;
+				var colList = _item.colList; 
+				
+				var colArr = [];
+				$.each(colList , function (j , colItem){
+					colArr.push(colItem.name);
+				});
+				
+				tableHint[tblName] = {
+					columns:colArr
+					,text :tblName
+				};
+				
+				_g_cache.setSOMetaCache($$objectType,tblName,  'column', {items:colList});
+				
+			})
+						
+			// 테이블 hint;
+			VARSQLHints.setTableInfo(tableHint);
+			
+			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true, width : 30, align: 'right'}
+				}
+				,tColItem : [
+					{key :'name', label:'View', width:200, sort:true}
+					,{key :'remarks', label:'설명', sort:true}
+				]
+				,tbodyItem :itemArr
+				,bodyOptions :{
+					cellDblClick : function (rowItem){
+						var selKey =rowItem.keyItem.key;
+						
+						if(selKey == 'name' ){
+							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
+						}
+					}
+				}
+				,rowOptions : {
+					click : function (idx, item){
+						var sObj = $(this);
+		    			sObj.addClass('active');
+		    			
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							if(key =='copy'){
+								gridObj.copyData();
+								return ; 
+							}
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType, tmpName);
+							
+							_ui.pluginProxy.createScriptSql({
+								gubunKey : key
+								,sqlGenType : sObj.mode
+								,objectType : $$objectType
+								,objName :  _self.selectMetadata[$$objectType]
+								,item : {
+									items : cacheData.items
+								}
+							});
+						},
+						items: [
+							{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+							,{key : "sql_create", "name": "sql생성" 
+								,subMenu: [
+									{ key : "selectStar","name": "select *" , mode: "selectStar"}
+									,{ key : "select","name": "select column" ,mode:"select"}
+								]
+							}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
 		}
+	}
+});
+
+// procedure object grid
+_ui.addDbServiceObject('procedure',{
+	_procedure:function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$objectType = 'procedure';
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_g_cache.setSOMetaCache($$objectType,_name, 'column', {items:colList});
+			})
+			
+			var procedureObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true	,width : 30, align: 'right'}
+				}
+				,tColItem : [
+					{key :'name', label:'Procedure',width:200, sort:true}
+					,{key :'status', label:'상태'}
+					,{key :'remarks', label:'설명'}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			sObj.addClass('active');
+		    			
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
+							
+							if(key =='copy'){
+								procedureObj.copyData();
+								return ; 
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+})
+
+_ui.addDbServiceObject('function',{
+	_function : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$objectType = 'function';
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_g_cache.setSOMetaCache($$objectType,_name, 'column', {items:colList});
+			})
 		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,width : 'auto'
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata['table'];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId('table')+' [data-meta-tab="'+itemKey+'"]');
+			var itemArr = resData.items;
+    				
+			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,tColItem : [
+					{key :'name', label:'Function',width:200, sort:true}
+					,{key :'status', label:'상태'}
+					,{key :'remarks', label:'설명'}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+						
+		    			sObj.addClass('active');
+		    			
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
+							
+							if(key =='copy'){
+								gridObj.copyData();
+								return ; 
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+});
+
+_ui.addDbServiceObject('index',{
+	_index : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$objectType = 'index';
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_g_cache.setSOMetaCache($$objectType,_name, 'column', {items:colList});
+			})
 		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId('table')+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
+			var itemArr = resData.items;
+    				
+			var indexObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,tColItem : [
+					{key :'name', label:'Index',width:200, sort:true}
+					,{key :'tblName', label:'테이블명', sort:true}
+					,{key :'type', label:'타입',sort:true}
+					,{key :'tableSpace', label:'Tablespace',sort:true}
+					,{key :'bufferPool', label:'버퍼풀',sort:true}
+					,{key :'status', label:'상태' ,sort:true}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			sObj.addClass('active');
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
+							
+							if(key =='copy'){
+								indexObj.copyData();
+								return ; 
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+})
+
+_ui.addDbServiceObject('trigger',{
+	_trigger : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+    		var $$objectType = 'trigger';
+    		
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = _item.colList; 
+				_g_cache.setSOMetaCache($$objectType,_name, {items:colList});
+			})
+		
+			var itemArr = resData.items;
+			
+			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,tColItem : [
+					{key :'name', label:'Trigger',width:200, sort:true}
+					,{key :'tblName', label:'테이블명'}
+					,{key :'eventType', label:'타입'}
+					,{key :'timing', label:'timing'}
+					,{key :'status', label:'상태'}
+					,{key :'created', label:'CREATED'}
+				]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+		    			
+		    			sObj.addClass('active');
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+					}
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
+							
+							if(key =='copy'){
+								triggerGridObj.copyData();
+								return ; 
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
+			});
+ 		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+})
+
+_ui.addDbServiceObject('sequence',{
+	_sequence : function (resData ,reqParam){
+		var _self = this;
+		try{
+			var len = resData.items?resData.items.length:0;
+			var $$objectType = 'sequence';
+			
+			var itemArr = resData.items;
+			
+			$.each(itemArr , function (_idx, _item){
+				var _name =_item.name;
+				var colList = []; 
+				
+				for(var key in _item){
+					colList.push({
+						'name' : convertUnderscoreCase(key)
+						,'val' : _item[key]
+					})
 				}
 				
-				var cacheData = _self._getMetaCache('table', objectName, itemKey);
-				
-				if('column' == itemKey){
-					if(cacheData && $.isArray(cacheData.items)){
-						_self._tableColumn(cacheData, param, itemKey, false);
-						return ; 
-					}else{
-						param.objectName = objectName; 
-						param.cacheKey = itemKey;
-						_self._getMetadataInfo(param, function (resData, param){
-							_self._tableColumn(resData, param, itemKey, true);
-						})
+				_g_cache.setSOMetaCache($$objectType,_name, 'info', {items:colList});
+			})
+			
+			var itemArr = resData.items;
+			
+			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+				asideOptions :{
+					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				}
+				,tColItem : [
+					{key :'name', label:'Sequence',width:200, sort:true}
+					,{key :'status', label:'상태'}
+					,{key :'created', label:'생성일자'}
+					,{key :'lastDdlTime', label:'최종수정일'}
+					]
+				,tbodyItem :itemArr
+				,rowOptions :{
+					click : function (idx, item){
+						var sObj = $(this);
+						
+						sObj.addClass('active');
+						_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView('table',itemKey, cacheData);
-						return ; 
+					,contextMenu :{
+						beforeSelect :function (){
+							$(this).trigger('click');
+						}
+						,callback: function(key,sObj) {
+							var ele = this.element, sItem = this.gridItem;
+							var tmpName = sItem.name;
+							
+							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
+							
+							if(key =='copy'){
+								triggerGridObj.copyData();
+								return ; 
+							}
+						},
+						items: [
+							{key : "copy" , "name": "복사"}
+						]
+					}
+				}
+			});
+		}catch(e){
+			VARSQL.log.info(e);
+		}
+	}
+})
+/**
+ * db object metadata
+ */
+_ui.dbObjectMetadata= {
+	initFlag : false
+	,metaInfoLoadComplete : true
+	,selectObjectMenu : 'table'
+	,selectMetadata : {} 
+	,metadataTabInfo:{}
+	,selector : {
+		contEleId : _getSelector('objectMeta',_selectorType.PLUGIN, _selectorSuffix.CONT)
+	}
+	// 왼쪽 메뉴 생성 . 
+	,init : function (options){
+		this.createTemplate();
+		this.initEvt();
+	}
+	,initEvt : function (){
+		var _self = this; 
+		
+		// ddl copy 
+		$(_self.selector.contEleId).on('click','.ddl-copy', function (){
+			var sEle = $(this)
+				,mode = sEle.data('ddl-copy-mode');
+			
+			var copyTxt = sEle.closest('.pretty-view-area').find('textarea').val();
+			
+			if('copy'==mode){
+				copyStringToClipboard('ddlcopy' ,copyTxt);
+			}else{
+				_ui.SQL.addSqlEditContent(copyTxt , false);
+			}
+		})
+	}
+	// meta 영역 resize
+	,resizeMetaArea : function (){
+		var resizeMethod = this.getCallMethod('_'+this.selectObjectMenu +'MetaResize');
+		resizeMethod.call(this);
+	}
+	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
+	,getServiceObjectMetadata : function(param,refresh){
+		
+		var _self = this
+			,objType = param.objectType
+			,objName = param.objectName; 
+		
+		var selObjectMetaEle = $(_self.getTabGroupEleId(objType));
+		
+		if(!selObjectMetaEle.hasClass('tab-on')){
+			$(_self.getTabGroupEleId('tab-on')).removeClass('tab-on');
+			selObjectMetaEle.addClass('tab-on');
+		}
+		
+		if(_self.metaInfoLoadComplete===false){
+			alert('로드중입니다.');
+			return ; 
+		}
+		
+		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
+		
+		_ui.layout.setActiveTab('dbMetadata');
+		
+		var refreshFlag = true; 
+		if(!refresh){
+			var cacheData = _g_cache.getSOMetaCache(objType,objName);
+			if(cacheData){
+				refreshFlag = false; 
+			}
+		}
+		 
+		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]'; 
+		var metaTabObj = $.pubTab(metaTabEleId);
+		
+		if(VARSQL.isUndefined(metaTabObj)){
+			$.pubTab(metaTabEleId, {
+				items : _self.metadataTabInfo[objType]
+				,click : function (item){
+					var tabEle= $(this)
+						,objectName = _self.selectMetadata[objType];
+					
+					var metaTabKey = item.tabid;
+					
+					var tabParam = {
+						metaTabKey : metaTabKey
+						, objectType : objType
+						, objectName : objectName
+					};
+					
+					var tabGroupContEleId = _self.getTabGroupEleId(objType);
+					
+					var sEle = $(_self.getTabContEleId(objType, metaTabKey));
+			
+					if(!sEle.hasClass('on')){
+						$(tabGroupContEleId+' .on[data-so-meta-tab-content]').removeClass('on');
+						sEle.addClass('on');
+					}
+					
+					var cacheData = _g_cache.getSOMetaCache(objType, objectName, metaTabKey);
+					
+					 if('ddl' == metaTabKey){
+						if(cacheData){
+							_self.metadataDDLView(objType, metaTabKey, cacheData);
+							return ; 
+						}else{
+							_self._createDDL(tabParam, function (data){
+								_self.metadataDDLView(objType, metaTabKey, data);
+							});
+						}
+					}else {
+						var callMethodStr = '_'+convertCamel(objType+'_'+metaTabKey);
+						
+						if(cacheData && $.isArray(cacheData.items)){
+							_self[callMethodStr](cacheData, tabParam, metaTabKey, false);
+							return ; 
+						}else{
+							_self._getMetadataInfo(tabParam, function (resData, param){
+								_self[callMethodStr](resData, tabParam, metaTabKey, true);
+							})
+						}
+					}
+				}
+			})
+		}else{
+			var activeItem = metaTabObj.getActive();
+			metaTabObj.itemClick(activeItem.idx);
+		}
+	}
+	// meta data 가져오기.
+	,_getMetadataInfo : function (param , callbackFn){
+		var _self =this; 
+		
+		_self.metaInfoLoadComplete = false;
+		
+		VARSQL.req.ajax({
+			loadSelector : _self.options.metadataTabContentEleId
+			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
+			,data : _getParam(param)
+			,success:function (resData){
+				
+				_self.metaInfoLoadComplete = true;
+				
+				var result = resData.items;
+				
+				if(result.length > 0){
+					var callData=result;
+					var objectType = param.objectType;
+					
+					if('table' == objectType || 'view' == param.objectType){
+						if(result.length > 0){
+							callData = result[0].colList;
+						}
+					}
+					_g_cache.setSOMetaCache(objectType,param.objectName, param.cacheKey,{items:callData}); 
+					callbackFn.call(_self,{items:callData}, param);
+				}
+			}
+			,error: function (jqXHR, exception) {
+				_self.metaInfoLoadComplete = true;
+			}
+		});
+	}
+	// meta tab content id
+	,getTabContEleId : function(objType, metaKey){
+		return this.selector.contEleId +' [data-so-meta-tab-content="'+objType+'_'+ metaKey+'"]'; 
+	}
+	// meta content group id 
+	,getTabGroupEleId : function(objType){
+		if(objType == 'tab-on'){
+			return this.selector.contEleId +' .tab-on[data-so-meta-tab-group]';
+		}
+		return this.selector.contEleId +' [data-so-meta-tab-group="'+objType+'"]'; 
+	}
+	/**
+	 * @method _createDDL
+	 * @param name 
+	 * @param val 
+	 * @param options 
+	 * @description create ddl
+	 */	
+	,_createDDL :function (sObj, callbackFn){
+		var _self = this; 
+		
+		var param =_getParam({'objectType':sObj.objectType ,objectName:sObj.objectName});
+		
+		VARSQL.req.ajax({
+			url:{type:VARSQL.uri.database, url:'/createDDL.varsql'}
+			,data:param
+			,success:function (resData){
+				
+				var item = resData.item||{};
+				_g_cache.setSOMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
+				
+				if(VARSQL.isFunction(callbackFn)){
+					callbackFn.call(_self, item.createScript);
+				}else{
+					if(sObj.gubunKey=='ddl_copy'){
+						_ui.text.copy(item.createScript);
 					}else{
-						_self._createDDL({
-							objectType : 'table'
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView('table',itemKey, data);
-						});
+						_ui.SQL.addSqlEditContent(item.createScript, false);
 					}
 				}
 			}
-		}).itemClick();
+		});
 	}
+	// 데이타 내보내기
+	,_dataExport : function (exportObj){
+		_ui.SQL.exportDataDownload(exportObj);
+	}
+	,getCallMethod : function (methodName){
+		var callMethod  =_ui.extension[methodName];
+		
+		if(VARSQL.isUndefined(callMethod)){
+			callMethod = this[methodName];
+		}
+		
+		return callMethod;
+	}
+	// ddl source view
+	,metadataDDLView : function (objectType, eleName, ddlSource){
+		var addHtml = $('#ddlViewTemplate').html();
+		var ddlEleId = this.getTabContEleId(objectType,eleName);
+		
+		var ele = $(ddlEleId);
+		ele.empty().html(addHtml);
+		
+		ele.find('.prettyprint').empty().html(ddlSource).removeClass('prettyprinted');
+		ele.find('textarea').val(ddlSource);
+		ele.scrollTop(0);
+		PR.prettyPrint();
+		
+	}
+	// create meta element template
+	,createTemplate : function (){
+		var _self = this; 
+	
+		var data = _g_options.serviceObject;
+		var len = data.length; 
+		
+		if(len < 1) return ; 
+		
+		var metaStrHtm = [];
+		var item;
+		for(var i=0; i < len; i++){
+			item = data[i];
+			var contentid = item.contentid; 
+			
+			metaStrHtm.push('<div data-so-meta-tab-group="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'">');
+			metaStrHtm.push('	<div data-so-meta-tab="'+contentid +'" class="object-meta-tab"></div>');
+			metaStrHtm.push('	<div class="object-meta-tab-content">');
+			
+			var metaTabList = item.tabList;
+			
+			_self.metadataTabInfo[contentid] = metaTabList;
+			
+			for(var j =0 ;j <metaTabList.length; j++){
+				var tabItem = metaTabList[j];
+				metaStrHtm.push('	<div data-so-meta-tab-content="'+(contentid+'_' +tabItem.tabid)+'" class="varsql-tab-group '+(j==0?'on':'')+'"></div>');
+			}
+			metaStrHtm.push('	</div>');
+			metaStrHtm.push('</div>	');
+		}
+		
+		$(_getSelector('objectMeta',_selectorType.PLUGIN, _selectorSuffix.CONT)).empty().html(metaStrHtm.join(''));
+	}
+}
+
+//table tab control
+_ui.addODbServiceObjectMetadata('table', {
 	//테이블에 대한 메타 정보 보기 .
-	,_tableColumn:function (colData ,reqParam, eleName, reloadFlag){
+	_tableColumn:function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		
-		var metaEleInfo = _self._getMetadataElement('table',eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
-		
-		var gridObj = $.pubGrid(metaEleId);
-		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
+		var metaEleId = _self.getTabContEleId('table',callParam.metaTabKey); 
 		
 		var items = colData.items;
 		
@@ -1888,7 +2031,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
 		}
 		
-		gridObj = $.pubGrid(metaEleId);
+		var gridObj = $.pubGrid(metaEleId);
 		
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
@@ -1930,7 +2073,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 						
 						var cacheData = gridObj.getSelectItem(['name']);
 						
-						_self._createScriptSql({
+						_ui.pluginProxy.createScriptSql({
 							gubunKey : key
 							,sqlGenType : sObj.mode
 							,objectType : 'table'
@@ -1966,187 +2109,24 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu,{
 		});
 	}
 	,_tableMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('table') + "column");
+			
+		var gridObj = $.pubGrid(this.getTabContEleId('table',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
 		}
 	}
-});
+})
+
 
 //view 정보 보기.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_view:function (resData ,reqParam){
-		var _self = this;
-		try{
-			var $$objectType = 'view';	
-			var len = resData.items?resData.items.length:0;
-    		
-			var itemArr = resData.items;
-			var item;
-			
-			var tableHint = {};
-			$.each(itemArr , function (_idx, _item){
-				var tblName =_item.name;
-				var colList = _item.colList; 
-				
-				var colArr = [];
-				$.each(colList , function (j , colItem){
-					colArr.push(colItem.name);
-				});
-				
-				tableHint[tblName] = {
-					columns:colArr
-					,text :tblName
-				};
-				
-				_self._setMetaCache($$objectType,tblName,  'column', {items:colList});
-				
-			})
-						
-			// 테이블 hint;
-			VARSQLHints.setTableInfo(tableHint);
-			
-			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'View', width:200, sort:true}
-					,{key :'remarks', label:'설명', sort:true}
-				]
-				,tbodyItem :itemArr
-				,bodyOptions :{
-					cellDblClick : function (rowItem){
-						var selKey =rowItem.keyItem.key;
-						
-						if(selKey == 'name' ){
-							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
-						}
-					}
-				}
-				,rowOptions : {
-					click : function (idx, item){
-						var sObj = $(this);
-		    			sObj.addClass('active');
-		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							if(key =='copy'){
-								gridObj.copyData();
-								return ; 
-							}
-							
-							var cacheData = _self._getMetaCache($$objectType, tmpName);
-							
-							_self._createScriptSql({
-								gubunKey : key
-								,sqlGenType : sObj.mode
-								,objectType : $$objectType
-								,objName :  _self.selectMetadata[$$objectType]
-								,item : {
-									items : cacheData.items
-								}
-							});
-						},
-						items: [
-							{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
-							,{key : "sql_create", "name": "sql생성" 
-								,subMenu: [
-									{ key : "selectStar","name": "select *" , mode: "selectStar"}
-									,{ key : "select","name": "select column" ,mode:"select"}
-								]
-							}
-						]
-					}
-				}
-			});
- 		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//view tab control
-	,_viewTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		
-		var $objType = 'view';
-		var tabObj = $.pubTab(metaTabId);
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if('column' == itemKey){
-					if(cacheData){
-						_self._viewColumn(cacheData, param, itemKey, false);
-						return ; 
-					}else{
-						param.objectName = objectName; 
-						param.cacheKey = itemKey;
-						_self._getMetadataInfo(param, function (resData, param){
-							_self._viewColumn(resData, param, itemKey, true);
-						})
-					}
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
-						return ; 
-					}else{
-						_self._createDDL({
-							objectType : $objType
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
-						});
-					}
-				}
-			}
-		}).itemClick();
-	}
+_ui.addODbServiceObjectMetadata('view', {
 	// view 메타 데이타 보기.
-	,_viewColumn :function (colData ,reqParam, eleName, reloadFlag){
+	_viewColumn :function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		var $objType = 'view';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
-		
-		var gridObj = $.pubGrid(metaEleId);
-		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
+		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
 		
 		var items = colData.items;
 		
@@ -2158,7 +2138,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
 		}
 		
-		gridObj = $.pubGrid(metaEleId);
+		var gridObj = $.pubGrid(metaEleId);
 		
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
@@ -2198,7 +2178,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 						
 						var cacheData = gridObj.getSelectItem(['name']);
 						
-						_self._createScriptSql({
+						_ui.pluginProxy.createScriptSql({
 							gubunKey : key
 							,sqlGenType : sObj.mode
 							,objectType : $objType
@@ -2219,7 +2199,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		});
 	}
 	,_viewMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('view') + "column");
+		var gridObj = $.pubGrid(this.getTabContEleId('view',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -2228,143 +2208,18 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 });
 
 // 프로시저 처리.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_procedure:function (resData ,reqParam){
-		var _self = this;
-		try{
-			var len = resData.items?resData.items.length:0;
-    		var $$objectType = 'procedure';
-    		
-			var itemArr = resData.items;
-			
-			$.each(itemArr , function (_idx, _item){
-				var _name =_item.name;
-				var colList = _item.colList; 
-				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
-			})
-			
-			var procedureObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'Procedure',width:200, sort:true}
-					,{key :'status', label:'상태'}
-					,{key :'remarks', label:'설명'}
-				]
-				,tbodyItem :itemArr
-				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			
-		    			sObj.addClass('active');
-		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							var cacheData = _self._getMetaCache($$objectType,tmpName);
-							
-							if(key =='copy'){
-								procedureObj.copyData();
-								return ; 
-							}
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
- 		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//procedure tab control
-	,_procedureTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'procedure';
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,width : 'auto'
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if('column' == itemKey){
-					if(cacheData){
-						_self._procedureColumn(cacheData, param, itemKey, false);
-						return ; 
-					}else{
-						param.objectName = objectName; 
-						param.cacheKey = itemKey;
-						_self._getMetadataInfo(param, function (resData, param){
-							_self._procedureColumn(resData, param, itemKey, true);
-						})
-					}
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
-						return ; 
-					}else{
-						_self._createDDL({
-							objectType : $objType
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
-						});
-					}
-				}
-			}
-		}).itemClick();
-	}
+_ui.addODbServiceObjectMetadata('procedure', {
 	//procedure 대한 메타 정보 보기 .
-	,_procedureColumn :function (colData ,reqParam, eleName, reloadFlag){
+	_procedureColumn :function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
  		
  		var $objType = 'procedure';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
+ 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
 		
 		var gridObj = $.pubGrid(metaEleId);
 		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
-		
 		var items = colData.items;
-		
-		gridObj = $.pubGrid(metaEleId);
 		
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
@@ -2401,7 +2256,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		});
 	}
 	,_procedureMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('procedure') + "column");
+		var gridObj = $.pubGrid(this.getTabContEleId('procedure',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -2410,146 +2265,18 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 })
 
 // function 정보 처리.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_function : function (resData ,reqParam){
-		var _self = this;
-		try{
-			var len = resData.items?resData.items.length:0;
-    		var $$objectType = 'function';
-    		
-			var itemArr = resData.items;
-			
-			$.each(itemArr , function (_idx, _item){
-				var _name =_item.name;
-				var colList = _item.colList; 
-				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
-			})
-		
-			var itemArr = resData.items;
-    				
-			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'Function',width:200, sort:true}
-					,{key :'status', label:'상태'}
-					,{key :'remarks', label:'설명'}
-				]
-				,tbodyItem :itemArr
-				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-						
-		    			sObj.addClass('active');
-		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							var cacheData = _self._getMetaCache($$objectType,tmpName);
-							
-							if(key =='copy'){
-								gridObj.copyData();
-								return ; 
-							}
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
- 		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//functio tab control
-	,_functionTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'function';
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if('column' == itemKey){
-					if(cacheData){
-						_self._functionColumn(cacheData, param, itemKey, false);
-						return ; 
-					}else{
-						
-						param.objectName = objectName; 
-						param.cacheKey = itemKey;
-						
-						_self._getMetadataInfo(param, function (resData, param){
-							_self._functionColumn(resData, param, itemKey, true);
-						})
-					}
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
-						return ; 
-					}else{
-						_self._createDDL({
-							objectType : $objType
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
-						});
-					}
-				}
-			}
-		}).itemClick();
-	}
-	//functio 대한 메타 정보 보기 .
-	,_functionColumn :function (colData ,reqParam, eleName, reloadFlag){
+_ui.addODbServiceObjectMetadata('function', {
+	//function 대한 메타 정보 보기 .
+	_functionColumn :function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		
  		var $objType = 'function';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
-		
-		var gridObj = $.pubGrid(metaEleId);
-		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
+ 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
 		
 		var items = colData.items;
 		
-		gridObj = $.pubGrid(metaEleId);
+		var gridObj = $.pubGrid(metaEleId);
 		
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
@@ -2586,7 +2313,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		});
 	}
 	,_functionMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('function') + "column");
+		var gridObj = $.pubGrid(this.getTabContEleId('function',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -2595,144 +2322,18 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 })
 
 // index 처리.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_index : function (resData ,reqParam){
-		var _self = this;
-		try{
-			var len = resData.items?resData.items.length:0;
-    		var $$objectType = 'index';
-    		
-			var itemArr = resData.items;
-			
-			$.each(itemArr , function (_idx, _item){
-				var _name =_item.name;
-				var colList = _item.colList; 
-				_self._setMetaCache($$objectType,_name, 'column', {items:colList});
-			})
-		
-			var itemArr = resData.items;
-    				
-			var indexObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'Index',width:200, sort:true}
-					,{key :'tblName', label:'테이블명', sort:true}
-					,{key :'type', label:'타입',sort:true}
-					,{key :'tableSpace', label:'Tablespace',sort:true}
-					,{key :'bufferPool', label:'버퍼풀',sort:true}
-					,{key :'status', label:'상태' ,sort:true}
-				]
-				,tbodyItem :itemArr
-				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			sObj.addClass('active');
-		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							var cacheData = _self._getMetaCache($$objectType,tmpName);
-							
-							if(key =='copy'){
-								indexObj.copyData();
-								return ; 
-							}
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
- 		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//index tab control
-	,_indexTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'index';
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "Column", key: "column"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if('column' == itemKey){
-					if(cacheData){
-						_self._indexColumn(cacheData, param, itemKey, false);
-						return ; 
-					}else{
-						_self._indexColumn(param, function (resData, param){
-							_self._functionColumn(resData, param, itemKey, true);
-						})
-					}
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
-						return ; 
-					}else{
-						_self._createDDL({
-							objectType : $objType
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
-						});
-					}
-				}
-			}
-		}).itemClick();
-	}
+_ui.addODbServiceObjectMetadata('index', {
 	// index column 정보.
-	,_indexColumn : function (colData ,reqParam, eleName, reloadFlag){
+	_indexColumn : function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		
  		var $objType = 'index';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
+ 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
 		
 		var gridObj = $.pubGrid(metaEleId);
 		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
-		
 		var items = colData.items;
-		
-		gridObj = $.pubGrid(metaEleId);
 		
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
@@ -2768,7 +2369,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		});
 	}
 	,_indexMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('index') + "column");
+		var gridObj = $.pubGrid(this.getTabContEleId('index',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -2777,116 +2378,9 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 })
 
 // trigger 처리.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_trigger : function (resData ,reqParam){
-		var _self = this;
-		try{
-			var len = resData.items?resData.items.length:0;
-    		var $$objectType = 'trigger';
-    		
-			var itemArr = resData.items;
-			
-			$.each(itemArr , function (_idx, _item){
-				var _name =_item.name;
-				var colList = _item.colList; 
-				_self._setMetaCache($$objectType,_name, {items:colList});
-			})
-		
-			var itemArr = resData.items;
-			
-			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'Trigger',width:200, sort:true}
-					,{key :'tblName', label:'테이블명'}
-					,{key :'eventType', label:'타입'}
-					,{key :'timing', label:'timing'}
-					,{key :'status', label:'상태'}
-					,{key :'created', label:'CREATED'}
-				]
-				,tbodyItem :itemArr
-				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			
-		    			sObj.addClass('active');
-		    			
-		    			_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							var cacheData = _self._getMetaCache($$objectType,tmpName);
-							
-							if(key =='copy'){
-								triggerGridObj.copyData();
-								return ; 
-							}
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
- 		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//trigger tab control
-	,_triggerTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'trigger';
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "DDL", key: "ddl"}
-			]
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-					,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-		
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if(cacheData){
-					_self.metadataDDLView($objType,itemKey, cacheData);
-					return ; 
-				}else{
-					_self._createDDL({
-						objectType : $objType
-						,objName :  objectName
-					}, function (data){
-						_self.metadataDDLView($objType,itemKey, data);
-					});
-				}
-			}
-		}).itemClick();
-	}
-	,_triggerMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('trigger') + "column");
+_ui.addODbServiceObjectMetadata('trigger', {
+	_triggerMetaResize : function (){
+		var gridObj = $.pubGrid(this.getTabContEleId('trigger',"column"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -2895,146 +2389,19 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 })
 
 // sequence 처리.
-_ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
-	_sequence : function (resData ,reqParam){
-		var _self = this;
-		try{
-			var len = resData.items?resData.items.length:0;
-			var $$objectType = 'sequence';
-			
-			var itemArr = resData.items;
-			
-			$.each(itemArr , function (_idx, _item){
-				var _name =_item.name;
-				var colList = []; 
-				
-				for(var key in _item){
-					colList.push({
-						'name' : convertUnderscoreCase(key)
-						,'val' : _item[key]
-					})
-				}
-				
-				_self._setMetaCache($$objectType,_name, 'info', {items:colList});
-			})
-			
-			var itemArr = resData.items;
-			
-			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
-				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
-				}
-				,tColItem : [
-					{key :'name', label:'Sequence',width:200, sort:true}
-					,{key :'status', label:'상태'}
-					,{key :'created', label:'생성일자'}
-					,{key :'lastDdlTime', label:'최종수정일'}
-					]
-				,tbodyItem :itemArr
-				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-						
-						sObj.addClass('active');
-						
-						_self._dbObjectMetadataList($.extend({},_self.options.param,{'objectType':$$objectType,'objectName':item.name}), '_'+$$objectType+'TabCtrl');
-					}
-					,contextMenu :{
-						beforeSelect :function (){
-							$(this).trigger('click');
-						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-							
-							var cacheData = _self._getMetaCache($$objectType,tmpName);
-							
-							if(key =='copy'){
-								triggerGridObj.copyData();
-								return ; 
-							}
-						},
-						items: [
-							{key : "copy" , "name": "복사"}
-						]
-					}
-				}
-			});
-		}catch(e){
-			VARSQL.log.info(e);
-		}
-	}
-	//sequence tab control
-	,_sequenceTabCtrl : function (metaTabId, param , refreshFlag){
-		var _self =this; 
-		var tabObj = $.pubTab(metaTabId);
-		var $objType = 'sequence';
-		
-		if(tabObj){
-			tabObj.itemClick();
-			return ;
-		}
-		
-		$.pubTab(metaTabId,{
-			items : [
-				{name: "info", key: "info"}
-				,{name: "DDL", key: "ddl"}
-			]
-			,height:20
-			,click : function (item){
-				var tabEle= $(this)
-				,objectName = _self.selectMetadata[$objType];
-				
-				var itemKey = item.key;
-				
-				var sEle = $(_self._getMetadataObjectEleId($objType)+' [data-meta-tab="'+itemKey+'"]');
-				
-				if(!sEle.hasClass('on')){
-					$(_self._getMetadataObjectEleId($objType)+' .on[data-meta-tab]').removeClass('on');
-					sEle.addClass('on');
-				}
-				
-				var cacheData = _self._getMetaCache($objType, objectName, itemKey);
-				
-				if('info' == itemKey){
-					_self._sequenceInfo(cacheData, param, itemKey, false);
-					return ; 
-				}else if('ddl' == itemKey){
-					if(cacheData){
-						_self.metadataDDLView($objType,itemKey, cacheData);
-						return ; 
-					}else{
-						_self._createDDL({
-							objectType : $objType
-							,objName :  objectName
-						}, function (data){
-							_self.metadataDDLView($objType,itemKey, data);
-						});
-					}
-				}
-			}
-		}).itemClick();
-	}
+_ui.addODbServiceObjectMetadata('sequence', {
 	// sequence 정보보기.
-	,_sequenceInfo : function (colData ,reqParam, eleName, reloadFlag){
+	_sequenceInfo : function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		
  		var $objType = 'sequence';
 		
-		var metaEleInfo = _self._getMetadataElement($objType,eleName);
-		
-		var metaEleId = metaEleInfo.eleId; 
-		
+ 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
+ 		
 		var gridObj = $.pubGrid(metaEleId);
-		
-		if(metaEleInfo.isCreate ===true){
-			if(gridObj) gridObj.destroy();
-		}
-		
+				
 		var items = colData.items;
-		
-		gridObj = $.pubGrid(metaEleId);
-		
+				
 		if(gridObj){
 			gridObj.setData(items,'reDraw');
 			return ;
@@ -3068,7 +2435,7 @@ _ui.utils.copy(_ui.dbSchemaObjectServiceMenu ,{
 		});
 	}
 	,_sequenceMetaResize : function (){
-		var gridObj = $.pubGrid(this._getMetadataObjectEleId('sequence') + "info");
+		var gridObj = $.pubGrid(this.getTabContEleId('sequence',"info"));
 		
 		if(gridObj){
 			gridObj.resizeDraw();
@@ -3133,7 +2500,7 @@ _ui.SQL = {
 					_self.sqlFileNameDialogEle.dialog( "close" );
 				}
 				,buttons: {
-					"저장":function (){
+					"Save":function (){
 						_self.sqlFileNameSave();						
 						_self.sqlFileNameDialogEle.dialog( "close" );
 					}
@@ -3215,7 +2582,6 @@ _ui.SQL = {
 			,width:'auto'
 			,itemMaxWidth: 100
 			,dropItemWidth : '100px'
-				
 			,titleIcon :{
 				right :{
 					html : '<i class="fa fa-remove"></i>'
@@ -3241,7 +2607,7 @@ _ui.SQL = {
 										_self.saveSqlFile(param ,'query_del');
 										dialogObj.dialog( "close" );
 									}
-									,"닫기":function (){
+									,"close":function (){
 										_self.deleteEditorInfo(item);
 										param.len =_self.sqlFileTabObj.getItemLength();
 										_self.saveSqlFile(param ,'delTab');
@@ -4057,6 +3423,7 @@ _ui.SQL = {
 		    		}
 		    		enableItem = enableItem ? enableItem : items[0];
 		    		_self.loadEditor(enableItem, false);
+		    		_self.setSqlEditorBtnEnable();
 		    	}else{
 		    		_self.setSqlEditorBtnDisable();
 		    	}
@@ -4883,6 +4250,220 @@ _ui.sqlDataArea =  {
 	}
 }
 
+
+//glossary component
+_ui.registerPlugin({
+	'glossary' : {
+		selector :'#pluginGlossary'
+		,gridObj : false
+		,init : function (){
+			var _self = this;
+			
+			_self.initEvt();
+			
+			_self.gridObj = $.pubGrid('#glossaryResultArea', {
+				asideOptions :{lineNumber : {enable : true	,width : 30}}
+				,tColItem : [
+					{ label: '용어', key: 'WORD',width:80 },
+					{ label: '영문명', key: 'WORD_EN' },
+					{ label: '약어', key: 'WORD_ABBR', width:45},
+					{ label: '설명', key: 'WORD_DESC',width:45},
+				]
+				,tbodyItem :[]
+				,bodyOptions : {
+					cellDblClick : function (cellInfo){
+						
+						var selKey =cellInfo.keyItem.key;
+						
+						if(selKey != 'WORD' && selKey !='WORD_DESC'){
+							
+							var variableText = $(_self.selector+' #glossaryConvertTxt').val();
+							
+							var val =cellInfo.item[selKey]; 
+							
+							val = val.split(' ').join('_');
+							
+							if($.trim(variableText)==''){
+								variableText = val;
+							}else{
+								variableText = variableText+'_'+val;
+							}
+							
+							$(_self.selector+' #glossaryConvertTxt').val(variableText);
+						}
+					}
+				}
+			});
+		}
+		,initEvt : function (){
+			var _self = this;
+			
+			// enter 검색.
+			$(_self.selector+' #glossarySearchTxt').on('keydown', function (e){
+				if (e.keyCode == '13') {
+					_self.search();
+				}
+			})
+			
+			// 검색
+			$(_self.selector+' .glossary-search-btn').on('click', function (e){
+				_self.search();
+			})
+			
+			// 변환
+			$(_self.selector+' .glossary-convert-camelcase').on('click', function (e){
+				$(_self.selector+' #glossaryConvertTxt').val(convertCamel($(_self.selector+' #glossaryConvertTxt').val()));
+			})
+			// 지우기
+			$(_self.selector+' .glossary-convert-clear').on('click', function (e){
+				$(_self.selector+' #glossaryConvertTxt').val('');
+			})
+		}
+		,search :  function (){
+			var _self = this;
+			var schVal = $(_self.selector+' #glossarySearchTxt').val();
+			
+			schVal = $.trim(schVal);
+			
+			if(schVal.length < 1){
+				return ; 
+			}
+			
+			var params ={
+				keyword : schVal
+			}
+			
+			VARSQL.req.ajax({      
+			    loadSelector : _self.selector
+			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
+			    ,data : params 
+			    ,success:function (res){
+			    	_self.gridObj.setData(res.items,'reDraw');
+				}
+			});
+		}
+		,template : function (){
+			return $('#glossaryComponentTemplate').html();
+		}
+		,resize : function (dimension){
+			dimension.height = dimension.height - $(this.selector+' .glossary-search-area-wrapper').height(); 
+			this.gridObj.resizeDraw(dimension);
+		}
+		,destroy: function (){
+			this.gridObj.destroy()
+		}
+	}
+})
+
+//history component
+_ui.registerPlugin({
+	'history' : {
+		selector :'#pluginHistory'
+		,gridObj :false
+		,pageNo :1
+		,scrollEndFlag : true
+		,init : function (){
+			var _self = this;
+			_self.initEvt();
+		}
+		,initEvt : function (){
+			var _self = this;
+			// enter 검색.
+			$(_self.selector+' #historySearchTxt').on('keydown', function (e){
+				if (e.keyCode == '13') {
+					_self.search();
+				}
+			})
+			// 검색
+			$(_self.selector+' .history-search-btn').on('click', function (e){
+				_self.search();
+			})
+			
+			_self.gridObj = $.pubGrid('#historyResultArea', {
+				asideOptions :{lineNumber : {enable : true	,width : 30}}
+				,tColItem : [
+					{ label: 'SQL', key: 'LOG_SQL'},
+					{ label: '시작시간', key: 'VIEW_STARTDT' },
+					{ label: '종료시간', key: 'VIEW_ENDDT', width:45},
+					{ label: '걸린시간', key: 'DELAY_TIME',width:45},
+				]
+				,tbodyItem :[]
+				,bodyOptions : {
+					cellDblClick : function (cellInfo){
+						
+						var selKey =cellInfo.keyItem.key;
+						
+						if(selKey == 'LOG_SQL'){
+							var val =cellInfo.item[selKey]; 
+							_ui.SQL.addSqlEditContent(val , false);
+						}
+					}
+				}
+				,scroll :{
+					vertical : {
+						onUpdate : function (item){	// 스크롤 업데이트. 
+							if(_self.scrollEndFlag !==true && item.barPosition > 80){
+								_self.pageNo = _self.pageNo+1;
+								_self.search('scroll');
+							}
+						}
+					}
+				}
+			});
+		}
+		,search :  function (mode){
+			var _self = this;
+			var schVal = $(_self.selector+' #historySearchTxt').val();
+			
+			schVal = $.trim(schVal);
+			
+			if(mode != 'scroll'){
+				_self.pageNo = 1;
+			}
+			
+			var params ={
+				pageNo: _self.pageNo
+				,countPerPage : _self.gridObj.getViewRow()
+				,'searchVal':schVal
+				,conuid : _g_options.param.conuid
+			}
+			
+			VARSQL.req.ajax({      
+			    loadSelector : _self.selector
+			    ,url:{type:VARSQL.uri.plugin, url:'/historySearch.varsql'}
+			    ,data : params 
+			    ,success:function (res){
+			    	
+			    	var items = res.items ||[]; 
+			    	
+			    	var itemLen =items.length; 
+			    	
+			    	if(_self.pageNo ==1){
+			    		_self.gridObj.setData(items);
+			    	}else{
+			    		_self.gridObj.addData(items);
+			    	}
+			    	
+			    	if(itemLen> 0){
+			    		_self.scrollEndFlag = false; 
+			    	}else{
+			    		_self.scrollEndFlag = true; 
+			    	}
+				}
+			});
+		}
+		,template : function (){
+			return $('#historyPluginAreaTemplate').html();
+		}
+		,resize : function (dimension){
+			dimension.height = dimension.height - $(this.selector+' .history-search-area-wrapper').height(); 
+			this.gridObj.resizeDraw(dimension);
+		}
+		,destroy: function (){
+		}
+	}
+})
+
 _ui.progress = {
 	start:function (divObj){
 		try{
@@ -4925,7 +4506,7 @@ _ui.text={
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
 			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden" class="pretty-view-area"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
@@ -4933,15 +4514,15 @@ _ui.text={
 				,width: 640
 				,modal: true
 				,buttons: {
-					"복사":function (){
-						$( this ).dialog( "close" );
+					'Copy':function (){
+						_this.modalEle.dialog( "close" );
 					}
-					,Cancel: function() {
-						$( this ).dialog( "close" );
+					,'Cancel': function() {
+						_this.modalEle.dialog( "close" );
 					}
 				}
 				,close: function() {
-				  $( this ).dialog( "close" );
+					_this.modalEle.dialog( "close" );
 				}
 			});
 			

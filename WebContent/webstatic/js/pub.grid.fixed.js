@@ -1036,7 +1036,9 @@ Plugin.prototype ={
 						colGroupHtm.push('<col style="width:'+item.width+'px;" />');
 					}
 					
-					strHtm.push('<td scope="col" class="pub-body-aside-td" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
+					item['_alignClass'] = item.align=='right' ? 'ar' : (item.align=='left'?'al':'ac');
+
+					strHtm.push('<td scope="col" class="pub-body-aside-td '+item['_alignClass']+'" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
 				}
 				strHtm.push('</tr>');
 				firstFlag = false; 
