@@ -98,6 +98,9 @@ _ui.pluginProxy = {
 	,createJavaProgram: function (scriptObj){
 		_ui.JAVA.createJavaProgram(scriptObj);
 	}
+	,getActiveObjectMenu : function (){
+		return _ui.dbSchemaObject.selectObjectMenu;
+	}
 }
 
 //컨텍스트 메뉴 sql 생성 부분 처리 .
@@ -862,8 +865,6 @@ _ui.layout = {
 			
 			layoutSaveTimer = setTimeout(function() {
 				_ui.preferences.save({layoutConfig : JSON.stringify( varsqlLayout.toConfig())});
-				//console.log( JSON.stringify( varsqlLayout.toConfig() ) );
-				//localStorage.setItem( 'varsqlLayoutInfo',  JSON.stringify( varsqlLayout.toConfig() ));
 			}, 300);
 		});
 		
@@ -948,13 +949,10 @@ _ui.registerPlugin = function ( regItem){
 // db schema object 처리.
 _ui.dbSchemaObject ={
 	initObjectMenu : false
-	,selectObjectMenu : 'table'
+	,selectObjectMenu : ''
 	,options :{
-		selector:'#dbSchemaList'
-		,objectTypeTabEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB)
+		objectTypeTabEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB)
 		,objectTypeTabContentEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB_CONT)
-		,schemaList:[]
-		,param:{}
 	}
 	,init :function (){
 		var _self = this;
@@ -995,13 +993,6 @@ _ui.dbSchemaObject ={
 			
 			$('#varsql_schema_name').html(_g_options.param.schema);
 			
-			var tmpParam = _self.options.param;
-			tmpParam.schema = _g_options.param.schema;
-			
-			var schemaInfo = {
-	    		param : tmpParam
-	    	};
-			
 			_g_cache.initSOMetaCacheObject();
 			
 			$.pubTab(_self.options.objectTypeTabEleId).itemClick(0);
@@ -1012,9 +1003,9 @@ _ui.dbSchemaObject ={
 	,_initObjectTypeTab : function (){
 		var _self = this; 
 		
-		_self._initObjectTabContentEle();
+		_self.createTemplate();
 		
-		$.pubTab(_self.options.objectTypeTabEleId ,{
+		var objectTypeTab = $.pubTab(_self.options.objectTypeTabEleId ,{
 			items : _g_options.serviceObject
 			,dropItemHeight : $(_self.options.objectTypeTabContentEleId).height() -10
 			,titleIcon :{
@@ -1031,7 +1022,6 @@ _ui.dbSchemaObject ={
 				var sObj = $(this);
 				
 				_self.selectObjectMenu = item.contentid;
-				
 				_self.getObjectTypeData(item);
 			}
 		});
@@ -1039,7 +1029,7 @@ _ui.dbSchemaObject ={
 	/**
 	 * init object tab content element
 	 */
-	,_initObjectTabContentEle : function (){
+	,createTemplate : function (){
 		var _self = this; 
 		
 		var data = _g_options.serviceObject;
@@ -1079,8 +1069,9 @@ _ui.dbSchemaObject ={
 			}
 		}
 		
+		_self.getObjectMetadata({'objectType':$contentId, 'visible' :true});
+
 		var objectInitFlag = _g_cache.isSOMetaInitCache($contentId);
-		
 		if(refresh !== true && objectInitFlag){
 			return ; 
 		}
@@ -1114,6 +1105,7 @@ _ui.dbSchemaObject ={
 	}
 	// resize object area
 	,resizeObjectArea : function (dimension){
+		
 		// tab resize
 		var tabObj =$.pubTab(this.options.objectTypeTabEleId);
 		if(tabObj){
@@ -1124,6 +1116,10 @@ _ui.dbSchemaObject ={
 		if(gridObj){
 			gridObj.resizeDraw(dimension);
 		}
+	}
+	// 데이타 내보내기
+	,_dataExport : function (exportObj){
+		_ui.SQL.exportDataDownload(exportObj);
 	}
 	,getCallMethod : function (methodName){
 		var callMethod  =_ui.extension[methodName];
@@ -1753,7 +1749,6 @@ _ui.addDbServiceObject('sequence',{
 _ui.dbObjectMetadata= {
 	initFlag : false
 	,metaInfoLoadComplete : true
-	,selectObjectMenu : 'table'
 	,selectMetadata : {} 
 	,metadataTabInfo:{}
 	,selector : {
@@ -1781,12 +1776,14 @@ _ui.dbObjectMetadata= {
 			}
 		})
 	}
-	// meta 영역 resize
-	,resizeMetaArea : function (){
-		var resizeMethod = this.getCallMethod('_'+this.selectObjectMenu +'MetaResize');
-		resizeMethod.call(this);
-	}
-	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
+	// 
+	/**
+     * @method getServiceObjectMetadata
+	 * @param objectType {String} - db service object
+	 * @param objectName {String} - object type name
+	 * @param visible {Boolean} - 보이기 여부. 
+     * @description 클릭시 텝메뉴에 해당하는 메뉴 그리기
+     */
 	,getServiceObjectMetadata : function(param,refresh){
 		
 		var _self = this
@@ -1805,9 +1802,14 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
-		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
-		
 		_ui.layout.setActiveTab('dbMetadata');
+		
+		if(param.visible===true){
+			_self.resizeMetaArea();
+			return ; 
+		}
+		
+		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
 		
 		var refreshFlag = true; 
 		if(!refresh){
@@ -1881,7 +1883,7 @@ _ui.dbObjectMetadata= {
 		_self.metaInfoLoadComplete = false;
 		
 		VARSQL.req.ajax({
-			loadSelector : _self.options.metadataTabContentEleId
+			loadSelector : _self.selector.contEleId
 			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
 			,data : _getParam(param)
 			,success:function (resData){
@@ -1933,6 +1935,7 @@ _ui.dbObjectMetadata= {
 		
 		VARSQL.req.ajax({
 			url:{type:VARSQL.uri.database, url:'/createDDL.varsql'}
+			,loadSelector : _self.selector.contEleId
 			,data:param
 			,success:function (resData){
 				
@@ -1950,10 +1953,6 @@ _ui.dbObjectMetadata= {
 				}
 			}
 		});
-	}
-	// 데이타 내보내기
-	,_dataExport : function (exportObj){
-		_ui.SQL.exportDataDownload(exportObj);
 	}
 	,getCallMethod : function (methodName){
 		var callMethod  =_ui.extension[methodName];
@@ -2011,6 +2010,11 @@ _ui.dbObjectMetadata= {
 		
 		$(_getSelector('objectMeta',_selectorType.PLUGIN, _selectorSuffix.CONT)).empty().html(metaStrHtm.join(''));
 	}
+	// meta 영역 resize
+	,resizeMetaArea : function (dimension){
+		var resizeMethod = this.getCallMethod('_'+_ui.pluginProxy.getActiveObjectMenu()+'MetaResize');
+		resizeMethod.call(this, dimension);
+	}
 }
 
 //table tab control
@@ -2028,7 +2032,7 @@ _ui.addODbServiceObjectMetadata('table', {
 			$.each(items , function (i , item){
 				colArr.push(item.name);
 			});
-			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
+			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
 		}
 		
 		var gridObj = $.pubGrid(metaEleId);
@@ -2109,7 +2113,6 @@ _ui.addODbServiceObjectMetadata('table', {
 		});
 	}
 	,_tableMetaResize : function (dimension){
-			
 		var gridObj = $.pubGrid(this.getTabContEleId('table',"column"));
 		
 		if(gridObj){
@@ -2135,7 +2138,7 @@ _ui.addODbServiceObjectMetadata('view', {
 			$.each(items , function (i , item){
 				colArr.push(item.name);
 			});
-			VARSQLHints.setTableColumns(reqParam.objectName ,colArr);
+			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
 		}
 		
 		var gridObj = $.pubGrid(metaEleId);
@@ -2198,11 +2201,11 @@ _ui.addODbServiceObjectMetadata('view', {
 			}
 		});
 	}
-	,_viewMetaResize : function (){
+	,_viewMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('view',"column"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 });
@@ -2255,11 +2258,11 @@ _ui.addODbServiceObjectMetadata('procedure', {
 			}
 		});
 	}
-	,_procedureMetaResize : function (){
+	,_procedureMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('procedure',"column"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 })
@@ -2312,11 +2315,11 @@ _ui.addODbServiceObjectMetadata('function', {
 			}
 		});
 	}
-	,_functionMetaResize : function (){
+	,_functionMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('function',"column"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 })
@@ -2368,22 +2371,22 @@ _ui.addODbServiceObjectMetadata('index', {
 			}
 		});
 	}
-	,_indexMetaResize : function (){
+	,_indexMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('index',"column"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 })
 
 // trigger 처리.
 _ui.addODbServiceObjectMetadata('trigger', {
-	_triggerMetaResize : function (){
+	_triggerMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('trigger',"column"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 })
@@ -2434,11 +2437,11 @@ _ui.addODbServiceObjectMetadata('sequence', {
 			}
 		});
 	}
-	,_sequenceMetaResize : function (){
+	,_sequenceMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('sequence',"info"));
 		
 		if(gridObj){
-			gridObj.resizeDraw();
+			gridObj.resizeDraw(dimension);
 		}
 	}
 })

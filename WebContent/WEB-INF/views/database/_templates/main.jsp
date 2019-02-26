@@ -22,7 +22,7 @@
 
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(screenConfigInfo)};
-	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
+	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid, schema:viewConnInfo.schema},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.screenSetting = ${database_screen_setting};
 	VARSQL.ui.create(opts);
 	
@@ -61,7 +61,7 @@ $(document).ready(function(){
 <%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div id="pluginObjectMeta" class="varsql-plugin-wrapper">
-	<div id="pluginObjectMetaContent"></div>	
+	<div id="pluginObjectMetaContent" class="wh100"></div>	
 </div>
 </script>
 

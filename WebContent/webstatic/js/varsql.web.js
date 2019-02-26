@@ -380,9 +380,13 @@ jQuery.fn.centerLoading = function(options) {
 	}
 	
 	var cssPosition = this.css('position'); 
+	
 	if (cssPosition != 'relative' &&  cssPosition != 'absolute') {
 		this.css('position','relative');
-		this.attr('var-loading-postion','relative');
+		var heightVal = this.css('height') ||'';
+		heightVal = heightVal.replace('px','');
+		var addCssKey = 'relative';
+		this.attr('var-css-key',addCssKey);
 	}
 	config.action == 'slide'?jQuery(this).slideDown('slow') : config.action == 'fade'?jQuery(this).fadeIn('slow'):jQuery(this).show();
 	
@@ -390,10 +394,12 @@ jQuery.fn.centerLoading = function(options) {
 };
 
 jQuery.fn.centerLoadingClose= function(options) {
+	
 	this.find('.centerLoading').remove();
-	if(this.attr('var-loading-postion')=='relative'){
+	var posVal = (this.attr('var-css-key')||''); 
+	if(posVal.indexOf('relative') > -1){
 		this.css('position','');
-		this.removeAttr('var-loading-postion');
+		this.removeAttr('var-css-key');
 	}
 };
 
