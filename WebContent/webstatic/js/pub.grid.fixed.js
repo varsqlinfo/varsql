@@ -305,6 +305,12 @@ function objectMerge() {
 	return dst;
 }
 
+_$doc.on('mouseup.pubgrid', function (){
+	for(var key in _datastore){
+		_datastore[key]._setMouseDownFlag(false);
+	}
+})
+
 Plugin.prototype ={
 	/**
      * @method _initialize
@@ -603,6 +609,9 @@ Plugin.prototype ={
 
 		var colWidth = Math.floor((gridElementWidth)/tci.length);
 		
+		colWidth = colWidth-10;
+		
+		
 		var viewAllLabel = calcFlag===false ? false : (opt.headerOptions.viewAllLabel ===true ?true :false); 
 
 		var strHtm = [], leftWidth=0, mainWidth=0;
@@ -610,13 +619,12 @@ Plugin.prototype ={
 			var tciItem = tci[j];
 
 			if(viewAllLabel){
-				tciItem.width = tciItem.label.length* 11; 
+				tciItem.width = tciItem.label.length * 11; 
 			}else{
 				tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
 			}
 			
 			tciItem.width = Math.max(tciItem.width, opt.headerOptions.colMinWidth);
-			
 			tciItem['_alignClass'] = tciItem.align=='right' ? 'ar' : (tciItem.align=='center'?'ac':'al');
 			opt.tColItem[j] = tciItem;
 
@@ -655,23 +663,25 @@ Plugin.prototype ={
 			,tciLen = tci.length;
 
 		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+opt.scroll.vertical.width;
-			
+					
 		if(opt.headerOptions.colWidthFixed !== true){
 			var resizeFlag = _totW  < _gw ? true : false;
-			var remainderWidth = (_gw -_totW)/tciLen
+			var remainderWidth = Math.floor((_gw -_totW)/tciLen)
 				, lastSpaceW = (_gw -_totW)-remainderWidth *tciLen;
+
+			lastSpaceW = lastSpaceW -2; // border 겹치는 현상때문에 -2 빼줌.
 
 			if(resizeFlag){
 				var leftGridWidth = 0, mainGridWidth=0;
 				for(var j=0; j<tciLen; j++){
-					
-					opt.tColItem[j].width += remainderWidth;
-					opt.tColItem[j].width = Math.max(opt.tColItem[j].width, opt.headerOptions.colMinWidth);
+					var item = opt.tColItem[j];
+					item.width += remainderWidth;
+					item.width = Math.max(item.width, opt.headerOptions.colMinWidth);
 
 					if(_this._isFixedPostion(j)){
-						leftGridWidth +=opt.tColItem[j].width;
+						leftGridWidth +=item.width;
 					}else{
-						mainGridWidth +=opt.tColItem[j].width;
+						mainGridWidth +=item.width;
 					}
 				}
 				opt.tColItem[tciLen-1].width +=lastSpaceW;
@@ -1012,9 +1022,7 @@ Plugin.prototype ={
 	,getTbodyAsideHtml : function (mode){
 		var _this =this; 
 
-		var firstFlag = true; 
-		
-		var strHtm = [], colGroupHtm=[];
+		var strHtm = [];
 		
 		var items =_this.config.aside.items;
 		
@@ -1032,20 +1040,20 @@ Plugin.prototype ={
 
 				for(var j=0 ;j < items.length; j++){
 					var item = items[j];
-					if(firstFlag){
-						colGroupHtm.push('<col style="width:'+item.width+'px;" />');
-					}
-					
 					item['_alignClass'] = item.align=='right' ? 'ar' : (item.align=='left'?'al':'ac');
 
 					strHtm.push('<td scope="col" class="pub-body-aside-td '+item['_alignClass']+'" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
 				}
 				strHtm.push('</tr>');
-				firstFlag = false; 
 			}
 		}
 		
 		if(mode=='init'){
+			var colGroupHtm=[];
+			for(var j=0 ;j < items.length; j++){
+				colGroupHtm.push('<col style="width:'+items[j].width+'px;" />');
+			}
+							
 			var bodyHtm = '';
 			bodyHtm += '<colgroup>'+colGroupHtm.join('')+'</colgroup>';
 			bodyHtm += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
@@ -1354,13 +1362,11 @@ Plugin.prototype ={
 		}
 
 		if(tbi.length < 1){
-			_this.element.body.find('.pubGrid-body-aside-cont').css({'visibility' :'hidden'})
-			_this.element.body.find('.pubGrid-body-cont-wrapper').hide();
+			_this.element.body.find('.pubGrid-body-container').hide();
 			_this.element.body.find('.pubGrid-empty-msg-area').show();
 			return ; 
 		}else{
-			_this.element.body.find('.pubGrid-body-aside-cont').css({'visibility' :'visible'});
-			_this.element.body.find('.pubGrid-body-cont-wrapper').show();
+			_this.element.body.find('.pubGrid-body-container').show();
 			_this.element.body.find('.pubGrid-empty-msg-area').hide();
 		}
 		
@@ -1703,7 +1709,7 @@ Plugin.prototype ={
 			}
 		}
 
-		if(type=='resize'){
+		if(type=='resize' ||type =='headerResize'){
 			_this.moveVerticalScroll({pos :topVal, drawFlag : false,resizeFlag:true});
 			_this.moveHorizontalScroll({pos :leftVal, drawFlag : false,resizeFlag:true});
 			_this.drawGrid();
@@ -2061,6 +2067,7 @@ Plugin.prototype ={
 	*/
 	,moveHorizontalScroll : function (moveObj){
 		var _this =this; 
+
 		if(!_this.config.scroll.hUse && moveObj.resizeFlag !== true){ return ; }
 
 		var leftVal = moveObj.pos;
@@ -2075,7 +2082,7 @@ Plugin.prototype ={
 				leftVal = _this.config.scroll.left+ ((leftVal=='L'?-1:1) *moveVal);
 			}
 		}
-
+		
 		this.moveHScrollPosition(leftVal, moveObj.drawFlag);
 	}
 	/**
@@ -2735,6 +2742,13 @@ Plugin.prototype ={
 				_this.gridKeyCtrl(e, evtKey);
 			}
 		});
+	}
+	/**
+     * @method _setMouseDownFlag
+     * @description mousedown flag 처리.
+     */
+	,_setMouseDownFlag :function(flag){
+		this.config.select.isMouseDown = flag;
 	}
 	/**
      * @method gridKeyCtrl
@@ -3453,7 +3467,7 @@ Plugin.prototype ={
 		return tbi; 
 	}
 	/**
-     * @method colResize
+     * @method _headerResize
 	 * @param  flag {Boolean} resize 여부
      * @description header resize 설정
      */
@@ -3479,7 +3493,7 @@ Plugin.prototype ={
 				_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
 			}
 			_this.drag.gridBodyW = _this.config.body.width - _this.drag.colW;
-			return 
+			return ; 
 		}
 
 		if(flag===true){
@@ -3602,10 +3616,7 @@ Plugin.prototype ={
 
 		}else{
 			var w = drag.totColW + (ox - drag.pageX);
-
-			if(w > _this.options.headerOptions.colMinWidth){
-				drag.ele.css('left',w);
-			}
+			drag.ele.css('left', w > _this.options.headerOptions.colMinWidth? w : _this.options.headerOptions.colMinWidth);	
 		}
 	}
 	/**

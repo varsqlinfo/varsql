@@ -30,7 +30,7 @@
 </div>
 
 <div id="confirmTemplateTemplate" style="display:none;overflow: hidden;" title="Confirm">
-	<div style="margin: 0px -10px 0px -10px;">
+	<div>
 		<div>저장하고 닫으시겠습니까?</div>
 	</div>
 </div>

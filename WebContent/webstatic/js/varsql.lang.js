@@ -13,6 +13,11 @@ function _langInfo (key, lang){
 		,'varsql.0003' : '추가할 그룹정보를 선택해주세요.'
 		,'varsql.0004' : '삭제할 그룹정보를 선택해주세요.'
 		,'varsql.0005' : '저장하지않은 파일이 존재 합니다.\n페이지를 나가시겠습니까?'
+		,'btn.ok' : 'Ok'
+		,'btn.cancle' : 'Cancle'
+		,'btn.close' : 'Close'
+		,'btn.copy' : 'Copy'
+		,'btn.save' : 'Save'
 	} 
 	
 	return _lang[key]||lang||''; 

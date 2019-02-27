@@ -994,6 +994,7 @@ _ui.dbSchemaObject ={
 			$('#varsql_schema_name').html(_g_options.param.schema);
 			
 			_g_cache.initSOMetaCacheObject();
+			_self.selectObjectMenu = '';
 			
 			$.pubTab(_self.options.objectTypeTabEleId).itemClick(0);
 			
@@ -1011,6 +1012,8 @@ _ui.dbSchemaObject ={
 			,titleIcon :{
 				left :{
 					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					,visible : false
+					,overview : false
 					,click : function (item, idx){
 						if(confirm('새로고침 하시겠습니까?')){
 							_self.getObjectTypeData(item, true);
@@ -1087,6 +1090,7 @@ _ui.dbSchemaObject ={
 			,success:function (resData){
 				_g_cache.setSOMetaInitFlag($contentId, true);
 				callMethod.call(_self,resData);
+				_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
 			}
 		});
 		
@@ -1809,16 +1813,8 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
-		_self.selectMetadata[objType] = objName; // 선택한 오브젝트 캐쉬
+		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
 		
-		var refreshFlag = true; 
-		if(!refresh){
-			var cacheData = _g_cache.getSOMetaCache(objType,objName);
-			if(cacheData){
-				refreshFlag = false; 
-			}
-		}
-		 
 		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]'; 
 		var metaTabObj = $.pubTab(metaTabEleId);
 		
@@ -1846,9 +1842,14 @@ _ui.dbObjectMetadata= {
 						sEle.addClass('on');
 					}
 					
-					var cacheData = _g_cache.getSOMetaCache(objType, objectName, metaTabKey);
+					var cacheData;
+					if(objectName !=''){
+						cacheData = _g_cache.getSOMetaCache(objType, objectName, metaTabKey);
+					}else{
+						cacheData = {items:[]};
+					}
 					
-					 if('ddl' == metaTabKey){
+					if('ddl' == metaTabKey){
 						if(cacheData){
 							_self.metadataDDLView(objType, metaTabKey, cacheData);
 							return ; 
@@ -2382,7 +2383,50 @@ _ui.addODbServiceObjectMetadata('index', {
 
 // trigger 처리.
 _ui.addODbServiceObjectMetadata('trigger', {
-	_triggerMetaResize : function (dimension){
+	_triggerInfo : function (colData ,callParam, eleName, reloadFlag){
+		var _self = this;
+		
+ 		var $objType = 'trigger';
+		
+ 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey); 
+ 		
+		var gridObj = $.pubGrid(metaEleId);
+				
+		var items = colData.items;
+				
+		if(gridObj){
+			gridObj.setData(items,'reDraw');
+			return ;
+		}
+		
+		gridObj = $.pubGrid(metaEleId, {
+			headerOptions : {redraw : false}
+			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,tColItem : [
+				{ label: 'Name', key: 'name'},
+				{ label: 'Value', key: 'val',width:80 },
+			]
+			,tbodyItem :items
+			,rowOptions :{
+				contextMenu : {
+					beforeSelect :function (){
+						$(this).trigger('click');
+					}
+					,callback: function(key,sObj) {
+						
+						if(key =='copy'){
+							gridObj.copyData();
+							return ; 
+						}
+					},
+					items: [
+						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+					]
+				}
+			}
+		});
+	}
+	,_triggerMetaResize : function (dimension){
 		var gridObj = $.pubGrid(this.getTabContEleId('trigger',"column"));
 		
 		if(gridObj){
@@ -2603,20 +2647,20 @@ _ui.SQL = {
 								,modal: true
 								,autoOpen:true
 								,buttons: {
-									"저장 후 닫기":function (){
+									"Save and close":function (){
 										param.sql = editorObj.editor.getValue();
 										_self.deleteEditorInfo(item);
 										param.len =_self.sqlFileTabObj.getItemLength();
 										_self.saveSqlFile(param ,'query_del');
 										dialogObj.dialog( "close" );
 									}
-									,"close":function (){
+									,"Close":function (){
 										_self.deleteEditorInfo(item);
 										param.len =_self.sqlFileTabObj.getItemLength();
 										_self.saveSqlFile(param ,'delTab');
 										dialogObj.dialog( "close" );
 									}
-									,"취소": function() {
+									,"Cancle": function() {
 										dialogObj.dialog( "close" );
 									}
 								}
@@ -3355,7 +3399,7 @@ _ui.SQL = {
 				,width: 640
 				,modal: true
 				,buttons: {
-					"보내기":function (){
+					"Send":function (){
 						var recvEle = $('.recv_id_item[_recvid]');
 						
 						if(recvEle.length < 1) {
@@ -3855,7 +3899,7 @@ _ui.SQL = {
 			,width: 640
 			,modal: true
 			,buttons: {
-				"내보내기":function (){
+				"Export":function (){
 					if(!confirm('내보내기 하시겠습니까?')) return ; 
 
 					var params =VARSQL.util.objectMerge ({}, _g_options.param,{

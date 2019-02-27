@@ -30,13 +30,13 @@
 			}
 			,titleIcon :{
 				left :{
-					overView : true		// mouseover icon view  여부
+					overview : true		// mouseover icon view  여부
 					,visible :true		// 기본 보이기 여부.
 					,html : ''				// 활성시 추가할 html
 					,click: false			// 클릭 이벤트.
 				}
 				,right : {
-					overView : true		// mouseover icon view  여부
+					overview : true		// mouseover icon view  여부
 					,visible :true
 					,html : ''				// 활성시 추가할 html
 					,click: false			// 클릭 이벤트.
@@ -130,11 +130,11 @@
 
 			if(titleIcon){
 				if(titleIcon.left && titleIcon.left.html != ''){
-					iconInfo.left.html =  '<span class="pubTab-icon-area '+(titleIcon.left.visible === false ? 'hide' : '')+' '+(titleIcon.left.overView === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+titleIcon.left.html+'</span></span>';
+					iconInfo.left.html =  '<span class="pubTab-icon-area '+(titleIcon.left.visible === false ? 'visible-hide' : '')+' '+(titleIcon.left.overview === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+titleIcon.left.html+'</span></span>';
 				}
 				
 				if(titleIcon.right && titleIcon.right.html != ''){
-					iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.visible === false ? 'hide' : '')+' '+(titleIcon.right.overView === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
+					iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.visible === false ? 'hide' : '')+' '+(titleIcon.right.overview === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
 				}
 			}
 
