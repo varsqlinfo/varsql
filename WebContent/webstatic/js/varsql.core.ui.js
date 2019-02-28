@@ -779,7 +779,12 @@ _ui.layout = {
 			
 			if(component.tab.isActive){
 				componentInfo.initFlag = true;
-				initActiveComponentTab[componentName] = componentInfo;
+				
+				if(!initActiveComponentTab[componentName]){
+					initActiveComponentTab[componentName] = [];
+				}
+				
+				initActiveComponentTab[componentName].push(componentInfo)
 			}
 		});
 		
@@ -812,18 +817,7 @@ _ui.layout = {
 		    	var componentInfo = contentItem.config.componentState;
 		    	
 		    	if(componentInfo.isComponentInit ===true && componentInfo.initFlag !== true){
-			    	if(componentName =='pluginComponent'){
-			    		_self.initPluginComponent(componentInfo);
-			    	}else if(componentName =='sqlEditorComponent'){
-			    		componentInfo.initFlag = true;
-						_ui.SQL.init();
-					}else if(componentName =='dbObjectComponent'){
-						componentInfo.initFlag = true; 
-						_ui.dbSchemaObject.init();
-					}else if(componentName =='sqlDataComponent'){
-						componentInfo.initFlag = true;
-						_ui.sqlDataArea.init();
-					}
+			    	_self.initComponent(componentName, componentInfo);
 		    	}
 		    });
 		});
@@ -831,18 +825,10 @@ _ui.layout = {
 		varsqlLayout.init();
 		
 		for(var componentName in initActiveComponentTab){
-			var componentInfo = initActiveComponentTab[componentName];
+			var componentInfoArr = initActiveComponentTab[componentName];
 			
-			if(componentName =='pluginComponent'){
-				_self.initPluginComponent(componentInfo);
-			}else if(componentName =='sqlEditorComponent'){
-				_ui.SQL.init();
-			}else if(componentName =='dbObjectComponent'){
-				_ui.dbSchemaObject.init();
-			}else if(componentName =='sqlDataComponent'){
-				_ui.sqlDataArea.init();
-			}else if(componentName =='dbMetadataComponent'){
-				_ui.dbObjectMetadata.init();
+			for(var i =0 ;i <componentInfoArr.length; i++){
+				_self.initComponent(componentName, componentInfoArr[i]);
 			}
 		}
 		
@@ -869,6 +855,22 @@ _ui.layout = {
 		});
 		
 		_self.mainObj = varsqlLayout;
+	}
+	,initComponent : function (componentName, componentInfo){
+		var _self = this; 
+		
+		componentInfo.initFlag = true;
+		if(componentName =='pluginComponent'){
+			_self.initPluginComponent(componentInfo);
+		}else if(componentName =='sqlEditorComponent'){
+			_ui.SQL.init();
+		}else if(componentName =='dbObjectComponent'){
+			_ui.dbSchemaObject.init();
+		}else if(componentName =='sqlDataComponent'){
+			_ui.sqlDataArea.init();
+		}else if(componentName =='dbMetadataComponent'){
+			_ui.dbObjectMetadata.init();
+		}
 	}
 	// tab active
 	,setActiveTab : function (tabKey){
@@ -3973,9 +3975,8 @@ _ui.sqlDataArea =  {
 	,initDataGridContextFlag : false // data grid context 초기화 여부
 	,options :{
 		dataGridSelector:'#dataGridArea'
-		,dataColumnTypeSelector:'#dataColumnTypeArea'
-		,dataGridSelectorWrap:'#dataGridAreaWrap'
 		,resultMsgAreaWrap:'#resultMsgAreaWrap'
+		,dataGridSelectorWrap : '#dataGridAreaWrap'
 		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
 		,active: null
 		,delay: 0
@@ -4005,45 +4006,67 @@ _ui.sqlDataArea =  {
 			$(_self.options.dataGridResultTabWrap+' [tab_gubun]').removeClass('on');
 			sObj.addClass('on');
 			
-			// data grid araea
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun]').removeClass('tab-on');
-			$(_self.options.dataGridSelectorWrap +' [tab_gubun='+tab_gubun+']').addClass('tab-on');
-			
+			if(tab_gubun =='msg'){
+				// data grid araea
+				$(_self.options.dataGridSelectorWrap +' [tab_gubun="result"]').removeClass('tab-on');
+				$(_self.options.dataGridSelectorWrap +' [tab_gubun="msg"]').addClass('tab-on');
+			}else{
+				$(_self.options.dataGridSelectorWrap +' [tab_gubun="result"]').addClass('tab-on');
+				$(_self.options.dataGridSelectorWrap +' [tab_gubun="msg"]').removeClass('tab-on');
+				
+				$(_self.getSqlResultSelector('active')+' .sql-editor-result-grid.on').removeClass('on')
+				$(_self.getSqlResultSelector('active',tab_gubun)).addClass('on');
+			}
 		});
 	}
 	// init grid selector 
 	,initGridSelector : function (){
-		//this.setGridSelector({SQL_ID : 'empty'});
-		$('.sql-data-grid-column-item[data-grid-column-id="empty]').empty().addClass('active');
-		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="empty"]';
-		
-		$('.sql-data-grid-item[data-result-grid-id="empty"]').empty().addClass('active');
-		this.currnetDataGridSelector = '.sql-data-grid-item[data-result-grid-id="empty"]';
-		
+		this.setGridSelector({SQL_ID : 'empty'});
 	}
 	// add data grid element
 	,addDataGridEle : function(item){
-		$(this.options.dataGridSelector).append('<div class="sql-data-grid-item" data-result-grid-id="'+item.SQL_ID+'"></div>');
-		$(this.options.dataColumnTypeSelector).append('<div class="sql-data-grid-column-item" data-grid-column-id="'+item.SQL_ID+'"></div>');
-		this.setGridSelector(item);
+		var addTemplateHtml = '<div class="sql-editor-result active" data-sql-result-id="'+item.SQL_ID+'"><div class="sql-editor-result-grid on" data-grid-type="result"></div><div class="sql-editor-result-grid" data-grid-type="columnType"></div></div>';
+		$(this.options.dataGridSelector).append(addTemplateHtml);
+		//this.setGridSelector(item);
 	}
 	//remove data grid element
 	,removeDataGridEle : function(item){
-		$(this.options.dataGridSelector).find('.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]').remove();
-		$(this.options.dataColumnTypeSelector).find('.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]').remove();
+		$(this.options.dataGridSelector).find(this.getSqlResultSelector(item)).remove();
+		
+		// result grid
+		var sqlResultObj = $.pubGrid(this.getSqlResultSelector(item , 'result'));
+		if(sqlResultObj) sqlResultObj.destroy();
+		
+		//grid column
+		var sqlColmnuTypeObj = $.pubGrid(this.getSqlResultSelector(item , 'columnType'));
+		if(sqlColmnuTypeObj) sqlColmnuTypeObj.destroy();
+		
 	}
 	,setGridSelector :  function (item){
 		// grid
-		this.currnetDataGridSelector = '.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]';
-		$('.sql-data-grid-item[data-result-grid-id].active').removeClass('active');
-		$('.sql-data-grid-item[data-result-grid-id="'+item.SQL_ID+'"]').addClass('active');
-		
+		this.currnetDataGridSelector = this.getSqlResultSelector(item , 'result');
 		//grid column
-		this.currnetDataGridColumnSelector = '.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]';
-		$('.sql-data-grid-column-item[data-grid-column-id].active').removeClass('active');
-		$('.sql-data-grid-column-item[data-grid-column-id="'+item.SQL_ID+'"]').addClass('active');
+		this.currnetDataGridColumnSelector = this.getSqlResultSelector(item , 'columnType');
+		
+		$('.sql-editor-result[data-sql-result-id].active').removeClass('active');
+		$('.sql-editor-result[data-sql-result-id="'+item.SQL_ID+'"]').addClass('active');
 		
 		this.resize(this.resizeDimension);
+	}
+	// sql result select
+	,getSqlResultSelector : function (item, type){
+		var sqlResultSelector;
+		if(item =='active'){
+			sqlResultSelector = '.sql-editor-result[data-sql-result-id].active';
+		}else{
+			sqlResultSelector = '.sql-editor-result[data-sql-result-id="'+item.SQL_ID+'"]';
+		}
+		
+		if(type){
+			return sqlResultSelector + ' [data-grid-type="'+type+'"]';
+		}
+		
+		return sqlResultSelector;
 	}
 	// 결과 보기.
 	,viewResult : function (resultData){

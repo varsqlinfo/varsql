@@ -763,6 +763,8 @@ Plugin.prototype ={
 		var data = pdata;
 		var pageInfo = opt.page;
 
+		mode = mode||'reDraw'; 
+
 		var gridMode = mode.split('_')[0];
 
 		gridMode = gridMode||'reDraw';

@@ -66,7 +66,7 @@ $(document).ready(function(){
 </script>
 
 <%--sql editor component template --%>
-<scrip1t id="sqlEditorComponentTemplate" type="text/varsql-template">
+<script id="sqlEditorComponentTemplate" type="text/varsql-template">
 <div id="pluginSqlEditor" class="varsql-plugin-wrapper">
 	<div class="sql-editor-toolbar">
 		<ul>
@@ -209,10 +209,10 @@ $(document).ready(function(){
 	
 	<div id="dataGridAreaWrap" class="sql-result-tab-content">
 		<div id="dataGridArea" class="varsql-tab-content tab-on" tab_gubun="result">
-			<div class="sql-data-grid-item" data-result-grid-id="empty"></div>
-		</div>
-		<div id="dataColumnTypeArea" class="varsql-tab-content" tab_gubun="columnType">
-			<div class="sql-data-grid-column-item" data-grid-column-id="empty"></div>
+			<div class="sql-editor-result active" data-sql-result-id="empty">
+				<div class="sql-editor-result-grid on" data-grid-type="result"></div>
+				<div class="sql-editor-result-grid" data-grid-type="columnType"></div>
+			</div>
 		</div>
 		<div id="resultMsgAreaWrap"  class="varsql-tab-content user-select-on varsql-log-area" tab_gubun="msg"></div>		
 	</div>

@@ -35,19 +35,25 @@ li{
     height: 100%;
 }
 
-.frame-wh100{
-	width:100%;height:100%;border:0px;
-}
-
-.absolute-wh100{
+.wh100-absolute{
 	position:absolute;
 	width:100%;height:100%;
 }
 
-.relative-wh100{
+.wh100-relative{
 	position:relative;
 	width:100%;height:100%;
 }
+
+.frame-wh100{
+    width:100%;
+    height:100%;
+    border:0px;
+}
+
+
+
+
 
 .float-right{
     float: right;
@@ -103,7 +109,6 @@ li{
 
 .error{
 	color: red;
-	font-weight: bold;
 }
 
 table>tbody>tr.error-row>td, table>tbody>tr.error-row>th {
