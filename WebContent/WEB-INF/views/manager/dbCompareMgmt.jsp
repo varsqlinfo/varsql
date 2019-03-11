@@ -280,11 +280,11 @@ VarsqlAPP.vueServiceBean( {
 			
 			var diffItem = _self.diffItem;
 			if(diffItem.source ==''){
-				VARSQLUI.toast.open('타켓을 선택하세요.');
+				VARSQLUI.toast.open('대상을 선택하세요.');
 				return ;
 			}
 			if(diffItem.target ==''){
-				VARSQLUI.toast.open('대상을 선택하세요.');
+				VARSQLUI.toast.open('타켓을 선택하세요.');
 				return ;
 			}
 			

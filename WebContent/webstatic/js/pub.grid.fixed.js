@@ -1526,8 +1526,8 @@ Plugin.prototype ={
 		}
 
 		this.element.pubGrid.addClass(pubGridClass)
-		this.element.header.find('.pubGrid-header-aside-cont').css({'line-height': header_height+'px' , 'height' : header_height+'px'})
-		this.element.header.find('.aside-label-wrapper').css('height',header_height-1+'px');
+		this.element.header.find('.pubGrid-header-aside-cont').css({'line-height': (header_height-1)+'px' , 'height' : (header_height-1)+'px'})
+		//this.element.header.find('.aside-label-wrapper').css('height',header_height-1+'px'); // 20190311
 
 		$('#'+this.prefix+'_vscroll .pubGrid-scroll-top-area').css({'line-height': header_height+'px' , 'height' : header_height+'px'});
 			
@@ -1605,8 +1605,6 @@ Plugin.prototype ={
 				_this.config.gridWidth.main = _currGridMain +(_reiszeW);
 			}
 		}
-
-
 
 		_this.config.gridWidth.total = _this.config.gridWidth.aside+_this.config.gridWidth.left+ _this.config.gridWidth.main;
 
@@ -1739,7 +1737,6 @@ Plugin.prototype ={
 	,_setPanelElementWidth : function (){
 		var _this = this; 
 
-		console.log('_setPanelElementWidth', _this.options.borderSpace);
 		// header grid set width
 		_this.element.header.find('.pubGrid-header-aside-cont').css('width',(_this.config.gridWidth.aside)+'px');
 		_this.element.header.find('.pubGrid-header-left-cont').css('width',(_this.config.gridWidth.left)+'px');
