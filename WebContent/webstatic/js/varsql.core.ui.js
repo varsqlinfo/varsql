@@ -558,7 +558,6 @@ _ui.preferences= {
 // layoutObject
 _ui.layout = {
 	layoutObj :false
-	,contTabHeight : 25
 	,mainObj :{} //main layout 처리.
 	,init : function(_opts){
 		var _self = this; 
@@ -674,10 +673,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				var containerW =container.width-2
-					, containerH = container.height-50; 
-				
-				_ui.dbSchemaObject.resizeObjectArea({width : containerW,height : containerH});
+				_ui.dbSchemaObject.resizeObjectArea({width : container.width,height : container.height});
 				
 			});
 		});
@@ -693,10 +689,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				var containerW =container.width-2 
-					,containerH = container.height-_self.contTabHeight; 
-				
-				_ui.dbObjectMetadata.resizeMetaArea({width : containerW,height : containerH});
+				_ui.dbObjectMetadata.resizeMetaArea({width : container.width,height : container.height});
 			})
 		});
 
@@ -711,10 +704,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				var containerW =container.width-2
-				, containerH = container.height-60; 
-				
-				_ui.SQL.refresh({width : containerW,height : containerH});
+				_ui.SQL.resize({width : container.width,height : container.height});
 			});
 		});
 
@@ -729,11 +719,8 @@ _ui.layout = {
 					initResize = false; 
 					return ; 
 				}
-				var containerW =container.width-2
-					,containerH = container.height-_self.contTabHeight; 
-				
 				_ui.sqlDataArea.resize({
-					width : containerW , height : containerH
+					width : container.width , height : container.height
 				});
 			})
 		});
@@ -1111,6 +1098,11 @@ _ui.dbSchemaObject ={
 	}
 	// resize object area
 	,resizeObjectArea : function (dimension){
+		
+		if(dimension){
+			dimension.width = dimension.width-2;
+			dimension.height = dimension.height - 50; // schema area +  tab area
+		}
 		
 		// tab resize
 		var tabObj =$.pubTab(this.options.objectTypeTabEleId);
@@ -2015,6 +2007,12 @@ _ui.dbObjectMetadata= {
 	}
 	// meta 영역 resize
 	,resizeMetaArea : function (dimension){
+		
+		if(dimension){
+			dimension.width =dimension.width-2 
+			dimension.height = dimension.height-25; // tab height
+		}
+		
 		var resizeMethod = this.getCallMethod('_'+_ui.pluginProxy.getActiveObjectMenu()+'MetaResize');
 		resizeMethod.call(this, dimension);
 	}
@@ -2695,7 +2693,12 @@ _ui.SQL = {
 		
 		_self.sqlEditorEle = $(_self.sqlEditorSelector);
 	}
-	,refresh : function (dimension){
+	,resize : function (dimension){
+		if(dimension){
+			dimension.width =dimension.width-2;
+			dimension.height = dimension.height-60; // editor button area  +  editor sql tab area
+		}
+		
 		var _self = this;
 
 		var editorObj = _self.getSqlEditorObj();
@@ -4302,9 +4305,14 @@ _ui.sqlDataArea =  {
 		return _self.resultMsgAreaObj; 
 	}
 	,resize : function (dimension){
+		
 		if(!dimension.width){
 			return ; 
 		}
+		
+		dimension.width =dimension.width-2
+		dimension.height = dimension.height-25; // tab area height;1 
+
 		this.resizeDimension = dimension;
 		try{
 			$.pubGrid(this.currnetDataGridSelector).resizeDraw(dimension);

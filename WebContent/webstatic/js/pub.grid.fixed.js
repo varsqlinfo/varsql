@@ -16,6 +16,7 @@ var _initialized = false
 ,_datastore = {}
 ,_defaults = {
 	drag:false
+	,borderSpace : 2 // width board space
 	,rowOptions:{
 		height: 22	// cell 높이
 		,click : false //row(tr) click event
@@ -610,8 +611,7 @@ Plugin.prototype ={
 		var colWidth = Math.floor((gridElementWidth)/tci.length);
 		
 		colWidth = colWidth-10;
-		
-		
+				
 		var viewAllLabel = calcFlag===false ? false : (opt.headerOptions.viewAllLabel ===true ?true :false); 
 
 		var strHtm = [], leftWidth=0, mainWidth=0;
@@ -669,7 +669,7 @@ Plugin.prototype ={
 			var remainderWidth = Math.floor((_gw -_totW)/tciLen)
 				, lastSpaceW = (_gw -_totW)-remainderWidth *tciLen;
 
-			lastSpaceW = lastSpaceW -2; // border 겹치는 현상때문에 -2 빼줌.
+			lastSpaceW = lastSpaceW - _this.options.borderSpace; // border 겹치는 현상때문에 -2 빼줌.
 
 			if(resizeFlag){
 				var leftGridWidth = 0, mainGridWidth=0;
@@ -1555,12 +1555,15 @@ Plugin.prototype ={
 	, calcDimension : function (type, opt){
 
 		var _this = this; 
-				
+		var dimension;
 		if(type =='headerResize'){
-			opt = $.extend(true, {width : _this.config.body.width, height : _this.config.body.height},opt);
+			dimension = {width : _this.config.body.width, height : _this.config.body.height}; 
 		}else{
-			opt = $.extend(true, {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()},opt);
+			dimension = {width : _this.gridElement.innerWidth(), height : _this.gridElement.parent().height()};
 		}
+		
+		opt = $.extend(true, dimension ,opt);
+
 		if(type =='init'  ||  type =='resize'){
 			_this.element.pubGrid.css('height',opt.height+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
@@ -1576,11 +1579,10 @@ Plugin.prototype ={
 					_overW = 0; 
 				}
 
-				//console.log(_totW ,_overW)
 				
 				var _reiszeW = (opt.width+_overW-_this.options.scroll.vertical.width) -(_totW); 
 				var _currGridMain = _this.config.gridWidth.main;
-				var _addTotW =0, _addW = 0 ; 
+				var _addW = 0 ; 
 				_overW = _overW > 0 ? _overW : 0;
 
 				var colItems = _this.options.tColItem;
@@ -1588,18 +1590,23 @@ Plugin.prototype ={
 				for(var i=0 ,colLen  = colItems.length; i<colLen; i++){
 					var colItem = colItems[i]; 
 					_addW = (_reiszeW*(colItem.width/_currGridMain*100)/100);
-					var colResizeW = colItem.width + _addW;
-					_addTotW += _addW;
 					
-					colItem.width = colResizeW;
-				
-					$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px');
-					$('#'+_this.prefix+'colbody'+i).css('width',colResizeW+'px');
+					var colResizeW = colItem.width = colItem.width + _addW;
+
+					if(i == colLen-1){
+						$('#'+_this.prefix+'colHeader'+i).css('width', (colResizeW-2) +'px');
+						$('#'+_this.prefix+'colbody'+i).css('width', (colResizeW-2) +'px');
+					}else{
+						$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px');
+						$('#'+_this.prefix+'colbody'+i).css('width',colResizeW +'px');
+					}				
 				}
 
 				_this.config.gridWidth.main = _currGridMain +(_reiszeW);
 			}
 		}
+
+
 
 		_this.config.gridWidth.total = _this.config.gridWidth.aside+_this.config.gridWidth.left+ _this.config.gridWidth.main;
 
@@ -1727,19 +1734,21 @@ Plugin.prototype ={
 	}
 	/**
      * @method _setPanelElementWidth
-     * @description panel 위치 셋팅.
+     * @description panel width 셋팅.
      */
 	,_setPanelElementWidth : function (){
 		var _this = this; 
+
+		console.log('_setPanelElementWidth', _this.options.borderSpace);
 		// header grid set width
 		_this.element.header.find('.pubGrid-header-aside-cont').css('width',(_this.config.gridWidth.aside)+'px');
 		_this.element.header.find('.pubGrid-header-left-cont').css('width',(_this.config.gridWidth.left)+'px');
-		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main)+'px');
+		_this.element.header.find('.pubGrid-header-cont').css('width',(_this.config.gridWidth.main-_this.options.borderSpace)+'px');
 		
 		// body grid set width
 		_this.element.body.find('.pubGrid-body-aside-cont').css('width',(_this.config.gridWidth.aside)+'px');
 		_this.element.body.find('.pubGrid-body-left-cont').css('width',(_this.config.gridWidth.left)+'px');
-		_this.element.body.find('.pubGrid-body-cont').css('width',(_this.config.gridWidth.main)+'px');
+		_this.element.body.find('.pubGrid-body-cont').css('width',(_this.config.gridWidth.main- _this.options.borderSpace)+'px');
 		
 		// set horizontal scroll padding 
 		$('#'+_this.prefix+'_hscroll').css('padding-left' , _this.config.gridWidth.aside);
