@@ -146,6 +146,10 @@ var _initialized = false
 		,'setting.speed.label' : '스크롤속도'
 		,'setting.column.fixed.label' : '고정컬럼'
 	}
+	,icon : {
+		'sortup' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"></polygon></g></svg>'
+		,'sortdown' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"></polygon></g></svg>'
+	}
 }
 ,agt = navigator.userAgent.toLowerCase()
 ,_broswer = ((function (){
@@ -339,6 +343,7 @@ Plugin.prototype ={
 			, orginData: []
 			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0, beforeItemLen : 0}
 			, rowOpt :{}
+			, sort : {}
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -809,7 +814,7 @@ Plugin.prototype ={
 			var settingOpt = _this.options.setting; 
 
 			_this.config.orginData = _this.options.tbodyItem;
-
+			
 			if(settingOpt.enable ===true  && settingOpt.enableSearch ===true){
 				try{
 					var schField = settingOpt.configVal.search.field ||''
@@ -1236,12 +1241,16 @@ Plugin.prototype ={
 				for(var j=0 ; j <ghArr.length; j++){
 					ghItem = ghArr[j];
 					if(ghItem.view){
-						strHtm.push('	<th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+j+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
-						strHtm.push('		<div class="label-wrapper">');
-						strHtm.push('			<div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+j+'"><div class="inner"><div class="centered">'+ghItem.label+'</div></div></div>');
-						strHtm.push('			<div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
-						strHtm.push('		</div>');
-						strHtm.push('	</th>');					
+						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+j+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
+						strHtm.push('  <div class="label-wrapper">');
+						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+j+'"><div class="inner"><div class="centered">'+ghItem.label+'</div></div>');
+						if(ghItem.isSort ===true){
+							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');	
+						}
+						strHtm.push('   </div>');
+						strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
+						strHtm.push('  </div>');
+						strHtm.push(' </th>');					
 					}
 				}
 				strHtm.push('</tr>');
@@ -2301,7 +2310,7 @@ Plugin.prototype ={
 			if(beforeClickObj) beforeClickObj.closest('.label-wrapper').removeClass('sortasc sortdesc');
 
 			//.removeClass('sortasc sortdesc');
-			sortType = sortType =='asc' ? 'desc' : (sortType =='desc'?'asc':'asc');
+			sortType = sortType =='asc' ? 'desc' : (sortType =='desc'?'':'asc');
 			
 			// col select background col setting
 			if($('#'+_this.prefix+'colbody'+col_idx).attr('data-sort-flag') != 'Y'){
@@ -2312,7 +2321,12 @@ Plugin.prototype ={
 			
 			selEle.attr('sort_type', sortType);
 			
-			selEle.closest('.label-wrapper').removeClass('sortasc sortdesc').addClass('sort'+sortType);
+			var labelWrapperEle = selEle.closest('.label-wrapper');
+			labelWrapperEle.removeClass('sortasc sortdesc');
+
+			if(sortType !='' ){
+				labelWrapperEle.addClass('sort'+sortType);
+			}
 
 			beforeClickObj = selEle;
 		
@@ -3451,25 +3465,35 @@ Plugin.prototype ={
 		if(idx < 0 || tbi.length < 1 || idx >= tci.length){
 			return [];
 		}
-			
+
 		var _key = tci[idx].key;
 
+		if(isUndefined(_this.config.sort[_key])){
+			_this.config.sort[_key]= {sortType : sortType};
+		}else{
+			_this.config.sort[_key].sortType=sortType;
+		}
+		
 		function getItemVal(itemObj){
 			return itemObj[_key];
 		}
 		
 		if(sortType=='asc'){  // 오름차순
+			_this.config.sort[_key].orginList = tbi.slice(0);
+
 			tbi.sort(function (a,b){
 				var v1 = getItemVal(a)
 					,v2 = getItemVal(b);
 				return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 			});
-		}else{
+		}else if(sortType=='desc'){
 			tbi.sort(function (a,b){ // 내림차순
 				var v1 = getItemVal(a)
 					,v2 = getItemVal(b);
 				return v1 > v2 ? -1 : v1 < v2 ? 1 : 0;
 			});
+		}else{
+			tbi = _this.config.sort[_key].orginList;
 		}
 
 		return tbi; 
