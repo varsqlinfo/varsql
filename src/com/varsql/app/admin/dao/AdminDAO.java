@@ -1,6 +1,7 @@
 package com.varsql.app.admin.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -73,8 +74,18 @@ public class AdminDAO extends BaseDAO{
 	public int updateVtconnectionOptionInfo(VtconnectionOption vtconnectionOption) {
 		return getSqlSession().update("adminMapper.updateVtconnectionOptionInfo", vtconnectionOption);
 	}
-
-	public String selectDbPassword(Vtconnection vtConnection) {
-		return getSqlSession().selectOne("adminMapper.selectDbPassword",vtConnection);
+	
+	/**
+	 * 
+	 * @Method Name  : selectDbInfo
+	 * @Method 설명 : db 정보 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 3. 14. 
+	 * @변경이력  :
+	 * @param vtConnection
+	 * @return
+	 */
+	public Map<String,String> selectDbInfo(Vtconnection vtConnection) {
+		return getSqlSession().selectOne("adminMapper.selectDbInfo",vtConnection);
 	}
 }

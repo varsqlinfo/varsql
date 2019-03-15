@@ -1,7 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <ul class="varsql-menu">
-	<li class="dropdown">
+	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.file" /></a>
 		<ul class="varsql-top-menu">
 			<li class="varsql-menu-item" data-menu-item="file_new">
@@ -37,7 +37,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="dropdown">
+	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.edit" /></a>
 		<ul class="varsql-top-menu">
 			<li class="varsql-menu-item" data-menu-item="edit_undo" data-sql-editor-menu="y">
@@ -59,7 +59,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="dropdown">
+	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.search" /></a>
 		<ul class="varsql-top-menu">
 			<li class="varsql-menu-item" data-menu-item="search_find" data-sql-editor-menu="y">
@@ -70,7 +70,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="dropdown">
+	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.tool" /></a>
 		<ul class="varsql-top-menu">
 			<%-- <!-- 가져오기 -->
@@ -84,7 +84,7 @@
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.export" /></span>
 				</a>
-				<ul class="dropdown-menu">
+				<ul class="varsql-sub-menu">
 					<li class="varsql-menu-item" data-menu-item="tool_export_spec">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.export.specification" /></span></a>
 					</li>
@@ -104,7 +104,7 @@
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.show.plugin" /></span>
 				</a>
-				<ul class="dropdown-menu">
+				<ul class="varsql-sub-menu">
 					<li class="varsql-menu-item" data-menu-item="tool_show_glossary">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.show.glossary" /></span></a>
 					</li>
@@ -117,6 +117,20 @@
 				</ul>
 			</li>
 			<li class="divider"></li>
+			<li class="header-dropdown-submenu">
+				<a href="javascript:;">
+					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.theme" /></span>
+				</a>
+				<ul class="varsql-sub-menu">
+					<li class="varsql-menu-item" data-menu-item="tool_theme_light">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.theme.light" /></span></a>
+					</li>
+					<li class="varsql-menu-item" data-menu-item="tool_theme_dark">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.theme.dark" /></span></a>
+					</li>
+				</ul>
+			</li>
+			<li class="divider"></li>
 			<li class="varsql-menu-item" data-menu-item="tool_layout">
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.initlayout" /></span>
@@ -124,7 +138,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="dropdown">
+	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.help" /></a>
 		<ul class="varsql-top-menu">
 			<!-- 

@@ -301,9 +301,10 @@
 	</select>
 	
 	<!-- password check 를위해 password get -->
-	<select id="adminMapper.selectDbPassword" parameterType="vtConnection" resultType="string">
-		SELECT VPW
-		FROM VTCONNECTION
-		WHERE VCONNID = #{vconnid}
+	<select id="adminMapper.selectDbInfo" parameterType="vtConnection" resultType="hashmap">
+		SELECT VPW , VQUERY, VALIDATION_QUERY
+		FROM VTCONNECTION a, VTDBTYPE_DRIVER b
+		WHERE a.VDRIVER = b.DRIVER_ID
+		and a.VCONNID = #{vconnid}
 	</select>
 </mapper>

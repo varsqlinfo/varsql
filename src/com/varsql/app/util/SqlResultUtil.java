@@ -44,16 +44,14 @@ public class SqlResultUtil {
 			return ssrv;
 		}
 		
-		ResultSetMetaData rsmd = null;
+		ResultSetMetaData rsmd = rs.getMetaData();
 		
-		rsmd = rs.getMetaData();
-		
-		ResultSetHandler resultsetHandle = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
+		ResultSetHandler resultsetHandler = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];
-		String [] viewColumnsKey = new String[count];
 		String [] columns_type = new String[count];
+		String [] columns_type_name = new String[count];
 		
 		int columnType=-1;
 		String columnTypeName = "";
@@ -64,10 +62,12 @@ public class SqlResultUtil {
 		
 		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
 		
-		for (int i = 1; i <= count; i++) {
-			columnName= rsmd.getColumnName(i);
-			columnType = rsmd.getColumnType(i);
-			columnTypeName = rsmd.getColumnTypeName(i);
+		int idx = 0; 
+		for (int i = 0; i < count; i++) {
+			idx = i+1;
+			columnName= rsmd.getColumnName(idx);
+			columnType = rsmd.getColumnType(idx);
+			columnTypeName = rsmd.getColumnTypeName(idx);
 			
 			if(columnKeyCheck.containsKey(columnName)){
 				int idxVal =columnKeyCheck.get(columnName)+1; 
@@ -76,7 +76,7 @@ public class SqlResultUtil {
 			}else{
 				columnKeyCheck.put(columnName, 0);
 			}
-			columns_key[i - 1] = columnName; 
+			columns_key[i] = columnName; 
 			
 			columnInfo = new GridColumnInfo();
 			columnInfo.setLabel(columnName);
@@ -91,34 +91,35 @@ public class SqlResultUtil {
 			
 			if(columnType == Types.INTEGER||columnType ==Types.NUMERIC||columnType ==Types.BIGINT||columnType ==Types.DECIMAL
 					||columnType ==Types.DOUBLE||columnType ==Types.FLOAT||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
-				columns_type[i - 1] = "number";
+				columns_type[i] = "number";
 				columnInfo.setAlign("right");
 				isNumber = true;
 			}else if(columnType == Types.DATE ){
-				columns_type[i - 1] = "date";
+				columns_type[i] = "date";
 			}else if(columnType == Types.TIME ){
-				columns_type[i - 1] = "time";
+				columns_type[i] = "time";
 			}else if(columnType == Types.TIMESTAMP ){
-				columns_type[i - 1] = "timestamp";
+				columns_type[i] = "timestamp";
 			}else if(columnType == Types.BLOB ){
-				columns_type[i - 1] = "blob";
+				columns_type[i] = "blob";
 			}else if(columnType == Types.CLOB ){
-				columns_type[i - 1] = "clob";
+				columns_type[i] = "clob";
 			}else if(columnType == Types.REF ){
-				columns_type[i - 1] = "ref";
+				columns_type[i] = "ref";
 			}else if(columnType == Types.NCLOB ){
-				columns_type[i - 1] = "nclob";
+				columns_type[i] = "nclob";
 			}else if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
-				columns_type[i - 1] = "binary";
+				columns_type[i] = "binary";
 			}else if(columnType == Types.SQLXML ){
-				columns_type[i - 1] = "sqlxml";
+				columns_type[i] = "sqlxml";
 			}else{
-				columns_type[i - 1] = "string";
+				columns_type[i] = "string";
 			}
+			columns_type_name[i] = columnTypeName;
 			
 			columnNumberTypeFlag.add(isNumber);
 			
-			columnInfo.setType(columns_type[i - 1]);
+			columnInfo.setType(columns_type[i]);
 			columnInfoList.add(columnInfo);
 		}
 		
@@ -129,42 +130,17 @@ public class SqlResultUtil {
 		ssrv.setNumberTypeFlag(columnNumberTypeFlag);
 		ssrv.setColumn(columnInfoList);
 		
-		Map columns = null;
+		Map row = null;
 		String tmpColumnType = "";
 		ArrayList rows = new ArrayList();
 		int totalCnt = 0 ; 
 		while (rs.next()) {
 			
-			columns = new LinkedHashMap(count);
+			row = new LinkedHashMap(count);
 			for (int colIdx = 1; colIdx <= count; colIdx++) {				
-				columnName = columns_key[colIdx-1];
-				tmpColumnType = columns_type[colIdx-1]; 
-				
-				if("number".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getNumber(rs, colIdx));
-				}else if("string".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getString(rs, colIdx));
-				}else if( "clob".equals(tmpColumnType)){
-					columns.put(columnName , resultsetHandle.getClob(rs, colIdx));
-				}else if( "blob".equals(tmpColumnType)){
-					columns.put(columnName , resultsetHandle.getBlob(rs, colIdx));
-				}else if("timestamp".equals(tmpColumnType)){
-					columns.put(columnName, resultsetHandle.getTimeStamp(rs, colIdx));
-				}else if("date".equals(tmpColumnType)){
-					columns.put(columnName, resultsetHandle.getDate(rs, colIdx));
-				}else if("time".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getTime(rs, colIdx));
-				}else if("sqlxml".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getSQLXML(rs, colIdx));
-				}else if("binary".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getBinary(rs, colIdx));
-				}else if("nclob".equals(tmpColumnType)){
-					columns.put(columnName,resultsetHandle.getNCLOB(rs, colIdx));
-				}else{
-					columns.put(columnName,resultsetHandle.getObject(rs, colIdx));
-				}
+				row = resultsetHandler.getDataValue(row, columns_key[colIdx-1], rs, colIdx, columns_type[colIdx-1], columns_type_name[colIdx-1]);
 			}
-			rows.add(columns);
+			rows.add(row);
 			++first;
 			totalCnt++;
 			

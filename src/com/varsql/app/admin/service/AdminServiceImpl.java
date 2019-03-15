@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.dao.AdminDAO;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
@@ -106,9 +108,20 @@ public class AdminServiceImpl{
 		String pwd = vtConnection.getVpw();
 		String dbtype = vtConnection.getVtype();
 		
+		Map<String,String> dbInfo = adminDAO.selectDbInfo(vtConnection);
+		
 		if(!"".equals(vtConnection.getVconnid()) && (pwd ==null || "".equals(pwd))){
-			pwd = adminDAO.selectDbPassword(vtConnection);
+			pwd = dbInfo.get(VarsqlConstants.CONN_PW);
 		}
+		
+		String conn_query = dbInfo.get(VarsqlConstants.CONN_QUERY);
+		String dbvalidation_query =dbInfo.get(VarsqlConstants.VALIDATION_QUERY);
+		
+		conn_query = conn_query ==null?"":conn_query;
+		dbvalidation_query = dbvalidation_query ==null?"":dbvalidation_query;
+		
+		String validation_query = !"".equals(conn_query.trim()) ? conn_query: 
+			( !"".equals(dbvalidation_query.trim()) ?  dbvalidation_query : ValidationProperty.getInstance().validationQuery(dbtype));
 		
 		Properties p =new Properties();
 		
@@ -123,7 +136,6 @@ public class AdminServiceImpl{
 		try {
 			Class.forName(driver);
 			connChk = DriverManager.getConnection(url, p);
-			String validation_query = ValidationProperty.getInstance().validationQuery(dbtype);
 			
 			pstmt=connChk.prepareStatement(validation_query);
 			pstmt.executeQuery();

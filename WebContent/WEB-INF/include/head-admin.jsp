@@ -11,8 +11,8 @@
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 

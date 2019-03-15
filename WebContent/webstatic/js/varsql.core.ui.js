@@ -252,7 +252,7 @@ _ui.headerMenu ={
 		// header menu dropdown  init
 		$('.varsql-top-menu-label').on('click.header.menu', function (){
 			var sEle = $(this);
-			var dropDownEle = sEle.closest('.dropdown'); 
+			var dropDownEle = sEle.closest('.top-menu-button'); 
 			
 			if(dropDownEle.hasClass('open')){
 				dropDownEle.removeClass('open');
@@ -398,6 +398,10 @@ _ui.headerMenu ={
 							}
 							
 							break;
+						case 'theme':	//테마 설정
+							_self.setThemeInfo(menu_mode3);
+							
+							break;
 						case 'layout':	//레이아웃 초기화
 							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?')){
 								_ui.preferences.save({layoutConfig : ''} , function (){
@@ -527,6 +531,11 @@ _ui.headerMenu ={
 		}else if(type=='ddl'){
 			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
 		}
+	}
+	// 테마 설정.
+	,setThemeInfo : function (themeName){
+		var addTheme = 'varsql-theme-'+themeName +' ' +'pub-theme-'+themeName 
+		$('html').removeAttr('class').addClass(addTheme);
 	}
 }
 
@@ -1192,7 +1201,7 @@ _ui.addDbServiceObject('table',{
 						var selKey =rowItem.keyItem.key;
 						
 						if(selKey == 'name' ){
-							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
+							_ui.SQL._sqlData('select * from '+ getTableName(rowItem.item[selKey]),false);
 						}
 					}
 				}
@@ -1224,10 +1233,10 @@ _ui.addDbServiceObject('table',{
 							var tmpName = sItem.name;
 							
 							if(key=='dataview_all'){
-								_ui.SQL._sqlData('select * from '+tmpName,false);
+								_ui.SQL._sqlData('select * from '+getTableName(tmpName),false);
 								return ; 
 							}else if(key=='dataview_count'){
-								_ui.SQL._sqlData('select count(1) CNT from '+tmpName,false);
+								_ui.SQL._sqlData('select count(1) CNT from '+getTableName(tmpName),false);
 								return ;
 							}
 							
@@ -1368,7 +1377,7 @@ _ui.addDbServiceObject('view',{
 						var selKey =rowItem.keyItem.key;
 						
 						if(selKey == 'name' ){
-							_ui.SQL._sqlData('select * from '+rowItem.item[selKey],false);
+							_ui.SQL._sqlData('select * from '+getTableName(rowItem.item[selKey]),false);
 						}
 					}
 				}
@@ -4093,13 +4102,16 @@ _ui.sqlDataArea =  {
 			logValEle.empty();
 			logValEle= null; 
 			
-			var stdPos = _ui.SQL.getSelectionPosition();
-			
-			var cursor =_ui.SQL.getSqlEditorObj().getSearchCursor(errQuery, stdPos);
-			
-			if(cursor.findNext()){
-				_ui.SQL.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
+			if(_ui.SQL.getSqlEditorObj() !==false){
+				var stdPos = _ui.SQL.getSelectionPosition();
+				
+				var cursor =_ui.SQL.getSqlEditorObj().getSearchCursor(errQuery, stdPos);
+				
+				if(cursor.findNext()){
+					_ui.SQL.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
+				}
 			}
+			
 		}else{
 			var resData = resultData.items; 
     		var resultLen = resData.length;
@@ -4730,6 +4742,18 @@ _ui.JAVA = {
 }
 
 /**
+ * getTableName
+ * @param tblName {String}
+ */
+function getTableName(tblName){
+	if(_g_options.schema != _g_options.param.schema){
+		tblName = _g_options.param.schema+'.'+tblName;
+	}
+	
+	return tblName; 
+}
+
+/**
  * sql gen
  * @param scriptInfo
  * @returns
@@ -4740,9 +4764,7 @@ function generateSQL(scriptInfo){
 		,data = scriptInfo.item
 		,param_yn  = scriptInfo.param_yn;
 	
-	if(_g_options.schema != _g_options.param.schema){
-		tmpName = _g_options.param.schema+'.'+tmpName;
-	}
+	tmpName = getTableName(tmpName);
 			
 	sqlGenType =sqlGenType.split('|');
 	

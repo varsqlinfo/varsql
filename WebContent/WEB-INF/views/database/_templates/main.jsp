@@ -139,10 +139,10 @@ $(document).ready(function(){
 	
 	<div class="sql-editor-file">
 		<div class="left-cont">
-			<span class="sql-limit-count" style="padding:0px 5px 0px 0px;display:inline-block; vertical-align:bottom;">
+			<span class="sql-limit-count">
 				<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
 				LIMIT 
-				<select id="limitRowCnt"  name="limitRowCnt" class="selectpicker">
+				<select id="limitRowCnt"  name="limitRowCnt">
 					<option value="100" selected>100</option>
 					<option value="500">500</option>
 					<option value="1000">1000</option>
@@ -166,7 +166,7 @@ $(document).ready(function(){
 		<div class="varsql-file-save-list">
 			<div style="padding:5px;">
 				<input type="hidden" id="sqlFileId">
-				<input type="text" id="sqlFileSearchTxt" class="form-control input-sm">
+				<input type="text" id="sqlFileSearchTxt">
 			</div>
 			<div class="scroll-area">
 				<ul id="sql_filelist_area"></ul>

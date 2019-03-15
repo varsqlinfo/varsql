@@ -18,6 +18,10 @@ body {
 	min-height:100%;
 }
 
+table>tbody>tr.error-row>td, table>tbody>tr.error-row>th {
+    background: #f7d5d5 !important;
+}
+
 #wrapper {
   min-height: 100%;
   height: auto !important;
@@ -165,6 +169,14 @@ a.show-sidebar:hover {
   bottom: 0px;
   padding-top :50px;
 }
+
+
+#main-content .page-header {
+    padding-bottom: 10px;
+    margin: 20px 0 5px;
+    border-bottom: 1px solid #eee;
+}
+
 
 .nav.left-menu, .nav.msg-menu {
   margin:0 -15px;
