@@ -106,7 +106,7 @@ var userMain = {
 		var sconid = sItem.conuid; 
 		
 		if(_self.tabObj.isItem(sconid)){
-			_self.tabObj.setActive(sItem);
+			_self.tabObj.itemClick(sItem);
 			return ; 
 		}
 		

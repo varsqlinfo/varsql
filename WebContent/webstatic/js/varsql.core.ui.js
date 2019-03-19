@@ -237,6 +237,8 @@ _ui.headerMenu ={
 	,dialogObj : {}
 	,init : function(){
 		var _self = this;
+		// theme 설정.
+		_self.setThemeInfo(_g_options.screenSetting.mainTheme, true);
 		
 		_self.initEvt();
 	}
@@ -533,9 +535,13 @@ _ui.headerMenu ={
 		}
 	}
 	// 테마 설정.
-	,setThemeInfo : function (themeName){
+	,setThemeInfo : function (themeName, initFlag){
 		var addTheme = 'varsql-theme-'+themeName +' ' +'pub-theme-'+themeName 
 		$('html').removeAttr('class').addClass(addTheme);
+		
+		if(initFlag !== true){
+			_ui.preferences.save({mainTheme : themeName});
+		}
 	}
 }
 
@@ -2950,9 +2956,9 @@ _ui.SQL = {
 			
 			lineWrapping = !lineWrapping;
 			if(lineWrapping){
-				$(this).addClass('sql-btn-success');
+				$(this).addClass('varsql-btn-on');
 			}else{
-				$(this).removeClass('sql-btn-success');
+				$(this).removeClass('varsql-btn-on');
 			}
 			_self.getSqlEditorObj().setOption('lineWrapping',lineWrapping);
 		});
@@ -3018,11 +3024,11 @@ _ui.SQL = {
 			if(sEditorWrapperEle.hasClass('sql-flielist-active')){
 				sqlFileConfig.enable = false; 
 				sEditorWrapperEle.removeClass('sql-flielist-active');
-				sEle.removeClass('active');
+				sEle.removeClass('varsql-btn-on');
 			}else{
 				sqlFileConfig.enable = true; 
 				sEditorWrapperEle.addClass('sql-flielist-active');
-				sEle.addClass('active');
+				sEle.addClass('varsql-btn-on');
 			}
 			
 			if(_g_options.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){

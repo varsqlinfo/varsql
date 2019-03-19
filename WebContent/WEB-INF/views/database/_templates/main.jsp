@@ -40,7 +40,7 @@ $(document).ready(function(){
 		<span id="varsql_schema_name">${screenConfigInfo.schema}</span>
 		<div class="btn-group pull-right">
 			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">
-				<button type="button" class="btn btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="varsql-btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
 					<i class="fa fa-chevron-down"></i>
 				</button>
 				<ul id="dbSchemaList" class="dropdown-menu slidedown">
@@ -71,7 +71,7 @@ $(document).ready(function(){
 	<div class="sql-editor-toolbar">
 		<ul>
 			<li>
-				<button type="button" class="sql-edit-btn sql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
+				<button type="button" class="sql-edit-btn varsql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
 					<i class="fa fa-play"></i>
 				</button>
 			</li>
@@ -150,7 +150,7 @@ $(document).ready(function(){
 					<option value="10000">10000</option>
 				</select>
 			</span>
-			<button type="button" id="sql_filelist_view_btn" class="btn btn-default sql-filelist-view-btn"><i class="fa fa-bars" style="margin-right:3px;"></i>파일</button></button>
+			<button type="button" id="sql_filelist_view_btn" class="varsql-btn-default sql-filelist-view-btn"><i class="fa fa-bars" style="margin-right:3px;"></i>파일</button></button>
 		</div>
 
 		<div id="varsqlSqlFileTab" class="sqlfile-tab"></div>
@@ -176,7 +176,7 @@ $(document).ready(function(){
 			<div class="sql-editor-item" data-editor-id="empty">
 	 			<p class="msg-text">
 					<a href="javascript:;" class="sql_new_file">
-						<button type="button" class="btn btn-default"><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" /> 
+						<button type="button" class=""><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" /> 
 					</a>
 					<br><spring:message code="msg.editor.info" />
 				</p>
@@ -225,11 +225,11 @@ $(document).ready(function(){
 		<div class="glossary-search-area-wrapper">
 			<div class="glossary-search-area">
 				<input type="text" id="glossarySearchTxt" class="input-text" placeholder="Search...">
-				<button type="button" class="btn btn-default glossary-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
+				<button type="button" class="varsql-btn-default glossary-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
 			</div>
 			<div class="glossary-convert-area">
-				<button type="button" class="btn btn-default glossary-convert-camelcase" title="<spring:message code="btn.glossary.convert"/>"><span class="fa fa-retweet"></span></button>
-				<button type="button" class="btn btn-default glossary-convert-clear" title="<spring:message code="btn.glossary.remove"/>"><span class="fa fa-trash-o"></span></button>
+				<button type="button" class="varsql-btn-default glossary-convert-camelcase" title="<spring:message code="btn.glossary.convert"/>"><span class="fa fa-retweet"></span></button>
+				<button type="button" class="varsql-btn-default glossary-convert-clear" title="<spring:message code="btn.glossary.remove"/>"><span class="fa fa-trash-o"></span></button>
 				<input type="text" id="glossaryConvertTxt" class="input-text">
 			</div>
 		</div>
@@ -245,7 +245,7 @@ $(document).ready(function(){
 		<div class="history-search-area-wrapper">
 			<div class="history-search-area">
 				<input type="text" id="historySearchTxt" class="input-text" placeholder="Search...">
-				<button type="button" class="btn btn-default history-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
+				<button type="button" class="varsql-btn-default history-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
 			</div>
 		</div>
 		<div class="history-result-area">

@@ -163,7 +163,8 @@ public class SQLServiceImpl{
 			result.setItemList(reLst);
 			conn.commit();
 		} catch (Exception e) {
-			conn.rollback();
+			if(conn != null) conn.rollback();
+			
 			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
