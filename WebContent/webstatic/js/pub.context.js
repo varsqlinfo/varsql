@@ -96,16 +96,22 @@ Plugin.prototype ={
 	}
 	,loadAfterEvt : function(){
 		var _this = this;
+		var _opt = this.options;
 		var id=_this.contextId;
 
-		if(_this.options.preventDoubleContext){
-			$(document).on('contextmenu.pubcontext'+_this.contextId, '#'+id+'_wrap .pub-context-top', function (e) {
+		if(_opt.preventDoubleContext){
+			$('#'+id+'_wrap').on('contextmenu.pubcontext'+_this.contextId, '.pub-context-top', function (e) {
 				e.preventDefault();
 			});
 		}
-
-		$(document).on('mouseenter.pubcontext'+this.contextId, '#'+id+'_wrap .pub-context-submenu', function(e){
+		
+		// sub menu click
+		$('#'+id+'_wrap').on('mouseenter.pubcontext'+this.contextId, '.pub-context-submenu', function(e){
 			var sEle = $(this); 
+			
+			//sEle.closest('.pub-context-menu').find('.pub-context-submenu.on').removeClass('on');
+			sEle.addClass('on');
+
 			var $sub = sEle.find('.pub-context-sub:first')
 				, subWidth = $sub.width()
 				, subLeft = $sub.offset().left
@@ -126,6 +132,46 @@ Plugin.prototype ={
 				$sub.css('top' ,'-'+ offTop+'px');
 			}else{
 				$sub.css('top' ,'');
+			}
+		}).on('mouseleave.pubcontext'+this.contextId, '.pub-context-submenu', function(e){
+			if(headerClickFlag){
+				headerClickFlag = false; 
+				return ; 
+			}
+			var sEle = $(this); 
+			sEle.removeClass('on');
+		});
+
+		var headerClickFlag = false; // header click check flag
+		$('#'+id+'_wrap').on('click.item.'+_this.contextId ,'.pub-context-header',function (e){
+			headerClickFlag =true; 
+			setTimeout(function(){ headerClickFlag = false}, 200)
+		});
+		
+		// click event
+		$('#'+id+'_wrap').on('click.item.'+_this.contextId ,'.pub-context-item',function (e){
+			var clickEle=$(this);
+
+			if(clickEle.hasClass('disabled')){
+				return ; 
+			}else if(clickEle.hasClass('pub-context-submenu')){
+				return ; 
+			}else{
+				skey = clickEle.attr('context-key');
+				var sobj = {
+					key : skey
+					,item : _this.contextData[skey]
+					,list : _this.contextData
+					,element : _this.selectElement
+					,evt : e
+				}
+			
+				if(jQuery.isFunction(_opt.callback)){
+					_opt.callback.call(sobj, sobj.item.key, sobj.item , sobj.evt);
+				}else{
+					alert(skey);
+				}
+				_this.closeContextMenu();
 			}
 		});
 	}
@@ -168,7 +214,7 @@ Plugin.prototype ={
 			}
 
 			if (typeof item.subMenu !== 'undefined') {
-				$menuHtm.push('<li class="pub-context-submenu pub-context-item '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1"><span class="pub-context-item-title">' + item.name +'</span><span class="pub-context-hotkey-empty"></span></a>');
+				$menuHtm.push('<li class="pub-context-submenu '+styleClass+'" context-key="'+itemKey+'"><a tabindex="-1"><span class="pub-context-item-title">' + item.name +'</span><span class="pub-context-hotkey-empty"></span></a>');
 			} else {
 				var hotkeyHtm = item.hotkey||'';
 				hotkeyHtm = hotkeyHtm !='' ?'<span class="pub-context-hotkey">'+ item.hotkey +'</span>':'';
@@ -199,34 +245,7 @@ Plugin.prototype ={
      * @description context item event 
      */
 	,contextEvent : function (){
-		var _this = this,opt = _this.options;
 		
-		$('#'+_this.contextId+' .pub-context-item').off('click.'+this.contextId);
-		$('#'+_this.contextId+' .pub-context-item').on('click.'+this.contextId,function (e){
-			var clickEle=$(this);
-
-			if(clickEle.hasClass('disabled')){
-				return ; 
-			}else if(clickEle.hasClass('pub-context-submenu')){
-				return ; 
-			}else{
-				skey = clickEle.attr('context-key');
-				var sobj = {
-					key : skey
-					,item : _this.contextData[skey]
-					,list : _this.contextData
-					,element : _this.selectElement
-					,evt : e
-				}
-			
-				if(jQuery.isFunction(opt.callback)){
-					opt.callback.call(sobj, sobj.item.key, sobj.item , sobj.evt);
-				}else{
-					alert(skey);
-				}
-				_this.closeContextMenu();
-			}
-		});
 	}
 	/**
      * @method disableItem

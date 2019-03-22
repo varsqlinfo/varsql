@@ -6,3 +6,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="varsqlfn" uri="http://varsql.vartech.com/varsqlfn"%>
+<%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
+
+
+<c:set var="pageContextPath" value="${pageContext.request.contextPath}" />
+<c:set var="varsqlLoginUrl" value="${pageContextPath}/login_check" />
+<c:set var="varsqlLogoutUrl" value="${pageContextPath}/logout" />
+<c:set var="webResourceRoot" value="${pageContextPath}" />

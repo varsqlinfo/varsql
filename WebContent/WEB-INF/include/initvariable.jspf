@@ -1,8 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="pageContextPath" value="${pageContext.request.contextPath}" />
-<c:set var="varsqlLoginUrl" value="${pageContextPath}/login_check" />
-<c:set var="varsqlLogoutUrl" value="${pageContextPath}/logout" />
 
 <c:set var="codemirror_ver" value="<%=com.varsql.app.common.constants.WebStaticResourceVersion.CODE_MIRROR %>" />
 <c:set var="pubjs_ver" value="<%=java.lang.Math.round(java.lang.Math.random() * 20000) %>" />

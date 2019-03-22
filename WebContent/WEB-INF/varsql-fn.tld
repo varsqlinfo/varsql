@@ -7,7 +7,7 @@
 
 	<description>This tag lib demonstrates JSP 2.0 Expression Language functions</description>
 	<tlib-version>1.2</tlib-version>
-	<short-name>pubfn</short-name>
+	<short-name>varsqlfn</short-name>
 	<uri>http://varsql.vartech.com/varsqlfn</uri>
 	
 	<function>

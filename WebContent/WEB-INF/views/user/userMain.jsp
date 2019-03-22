@@ -159,9 +159,9 @@ $(function (){
 </div>
 </script>
 
-<div class="col-lg-12 fill" style="height:100%;">
-	<div class="row fill" id="user_connection_info_iframe" style="height:100%;">
-		<table id="connectionMsg"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
+<div class="user-main-body wh100">
+	<div class="wh100" id="user_connection_info_iframe">
+		<table id="connectionMsg" class="wh100-absolute" style="z-index:200;top:0px;">
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">

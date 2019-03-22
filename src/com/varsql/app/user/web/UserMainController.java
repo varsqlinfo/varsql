@@ -1,5 +1,9 @@
 package com.varsql.app.user.web;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +29,7 @@ import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.service.UserMainServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.beans.DatabaseInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -72,6 +77,7 @@ public class UserMainController {
 		
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		SecurityUtil.reloadUserDatabaseInfo();
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
 		return  new ModelAndView("/user/userMain",model);
@@ -427,6 +433,30 @@ public class UserMainController {
 			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = userMainServiceImpl.saveQnaInfo(qnaInfo, false);
 		}
+		
+		return resultObject; 
+	}
+	
+	@RequestMapping(value="/connectionInfo")
+	public @ResponseBody ResponseResult connectionInfo(HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		
+		SecurityUtil.reloadUserDatabaseInfo();
+		
+		
+		Collection<DatabaseInfo> dataBaseInfo = SecurityUtil.loginInfo(req).getDatabaseInfo().values();
+		
+		List databaseList =new ArrayList();
+		dataBaseInfo.forEach(item -> {
+			Map addMap = new HashMap();
+			
+			addMap.put("uuid", item.getConnUUID());
+			addMap.put("type", item.getType());
+			addMap.put("name", item.getName());
+			databaseList.add(addMap);
+		});
+		
+		resultObject.setItemList(databaseList);
 		
 		return resultObject; 
 	}

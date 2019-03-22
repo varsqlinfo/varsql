@@ -2,8 +2,11 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <div class="user-connection-list-area">
-	<label>Connect to : </label> 
-	
+	<label class="main-logo-area">
+	    <img src="${webResourceRoot}/webstatic/vt/vt32.png" class="user-main-logo">
+	    <span>Connect : </span>
+	</label>
+
 	<select id="user_connection_info">
 		<option value="">----connection info---</option>
 		<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
@@ -63,6 +66,11 @@ var userHeader = {
 		$('.ui-memo-btn').on('click', function(e) {
 			_self.messageLoad();
 		})
+		
+		$('.main-logo-area').on('click', function(e) {
+			_self.getConnectionInfo();
+		})
+		
 		$('.preferences').on('click', function(e) {
 			userMain.addTabInfo({
 				conuid : 'preferences'
@@ -73,12 +81,10 @@ var userHeader = {
 	messageLoad : function() {
 		var _self = this;
 		VARSQL.req.ajax({
-			type : "POST",
 			url : {
 				type : VARSQL.uri.user,
 				url : '/message.vsql'
 			},
-			dataType : 'json',
 			data : {},
 			success : function(res) {
 				var items = res.items;
@@ -111,8 +117,33 @@ var userHeader = {
 				VARSQL.log.error(data, status, err);
 			}
 		});
-	},
-	memoDetail : function(item) {
+	}
+	,getConnectionInfo : function (){
+		VARSQL.req.ajax({
+			url : {
+				type : VARSQL.uri.user,
+				url : '/connectionInfo.vsql'
+			},
+			data : {},
+			success : function(res) {
+				var strHtm = [];
+				
+				var items = res.items;
+				
+				strHtm.push('<option value="">----connection info---</option>');
+				for(var i =0, len = items.length;i <len; i++){
+					var item = items[i];
+					strHtm.push('<option value="'+item.uuid+'" dbtype="'+item.type+'" vname="'+item.name+'">'+item.name+'</option>');
+				}
+				
+				$('#user_connection_info').empty().html(strHtm.join(''));
+			},
+			error : function(data, status, err) {
+				VARSQL.log.error(data, status, err);
+			}
+		});
+	}
+	,memoDetail : function(item) {
 		var _self = this;
 
 		$('#memo_content').val(item.MEMO_CONT);
