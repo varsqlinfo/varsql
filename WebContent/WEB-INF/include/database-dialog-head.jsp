@@ -5,14 +5,15 @@
 <%
 long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
-<!-- Bootstrap Core CSS -->
-<link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
+
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+<link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
+
 <!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tree.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 

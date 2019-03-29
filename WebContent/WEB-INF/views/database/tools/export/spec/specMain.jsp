@@ -7,9 +7,9 @@
 <%@ include file="/WEB-INF/include/database-dialog-head.jsp"%>
 
 </head>
-<BODY class="preferences-body">
-	<div id="specMain" class="preferences">
-		<div class="left-nav col-xs-3 padding0">
+<BODY class="preferences">
+	<div id="specMain" class="wh100">
+		<div class="preferences-nav col-xs-3">
 			<ul>
 				<li :class="step==1?'active':''" @click="selectStep(1)">
 					<a href="javascript:;"><spring:message code="msg.export.spec.step1" /></a>
@@ -22,7 +22,7 @@
 				</li>
 			</ul>
 		</div>
-		<div class="process-step-area col-xs-9 padding0 scroll-y">
+		<div class="preferences-body process-step-area col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
 					<label class="control-label"><spring:message code="msg.table.export.info" /></label>
@@ -71,9 +71,9 @@
 				</div>
 				<div class="col-xs-2 text-center">
 					<div style="position:relative;top:100px;">
-						<a href="javascript:;" @click="selectTableObj.sourceMove()"><span class="glyphicon glyphicon-forward"></span></a>
+						<a href="javascript:;" @click="selectTableObj.sourceMove()"><span class="fa fa-forward"></span></a>
 						<br/>
-						<a href="javascript:;" @click="selectTableObj.targetMove()"><span class="glyphicon glyphicon-backward"></span></a>
+						<a href="javascript:;" @click="selectTableObj.targetMove()"><span class="fa fa-backward"></span></a>
 					</div>
 				</div>
 				<div class="col-xs-5">
@@ -106,9 +106,9 @@
 					</div>
 					<div class="col-xs-1 text-center">
 						<div style="position:relative;top:100px;">
-							<a href="javascript:;" @click="selectColumnObj.sourceMove()"><span class="glyphicon glyphicon-forward"></span></a>
+							<a href="javascript:;" @click="selectColumnObj.sourceMove()"><span class="fa fa-forward"></span></a>
 							<br/>
-							<a href="javascript:;" @click="selectColumnObj.targetMove()"><span class="glyphicon glyphicon-backward"></span></a>
+							<a href="javascript:;" @click="selectColumnObj.targetMove()"><span class="fa fa-backward"></span></a>
 						</div>
 					</div>
 					<div class="col-xs-3">
@@ -153,9 +153,9 @@
 				</div>
 			</div>
 			<div class="process-step-btn-area">
-				<button type="button" class="btn btn-default btn-sm" :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
-				<button type="button" class="btn btn-default btn-sm" :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
-				<button type="button" class="btn btn-default btn-sm" :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
+				<button type="button" class="btn-md"  :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
+				<button type="button" class="btn-md"  :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
+				<button type="button" class="btn-md"  :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
 			</div>
 		</div>
 	</div>

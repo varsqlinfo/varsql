@@ -54,7 +54,7 @@ var _initialized = false
 		
 	}
 	,setting : {
-		enable : false
+		enabled : false
 		,enableSpeed : false
 		,enableSearch : true
 		,enableColumnFix : false
@@ -83,8 +83,8 @@ var _initialized = false
 	}
 	,asideOptions :{
 		lineNumber : {
-			enable :false
-			,key : 'number'
+			enabled :false
+			,key : 'lineNumber'
 			,charWidth : 9
 			,name : ''
 			,width : 40
@@ -92,13 +92,13 @@ var _initialized = false
 			,isSelectRow:true
 		}
 		,rowSelector :{
-			enable :false
-			,key : 'chceck'
-			,name : 'chceck'
+			enabled :false
+			,key : 'checkbox'
+			,name : 'V'
 			,width : 25
 		}
 		,modifyInfo :{
-			enable :false
+			enabled :false
 			,key : 'modify'
 			,name : 'modify'
 			,width : 10
@@ -420,15 +420,15 @@ Plugin.prototype ={
 			_this.options.headerOptions.contextMenu =false; 
 		}
 		var asideItem = [];
-		if(_this.options.asideOptions.lineNumber.enable ===true){
+		if(_this.options.asideOptions.lineNumber.enabled ===true){
 			asideItem.push(_this.options.asideOptions.lineNumber);
 		}
 
-		if(_this.options.asideOptions.rowSelector.enable ===true){
+		if(_this.options.asideOptions.rowSelector.enabled ===true){
 			asideItem.push(_this.options.asideOptions.rowSelector);
 		}
 		
-		if(_this.options.asideOptions.modifyInfo.enable ===true){
+		if(_this.options.asideOptions.modifyInfo.enabled ===true){
 			asideItem.push(_this.options.asideOptions.modifyInfo);
 		}
 		
@@ -815,7 +815,7 @@ Plugin.prototype ={
 
 			_this.config.orginData = _this.options.tbodyItem;
 			
-			if(settingOpt.enable ===true  && settingOpt.enableSearch ===true){
+			if(settingOpt.enabled ===true  && settingOpt.enableSearch ===true){
 				try{
 					var schField = settingOpt.configVal.search.field ||''
 						,schVal = settingOpt.configVal.search.val ||'';
@@ -943,7 +943,7 @@ Plugin.prototype ={
 	
 		return '<div class="pubGrid-wrapper"><div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect"  style="overflow:hidden;width:'+_this.config.body.width+'px;">'
 			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container" style="overflow:hidden;">'
-			+'    <div class="pubGrid-setting-wrapper"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
+			+'    <div class="pubGrid-setting-wrapper pubGrid-layer"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
 			+'<g><path id="'+_this.prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
 			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
 			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
@@ -1049,7 +1049,7 @@ Plugin.prototype ={
 					var item = items[j];
 					item['_alignClass'] = item.align=='right' ? 'ar' : (item.align=='left'?'al':'ac');
 
-					strHtm.push('<td scope="col" class="pub-body-aside-td '+item['_alignClass']+'" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
+					strHtm.push('<td scope="col" class="pub-body-aside-td pub-'+item.key+' '+item['_alignClass']+'" data-aside-position="'+i+','+item.key+'"><div class="aside-content" style="'+item.styleCss+'"></div></td>');
 				}
 				strHtm.push('</tr>');
 			}
@@ -1243,7 +1243,7 @@ Plugin.prototype ={
 					if(ghItem.view){
 						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+j+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
 						strHtm.push('  <div class="label-wrapper">');
-						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+j+'"><div class="inner"><div class="centered">'+ghItem.label+'</div></div>');
+						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+j+'"><div class="pub-inner"><div class="centered">'+ghItem.label+'</div></div>');
 						if(ghItem.isSort ===true){
 							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');	
 						}
@@ -1297,7 +1297,7 @@ Plugin.prototype ={
 			colGroupHtm.push('<col style="width:'+item.width+'px;" />');
 
 			strHtm.push('	<th>');
-			strHtm.push('		<div class="aside-label-wrapper">'+item.name+'</div>');
+			strHtm.push('		<div class="aside-label-wrapper pub-header-'+item.key+'">'+item.name+'</div>');
 			strHtm.push('	</th>');					
 		}
 		strHtm.push('</tr>');
@@ -1377,7 +1377,7 @@ Plugin.prototype ={
 			_this.element.body.find('.pubGrid-empty-msg-area').show();
 			return ; 
 		}else{
-			_this.element.body.find('.pubGrid-body-container').show();
+			_this.element.body.find('.pubGrid-body-container').show()
 			_this.element.body.find('.pubGrid-empty-msg-area').hide();
 		}
 		
@@ -1416,7 +1416,7 @@ Plugin.prototype ={
 		var fnAddStyle = _this.options.rowOptions.addStyle; 
 		
 		// aside number size check
-		if(_this.options.asideOptions.lineNumber.enable ===true){
+		if(_this.options.asideOptions.lineNumber.enabled ===true){
 			var itemViewMaxCnt = itemIdx+viewCount; 
 			if((itemViewMaxCnt) >10000){
 				var idxCharLen = (itemViewMaxCnt+'').length; 
@@ -1437,7 +1437,14 @@ Plugin.prototype ={
 				}
 			}
 		}
-
+		
+		// row color change
+		if(itemIdx%2==0){
+			_this.element.body.find('.pubGrid-body-container').removeClass('even');
+		}else{
+			_this.element.body.find('.pubGrid-body-container').addClass('even');
+		}
+		
 		for(var i =0 ; i < viewCount; i++){
 			tbiItem = tbi[itemIdx] ||{};
 			
@@ -1454,14 +1461,13 @@ Plugin.prototype ={
 				
 				addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-aside-cont').querySelector('[data-aside-position="'+rowCol+'"]>.aside-content');
 				
-				if(tmpItem.key == 'number'){
+				if(tmpItem.key == 'lineNumber'){
 					addEle.textContent = (itemIdx+1);	
-				}else if(tmpItem.key == 'chceck'){
-					addEle.innerHTML = '<input type="checkbox" class="row-check"/>';	
+				}else if(tmpItem.key == 'checkbox'){
+					addEle.innerHTML = '<input type="checkbox" class="pub-row-check" '+(tbiItem['_pubcheckbox']?'checked':'')+'/>';	
 				}else if(tmpItem.key == 'modify'){
 					addEle.innerHTML = 'V';
 				}
-				
 			};
 			
 			if(drawMode != 'hscroll'){
@@ -1553,7 +1559,6 @@ Plugin.prototype ={
 		}
 		
 		this.calcViewCol(0);
-
 	}
 	/**
      * @method calcDimension
@@ -2267,6 +2272,43 @@ Plugin.prototype ={
 		}
 	}
 	/**
+     * @method getCheckItems
+     * @description check item 값 얻기.
+     */
+	,getCheckItems: function (){
+		var tbodyItem =this.options.tbodyItem; 
+		var reval = [];
+		for(var i =0, len=tbodyItem.length;i < len; i++){
+			var item = tbodyItem[i]; 
+			if(item['_pubcheckbox']===true){
+				reval.push(item)
+			}
+		}
+		return reval;
+	}
+	/**
+     * @method setCheckItems
+	 * @param  idxArr {Array} integer array
+	 * @param  checkFlag {Bollean} check flag
+     * @description set checkbox
+     */
+	,setCheckItems: function (idxArr, checkFlag){
+		var tbodyItem =this.options.tbodyItem; 
+		var item;
+		if(idxArr=='all'){
+			for(var i =0, len=tbodyItem.length;i < len; i++){
+				tbodyItem[i]['_pubcheckbox']= checkFlag; 
+			}
+		}else{
+			for(var i =0, len=idxArr.length;i < len; i++){
+				item = tbodyItem[idxArr[i]];
+				if(item) item['_pubcheckbox'] = true; 
+			}
+		}
+
+		this.drawGrid();
+	}
+	/**
      * @method _initHeaderEvent
      * @description 바디 이벤트 초기화.
      */
@@ -2277,6 +2319,8 @@ Plugin.prototype ={
 		var beforeClickObj; 
 		//headerCol.off('click.pubGridHeader.sort');
 		
+		var dataSortEvent = 'dblclick.pubGridHeader.sort';
+
 		if(headerOpt.isColSelectAll ===true){
 			// column select
 			_this.element.header.on('click.pubGridHeader.select','.pub-header-cont',function (e){
@@ -2299,10 +2343,28 @@ Plugin.prototype ={
 					,curr : curr
 				}, initFlag , true);
 			});
+		}else{
+			dataSortEvent = 'click.pubGridHeader.sort';
+		}
+		
+		if(_this.options.asideOptions.rowSelector.enabled === true){
+			// checkbox click
+			_this.element.header.on('click.pubGrid.allcheck','.pub-header-checkbox',function (e){
+				var checkFlag; 
+				if($(this).hasClass('pub-check-all')){
+					$(this).removeClass('pub-check-all');
+					checkFlag = false; 
+				}else{
+					$(this).addClass('pub-check-all');
+					checkFlag = true; 
+				}
+
+				_this.setCheckItems('all',checkFlag);
+			});
 		}
 		
 		// sort
-		_this.element.header.on('dblclick.pubGridHeader.sort','.pub-header-cont.sort-header',function (e){
+		_this.element.header.on(dataSortEvent,'.pub-header-cont.sort-header',function (e){
 			var selEle = $(this)
 				,col_idx = selEle.attr('col_idx')
 				,sortType = selEle.attr('sort_type');
@@ -2336,7 +2398,7 @@ Plugin.prototype ={
 		if(headerOpt.contextMenu !== false){
 			$.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th',headerOpt.contextMenu);			
 		}
-		if(_this.options.setting.enable ===true){
+		if(_this.options.setting.enabled ===true){
 			_this.setGridSettingInfo();
 		}
 	}
@@ -2345,8 +2407,8 @@ Plugin.prototype ={
      * @description settring enable/disable
      */
 	,toggleSettingArea : function (){
-		this.options.setting.enable = !this.options.setting.enable;
-		this.setGridSettingInfo(!this.options.setting.enable);
+		this.options.setting.enabled = !this.options.setting.enabled;
+		this.setGridSettingInfo(!this.options.setting.enabled);
 	}
 	/**
      * @method setGridSettingInfo
@@ -2560,7 +2622,7 @@ Plugin.prototype ={
 		
 		if(asideOpt.lineNumber.isSelectRow === true){
 			// column select
-			_this.element.body.find('.pubGrid-body-aside').on('click.pubGridLine.select','.pub-body-aside-td',function (e){
+			_this.element.body.find('.pubGrid-body-aside').on('click.pubGridLine.select','.pub-lineNumber',function (e){
 				var selEle = $(this)
 					,row_idx = selEle.closest('tr').attr('rowinfo');
 				
@@ -2583,6 +2645,21 @@ Plugin.prototype ={
 				}, initFlag , true);
 			});
 		}
+
+		if(asideOpt.rowSelector.enabled === true){
+			// checkbox click
+			_this.element.body.find('.pubGrid-body-aside').on('click.pubGridCheck','.pub-row-check',function (e){
+				var selEle = $(this)
+					,rowinfo = selEle.closest('tr').attr('rowinfo');
+
+				rowinfo = _this.config.scroll.viewIdx+intValue(rowinfo);
+
+				var selItem = _this.options.tbodyItem[rowinfo];
+
+				selItem['_pubcheckbox'] = selItem['_pubcheckbox'] === true ? false :true;
+			});
+		}
+		
 	
 		if(isFunction(_this.options.rowOptions.click)){
 
@@ -2717,14 +2794,6 @@ Plugin.prototype ={
 			_this._setRangeSelectInfo({isMouseDown : false});
 		})
 		
-		// focus in
-		_this.element.pubGrid.on('mousedown.'+_this.prefix,function (e){
-			_this.config.focus = true; 
-
-			if(e.which !==2 && $(e.target).closest('#'+_this.prefix+'_pubGrid .pubGrid-setting-wrapper').length < 1){
-				_this.setGridSettingInfo('enable', false);
-			}
-		})
 
 		// focus out
 		$(document).on('mousedown.'+_this.prefix, 'html', function (e) {
@@ -4001,6 +4070,18 @@ Plugin.prototype ={
 		return _datastore; 
 	}
 };
+
+
+// background click check 
+$(document).on('mousedown.pubgrid.background', function (e){
+	if(e.which !==2){
+		var targetEle = $(e.target); 
+		
+		if(targetEle.closest('.pubGrid-layer').length < 1 ){
+			$('.pubGrid-layer.open').removeClass('open');
+		}
+	}
+})
 
 $.pubGrid = function (selector,options, args) {
 	var _cacheObject = _datastore[selector]; 

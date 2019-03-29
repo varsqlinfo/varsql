@@ -14,9 +14,9 @@
 		</div>
 		<div class="col-xs-2 text-center">
 			<div style="position:relative;top:100px;">
-				<a href="javascript:;" class="add-item"><span class="glyphicon glyphicon-forward"></span></a>
+				<a href="javascript:;" class="add-item"><span class="fa fa-forward"></span></a>
 				<br/>
-				<a href="javascript:;" class="cancle-item"><span class="glyphicon glyphicon-backward"></span></a>
+				<a href="javascript:;" class="cancle-item"><span class="fa fa-backward"></span></a>
 			</div>
 		</div>
 		<div class="col-xs-5">

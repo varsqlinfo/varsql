@@ -13,16 +13,12 @@
 	<function>
 		<name>objectToJson</name>
 		<function-class>com.varsql.app.util.VarsqlUtil</function-class>
-		<function-signature>
-			java.lang.String objectToString(java.lang.Object)
-		</function-signature>
+		<function-signature>java.lang.String objectToString(java.lang.Object)</function-signature>
 	</function>
 	
 	<function>
 		<name>currentDate</name>
 		<function-class>com.vartech.common.utils.DateUtils</function-class>
-		<function-signature>
-			java.lang.String getCurrentDate(java.lang.String)
-		</function-signature>
+		<function-signature>java.lang.String getCurrentDate(java.lang.String)</function-signature>
 	</function>
 </taglib>

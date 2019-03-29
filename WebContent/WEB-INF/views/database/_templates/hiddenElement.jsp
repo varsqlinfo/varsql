@@ -4,11 +4,11 @@
 
 <%--메모 보내기 다이얼로그 --%>
 <div id="memoTemplate" style="display:none;overflow: hidden;" title="<spring:message code="msg.sendmsg.title" />">
-	<div style="margin: 0px -10px 0px -10px;">
+	<div>
 		<div class="col-xs-6">
-			<div class="panel panel-default">
+			<div class="panel">
 				<div class="panel-heading">
-					<input type="text" id="recv_user_search" name="recv_user_search" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
+					<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
 					<div id="recv_autocomplete_area" class=""></div>
 				</div>
 				<!-- /.panel-heading -->
@@ -22,9 +22,14 @@
 		</div>
 		<!-- /.col-lg-4 -->
 		<div class="col-xs-6">
-			<!-- /.panel-heading -->
-			<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="<spring:message code="title" />" style="margin-bottom:5px;">
-			<textarea id="memoContent" name="memoContent" class="form-control" style="height: 210px;" placeholder="<spring:message code="content" />"></textarea>
+			<div class="panel">
+				<div class="panel-heading">
+					<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="<spring:message code="title" />">
+				</div>
+				<div>
+					<textarea id="memoContent" name="memoContent" class="form-control" style="height: 230px;" placeholder="<spring:message code="content" />"></textarea>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

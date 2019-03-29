@@ -8,9 +8,9 @@
 
 </head>
 
-<BODY class="preferences-body">
-	<div id="ddlMain" class="preferences">
-		<div class="left-nav col-xs-3 padding0">
+<BODY class="preferences">
+	<div id="ddlMain" class="wh100">
+		<div class="preferences-nav col-xs-3">
 			<ul>
 				<li :class="step==1?'active':''" @click="selectStep(1)">
 					<a href="javascript:;"><spring:message code="msg.export.ddl.step1" /></a>
@@ -24,7 +24,7 @@
 			</ul>
 		</div>
 		
-		<div class="process-step-area col-xs-9 padding0 scroll-y">
+		<div class="preferences-body process-step-area col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
 					<label class="control-label"><spring:message code="msg.export.ddl.info" /></label>
@@ -84,9 +84,9 @@
 				</div>
 				<div class="col-xs-1 text-center padding0">
 					<div style="position:relative;top:100px;">
-						<a href="javascript:;" @click="selectDbObjectInfo.sourceMove()"><span class="glyphicon glyphicon-forward"></span></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.sourceMove()"><span class="fa fa-forward"></span></a>
 						<br/>
-						<a href="javascript:;" @click="selectDbObjectInfo.targetMove()"><span class="glyphicon glyphicon-backward"></span></a>
+						<a href="javascript:;" @click="selectDbObjectInfo.targetMove()"><span class="fa fa-backward"></span></a>
 					</div>
 				</div>
 				<div class="col-xs-4 padding0">
@@ -105,9 +105,9 @@
 				</div>
 			</div>
 			<div class="process-step-btn-area">
-				<button type="button" class="btn btn-default btn-sm" :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
-				<button type="button" class="btn btn-default btn-sm" :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
-				<button type="button" class="btn btn-default btn-sm" :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
+				<button type="button" class="btn-md" :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
+				<button type="button" class="btn-md" :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
+				<button type="button" class="btn-md" :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
 			</div>
 		</div>
 	</div>

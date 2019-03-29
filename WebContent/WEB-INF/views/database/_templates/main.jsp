@@ -38,14 +38,14 @@ $(document).ready(function(){
 	<div class="db-schema">
 		<img src="/vsql/webstatic/imgs/Database.gif"/>
 		<span id="varsql_schema_name">${screenConfigInfo.schema}</span>
-		<div class="btn-group pull-right">
+		<div class="schema-view-btn pull-right varsql-widget-layer">
 			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">
-				<button type="button" class="varsql-btn-default btn-xs dropdown-toggle db-schema-list-btn" data-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="varsql-btn-default db-schema-list-btn">
 					<i class="fa fa-chevron-down"></i>
 				</button>
-				<ul id="dbSchemaList" class="dropdown-menu slidedown">
+				<ul id="dbSchemaList" class="dropdown-scheam-list">
 					<c:forEach var="item" items="${screenConfigInfo.schemaList}" varStatus="status">
-						<li><a href="javascript:;" class="db-list-group-item ${screenConfigInfo.schema == item ? 'active' :''}" obj_nm="${item}">${item}</a></li>
+						<li><a href="javascript:;" class="db-schema-item ${screenConfigInfo.schema == item ? 'active' :''}" obj_nm="${item}">${item}</a></li>
 					</c:forEach>
 				</ul>
 			</c:if>
@@ -71,66 +71,66 @@ $(document).ready(function(){
 	<div class="sql-editor-toolbar">
 		<ul>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
+				<button type="button" class="sql-edit-btn varsql-btn-trans varsql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
 					<i class="fa fa-play"></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_new_file" title="<spring:message code="btn.toolbar.newfile" /> Ctrl+Alt+N">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_new_file" title="<spring:message code="btn.toolbar.newfile" /> Ctrl+Alt+N">
 					<i class="fa fa-file-o"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+S">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+S">
 					<i class="fa fa-save"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_allsave_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.allsave" /> Ctrl+Shift+S">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_allsave_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.allsave" /> Ctrl+Shift+S">
 					<i class="fa fa-save-all"></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>	
-				<button type="button" class="sql-edit-btn sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.cut" /> Ctrl+X">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.cut" /> Ctrl+X">
 					<i class="fa fa-scissors"></i>
 				</button>
 			</li>
 			<li>	
-				<button type="button" class="sql-edit-btn sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.copy" /> Ctrl+C">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.copy" /> Ctrl+C">
 					<i class="fa fa-copy"></i>
 				</button>
 			</li>	
 			<li>	
-				<button type="button" class="sql-edit-btn sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.eraser" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.eraser" />">
 					<i class="fa fa-eraser"></i>
 				</button>
 			</li>	
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.undo" /> Ctrl+Z">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.undo" /> Ctrl+Z">
 					<i class="fa fa-undo" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_redo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.redo" /> Ctrl+Y">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_redo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.redo" /> Ctrl+Y">
 					<i class="fa fa-repeat" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.linewrapper" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.linewrapper" />">
 					<i class="fa fa-dedent" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.format" /> Ctrl+Shift+F">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.format" /> Ctrl+Shift+F">
 					<i class="fa fa-align-justify" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn sql_toolbar_send_btn" title="<spring:message code="btn.toolbar.send" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_send_btn" title="<spring:message code="btn.toolbar.send" />">
 					<i class="fa fa-paper-plane-o"></i>
 				</button>
 			</li>
@@ -186,7 +186,7 @@ $(document).ready(function(){
 			<div class="sql-param-header">
 				<span class="key">Key</span>
 				<span class="val">Value</span>
-				<span class="remove"><button type="button" class="sql-param-add-btn btn btn-sm btn-default fa fa-plus"></button></span>
+				<span class="remove"><button type="button" class="sql-param-add-btn"><i class="fa fa-plus"></i></button></span>
 		    </div>
 			<div id="sql_parameter_area" class="sql-param-body">
 

@@ -21,6 +21,10 @@ var _$base = {
 	,author:'ytkim'
 };
 
+if(parent && parent.VARSQL && parent.VARSQL.ui){
+	$('html').addClass(parent.VARSQL.ui.getTheme());
+}
+
 /**
  * dialog
  */

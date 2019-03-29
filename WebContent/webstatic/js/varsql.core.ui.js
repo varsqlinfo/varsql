@@ -18,6 +18,10 @@ var _g_options={
 	,_opts :{}
 	,serviceObject : []
 	,screenSetting : {}
+	,autoSave :{
+		enabled : true 
+		,delay : (10 *1000) // 10 초.
+	}
 };
 
 // cache
@@ -121,6 +125,10 @@ _ui.extension ={
 	
 }
 
+VARSQL.ui.getTheme = function (){
+	return getThemeClass(_g_options.screenSetting.mainTheme); 
+}
+
 VARSQL.ui.create = function (_opts){
 	
 	VARSQLCont.init(_opts.dbtype , _ui.base);
@@ -182,6 +190,24 @@ function _getSelector(key,type, suffixKey){
 	return _selector[type][key] + (suffixKey ? (_selector['subffix'][suffixKey]||suffixKey):'' ); 
 }
 
+// background click check 
+$(document).on('mousedown.varsql.background', function (e){
+	if(e.which !==2){
+		var targetEle = $(e.target); 
+		if(targetEle.closest('.varsql-menu').length < 1 ){
+			$('.varsql-menu .open').removeClass('open');
+		}
+		
+		if(targetEle.closest('.varsql-widget-layer').length < 1 ){
+			$('.varsql-widget-layer.open').removeClass('open');
+		}
+	}
+})
+
+function varsqlLayerClear(){
+	$(document).trigger('mousedown.varsql.background');
+}
+
 /**
  * 파라미터 얻기.
  * @returns
@@ -231,6 +257,10 @@ _ui.initContextMenu  = function (){
 	});
 }
 
+_ui.initEvt = function(){
+	
+}
+
 //header 메뉴 처리.
 _ui.headerMenu ={
 	preferencesDialog : ''
@@ -245,12 +275,6 @@ _ui.headerMenu ={
 	,initEvt : function (){
 		var _self = this;
 		
-		$(document).on('click.bs.header-dropdown.data-api', function (e){
-			if(e.which !==2 && $(e.target).closest('.varsql-menu').length < 1){
-				$('.varsql-menu .open').removeClass('open');
-			}
-		})
-	    
 		// header menu dropdown  init
 		$('.varsql-top-menu-label').on('click.header.menu', function (){
 			var sEle = $(this);
@@ -297,7 +321,7 @@ _ui.headerMenu ={
 				return ; 
 			}
 			
-			$(document).trigger('click.bs.header-dropdown.data-api');
+			varsqlLayerClear();
 			
 			switch (depth1) {
 				case 'file': {
@@ -503,10 +527,7 @@ _ui.headerMenu ={
 				,width: 700
 				,modal: true
 				,buttons: {
-					Ok:function (){
-						_self.preferencesDialog.dialog( "close" );
-					}
-					,Cancel: function() {
+					Close:function (){
 						_self.preferencesDialog.dialog( "close" );
 					}
 				}
@@ -536,7 +557,7 @@ _ui.headerMenu ={
 	}
 	// 테마 설정.
 	,setThemeInfo : function (themeName, initFlag){
-		var addTheme = 'varsql-theme-'+themeName +' ' +'pub-theme-'+themeName 
+		var addTheme = getThemeClass(themeName);
 		$('html').removeAttr('class').addClass(addTheme);
 		
 		if(initFlag !== true){
@@ -980,18 +1001,31 @@ _ui.dbSchemaObject ={
 	,initEvt : function (){
 		var _self = this;
 		
-		var schemaObjEleId = _getSelector('schemaObject',_selectorType.PLUGIN); 
+		var schemaObjEleId = _getSelector('schemaObject',_selectorType.PLUGIN);
+		
+		$(schemaObjEleId+' .db-schema-list-btn').on('click', function (){
+			var viewArea = $(this).closest('.schema-view-btn');
+			
+			if(viewArea.hasClass('open')){
+				viewArea.removeClass('open');
+			}else{
+				viewArea.addClass('open');
+			}
+		})
+		
 		// 스키마 클릭.
-		$(schemaObjEleId+' .db-list-group-item').on('click', function (){
+		$(schemaObjEleId+' .db-schema-item').on('click', function (){
 			
 			var sEle = $(this);
 			
 			if(sEle.hasClass('active')){
 				return ; 
 			}else{
-				$(schemaObjEleId+' .db-list-group-item.active').removeClass('active');
+				$(schemaObjEleId+' .db-schema-item.active').removeClass('active');
 				sEle.addClass('active');
 			}
+			
+			varsqlLayerClear();
 			
 			_g_options.param.schema =sEle.attr('obj_nm');
 			
@@ -1184,7 +1218,7 @@ _ui.addDbServiceObject('table',{
 			
 			var tableObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				setting : {
-					enable : true
+					enabled : true
 					,click : false
 					,enableSearch : true
 					,enableSpeed : true
@@ -1195,7 +1229,7 @@ _ui.addDbServiceObject('table',{
 					,configVal : _g_options.screenSetting.tablesConfig
 				}
 				,asideOptions :{
-					lineNumber : {enable : true, width : 30, align: 'right'}
+					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
 					{key :'name', label:'Table', width:200, sort:true}
@@ -1371,7 +1405,7 @@ _ui.addDbServiceObject('view',{
 			
 			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true, width : 30, align: 'right'}
+					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
 					{key :'name', label:'View', width:200, sort:true}
@@ -1455,7 +1489,7 @@ _ui.addDbServiceObject('procedure',{
 			
 			var procedureObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true	,width : 30, align: 'right'}
+					lineNumber : {enabled : true	,width : 30, align: 'right'}
 				}
 				,tColItem : [
 					{key :'name', label:'Procedure',width:200, sort:true}
@@ -1517,7 +1551,7 @@ _ui.addDbServiceObject('function',{
     				
 			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
 					{key :'name', label:'Function',width:200, sort:true}
@@ -1579,7 +1613,7 @@ _ui.addDbServiceObject('index',{
     				
 			var indexObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
 					{key :'name', label:'Index',width:200, sort:true}
@@ -1642,7 +1676,7 @@ _ui.addDbServiceObject('trigger',{
 			
 			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
 					{key :'name', label:'Trigger',width:200, sort:true}
@@ -1714,7 +1748,7 @@ _ui.addDbServiceObject('sequence',{
 			
 			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
 				,tColItem : [
 					{key :'name', label:'Sequence',width:200, sort:true}
@@ -2060,7 +2094,7 @@ _ui.addODbServiceObjectMetadata('table', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeAndLength' },
@@ -2166,7 +2200,7 @@ _ui.addODbServiceObjectMetadata('view', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeName' },
@@ -2247,7 +2281,7 @@ _ui.addODbServiceObjectMetadata('procedure', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'dataType' },
@@ -2304,7 +2338,7 @@ _ui.addODbServiceObjectMetadata('function', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'dataType' },
@@ -2361,7 +2395,7 @@ _ui.addODbServiceObjectMetadata('index', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: 'POSITION', key: 'no',width:80 },
@@ -2416,7 +2450,7 @@ _ui.addODbServiceObjectMetadata('trigger', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: 'Name', key: 'name'},
 				{ label: 'Value', key: 'val',width:80 },
@@ -2471,7 +2505,7 @@ _ui.addODbServiceObjectMetadata('sequence', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
-			,asideOptions :{lineNumber : {enable : true	,width : 30}}
+			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: 'Name', key: 'name'},
 				{ label: 'Value', key: 'val',width:80 },
@@ -2956,9 +2990,9 @@ _ui.SQL = {
 			
 			lineWrapping = !lineWrapping;
 			if(lineWrapping){
-				$(this).addClass('varsql-btn-on');
+				$(this).addClass('on');
 			}else{
-				$(this).removeClass('varsql-btn-on');
+				$(this).removeClass('on');
 			}
 			_self.getSqlEditorObj().setOption('lineWrapping',lineWrapping);
 		});
@@ -3024,11 +3058,11 @@ _ui.SQL = {
 			if(sEditorWrapperEle.hasClass('sql-flielist-active')){
 				sqlFileConfig.enable = false; 
 				sEditorWrapperEle.removeClass('sql-flielist-active');
-				sEle.removeClass('varsql-btn-on');
+				sEle.removeClass('on');
 			}else{
 				sqlFileConfig.enable = true; 
 				sEditorWrapperEle.addClass('sql-flielist-active');
-				sEle.addClass('varsql-btn-on');
+				sEle.addClass('on');
 			}
 			
 			if(_g_options.screenSetting.sqlFileConfig.enable !==sqlFileConfig.enable){
@@ -3256,7 +3290,7 @@ _ui.SQL = {
 		return '<div class="sql-param-row">'
 			+'	<span class="key"><input type="text" class="sql-param-key" value="'+(valFlag?'{{key}}':'')+'" /></span>'
 			+'	<span class="val"><input type="text" class="sql-param-value" value="'+(valFlag?'{{val}}':'')+'"/></span>'
-			+'	<span class="remove"><button type="button" class="sql-param-del-btn fa fa-minus btn btn-sm btn-default"></button></span>'
+			+'	<span class="remove"><button type="button" class="sql-param-del-btn"><i class="fa fa-minus"></i></button></span>'
 			+'</div>';
 	}
 	// sql 파라미터 셋팅. 
@@ -3680,6 +3714,19 @@ _ui.SQL = {
 			hintOptions: {tables:tableHint}
 		});
 		
+		editor.VARSQL ={
+			SQL_ID : sqlId 
+		};
+		
+		// 자동 저장 처리.	
+		var changeTimer;
+		function autoSave(editerInfo){
+			changeTimer = setTimeout(function() {
+				editerInfo.item._isChange = false; 
+				_self.saveSqlFile();
+			},_g_options.autoSave.delay );
+		}
+		
 		editor.on("change", function (cm , changeObj){
 			
 			var currentEditorInfo = _self.currentSqlEditorInfo;
@@ -3692,6 +3739,12 @@ _ui.SQL = {
 		    		,"GUERY_TITLE" : '*' + currentEditorInfo.item.GUERY_TITLE
 				}, enabled:false});
 			}
+			
+			if(_g_options.autoSave.enabled !== false){
+				clearTimeout(changeTimer);
+				autoSave(currentEditorInfo);
+			}
+			
 		})
 		
 		_self.allTabSqlEditorObj[sqlId].editor = editor;
@@ -4172,7 +4225,7 @@ _ui.sqlDataArea =  {
 		
 		$.pubGrid(_self.currnetDataGridSelector,{
 			setting : {
-				enable : true
+				enabled : true
 				,click : false
 				,enableSearch : true
 				,enableSpeed : true
@@ -4190,7 +4243,7 @@ _ui.sqlDataArea =  {
 				}
 			}
 			,asideOptions :{
-				lineNumber : {enable : true}				
+				lineNumber : {enabled : true}				
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
@@ -4282,7 +4335,7 @@ _ui.sqlDataArea =  {
 				}
 			}
 			,asideOptions :{
-				lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
+				lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
 			,tColItem : [
 				{label: "NAME", key: "key"}
@@ -4358,7 +4411,7 @@ _ui.registerPlugin({
 			_self.initEvt();
 			
 			_self.gridObj = $.pubGrid('#glossaryResultArea', {
-				asideOptions :{lineNumber : {enable : true	,width : 30}}
+				asideOptions :{lineNumber : {enabled : true	,width : 30}}
 				,tColItem : [
 					{ label: '용어', key: 'WORD',width:80 },
 					{ label: '영문명', key: 'WORD_EN' },
@@ -4476,7 +4529,7 @@ _ui.registerPlugin({
 			})
 			
 			_self.gridObj = $.pubGrid('#historyResultArea', {
-				asideOptions :{lineNumber : {enable : true	,width : 30}}
+				asideOptions :{lineNumber : {enabled : true	,width : 30}}
 				,tColItem : [
 					{ label: 'SQL', key: 'LOG_SQL'},
 					{ label: '시작시간', key: 'VIEW_STARTDT' },
@@ -4988,6 +5041,11 @@ function milli2str(milliTime, format) {
 
 function capitalizeFirstLetter(str) {
     return toUpperCase(str.charAt(0)) + str.slice(1);
+}
+
+// theme class
+function getThemeClass(themeName){
+	return 'varsql-theme-'+themeName +' ' +'pub-theme-'+themeName 
 }
 
 }(jQuery, window, document,VARSQL));
