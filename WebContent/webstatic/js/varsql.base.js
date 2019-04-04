@@ -18,7 +18,7 @@ if (typeof window != "undefined") {
 ;(function(VARSQLCont) {
 "use strict";
 
-function set(str) {
+function setHints(str) {
 	return str.split(",");
 }
 
@@ -121,11 +121,26 @@ var DEFINE_INFO = {
 	}
 	,ORACLE : { 
 		type : 'text/x-plsql'
-		,hint : set('VARCHAR2,NVARCHAR2,NCHAR2')
+		,hint : setHints('VARCHAR2,NVARCHAR2,NCHAR2')
 		,setDataType :  function (pdto){
 			pdto['VARCHAR2'] = VARSQL.util.objectMerge({},pdto['12'],{name:'VARCHAR2'});
 			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
 			pdto['NCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
+			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
+			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
+			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
+			
+			return pdto; 
+		}
+	}
+	,TIBERO :{ 
+		type : 'text/x-plsql'
+		,hint : setHints('VARCHAR2,NVARCHAR2,NCHAR2,NUMBER')
+		,setDataType :  function (pdto){
+			pdto['VARCHAR2'] = VARSQL.util.objectMerge({},pdto['12'],{name:'VARCHAR2'});
+			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
+			pdto['NCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
+			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
 			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
 			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
 			
@@ -173,6 +188,7 @@ var dataType = {};
 
 dataType.getDataTypeInfo = function (dataType){
 	var tmpDataType= _dto[dataType]; 
+	
 	if(typeof  tmpDataType !=='undefined'){
 		return  tmpDataType;
 	}else{

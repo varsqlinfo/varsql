@@ -1856,6 +1856,10 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
+		if(refresh !== true && _self.selectMetadata[objType] == objName){
+			return ; 
+		}
+		
 		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
 		
 		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]'; 
