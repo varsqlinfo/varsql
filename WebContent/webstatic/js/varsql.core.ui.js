@@ -286,7 +286,7 @@ _ui.headerMenu ={
 				$('.header-dropdown-submenu.open').removeClass('open');
 				dropDownEle.addClass('open');
 			}
-		}).on('mouseenter',function (e){
+		}).on('mouseenter.header.menu',function (e){
 			var sEle = $(this);
 			var eleOpen = $('.varsql-menu>li.open'); 
 			if(eleOpen.length > 0){
@@ -296,16 +296,18 @@ _ui.headerMenu ={
 				sEle.closest('li').addClass('open');
 			}
 		})
-		
-		$('.header-dropdown-submenu').on('click.sub.menu', function (){
+		// submenu view
+		$('.header-dropdown-submenu').on('mouseenter.sub.menu', function (){
 			var sEle = $(this);
 			var dropDownEle = sEle.closest('.header-dropdown-submenu'); 
-			if(dropDownEle.hasClass('open')){
-				dropDownEle.removeClass('open');
-			}else{
+			if(!dropDownEle.hasClass('open')){
 				$('.header-dropdown-submenu.open').removeClass('open');
 				dropDownEle.addClass('open');
 			}
+		});
+		// top menu mouseover submenu hide
+		$('.varsql-top-menu >.varsql-menu-item').on('mouseenter.menu.item', function (){
+			$('.header-dropdown-submenu.open').removeClass('open');
 		});
 		
 		$('.varsql-menu').on('click', '.varsql-menu-item', function (e){
@@ -523,7 +525,7 @@ _ui.headerMenu ={
 		
 		if(_self.preferencesDialog ==''){
 			_self.preferencesDialog = $('#preferencesTemplate').dialog({
-				height: 420
+				height: 450
 				,width: 700
 				,modal: true
 				,buttons: {

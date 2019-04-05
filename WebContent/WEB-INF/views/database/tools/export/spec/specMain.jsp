@@ -25,17 +25,17 @@
 		<div class="preferences-body process-step-area col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.table.export.info" /></label>
+					<div class="process-title"><spring:message code="msg.table.export.info" /></div>
 				</div>
 				<div class="col-xs-12">
 					<form id="firstConfigForm" name="firstConfigForm" class="form-horizontal bv-form eportalForm">
-						<div class="form-group">
+						<div class="field-group">
 							<label class="col-xs-3 control-label"><spring:message code="file_name" /></label>
 							<div class="col-xs-9 padding0">
 								<input class="form-control text required input-sm" name="exportName" v-model="userSetting.exportName" value="table_spec">
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="field-group">
 							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.table.definition" /></label>
 							<div class="col-xs-9">
 								<label class="checkbox-inline"> 
@@ -43,7 +43,7 @@
 								</label>
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="field-group">
 							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.column.multi.sheet" /></label>
 							<div class="col-xs-9">
 								<label class="radio-inline"> 
@@ -60,7 +60,8 @@
 			
 			<div class="process-step" :class="step==2?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.table.dbclick.move" /></label>
+					<div class="process-title"><spring:message code="msg.export.spec.step2" /></div>
+					<div class="process-desc"><spring:message code="msg.table.dbclick.move" /></div>
 				</div>
 				<div class="col-xs-5">
 					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
@@ -94,11 +95,12 @@
 				
 			<div class="process-step" :class="step==3?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.column.dbclick.move" /></label>
+					<div class="process-title"><spring:message code="msg.export.spec.column.title" /></div>
+					<div class="process-desc"><spring:message code="msg.column.dbclick.move" /></div>
 				</div>
 				<div style="height:245px;;border:1px solid #ddd;margin:3px;overflow:hidden;">
 					<div class="col-xs-3">
-						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="column" /></div>
 						<div>
 							<ul id="columnSource" class="pub-select-source pub-multiselect-area" style="height: 200px;width: 100%;">
 							</ul>
@@ -130,19 +132,19 @@
 							<div class="col-xs-12" style="padding:0px 0px 5px 0px;">
 								<spring:message code="msg.export.spec.column.detail" />
 							</div>
-							<div class="form-group">
+							<div class="field-group">
 								<label class="col-xs-3 control-label padding0"><spring:message code="column" /></label>
 								<div class="col-xs-9">
 									<input class="form-control text required input-sm" v-model="detailItem.code" disabled="disabled">
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="field-group">
 								<label class="col-xs-3 control-label padding0"><spring:message code="column_name" /></label>
 								<div class="col-xs-9">
 									<input class="form-control text required input-sm" v-model="detailItem.title" >
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="field-group">
 								<label class="col-xs-3 control-label padding0"><spring:message code="size" /></label>
 								<div class="col-xs-9">
 									<input class="form-control text required input-sm" v-model="detailItem.width">
@@ -197,12 +199,13 @@ VarsqlAPP.vueServiceBean({
 		,complete : function (){
 			var _self = this; 
 			if(_self.selectTableObj.getTargetItem().length < 1){
-    			alert('테이블을 선택화세요.');
+				this.step=2;
+    			alert('<spring:message code="msg.table.select" />');
     			return ; 
     		}
 			
 			if(_self.selectColumnObj.getTargetItem().length < 1){
-    			alert('컬럼을 선택화세요.');
+    			alert('<spring:message code="msg.column.select" />');
     			return ; 
     		}
 			

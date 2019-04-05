@@ -111,7 +111,7 @@ var _initialized = false
 	,scroll :{
 		isPreventDefault : true	// 이벤트 전파 여부.	
 		,vertical : {
-			width : 13
+			width : 12
 			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 			,btnDelay : 100		// 방향키 mousedown delay
 			,speed :  'auto'	// 스크롤 스피드
@@ -120,7 +120,7 @@ var _initialized = false
 			}
 		}
 		,horizontal :{
-			height: 13
+			height: 12
 			,bgDelay : 100		
 			,btnDelay : 100		// 방향키 버튼 속도.
 			,speed : 1			// 스크롤 스피드
@@ -2037,6 +2037,7 @@ Plugin.prototype ={
 	* @param  moveObj.resizeFlag {boolean} resize flag
 	* @param  moveObj.drawFlag {boolean} redraw flag
 	* @param  moveObj.speed {Integer} row move count
+	* @param  moveObj.rowIdx {Integer} move row idx
     * @description 세로 스크롤 이동.
 	*/
 	,moveVerticalScroll : function (moveObj){
@@ -2048,12 +2049,19 @@ Plugin.prototype ={
 			return ; 
 		}
 
-		var topVal = moveObj.pos 
+		var posVal=moveObj.pos 
 			,speed = moveObj.speed || 1
-			,drawFlag = moveObj.drawFlag;
+			,drawFlag = moveObj.drawFlag
+			,rowIdx = moveObj.rowIdx;
+		
+		var topVal = posVal; 
 
-		if(isNaN(topVal)){
-			topVal =_this.config.scroll.top+((topVal=='U'?-1:1)* speed * _this.config.scroll.oneRowMove);
+		if(!isNaN(rowIdx)){
+			topVal =rowIdx * _this.config.scroll.oneRowMove;
+		}else{
+			if(isNaN(posVal)){
+				topVal =_this.config.scroll.top+((topVal=='U'?-1:1)* speed * _this.config.scroll.oneRowMove);
+			}
 		}
 		
 		this.moveVScrollPosition(topVal, moveObj.drawFlag);
@@ -2949,6 +2957,9 @@ Plugin.prototype ={
 			case 40 : { //down
 				
 				if(endIdx+1 >= dataInfo.orginRowLen){
+					if((endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){
+						_this.moveVerticalScroll({pos: 'M',rowIdx :endIdx });
+					}
 					return ; 
 				}
 
@@ -2956,10 +2967,12 @@ Plugin.prototype ={
 				var moveRowIdx = (endIdx +moveRow);
 					
 				moveRowIdx = moveRowIdx >= dataInfo.orginRowLen ? dataInfo.orginRowLen-1 : moveRowIdx;
-				
+
 				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
 
-				if((moveRowIdx -scrollInfo.viewIdx) >= scrollInfo.insideViewCount){
+				if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
+					_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+				}else if((moveRowIdx -scrollInfo.viewIdx) >= scrollInfo.insideViewCount){
 					_this.moveVerticalScroll({pos: 'D',speed :moveRow });
 				}
 			
@@ -2967,8 +2980,11 @@ Plugin.prototype ={
 			}
 			case 33 :  //PageUp
 			case 38 : { //up
-
+				
 				if(endIdx <= 0){
+					if(endIdx < scrollInfo.viewIdx){
+						_this.moveVerticalScroll({pos: 'M',rowIdx :endIdx });
+					}			
 					return ; 
 				}
 
@@ -2976,10 +2992,12 @@ Plugin.prototype ={
 				var moveRowIdx = (endIdx - moveRow);
 				
 				moveRowIdx = moveRowIdx > 0 ? moveRowIdx : 0;
-				
+
 				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
 
-				if(moveRowIdx < scrollInfo.viewIdx){
+				if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
+					_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+				}else if(moveRowIdx < scrollInfo.viewIdx){
 					_this.moveVerticalScroll({pos:'U',speed :moveRow});
 				}
 
@@ -2988,17 +3006,26 @@ Plugin.prototype ={
 			case 36 : // Home
 			case 37 : { //left
 
-				if(endCol <= 0) return ; 
+				if(endCol <= 0){
+					if(endCol < scrollInfo.startCol){
+						_this.moveHorizontalScroll({pos: 'L',colIdx :endCol});
+					}
+					return ; 
+				}
 
 				var moveColIdx =(evtKey ==36 ? 0: endCol-1);
 				
 				moveColIdx = moveColIdx > 0 ? moveColIdx : 0;
 
-				if(moveColIdx <= scrollInfo.startCol){
+				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
+				
+				if(endCol < scrollInfo.startCol){ // 스크롤 밖에 있을때
+					_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
+				}else if(endCol > scrollInfo.endCol){
+					_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				}else if(moveColIdx <= scrollInfo.startCol){
 					_this.moveHorizontalScroll({pos:'L', colIdx :moveColIdx });
 				}
-
-				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
 
 				break; 
 			}
@@ -3006,12 +3033,20 @@ Plugin.prototype ={
 			case 9 : // tab
 			case 39 : { //right
 				if(endCol+1 >= dataInfo.colLen){
+					if(endCol > scrollInfo.endCol){
+						_this.moveHorizontalScroll({pos: 'R',colIdx :endCol});
+					}
+
 					return; 
 				}
 				
 				var moveColIdx =(evtKey ==35 ? dataInfo.colLen-1 : endCol+1);
 
-				if(moveColIdx >= scrollInfo.insideEndCol){
+				if(endCol < scrollInfo.startCol){// 스크롤 밖에 있을때
+					_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
+				}else if(endCol > scrollInfo.endCol){
+					_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				}else if(moveColIdx >= scrollInfo.insideEndCol){
 					_this.moveHorizontalScroll({pos:'R' ,colIdx :moveColIdx});
 				}
 
@@ -3133,7 +3168,7 @@ Plugin.prototype ={
 		currInfo.maxCol = Math.max( currInfo.endCol , currInfo.startCol);
 		
 		if(tdSelectFlag){
-			_this._setCellSelect();
+			_this._setCellSelect(initFlag);
 		}
 	}
 	/**
@@ -3147,7 +3182,7 @@ Plugin.prototype ={
      * @method _setCellSelect
      * @description cell select  
      */
-	,_setCellSelect : function () {
+	,_setCellSelect : function (initFlag) {
 		var _this =this; 
 
 		var tmpCurr = _this.config.select.curr;
@@ -3173,9 +3208,9 @@ Plugin.prototype ={
 					var addEle;
 
 					if(_this._isFixedPostion(j)){
-						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+						addEle =_this.element.leftContent.querySelector('[data-grid-position="'+rowCol+'"]');
 					}else{
-						addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+						addEle =_this.element.bodyContent.querySelector('[data-grid-position="'+rowCol+'"]');
 					}
 					if(addEle==null) continue; 
 
@@ -3190,18 +3225,23 @@ Plugin.prototype ={
 			return ; 
 		}
 
-		_this.element.body.find('.pub-body-td[data-select-idx="'+tmpCurr+'"].col-active').each(function (){
-			var sEle = $(this);
-			
-			var gridTdPos = sEle.attr('data-grid-position')
-				,selCol = gridTdPos.split(',');
+		if(initFlag){
+			_this.element.body.find('.pub-body-td.col-active').removeClass('col-active');
+		}else{
+			_this.element.body.find('.pub-body-td[data-select-idx="'+tmpCurr+'"].col-active').each(function (){
 
-			if(_this.isSelectPosition(currViewIdx+intValue(selCol[0]) , intValue(selCol[1]))){
+				var sEle = $(this);
 				
-			}else{
-				sEle.removeClass('col-active');
-			}
-		})
+				var gridTdPos = sEle.attr('data-grid-position')
+					,selCol = gridTdPos.split(',');
+
+				if(_this.isSelectPosition(currViewIdx+intValue(selCol[0]) , intValue(selCol[1]))){
+					
+				}else{
+					sEle.removeClass('col-active');
+				}
+			})
+		}
 		
 		var rangeKey = _this.config.select.range._key; 
 		var isRowSelect =false,isColSelect = false;  
@@ -3227,9 +3267,9 @@ Plugin.prototype ={
 				var addEle;
 				
 				if(_this._isFixedPostion(j)){
-					addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+					addEle =_this.element.leftContent.querySelector('[data-grid-position="'+rowCol+'"]');
 				}else{
-					addEle =$pubSelect('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont').querySelector('[data-grid-position="'+rowCol+'"]');
+					addEle =_this.element.bodyContent.querySelector('[data-grid-position="'+rowCol+'"]');
 				}
 				if(addEle==null) continue; 
 

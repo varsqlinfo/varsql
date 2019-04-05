@@ -564,10 +564,12 @@ Plugin.prototype ={
 			for(var pageHtmKey in pageNumHtm){
 				
 				var tmpHtmInfo = pageNumHtm[pageHtmKey].join('');
+				
+				var tmpHtmInfoEle = $(tmpHtmInfo); 
+				
+				if(tmpHtmInfoEle.hasClass("empty-message")) continue; 
 
-				if(tmpHtmInfo.indexOf('class="empty-message"') > -1) continue; 
-
-				$(tmpHtmInfo).each(function (i ,item){
+				tmpHtmInfoEle.each(function (i ,item){
 				
 					var tmpPageNo = $(item).attr('data-pageno');
 					var addItem = _this.addItemList[tmpPageNo][$(item).attr('data-val')];

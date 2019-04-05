@@ -27,12 +27,12 @@
 		<div class="preferences-body process-step-area col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.export.ddl.info" /></label>
+					<div class="process-title"><spring:message code="msg.export.ddl.info" /></div>
 				</div>
 				<div class="col-xs-12">
 					<form id="firstConfigForm" name="firstConfigForm" class="form-horizontal bv-form eportalForm">
-						<div class="form-group">
-							<label class="col-xs-3 control-label"><spring:message code="file_name" /></label>
+						<div class="field-group">
+							<label class="col-xs-3"><spring:message code="file_name" /></label>
 							<div class="col-xs-9 padding0">
 								<input class="form-control text required input-sm" name="export_name" v-model="downloadConfig.exportName">
 							</div>
@@ -43,7 +43,8 @@
 			
 			<div class="process-step" :class="step==2?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.export.ddl.object.select" /></label>
+					<div class="process-title"><spring:message code="msg.export.ddl.step2" /></div>
+					<div class="process-desc"><spring:message code="msg.export.ddl.object.desc" /></div>
 				</div>
 				<div class="col-xs-12">
 					<ul>
@@ -59,7 +60,8 @@
 				
 			<div class="process-step" :class="step==3?'active':''">
 				<div class="col-xs-12">
-					<label class="control-label"><spring:message code="msg.table.dbclick.move" /></label>
+					<div class="process-title"><spring:message code="msg.export.ddl.object.select.title" /></div>
+					<div class="process-desc"><spring:message code="msg.table.dbclick.move" /></div>
 				</div>
 				<div class="col-xs-3">
 					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.object" /></div>
@@ -76,7 +78,7 @@
 				</div>
 				
 				<div class="col-xs-4 padding0">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="object" /></div>
 					<div>
 						<ul id="source" class="pub-select-source pub-multiselect-area" style="height: 200px;width: 100%;">
 						</ul>
