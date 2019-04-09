@@ -128,6 +128,7 @@ var _initialized = false
 	}
 	,theme : 'light'
 	,height: 'auto'
+	,itemMaxCount : -1	// add시 item max로 유지할 카운트
 	/*
 	tColItem  object info
 	{
@@ -760,20 +761,20 @@ Plugin.prototype ={
 	/**
      * @method addData
 	 * @param data {Array} - 데이타
-	 * @param prependFlag {Boolean} - prepend flag
+	 * @param opt {Object} - add option { prepend : 앞에 넣을지 여부 (true or false) ,focus : 스크롤 이동 여부 (true or false) }
      * @description 데이타 add
      */
-	,addData : function (pData, prependFlag){
-		this.setData(pData, 'addData', prependFlag);
+	,addData : function (pData, opt){
+		this.setData(pData, 'addData', opt);
 	}
 	/**
      * @method setData
 	 * @param data {Array} - 데이타
 	 * @param gridMode {String} - 그리드 모드 
-	 * @param prependFlag {Boolean} - prepend flag
+	 * @param addOpt {Object} - add opt
      * @description 데이타 그리기
      */
-	,setData :function (pdata, mode, prependFlag){
+	,setData :function (pdata, mode, addOpt){
 		var _this = this
 			,opt = _this.options
 			,tci = opt.tColItem;
@@ -792,11 +793,22 @@ Plugin.prototype ={
 
 		if(data){
 			if(gridMode == 'addData'){
-				if(prependFlag ===true){
+				var rowIdx =0;
+				
+				if(addOpt.prepend ===true){
 					Array.prototype.unshift.apply(_this.options.tbodyItem, data);
 					//_this.options.tbodyItem = _this.options.tbodyItem.unshift(data);	
 				}else{
 					_this.options.tbodyItem = _this.options.tbodyItem.concat(data);	
+				}
+				
+				if(_this.options.tbodyItem.length > opt.itemMaxCount){
+					var removeCount = _this.options.tbodyItem.length-opt.itemMaxCount; 
+					if(addOpt.prepend ===true){
+						_this.options.tbodyItem.splice(opt.itemMaxCount,removeCount)
+					}else{
+						_this.options.tbodyItem.splice(0,removeCount)
+					}	
 				}
 			}else{
 				_this.options.tbodyItem = data;
@@ -873,6 +885,14 @@ Plugin.prototype ={
 
 		if(gridMode != 'addData'){
 			_this.drawGrid(mode,true);
+		}else{
+			if(addOpt.focus ===true){
+				if(addOpt.prepend ===true){
+					_this.moveVerticalScroll({rowIdx : 0})
+				}else{
+					_this.moveVerticalScroll({rowIdx : _this.config.dataInfo.orginRowLen})
+				}	
+			}
 		}
 
 		_this.setPage(pageInfo);
@@ -2949,8 +2969,7 @@ Plugin.prototype ={
 		var endIdx = rangeInfo.endIdx
 			,endCol = rangeInfo.endCol
 			,currViewIdx = scrollInfo.viewIdx;
-			
-
+		
 		switch(evtKey){
 			case 34 : // PageDown
 			case 13 : // enter
@@ -2970,8 +2989,8 @@ Plugin.prototype ={
 
 				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
 
-				if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
-					_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+				if(insideScrollCheck(endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
+					return ; 
 				}else if((moveRowIdx -scrollInfo.viewIdx) >= scrollInfo.insideViewCount){
 					_this.moveVerticalScroll({pos: 'D',speed :moveRow });
 				}
@@ -2995,8 +3014,8 @@ Plugin.prototype ={
 
 				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
 
-				if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
-					_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+				if(insideScrollCheck(endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
+					return ; 
 				}else if(moveRowIdx < scrollInfo.viewIdx){
 					_this.moveVerticalScroll({pos:'U',speed :moveRow});
 				}
@@ -3019,10 +3038,8 @@ Plugin.prototype ={
 
 				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
 				
-				if(endCol < scrollInfo.startCol){ // 스크롤 밖에 있을때
-					_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
-				}else if(endCol > scrollInfo.endCol){
-					_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				if(insideScrollCheck(endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
+					return ; 
 				}else if(moveColIdx <= scrollInfo.startCol){
 					_this.moveHorizontalScroll({pos:'L', colIdx :moveColIdx });
 				}
@@ -3042,15 +3059,13 @@ Plugin.prototype ={
 				
 				var moveColIdx =(evtKey ==35 ? dataInfo.colLen-1 : endCol+1);
 
-				if(endCol < scrollInfo.startCol){// 스크롤 밖에 있을때
-					_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
-				}else if(endCol > scrollInfo.endCol){
-					_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
+				
+				if(insideScrollCheck(endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
+					return ; 
 				}else if(moveColIdx >= scrollInfo.insideEndCol){
 					_this.moveHorizontalScroll({pos:'R' ,colIdx :moveColIdx});
 				}
-
-				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
 						
 				break; 
 			}
@@ -3070,6 +3085,24 @@ Plugin.prototype ={
 					rangeInfo :  {startIdx : endIdx,endIdx : endIdx, startCol:moveColIdx,endCol :moveColIdx}
 				},true, true);
 			}
+		}
+
+		// cursor scroll inside check
+		function insideScrollCheck(endIdx, endCol,scrollInfo, moveRowIdx, moveColIdx){
+			var reFlag = false; 
+			if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
+				_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+				reFlag = true; 
+			}
+			
+			if(endCol < scrollInfo.startCol){ // 스크롤 밖에 있을때
+				_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
+				reFlag = true; 
+			}else if(endCol > scrollInfo.endCol){
+				_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				reFlag = true; 
+			}
+			return reFlag;
 		}
 	}
 	/**

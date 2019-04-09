@@ -1031,7 +1031,7 @@ _ui.dbSchemaObject ={
 			
 			_g_options.param.schema =sEle.attr('obj_nm');
 			
-			$('#varsql_schema_name').html(_g_options.param.schema);
+			$('#varsqlSschemaName').val(_g_options.param.schema);
 			
 			_g_cache.initSOMetaCacheObject();
 			_self.selectObjectMenu = '';

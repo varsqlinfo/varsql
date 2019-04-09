@@ -116,6 +116,7 @@
 
 <!-- button message -->
 <entry key="btn.search">조회</entry>
+<entry key="btn.compare">비교</entry>
 <entry key="btn.save">저장</entry>
 <entry key="btn.delete">삭제</entry>
 <entry key="btn.add">추가</entry>
@@ -129,7 +130,6 @@
 <entry key="btn.setting">셋팅</entry>
 <entry key="btn.signup">회원가입</entry>
 <entry key="btn.logout">로그아웃</entry>
-<entry key="btn.search">검색</entry>
 
 <!-- toolbar button -->
 <entry key="btn.toolbar.execute">실행</entry>
@@ -292,6 +292,14 @@
 <entry key="id">ID</entry>
 <entry key="ip">IP</entry>
 <entry key="size">크기</entry>
+<entry key="loading">로딩중 입니다.</entry>
+<entry key="select">선택</entry>
+<entry key="source">대상</entry>
+<entry key="target">타켓</entry>
+<entry key="result.download">결과 다운르드</entry>
+
+<entry key="compare.result">비교 결과</entry>
+<entry key="compare.detail">비교 상세</entry>
 
 <!-- export table spec -->
 <entry key="msg.export.spec.step1">내보내기 정보</entry>

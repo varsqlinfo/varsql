@@ -140,6 +140,7 @@
 		select
 			a.VCONNID
 			,a.VNAME
+			,a.VDBSCHEMA
 		from VTCONNECTION a 
 		<choose>
 			<when test="customParam.role != null and customParam.role.equalsIgnoreCase('ADMIN')">

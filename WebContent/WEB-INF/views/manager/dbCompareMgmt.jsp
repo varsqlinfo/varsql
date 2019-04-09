@@ -6,6 +6,7 @@
 [data-compare-area="grid"]{
 	display:block;
 }
+
 [data-compare-mode="text"] [data-compare-area="grid"]{
 	display:none;
 }
@@ -19,7 +20,7 @@
 }
 
 .CodeMirror-merge, .CodeMirror-merge .CodeMirror {
-    height: 650px;
+    height: 665px;
 }
 
 .CodeMirror-merge {
@@ -46,6 +47,16 @@ section#content:after{content:"";display:block;clear:both;}
     color: #428bca;
 }
 
+
+.source-object-meta, .source-target-meta{
+	height:205px;
+}
+
+.source-column,.target-column{
+	height:645px;
+}
+
+
 </style>
 <!-- Page Heading -->
 <div class="row">
@@ -66,7 +77,9 @@ section#content:after{content:"";display:block;clear:both;}
 						<td>
 							<div style="text-align: center;">
 								<div style="width: 200px; padding: 5px 10px 5px 10px; background-color: #ffffff; line-height: 15pt; margin: auto;">
-									<span>데이터를 로드중입니다.</span><br>
+									<span>
+										<spring:message code="loading" text="로드중입니다."/>
+									</span><br>
 									<span><img src="/vsql/webstatic/imgs/progressLoader.gif"></span>
 								</div>
 							</div>
@@ -75,45 +88,59 @@ section#content:after{content:"";display:block;clear:both;}
 				</table>
 			</div>
 		</div>
+			
 		<div class="panel panel-default">
-			<div class="panel-heading">
-				대상
-				<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:30%">
-					<option value="">선택</option>
-					<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
-				</select>
-				타켓
-				<select class="input-sm" v-model="diffItem.target" style="width:30%">
-					<option value="">선택</option>
-					<option v-for="(item,index) in dbList" v-if="diffItem.source != item.VCONNID" :value="item.VCONNID">{{item.VNAME}}</option>
-				</select>
-				오브젝트
+			<div class="panel-heading db-compare-header">
+				<spring:message code="source" text="대상"/>
+				<span>
+					<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:18%">
+						<option value=""><spring:message code="select" text="선택"/></option>
+						<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+					</select>
+					<select class="input-sm" v-model="diffItem.sourceSchema" style="width:12%">
+						<option value=""><spring:message code="select" text="선택"/></option>
+						<option v-for="(item,index) in sourceSchemaList" :value="item">{{item}}</option>
+					</select>
+				
+				</span>
+				<spring:message code="target" text="타켓"/>
+				<span>
+					<select class="input-sm" v-model="diffItem.target" @change="targetChange(diffItem.target)" style="width:18%">
+						<option value=""><spring:message code="select" text="선택"/></option>
+						<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+					</select>
+					<select class="input-sm" v-model="diffItem.targetSchema" style="width:12%">
+						<option value=""><spring:message code="select" text="선택"/></option>
+						<option v-for="(item,index) in targetSchemaList" :value="item">{{item}}</option>
+					</select>
+				</span>
+				<spring:message code="object" text="오브젝트"/>
 				<select class="input-sm" v-model="diffItem.objectType" style="width:10%">
-					<option value="">선택</option>
+					<option value=""><spring:message code="select" text="선택"/></option>
 					<option v-for="(item,index) in objectList" :value="item.contentid">{{item.name}}</option>
 				</select>
 				<button @click="objectListSearch()" type="button" class="btn btn-sm btn-primary" style="margin-bottom: 3px">
-					조회
+					<spring:message code="btn.compare" text="비교"/>
 				</button>
 			</div>
 			<div class="panel-body" id="compareArea">
 				<div class="row" style="position: relative;">
 					<div id="resizeHelper" class="resizable-helper"></div>
 					<aside id="resizable" class="ui-widget-content">
-						<div class="panel panel-default" style="height:250px;padding-bottom:10px;margin-bottom:10px;">
+						<div class="panel panel-default" style="height:230px;padding-bottom:10px;margin-bottom:10px;">
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div>대상</div>
-										<div id="sourceObjectMeta" class="row" style="height:200px;">
+										<div><spring:message code="source" text="대상"/></div>
+										<div id="sourceObjectMeta" class="row source-object-meta">
 											
 										</div>
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div>타켓</div>
-										<div id="targetObjectMeta" class="row" style="height:200px;">
+										<div><spring:message code="target" text="타켓"/></div>
+										<div id="targetObjectMeta" class="row source-target-meta">
 											
 										</div>
 									</div>
@@ -122,7 +149,8 @@ section#content:after{content:"";display:block;clear:both;}
 						</div>
 						<div>
 							<div class="panel-heading" style="padding:3px;">
-								비교 결과
+								<span><spring:message code="compare.result" text="비교결과"/></span>
+								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
 							<div class="panel-body" style="padding: 0px;">	
 								<pre v-html="compareResult" id="compareResultArea" style="height:400px;overflow:auto;">
@@ -132,29 +160,29 @@ section#content:after{content:"";display:block;clear:both;}
 						</div>
 					</aside>
 					<section id="content">
-						<div class="panel panel-default" style="padding-left: 0px; height: 685px;">
-							비교상세 : <span style="font-weight: bold;padding-left:5px;">{{compareObjectName}}&nbsp;</span>
-							<div class="panel-body" style="padding: 5px;" :data-compare-mode="diffItem.objectType != 'table'?'text':''">	
+						<div class="panel panel-default" style="padding-left: 0px; height: 100%;padding-bottom: 10px; margin-bottom: 10px;">
+							<spring:message code="compare.detail" text="비교상세"/> : <span style="font-weight: bold;padding-left:5px;">{{compareObjectName}}&nbsp;</span>
+							<div class="panel-body" style="padding: 5px 5px 0px 5px;" :data-compare-mode="currentObjectType != 'table'?'text':''">	
 								<div data-compare-area="grid">
 									<div class="col-xs-6">
 										<div style="margin:3px;">
-											<div class="row">컬럼</div>
-											<div id="sourceColumn" class="row" style="height:550px;">
+											<div class="row"><span><spring:message code="column" text="컬럼"/></span></div>
+											<div id="sourceColumn" class="row source-column">
 											
 											</div>
 										</div>
 									</div>
 									<div class="col-xs-6">
 										<div style="margin:3px;">
-											<div class="row">컬럼</div>
-											<div id="targetColumn" class="row" style="height:550px;">
+											<div class="row"><spring:message code="column" text="컬럼"/></div>
+											<div id="targetColumn" class="row target-column" >
 											
 											</div>
 										</div>
 									</div>
 								</div>
 								<div data-compare-area="text">
-									<div id="compareTextArea" style="height: 650px;"></div>
+									<div id="compareTextArea" style="height: 100%;"></div>
 								</div>
 							</div>
 						</div>
@@ -167,20 +195,26 @@ section#content:after{content:"";display:block;clear:both;}
 </div>
 <!-- /.row -->
 
-
 <script>
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,data: {
 		dbList : ${varsqlfn:objectToJson(dbList)}
+		,dbListMap : {}
 		,diffItem : {
 			source :''
+			,sourceSchema : ''
 			,target :''
+			,targetSchema : ''
 			,objectType : ''
 		}
+		,currentObjectType : ''
 		,loading:false
 		,compareObjectName :''
 		,objectList : []
+		
+		,sourceSchemaList :[]
+		,targetSchemaList :[]
 		,sourceItems : false	// 원천 item 목록.
 		,targetItems : false
 		,compareItem : {
@@ -191,23 +225,42 @@ VarsqlAPP.vueServiceBean( {
 	}
 	,computed: {
 		compareResult : function (){
+			if(this.currentObjectType != this.diffItem.objectType){
+				return '';
+			}
+			
 			if(this.sourceItems !==false && this.targetItems !== false){
 				var compareFn = this[this.diffItem.objectType+'Compare'];
 				
-				this.loading =false; 
+				this.loading =false;
+				var resultVal = '';
 				if(compareFn){
-					return compareFn.call(this);
+					resultVal =compareFn.call(this);
 				}else{
-					return this.otherCompare.call(this);
+					resultVal = this.otherCompare.call(this);
+				}
+				
+				if(resultVal ==''){
+					return '<div class="text-center">동일합니다</div>';
+				}else{
+					return resultVal;
 				}
 			}
-			
 			return '';
 		}
 	}
 	,methods:{
 		init : function(){
 			var _self = this;
+			
+			var dbList = _self.dbList;
+			var dbListMap = {};
+			for(var i =0, len = dbList.length; i< len ;i++){
+				var dbInfo = dbList[i];
+				dbListMap[dbInfo.VCONNID] = dbInfo; 
+			}
+			
+			_self.dbListMap = dbListMap;
 			
 			$('#compareResultArea').on('click','.table-name' , function (e){
 				var sEle = $(this);
@@ -293,9 +346,15 @@ VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 			
+			_self.initDetailArea();
+			
+			
 			this.loading =true; 
 			_self.targetItems = false;
 			_self.sourceItems = false;
+			
+			_self.compareObjectName = '';
+			_self.currentObjectType = diffItem.objectType;
 			
 			var objectType = diffItem.objectType; 
 			// source data load
@@ -305,6 +364,7 @@ VarsqlAPP.vueServiceBean( {
 				,data :  {
 					vconnid : diffItem.source 
 					,objectType : objectType
+					,schema : diffItem.sourceSchema
 				}
 				,success: function(resData) {
 					
@@ -325,6 +385,7 @@ VarsqlAPP.vueServiceBean( {
 				,data :  {
 					vconnid : diffItem.target 
 					,objectType : objectType
+					,schema : diffItem.targetSchema
 				}
 				,success: function(resData) {
 					var objViewFn = _self[objectType+'ObjectView'];
@@ -336,6 +397,19 @@ VarsqlAPP.vueServiceBean( {
 					}
 				}
 			})
+		}
+		//상세 비교 
+		,initDetailArea : function (){
+			
+			var sourceMetaGridObj = $.pubGrid('#sourceColumn');
+			if(sourceMetaGridObj)sourceMetaGridObj.destroy();
+			
+			var targetMetaGridObj = $.pubGrid('#targetColumn');
+			if(targetMetaGridObj)targetMetaGridObj.destroy();
+			
+			
+			this.otherMetaView({});
+		 	
 		}
 		// 테이블 비교
 		,tableCompare : function (){
@@ -761,8 +835,8 @@ VarsqlAPP.vueServiceBean( {
 						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 					}
 					,tColItem : [
-						{key :'name', label:'Table', width:200, sort:true}
-						,{key :'remarks', label:'설명', sort:true}
+						{key :'name', label:'Object Name', width:200, sort:true}
+						,{key :'remarks', label:'Desc', sort:true}
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -807,8 +881,8 @@ VarsqlAPP.vueServiceBean( {
 						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 					}
 					,tColItem : [
-						{key :'name', label:'Table', width:200, sort:true}
-						,{key :'remarks', label:'설명', sort:true}
+						{key :'name', label:'Object Name', width:200, sort:true}
+						,{key :'remarks', label:'Desc', sort:true}
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -930,16 +1004,48 @@ VarsqlAPP.vueServiceBean( {
 		,sourceChange : function (val){
 			var _self = this; 
 			
+			_self.diffItem.sourceSchema = _self.dbListMap[val].VDBSCHEMA;
+			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}
 				,data : {
 					vconnid : val
 				}
+				,loadSelector : '#varsqlVueArea'
 				,success: function(resData) {
 					_self.objectList = resData.items;
+					_self.sourceSchemaList = resData.customs.schemaInfo;
 				}
 			})
+		}
+		,targetChange : function (val){
+			var _self = this; 
 			
+			_self.diffItem.targetSchema = _self.dbListMap[val].VDBSCHEMA;
+			
+			this.$ajax({
+				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}
+				,loadSelector : '#varsqlVueArea'
+				,data : {
+					vconnid : val
+				}
+				,success: function(resData) {
+					_self.targetSchemaList = resData.customs.schemaInfo;
+				}
+			})
+		}
+		,resultDownload : function (){
+			var params ={
+				exportType :'text' 
+				,fileName : 'dbCompareResult.html'
+				,content : '<pre>' + $('#compareResultArea').html() +'</pre>'
+			};
+			
+			VARSQL.req.download({
+				type: 'post'
+				,url: '/download.varsql'
+				,params: params
+			});
 		}
 	}
 });

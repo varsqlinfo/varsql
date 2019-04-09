@@ -59,6 +59,10 @@ public class DbDiffServiceImpl{
 		}else{
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
 			resultObject.setItemList(dbMetaEnum.getServiceMenu());
+			
+			DatabaseParamInfo dpi =  getDatabaseParamInfo(vtConnRVO);
+					
+			resultObject.addCustoms("schemaInfo",dbMetaEnum.getSchemas(dpi));
 		}
 		
 		return resultObject;
@@ -84,15 +88,8 @@ public class DbDiffServiceImpl{
 			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
 			resultObject.setItemList(null);
 		}else{
-			DatabaseParamInfo dpi = new DatabaseParamInfo();
-			dpi.setConuid(null, SecurityUtil.loginUser().getUid(), new DatabaseInfo(vtConnRVO.getVCONNID()
-					, null
-					, vtConnRVO.getVTYPE()
-					, vtConnRVO.getVNAME()
-					, vtConnRVO.getVDBSCHEMA()
-					, vtConnRVO.getBASETABLE_YN()
-					, vtConnRVO.getLAZYLOAD_YN()
-					, vtConnRVO.getVDBVERSION()));
+			DatabaseParamInfo dpi = getDatabaseParamInfo(vtConnRVO);
+			dpi.setSchema(paramMap.getString("schema", dpi.getSchema()));
 			
 			String objectType = paramMap.getString("objectType"); 
 			dpi.setObjectType(objectType);
@@ -108,6 +105,7 @@ public class DbDiffServiceImpl{
 				
 				int idx =0 ; 
 				for(BaseObjectInfo boi : objectList){
+					System.out.println("boi.getName() : "+ boi.getName());
 					objectNameArr[idx] =boi.getName();
 					++idx;
 				}
@@ -116,5 +114,20 @@ public class DbDiffServiceImpl{
 		}
 		
 		return resultObject;
+	}
+	
+	
+	private DatabaseParamInfo getDatabaseParamInfo(VtconnectionRVO vtConnRVO) {
+		DatabaseParamInfo dpi = new DatabaseParamInfo();
+		dpi.setConuid(null, SecurityUtil.loginUser().getUid(), new DatabaseInfo(vtConnRVO.getVCONNID()
+				, null
+				, vtConnRVO.getVTYPE()
+				, vtConnRVO.getVNAME()
+				, vtConnRVO.getVDBSCHEMA()
+				, vtConnRVO.getBASETABLE_YN()
+				, vtConnRVO.getLAZYLOAD_YN()
+				, vtConnRVO.getVDBVERSION()));
+		
+		return dpi; 
 	}
 }
