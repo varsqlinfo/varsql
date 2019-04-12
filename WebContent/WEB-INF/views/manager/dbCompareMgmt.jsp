@@ -191,7 +191,11 @@ section#content:after{content:"";display:block;clear:both;}
 			</div>
 		</div>
 	</div>
-		
+											
+	<div id="downloadTemplate" class="hidden">
+		<span><spring:message code="source" text="대상"/> : {{currentObject.sourceSchema}}</span>
+		<span><spring:message code="target" text="타켓"/> :  {{currentObject.targetSchema}}</span>
+	</div>
 </div>
 <!-- /.row -->
 
@@ -209,6 +213,7 @@ VarsqlAPP.vueServiceBean( {
 			,objectType : ''
 		}
 		,currentObjectType : ''
+		,currentObject : {}
 		,loading:false
 		,compareObjectName :''
 		,objectList : []
@@ -341,7 +346,8 @@ VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 			
-			if(diffItem.objectType ==''){
+			var objectType = diffItem.objectType;
+			if(objectType ==''){
 				VARSQLUI.toast.open('objectType을 선택하세요.');
 				return ;
 			}
@@ -354,9 +360,9 @@ VarsqlAPP.vueServiceBean( {
 			_self.sourceItems = false;
 			
 			_self.compareObjectName = '';
-			_self.currentObjectType = diffItem.objectType;
+			_self.currentObjectType = objectType;
+			_self.currentObject = VARSQL.util.objectMerge ({},diffItem);
 			
-			var objectType = diffItem.objectType; 
 			// source data load
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
@@ -1035,10 +1041,13 @@ VarsqlAPP.vueServiceBean( {
 			})
 		}
 		,resultDownload : function (){
+			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html()
+			
+			
 			var params ={
 				exportType :'text' 
 				,fileName : 'dbCompareResult.html'
-				,content : '<pre>' + $('#compareResultArea').html() +'</pre>'
+				,content : headerHtml+'<pre>' + $('#compareResultArea').html() +'</pre>'
 			};
 			
 			VARSQL.req.download({

@@ -30,9 +30,9 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 		String connid =req.getParameter(VarsqlParamConstants.CONN_UUID);
 		if (!authCheck(req, connid)) {
 			if(VarsqlUtil.isAjaxRequest(req)){
-				req.getRequestDispatcher("/invalidDatabase").forward(req, res);
+				req.getRequestDispatcher("/error/invalidDatabase").forward(req, res);
 			}else{
-				req.getRequestDispatcher("/invalidDatabasePage").forward(req, res);
+				req.getRequestDispatcher("/error/invalidDatabasePage").forward(req, res);
 			}
 		    return false;
 		}

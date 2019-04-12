@@ -44,22 +44,6 @@ public class VarsqlCommonController {
 		return new ModelAndView("redirect:/login", model);
 	}
 
-	@RequestMapping(value = "/invalidDatabase")
-	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res,
-			ModelAndView mav) throws Exception {
-		ResponseResult result = new ResponseResult();
-		result.setStatus(500);
-		result.setResultCode(2000);
-		result.setMessage("invalidDatabase");
-		
-		return result; 
-	}
-	
-	@RequestMapping(value = "/invalidDatabasePage")
-	public ModelAndView invalidDatabasePage(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		return new ModelAndView("/commonPage/error/invalidDatabase");
-	}
-	
 	/**
 	 * 
 	 * @Method Name  : invalidLogin

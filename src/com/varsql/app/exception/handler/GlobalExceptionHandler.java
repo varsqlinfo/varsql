@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.varsql.app.exception.DatabaseInvalidException;
 import com.varsql.app.exception.VarsqlAppException;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.connection.pool.ConnectionCreateException;
@@ -55,26 +56,6 @@ public class GlobalExceptionHandler{
 		exceptionRequestHandle(request, response ,result,"connError");
 	}
 	
-	/**
-	 * 
-	 * @Method Name  : runtimeExceptionHandle
-	 * @Method 설명 : 실행시 에러 처리.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 13. 
-	 * @변경이력  :
-	 * @param ex
-	 * @param response
-	 * @return
-	 */
-	@ExceptionHandler(value=RuntimeException.class)
-	public void runtimeExceptionHandle(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
-		
-		logger.error("runtimeExceptionHandle : ", getClass().getName(),ex);
-		ResponseResult result = new ResponseResult();
-		result.setMessage(ex.getMessage());
-		
-		exceptionRequestHandle(request, response ,result);
-	}
 	
 	/**
 	 * 
@@ -163,6 +144,47 @@ public class GlobalExceptionHandler{
 		exceptionRequestHandle(request, response ,result ,"connCreateError");
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : databaseInvalidExceptionHandle
+	 * @Method 설명 : database invalid exception
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 4. 12. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=DatabaseInvalidException.class)
+	public void databaseInvalidExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+		
+		logger.error(getClass().getName(),ex);
+		
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(request, response ,result,"invalidDatabasePage");
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : runtimeExceptionHandle
+	 * @Method 설명 : 실행시 에러 처리.
+	 * @작성자   : ytkim
+	 * @작성일   : 2017. 11. 13. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param response
+	 * @return
+	 */
+	@ExceptionHandler(value=RuntimeException.class)
+	public void runtimeExceptionHandle(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
+		
+		logger.error("runtimeExceptionHandle : ", getClass().getName(),ex);
+		ResponseResult result = new ResponseResult();
+		result.setMessage(ex.getMessage());
+		
+		exceptionRequestHandle(request, response ,result);
+	}
+	
 	@ExceptionHandler(value=Exception.class)
 	public void exceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
@@ -202,6 +224,7 @@ public class GlobalExceptionHandler{
 			}
 		}else{
 			try {
+				System.out.println("pageName : " +pageName);
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);
 				dispatcher.forward(request, response);
 			} catch (ServletException | IOException e1) {

@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-<title>권한이 없습니다 </title>
+<title>권한이 없습니다 403</title>
 <style>
 html, body{width:100%;height:100%;overflow:hidden;}
 </style>

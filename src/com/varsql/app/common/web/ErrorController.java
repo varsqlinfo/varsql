@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.vartech.common.app.beans.ResponseResult;
 
 
 
@@ -67,6 +70,24 @@ public class ErrorController {
 	public ModelAndView blockUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView model = new ModelAndView();
 		model.setViewName("/commonPage/error/blockUser");
+		return model;
+	}
+	
+	@RequestMapping(value = "/invalidDatabase")
+	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res,
+			ModelAndView mav) throws Exception {
+		ResponseResult result = new ResponseResult();
+		result.setStatus(500);
+		result.setResultCode(2000);
+		result.setMessage("invalidDatabase");
+		
+		return result; 
+	}
+	
+	@RequestMapping(value = "/invalidDatabasePage")
+	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("/commonPage/error/invalidDatabase");
 		return model;
 	}
 }
