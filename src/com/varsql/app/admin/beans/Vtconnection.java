@@ -55,7 +55,7 @@ public class Vtconnection{
 
 	private String userId;
 	
-	private String pollinit;
+	private String poolInit;
 	
 	@NotBlank
 	@Size(max=1)
@@ -130,11 +130,11 @@ public class Vtconnection{
 	public void setUserId(String regId){
 		this.userId=regId;
 	}
-	public String getPollinit() {
-		return pollinit;
+	public String getPoolInit() {
+		return this.poolInit;
 	}
-	public void setPollinit(String pollinit) {
-		this.pollinit = pollinit;
+	public void setPoolInit(String poolInit) {
+		this.poolInit = poolInit;
 	}
 	public String getUseYn() {
 		return useYn;

@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.varsql.app.exception.DatabaseInvalidException;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
@@ -38,26 +37,20 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public Map schemas(DatabaseParamInfo databaseParamInfo) throws Exception {
+	public Map schemas(DatabaseParamInfo databaseParamInfo){
 		Map json = new HashMap();
 		String connid =databaseParamInfo.getConuid();
 		
-		try{
-			DatabaseInfo  dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
-			
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
-			
-			json.put("schema", dbinfo.getSchema());
-			json.put("conuid", dbinfo.getConnUUID());
-			json.put("type", dbinfo.getType());
-			json.put("lazyload", dbinfo.isLazyLoad());
-			json.put("schemaList", dbMetaEnum.getSchemas(databaseParamInfo));
-			json.put("serviceObject", dbMetaEnum.getServiceMenu());
-			
-		}catch(Exception e){
-			logger.error("schemas {}" , e.getMessage());
-			throw new DatabaseInvalidException(e.getMessage());
-		}
+		DatabaseInfo dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
+		
+		json.put("schema", dbinfo.getSchema());
+		json.put("conuid", dbinfo.getConnUUID());
+		json.put("type", dbinfo.getType());
+		json.put("lazyload", dbinfo.isLazyLoad());
+		json.put("schemaList", dbMetaEnum.getSchemas(databaseParamInfo));
+		json.put("serviceObject", dbMetaEnum.getServiceMenu());
 		
 		return json;
 	}
@@ -91,7 +84,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception 
 	 */
-	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) throws Exception {
+	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
 		
 		ResponseResult result = new ResponseResult();

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.varsql.app.common.beans.ExceptionLogVO;
 import com.varsql.app.common.beans.VtconnectionRVO;
 
 /**
@@ -25,6 +26,10 @@ public class CommonDAO extends BaseDAO{
 	
 	public VtconnectionRVO selectDetailObject(Map paramMap) {
 		return getSqlSession().selectOne("commonMapper.selectDetailObject", paramMap);
+	}
+	
+	public int insertExceptionLog(ExceptionLogVO exceptionLogVO) {
+		return getSqlSession().insert("commonMapper.insertExceptionLog", exceptionLogVO);
 	}
 
 }

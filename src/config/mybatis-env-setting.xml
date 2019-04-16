@@ -24,5 +24,6 @@
 	  <typeAlias alias="userForm" type="com.varsql.app.user.beans.UserForm"/>
 	  <typeAlias alias="joinForm" type="com.varsql.app.user.beans.JoinForm"/>
 	  <typeAlias alias="passwordForm" type="com.varsql.app.user.beans.PasswordForm"/>
+	  <typeAlias alias="exceptionLogVO" type="com.varsql.app.common.beans.ExceptionLogVO"/>
 	</typeAliases>
 </configuration>

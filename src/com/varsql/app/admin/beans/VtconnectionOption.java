@@ -27,7 +27,7 @@ public class VtconnectionOption{
 	
 	private String userId;
 	
-	private String pollinit;
+	private String poolInit;
 	
 	@NotNull
 	@Range(min=-1, max=1000)
@@ -64,12 +64,11 @@ public class VtconnectionOption{
 		this.userId = userId;
 	}
 
-	public String getPollinit() {
-		return pollinit;
+	public String getPoolInit() {
+		return this.poolInit;
 	}
-
-	public void setPollinit(String pollinit) {
-		this.pollinit = pollinit;
+	public void setPoolInit(String poolInit) {
+		this.poolInit = poolInit;
 	}
 
 	public int getMaxActive() {

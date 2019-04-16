@@ -31,4 +31,10 @@
 		where DEL_YN = 'N'
 		AND VCONNID =#{vconnid}
 	</select>
+		
+	<!-- exception 정보 등록. -->
+	<insert id="commonMapper.insertExceptionLog" parameterType="exceptionLogVO">
+		insert into VTSQL_EXCEPTIONLOG (EXCP_ID,SERVER_ID,EXCP_TYPE,EXCP_TITLE,EXCP_CONT,REG_ID,REG_DT )
+		values( #{exceotionId},#{serverId},#{exceptionType},#{exceptionTitle},#{exceptionCont},#{regId},CURRENT TIMESTAMP )  
+	</insert>
 </mapper>

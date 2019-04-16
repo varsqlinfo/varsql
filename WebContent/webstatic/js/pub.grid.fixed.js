@@ -2922,9 +2922,13 @@ Plugin.prototype ={
 			}
 		});
 		
+		// window keydown 처리.  tabindex 처리 확인 해볼것.
 		$(window).on("keydown." + _this.prefix, function (e) {
 
 			if(!_this.config.focus) return ;
+			
+			// 설정 영역 keydown 처리
+			if($(e.target).closest('.pubGrid-setting-area').length > 0) return true; ;
 
 			var evtKey = window.event ? e.keyCode : e.which;
 

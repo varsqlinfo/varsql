@@ -105,6 +105,10 @@ li {
   max-width: calc(100% - 5px);
 }
 
+.text-ellipsis.ellipsis0 {
+  max-width: calc(100% - 0px);
+}
+
 .error {
   color: #ff3400;
 }
@@ -150,6 +154,9 @@ li {
   height: 15px;
   width: 15px;
   background-color: #dddddd;
+}
+.cursor-pointer{
+	cursor: pointer;
 }
 
 .checkmark {
@@ -207,4 +214,8 @@ li {
 
 .varsql-theme-dark .input-text, .varsql-theme-dark .textarea-text {
   border: 1px solid #6d6d75;
+}
+
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+    padding: 8px 4px 8px 4px;
 }

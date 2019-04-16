@@ -190,7 +190,7 @@ public class AdminServiceImpl{
 		}else{
 			int result =adminDAO.updateVtconnectionInfo(vtConnection);
 			
-			if(result > 0 && "Y".equals(vtConnection.getPollinit())){
+			if(result > 0 && "Y".equals(vtConnection.getPoolInit())){
 				try {
 					ConnectionFactory.getInstance().resetConnectionPool(vtConnection.getVconnid());
 					resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
@@ -247,7 +247,7 @@ public class AdminServiceImpl{
 		
 		int result =adminDAO.updateVtconnectionOptionInfo(vtconnectionOption);
 			
-		if(result > 0 && "Y".equals(vtconnectionOption.getPollinit())){
+		if(result > 0 && "Y".equals(vtconnectionOption.getPoolInit())){
 			try {
 				ConnectionFactory.getInstance().resetConnectionPool(vtconnectionOption.getVconnid());
 				resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());

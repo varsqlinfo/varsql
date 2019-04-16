@@ -12,6 +12,9 @@
     <li <c:if test="${fn:endsWith(originalURL,'/databaseUserMgmt')}">class="active"</c:if>>
         <a href="<c:url value="./databaseUserMgmt" />"><i class="fa fa-drivers-license-o"></i><spring:message code="admin.menu.databaseusermgmt" /></a>
     </li>
+    <li <c:if test="${fn:endsWith(originalURL,'/errorlogMgmt')}">class="active"</c:if>>
+        <a href="<c:url value="./errorlogMgmt" />"><i class="fa fa-server"></i><spring:message code="admin.menu.errorlog" /></a>
+    </li>
     <!-- 
     <li <c:if test="${fn:endsWith(originalURL,'/report')}">class="active"</c:if>>
         <a href="<c:url value="./report" />"><i class="fa fa-fw fa-bar-chart-o"></i><spring:message code="admin.menu.report" /></a>

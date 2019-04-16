@@ -307,4 +307,51 @@
 		WHERE a.VDRIVER = b.DRIVER_ID
 		and a.VCONNID = #{vconnid}
 	</select>
+	
+	<!-- error log count -->
+	<select id="adminMapper.selectErrorTotalCnt" parameterType="searchParameter" resultType="int">
+		select count(1) as totalcnt 
+		from VTSQL_EXCEPTIONLOG 
+		where 1=1
+		and 
+		<choose>
+			<when test="category=='0'">
+				SERVER_ID like '%'||#{keyword}||'%'
+			</when>
+			<when test="category=='1'">
+				EXCP_TYPE like '%'||#{keyword}||'%'
+			</when>
+			<when test="category=='2'">
+				EXCP_TYPE like '%'||#{keyword}||'%'
+			</when>
+	    	<otherwise>
+	      		EXCP_TITLE like '%'||#{keyword}||'%'
+	    	</otherwise>
+	  	</choose>
+	</select>
+	
+	<!-- error log -->
+	<select id="adminMapper.selectErrorList" parameterType="searchParameter" resultType="hashmap">
+		select 
+			EXCP_ID,SERVER_ID,EXCP_TYPE,EXCP_TITLE, EXCP_CONT,REG_ID, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT  
+		from VTSQL_EXCEPTIONLOG
+		where 1=1
+		and 
+		<choose>
+			<when test="category=='0'">
+				SERVER_ID like '%'||#{keyword}||'%'
+			</when>
+			<when test="category=='1'">
+				EXCP_TYPE like '%'||#{keyword}||'%'
+			</when>
+			<when test="category=='2'">
+				EXCP_TYPE like '%'||#{keyword}||'%'
+			</when>
+	    	<otherwise>
+	      		EXCP_TITLE like '%'||#{keyword}||'%'
+	    	</otherwise>
+	  	</choose>
+		order by REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
+	
 </mapper>

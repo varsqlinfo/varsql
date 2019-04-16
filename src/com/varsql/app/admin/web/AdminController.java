@@ -102,6 +102,13 @@ public class AdminController{
 		return new ModelAndView("/admin/userMenuMgmt",model);
 	}
 	
+	@RequestMapping(value = "/errorlogMgmt")
+	public ModelAndView errorlogMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		return new ModelAndView("/admin/errorlogMgmt",model);
+	}
+	
 	/**
 	 * 
 	 * @Method Name  : dblist

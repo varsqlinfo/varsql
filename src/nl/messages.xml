@@ -65,7 +65,7 @@
 <entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
-<entry key="admin.menu.glossary">용어 관리</entry>
+<entry key="admin.menu.errorlog">Error Log</entry>
 
 									
 <!-- manage menu -->
@@ -233,6 +233,14 @@
 <entry key="admin.managerlist.dbuser">데이타 베이스 관리 매니저</entry>
 
 <entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
+
+<entry key="admin.errorlog.title">에러 메시지</entry>
+<entry key="admin.errorlog.type">타입</entry>
+<entry key="admin.errorlog.cont">에러 내용</entry>
+<entry key="admin.errorlog.server">host</entry>
+
+
+
 
 <entry key="manage.userlist.head">사용자 목록</entry>
 <entry key="manage.userlist.name">이름</entry>

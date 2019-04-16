@@ -11,27 +11,44 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.varsql.app.common.service.CommonServiceImpl;
 import com.varsql.app.exception.DatabaseInvalidException;
 import com.varsql.app.exception.VarsqlAppException;
 import com.varsql.app.util.VarsqlUtil;
-import com.varsql.core.connection.pool.ConnectionCreateException;
-import com.varsql.core.connection.pool.ConnectionException;
+import com.varsql.core.exception.ConnectionException;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.VartechUtils;
 
+/**
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: GlobalExceptionHandler.java
+* @DESC		: exception handler 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 4. 16. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 @ControllerAdvice
-@RestController
 public class GlobalExceptionHandler{
 	
-	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger("appErrorLog");
+	
+	@Autowired
+	private CommonServiceImpl commonServiceImpl;
 	
 	/**
 	 * 
@@ -45,7 +62,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=SQLException.class)
-	public void sqlExceptionHandle(SQLException ex, HttpServletRequest request ,  HttpServletResponse response){
+	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error("sqlExceptionHandle "+ getClass().getName(),ex);
 		
@@ -69,7 +86,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
-	public void varsqlAppException(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
+	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		
@@ -93,9 +110,12 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=VarsqlRuntimeException.class)
-	public void varsqlRuntimeException(VarsqlRuntimeException ex, HttpServletRequest request , HttpServletResponse response){
+	public void varsqlRuntimeExceptionHandler(VarsqlRuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
+		
+		
+		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 		
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
@@ -117,31 +137,36 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=ConnectionException.class)
-	public void connectionExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void connectionExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
+		
+		commonServiceImpl.insertExceptionLog("connectionException",ex);
 		
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(request, response ,result,"connError");
 	}
 	
 	/**
-	 * @Method Name  : connectionCreateExceptionHandle
-	 * @Method 설명 :  커넥션 생성 에러
+	 * 
+	 * @Method Name  : connectionFactoryException
+	 * @Method 설명 : db connection exception
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 2. 13. 
+	 * @작성일   : 2019. 4. 15. 
 	 * @변경이력  :
 	 * @param ex
 	 * @param request
 	 * @param response
 	 */
-	@ExceptionHandler(value=ConnectionCreateException.class)
-	public void connectionCreateExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	@ExceptionHandler(value=ConnectionFactoryException.class)
+	public void connectionFactoryExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		
+		commonServiceImpl.insertExceptionLog("connectionFactoryException",ex);
+		
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(request, response ,result ,"connCreateError");
+		exceptionRequestHandle(request, response ,result,"connCreateError");
 	}
 	
 	/**
@@ -156,7 +181,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=DatabaseInvalidException.class)
-	public void databaseInvalidExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void databaseInvalidExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		
@@ -176,7 +201,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=RuntimeException.class)
-	public void runtimeExceptionHandle(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
+	public void runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 		
 		logger.error("runtimeExceptionHandle : ", getClass().getName(),ex);
 		ResponseResult result = new ResponseResult();
@@ -186,7 +211,7 @@ public class GlobalExceptionHandler{
 	}
 	
 	@ExceptionHandler(value=Exception.class)
-	public void exceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void exceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
 		logger.error(getClass().getName(),ex);
 		
@@ -218,17 +243,16 @@ public class GlobalExceptionHandler{
 				writer = response.getWriter();
 				writer.write(VartechUtils.objectToString(result));
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
 			}finally{
 				if(writer!=null){ try {writer.close();} catch (IOException e) {}};
 			}
 		}else{
 			try {
-				System.out.println("pageName : " +pageName);
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);
 				dispatcher.forward(request, response);
 			} catch (ServletException | IOException e1) {
-				e1.printStackTrace();
+				logger.error("exceptionRequestHandle Cause :" + e1.getMessage() ,e1);
 			}
 		}
 	}
