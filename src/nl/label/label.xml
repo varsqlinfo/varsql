@@ -4,6 +4,64 @@
 
 <comment>label</comment>
 
+
+<entry key="complete">완료</entry>
+
+
+<entry key="title">제목</entry>
+<entry key="content">내용</entry>
+<entry key="reg_dt">등록일</entry>
+<entry key="view_dt">확인일</entry>
+<entry key="upd_dt">수정일</entry>
+<entry key="std_day">시작일</entry>
+<entry key="end_day">종료일</entry>
+<entry key="std_time">시작시간</entry>
+<entry key="end_time">종료시간</entry>
+<entry key="file_name">파일명</entry>
+<entry key="preferences">환경설정</entry>
+<entry key="object">오브젝트</entry>
+<entry key="export">내보내기</entry>
+<entry key="import">가져오기</entry>
+<entry key="copy">복사</entry>
+
+
+<entry key="regular.expression">정규식</entry>
+<entry key="replace">바꾸기</entry>
+<entry key="find.word">찾을 말</entry>
+<entry key="replace.word">바꿀 말</entry>
+<entry key="all.replace">모두 바꾸기</entry>
+<entry key="find">찾기</entry>
+<entry key="close">닫기</entry>
+<entry key="data.export">데이터  내보내기</entry>
+<entry key="data.import">데이터 가져오기</entry>
+
+<entry key="block">차단</entry>
+<entry key="release">해제</entry>
+<entry key="options">옵션</entry>
+
+<entry key="direction">방향</entry>
+<entry key="up">위</entry>
+<entry key="down">아래</entry>
+
+<entry key="single">단일 </entry>
+<entry key="multiple">다중 </entry>
+<entry key="addflag">추가여부 </entry>
+<entry key="delflag">삭제여부 </entry>
+<entry key="column">컬럼 </entry>
+<entry key="column_name">컬럼명 </entry>
+<entry key="id">ID</entry>
+<entry key="ip">IP</entry>
+<entry key="size">크기</entry>
+<entry key="loading">로딩중 입니다.</entry>
+<entry key="select">선택</entry>
+<entry key="source">대상</entry>
+<entry key="target">타켓</entry>
+<entry key="result.download">결과 다운르드</entry>
+
+<entry key="compare.result">비교 결과</entry>
+<entry key="compare.detail">비교 상세</entry>
+
+
 <entry key="label.id">아이디</entry>
 <entry key="label.pw">패스워드</entry>
 <entry key="label.login">로그인</entry>
@@ -31,6 +89,9 @@
 <entry key="label.next">다음</entry>
 <entry key="label.cancle">취소</entry>
 <entry key="label.delete">삭제</entry>
+
+<entry key="label.wrap.search">끝에서 되돌리기</entry>
+<entry key="label.case.sensitive">대소문자</entry>
 
 <entry key="btn.close">닫기</entry>
 

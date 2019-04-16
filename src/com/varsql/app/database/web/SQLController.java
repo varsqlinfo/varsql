@@ -81,7 +81,7 @@ public class SQLController {
 	 */
 	@RequestMapping({"/dataExport"})
 	public void dataExport(SqlParamInfo sqlParamInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sQLServiceImpl.dataExport(sqlParamInfo, response);
+		sQLServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlParamInfo, response);
 	}
 
 	/**

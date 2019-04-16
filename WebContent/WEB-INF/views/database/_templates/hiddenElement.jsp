@@ -36,7 +36,7 @@
 
 <div id="confirmTemplateTemplate" style="display:none;overflow: hidden;" title="Confirm">
 	<div>
-		<div>저장하고 닫으시겠습니까?</div>
+		<div><spring:message code="msg.saveandclose.confirm" /></div>
 	</div>
 </div>
 
@@ -52,8 +52,10 @@
 	</div>
 	<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
 		<div style="padding-top :10px;">
-			<div style="font-weight: bold;font-size: 14pt;">Varsql 정보</div>
+			<div style="font-weight: bold;font-size: 14pt;">Varsql</div>
 			<div style="padding-top:10px;">Version : 0.5</div>
+			<div style="padding-top:10px;"><a href="mailto:varsqlinfo@gmail.com">varsqlinfo@gmail.com</a></div>
+			<div style="padding-top:10px;"><a href="http://varsql.moaview.com" target="_blank">VARSQL site</a></div>
 			<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
 		</div>
 	</div>
@@ -71,29 +73,29 @@
 </div>
 
 <%--editor 문자 찾기 다이얼로그. --%>
-<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="찾기">
+<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="<spring:message code="find" />">
 	<div class="find-text-area">
 		<ul class="find-text">
 			<li>
-				<label class="find-text-label">Find</label>
+				<label class="find-text-label"><spring:message code="find.word" /></label>
 				<span class="find-text-input-area"><input type="text" id="editorFindText" name="editorFindText"></span>
 			</li>
 			<li>
-				<label class="find-text-label">Replace with</label>
+				<label class="find-text-label"><spring:message code="replace.word" /></label>
 				<span class="find-text-input-area"><input type="text" id="editorReplaceText" name="editorReplaceText"></span>
 			</li>
 		</ul>
 		<div class="rows">
-			<div>방향</div>
+			<div><spring:message code="direction" /></div>
 			<ul class="find-text-option-area">
 				<li>
-					<label class="checkbox-container">아래
+					<label class="checkbox-container"><spring:message code="down" />
 					  <input type="radio" name="find-text-direction" value="down" checked="checked">
 					  <span class="radiomark"></span>
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container">위
+					<label class="checkbox-container"><spring:message code="up" />
 					  <input type="radio" name="find-text-direction" value="up">
 					  <span class="radiomark"></span>
 					</label>
@@ -101,22 +103,22 @@
 			</ul>
 		</div>
 		<div class="rows">
-			<div>옵션</div>
+			<div><spring:message code="options" /></div>
 			<ul class="find-text-option-area">
 				<li>
-					<label class="checkbox-container">대소문자
+					<label class="checkbox-container"><spring:message code="label.case.sensitive" />
 					  <input type="checkbox" name="find-text-option" value="caseSearch">
 					  <span class="checkmark"></span>
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container">끝에서 되돌리기
+					<label class="checkbox-container"><spring:message code="label.wrap.search" />
 					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
 					  <span class="checkmark"></span>
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container">정규식
+					<label class="checkbox-container"><spring:message code="regular.expression" />
 					  <input type="checkbox" name="find-text-option" value="regularSearch">
 					  <span class="checkmark"></span>
 					</label>
@@ -125,10 +127,10 @@
 		</div>
 		<div class="rows">
 			<ul class="find-text-button">
-				<li><button type="button" class="find_text_btn">찾기</button></li>
-				<li><button type="button" class="find_replace_btn">바꾸기</button></li>
-				<li><button type="button" class="find_all_replace_btn">모두바꿈</button></li>
-				<li><button type="button" class="find_close_btn">닫기</button></li>
+				<li><button type="button" class="find_text_btn"><spring:message code="find" /></button></li>
+				<li><button type="button" class="find_replace_btn"><spring:message code="replace" /></button></li>
+				<li><button type="button" class="find_all_replace_btn"><spring:message code="all.replace" /></button></li>
+				<li><button type="button" class="find_close_btn"><spring:message code="close" /></button></li>
 			</ul>
 		</div>
 	</div>
@@ -152,7 +154,7 @@
 <div class="pretty-view-area">
 	<div class="pull-right" style="position:relative;z-index:1;">
 		<!-- button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">띄워보기</button -->
-		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy">복사</button>
+		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy"><spring:message code="copy" /></button>
 	</div>
 	<div  class="wh100-absolute meta-ddl-view">
 		<pre class="user-select-on prettyprint lang-sql"></pre>
@@ -163,7 +165,7 @@
 
 <%--data export template --%>
 <script id="dataExportTemplate" type="text/varsql-template">
-<div id="data-export-modal" title="데이타 내보내기">
+<div id="data-export-modal" title="<spring:message code="data.export" />">
 	<div class="export-dialog-area">
 		<div class="export-column-area">
 			<table class="varsql-table border-zero">
@@ -186,6 +188,10 @@
 			</table>
 		</div>
 		<div class="export-type-area">
+			<div style="margin-bottom:5px;">
+				<label class="control-label">Export Name</label>
+				<input class="" id="exportFileName" name="exportFileName" value="">
+			</div>
 			<div>
 				<label class="control-label">LIMIT COUNT</label>
 				<input class="" id="exportCount" name="exportCount" value="1000">
@@ -204,7 +210,7 @@
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container">INSERT문
+					<label class="checkbox-container">INSERT Query
 					  <input type="radio" name="exportType" value="insert">
 					  <span class="radiomark"></span>
 					</label>

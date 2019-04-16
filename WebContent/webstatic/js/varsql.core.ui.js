@@ -3985,6 +3985,7 @@ _ui.SQL = {
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='exportColumnCheckBox']:not([value='all'])").join(',')
 						,objectName : tmpName
+						,fileName: $('#exportFileName').val()
 						,limit: $('#exportCount').val()
 					});
 

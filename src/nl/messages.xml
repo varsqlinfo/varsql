@@ -177,6 +177,7 @@
 <entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
 <entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
 <entry key="msg.save.confirm">저장 하시겠습니까?</entry>
+<entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
 <entry key="msg.save.success">저장 되었습니다</entry>
 <entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
@@ -272,43 +273,6 @@
 <entry key="user.edit.msgcont">내용</entry>
 <entry key="detail.view">상세보기</entry>
 
-<entry key="title">제목</entry>
-<entry key="content">내용</entry>
-<entry key="reg_dt">등록일</entry>
-<entry key="view_dt">확인일</entry>
-<entry key="upd_dt">수정일</entry>
-<entry key="std_day">시작일</entry>
-<entry key="end_day">종료일</entry>
-<entry key="std_time">시작시간</entry>
-<entry key="end_time">종료시간</entry>
-<entry key="file_name">파일명</entry>
-<entry key="preferences">환경설정</entry>
-<entry key="object">오브젝트</entry>
-
-<entry key="block">차단</entry>
-<entry key="release">해제</entry>
-
-<entry key="up">위</entry>
-<entry key="down">아래</entry>
-
-<entry key="single">단일 </entry>
-<entry key="multiple">다중 </entry>
-<entry key="addflag">추가여부 </entry>
-<entry key="delflag">삭제여부 </entry>
-<entry key="column">컬럼 </entry>
-<entry key="column_name">컬럼명 </entry>
-<entry key="id">ID</entry>
-<entry key="ip">IP</entry>
-<entry key="size">크기</entry>
-<entry key="loading">로딩중 입니다.</entry>
-<entry key="select">선택</entry>
-<entry key="source">대상</entry>
-<entry key="target">타켓</entry>
-<entry key="result.download">결과 다운르드</entry>
-
-<entry key="compare.result">비교 결과</entry>
-<entry key="compare.detail">비교 상세</entry>
-
 <!-- export table spec -->
 <entry key="msg.export.spec.step1">내보내기 정보</entry>
 <entry key="msg.export.spec.step2">테이블 선택</entry>
@@ -332,6 +296,9 @@
 <entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택하세요.</entry>
 <entry key="msg.export.ddl.object.nodata">object를 선택해주세요..</entry>
 
-<entry key="complete">완료</entry>
+
+
+
+
 
 </properties>

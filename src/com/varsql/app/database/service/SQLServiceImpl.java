@@ -44,6 +44,7 @@ import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.util.SQLUtil;
+import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.PagingUtil;
@@ -333,8 +334,9 @@ public class SQLServiceImpl{
 
 	/**
 	 * 데이타 내보내기.
+	 * @param paramMap 
 	 */
-	public void dataExport(SqlParamInfo sqlParamInfo, HttpServletResponse res) throws Exception {
+	public void dataExport(ParamMap paramMap, SqlParamInfo sqlParamInfo, HttpServletResponse res) throws Exception {
 		
 		String exportType = sqlParamInfo.getExportType();
 		String tmpName = sqlParamInfo.getObjectName(); 
@@ -354,20 +356,22 @@ public class SQLServiceImpl{
 			SQLUtil.close(conn);
 		}
 		
+		String exportFileName = paramMap.getString("fileName", tmpName);
+		
 		if("csv".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".csv",VarsqlConstants.CHAR_SET));
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), res.getOutputStream());
 		}else if("json".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".json",VarsqlConstants.CHAR_SET));
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
 			new ObjectMapper().writeValue(res.getOutputStream(), result.getData());
 		}else if("insert".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".sql",VarsqlConstants.CHAR_SET));
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, res.getOutputStream());
 		}else if("xml".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".xml",VarsqlConstants.CHAR_SET));
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , res.getOutputStream());
 		}else if("excel".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(tmpName + ".xlsx",VarsqlConstants.CHAR_SET));
+			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
 			DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , res.getOutputStream());
 		}
 	}

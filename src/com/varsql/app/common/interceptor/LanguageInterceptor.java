@@ -57,7 +57,6 @@ public class LanguageInterceptor extends HandlerInterceptorAdapter {
 				.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		String newLocale = null;
 		
-		
 		if (MapUtils.isNotEmpty(pathVariables)) {
 			newLocale = (String) pathVariables.get(getParamName());
 		}

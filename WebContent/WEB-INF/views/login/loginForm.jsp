@@ -119,10 +119,17 @@ $(document).ready(function (){
 			
 			<input class="form-control" id="id" name="id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off"> 
 			<input class="form-control" id="password" name="password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
-			<div class="checkbox">
-				<label>
+			<div class="checkbox" style="margin-bottom:13px;">
+				<label style="padding-top:5px;">
 					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me
 				</label>
+				<div class="pull-right">
+					<select name="lang" style="padding:3px;">
+						<option value="">언어 선택</option>
+						<option value="ko">한국어</option>
+						<option value="en">English</option>
+					</select>
+				</div>
 			</div>
 			<div class="error">
 				<c:if test="${param.mode eq 'fail'}">
@@ -130,15 +137,15 @@ $(document).ready(function (){
 				</c:if>
 				<div class="error-msg"></div>
 			</div>
-			<button class="btn btn-lg btn-primary btn-block btn-login" type="button">
-				<spring:message code="btn.login" />
-			</button>
-			<div class="text-center panel-footer">
-				<!-- 
-				<a href="javascript:;" class="">아이디찾기</a>
-				<a href="javascript:;" class="">비밀번호찾기</a>
-				 -->
-				<a href="./join/" class="">회원가입</a>
+			<div style="padding-bottom:10px;">
+				<button class="btn btn-lg btn-primary btn-block btn-login" type="button">
+					<spring:message code="btn.login" />
+				</button>
+			</div>
+			<div>
+				<a href="./join/" class=""><button class="btn  btn-block btn-success" type="button">
+					<spring:message code="btn.signup" />
+				</button></a>
 			</div>
 		</form>
 	</div>
