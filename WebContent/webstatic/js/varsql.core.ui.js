@@ -4156,7 +4156,7 @@ _ui.sqlDataArea =  {
 		
 		var resultMsg = [];
 		
-		if(resultData.resultCode ==500){
+		if(resultData.resultCode ==10000){
 			
 			var errQuery = resultData.item.query; 
 			msgViewFlag =true;

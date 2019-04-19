@@ -49,7 +49,9 @@ var userMain = {
 			}
 			,titleIcon :{
 				left :{
-					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					visible:false
+					,overview :false
+					,html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
 					,click : function (item, idx){
 						var sconid = item.conuid;
 					

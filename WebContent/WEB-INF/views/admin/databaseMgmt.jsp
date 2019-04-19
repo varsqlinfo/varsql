@@ -157,6 +157,13 @@
 								<label><input type="radio" name="basetableyn" value="N" v-model="detailItem.BASETABLE_YN" >N</label>
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.schemaviewyn" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="schemaviewyn" value="Y" v-model="detailItem.SCHEMA_VIEW_YN" checked>Y</label>
+								<label><input type="radio" name="schemaviewyn" value="N" v-model="detailItem.SCHEMA_VIEW_YN" >N</label>
+							</div>
+						</div>
 					</form>
 				</div>
 				<div class="view-area"  :class="viewMode=='opt'?'on':''">
@@ -302,6 +309,7 @@ VarsqlAPP.vueServiceBean( {
 					,VURL: ""
 					,BASETABLE_YN: 'Y'
 					,LAZYLOAD_YN: 'N'
+					,SCHEMA_VIEW_YN: 'N'
 				}
 			}else{
 				this.detailFlag = true; 

@@ -1,13 +1,19 @@
 package com.varsql.app.user.service;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
@@ -16,6 +22,8 @@ import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.UserMainDAO;
 import com.varsql.app.util.VarsqlUtil;
+import com.varsql.core.common.constants.LocaleConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.encryption.EncryptionFactory;
 import com.vartech.common.app.beans.ParamMap;
@@ -121,10 +129,32 @@ public class UserMainServiceImpl{
 	 * @작성일   : 2017. 11. 29. 
 	 * @변경이력  :
 	 * @param userForm
+	 * @param req 
+	 * @param res 
 	 * @return
 	 */
-	public boolean updateUserInfo(UserForm userForm) {
-		return userMainDAO.updateUserInfo(userForm)> 0;
+	public boolean updateUserInfo(UserForm userForm, HttpServletRequest req, HttpServletResponse res) {
+		boolean flag = userMainDAO.updateUserInfo(userForm)> 0;
+		
+		if(flag) {
+			// 언어 변경시 처리.
+			Locale userLocale= LocaleConstants.parseLocaleString(userForm.getLang());
+			
+			if(userLocale != null  && !userLocale.equals(SecurityUtil.loginInfo().getUserLocale())) {
+				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(req);
+				if (localeResolver == null) {
+					throw new IllegalStateException("No LocaleResolver found.");
+				}
+				
+				if(localeResolver.resolveLocale(req) != userLocale) {
+					localeResolver.setLocale(req, res, userLocale);
+				}
+				
+				SecurityUtil.loginInfo().setUserLocale(userLocale);
+			}
+		}
+		
+		return flag;
 	}
 	
 	/**

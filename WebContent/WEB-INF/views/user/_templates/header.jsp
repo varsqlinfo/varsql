@@ -119,6 +119,10 @@ var userHeader = {
 		});
 	}
 	,getConnectionInfo : function (){
+		
+		if(!confirm('커넥션 정보를 새로고침 하시겠습니까?')){
+			return ; 
+		}
 		VARSQL.req.ajax({
 			url : {
 				type : VARSQL.uri.user,

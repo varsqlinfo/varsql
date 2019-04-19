@@ -51,6 +51,7 @@
 	
 	<logger name="appErrorLog" level="info" additivity="false" >
 		<appender-ref ref="appErrorLog" />
+		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="org.springframework" level="info" additivity="false">
@@ -116,7 +117,7 @@
 	</logger>
 	 -->
   
-	<root level="debug">
+	<root level="error">
 		<appender-ref ref="STDOUT" />
 	</root>
 

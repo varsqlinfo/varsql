@@ -28,6 +28,7 @@ import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.service.UserMainServiceImpl;
+import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.vartech.common.app.beans.ParamMap;
@@ -102,6 +103,7 @@ public class UserMainController {
 		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		model.addAttribute("detailInfo" , userMainServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
+		model.addAttribute("localeInfo" , LocaleConstants.values());
 		return  new ModelAndView("/user/preferences/general", model);
 	}
 	
@@ -120,7 +122,7 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/preferences/userInfoSave"})
-	public @ResponseBody ResponseResult userInfoSave(@Valid UserForm userForm, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult userInfoSave(@Valid UserForm userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -131,7 +133,7 @@ public class UserMainController {
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			userForm.setViewid(SecurityUtil.loginId(req));
-			resultObject.setItemOne(userMainServiceImpl.updateUserInfo(userForm));
+			resultObject.setItemOne(userMainServiceImpl.updateUserInfo(userForm,req,res));
 		}
 		
 		return  resultObject;
@@ -442,7 +444,6 @@ public class UserMainController {
 		ResponseResult resultObject = new ResponseResult();
 		
 		SecurityUtil.reloadUserDatabaseInfo();
-		
 		
 		Collection<DatabaseInfo> dataBaseInfo = SecurityUtil.loginInfo(req).getDatabaseInfo().values();
 		

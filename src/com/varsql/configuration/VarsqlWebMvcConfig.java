@@ -1,5 +1,7 @@
 package com.varsql.configuration;
 
+import java.util.Locale;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +11,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.varsql.app.common.interceptor.DatabaseAuthInterceptor;
+import com.varsql.app.common.interceptor.LanguageInterceptor;
 
 /**
  * 
@@ -99,11 +104,26 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
     @Override
 	public void addInterceptors(InterceptorRegistry registry) {
 	    registry.addInterceptor(databaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
+	    registry.addInterceptor(languageInterceptor()).addPathPatterns("/**");
 	}
+     
     
     @Bean
     public DatabaseAuthInterceptor databaseAuthInterceptor() {
         return new DatabaseAuthInterceptor();
+    }
+    
+    @Bean
+    public LanguageInterceptor languageInterceptor() {
+    	return new LanguageInterceptor();
+    }
+    
+    @Bean
+    public LocaleResolver localeResolver()
+    {
+        final SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+       // localeResolver.setDefaultLocale(new Locale("en", "US"));
+        return localeResolver;
     }
 
 }

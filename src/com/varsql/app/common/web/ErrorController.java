@@ -15,7 +15,18 @@ import com.vartech.common.app.beans.ResponseResult;
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ErrorController.java
+* @DESC		: error controller
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2015. 4. 18. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/error")

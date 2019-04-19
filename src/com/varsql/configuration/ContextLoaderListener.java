@@ -6,14 +6,25 @@ import javax.servlet.ServletContextListener;
 
 import com.varsql.core.configuration.Configuration;
 
+/**
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ContextLoaderListener.java
+* @DESC		: 초기화할  Listener
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2015. 4. 19. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 public class ContextLoaderListener  implements ServletContextListener{
 	public void contextInitialized(ServletContextEvent event)
     {
-		//DB연결이라면 초기화 코딩, 객체 컨텍스트에 담기.
-		ServletContext sc = event.getServletContext();	        //이벤트에게 컨텍스트를 얻어온다
-		
+		ServletContext sc = event.getServletContext();
 		Configuration.getInstance();
-		
 	}	
 				
 	public void contextDestroyed(ServletContextEvent event){

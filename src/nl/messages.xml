@@ -103,6 +103,7 @@
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
 <entry key="join.form.dept">소속</entry>
+<entry key="join.form.locale">언어선택</entry>
 
 <entry key="join.form.password">비밀번호</entry>
 <entry key="join.form.password.confirm">비밀번호 확인</entry>
@@ -213,6 +214,7 @@
 <entry key="admin.form.db.databasename">스키마명</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.useyn">사용여부</entry>
+<entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
@@ -295,9 +297,6 @@
 <entry key="msg.export.ddl.object.select.title">Export Object 선택</entry>
 <entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택하세요.</entry>
 <entry key="msg.export.ddl.object.nodata">object를 선택해주세요..</entry>
-
-
-
 
 
 

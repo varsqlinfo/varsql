@@ -36,6 +36,7 @@
 			, USE_YN
 			, VTYPE
 			, VQUERY
+			, SCHEMA_VIEW_YN
 			, VID
 			, MAX_ACTIVE
 			, MIN_IDLE
@@ -70,6 +71,7 @@
 			,USE_YN
 			,BASETABLE_YN
 			,LAZYLOAD_YN
+			,SCHEMA_VIEW_YN
 			,REG_ID
 			,REG_DT
 			,UPD_ID
@@ -86,6 +88,7 @@
 			,#{useYn}
 			,#{basetableYn}
 			,#{lazyloadYn}
+			,#{schemaViewYn}
 			,#{userId}
 			,CURRENT TIMESTAMP
 			,#{userId}
@@ -109,6 +112,7 @@
 			, USE_YN = #{useYn}
 			, BASETABLE_YN = #{basetableYn}
 			, LAZYLOAD_YN = #{lazyloadYn}
+			, SCHEMA_VIEW_YN = #{schemaViewYn}
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT TIMESTAMP 
 		where VCONNID =#{vconnid}

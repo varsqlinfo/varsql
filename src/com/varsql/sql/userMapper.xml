@@ -8,7 +8,7 @@
 	<!-- 사용자 정보 상세 보기. -->
 	<select id="userMapper.selectUserDetail" parameterType="string" resultType="dataCommonVO">
 		select VIEWID, UID, UNAME, ORG_NM
-			, DEPT_NM, UEMAIL, DESCRIPTION, BLOCK_YN
+			, DEPT_NM, UEMAIL, DESCRIPTION, BLOCK_YN, LANG
 		from VTUSER
 		where viewid =#{viewid}
 	</select>
@@ -70,6 +70,7 @@
 			, DEPT_NM =#{deptNm}
 			, UEMAIL =#{uemail}
 			, DESCRIPTION =#{description}
+			, LANG =#{lang}
 			, UPD_DT = CURRENT TIMESTAMP
 		where VIEWID =#{viewid}
 	</update>

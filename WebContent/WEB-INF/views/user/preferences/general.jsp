@@ -47,6 +47,18 @@
 				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.DEPT_NM}" placeholder="<spring:message code="join.form.dept"/>"/>
 				            </div>
 						</div>
+						<div class="form-group">
+							<label class="col-lg-2 control-label"><spring:message code="join.form.locale"/></label>
+
+				            <div class="col-lg-10">
+				            	<select class="form-control" id="lang" name="lang">
+				            		<option value=""><spring:message code="join.form.locale"/></option>
+				            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
+										<option value="${item.locale}" ${item.locale == detailInfo.LANG ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>       
+									</c:forEach>
+				            	</select>
+				            </div>
+						</div>
 					</form>
 				</div>
 			</div>

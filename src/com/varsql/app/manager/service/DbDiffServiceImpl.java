@@ -126,7 +126,9 @@ public class DbDiffServiceImpl{
 				, vtConnRVO.getVDBSCHEMA()
 				, vtConnRVO.getBASETABLE_YN()
 				, vtConnRVO.getLAZYLOAD_YN()
-				, vtConnRVO.getVDBVERSION()));
+				, vtConnRVO.getVDBVERSION()
+				, vtConnRVO.getSCHEMA_VIEW_YN())
+		);
 		
 		return dpi; 
 	}

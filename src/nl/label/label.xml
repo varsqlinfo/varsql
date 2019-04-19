@@ -43,6 +43,7 @@
 <entry key="up">위</entry>
 <entry key="down">아래</entry>
 
+
 <entry key="single">단일 </entry>
 <entry key="multiple">다중 </entry>
 <entry key="addflag">추가여부 </entry>
@@ -94,6 +95,9 @@
 <entry key="label.case.sensitive">대소문자</entry>
 
 <entry key="btn.close">닫기</entry>
+
+<entry key="ko.lang">한국어</entry>
+<entry key="en.lang">English</entry>
 
 
 </properties>

@@ -68,6 +68,10 @@ public class Vtconnection{
 	@NotBlank
 	@Size(max=1)
 	private String lazyloadYn;
+	
+	@NotBlank
+	@Size(max=1)
+	private String schemaViewYn;
 
 	public String getVconnid(){
 		return this.vconnid;
@@ -153,6 +157,12 @@ public class Vtconnection{
 	}
 	public void setLazyloadYn(String lazyloadYn) {
 		this.lazyloadYn = lazyloadYn;
+	}
+	public String getSchemaViewYn() {
+		return schemaViewYn;
+	}
+	public void setSchemaViewYn(String schemaViewYn) {
+		this.schemaViewYn = schemaViewYn;
 	}
 	
 

@@ -14,6 +14,8 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.varsql.core.common.util.SecurityUtil;
+
 public class LanguageInterceptor extends HandlerInterceptorAdapter {
 
 	public static final String DEFAULT_PARAM_NAME = "locale";
@@ -31,14 +33,23 @@ public class LanguageInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws ServletException {
 		
-		Locale locale = extractLocale(request);
+		Locale locale;
+		if(SecurityUtil.isAuthenticated()) {
+			locale = SecurityUtil.loginInfo().getUserLocale();
+		}else {
+			locale = extractLocale(request);
+		}
+		
 		if (locale != null && !locale.equals(request.getLocale())) {
-			LocaleResolver localeResolver = RequestContextUtils
-					.getLocaleResolver(request);
+			
+			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
 			if (localeResolver == null) {
 				throw new IllegalStateException("No LocaleResolver found.");
 			}
-			localeResolver.setLocale(request, response, locale);
+			
+			if(localeResolver.resolveLocale(request) != locale) {
+				localeResolver.setLocale(request, response, locale);
+			}
 		}
 		return true;
 	}

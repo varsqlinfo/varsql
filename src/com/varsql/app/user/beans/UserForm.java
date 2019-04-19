@@ -26,6 +26,9 @@ public class UserForm {
 
 	@Size(max=250)
 	private String deptNm;
+	
+	@Size(max=5)
+	private String lang;
 
 	@Size(max=2000)
 	private String description;
@@ -85,5 +88,13 @@ public class UserForm {
 
 	public void setViewid(String viewid) {
 		this.viewid = viewid;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 }

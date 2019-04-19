@@ -64,6 +64,8 @@ public class VtconnectionRVO{
 	private String BASETABLE_YN;
 
 	private String LAZYLOAD_YN;
+	
+	private String SCHEMA_VIEW_YN;
 
 	public String getVCONNID(){
 		return this.VCONNID;
@@ -208,6 +210,12 @@ public class VtconnectionRVO{
 	}
 	public void setLAZYLOAD_YN(String lAZYLOAD_YN) {
 		LAZYLOAD_YN = lAZYLOAD_YN;
+	}
+	public String getSCHEMA_VIEW_YN() {
+		return SCHEMA_VIEW_YN;
+	}
+	public void setSCHEMA_VIEW_YN(String sCHEMA_VIEW_YN) {
+		SCHEMA_VIEW_YN = sCHEMA_VIEW_YN;
 	}
 	
 

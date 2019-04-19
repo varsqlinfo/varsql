@@ -85,7 +85,7 @@ $(document).ready(function (){
 	 
 	if(localStorage.getItem('varsqlLoginID') && localStorage.getItem('varsqlLoginID') !=''){
 		$('#rememberMe').prop('checked',true);
-		$('#id').val(localStorage.getItem('varsqlLoginID'));
+		$('#vsql_login_id').val(localStorage.getItem('varsqlLoginID'));
 	}
 	
 	$('#password').keydown(function(event) {
@@ -95,10 +95,10 @@ $(document).ready(function (){
 	});
 	
 	$('.btn-login').on('click', function (){
-		var loginID = $.trim($('#id').val()); 
+		var loginID = $.trim($('#vsql_login_id').val()); 
 	
-		$('#id').val(loginID);
-		$('#password').val($.trim($('#password').val()))
+		$('#vsql_login_id').val(loginID);
+		$('#vsql_login_password').val($.trim($('#vsql_login_password').val()))
 		
 		if($('#rememberMe').is(':checked')){
 			localStorage.setItem('varsqlLoginID', loginID);
@@ -114,11 +114,11 @@ $(document).ready(function (){
 	<div class="container">
 		<form name="f" action="${varsqlLoginUrl}" method="post"
 			class="form-signin" role="form" onsubmit="return false;">
-			<h2 class="form-signin-heading"><spring:message code="msg.please.sign.in" /></h2>
+			<h2 class="form-signin-heading" style="text-align:center;"><spring:message code="msg.please.sign.in" /></h2>
 			<sec:csrfInput/>
 			
-			<input class="form-control" id="id" name="id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off"> 
-			<input class="form-control" id="password" name="password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
+			<input class="form-control" id="vsql_login_id" name="vsql_login_id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off"> 
+			<input class="form-control" id="vsql_login_password" name="vsql_login_password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
 			<div class="checkbox" style="margin-bottom:13px;">
 				<label style="padding-top:5px;">
 					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me

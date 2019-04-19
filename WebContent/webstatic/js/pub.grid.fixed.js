@@ -352,7 +352,7 @@ Plugin.prototype ={
 			, footer :{height : 0, width : 0}
 			, navi :{height : 0, width : 0}
 			, initSettingFlag :false
-			, aside :{items :[], lineNumberCharLength : 0}
+			, aside :{items :[], lineNumberCharLength : 0, initWidth: 0}
 			, select : {}
 			, template: {}
 			, orginData: []
@@ -435,6 +435,7 @@ Plugin.prototype ={
 			_this.options.headerOptions.contextMenu =false; 
 		}
 		var asideItem = [];
+
 		if(_this.options.asideOptions.lineNumber.enabled ===true){
 			asideItem.push(_this.options.asideOptions.lineNumber);
 		}
@@ -448,11 +449,13 @@ Plugin.prototype ={
 		}
 		
 		_this.config.rowOpt.isAddStyle = isFunction(_this.options.rowOptions.addStyle);
-
+		
 		_this.config.aside.items = asideItem; 
 		for(var i =0 ; i < asideItem.length ;i++){
 			_this.config.gridWidth.aside += asideItem[i].width; 
 		}
+		_this.config.aside.initWidth = _this.config.gridWidth.aside;
+
 		_this._setGridWidth();
 	}
 	/**
@@ -1092,7 +1095,7 @@ Plugin.prototype ={
 		if(mode=='init'){
 			var colGroupHtm=[];
 			for(var j=0 ;j < items.length; j++){
-				colGroupHtm.push('<col style="width:'+items[j].width+'px;" />');
+				colGroupHtm.push('<col id="'+_this.prefix+'colbody'+items[j].key+'" style="width:'+items[j].width+'px;" />');
 			}
 							
 			var bodyHtm = '';
@@ -1347,7 +1350,7 @@ Plugin.prototype ={
 		strHtm.push('<tr class="pub-header-tr">');
 		for(var j=0 ;j < items.length; j++){
 			var item = items[j];
-			colGroupHtm.push('<col style="width:'+item.width+'px;" />');
+			colGroupHtm.push('<col id="'+_this.prefix+'colhead'+items[j].key+'" style="width:'+item.width+'px;" />');
 
 			strHtm.push('	<th>');
 			strHtm.push('		<div class="aside-label-wrapper pub-header-'+item.key+'">'+item.name+'</div>');
@@ -1485,12 +1488,20 @@ Plugin.prototype ={
 					_this.config.aside.lineNumberCharLength = idxCharLen;
 
 					var asideWidth = idxCharLen * _this.options.asideOptions.lineNumber.charWidth; 
-					_this.config.gridWidth.aside = asideWidth;
+
+					$('#'+_this.prefix+'colhead'+_this.options.asideOptions.lineNumber.key).css('width',  asideWidth+'px');
+					$('#'+_this.prefix+'colbody'+_this.options.asideOptions.lineNumber.key).css('width',  asideWidth+'px');
+
+					_this.config.gridWidth.aside = _this.config.aside.initWidth - _this.options.asideOptions.lineNumber.width + asideWidth;
 					_this.calcDimension('resize');
 				}
 			}else{
 				if(_this.config.aside.lineNumberCharLength != 0){
-					_this.config.gridWidth.aside = _this.options.asideOptions.lineNumber.width;
+					_this.config.gridWidth.aside = _this.config.aside.initWidth;
+
+					$('#'+_this.prefix+'colhead'+_this.options.asideOptions.lineNumber.key).css('width',  _this.options.asideOptions.lineNumber.width+'px');
+					$('#'+_this.prefix+'colbody'+_this.options.asideOptions.lineNumber.key).css('width',  _this.options.asideOptions.lineNumber.width+'px');
+
 					_this.config.aside.lineNumberCharLength= 0; 
 					_this.calcDimension('resize');
 				}

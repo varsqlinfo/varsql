@@ -170,7 +170,7 @@ public class SQLServiceImpl{
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 						
-			result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+			result.setResultCode(ResultConstants.CODE_VAL.SQL_ERROR.intVal());
 			result.addCustoms("errorLine", sqldx);
 			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 			result.setItemOne(tmpSqlSource);
