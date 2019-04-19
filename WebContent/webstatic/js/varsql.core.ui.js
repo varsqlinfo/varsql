@@ -543,6 +543,9 @@ _ui.headerMenu ={
 		
 		if(iframeEle.attr('src') != loadUrl){
 			iframeEle.attr('src', loadUrl);
+		}else{
+			// theme setting
+			_self.setThemeInfo(_g_options.screenSetting.mainTheme, true, iframeEle.get(0).contentWindow.$('html'));
 		}
 		
 		_self.preferencesDialog.dialog("open").parent().find('.ui-dialog-title').html(title);
@@ -558,9 +561,11 @@ _ui.headerMenu ={
 		}
 	}
 	// 테마 설정.
-	,setThemeInfo : function (themeName, initFlag){
+	,setThemeInfo : function (themeName, initFlag, ele){
 		var addTheme = getThemeClass(themeName);
-		$('html').removeAttr('class').addClass(addTheme);
+		ele = ele ||$('html');
+		
+		ele.removeAttr('class').addClass(addTheme);
 		
 		if(initFlag !== true){
 			_ui.preferences.save({mainTheme : themeName});
