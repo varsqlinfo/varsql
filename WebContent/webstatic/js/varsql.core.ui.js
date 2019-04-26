@@ -2121,7 +2121,7 @@ _ui.addODbServiceObjectMetadata('table', {
 						$(this).trigger('click');
 					}
 					,disableItemKey : function (items){
-						if(gridObj.getSelectItem(['name']).length < 1){
+						if(gridObj.getSelectionItem(['name']).length < 1){
 							return [
 								{key :'sql_create' , depth :0	}
 								,{key :'mybatis-sql_create' , depth :0}	
@@ -2136,7 +2136,7 @@ _ui.addODbServiceObjectMetadata('table', {
 							return ; 
 						}
 						
-						var cacheData = gridObj.getSelectItem(['name']);
+						var cacheData = gridObj.getSelectionItem(['name']);
 						
 						_ui.pluginProxy.createScriptSql({
 							gubunKey : key
@@ -2226,7 +2226,7 @@ _ui.addODbServiceObjectMetadata('view', {
 						$(this).trigger('click');
 					}
 					,disableItemKey : function (items){
-						if(gridObj.getSelectItem(['name']).length < 1){
+						if(gridObj.getSelectionItem(['name']).length < 1){
 							return [
 								{key :'select' , depth :0	}
 							]; 
@@ -2240,7 +2240,7 @@ _ui.addODbServiceObjectMetadata('view', {
 							return ; 
 						}
 						
-						var cacheData = gridObj.getSelectItem(['name']);
+						var cacheData = gridObj.getSelectionItem(['name']);
 						
 						_ui.pluginProxy.createScriptSql({
 							gubunKey : key
@@ -4240,7 +4240,6 @@ _ui.sqlDataArea =  {
 				enabled : true
 				,click : false
 				,enableSearch : true
-				,enableSpeed : true
 				,enableColumnFix : true
 				,callback : function (data){
 					

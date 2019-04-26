@@ -47,7 +47,6 @@ section#content:after{content:"";display:block;clear:both;}
     color: #428bca;
 }
 
-
 .source-object-meta, .source-target-meta{
 	height:205px;
 }
@@ -56,6 +55,9 @@ section#content:after{content:"";display:block;clear:both;}
 	height:645px;
 }
 
+.result-count {
+    font-weight: bold;
+}
 
 </style>
 <!-- Page Heading -->
@@ -80,7 +82,7 @@ section#content:after{content:"";display:block;clear:both;}
 									<span>
 										<spring:message code="loading" text="로드중입니다."/>
 									</span><br>
-									<span><img src="/vsql/webstatic/imgs/progressLoader.gif"></span>
+									<span><img src="${pageContext.request.contextPath}/webstatic/imgs/progressLoader.gif"></span>
 								</div>
 							</div>
 						</td>
@@ -97,7 +99,7 @@ section#content:after{content:"";display:block;clear:both;}
 						<option value=""><spring:message code="select" text="선택"/></option>
 						<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
 					</select>
-					<select class="input-sm" v-model="diffItem.sourceSchema" style="width:12%">
+					<select class="input-sm" v-model="diffItem.sourceSchema" style="width:12%" @change="sourceSchemaChange(diffItem.sourceSchema)">
 						<option value=""><spring:message code="select" text="선택"/></option>
 						<option v-for="(item,index) in sourceSchemaList" :value="item">{{item}}</option>
 					</select>
@@ -131,18 +133,14 @@ section#content:after{content:"";display:block;clear:both;}
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div><spring:message code="source" text="대상"/></div>
-										<div id="sourceObjectMeta" class="row source-object-meta">
-											
-										</div>
+										<div><spring:message code="source" text="대상"/> <span class="result-count"> [{{resultInfo.sourceCount}}]</span></div>
+										<div id="sourceObjectMeta" class="row source-object-meta"></div>
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div><spring:message code="target" text="타켓"/></div>
-										<div id="targetObjectMeta" class="row source-target-meta">
-											
-										</div>
+										<div><spring:message code="target" text="타켓"/> <span class="result-count"> [{{resultInfo.targetCount}}]</span></div>
+										<div id="targetObjectMeta" class="row source-target-meta"></div>
 									</div>
 								</div>
 							</div>
@@ -227,6 +225,10 @@ VarsqlAPP.vueServiceBean( {
 			, targetNameMap : {}
 			, objectColNameMap :{}
 		}
+		,resultInfo:{
+			sourceCount :0
+			,targetCount :0
+		}
 	}
 	,computed: {
 		compareResult : function (){
@@ -244,6 +246,9 @@ VarsqlAPP.vueServiceBean( {
 				}else{
 					resultVal = this.otherCompare.call(this);
 				}
+				
+				this.resultInfo.sourceCount = this.sourceItems.length;
+				this.resultInfo.targetCount = this.targetItems.length;
 				
 				if(resultVal ==''){
 					return '<div class="text-center">동일합니다</div>';
@@ -358,6 +363,9 @@ VarsqlAPP.vueServiceBean( {
 			this.loading =true; 
 			_self.targetItems = false;
 			_self.sourceItems = false;
+			
+			_self.resultInfo.sourceCount = 0;
+			_self.resultInfo.targetCount = 0;
 			
 			_self.compareObjectName = '';
 			_self.currentObjectType = objectType;
@@ -1036,9 +1044,31 @@ VarsqlAPP.vueServiceBean( {
 					vconnid : val
 				}
 				,success: function(resData) {
-					_self.targetSchemaList = resData.customs.schemaInfo;
+					var schemaList = resData.customs.schemaInfo; 
+					
+					if(_self.diffItem.sourceSchema != ''){
+						for(var i =0, len =schemaList.length; i< len; i++ ){
+							if(_self.diffItem.sourceSchema==schemaList[i]){
+								_self.diffItem.targetSchema = _self.diffItem.sourceSchema;
+								break; 
+							}
+						}
+					}
+					
+					_self.targetSchemaList = schemaList;
 				}
 			})
+		}
+		// source shcema change
+		,sourceSchemaChange : function(sourceSchema){
+			if(sourceSchema != ''){
+				for(var i =0, len =this.targetSchemaList.length; i< len; i++ ){
+					if(sourceSchema==this.targetSchemaList[i]){
+						this.diffItem.targetSchema = sourceSchema;
+						break; 
+					}
+				}
+			}
 		}
 		,resultDownload : function (){
 			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html()

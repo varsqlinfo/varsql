@@ -296,7 +296,7 @@
 <entry key="msg.select.object">선택된 object</entry>
 <entry key="msg.export.ddl.object.select.title">Export Object 선택</entry>
 <entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택하세요.</entry>
-<entry key="msg.export.ddl.object.nodata">object를 선택해주세요..</entry>
+<entry key="msg.export.ddl.object.nodata">object를 선택해주세요.</entry>
 
 
 

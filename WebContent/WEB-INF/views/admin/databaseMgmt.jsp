@@ -80,6 +80,16 @@
 								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
+							<div class="col-sm-8">
+								<select class="form-control text required" v-model="detailItem.VTYPE" @change="dbDriverLoad(detailItem.VTYPE)">
+									<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
+										<option value="${tmpInfo.URLPREFIX}" i18n="${tmpInfo.LANGKEY}">${tmpInfo.NAME}</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
 						<div class="form-group" :class="errors.has('SCHEMA') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
 							<div class="col-sm-8">
@@ -116,24 +126,6 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.useyn" /></label>
-							<div class="col-sm-8">
-								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.USE_YN" checked>Y</label>
-								<label><input type="radio" name="useyn" value="N" v-model="detailItem.USE_YN" >N</label>
-							</div>
-						</div>
-						
-						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
-							<div class="col-sm-8">
-								<select class="form-control text required" v-model="detailItem.VTYPE" @change="dbDriverLoad(detailItem.VTYPE)">
-									<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
-										<option value="${tmpInfo.URLPREFIX}" i18n="${tmpInfo.LANGKEY}">${tmpInfo.NAME}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
 							<div class="col-sm-8">
 								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.VDRIVER">
@@ -143,6 +135,15 @@
 								</select>
 							</div>
 						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.useyn" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.USE_YN" checked>Y</label>
+								<label><input type="radio" name="useyn" value="N" v-model="detailItem.USE_YN" >N</label>
+							</div>
+						</div>
+						
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.lazyloadyn" /></label>
 							<div class="col-sm-8">

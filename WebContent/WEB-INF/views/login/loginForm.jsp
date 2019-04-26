@@ -88,7 +88,7 @@ $(document).ready(function (){
 		$('#vsql_login_id').val(localStorage.getItem('varsqlLoginID'));
 	}
 	
-	$('#password').keydown(function(event) {
+	$('#vsql_login_password').keydown(function(event) {
 		if(event.keyCode =='13'){
 			$('.btn-login').trigger('click');
 		}
@@ -123,7 +123,7 @@ $(document).ready(function (){
 				<label style="padding-top:5px;">
 					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me
 				</label>
-				<div class="pull-right">
+				<div class="pull-right" style="display:none;">
 					<select name="lang" style="padding:3px;">
 						<option value="">언어 선택</option>
 						<option value="ko">한국어</option>
