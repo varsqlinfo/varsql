@@ -113,16 +113,28 @@ _$base.isFunction = function(obj){
 };
 
 /**
+ * object check
+ */
+_$base.isObject = function(obj){
+	return typeof obj==='object';
+};
+
+/**
  * undefined check
  */
 _$base.isUndefined = function(obj){
 	return typeof obj==='undefined';
 };
 
-_$base.isUndefined = function(obj){
-	return typeof obj==='undefined';
-};
-
+/**
+ * array contain 
+ */
+_$base.inArray =function(array,val){
+    for(var i = 0,l = array.length; i<l; i++){
+        if(array[i] == val){return true;}
+    }
+    return false;
+} 
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){

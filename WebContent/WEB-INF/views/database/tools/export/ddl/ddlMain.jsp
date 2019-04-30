@@ -99,9 +99,9 @@
 						</ul>
 					</div>
 					<div class="pull-right">
-						<a href="javascript:;" @click="selectDbObjectInfo.move('up')"><spring:message code="up" /></a>
+						<a href="javascript:;" class="fa fa-arrow-up"  @click="selectDbObjectInfo.move('up')"><spring:message code="up" /></a>
 						<span style="padding-left:10px;"></span>
-						<a href="javascript:;" @click="selectDbObjectInfo.move('down')"><spring:message code="down" /></a>
+						<a href="javascript:;" class="fa fa-arrow-down"  @click="selectDbObjectInfo.move('down')"><spring:message code="down" /></a>
 						<span style="padding-right:10px;"></span>
 					</div>
 				</div>

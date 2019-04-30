@@ -1,4 +1,5 @@
 package com.varsql.app.database.service;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,10 +22,10 @@ import com.varsql.app.database.dao.ExportDAO;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.beans.BaseObjectInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.varsql.core.db.beans.ddl.DDLCreateOption;
 import com.varsql.core.db.beans.ddl.DDLInfo;
@@ -69,17 +70,38 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public void selectExportConfigInfo(PreferencesInfo preferencesInfo, ModelMap model) throws Exception {
-		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
-	}
-	
-	public void selectExportTableInfo(PreferencesInfo preferencesInfo, ModelMap model, boolean tableColumnInfoFlag) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 		
-		model.addAttribute("tableInfo",dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(),preferencesInfo));
+		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
+		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 		
-		if(tableColumnInfoFlag){
-			model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
+		if(SecurityUtil.isSchemaView(preferencesInfo)) {
+			model.addAttribute("schemaList",dbMetaEnum.getSchemas(preferencesInfo));
+		}else {
+			model.addAttribute("schemaInfo", "");
 		}
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectExportTableInfo
+	 * @Method 설명 : table export list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 4. 29. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @return
+	 * @throws Exception
+	 */
+	public ResponseResult selectExportTableInfo(PreferencesInfo preferencesInfo) throws Exception {
+		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		
+		ResponseResult result =new ResponseResult();
+		
+		result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(),preferencesInfo));
+		
+		return result ;
+		
 	}
 	
 	/**

@@ -80,7 +80,7 @@ section#content:after{content:"";display:block;clear:both;}
 							<div style="text-align: center;">
 								<div style="width: 200px; padding: 5px 10px 5px 10px; background-color: #ffffff; line-height: 15pt; margin: auto;">
 									<span>
-										<spring:message code="loading" text="로드중입니다."/>
+										<spring:message code="msg.analyzing" text="분석 중입니다."/>
 									</span><br>
 									<span><img src="${pageContext.request.contextPath}/webstatic/imgs/progressLoader.gif"></span>
 								</div>
@@ -129,17 +129,29 @@ section#content:after{content:"";display:block;clear:both;}
 				<div class="row" style="position: relative;">
 					<div id="resizeHelper" class="resizable-helper"></div>
 					<aside id="resizable" class="ui-widget-content">
-						<div class="panel panel-default" style="height:230px;padding-bottom:10px;margin-bottom:10px;">
+						<div class="panel panel-default" style="height:240px;padding-bottom:10px;margin-bottom:10px;">
 							<div class="panel-body" style="padding: 0px;">	
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div><spring:message code="source" text="대상"/> <span class="result-count"> [{{resultInfo.sourceCount}}]</span></div>
+										<div style="height:25px;">
+											<span style="position: absolute;margin-top: 5px;">
+												<spring:message code="source" text="대상"/> <span class="result-count"> [{{resultInfo.sourceCount}}]</span>
+												<span><label for="scrollSync" style="margin-bottom:0px;">scrollSync</label> <input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y"></span>
+											</span>
+										</div>
 										<div id="sourceObjectMeta" class="row source-object-meta"></div>
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
-										<div><spring:message code="target" text="타켓"/> <span class="result-count"> [{{resultInfo.targetCount}}]</span></div>
+										<div style="height:25px;">
+											<span style="position: absolute;margin-top: 5px;">
+												<spring:message code="target" text="타켓"/> <span class="result-count"> [{{resultInfo.targetCount}}]</span>
+											</span>
+											<span class="pull-right">
+												<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-success" style="padding:2px 3px;">select compare</button>
+											</span>
+										</div>
 										<div id="targetObjectMeta" class="row source-target-meta"></div>
 									</div>
 								</div>
@@ -210,10 +222,13 @@ VarsqlAPP.vueServiceBean( {
 			,targetSchema : ''
 			,objectType : ''
 		}
+		,scrollSync : 'Y'
 		,currentObjectType : ''
 		,currentObject : {}
 		,loading:false
+		,isCompleteCompare :false
 		,compareObjectName :''
+		,compareObjectMetaResult :{}
 		,objectList : []
 		
 		,sourceSchemaList :[]
@@ -239,6 +254,7 @@ VarsqlAPP.vueServiceBean( {
 			if(this.sourceItems !==false && this.targetItems !== false){
 				var compareFn = this[this.diffItem.objectType+'Compare'];
 				
+				this.isCompleteCompare = true; 
 				this.loading =false;
 				var resultVal = '';
 				if(compareFn){
@@ -368,6 +384,8 @@ VarsqlAPP.vueServiceBean( {
 			_self.resultInfo.targetCount = 0;
 			
 			_self.compareObjectName = '';
+			_self.isCompleteCompare = false; 
+			_self.compareObjectMetaResult = {};
 			_self.currentObjectType = objectType;
 			_self.currentObject = VARSQL.util.objectMerge ({},diffItem);
 			
@@ -558,6 +576,9 @@ VarsqlAPP.vueServiceBean( {
 			
 			return compareResult.join('\n');
 		}
+		,isScrollSync : function (){
+			return this.scrollSync =='Y';
+		}
 		// 테이블 데이터 비교.
 		,tableObjectView : function (resData, mode){
 			var _self = this; 
@@ -572,6 +593,7 @@ VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -597,12 +619,16 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
+								}
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								}
 							}
 						}
 					}
@@ -618,6 +644,7 @@ VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -641,12 +668,17 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
+								}
+								
 							}
 						}
 						,horizontal :{
 							onUpdate : function (item){ 
-								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								}
 							}
 						}
 					}
@@ -654,76 +686,130 @@ VarsqlAPP.vueServiceBean( {
 			}
 		}
 		// 테이블  column 비교. 
-		, tableObjectMetaView:  function (viewItem){
+		, tableObjectMetaView:  function (viewItem,selectItemCompareFlag){
 			
 			var tblName = viewItem;
-			if(typeof viewItem==='object'){
+			if(VARSQL.isObject(viewItem)){
 				tblName = viewItem.name;
 			}
 			
 			this.compareObjectName = tblName;
 			
-			var sourceItem = this.compareItem.sourceNameMap[tblName]||{}; 
-			var targetItem = this.compareItem.targetNameMap[tblName] ||{};
-			
-			var sourceColList = sourceItem.colList||[];
-			var targetColList = targetItem.colList||[];
-			
 			var compareSourceColList =sourceColList;
 			var compareTargetColList =targetColList;
 			
-			if(sourceColList.length > 0  && targetColList.length > 0){
+			if(!VARSQL.isUndefined(this.compareObjectMetaResult[tblName])){
+				compareSourceColList =this.compareObjectMetaResult[tblName].source;
+				compareTargetColList =this.compareObjectMetaResult[tblName].target;
+			}else{
+				var sourceItem; 
+				var targetItem;
 				
-				compareSourceColList =[];
-				compareTargetColList =[];
-				
-				var maxLen = Math.max(sourceColList.length,targetColList.length);
-				
-				var sourceColMap={};
-				var targetColMap={};
-				
-				var colNameMap = {};
-				
-				for(var i =0 ; i < maxLen; i++){
-					var sourceColItem = sourceColList[i];
-					if(sourceColItem){
-						sourceColMap[sourceColItem.name] = sourceColItem;
-						colNameMap[sourceColItem.name] = '';
-					}
-				
-					var targetColItem= targetColList[i];
-					if(targetColItem){
-						targetColMap[targetColItem.name] = targetColItem;
-						colNameMap[targetColItem.name] = '';
-					}
+				if(selectItemCompareFlag === true){
+					var sourceSelArr = $.pubGrid('#sourceObjectMeta').getSelectionItem('name');
+					sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'')]||{});
+					var targetSelArr = $.pubGrid('#targetObjectMeta').getSelectionItem('name');
+					targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'')]||{});
+				}else{
+					sourceItem = this.compareItem.sourceNameMap[tblName]||{}; 
+					targetItem = this.compareItem.targetNameMap[tblName]||{};
 				}
 				
-				for(var key in colNameMap){
-					var sourceCol = sourceColMap[key]||{'__ne' :true};
-					var targetCol = targetColMap[key]||{'__ne' :true};
+				var sourceColList = sourceItem.colList||[];
+				var targetColList = targetItem.colList||[];
+				
+				compareSourceColList =sourceColList;
+				compareTargetColList =targetColList;
+			
+			
+				if( sourceColList.length > 0  && targetColList.length > 0){
 					
-					for(var colKey in sourceCol){
-						if($.trim(sourceCol[colKey]) != $.trim(targetCol[colKey])){
-							sourceCol[colKey+'_ne'] = true;
-							targetCol[colKey+'_ne'] = true
-							sourceCol['__ne'] = true;
-							targetCol['__ne'] = true
+					compareSourceColList =[];
+					compareTargetColList =[];
+					
+					var maxLen = Math.max(sourceColList.length,targetColList.length);
+					
+					var sourceColMap={};
+					var targetColMap={};
+					
+					for(var i =0 ; i < maxLen; i++){
+						var sourceColItem = sourceColList[i];
+						if(sourceColItem){
+							sourceColMap[sourceColItem.name] = sourceColItem;
+						}
+					
+						var targetColItem= targetColList[i];
+						if(targetColItem){
+							targetColMap[targetColItem.name] = targetColItem;
 						}
 					}
 					
-					compareSourceColList.push(sourceCol);
-					compareTargetColList.push(targetCol);
+					for(var key in sourceColMap){
+						var sourceCol = sourceColMap[key];
+						var targetCol = targetColMap[key];
+						
+						if(selectItemCompareFlag ===true ){
+							delete sourceCol['__ne'];
+							if(targetCol) delete targetCol['__ne'];
+						}
+						
+											
+						if(VARSQL.isUndefined(targetCol)){
+							targetCol = {'__ne' :true};
+						}else{
+							delete targetColMap[key];
+						}
+						
+						var equlasFlag = true; 
+						for(var colKey in sourceCol){
+							if(colKey.lastIndexOf('_ne') == (colKey.length-3)){
+								delete sourceCol[colKey];
+								continue; 
+							}
+							
+							sourceCol[colKey+'_ne'] =false;
+							if(targetCol[colKey+'_ne']) targetCol[colKey+'_ne'] =false;
+							
+							var targetColVal = targetCol[colKey]; 
+							if(!VARSQL.isUndefined(targetColVal)){
+								if($.trim(sourceCol[colKey]) != $.trim(targetColVal)){
+									sourceCol[colKey+'_ne'] = true;
+									targetCol[colKey+'_ne'] = true;
+									equlasFlag = false; 
+								}
+							}
+						}
+						
+						if(!equlasFlag){
+							sourceCol['__ne'] = true;
+							targetCol['__ne'] = true
+						}
+						
+						compareSourceColList.push(sourceCol);
+						compareTargetColList.push(targetCol);
+					}
+					
+					for(var key in targetColMap){
+						compareTargetColList.push(targetColMap[key]);
+					}
+					
+					if(selectItemCompareFlag !==true ){
+						this.compareObjectMetaResult[tblName] ={
+							source : compareSourceColList
+							,target : compareTargetColList
+						};
+					}
 				}
 			}
 			
-			var errorFormatter =  function (item){
-				if(item.item[item.colInfo.key +'_ne']){
-					return '<span style="color:red;">'+item.item[item.colInfo.key]+'</span>';
+			var errorFormatter =  function (colItemInfo){
+				if(colItemInfo.item[colItemInfo.colInfo.key +'_ne']===true){
+					return '<span style="color:red;">'+(colItemInfo.item[colItemInfo.colInfo.key]||'')+'</span>';
 				}else{
-					if(typeof item.item[item.colInfo.key] ==='undefined'){
-						return '<span style="color:red;">empty</span>';;
+					if(VARSQL.isUndefined(colItemInfo.item[colItemInfo.colInfo.key])){
+						return '<span style="color:red;">-----</span>';;
 					}else{
-						return item.item[item.colInfo.key];
+						return colItemInfo.item[colItemInfo.colInfo.key];
 					}
 				}
 			}
@@ -863,12 +949,16 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
+								}
 							}
 						}
 						,horizontal :{
-							onUpdate : function (item){ 
-								$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+							onUpdate : function (item){
+								if(_self.isScrollSync()){
+									$.pubGrid('#targetObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								}
 							}
 						}
 					}
@@ -907,12 +997,16 @@ VarsqlAPP.vueServiceBean( {
 					,scroll :{
 						vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
+								if(_self.isScrollSync()){
+									$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
+								}
 							}
 						}
 						,horizontal :{
-							onUpdate : function (item){ 
-								$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+							onUpdate : function (item){
+								if(_self.isScrollSync()){
+									$.pubGrid('#sourceObjectMeta').moveHScrollPosition(item.scrollLeft,'',false);
+								}
 							}
 						}
 					}
@@ -981,7 +1075,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			return compareResult.join('\n');
 		}
-		,otherMetaView :  function (viewItem){
+		,otherMetaView :  function (viewItem ,selectItemCompareFlag ){
 			var objName = viewItem;
 			if(typeof viewItem==='object'){
 				objName = viewItem.name;
@@ -989,8 +1083,18 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.compareObjectName = objName;
 			
-			var sourceItem = this.compareItem.sourceNameMap[objName]||{}; 
-			var targetItem = this.compareItem.targetNameMap[objName]||{};
+			var sourceItem; 
+			var targetItem;
+			
+			if(selectItemCompareFlag === true){
+				var sourceSelArr = $.pubGrid('#sourceObjectMeta').getSelectionItem('name');
+				sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'')]||{});
+				var targetSelArr = $.pubGrid('#targetObjectMeta').getSelectionItem('name');
+				targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'')]||{});
+			}else{
+				sourceItem = this.compareItem.sourceNameMap[objName]||{}; 
+				targetItem = this.compareItem.targetNameMap[objName]||{};
+			}
 			
 			var compareEle =document.getElementById('compareTextArea'); 
 			compareEle.innerHTML = '';
@@ -1013,7 +1117,16 @@ VarsqlAPP.vueServiceBean( {
 // 			if (mergeView.rightOriginal()){
 // 				mergeView.rightOriginal().setSize(null, height);
 // 			}
-			
+		}
+		// object list select item compare
+		,selectItemCompare : function (){
+			if(this.isCompleteCompare ==true){
+				if(this.diffItem.objectType =='table'){
+					this.tableObjectMetaView('',true);
+				}else{
+					this.otherMetaView('',true);
+				}
+			}
 		}
 		,sourceChange : function (val){
 			var _self = this; 
@@ -1071,6 +1184,10 @@ VarsqlAPP.vueServiceBean( {
 			}
 		}
 		,resultDownload : function (){
+			
+			if(this.isCompleteCompare !== true){
+				return ; 
+			}
 			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html()
 			
 			

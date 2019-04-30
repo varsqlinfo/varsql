@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
+import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseParamInfo;
@@ -66,11 +67,29 @@ public class ExportController {
 		
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
-		exportServiceImpl.selectExportTableInfo(preferencesInfo, model, true);
-		
-		
 		
 		return  new ModelAndView("/database/tools/exportMain/spec/specMain",model);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : specMainTableInfoList
+	 * @Method 설명 : table list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 4. 29. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/specMain/tableList")
+	public @ResponseBody ResponseResult tableList(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		
+		logger.debug("export specMain tableInfoList : {} ", preferencesInfo);
+		
+		return exportServiceImpl.selectExportTableInfo(preferencesInfo);
 	}
 	
 	

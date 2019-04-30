@@ -118,6 +118,7 @@ var _initialized = false
 			,onUpdate : function (item){	// 스크롤 업데이트. 
 				return true; 
 			}
+			,tooltip : false		// item count tooltip
 		}
 		,horizontal :{
 			height: 12
@@ -348,7 +349,7 @@ Plugin.prototype ={
 		_this.element = {};
 		_this.config = {
 			gridWidth :{aside : 0,left : 0, main:0, total:0} 
-			, container :{height : 0,width : 0}
+			, container :{height : 0,width : 0, bodyHeight:0}
 			, header :{height : 0, width : 0}
 			, footer :{height : 0, width : 0}
 			, navi :{height : 0, width : 0}
@@ -363,6 +364,7 @@ Plugin.prototype ={
 			, selection :{
 				startCell :{}
 			}
+			,mouseEnter :false
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -383,7 +385,7 @@ Plugin.prototype ={
 	}
 
 	,_initScrollData : function (){
-		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0,hTrackWidth:0, bodyHeight:0}; 
+		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0,hTrackWidth:0}; 
 	}
 	/**
      * @method _setGridWidth
@@ -1043,7 +1045,7 @@ Plugin.prototype ={
 			+' 		  </div>'
 			+' 		</div>'		
 
-			+' 		<div id="'+_this.prefix+'_bodyContainer" class="pubGrid-body-container-warpper" style="height:'+_this.config.container.height+'px">'
+			+' 		<div id="'+_this.prefix+'_bodyContainer" class="pubGrid-body-container-warpper">'
 			+' 			<div class="pubGrid-body-container">'
 			+' 				<div class="pubGrid-body-aside"><table style="width:'+_this.config.gridWidth.aside+'px;" class="pubGrid-body-aside-cont"></table></div>'
 			+' 				<div class="pubGrid-body-left"><table style="width:'+_this.config.gridWidth.left+'px;" class="pubGrid-body-left-cont"></table></div>'
@@ -1065,7 +1067,7 @@ Plugin.prototype ={
 			+' 			<div class="pubGrid-vscroll-bar-area">'
 			+'			  <div class="pubGrid-vscroll-bar-bg"></div>'
 			+' 			  <div class="pubGrid-vscroll-up pubGrid-vscroll-btn" data-pubgrid-btn="U"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"/></g></svg></div>'
-			+'			  <div class="pubGrid-vscroll-bar"></div>'
+			+'			  <div class="pubGrid-vscroll-bar"><div class="pubGrid-vscroll-bar-tip" style="right:'+(this.options.scroll.vertical.width)+'px"></div></div>'
 			+' 			  <div class="pubGrid-vscroll-down pubGrid-vscroll-btn" data-pubgrid-btn="D"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"/></g></svg></div>'
 			+' 			</div>'
 			+' 		</div>'
@@ -1749,8 +1751,8 @@ Plugin.prototype ={
 
 		var beforeViewCount = _this.config.scroll.viewCount ; 
 		_this.config.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / this.config.rowHeight) : _this.config.dataInfo.rowLen;
-		_this.config.scroll.bodyHeight = bodyH;
 		_this.config.scroll.insideViewCount = Math.floor(bodyH/this.config.rowHeight);
+		_this.config.container.bodyHeight = bodyH;
 		
 		var topVal = 0 ; 
 		if(vScrollFlag && _this.config.dataInfo.orginRowLen >= _this.config.scroll.viewCount){
@@ -2020,6 +2022,8 @@ Plugin.prototype ={
 			return true; 
 		});
 		
+		var tooltipFlag = _this.options.scroll.vertical.tooltip; 
+		var tooltipEle = _this.element.vScrollBar.find('.pubGrid-vscroll-bar-tip');
 		// 세로 스크롤 바 .
 		_this.element.vScrollBar.off('touchstart.pubvscroll mousedown.pubvscroll');
 		_this.element.vScrollBar.on('touchstart.pubvscroll mousedown.pubvscroll',function (e){
@@ -2036,11 +2040,20 @@ Plugin.prototype ={
 				clearTimeout(scrollbarDragTimeer)
 				scrollbarDragTimeer = setTimeout(function() {
 					_this.verticalScroll( data,e , 'move');
+
+					if(tooltipFlag){
+						tooltipEle.text(_this.config.scroll.viewIdx+1);
+						tooltipEle.show();
+					}
 				}, 7);
 			}).on('touchend.pubvscroll mouseup.pubvscroll mouseleave.pubvscroll', function (e){
 				ele.removeClass('active');
 				clearTimeout(scrollbarDragTimeer);
 				_this.verticalScroll(data, e , 'end');
+
+				if(tooltipFlag){
+					tooltipEle.hide();
+				}
 			});
 
 			return true; 
@@ -2765,20 +2778,23 @@ Plugin.prototype ={
 		}
 	}
 	/**
+     * @method _isMultipleSelection
+     * @description is multiple selection mode
+     */
+	,_isMultipleSelection : function (selectionMode){
+		return (selectionMode=='multiple-row' || selectionMode =='multiple-cell')
+	}
+	/**
      * @method _getSelectionModeColInfo
-     * @description select mode col info
+     * @description selection mode col info
      */
 	,_getSelectionModeColInfo : function (selectionMode ,colIdx ,dataInfo ,isMouseDown){
-		var multipleFlag=false; 
 		var _startCol=0 , _endCol =0; 
 
 		if(selectionMode =='multiple-row'){
-			multipleFlag = true;
 			_startCol = 0;
 			_endCol = dataInfo.colLen-1;
 		}else if(selectionMode =='multiple-cell'){
-			multipleFlag = true;
-
 			if(isMouseDown){
 				_startCol = -1;
 			}else{
@@ -2794,7 +2810,7 @@ Plugin.prototype ={
 			_endCol = colIdx;
 		}
 
-		return {multipleFlag :multipleFlag, startCol : _startCol, endCol : _endCol};
+		return {startCol : _startCol, endCol : _endCol};
 	}
 	/**
      * @method _initBodyEvent
@@ -2884,10 +2900,70 @@ Plugin.prototype ={
 
 		_this._setSelectionRangeInfo({isMouseDown : false});
 		
+		
+		var bodyDragTimer; 
+		var bodyDragDelay = 150;
+		var multipleFlag = _this._isMultipleSelection(selectionMode);
+
+		function dragScrollMove(){
+			bodyDragTimer = setInterval(function() {
+				if(_this.config.mouseDragDirectionY !==false){
+					_this.moveVerticalScroll({pos :_this.config.mouseDragDirectionY});
+				}
+				
+				if(_this.config.mouseScrollDirectionX !==false){
+					_this.moveHorizontalScroll({pos :_this.config.mouseScrollDirectionX});
+				}
+			}, bodyDragDelay);
+		}
+		
+		// body  selection 처리. 
 		_this.element.body.find('.pubGrid-body').on('mousedown.pubgrid.col','.pub-body-td',function (e){
 			
 			if(e.which ===3){
 				return true; 
+			}
+
+			var oe = e.originalEvent.touches;
+			var startPageX = oe ? oe[0].pageX : e.pageX;
+			var startPageY = oe ? oe[0].pageY : e.pageY;
+
+			var position  = _this.element.body.offset();
+
+			var _l  = position.left
+				,_r = _l +_this.config.container.width - _this.options.scroll.vertical.width;
+			var _t = position.top,
+				_b = _t+_this.config.container.bodyHeight;
+			
+			if(multipleFlag){
+				// mouse darg scroll
+				$(document).on('touchmove.pubgrid.body.drag mousemove.pubgrid.body.drag', function (e1){
+					
+					var oe1 = e1.originalEvent.touches;
+					var movePageX = oe1 ? oe1[0].pageX : e1.pageX;
+					var movePageY = oe1 ? oe1[0].pageY : e1.pageY;
+					
+					_this.config.mouseScrollDirectionX =false;
+					if(movePageX < _l){
+						_this.config.mouseScrollDirectionX = 'L';
+					}else if(movePageX > _r){
+						_this.config.mouseScrollDirectionX = 'R';
+					}
+					
+					_this.config.mouseDragDirectionY = false;
+					if(movePageY < _t){
+						_this.config.mouseDragDirectionY = 'U';
+					}else if(movePageY > _b){
+						_this.config.mouseDragDirectionY = 'D';
+					}
+
+					if(!bodyDragTimer)dragScrollMove();
+					
+				}).on('touchend.pubgrid.body.drag mouseup.pubgrid.body.drag mouseleave.pubgrid.body.drag', function (e1){
+					$(document).off('touchmove.pubgrid.body.drag mousemove.pubgrid.body.drag').off('touchend.pubgrid.body.drag mouseup.pubgrid.body.drag mouseleave.pubgrid.body.drag');
+					clearInterval(bodyDragTimer);
+					bodyDragTimer = false; 
+				});
 			}
 
 			var sEle = $(this)
@@ -2908,7 +2984,7 @@ Plugin.prototype ={
 			
 			var selItem = _this.options.tbodyItem[selRow];
 			
-			if(selectRangeInfo.multipleFlag && e.shiftKey) {	// shift key
+			if(multipleFlag && e.shiftKey) {	// shift key
 				var rangeInfo = {endIdx: selIdx, endCol: selectRangeInfo.endCol};
 
 				if(selectRangeInfo.startCol > -1){
@@ -2920,7 +2996,7 @@ Plugin.prototype ={
 					,isMouseDown : true
 				},false , true);
 
-			}else if(selectRangeInfo.multipleFlag && e.ctrlKey){ // ctrl key
+			}else if(multipleFlag && e.ctrlKey){ // ctrl key
 
 				_this._setSelectionRangeInfo({
 					rangeInfo : {startIdx : selIdx, endIdx : selIdx, startCol : selectRangeInfo.startCol, endCol: selectRangeInfo.endCol}
@@ -3004,7 +3080,7 @@ Plugin.prototype ={
 			if(!_this.config.focus) return ;
 			
 			// 설정 영역 keydown 처리
-			if($(e.target).closest('.pubGrid-setting-area').length > 0) return true; ;
+			if($(e.target).closest('.pubGrid-setting-area').length > 0) return true;
 
 			var evtKey = window.event ? e.keyCode : e.which;
 
@@ -3646,6 +3722,10 @@ Plugin.prototype ={
 
 		var selectItem = [];
 		var addRowFlag; 
+
+		if(!$.isArray(itemKeys)){
+			itemKeys = [itemKeys];
+		}
 		var keyLen = itemKeys.length; 
 		
 		var hi = _this.config.headerInfo[_this.config.headerInfo.length-1];

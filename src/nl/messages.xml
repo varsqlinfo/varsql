@@ -115,6 +115,8 @@
 <entry key="user.form.password.new">신규 비밀번호</entry>
 <entry key="user.form.password.confirm">확인 비밀번호</entry>
 
+<entry key="msg.analyzing">분석 중입니다.</entry>
+
 <!-- button message -->
 <entry key="btn.search">조회</entry>
 <entry key="btn.compare">비교</entry>
@@ -194,6 +196,7 @@
 <entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
 <entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
+<entry key="msg.confirm.block.n">스키마를 선택하세요.</entry>
 
 
 <entry key="msg.select.value">선택된 값</entry>
@@ -283,6 +286,7 @@
 <entry key="msg.export.spec.column.multi.sheet">컬럼다중시트여부</entry>
 <entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
 <entry key="msg.export.spec.column.title">Export 컬럼 정보</entry>
+<entry key="msg.export.spec.schema.select">스키마를 선택하세요.</entry>
 
 <!-- export ddl info-->
 <entry key="msg.export.ddl.info">내보내기 정보</entry>
