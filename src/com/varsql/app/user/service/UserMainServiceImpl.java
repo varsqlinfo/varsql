@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
+import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
@@ -64,7 +65,7 @@ public class UserMainServiceImpl{
 	
 	/**
 	 * 
-	 * @Method Name  : insertSendSqlInfo
+	 * @Method Name  : insertSendMemoInfo
 	 * @Method 설명 : sql 보내기
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29. 
@@ -73,12 +74,20 @@ public class UserMainServiceImpl{
 	 * @return
 	 */
 	@Transactional
-	public ResponseResult insertSendSqlInfo(ParamMap paramMap) {
+	public ResponseResult insertSendMemoInfo(MemoInfo memoInfo, boolean resendFlag) {
 		ResponseResult result = new ResponseResult();
-		paramMap.put("memo_id", VarsqlUtil.generateUUID());
-		userMainDAO.insertSendSqlInfo(paramMap);
 		
-		result.setItemOne(userMainDAO.insertSendUserInfo(paramMap));
+		if(resendFlag) {
+			memoInfo.setMemoCont(memoInfo.getReMemoCont());
+			memoInfo.setMemoTitle("[re]" + memoInfo.getMemoTitle());
+			memoInfo.setRecvId(userMainDAO.selectSendMemoUser(memoInfo));
+			memoInfo.setParentMemoId(memoInfo.getMemoId());
+		}
+		
+		memoInfo.setMemoId(VarsqlUtil.generateUUID());
+		
+		userMainDAO.insertSendMemoInfo(memoInfo);
+		result.setItemOne(userMainDAO.insertSendUserInfo(memoInfo));
 		
 		return result; 
 	}
@@ -208,6 +217,22 @@ public class UserMainServiceImpl{
 		}
 		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserMsgReply
+	 * @Method 설명 : 답변 목록 구하기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 5. 2. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
+	public ResponseResult selectUserMsgReply(ParamMap ParamMap) {
+		ResponseResult result = new ResponseResult();
+		result.setItemList(userMainDAO.selectUserMsgReply(ParamMap));
 		return result;
 	}
 

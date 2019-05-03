@@ -55,8 +55,16 @@ section#content:after{content:"";display:block;clear:both;}
 	height:645px;
 }
 
-.result-count {
+.object-count {
     font-weight: bold;
+}
+
+.result-detail{
+	display: none;
+}
+
+.result-wrapper.open .result-detail{
+	display: block;
 }
 
 </style>
@@ -121,7 +129,7 @@ section#content:after{content:"";display:block;clear:both;}
 					<option value=""><spring:message code="select" text="선택"/></option>
 					<option v-for="(item,index) in objectList" :value="item.contentid">{{item.name}}</option>
 				</select>
-				<button @click="objectListSearch()" type="button" class="btn btn-sm btn-primary" style="margin-bottom: 3px">
+				<button @click="getObjectList()" type="button" class="btn btn-sm btn-primary" style="margin-bottom: 3px">
 					<spring:message code="btn.compare" text="비교"/>
 				</button>
 			</div>
@@ -129,13 +137,21 @@ section#content:after{content:"";display:block;clear:both;}
 				<div class="row" style="position: relative;">
 					<div id="resizeHelper" class="resizable-helper"></div>
 					<aside id="resizable" class="ui-widget-content">
-						<div class="panel panel-default" style="height:240px;padding-bottom:10px;margin-bottom:10px;">
-							<div class="panel-body" style="padding: 0px;">	
+						<div class="panel panel-default" style="height:275px;padding-bottom:10px;margin-bottom:10px;">
+							<div class="panel-body" style="padding: 0px;">
+								<div class="input-group floatright" style="margin:3px;">
+									<input type="text" class="form-control input-sm" v-model="searchValue" @keyup.enter="searchObject()"> 
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-default btn-sm" @click="searchObject()">
+											<span class="glyphicon glyphicon-search"></span>
+										</button>
+									</span>
+								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
-												<spring:message code="source" text="대상"/> <span class="result-count"> [{{resultInfo.sourceCount}}]</span>
+												<spring:message code="source" text="대상"/> <span class="object-count"> [{{resultInfo.sourceCount}}]</span>
 												<span><label for="scrollSync" style="margin-bottom:0px;">scrollSync</label> <input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y"></span>
 											</span>
 										</div>
@@ -146,7 +162,7 @@ section#content:after{content:"";display:block;clear:both;}
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
-												<spring:message code="target" text="타켓"/> <span class="result-count"> [{{resultInfo.targetCount}}]</span>
+												<spring:message code="target" text="타켓"/> <span class="object-count"> [{{resultInfo.targetCount}}]</span>
 											</span>
 											<span class="pull-right">
 												<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-success" style="padding:2px 3px;">select compare</button>
@@ -163,8 +179,15 @@ section#content:after{content:"";display:block;clear:both;}
 								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
 							<div class="panel-body" style="padding: 0px;">	
-								<pre v-html="compareResult" id="compareResultArea" style="height:400px;overflow:auto;">
-								
+								<pre id="compareResultArea" style="height:400px;overflow:auto;">
+<div :class="isCompleteCompare===true?'view':'hidden'">----------::결과::---------
+<span class="result-wrapper"><a href="javascript:;" class="result-count">동일한 수  : {{sameInfo.cnt}}</a><div class="result-detail">{{sameInfo.htm}}</div></span>
+<span class="result-wrapper"><a href="javascript:;" class="result-count">다른 수 : {{differentInfo.cnt}}</a><div class="result-detail" v-html="differentInfo.htm"></div></span>
+<span class="result-wrapper"><a href="javascript:;" class="result-count">없는 수  : {{emptyInfo.cnt}}</a><div class="result-detail">{{emptyInfo.htm}}</div></span>
+<div>----------::상세내역::----------<br/>
+<div v-html="compareResult"></div>
+</div>
+
 								</pre>
 							</div>
 						</div>
@@ -201,20 +224,31 @@ section#content:after{content:"";display:block;clear:both;}
 			</div>
 		</div>
 	</div>
-											
-	<div id="downloadTemplate" class="hidden">
-		<span><spring:message code="source" text="대상"/> : {{currentObject.sourceSchema}}</span>
-		<span><spring:message code="target" text="타켓"/> :  {{currentObject.targetSchema}}</span>
-	</div>
+
+<script id="downloadTemplate" type="text/varsql-template">
+	<span><spring:message code="source" text="대상"/> : {{currentObject.sourceSchema}}</span>
+	<span><spring:message code="target" text="타켓"/> :  {{currentObject.targetSchema}}</span>
+</script>
+
 </div>
 <!-- /.row -->
 
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/diff/diff_match_patch.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/merge/merge.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/fuse/fuse.min.js"></script>
+
+
 <script>
-VarsqlAPP.vueServiceBean( {
+var aaa = VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,data: {
 		dbList : ${varsqlfn:objectToJson(dbList)}
 		,dbListMap : {}
+		,searchValue : ''
+		,sourceSearchObj :''
+		,targetSearchObj :''
 		,diffItem : {
 			source :''
 			,sourceSchema : ''
@@ -244,6 +278,9 @@ VarsqlAPP.vueServiceBean( {
 			sourceCount :0
 			,targetCount :0
 		}
+		,sameInfo : {cnt: 0 , htm :[]}
+		,differentInfo : {cnt: 0 , htm :[]}
+		,emptyInfo : {cnt: 0 , htm :[]}
 	}
 	,computed: {
 		compareResult : function (){
@@ -266,11 +303,29 @@ VarsqlAPP.vueServiceBean( {
 				this.resultInfo.sourceCount = this.sourceItems.length;
 				this.resultInfo.targetCount = this.targetItems.length;
 				
-				if(resultVal ==''){
-					return '<div class="text-center">동일합니다</div>';
-				}else{
-					return resultVal;
-				}
+				var options = {
+					  shouldSort: true,
+					  threshold: 0.1,
+					  location: 0,
+					  distance: 100,
+					  maxPatternLength: 32,
+					  minMatchCharLength: 1,
+					  keys: [
+					    "name",
+					    "remarks",
+						"_lower_name",
+					]
+				};
+						
+				this.sourceSearchObj = new Fuse(this.sourceItems, options);
+				this.targetSearchObj = new Fuse(this.targetItems, options);
+				
+				this.sameInfo.htm = this.sameInfo.htm.join('\n'); 
+				this.differentInfo.htm =this.differentInfo.htm.join('\n');
+				this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
+				
+				return resultVal;
+				
 			}
 			return '';
 		}
@@ -302,6 +357,19 @@ VarsqlAPP.vueServiceBean( {
 				var objName = sEle.data('object-name');
 				
 				_self.otherMetaView(objName);
+			})
+			
+			// result count click
+			$('#compareResultArea').on('click.result.click','.result-count' , function (e){
+				var sEle = $(this);
+				
+				var resultEle = sEle.closest('.result-wrapper');
+				
+				if(resultEle.hasClass('open')){
+					resultEle.removeClass('open');
+				}else{
+					resultEle.addClass('open');
+				}
 			})
 			
 			var helperEle = $('#resizeHelper');
@@ -353,8 +421,27 @@ VarsqlAPP.vueServiceBean( {
 				}
 	        });
 		}
+		// object search
+		,searchObject : function (){
+			if(this.isCompleteCompare !== true){
+				return ; 
+			}
+			var schVal = this.searchValue.toLowerCase();
+			
+			var sList , tList;
+			if($.trim(schVal)==''){
+				sList = this.sourceItems;
+				tList = this.targetItems;
+			}else{
+				sList = this.sourceSearchObj.search(schVal);
+				tList = this.targetSearchObj.search(schVal);
+			}
+			
+			$.pubGrid('#sourceObjectMeta').setData(sList,'reDraw'); 
+			$.pubGrid('#targetObjectMeta').setData(tList,'reDraw'); 
+		}
 		// db object search.
-		,objectListSearch : function(){
+		,getObjectList : function(){
 			var _self = this; 
 			
 			var diffItem = _self.diffItem;
@@ -382,6 +469,10 @@ VarsqlAPP.vueServiceBean( {
 			
 			_self.resultInfo.sourceCount = 0;
 			_self.resultInfo.targetCount = 0;
+			
+			_self.sameInfo ={cnt: 0 , htm :[]};
+			_self.differentInfo ={cnt: 0 , htm :[]};
+			_self.emptyInfo ={cnt: 0 , htm :[]};
 			
 			_self.compareObjectName = '';
 			_self.isCompleteCompare = false; 
@@ -439,12 +530,11 @@ VarsqlAPP.vueServiceBean( {
 			var targetMetaGridObj = $.pubGrid('#targetColumn');
 			if(targetMetaGridObj)targetMetaGridObj.destroy();
 			
-			
 			this.otherMetaView({});
-		 	
 		}
 		// 테이블 비교
 		,tableCompare : function (){
+			var _self = this; 
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
 			
@@ -456,10 +546,15 @@ VarsqlAPP.vueServiceBean( {
 			var sourceItem, targetItem;
 			for(var i =0 ;i < maxLen; i++){
 				sourceItem = sourceItems[i];
-				if(sourceItem) sourceNameMap[sourceItem.name] = sourceItem;
+				if(sourceItem){
+					sourceItem._lower_name = VARSQL.util.removeUnderscore(sourceItem.name, true);
+					sourceNameMap[sourceItem.name] = sourceItem;
+				}
 				
 				targetItem = targetItems[i];
 				if(targetItem) {
+					targetItem._lower_name = VARSQL.util.removeUnderscore(targetItem.name, true);
+					
 					targetCompareNameMap[targetItem.name] = targetItem;
 					targetNameMap[targetItem.name] = targetItem;
 				}
@@ -474,6 +569,7 @@ VarsqlAPP.vueServiceBean( {
 			var sourceColList , targetColList;
 			var compareLog;
 			var compareFlag = false; 
+			
 			for(var key in sourceNameMap){
 				
 				compareLog = [];
@@ -559,9 +655,16 @@ VarsqlAPP.vueServiceBean( {
 					compareLog.push('</div>');
 					
 					if(compareFlag){
+						_self.differentInfo.htm.push('<a class="table-info table-name" data-table-name="'+key+'">'+key+'</a>');
+						++_self.differentInfo.cnt;
 						compareResult.push(compareLog.join(''))
+					}else {
+						_self.sameInfo.htm.push(key);
+						++_self.sameInfo.cnt;
 					}
 				}else {
+					_self.emptyInfo.htm.push(key);
+					++_self.emptyInfo.cnt;
 					compareResult.push('<span style="color:#f60b0b;">타켓에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 </span>');
 				}
 				
@@ -575,6 +678,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			return compareResult.join('\n');
+			
 		}
 		,isScrollSync : function (){
 			return this.scrollSync =='Y';
@@ -1014,6 +1118,8 @@ VarsqlAPP.vueServiceBean( {
 			}
 		}
 		,otherCompare : function (){
+			var _self = this; 
+			
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
 		
@@ -1023,10 +1129,14 @@ VarsqlAPP.vueServiceBean( {
 			var sourceItem, targetItem;
 			for(var i =0 ;i < maxLen; i++){
 				sourceItem = sourceItems[i];
-				if(sourceItem) sourceNameMap[sourceItem.name] = sourceItem;
+				if(sourceItem){
+					sourceItem._lower_name = VARSQL.util.removeUnderscore(sourceItem.name, true);
+					sourceNameMap[sourceItem.name] = sourceItem;
+				}
 				
 				targetItem = targetItems[i];
 				if(targetItem) {
+					targetItem._lower_name = VARSQL.util.removeUnderscore(targetItem.name, true);
 					targetCompareNameMap[targetItem.name] = targetItem;
 					targetNameMap[targetItem.name] = targetItem;
 				}
@@ -1050,18 +1160,33 @@ VarsqlAPP.vueServiceBean( {
 					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 					
-					if(sourceItem.remarks != targetItem.remarks){
-						compareFlag = true; 
-						compareLog.push('설명이 같지 않습니다. 대상 : '+sourceNameMap[key].remark + ' 타켓 : '+targetCompareNameMap[key].remark +'\n');
+					for(var itemKey in sourceItem){
+						
+						if(sourceItem[itemKey] != targetItem[itemKey]){
+							compareFlag = true;
+							
+							if(itemKey =='createScript'){
+								compareLog.push('['+itemKey+'] 같지 않습니다.\n');
+							}else{
+								compareLog.push('['+itemKey+'] 같지 않습니다. 대상 : '+sourceItem[itemKey] + ' 타켓 : '+targetItem[itemKey] +'\n');
+							}
+						}
 					}
 					
 					compareLog.push('</div>');
 					
 					if(compareFlag){
+						_self.differentInfo.htm.push('<a class="table-info object-name" data-object-name="'+key+'">'+key+'</a>');
+						++_self.differentInfo.cnt;
 						compareResult.push(compareLog.join(''))
+					}else {
+						_self.sameInfo.htm.push(key);
+						++_self.sameInfo.cnt;
 					}
 				}else {
-					compareResult.push('<span style="color:#f60b0b;">대상에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 </span>');
+					_self.emptyInfo.htm.push(key);
+					++_self.emptyInfo.cnt;
+					compareResult.push('<span style="color:#f60b0b;">타켓에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 </span>');
 				}
 				
 				delete targetCompareNameMap[key];
@@ -1070,7 +1195,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 			
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">타켓에 [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.</span>');
+				compareResult.push('<span style="color:#b55e34;">대상에 [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.</span>');
 			}
 			
 			return compareResult.join('\n');
@@ -1188,7 +1313,7 @@ VarsqlAPP.vueServiceBean( {
 			if(this.isCompleteCompare !== true){
 				return ; 
 			}
-			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html()
+			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html();
 			
 			
 			var params ={

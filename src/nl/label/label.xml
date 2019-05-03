@@ -23,6 +23,7 @@
 <entry key="export">내보내기</entry>
 <entry key="import">가져오기</entry>
 <entry key="copy">복사</entry>
+<entry key="reply">답장</entry>
 
 
 <entry key="regular.expression">정규식</entry>
@@ -90,6 +91,11 @@
 <entry key="label.next">다음</entry>
 <entry key="label.cancle">취소</entry>
 <entry key="label.delete">삭제</entry>
+
+<entry key="label.recv.msg">받은메시지</entry>
+<entry key="label.send.msg">보낸메시지</entry>
+
+<entry key="label.recv.user">받는사람</entry>
 
 <entry key="label.wrap.search">끝에서 되돌리기</entry>
 <entry key="label.case.sensitive">대소문자</entry>

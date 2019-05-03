@@ -3480,14 +3480,14 @@ _ui.SQL = {
 						});
 
 						var params = {
-							'memo_title' : $('#memoTitle').val()
-							,'memo_cont' : $('#memoContent').val()
-							,'recv_id' : recv_id.join(';;')
+							'memoTitle' : $('#memoTitle').val()
+							,'memoCont' : $('#memoContent').val()
+							,'recvId' : recv_id.join(';;')
 						};
 						
 						VARSQL.req.ajax({      
 						    loadSelector : '#sql_editor_wrapper'
-						    ,url:{type:VARSQL.uri.user, url:'/sendSql.varsql'}
+						    ,url:{type:VARSQL.uri.user, url:'/sendMemo.varsql'}
 						    ,data:params 
 						    ,success:function (resData){
 						    	_self.memoDialog.dialog( "close" );

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResourceConfigConstants;
 import com.varsql.app.common.dao.BaseDAO;
+import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
@@ -59,17 +60,17 @@ public class UserMainDAO extends BaseDAO{
 		return getSqlSession().selectList("userMapper.selectSearchUserList", paramMap );
 	}
 	
-	public int insertSendSqlInfo(ParamMap paramMap) {
-		return getSqlSession().insert("userMapper.insertSendSqlInfo", paramMap ); 
+	public int insertSendMemoInfo(MemoInfo memoInfo) {
+		return getSqlSession().insert("userMapper.insertSendMemoInfo", memoInfo ); 
 	}
-	public int insertSendUserInfo(ParamMap paramMap) {
+	public int insertSendUserInfo(MemoInfo memoInfo) {
 		SqlSession batch = getSqlSession(true);
-		String [] recvArr = paramMap.getString("recv_id").split(";;");
+		String [] recvArr = memoInfo.getRecvId().split(";;");
 		
 		try{
 			for (int i = 0; i < recvArr.length; i++) {
-				paramMap.put("recv_id", recvArr[i]);
-				batch.insert("userMapper.insertSendUserInfo", paramMap );
+				memoInfo.setRecvId(recvArr[i]);
+				batch.insert("userMapper.insertSendUserInfo", memoInfo);
 			}
 			batch.flushStatements();
 			batch.commit(true);
@@ -310,5 +311,33 @@ public class UserMainDAO extends BaseDAO{
 	 */
 	public int updateQnaInfo(QnAInfo qnaInfo){
 		return getSqlSession().update("userMapper.updateQnaInfo", qnaInfo );
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectSendMemoUser
+	 * @Method 설명 : 보낸 사용자 구하기
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 5. 2. 
+	 * @변경이력  :
+	 * @param memoInfo
+	 * @return
+	 */
+	public String selectSendMemoUser(MemoInfo memoInfo) {
+		return getSqlSession().selectOne("userMapper.selectSendMemoUser", memoInfo);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserMsgReply
+	 * @Method 설명 : 답장 목록 구하기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 5. 2. 
+	 * @변경이력  :
+	 * @param memoInfo
+	 * @return
+	 */
+	public List selectUserMsgReply(ParamMap param) {
+		return getSqlSession().selectList("userMapper.selectUserMsgReply", param);
 	}
 }

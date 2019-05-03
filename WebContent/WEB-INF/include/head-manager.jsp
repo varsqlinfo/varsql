@@ -44,12 +44,4 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/diff/diff_match_patch.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/merge/merge.js"></script>
-
 <script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js"></script>
-
-
-

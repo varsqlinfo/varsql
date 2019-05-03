@@ -777,6 +777,29 @@ _$base.util = {
 		for(b=i=0; c=s.charCodeAt(i++); b+=c >>11?2:c>>7?2:1);
 		return b;
 	}
+	,getConvertCamelObject : function (obj){
+		var param = {};
+		for(var key in obj){
+			param[_fnConvertCamel(key)] = obj[key];
+		}
+		return param; 
+	}
+	,removeUnderscore : function (str, lowerCaseFlag){
+	    if(str == '') {
+	        return str;
+	    }
+	    
+	    if(lowerCaseFlag){
+	    	str = str.toLowerCase();
+	    }
+	    // conversion
+	    var returnStr = str.replace(/_(\w)/g, function(word) {
+	        return word;
+	    });
+	    returnStr = returnStr.replace(/_/g, "");
+	    
+	    return returnStr; 
+	}
 	
 	// camel 변환
 	,convertCamel : _fnConvertCamel

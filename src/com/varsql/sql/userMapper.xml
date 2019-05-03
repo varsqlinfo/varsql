@@ -270,6 +270,13 @@
 		where c.SEND_ID  = d.VIEWID
 	</select>
 	
+	<!-- 메모 답장 목록. -->
+	<select id="userMapper.selectUserMsgReply" parameterType="map" resultType="hashmap">
+		select MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT from VTMEMO a 
+		where PARENT_MEMO_ID = #{memoId}
+		order by REG_DT desc
+	</select>
+	
 	<!-- 메시지 삭제 -->
 	<update id="userMapper.deleteMsgInfo" parameterType="map" >
 		update VTMEMO
@@ -295,34 +302,42 @@
 	</delete>
 	
 	<!-- 메시지 정보 보내기  -->
-	<insert id="userMapper.insertSendSqlInfo" parameterType="map">
+	<insert id="userMapper.insertSendMemoInfo" parameterType="memoInfo">
 		insert  into VTMEMO (
 			MEMO_ID
+			, PARENT_MEMO_ID
 			, MEMO_TITLE
 			, MEMO_CONT
 			, REG_ID
 			, REG_DT
 		) 
 		values(
-			#{memo_id}
-			, #{memo_title}
-			, #{memo_cont}
-			, #{uid}
+			#{memoId}
+			, #{parentMemoId}
+			, #{memoTitle}
+			, #{memoCont}
+			, #{regId}
 			, CURRENT TIMESTAMP
 		)
 	</insert>
 	
+	<!-- 메시지 보낸 사용자 -->
+	<select id="userMapper.selectSendMemoUser" parameterType="memoInfo" resultType="string">
+		select REG_ID from VTMEMO
+		where MEMO_ID = #{memoId}
+	</select>
+	
 	<!-- 메시지 보낸 사람과 받는 사람 등록. -->
-	<insert id="userMapper.insertSendUserInfo" parameterType="map">
+	<insert id="userMapper.insertSendUserInfo" parameterType="memoInfo">
 		insert  into VTMEMO_USER (
 			MEMO_ID
 			,SEND_ID
 			,RECV_ID
 		) 
 		values(
-			#{memo_id}
-			, #{uid}
-			, #{recv_id}
+			#{memoId}
+			, #{regId}
+			, #{recvId}
 		)
 	</insert>
 	

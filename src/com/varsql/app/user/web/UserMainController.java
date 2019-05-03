@@ -21,9 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
@@ -255,6 +258,12 @@ public class UserMainController {
 		return  userMainServiceImpl.selectUserMsg(searchParameter);
 	}
 	
+	@RequestMapping({"/preferences/msgReplyList"})
+	public @ResponseBody ResponseResult msgReplyList(HttpServletRequest req) throws Exception {
+		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
+		return  userMainServiceImpl.selectUserMsgReply(paramMap);
+	}
+	
 	/**
 	 * @Method Name  : preferencesdeleteMsg
 	 * @Method 설명 : 메시지 목록보기
@@ -287,24 +296,39 @@ public class UserMainController {
 	}
 	
 	/**
-	 * sql 정보 보내기.
-	 * @param vconnid
+	 * 
+	 * @Method Name  : sendMemo
+	 * @Method 설명 : 메시지 보내기
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 5. 2. 
+	 * @변경이력  :
+	 * @param memoInfo
+	 * @param result
 	 * @param req
-	 * @param response
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sendSql"})
-	public @ResponseBody ResponseResult sendSql(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
+	@RequestMapping({"/sendMemo", "/resendMemo"})
+	public @ResponseBody ResponseResult sendMemo(@Valid MemoInfo memoInfo, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			for(ObjectError errorVal :result.getAllErrors()){
+				logger.warn("###  UserMainController sendMemo check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			
+			String requestURI = req.getRequestURI();
+			
+			memoInfo.setRegId(SecurityUtil.loginId(req));
+			resultObject = userMainServiceImpl.insertSendMemoInfo(memoInfo, requestURI.indexOf("resendMemo") > -1 ? true : false); 
+		}
 		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
-		
-		return userMainServiceImpl.insertSendSqlInfo(paramMap);
+		return  resultObject;
 	}
-
+		
 	@RequestMapping({"/message"})
 	public @ResponseBody Map message(HttpServletRequest req
 			,HttpServletResponse response

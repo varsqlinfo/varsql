@@ -13,8 +13,10 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<label>
-					<input type="radio" value="recv" v-model="message_type" @change="search()">받은메시지
-					<input type="radio" value="send" v-model="message_type" @change="search()">보낸메시지
+					<input type="radio" value="recv" v-model="message_type" @change="search()"><spring:message code="label.recv.msg" text="받은메시지" />
+				</label>
+				<label>
+					<input type="radio" value="send" v-model="message_type" @change="search()"><spring:message code="label.send.msg" text="보낸메시지"/>
 				</label>
 			</div>
 			<!-- /.panel-heading -->
@@ -142,17 +144,59 @@
 							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
 						</div>
 					</div>
-					<div>받는사람</div>
-					<div class="form-group" :class="(message_type=='send'?'view':'hidden')">
-						<div class="col-sm-12">
-							<div style="height:100px;overflow:auto;border:1px solid #ddd;">
-							<div v-for="(item,index) in detailItem.RECV_USER">
-								 {{item.RECV_NM}} <span>(</span> {{item.UID}}<span>)</span>
-							</div>
+					
+					<div v-if="message_type=='send'">
+					 	<div><spring:message code="label.recv.user" text="받는사람"/></div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<div style="height:100px;overflow:auto;border:1px solid #ddd;">
+								<div v-for="(item,index) in detailItem.RECV_USER">
+									 {{item.RECV_NM}} <span>(</span> {{item.UID}}<span>)</span>
+								</div>
+								</div>
 							</div>
 						</div>
 					</div>
-					
+					<div v-else>
+						<div class="pull-right" style="margin-bottom:10px;">
+							<button type="button" class="btn btn-sm btn-primary" @click="resendMemo()"><spring:message code="reply" text="답장"/></button>
+						</div>
+						<textarea class="form-control text required" rows="5" v-model="detailItem.RE_MEMO_CONT"></textarea>
+						
+						<div style="margin-top:10px;">
+							<table 
+								class="table table-striped table-bordered table-hover dataTable no-footer"
+								id="dataTables-example" style="table-layout:fixed;">
+								<colgroup>
+									<col style="width:calc(100% - 140px);">
+									<col style="width:140px;">
+									
+								</colgroup>
+								<thead>
+									<tr role="row">
+										<th>
+											<spring:message	code="content" />
+										</th>
+										<th>
+											<spring:message	code="reg_dt" />
+										</th>
+									</tr>
+								</thead>
+								<tbody class="dataTableContent">
+									<tr v-for="(item,index) in replyList" class="gradeA" :class="(index%2==0?'add':'even')">
+										<td>
+											<a href="javascript:;" @click="replyViewItem(item)" class="text-ellipsis">{{item.MEMO_CONT}}</a>
+											<textarea rows="5" class="wh100" :class="item._visible==true?'view':'hidden'">{{item.MEMO_CONT}}</textarea>
+										</td>
+										<td class="center">{{item.REG_DT}}</td>
+									</tr>
+									<tr v-if="replyList.length === 0">
+										<td colspan="2"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</form>
 			</div>
 			<!-- /.panel-body -->
@@ -174,6 +218,8 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem :{}
 		,selectItem :[]
+		,replyList :[]
+		,reMemoItem :{}
 	}
 	,methods:{
 		deleteMsg : function(){
@@ -203,13 +249,45 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,viewItem : function (item){
+			var _self =this; 
+			item.RE_MEMO_CONT ='';
 			this.detailItem = item;
+			this.replyList = [];
+			
+			this.$ajax({
+			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList.varsql'}
+			    ,data : VARSQL.util.getConvertCamelObject(item) 
+			    ,success:function (resData){
+			    	_self.replyList = resData.items;
+				}
+			});
 		}
 		,allCheck : function (sEle){
 			console.log($(sEle));
 		}
+		,resendMemo  : function (){
+			
+			var params = VARSQL.util.getConvertCamelObject(this.detailItem);
+			params.recvId = 'resend';
+			
+			this.$ajax({
+			    url:{type:VARSQL.uri.user, url:'/resendMemo.varsql'}
+			    ,data:params 
+			    ,success:function (resData){
+			    	
+				}
+			});
+		}
+		,replyViewItem : function (item){
+			this.reMemoItem = item; 
+			
+			Vue.set(item, '_visible',  !item._visible)
+		}
 		,search : function(no){
 			var _self = this; 
+			
+			this.detailItem = {};
+			this.replyList = [];
 			
 			var param = {
 				pageNo : (no?no:1)
