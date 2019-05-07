@@ -178,28 +178,60 @@ section#content:after{content:"";display:block;clear:both;}
 								<span><spring:message code="compare.result" text="비교결과"/></span>
 								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
-							<div class="panel-body" style="padding: 0px;">	
-								<pre id="compareResultArea" style="height:400px;overflow:auto;">
+							<div id="compareResultArea" class="panel-body" style="height:400px;overflow:auto;padding:0px;">
+<style>
+.result-table{
+}
+</style>
 <div :class="isCompleteCompare===true?'view':'hidden'">----------::결과::---------
-<span class="result-wrapper"><a href="javascript:;" class="result-count">동일한 수  : {{sameInfo.cnt}}</a><div class="result-detail">{{sameInfo.htm}}</div></span>
-<span class="result-wrapper"><a href="javascript:;" class="result-count">다른 수 : {{differentInfo.cnt}}</a><div class="result-detail" v-html="differentInfo.htm"></div></span>
-<span class="result-wrapper"><a href="javascript:;" class="result-count">없는 수  : {{emptyInfo.cnt}}</a><div class="result-detail">{{emptyInfo.htm}}</div></span>
-<div>----------::상세내역::----------<br/>
-<div v-html="compareResult"></div>
-</div>
-
-								</pre>
+	<table style="width:100%;border:1px solid #000000;border-collapse: collapse;">
+		<colgroup>
+			<col style="width:100px;">
+			<col style="width:*;">
+		</colgroup>
+		<tr>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">동일한 수</td>
+			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
+				<a href="javascript:;" class="result-count">{{sameInfo.cnt}}</a>
+				<div class="result-detail" :class="sameInfo.cnt > 0 ?'':'hidden'"><pre>{{sameInfo.htm}}</pre></div>
+			</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">다른 수</td>
+			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
+				<a href="javascript:;" class="result-count">{{differentInfo.cnt}}</a>
+				<div class="result-detail" :class="differentInfo.cnt > 0 ?'':'hidden'"><pre v-html="differentInfo.htm"></pre></div>
+			</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">없는 수</td>
+			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
+				<a href="javascript:;" class="result-count">{{emptyInfo.cnt}}</a>
+				<div class="result-detail" :class="emptyInfo.cnt > 0 ?'':'hidden'"><pre>{{emptyInfo.htm}}</pre></div>
+			</td>
+		</tr>
+	</table>
+</div>								
+<pre>
+	<div v-html="resultReport" :title="compareResult"></div>
+</pre>
 							</div>
 						</div>
 					</aside>
 					<section id="content">
 						<div class="panel panel-default" style="padding-left: 0px; height: 100%;padding-bottom: 10px; margin-bottom: 10px;">
-							<spring:message code="compare.detail" text="비교상세"/> : <span style="font-weight: bold;padding-left:5px;">{{compareObjectName}}&nbsp;</span>
+							<spring:message code="compare.detail" text="비교상세"/> : <span style="font-weight: bold;padding-left:5px;">{{compareSourceItem.name}}&lt;-&gt;{{compareTargetItem.name}}</span>
 							<div class="panel-body" style="padding: 5px 5px 0px 5px;" :data-compare-mode="currentObjectType != 'table'?'text':''">	
 								<div data-compare-area="grid">
 									<div class="col-xs-6">
 										<div style="margin:3px;">
-											<div class="row"><span><spring:message code="column" text="컬럼"/></span></div>
+											<div class="row">
+												<span class="text-ellipsis">
+													<spring:message code="column" text="desc"/>
+													<span :class="compareSourceItem.remarks != compareTargetItem.remarks ?'error':''">
+														{{compareSourceItem.remarks}}
+													</span>
+												</span></div>
 											<div id="sourceColumn" class="row source-column">
 											
 											</div>
@@ -207,7 +239,14 @@ section#content:after{content:"";display:block;clear:both;}
 									</div>
 									<div class="col-xs-6">
 										<div style="margin:3px;">
-											<div class="row"><spring:message code="column" text="컬럼"/></div>
+											<div class="row">
+												<span class="text-ellipsis">
+													<spring:message code="column" text="desc"/>
+													<span :class="compareSourceItem.remarks != compareTargetItem.remarks ?'error':''">
+														{{compareTargetItem.remarks}}
+													</span>
+												</span>
+											</div>
 											<div id="targetColumn" class="row target-column" >
 											
 											</div>
@@ -241,7 +280,7 @@ section#content:after{content:"";display:block;clear:both;}
 
 
 <script>
-var aaa = VarsqlAPP.vueServiceBean( {
+VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,data: {
 		dbList : ${varsqlfn:objectToJson(dbList)}
@@ -281,10 +320,15 @@ var aaa = VarsqlAPP.vueServiceBean( {
 		,sameInfo : {cnt: 0 , htm :[]}
 		,differentInfo : {cnt: 0 , htm :[]}
 		,emptyInfo : {cnt: 0 , htm :[]}
+		,resultReport : ''
+		
+		,compareSourceItem:{}
+		,compareTargetItem:{}
 	}
 	,computed: {
 		compareResult : function (){
-			if(this.currentObjectType != this.diffItem.objectType){
+			
+			if(this.isCompleteCompare ===true){
 				return '';
 			}
 			
@@ -324,8 +368,7 @@ var aaa = VarsqlAPP.vueServiceBean( {
 				this.differentInfo.htm =this.differentInfo.htm.join('\n');
 				this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
 				
-				return resultVal;
-				
+				this.resultReport = resultVal;
 			}
 			return '';
 		}
@@ -470,6 +513,7 @@ var aaa = VarsqlAPP.vueServiceBean( {
 			_self.resultInfo.sourceCount = 0;
 			_self.resultInfo.targetCount = 0;
 			
+			_self.resultReport = '';
 			_self.sameInfo ={cnt: 0 , htm :[]};
 			_self.differentInfo ={cnt: 0 , htm :[]};
 			_self.emptyInfo ={cnt: 0 , htm :[]};
@@ -799,12 +843,16 @@ var aaa = VarsqlAPP.vueServiceBean( {
 			
 			this.compareObjectName = tblName;
 			
-			var compareSourceColList =sourceColList;
-			var compareTargetColList =targetColList;
+			var compareSourceColList;
+			var compareTargetColList;
 			
 			if(!VARSQL.isUndefined(this.compareObjectMetaResult[tblName])){
 				compareSourceColList =this.compareObjectMetaResult[tblName].source;
 				compareTargetColList =this.compareObjectMetaResult[tblName].target;
+				
+				this.compareSourceItem = this.compareItem.sourceNameMap[tblName];
+				this.compareTargetItem =this.compareItem.targetNameMap[tblName];
+				
 			}else{
 				var sourceItem; 
 				var targetItem;
@@ -818,6 +866,9 @@ var aaa = VarsqlAPP.vueServiceBean( {
 					sourceItem = this.compareItem.sourceNameMap[tblName]||{}; 
 					targetItem = this.compareItem.targetNameMap[tblName]||{};
 				}
+				
+				this.compareSourceItem = sourceItem;
+				this.compareTargetItem =targetItem;
 				
 				var sourceColList = sourceItem.colList||[];
 				var targetColList = targetItem.colList||[];
@@ -1028,6 +1079,7 @@ var aaa = VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -1078,6 +1130,7 @@ var aaa = VarsqlAPP.vueServiceBean( {
 						,enableSearch : true
 						,enableSpeed : true
 					}
+					,selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -1220,6 +1273,10 @@ var aaa = VarsqlAPP.vueServiceBean( {
 				sourceItem = this.compareItem.sourceNameMap[objName]||{}; 
 				targetItem = this.compareItem.targetNameMap[objName]||{};
 			}
+			
+			
+			this.compareSourceItem = sourceItem;
+			this.compareTargetItem =targetItem;
 			
 			var compareEle =document.getElementById('compareTextArea'); 
 			compareEle.innerHTML = '';

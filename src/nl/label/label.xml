@@ -24,6 +24,8 @@
 <entry key="import">가져오기</entry>
 <entry key="copy">복사</entry>
 <entry key="reply">답장</entry>
+<entry key="desc">설명</entry>
+<entry key="remarks">비고</entry>
 
 
 <entry key="regular.expression">정규식</entry>
