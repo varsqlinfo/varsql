@@ -3213,6 +3213,8 @@ _ui.SQL = {
 		var schTxt = orginTxt;
 		if(findOpt.regularSearch===true){
 			schTxt = new RegExp(schTxt,'i');
+		}else{
+			schTxt = new RegExp(schTxt.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),'i');
 		}
 		
 		if(replaceAllFlag ===true){ //  모두 바꾸기
