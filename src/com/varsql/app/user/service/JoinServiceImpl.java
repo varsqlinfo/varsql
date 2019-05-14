@@ -46,6 +46,8 @@ public class JoinServiceImpl{
 			viewId=String.format("%07d", 1);
 		}
 		
+		joinForm.setUid(joinForm.getUid().trim());
+		joinForm.setUname(joinForm.getUname().trim());
 		joinForm.setUpw(EncryptionFactory.getInstance().encrypt(joinForm.getUpw()));
 		joinForm.setViewid(viewId);
 		joinForm.setRole(Authority.GUEST.name());
@@ -66,6 +68,8 @@ public class JoinServiceImpl{
 	 * @return
 	 */
 	public ResponseResult selectIdCheck(String uid) {
+		
+		uid = uid.trim();
 		
 		ResponseResult resultObject = new ResponseResult();
 		resultObject.setItemOne(joinDAO.selectIdCheck(uid));

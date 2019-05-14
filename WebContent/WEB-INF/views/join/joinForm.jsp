@@ -114,12 +114,14 @@ var joinForm = {
 		var idChecVal = -1; 
 		$('#uid').focusout(function(e) {
 			
-			var tmpVal = $(this).val(); 
+			var tmpVal =  $.trim($(this).val()); 
+			
+			$(this).val(tmpVal);
 			
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.join, url:'/idCheck'},
 				data:{
-					uid : tmpVal
+					uid : $.trim(tmpVal)
 				},
 				success: function(resData) {
 					if(resData.item  > 0){
@@ -161,7 +163,12 @@ var joinForm = {
 				,uname: {
 					validators: {
 						notEmpty: { message: '필수 입력사항입니다.'}
-						,stringLength: { min: 3, max: 100, message: '크기는 3~100 사이여야 합니다'}
+						,callback: {
+		                     message: '크기는 2~100 사이여야 합니다',
+		                     callback: function (value, validator, $field) {
+		                   	  	return $.trim(value).length > 1;
+		                     }
+		                 }
 					}
 			  	}	
 				,uemail: {
