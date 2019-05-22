@@ -339,7 +339,13 @@ public class SQLServiceImpl{
 	public void dataExport(ParamMap paramMap, SqlParamInfo sqlParamInfo, HttpServletResponse res) throws Exception {
 		
 		String exportType = sqlParamInfo.getExportType();
-		String tmpName = sqlParamInfo.getObjectName(); 
+		
+		String tmpName = sqlParamInfo.getObjectName();
+		
+		if(!sqlParamInfo.getBaseSchema().equals(sqlParamInfo.getSchema())) {
+			tmpName = sqlParamInfo.getSchema()+"."+tmpName;
+		}
+		 
 		String reqSql = "select "+ sqlParamInfo.getColumnInfo() + " from "+tmpName;
 		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(reqSql);
 		

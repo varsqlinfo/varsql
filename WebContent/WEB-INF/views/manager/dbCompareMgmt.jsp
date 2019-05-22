@@ -758,10 +758,8 @@ VarsqlAPP.vueServiceBean( {
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
-						click : function (idx, item){
-							var sObj = $(this);
-							
-							_self.tableObjectMetaView(item);
+						click : function (rowInfo){
+							_self.tableObjectMetaView(rowInfo.item);
 						}
 					}
 					,scroll :{
@@ -809,8 +807,8 @@ VarsqlAPP.vueServiceBean( {
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
-						click : function (idx, item){
-							_self.tableObjectMetaView(item);
+						click : function (rowInfo){
+							_self.tableObjectMetaView(rowInfo.item);
 						}
 					}
 					,scroll :{
@@ -1096,10 +1094,8 @@ VarsqlAPP.vueServiceBean( {
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
-						click : function (idx, item){
-							var sObj = $(this);
-							
-							_self.otherMetaView(item);
+						click : function (rowInfo){
+							_self.otherMetaView(rowInfo.item);
 						}
 					}
 					,scroll :{
@@ -1147,8 +1143,8 @@ VarsqlAPP.vueServiceBean( {
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
-						click : function (idx, item){
-							_self.otherMetaView(item);
+						click : function (rowInfo){
+							_self.otherMetaView(rowInfo.item);
 						}
 					}
 					,scroll :{

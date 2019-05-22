@@ -105,7 +105,7 @@ public class DbDiffServiceImpl{
 				
 				int idx =0 ; 
 				for(BaseObjectInfo boi : objectList){
-					System.out.println("boi.getName() : "+ boi.getName());
+					//System.out.println("boi.getName() : "+ boi.getName());
 					objectNameArr[idx] =boi.getName();
 					++idx;
 				}

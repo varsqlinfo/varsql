@@ -44,4 +44,4 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.grid.js"></script>

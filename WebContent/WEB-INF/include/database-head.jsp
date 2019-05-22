@@ -42,7 +42,7 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js?version=${prettify_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
 
-<script src="${pageContextPath}/webstatic/js/pub.grid.fixed.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=${pubjs_ver}"></script>

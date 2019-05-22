@@ -25,14 +25,11 @@ public class VarsqlNamespace extends TagSupport {
 			
 			Object namespace = pageContext.getAttribute("$namespace$",PageContext.PAGE_SCOPE);
 			
-			System.out.println("0000000000000000000");
-			
 			if(namespace==null) {
 				String simpleName = pageContext.getPage().getClass().getSimpleName();
 				namespace = UUIDUtil.nameUUIDFromBytes(simpleName);
 				pageContext.setAttribute("$namespace$",namespace);
 				
-				System.out.println("1111111111111111");
 			}
 		
 			jw.write(String.format("%s%s",prefix, namespace));

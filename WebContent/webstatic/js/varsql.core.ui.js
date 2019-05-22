@@ -1253,10 +1253,8 @@ _ui.addDbServiceObject('table',{
 					}
 				}
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-						
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
@@ -1429,9 +1427,8 @@ _ui.addDbServiceObject('view',{
 					}
 				}
 				,rowOptions : {
-					click : function (idx, item){
-						var sObj = $(this);
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
@@ -1505,10 +1502,8 @@ _ui.addDbServiceObject('procedure',{
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
@@ -1567,10 +1562,8 @@ _ui.addDbServiceObject('function',{
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-						
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
@@ -1632,9 +1625,8 @@ _ui.addDbServiceObject('index',{
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
 					,contextMenu :{
@@ -1695,10 +1687,8 @@ _ui.addDbServiceObject('trigger',{
 				]
 				,tbodyItem :itemArr
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-		    			
-		    			sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
 					,contextMenu :{
@@ -1765,10 +1755,8 @@ _ui.addDbServiceObject('sequence',{
 					]
 				,tbodyItem :itemArr
 				,rowOptions :{
-					click : function (idx, item){
-						var sObj = $(this);
-						
-						sObj.addClass('active');
+					click : function (rowInfo){
+						var item = rowInfo.item; 
 						_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
 					}
 					,contextMenu :{
