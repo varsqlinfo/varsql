@@ -3265,25 +3265,24 @@ _ui.SQL = {
 			}
 		}
 	}
-	,addGridDataToEditArea : function(rowItem){
+	// editor 에 텍스트 추가.
+	,addTextToEditorArea : function(addText){
 		var _self = this; 
 		
 		var startCursor = _self.getSqlEditorObj().getCursor(true);
 		
-		var cellVal = rowItem.item[rowItem.keyItem.key];
+		addText = addText+'';
 		
-		cellVal = cellVal+'';
-		
-		var addLineArr = cellVal.split(VARSQLCont.constants.newline)
+		var addLineArr = addText.split(VARSQLCont.constants.newline)
 			,addLineCnt =addLineArr.length;
 		
-		_self.getSqlEditorObj().replaceSelection(cellVal);
+		_self.getSqlEditorObj().replaceSelection(addText);
 		_self.editorFocus();
 		
 		if(addLineCnt > 1){
 			_self.getSqlEditorObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
 		}else{
-			_self.getSqlEditorObj().setCursor({line: startCursor.line, ch: startCursor.ch +cellVal.length})
+			_self.getSqlEditorObj().setCursor({line: startCursor.line, ch: startCursor.ch +addText.length})
 		}
 	}
 	// 파라미터 html template
@@ -4237,10 +4236,12 @@ _ui.sqlDataArea =  {
 			}
 			,autoResize : false
 			,headerOptions:{
-				view:true
-				,sort : true
-				,resize:{
-					enabled : true
+				helpBtn:{			
+					enabled : true	
+					,click :  function (clickInfo){
+						var item = clickInfo.item; 
+						_ui.SQL.addTextToEditorArea(item.key);
+					}
 				}
 			}
 			,asideOptions :{
@@ -4248,7 +4249,7 @@ _ui.sqlDataArea =  {
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					_ui.SQL.addGridDataToEditArea(rowItem);
+					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key]);
 				}
 				,valueFilter : function (headerItem, bodyItem){
 					if(headerItem.dbType=='CLOB'){
@@ -4328,13 +4329,6 @@ _ui.sqlDataArea =  {
 			height:'auto'
 			,autoResize : false
 			,page :false
-			,headerOptions:{
-				view:true
-				,sort : true
-				,resize:{
-					enabled : true
-				}
-			}
 			,asideOptions :{
 				lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
@@ -4345,7 +4339,7 @@ _ui.sqlDataArea =  {
 			,tbodyItem :columnTypeArr
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					_ui.SQL.addGridDataToEditArea(rowItem);
+					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key]);
 				}
 			}
 			,rowOptions :{

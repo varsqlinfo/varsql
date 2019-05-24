@@ -36,34 +36,39 @@ var _initialized = false
 		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
 		,number : {prefix :'', suffix :'' , fixed : 0}
 	}
-	,autoResize : {
-		enabled:true
-		,responsive : true // 리사이즈시 그리드 리사이즈 여부.
+	,autoResize : {	//리사이즈 설정
+		enabled:true	// 리사이즈시 그리드 리사이즈 여부.
+		,responsive : true 
 		,threshold :150
 	}
 	,headerOptions : {
 		view : true	// header 보기 여부
-		,height: 23
-		,sort : false	// 초기에 정렬할 값
+		,height: 25
+		,sort : true	// 초기에 정렬할 값
 		,redraw : true	// 초기에 옵션 들어오면 새로 그릴지 여부.
-		,resize:{	// resize 여부
-			enabled : true
-			,cursor : 'col-resize'
-			,update : false	// 변경시 콜랙 함수
+		,resize:{	// resize 설정
+			enabled : true			// 활성화여부
+			,cursor : 'col-resize'	// 커서 모양
+			,update : false			// 변경시 콜랙 함수
 		}
 		,isColSelectAll : true	// 전체 선택 여부.
 		,scrollEnabled : true	// 마우스 휠로 가로 스크롤 이동할지 여부.
 		,oneCharWidth: 7
 		,viewAllLabel : true
 		,contextMenu : false // header contextmenu event
+		,helpBtn:{			//	header help btn 설정
+			enabled : false	// header help btn 활성 여부.
+			,click :  function (clickInfo){}	// click event
+			,dblclick : function (clickInfo){} // double click event
+		}
 	}
-	,setting : {
-		enabled : false
-		,enableSpeed : false
-		,enableSearch : true
-		,enableColumnFix : false
-		,click : false		// 직접 처리 할경우. function 으로 처리.
-		,speedMaxVal :10
+	,setting : {					// 그리드 설정 
+		enabled : false				// 활성여부
+		,enableSpeed : false		// 스크롤 스피트 사용여부
+		,enableSearch : true		// 검색 활성 여부
+		,enableColumnFix : false	// 고정 컬럼 활성여부
+		,click : false				// 직접 처리 할경우. function 으로 처리.
+		,speedMaxVal :10			// 스크롤 스피드 
 		,callback : function (item){
 			
 		}
@@ -110,7 +115,7 @@ var _initialized = false
 			,width : 10
 		}
 	}
-	,bodyOptions : {
+	,bodyOptions : {	// body option
 		cellDblClick : false	// body td click
 	}
 	,scroll :{	// 스크롤 옵션
@@ -127,7 +132,7 @@ var _initialized = false
 			,tooltip : false		// item count tooltip
 		}
 		,horizontal :{
-			height: 12
+			height: 12			// 가로 스크롤 높이
 			,bgDelay : 100		
 			,btnDelay : 100		// 방향키 버튼 속도.
 			,dragDelay : 7		// 스크롤 bar drag delay
@@ -351,7 +356,7 @@ Plugin.prototype ={
 		
 		_this.element = {};
 		_this.config = {
-			gridWidth :{aside : 0,left : 0, main:0, total:0} 
+			gridWidth :{aside : 0,left : 0, main:0, total:0, mainOverWidth:0 ,mainInsideWidth:0} 
 			, container :{height : 0,width : 0, bodyHeight:0}
 			, header :{height : 0, width : 0}
 			, footer :{height : 0, width : 0}
@@ -369,7 +374,6 @@ Plugin.prototype ={
 			}
 			,focus : false
 			,mouseEnter :false
-			,borderSpace : 1 
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -388,18 +392,23 @@ Plugin.prototype ={
 
 		return this;
 	}
-
+	// 스크롤 데이터 초기화
 	,_initScrollData : function (){
-		this.config.scroll = {before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0,hTrackWidth:0}; 
+		this.config.scroll = {containerLeft :0, before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0,hTrackWidth:0}; 
 	}
 	/**
-     * @method _setGridWidth
+     * @method _setGridContainerWidth
      * @description grid 넓이 구하기
      */
-	,_setGridWidth : function (mode){
-		var _this = this;
-		
-		_this.config.container.width = _this.gridElement.innerWidth()-1; // border 값 빼주기.			
+	,_setGridContainerWidth : function (width){
+		this.config.container.width = width;		
+	}
+	/**
+     * @method getGridWidth
+     * @description grid width
+     */
+	,getGridWidth : function(){
+		 return this.gridElement.innerWidth() -1; // border 값 빼주기.
 	}
 	/**
      * @method setOptions
@@ -471,15 +480,7 @@ Plugin.prototype ={
 		}
 		_this.config.aside.initWidth = _this.config.gridWidth.aside;
 
-		if(_this.config.gridWidth.aside > 0){
-			_this.config.borderSpace +=1;
-		}
-
-		if(_this.options.colFixedIndex >0){
-			_this.config.borderSpace +=1;
-		}
-
-		_this._setGridWidth();
+		_this._setGridContainerWidth(_this.getGridWidth());
 	}
 	/**
      * @method addStyleTag
@@ -730,7 +731,7 @@ Plugin.prototype ={
 		
 		var verticalScrllBarFlag = itemTotHeight > (_this.gridElement.height() - this.config.header.height -this.config.footer.height);
 	
-		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+(verticalScrllBarFlag? (opt.scroll.vertical.width):0) +_this.config.borderSpace;
+		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+(verticalScrllBarFlag? (opt.scroll.vertical.width):0);
 		
 		var resizeFlag = _totW  < _gw ? true : false;
 		var remainderWidth = Math.floor((_gw -_totW)/tciLen)
@@ -1084,9 +1085,9 @@ Plugin.prototype ={
 		var _this = this
 			,vArrowWidth = _this.options.scroll.vertical.width-2
 			,hArrowWidth = _this.options.scroll.horizontal.height-2;
-	
+		
 		return '<div class="pubGrid-wrapper"><div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
-			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container" style="overflow:hidden;">'
+			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container '+(_this.options.colFixedIndex >0 ? 'pubGrid-col-fixed':'')+'" style="overflow:hidden;">'
 			+'    <div class="pubGrid-setting-wrapper pubGrid-layer" data-pubgrid-layer="'+_this.prefix+'"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
 			+'<g><path id="'+_this.prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
 			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
@@ -1124,6 +1125,7 @@ Plugin.prototype ={
 			+' 		  <div id="'+_this.prefix+'_headerContainer" class="pubGrid-header-container">'
 			+' 			<div class="pubGrid-header-aside"><table class="pubGrid-header-aside-cont" style="width:'+_this.config.gridWidth.aside+'px;">#theaderAsideHtmlArea#</table></div>'
 			+' 			<div class="pubGrid-header-left"><table class="pubGrid-header-left-cont" style="width:'+_this.config.gridWidth.left+'px;">#theaderLeftHtmlArea#</table></div>'
+			+' 			<div class="pubGrid-header-left-cont-border"><div class="pubGrid-border"></div></div>'
 			+' 			<div class="pubGrid-header">'
 			+'				<div class="pubGrid-header-cont-wrapper" style="position:relative;"><table class="pubGrid-header-cont" onselectstart="return false">#theaderHtmlArea#</table></div>'
 			+' 			</div>'
@@ -1134,6 +1136,7 @@ Plugin.prototype ={
 			+' 			<div class="pubGrid-body-container">'
 			+' 				<div class="pubGrid-body-aside"><table style="width:'+_this.config.gridWidth.aside+'px;" class="pubGrid-body-aside-cont"></table></div>'
 			+' 				<div class="pubGrid-body-left"><table style="width:'+_this.config.gridWidth.left+'px;" class="pubGrid-body-left-cont"></table></div>'
+			+' 				<div class="pubGrid-body-left-cont-border"><div class="pubGrid-border"></div></div>'
 			+' 				<div class="pubGrid-body">'
 			+'					<div class="pubGrid-body-cont-wrapper" style="position:relative;"><table  class="pubGrid-body-cont"></table></div>'
 			+'				</div>'
@@ -1164,7 +1167,8 @@ Plugin.prototype ={
 			+'			  <div class="pubGrid-hscroll-bar"></div>'
 			+' 			  <div class="pubGrid-hscroll-right pubGrid-hscroll-btn" data-pubgrid-btn="R"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 0,100 90,50" fill="#737171"/></g></svg></div>'
 			+'			</div>'
-			+' 		</div> '
+			+' 		</div>'
+			+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 			+' 	</div>'
 			+' 	<div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 			+' 	</div>'
@@ -1392,14 +1396,17 @@ Plugin.prototype ={
 					ghItem = ghArr[j];
 					if(ghItem.view){
 						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+ghItem.resizeIdx+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
+						if(_this.options.headerOptions.helpBtn.enabled === true){
+							strHtm.push('  <div class="pub-header-help-wrapper"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
+						}
 						strHtm.push('  <div class="label-wrapper">');
 						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+j+'"><div class="pub-inner"><div class="centered">'+ghItem.label+'</div></div>');
 						if(ghItem.isSort ===true){
 							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');	
 						}
 						strHtm.push('   </div>');
-						strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
 						strHtm.push('  </div>');
+						strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
 						strHtm.push(' </th>');					
 					}
 				}
@@ -1423,9 +1430,9 @@ Plugin.prototype ={
      */
 	,setColFixedIndex : function (idx){
 		if(this.options.colFixedIndex > 0  && idx < 1){
-			this.config.borderSpace-=1;
+			this.element.container.removeClass('pubGrid-col-fixed');
 		}else if(this.options.colFixedIndex < 1  && idx > 0){
-			this.config.borderSpace+=1;
+			this.element.container.addClass('pubGrid-col-fixed')
 		}
 		this.options.colFixedIndex = idx; 
 		this._setThead(false);
@@ -1499,6 +1506,7 @@ Plugin.prototype ={
 				_this.element.status = $('#'+_this.prefix+'_status');
 				_this.element.vScrollBar = $('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar');
 				_this.element.hScrollBar = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar');
+				_this.element.resizeHelper = $('#'+_this.prefix+'_resizeHelper');	// resize helper
 
 				// query selector 
 				_this.element.leftContent = $pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont');
@@ -1536,12 +1544,10 @@ Plugin.prototype ={
 		}
 
 		if(tbi.length < 1){
-			_this.element.body.find('.pubGrid-body-container').hide();
-			_this.element.body.find('.pubGrid-empty-msg-area').show();
+			_this.element.body.addClass('pubGrid-data-empty');
 			return ; 
 		}else{
-			_this.element.body.find('.pubGrid-body-container').show()
-			_this.element.body.find('.pubGrid-empty-msg-area').hide();
+			_this.element.body.removeClass('pubGrid-data-empty');
 		}
 		
 		var itemIdx = _this.config.scroll.viewIdx;
@@ -1725,15 +1731,16 @@ Plugin.prototype ={
 			pubGridClass +=' pubGrid-no-item';
 		}
 
-		this.element.pubGrid.addClass(pubGridClass)
-		this.element.header.find('.pubGrid-header-aside-cont').css({'line-height': (header_height-1)+'px' , 'height' : (header_height-1)+'px'})
+		this.element.pubGrid.addClass(pubGridClass);
+		this.element.header.css({'height' : header_height});
+		this.element.header.find('.pubGrid-header-aside-cont').css({'line-height': (header_height)+'px' , 'height' : (header_height)+'px'})
 		//this.element.header.find('.aside-label-wrapper').css('height',header_height-1+'px'); // 20190311
 
 		$('#'+this.prefix+'_vscroll .pubGrid-scroll-top-area').css({'line-height': header_height+'px' , 'height' : header_height+'px'});
 			
 		$('#'+this.prefix+'_vscroll').css({'width' : this.options.scroll.vertical.width , 'padding-top' :  header_height});
 		$('#'+this.prefix+'_hscroll').css({'height' : this.options.scroll.horizontal.height});
-		
+
 		if(this.options.tbodyItem.length < 1){
 			// empty message
 			if(isFunction(this.options.message.empty)){
@@ -1758,7 +1765,7 @@ Plugin.prototype ={
 		if(type =='headerResize'){
 			dimension = {width : cfg.container.width, height : cfg.container.height}; 
 		}else{
-			dimension = {width : _this.gridElement.innerWidth(), height :(_this.options.height =='auto' ? _this.gridElement.height() : _this.options.height)};
+			dimension = {width : _this.getGridWidth(), height :(_this.options.height =='auto' ? _this.gridElement.height() : _this.options.height)};
 		}
 		
 		opt = objectMerge(dimension ,opt);
@@ -1789,15 +1796,11 @@ Plugin.prototype ={
 					var colItem = colItems[i]; 
 					_addW = (_reiszeW*(colItem.width/_currGridMain*100)/100);
 					
-					var colResizeW = colItem.width = colItem.width + _addW;
-
-					if(i == colLen-1){
-						$('#'+_this.prefix+'colHeader'+i).css('width', (colResizeW-2) +'px');
-						$('#'+_this.prefix+'colbody'+i).css('width', (colResizeW-2) +'px');
-					}else{
-						$('#'+_this.prefix+'colHeader'+i).css('width',colResizeW+'px');
-						$('#'+_this.prefix+'colbody'+i).css('width',colResizeW +'px');
-					}				
+					colItem.width = colItem.width + _addW;
+					
+					$('#'+_this.prefix+'colHeader'+i).css('width',colItem.width+'px');
+					$('#'+_this.prefix+'colbody'+i).css('width',colItem.width +'px');
+									
 				}
 
 				cfg.gridWidth.main = _currGridMain +(_reiszeW);
@@ -1805,9 +1808,10 @@ Plugin.prototype ={
 		}
 		
 		// grid total width
-		cfg.gridWidth.total = cfg.gridWidth.aside+cfg.gridWidth.left+ cfg.gridWidth.main+cfg.borderSpace;
-		
-		cfg.container.width = opt.width;
+		cfg.gridWidth.total = cfg.gridWidth.aside+cfg.gridWidth.left+ cfg.gridWidth.main;
+
+		_this._setGridContainerWidth(opt.width);
+
 		cfg.container.height = opt.height;
 		
 		var mainHeight = opt.height - cfg.navi.height;
@@ -1815,10 +1819,10 @@ Plugin.prototype ={
 		var  bodyH = mainHeight - cfg.header.height - cfg.footer.height
 			, itemTotHeight = cfg.dataInfo.rowLen * cfg.rowHeight
 			, vScrollFlag = itemTotHeight > bodyH ? true :false
-			,bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0))
+			, bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0))
 			, hScrollFlag = cfg.gridWidth.total > bodyW  ? true : false;
 			 
-					
+		bodyH -= hScrollFlag? this.options.scroll.horizontal.height :0;
 		_this._setPanelElementWidth();
 		
 		_this.element.body.css('height',(bodyH)+'px');
@@ -1865,18 +1869,20 @@ Plugin.prototype ={
 
 		var leftVal =0;
 		if(hScrollFlag){
+			var gridContTotW = cfg.gridWidth.total;
+
 			cfg.scroll.hUse = true; 
 			$('#'+_this.prefix+'_hscroll').css('padding-right',(vScrollFlag?_this.options.scroll.vertical.width:0));
 			$('#'+_this.prefix+'_hscroll').show();
 
 			var hscrollW = $('#'+_this.prefix+'_hscroll').find('.pubGrid-hscroll-bar-area').width();
 
-			var barWidth = (hscrollW*(bodyW/cfg.gridWidth.total*100))/100; 
+			var barWidth = (hscrollW*(bodyW/gridContTotW*100))/100; 
 			barWidth = barWidth < 25 ? 25 :( barWidth > hscrollW ?hscrollW :barWidth);
 			
 			cfg.scroll.hThumbWidth = barWidth;
 			cfg.scroll.hTrackWidth =hscrollW - barWidth;
-			cfg.scroll.oneColMove = cfg.gridWidth.total/cfg.scroll.hTrackWidth;
+			cfg.scroll.oneColMove = gridContTotW/cfg.scroll.hTrackWidth;
 			leftVal = cfg.scroll.hTrackWidth* cfg.scroll.hBarPosition/100;
 			_this.element.hScrollBar.css('width',barWidth)
 		}else{
@@ -1885,7 +1891,7 @@ Plugin.prototype ={
 		}
 
 		// main inside width
-		cfg.gridWidth.mainInsideWidth = (cfg.container.width - cfg.gridWidth.aside - cfg.gridWidth.left-(cfg.scroll.vUse?_this.options.scroll.vertical.width:0))- cfg.borderSpace; 
+		cfg.gridWidth.mainInsideWidth = (cfg.container.width - cfg.gridWidth.aside - cfg.gridWidth.left-(cfg.scroll.vUse?_this.options.scroll.vertical.width:0)); 
 		// main over width value
 		cfg.gridWidth.mainOverWidth = cfg.gridWidth.main-cfg.gridWidth.mainInsideWidth; 
 
@@ -2361,7 +2367,7 @@ Plugin.prototype ={
      * @description 가로 스크롤바 위치 이동
      */
 	,_getBodyContainerLeft : function (leftVal){
-		return ((this.config.gridWidth.mainOverWidth)*(leftVal/this.config.scroll.hTrackWidth*100))/100; 
+		return leftVal < 1? 0:(((this.config.gridWidth.mainOverWidth)*(leftVal/this.config.scroll.hTrackWidth*100))/100); 
 	}
 	/**
      * @method moveHScrollPosition
@@ -2673,6 +2679,29 @@ Plugin.prototype ={
 				_this.setCheckItems('all',checkFlag);
 			});
 		}
+
+		if(_this.options.headerOptions.helpBtn.enabled ===true){
+			var fnHelpClick = _this.options.headerOptions.helpBtn.click; 
+			if(isFunction(fnHelpClick)){
+				_this.element.header.on('click.pubGrid.helpbtn','.pub-header-help-btn',function (e){
+					var selEle = $(this);
+					var headerInfo = selEle.closest('[data-header-info]').attr('data-header-info').split(','); 
+					 
+					fnHelpClick.call(selEle, {item :_this.config.headerInfo[headerInfo[0]][headerInfo[1]], c :headerInfo[1] })
+				});	
+			}
+
+			var fnHelpDblclick = _this.options.headerOptions.helpBtn.dblclick; 
+			if(isFunction(fnHelpDblclick)){
+				_this.element.header.on('dblclick.pubGrid.helpbtn','.pub-header-help-btn',function (e){
+					var selEle = $(this);
+					var headerInfo = selEle.closest('[data-header-info]').attr('data-header-info').split(','); 
+					 
+					fnHelpDblclick.call(selEle, {item :_this.config.headerInfo[headerInfo[0]][headerInfo[1]], c :headerInfo[1] })
+				});	
+			}
+		}
+
 		
 		var beforeClickObj; 
 		// sort
@@ -3952,16 +3981,24 @@ Plugin.prototype ={
 			
 			_this.drag.ele = sEle;
 			
-			_this.drag.resizeIdx = _this.drag.ele.attr('data-resize-idx');
+			_this.drag.resizeIdx = parseInt(_this.drag.ele.attr('data-resize-idx'),10);
 			_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
 			_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
 			
-			_this.drag.totColW = _this.drag.ele.closest('[data-header-info]').width();
+			// get absolute left position 
+			var posLeft = _this.config.gridWidth.aside;
+			for(var i = 0;i < _this.drag.resizeIdx; i++ ){
+				posLeft+=$('#'+_this.prefix+'colHeader'+i).width();
+			}
+			_this.drag.positionLeft = posLeft;
+
+			_this.drag.totColW = _this.drag.colHeader.width();
 			
 			_this.drag.colW = _this.config.tColItem[_this.drag.resizeIdx].width;
 			if(_this.drag.isLeftContent){
 				_this.drag.gridW = _this.config.gridWidth.left - _this.drag.colW;
 			}else{
+				_this.drag.positionLeft -= _this.config.scroll.containerLeft;
 				_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
 			}
 			_this.drag.gridBodyW = _this.config.container.width - _this.drag.colW;
@@ -3999,12 +4036,14 @@ Plugin.prototype ={
 
 				_this._setHeaderResize(e,_this, 'end' , Math.min(resizeW,_this.options.colOptions.maxWidth ));
 			})
-
+			
 			resizeEle.css('cursor',_this.options.headerOptions.resize.cursor);
 			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
 				var oe = e.originalEvent.touches;
-				
+				var moveStart = false; 
 				colResize(_this, $(this));
+
+				_this.element.resizeHelper.show().css('left', (_this.drag.positionLeft+_this.drag.totColW)+'px');
 
 				_this.drag.pageX = oe ? oe[0].pageX : e.pageX;
 				_this.drag.ele.addClass('pubGrid-move-header')
@@ -4014,10 +4053,16 @@ Plugin.prototype ={
 				_this.element.hidden.append("<style type='text/css'>*{cursor:" + _this.options.headerOptions.resize.cursor + "!important}</style>");
 
 				_$doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e){
+					if(!moveStart){
+						_this.element.container.addClass('pubGrid-resize-mode');
+					}
+					moveStart =true; 
 					_this.onGripDrag(e,_this);
 				}).on('touchend.colheaderresize mouseup.colheaderresize mouseleave.colheaderresize', function (e){
 					_this.drag.ele.removeClass('pubGrid-move-header');
 					_this.onGripDragEnd(e,_this);
+					_this.element.container.removeClass('pubGrid-resize-mode');
+					_this.element.resizeHelper.hide();
 				});
 
 				return true; 
@@ -4079,6 +4124,8 @@ Plugin.prototype ={
 		}
 
 		if(mode=='end'){
+			w = (w > _this.options.colOptions.minWidth? w : _this.options.colOptions.minWidth);
+
 			_this.setHeaderWidth(drag.resizeIdx , w , drag.colHeader);
 
 			if(isFunction(_this.options.headerOptions.resize.update)){
@@ -4088,7 +4135,8 @@ Plugin.prototype ={
 
 		}else{
 			var w = drag.totColW + (ox - drag.pageX);
-			drag.ele.css('left', w > _this.options.colOptions.minWidth? w : _this.options.colOptions.minWidth);	
+			_this.element.resizeHelper.css('left', _this.drag.positionLeft+w);	
+			//drag.ele.css('left', w > _this.options.colOptions.minWidth? w : _this.options.colOptions.minWidth);	
 		}
 	}
 	/**
@@ -4096,7 +4144,7 @@ Plugin.prototype ={
 	 * @param  idx : heder index
 	 * @param  w : width
 	 * @param  colHeaderEle , header element
-     * @description 페이징 하기.
+     * @description set header width
      */
 	,setHeaderWidth : function (idx,w, colHeaderEle){
 		if(w <= this.options.colOptions.minWidth){
