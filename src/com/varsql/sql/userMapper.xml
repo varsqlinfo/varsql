@@ -274,6 +274,7 @@
 	<select id="userMapper.selectUserMsgReply" parameterType="map" resultType="hashmap">
 		select MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT from VTMEMO a 
 		where PARENT_MEMO_ID = #{memoId}
+		and DEL_YN != 'Y'
 		order by REG_DT desc
 	</select>
 	

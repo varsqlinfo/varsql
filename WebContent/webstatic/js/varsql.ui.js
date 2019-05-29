@@ -68,11 +68,65 @@ _$base.alert = {
 }
 
 _$base.toast = {
-	template : function (opt){
-		
+	options : {
+		info :  {
+			icon : 'info'
+			, bgColor: '#7399e6'
+		}
+		,error : {
+			icon : 'error'
+			, bgColor: '#ee8777'
+		}
+		,warning :{
+			icon : 'warning'
+			, bgColor: '#d9b36c'
+		}
+		,success:{
+			icon : 'success'
+			, bgColor: '#7399e6'
+		}
+		,alert : {
+			icon: 'warning'
+			, bgColor: '#7399e6'
+		}
+		,text :{
+			bgColor: '#7399e6'
+		}
 	}
-	,open : function (msgOpt){
-		return alert(msgOpt);
+	/**
+	 * @method _$base.dialog.view
+	 * @param opt {Object} toast option
+	 * @description toast view
+	 */	
+	,open :function (option){
+		
+		if(typeof option !=='object'){
+			option = {text: option};
+		}
+		
+		var opt = this.options[option.icon]; 
+		opt = opt?opt : this.options['info'];
+		
+		// 기본 옵션 셋팅
+		var setOpt = $.extend({}, {
+			 hideAfter: 2000
+			, loader :false
+			, position: {left:"50%",top:"50%"}
+			, textColor: '#fff'
+			, stack:false
+			, showHideTransition: 'fade'
+			//, beforeShow : function(){$('.jq-toast-wrap').css("margin" , "0 0 0 -155px") }
+		},opt);
+		
+		var tmpP = window ; 
+		
+		if(parent){
+			if(typeof tmpP.$ === 'undefined' && typeof tmpP.$.toast === 'undefined' ){
+				tmpP = parent;
+			}
+		}
+		
+		tmpP.$.toast($.extend(true,setOpt, option));
 	}
 }
 

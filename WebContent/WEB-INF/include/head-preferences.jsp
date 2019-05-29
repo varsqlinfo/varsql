@@ -15,6 +15,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tree.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
@@ -24,6 +25,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/varsql.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>

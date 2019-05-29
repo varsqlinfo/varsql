@@ -745,7 +745,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#targetObjectMeta').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#targetObjectMeta').setColumnWidth(item.index , item.width);
 							}
 						}
 					}
@@ -794,7 +794,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#sourceObjectMeta').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#sourceObjectMeta').setColumnWidth(item.index , item.width);
 							}
 						}
 					}
@@ -991,7 +991,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#targetColumn').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#targetColumn').setColumnWidth(item.index , item.width);
 							}
 						}
 					}
@@ -1040,7 +1040,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#sourceColumn').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#sourceColumn').setColumnWidth(item.index , item.width);
 							}
 						}
 					}
@@ -1081,7 +1081,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#targetObjectMeta').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#targetObjectMeta').setColumnWidth(item.index , item.width);
 							}
 						}
 					}
@@ -1130,7 +1130,7 @@ VarsqlAPP.vueServiceBean( {
 					,headerOptions:{
 						resize:{
 							update :  function (item){
-								$.pubGrid('#sourceObjectMeta').setHeaderWidth(item.index , item.width);
+								$.pubGrid('#sourceObjectMeta').setColumnWidth(item.index , item.width);
 							}
 						}
 					}

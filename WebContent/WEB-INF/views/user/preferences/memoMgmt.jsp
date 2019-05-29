@@ -266,6 +266,7 @@ VarsqlAPP.vueServiceBean( {
 			console.log($(sEle));
 		}
 		,resendMemo  : function (){
+			var _this =this; 
 			
 			var params = VARSQL.util.getConvertCamelObject(this.detailItem);
 			params.recvId = 'resend';
@@ -274,7 +275,9 @@ VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendMemo.varsql'}
 			    ,data:params 
 			    ,success:function (resData){
+			    	VARSQLUI.toast.open('저장 되었습니다.');
 			    	
+			    	_this.viewItem(_this.detailItem)
 				}
 			});
 		}

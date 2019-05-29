@@ -21,13 +21,48 @@ if (typeof window != "undefined") {
 
 var _$base = {},
 _defaultOption ={
-	version:'0.1'
+	version:'0.1.0'
 	,author:'ytkim'
-	,contextPath: (typeof global_page_context_path === 'undefined' ? '/' : global_page_context_path)
 }
 ,globalUIOption ={
 	dialogBgIframe : true
+	,dialog:{
+		targetID : '_main_div_dialog_frame_id_'
+		,title : '설정'
+		,width : '480'
+		,height : '355'
+		,scrolling : 'no'
+		,directCall : true
+		,useScrollHidden : true
+		,modal: true
+		, autoOpen : false
+		, resizable : false
+		, draggable: true
+		, titleClass : ''
+	}
+	,modal:{
+		cancleBtn :'Cancle'
+		,okBtn:'OK'
+		,width:'300px'
+		,useCancle : false
+		, height:'auto'
+		, title :'Confirm'
+	}
+	,toast : {
+		hideAfter: 2000
+		, position: {left:"50%",top:"50%"}
+		, textColor: '#fff'
+		, stack:false
+		, showHideTransition: 'fade'
+		, position: 'mid-center'
+		, loader :false
+		//, beforeShow : function(){$('.jq-toast-wrap').css("margin" , "0 0 0 -155px") }
+	}
 };
+
+_$base.init = function (initOpt){
+	globalUIOption=PubEP.util.objectMerge(globalUIOption,initOpt);
+}
 
 _$base.replaceHtm={
 	title :function(option){
@@ -52,10 +87,43 @@ _$base.replaceHtm={
  * @description dialog
  */
 _$base.dialog={
-	closeDialog : function (){
-		$(".ui-dialog-titlebar .ui-dialog-titlebar-close").trigger('click');
+	close : function (selector, parentWinChk){
+		this.closeDialog(selector, parentWinChk);
 	}
-	,html : function (text , opt){
+	,closeDialog : function (selector, parentWinChk){
+		var _opener = window;
+		
+		if(parentWinChk !== false){
+			if(typeof top.PubEPUI !=='undefined'){
+				_opener = top; 
+			}else if(typeof parent.PubEPUI !=='undefined'){
+				_opener = parent; 
+			}
+		}
+		
+		var dialogEle;
+		if(selector){
+			dialogEle = _opener.$(selector);
+		}else{
+			dialogEle= _opener.$('#_main_div_dialog_frame_id_');
+		}
+		
+		dialogEle.closest('.ui-dialog.ui-widget').find('.ui-dialog-titlebar .ui-dialog-titlebar-close').trigger('click');
+		
+		var htmlEle = $('html').get(0); 
+		var isScroll = (htmlEle.scrollHeight > window.innerHeight)||(htmlEle.scrollWidth > window.innerWidth) || $('html').css('overflow-y') == 'scroll';
+		
+		isScroll = _opener.$('.pub-ep-ui-overlay').length > 0 ? false :isScroll; 
+		
+		if(isScroll){
+			_opener.$('html').css('overflow','');
+			_opener.$('body').css('overflow-y','');
+		}
+	}
+	,html : function (selector , opt){
+		this._dialog('html',selector ,opt);
+	}
+	,text : function (text , opt){
 		this._dialog('text',text ,opt);
 	}
 	/**
@@ -73,20 +141,16 @@ _$base.dialog={
 	,_dialog : function (mode , dialogInfo , opt){
 		var _opener = window;
 		
-		if(typeof top.PubEPUI !=='undefined'){
-			_opener = top; 
-		}else if(typeof parent.PubEPUI !=='undefined'){
-			_opener = parent; 
+		if(opt.parentCheck !== false){
+			if(typeof top.PubEPUI !=='undefined'){
+				_opener = top; 
+			}else if(typeof parent.PubEPUI !=='undefined'){
+				_opener = parent; 
+			}
 		}
+		
 		opt.height = opt.height+'';
-		var options = $.extend(true, {
-			targetID : '_main_div_dialog_frame_id_'
-			,title : '설정'
-			,width : '480'
-			,height : '355'
-			,scrolling : 'no'
-			,directCall : true
-		} ,opt);
+		var options = PubEP.util.objectMerge({}, globalUIOption.dialog ,opt);
 		
 		var _targetId = options.targetID; 
 		
@@ -99,85 +163,248 @@ _$base.dialog={
 		}else{
 			$('#'+_targetId).css('overflow', 'auto');
 		}
+		
+		var htmlEle = $('html').get(0); 
+		var isScroll = (htmlEle.scrollHeight > window.innerHeight)||(htmlEle.scrollWidth > window.innerWidth) || $('html').css('overflow-y') == 'scroll';
+		
+		isScroll = _opener.$('.pub-ep-ui-overlay').length > 0 ? false :isScroll;
+		
+		var modalOption =PubEP.util.objectMerge({},options);
+		
+		modalOption.close = function (event, ui){
+			if(opt.closeOverflowAuto !==false){
+				if(isScroll){
+					if(options.useScrollHidden !== false){
+						_opener.$('html').css('overflow','');
+						_opener.$('body').css('overflow-y','');
+					}
+				}
+			}
+		}
+		
+		if(typeof options.position ==='undefined' && options.onlyCenter===true){
+			modalOption.position= { my: "center center", at: "center center", of: window }
+		}
+		
+		if(isScroll){
+			if(options.useScrollHidden !== false){
+				//position: fixed;
+				_opener.$('html').css('overflow','hidden');
+				_opener.$('body').css('overflow-y','scroll');
+			}
+		}
+		
+		modalOption.width = (modalOption.width+'').replace('px','');
+		modalOption.height = (modalOption.height+'').replace('px','');
 				
-		if(_opener.$('#'+_targetId+'iframe').length > 0){
-			_opener.$('#'+_targetId).dialog("close");
-		}
-		
-		var modalOption = {
-			 modal: true
-			, autoOpen : false
-			, resizable : false
-			, draggable: true
-			, close : function (event, ui){
-				_opener.$('html').css('overflow','auto');
-			}
-		}
-		
-		modalOption = $.extend(true,modalOption,options);
-		
-		var dialogHtm;
-		
-		if(mode=='frame'){
-			if(options.directCall===false){
-				dialogInfo=PubEP.getContextPath(dialogInfo);
-			}
-			modalOption.width = 'auto';
-			modalOption.height = 'auto';
-			modalOption.open =function(){
-				_opener.PubEP.page.view(dialogInfo, "iframe", $.extend({},{target:"#"+_targetId+'iframe', gubun:"dialog", gubunkey:"portletTabConfig",name:decodeURIComponent("게시판 목록 관리")},opt));
-			}
-			dialogHtm = '<iframe id="'+_targetId+'iframe" name="'+_targetId+'iframe" src="" style="width:'+options.width.replace('px','')+'px;height:'+options.height.replace('px','')+'px" frameborder="0" scrolling="'+options.scrolling+'"></iframe>'; 
-		}else if(mode=='frameHtml'){
-			modalOption.width = 'auto';
-			modalOption.height = 'auto';
-			modalOption.open =function(){
-				var previewFrame = document.getElementById(_targetId+'iframe');
-		        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
-		        preview.open();
-		        preview.write(dialogInfo);
-		        preview.close();
-			}
-			dialogHtm = '<iframe id="'+_targetId+'iframe" name="'+_targetId+'iframe" src="" style="width:'+options.width.replace('px','')+'px;height:'+options.height.replace('px','')+'px" frameborder="0" scrolling="'+options.scrolling+'"></iframe>';
+		var dialogEle;
+		if(mode == 'html'){
+			dialogEle =_opener.$(dialogInfo);
+			
+			dialogEle.dialog(modalOption)
+			.dialog("open").parent().find('.ui-dialog-title').html('<h1 class="tit">'+options.title+'</h1>');
 		}else{
-			modalOption.width = options.width;
-			modalOption.height =options.height;
-			modalOption.open = function (){};
-			dialogHtm = dialogInfo;
-		}
-		
-		_opener.$('#'+_targetId).html(dialogHtm)
+			var dialogHtm;
+			
+			if(_opener.$('#'+_targetId+'iframe').length > 0){
+				_opener.$('#'+_targetId).dialog("close");
+			}
+			
+			if(mode=='frame'){
+				if(options.directCall===false){
+					dialogInfo=PubEP.getContextPath(dialogInfo);
+				}
+				modalOption.width = 'auto';
+				modalOption.height = 'auto';
+				modalOption.open =function(){
+					_opener.PubEP.page.view(dialogInfo, "iframe", $.extend({},{target:"#"+_targetId+'iframe', gubun:"dialog", gubunkey:"portletTabConfig",name:decodeURIComponent("게시판 목록 관리")},opt));
+				}
+				dialogHtm = '<iframe id="'+_targetId+'iframe" name="'+_targetId+'iframe" src="" style="width:'+options.width.replace('px','')+'px;height:'+options.height.replace('px','')+'px" frameborder="0" scrolling="'+options.scrolling+'"></iframe>'; 
+			}else if(mode=='frameHtml'){
+				modalOption.width = 'auto';
+				modalOption.height = 'auto';
+				modalOption.open =function(){
+					var previewFrame = document.getElementById(_targetId+'iframe');
+			        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+			        preview.open();
+			        preview.write(dialogInfo);
+			        preview.close();
+				}
+				dialogHtm = '<iframe id="'+_targetId+'iframe" name="'+_targetId+'iframe" src="" style="width:'+options.width+'px;height:'+options.height+'px" frameborder="0" scrolling="'+options.scrolling+'"></iframe>';
+			}else if(mode=='text'){
+				modalOption.width = options.width;
+				modalOption.height =options.height;
+				modalOption.open = function (){};
+				dialogHtm = dialogInfo;
+			}
+			
+			dialogEle = _opener.$('#'+_targetId);
+			dialogEle.html(dialogHtm)
 			.dialog(modalOption)
 			.dialog("open").parent().find('.ui-dialog-title').html('<h1 class="tit">'+options.title+'</h1>');
+		}
 		
 		if(options.cssStyle!=''){
-			_opener.$('#'+_targetId).attr('style',options.cssStyle);
+			dialogEle.attr('style',options.cssStyle);
+		}
+		
+		var uiDiloagWidgetEle = dialogEle.closest('.ui-dialog.ui-widget');
+		
+		if(options.titleClass != ''){
+			uiDiloagWidgetEle.find('.ui-dialog-titlebar').addClass(options.titleClass);
 		}
 		
 		if(options.titleHide===true){
-			_opener.$('.ui-dialog-titlebar').hide();
-			_opener.$('html').css('overflow','hidden');
+			uiDiloagWidgetEle.find('.ui-dialog-titlebar').hide();
 		}else{
-			_opener.$('.ui-dialog-titlebar').show();
-			_opener.$('html').css('overflow','hidden');
+			uiDiloagWidgetEle.find('.ui-dialog-titlebar').show();
 			//_opener.$('.ui-widget-overlay.ui-front').css('height',_opener.$(_opener.document).height());
 		}
 		
-		if(options.overlayHide===true){
-			_opener.$('.ui-widget-overlay.ui-front').off('click');
-			_opener.$('.ui-widget-overlay.ui-front').on('click' , function (){
-				_opener.$('#'+_targetId).dialog("close");
+		var _uuid = 'bgiframe-'+PubEP.util.generateUUID();
+		
+		var overLayEle = uiDiloagWidgetEle.nextAll('.ui-widget-overlay.ui-front:not(.pub-ep-ui-overlay)'); 
+		overLayEle.addClass('pub-ep-ui-overlay');
+		overLayEle.append('<div class="bg-iframe-overlay '+_uuid+'" style="display:block;position:fixed;z-index:1;top:0px;left:0px;width:100%;height:100%;opacity:0;"></div>')
+		
+		if(options.bgiframe !== false && globalUIOption.dialogBgIframe !== false){
+			overLayEle.bgiframe();
+		}
+		
+		if(options.overlayHide !== false){
+			_opener.$('.'+_uuid).on('click' , function (){
+				if(isScroll){
+					if(options.useScrollHidden !== false){
+						_opener.$('html').css('overflow','');
+						_opener.$('body').css('overflow-y','');
+					}
+				}
+				dialogEle.dialog("close");
 			})
 		}
 		
-		if(options.bgiframe !== false && globalUIOption.dialogBgIframe !== false){
-			_opener.$('.ui-widget-overlay.ui-front').append('<div class="bg-iframe-overlay" style="display:block;position:fixed;z-index:1;top:0px;left:0px;width:100%;height:100%;opacity:0;"></div>')
-			_opener.$('.ui-widget-overlay.ui-front').bgiframe();
-			_opener.$('.ui-widget-overlay.ui-front>.bg-iframe-overlay').off('click');
-			_opener.$('.ui-widget-overlay.ui-front>.bg-iframe-overlay').on('click' , function (){
-				_opener.$('#'+_targetId).dialog("close");
-			})
+		return dialogEle; 
+	}
+}
+
+_$base.modal = {
+	modalEle : false
+	,template : function (opt){
+		var strHtm = [];
+		strHtm.push('<dl class="pubep-modal" style="width:#width#;height:#height#;">');
+		strHtm.push('	<dt class="pubep-modal-header">#title#</dt>');
+		strHtm.push('	<dd class="pubep-modal-body">');
+		strHtm.push('		#message#</dd>');
+		strHtm.push('	<dd class="pubep-modal-footer">');
+		
+		if(opt.useCancle !== false){
+			strHtm.push('		<a href="javascript:void(0);" class="pubep-modal-btn white pubEpModalCancle">');
+			strHtm.push('			#cancleBtn#');
+			strHtm.push('		</a>');
 		}
+		
+		if(opt.useOk !== false){
+			strHtm.push('		<a href="javascript:void(0);" class="pubep-modal-btn black pubEpModalOk">');
+			strHtm.push('			#okBtn#');
+			strHtm.push('		</a>');
+		}
+
+		strHtm.push('	</dd>');
+		strHtm.push('</dl>');
+		
+		return strHtm.join('');
+	}
+	/* opt {
+		message : '메시지'
+		width:  넓이
+		height : 높이 
+		cancleCallback : 취소 메소드 또는 string
+		okCallback :  ok 메소드 또는 string
+		cancleBtn : cancle 문구
+		okBtn : ok 문구
+		
+	}
+	*/
+	,open : function (opt){
+		
+		var _opener = window;
+		var isFrame = false; 
+		
+		if(typeof top.PubEPUI !=='undefined' && top != window){
+			_opener = top; 
+			isFrame =true;
+		}else if(typeof parent.PubEPUI !=='undefined'){
+			_opener = parent; 
+			isFrame =true;
+		}
+		
+		opt.isFrame = isFrame;
+		_opener.PubEPUI.modal._open(opt);
+	}
+	,close : function(){
+		var _opener = getOpenWin();
+		//console.log(_opener.location.href);
+		
+		_opener.PubEPUI.dialog.closeDialog('#pubEpUiModalArea', false);
+	}
+	,getElementVal : function (selector){
+		return getOpenWin().$(selector).val();
+	}
+	,_open : function (opt){
+		var _this = this; 
+		
+		opt = PubEP.util.objectMerge({},globalUIOption.modal,opt);
+		
+		var confirmHtml = PubEP.util.replaceParam(_this.template(opt), opt);
+		
+		if($('#pubEpUiModalArea').length < 1){
+			$('body').append('<div id="pubEpUiModalArea" class="pubep-modal-wrapper"></div>');
+			
+			_this.modalEle = $('#pubEpUiModalArea');
+		}
+		
+		_this.modalEle.off('click.pubepui.modal');
+				
+		_this.modalEle.on("click.pubepui.modal",'.pubEpModalCancle,.btn_close',function (){
+			PubEPUI.dialog.closeDialog('#pubEpUiModalArea', false);
+			
+			if(PubEP.isUndefined(opt.cancleCallback)) return ; 
+			
+			if(PubEP.isFunction(opt.cancleCallback)){
+				opt.cancleCallback();
+			}else{
+				if(opt.isFrame){
+					$('#epContentViewFrame').get(0).contentWindow[opt.cancleCallback]();
+				}else{
+					window[opt.cancleCallback]();
+				}
+			}
+		});
+		
+		_this.modalEle.on("click.pubepui.modal",'.pubEpModalOk', function (){
+			
+			if(opt.autoClose !==false ){
+				PubEPUI.dialog.closeDialog('#pubEpUiModalArea',false);
+			}
+			
+			if(PubEP.isUndefined(opt.okCallback)) return ; 
+			
+			if(PubEP.isFunction(opt.okCallback)){
+				opt.okCallback();
+			}else{
+				if(opt.isFrame){
+					$('#epContentViewFrame').get(0).contentWindow[opt.okCallback]();
+				}else{
+					window[opt.okCallback]();
+				}
+			}
+		})
+		
+		_this.modalEle.empty().html(confirmHtml);
+		
+		//console.log({overlayHide :false ,parentCheck :false , width:(opt.width||'auto'),height:(opt.height||'auto'),titleHide:true});
+		
+		return _$base.dialog.html('#pubEpUiModalArea',{overlayHide :false ,parentCheck :false , width:(opt.width||'auto'),height:'auto', onlyCenter :true,titleHide:true});
 	}
 }
 
@@ -215,7 +442,7 @@ _$base.toast = {
 	options : {
 		info :  {
 			icon : 'info'
-			, bgColor: '#7399e6'
+			, bgColor: '#000'
 		}
 		,error : {
 			icon : 'error'
@@ -247,25 +474,17 @@ _$base.toast = {
 		opt = opt?opt : this.options['info'];
 		
 		// 기본 옵션 셋팅
-		var setOpt = $.extend({}, {
-			 hideAfter: 3000
-			, position: {left:"50%",top:"50%"}
-			, textColor: '#fff'
-			, stack:false
-			, showHideTransition: 'fade'
-			, position: 'mid-center'
-			//, beforeShow : function(){$('.jq-toast-wrap').css("margin" , "0 0 0 -155px") }
-		},opt);
+		var setOpt = PubEP.util.objectMerge({},globalUIOption.toast,opt);
 		
-		var tmpP = window ; 
+		var _opener = window;
 		
-		if(parent){
-			if(typeof tmpP.$ === 'undefined' && typeof tmpP.$.toast === 'undefined' ){
-				tmpP = parent;
-			}
+		if(typeof top.PubEPUI !=='undefined'){
+			_opener = top; 
+		}else if(typeof parent.PubEPUI !=='undefined'){
+			_opener = parent; 
 		}
 		
-		tmpP.$.toast($.extend(true,setOpt, option));
+		_opener.$.toast($.extend(true,setOpt, option));
 	}
 }
 

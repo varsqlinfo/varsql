@@ -13,11 +13,12 @@
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
-
+<script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 

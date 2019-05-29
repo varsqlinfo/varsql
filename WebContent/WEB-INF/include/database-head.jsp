@@ -5,7 +5,7 @@
 
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
+<link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/plugins/layout/goldenlayout-base.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/plugins/layout/goldenlayout-light-theme.css" rel="stylesheet" type="text/css">
 
@@ -18,6 +18,7 @@
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/clipboard/clipboard.min.js"></script>
 
