@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
 
-	<property name="LOG_DIR" value="c:/zzz/varsql" />
+	<property name="LOG_DIR" value="${catalina.base}/logs/varsql" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">

@@ -52,6 +52,10 @@
 				title :'name'
 				,id :'_tabid'
 			}
+			,beforeUpdate : function (){	// before update item callback
+			}
+			,afterUpdate : function (){		// after update item callback
+			}
 		};
 
 	function objectMerge() {
@@ -403,6 +407,26 @@
 			return true;
 		}
 		/**
+		 * @method updateTitle
+		 * @description update tab title
+		 */
+		,updateTitle : function (id ,tit , overwriteFlag){
+			var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+id+'"]');
+
+			if(tabEle.length > 0){
+
+				var titEle = tabEle.find('.pubTab-item-title'); 
+
+				titEle.empty().html(tit);
+
+				if(overwriteFlag){
+					this.options.items[tabEle.index()][this.options.itemKey.title] = tit; 
+				}
+
+				return; 
+			}
+		}
+		/**
 		 * @method updateItem
 		 * @description item update
 		 */
@@ -414,14 +438,26 @@
 
 			if(tabEle.length > 0){
 
+				var titEle = tabEle.find('.pubTab-item-title'); 
+
+				if($.isFunction(this.options.beforeUpdate)){
+					if(this.options.beforeUpdate.call(null,{ele : tabEle , titleEle : titEle, item:item})===false){
+						return ; 
+					}
+				}
+
 				this.options.items[tabEle.index()] = objectMerge(this.options.items[tabEle.index()], item);
 				
-				tabEle.find('.pubTab-item-title').empty().html(item[this.options.itemKey.title]);
+				titEle.empty().html(this.options.items[tabEle.index()][this.options.itemKey.title]);
 				
 				if(enabled !== false){
 					tabEle.find('.pubTab-item-cont').trigger('click');
 				}
 				this.calcItemWidth();
+
+				if($.isFunction(this.options.afterUpdate)){
+					this.options.afterUpdate.call(null,{ele : tabEle , titleEle : titEle, item:item});
+				}
 				
 				return; 
 			}else{

@@ -3384,7 +3384,6 @@ _ui.SQL = {
 					
 					_self.sqlFileTabObj.updateItem({item:{
 						"SQL_ID":currentEditorInfo.SQL_ID
-			    		,"GUERY_TITLE" : currentEditorInfo.item.GUERY_TITLE
 					}, enabled:false});
 		    	}
 			}
@@ -3426,7 +3425,6 @@ _ui.SQL = {
 			    		
 			    		_self.sqlFileTabObj.updateItem({item:{
 							"SQL_ID":sqlId
-				    		,"GUERY_TITLE" : editorObj.item.GUERY_TITLE
 						}, enabled:false});
 			    	}
 				}
@@ -3733,18 +3731,14 @@ _ui.SQL = {
 			
 			if(currentEditorInfo.item._isChange ===false){
 				currentEditorInfo.item._isChange = true; 
-				
-				_self.sqlFileTabObj.updateItem({item:{
-					"SQL_ID":currentEditorInfo.SQL_ID
-		    		,"GUERY_TITLE" : '*' + currentEditorInfo.item.GUERY_TITLE
-				}, enabled:false});
+				var activeItem = _self.sqlFileTabObj.getActive();
+				_self.sqlFileTabObj.updateTitle(activeItem.item.SQL_ID ,'*' + activeItem.item.GUERY_TITLE);
 			}
 			
 			if(_g_options.autoSave.enabled !== false){
 				clearTimeout(changeTimer);
 				autoSave(currentEditorInfo);
 			}
-			
 		})
 		
 		_self.allTabSqlEditorObj[sqlId].editor = editor;
