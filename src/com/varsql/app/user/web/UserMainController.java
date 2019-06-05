@@ -131,7 +131,7 @@ public class UserMainController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController validation check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(500);
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
@@ -184,7 +184,7 @@ public class UserMainController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
@@ -315,7 +315,7 @@ public class UserMainController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController sendMemo check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
@@ -397,7 +397,7 @@ public class UserMainController {
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
@@ -452,7 +452,7 @@ public class UserMainController {
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{

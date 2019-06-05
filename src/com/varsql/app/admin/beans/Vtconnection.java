@@ -4,6 +4,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.varsql.app.admin.beans.valid.ValidUrlDirectYn;
+
 /**
  * 
  * 
@@ -19,6 +21,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 *-----------------------------------------------------------------------------
  */
+@ValidUrlDirectYn
 public class Vtconnection{
 	@Size(max=5)
 	private String vconnid;
@@ -27,11 +30,15 @@ public class Vtconnection{
 	@Size(max=250)
 	private String vname;
 	
-	@NotBlank
-	@Size(max=250)
-	private String vdbschema;
+	@Size(max=45)
+	private String vserverip;
 	
-	@NotBlank
+	@Size(max=6)
+	private String vport;
+	
+	@Size(max=250)
+	private String vdatabasename;
+	
 	@Size(max=250)
 	private String vurl;
 	
@@ -50,12 +57,17 @@ public class Vtconnection{
 	
 	@Size(max=500)
 	private String confirmPw;
-
+	
+	@Size(max=1)
+	private String urlDirectYn;
+	
 	private String vdbversion;
 
 	private String userId;
 	
 	private String poolInit;
+	
+	private String vdbschema;
 	
 	@NotBlank
 	@Size(max=1)
@@ -84,12 +96,6 @@ public class Vtconnection{
 	}
 	public void setVname(String vname){
 		this.vname=vname;
-	}
-	public String getVdbschema(){
-		return this.vdbschema;
-	}
-	public void setVdbschema(String vdbschema){
-		this.vdbschema=vdbschema;
 	}
 	public String getVurl(){
 		return this.vurl;
@@ -164,6 +170,42 @@ public class Vtconnection{
 	public void setSchemaViewYn(String schemaViewYn) {
 		this.schemaViewYn = schemaViewYn;
 	}
+	public String getVserverip() {
+		return vserverip;
+	}
+	public void setVserverip(String vserverip) {
+		this.vserverip = vserverip;
+	}
+	public String getVport() {
+		return vport;
+	}
+	public void setVport(String vport) {
+		this.vport = vport;
+	}
+	public String getVdatabasename() {
+		return vdatabasename;
+	}
+	public void setVdatabasename(String vdatabasename) {
+		this.vdatabasename = vdatabasename;
+	}
+	public String getUrlDirectYn() {
+		return urlDirectYn;
+	}
+	public void setUrlDirectYn(String urlDirectYn) {
+		this.urlDirectYn = urlDirectYn;
+	}
+	/**
+	 * @return the vdbschema
+	 */
+	public String getVdbschema() {
+		return vdbschema;
+	}
+	/**
+	 * @param vdbschema the vdbschema to set
+	 */
+	public void setVdbschema(String vdbschema) {
+		this.vdbschema = vdbschema;
+	}
 	
-
+	
 }

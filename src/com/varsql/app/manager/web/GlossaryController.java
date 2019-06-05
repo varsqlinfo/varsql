@@ -82,8 +82,7 @@ public class GlossaryController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
 			}
-			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{

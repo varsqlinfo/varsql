@@ -214,7 +214,10 @@
 <entry key="admin.form.header">Database info</entry>
 <entry key="admin.form.db.vname">연결명</entry>
 <entry key="admin.form.db.vurl">Url</entry>
-<entry key="admin.form.db.databasename">스키마명</entry>
+<entry key="admin.form.db.serverip">Server IP</entry>
+<entry key="admin.form.db.port">Port</entry>
+<entry key="admin.form.db.urldirectmsg">Url 직접 입력</entry>
+<entry key="admin.form.db.databasename">DB Name(SID)</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.useyn">사용여부</entry>
 <entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>

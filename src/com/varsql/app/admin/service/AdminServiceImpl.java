@@ -185,9 +185,21 @@ public class AdminServiceImpl{
 				vconnid=String.format("%05d", 1);
 			}
 			vtConnection.setVconnid(vconnid);
+			
+			if(vtConnection.getVid() != null) {
+				vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
+			}else {
+				vtConnection.setVdbschema("PUBLIC");
+			}
 				
 			resultObject.setItemOne(adminDAO.insertVtconnectionInfo(vtConnection));
 		}else{
+			if(vtConnection.getVid() != null) {
+				vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
+			}else {
+				vtConnection.setVdbschema("PUBLIC");
+			}
+			
 			int result =adminDAO.updateVtconnectionInfo(vtConnection);
 			
 			if(result > 0 && "Y".equals(vtConnection.getPoolInit())){

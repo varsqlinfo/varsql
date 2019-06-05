@@ -33,6 +33,10 @@
 			, VDRIVER
 			, '' as VPW
 			, '' as CONFIRM_PW
+			, VSERVERIP
+			, VPORT
+			, URL_DIRECT_YN
+			, VDATABASENAME
 			, USE_YN
 			, VTYPE
 			, VQUERY
@@ -62,7 +66,11 @@
 		insert into VTCONNECTION (
 			VCONNID
 			,VNAME 
-			,VURL 
+			,VURL
+			,VSERVERIP
+			,VPORT
+			,VDATABASENAME 
+			,URL_DIRECT_YN
 			,VDBSCHEMA 
 			,VDRIVER 
 			,VTYPE 
@@ -79,7 +87,11 @@
 		)values (
 			#{vconnid}
 			,#{vname}
-			,#{vurl} 
+			,#{vurl}
+			,#{vserverip} 
+			,#{vport} 
+			,#{vdatabasename} 
+			,#{urlDirectYn} 
 			,#{vdbschema} 
 			,#{vdriver} 
 			,#{vtype}
@@ -101,7 +113,17 @@
 		update VTCONNECTION 
 		set 
 			VNAME =#{vname}
-			, VURL =#{vurl}
+			,URL_DIRECT_YN = #{urlDirectYn} 
+			<choose>
+				<when test='!"Y".equals(urlDirectYn)'>
+					, VURL =#{vurl}
+				</when>
+		    	<otherwise>
+		      		,VSERVERIP = #{vserverip} 
+					,VPORT =#{vport} 
+					,VDATABASENAME =#{vdatabasename} 
+		    	</otherwise>
+		  	</choose>
 			, VDBSCHEMA =#{vdbschema}
 			, VDRIVER =#{vdriver} 
 			, VTYPE =#{vtype}

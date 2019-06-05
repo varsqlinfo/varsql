@@ -982,6 +982,9 @@
 			if(_this.config.dataInfo.orginRowLen > 0){
 				_this.config.dataInfo.rowLen= _this.config.dataInfo.orginRowLen+1;
 				_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.orginRowLen-1;
+			}else{
+				_this.config.dataInfo.rowLen= 0;
+				_this.config.dataInfo.lastRowIdx= 0;
 			}
 			
 			if(gridMode=='reDraw' || gridMode == 'addData'){
@@ -1364,9 +1367,9 @@
 		 */
 		,_setCellStyle : function (cellEle, _idx,thiItem,rowItem){
 			// style 처리
-			var addClass
+			var addClass;
 			if(isFunction(thiItem.styleClass)){
-				addClass = thiItem.styleClass.call(null,_idx, rowItem)
+				addClass = thiItem.styleClass.call(null,{idx : _idx, colInfo:thiItem, item: rowItem})
 			}else{
 				addClass=(thiItem.cellClass||'');
 			}
@@ -1826,6 +1829,8 @@
 				, vScrollFlag = itemTotHeight > bodyH ? true :false
 				, bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0))
 				, hScrollFlag = cfg.gridWidth.total > bodyW  ? true : false;
+				
+			//console.log(itemTotHeight , bodyH, cfg.scroll.vUse , vScrollFlag)
 
 			if(cfg.isResize !== true && !cfg.scroll.hUse && type == 'reDraw' && cfg.scroll.vUse != vScrollFlag){
 				var colItems = cfg.tColItem
@@ -3733,6 +3738,7 @@
 			opt = objectMerge({isSelect :false,dataType : 'text', isFormatValue: false} ,opt);
 			
 			var dataType =opt.dataType
+				,isDataTypeJson = (dataType=='json')
 				,isFormatValue = opt.isFormatValue===true;
 		
 			if(opt.isSelect===true){
@@ -3745,8 +3751,20 @@
 				var tbodyLen = tbodyItem.length
 					,tColLen = tColItem.length;
 				
+				if(tbodyLen < 1 ) {
+					if(isDataTypeJson){
+						return {
+							header : tColItem
+							,data : []
+						}
+					}else{
+						return '';
+					}
+				}
+				
 				var returnVal = [];
 				var keyInfo ={};
+
 				for(var i = 0; i < tbodyLen; i++){
 					var item = tbodyItem[i];
 					var rowText = [];
@@ -3770,29 +3788,23 @@
 							tmpVal = item[tmpKey];
 						}
 						
-						if(dataType=='json'){
-							keyInfo[j] = colItem;
+						if(isDataTypeJson){
 							rowItem[tmpKey] = tmpVal;
 						}else{
 							rowText.push(tmpVal);
 						}
 					}
 	
-					if(dataType=='json'){
+					if(isDataTypeJson){
 						returnVal.push(rowItem);
 					}else{
 						returnVal.push(rowText.join('\t'));
 					}
 				}
 			
-				if(dataType=='json'){
-					var reKeyInfo =[];
-					for(var key in keyInfo){
-						reKeyInfo.push(keyInfo[key]);
-					}
-	
+				if(isDataTypeJson){
 					return {
-						header : reKeyInfo
+						header : tColItem
 						,data : returnVal
 					}
 				}else{
@@ -3826,7 +3838,8 @@
 				eIdx =  colInfo.maxIdx;
 			}
 	
-			if(sIdx < 0 || eIdx < 0) return ''; 
+			if(sIdx < 0 || eIdx < 0) 
+				return dataType == 'json'? {} :''; 
 	
 			var returnVal = [];
 			var addRowFlag;
@@ -3838,7 +3851,7 @@
 			for(var i = sIdx ; i <= eIdx ; i++){
 				var item = tbodyItem[i];
 	
-				var rowText = [], rowItem = {};
+				var rowText = [], rowItem = {'_pubIdx' : i};
 				addRowFlag = false; 
 	
 				for(var j=sCol ;j <= eCol; j++){

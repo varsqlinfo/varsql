@@ -37,7 +37,7 @@ public class ExportJarUtil {
 	
 	private static final String JAR_VERSION = "-0.0.1";
 	
-	private static final String EXPORT_PATH = "C:\\01.util\\tomcat\\webapps\\vsql\\WEB-INF\\lib/";
+	private static final String EXPORT_PATH = "E:\\09.util\\99.tomcat\\webapps\\vsql\\WEB-INF\\lib/";
 	
 	enum JAR_TYPE{
 		APP("varsql-app","/WebContent/WEB-INF/classes", Arrays.asList("$$export") ,false ,"")

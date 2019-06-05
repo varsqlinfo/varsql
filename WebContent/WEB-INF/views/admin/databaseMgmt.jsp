@@ -90,18 +90,43 @@
 								</select>
 							</div>
 						</div>
-						<div class="form-group" :class="errors.has('SCHEMA') ? 'has-error' :''">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
-								<input type="text" v-model="detailItem.VDBSCHEMA" v-validate="'required'" name="SCHEMA" class="form-control" />
-								<div v-if="errors.has('SCHEMA')" class="help-block">{{ errors.first('SCHEMA') }}</div>
+								<input type="checkbox"  v-model="detailItem.URL_DIRECT_YN" true-value="Y" false-value="N"><spring:message code="admin.form.db.urldirectmsg" />
 							</div>
 						</div>
-						<div class="form-group" :class="errors.has('URL') ? 'has-error' :''">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
-							<div class="col-sm-8">
-								<input type="text" v-model="detailItem.VURL" v-validate="'required'" name="URL" class="form-control" />
-								<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
+						
+						<div v-if="detailItem.URL_DIRECT_YN!='Y'">
+							<div class="form-group" :class="errors.has('SERVERIP') ? 'has-error' :''">
+								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.serverip" /></label>
+								<div class="col-sm-8">
+									<input type="text" v-model="detailItem.VSERVERIP" v-validate="'required'" name="SERVERIP" class="form-control" />
+									<div v-if="errors.has('SERVERIP')" class="help-block">{{ errors.first('SERVERIP') }}</div>
+								</div>
+							</div>
+							<div class="form-group" :class="errors.has('PORT') ? 'has-error' :''">
+								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.port" /></label>
+								<div class="col-sm-8">
+									<input type="number" v-model="detailItem.VPORT" v-validate="'required'" name="PORT" class="form-control" />
+									<div v-if="errors.has('PORT')" class="help-block">{{ errors.first('PORT') }}</div>
+								</div>
+							</div>
+							<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
+								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
+								<div class="col-sm-8">
+									<input type="text" v-model="detailItem.VDATABASENAME" v-validate="'required'" name="DBNAME" class="form-control" />
+									<div v-if="errors.has('DBNAME')" class="help-block">{{ errors.first('DBNAME') }}</div>
+								</div>
+							</div>
+						</div>
+						<div v-else>
+							<div class="form-group" :class="errors.has('URL') ? 'has-error' :''">
+								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
+								<div class="col-sm-8">
+									<input type="text" v-model="detailItem.VURL" v-validate="'required'" name="URL" class="form-control" />
+									<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
+								</div>
 							</div>
 						</div>
 						<div class="form-group">
@@ -288,6 +313,9 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
+		,setUrlDirectInfo : function (){
+			this.detailItem.URL_DIRECT_YN = (this.detailItem.URL_DIRECT_YN=='N'?'Y':'N');
+		}
 		,setDetailItem : function (item){
 			
 			if(VARSQL.isUndefined(item)){
@@ -299,14 +327,18 @@ VarsqlAPP.vueServiceBean( {
 					,MIN_IDLE: 2
 					,TIMEOUT: 18000
 					,VDBSCHEMA: ""
+					,VDATABASENAME: ""
+					,VPORT: ""
 					,VDRIVER: ""
 					,USE_YN: "Y"
+					,URL_DIRECT_YN:'N'
 					,VID: ""
 					,VNAME: ""
 					,VPOOLOPT: ""
 					,VPW: ""
 					,VQUERY: ""
 					,VTYPE: ""
+					,VSERVERIP: ""
 					,VURL: ""
 					,BASETABLE_YN: 'Y'
 					,LAZYLOAD_YN: 'N'

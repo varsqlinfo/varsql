@@ -50,7 +50,7 @@ public class JoinController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  saveVirtualPortal validation check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(500);
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}
