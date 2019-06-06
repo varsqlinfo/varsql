@@ -37,7 +37,7 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     		}
     		
     		String port = vtConnection.getVport(); 
-    		if(!(serverip ==null || "".equals(serverip.trim()))) {
+    		if(port !=null && !"".equals(port.trim())) {
     			int portVal = Integer.parseInt(port);
     			
     			if(portVal < 1) {

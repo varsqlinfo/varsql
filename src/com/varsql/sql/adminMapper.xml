@@ -68,7 +68,9 @@
 			,VNAME 
 			,VURL
 			,VSERVERIP
+			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
 			,VPORT
+			</if>
 			,VDATABASENAME 
 			,URL_DIRECT_YN
 			,VDBSCHEMA 
@@ -88,8 +90,10 @@
 			#{vconnid}
 			,#{vname}
 			,#{vurl}
-			,#{vserverip} 
-			,#{vport} 
+			,#{vserverip}
+			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
+			,#{vport}
+			</if>
 			,#{vdatabasename} 
 			,#{urlDirectYn} 
 			,#{vdbschema} 
@@ -115,12 +119,14 @@
 			VNAME =#{vname}
 			,URL_DIRECT_YN = #{urlDirectYn} 
 			<choose>
-				<when test='!"Y".equals(urlDirectYn)'>
-					, VURL =#{vurl}
+				<when test='"Y".equals(urlDirectYn)'>
+					,VURL =#{vurl}
 				</when>
 		    	<otherwise>
-		      		,VSERVERIP = #{vserverip} 
-					,VPORT =#{vport} 
+					<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
+					,VPORT =#{vport}
+					</if>
+					,VSERVERIP = #{vserverip} 
 					,VDATABASENAME =#{vdatabasename} 
 		    	</otherwise>
 		  	</choose>

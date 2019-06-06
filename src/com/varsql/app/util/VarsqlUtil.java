@@ -31,6 +31,8 @@ import com.varsql.core.db.beans.DatabaseInfo;
 
 public class VarsqlUtil {
 	
+	private VarsqlUtil() {}
+	
 	public static String generateUUID (){
 		return UUID.randomUUID().toString().replaceAll("-", ""); 
 	}

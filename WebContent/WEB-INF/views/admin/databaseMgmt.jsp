@@ -93,10 +93,9 @@
 						<div class="form-group">
 							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
-								<input type="checkbox"  v-model="detailItem.URL_DIRECT_YN" true-value="Y" false-value="N"><spring:message code="admin.form.db.urldirectmsg" />
+								<input type="checkbox" v-model="detailItem.URL_DIRECT_YN" true-value="Y" false-value="N" /><spring:message code="admin.form.db.urldirectmsg" />
 							</div>
 						</div>
-						
 						<div v-if="detailItem.URL_DIRECT_YN!='Y'">
 							<div class="form-group" :class="errors.has('SERVERIP') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.serverip" /></label>
@@ -108,7 +107,7 @@
 							<div class="form-group" :class="errors.has('PORT') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.port" /></label>
 								<div class="col-sm-8">
-									<input type="number" v-model="detailItem.VPORT" v-validate="'required'" name="PORT" class="form-control" />
+									<input type="number" v-model="detailItem.VPORT" name="PORT" class="form-control" />
 									<div v-if="errors.has('PORT')" class="help-block">{{ errors.first('PORT') }}</div>
 								</div>
 							</div>
@@ -140,7 +139,7 @@
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
 								<input v-model="detailItem.VPW" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="false" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
-								<input v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
+								<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 							    <div class="help-block" v-if="errors.has('password')">
 							      {{ errors.first('password') }}
 							    </div>
@@ -319,6 +318,7 @@ VarsqlAPP.vueServiceBean( {
 		,setDetailItem : function (item){
 			
 			if(VARSQL.isUndefined(item)){
+				this.$validator.reset()
 				this.viewMode = 'view';
 				this.detailFlag = false;
 				this.detailItem ={
