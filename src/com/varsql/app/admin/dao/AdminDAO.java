@@ -85,7 +85,11 @@ public class AdminDAO extends BaseDAO{
 	 * @param vtConnection
 	 * @return
 	 */
-	public Map<String,String> selectDbInfo(Vtconnection vtConnection) {
+	public DataCommonVO selectDbInfo(Vtconnection vtConnection) {
 		return getSqlSession().selectOne("adminMapper.selectDbInfo",vtConnection);
+	}
+
+	public DataCommonVO selectDbDriverInfo(Vtconnection vtConnection) {
+		return getSqlSession().selectOne("adminMapper.selectDbDriverInfo",vtConnection);
 	}
 }

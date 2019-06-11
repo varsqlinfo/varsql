@@ -91,9 +91,7 @@
 			,#{vname}
 			,#{vurl}
 			,#{vserverip}
-			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
 			,#{vport}
-			</if>
 			,#{vdatabasename} 
 			,#{urlDirectYn} 
 			,#{vdbschema} 
@@ -123,9 +121,7 @@
 					,VURL =#{vurl}
 				</when>
 		    	<otherwise>
-					<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
 					,VPORT =#{vport}
-					</if>
 					,VSERVERIP = #{vserverip} 
 					,VDATABASENAME =#{vdatabasename} 
 		    	</otherwise>
@@ -332,11 +328,22 @@
 		WHERE DBTYPE = #{db_type}
 	</select>
 	
+	<!-- db driver info -->
+	<select id="adminMapper.selectDbDriverInfo" parameterType="vtConnection" resultType="dataCommonVO">
+		SELECT *
+		FROM VTDBTYPE_DRIVER
+		WHERE DRIVER_ID = #{vdriver}
+	</select>
+	
 	<!-- password check 를위해 password get -->
-	<select id="adminMapper.selectDbInfo" parameterType="vtConnection" resultType="hashmap">
-		SELECT VPW , VQUERY, b.*
-		FROM VTCONNECTION a, VTDBTYPE_DRIVER b
-		WHERE a.VDRIVER = b.DRIVER_ID
+	<select id="adminMapper.selectDbInfo" parameterType="vtConnection" resultType="dataCommonVO">
+		SELECT a.VPW , a.VQUERY, b.*
+		FROM VTCONNECTION a, (
+			select  CAST(#{vconnid} AS VARCHAR) as VCONNID, subb.* 
+			from VTDBTYPE_DRIVER subb
+			WHERE DRIVER_ID = #{vdriver}
+		) b
+		WHERE a.VCONNID = b.VCONNID
 		and a.VCONNID = #{vconnid}
 	</select>
 	

@@ -449,7 +449,7 @@ VarsqlAPP.vueServiceBean( {
 		,connectionCheck : function (){
 			var param = this.getParamVal();
 			
-			param.vdriver = $('#vdriver option:selected').attr('data-driver');
+			//param.vdriver = $('#vdriver option:selected').attr('data-driver');
 			
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}

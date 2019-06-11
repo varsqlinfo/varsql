@@ -15,10 +15,6 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     @Override
     public boolean isValid(final Vtconnection vtConnection, final ConstraintValidatorContext context) {
     	
-    	if (!(vtConnection instanceof Vtconnection)) {
-            throw new IllegalArgumentException("Illegal method signature, expected parameter of type Vtconnection.");
-        }
-    	
     	if("Y".equals(vtConnection.getUrlDirectYn())) {
     		String  url = vtConnection.getVurl();
     		
@@ -43,11 +39,12 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     			if(portVal < 1) {
     				context.disableDefaultConstraintViolation();
         			context.buildConstraintViolationWithTemplate( "{com.varsql.app.admin.beans.valid.ValidUrlDirectYn.port}" ).addConstraintViolation();
+        			return false; 
     			}
-    			return false; 
     		}
     		
-    		String databaseName = vtConnection.getVdatabasename(); 
+    		String databaseName = vtConnection.getVdatabasename();
+    		
     		if(databaseName ==null || "".equals(databaseName.trim())) {
     			context.disableDefaultConstraintViolation();
     			context.buildConstraintViolationWithTemplate( "{com.varsql.app.admin.beans.valid.ValidUrlDirectYn.databaseName}" ).addConstraintViolation();

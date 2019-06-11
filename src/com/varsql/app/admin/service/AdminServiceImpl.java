@@ -19,6 +19,7 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.sql.util.SQLUtil;
@@ -102,20 +103,25 @@ public class AdminServiceImpl{
 		
 		logger.debug("connection check object :  {}" , VartechUtils.reflectionToString(vtConnection));
 		
-		String driver = vtConnection.getVdriver();
-		String url = vtConnection.getVurl();
 		String username = vtConnection.getVid();
 		String pwd = vtConnection.getVpw();
 		String dbtype = vtConnection.getVtype();
 		
-		Map<String,String> dbInfo = adminDAO.selectDbInfo(vtConnection);
+		DataCommonVO dbInfo = adminDAO.selectDbInfo(vtConnection);
 		
 		if(!"".equals(vtConnection.getVconnid()) && (pwd ==null || "".equals(pwd))){
-			pwd = dbInfo.get(VarsqlConstants.CONN_PW);
+			pwd = dbInfo.getString(VarsqlConstants.CONN_PW);
 		}
 		
-		String conn_query = dbInfo.get(VarsqlConstants.CONN_QUERY);
-		String dbvalidation_query =dbInfo.get(VarsqlConstants.VALIDATION_QUERY);
+		String driver = dbInfo.getString(VarsqlConstants.DBDRIVER);
+		String url = vtConnection.getVurl();
+		
+		if(!"Y".equals(vtConnection.getUrlDirectYn())){
+			url = VarsqlJdbcUtil.getJdbcUrl(dbInfo.getString(VarsqlConstants.CONN_URL_FORMAT), vtConnection.getVserverip() , vtConnection.getVport() , vtConnection.getVdatabasename());
+		}
+		
+		String conn_query = dbInfo.getString(VarsqlConstants.CONN_QUERY);
+		String dbvalidation_query =dbInfo.getString(VarsqlConstants.VALIDATION_QUERY);
 		
 		conn_query = conn_query ==null?"":conn_query;
 		dbvalidation_query = dbvalidation_query ==null?"":dbvalidation_query;
@@ -177,6 +183,18 @@ public class AdminServiceImpl{
 		
 		vtConnection.setUserId(SecurityUtil.loginId());
 		
+		DataCommonVO driverInfo = adminDAO.selectDbDriverInfo(vtConnection);
+		
+		String schemeType = driverInfo.getString("SCHEMA_TYPE"); 
+		
+		if("user".equals(schemeType)) {
+			vtConnection.setVdbschema(vtConnection.getVid());
+		}else if("db".equals(schemeType)){
+			vtConnection.setVdbschema(vtConnection.getVdatabasename());
+		}else {
+			vtConnection.setVdbschema(schemeType);
+		}
+		
 		if(vtConnection.getVconnid()==null || "".equals(StringUtil.allTrim(vtConnection.getVconnid()))){
 			String vconnid = adminDAO.selectVtconnectionMaxVal();
 			try{
@@ -186,20 +204,8 @@ public class AdminServiceImpl{
 			}
 			vtConnection.setVconnid(vconnid);
 			
-			if(vtConnection.getVid() != null) {
-				vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
-			}else {
-				vtConnection.setVdbschema("PUBLIC");
-			}
-				
 			resultObject.setItemOne(adminDAO.insertVtconnectionInfo(vtConnection));
 		}else{
-			if(vtConnection.getVid() != null) {
-				vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
-			}else {
-				vtConnection.setVdbschema("PUBLIC");
-			}
-			
 			int result =adminDAO.updateVtconnectionInfo(vtConnection);
 			
 			if(result > 0 && "Y".equals(vtConnection.getPoolInit())){

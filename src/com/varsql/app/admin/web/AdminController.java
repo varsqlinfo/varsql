@@ -225,7 +225,7 @@ public class AdminController{
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+				logger.warn("###  AdminController dbSave {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
