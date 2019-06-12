@@ -1157,7 +1157,7 @@ _ui.dbSchemaObject ={
 		
 		if(dimension){
 			dimension.width = dimension.width-2;
-			dimension.height = dimension.height - 50; // schema area +  tab area
+			dimension.height = dimension.height - 52; // schema area +  tab area
 		}
 		
 		// tab resize
@@ -4371,7 +4371,7 @@ _ui.sqlDataArea =  {
 		}
 		
 		dimension.width =dimension.width-2
-		dimension.height = dimension.height-25; // tab area height;1 
+		dimension.height = dimension.height-27; // tab area height;1 
 
 		this.resizeDimension = dimension;
 		try{
