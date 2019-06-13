@@ -176,6 +176,10 @@ public class VarsqlUtil {
 	     
 	     return ip;
 	}
+	
+	public static boolean isRuntimelocal() {
+		return "locale".equals(VarsqlConstants.RUNTIME);
+	}
 }
 
 class LowerCaseKeySerializer extends JsonSerializer {

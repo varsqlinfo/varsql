@@ -10,10 +10,11 @@
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.manager.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom CSS -->
+<link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.manager.css?version=${css_ver}" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
@@ -26,15 +27,15 @@
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.selection.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/pub.ep.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.ep.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.ui.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/vue.varsql.js"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js?version=${pubjs_ver}"></script>
 
 
 
