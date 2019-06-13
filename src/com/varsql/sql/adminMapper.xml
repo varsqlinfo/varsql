@@ -123,7 +123,7 @@
 					,VURL =#{vurl}
 				</when>
 		    	<otherwise>
-					<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
+					<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
 					,VPORT =#{vport}
 					</if>
 					,VSERVERIP = #{vserverip} 

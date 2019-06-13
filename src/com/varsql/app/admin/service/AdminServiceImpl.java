@@ -4,7 +4,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -101,7 +100,7 @@ public class AdminServiceImpl{
 		
 		ResponseResult resultObject = new ResponseResult();
 		
-		logger.debug("connection check object :  {}" , VartechUtils.reflectionToString(vtConnection));
+		logger.debug("connection check object param :  {}" , VartechUtils.reflectionToString(vtConnection));
 		
 		String username = vtConnection.getVid();
 		String pwd = vtConnection.getVpw();
@@ -119,6 +118,8 @@ public class AdminServiceImpl{
 		if(!"Y".equals(vtConnection.getUrlDirectYn())){
 			url = VarsqlJdbcUtil.getJdbcUrl(dbInfo.getString(VarsqlConstants.CONN_URL_FORMAT), vtConnection.getVserverip() , vtConnection.getVport() , vtConnection.getVdatabasename());
 		}
+		
+		logger.debug("connection check url :  {}" , url);
 		
 		String conn_query = dbInfo.getString(VarsqlConstants.CONN_QUERY);
 		String dbvalidation_query =dbInfo.getString(VarsqlConstants.VALIDATION_QUERY);
@@ -188,12 +189,16 @@ public class AdminServiceImpl{
 		String schemeType = driverInfo.getString("SCHEMA_TYPE"); 
 		
 		if("user".equals(schemeType)) {
+			vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
+		}else if("orginUser".equals(schemeType)) {
 			vtConnection.setVdbschema(vtConnection.getVid());
 		}else if("db".equals(schemeType)){
 			vtConnection.setVdbschema(vtConnection.getVdatabasename());
 		}else {
 			vtConnection.setVdbschema(schemeType);
 		}
+		
+		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(vtConnection));
 		
 		if(vtConnection.getVconnid()==null || "".equals(StringUtil.allTrim(vtConnection.getVconnid()))){
 			String vconnid = adminDAO.selectVtconnectionMaxVal();
