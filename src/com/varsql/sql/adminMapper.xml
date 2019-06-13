@@ -123,9 +123,14 @@
 					,VURL =#{vurl}
 				</when>
 		    	<otherwise>
-					<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
-					,VPORT =#{vport}
-					</if>
+		    		<choose>
+						<when test='@com.varsql.app.util.VarQueryUtil@isNumber(vport)'>
+							,VPORT = #{vport}
+						</when>
+				    	<otherwise>
+							,VPORT = null
+				    	</otherwise>
+				  	</choose>
 					,VSERVERIP = #{vserverip} 
 					,VDATABASENAME =#{vdatabasename} 
 		    	</otherwise>
