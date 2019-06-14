@@ -66,6 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint())
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+			//.maximumSessions(1)	// 중복 로그인 카운트
+			.sessionFixation().changeSessionId()	// session 공격시 session id 변경.
 		.and() // login
 			.formLogin()
 	        .loginPage("/login")
