@@ -1,26 +1,23 @@
 package com.varsql.app.common.web;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.OutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.xmlbeans.impl.common.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DownloadInfo;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
-import com.varsql.core.sql.beans.GridColumnInfo;
 import com.vartech.common.utils.VartechReflectionUtils;
-import com.vartech.common.utils.VartechUtils;
 
 
 
@@ -56,9 +53,19 @@ public class DownloadController {
 		
 		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim())?downloadInfo.getFileName() : "varsql-download."+ exportType; 
 		
-		if("text".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
-			DataExportUtil.toTextWrite(downloadInfo.getContent(), res.getOutputStream());
+		OutputStream os = res.getOutputStream();
+		
+		try {
+			if("text".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
+				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
+			}
+			if(os !=null) os.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			IOUtils.closeQuietly(os);
 		}
+		
 	}
 }

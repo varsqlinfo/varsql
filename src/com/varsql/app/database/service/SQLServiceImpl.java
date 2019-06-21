@@ -1,5 +1,6 @@
 package com.varsql.app.database.service;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +16,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -364,21 +366,32 @@ public class SQLServiceImpl{
 		
 		String exportFileName = paramMap.getString("fileName", tmpName);
 		
-		if("csv".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), res.getOutputStream());
-		}else if("json".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
-			new ObjectMapper().writeValue(res.getOutputStream(), result.getData());
-		}else if("insert".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, res.getOutputStream());
-		}else if("xml".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , res.getOutputStream());
-		}else if("excel".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , res.getOutputStream());
+		OutputStream os = res.getOutputStream();
+		
+		try {
+			if("csv".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), os);
+			}else if("json".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
+				new ObjectMapper().writeValue(os, result.getData());
+			}else if("insert".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, os);
+			}else if("xml".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , os);
+			}else if("excel".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , os);
+			}
+			
+			if(os !=null) os.close();
+		}catch(Exception e) {
+			logger.error(getClass().getName()+" dataExport {}", e.getMessage());
+	    	logger.error(getClass().getName()+" dataExport ", e);
+		}finally {
+			IOUtils.closeQuietly(os);
 		}
 	}
 	
@@ -525,19 +538,33 @@ public class SQLServiceImpl{
 		
 		String downloadName = "grid-data-download"; 
 		
-		if("csv".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toCSVWrite(downloadData, columnInfo, res.getOutputStream());
-		}else if("json".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
-			new ObjectMapper().writeValue(res.getOutputStream(), downloadData);
-		}else if("xml".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toXmlWrite(downloadData, columnInfo , res.getOutputStream());
-		}else if("excel".equals(exportType)){
-			VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
-			DataExportUtil.toExcelWrite(downloadData,columnInfo , res.getOutputStream());
+		
+		OutputStream os = res.getOutputStream();
+		
+		try {
+			if("csv".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toCSVWrite(downloadData, columnInfo, os);
+			}else if("json".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
+				new ObjectMapper().writeValue(os, downloadData);
+			}else if("xml".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toXmlWrite(downloadData, columnInfo , os);
+			}else if("excel".equals(exportType)){
+				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
+				DataExportUtil.toExcelWrite(downloadData,columnInfo , os);
+			}
+			
+			if(os !=null) os.close();
+		}catch(Exception e) {
+			logger.error(getClass().getName()+" gridDownload {}", e.getMessage());
+	    	logger.error(getClass().getName()+" gridDownload ", e);
+		}finally {
+			IOUtils.closeQuietly(os);
 		}
+		
+		
 		
 	}
 	
