@@ -3969,7 +3969,6 @@ _ui.SQL = {
 				"Export":function (){
 					if(!confirm('내보내기 하시겠습니까?')) return ; 
 					
-					console.log('11111111');
 					var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
 						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='exportColumnCheckBox']:not([value='all'])").join(',')
@@ -3978,8 +3977,6 @@ _ui.SQL = {
 						,limit: $('#exportCount').val()
 					});
 					
-					console.log(params);
-
 					VARSQL.req.download({
 						type: 'post'
 						,url: {type:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
@@ -4295,16 +4292,12 @@ _ui.sqlDataArea =  {
 							,gridData : JSON.stringify(selData.data)
 						});
 						
-						console.log('111111');
-						
-						
 						VARSQL.req.download({
 							type: 'post'
 							,url: {type:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
 							,params: params
 						});
 						
-						console.log(params);
 						return 
 					}
 				}
