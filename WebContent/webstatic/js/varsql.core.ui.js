@@ -1417,6 +1417,10 @@ _ui.addDbServiceObject('view',{
 					,{key :'remarks', label:'설명', sort:true}
 				]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,bodyOptions :{
 					cellDblClick : function (rowItem){
 						var selKey =rowItem.keyItem.key;
@@ -1501,6 +1505,10 @@ _ui.addDbServiceObject('procedure',{
 					,{key :'remarks', label:'설명'}
 				]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,rowOptions :{
 					click : function (rowInfo){
 						var item = rowInfo.item; 
@@ -1561,6 +1569,10 @@ _ui.addDbServiceObject('function',{
 					,{key :'remarks', label:'설명'}
 				]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,rowOptions :{
 					click : function (rowInfo){
 						var item = rowInfo.item; 
@@ -1624,6 +1636,10 @@ _ui.addDbServiceObject('index',{
 					,{key :'status', label:'상태' ,sort:true}
 				]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,rowOptions :{
 					click : function (rowInfo){
 						var item = rowInfo.item; 
@@ -1686,6 +1702,10 @@ _ui.addDbServiceObject('trigger',{
 					,{key :'created', label:'CREATED'}
 				]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,rowOptions :{
 					click : function (rowInfo){
 						var item = rowInfo.item; 
@@ -1754,6 +1774,10 @@ _ui.addDbServiceObject('sequence',{
 					,{key :'lastDdlTime', label:'최종수정일'}
 					]
 				,tbodyItem :itemArr
+				,setting : {
+					enabled : true
+					,enableSearch : true
+				}
 				,rowOptions :{
 					click : function (rowInfo){
 						var item = rowInfo.item; 
@@ -2094,6 +2118,10 @@ _ui.addODbServiceObjectMetadata('table', {
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
 				{ label: '데이타타입', key: 'typeAndLength' },
@@ -2199,6 +2227,10 @@ _ui.addODbServiceObjectMetadata('view', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
@@ -2280,6 +2312,10 @@ _ui.addODbServiceObjectMetadata('procedure', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
@@ -2337,6 +2373,10 @@ _ui.addODbServiceObjectMetadata('function', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
@@ -2394,6 +2434,10 @@ _ui.addODbServiceObjectMetadata('index', {
 		
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
@@ -2450,6 +2494,10 @@ _ui.addODbServiceObjectMetadata('trigger', {
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,tColItem : [
 				{ label: 'Name', key: 'name'},
 				{ label: 'Value', key: 'val',width:80 },
@@ -2505,6 +2553,10 @@ _ui.addODbServiceObjectMetadata('sequence', {
 		gridObj = $.pubGrid(metaEleId, {
 			headerOptions : {redraw : false}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,tColItem : [
 				{ label: 'Name', key: 'name'},
 				{ label: 'Value', key: 'val',width:80 },
