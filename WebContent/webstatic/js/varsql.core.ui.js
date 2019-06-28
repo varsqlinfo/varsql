@@ -716,7 +716,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				_ui.dbSchemaObject.resizeObjectArea({width : container.width,height : container.height});
+				_ui.dbSchemaObject.resizeObjectArea({width : container.width-2,height : container.height});
 				
 			});
 		});
@@ -732,7 +732,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				_ui.dbObjectMetadata.resizeMetaArea({width : container.width,height : container.height});
+				_ui.dbObjectMetadata.resizeMetaArea({width : container.width-2,height : container.height});
 			})
 		});
 
@@ -747,7 +747,7 @@ _ui.layout = {
 					return ; 
 				}
 				
-				_ui.SQL.resize({width : container.width,height : container.height});
+				_ui.SQL.resize({width : container.width-2,height : container.height});
 			});
 		});
 
@@ -763,15 +763,15 @@ _ui.layout = {
 					return ; 
 				}
 				_ui.sqlDataArea.resize({
-					width : container.width , height : container.height
+					width : container.width-2 , height : container.height
 				});
 			})
 		});
 		
 		// plugin component reg
-		varsqlLayout.registerComponent('pluginComponent', function( container, componentInfo ){
+		varsqlLayout.registerComponent('pluginComponent', function( container, componentState ){
 			
-			var componentObj = _ui.component[componentInfo.key]; 
+			var componentObj = _ui.component[componentState.key]; 
 			container.getElement().html(componentObj.template());
 			
 			var initResize = true; 
@@ -782,8 +782,15 @@ _ui.layout = {
 				}
 				var resizeFn = componentObj.resize; 
 				if(VARSQL.isFunction(resizeFn)){
+					
+					var componentInfo = container._config.componentState; 
+					
+					if(componentInfo.initFlag !== true){
+				    	return ; 
+			    	}
+					
 					resizeFn.call(componentObj, {
-						width : container.width , height : container.height
+						width : container.width-2 , height : container.height
 					});
 				}
 			})
@@ -952,11 +959,11 @@ _ui.layout = {
 			})
 		}
 		
-		this.initPluginComponent(addItemInfo);
-		
 		if(pluginLen < 1){
 			varsqlLayout.root.getItemsById(addItemInfo.key)[0].container.setSize(250);
 		}
+		
+		this.initPluginComponent(addItemInfo);
 	}
 	// plugin component 초기화
 	,initPluginComponent : function (itemInfo){
@@ -1156,7 +1163,6 @@ _ui.dbSchemaObject ={
 	,resizeObjectArea : function (dimension){
 		
 		if(dimension){
-			dimension.width = dimension.width-2;
 			dimension.height = dimension.height - 52; // schema area +  tab area
 		}
 		
@@ -1868,14 +1874,14 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
+		if(refresh !== true && _self.selectMetadata[objType] == objName){
+			return ; 
+		}
+		
 		_ui.layout.setActiveTab('dbMetadata');
 		
 		if(param.visible===true){
 			_self.resizeMetaArea();
-			return ; 
-		}
-		
-		if(refresh !== true && _self.selectMetadata[objType] == objName){
 			return ; 
 		}
 		
@@ -2081,7 +2087,6 @@ _ui.dbObjectMetadata= {
 	,resizeMetaArea : function (dimension){
 		
 		if(dimension){
-			dimension.width =dimension.width-2 
 			dimension.height = dimension.height-25; // tab height
 		}
 		
@@ -2795,7 +2800,6 @@ _ui.SQL = {
 	}
 	,resize : function (dimension){
 		if(dimension){
-			dimension.width =dimension.width-2;
 			dimension.height = dimension.height-60; // editor button area  +  editor sql tab area
 		}
 		
@@ -4051,8 +4055,6 @@ _ui.SQL = {
 	}
 	// 에디터 영역에 값 넣기.
 	,addSqlEditContent :function (cont , suffixAddFlag){
-		
-		
 		var _self = this;
 		
 		cont = VARSQL.str.trim(cont);
@@ -4423,7 +4425,6 @@ _ui.sqlDataArea =  {
 			return ; 
 		}
 		
-		dimension.width =dimension.width-2
 		dimension.height = dimension.height-27; // tab area height;1 
 
 		this.resizeDimension = dimension;

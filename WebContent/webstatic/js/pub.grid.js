@@ -9,7 +9,7 @@
 */
 
 ;(function($, window, document) {
-	"use strict";
+	"use stric1t";
 	
 	var _initialized = false
 	,_$doc = $(document)
@@ -31,6 +31,8 @@
 			,click : false //row(tr) click event
 			,contextMenu : false // row(tr) contextmenu event
 			,addStyle : false	// 추가할 style method
+			,dblClick : false	// row dblclick event
+			,dblClickCheck : false	// double click row checkbox checked true 여부.
 		}
 		,formatter :{
 			money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
@@ -121,7 +123,7 @@
 		,scroll :{	// 스크롤 옵션
 			isPreventDefault : true	// 이벤트 전파 여부.	
 			,vertical : {
-				width : 12			// 세로 스크롤 
+				width : 14			// 세로 스크롤 
 				,bgDelay : 100		// 스크롤 빈공간 mousedown delay
 				,btnDelay : 100		// 방향키 mousedown delay
 				,dragDelay : 5		// 스크롤 bar drag delay
@@ -133,7 +135,7 @@
 				
 			}
 			,horizontal :{
-				height: 12			// 가로 스크롤 높이
+				height: 14			// 가로 스크롤 높이
 				,bgDelay : 100		
 				,btnDelay : 100		// 방향키 버튼 속도.
 				,dragDelay : 7		// 스크롤 bar drag delay
@@ -385,7 +387,9 @@
 	
 			_this.drag ={};
 			_this.addStyleTag();
-	
+
+			_this._setSearchInfo();
+			
 			_this._setThead();
 			_this.setData(_this.options.tbodyItem , 'init');
 			
@@ -402,15 +406,19 @@
 		 * @method _setGridContainerWidth
 		 * @description grid 넓이 구하기
 		 */
-		,_setGridContainerWidth : function (width){
-			this.config.container.width = width;		
+		,_setGridContainerWidth : function (width, mode){
+			if(mode=='headerResize'){
+				this.config.container.width = width;		// border 값 빼주기.
+			}else{
+				this.config.container.width = width-2;		// border 값 빼주기.
+			}
 		}
 		/**
 		 * @method getGridWidth
 		 * @description grid width
 		 */
 		,getGridWidth : function(){
-			 return this.gridElement.innerWidth() -1; // border 값 빼주기.
+			return this.gridElement.width();
 		}
 		/**
 		 * @method setOptions
@@ -739,8 +747,6 @@
 			var remainderWidth = Math.floor((_gw -_totW)/tciLen)
 				, lastSpaceW = (_gw -_totW)-remainderWidth *tciLen;
 	
-			lastSpaceW = lastSpaceW; // border 겹치는 현상때문에 -2 빼줌.
-	
 			if(resizeFlag){
 				var leftGridWidth = 0, mainGridWidth=0;
 				for(var j=0; j<tciLen; j++){
@@ -867,6 +873,38 @@
 			return updItem; 
 		}
 		/**
+		 * @method _setSearchInfo
+		 * @description 검색 정보 셋팅
+		 */
+		,_setSearchInfo: function (){
+			var settingOpt = this.options.setting; 
+	
+			this.config.orginData = this.options.tbodyItem;
+			
+			if(settingOpt.enabled ===true  && settingOpt.enableSearch ===true){
+				try{
+					var schField = settingOpt.configVal.search.field ||''
+						,schVal = settingOpt.configVal.search.val ||'';
+
+					if(schField != '' && schVal !=''){
+						var tbodyItem = this.options.tbodyItem
+							,schArr =[];
+
+						schVal =schVal.toLowerCase();
+						
+						for(var i =0 , len  = tbodyItem.length; i < len;i++){
+							var tmpItem =tbodyItem[i]; 
+
+							if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
+								schArr.push(tmpItem);
+							}
+						}
+						this.options.tbodyItem = schArr;
+					}
+				}catch(e){}
+			}
+		}
+		/**
 		 * @method setData
 		 * @param data {Array} - 데이타
 		 * @param gridMode {String} - 그리드 모드 
@@ -949,31 +987,8 @@
 			if(gridMode == 'search'){
 				gridMode = 'reDraw';
 			}else{
-				var settingOpt = _this.options.setting; 
-	
-				_this.config.orginData = _this.options.tbodyItem;
-				
-				if(settingOpt.enabled ===true  && settingOpt.enableSearch ===true){
-					try{
-						var schField = settingOpt.configVal.search.field ||''
-							,schVal = settingOpt.configVal.search.val ||'';
-	
-						if(schField != '' && schVal !=''){
-							var tbodyItem = _this.options.tbodyItem
-								,schArr =[];
-	
-							schVal =schVal.toLowerCase();
-							
-							for(var i =0 , len  = tbodyItem.length; i < len;i++){
-								var tmpItem =tbodyItem[i]; 
-	
-								if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
-									schArr.push(tmpItem);
-								}
-							}
-							_this.options.tbodyItem = schArr;
-						}
-					}catch(e){}
+				if(gridMode !='init'){
+					_this._setSearchInfo();
 				}
 			}
 			
@@ -1180,9 +1195,11 @@
 				+' 		</div>'
 				+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 				+' 	</div>'
-				+' 	<div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
-				+' 	</div>'
-				+' </div><textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea></div>';
+				+' </div>'
+				+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
+				+' <textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea>'
+				+' </div>'
+				+' </div>';
 	
 		}
 		,getTbodyAsideHtml : function (mode){
@@ -1541,6 +1558,7 @@
 					_this._setBodyEvent();
 					_this.getTbodyHtml('init');
 					_this.setTheme(_this.options.theme);
+					_this._initFooterEvent();
 				}else{
 					_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
 					_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
@@ -1658,9 +1676,9 @@
 					if(tmpItem.key == 'lineNumber'){
 						addEle.textContent = (itemIdx+1);	
 					}else if(tmpItem.key == 'checkbox'){
-						addEle.innerHTML = '<input type="checkbox" class="pub-row-check" '+(tbiItem['_pubcheckbox']?'checked':'')+'/>';	
+						_$util.setCheckBoxCheck(addEle , tbiItem);
 					}else if(tmpItem.key == 'modify'){
-						addEle.innerHTML = 'V';
+						addEle.textContent = 'V';
 					}
 				};
 				
@@ -1712,7 +1730,9 @@
 				_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
 			}
 			
-			_this._statusMessage(viewCount);	
+			if(this.options.page !== false && this.options.page.status === true){
+				_this._statusMessage(viewCount);	
+			}
 		}
 		/**
 		 * @method setElementDimensionAndMessage
@@ -1767,9 +1787,10 @@
 		 * @description 그리드 수치 계산 . 
 		 */
 		, calcDimension : function (type, opt){
-	
+
 			var _this = this
 				,cfg = _this.config; 
+
 			var dimension;
 			
 			if(type =='headerResize'){
@@ -1777,60 +1798,57 @@
 			}else{
 				dimension = {width : _this.getGridWidth(), height :(_this.options.height =='auto' ? _this.gridElement.height() : _this.options.height)};
 			}
-			
-			opt = objectMerge(dimension ,opt);
+
+			opt = objectMerge(dimension ,opt);						
+			cfg.container.height = opt.height;
+			var mainHeight = opt.height - cfg.navi.height;
 	
-			if(type =='init'  ||  type =='resize'){
-				_this.element.pubGrid.css('height',opt.height+'px');
+			if(type =='init' || type =='resize'){
+
+				_this.element.pubGrid.css('height',mainHeight+'px');
 				_this.element.pubGrid.css('width',opt.width+'px');
+
+				var currentContainerWidth = cfg.container.width // border 값 
+					, resizeWidth = opt.width-2; 
 				
-				if(cfg.container.width != opt.width && type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
+				if(currentContainerWidth != resizeWidth && type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
 	
 					var _totW = cfg.gridWidth.total; 
-					var _overW = (_totW+_this.options.scroll.vertical.width) - cfg.container.width;
-		
-					if(_overW > 0){
-						_overW = (opt.width*(_overW/cfg.container.width*100)/100);
-					}else{
-						_overW = 0; 
-					}
-					
-					var _reiszeW = (opt.width+_overW-_this.options.scroll.vertical.width) -(_totW); 
+
+					var _overW = resizeWidth - currentContainerWidth;
 					var _currGridMain = cfg.gridWidth.main;
-					var _addW = 0 ; 
-					_overW = _overW > 0 ? _overW : 0;
-	
+					var _addW = 0; 
+					var _totColWidth =0;
+					
 					var colItems = cfg.tColItem;
 	
 					for(var i=0 ,colLen  = colItems.length; i<colLen; i++){
 						var colItem = colItems[i]; 
-						_addW = (_reiszeW*(colItem.width/_currGridMain*100)/100);
-						
-						colItem.width = colItem.width + _addW;
+						_addW = (_overW*(colItem.width/_currGridMain*100)/100);
+						_this.setColumnWidth(i, (colItem.width+_addW), null, false);
 
-						_this.setColumnWidth(i ,colItem.width);
+						_totColWidth+=colItem.width;
 					}
-	
-					cfg.gridWidth.main = _currGridMain +(_reiszeW);
+
+					cfg.gridWidth.main = _totColWidth;
 				}
 			}
-			
+
 			// grid total width
 			cfg.gridWidth.total = cfg.gridWidth.aside+cfg.gridWidth.left+ cfg.gridWidth.main;
-	
-			_this._setGridContainerWidth(opt.width);
-	
-			cfg.container.height = opt.height;
-			
-			var mainHeight = opt.height - cfg.navi.height;
-			
+			_this._setGridContainerWidth(opt.width, type);
+							
 			var  bodyH = mainHeight - cfg.header.height - cfg.footer.height
 				, itemTotHeight = (cfg.dataInfo.rowLen-1) * cfg.rowHeight
-				, vScrollFlag = itemTotHeight > bodyH ? true :false
+				, vScrollFlag = (itemTotHeight > bodyH)
 				, bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0))
-				, hScrollFlag = cfg.gridWidth.total > bodyW  ? true : false;
-				
-			//console.log(itemTotHeight , bodyH, cfg.scroll.vUse , vScrollFlag)
+				, hScrollFlag = (Math.floor(cfg.gridWidth.total) > bodyW);
+
+			vScrollFlag = (!vScrollFlag && hScrollFlag) ? (itemTotHeight > bodyH-this.options.scroll.horizontal.height) : vScrollFlag;
+			hScrollFlag = (!hScrollFlag && vScrollFlag) ? (Math.floor(cfg.gridWidth.total) > cfg.container.width-this.options.scroll.vertical.width) : hScrollFlag;
+
+			//console.log(Math.floor(cfg.gridWidth.total) , cfg.container.width-this.options.scroll.vertical.width);
+			//console.log(hScrollFlag, cfg.gridWidth.aside, cfg.gridWidth.left , cfg.gridWidth.main)
 
 			if(cfg.isResize !== true && !cfg.scroll.hUse && type == 'reDraw' && cfg.scroll.vUse != vScrollFlag){
 				var colItems = cfg.tColItem
@@ -1846,7 +1864,7 @@
 						colItem.width = colItem.width + _w;
 					}
 
-					_this.setColumnWidth(i ,colItem.width);
+					_this.setColumnWidth(i ,colItem.width, null, false);
 				}
 
 				if(vScrollFlag){					
@@ -1857,13 +1875,11 @@
 					hScrollFlag = cfg.gridWidth.total+this.options.scroll.vertical.width > bodyW  ? true : false;
 				}
 			}
-				 
+						
 			bodyH -= hScrollFlag? this.options.scroll.horizontal.height :0;
 			_this._setPanelElementWidth();
 			
 			_this.element.body.css('height',(bodyH)+'px');
-	
-			//console.log(vScrollFlag,mainHeight , cfg.header.height , cfg.footer.height ,hScrollFlag, (hScrollFlag?this.options.scroll.horizontal.height:0))
 	
 			var beforeViewCount = cfg.scroll.viewCount ; 
 			cfg.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / cfg.rowHeight) : cfg.dataInfo.rowLen;
@@ -2307,7 +2323,7 @@
 			if(updateChkFlag !== false){
 				var onUpdateFn = this.options.scroll.vertical.onUpdate; 
 				if(drawFlag !== false && isFunction(onUpdateFn)){
-					if(onUpdateFn.call(null, {scrollTop : topVal, height :  this.config.scroll.vTrackHeight , barPosition : barPos }) === false){
+					if(onUpdateFn.call(null, {scrollTop : topVal, height :  this.config.scroll.vTrackHeight, barPosition : barPos }) === false){
 						return ; 
 					}
 				}
@@ -2495,11 +2511,14 @@
 		}
 		,_statusMessage : function (viewCnt){
 			var startVal = this.config.scroll.viewIdx +1
-				,endVal = isNaN(viewCnt)? (startVal+ this.config.scroll.viewCount) : (startVal+ viewCnt);
+				,endVal = startVal+ this.config.scroll.insideViewCount;
+			
+			endVal = endVal >= this.config.dataInfo.orginRowLen? this.config.dataInfo.orginRowLen: endVal;
+
 			this.element.status.empty().html(this.options.message.pageStatus({
 				currStart :startVal
-				,currEnd : (endVal-1)
-				,total : this.config.dataInfo.rowLen
+				,currEnd : endVal
+				,total : this.config.dataInfo.orginRowLen
 			}))
 		}
 		/**
@@ -2525,8 +2544,8 @@
 			this._headerResize(false);
 		}
 		,_windowResize :function (){
-			var _this = this; 
-			
+			var _this = this;
+
 			if(_this.options.autoResize ===false || _this.options.autoResize.enabled === false) return false; 
 			
 			var _evt = $.event,
@@ -2554,7 +2573,7 @@
 					if ( resizeTimeout ) {
 						clearTimeout( resizeTimeout );
 					}
-	
+
 					execAsap ?
 						dispatch() :
 						resizeTimeout = setTimeout( dispatch, _special.threshold );
@@ -2624,14 +2643,19 @@
 		,setCheckItems: function (idxArr, checkFlag){
 			var tbodyItem =this.options.tbodyItem; 
 			var item;
+			checkFlag = isUndefined(checkFlag)?true:checkFlag; 
 			if(idxArr=='all'){
 				for(var i =0, len=tbodyItem.length;i < len; i++){
 					tbodyItem[i]['_pubcheckbox']= checkFlag; 
 				}
 			}else{
+				if(!$.isArray(idxArr)){
+					idxArr = [idxArr];
+				}
+
 				for(var i =0, len=idxArr.length;i < len; i++){
 					item = tbodyItem[idxArr[i]];
-					if(item) item['_pubcheckbox'] = true; 
+					if(item) item['_pubcheckbox'] = checkFlag; 
 				}
 			}
 	
@@ -2783,6 +2807,23 @@
 			if(_this.options.setting.enabled ===true){
 				_this.setGridSettingInfo();
 			}
+		}
+		,_initFooterEvent : function (){
+			var _this = this; 
+
+			var pageCallback = _this.options.page.callback;
+			_this.element.navi.on('click', '.page-num',function() {
+				var sEle = $(this); 
+				var pageno =sEle.attr('pageno');
+
+				_this.element.navi.find('li.active').removeClass('active');
+				_this.element.navi.find('li[pageno="'+pageno+'"]').addClass('active');
+				
+				if (isFunction(pageCallback)) {
+					_this.config.pageNo = pageno;
+					pageCallback(pageno);
+				}
+			});
 		}
 		/**
 		 * @method toggleSettingArea
@@ -3053,10 +3094,12 @@
 							
 				});
 			}
-			
-			// body cell double click
-			if(isFunction(_this.options.bodyOptions.cellDblClick)){
-				
+			// row cell double click event
+			var dblCheckFlag = _this.options.rowOptions.dblClickCheck===true; 
+
+			if(dblCheckFlag || isFunction(_this.options.rowOptions.dblClick) || isFunction(_this.options.bodyOptions.cellDblClick)){
+				var fnDblClick = _this.options.rowOptions.dblClick || _this.options.bodyOptions.cellDblClick ||(function (){});
+
 				_this.element.body.find('.pubGrid-body-container').on('dblclick.pubgrid.td','.pub-body-td',function (e){
 					var selRow = $(this)
 						,tdInfo=selRow.data('grid-position')
@@ -3066,8 +3109,16 @@
 						,colIdx = intValue(rowColArr[1]); 
 	
 					var rowItem = _this.options.tbodyItem[rowIdx];
-									
-					_this.options.bodyOptions.cellDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : _this.config.tColItem[colIdx] } );
+
+					if(dblCheckFlag){
+						_this.options.tbodyItem[rowIdx] = _this.getRowCheckValue(rowItem,rowItem['_pubcheckbox']===true?false:true);
+
+						var addEle =$pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-aside-cont').querySelector('[data-aside-position="'+rowColArr[0]+',checkbox"]>.aside-content');
+
+						_$util.setCheckBoxCheck(addEle , rowItem);
+					}
+					
+					fnDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : _this.config.tColItem[colIdx] } );
 				});
 			}
 	
@@ -4180,7 +4231,7 @@
 
 				w = (w > _this.options.colOptions.minWidth? w : _this.options.colOptions.minWidth);
 	
-				_this.setColumnWidth(drag.resizeIdx , w , drag.colHeader);
+				_this.setColumnWidth(drag.resizeIdx, w, drag.colHeader);
 	
 				if(isFunction(_this.options.headerOptions.resize.update)){
 					_this.options.headerOptions.resize.update.call(null , {index:drag.resizeIdx , width: w});
@@ -4198,9 +4249,10 @@
 		 * @param  idx : heder index
 		 * @param  w : width
 		 * @param  colHeaderEle , header element
+		 * @param  calcFlag , calcDimension call flag
 		 * @description set header width
 		 */
-		,setColumnWidth : function (idx,w, colHeaderEle){
+		,setColumnWidth : function (idx,w, colHeaderEle , calcFlag){
 			
 			if(w <= this.options.colOptions.minWidth){
 				w =this.options.colOptions.minWidth;
@@ -4222,8 +4274,10 @@
 			}
 	
 			$('#'+this.prefix+'colbody'+idx).css('width',w+'px');
-	
-			this.calcDimension('headerResize');
+			
+			if(calcFlag !== false){
+				this.calcDimension('headerResize');
+			}
 		}
 		/**
 		 * @method getHeaderWidth
@@ -4254,15 +4308,15 @@
 			if (currE == "0") currE = 1;
 			var nextO = 1 * currP + 1;
 			var preO = currP - 1;
-			var strHTML = new Array();
+			var strHTML = [];
 			strHTML.push('<ul>');
 			if (new Boolean(preP_is) == true) {
-				strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
 			} else {
 				if (currP <= 1) {
-					strHTML.push(' <li class="disabled"><a href="javascript:">&laquo;</a></li>');
+					strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
 				} else {
-					strHTML.push(' <li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+					strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
 				}
 			}
 			var no = 0;
@@ -4270,35 +4324,24 @@
 				if (no == currP) {
 					strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
 				} else {
-					strHTML.push(' <li class="page-click" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
+					strHTML.push(' <li class="page-num" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
 				}
 			}
 	
 			if (new Boolean(nextP_is) == true) {
-				strHTML.push(' <li class="page-click" pageno="'+nextO+'"><a href="javascript:" >&raquo;</a></li>');
+				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
 			} else {
 				if (currP == currE) {
 					strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
 				} else {
-					strHTML.push(' <li class="page-click" pageno="'+nextO+'"><a href="javascript:" >&raquo;</a></li>');
+					strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
 				}
 			}
 			strHTML.push('</ul>');
-			
-			$('#'+_this.prefix+'pubGrid-pageNav').addClass('page-'+(options.position || 'center'))
-			$('#'+_this.prefix+'pubGrid-pageNav').empty().html(strHTML.join(''));
-			
-			$('#'+_this.prefix+'pubGrid-pageNav .page-click').on('click', function() {
-				var pageno = $(this).attr('pageno');
-				
-				$('#'+_this.prefix+'pubGrid-pageNav').find('li.active').removeClass('active');
-				$('#'+_this.prefix+'pubGrid-pageNav').find('[pageno="'+pageno+'"]').addClass('active');
-	
-				if (typeof options.callback == 'function') {
-					_this.config.pageNo = pageno;
-					options.callback(pageno);
-				}
-			});
+
+			var pageNaviEle = _this.element.navi.find('.pubGrid-page-navigation'); 
+			pageNaviEle.addClass('page-'+(options.position || 'center'));
+			pageNaviEle.empty().html(strHTML.join(''));
 			
 			return this; 
 		}
@@ -4447,8 +4490,7 @@
 		}
 	};
 	
-		
-	 var _$util = {
+	var _$util = {
 		/**
 		 * @method _isMultipleSelection
 		 * @description is multiple selection mode
@@ -4484,7 +4526,13 @@
 	
 			return {startCol : _startCol, endCol : _endCol};
 		}
-	 }
+		/**
+		*
+		*/
+		,setCheckBoxCheck : function (checkEle, item){
+			checkEle.innerHTML = '<input type="checkbox" class="pub-row-check" '+(item['_pubcheckbox']?'checked':'')+'/>';	
+		}
+	}
 	
 	
 	// background click check 
