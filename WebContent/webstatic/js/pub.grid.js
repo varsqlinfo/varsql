@@ -1989,6 +1989,8 @@
 					topVal = cfg.scroll.viewIdx * cfg.scroll.oneRowMove;
 				}
 			}
+
+			console.log(topVal , leftVal);
 	
 			if(type=='resize' ||type =='headerResize'){
 				_this.moveVerticalScroll({pos :topVal, drawFlag : false,resizeFlag:true});
@@ -2405,7 +2407,15 @@
 		,moveHorizontalScroll : function (moveObj){
 			var _this =this; 
 	
-			if(!_this.config.scroll.hUse && moveObj.resizeFlag !== true){ return ; }
+			if(!_this.config.scroll.hUse){
+				if(this.config.scroll.left > 0){
+					this.moveHScrollPosition(0, moveObj.drawFlag);
+				}
+
+				if(moveObj.resizeFlag !== true){
+					return ; 
+				}
+			}
 	
 			var posVal = moveObj.pos;
 	
