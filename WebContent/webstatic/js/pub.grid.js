@@ -109,6 +109,9 @@
 				,key : 'checkbox'
 				,name : 'V'
 				,width : 25
+				,click : function (rowInfo){ // click event , return false 일경우 체크 안함. 
+					
+				}
 			}
 			,modifyInfo :{	// 수정 여부
 				enabled :false
@@ -689,12 +692,13 @@
 				++viewColCount; 
 	
 				if(viewAllLabel){
-					tciItem.width = tciItem.label.length * 11; 
+					tciItem.width = tciItem.label.length * 5; 
 				}else{
 					tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
 				}
 				
 				tciItem.width = Math.max(tciItem.width, opt.colOptions.minWidth);
+				
 				tciItem['_alignClass'] = tciItem.align=='right' ? 'ar' : (tciItem.align=='center'?'ac':'al');
 				cfg.tColItem[j] = tciItem;
 	
@@ -1834,8 +1838,8 @@
 				}
 			}
 
-			// grid total width
 			cfg.gridWidth.total = cfg.gridWidth.aside+cfg.gridWidth.left+ cfg.gridWidth.main;
+
 			_this._setGridContainerWidth(opt.width, type);
 							
 			var  bodyH = mainHeight - cfg.header.height - cfg.footer.height
@@ -1846,36 +1850,53 @@
 
 			vScrollFlag = (!vScrollFlag && hScrollFlag) ? (itemTotHeight > bodyH-this.options.scroll.horizontal.height) : vScrollFlag;
 			hScrollFlag = (!hScrollFlag && vScrollFlag) ? (Math.floor(cfg.gridWidth.total) > cfg.container.width-this.options.scroll.vertical.width) : hScrollFlag;
+			
+			bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0));
 
-			//console.log(Math.floor(cfg.gridWidth.total) , cfg.container.width-this.options.scroll.vertical.width);
-			//console.log(hScrollFlag, cfg.gridWidth.aside, cfg.gridWidth.left , cfg.gridWidth.main)
-
-			if(cfg.isResize !== true && !cfg.scroll.hUse && type == 'reDraw' && cfg.scroll.vUse != vScrollFlag){
-				var colItems = cfg.tColItem
-					,colLen  = colItems.length; 
+			//if(cfg.isResize !== true && !cfg.scroll.hUse && type == 'reDraw' && cfg.scroll.vUse != vScrollFlag){
+			if(cfg.isResize !== true && (type == 'reDraw'||type=='resize') && cfg.scroll.vUse != vScrollFlag){
+				var colItems = cfg.tColItem; 
+				var colLen = colItems.length; 
 				
-				var _w = this.options.scroll.vertical.width/colLen; 
-	
-				for(var i=0; i<colLen; i++){
-					var colItem = colItems[i]; 
-					if(vScrollFlag){					
-						colItem.width = colItem.width - _w;
-					}else{
-						colItem.width = colItem.width + _w;
-					}
+				var _w =0, lastSpaceW=0; 
 
-					_this.setColumnWidth(i ,colItem.width, null, false);
-				}
-
-				if(vScrollFlag){					
-					cfg.gridWidth.main -= this.options.scroll.vertical.width;
-					hScrollFlag = cfg.gridWidth.total-this.options.scroll.vertical.width > bodyW  ? true : false;
+				if(vScrollFlag){
+					_w =  (this.options.scroll.vertical.width/colLen)*-1;
+					lastSpaceW = this.options.scroll.vertical.width+(_w *colLen);	
 				}else{
-					cfg.gridWidth.main += this.options.scroll.vertical.width;
-					hScrollFlag = cfg.gridWidth.total+this.options.scroll.vertical.width > bodyW  ? true : false;
+					if(cfg.container.width > cfg.gridWidth.total){
+						var addW = cfg.container.width-cfg.gridWidth.total;
+						if(addW > colLen){
+							_w = (addW /colLen);
+							lastSpaceW = addW - (_w *colLen);	
+						}else{
+							lastSpaceW =addW;
+						}
+					}
+				}
+			
+				if(_w != 0 || lastSpaceW != 0){
+
+					var _totColWidth =0;
+					
+					for(var i=0; i<colLen; i++){
+						var colItem = colItems[i]; 
+						
+						_this.setColumnWidth(i ,colItem.width + _w, null, false);					
+						_totColWidth+=colItem.width;
+					}
+					
+					_this.setColumnWidth(colLen-1 ,colItems[colLen-1].width +lastSpaceW , null, false);
+
+					cfg.gridWidth.main = _totColWidth+lastSpaceW;
+					cfg.gridWidth.total = cfg.gridWidth.aside+cfg.gridWidth.left+ cfg.gridWidth.main;
+				
+					hScrollFlag = Math.floor(cfg.gridWidth.total) > bodyW  ? true : false;
 				}
 			}
-						
+
+			//console.log('bodyW', cfg.gridWidth.aside, cfg.gridWidth.left , cfg.gridWidth.main)
+			
 			bodyH -= hScrollFlag? this.options.scroll.horizontal.height :0;
 			_this._setPanelElementWidth();
 			
@@ -1918,7 +1939,7 @@
 				cfg.scroll.vUse = false; 
 				$('#'+_this.prefix+'_vscroll').hide();
 			}
-	
+				
 			var leftVal =0;
 			if(hScrollFlag){
 				var gridContTotW = cfg.gridWidth.total;
@@ -3064,6 +3085,9 @@
 			}
 	
 			if(asideOpt.rowSelector.enabled === true){
+				
+				var fnRowChkClick = asideOpt.rowSelector.click; 
+
 				// checkbox click
 				_this.element.body.find('.pubGrid-body-aside').on('click.pubGrid.check','.pub-row-check',function (e){
 					var selEle = $(this)
@@ -3072,6 +3096,12 @@
 					rowinfo = _this.config.scroll.viewIdx+intValue(rowinfo);
 	
 					var selItem = _this.options.tbodyItem[rowinfo];
+				
+					if(isFunction(fnRowChkClick) && fnRowChkClick.call(selEle ,{item : selItem ,r: rowinfo})===false){
+						selEle.prop('checked',false);
+						selItem['_pubcheckbox'] =false;
+						return ; 
+					}
 	
 					selItem['_pubcheckbox'] = selItem['_pubcheckbox'] === true ? false :true;
 				});
