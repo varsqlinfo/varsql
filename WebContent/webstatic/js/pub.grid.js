@@ -15,7 +15,8 @@
 	,_$doc = $(document)
 	,_datastore = {}
 	,_defaults = {
-		colFixedIndex : 0	// 고정 컬럼 
+		blankSpaceWidth : 1		// 오른쪽 끝 공백 값
+		,colFixedIndex : 0	// 고정 컬럼 
 		,widthFixed : false  // 넓이 고정 여부.
 		,useDefaultFormatter: true // 기본 포멧터 사용여부
 		,selectionMode : 'multiple-cell'	// row , cell , multiple-row , multiple-cell	// 선택 방법. 
@@ -411,9 +412,9 @@
 		 */
 		,_setGridContainerWidth : function (width, mode){
 			if(mode=='headerResize'){
-				this.config.container.width = width;		// border 값 빼주기.
+				this.config.container.width = width;
 			}else{
-				this.config.container.width = width-2;		// border 값 빼주기.
+				this.config.container.width = width- this.options.blankSpaceWidth;		// border 값 빼주기.
 			}
 		}
 		/**
@@ -465,7 +466,11 @@
 			}else{
 				_this.options.headerOptions.contextMenu =false; 
 			}
-		
+
+			
+			// space width
+			this.options.blankSpaceWidth = 2+(this.options.blankSpaceWidth>0?this.options.blankSpaceWidth :0);
+					
 			// header element height 	
 			if(_this.options.headerOptions.view !== false){
 				this.config.header.height = _this.options.headerOptions.height * (this.options.theadGroup.length > 0 ?this.options.theadGroup.length : 1);
@@ -1200,8 +1205,8 @@
 				+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 				+' 	</div>'
 				+' </div>'
-				+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 				+' <textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea>'
+				+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 				+' </div>'
 				+' </div>';
 	
@@ -1813,7 +1818,7 @@
 				_this.element.pubGrid.css('width',opt.width+'px');
 
 				var currentContainerWidth = cfg.container.width // border 값 
-					, resizeWidth = opt.width-2; 
+					, resizeWidth = opt.width-this.options.blankSpaceWidth; 
 				
 				if(currentContainerWidth != resizeWidth && type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
 	
