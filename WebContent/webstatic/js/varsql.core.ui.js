@@ -4425,15 +4425,14 @@ _ui.sqlDataArea =  {
 			return ; 
 		}
 		
+		this.resizeDimension = VARSQL.util.objectMerge({}, dimension);;	// file tab 클릭시 resize 때문에 보관
+		
 		dimension.height = dimension.height-27; // tab area height;1 
-
-		this.resizeDimension = dimension;
 		try{
 			$.pubGrid(this.currnetDataGridSelector).resizeDraw(dimension);
 		}catch(e){
 			//console.log(e)
 		}
-		
 		try{
 			$.pubGrid(this.currnetDataGridColumnSelector).resizeDraw(dimension);
 		}catch(e){

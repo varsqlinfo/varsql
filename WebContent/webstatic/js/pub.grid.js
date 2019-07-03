@@ -1205,7 +1205,7 @@
 				+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 				+' 	</div>'
 				+' </div>'
-				+' <textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea>'
+				+' <textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea>' // copy 하기위한 textarea 꼭 위치해야함. 
 				+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 				+' </div>'
 				+' </div>';
@@ -1994,8 +1994,6 @@
 					topVal = cfg.scroll.viewIdx * cfg.scroll.oneRowMove;
 				}
 			}
-
-			console.log(topVal , leftVal);
 	
 			if(type=='resize' ||type =='headerResize'){
 				_this.moveVerticalScroll({pos :topVal, drawFlag : false,resizeFlag:true});
