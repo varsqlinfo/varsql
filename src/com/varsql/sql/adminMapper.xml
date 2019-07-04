@@ -68,7 +68,7 @@
 			,VNAME 
 			,VURL
 			,VSERVERIP
-			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
+			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
 			,VPORT
 			</if>
 			,VDATABASENAME 
@@ -91,7 +91,7 @@
 			,#{vname}
 			,#{vurl}
 			,#{vserverip}
-			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(#{vport})">
+			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
 			,#{vport}
 			</if>
 			,#{vdatabasename} 
