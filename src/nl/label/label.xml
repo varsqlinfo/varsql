@@ -91,7 +91,7 @@
 <entry key="label.complete">완료</entry>
 <entry key="label.prev">이전</entry>
 <entry key="label.next">다음</entry>
-<entry key="label.cancle">취소</entry>
+<entry key="label.cancel">취소</entry>
 <entry key="label.delete">삭제</entry>
 
 <entry key="label.recv.msg">받은메시지</entry>

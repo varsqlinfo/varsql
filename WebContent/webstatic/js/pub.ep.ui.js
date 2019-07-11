@@ -41,10 +41,10 @@ _defaultOption ={
 		, titleClass : ''
 	}
 	,modal:{
-		cancleBtn :'Cancle'
+		cancelBtn :'Cancel'
 		,okBtn:'OK'
 		,width:'300px'
-		,useCancle : false
+		,useCancel : false
 		, height:'auto'
 		, title :'Confirm'
 	}
@@ -297,9 +297,9 @@ _$base.modal = {
 		strHtm.push('		#message#</dd>');
 		strHtm.push('	<dd class="pubep-modal-footer">');
 		
-		if(opt.useCancle !== false){
-			strHtm.push('		<a href="javascript:void(0);" class="pubep-modal-btn white pubEpModalCancle">');
-			strHtm.push('			#cancleBtn#');
+		if(opt.useCancel !== false){
+			strHtm.push('		<a href="javascript:void(0);" class="pubep-modal-btn white pubEpModalCancel">');
+			strHtm.push('			#cancelBtn#');
 			strHtm.push('		</a>');
 		}
 		
@@ -318,9 +318,9 @@ _$base.modal = {
 		message : '메시지'
 		width:  넓이
 		height : 높이 
-		cancleCallback : 취소 메소드 또는 string
+		cancelCallback : 취소 메소드 또는 string
 		okCallback :  ok 메소드 또는 string
-		cancleBtn : cancle 문구
+		cancelBtn : cancel 문구
 		okBtn : ok 문구
 		
 	}
@@ -365,18 +365,18 @@ _$base.modal = {
 		
 		_this.modalEle.off('click.pubepui.modal');
 				
-		_this.modalEle.on("click.pubepui.modal",'.pubEpModalCancle,.btn_close',function (){
+		_this.modalEle.on("click.pubepui.modal",'.pubEpModalCancel,.btn_close',function (){
 			PubEPUI.dialog.closeDialog('#pubEpUiModalArea', false);
 			
-			if(PubEP.isUndefined(opt.cancleCallback)) return ; 
+			if(PubEP.isUndefined(opt.cancelCallback)) return ; 
 			
-			if(PubEP.isFunction(opt.cancleCallback)){
-				opt.cancleCallback();
+			if(PubEP.isFunction(opt.cancelCallback)){
+				opt.cancelCallback();
 			}else{
 				if(opt.isFrame){
-					$('#epContentViewFrame').get(0).contentWindow[opt.cancleCallback]();
+					$('#epContentViewFrame').get(0).contentWindow[opt.cancelCallback]();
 				}else{
-					window[opt.cancleCallback]();
+					window[opt.cancelCallback]();
 				}
 			}
 		});

@@ -2765,7 +2765,7 @@ _ui.SQL = {
 										_self.saveSqlFile(param ,'delTab');
 										dialogObj.dialog( "close" );
 									}
-									,"Cancle": function() {
+									,"Cancel": function() {
 										dialogObj.dialog( "close" );
 									}
 								}

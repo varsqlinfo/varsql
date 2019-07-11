@@ -16,7 +16,7 @@
 			<div style="position:relative;top:100px;">
 				<a href="javascript:;" class="add-item"><span class="fa fa-forward"></span></a>
 				<br/>
-				<a href="javascript:;" class="cancle-item"><span class="fa fa-backward"></span></a>
+				<a href="javascript:;" class="cancel-item"><span class="fa fa-backward"></span></a>
 			</div>
 		</div>
 		<div class="col-xs-5">
@@ -99,7 +99,7 @@ $(document).ready(function (){
 		selectObj.sourceMove();
 	});
 	//취소
-	$('.cancle-item').on('click',function (){
+	$('.cancel-item').on('click',function (){
 		selectObj.targetMove();
 	});
 
