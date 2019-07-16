@@ -4614,7 +4614,7 @@ _ui.registerPlugin({
 			
 			var params ={
 				pageNo: _self.pageNo
-				,countPerPage : _self.gridObj.getViewRow()
+				,countPerPage : _self.gridObj.getViewRow() * 2
 				,'searchVal':schVal
 				,conuid : _g_options.param.conuid
 			}
@@ -4632,7 +4632,7 @@ _ui.registerPlugin({
 			    	if(_self.pageNo ==1){
 			    		_self.gridObj.setData(items);
 			    	}else{
-			    		_self.gridObj.addData(items);
+			    		_self.gridObj.addRow(items);
 			    	}
 			    	
 			    	if(itemLen> 0){

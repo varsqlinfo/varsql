@@ -16,9 +16,11 @@
 	,_datastore = {}
 	,_defaults = {
 		blankSpaceWidth : 1		// 오른쪽 끝 공백 값
+		,copyMode : 'single'		// copy mode	single, multiple, none
 		,colFixedIndex : 0	// 고정 컬럼 
 		,widthFixed : false  // 넓이 고정 여부.
 		,useDefaultFormatter: true // 기본 포멧터 사용여부
+		,editable :false	// 편집 모드 활성화
 		,selectionMode : 'multiple-cell'	// row , cell , multiple-row , multiple-cell	// 선택 방법. 
 		,theme : 'light'
 		,height: 'auto'
@@ -157,8 +159,10 @@
 		  ,"align": "center"	// align
 		  ,"type": "money"		// value type
 		  ,"render": "html"		// render mode
+		  ,defaultValue : ''	// add item default value
 		  ,colClick :function (idx,item){ console.log(idx, item)}		// cell click event
 		  ,styleClass : function (idx, item){return 'pub-bg-private';}	// cell add class
+		  
 		}
 		*/
 		,tColItem : [] //head item 
@@ -926,12 +930,15 @@
 				,tci = _this.config.tColItem;
 			var data = pdata;
 			var pageInfo = opt.page;
-	
+			
 			mode = mode||'reDraw'; 
-	
-			var gridMode = mode.split('_')[0];
-	
+
+			var modeInfo = mode.split('_');
+			var gridMode = modeInfo[0]
+				,subMode = modeInfo[1] ||'';
+				
 			gridMode = gridMode||'reDraw';
+
 			if(!$.isArray(pdata)){
 				data = pdata.items;
 				pageInfo = pdata.page; 
@@ -1002,7 +1009,7 @@
 			}
 			
 			_this.config.dataInfo.orginRowLen = _this.options.tbodyItem.length;
-	
+
 			if(_this.config.dataInfo.orginRowLen > 0){
 				_this.config.dataInfo.rowLen= _this.config.dataInfo.orginRowLen+1;
 				_this.config.dataInfo.lastRowIdx= _this.config.dataInfo.orginRowLen-1;
@@ -1013,15 +1020,22 @@
 			
 			if(gridMode=='reDraw' || gridMode == 'addData'){
 				_this._setHeaderInitInfo();
-				_this._setSelectionRangeInfo({}, true);
-				
-				_this.calcDimension(gridMode);	
+
+				if(subMode !='paste'){
+					_this._setSelectionRangeInfo({}, true);
+				}
+
+				_this.calcDimension(gridMode);
 			}
 	
-			if(gridMode == 'addData'){
+			if(gridMode == 'addData' || subMode =='paste'){
+
 				var rowIdx =_this.config.scroll.viewIdx; 
+
+				var addIdx = addOpt.index; 
+
 				if(addOpt.focus ===true){
-					if(addOpt.index =='first'){
+					if(addIdx =='first'){
 						rowIdx =0; 
 					}else if(!isNaN(addIdx)){
 						rowIdx = parseInt(addOpt.index,10);
@@ -1205,7 +1219,8 @@
 				+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 				+' 	</div>'
 				+' </div>'
-				+' <textarea id="'+_this.prefix+'_pubGridCopyArea" style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"></textarea>' // copy 하기위한 textarea 꼭 위치해야함. 
+				+' <div style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"><textarea id="'+_this.prefix+'_pubGridPasteArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함. 
+				+' <textarea id="'+_this.prefix+'_pubGridCopyArea"></textarea></div>' // copy 하기위한 textarea 꼭 위치해야함. 
 				+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
 				+' </div>'
 				+' </div>';
@@ -1263,7 +1278,7 @@
 		* @description view row count
 		*/
 		,getViewRow: function (){
-			return this.config.scroll.viewCount;
+			return this.config.scroll.bodyViewCount;
 		}
 		/**
 		 * @method getTbodyHtml
@@ -1343,7 +1358,6 @@
 			}
 	
 			return false; 
-			
 		}
 		/**
 		 * @method valueFormatter
@@ -1531,7 +1545,7 @@
 	
 					_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
 					_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
-					
+									
 					_this.element.container = $('#'+_this.prefix+'_container');
 					_this.element.left = $('#'+_this.prefix+'_left');
 					_this.element.header= $('#'+_this.prefix+'_headerContainer');
@@ -1547,6 +1561,9 @@
 					// query selector 
 					_this.element.leftContent = $pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-left-cont');
 					_this.element.bodyContent = $pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont');
+
+					//hidden area element
+					_this.element.pasteArea = $('#'+_this.prefix +'_pubGridPasteArea');
 					
 					// header html 만들기
 					if(headerOpt.view===false){
@@ -1909,6 +1926,7 @@
 	
 			var beforeViewCount = cfg.scroll.viewCount ; 
 			cfg.scroll.viewCount = itemTotHeight > bodyH ? Math.ceil(bodyH / cfg.rowHeight) : cfg.dataInfo.rowLen;
+			cfg.scroll.bodyViewCount = Math.ceil(bodyH/cfg.rowHeight);
 			cfg.scroll.insideViewCount = Math.floor(bodyH/cfg.rowHeight);
 			cfg.container.bodyHeight = bodyH;
 			
@@ -2948,7 +2966,7 @@
 				schSelEle.val(settingOpt.configVal.search.val);
 				
 				// 검색
-				schSelEle.on('keydown',function(e) {
+				schSelEle.on('keydown.pubGrid.search',function(e) {
 					if (e.keyCode == '13') {
 						settingWrapper.find('[data-setting-mode="search"]').trigger('click');
 						return false; 
@@ -3139,20 +3157,31 @@
 			}
 			// row cell double click event
 			var dblCheckFlag = _this.options.rowOptions.dblClickCheck===true; 
-
-			if(dblCheckFlag || isFunction(_this.options.rowOptions.dblClick) || isFunction(_this.options.bodyOptions.cellDblClick)){
+			
+			var editable = _this.options.editable;
+			if(editable || dblCheckFlag || isFunction(_this.options.rowOptions.dblClick) || isFunction(_this.options.bodyOptions.cellDblClick)){
 				var fnDblClick = _this.options.rowOptions.dblClick || _this.options.bodyOptions.cellDblClick ||(function (){});
-
+				
 				_this.element.body.find('.pubGrid-body-container').on('dblclick.pubgrid.td','.pub-body-td',function (e){
 					var selRow = $(this)
 						,tdInfo=selRow.data('grid-position')
 						,rowColArr  = tdInfo.split(',');
-					
+
 					var rowIdx = _this.config.scroll.viewIdx+intValue(rowColArr[0])
 						,colIdx = intValue(rowColArr[1]); 
-	
-					var rowItem = _this.options.tbodyItem[rowIdx];
+					
+					var rowItem = _this.options.tbodyItem[rowIdx]
+						colItem = _this.config.tColItem[colIdx]; 
 
+					if(editable ===true){
+						selRow.append(_$util.getEditForm(selRow,colItem ,rowItem));
+						var editEl = selRow.find('input'); 
+
+						editEl.val(rowItem[colItem.key]);
+						editEl.focus();
+						return ; 
+					}
+	
 					if(dblCheckFlag){
 						_this.options.tbodyItem[rowIdx] = _this.getRowCheckValue(rowItem,rowItem['_pubcheckbox']===true?false:true);
 
@@ -3161,7 +3190,7 @@
 						_$util.setCheckBoxCheck(addEle , rowItem);
 					}
 					
-					fnDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : _this.config.tColItem[colIdx] } );
+					fnDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : colItem} );
 				});
 			}
 	
@@ -3270,6 +3299,7 @@
 						,isSelect : true
 						,curr : (_this.config.selection.isSelect?'add':'')
 						,isMouseDown : true
+						,startCell : {startIdx : selIdx, startCol : selectRangeInfo.startCol}
 					}, false, true);
 				
 				}else{
@@ -3343,7 +3373,80 @@
 					_this.config.focus = false;
 				}
 			});
+			
+			if(_this.options.editable===true){
+				// paste event
+				_this.element.pasteArea.on('paste.pubGrid', function (e){
+					
+					var orginEvt = e.originalEvent;
+					var content ='';
+					if( orginEvt.clipboardData && orginEvt.clipboardData.getData ){
+						content = orginEvt.clipboardData.getData('text');
+					}else if( e.clipboardData && e.clipboardData.getData ){
+						content = e.clipboardData.getData('text/plain');
+					}else if( window.clipboardData  && window.clipboardData.getData ){
+						content = window.clipboardData.getData('Text');
+					}
+
+					if(content !=''){
+						var contentArr = content.split(/\r\n|\r|\n/);
+						
+						var startCellInfo = _this.config.selection.startCell;
+						
+						var tColItems = _this.config.tColItem
+							,tbodyItems = _this.options.tbodyItem;
+
+						var startIdx = startCellInfo.startIdx
+							,startCol = startCellInfo.startCol
+							,tColLen =tColItems.length
+							,tbodyLen =tbodyItems.length;
+						
+						var maxCol=0
+							,iLen = contentArr.length;
+						
+						if(startCellInfo.startIdx+iLen > tbodyLen){ // 붙여 넣기가 row가 더 많으면 추가 item 생성. 
+							tbodyItems = tbodyItems.concat(_$util.newItems(tColItems, startCellInfo.startIdx+iLen -tbodyLen));	
+							tbodyLen =tbodyItems.length;
+						}
+						
+						for(var i =0; i<iLen; i++){
+							var addCont = contentArr[i];
+							
+							var addRowIdx = startIdx+i;
+							
+							if(addRowIdx >= tbodyLen){
+								break; 
+							}
+
+							var selItem = tbodyItems[addRowIdx];
+
+							var addContArr = addCont.split(/\t/);
+							var jLen=addContArr.length; 
+							
+							selItem['_pubCUD'] = selItem['_pubCUD']=='_C'?'C':(selItem['_pubCUD']=='C'?'CU':'U');
+
+							for(var j =0; j <jLen; j++){
+								var addColIdx = startCol+j; 
+
+								if(addColIdx < tColLen){
+									maxCol = Math.max(maxCol,addColIdx);
+									selItem[tColItems[addColIdx].key] = addContArr[j];
+								}
+							}
+						}
+
+						_this._setSelectionRangeInfo({
+							rangeInfo :  {startIdx : startCellInfo.startIdx,endIdx : startCellInfo.startIdx+iLen-1, startCol:startCellInfo.startCol,endCol :maxCol}
+							,startCell : startCellInfo
+						},true, false);
+
+						_this.setData(tbodyItems,'reDraw_paste' ,{focus:true,index: _this.config.scroll.viewIdx});
+					}
+				})
+			}
 		
+			var copyMode = _this.options.copyMode; 
+			var selectionMode = _this.options.selectionMode;
 			// window keydown 처리.  tabindex 처리 확인 해볼것.
 			$(window).on("keydown." + _this.prefix, function (e) {
 	
@@ -3357,8 +3460,25 @@
 				if (e.metaKey || e.ctrlKey) { // copy 
 	
 					if (evtKey == 67) { // ctrl+ c
+						if(copyMode =='none'){
+							return ; 
+						}
 						
-						var copyData = _this.selectionData();
+						var copyData = '';
+
+						if(selectionMode =='row' && copyMode =='single' ){
+							var startCellInfo = _this.config.selection.startCell;
+							var selItem = _this.options.tbodyItem[startCellInfo.startIdx]; 
+							
+							if(isUndefined(selItem)){
+								return ; 
+							}
+
+							copyData = _this.options.tbodyItem[startCellInfo.startIdx][_this.config.tColItem[startCellInfo.startCol].key];
+						}else{
+							copyData = _this.selectionData();
+						}
+						
 						try{
 							copyStringToClipboard(_this.prefix, copyData);
 						}catch(e){
@@ -3370,6 +3490,9 @@
 						}
 						_this.allItemSelect();
 						return false; 
+					}else if(evtKey==86){ // ctrl + v
+						_this.element.pasteArea.focus();
+						return true; 
 					}
 				}
 				
@@ -3564,6 +3687,8 @@
 		}
 		/**
 		 * @method _setSelectionRangeInfo
+		 * @param  initFlag {boolean} init flag
+		 * @param  tdSelectFlag {boolean} select flag
 		 * @description 선택 영역 정보 셋팅.
 		 */
 		,_setSelectionRangeInfo : function(selectionInfo, initFlag, tdSelectFlag){
@@ -4061,17 +4186,41 @@
 			}
 		}
 		/**
+		 * @method setSorting
+		 * @param  sortInfo {Object} [{key, val, sortType}]column key , value ,sortType ="a" or "d"
+		 * @description data sorting
+		 */
+		,setSorting : function (sortInfoArr){
+			if(!$.isArray(sortInfoArr)){
+				sortInfoArr = [sortInfoArr];
+			}
+
+			var tColItem = this.config.tColItem;
+
+			var keyIdx = {};
+			for(var i =0; i< tColItem.length;i++){
+				keyIdx[tColItem[i].key]= i; 
+			}
+
+			for(var i =0, len = sortInfoArr.length;i < len; i++){
+				var sortInfo = sortInfoArr[i]; 
+				this.setData(this.getSortList(keyIdx[sortInfo.key], sortInfo.sortType=='d'?'desc':'asc', sortInfo.val) ,'sort');
+			}
+		}
+		/**
 		 * @method getSortList
 		 * @param  idx {Integer} item index
 		 * @param  sortType {String} 정렬 타입 ex(asc,desc)
+		 * @param  val {String,Integer} 정렬값
 		 * @description data sorting 처리.
 		 */
-		,getSortList :function (idx, sortType){
+		,getSortList :function (idx, sortType, val){
 			var _this = this
 				,opt = _this.options
 				,tci = _this.config.tColItem
-				,tbi = opt.tbodyItem;
-			
+				,tbi = opt.tbodyItem
+				,val  = val ||'';
+
 			if(idx < 0 || tbi.length < 1 || idx >= tci.length){
 				return [];
 			}
@@ -4094,13 +4243,27 @@
 				tbi.sort(function (a,b){
 					var v1 = getItemVal(a)
 						,v2 = getItemVal(b);
-					return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
+
+					if(v1 == v2) return 0;
+					
+					if(val != ''){
+						return (v1==val?-1:(v2==val)?1:0);
+					}else{
+						return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
+					}
 				});
 			}else if(sortType=='desc'){
 				tbi.sort(function (a,b){ // 내림차순
 					var v1 = getItemVal(a)
 						,v2 = getItemVal(b);
-					return v1 > v2 ? -1 : v1 < v2 ? 1 : 0;
+
+					if(v1 == v2) return 0;
+					
+					if(val != ''){
+						return (v1==val?1:(v2==val)?-1:0);
+					}else{
+						return v1 > v2 ? -1 : v1 < v2 ? 1 : 0;
+					}					
 				});
 			}else{
 				tbi = _this.config.sort[_key].orginList;
@@ -4535,10 +4698,44 @@
 	
 	var _$util = {
 		/**
+		 * @method newItems
+		 * @description get new item default object 
+		 */	
+		newItems : function (tColItems, newCount){
+			var len = tColItems.length;
+
+			newCount=newCount||1;
+
+			var reArr=[];
+			for(var i=0; i <newCount; i++){
+				var addItem = {'_pubCUD':'_C'};
+				for(var j= 0; j <len; j++){
+					var tColItem = tColItems[j];
+					addItem[tColItem.key]  = tColItem.defaultValue ||'';
+				}
+
+				reArr.push(addItem);
+			}
+
+			return reArr; 
+		}
+		/**
+		 * @method getEditForm
+		 * @description get edit form
+		 */	
+		,getEditForm : function (editEle, tColItem){
+			
+			var reForm =[];
+
+			reForm.push( '<input type="text" class="pubGrid-edit-input">');
+
+			return reForm.join('');
+		}
+		/**
 		 * @method _isMultipleSelection
 		 * @description is multiple selection mode
 		 */	
-		isMultipleSelection : function (selectionMode){
+		,isMultipleSelection : function (selectionMode){
 			return (selectionMode=='multiple-row' || selectionMode =='multiple-cell')
 		}
 		/**

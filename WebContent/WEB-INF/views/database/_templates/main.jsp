@@ -240,12 +240,13 @@ $(document).ready(function(){
 		</div>
 	</div>
 </script>
+
 <%-- history component template --%>
-<script id="historyPluginAreaTemplate" type="text/varsql-template">
+<script id="historyPluginAreaTemplate" type="text/varsql-template" >
 	<div id="pluginHistory" class="varsql-plugin-wrapper">
 		<div class="history-search-area-wrapper">
 			<div class="history-search-area">
-				<input type="text" id="historySearchTxt" class="input-text" placeholder="Search...">
+				<input type="text" id="historySearchTxt" class="input-text" placeholder="Search..." autocomplete="off">
 				<button type="button" class="varsql-btn-default history-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
 			</div>
 		</div>
