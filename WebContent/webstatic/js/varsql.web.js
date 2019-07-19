@@ -184,8 +184,9 @@ var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
  * ajax 요청
  */
 _$base.req ={
-	ajax:function (option){
-		
+	isConnectError : false
+	,ajax:function (option){
+		var _this =this; 
 		var urlObj = option.url;
 		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url); 
 		
@@ -214,8 +215,18 @@ _$base.req ={
 			if (xhr.readyState == 4) {
 				// xhr.status , xhr.statusText check
 			}else if (xhr.readyState == 0) { // connection refused , access denied
-				alert(unescape('%uC5F0%uACB0%uC774%uAC70%uBD80%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%uAD00%uB9AC%uC790%uC5D0%uAC8C%20%uBB38%uC758%uD558%uC138%uC694.'));
+				
+				if(_this.isConnectError===true){
+					return ;
+				}
 				$(loadSelector).centerLoadingClose();
+				alert(unescape('%uC5F0%uACB0%uC774%uAC70%uBD80%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%uAD00%uB9AC%uC790%uC5D0%uAC8C%20%uBB38%uC758%uD558%uC138%uC694.'));
+				_this.isConnectError = true; 
+				
+				setTimeout(function() {
+					_this.isConnectError =false;
+				},2000 );
+				
 				return ;
 			}else {
 				//Other errors	
@@ -223,6 +234,7 @@ _$base.req ={
 		}
 		
 		ajaxOpt.success =  function (data, status, jqXHR) {
+			_this.isConnectError = false; 
 			var resultCode = data.resultCode;  
 		
 			if(resultCode== 401){
