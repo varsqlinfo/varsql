@@ -178,7 +178,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemOne(dbMetaEnum.getDBInfo(databaseParamInfo));
+			result.setItemList(dbMetaEnum.getDBInfo(databaseParamInfo));
 		}catch(Exception e){
 			logger.error("createDDL : ", e);
 		}

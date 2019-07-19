@@ -461,20 +461,33 @@ _ui.headerMenu ={
 								url:{type:VARSQL.uri.database, url:'/dbInfo.vsql'}
 								,data: param
 								,success:function (resData){
-									var item = resData.item; 
+									var list = resData.items; 
 									
 									var strHtm =[];
 									
-									strHtm.push(' '+ item.VERSIONINFO + '<br/>');
-									strHtm.push('<br/><span style="font-weight:bold;">--- more information ---</span><br/>');
-									
-									for(var key in item){
-										if(key != 'VERSIONINFO'){
-											//strHtm.push(key+' : '+item[key]+ '<br/>');
-											strHtm.push(item[key]+ '<br/>');
+									var itemName = '', itemVal='', etc='';
+									for(var i =0 , len = list.length; i < len ;i++){
+										var item = list [i];
+										
+										itemName = '', itemVal='', etc='';
+										
+										for(var key in item){
+											var keyLowerVal = key.toLowerCase(); 
+											if(keyLowerVal.indexOf('name') >0){
+												itemName = item[key]||'';
+											}else if(keyLowerVal.indexOf('val') >0){
+												itemVal = item[key]||'';
+											}else{
+												etc +=item[key]||'';
+											}
 										}
+										
+										strHtm.push(itemName != '' ? itemName+' : ' : '');
+										strHtm.push(itemVal != '' ? itemVal+'  ' : '');
+										strHtm.push(etc != '' ? etc:'');
+										strHtm.push('<br/>');
 									}
-								
+									
 									$('#epHeaderDialogDbInfo').html(strHtm.join(''));
 									
 									_self.dialogObj['dbInfo'] = $('#aboutDbInfoDialog').dialog({
