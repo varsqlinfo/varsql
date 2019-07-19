@@ -2667,7 +2667,6 @@ _ui.SQL = {
 				,buttons: {
 					"Save":function (){
 						_self.sqlFileNameSave();						
-						_self.sqlFileNameDialogEle.dialog( "close" );
 					}
 					,Cancel: function() {
 						_self.sqlFileNameDialogEle.dialog( "close" );
@@ -2680,7 +2679,6 @@ _ui.SQL = {
 				if (e.keyCode == '13') {
 					e.preventDefault();
 					_self.sqlFileNameSave();						
-					_self.sqlFileNameDialogEle.dialog( "close" );
 					return false; 
 				}
 			});
@@ -2690,6 +2688,7 @@ _ui.SQL = {
 	,sqlFileNameSave : function (){
 		var nameTxt = $('#editorSqlFileNameText').val(); 
 		if($.trim(nameTxt)==''){
+			$('#editorSqlFileNameText').focus();
 			VARSQLUI.alert.open('sql명을 입력해주세요.');
 			return ;
 		}
@@ -2699,7 +2698,9 @@ _ui.SQL = {
 		this.saveSqlFile({
 			'sqlId' : sqlFileId
 			,'sqlTitle' : nameTxt
-		}, (sqlFileId =='' ? 'newfile' :'title'))
+		}, (sqlFileId =='' ? 'newfile' :'title'));
+		
+		this.sqlFileNameDialogEle.dialog( "close" );
 	}
 	// 실행 취소
 	,undo :function (){
@@ -3337,6 +3338,10 @@ _ui.SQL = {
 	// editor 에 텍스트 추가.
 	,addTextToEditorArea : function(addText){
 		var _self = this; 
+		
+		if(_self.getSqlEditorObj() ==false){
+			return ; 
+		}
 		
 		var startCursor = _self.getSqlEditorObj().getCursor(true);
 		
