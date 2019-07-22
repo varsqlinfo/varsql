@@ -512,7 +512,7 @@ _$base.unload =function (){
         }
 	    
 	    if(keychk){
-			if(!VARSQL.confirm(VARSQL.messageLang('varsql.0001','페이지를 나가시겠습니까?'))){
+			if(!VARSQL.confirm(VARSQLLang.message('varsql.0001','페이지를 나가시겠습니까?'))){
 				return false;
 			}else{
 				location.reload();
@@ -1102,7 +1102,7 @@ function selectBoxMove(first,second){
 					});
 				}
 			}else{
-				VARSQL.alert(VARSQL.messageLang('varsql.0003','추가할 그룹정보를 선택해주세요.'));
+				VARSQL.alert(VARSQLLang.message('varsql.0003','추가할 항목을 선택해주세요.'));
 				return ;
 			}
 		}
@@ -1124,7 +1124,7 @@ function selectBoxMove(first,second){
 					});
 				}
 			}else{
-				VARSQL.alert(VARSQL.messageLang('varsql.0004','삭제할 그룹정보를 선택해주세요.'));
+				VARSQL.alert(VARSQLLang.message('varsql.0004','삭제할 항목을 선택해주세요.'));
 				return ;
 			}
 		}

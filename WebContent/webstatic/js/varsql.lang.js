@@ -3,15 +3,25 @@
 *ytkim
 *varsql base lang js
  */
+if (typeof window != "undefined") {
+    if (typeof window.VARSQLLang == "undefined") {
+        window.VARSQLLang = {};
+    }
+}else{
+	if(!VARSQLLang){
+		VARSQLLang = {};
+	}
+}
 
-;(function(VARSQL) {
+
+;(function() {
 "use strict";
 function _langInfo (key, lang){
 	var _lang = {
 		'varsql.0001' : '페이지를 나가시겠습니까?'
 		,'varsql.0002' : '저장되었습니다.'
-		,'varsql.0003' : '추가할 그룹정보를 선택해주세요.'
-		,'varsql.0004' : '삭제할 그룹정보를 선택해주세요.'
+		,'varsql.0003' : '추가할 항목을 선택해주세요.'
+		,'varsql.0004' : '삭제할 항목을 선택해주세요.'
 		,'varsql.0005' : '저장하지않은 파일이 존재 합니다.\n페이지를 나가시겠습니까?'
 		,'btn.ok' : 'Ok'
 		,'btn.cancel' : 'Cancel'
@@ -23,7 +33,11 @@ function _langInfo (key, lang){
 	return _lang[key]||lang||''; 
 }
 
-VARSQL.messageLang =function (key,lang){
+VARSQLLang.message =function (key,lang){
+	return _langInfo(key,lang);
+}
+
+VARSQLLang.format =function (fmt,obj){
 	return _langInfo(key,lang);
 }
 

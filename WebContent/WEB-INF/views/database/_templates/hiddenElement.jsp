@@ -46,7 +46,7 @@
 </div>
 
 <%--varsql 정보 --%>
-<div id="aboutVarsqlDialog" style="display:none;margin:0px;padding:0px;" title="Varsql정보">
+<div id="aboutVarsqlDialog" style="display:none;margin:0px;padding:0px;" title="<spring:message code="varsql.info" />">
 	<div style="position:absolute; width:32px;height:32px;">
 		<img src="${pageContextPath}/webstatic/vt/vt32.png">
 	</div>
@@ -55,7 +55,7 @@
 			<div style="font-weight: bold;font-size: 14pt;">Varsql</div>
 			<div style="padding-top:10px;">Version : 0.5</div>
 			<div style="padding-top:10px;"><a href="mailto:varsqlinfo@gmail.com">varsqlinfo@gmail.com</a></div>
-			<div style="padding-top:10px;"><a href="http://varsql.moaview.com" target="_blank">VARSQL site</a></div>
+			<div style="padding-top:10px;"><a href="https://varsql.com/" target="_blank">VARSQL site</a></div>
 			<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
 		</div>
 	</div>

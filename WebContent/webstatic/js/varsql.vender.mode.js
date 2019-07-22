@@ -58,7 +58,7 @@ var $oracle = {
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -177,7 +177,7 @@ var $oracle = {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
