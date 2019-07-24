@@ -15,4 +15,14 @@
 		<tag-class>com.varsql.app.tags.VarsqlNamespace</tag-class>
 		<body-content>empty</body-content>
 	</tag>
+	
+	<tag>
+		<name>resourceLocaleName</name>
+		<tag-class>com.varsql.app.tags.VarsqlResourceLocaleName</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+		</attribute>
+	</tag>
 </taglib>

@@ -1,6 +1,6 @@
 /**
 *ytkim
-*varsql ui js
+*varsql db ui js
  */
 ;(function($, window, document, VARSQL) {
 "use strict";

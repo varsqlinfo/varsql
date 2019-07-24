@@ -178,7 +178,7 @@ public class VarsqlUtil {
 	}
 	
 	public static boolean isRuntimelocal() {
-		return "locale".equals(VarsqlConstants.RUNTIME);
+		return "local".equals(VarsqlConstants.RUNTIME);
 	}
 }
 

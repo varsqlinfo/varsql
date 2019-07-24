@@ -86,26 +86,6 @@ _$base.url = function (type , url){
 };
 
 /**
- * alert 띄우기
- */
-_$base.alert =function (opt){
-	var option ={
-		delim:','
-	};
-	
-	if ( typeof opt === "string" ) {
-		alert(opt);
-	}
-};
-/**
- * confirm 띄우기
- */
-_$base.confirm =function (opt){
-	return confirm(opt);
-};
-
-
-/**
  * function check
  */
 _$base.isFunction = function(obj){
@@ -134,7 +114,66 @@ _$base.inArray =function(array,val){
         if(array[i] == val){return true;}
     }
     return false;
-} 
+}
+
+/**
+ * message  
+ */
+_$base.messageFormat =function (fmt,obj){
+	
+	if(_$base.isUndefined(obj)){
+		var reval = VARSQL_LANG[fmt];
+		
+		if(!_$base.isUndefined(reval)){
+			return reval; 
+		}
+	}
+	
+	obj = obj||VARSQL_LANG;
+	
+	var strFlag = false
+		,objFlag = false
+		,arrFlag = false; 
+
+	var arrLen = -1; 
+
+	if(typeof args ==='string'){
+		strFlag = true;
+	}else{
+		objFlag = typeof args ==='object';
+
+		if (objFlag) {
+			if(Array.isArray){
+				arrFlag =Array.isArray(args);
+				arrLen = args.length; 
+			}else {
+				arrFlag = Object.prototype.toString.call(args) === '[object Array]';
+			}
+			objFlag = arrFlag?false:true; 
+		}
+	}
+
+    this.$$index = 0;
+
+    return fmt.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function(match, key) {
+		if(strFlag){
+			return args;
+		}else if(arrFlag){
+			if (key === '') { // {}
+				key = this.$$index;
+				this.$$index++
+			}
+			
+			if(key < arrLen){
+				return args[key];
+			}
+			return match;
+		}else{
+			return typeof args[key] !== 'undefined' ? args[key] : match;
+		}       
+    });
+	return _langInfo(key,lang);
+}
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){
@@ -220,7 +259,7 @@ _$base.req ={
 					return ;
 				}
 				$(loadSelector).centerLoadingClose();
-				alert(unescape('%uC5F0%uACB0%uC774%uAC70%uBD80%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%uAD00%uB9AC%uC790%uC5D0%uAC8C%20%uBB38%uC758%uD558%uC138%uC694.'));
+				alert(_$base.messageFormat('error.0004'));
 				_this.isConnectError = true; 
 				
 				setTimeout(function() {
@@ -237,21 +276,21 @@ _$base.req ={
 			_this.isConnectError = false; 
 			var resultCode = data.resultCode;  
 		
-			if(resultCode== 401){
-				if(confirm(unescape('%uB85C%uADF8%uC544%uC6C3%20%uB418%uC5C8%uC2B5%uB2C8%uB2E4.%0A%uB85C%uADF8%uC778%uCC3D%20%uC73C%uB85C%20%uC774%uB3D9%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
+			if(resultCode== 401){ // 로그아웃
+				if(confirm(_$base.messageFormat('error.0001'))){
 					(top || window).location.href=VARSQL.contextPath;
 				}
 				return ; 
-			}else if(resultCode == 412){
-				if(confirm(unescape('%uC720%uD6A8%uD558%uC9C0%uC54A%uC740%20%uC694%uCCAD%uC785%uB2C8%uB2E4.%20%uC0C8%uB85C%uACE0%uCE6D%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
+			}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
+				if(confirm(_$base.messageFormat('error.0002'))){
 					(top || window).location.href=VARSQL.contextPath;
 				}
 				return ; 
-			}else if(resultCode == 500){
+			}else if(resultCode == 500){	// error
 				alert(data.message);
 				return ;
-			}else if(resultCode == 2000){
-				if(confirm(unescape('%uC720%uD6A8%uD558%uC9C0%uC54A%uC740%20database%20%uC785%uB2C8%uB2E4.%0A%uBA54%uC778%20%uD398%uC774%uC9C0%uB85C%20%uC774%uB3D9%uD558%uC2DC%uACA0%uC2B5%uB2C8%uAE4C%3F'))){
+			}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
+				if(confirm(_$base.messageFormat('error.0003'))){
 					(top || window).location.href=VARSQL.contextPath;
 				}
 				return ; 
@@ -512,7 +551,7 @@ _$base.unload =function (){
         }
 	    
 	    if(keychk){
-			if(!VARSQL.confirm(VARSQLLang.message('varsql.0001','페이지를 나가시겠습니까?'))){
+			if(!confirm(_$base.messageFormat('varsql.0001'))){
 				return false;
 			}else{
 				location.reload();
@@ -1049,213 +1088,5 @@ window.VARSQL = _$base;
 
 })( window );
 
-
-
-/**
- * javascript function 
- * @param first
- * @param second
- * @returns {___anonymous3771_6484}
- */
-function selectBoxMove(first,second){
-	var actionObj ={
-		firstSelect:first
-		,secondSelect:second
-		,init:function (){
-			this.initEvent();
-		}
-		,initEvent:function (){
-			
-			$(this.firstSelect).unbind('dblclick')
-			$(this.firstSelect).bind("dblclick", function(){
-				actionObj.firstMove();
-			});
-			
-			$(this.secondSelect).unbind('dblclick')
-			$(this.secondSelect).bind("dblclick", function(){
-				actionObj.secondMove();
-			});
-		}
-		,allFirstMove:function (){
-			$(this.firstSelect).children().each(function (i, item){
-				$(this.secondSelect).append('<option value="'+$(item).val()+'">'+$(item).html()+'</option>');
-				$(item).remove();
-			});
-		}
-		,firstMove:function (){
-			var selectVal = $(this.firstSelect).val();
-
-			if(selectVal){
-				if(selectVal.length >0){
-					
-					var tmpVal = '';
-					selectVal=selectVal.join('|')+'|';
-					
-
-					$(this.firstSelect).children().each(function (i, item){
-						tmpVal=$(item).val()+'|';
-
-						if(selectVal.indexOf(tmpVal) > -1){
-							$(actionObj.secondSelect).append('<option value="'+$(item).val()+'">'+$(item).html()+'</option>');
-							$(item).remove();
-						}
-					});
-				}
-			}else{
-				VARSQL.alert(VARSQLLang.message('varsql.0003','추가할 항목을 선택해주세요.'));
-				return ;
-			}
-		}
-		,secondMove:function (){
-			var selectVal = $(this.secondSelect).val();
-
-			if(selectVal){
-				if(selectVal.length >0){
-					selectVal=selectVal.join('|')+'|';
-					var tmpVal = '';
-					$(this.secondSelect).children().each(function (i, item){
-
-						tmpVal=$(item).val()+'|';
-
-						if(selectVal.indexOf(tmpVal) > -1){
-							$(actionObj.firstSelect).append('<option value="'+$(item).val()+'">'+$(item).html()+'</option>');
-							$(item).remove();
-						}
-					});
-				}
-			}else{
-				VARSQL.alert(VARSQLLang.message('varsql.0004','삭제할 항목을 선택해주세요.'));
-				return ;
-			}
-		}
-		,getAddItem:function (){
-			var reInfo = new Array();
-			$(this.secondSelect).children().each(function (i, item){
-				reInfo.push($(item).val())
-			});
-
-			return reInfo;
-		}
-		,move:function (type){
-			if(type=='up'){
-				$($(this.secondSelect).val()).each(function (i, item){
-					$(this.secondSelect).children().each(function (i , cItem){
-						if($(cItem).val() ==item){
-							if($(cItem).prev().length > 0){
-								$(cItem).after($($(cItem).prev()).clone().wrapAll('<div/>').parent().html());
-								$($(cItem).prev()).remove();
-							}
-						}
-					});
-				});
-			}else{
-				var rightVal = $(this.secondSelect).val();
-				var len  = rightVal.length;
-				var item;
-				for(var i=len; i > 0 ; i--){
-					item  = rightVal[i-1];
-
-					$(this.secondSelect).children().each(function (j , cItem){
-						if($(cItem).val() ==item){
-							if($(cItem).next().length > 0){
-								$(cItem).before($($(cItem).next()).clone().wrapAll('<div/>').parent().html());
-								$($(cItem).next()).remove();
-							}
-						}
-					});
-				}
-			}
-		}
-	}
-	
-	return actionObj; 
-}
-
-
-(function($) {
-    $.fn.pagingNav = function(options, callback) {
-        if(!options){
-        	$(this).html('');
-			return false;
-		}
-		
-		var currP = options.currPage ;
-		if(currP == "0") currP = 1;
-		var preP_is = options.prePage_is;
-		var nextP_is = options.nextPage_is;
-		var currS = options.currStartPage;
-		var currE = options.currEndPage;
-
-		if(currE == "0") currE = 1;
-		var nextO = 1*currP+1;
-		var preO = currP - 1;
-		
-		var strHTML=new Array();
-
-		strHTML.push('<div class="text-center">');
-		strHTML.push('	<ul class="pagination">');
-			
-		if (preP_is=="true"){
-			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
-		}else{
-			if (currP<=1)
-			{
-				strHTML.push('	<li class="disabled"><a href="javascript:">&laquo;</a></li>');
-			}else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
-			}
-		}
-		var no=0;
-
-		for (no = currS*1; no <= currE*1; no++){
-
-			if ( no == currP ){
-				strHTML.push('	<li class="active"><a href="javascript:">'+no+'</a></li>');
-			}
-			else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+no+'">'+no+'</a></li>');
-			}
-		}
-
-		if(nextP_is=="true"){
-			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');		
-		}else{
-			if (currP==currE)
-			{
-				strHTML.push('	<li class="disabled"><a href="javascript:">&raquo;</a></li>');
-			}else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');	
-			}
-		}
-
-		strHTML.push('	</ul>');
-		strHTML.push('</div>');
-		
-		this.empty('');
-		this.html(strHTML.join(''));
-		
-		var initFlag = this.data('initFlag');
-		
-		if(initFlag != 'true'){
-			this.data('initFlag', 'true')
-			this.on('click',' .page-click', function() {
-				var sNo = $(this).attr('pageno');
-				
-				
-				if (typeof callback == 'function') {
-					callback(sNo);
-				} else {
-					try {
-						nextPage(sNo);
-					} catch (e) {
-					}
-				}
-			});
-		}
-		
-		return this; 
-	};
-	
-})(jQuery);
 
 (function defineMustache(global,factory){if(typeof exports==="object"&&exports&&typeof exports.nodeName!=="string"){factory(exports)}else if(typeof define==="function"&&define.amd){define(["exports"],factory)}else{global.Mustache={};factory(global.Mustache)}})(this,function mustacheFactory(mustache){var objectToString=Object.prototype.toString;var isArray=Array.isArray||function isArrayPolyfill(object){return objectToString.call(object)==="[object Array]"};function isFunction(object){return typeof object==="function"}function typeStr(obj){return isArray(obj)?"array":typeof obj}function escapeRegExp(string){return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g,"\\$&")}function hasProperty(obj,propName){return obj!=null&&typeof obj==="object"&&propName in obj}var regExpTest=RegExp.prototype.test;function testRegExp(re,string){return regExpTest.call(re,string)}var nonSpaceRe=/\S/;function isWhitespace(string){return!testRegExp(nonSpaceRe,string)}var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};function escapeHtml(string){return String(string).replace(/[&<>"'`=\/]/g,function fromEntityMap(s){return entityMap[s]})}var whiteRe=/\s*/;var spaceRe=/\s+/;var equalsRe=/\s*=/;var curlyRe=/\s*\}/;var tagRe=/#|\^|\/|>|\{|&|=|!/;function parseTemplate(template,tags){if(!template)return[];var sections=[];var tokens=[];var spaces=[];var hasTag=false;var nonSpace=false;function stripSpace(){if(hasTag&&!nonSpace){while(spaces.length)delete tokens[spaces.pop()]}else{spaces=[]}hasTag=false;nonSpace=false}var openingTagRe,closingTagRe,closingCurlyRe;function compileTags(tagsToCompile){if(typeof tagsToCompile==="string")tagsToCompile=tagsToCompile.split(spaceRe,2);if(!isArray(tagsToCompile)||tagsToCompile.length!==2)throw new Error("Invalid tags: "+tagsToCompile);openingTagRe=new RegExp(escapeRegExp(tagsToCompile[0])+"\\s*");closingTagRe=new RegExp("\\s*"+escapeRegExp(tagsToCompile[1]));closingCurlyRe=new RegExp("\\s*"+escapeRegExp("}"+tagsToCompile[1]))}compileTags(tags||mustache.tags);var scanner=new Scanner(template);var start,type,value,chr,token,openSection;while(!scanner.eos()){start=scanner.pos;value=scanner.scanUntil(openingTagRe);if(value){for(var i=0,valueLength=value.length;i<valueLength;++i){chr=value.charAt(i);if(isWhitespace(chr)){spaces.push(tokens.length)}else{nonSpace=true}tokens.push(["text",chr,start,start+1]);start+=1;if(chr==="\n")stripSpace()}}if(!scanner.scan(openingTagRe))break;hasTag=true;type=scanner.scan(tagRe)||"name";scanner.scan(whiteRe);if(type==="="){value=scanner.scanUntil(equalsRe);scanner.scan(equalsRe);scanner.scanUntil(closingTagRe)}else if(type==="{"){value=scanner.scanUntil(closingCurlyRe);scanner.scan(curlyRe);scanner.scanUntil(closingTagRe);type="&"}else{value=scanner.scanUntil(closingTagRe)}if(!scanner.scan(closingTagRe))throw new Error("Unclosed tag at "+scanner.pos);token=[type,value,start,scanner.pos];tokens.push(token);if(type==="#"||type==="^"){sections.push(token)}else if(type==="/"){openSection=sections.pop();if(!openSection)throw new Error('Unopened section "'+value+'" at '+start);if(openSection[1]!==value)throw new Error('Unclosed section "'+openSection[1]+'" at '+start)}else if(type==="name"||type==="{"||type==="&"){nonSpace=true}else if(type==="="){compileTags(value)}}openSection=sections.pop();if(openSection)throw new Error('Unclosed section "'+openSection[1]+'" at '+scanner.pos);return nestTokens(squashTokens(tokens))}function squashTokens(tokens){var squashedTokens=[];var token,lastToken;for(var i=0,numTokens=tokens.length;i<numTokens;++i){token=tokens[i];if(token){if(token[0]==="text"&&lastToken&&lastToken[0]==="text"){lastToken[1]+=token[1];lastToken[3]=token[3]}else{squashedTokens.push(token);lastToken=token}}}return squashedTokens}function nestTokens(tokens){var nestedTokens=[];var collector=nestedTokens;var sections=[];var token,section;for(var i=0,numTokens=tokens.length;i<numTokens;++i){token=tokens[i];switch(token[0]){case"#":case"^":collector.push(token);sections.push(token);collector=token[4]=[];break;case"/":section=sections.pop();section[5]=token[2];collector=sections.length>0?sections[sections.length-1][4]:nestedTokens;break;default:collector.push(token)}}return nestedTokens}function Scanner(string){this.string=string;this.tail=string;this.pos=0}Scanner.prototype.eos=function eos(){return this.tail===""};Scanner.prototype.scan=function scan(re){var match=this.tail.match(re);if(!match||match.index!==0)return"";var string=match[0];this.tail=this.tail.substring(string.length);this.pos+=string.length;return string};Scanner.prototype.scanUntil=function scanUntil(re){var index=this.tail.search(re),match;switch(index){case-1:match=this.tail;this.tail="";break;case 0:match="";break;default:match=this.tail.substring(0,index);this.tail=this.tail.substring(index)}this.pos+=match.length;return match};function Context(view,parentContext){this.view=view;this.cache={".":this.view};this.parent=parentContext}Context.prototype.push=function push(view){return new Context(view,this)};Context.prototype.lookup=function lookup(name){var cache=this.cache;var value;if(cache.hasOwnProperty(name)){value=cache[name]}else{var context=this,names,index,lookupHit=false;while(context){if(name.indexOf(".")>0){value=context.view;names=name.split(".");index=0;while(value!=null&&index<names.length){if(index===names.length-1)lookupHit=hasProperty(value,names[index]);value=value[names[index++]]}}else{value=context.view[name];lookupHit=hasProperty(context.view,name)}if(lookupHit)break;context=context.parent}cache[name]=value}if(isFunction(value))value=value.call(this.view);return value};function Writer(){this.cache={}}Writer.prototype.clearCache=function clearCache(){this.cache={}};Writer.prototype.parse=function parse(template,tags){var cache=this.cache;var tokens=cache[template];if(tokens==null)tokens=cache[template]=parseTemplate(template,tags);return tokens};Writer.prototype.render=function render(template,view,partials){var tokens=this.parse(template);var context=view instanceof Context?view:new Context(view);return this.renderTokens(tokens,context,partials,template)};Writer.prototype.renderTokens=function renderTokens(tokens,context,partials,originalTemplate){var buffer="";var token,symbol,value;for(var i=0,numTokens=tokens.length;i<numTokens;++i){value=undefined;token=tokens[i];symbol=token[0];if(symbol==="#")value=this.renderSection(token,context,partials,originalTemplate);else if(symbol==="^")value=this.renderInverted(token,context,partials,originalTemplate);else if(symbol===">")value=this.renderPartial(token,context,partials,originalTemplate);else if(symbol==="&")value=this.unescapedValue(token,context);else if(symbol==="name")value=this.escapedValue(token,context);else if(symbol==="text")value=this.rawValue(token);if(value!==undefined)buffer+=value}return buffer};Writer.prototype.renderSection=function renderSection(token,context,partials,originalTemplate){var self=this;var buffer="";var value=context.lookup(token[1]);function subRender(template){return self.render(template,context,partials)}if(!value)return;if(isArray(value)){for(var j=0,valueLength=value.length;j<valueLength;++j){buffer+=this.renderTokens(token[4],context.push(value[j]),partials,originalTemplate)}}else if(typeof value==="object"||typeof value==="string"||typeof value==="number"){buffer+=this.renderTokens(token[4],context.push(value),partials,originalTemplate)}else if(isFunction(value)){if(typeof originalTemplate!=="string")throw new Error("Cannot use higher-order sections without the original template");value=value.call(context.view,originalTemplate.slice(token[3],token[5]),subRender);if(value!=null)buffer+=value}else{buffer+=this.renderTokens(token[4],context,partials,originalTemplate)}return buffer};Writer.prototype.renderInverted=function renderInverted(token,context,partials,originalTemplate){var value=context.lookup(token[1]);if(!value||isArray(value)&&value.length===0)return this.renderTokens(token[4],context,partials,originalTemplate)};Writer.prototype.renderPartial=function renderPartial(token,context,partials){if(!partials)return;var value=isFunction(partials)?partials(token[1]):partials[token[1]];if(value!=null)return this.renderTokens(this.parse(value),context,partials,value)};Writer.prototype.unescapedValue=function unescapedValue(token,context){var value=context.lookup(token[1]);if(value!=null)return value};Writer.prototype.escapedValue=function escapedValue(token,context){var value=context.lookup(token[1]);if(value!=null)return mustache.escape(value)};Writer.prototype.rawValue=function rawValue(token){return token[1]};mustache.name="mustache.js";mustache.version="2.3.0";mustache.tags=["{{","}}"];var defaultWriter=new Writer;mustache.clearCache=function clearCache(){return defaultWriter.clearCache()};mustache.parse=function parse(template,tags){return defaultWriter.parse(template,tags)};mustache.render=function render(template,view,partials){if(typeof template!=="string"){throw new TypeError('Invalid template! Template should be a "string" '+'but "'+typeStr(template)+'" was given as the first '+"argument for mustache#render(template, view, partials)")}return defaultWriter.render(template,view,partials)};mustache.to_html=function to_html(template,view,partials,send){var result=mustache.render(template,view,partials);if(isFunction(send)){send(result)}else{return result}};mustache.escape=escapeHtml;mustache.Scanner=Scanner;mustache.Context=Context;mustache.Writer=Writer;return mustache});

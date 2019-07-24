@@ -227,7 +227,7 @@ VarsqlAPP.vueServiceBean( {
 			var selectItem = _self.selectItem;
 			
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQL.alert('<spring:message code="msg.data.select" />');
+				VARSQLUI.alert.open('<spring:message code="msg.data.select" />');
 				return ; 
 			}
 			

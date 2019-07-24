@@ -62,7 +62,13 @@ _$base.alert = {
 	template : function (opt){
 		
 	}
-	,open : function (msgOpt){
+	,open : function (opt){
+		
+		var msg = opt;
+		if(VARSQL.isObject(opt) && !VARSQL.isUndefined(opt.key)){
+			msg = VARSQL.messageFormat(opt.key);
+		}
+		
 		return alert(msgOpt);
 	}
 }
@@ -133,3 +139,89 @@ _$base.toast = {
 window.VARSQLUI = _$base; 
 })(VARSQL, jQuery);
 
+
+(function($) {
+    $.fn.pagingNav = function(options, callback) {
+        if(!options){
+        	$(this).html('');
+			return false;
+		}
+		
+		var currP = options.currPage ;
+		if(currP == "0") currP = 1;
+		var preP_is = options.prePage_is;
+		var nextP_is = options.nextPage_is;
+		var currS = options.currStartPage;
+		var currE = options.currEndPage;
+
+		if(currE == "0") currE = 1;
+		var nextO = 1*currP+1;
+		var preO = currP - 1;
+		
+		var strHTML=new Array();
+
+		strHTML.push('<div class="text-center">');
+		strHTML.push('	<ul class="pagination">');
+			
+		if (preP_is=="true"){
+			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+		}else{
+			if (currP<=1)
+			{
+				strHTML.push('	<li class="disabled"><a href="javascript:">&laquo;</a></li>');
+			}else{
+				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
+			}
+		}
+		var no=0;
+
+		for (no = currS*1; no <= currE*1; no++){
+
+			if ( no == currP ){
+				strHTML.push('	<li class="active"><a href="javascript:">'+no+'</a></li>');
+			}
+			else{
+				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+no+'">'+no+'</a></li>');
+			}
+		}
+
+		if(nextP_is=="true"){
+			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');		
+		}else{
+			if (currP==currE)
+			{
+				strHTML.push('	<li class="disabled"><a href="javascript:">&raquo;</a></li>');
+			}else{
+				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');	
+			}
+		}
+
+		strHTML.push('	</ul>');
+		strHTML.push('</div>');
+		
+		this.empty('');
+		this.html(strHTML.join(''));
+		
+		var initFlag = this.data('initFlag');
+		
+		if(initFlag != 'true'){
+			this.data('initFlag', 'true')
+			this.on('click',' .page-click', function() {
+				var sNo = $(this).attr('pageno');
+				
+				
+				if (typeof callback == 'function') {
+					callback(sNo);
+				} else {
+					try {
+						nextPage(sNo);
+					} catch (e) {
+					}
+				}
+			});
+		}
+		
+		return this; 
+	};
+	
+})(jQuery);

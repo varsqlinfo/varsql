@@ -1,6 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 <link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
 
@@ -25,6 +26,8 @@
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
+<script src="${pageContextPath}/webstatic/i18n/<varsql:resourceLocaleName name="varsql.lang"/>.js?version=${pubjs_ver}"></script>
+
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
@@ -37,10 +40,10 @@
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.ui.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.plugin.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.plugin.ui.js?version=${pubjs_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>

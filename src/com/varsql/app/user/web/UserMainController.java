@@ -129,7 +129,7 @@ public class UserMainController {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController validation check {}",errorVal.toString());
+				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
@@ -166,7 +166,7 @@ public class UserMainController {
 	
 	/**
 	 * 
-	 * @Method Name  : userInfoSave
+	 * @Method Name  : passwordSave
 	 * @Method 설명 : 비밀번호 변경.
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29. 
@@ -178,11 +178,11 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/preferences/passwordSave"})
-	public @ResponseBody ResponseResult userInfoSave(@Valid PasswordForm passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult passwordSave(@Valid PasswordForm passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+				logger.warn("###  UserMainController passwordSave check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());

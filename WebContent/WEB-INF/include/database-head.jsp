@@ -1,7 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
-
+<%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -16,18 +16,19 @@
 
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
 
+<script src="${pageContextPath}/webstatic/i18n/<varsql:resourceLocaleName name="varsql.lang"/>.js?version=${pubjs_ver}"></script>
+
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/varsql.custom.plugin.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.custom.plugin.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.base.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.core.ui.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.lang.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.ui.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/varsql.vender.mode.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.conts.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.vender.plugin.js?version=${pubjs_ver}"></script>
 
 <!-- sql editor -->
 <script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js?version=${codemirror_ver}"></script>

@@ -188,7 +188,7 @@ public class AdminController{
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+				logger.warn("###  AdminController dbConnectionCheck check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
@@ -255,7 +255,7 @@ public class AdminController{
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
+				logger.warn("###  AdminController dbOptSave check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());

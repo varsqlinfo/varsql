@@ -40,7 +40,7 @@ function fnAcceptYn(obj){
 	var selectItem = VARSQL.check.getCheckVal('input:checkbox[class="itemCheck"]');
 	
 	if(VARSQL.isDataEmpty(selectItem)){
-		VARSQL.alert('<spring:message code="msg.data.select" />');
+		VARSQLUI.alert.open('<spring:message code="msg.data.select" />');
 		return ; 
 	}
 	
