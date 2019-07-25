@@ -60,7 +60,7 @@
 	<!-- log search count -->
 	<select id="sqlStatsMapper.selectLogSearchTotalCnt" parameterType="searchParameter" resultType="int">
 		select count(1) as totalcnt 
-		from VTSQL_LOG 
+		from VTSQL_HISTORY 
 		where 1=1
 		and VCONNID=#{customParam.vconnid}
 		and LOG_SQL like '%'||#{keyword}||'%' 

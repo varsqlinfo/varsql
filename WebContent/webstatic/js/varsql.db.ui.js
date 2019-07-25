@@ -1427,7 +1427,7 @@ _ui.addDbServiceObject('view',{
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 			
-			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var viewObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
@@ -1464,7 +1464,7 @@ _ui.addDbServiceObject('view',{
 							var tmpName = sItem.name;
 							
 							if(key =='copy'){
-								gridObj.copyData();
+								viewObj.copyData();
 								return ; 
 							}
 							
@@ -1474,7 +1474,7 @@ _ui.addDbServiceObject('view',{
 								gubunKey : key
 								,sqlGenType : sObj.mode
 								,objectType : $$objectType
-								,objName :  _self.selectMetadata[$$objectType]
+								,objName :  tmpName
 								,item : {
 									items : cacheData.items
 								}
@@ -1861,7 +1861,6 @@ _ui.dbObjectMetadata= {
 			}
 		})
 	}
-	// 
 	/**
      * @method getServiceObjectMetadata
 	 * @param objectType {String} - db service object
@@ -1891,14 +1890,14 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
+		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
+		
 		_ui.layout.setActiveTab('dbMetadata');
 		
 		if(param.visible===true){
 			_self.resizeMetaArea();
 			return ; 
 		}
-		
-		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
 		
 		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]'; 
 		var metaTabObj = $.pubTab(metaTabEleId);
@@ -4396,6 +4395,10 @@ _ui.sqlDataArea =  {
 			height:'auto'
 			,autoResize : false
 			,page :false
+			,setting : {
+				enabled : true
+				,enableSearch : true
+			}
 			,asideOptions :{
 				lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 			}
@@ -4725,6 +4728,7 @@ _ui.text={
 				,buttons: {
 					'Copy':function (){
 						_this.modalEle.dialog( "close" );
+						copyStringToClipboard('programCodeCopy' ,$('#data-orgin-area').val());
 					}
 					,'Cancel': function() {
 						_this.modalEle.dialog( "close" );
@@ -4733,13 +4737,6 @@ _ui.text={
 				,close: function() {
 					_this.modalEle.dialog( "close" );
 				}
-			});
-			
-			$($('[aria-describedby="data-copy-modal"] .ui-dialog-buttonset button.ui-button')[0]).addClass('varsql-copy-btn');
-			new Clipboard('.varsql-copy-btn', {
-			  text: function(trigger) {
-				  return $('#data-orgin-area').val();
-			  }
 			});
 		}else{
 			_this.modalEle.dialog( "open" );
@@ -5047,6 +5044,7 @@ function toUpperCase(str){
 }
 
 function copyStringToClipboard (prefix , copyText) {
+	
 	var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
 
 	if (typeof window.clipboardData !== "undefined" &&
@@ -5061,7 +5059,7 @@ function copyStringToClipboard (prefix , copyText) {
 		var fakeElem = document.createElement('textarea');
 		var yPosition = window.pageYOffset || document.documentElement.scrollTop;
 		fakeElem.id =_id;
-		fakeElem.style = 'top:'+yPosition+'px;font-size : 12pt;border:0;padding:0;margin:0;position:absolute;' +(isRTL ? 'right' : 'left')+':-9999px';
+		fakeElem.style = 'top:'+yPosition+'px;z-index:9999999;font-size : 12pt;border:0;padding:0;margin:0;position:absolute;' +(isRTL ? 'right' : 'left')+':-9999px';
 		fakeElem.setAttribute('readonly', '');
 
 		document.body.appendChild(fakeElem);

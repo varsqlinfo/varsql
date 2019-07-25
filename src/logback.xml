@@ -53,7 +53,7 @@
 	<logger name="appErrorLog" level="info" additivity="false" >
 		<appender-ref ref="appErrorLog" />
 		
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -62,7 +62,7 @@
 
 	<logger name="org.springframework" level="info" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -71,7 +71,7 @@
 	
 	<logger name="com.varsql" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -80,7 +80,7 @@
 	
 	<logger name="com.varsql_query" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -89,7 +89,7 @@
 	
 	<logger name="com.core.varsql_query" level="debug" additivity="false">
 		<appender-ref ref="STDOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -99,7 +99,7 @@
 	<!-- connection 정보 보기. -->
 	<logger name="jdbc.connection" level="INFO" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -109,7 +109,7 @@
 	<!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함-->
 	<logger name="jdbc.sqltiming" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -119,7 +119,7 @@
 	<!-- SQL문만을 로그로 남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 출력 -->
 	<logger name="jdbc.sqlonly" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -129,7 +129,7 @@
 	<!-- ResultSet을 제외한 모든 JDBC 호출 정보 -->
 	<logger name="jdbc.audit" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -139,7 +139,7 @@
 	<!-- ResultSet을 포함한 모든 JDBC 호출 정보 -->
 	<logger name="jdbc.resultset" level="error" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -149,7 +149,7 @@
 	<!-- result set 결과 보기. -->
 	<logger name="jdbc.resultsettable" level="error" additivity="false">
 		<appender-ref ref="FILEOUT" />
-		<if condition='"locale".equals("${runtime}")'>
+		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
 	        </then>
@@ -162,7 +162,7 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 	 -->
-   <if condition='"locale".equals("${runtime}")'>
+   <if condition='"local".equals("${runtime}")'>
         <then>
 			<root level="debug">
 				<appender-ref ref="FILEOUT" />
