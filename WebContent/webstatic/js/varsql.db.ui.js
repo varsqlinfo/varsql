@@ -3335,27 +3335,41 @@ _ui.SQL = {
 		}
 	}
 	// editor 에 텍스트 추가.
-	,addTextToEditorArea : function(addText){
+	,addTextToEditorArea : function(addText , addCriteria){
 		var _self = this; 
-		
-		if(_self.getSqlEditorObj() ==false){
+		var sqlEditorObj =_self.getSqlEditorObj(); 
+		if(sqlEditorObj ==false){
 			return ; 
 		}
 		
-		var startCursor = _self.getSqlEditorObj().getCursor(true);
+		var currEditorCursor = sqlEditorObj.getCursor(true);
+		
+		if(!VARSQL.isUndefined(addCriteria)){
+			if(addCriteria.type=='column'){
+				
+				var startCursor = {line:0 , ch:0};
+				
+				startCursor.line = currEditorCursor.line-10;  
+				startCursor.line = startCursor.line > 0 ?startCursor.line : 0;
+				
+				var chkQuery = sqlEditorObj.getRange(startCursor,currEditorCursor);
+				
+				addText = addColumnPrefix(chkQuery) +addText;
+			}
+		}
 		
 		addText = addText+'';
 		
 		var addLineArr = addText.split(VARSQLCont.constants.newline)
 			,addLineCnt =addLineArr.length;
 		
-		_self.getSqlEditorObj().replaceSelection(addText);
+		sqlEditorObj.replaceSelection(addText);
 		_self.editorFocus();
 		
 		if(addLineCnt > 1){
-			_self.getSqlEditorObj().setCursor({line: startCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
+			sqlEditorObj.setCursor({line: currEditorCursor.line+addLineCnt-1, ch:addLineArr[addLineCnt-1].length})
 		}else{
-			_self.getSqlEditorObj().setCursor({line: startCursor.line, ch: startCursor.ch +addText.length})
+			sqlEditorObj.setCursor({line: currEditorCursor.line, ch: currEditorCursor.ch +addText.length})
 		}
 	}
 	// 파라미터 html template
@@ -4295,9 +4309,6 @@ _ui.sqlDataArea =  {
 				,click : false
 				,enableSearch : true
 				,enableColumnFix : true
-				,callback : function (data){
-					
-				}
 			}
 			,autoResize : false
 			,headerOptions:{
@@ -4305,7 +4316,7 @@ _ui.sqlDataArea =  {
 					enabled : true	
 					,click :  function (clickInfo){
 						var item = clickInfo.item; 
-						_ui.SQL.addTextToEditorArea(item.key);
+						_ui.SQL.addTextToEditorArea(item.key ,{type:'column'});
 					}
 				}
 			}
@@ -4409,7 +4420,7 @@ _ui.sqlDataArea =  {
 			,tbodyItem :columnTypeArr
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key]);
+					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key], {type:'column'});
 				}
 			}
 			,rowOptions :{
@@ -5099,6 +5110,81 @@ function milli2str(milliTime, format) {
 
 function capitalizeFirstLetter(str) {
     return toUpperCase(str.charAt(0)) + str.slice(1);
+}
+
+// 컬럼 에디터 넣을때 붙여질 문자.
+function addColumnPrefix(chkVal){
+	chkVal = chkVal.replace(/^\s*|\s*$/g, '');
+	if(chkVal==''){
+		return ''; 
+	}
+	
+	var lastIdx = chkVal.lastIndexOf('(');
+	if(lastIdx > -1){
+		var tmpVal = chkVal.substring(lastIdx+1);
+		
+		if(tmpVal.replace(/\s/g,'') ==''){
+			return '';
+		}
+	}
+	chkVal = chkVal+'\n';
+	// 주석 /**/ 지우기
+	chkVal = chkVal.replace(/\/\*(.|[\r\n])*?\\*\//gm,'');
+	
+	// 주석 -- 지우기 
+	chkVal = chkVal.replace(/--.*\n/gm,'');
+	
+	// 줄바꿈 ' ' 변경
+	chkVal = chkVal.replace(/\s/g,' ');
+
+	// '' 안에 뭍자열 지우기
+	chkVal = chkVal.replace(/\'(.*?)\'/g,'');
+	
+	// "" 안에 뭍자열 지우기
+	chkVal = chkVal.replace(/\"(.*?)\"/g,'');
+	
+	// 괄호 () 지우기 
+	chkVal = chkVal.replace(/\((.|[\r\n])*?\)/gm,'');
+	
+	var chkStr = ' ' +chkVal.toLowerCase()+' ';
+
+	var chkReg = [',',' select ',' set ',' from ',' where ',' and ',' or '];
+
+	var regular = /(\s(select|from|where|and|or|on|order|by|group|update|delete|truncate|drop|create)\s)/g; 
+
+	var prefixMap = {
+		',' :','
+		,'from' : ' where '
+		,'and' : ' and '
+		,'or' : ' or '
+		,'where' : ' and '
+		,'select' :' , '
+	};
+
+	var reval = '';
+	for(var i =0 , len = chkReg.length;i <len;i++){
+		var chkItem = chkReg[i];
+		var lastIdx = chkStr.lastIndexOf(chkItem);
+
+		if(lastIdx > -1){
+			chkStr = chkStr.substring(lastIdx+ chkItem.length); 
+
+			if(chkStr.match(regular) ==null){
+				if(chkStr.replace(/\s/g,'') !=''){
+					if(chkStr.indexOf(';') > -1){
+						reval='';
+					}else{
+						reval = prefixMap[chkItem.replace(/\s/g,'')];
+					}
+				}else{
+					reval='';
+				}
+				break; 
+			}
+		}
+	}
+
+	return (reval||'');
 }
 
 // theme class
