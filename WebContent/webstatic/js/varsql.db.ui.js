@@ -3354,7 +3354,7 @@ _ui.SQL = {
 				
 				var chkQuery = sqlEditorObj.getRange(startCursor,currEditorCursor);
 				
-				addText = addColumnPrefix(chkQuery) +addText;
+				addText = addColumnPrefix(chkQuery)+addText+' ';
 			}
 		}
 		
