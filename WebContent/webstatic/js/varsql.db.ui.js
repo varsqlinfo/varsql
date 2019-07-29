@@ -1890,14 +1890,14 @@ _ui.dbObjectMetadata= {
 			return ; 
 		}
 		
-		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
-		
 		_ui.layout.setActiveTab('dbMetadata');
 		
-		if(param.visible===true){
+		if(param.visible===true){	// object 선택 이 아닌  object tab 선택.
 			_self.resizeMetaArea();
 			return ; 
 		}
+		
+		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
 		
 		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]'; 
 		var metaTabObj = $.pubTab(metaTabEleId);
@@ -1920,7 +1920,7 @@ _ui.dbObjectMetadata= {
 					var tabGroupContEleId = _self.getTabGroupEleId(objType);
 					
 					var sEle = $(_self.getTabContEleId(objType, metaTabKey));
-			
+					
 					if(!sEle.hasClass('on')){
 						$(tabGroupContEleId+' .on[data-so-meta-tab-content]').removeClass('on');
 						sEle.addClass('on');
@@ -2214,7 +2214,6 @@ _ui.addODbServiceObjectMetadata('table', {
 		}
 	}
 })
-
 
 //view 정보 보기.
 _ui.addODbServiceObjectMetadata('view', {
@@ -3354,7 +3353,9 @@ _ui.SQL = {
 				
 				var chkQuery = sqlEditorObj.getRange(startCursor,currEditorCursor);
 				
-				addText = addColumnPrefix(chkQuery)+addText+' ';
+				//var addTextFormat = addColumnPrefix(chkQuery); 
+				//addText = addColumnPrefix(chkQuery)+addText+' ';
+				addText = VARSQL.messageFormat(addColumnPrefix(chkQuery) ,{key:addText,val:''}) +' ';
 			}
 		}
 		
@@ -4316,7 +4317,7 @@ _ui.sqlDataArea =  {
 					enabled : true	
 					,click :  function (clickInfo){
 						var item = clickInfo.item; 
-						_ui.SQL.addTextToEditorArea(item.key ,{type:'column'});
+						_ui.SQL.addTextToEditorArea(item.key ,{type:'column' , dataType : item.type});
 					}
 				}
 			}
@@ -5115,8 +5116,10 @@ function capitalizeFirstLetter(str) {
 // 컬럼 에디터 넣을때 붙여질 문자.
 function addColumnPrefix(chkVal){
 	chkVal = chkVal.replace(/^\s*|\s*$/g, '');
+	var reval = '{key}';
+	
 	if(chkVal==''){
-		return ''; 
+		return reval; 
 	}
 	
 	var lastIdx = chkVal.lastIndexOf('(');
@@ -5124,7 +5127,7 @@ function addColumnPrefix(chkVal){
 		var tmpVal = chkVal.substring(lastIdx+1);
 		
 		if(tmpVal.replace(/\s/g,'') ==''){
-			return '';
+			return reval;
 		}
 	}
 	chkVal = chkVal+'\n';
@@ -5153,15 +5156,14 @@ function addColumnPrefix(chkVal){
 	var regular = /(\s(select|from|where|and|or|on|order|by|group|update|delete|truncate|drop|create)\s)/g; 
 
 	var prefixMap = {
-		',' :','
-		,'from' : ' where '
-		,'and' : ' and '
-		,'or' : ' or '
-		,'where' : ' and '
-		,'select' :' , '
+		',' :', {key}'
+		,'from' : ' where {key}={val}'
+		,'and' : ' and {key}={val}'
+		,'or' : ' or {key}={val}'
+		,'where' : ' and {key}={val}'
+		,'select' :' , {key}'
 	};
 
-	var reval = '';
 	for(var i =0 , len = chkReg.length;i <len;i++){
 		var chkItem = chkReg[i];
 		var lastIdx = chkStr.lastIndexOf(chkItem);
@@ -5170,21 +5172,25 @@ function addColumnPrefix(chkVal){
 			chkStr = chkStr.substring(lastIdx+ chkItem.length); 
 
 			if(chkStr.match(regular) ==null){
+				if(chkItem ==','){
+					if(chkStr.indexOf('=') > -1){
+						reval = ', {key}={val}'
+						break; 
+					}
+				}
+
 				if(chkStr.replace(/\s/g,'') !=''){
-					if(chkStr.indexOf(';') > -1){
-						reval='';
-					}else{
+					if(chkStr.indexOf(';') < 0){
 						reval = prefixMap[chkItem.replace(/\s/g,'')];
 					}
-				}else{
-					reval='';
 				}
+				
 				break; 
 			}
 		}
 	}
 
-	return (reval||'');
+	return (reval ==''?'{key}':reval);
 }
 
 // theme class

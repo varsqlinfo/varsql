@@ -119,9 +119,9 @@ _$base.inArray =function(array,val){
 /**
  * message  
  */
-_$base.messageFormat =function (fmt,obj){
+_$base.messageFormat =function (fmt,msgParam){
 	
-	if(_$base.isUndefined(obj)){
+	if(_$base.isUndefined(msgParam)){
 		var reval = VARSQL_LANG[fmt];
 		
 		if(!_$base.isUndefined(reval)){
@@ -129,7 +129,7 @@ _$base.messageFormat =function (fmt,obj){
 		}
 	}
 	
-	obj = obj||VARSQL_LANG;
+	msgParam = msgParam||VARSQL_LANG;
 	
 	var strFlag = false
 		,objFlag = false
@@ -137,17 +137,17 @@ _$base.messageFormat =function (fmt,obj){
 
 	var arrLen = -1; 
 
-	if(typeof args ==='string'){
+	if(typeof msgParam ==='string'){
 		strFlag = true;
 	}else{
-		objFlag = typeof args ==='object';
+		objFlag = typeof msgParam ==='object';
 
 		if (objFlag) {
 			if(Array.isArray){
-				arrFlag =Array.isArray(args);
-				arrLen = args.length; 
+				arrFlag =Array.isArray(msgParam);
+				arrLen = msgParam.length; 
 			}else {
-				arrFlag = Object.prototype.toString.call(args) === '[object Array]';
+				arrFlag = Object.prototype.toString.call(msgParam) === '[object Array]';
 			}
 			objFlag = arrFlag?false:true; 
 		}
@@ -157,7 +157,7 @@ _$base.messageFormat =function (fmt,obj){
 
     return fmt.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function(match, key) {
 		if(strFlag){
-			return args;
+			return msgParam;
 		}else if(arrFlag){
 			if (key === '') { // {}
 				key = this.$$index;
@@ -165,11 +165,11 @@ _$base.messageFormat =function (fmt,obj){
 			}
 			
 			if(key < arrLen){
-				return args[key];
+				return msgParam[key];
 			}
 			return match;
 		}else{
-			return typeof args[key] !== 'undefined' ? args[key] : match;
+			return typeof msgParam[key] !== 'undefined' ? msgParam[key] : match;
 		}       
     });
 	return _langInfo(key,lang);
