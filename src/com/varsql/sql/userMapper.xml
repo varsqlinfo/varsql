@@ -55,9 +55,9 @@
 			, #{description}
 			, #{acceptYn}
 			, #{creId}
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
 			, #{creId}
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
 		) 
 	</insert>
 	
@@ -71,7 +71,7 @@
 			, UEMAIL =#{uemail}
 			, DESCRIPTION =#{description}
 			, LANG =#{lang}
-			, UPD_DT = CURRENT TIMESTAMP
+			, UPD_DT = CURRENT_TIMESTAMP
 		where VIEWID =#{viewid}
 	</update>
 	
@@ -134,7 +134,7 @@
 			, #{title}
 			, #{question}
 			, #{userid}
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
 		)
 	</insert>
 	
@@ -144,7 +144,7 @@
 		set
 			TITLE =#{title}
 			,QUESTION =#{question}
-			,UPD_DT = CURRENT TIMESTAMP
+			,UPD_DT = CURRENT_TIMESTAMP
 		where QNAID=#{qnaid}
 		and REG_ID = #{userid}
 		and ANSWER_ID IS NULL
@@ -318,7 +318,7 @@
 			, #{memoTitle}
 			, #{memoCont}
 			, #{regId}
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
 		)
 	</insert>
 	
@@ -346,7 +346,7 @@
 	<update id="userMapper.updateMemoViewDate" parameterType="map">
 		update VTMEMO_USER 
 		set 
-			VIEW_DT = CURRENT TIMESTAMP
+			VIEW_DT = CURRENT_TIMESTAMP
 		where RECV_ID = #{uid}
 		and MEMO_ID = #{memo_id}
 	</update>

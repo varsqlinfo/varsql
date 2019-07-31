@@ -48,10 +48,10 @@
 							<colgroup>
 								<col style="width:*;">
 								<col style="width:120px;">
-								<col style="width:120px;">
+								<col style="width:100px;">
 								<col style="width:130px;">
 								<col style="width:50px;">
-								<col style="width:50px;">
+								<col style="width:40px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
@@ -59,7 +59,7 @@
 									<th class="text-center"><spring:message	code="id" /></th>
 									<th class="text-center"><spring:message	code="ip" /></th>
 									<th class="text-center"><spring:message	code="std_time" /><br><spring:message code="end_time" /></th>
-									<th class="text-center">결과</th>
+									<th class="text-center"><spring:message code="result" /></th>
 									<th class="text-center"><spring:message	code="manage.log.delay" /></th>
 								</tr>
 							</thead>

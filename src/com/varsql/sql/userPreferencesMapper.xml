@@ -22,8 +22,8 @@
 			, #{userid}
 			, #{prefKey}
 			, #{prefVal}
-			, CURRENT TIMESTAMP
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
+			, CURRENT_TIMESTAMP
 		)
 	</insert>
 	
@@ -32,7 +32,7 @@
 		update VTPREFERENCES 
 		set
 			PREF_VAL = #{prefVal}
-			, UPD_DT = CURRENT TIMESTAMP
+			, UPD_DT = CURRENT_TIMESTAMP
 		where	VCONNID = #{vconnid} 
 		and	VIEWID = #{userid} 
 		and	PREF_KEY = #{prefKey}

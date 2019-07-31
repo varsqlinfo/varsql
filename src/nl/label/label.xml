@@ -60,6 +60,7 @@
 <entry key="select">선택</entry>
 <entry key="source">대상</entry>
 <entry key="target">타켓</entry>
+<entry key="result">결과</entry>
 <entry key="result.download">결과 다운르드</entry>
 
 <entry key="compare.result">비교 결과</entry>

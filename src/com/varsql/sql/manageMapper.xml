@@ -112,7 +112,7 @@
 		set
 			ANSWER =#{answer}
 			,ANSWER_ID =#{userid}
-			,ANSWER_DT = CURRENT TIMESTAMP
+			,ANSWER_DT = CURRENT_TIMESTAMP
 		where QNAID=#{qnaid}
 	</update>
 	
@@ -189,7 +189,7 @@
 			, #{viewid}
 			,'U'
 			, #{uid}
-			,CURRENT TIMESTAMP
+			,CURRENT_TIMESTAMP
 		)
 	</insert>
 	

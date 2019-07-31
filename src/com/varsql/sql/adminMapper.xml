@@ -106,9 +106,9 @@
 			,#{lazyloadYn}
 			,#{schemaViewYn}
 			,#{userId}
-			,CURRENT TIMESTAMP
+			,CURRENT_TIMESTAMP
 			,#{userId}
-			,CURRENT TIMESTAMP
+			,CURRENT_TIMESTAMP
 		)
 	</insert>
 	
@@ -147,7 +147,7 @@
 			, LAZYLOAD_YN = #{lazyloadYn}
 			, SCHEMA_VIEW_YN = #{schemaViewYn}
 			, UPD_ID = #{userId}
-			, UPD_DT =CURRENT TIMESTAMP 
+			, UPD_DT =CURRENT_TIMESTAMP 
 		where VCONNID =#{vconnid}
 	</update>
 	
@@ -161,7 +161,7 @@
  			, TIMEOUT = #{timeout}
  			, EXPORTCOUNT = #{exportcount}
 			, UPD_ID = #{userId}
-			, UPD_DT =CURRENT TIMESTAMP 
+			, UPD_DT =CURRENT_TIMESTAMP 
 		where VCONNID =#{vconnid}
 	</update>
 	
@@ -252,7 +252,7 @@
 			, #{viewid}
 			, 'M'
 			, #{uid}
-			,CURRENT TIMESTAMP
+			,CURRENT_TIMESTAMP
 		)
 	</update>
 	

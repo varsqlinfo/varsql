@@ -56,8 +56,8 @@
 			, #{sqlTitle}
 			, #{sql}
 			, #{sqlParam}
-			, CURRENT TIMESTAMP
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
+			, CURRENT_TIMESTAMP
 		)
 	</insert>
 	
@@ -65,7 +65,7 @@
 	<update id="sqlServiceMapper.updateQueryInfo" parameterType="sqlParamInfo">
 		update VTSQL_SQLFILE 
 		set
-			UPD_DT = CURRENT TIMESTAMP
+			UPD_DT = CURRENT_TIMESTAMP
 		<choose>
 			<when test="custom != null and 'title'.equalsIgnoreCase(custom.mode)">
 				, GUERY_TITLE = #{sqlTitle}
@@ -108,7 +108,7 @@
 			, #{custom.prevTabId}
 			, #{sqlId}
 			, 'Y' 
-			, CURRENT TIMESTAMP
+			, CURRENT_TIMESTAMP
 		)
 	</insert>
 	
