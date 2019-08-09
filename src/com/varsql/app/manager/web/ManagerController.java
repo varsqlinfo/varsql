@@ -58,6 +58,19 @@ public class ManagerController {
 		return new ModelAndView("/manager/dbUserMgmt");
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : qnaMgmtList
+	 * @Method 설명 : Q & A
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/qnaMgmt"})
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
@@ -65,13 +78,58 @@ public class ManagerController {
 		return new ModelAndView("/manager/qnaMgmt",model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : glossaryMgmt
+	 * @Method 설명 : 용어집
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/glossaryMgmt"})
 	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return new ModelAndView("/manager/glossaryMgmt",model);
 	}
+	/**
+	 * 
+	 * @Method Name  : dbGroupMgmt
+	 * @Method 설명 : db 그룹 관리
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/dbGroupMgmt"})
+	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		return new ModelAndView("/manager/dbGroupMgmt",model);
+	}
 	
+	/**
+	 * 
+	 * @Method Name  : dbCompareMgmt
+	 * @Method 설명 : db 비교. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/dbCompareMgmt"})
 	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
@@ -87,6 +145,19 @@ public class ManagerController {
 		return new ModelAndView("/manager/dbCompareMgmt",model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : sqlLogStat
+	 * @Method 설명 : sql log  통계. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/sqlLogStat"})
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
@@ -104,6 +175,19 @@ public class ManagerController {
 		return new ModelAndView("/manager/sqlLogStat",model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : sqlLogHistory
+	 * @Method 설명 : sql 이력 조회.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/sqlLogHistory"})
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();

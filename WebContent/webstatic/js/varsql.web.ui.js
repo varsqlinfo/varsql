@@ -69,7 +69,7 @@ _$base.alert = {
 			msg = VARSQL.messageFormat(opt.key);
 		}
 		
-		return alert(msgOpt);
+		return alert(msg);
 	}
 }
 

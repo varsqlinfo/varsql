@@ -8,6 +8,9 @@
     <li class="<c:if test="${fn:endsWith(originalURL,'/dbUserMgmt')}"> active</c:if>">
         <a href="<c:url value="./dbUserMgmt" />"><i class="fa fa-address-card-o"></i><spring:message code="manage.menu.dbnuser" /></a>
     </li>
+    <li class="<c:if test="${fn:endsWith(originalURL,'/dbGroupMgmt')}"> active</c:if>">
+        <a href="<c:url value="./dbGroupMgmt" />"><i class="fa fa-address-card-o"></i><spring:message code="manage.menu.dbgroup" /></a>
+    </li>
     <li class="<c:if test="${fn:endsWith(originalURL,'/qnaMgmt')}"> active</c:if>">
         <a href="<c:url value="./qnaMgmt" />"><i class="fa fa-eye"></i><spring:message code="manage.menu.qnamgmt" /></a>
     </li>

@@ -1279,9 +1279,10 @@ _ui.addDbServiceObject('table',{
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var item = tableObj.getRowItemToElement($(this));
+							tableObj.config.rowContext.changeHeader('contextTitle',0,item.name);
 						}
-						/*	//editor 없을대 처리, 경고창으로 대체 함. 
+						//editor 없을대 처리, 경고창으로 대체 함. 
 						,disableItemKey : function (items){
 							if(!_ui.SQL.getSqlEditorObj()){
 								return [
@@ -1291,7 +1292,6 @@ _ui.addDbServiceObject('table',{
 							}
 							return [];
 						}
-						*/
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
 							var tmpName = sItem.name;
@@ -1338,8 +1338,9 @@ _ui.addDbServiceObject('table',{
 							_ui.pluginProxy.createScriptSql(params);
 						},
 						items: [
-							
-							{key : "dataview" , "name": "데이타 보기"
+							{header: "title" , "key": "contextTitle"}
+							,{divider:true}
+							,{key : "dataview" , "name": "데이타 보기"
 								,subMenu: [
 									{ key : "dataview_all","name": "데이터" , mode: "selectStar"}
 									,{ key : "dataview_count","name": "카운트" ,mode:"selectCount"}
@@ -1358,14 +1359,6 @@ _ui.addDbServiceObject('table',{
 									,{ key : "drop","name": "drop" , mode:"drop"}
 								]
 							}
-							,{key : "create_java","name": "java 모델생성" 
-								,subMenu:[
-									{key : "java_column","name": "컬럼명"}
-									,{key : "java_camel_case_naming","name": "Camel case naming"}
-									,{key : "java_json","name": "json형식"}
-									,{key : "java_valid","name": "우효성 체크 Bean"}
-									]
-							}
 							,{key : "mybatis-sql_create","name": "mybatis Sql생성" 
 								,subMenu : [
 									{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
@@ -1375,6 +1368,14 @@ _ui.addDbServiceObject('table',{
 									,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
 									,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
 								]
+							}
+							,{key : "create_java","name": "java 모델생성" 
+								,subMenu:[
+									{key : "java_column","name": "컬럼명"}
+									,{key : "java_camel_case_naming","name": "Camel case naming"}
+									,{key : "java_json","name": "json형식"}
+									,{key : "java_valid","name": "우효성 체크 Bean"}
+									]
 							}
 							,{divider:true}
 							,{key :'export', "name": "내보내기" 
@@ -1457,7 +1458,8 @@ _ui.addDbServiceObject('view',{
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var item = viewObj.getRowItemToElement($(this));
+							viewObj.config.rowContext.changeHeader('contextTitle',0,item.name);
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
@@ -1481,7 +1483,9 @@ _ui.addDbServiceObject('view',{
 							});
 						},
 						items: [
-							{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+							{header: "title" , "key": "contextTitle"}
+							,{divider:true}
+							,{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
 							,{key : "sql_create", "name": "sql생성" 
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
@@ -5163,13 +5167,21 @@ function addColumnPrefix(chkVal){
 		,'where' : ' and {key}={val}'
 		,'select' :' , {key}'
 	};
-
+	
+	
+	var dotCheckReg = /(\.)$/; // 마지막 문자 체크. 
+	
 	for(var i =0 , len = chkReg.length;i <len;i++){
 		var chkItem = chkReg[i];
 		var lastIdx = chkStr.lastIndexOf(chkItem);
 
 		if(lastIdx > -1){
 			chkStr = chkStr.substring(lastIdx+ chkItem.length); 
+			
+			if(dotCheckReg.test(chkStr.replace(/\s/g,''))) {
+				reval = '';
+				break;
+			}
 
 			if(chkStr.match(regular) ==null){
 				if(chkItem ==','){

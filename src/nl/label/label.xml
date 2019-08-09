@@ -10,9 +10,11 @@
 
 <entry key="title">제목</entry>
 <entry key="content">내용</entry>
+<entry key="reg_user">등록자</entry>
 <entry key="reg_dt">등록일</entry>
 <entry key="view_dt">확인일</entry>
 <entry key="upd_dt">수정일</entry>
+<entry key="upd_user">수정자</entry>
 <entry key="std_day">시작일</entry>
 <entry key="end_day">종료일</entry>
 <entry key="std_time">시작시간</entry>

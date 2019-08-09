@@ -28,6 +28,8 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.beans.DatabaseInfo;
+import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.HttpUtils;
 
 public class VarsqlUtil {
 	
@@ -179,6 +181,24 @@ public class VarsqlUtil {
 	
 	public static boolean isRuntimelocal() {
 		return "local".equals(VarsqlConstants.RUNTIME);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : getIncludeDefaultParam
+	 * @Method 설명  : 기본 파리미터 포함. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 */
+	public static ParamMap getIncludeDefaultParam(HttpServletRequest req) {
+		ParamMap parameter = HttpUtils.getServletRequestParam(req);
+		
+		parameter.put("userId", SecurityUtil.loginId());
+		
+		return parameter; 
 	}
 }
 

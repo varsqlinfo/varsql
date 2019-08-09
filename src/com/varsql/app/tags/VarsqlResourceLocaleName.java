@@ -26,8 +26,9 @@ public class VarsqlResourceLocaleName extends TagSupport {
 			uLocale = LocaleConstants.parseLocaleString(uLocale.toString());
 			
 			if(uLocale==null) {
-				jw.write(name+".");
+				jw.write(name);
 			}else {
+				
 				jw.write(name+"."+uLocale.toString());
 			}
 		} catch (IOException e) {

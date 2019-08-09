@@ -23,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.ResultConstants;
@@ -49,7 +52,6 @@ import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.DateUtils;
-import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtil;
 import com.vartech.common.utils.StringUtil.EscapeType;
 import com.vartech.common.utils.VartechUtils;
@@ -529,37 +531,53 @@ public class SQLServiceImpl{
 	    }
 		return result; 
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : gridDownload
+	 * @Method 설명 : 그리드 데이터 다운로드. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9. 
+	 * @변경이력  :
+	 * @param sqlGridDownloadInfo
+	 * @param res
+	 * @throws IOException
+	 */
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletResponse res) throws IOException {
 		String exportType = sqlGridDownloadInfo.getExportType();
 		
 		List<GridColumnInfo> columnInfo = Arrays.asList(VartechUtils.stringToObject(sqlGridDownloadInfo.getHeaderInfo(), GridColumnInfo[].class , true));
-		List<Map> downloadData = VartechUtils.stringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
+		
+		//List<Map> downloadData = VartechUtils.stringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
+		
+		logger.info("grid download : {} " , sqlGridDownloadInfo);
+		
 		
 		String downloadName = "grid-data-download"; 
-		
 		
 		OutputStream os = res.getOutputStream();
 		
 		try {
+			String jsonString = sqlGridDownloadInfo.getGridData(); 
 			if("csv".equals(exportType)){
 				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toCSVWrite(downloadData, columnInfo, os);
+				DataExportUtil.jsonStringToCsv(jsonString, columnInfo, os);
 			}else if("json".equals(exportType)){
 				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
-				new ObjectMapper().writeValue(os, downloadData);
+				DataExportUtil.toTextWrite(jsonString, os);
 			}else if("xml".equals(exportType)){
 				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toXmlWrite(downloadData, columnInfo , os);
+				DataExportUtil.jsonStringToXml(jsonString, columnInfo , os);
 			}else if("excel".equals(exportType)){
 				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toExcelWrite(downloadData,columnInfo , os);
+				DataExportUtil.jsonStringToExcel(jsonString, columnInfo , os);
 			}
 			
 			if(os !=null) os.close();
 		}catch(Exception e) {
-			logger.error(getClass().getName()+" gridDownload {}", e.getMessage());
-	    	logger.error(getClass().getName()+" gridDownload ", e);
+			logger.error(" param {} ", sqlGridDownloadInfo);
+			logger.error(" gridDownload {}", e.getMessage());
+	    	logger.error(" gridDownload ", e);
 		}finally {
 			IOUtils.closeQuietly(os);
 		}

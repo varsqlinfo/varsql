@@ -20,7 +20,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
 
 <script src="${pageContextPath}/webstatic/i18n/<varsql:resourceLocaleName name="varsql.lang"/>.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>

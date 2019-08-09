@@ -50,6 +50,14 @@ public class SqlGridDownloadInfo extends DatabaseParamInfo{
 	public void setGridData(String gridData) {
 		this.gridData = gridData;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("exportType : ").append(exportType)
+				.append(" ;; headerInfo : ").append(headerInfo)
+				.toString();
+	}
 
 	
 }

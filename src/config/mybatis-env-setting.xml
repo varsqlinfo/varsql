@@ -26,5 +26,7 @@
 	  <typeAlias alias="passwordForm" type="com.varsql.app.user.beans.PasswordForm"/>
 	  <typeAlias alias="exceptionLogVO" type="com.varsql.app.common.beans.ExceptionLogVO"/>
 	  <typeAlias alias="memoInfo" type="com.varsql.app.user.beans.MemoInfo"/>
+	  <typeAlias alias="camelMap" type="com.varsql.app.common.beans.CamelCaseMap"/>
+	  <typeAlias alias="dbGroupInfo" type="com.varsql.app.manager.beans.DbGroupInfo"/>
 	</typeAliases>
 </configuration>

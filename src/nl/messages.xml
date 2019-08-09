@@ -73,6 +73,7 @@
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
 <entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
 <entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manage.menu.dbgroup">DB 그룹관리</entry>
 <entry key="manage.menu.glossary"><![CDATA[용어집]]></entry>
 <entry key="manage.menu.logmgmt">로그</entry>
 <entry key="manage.menu.dbcomparemgmt">DB 비교</entry>
@@ -270,6 +271,8 @@
 <entry key="manage.glossary.word_en">영문명</entry>
 <entry key="manage.glossary.word_abbr">약어명</entry>
 <entry key="manage.glossary.desc">설명</entry>
+
+<entry key="manage.dbgroup.nm">그룹명</entry>
 
 
 <entry key="manage.log.command">Command</entry>

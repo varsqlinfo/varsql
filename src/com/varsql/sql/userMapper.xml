@@ -170,10 +170,10 @@
 				1=1
 			</when>
 			<when test="role=='MANAGER'">
-				a.VCONNID in (select VCONNID from VTDATABASE_ROLE where VIEWID = #{uid} and ROLE_TYPE='U')
+				a.VCONNID in (select VCONNID from VTDATABASE_USER_AUTHORITY where VIEWID = #{uid} and AUTH_TYPE='U')
 			</when>
 			<when test="role=='USER'">
-				a.VCONNID in (select vconnid from VTDATABASE_ROLE where VIEWID = #{uid} and ROLE_TYPE='U' )
+				a.VCONNID in (select vconnid from VTDATABASE_USER_AUTHORITY where VIEWID = #{uid} and AUTH_TYPE='U' )
 			</when>
 	    	<otherwise>
 	      		1!=1
@@ -354,17 +354,17 @@
 	<!-- select user db info -->
 	<select id="userMapper.selectUserDbInfo" parameterType="map" resultType="map">
 		select b.* , a.VNAME , 
-			(select count(1) from VTDATABASE_ROLE subt 
-			 where subt.VCONNID = a.VCONNID and role_type='M' 
+			(select count(1) from VTDATABASE_USER_AUTHORITY subt 
+			 where subt.VCONNID = a.VCONNID and AUTH_TYPE='M' 
 			 and subt.VIEWID = #{userId} 
 			) MANAGER_CNT
 		from VTCONNECTION a 
 			,(
 				SELECT VCONNID
-					,SUM(case role_type when 'U' then 1 else 0 end) USER_CHK
-					,SUM(case role_type when 'M' then 1 else 0 end) MSG_CHK
+					,SUM(case AUTH_TYPE when 'U' then 1 else 0 end) USER_CHK
+					,SUM(case AUTH_TYPE when 'M' then 1 else 0 end) MSG_CHK
 					, max(VIEWID) as VIEWID
-				from VTDATABASE_ROLE 
+				from VTDATABASE_USER_AUTHORITY 
 				where VIEWID = #{viewid}
 				group by VCONNID
 			)b 
@@ -374,14 +374,14 @@
 	
 	<!-- db 사용자 권한 제거. -->
 	<delete id="userMapper.deleteUserDbAuth" parameterType="map">
-		delete from VTDATABASE_ROLE
+		delete from VTDATABASE_USER_AUTHORITY
 		where 1=1
 		<choose>
 			<when test='"M".equalsIgnoreCase(mode)'>
-				and ROLE_TYPE = 'M'
+				and AUTH_TYPE = 'M'
 			</when>
 			<otherwise>
-				and ROLE_TYPE = 'U'
+				and AUTH_TYPE = 'U'
 			</otherwise>
 		</choose>
 		and VCONNID = #{vconnid}
@@ -391,9 +391,9 @@
 	<!-- db manager check -->
 	<select id="userMapper.selectDbManagerCheck" parameterType="map" resultType="int">
 		select count(1)  cnt
-		from VTDATABASE_ROLE 
+		from VTDATABASE_USER_AUTHORITY 
 		where VCONNID = #{vconnid} 
-		and role_type='M' 
+		and AUTH_TYPE='M' 
 		and VIEWID = #{userId} 
 	</select>
 </mapper>

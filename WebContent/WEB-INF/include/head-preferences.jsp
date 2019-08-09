@@ -18,7 +18,7 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
 
-<script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>

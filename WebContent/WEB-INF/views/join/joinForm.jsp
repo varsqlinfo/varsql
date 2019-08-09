@@ -15,7 +15,7 @@
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<script src="${pageContextPath}/webstatic/js/jquery-1.10.2.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>

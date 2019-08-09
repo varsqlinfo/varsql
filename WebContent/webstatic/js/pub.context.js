@@ -17,20 +17,17 @@ var pluginName = "pubContextMenu"
 	,isContextView = false
 	,_$win = $(window)
 	,defaults = {
-		fadeSpeed: 100			
-		,filter: function ($obj) {
+		fadeSpeed: 100				// 숨김 속도 
+		,filter: function ($obj) {		// 필터 
 			// Modify $obj, Do not return
 		}
-		,bgiframe:true
-		,theme : 'light'
-		,above: 'auto'
-		,preventDoubleContext: true
-		,compress: true
-		,selectCls : 'item_select'
-		,callback:function (key){
+		,theme : 'light'			// 테마  light , dark
+		,preventDoubleContext: true		//
+		,selectCls : 'item_select'	// item select class
+		,callback:function (key){	// item click callback
 			alert(key)
 		}
-		,beforeSelect :function (item){
+		,beforeSelect :function (item){	// 선택전 이벤트.
 			
 		}
 	};
@@ -188,8 +185,12 @@ Plugin.prototype ={
 		var dateLen =data.length,item ,linkTarget = '',itemKey , styleClass;
 		for(var i = 0; i< dateLen ; i++) {
 			item = data[i];
+
+			if(isUndefined(item)) continue ; 
 			
 			styleClass = (item.styleClass?item.styleClass:'') + (item.disabled===true ?' disabled' :'');
+
+			itemKey = depth+'_'+(item.key||''); 
 			
 			if (typeof item.divider !== 'undefined') {
 				$menuHtm.push('<li class="divider '+styleClass+'" context-key="divider"></li>');
@@ -197,7 +198,7 @@ Plugin.prototype ={
 			}
 			
 			if (typeof item.header !== 'undefined') {
-				$menuHtm.push('<li class="pub-context-header '+styleClass+'" context-key="header">' + item.header + '</li>');
+				$menuHtm.push('<li class="pub-context-header '+styleClass+'" context-key="'+itemKey+'_header">' + item.header + '</li>');
 				continue; 
 			}
 
@@ -206,7 +207,6 @@ Plugin.prototype ={
 				continue; 
 			}
 			
-			itemKey = depth+'_'+item.key; 
 			_this.contextData[itemKey] = item;
 		
 			if (typeof item.target !== 'undefined') {
@@ -253,6 +253,20 @@ Plugin.prototype ={
      */
 	,disableItem : function (itemKey , depth){
 		this.contextElement.find('[context-key="'+depth+'_'+itemKey+'"]').addClass('disabled')
+	}
+	/**
+     * @method changeName
+     * @description change name 
+     */
+	,changeName : function (itemKey ,depth, name){
+		this.contextElement.find('[context-key="'+depth+'_'+itemKey+'"] .pub-context-item-title').text(name);
+	}
+	/**
+     * @method changeHeader
+     * @description change header item name 
+     */
+	,changeHeader : function (itemKey ,depth, name){
+		this.contextElement.find('[context-key="'+(depth+'_'+(itemKey||''))+'_header"]').text(name);
 	}
 	/**
      * @method enableItem
@@ -347,7 +361,7 @@ Plugin.prototype ={
 			var $dd = $('#'+ id);
 			
 			if(beforeSelectFlag){
-				opt.beforeSelect.call(this);
+				opt.beforeSelect.call(this, {evt : e, element : $(this)});
 			}
 
 			var eleH = $dd.height()

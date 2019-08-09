@@ -87,6 +87,7 @@
 			 VIEW_YN = 'N'
 		where VCONNID = #{vconnid} 
 		and VIEWID = #{userid}
+		and VIEW_YN = 'Y'
 	</update>
 	
 	<!-- tab 비활성화 -->

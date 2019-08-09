@@ -125,9 +125,9 @@
 				where 1=1
 			</when>
 			<otherwise>
-				, VTDATABASE_ROLE  b
+				, VTDATABASE_USER_AUTHORITY  b
 				where a.VCONNID = b.VCONNID
-				and b.ROLE_TYPE = 'M'
+				and b.AUTH_TYPE = 'M'
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
@@ -147,9 +147,9 @@
 				where 1=1
 			</when>
 			<otherwise>
-				, VTDATABASE_ROLE  b
+				, VTDATABASE_USER_AUTHORITY  b
 				where a.VCONNID = b.VCONNID
-				and b.ROLE_TYPE = 'M'
+				and b.AUTH_TYPE = 'M'
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
@@ -164,17 +164,17 @@
 	<!-- db 사용자 목록. -->
 	<select id="manageMapper.selectDbUserMappingList" parameterType="map" resultType="map">
 		select * 
-		from VTUSER a left outer join VTDATABASE_ROLE b 
+		from VTUSER a left outer join VTDATABASE_USER_AUTHORITY b 
 		on a.VIEWID = b.VIEWID 
 		and b.VCONNID = #{vconnid}
-		and b.ROLE_TYPE = 'U'
+		and b.AUTH_TYPE = 'U'
 		where (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
 	</select>
 	
 	<!-- db 사용자 삭제. -->
 	<delete id="manageMapper.deleteDbUser" parameterType="map">
-		delete from VTDATABASE_ROLE
-		where ROLE_TYPE = 'U'
+		delete from VTDATABASE_USER_AUTHORITY
+		where AUTH_TYPE = 'U'
 		and VCONNID = #{vconnid}
 		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
 			#{item}
@@ -183,7 +183,7 @@
 	
 	<!-- db 사용자  등록 -->
 	<insert id="manageMapper.updateDbUser" parameterType="map">
-		insert into VTDATABASE_ROLE (VCONNID, VIEWID ,ROLE_TYPE, REG_ID ,REG_DT)
+		insert into VTDATABASE_USER_AUTHORITY (VCONNID, VIEWID ,AUTH_TYPE, REG_ID ,REG_DT)
 		values(
 			#{vconnid}
 			, #{viewid}
@@ -192,5 +192,68 @@
 			,CURRENT_TIMESTAMP
 		)
 	</insert>
+	
+	<!-- DB 그룹 검색 카운트 -->
+	<select id="manageMapper.selectDbGroupTotalcnt" parameterType="searchParameter" resultType="int">
+		select count(1) as totalcnt 
+		from VTDATABASE_GROUP 
+		where 1=1
+		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+			and REG_ID =#{userId}	
+		</if>
+		and (GROUP_NAME like '%'||#{keyword}||'%' or GROUP_DESC like '%'||#{keyword}||'%') 
+	</select>
+	
+	<!-- DB 그룹 검색 -->
+	<select id="manageMapper.selectDbGroupList" parameterType="searchParameter" resultType="camelMap">
+		select 
+			GROUP_ID, GROUP_NAME, GROUP_DESC, REG_ID, REG_DT
+		 	,to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
+		from VTDATABASE_GROUP a
+		where 1=1
+		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+			and REG_ID =#{userId}	
+		</if>
+		and (GROUP_NAME like '%'||#{keyword}||'%' or GROUP_DESC like '%'||#{keyword}||'%') 
+		order by REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
+	
+	<!-- DB 그룹 등록 -->
+	<insert id="manageMapper.insertDbGroupInfo" parameterType="dbGroupInfo">
+		insert  into VTDATABASE_GROUP (GROUP_ID,GROUP_NAME,GROUP_DESC,REG_ID,REG_DT,UPD_ID,UPD_DT )
+		values(
+			#{groupId}
+			, #{groupName}
+			, #{groupDesc}
+			, #{userId}
+			, current_date
+			, #{userId}
+			, current_date
+		);
+	</insert>
+	
+	<!-- DB 그룹 수정 -->
+	<update id="manageMapper.updateDbGroupInfo" parameterType="dbGroupInfo">
+		update VTDATABASE_GROUP
+		set
+			GROUP_NAME = #{groupName}
+			, GROUP_DESC = #{groupDesc}
+			, UPD_ID = #{userId}
+			, UPD_DT = current_date
+		where	GROUP_ID = #{groupId}
+		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+			and REG_ID =#{userId}	
+		</if>
+	</update>
+	
+	<!-- DB 그룹 삭제 -->
+	<delete id="manageMapper.deleteDbGroupInfo" parameterType="map">
+		delete from VTDATABASE_GROUP 
+		where GROUP_ID = #{groupId}
+		
+		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+			and REG_ID =#{userId}	
+		</if>
+	</delete>
 	
 </mapper>
