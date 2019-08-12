@@ -1,11 +1,18 @@
 package com.varsql.app.manager.service;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.dao.DbGroupDAO;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -96,6 +103,50 @@ public class DbGroupServiceImpl{
 		result.setItemOne(dbGroupDAO.deleteDbGroupInfo(parameter));
 		
 		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectDbGroupMappingList
+	 * @Method 설명 : db 그룹 맵핑 목록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 12. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectDbGroupMappingList(DataCommonVO paramMap) {
+		ResponseResult resultObject = new ResponseResult();
+		resultObject.setItemList(dbGroupDAO.selectDbGroupMappingList(paramMap));
+		return resultObject;
+	}
+	
+	@Transactional
+	public ResponseResult updateDbGroupMappingInfo(DataCommonVO paramMap) {
+		String[] vconnidArr = StringUtil.split(paramMap.getString("selectItem"),",");
+		SecurityUtil.setUserInfo(paramMap);
+		
+		ResponseResult resultObject = new ResponseResult();
+		Map<String,String> addResultInfo = new HashMap<String,String>();
+		
+		if("del".equals(paramMap.getString("mode"))){
+			paramMap.put("vconnidArr", vconnidArr);
+			dbGroupDAO.deleteDbGroupMappingInfo(paramMap);
+		}else{
+			for(String id: vconnidArr){
+	        	paramMap.put("vconnid", id);
+	        	try{
+	        		dbGroupDAO.insertDbGroupMappingInfo(paramMap);
+	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        	}catch(Exception e){
+	        		addResultInfo.put(id,e.getMessage());
+	    		}
+	        }
+			
+			resultObject.setItemOne(addResultInfo);
+		}
+		
+		return resultObject;
 	}
 	
 	

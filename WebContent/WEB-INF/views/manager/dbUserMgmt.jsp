@@ -71,7 +71,7 @@ var dbUserMgmt ={
 		
 		VARSQL.req.ajax({
 			data:param
-			,url : {type:VARSQL.uri.manager, url:'/dbnuser/dbList'}
+			,url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
 			,success:function (resData){
 					
 				var result = resData.items;

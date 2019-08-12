@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.vartech.common.app.beans.ParamMap;
@@ -37,7 +38,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @return
 	 */
 	public int selectDbGroupTotalcnt(SearchParameter searchParameter) {
-		return getSqlSession().selectOne("manageMapper.selectDbGroupTotalcnt", searchParameter);
+		return getSqlSession().selectOne("manageDbGroupMapper.selectDbGroupTotalcnt", searchParameter);
 	}
 	
 	/**
@@ -51,7 +52,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @return
 	 */
 	public List<Object> selectDbGroupList(SearchParameter searchParameter) {
-		return getSqlSession().selectList("manageMapper.selectDbGroupList", searchParameter);
+		return getSqlSession().selectList("manageDbGroupMapper.selectDbGroupList", searchParameter);
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @return
 	 */
 	public Object insertDbGroupInfo(DbGroupInfo dbGroupInfo) {
-		return getSqlSession().insert("manageMapper.insertDbGroupInfo",dbGroupInfo);
+		return getSqlSession().insert("manageDbGroupMapper.insertDbGroupInfo",dbGroupInfo);
 	}
 	
 	/**
@@ -79,7 +80,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @return
 	 */
 	public Object updateDbGroupInfo(DbGroupInfo dbGroupInfo) {
-		return getSqlSession().update("manageMapper.updateDbGroupInfo",dbGroupInfo);
+		return getSqlSession().update("manageDbGroupMapper.updateDbGroupInfo",dbGroupInfo);
 	}
 	
 	/**
@@ -93,6 +94,49 @@ public class DbGroupDAO extends BaseDAO{
 	 * @return
 	 */
 	public Object deleteDbGroupInfo(ParamMap parameter) {
-		return getSqlSession().delete("manageMapper.deleteDbGroupInfo", parameter);
+		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupInfo", parameter);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectDbGroupMappingList
+	 * @Method 설명 : db group mapping list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 12. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public List selectDbGroupMappingList(DataCommonVO paramMap) {
+		return getSqlSession().selectList("manageDbGroupMapper.selectDbGroupMappingList", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteDbGroupMappingInfo
+	 * @Method 설명 : delete db group mapping info
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 12. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int deleteDbGroupMappingInfo(DataCommonVO paramMap) {
+		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupMappingInfo",paramMap);
+		
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateDbGroupMappingInfo
+	 * @Method 설명 : update db group mapping info
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 12. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int insertDbGroupMappingInfo(DataCommonVO paramMap) {
+		return getSqlSession().update("manageDbGroupMapper.insertDbGroupMappingInfo", paramMap);
 	}
 }

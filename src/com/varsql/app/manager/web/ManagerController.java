@@ -38,24 +38,19 @@ public class ManagerController {
 	
 	@Autowired
 	DbnUserServiceImpl dbnUserServiceImpl;
-
-	@RequestMapping({""})
-	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return new ModelAndView("redirect:/manager/");
-	}
 	
-	@RequestMapping({"/","/main"})
+	@RequestMapping({"", "/","/main"})
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "main");
 		return new ModelAndView("/manager/manageMain", model);
 	}
 	
 	@RequestMapping(value="/dbUserMgmt")
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		return new ModelAndView("/manager/dbUserMgmt");
+		model.addAttribute("selectMenu", "dbUserMgmt");
+		return new ModelAndView("/manager/dbUserMgmt", model);
 	}
 	
 	/**
@@ -74,7 +69,7 @@ public class ManagerController {
 	@RequestMapping({"/qnaMgmt"})
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "qnaMgmt");
 		return new ModelAndView("/manager/qnaMgmt",model);
 	}
 	
@@ -94,7 +89,7 @@ public class ManagerController {
 	@RequestMapping({"/glossaryMgmt"})
 	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "glossaryMgmt");
 		return new ModelAndView("/manager/glossaryMgmt",model);
 	}
 	/**
@@ -113,7 +108,7 @@ public class ManagerController {
 	@RequestMapping({"/dbGroupMgmt"})
 	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "dbGroupMgmt");
 		return new ModelAndView("/manager/dbGroupMgmt",model);
 	}
 	
@@ -133,7 +128,7 @@ public class ManagerController {
 	@RequestMapping({"/dbCompareMgmt"})
 	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "dbCompareMgmt");
 		
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
@@ -161,7 +156,7 @@ public class ManagerController {
 	@RequestMapping({"/sqlLogStat"})
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "sqlLog");
 		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
 		model.addAttribute("currentDate", DateUtils.getCurrentDate());
 		
@@ -191,7 +186,7 @@ public class ManagerController {
 	@RequestMapping({"/sqlLogHistory"})
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		model.addAttribute("selectMenu", "sqlLog");
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));

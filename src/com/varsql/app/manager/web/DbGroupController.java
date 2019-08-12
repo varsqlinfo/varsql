@@ -10,11 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.service.DbGroupServiceImpl;
 import com.varsql.app.util.VarsqlUtil;
+import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -107,5 +111,40 @@ public class DbGroupController {
 	@RequestMapping({"/delete"})
 	public @ResponseBody ResponseResult delete(HttpServletRequest req) throws Exception {
 		return dbGroupServiceImpl.deleteDbGroupInfo(VarsqlUtil.getIncludeDefaultParam(req));
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbGroupMappingList
+	 * @Method 설명 : db 그룹 맵핑 목록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 12. 
+	 * @변경이력  :
+	 * @param vconid
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/dbGroupMappingList"})
+	public @ResponseBody ResponseResult dbGroupMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put("groupId", groupId);
+		
+		return dbGroupServiceImpl.selectDbGroupMappingList(paramMap);
+	}
+	
+	@RequestMapping({"/addDbGroupMappingInfo"})
+	public @ResponseBody ResponseResult addDbGroupMappingInfo(@RequestParam(value = "selectItem", required = true)  String selectItem
+			,@RequestParam(value = "groupId", required = true) String groupId
+			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
+			, HttpServletRequest req
+			) throws Exception {
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("selectItem", selectItem);
+		paramMap.put("groupId", groupId);
+		paramMap.put("mode", mode);
+		
+		return dbGroupServiceImpl.updateDbGroupMappingInfo(paramMap);
 	}
 }

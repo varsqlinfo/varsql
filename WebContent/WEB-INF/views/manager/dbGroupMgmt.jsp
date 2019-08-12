@@ -103,13 +103,40 @@
 			</div>
 			<!-- /.panel-body -->
 		</div>
+		
+		<div class="panel panel-default" :class="isViewMode ?'' :'hidden'" >
+			<div class="panel-heading"><spring:message code="manage.dbgroup.mapping" /></div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<div class="col-sm-5">
+					<ul id="source" class="form-control" style="width:100%;height:200px;">
+					  <li><spring:message code="msg.nodata" /></li>
+					</ul>
+				</div>
+				<div class="col-sm-2" style="text-align:center;padding:10px;height:200px;">
+					<div style="margin: 0 auto;">
+						<a href="javascript:;" class="btn_m mb05 item-move" mode="add">
+							<spring:message code="label.add" text="add"/><span class="fa fa-caret-right"></span>
+						</a>
+						<br/>
+						<a href="javascript:;" class="btn_m mb05 item-move" mode="del">
+							<span class="fa fa-caret-left"></span><spring:message code="label.delete" text="del" />
+						</a>
+					</div>
+				</div>
+				<div class="col-sm-5">
+					<ul id="target"  class="form-control" style="width:100%;height:200px;">
+					  <li><spring:message code="msg.nodata" /></li>
+					</ul>
+				</div>
+			</div>
+			<!-- /.panel-body -->
+		</div>
 	</div>
 </div>
 
-
 <script>
 (function() {
-	
 
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
@@ -120,13 +147,57 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem : {}
 		,isViewMode : false
+		,selectObj : {}
 	}
 	,beforeMount: function() {
 		this.fieldClear();
 	}
 	,methods:{
+		init : function (){
+			var _self = this;
+			
+			this.initDbMappingInfo();
+			
+			$('.item-move').on('click',function (){
+				var moveItem = [];
+				var mode = $(this).attr('mode');
+				if(mode =='add'){
+					moveItem = _self.selectObj.sourceMove();
+				}else{
+					moveItem = _self.selectObj.targetMove();
+				}
+			});
+			
+			_self.selectObj= $.pubMultiselect('#source', {
+				targetSelector : '#target'
+				,addItemClass:'text_selected'
+				,useMultiSelect : true
+				,useDragMove : false
+				,useDragSort : false
+				,sourceItem : {
+					optVal : 'VCONNID'
+					,optTxt : 'VNAME'
+					,items : []
+				}
+				,targetItem : {
+					optVal : 'VCONNID'
+					,optTxt : 'VNAME'
+					,items : []
+				}
+				,compleateSourceMove : function (moveItem){
+					if($.isArray(moveItem)){
+						_self.addDbGroupMappingInfo('add', moveItem);
+					}
+				}
+				,compleateTargetMove : function (moveItem){
+					if($.isArray(moveItem)){
+						_self.addDbGroupMappingInfo('del', moveItem);
+					}
+				}
+			}); 
+		}
 		// 추가.
-		fieldClear : function (){
+		,fieldClear : function (){
 			this.isViewMode = false;
 			this.detailItem = {
 				groupId:''
@@ -134,10 +205,12 @@ VarsqlAPP.vueServiceBean( {
 				, groupDesc :''
 			};
 		}
+		
 		// 상세
 		,itemView : function (item){
 			this.isViewMode = true;
 			this.detailItem = item;
+			this.dbMappingInfo();
 		}
 		// 검색
 		,search : function(no){
@@ -210,6 +283,69 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (response){
 					_self.fieldClear();
 					_self.search();
+				}
+			});
+		}
+		,initDbMappingInfo: function (){
+			var _self = this;
+			var param = {
+				'searchVal':''
+			};
+			
+			this.$ajax({
+				url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
+				,data : param
+				,success: function(resData) {
+					_self.selectObj.setItem('source', resData.items);
+				}
+			})
+		}
+		// db mapping info
+		,dbMappingInfo: function (){
+			var _self = this;
+			
+			if(this.isViewMode ===false) return ; 
+			
+			var param = {
+				groupId : this.detailItem.groupId
+			};
+			
+			VARSQL.req.ajax({
+				data:param
+				,loadSelector: '#main-content'
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupMappingList'}
+				,success:function (resData){
+						
+					var result = resData.items;
+		    		var resultLen = result.length;
+		    		
+		    		if(resultLen==0){
+		    			$('#dbinfolist').html('<div class="text-center"><spring:message code="msg.nodata"/></div>');
+		    			$('#pageNavigation').pagingNav();
+		    			return ; 
+		    		}
+		    		
+		    		_self.selectObj.setItem('target', result);
+				}
+			});
+		}
+		// 맵핑 정보 추가. 
+		,addDbGroupMappingInfo : function (mode, moveItem){
+			var _self = this;
+			
+			if(this.isViewMode ===false) return ; 
+
+			var param ={
+				selectItem : moveItem.join(',')
+				,groupId : this.detailItem.groupId
+				, mode : mode
+			};
+			
+			VARSQL.req.ajax({
+				data:param
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupMappingInfo'}
+				,success:function (response){
+					_self.dbMappingInfo();
 				}
 			});
 		}

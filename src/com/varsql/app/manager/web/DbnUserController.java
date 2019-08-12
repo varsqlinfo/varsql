@@ -36,15 +36,6 @@ public class DbnUserController {
 	@Autowired
 	DbnUserServiceImpl dbnUserServiceImpl;
 	
-	@RequestMapping({"/dbList"})
-	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		
-		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
-		return dbnUserServiceImpl.selectdbList(searchParameter);
-	}
-	
 	@RequestMapping({"/dbnUserMappingList"})
 	public @ResponseBody ResponseResult dbnUserMappingList(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid) throws Exception {
 		

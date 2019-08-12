@@ -273,6 +273,7 @@
 <entry key="manage.glossary.desc">설명</entry>
 
 <entry key="manage.dbgroup.nm">그룹명</entry>
+<entry key="manage.dbgroup.mapping">그룹맵핑</entry>
 
 
 <entry key="manage.log.command">Command</entry>
