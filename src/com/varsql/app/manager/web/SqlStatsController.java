@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.manager.service.DbnUserServiceImpl;
+import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.app.manager.service.SqlStatsServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
@@ -39,7 +39,7 @@ public class SqlStatsController {
 	SqlStatsServiceImpl sqlStatsServiceImpl;
 	
 	@Autowired
-	DbnUserServiceImpl dbnUserServiceImpl;
+	ManagerCommonServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"/dbList"})
 	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {

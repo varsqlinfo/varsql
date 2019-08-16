@@ -37,4 +37,29 @@
 		insert into VTSQL_EXCEPTIONLOG (EXCP_ID,SERVER_ID,EXCP_TYPE,EXCP_TITLE,EXCP_CONT,REG_ID,REG_DT )
 		values( #{exceotionId},#{serverId},#{exceptionType},#{exceptionTitle},#{exceptionCont},#{regId},CURRENT_TIMESTAMP )  
 	</insert>
+	
+	<!-- 사용자 검색  -->
+	<select id="commonMapper.selectUserListTotalCnt" parameterType="searchParameter" resultType="int">
+		select count(1) as totalcnt 
+		<include refid="userSearchCriteria"></include>
+	</select>
+	
+	<!-- 사용자 검색  -->
+	<select id="commonMapper.selectUserList" parameterType="searchParameter" resultType="map">
+		select 
+			VIEWID
+			,UNAME
+			,UID
+		<include refid="userSearchCriteria"></include>
+		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
+	</select>
+	
+	<!-- 사용자 검색 공통 sql 부분.  -->
+	<sql id="userSearchCriteria">
+		from VTUSER a
+		where 1=1
+		and USER_ROLE not in ('ADMIN')
+		and (UNAME like '%'||#{keyword}||'%' or UID like '%'||#{keyword}||'%')
+	</sql>
+	
 </mapper>

@@ -48,6 +48,55 @@
 		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
+	<!-- select user db info -->
+	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
+		select b.* , a.VNAME , 
+			(select count(1) from VTDATABASE_MANAGER subt 
+			 where subt.VCONNID = a.VCONNID 
+			 and subt.VIEWID = #{userId} 
+			) MANAGER_CNT
+		from VTCONNECTION a 
+			,(
+				select distinct VCONNID from VTDATABASE_GROUP_DB where GROUP_ID in (
+					select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID =#{viewid}
+				)
+			)b 
+		where a.VCONNID = b.VCONNID
+		and a.USE_YN = 'Y'
+	</select>
+	
+	<!-- db 사용자 권한 제거. -->
+	<delete id="manageMapper.deleteUserDbAuth" parameterType="map">
+		delete from VTDATABASE_USER_AUTHORITY
+		where 1=1
+		<choose>
+			<when test='"M".equalsIgnoreCase(mode)'>
+				and AUTH_TYPE = 'M'
+			</when>
+			<otherwise>
+				and AUTH_TYPE = 'U'
+			</otherwise>
+		</choose>
+		and VCONNID = #{vconnid}
+		and VIEWID  = #{viewid}
+	</delete>
+	
+	<!-- 사용자 정보 상세 보기. -->
+	<select id="manageMapper.selectUserDetail" parameterType="string" resultType="dataCommonVO">
+		select VIEWID, UID, UNAME, ORG_NM
+			, DEPT_NM, UEMAIL, DESCRIPTION, BLOCK_YN, LANG
+		from VTUSER
+		where viewid =#{viewid}
+	</select>
+	
+	<!-- db manager check -->
+	<select id="manageMapper.selectDbManagerCheck" parameterType="map" resultType="int">
+		select count(1)  cnt
+		from VTDATABASE_MANAGER 
+		where VCONNID = #{vconnid} 
+		and VIEWID = #{userId} 
+	</select>
+	
 	<delete id="manageMapper.deleteUserInfo" parameterType="map">
 		delete from VTUSER where VIEWID =#{viewid}
 	</delete>
@@ -125,9 +174,8 @@
 				where 1=1
 			</when>
 			<otherwise>
-				, VTDATABASE_USER_AUTHORITY  b
+				, VTDATABASE_MANAGER  b
 				where a.VCONNID = b.VCONNID
-				and b.AUTH_TYPE = 'M'
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
@@ -147,9 +195,8 @@
 				where 1=1
 			</when>
 			<otherwise>
-				, VTDATABASE_USER_AUTHORITY  b
+				, VTDATABASE_MANAGER  b
 				where a.VCONNID = b.VCONNID
-				and b.AUTH_TYPE = 'M'
 				and b.VIEWID = #{customParam.uid}
 			</otherwise>
 		</choose>
@@ -160,36 +207,4 @@
 			order  by a.VCONNID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 		</if>
 	</select>
-	
-	<!-- db 사용자 목록. -->
-	<select id="manageMapper.selectDbUserMappingList" parameterType="map" resultType="map">
-		select * 
-		from VTUSER a left outer join VTDATABASE_USER_AUTHORITY b 
-		on a.VIEWID = b.VIEWID 
-		and b.VCONNID = #{vconnid}
-		and b.AUTH_TYPE = 'U'
-		where (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
-	</select>
-	
-	<!-- db 사용자 삭제. -->
-	<delete id="manageMapper.deleteDbUser" parameterType="map">
-		delete from VTDATABASE_USER_AUTHORITY
-		where AUTH_TYPE = 'U'
-		and VCONNID = #{vconnid}
-		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
-			#{item}
-		</foreach>
-	</delete>
-	
-	<!-- db 사용자  등록 -->
-	<insert id="manageMapper.updateDbUser" parameterType="map">
-		insert into VTDATABASE_USER_AUTHORITY (VCONNID, VIEWID ,AUTH_TYPE, REG_ID ,REG_DT)
-		values(
-			#{vconnid}
-			, #{viewid}
-			,'U'
-			, #{uid}
-			,CURRENT_TIMESTAMP
-		)
-	</insert>
 </mapper>

@@ -139,4 +139,46 @@ public class DbGroupDAO extends BaseDAO{
 	public int insertDbGroupMappingInfo(DataCommonVO paramMap) {
 		return getSqlSession().update("manageDbGroupMapper.insertDbGroupMappingInfo", paramMap);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectDbGroupUserMappingList
+	 * @Method 설명 : db그룹 사용자 맵핑 목록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public List<Object>  selectDbGroupUserMappingList(DataCommonVO paramMap){
+		return getSqlSession().selectList("manageDbGroupMapper.selectDbGroupUserMappingList", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateDbUser
+	 * @Method 설명 : db 사용자 등록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int updateDbGroupUser( DataCommonVO paramMap){
+		return getSqlSession().update("manageDbGroupMapper.updateDbGroupUser", paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteDbUser
+	 * @Method 설명 : db 사용자 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public int deleteDbGroupUser( DataCommonVO paramMap){
+		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupUser",paramMap);
+	}
 }

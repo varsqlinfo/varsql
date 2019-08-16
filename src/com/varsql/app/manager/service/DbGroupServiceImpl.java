@@ -150,4 +150,57 @@ public class DbGroupServiceImpl{
 	}
 	
 	
+	/**
+	 * 
+	 * @Method Name  : selectDbGroupUserMappingList
+	 * @Method 설명 : db 맵핑 사용자 목록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 1. 23. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult selectDbGroupUserMappingList(DataCommonVO paramMap) {
+		ResponseResult resultObject = new ResponseResult();
+		resultObject.setItemList(dbGroupDAO.selectDbGroupUserMappingList(paramMap));
+		return resultObject;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : updateDbGroupUser
+	 * @Method 설명 : db그룹 사용자 추가, 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult updateDbGroupUser(DataCommonVO paramMap) {
+		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
+		SecurityUtil.setUserInfo(paramMap);
+		
+		ResponseResult resultObject = new ResponseResult();
+		Map<String,String> addResultInfo = new HashMap<String,String>();
+		
+		if("del".equals(paramMap.getString("mode"))){
+			paramMap.put("viewidArr", viewidArr);
+			dbGroupDAO.deleteDbGroupUser(paramMap);
+		}else{
+			for(String id: viewidArr){
+	        	paramMap.put("viewid", id);
+	        	try{
+	        		dbGroupDAO.updateDbGroupUser(paramMap);
+	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        	}catch(Exception e){
+	        		addResultInfo.put(id,e.getMessage());
+	    		}
+	        }
+			
+			resultObject.setItemOne(addResultInfo);
+		}
+		
+		return resultObject;
+	}
+	
 }

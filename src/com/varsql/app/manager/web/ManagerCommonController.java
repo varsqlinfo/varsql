@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
-import com.varsql.app.manager.service.DbnUserServiceImpl;
+import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.core.common.util.SecurityUtil;
@@ -27,7 +27,18 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ManagerCommonController.java
+* @DESC		: 매니저 공통 컨트롤러 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 16. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/manager/comm")
@@ -37,14 +48,34 @@ public class ManagerCommonController {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCommonController.class);
 	
 	@Autowired
-	DbnUserServiceImpl dbnUserServiceImpl;
+	ManagerCommonServiceImpl managerCommonServiceImpl;
 	
+	/**
+	 * 
+	 * @Method Name  : dbList
+	 * @Method 설명 : 권한 있는 db list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/dbList"})
 	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
 		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
 		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
-		return dbnUserServiceImpl.selectdbList(searchParameter);
+		return managerCommonServiceImpl.selectdbList(searchParameter);
+	}
+	
+	@RequestMapping({"/userList"})
+	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		
+		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		return managerCommonServiceImpl.selectUserList(searchParameter);
 	}
 }

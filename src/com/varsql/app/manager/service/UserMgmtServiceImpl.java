@@ -127,8 +127,8 @@ public class UserMgmtServiceImpl{
 	public ResponseResult userDetail(ParamMap param) {
 		ResponseResult result = new ResponseResult();
 		
-		result.setItemOne(userMainDAO.selectUserDetail(param.getString("viewid")));
-		result.setItemList(userMainDAO.selectUserDbInfo(param));
+		result.setItemOne(manageDAO.selectUserDetail(param.getString("viewid")));
+		result.setItemList(manageDAO.selectUserDbInfo(param));
 		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
 		
 		return result;
@@ -148,13 +148,13 @@ public class UserMgmtServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		if(SecurityUtil.isAdmin()){
-			result.setItemOne(userMainDAO.deleteUserDbAuth(param));
+			result.setItemOne(manageDAO.deleteUserDbAuth(param));
 		}else{
 			param.put("userId", SecurityUtil.loginInfo().getUid());
 			
-			int cnt = userMainDAO.selectDbManagerCheck(param);
+			int cnt = manageDAO.selectDbManagerCheck(param);
 			if(cnt > 0){
-				result.setItemOne(userMainDAO.deleteUserDbAuth(param));
+				result.setItemOne(manageDAO.deleteUserDbAuth(param));
 			}
 		}
 		

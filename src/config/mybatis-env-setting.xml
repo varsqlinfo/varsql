@@ -7,7 +7,6 @@
 		<setting name="cacheEnabled" value="true"></setting>
 		<setting name="callSettersOnNulls" value="true"></setting>
 		<setting name="jdbcTypeForNull" value="NULL" ></setting>
-		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
 		<setting name="logPrefix" value="com.varsql_query"></setting>  
 	</settings>
 	

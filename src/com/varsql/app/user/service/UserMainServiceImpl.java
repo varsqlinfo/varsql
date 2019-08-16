@@ -92,7 +92,16 @@ public class UserMainServiceImpl{
 		return result; 
 	}
 	
-	
+	/**
+	 * 
+	 * @Method Name  : selectMessageInfo
+	 * @Method 설명 : 메시지 목록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
 	public Map selectMessageInfo(ParamMap paramMap) {
 		Map reval =  new HashMap();
 		try{
@@ -110,7 +119,7 @@ public class UserMainServiceImpl{
 	/**
 	 * 
 	 * @Method Name  : updateMemoViewDate
-	 * @Method 설명 : 메모 보기 업데이트.
+	 * @Method 설명 : 메모 확인일  업데이트.
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29. 
 	 * @변경이력  :
@@ -204,7 +213,17 @@ public class UserMainServiceImpl{
 		
 		return resultObject;
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserMsg
+	 * @Method 설명 : 사용자 메시지 목록 [환경 설정]
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param searchParameter
+	 * @return
+	 */
 	public ResponseResult selectUserMsg(SearchParameter searchParameter) {
 		ResponseResult result = new ResponseResult();
 		
@@ -235,7 +254,17 @@ public class UserMainServiceImpl{
 		result.setItemList(userMainDAO.selectUserMsgReply(ParamMap));
 		return result;
 	}
-
+	
+	/**
+	 * 
+	 * @Method Name  : deleteUserMsg
+	 * @Method 설명 : 메시지 삭제. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
 	public ResponseResult deleteUserMsg(ParamMap paramMap) {
 		ResponseResult result = new ResponseResult();
 		

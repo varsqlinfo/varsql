@@ -1,5 +1,8 @@
 package com.varsql.app.manager.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -14,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.service.DbGroupServiceImpl;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -133,6 +138,20 @@ public class DbGroupController {
 		return dbGroupServiceImpl.selectDbGroupMappingList(paramMap);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : addDbGroupMappingInfo
+	 * @Method 설명 : db 그룹에 db 맵핑 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param selectItem
+	 * @param groupId
+	 * @param mode
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/addDbGroupMappingInfo"})
 	public @ResponseBody ResponseResult addDbGroupMappingInfo(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "groupId", required = true) String groupId
@@ -146,5 +165,55 @@ public class DbGroupController {
 		paramMap.put("mode", mode);
 		
 		return dbGroupServiceImpl.updateDbGroupMappingInfo(paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbGroupnuserMappingList
+	 * @Method 설명 : db그룹  & 사용자 맵핑 목록.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param vconid
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/dbGroupnuserMappingList"})
+	public @ResponseBody ResponseResult dbGroupnuserMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
+		
+		DataCommonVO paramMap = new DataCommonVO();
+		paramMap.put("groupId", groupId);
+		
+		return dbGroupServiceImpl.selectDbGroupUserMappingList(paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : addDbGroupUser
+	 * @Method 설명 : db 그룹 사용자 추가 삭제. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param selectItem
+	 * @param vconid
+	 * @param mode
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({"/addDbGroupUser"})
+	public @ResponseBody ResponseResult addDbGroupUser(@RequestParam(value = "groupId", required = true) String vconid
+			,@RequestParam(value = "selectItem", required = true)  String selectItem
+			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
+			, HttpServletRequest req
+			) throws Exception {
+		DataCommonVO paramMap = new DataCommonVO();
+		
+		paramMap.put("selectItem", selectItem);
+		paramMap.put("groupId", vconid);
+		paramMap.put("uid", SecurityUtil.loginId(req));
+		paramMap.put("mode", mode);
+		
+		return dbGroupServiceImpl.updateDbGroupUser(paramMap);
 	}
 }

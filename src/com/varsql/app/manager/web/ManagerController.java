@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
-import com.varsql.app.manager.service.DbnUserServiceImpl;
+import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.core.common.util.SecurityUtil;
@@ -37,20 +37,13 @@ public class ManagerController {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 	
 	@Autowired
-	DbnUserServiceImpl dbnUserServiceImpl;
+	ManagerCommonServiceImpl dbnUserServiceImpl;
 	
 	@RequestMapping({"", "/","/main"})
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "main");
 		return new ModelAndView("/manager/manageMain", model);
-	}
-	
-	@RequestMapping(value="/dbUserMgmt")
-	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
-		ModelMap model = mav.getModelMap();
-		model.addAttribute("selectMenu", "dbUserMgmt");
-		return new ModelAndView("/manager/dbUserMgmt", model);
 	}
 	
 	/**
@@ -110,6 +103,26 @@ public class ManagerController {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
 		return new ModelAndView("/manager/dbGroupMgmt",model);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : dbUserMgmt
+	 * @Method 설명 : db 그룹 사용자 관리.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/dbGroupUserMgmt")
+	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "dbGroupMgmt");
+		return new ModelAndView("/manager/dbGroupUserMgmt", model);
 	}
 	
 	/**

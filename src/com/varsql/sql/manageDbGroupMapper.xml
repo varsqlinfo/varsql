@@ -62,7 +62,6 @@
 	<delete id="manageDbGroupMapper.deleteDbGroupInfo" parameterType="map">
 		delete from VTDATABASE_GROUP 
 		where GROUP_ID = #{groupId}
-		
 		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
 			and REG_ID =#{userId}	
 		</if>
@@ -91,6 +90,35 @@
 	<insert id="manageDbGroupMapper.insertDbGroupMappingInfo" parameterType="map">
 		insert into VTDATABASE_GROUP_DB (GROUP_ID,VCONNID,REG_ID,REG_DT )
 		values( #{groupId},#{vconnid},#{uid},CURRENT_TIMESTAMP )  
+	</insert>
+	
+	
+	<!-- db 사용자 목록. -->
+	<select id="manageDbGroupMapper.selectDbGroupUserMappingList" parameterType="map" resultType="map">
+		select a.VIEWID , a.UNAME 
+		from VTUSER a, VTDATABASE_GROUP_USER b 
+		where a.VIEWID = b.VIEWID 
+		and b.GROUP_ID =#{groupId}
+	</select>
+	
+	<!-- db 사용자 삭제. -->
+	<delete id="manageDbGroupMapper.deleteDbGroupUser" parameterType="map">
+		delete from VTDATABASE_GROUP_USER
+		where GROUP_ID =#{groupId}
+		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- db 사용자  등록 -->
+	<insert id="manageDbGroupMapper.updateDbGroupUser" parameterType="map">
+		insert into VTDATABASE_GROUP_USER (GROUP_ID, VIEWID , REG_ID ,REG_DT)
+		values(
+			#{groupId}
+			, #{viewid}
+			, #{uid}
+			,CURRENT_TIMESTAMP
+		)
 	</insert>
 	
 </mapper>

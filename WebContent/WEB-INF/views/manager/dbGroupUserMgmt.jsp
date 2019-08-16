@@ -3,12 +3,12 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.dbgroup" /></h1>
+        <h1 class="page-header"><spring:message code="manage.menu.dbgroupnuser" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 <div class="row display-off" id="epViewArea">
-	<div class="col-lg-5">
+	<div class="col-xs-3">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
@@ -40,24 +40,18 @@
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
 								<col style="width:*;">
-								<col style="width:140px;">
-								<col style="width:140px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
 									<th class="text-center"><spring:message	code="manage.dbgroup.nm" /></th>
-									<th class="text-center"><spring:message	code="reg_user" /></th>
-									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td :title="item.groupName"><a href="javascript:;" @click="itemView(item)"> {{item.groupName}}</a></td>
-									<td :title="item.regId"><div class="text-ellipsis">{{item.regId}}</div></td>
-									<td>{{item.charCreDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -68,52 +62,25 @@
 			</div>
 			<!-- /.panel-body -->
 		</div>
+		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-4 -->
-	<div class="col-lg-7">
-		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manage.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<input type="hidden" v-model="detailItem.wordIdx">
-				<form id="addForm" name="addForm" class="form-horizontal" >
-					<div class="form-group">
-						<div class="col-sm-12">
-							<div class="pull-right">
-								<button type="button" class="btn btn-default" @click="fieldClear()"><spring:message code="btn.add"/></button>
-								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
-								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
-							</div>
-						</div>
-					</div>
-					<div id="warningMsgDiv"></div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.dbgroup.nm" /></label>
-						<div class="col-sm-8">
-							<input class="form-control text required" v-model="detailItem.groupName">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="desc" /></label>
-						<div class="col-sm-8">
-							<textarea class="form-control text" rows="3" v-model="detailItem.groupDesc" style="width:100%;"></textarea>
-						</div>
-					</div>
-				</form>
+	<div class="col-xs-9">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<spring:message code="manage.dbgroup.mapping" /> 
+				<template v-if="detailItem.groupName">
+					[[<b>{{detailItem.groupName}}</b>]]
+				</template>
 			</div>
-			<!-- /.panel-body -->
-		</div>
-		
-		<div class="panel panel-default" :class="isViewMode ?'' :'hidden'" >
-			<div class="panel-heading"><spring:message code="manage.dbgroup.mapping" /></div>
-			<!-- /.panel-heading -->
+			
 			<div class="panel-body">
 				<div class="col-sm-5">
-					<ul id="source" class="form-control" style="width:100%;height:200px;">
+					<ul id="source" class="form-control" style="width:100%;height:400px;">
 					  <li><spring:message code="msg.nodata" /></li>
 					</ul>
 				</div>
-				<div class="col-sm-2" style="text-align:center;padding:10px;height:200px;">
+				<div class="col-sm-2" style="text-align:center;padding:10px;height:400px;">
 					<div style="margin: 0 auto;">
 						<a href="javascript:;" class="btn_m mb05 item-move" mode="add">
 							<spring:message code="label.add" text="add"/><span class="fa fa-caret-right"></span>
@@ -125,15 +92,18 @@
 					</div>
 				</div>
 				<div class="col-sm-5">
-					<ul id="target"  class="form-control" style="width:100%;height:200px;">
+					<ul id="target"  class="form-control" style="width:100%;height:400px;">
 					  <li><spring:message code="msg.nodata" /></li>
 					</ul>
 				</div>
 			</div>
-			<!-- /.panel-body -->
 		</div>
+		<!-- /.panel -->
 	</div>
+	<!-- /.col-lg-8 -->
 </div>
+<!-- /.row -->
+
 
 <script>
 (function() {
@@ -148,9 +118,6 @@ VarsqlAPP.vueServiceBean( {
 		,detailItem : {}
 		,isViewMode : false
 		,selectObj : {}
-	}
-	,beforeMount: function() {
-		this.fieldClear();
 	}
 	,methods:{
 		init : function (){
@@ -175,13 +142,13 @@ VarsqlAPP.vueServiceBean( {
 				,useDragMove : false
 				,useDragSort : false
 				,sourceItem : {
-					optVal : 'VCONNID'
-					,optTxt : 'VNAME'
+					optVal : 'VIEWID'
+					,optTxt : 'UNAME'
 					,items : []
 				}
 				,targetItem : {
-					optVal : 'VCONNID'
-					,optTxt : 'VNAME'
+					optVal : 'VIEWID'
+					,optTxt : 'UNAME'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){
@@ -196,16 +163,6 @@ VarsqlAPP.vueServiceBean( {
 				}
 			}); 
 		}
-		// 추가.
-		,fieldClear : function (){
-			this.isViewMode = false;
-			this.detailItem = {
-				groupId:''
-				, groupName:''
-				, groupDesc :''
-			};
-		}
-		
 		// 상세
 		,itemView : function (item){
 			this.isViewMode = true;
@@ -231,61 +188,6 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
-		// 저장
-		,saveInfo : function (){
-			var _self = this;
-			
-			var param = this.detailItem;
-			
-			_self.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/dbGroup/save'}
-				,data : param
-				,success: function(resData) {
-					if(resData.resultCode != 200){
-						if(resData.messageCode=='valid'){
-							var items = resData.items;
-							objLen = items.length;
-							if(objLen >0){
-								var item;
-								for(var i=0; i <objLen; i++){
-									item = items[i];
-									alert(item.field + "\n"+ item.defaultMessage)
-									return ; 
-								}
-							}
-						}else{
-							var message = resData.messageCode; 
-							alert(resData.messageCode +'\n'+ resData.message);
-							return ; 
-						}
-					}
-					
-					_self.fieldClear();
-					_self.search();
-				}
-			})
-		}
-		// 삭제.
-		,deleteInfo : function(){
-			var _self = this; 
-			
-			if(!confirm('['+_self.detailItem.groupName +'] 삭제하시겠습니까?')){
-				return ; 
-			}
-			
-			var param = {
-				groupId : _self.detailItem.groupId
-			};
-			
-			this.$ajax({
-				data:param
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/delete'}
-				,success:function (response){
-					_self.fieldClear();
-					_self.search();
-				}
-			});
-		}
 		,initDbMappingInfo: function (){
 			var _self = this;
 			var param = {
@@ -293,7 +195,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
+				url : {type:VARSQL.uri.manager, url:'/comm/userList'}
 				,data : param
 				,success: function(resData) {
 					_self.selectObj.setItem('source', resData.items);
@@ -313,7 +215,7 @@ VarsqlAPP.vueServiceBean( {
 			VARSQL.req.ajax({
 				data:param
 				,loadSelector: '#main-content'
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupMappingList'}
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupnuserMappingList'}
 				,success:function (resData){
 					var result = resData.items;
 		    		_self.selectObj.setItem('target', result);
@@ -334,7 +236,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			VARSQL.req.ajax({
 				data:param
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupMappingInfo'}
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupUser'}
 				,success:function (response){
 					_self.dbMappingInfo();
 				}

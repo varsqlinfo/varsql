@@ -227,17 +227,15 @@
 	<!-- 매니저 목록 보기 -->
 	<select id="adminMapper.selectDatabaseManager" parameterType="map" resultType="hashmap">
 		select * 
-		from VTUSER a left outer join VTDATABASE_USER_AUTHORITY b 
+		from VTUSER a left outer join VTDATABASE_MANAGER b 
 		on a.VIEWID = b.VIEWID 
 		and b.VCONNID = #{vconnid}
-		and b.AUTH_TYPE = 'M'
 		where USER_ROLE = 'MANAGER' and (b.VCONNID = #{vconnid} or b.VCONNID is null ) 
 	</select>
 	
 	<!-- db manager 삭제. -->
 	<delete id="adminMapper.deleteDbManager" parameterType="map">
-		delete from VTDATABASE_USER_AUTHORITY
-		where AUTH_TYPE = 'M' 
+		delete from VTDATABASE_MANAGER
 		and VCONNID = #{vconnid}
 		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
 			#{item}
@@ -246,11 +244,10 @@
 	
 	<!-- db 매니저 등록. -->
 	<update id="adminMapper.updateDbManager" parameterType="map">
-		insert into VTDATABASE_USER_AUTHORITY (VCONNID, VIEWID , AUTH_TYPE, REG_ID, REG_DT)
+		insert into VTDATABASE_MANAGER (VCONNID, VIEWID , REG_ID, REG_DT)
 		values(
 			#{vconnid}
 			, #{viewid}
-			, 'M'
 			, #{uid}
 			,CURRENT_TIMESTAMP
 		)

@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.UserConstants;
@@ -284,6 +282,18 @@ public class UserMainController {
 		return  userMainServiceImpl.deleteUserMsg( paramMap);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : searchUserList
+	 * @Method 설명 : 사용자 검색 .
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/searchUserList"})
 	public @ResponseBody Map searchUserList(HttpServletRequest req
 			,HttpServletResponse response
@@ -328,7 +338,19 @@ public class UserMainController {
 		
 		return  resultObject;
 	}
-		
+	
+	/**
+	 * 
+	 * @Method Name  : message
+	 * @Method 설명 : 사용자 메모 목록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param req
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping({"/message"})
 	public @ResponseBody Map message(HttpServletRequest req
 			,HttpServletResponse response
@@ -339,8 +361,14 @@ public class UserMainController {
 		
 		return userMainServiceImpl.selectMessageInfo(paramMap);
 	}
+	
 	/**
-	 * 메시지 본 날짜 업데이트
+	 * 
+	 * @Method Name  : updMsgViewDt
+	 * @Method 설명 : 메시지 확인 날짜 업데이트
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
 	 * @param req
 	 * @param response
 	 * @return
@@ -463,6 +491,17 @@ public class UserMainController {
 		return resultObject; 
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : connectionInfo
+	 * @Method 설명 : 사용자 권한 있는 db 정보. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/connectionInfo")
 	public @ResponseBody ResponseResult connectionInfo(HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();

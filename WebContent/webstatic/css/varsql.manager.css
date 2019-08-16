@@ -227,6 +227,19 @@ a.show-sidebar:hover {
   text-align: center;
   vertical-align: middle;
 }
+.sub-menu{
+	background: #f7f7f7;
+}
+.sub-menu>li:before{
+  	margin-left: 26px;
+    margin-top: 18px;
+    width: 10px;
+    height: 1px;
+    border-bottom: 2px solid #777 !important;
+    content: '';
+    z-index: 10;
+    position: absolute;
+}
 
 #sidebar-left {
   background-color: #dfdfdf;
