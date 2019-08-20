@@ -9,7 +9,20 @@ import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.user.beans.QnAInfo;
 import com.vartech.common.app.beans.SearchParameter;
 
+/**
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: QnaDAO.java
+* @DESC		: qna  
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 20. 			ytkim			최초작성
 
+*-----------------------------------------------------------------------------
+ */
 @Repository
 public class QnaDAO extends BaseDAO{
 	

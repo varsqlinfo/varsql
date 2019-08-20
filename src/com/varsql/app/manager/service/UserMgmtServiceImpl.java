@@ -3,10 +3,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.manager.dao.ManagerDAO;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.UserMainDAO;
+import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.auth.Authority;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
@@ -15,6 +17,7 @@ import com.varsql.core.db.encryption.EncryptionFactory;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.encryption.EncryptDecryptException;
 import com.vartech.common.encryption.PasswordUtil;
 import com.vartech.common.utils.PagingUtil;
@@ -147,15 +150,24 @@ public class UserMgmtServiceImpl{
 	public ResponseResult removeAuth(ParamMap param) {
 		ResponseResult result = new ResponseResult();
 		
+		boolean chkFlag = false; 
 		if(SecurityUtil.isAdmin()){
-			result.setItemOne(manageDAO.deleteUserDbAuth(param));
+			chkFlag =true; 
 		}else{
-			param.put("userId", SecurityUtil.loginInfo().getUid());
-			
 			int cnt = manageDAO.selectDbManagerCheck(param);
 			if(cnt > 0){
-				result.setItemOne(manageDAO.deleteUserDbAuth(param));
+				chkFlag =true; 
 			}
+		}
+		
+		if(chkFlag){
+			if("block".equals(param.getString("mode"))) {
+				result.setItemOne(manageDAO.inserDbBlockUser(param));
+			}else {
+				result.setItemOne(manageDAO.deleteDbBlockUser(param));
+			}
+		}else {
+			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
 		}
 		
 		return result;

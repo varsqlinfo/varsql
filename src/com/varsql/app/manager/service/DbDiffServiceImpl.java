@@ -21,8 +21,8 @@ import com.vartech.common.constants.ResultConst;
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: DbnUserServiceImpl.java
-* @DESC		: db 사용자 관리. 
+* @NAME		: DbDiffServiceImpl.java
+* @DESC		: db 비교
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

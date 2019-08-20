@@ -22,7 +22,7 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: DbGroupServiceImpl.java
-* @DESC		: 용어집  
+* @DESC		: db 그룹 관리.  
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

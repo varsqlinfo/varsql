@@ -3,7 +3,7 @@
 
 <ul class="nav left-menu">
     <li <c:if test="${fn:endsWith(originalURL,'/main')}">class="active"</c:if>>
-        <a href="<c:url value="./main" />"><i class="fa fa-database"></i><spring:message code="admin.menu.database" /></a>
+        <a href="<c:url value="./" />"><i class="fa fa-database"></i><spring:message code="admin.menu.database" /></a>
     </li>
     
     <li <c:if test="${fn:endsWith(originalURL,'/managerMgmt')}">class="active"</c:if>>
@@ -15,23 +15,4 @@
     <li <c:if test="${fn:endsWith(originalURL,'/errorlogMgmt')}">class="active"</c:if>>
         <a href="<c:url value="./errorlogMgmt" />"><i class="fa fa-server"></i><spring:message code="admin.menu.errorlog" /></a>
     </li>
-    <!-- 
-    <li <c:if test="${fn:endsWith(originalURL,'/report')}">class="active"</c:if>>
-        <a href="<c:url value="./report" />"><i class="fa fa-fw fa-bar-chart-o"></i><spring:message code="admin.menu.report" /></a>
-    </li>
-    <li <c:if test="${fn:endsWith(originalURL,'/userMenuMgmt')}">class="active"</c:if>>
-        <a href="<c:url value="./userMenuMgmt" />"><i class="fa fa-fw fa-bar-chart-o"></i><spring:message code="admin.menu.dbmenumgmt" /></a>
-    </li>
-    <li>
-        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
-        <ul id="demo" class="nav sub-menu collapse">
-            <li>
-                <a href="#">Dropdown Item</a>
-            </li>
-            <li>
-                <a href="#">Dropdown Item</a>
-            </li>
-        </ul>
-    </li>
-     -->
 </ul>

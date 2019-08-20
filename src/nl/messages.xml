@@ -119,6 +119,7 @@
 <entry key="user.form.password.confirm">확인 비밀번호</entry>
 
 <entry key="msg.analyzing">분석 중입니다.</entry>
+<entry key="msg.auth_db_list">권한 있는 DB 목록</entry>
 
 <!-- button message -->
 <entry key="btn.search">조회</entry>

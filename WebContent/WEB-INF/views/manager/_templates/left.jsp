@@ -1,8 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <ul class="nav left-menu">
-    <li class="<c:if test="${selectMenu eq 'main'}"> active</c:if>">
-        <a href="<c:url value="./main" />"><i class="fa fa-fw fa-user"></i><spring:message code="manage.menu.usermgmt" /></a>
+    <li class="<c:if test="${selectMenu eq 'userMgmt'}"> active</c:if>">
+        <a href="<c:url value="./" />"><i class="fa fa-fw fa-user"></i><spring:message code="manage.menu.usermgmt" /></a>
     </li>
     
     <li class="dropdown<c:if test="${selectMenu eq 'dbGroupMgmt'}"> active</c:if>">

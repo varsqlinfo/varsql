@@ -1,19 +1,10 @@
 package com.varsql.app.manager.service;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
-import com.varsql.app.common.constants.UserConstants;
-import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.dao.ManagerCommonDAO;
-import com.varsql.app.util.VarsqlUtil;
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
@@ -21,8 +12,8 @@ import com.vartech.common.utils.PagingUtil;
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: DbnUserServiceImpl.java
-* @DESC		: db 사용자 관리. 
+* @NAME		: ManagerCommonServiceImpl.java
+* @DESC		: 매니저 공통 처리.
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

@@ -28,7 +28,7 @@ import com.vartech.common.utils.HttpUtils;
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: GlossaryController.java
-* @DESC		:  용어집 
+* @DESC		: 용어집 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

@@ -12,6 +12,20 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
 
+/**
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: SqlStatsServiceImpl.java
+* @DESC		: sql 통계 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 20. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 @Service
 public class SqlStatsServiceImpl{
 	

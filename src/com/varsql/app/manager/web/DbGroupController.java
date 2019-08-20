@@ -1,8 +1,5 @@
 package com.varsql.app.manager.web;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -17,14 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
-import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.service.DbGroupServiceImpl;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;

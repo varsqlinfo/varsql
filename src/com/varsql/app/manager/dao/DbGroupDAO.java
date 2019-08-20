@@ -15,7 +15,7 @@ import com.vartech.common.app.beans.SearchParameter;
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: DbGroupDAO.java
-* @DESC		: 용어집 dao 
+* @DESC		: db group 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

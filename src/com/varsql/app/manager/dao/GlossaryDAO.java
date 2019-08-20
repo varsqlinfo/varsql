@@ -2,10 +2,8 @@ package com.varsql.app.manager.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.dao.BaseDAO;
 import com.varsql.app.manager.beans.GlossaryInfo;
 import com.vartech.common.app.beans.ParamMap;
@@ -16,7 +14,7 @@ import com.vartech.common.app.beans.SearchParameter;
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: GlossaryDAO.java
-* @DESC		: 용어집 dao 
+* @DESC		: 용어집  
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

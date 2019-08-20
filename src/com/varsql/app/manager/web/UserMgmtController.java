@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
-import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.app.util.VarsqlUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -23,7 +23,18 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: UserMgmtController.java
+* @DESC		: 사용자 관리.
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 20. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/manager/user")
@@ -125,10 +136,9 @@ public class UserMgmtController {
 	 */
 	@RequestMapping(value = "/userDetail", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "VIEWID", required = true )  String viewid , HttpServletRequest req) throws Exception {
-		ParamMap param = HttpUtils.getServletRequestParam(req);
+		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
 		
 		param.put("viewid", viewid);
-		param.put("userId", SecurityUtil.loginInfo().getUid());
 		
 		return userMgmtServiceImpl.userDetail(param);
 	}
@@ -146,9 +156,9 @@ public class UserMgmtController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/removeAuth", method=RequestMethod.POST)
+	@RequestMapping(value = "/dbBlockInfo", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult removeAuth(@RequestParam(value = "VIEWID", required = true )  String viewid ,@RequestParam(value = "VCONNID", required = true )  String vconnid, HttpServletRequest req) throws Exception {
-		ParamMap param = HttpUtils.getServletRequestParam(req);
+		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
 		param.put("viewid", viewid);
 		param.put("vconnid", vconnid);
 		

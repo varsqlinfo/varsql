@@ -8,7 +8,20 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.dao.BaseDAO;
 import com.vartech.common.app.beans.SearchParameter;
 
+/**
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: SqlStatsDAO.java
+* @DESC		: sql 통계 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 20. 			ytkim			최초작성
 
+*-----------------------------------------------------------------------------
+ */
 @Repository
 public class SqlStatsDAO extends BaseDAO{
 	

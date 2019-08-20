@@ -96,16 +96,30 @@ public class ManagerDAO extends BaseDAO{
 	
 	/**
 	 * 
-	 * @Method Name  : deleteUserDbAuth
-	 * @Method 설명 : 사용자 db 권한 삭제. 
+	 * @Method Name  : inserDbBlockUser
+	 * @Method 설명 : 사용자 db 차단 
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 11. 30. 
 	 * @변경이력  :
 	 * @param param
 	 * @return
 	 */
-	public int deleteUserDbAuth(ParamMap param) {
-		return getSqlSession().delete("manageMapper.deleteUserDbAuth", param);
+	public int inserDbBlockUser(ParamMap param) {
+		return getSqlSession().delete("manageMapper.inserDbBlockUser", param);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteDbBlockUser
+	 * @Method 설명 : 사용자  db 차단 해제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 20. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public int deleteDbBlockUser(ParamMap param) {
+		return getSqlSession().delete("manageMapper.deleteDbBlockUser", param);
 	}
 
 	public int selectDbManagerCheck(ParamMap param) {

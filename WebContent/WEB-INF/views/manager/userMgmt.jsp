@@ -124,7 +124,7 @@
 					<th>DESC</th><td>{{clickItem.DESCRIPTION}}</td>
 				</tr>
 				<tr>
-					<th>차단</th>
+					<th><spring:message code="label.block"/></th>
 					<td>
 						<template v-if="clickItem.BLOCK_YN=='N'">
 							<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
@@ -136,33 +136,36 @@
 				</tr>
 				<tr>
 					<th valign="top" style="vertical-align: top;">
-						<div>권한 있는 DB 목록</div>
+						<div><spring:message code="msg.auth_db_list"/></div>
 					</th>
 					<td style="padding:0px;">
 						<div>
 							<table class="fixed_headers" style="background:#ffffff;">
 								<thead>
 									<tr>
-										<th>DB</th>
-										<th>사용자 </th>
-										<th>매니저</th>
+										<th><spring:message code="label.db"/></th>
+										<th><spring:message code="label.user"/> </th>
+										<th><spring:message code="label.manager"/></th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr v-for="(item,index) in clickItemDbList">
 										<td><div class="text-ellipsis ellipsis5" style="width:150px;">{{item.VNAME}}</div></td>
 										<td class="align-center">
-											<template v-if="item.USER_CHK > 0 && (item.MANAGER_CNT > 0 || clickItemCustom.isAdmin) ">
-												<button type="button" @click="removeAuth(item, 'U')">제거</button>
+											<template v-if="item.BLOCK_ID == null">
+												<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
+													<button type="button" @click="dbBlockInfo(item, 'block')">차단</button>
+												</template>
+												<template v-else>Y</template>
 											</template>
-											<template v-else-if="item.USER_CHK > 0">
-												Y
+											<template v-else>
+												<button type="button" @click="dbBlockInfo(item, 'cancel')">해제</button>
 											</template>
-											<template v-else>N</template>
+											
 										</td>
 										<td class="align-center">
 											<template v-if="clickItemCustom.isAdmin && item.MSG_CHK > 0">
-												<button type="button" @click="removeAuth(item, 'M')">제거</button>
+												<button type="button" @click="dbBlockInfo(item, 'M')">제거</button>
 											</template>
 											<template v-else-if="item.MSG_CHK> 0">
 												Y
@@ -235,7 +238,8 @@
 
 </style>
 <script>
-
+(function() {
+	
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
@@ -364,16 +368,16 @@ VarsqlAPP.vueServiceBean( {
 						sItem.INITPW ='';
 					}, 5000);
 					
-					alert('변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.');
+					alert(VARSQL.messageFormat('varsql.m.0001'));
 				}
 			})
 		}
-		,removeAuth : function (item, mode){
+		,dbBlockInfo : function (item, mode){
 			var confirmMsg =this.clickItem.UNAME +'님의 ['+item.VNAME+']'; 
 			if(mode=='M'){
-				confirmMsg+=' 매니저 권한을 삭제 하시겠습니까?';
+				confirmMsg+= VARSQL.messageFormat('varsql.m.0002');
 			}else{
-				confirmMsg+=' 사용자 권한을 삭제 하시겠습니까?';
+				confirmMsg+= VARSQL.messageFormat('varsql.m.0003');
 			}
 			
 			if(!confirm(confirmMsg)){
@@ -383,7 +387,7 @@ VarsqlAPP.vueServiceBean( {
 			var param = VARSQL.util.objectMerge({},item);
 			param.mode = mode; 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/user/removeAuth'}
+				url : {type:VARSQL.uri.manager, url:'/user/dbBlockInfo'}
 				,data : param
 				,success: function(resData) {
 					if(resData.item > 0){
@@ -398,4 +402,6 @@ VarsqlAPP.vueServiceBean( {
 		}
 	}
 });
+
+}());
 </script>

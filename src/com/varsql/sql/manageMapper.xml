@@ -50,34 +50,51 @@
 	
 	<!-- select user db info -->
 	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
-		select b.* , a.VNAME , 
-			(select count(1) from VTDATABASE_MANAGER subt 
-			 where subt.VCONNID = a.VCONNID 
-			 and subt.VIEWID = #{userId} 
-			) MANAGER_CNT
-		from VTCONNECTION a 
-			,(
-				select distinct VCONNID from VTDATABASE_GROUP_DB where GROUP_ID in (
-					select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID =#{viewid}
-				)
-			)b 
-		where a.VCONNID = b.VCONNID
-		and a.USE_YN = 'Y'
+		
+		select suba.*, subb.VCONNID as BLOCK_Id from (
+			select b.* , a.VNAME, 
+				<choose>
+					<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
+						 1 
+					</when>
+					<otherwise>
+						(select count(1) from VTDATABASE_MANAGER subt 
+						 where subt.VCONNID = a.VCONNID 
+						 and subt.VIEWID = #{dp_viewId} 
+						) 
+					</otherwise>
+				</choose>
+				as  MANAGER_CNT
+			from VTCONNECTION a 
+				,(
+					select distinct VCONNID from VTDATABASE_GROUP_DB where GROUP_ID in (
+						select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID = #{viewid}
+					)
+				)b 
+			where a.VCONNID = b.VCONNID
+			and a.USE_YN = 'Y'
+		) suba left outer join (select * from VTDATABASE_BLOCK_USER where VIEWID =#{viewid}) subb
+		on suba.VCONNID = subb.VCONNID
 	</select>
 	
-	<!-- db 사용자 권한 제거. -->
-	<delete id="manageMapper.deleteUserDbAuth" parameterType="map">
-		delete from VTDATABASE_USER_AUTHORITY
-		where 1=1
-		<choose>
-			<when test='"M".equalsIgnoreCase(mode)'>
-				and AUTH_TYPE = 'M'
-			</when>
-			<otherwise>
-				and AUTH_TYPE = 'U'
-			</otherwise>
-		</choose>
-		and VCONNID = #{vconnid}
+	<!-- db manager check -->
+	<select id="manageMapper.selectDbManagerCheck" parameterType="map" resultType="int">
+		select count(1)  cnt
+		from VTDATABASE_MANAGER 
+		where VCONNID = #{vconnid} 
+		and VIEWID = #{dp_viewId} 
+	</select>
+	
+	<!-- db 사용자 차단. -->
+	<insert id="manageMapper.inserDbBlockUser" parameterType="map">
+		insert into VTDATABASE_BLOCK_USER (VCONNID,VIEWID,REG_ID,REG_DT )
+		values( #{vconnid},#{viewid},#{dp_viewId},CURRENT_TIMESTAMP)  
+	</insert>
+	
+	<!-- db 차단 해제 -->	
+	<delete id="manageMapper.deleteDbBlockUser" parameterType="map">
+		delete from VTDATABASE_BLOCK_USER
+		where VCONNID = #{vconnid}
 		and VIEWID  = #{viewid}
 	</delete>
 	
@@ -87,14 +104,6 @@
 			, DEPT_NM, UEMAIL, DESCRIPTION, BLOCK_YN, LANG
 		from VTUSER
 		where viewid =#{viewid}
-	</select>
-	
-	<!-- db manager check -->
-	<select id="manageMapper.selectDbManagerCheck" parameterType="map" resultType="int">
-		select count(1)  cnt
-		from VTDATABASE_MANAGER 
-		where VCONNID = #{vconnid} 
-		and VIEWID = #{userId} 
 	</select>
 	
 	<delete id="manageMapper.deleteUserInfo" parameterType="map">

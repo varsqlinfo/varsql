@@ -63,7 +63,7 @@
 		delete from VTDATABASE_GROUP 
 		where GROUP_ID = #{groupId}
 		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
-			and REG_ID =#{userId}	
+			and REG_ID =#{dp_viewId}	
 		</if>
 	</delete>
 	

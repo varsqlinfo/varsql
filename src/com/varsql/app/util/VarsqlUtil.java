@@ -192,10 +192,23 @@ public class VarsqlUtil {
 	 */
 	public static ParamMap getIncludeDefaultParam(HttpServletRequest req) {
 		ParamMap parameter = HttpUtils.getServletRequestParam(req);
-		
-		parameter.put("userId", SecurityUtil.loginId());
-		
-		return parameter; 
+		return setDefaultParam(parameter);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : setDefaultParam
+	 * @Method 설명 : 기본정보 셋팅. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 20. 
+	 * @변경이력  :
+	 * @param paramInfo
+	 * @return
+	 */
+	public static ParamMap setDefaultParam(ParamMap paramInfo) {
+		// dp  = default parameter;
+		paramInfo.put("dp_viewId", SecurityUtil.loginId());
+		return paramInfo; 
 	}
 }
 

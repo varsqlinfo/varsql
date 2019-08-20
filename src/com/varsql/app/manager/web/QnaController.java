@@ -28,7 +28,18 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: QnaController.java
+* @DESC		: Qna 관리 
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 8. 20. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/manager")
