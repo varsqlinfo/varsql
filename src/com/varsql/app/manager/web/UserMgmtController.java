@@ -95,6 +95,7 @@ public class UserMgmtController {
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
+		VarsqlUtil.setDefaultParam(paramMap);
 		paramMap.put("userid", userid);
 		paramMap.put("blockYn", "N".equals(blockYn)?"N":"Y");
 		

@@ -51,7 +51,7 @@
 	<!-- select user db info -->
 	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
 		
-		select suba.*, subb.VCONNID as BLOCK_Id from (
+		select suba.*, nvl2(subb.VCONNID,'Y','N') as BLOCK_YN from (
 			select b.* , a.VNAME, 
 				<choose>
 					<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
@@ -125,7 +125,7 @@
 		set 
 			BLOCK_YN=#{blockYn}
 		where VIEWID =#{userid}
-		and USER_ROLE in ('USER','GUEST')
+		and USER_ROLE not in ('ADMIN')
 	</update>
 	
 	<select id="manageMapper.selectQnaMgmtTotalCnt" parameterType="searchParameter" resultType="int">

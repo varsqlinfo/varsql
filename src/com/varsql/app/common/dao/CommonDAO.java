@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.beans.ExceptionLogVO;
 import com.varsql.app.common.beans.VtconnectionRVO;
+import com.vartech.common.app.beans.ParamMap;
 
 /**
  * 
@@ -30,6 +31,19 @@ public class CommonDAO extends BaseDAO{
 	
 	public int insertExceptionLog(ExceptionLogVO exceptionLogVO) {
 		return getSqlSession().insert("commonMapper.insertExceptionLog", exceptionLogVO);
+	}
+	/**
+	 * 
+	 * @Method Name  : selectManagerCheck
+	 * @Method 설명 : 매니저 권한 체크. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 21. 
+	 * @변경이력  :
+	 * @param exceptionLogVO
+	 * @return
+	 */
+	public int selectManagerCheck(ParamMap param) {
+		return getSqlSession().selectOne("commonMapper.selectManagerCheck", param);
 	}
 
 }

@@ -152,25 +152,15 @@
 									<tr v-for="(item,index) in clickItemDbList">
 										<td><div class="text-ellipsis ellipsis5" style="width:150px;">{{item.VNAME}}</div></td>
 										<td class="align-center">
-											<template v-if="item.BLOCK_ID == null">
-												<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
+											<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
+												<template v-if="item.BLOCK_YN == 'N'">
 													<button type="button" @click="dbBlockInfo(item, 'block')">차단</button>
 												</template>
-												<template v-else>Y</template>
+												<template v-else>
+													<button type="button" @click="dbBlockInfo(item, 'cancel')">해제</button>
+												</template>
 											</template>
-											<template v-else>
-												<button type="button" @click="dbBlockInfo(item, 'cancel')">해제</button>
-											</template>
-											
-										</td>
-										<td class="align-center">
-											<template v-if="clickItemCustom.isAdmin && item.MSG_CHK > 0">
-												<button type="button" @click="dbBlockInfo(item, 'M')">제거</button>
-											</template>
-											<template v-else-if="item.MSG_CHK> 0">
-												Y
-											</template>
-											<template v-else>N</template>
+											<template v-else>Y</template>
 										</td>
 									</tr>
 									<tr v-if="clickItemDbList.length === 0">
@@ -373,12 +363,8 @@ VarsqlAPP.vueServiceBean( {
 			})
 		}
 		,dbBlockInfo : function (item, mode){
-			var confirmMsg =this.clickItem.UNAME +'님의 ['+item.VNAME+']'; 
-			if(mode=='M'){
-				confirmMsg+= VARSQL.messageFormat('varsql.m.0002');
-			}else{
-				confirmMsg+= VARSQL.messageFormat('varsql.m.0003');
-			}
+			var confirmMsg =this.clickItem.UNAME +' ['+item.VNAME+']' + VARSQL.messageFormat('varsql.m.0003');
+			
 			
 			if(!confirm(confirmMsg)){
 				return ; 
@@ -386,15 +372,16 @@ VarsqlAPP.vueServiceBean( {
 			
 			var param = VARSQL.util.objectMerge({},item);
 			param.mode = mode; 
+			param.VIEWID = this.clickItem.VIEWID;
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/dbBlockInfo'}
 				,data : param
 				,success: function(resData) {
 					if(resData.item > 0){
-						if(mode=='M'){
-							item.MSG_CHK = 0;
+						if(mode=='block'){
+							item.BLOCK_YN = 'Y';
 						}else{
-							item.USER_CHK = 0;
+							item.BLOCK_YN = 'N';
 						}
 					}
 				}

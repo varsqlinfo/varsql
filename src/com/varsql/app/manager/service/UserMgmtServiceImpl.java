@@ -3,10 +3,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
+import com.varsql.app.common.dao.CommonDAO;
 import com.varsql.app.manager.dao.ManagerDAO;
 import com.varsql.app.user.beans.PasswordForm;
-import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.dao.UserMainDAO;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.auth.Authority;
@@ -45,6 +44,9 @@ public class UserMgmtServiceImpl{
 	
 	@Autowired
 	UserMainDAO userMainDAO;
+	
+	@Autowired
+	CommonDAO commonDAO;
 	
 	/**
 	 * 
@@ -186,7 +188,20 @@ public class UserMgmtServiceImpl{
 	public ResponseResult updateBlockYn(DataCommonVO paramMap) {
 		ResponseResult result = new ResponseResult();
 		
-		result.setItemOne(manageDAO.updateBlockYn(paramMap));
+		boolean chkFlag = false; 
+		if(SecurityUtil.isAdmin()){
+			chkFlag =true; 
+		}else if(SecurityUtil.isManager()){
+			if(commonDAO.selectManagerCheck(paramMap) > 0) {
+				chkFlag =true; 
+			}
+		}
+		
+		if(chkFlag){
+			result.setItemOne(manageDAO.updateBlockYn(paramMap));
+		}else {
+			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+		}
 		
 		return result;
 	}

@@ -54,6 +54,16 @@
 		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
+	<!-- 매니저 체크.  -->
+	<select id="commonMapper.selectManagerCheck" parameterType="map" resultType="int">
+		select 
+			count(1)
+		from VTUSER 
+		where USER_ROLE = 'MANAGER'
+		and VIEWID =#{dp_viewId}
+		and BLOCK_YN = 'N'
+	</select>
+	
 	<!-- 사용자 검색 공통 sql 부분.  -->
 	<sql id="userSearchCriteria">
 		from VTUSER a

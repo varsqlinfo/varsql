@@ -28,6 +28,7 @@ var _initialized = false
 	,showTooltip : false			// tooltip flag
 	,theme : 'light'
 	,height: 'auto'
+	,width: 'auto'
 	,itemMaxCount : -1	// add시 item max로 유지할 카운트
 	,colOptions : {	// 컬럼 옵션
 		minWidth : 50  // 컬럼 최소 넓이
@@ -92,8 +93,6 @@ var _initialized = false
 		,util : {
 			searchFilter : function (item, key,searchVal){
 				var itemVal = (item[key]||'')+'';
-
-
 
 				if(itemVal.toLowerCase().indexOf(searchVal) > -1){
 					return true; 
@@ -412,6 +411,7 @@ Plugin.prototype ={
 			, focus : false
 			, mouseEnter :false
 			, currentClickInfo :{}
+			, allCheck :false
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -444,7 +444,7 @@ Plugin.prototype ={
 		if(mode=='headerResize'){
 			this.config.container.width = width;
 		}else{
-			this.config.container.width = width- this.options.blankSpaceWidth;		// border 값 빼주기.
+			this.config.container.width = width- this.config.blankSpaceWidth;		// border 값 빼주기.
 		}
 	}
 	/**
@@ -452,7 +452,14 @@ Plugin.prototype ={
 	 * @description grid width
 	 */
 	,getGridWidth : function(){
-		return this.gridElement.width();
+		return this.options.width =='auto' ? this.gridElement.width() : this.options.width;
+	}
+	/**
+	 * @method getGridHeight
+	 * @description grid height
+	 */
+	,getGridHeight : function (){
+		return this.options.height =='auto' ? this.gridElement.height() : this.options.height;
 	}
 	/**
 	 * @method setOptions
@@ -498,7 +505,7 @@ Plugin.prototype ={
 		}
 		
 		// space width
-		this.options.blankSpaceWidth = 2+(this.options.blankSpaceWidth>0?this.options.blankSpaceWidth :0);
+		this.config.blankSpaceWidth = 2+(this.options.blankSpaceWidth>0?this.options.blankSpaceWidth :0);
 				
 		// header element height 	
 		if(_this.options.headerOptions.view !== false){
@@ -591,7 +598,7 @@ Plugin.prototype ={
 			,thg = opt.theadGroup
 			,fixedColIdx = opt.colFixedIndex
 			,cfg = _this.config
-			,gridElementWidth =cfg.container.width-(cfg.gridWidth.aside+opt.scroll.vertical.width)
+			,gridElementWidth =cfg.container.width
 			,tciItem,thgItem, rowItem, headItem
 			,headGroupInfo = [] ,groupInfo = [], rowSpanNum = {}, colSpanNum = {}
 			,leftHeaderGroupInfo = [] ,leftGroupInfo = [], rowSpanNum = {}, colSpanNum = {};
@@ -781,11 +788,15 @@ Plugin.prototype ={
 			,tci = _this.config.tColItem
 			,tciLen = _this.config.dataInfo.colLen;
 
-		var itemTotHeight = _this.options.tbodyItem.length * _this.config.rowHeight
+		var verticalW = 0; 
+
+		if(_this.options.tbodyItem.length > 0){
+			if( (_this.options.tbodyItem.length * _this.config.rowHeight) > (_this.getGridHeight() - this.config.header.height -this.config.footer.height)){
+				verticalW = opt.scroll.vertical.width;
+			}
+		}
 		
-		var verticalScrllBarFlag = itemTotHeight > (_this.gridElement.height() - this.config.header.height -this.config.footer.height);
-	
-		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+(verticalScrllBarFlag? (opt.scroll.vertical.width):0);
+		var _totW = _this.config.gridWidth.aside+_this.config.gridWidth.left+_this.config.gridWidth.main+verticalW;
 		
 		var resizeFlag = _totW  < _gw ? true : false;
 		var remainderWidth = Math.floor((_gw -_totW)/tciLen)
@@ -1085,6 +1096,10 @@ Plugin.prototype ={
 					}	
 				}
 			}else{
+				if(gridMode != 'init' && subMode !='keepCheck'){
+					_this.setCheckItems('all', false, false);
+				}
+
 				_this.options.tbodyItem = data;
 			}
 		}
@@ -1918,20 +1933,20 @@ Plugin.prototype ={
 		if(type =='headerResize'){
 			dimension = {width : cfg.container.width, height : cfg.container.height}; 
 		}else{
-			dimension = {width : _this.getGridWidth(), height :(_this.options.height =='auto' ? _this.gridElement.height() : _this.options.height)};
+			dimension = {width : _this.getGridWidth(), height :_this.getGridHeight()};
 		}
 
 		opt = objectMerge(dimension ,opt);						
 		cfg.container.height = opt.height;
 		var mainHeight = opt.height - cfg.navi.height;
-
+		
 		if(type =='init' || type =='resize'){
 
 			_this.element.pubGrid.css('height',mainHeight+'px');
 			_this.element.pubGrid.css('width',opt.width+'px');
 
 			var currentContainerWidth = cfg.container.width // border 값 
-				, resizeWidth = opt.width-this.options.blankSpaceWidth; 
+				, resizeWidth = opt.width-cfg.blankSpaceWidth; 
 			
 			if(currentContainerWidth != resizeWidth && type=='resize' && _this.options.autoResize !==false && _this.options.autoResize.responsive ===true){
 
@@ -1994,7 +2009,6 @@ Plugin.prototype ={
 			}
 		
 			if(_w != 0 || lastSpaceW != 0){
-
 				var _totColWidth =0;
 				
 				for(var i=0; i<colLen; i++){
@@ -2788,11 +2802,21 @@ Plugin.prototype ={
 	 * @param  checkFlag {Bollean} check flag
 	 * @description set checkbox
 	 */
-	,setCheckItems: function (idxArr, checkFlag){
+	,setCheckItems: function (idxArr, checkFlag, drawFlag){
 		var tbodyItem =this.options.tbodyItem; 
 		var item;
 		checkFlag = isUndefined(checkFlag)?true:checkFlag; 
 		if(idxArr=='all'){
+
+			this.config.allCheck = checkFlag; 
+			var allChkEle =this.element.header.find('.pub-header-checkbox'); 
+
+			if(checkFlag){
+				allChkEle.addClass('pub-check-all');
+			}else{
+				allChkEle.removeClass('pub-check-all');
+			}
+
 			for(var i =0, len=tbodyItem.length;i < len; i++){
 				tbodyItem[i]['_pubcheckbox']= checkFlag; 
 			}
@@ -2806,8 +2830,9 @@ Plugin.prototype ={
 				if(item) item['_pubcheckbox'] = checkFlag; 
 			}
 		}
-
-		this.drawGrid();
+		if(drawFlag !== false){
+			this.drawGrid();
+		}
 	}
 	/**
 	 * @method _initHeaderEvent
@@ -2878,16 +2903,7 @@ Plugin.prototype ={
 		if(_this.options.asideOptions.rowSelector.enabled === true){
 			// checkbox click
 			_this.element.header.on('click.pubGrid.allcheck','.pub-header-checkbox',function (e){
-				var checkFlag; 
-				if($(this).hasClass('pub-check-all')){
-					$(this).removeClass('pub-check-all');
-					checkFlag = false; 
-				}else{
-					$(this).addClass('pub-check-all');
-					checkFlag = true; 
-				}
-
-				_this.setCheckItems('all',checkFlag);
+				_this.setCheckItems('all', !_this.config.allCheck);
 			});
 		}
 
