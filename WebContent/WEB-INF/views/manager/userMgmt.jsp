@@ -136,31 +136,24 @@
 				</tr>
 				<tr>
 					<th valign="top" style="vertical-align: top;">
-						<div><spring:message code="msg.auth_db_list"/></div>
+						<div><spring:message code="msg.auth_db_list" text="db list"/></div>
 					</th>
 					<td style="padding:0px;">
 						<div>
 							<table class="fixed_headers" style="background:#ffffff;">
-								<thead>
-									<tr>
-										<th><spring:message code="label.db"/></th>
-										<th><spring:message code="label.user"/> </th>
-										<th><spring:message code="label.manager"/></th>
-									</tr>
-								</thead>
 								<tbody>
 									<tr v-for="(item,index) in clickItemDbList">
 										<td><div class="text-ellipsis ellipsis5" style="width:150px;">{{item.VNAME}}</div></td>
 										<td class="align-center">
 											<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
 												<template v-if="item.BLOCK_YN == 'N'">
-													<button type="button" @click="dbBlockInfo(item, 'block')">차단</button>
+													<button type="button" @click="dbBlockInfo(item, 'block')"><spring:message code="label.block" text="차단"/></button>
 												</template>
 												<template v-else>
-													<button type="button" @click="dbBlockInfo(item, 'cancel')">해제</button>
+													<button type="button" @click="dbBlockInfo(item, 'cancel')"><spring:message code="label.release" text="차단"/></button>
 												</template>
 											</template>
-											<template v-else>Y</template>
+											<template v-else>{{item.BLOCK_YN=='N'?'Y':'N'}}</template>
 										</td>
 									</tr>
 									<tr v-if="clickItemDbList.length === 0">
@@ -189,7 +182,7 @@
 }
 
 .fixed_headers {
-	width: 350px;
+	width: 100%;
 	table-layout: fixed;
 }
 .fixed_headers th {
@@ -202,16 +195,13 @@
 }
 .fixed_headers td:nth-child(1),
 .fixed_headers th:nth-child(1) {
-	min-width: 160px;
+	min-width: 234px;
 }
 .fixed_headers td:nth-child(2),
 .fixed_headers th:nth-child(2) {
 	min-width: 95px;
 }
-.fixed_headers td:nth-child(3),
-.fixed_headers th:nth-child(3) {
-	width: 95px;
-}
+
 .fixed_headers thead {
 	background-color: #e1e1e1;
     color: #090909;
@@ -354,17 +344,16 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					sItem.INITPW = resData.item;
 					
+					alert(VARSQL.messageFormat('varsql.m.0001'));
+					
 					setTimeout(function (){
 						sItem.INITPW ='';
 					}, 5000);
-					
-					alert(VARSQL.messageFormat('varsql.m.0001'));
 				}
 			})
 		}
 		,dbBlockInfo : function (item, mode){
 			var confirmMsg =this.clickItem.UNAME +' ['+item.VNAME+']' + VARSQL.messageFormat('varsql.m.0003');
-			
 			
 			if(!confirm(confirmMsg)){
 				return ; 

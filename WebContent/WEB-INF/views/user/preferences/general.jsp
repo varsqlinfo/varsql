@@ -59,6 +59,13 @@
 				            	</select>
 				            </div>
 						</div>
+						<div class="form-group">
+							<label class="col-lg-2 control-label"><spring:message code="join.form.desc"/></label>
+
+				            <div class="col-lg-10">
+				                <textarea class="form-control" rows="3" id="description" name="description" placeholder="<spring:message code="join.form.desc"/>" >${detailInfo.DESCRIPTION}</textarea>
+				            </div>
+						</div>
 					</form>
 				</div>
 			</div>

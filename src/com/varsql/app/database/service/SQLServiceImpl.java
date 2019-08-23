@@ -169,7 +169,7 @@ public class SQLServiceImpl{
 			conn.commit();
 		} catch (Exception e) {
 			if(conn != null) conn.rollback();
-			
+			ssrv = new SqlSourceResultVO();
 			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
@@ -180,7 +180,7 @@ public class SQLServiceImpl{
 			result.setItemOne(tmpSqlSource);
 			
 			errorMsg = e.getMessage();
-			logger.error(getClass().getName()+"sqlData", e);
+			logger.error(getClass().getName()+"sqlData : ", e);
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);

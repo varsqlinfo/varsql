@@ -106,6 +106,7 @@
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
 <entry key="join.form.dept">소속</entry>
+<entry key="join.form.desc">설명</entry>
 <entry key="join.form.locale">언어선택</entry>
 
 <entry key="join.form.password">비밀번호</entry>

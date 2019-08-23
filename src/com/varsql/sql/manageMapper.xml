@@ -50,9 +50,8 @@
 	
 	<!-- select user db info -->
 	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
-		
 		select suba.*, nvl2(subb.VCONNID,'Y','N') as BLOCK_YN from (
-			select b.* , a.VNAME, 
+			select a.VCONNID , a.VNAME, 
 				<choose>
 					<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
 						 1 
@@ -65,13 +64,16 @@
 					</otherwise>
 				</choose>
 				as  MANAGER_CNT
-			from VTCONNECTION a 
-				,(
+			from VTCONNECTION a
+			where 1=1 
+			and (	
+				a.VCONNID in (
 					select distinct VCONNID from VTDATABASE_GROUP_DB where GROUP_ID in (
 						select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID = #{viewid}
 					)
-				)b 
-			where a.VCONNID = b.VCONNID
+				)
+				or a.VCONNID in (select VCONNID from VTDATABASE_MANAGER where VIEWID =#{viewid} )
+			)
 			and a.USE_YN = 'Y'
 		) suba left outer join (select * from VTDATABASE_BLOCK_USER where VIEWID =#{viewid}) subb
 		on suba.VCONNID = subb.VCONNID
@@ -125,7 +127,15 @@
 		set 
 			BLOCK_YN=#{blockYn}
 		where VIEWID =#{userid}
-		and USER_ROLE not in ('ADMIN')
+		and USER_ROLE not in 
+		<choose>
+			<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
+				('ADMIN') 
+			</when>
+			<otherwise>
+				('ADMIN','MANAGER') 
+			</otherwise>
+		</choose>
 	</update>
 	
 	<select id="manageMapper.selectQnaMgmtTotalCnt" parameterType="searchParameter" resultType="int">

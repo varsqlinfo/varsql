@@ -30,6 +30,7 @@ VARSQL_LANG = {
 	,'error.0002' : '유효하지않은 요청입니다. 새로고칭하시겠습니까?'
 	,'error.0003' : '유효하지않은 database 입니다.\n메인 페이지로 이동하시겠습니까?'
 	,'error.0004' : '연결이거부되었습니다.관리자에게 문의하세요.'
+	,'error.403' : '권한이 없습니다.'
 	,'btn.ok' : 'Ok'
 	,'btn.cancel' : 'Cancel'
 	,'btn.close' : 'Close'

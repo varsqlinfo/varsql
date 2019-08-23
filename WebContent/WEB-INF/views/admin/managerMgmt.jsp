@@ -149,7 +149,7 @@ function fnManagerRoleEvent(pType){
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-sm-12">
+					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
 								<input type="text" value="" id="searchVal1" name="searchVal1"
@@ -197,7 +197,7 @@ function fnManagerRoleEvent(pType){
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-sm-12">
+					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
 								<input type="text" value="" id="searchVal2" name="searchVal2"

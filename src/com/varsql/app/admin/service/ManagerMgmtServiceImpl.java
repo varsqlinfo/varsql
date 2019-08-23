@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.app.admin.dao.ManagerMgmtDAO;
 import com.varsql.app.common.beans.DataCommonVO;
@@ -94,6 +95,7 @@ public class ManagerMgmtServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
+	@Transactional(rollbackFor=Exception.class)
 	public ResponseResult updateManagerRole(DataCommonVO paramMap) {
 		
 		SecurityUtil.setUserInfo(paramMap);
@@ -101,6 +103,8 @@ public class ManagerMgmtServiceImpl{
 		ResponseResult resultObject = new ResponseResult();
 		
 		resultObject.setItemOne(managerMgmtDAO.updateManagerRole( paramMap));
+		
+		managerMgmtDAO.deleteManagerAuthDb(paramMap);
 		
 		return resultObject;
 	}

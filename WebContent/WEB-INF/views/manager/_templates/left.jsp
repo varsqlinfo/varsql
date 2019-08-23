@@ -7,7 +7,7 @@
     
     <li class="dropdown<c:if test="${selectMenu eq 'dbGroupMgmt'}"> active</c:if>">
 		<a href="#" data-toggle="collapse" data-target="#dbgroup-sub-menu">
-			<i class="fa fa-bar-chart-o"></i>
+			<i class="fa fa-object-group"></i>
 			<span class="hidden-xs"><spring:message code="manage.menu.dbgroup" /></span>
 			<i class="fa fa-fw fa-caret-down"></i>
 		</a>

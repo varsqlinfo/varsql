@@ -275,25 +275,32 @@ _$base.req ={
 		ajaxOpt.success =  function (data, status, jqXHR) {
 			_this.isConnectError = false; 
 			var resultCode = data.resultCode;  
-		
-			if(resultCode== 401){ // 로그아웃
-				if(confirm(_$base.messageFormat('error.0001'))){
-					(top || window).location.href=VARSQL.contextPath;
+			
+			if(option.disableResultCheck !== true){
+				if(resultCode== 401){ // 로그아웃
+					if(confirm(_$base.messageFormat('error.0001'))){
+						(top || window).location.href=VARSQL.contextPath;
+					}
+					return ; 
+				}else if(resultCode == 403){	// error
+					
+					var msg = data.message || _$base.messageFormat('error.403');
+					alert(msg);
+					return ;
+				}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
+					if(confirm(_$base.messageFormat('error.0002'))){
+						(top || window).location.href=VARSQL.contextPath;
+					}
+					return ; 
+				}else if(resultCode == 500){	// error
+					alert(data.message);
+					return ;
+				}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
+					if(confirm(_$base.messageFormat('error.0003'))){
+						(top || window).location.href=VARSQL.contextPath;
+					}
+					return ; 
 				}
-				return ; 
-			}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
-				if(confirm(_$base.messageFormat('error.0002'))){
-					(top || window).location.href=VARSQL.contextPath;
-				}
-				return ; 
-			}else if(resultCode == 500){	// error
-				alert(data.message);
-				return ;
-			}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
-				if(confirm(_$base.messageFormat('error.0003'))){
-					(top || window).location.href=VARSQL.contextPath;
-				}
-				return ; 
 			}
 			try{
 				option.success.call(this, data, status, jqXHR);

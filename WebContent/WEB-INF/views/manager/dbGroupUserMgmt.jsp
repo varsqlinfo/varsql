@@ -8,7 +8,7 @@
     <!-- /.col-lg-12 -->
 </div>
 <div class="row display-off" id="epViewArea">
-	<div class="col-xs-3">
+	<div class="col-xs-4">
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
@@ -65,7 +65,7 @@
 		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-4 -->
-	<div class="col-xs-9">
+	<div class="col-xs-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<spring:message code="manage.dbgroup.mapping" /> 

@@ -224,6 +224,12 @@
 		where VIEWID =#{viewid}
 	</update>
 	
+	<!-- 매니저 권한이 있는 사용자의 db 목록 삭제.   -->
+	<delete id="adminMapper.deleteManagerAuthDb" parameterType="map">
+		delete from VTDATABASE_MANAGER
+		where VIEWID =#{viewid}
+	</delete>
+	
 	<!-- 매니저 목록 보기 -->
 	<select id="adminMapper.selectDatabaseManager" parameterType="map" resultType="hashmap">
 		select * 
@@ -236,7 +242,7 @@
 	<!-- db manager 삭제. -->
 	<delete id="adminMapper.deleteDbManager" parameterType="map">
 		delete from VTDATABASE_MANAGER
-		and VCONNID = #{vconnid}
+		where VCONNID = #{vconnid}
 		<foreach item="item" index="index" collection="viewidArr" open="and VIEWID in (" close=")" separator=",">
 			#{item}
 		</foreach>
