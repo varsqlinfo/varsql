@@ -165,4 +165,27 @@ public class UserMgmtController {
 		
 		return userMgmtServiceImpl.removeAuth(param);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : removeDbGroup
+	 * @Method 설명 : db group 제거. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 26. 
+	 * @변경이력  :
+	 * @param viewid
+	 * @param vconnid
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/removeDbGroup", method=RequestMethod.POST)
+	public @ResponseBody ResponseResult removeDbGroup(@RequestParam(value = "VIEWID", required = true )  String viewid 
+			,@RequestParam(value = "GROUP_ID", required = true )  String groupId, HttpServletRequest req) throws Exception {
+		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
+		param.put("viewid", viewid);
+		param.put("groupId", groupId);
+		
+		return userMgmtServiceImpl.removeDbGroup(param);
+	}
 }

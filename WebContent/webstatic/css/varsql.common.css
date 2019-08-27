@@ -175,9 +175,16 @@ li {
   background-color: #e6e5e5;
 }
 
+.text-left {
+  text-align: left;
+}
 .text-center {
   text-align: center;
 }
+.text-right {
+  text-align: right;
+}
+
 
 .input-text, .textarea-text {
   width: 100%;

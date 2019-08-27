@@ -70,13 +70,20 @@
 <entry key="compare.detail">비교 상세</entry>
 
 <entry key="label.db">db</entry>
+<entry key="label.remove">제거</entry>
 <entry key="label.user">사용자</entry>
+<entry key="label.username">사용자명</entry>
+<entry key="label.orgnm">조직</entry>
+<entry key="label.deptnm">부서</entry>
 <entry key="label.manager">매니저</entry>
 <entry key="label.block">차단</entry>
 <entry key="label.release">해제</entry>
 <entry key="label.id">아이디</entry>
 <entry key="label.pw">패스워드</entry>
 <entry key="label.login">로그인</entry>
+
+<entry key="label.dbgroup">DB Group</entry>
+<entry key="label.dbgroup">DB Group</entry>
 
 <entry key="label.first.name">First Name</entry>
 <entry key="label.last.name">Last Name</entry>

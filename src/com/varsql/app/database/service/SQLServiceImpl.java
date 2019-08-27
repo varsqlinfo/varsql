@@ -169,7 +169,13 @@ public class SQLServiceImpl{
 			conn.commit();
 		} catch (Exception e) {
 			if(conn != null) conn.rollback();
-			ssrv = new SqlSourceResultVO();
+			
+			boolean ssrvNullFlag = false; 
+			if(ssrv==null) {
+				ssrvNullFlag = true; 
+				ssrv = new SqlSourceResultVO();
+			}
+			//ssrv = new SqlSourceResultVO();
 			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
@@ -180,7 +186,13 @@ public class SQLServiceImpl{
 			result.setItemOne(tmpSqlSource);
 			
 			errorMsg = e.getMessage();
-			logger.error(getClass().getName()+"sqlData : ", e);
+			
+			if(ssrvNullFlag) {
+				result.setMessage(errorMsg);
+			}
+			if(VarsqlUtil.isRuntimelocal()) {
+				logger.error(getClass().getName()+" sqlData : ", e);
+			}
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);

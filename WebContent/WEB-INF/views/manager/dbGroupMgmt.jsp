@@ -86,7 +86,6 @@
 							</div>
 						</div>
 					</div>
-					<div id="warningMsgDiv"></div>
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="manage.dbgroup.nm" /></label>
 						<div class="col-sm-8">

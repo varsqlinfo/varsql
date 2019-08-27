@@ -260,7 +260,7 @@
 <entry key="manage.userlist.name">이름</entry>
 <entry key="manage.userlist.id">아이디</entry>
 <entry key="manage.userlist.dept">소속</entry>
-<entry key="manage.userlist.init.password">퍄스워드 초기화</entry>
+<entry key="manage.userlist.init.password">패스워드 초기화</entry>
 <entry key="manage.userlist.date">등록일</entry>
 <entry key="manage.userlist.access">수락여부</entry>
 <entry key="manage.userlist.useyn">사용여부</entry>

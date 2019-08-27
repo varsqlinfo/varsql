@@ -48,6 +48,14 @@
 		order by VIEWID desc OFFSET ${first}-1 ROWS FETCH FIRST ${countPerPage} ROWS ONLY
 	</select>
 	
+	<!-- db gropu info -->
+	<select id="manageMapper.selectUserDbGroup" parameterType="map" resultType="map">
+		select b.GROUP_ID ,b.GROUP_NAME, a.VIEWID, a.REG_DT
+		from VTDATABASE_GROUP_USER a, VTDATABASE_GROUP b
+		where a.GROUP_ID = b.GROUP_ID
+		and a.VIEWID =#{viewid}
+	</select>
+	
 	<!-- select user db info -->
 	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
 		select suba.*, nvl2(subb.VCONNID,'Y','N') as BLOCK_YN from (
@@ -64,16 +72,17 @@
 					</otherwise>
 				</choose>
 				as  MANAGER_CNT
-			from VTCONNECTION a
-			where 1=1 
-			and (	
-				a.VCONNID in (
-					select distinct VCONNID from VTDATABASE_GROUP_DB where GROUP_ID in (
+				,MANAGER_DB_CNT
+			from VTCONNECTION a , (
+				select VCONNID , max(type) as MANAGER_DB_CNT from (							
+					select VCONNID, 1 type from VTDATABASE_GROUP_DB where GROUP_ID in (
 						select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID = #{viewid}
 					)
-				)
-				or a.VCONNID in (select VCONNID from VTDATABASE_MANAGER where VIEWID =#{viewid} )
-			)
+					union 
+					select VCONNID , 2 type from VTDATABASE_MANAGER where VIEWID =#{viewid}						
+				) group by VCONNID
+			) b
+			where a.VCONNID = b.VCONNID
 			and a.USE_YN = 'Y'
 		) suba left outer join (select * from VTDATABASE_BLOCK_USER where VIEWID =#{viewid}) subb
 		on suba.VCONNID = subb.VCONNID
@@ -97,6 +106,13 @@
 	<delete id="manageMapper.deleteDbBlockUser" parameterType="map">
 		delete from VTDATABASE_BLOCK_USER
 		where VCONNID = #{vconnid}
+		and VIEWID  = #{viewid}
+	</delete>
+
+	<!-- remove user db group info  -->	
+	<delete id="manageMapper.deleteUserDbGroup" parameterType="map">
+		delete from VTDATABASE_GROUP_USER
+		where GROUP_ID = #{groupId}
 		and VIEWID  = #{viewid}
 	</delete>
 	

@@ -127,9 +127,12 @@ _$base.messageFormat =function (fmt,msgParam){
 		if(!_$base.isUndefined(reval)){
 			return reval; 
 		}
+	}else{
+		var tmpFmt = VARSQL_LANG[fmt];
+		fmt = tmpFmt ? tmpFmt :fmt; 
 	}
 	
-	msgParam = msgParam||VARSQL_LANG;
+	msgParam = msgParam||{};
 	
 	var strFlag = false
 		,objFlag = false

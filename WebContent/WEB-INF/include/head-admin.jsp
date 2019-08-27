@@ -6,7 +6,7 @@
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/jquery-ui.min.css" rel="stylesheet">
 
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">

@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
-<link href="${pageContextPath}/webstatic/css/jquery-ui.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/jquery-ui.min.css" rel="stylesheet">
 
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">

@@ -574,3 +574,82 @@ ul.alert-dropdown {
 .column-compare-log{
 	padding-left:10px;
 }
+
+.ui-widget-overlay.ui-front{
+	opacity: 0.3;
+    filter: Alpha(Opacity=.3);
+}
+
+/* table Header 고정 tbody scroll ====================================== */	
+.tbl-header-fixed-container {
+	width: 100%;
+	position: relative;
+	padding-top: 30px; /* header-bg height값 */
+	background: #ffffff;
+}
+
+.tbl-header-fixed-header-bg { 
+	border-top: 1px solid #d6d8d0;
+	border-bottom: 1px solid #d6d8d0;
+	text-align: center;
+	color: #666;
+	background: #f9f9f9;
+	font-weight: bold;
+	height: 30px; /* header-bg height값 */
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+
+.tbl-header-fixed-wrapper {
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
+}
+
+table.tbl-header-fixed {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table.tbl-header-fixed td {
+	border-bottom: 1px solid #DDD;
+	height: 30px;
+	padding: 3px 10px 2px;
+	color: #666;
+}
+
+table.tbl-header-fixed td+td {
+	border-left: 1px solid #DDD;
+}
+
+table.tbl-header-fixed th {
+	padding: 0px;
+}
+
+table.tbl-header-fixed .th-text {
+	position: absolute;
+	top: 0;
+	width: inherit;
+	line-height: 30px;
+	border-left: 1px solid;
+	border-color: transparent;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 0px 5px;
+	margin: 0px;
+}
+
+table.tbl-header-fixed th:first-child .th-text {
+	border-left: none;
+}
+
+table.tbl-header-fixed tbody tr:last-child td {
+	border-bottom: 1px solid #d6d8d0;
+}
+
+table.tbl-header-fixed tbody tr:nth-child(even) {
+	background: #f6f6f6;
+}

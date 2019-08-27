@@ -125,4 +125,32 @@ public class ManagerDAO extends BaseDAO{
 	public int selectDbManagerCheck(ParamMap param) {
 		return getSqlSession().selectOne("manageMapper.selectDbManagerCheck", param);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : selectUserDbGroup
+	 * @Method 설명 : 사용자 권한 있는 db 그룹
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 26. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public List selectUserDbGroup(ParamMap param) {
+		return getSqlSession().selectList("manageMapper.selectUserDbGroup", param);
+	}
+
+	/**
+	 * 
+	 * @Method Name  : deleteUserDbGroup
+	 * @Method 설명 : 사용자 db권한 제거. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 26. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public int deleteUserDbGroup(ParamMap param) {
+		return getSqlSession().delete("manageMapper.deleteUserDbGroup", param);
+	}
 }

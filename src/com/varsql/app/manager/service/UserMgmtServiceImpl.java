@@ -135,6 +135,7 @@ public class UserMgmtServiceImpl{
 		result.setItemOne(manageDAO.selectUserDetail(param.getString("viewid")));
 		result.setItemList(manageDAO.selectUserDbInfo(param));
 		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
+		result.addCustoms("dbGroup",manageDAO.selectUserDbGroup(param));
 		
 		return result;
 	}
@@ -199,6 +200,33 @@ public class UserMgmtServiceImpl{
 		
 		if(chkFlag){
 			result.setItemOne(manageDAO.updateBlockYn(paramMap));
+		}else {
+			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : removeDbGroup
+	 * @Method 설명 : 사용자 db 그룹 권한 제거. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 26. 
+	 * @변경이력  :
+	 * @param param
+	 * @return
+	 */
+	public ResponseResult removeDbGroup(ParamMap param) {
+		ResponseResult result = new ResponseResult();
+		
+		boolean chkFlag = false; 
+		if(SecurityUtil.isAdmin() || SecurityUtil.isManager()){
+			chkFlag =true; 
+		}
+		
+		if(chkFlag){
+			result.setItemOne(manageDAO.deleteUserDbGroup(param));
 		}else {
 			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
 		}
