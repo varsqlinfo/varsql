@@ -231,6 +231,12 @@
 							</div>
 						</div>
 						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.max_select_count" /></label>
+							<div class="col-sm-8">
+								<input class="form-control text required" type="number" v-model="detailItem.MAX_SELECT_COUNT">
+							</div>
+						</div>
+						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vquery" /></label>
 							<div class="col-sm-8">
 								<input class="form-control text required" type="text" v-model="detailItem.VQUERY">
@@ -323,6 +329,7 @@ VarsqlAPP.vueServiceBean( {
 				this.detailFlag = false;
 				this.detailItem ={
 					EXPORTCOUNT: 1000
+					,MAX_SELECT_COUNT : 10000
 					,MAX_ACTIVE: 5
 					,MIN_IDLE: 2
 					,TIMEOUT: 18000

@@ -6,7 +6,6 @@ public interface VarsqlParamConstants {
 	public String CONN_UUID ="conuid";
 	public String SQL ="sql";
 	public String LIMIT ="limit";
-	public int SQL_MAX_ROW =1000;
 	public String SQL_PARAM ="sqlParam";
 	
 	/**

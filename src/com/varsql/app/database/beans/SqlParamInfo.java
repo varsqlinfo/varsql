@@ -1,5 +1,6 @@
 package com.varsql.app.database.beans;
 
+import com.varsql.app.common.constants.SqlDataConstants;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
@@ -42,14 +43,17 @@ public class SqlParamInfo extends DatabaseParamInfo{
 		this.sql = sql;
 	}
 
-	public int getLimit(int defaultLimit) {
-		return limit > -1? limit : defaultLimit;
+	public int getLimit() {
+		return limit;
 	}
 
-	public void setLimit(String limit) {
-		try{
-			this.limit =Integer.parseInt(limit);
-		}catch(Exception e){}
+	public void setLimit(int limit) {
+		if(limit > -1) {
+			this.limit =limit;
+		}else {
+			this.limit = SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT; 
+		}
+		
 	}
 
 	public String getSqlParam() {

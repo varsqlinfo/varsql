@@ -167,25 +167,8 @@
 <script id="dataExportTemplate" type="text/varsql-template">
 <div id="data-export-modal" title="<spring:message code="data.export" />">
 	<div class="export-dialog-area">
-		<div class="export-column-area">
-			<table class="varsql-table border-zero">
-				<colgroup>
-					<col style="width:50px;">
-					<col style="width:150px;">
-					<col style="width:*;">
-				</colgroup>
-				<thead>
-					<tr role="row">
-						<th class="text-center"><input
-							type="checkbox" name="exportColumnCheckBox" value="all">all</th>
-						<th>Column</th>
-						<th>Desc</th>
-					</tr>
-				</thead>
-				<tbody id="exportColumnInfoArea" class="dataTableContent">
-					{{{exportColumnInfo}}}
-				</tbody>
-			</table>
+		<div id="data-export-column-list" class="export-column-area">
+			
 		</div>
 		<div class="export-type-area">
 			<div style="margin-bottom:5px;">

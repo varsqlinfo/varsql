@@ -51,6 +51,7 @@
 			, VDBVERSION 
 			, BASETABLE_YN
 			, LAZYLOAD_YN
+			, MAX_SELECT_COUNT
 		from VTCONNECTION 
 		where DEL_YN = 'N'
 		AND VCONNID =#{vconnid}
@@ -160,6 +161,7 @@
  			, MIN_IDLE = #{minIdle}
  			, TIMEOUT = #{timeout}
  			, EXPORTCOUNT = #{exportcount}
+ 			, MAX_SELECT_COUNT = #{maxSelectCount}
 			, UPD_ID = #{userId}
 			, UPD_DT =CURRENT_TIMESTAMP 
 		where VCONNID =#{vconnid}

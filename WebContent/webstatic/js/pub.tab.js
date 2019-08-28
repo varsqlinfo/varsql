@@ -13,15 +13,13 @@
     var pluginName = "pubTab"
 		,_datastore = {}
 		,defaults = {
-			speed : 150
-			,width:'auto'
-			,itemMaxWidth : -1
+			width:'auto'			//tab width
+			,itemMaxWidth : -1		// tab max width
 			,activeFirstItem : true	//로드시 첫번째 item 활성화 여부
-			,autoMove : false
-			,itemPadding: 5
-			,height : '22px'
-			,leftMargin : 30	// 왼쪽에 item 있을경우 더 이동할 space
-			,overItemViewMode : 'drop'
+			,itemPadding: 5			// item padding 값
+			,height : '22px'		// tab height
+			,leftMargin : 30		// 왼쪽에 item 있을경우 더 이동할 space
+			,overItemViewMode : 'drop'	// over item  보여질 방법. 
 			,dropItemHeight :'auto'		//drop item height
 			,dropItemWidth :'auto'		//drop item width
 			,moveZIndex : 9				// move 영역 z- index
@@ -82,9 +80,14 @@
         this.selector = (typeof element=='object') ? element.selector : element;
 		this.contextId = 'pubTab-'+new Date().getTime();
 		this.tabElement = $(element);
+		
+		if(options.width != 'auto'){
+			$(this.selector).width(options.width);
+		}
 
         options.width= isNaN(options.width) ?  this.tabElement.width() : options.width;
         this.options = objectMerge({}, defaults, options);
+
 	
 		this.init();
 	
@@ -191,7 +194,9 @@
 				};
 
 				//delta > 0--up
-				_this._moveContainerPos( _this.element.tabScrollElement.scrollLeft() + (delta > 0?-10 :10) );
+				_this._moveContainerPos( _this.element.tabScrollElement.scrollLeft() + (delta > 0?-10 :10));
+
+				return false; 
 			});
 						
 			if(opts.overItemViewMode =='drop'){
@@ -249,6 +254,22 @@
 			}
 			
 			//$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
+		}
+		// right icon click
+		,rightIconClick: function (item){
+			var ele; 
+			if(typeof item ==='object'){
+				ele = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+				ele.find('.pubTab-icon[data-posistion="right"]').trigger('click.pubtab.icon');
+			}
+		}
+		// left icon click
+		,leftIconClick: function (item){
+			var ele; 
+			if(typeof item ==='object'){
+				ele = this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+				ele.find('.pubTab-icon[data-posistion="left"]').trigger('click.pubtab.icon');
+			}
 		}
 		/**
 		 * @method isActive

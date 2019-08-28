@@ -66,7 +66,7 @@ _$base.alert = {
 		
 		var msg = opt;
 		if(VARSQL.isObject(opt) && !VARSQL.isUndefined(opt.key)){
-			msg = VARSQL.messageFormat(opt.key);
+			msg = VARSQL.messageFormat(opt.key, opt);
 		}
 		
 		return alert(msg);

@@ -35,6 +35,8 @@ public class VtconnectionRVO{
 
 	private String VPW;
 
+	private int MAX_SELECT_COUNT;
+	
 	private int MAX_ACTIVE;
 
 	private int MIN_IDLE;
@@ -216,6 +218,14 @@ public class VtconnectionRVO{
 	}
 	public void setSCHEMA_VIEW_YN(String sCHEMA_VIEW_YN) {
 		SCHEMA_VIEW_YN = sCHEMA_VIEW_YN;
+	}
+	
+	public int getMAX_SELECT_COUNT() {
+		return MAX_SELECT_COUNT;
+	}
+
+	public void setMAX_SELECT_COUNT(int mAX_SELECT_COUNT) {
+		MAX_SELECT_COUNT = mAX_SELECT_COUNT;
 	}
 	
 

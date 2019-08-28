@@ -88,7 +88,6 @@ var userHeader = {
 			data : {},
 			success : function(res) {
 				var items = res.items;
-				var paging = res.paging;
 				var strHtm = [], len = items.length;
 				
 				if (len > 0) {
@@ -154,12 +153,10 @@ var userHeader = {
 
 		if (item.UPD_DT == null) {
 			VARSQL.req.ajax({
-				type : "POST",
 				url : {
 					type : VARSQL.uri.user,
 					url : '/updMsgViewDt.vsql'
 				},
-				dataType : 'json',
 				data : {
 					memo_id : item.MEMO_ID
 				},

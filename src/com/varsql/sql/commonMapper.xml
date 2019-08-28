@@ -19,6 +19,7 @@
 			, VQUERY
 			, VID
 			, MAX_ACTIVE
+			, MAX_SELECT_COUNT
 			, MIN_IDLE
 			, TIMEOUT
 			, EXPORTCOUNT

@@ -1,6 +1,5 @@
 package com.varsql.app.user.service;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
@@ -50,17 +47,12 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map selectSearchUserList(ParamMap paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT_ITEMS, userMainDAO.selectSearchUserList(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"selectSearchUserList", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval; 
+	public ResponseResult selectSearchUserList(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemList(userMainDAO.selectSearchUserList(paramMap));
+		
+		return result; 
 	}
 	
 	/**
@@ -102,18 +94,12 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map selectMessageInfo(ParamMap paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT_ITEMS, userMainDAO.selectMessageInfo(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
+	public ResponseResult selectMessageInfo(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemList(userMainDAO.selectMessageInfo(paramMap));
 			
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"selectMessageInfo", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval; 
+		return result; 
 	}
 	
 	/**
@@ -126,17 +112,12 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map updateMemoViewDate(ParamMap paramMap) {
-		Map reval =  new HashMap();
-		try{
-			reval.put(ResultConstants.RESULT, userMainDAO.updateMemoViewDate(paramMap));
-			reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.SUCCESS);
-	    }catch(Exception e){
-	    	reval.put(ResultConstants.CODE, ResultConstants.CODE_VAL.ERROR);
-	    	logger.error(getClass().getName()+"updateMemoViewDate", e);
-	    	reval.put("msg", e.getMessage());
-	    }
-		return reval;
+	public ResponseResult updateMemoViewDate(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		
+		result.setItemOne(userMainDAO.updateMemoViewDate(paramMap));
+		
+		return result;
 	}
 	
 	/**

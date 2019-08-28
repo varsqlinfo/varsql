@@ -295,9 +295,7 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/searchUserList"})
-	public @ResponseBody Map searchUserList(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {	
+	public @ResponseBody ResponseResult searchUserList(HttpServletRequest req, HttpServletResponse response) throws Exception {	
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
@@ -352,9 +350,7 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/message"})
-	public @ResponseBody Map message(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
+	public @ResponseBody ResponseResult message(HttpServletRequest req, HttpServletResponse response) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
@@ -375,9 +371,7 @@ public class UserMainController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/updMsgViewDt"})
-	public @ResponseBody Map updMsgViewDt(HttpServletRequest req
-			,HttpServletResponse response
-			) throws Exception {
+	public @ResponseBody ResponseResult updMsgViewDt(HttpServletRequest req, HttpServletResponse response) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));

@@ -25,21 +25,11 @@ var _g_options={
 };
 
 // cache
-var _g_cache_store ={}
+var _g_cache_store={}
+	,_g_all_schema_object={}
 	,_g_cache_obj_meta_store ={};
 var _g_cache = {
-	get :function (key){
-		return _g_cache_store[key];
-	}
-	,set : function (key , val){
-		_g_cache_store[key] = val;
-	}
-	// object cache check
-	,isSOMetaInitCache : function (objectType){
-		return (_g_cache_obj_meta_store[objectType]||{}).initFlag===false ? false :true; 
-	}
-	,initSOMetaCacheObject : function (){
-		var _self = this;
+	initSOMetaCacheObject : function (){
 		var serviceObject = _g_options.serviceObject;
 		
 		for(var i =0; i<serviceObject.length; i++){
@@ -48,6 +38,10 @@ var _g_cache = {
 			
 			_g_cache_obj_meta_store[contentid] = {initFlag:false}; // 초기화 여부 
 		}
+	}
+	// object cache check
+	,isSOMetaInitCache : function (objectType){
+		return (_g_cache_obj_meta_store[objectType]||{}).initFlag===false ? false :true; 
 	}
 	//set  object initflag 
 	,setSOMetaInitFlag : function (objectType){
@@ -59,6 +53,21 @@ var _g_cache = {
 		
 		var t =_g_cache_obj_meta_store[objectType][objecName][tabKey]; 
 		return t?t:null;
+	}
+	// scheam 별  object cache
+	,setCacheSchemaObject : function (objectType , objInfo){
+		var cacheSchemaObject = _g_all_schema_object[_g_options.param.schema];
+		
+		if(VARSQL.isUndefined(cacheSchemaObject)){
+			 cacheSchemaObject ={};
+			_g_all_schema_object[_g_options.param.schema] = cacheSchemaObject;
+		}
+		cacheSchemaObject[objectType] = objInfo;
+	}
+	// get cache schema object
+	,getCacheSchemaObject : function (objectType){
+		return (_g_all_schema_object[_g_options.param.schema] ||{})[objectType];
+		
 	}
 	// 메타 데이타 셋팅하기.
 	,setSOMetaCache:function (objectType, objecName, tabKey, data){
@@ -358,7 +367,7 @@ _ui.headerMenu ={
 							if(isInIFrame==true){
 								parent.userMain.activeClose();
 							}else {
-								if(confirm('창을 닫으시겠습니까?')){
+								if(confirm(VARSQL.messageFormat('msg.close.window'))){
 									window.close();
 								}
 							}
@@ -431,7 +440,7 @@ _ui.headerMenu ={
 							
 							break;
 						case 'layout':	//레이아웃 초기화
-							if(confirm('초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?')){
+							if(confirm(VARSQL.messageFormat('varsql.0013'))){
 								_ui.preferences.save({layoutConfig : ''} , function (){
 									location.href = location.href; 
 									return ;
@@ -1080,7 +1089,7 @@ _ui.dbSchemaObject ={
 					,visible : false
 					,overview : false
 					,click : function (item, idx){
-						if(confirm('새로고침 하시겠습니까?')){
+						if(confirm(VARSQL.messageFormat('msg.refresh'))){
 							_self.getObjectTypeData(item, true);
 						}
 					}
@@ -1146,6 +1155,15 @@ _ui.dbSchemaObject ={
 		
 		var callMethod = _self.getCallMethod('_'+$contentId);
 		
+		if(refresh !== true){
+			var cacheObj = _g_cache.getCacheSchemaObject($contentId);
+			
+			if(!VARSQL.isUndefined(cacheObj)){
+				callMethod.call(_self,cacheObj);
+				return ; 
+			}
+		}
+		
 		var param =_getParam({'objectType':$contentId});
 		
 		VARSQL.req.ajax({      
@@ -1154,6 +1172,7 @@ _ui.dbSchemaObject ={
 			,data : param 
 			,success:function (resData){
 				_g_cache.setSOMetaInitFlag($contentId, true);
+				_g_cache.setCacheSchemaObject($contentId, resData); // object cache
 				callMethod.call(_self,resData);
 				_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
 			}
@@ -1168,6 +1187,7 @@ _ui.dbSchemaObject ={
 				,success:function (resData){
 					resData.refreshFlag = false; 
 					callMethod.call(_self,resData);
+					_g_cache.setCacheSchemaObject($contentId, resData); // object cache
 				}
 			});
 		}
@@ -1886,7 +1906,7 @@ _ui.dbObjectMetadata= {
 		}
 		
 		if(_self.metaInfoLoadComplete===false){
-			alert('로드중입니다.');
+			VARSQLUI.alert.open({key:'msg.loading'});
 			return ; 
 		}
 		
@@ -2691,7 +2711,7 @@ _ui.SQL = {
 		var nameTxt = $('#editorSqlFileNameText').val(); 
 		if($.trim(nameTxt)==''){
 			$('#editorSqlFileNameText').focus();
-			VARSQLUI.alert.open('sql명을 입력해주세요.');
+			VARSQLUI.alert.open({key:'varsql.0010'});
 			return ;
 		}
 		
@@ -3308,7 +3328,7 @@ _ui.SQL = {
 			}
 			
 			if(!isNext){
-				VARSQLUI.alert.open('일치하는 내용이 '+replaceCount+'회 변경되었습니다.');
+				VARSQLUI.alert.open({key:'varsql.0011' , count: replaceCount});
 			}
 			
 			return ; 
@@ -3317,7 +3337,7 @@ _ui.SQL = {
 		isNext = cursor.find(isReverseFlag);
 		
 		if(wrapSearch===true && isNext===false){
-			VARSQLUI.alert.open('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
+			VARSQLUI.alert.open({key:'varsql.0012' , findText: orginTxt});
 			return ;
 		}
 		
@@ -3332,7 +3352,7 @@ _ui.SQL = {
 				_self.getSqlEditorObj().setCursor(wrapSearchPos);
 				_self.searchFindText(orginTxt,replaceTxt,replaceFlag, replaceAllFlag, true);
 			}else{
-				VARSQLUI.alert.open('다음 문자열을 찾을수 없습니다.\n'+orginTxt);
+				VARSQLUI.alert.open({key:'varsql.0012' , findText: orginTxt}); 
 				return ; 
 			}
 		}
@@ -3547,11 +3567,11 @@ _ui.SQL = {
 						var recvEle = $('.recv_id_item[_recvid]');
 						
 						if(recvEle.length < 1) {
-							VARSQLUI.alert.open('보낼 사람을 선택하세요.');
+							VARSQLUI.alert.open({key:'varsql.0007'});
 							return ; 
 						}
 						
-						if(!confirm('보내기 시겠습니까?')) return ; 
+						if(!confirm(VARSQL.messageFormat('varsql.0014'))) return ; 
 						
 						var recv_id = [];
 						$.each(recvEle,function (i , item ){
@@ -3684,7 +3704,7 @@ _ui.SQL = {
 						
 						_self.sqlFileNameDialogEle.dialog("open");
 		    		}else{
-		    			if(!confirm('['+sItem.GUERY_TITLE + '] 삭제하시겠습니까?')){
+		    			if(!confirm(VARSQL.messageFormat('varsql.0015', {itemText : sItem.GUERY_TITLE}))){
 		    				return ; 
 		    			}
 		    			
@@ -4024,33 +4044,18 @@ _ui.SQL = {
 			,tmpName = exportInfo.objName
 			,data = exportInfo.item;
 		
-		var dataArr = data.items;
-		var len = dataArr.length;
-		
-		var strHtm = [];
-		
-		var item;
-		for(var i=0; i < len; i++){
-			item = dataArr[i];
-			strHtm.push('<tr class="gradeA add">	');
-			strHtm.push('	<td class="text-center"><input type="checkbox" name="exportColumnCheckBox" value="'+item[VARSQLCont.tableColKey.NAME]+'" checked="check"></td>	');
-			strHtm.push(' 	<td class="">'+item[VARSQLCont.tableColKey.NAME]+'</td>	');
-			strHtm.push(' 	<td class="">'+(item[VARSQLCont.tableColKey.COMMENT]||'')+'</td>	');
-			strHtm.push('</tr>');
-		}
+		var items = data.items;
 		
 		var modalEle = $('#data-export-modal'); 
 		if(modalEle.length > 0){
-			$('#exportColumnInfoArea').empty().html(strHtm.join(''));
-			 $("input:checkbox[name='exportColumnCheckBox'][value='all']").prop('checked',true); 
+			modalEle.dialog( "open" );
+			$('#exportFileName').val(tmpName);
+			$.pubGrid('#data-export-column-list').setData(items);
+			$.pubGrid('#data-export-column-list').setCheckItems('all');
 		}else{
-			$(_g_options.hiddenArea).append(Mustache.render($('#dataExportTemplate').html(), {exportColumnInfo:strHtm.join('')}));
+			$(_g_options.hiddenArea).append($('#dataExportTemplate').html());
+			$('#exportFileName').val(tmpName);
 			modalEle = $('#data-export-modal');
-			
-			var checkAllObj = $("input:checkbox[name='exportColumnCheckBox'][value='all']").prop('checked',true); 
-			checkAllObj.on('click',function (){
-				VARSQL.check.allCheck($(this),"input:checkbox[name='exportColumnCheckBox']");
-			});
 		}
 		
 		modalEle.dialog({
@@ -4059,11 +4064,25 @@ _ui.SQL = {
 			,modal: true
 			,buttons: {
 				"Export":function (){
-					if(!confirm('내보내기 하시겠습니까?')) return ; 
+					
+					var chkItems =$.pubGrid('#data-export-column-list').getCheckItems();
+					var chkItemLen = chkItems.length; 
+					if(chkItemLen < 1){
+						VARSQLUI.alert.open({key:'varsql.0006'});
+						return ; 
+					}
+					
+					if(!confirm(VARSQL.messageFormat('varsql.0008'))) return ; 
+					
+					var columnNameArr = [];
+					for(var i =0 ;i < chkItemLen;i++){
+						var item = chkItems[i];
+						columnNameArr.push(item[VARSQLCont.tableColKey.NAME]);
+					}
 					
 					var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
-						,columnInfo : VARSQL.check.getCheckVal("input:checkbox[name='exportColumnCheckBox']:not([value='all'])").join(',')
+						,columnInfo : columnNameArr.join(',')
 						,objectName : tmpName
 						,fileName: $('#exportFileName').val()
 						,limit: $('#exportCount').val()
@@ -4083,6 +4102,26 @@ _ui.SQL = {
 			  $( this ).dialog( "close" );
 			}
 		});
+		
+		if(VARSQL.isUndefined($.pubGrid('#data-export-column-list'))){
+			$.pubGrid('#data-export-column-list',{
+				asideOptions :{
+					lineNumber : {enabled : true,width : 30}
+					,rowSelector :{
+						enabled : true
+						,key : 'checkbox'
+						,name : 'V'
+						,width : 25
+					}
+				}
+				,tColItem : [
+					{key:VARSQLCont.tableColKey.NAME ,label :'Column',width : 150}
+					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Cesc',width : 200}
+				]
+				,tbodyItem :items
+			});
+			$.pubGrid('#data-export-column-list').setCheckItems('all');
+		}
 	}
 	// 스크립트 내보내기
 	,addCreateScriptSql :function (scriptInfo){
@@ -4106,7 +4145,7 @@ _ui.SQL = {
 		var editObj =_self.getSqlEditorObj();
 		
 		if(!editObj){
-			VARSQLUI.alert.open('에디터 창이 없습니다.\n새파일을 클릭후에 추가해주세요.');
+			VARSQLUI.alert.open({key:'varsql.0009'});
 			return ; 
 		}
 		

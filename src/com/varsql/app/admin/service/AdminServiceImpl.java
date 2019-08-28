@@ -15,7 +15,6 @@ import com.varsql.app.admin.beans.Vtconnection;
 import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.dao.AdminDAO;
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
@@ -24,6 +23,7 @@ import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtil;
 import com.vartech.common.utils.VartechUtils;
@@ -216,9 +216,9 @@ public class AdminServiceImpl{
 			if(result > 0 && "Y".equals(vtConnection.getPoolInit())){
 				try {
 					ConnectionFactory.getInstance().resetConnectionPool(vtConnection.getVconnid());
-					resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
+					resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
 				} catch (Exception e) {
-					resultObject.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+					resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
 					resultObject.setMessage(e.getMessage());
 				}
 			}
@@ -273,9 +273,9 @@ public class AdminServiceImpl{
 		if(result > 0 && "Y".equals(vtconnectionOption.getPoolInit())){
 			try {
 				ConnectionFactory.getInstance().resetConnectionPool(vtconnectionOption.getVconnid());
-				resultObject.setResultCode(ResultConstants.CODE_VAL.SUCCESS.intVal());
+				resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
 			} catch (Exception e) {
-				resultObject.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
+				resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
 				resultObject.setMessage(e.getMessage());
 			}
 		}

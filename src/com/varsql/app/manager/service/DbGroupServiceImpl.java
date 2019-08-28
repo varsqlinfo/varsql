@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.dao.DbGroupDAO;
 import com.varsql.app.util.VarsqlUtil;
@@ -16,6 +15,7 @@ import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.PagingUtil;
 
 /**
@@ -137,7 +137,7 @@ public class DbGroupServiceImpl{
 	        	paramMap.put("vconnid", id);
 	        	try{
 	        		dbGroupDAO.insertDbGroupMappingInfo(paramMap);
-	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        		addResultInfo.put(id,ResultConst.CODE.SUCCESS.name());
 	        	}catch(Exception e){
 	        		addResultInfo.put(id,e.getMessage());
 	    		}
@@ -191,7 +191,7 @@ public class DbGroupServiceImpl{
 	        	paramMap.put("viewid", id);
 	        	try{
 	        		dbGroupDAO.updateDbGroupUser(paramMap);
-	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        		addResultInfo.put(id,ResultConst.CODE.SUCCESS.name());
 	        	}catch(Exception e){
 	        		addResultInfo.put(id,e.getMessage());
 	    		}

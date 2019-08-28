@@ -10,12 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.app.admin.dao.ManagerMgmtDAO;
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
-import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.PagingUtil;
 
 /**
@@ -154,7 +153,7 @@ public class ManagerMgmtServiceImpl{
 	        	paramMap.put("viewid", id);
 	        	try{
 	        		managerMgmtDAO.updateDbManager(paramMap);
-	        		addResultInfo.put(id,ResultConstants.CODE_VAL.SUCCESS.name());
+	        		addResultInfo.put(id,ResultConst.CODE.SUCCESS.name());
 	        	}catch(Exception e){
 	        		addResultInfo.put(id,e.getMessage());
 	    		}

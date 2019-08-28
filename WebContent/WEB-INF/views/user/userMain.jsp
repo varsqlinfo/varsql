@@ -133,6 +133,9 @@ var userMain = {
 			return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
 		}
 	} 
+	,activeClose : function (){
+		this.tabObj.rightIconClick(this.tabObj.getSelectItem());
+	}
 }
 
 $(function (){

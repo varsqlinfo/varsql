@@ -45,6 +45,10 @@ public class VtconnectionOption{
 	@Range(min=-1, max=100000000)
 	private Integer exportcount;
 	
+	@NotNull
+	@Range(min=-1, max=100000000)
+	private Integer maxSelectCount;
+	
 	@Size(max=1000)
 	private String vquery;
 
@@ -108,6 +112,20 @@ public class VtconnectionOption{
 
 	public void setExportcount(Integer exportcount) {
 		this.exportcount = exportcount;
+	}
+
+	/**
+	 * @return the maxSelectCount
+	 */
+	public Integer getMaxSelectCount() {
+		return maxSelectCount;
+	}
+
+	/**
+	 * @param maxSelectCount the maxSelectCount to set
+	 */
+	public void setMaxSelectCount(Integer maxSelectCount) {
+		this.maxSelectCount = maxSelectCount;
 	}
 
 }

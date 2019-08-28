@@ -180,7 +180,11 @@ VarsqlAPP.vueServiceBean({
 			
 			if(dbObjType.length < 1){
 				var item = _self.selectObjectItems[Object.keys(_self.selectObjectItems)[0]];
-				_self.setSelectObject(item);
+				
+				if(!VARSQL.isUndefined(item)){
+					_self.setSelectObject(item);	
+				}
+				
 				return ; 
 			}
 				

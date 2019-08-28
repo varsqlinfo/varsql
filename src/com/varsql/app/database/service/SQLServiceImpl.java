@@ -23,13 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.ResultConstants;
-import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.constants.SqlDataConstants;
 import com.varsql.app.database.beans.SqlGridDownloadInfo;
 import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
@@ -40,8 +36,10 @@ import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
@@ -110,9 +108,17 @@ public class SQLServiceImpl{
 		
 		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class); 
 		
+		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlParamInfo.getConuid()); 
+		
 		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
 		
 		List<SqlSource> sqlList = parseInfo.getItems();
+		
+		int limit = sqlParamInfo.getLimit();
+		
+		if(!SecurityUtil.isAdmin()) {
+			sqlParamInfo.setLimit(limit > dbinfo.getMaxSelectCount() ? dbinfo.getMaxSelectCount() : limit);
+		}
 		
 		ArrayList<SqlSourceResultVO> reLst = new ArrayList<SqlSourceResultVO>();
 		
@@ -151,7 +157,7 @@ public class SQLServiceImpl{
 				tmpSqlSource.setResult(ssrv);
 				ssrv.setStarttime(System.currentTimeMillis());
 				
-				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource);
+				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource, dbinfo);
 				
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
@@ -163,6 +169,10 @@ public class SQLServiceImpl{
 				sqlLogInfo.setEndTime(System.currentTimeMillis());
 				
 				sqlLogInsert(sqlLogInfo);
+				
+				if(SqlDataConstants.VIEWTYPE.GRID.val().equals(ssrv.getViewType())) {
+					break; 
+				}
 			}
 			
 			result.setItemList(reLst);
@@ -175,12 +185,12 @@ public class SQLServiceImpl{
 				ssrvNullFlag = true; 
 				ssrv = new SqlSourceResultVO();
 			}
-			//ssrv = new SqlSourceResultVO();
+			
 			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 						
-			result.setResultCode(ResultConstants.CODE_VAL.SQL_ERROR.intVal());
+			result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
 			result.addCustoms("errorLine", sqldx);
 			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 			result.setItemOne(tmpSqlSource);
@@ -241,7 +251,7 @@ public class SQLServiceImpl{
 			stmt.execute(tmpSqlSource.getQuery());
 		}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 			CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
-			setMaxRow(callStatement, maxRow);
+			//setMaxRow(callStatement, maxRow);
 			callStatement.execute();
 			stmt = callStatement; 
 		}else{
@@ -275,7 +285,7 @@ public class SQLServiceImpl{
 	 * @throws SQLException
 	 */
 	private void setMaxRow(Statement stmt, int maxRow) throws SQLException {
-		//stmt.setMaxRows(maxRow);
+		stmt.setMaxRows(maxRow);
 	}
 	
 	/**
@@ -288,17 +298,18 @@ public class SQLServiceImpl{
 	 * @변경이력  :
 	 * @param conn
 	 * @param tmpSqlSource
+	 * @param dbinfo 
 	 * @param vconnid 
 	 * @param maxRow
 	 * @return
 	 * @throws SQLException 
 	 */
-	protected void getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource) throws SQLException {
+	protected void getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource, DatabaseInfo dbInfo) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
 		
-		int maxRow = sqlParamInfo.getLimit(VarsqlParamConstants.SQL_MAX_ROW);
+		int maxRow = sqlParamInfo.getLimit();
 		
 	    try{
 			stmt  = getStatement(conn, tmpSqlSource, maxRow);
@@ -307,10 +318,10 @@ public class SQLServiceImpl{
 			
 			if(rs != null){
 				SqlResultUtil.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow);
-				ssrv.setViewType("grid");
+				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
-				ssrv.setViewType("msg");
+				ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 				ssrv.setResultCnt(stmt.getUpdateCount());
 				ssrv.setResultMessage("success update count : "+ ssrv.getResultCnt());
 			}
@@ -318,7 +329,7 @@ public class SQLServiceImpl{
 			ssrv.setResultType(ResultType.SUCCESS.name());
 			
 	    }catch(SQLException e){
-	    	ssrv.setViewType("msg");
+	    	ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 	    	ssrv.setResultType(ResultType.FAIL.name());
 	    	ssrv.setResultMessage("error : "+e.getSQLState()+": "+ e.getLocalizedMessage());
 	    	logger.error(getClass().getName()+" sqlData", e);
@@ -368,12 +379,15 @@ public class SQLServiceImpl{
 		Connection conn = null;
 		SqlSourceResultVO result = null;
 		sqlSource.setResult(new SqlSourceResultVO());
+		
+		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlParamInfo.getConuid()); 
+		
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
-			getRequestSqlData(sqlParamInfo,conn,sqlSource);
+			getRequestSqlData(sqlParamInfo,conn,sqlSource, dbinfo);
 			result = sqlSource.getResult();
 		} catch (SQLException e) {
-			logger.error(getClass().getName()+"sqlData", e);
+			logger.error(getClass().getName()+" dataExport ", e);
 		}finally{
 			SQLUtil.close(conn);
 		}
@@ -512,14 +526,7 @@ public class SQLServiceImpl{
 	 */
 	public ResponseResult selectSqlFileList(SqlParamInfo sqlParamInfo) {
 		ResponseResult result = new ResponseResult();
-		
-		try{
-			result.setItemList(sqlDAO.selectSqlFileList(sqlParamInfo));
-	    }catch(Exception e){
-	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
-	    	logger.error(getClass().getName()+"selectSqlFileList", e);
-	    	result.setMessageCode(e.getMessage());
-	    }
+		result.setItemList(sqlDAO.selectSqlFileList(sqlParamInfo));
 		return result; 
 	}
 	
@@ -528,19 +535,12 @@ public class SQLServiceImpl{
 	 * @param sqlParamInfo
 	 * @return
 	 */
+	@Transactional(rollbackFor=Throwable.class)
 	public ResponseResult deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
 
 		ResponseResult result = new ResponseResult();
-		try{
-			result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
-			
-			deleteSqlFileTabInfo(sqlParamInfo);
-			
-	    }catch(Exception e){
-	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
-	    	logger.error(getClass().getName()+"deleteSqlSaveInfo", e);
-	    	result.setMessageCode(e.getMessage());
-	    }
+		result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
+		deleteSqlFileTabInfo(sqlParamInfo);
 		return result; 
 	}
 	
@@ -610,14 +610,7 @@ public class SQLServiceImpl{
 	 */
 	public ResponseResult selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
 		ResponseResult result = new ResponseResult();
-		
-		try{
-			result.setItemList(sqlDAO.selectSqlFileTabList(sqlParamInfo));
-	    }catch(Exception e){
-	    	result.setResultCode(ResultConstants.CODE_VAL.ERROR.intVal());
-	    	logger.error(getClass().getName()+"selectSqlFileTabList", e);
-	    	result.setMessageCode(e.getMessage());
-	    }
+		result.setItemList(sqlDAO.selectSqlFileTabList(sqlParamInfo));
 		return result; 
 	}
 	

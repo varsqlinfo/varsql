@@ -127,7 +127,9 @@ public class DbDiffServiceImpl{
 				, vtConnRVO.getBASETABLE_YN()
 				, vtConnRVO.getLAZYLOAD_YN()
 				, vtConnRVO.getVDBVERSION()
-				, vtConnRVO.getSCHEMA_VIEW_YN())
+				, vtConnRVO.getSCHEMA_VIEW_YN()
+				, vtConnRVO.getMAX_SELECT_COUNT()
+			)
 		);
 		
 		return dpi; 

@@ -235,7 +235,7 @@
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
-
+<entry key="admin.form.db.max_select_count">Limit Select Row</entry>
 <entry key="admin.form.db.maxactive">Max Active</entry>
 <entry key="admin.form.db.minidle">Min Idle</entry>
 <entry key="admin.form.db.timeout">Timeout</entry>
