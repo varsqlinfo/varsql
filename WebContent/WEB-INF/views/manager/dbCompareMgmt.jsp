@@ -76,7 +76,7 @@ section#content:after{content:"";display:block;clear:both;}
     <!-- /.col-lg-12 -->
 </div>
 	    			 
-<div class="row" id="varsqlVueArea">
+<div class="row display-off" id="varsqlVueArea">
 	<div class="col-xs-12">
 		<div :class="loading==true?'':'hidden'" style="z-index:100;position:absolute;width:98%; height:100%;">
 			<div style="width:100%;height:100%;background-color: #d3caca;opacity: 0.5;position: absolute;top: 0px;left: 0px;"></div>

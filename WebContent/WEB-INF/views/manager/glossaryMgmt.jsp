@@ -58,9 +58,9 @@
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
-								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
+								<tr v-for="(item,index) in gridData" @click="itemView(item)" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')">
 									<td>{{item.WORD_IDX}}</td>
-									<td :title="item.WORD"><a href="javascript:;" @click="itemView(item)"> {{item.WORD}}</a></td>
+									<td :title="item.WORD"><div class="text-ellipsis">{{item.WORD}}</div></td>
 									<td :title="item.WORD_EN"><div class="text-ellipsis">{{item.WORD_EN}}</div></td>
 									<td :title="item.WORD_ABBR">{{item.WORD_ABBR}}</td>
 									<td :title="item.WORD_DESC"><div class="text-ellipsis">{{item.WORD_DESC}}</div></td>
