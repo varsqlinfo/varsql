@@ -18,7 +18,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.varsql.app.common.constants.ResourceConfigConstants;
-import com.varsql.app.common.web.LoginController;
 import com.varsql.core.connection.beans.ConnectionInfo;
 
 /**
@@ -38,7 +37,7 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 @EnableTransactionManagement
 @Configuration
 public class DataSourceConfig {
-	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
 	
 	@Autowired	
 	private ApplicationContext applicationContext;
