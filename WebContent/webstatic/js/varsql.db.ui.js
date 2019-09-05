@@ -4773,7 +4773,7 @@ _ui.text={
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
 			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden" class="pretty-view-area"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden" class="pretty-view-area"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql" contenteditable="true"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal'); 
 			
 			_this.modalEle = modalEle.dialog({
