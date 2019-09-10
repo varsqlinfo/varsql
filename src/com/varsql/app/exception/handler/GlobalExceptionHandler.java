@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.util.NestedServletException;
 
 import com.varsql.app.common.service.CommonServiceImpl;
 import com.varsql.app.exception.DatabaseInvalidException;
@@ -90,10 +91,12 @@ public class GlobalExceptionHandler{
 		
 		logger.error(getClass().getName(),ex);
 		
+		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
+		
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
 		result.setMessageCode(ex.getMessageCode());
-		result.setMessage(ex.getErrorMessage());
+		result.setMessage(ex.getMessage());
 		
 		exceptionRequestHandle(request, response ,result);
 	}
@@ -114,13 +117,12 @@ public class GlobalExceptionHandler{
 		
 		logger.error(getClass().getName(),ex);
 		
-		
 		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 		
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
 		result.setMessageCode(ex.getMessageCode());
-		result.setMessage(ex.getErrorMessage());
+		result.setMessage(ex.getMessage());
 		
 		exceptionRequestHandle(request, response ,result);
 	}
@@ -210,12 +212,43 @@ public class GlobalExceptionHandler{
 		exceptionRequestHandle(request, response ,result);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : classNotFoundExceptionHandler
+	 * @Method 설명 : class  not found exception 처리. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 9. 7. 
+	 * @변경이력  :
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value= {ClassNotFoundException.class, NoClassDefFoundError.class})
+	public void classExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
+		
+		logger.error("classExceptionHandler : ", getClass().getName(),ex);
+		ResponseResult result = new ResponseResult();
+		result.setMessage(ex.getMessage());
+		exceptionRequestHandle(request, response ,result);
+	}
+	
 	@ExceptionHandler(value=Exception.class)
 	public void exceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 		
-		logger.error(getClass().getName(),ex);
+		logger.error("exceptionHandler : {}",getClass().getName(),ex);
 		
 		ResponseResult result = new ResponseResult();
+		
+		if(ex instanceof NestedServletException) {
+			NestedServletException  nestedServletException= (NestedServletException)ex;
+			
+			Throwable throwable= nestedServletException.getRootCause();
+			
+			if(throwable instanceof NoClassDefFoundError || throwable instanceof ClassNotFoundException) {
+				result.setMessage(ex.getMessage());
+			}
+		}
+		
 		exceptionRequestHandle(request, response ,result);
 	}
 	
