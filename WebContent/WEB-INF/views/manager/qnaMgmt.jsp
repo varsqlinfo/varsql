@@ -59,7 +59,7 @@
 							
 							<div class="form-group">
 								<label>Answer ({{item.CHAR_ANSWER_DT}})</label>
-								<textarea class="form-control answerTextArea" rows="3">{{item.ANSWER||''}}</textarea>
+								<textarea v-model="item.ANSWER" class="form-control answerTextArea" rows="3"></textarea>
 							</div>
 							<div class="text-right"><button type="button" class="btn btn-xs btn-primary" @click="save(item)">Save</button></div>
 		    			</template>
