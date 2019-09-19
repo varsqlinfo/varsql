@@ -740,11 +740,12 @@ Plugin.prototype ={
 			++viewColCount; 
 
 			if(viewAllLabel){
-				tciItem.width = tciItem.label.length * 5; 
+				var labelWidth = tciItem.label.length * 5;
+				tciItem.width = isNaN(tciItem.width) ? labelWidth : (labelWidth > tciItem.width ? labelWidth: tciItem.width);
 			}else{
-				tciItem.width = isNaN(tciItem.width) ? 0 :tciItem.width; 
+				tciItem.width = isNaN(tciItem.width) ? opt.colOptions.minWidth :tciItem.width; 
 			}
-			
+
 			tciItem.width = Math.max(tciItem.width, opt.colOptions.minWidth);
 			
 			tciItem['_alignClass'] = tciItem.align=='right' ? 'ar' : (tciItem.align=='center'?'ac':'al');
@@ -1726,23 +1727,26 @@ Plugin.prototype ={
 		
 		var itemIdx = _this.config.scroll.viewIdx;
 		var viewCount = _this.config.scroll.viewCount;
+		
 		// aside number size check
 		if(_this.options.asideOptions.lineNumber.enabled ===true){
 			var itemViewMaxCnt = itemIdx+viewCount; 
-			if((itemViewMaxCnt) >10000){
+
+			if((itemViewMaxCnt) > 999){
 				var idxCharLen = (itemViewMaxCnt+'').length; 
 
 				if(_this.config.aside.lineNumberCharLength != idxCharLen){
 				
 					_this.config.aside.lineNumberCharLength = idxCharLen;
 
-					var asideWidth = idxCharLen * _this.options.asideOptions.lineNumber.charWidth; 
+					var asideWidth = _this.options.asideOptions.lineNumber.width + ((idxCharLen-3) * _this.options.asideOptions.lineNumber.charWidth); 
 
 					$('#'+_this.prefix+'colhead'+_this.options.asideOptions.lineNumber.key).css('width',  asideWidth+'px');
 					$('#'+_this.prefix+'colbody'+_this.options.asideOptions.lineNumber.key).css('width',  asideWidth+'px');
 
 					_this.config.gridWidth.aside = _this.config.aside.initWidth - _this.options.asideOptions.lineNumber.width + asideWidth;
-					_this.calcDimension('resize');
+					_this.calcDimension('resize_aside');
+
 				}
 			}else{
 				if(_this.config.aside.lineNumberCharLength != 0){
@@ -1752,9 +1756,12 @@ Plugin.prototype ={
 					$('#'+_this.prefix+'colbody'+_this.options.asideOptions.lineNumber.key).css('width',  _this.options.asideOptions.lineNumber.width+'px');
 
 					_this.config.aside.lineNumberCharLength= 0; 
-					_this.calcDimension('resize');
+					_this.calcDimension('resize_aside');
+					
 				}
 			}
+			itemIdx = _this.config.scroll.viewIdx;
+			viewCount = _this.config.scroll.viewCount;
 		}
 		
 		// remove edit area
@@ -1923,7 +1930,11 @@ Plugin.prototype ={
 	 * @param  opt {Object}  옵션.
 	 * @description 그리드 수치 계산 . 
 	 */
-	, calcDimension : function (type, opt){
+	, calcDimension : function (pType, opt){
+		
+		var typeInfo =pType.split('_');
+		var type = typeInfo[0];
+		var subType = typeInfo[1] ||'';
 
 		var _this = this
 			,cfg = _this.config; 
@@ -2039,7 +2050,7 @@ Plugin.prototype ={
 		cfg.scroll.bodyViewCount = Math.ceil(bodyH/cfg.rowHeight);
 		cfg.scroll.insideViewCount = Math.floor(bodyH/cfg.rowHeight);
 		cfg.container.bodyHeight = bodyH;
-		
+
 		var topVal = 0 ; 
 		if(vScrollFlag && cfg.dataInfo.orginRowLen >= cfg.scroll.viewCount){
 			cfg.scroll.vUse = true;
@@ -2106,8 +2117,15 @@ Plugin.prototype ={
 						
 		var drawFlag =false; 
 
+
+
 		if(type !='init' && ( beforeViewCount != cfg.scroll.viewCount )){
 			drawFlag = _this.getTbodyHtml(); 
+		}
+
+		if(subType =='aside'){
+			_this.moveVerticalScroll({rowIdx :cfg.scroll.viewIdx, drawFlag : false,resizeFlag:true});
+			return ; 
 		}
 
 		if(cfg.scroll.startCol != cfg.scroll.before.startCol || cfg.scroll.before.endCol != cfg.scroll.endCol ){
@@ -3231,16 +3249,13 @@ Plugin.prototype ={
 		if(isFunction(_this.options.rowOptions.click)){	
 
 			_this.element.body.on('click.pubgrid.row','.pub-body-tr',function (e){
-				var selRow = $(this)
-					,rowinfo=intValue(selRow.attr('rowinfo'));
+				var selRow = $(this);
 
 				if(selRow.closest('.pubGrid-body-aside-cont').length > 0){
 					return true; 
 				}
 				
-				rowinfo = _this.config.scroll.viewIdx+rowinfo;
-
-				_this.options.rowOptions.click.call(selRow ,{item : _this.options.tbodyItem[rowinfo] ,r: rowinfo} );
+				_this.options.rowOptions.click.call(null , _this.getCurrentClickInfo());
 						
 			});
 		}
@@ -3383,12 +3398,14 @@ Plugin.prototype ={
 			}	
 			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode ,colIdx , _this.config.dataInfo ,_this.config.selection.isMouseDown);
 			
-			var selItem = _this.options.tbodyItem[selRow];
+			var selItem = _this.options.tbodyItem[selIdx];
 			var colItem = _this.config.tColItem[colIdx]; 
 
 			_this.config.currentClickInfo ={
 				column : colItem
 				,item : selItem
+				,r : selIdx
+				,c : colIdx
 			};
 			
 			if(multipleFlag && e.shiftKey) {	// shift key
