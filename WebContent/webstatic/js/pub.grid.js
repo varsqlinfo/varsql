@@ -3245,20 +3245,6 @@ Plugin.prototype ={
 			});
 		}
 		
-		// row click event
-		if(isFunction(_this.options.rowOptions.click)){	
-
-			_this.element.body.on('click.pubgrid.row','.pub-body-tr',function (e){
-				var selRow = $(this);
-
-				if(selRow.closest('.pubGrid-body-aside-cont').length > 0){
-					return true; 
-				}
-				
-				_this.options.rowOptions.click.call(null , _this.getCurrentClickInfo());
-						
-			});
-		}
 		// row cell double click event
 		var dblCheckFlag = _this.options.rowOptions.dblClickCheck===true; 
 		
@@ -3331,6 +3317,9 @@ Plugin.prototype ={
 				}
 			}, bodyDragDelay);
 		}
+
+		var rowClickFn = _this.options.rowOptions.click; 
+		var rowClickFlag = isFunction(rowClickFn); 
 		
 		// body  selection 처리. 
 		_this.element.body.on('mousedown.pubgrid.col','.pub-body-td',function (e){
@@ -3454,6 +3443,13 @@ Plugin.prototype ={
 					,item:selItem
 				});
 				return true; 
+			}
+			// row click event 
+			if(rowClickFlag){
+				if(sEle.closest('.pubGrid-body-aside-cont').length > 0){
+					return true; 
+				}
+				rowClickFn.call(null , _this.getCurrentClickInfo());
 			}
 			
 			return true;

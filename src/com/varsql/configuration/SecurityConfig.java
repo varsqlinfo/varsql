@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -17,6 +19,8 @@ import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.UserService;
 import com.varsql.core.auth.VarsqlAccessDeniedHandler;
 import com.varsql.core.auth.VarsqlAuthenticationFailHandler;
+import com.varsql.core.auth.VarsqlAuthenticationLogoutHandler;
+import com.varsql.core.auth.VarsqlAuthenticationLogoutSuccessHandler;
 import com.varsql.core.auth.VarsqlAuthenticationProvider;
 import com.varsql.core.auth.VarsqlAuthenticationSuccessHandler;
 import com.varsql.core.configuration.VarsqlWebConfig;
@@ -93,13 +97,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     	.logout()
 	        .logoutUrl("/logout")
 	        .logoutSuccessUrl("/login")
+	        .addLogoutHandler(logoutHandler())
+	        .logoutSuccessHandler(logoutSuccessHandler())
 	        .invalidateHttpSession(true)
 	        .deleteCookies("JSESSIONID").permitAll()
 	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+
 		.and()
 			.httpBasic();				
 	}
 	
+	@Bean
+	public LogoutHandler logoutHandler() {
+		return new VarsqlAuthenticationLogoutHandler();
+	}
+
+	@Bean
+	public LogoutSuccessHandler logoutSuccessHandler() {
+		return new VarsqlAuthenticationLogoutSuccessHandler();
+	}
+
 	@Bean
 	public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
 		return new RestAuthenticationEntryPoint();
