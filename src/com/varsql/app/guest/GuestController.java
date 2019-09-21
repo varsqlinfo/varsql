@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.service.UserMainServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
@@ -61,7 +61,7 @@ public class GuestController {
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 	
 		return userMainServiceImpl.selectQna(searchParameter);
 	}

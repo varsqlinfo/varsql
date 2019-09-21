@@ -11,7 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.SearchParameter;
@@ -149,8 +149,8 @@ public class ManagerController {
 		model.addAttribute("selectMenu", "dbCompareMgmt");
 		
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
@@ -179,8 +179,8 @@ public class ManagerController {
 		model.addAttribute("currentDate", DateUtils.getCurrentDate());
 		
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
@@ -206,8 +206,8 @@ public class ManagerController {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));

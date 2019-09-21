@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
@@ -251,7 +251,7 @@ public class UserMainController {
 	@RequestMapping({"/preferences/listMsg"})
 	public @ResponseBody ResponseResult preferenceslistMsg(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return  userMainServiceImpl.selectUserMsg(searchParameter);
 	}
@@ -277,7 +277,7 @@ public class UserMainController {
 	@RequestMapping({"/preferences/deleteMsg"})
 	public @ResponseBody ResponseResult preferencesdeleteMsg(HttpServletRequest req) throws Exception {
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return  userMainServiceImpl.deleteUserMsg( paramMap);
 	}
@@ -298,7 +298,7 @@ public class UserMainController {
 	public @ResponseBody ResponseResult searchUserList(HttpServletRequest req, HttpServletResponse response) throws Exception {	
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.selectSearchUserList(paramMap);
 	}
@@ -353,7 +353,7 @@ public class UserMainController {
 	public @ResponseBody ResponseResult message(HttpServletRequest req, HttpServletResponse response) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.selectMessageInfo(paramMap);
 	}
@@ -374,7 +374,7 @@ public class UserMainController {
 	public @ResponseBody ResponseResult updMsgViewDt(HttpServletRequest req, HttpServletResponse response) throws Exception {
 		
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(UserConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.updateMemoViewDate(paramMap);
 	}
@@ -393,7 +393,7 @@ public class UserMainController {
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 	
 		return userMainServiceImpl.selectQna(searchParameter);
 	}

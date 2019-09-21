@@ -4,8 +4,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.database.dao.DatabaseDAO;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
@@ -16,7 +21,7 @@ import com.vartech.common.app.beans.ResponseResult;
 
 /**
  * 
- * @FileName  : AdminServiceImpl.java
+ * @FileName  : DatabaseServiceImpl.java
  * @Date      : 2014. 8. 18. 
  * @작성자      : ytkim
  * @변경이력 :
@@ -26,6 +31,8 @@ import com.vartech.common.app.beans.ResponseResult;
 public class DatabaseServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 	
+	@Autowired
+	private DatabaseDAO databaseDAO ;
 	/**
 	 * 
 	 * @Method Name  : schemas
@@ -183,5 +190,27 @@ public class DatabaseServiceImpl{
 			logger.error("createDDL : ", e);
 		}
 		return result;
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : insertDbConnectionHistory
+	 * @Method 설명 : db 접속 로그 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 9. 21. 
+	 * @변경이력  :
+	 * @param databaseParamInfo
+	 */
+	public void insertDbConnectionHistory(DatabaseParamInfo databaseParamInfo) {
+		try{
+			Map param = new HashMap();
+			
+			param.put(VarsqlParamConstants.VCONNID, databaseParamInfo.getVconnid());
+			param.put(VarsqlParamConstants.VIEWID, databaseParamInfo.getUserid());
+			param.put("reqUrl", "main");
+			databaseDAO.insertDbConnectionHistory(param);
+		}catch(Exception e){
+			logger.error("insertDbConnectionHistory : ", e);
+		}
 	}
 }

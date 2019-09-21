@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.plugin.service.PluginServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
@@ -78,7 +78,7 @@ public class PluginController {
 		SearchParameter param = HttpUtils.getSearchParameter(req);
 		
 		param.addCustomParam("conuid", SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get("conuid"))));
-		param.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		param.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return pluginServiceImpl.historySearch(param);
 	}

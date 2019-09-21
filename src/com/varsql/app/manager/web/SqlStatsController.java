@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.common.constants.UserConstants;
+import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.app.manager.service.SqlStatsServiceImpl;
@@ -55,8 +55,8 @@ public class SqlStatsController {
 	@RequestMapping({"/dbList"})
 	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(UserConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(UserConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return dbnUserServiceImpl.selectdbList(searchParameter);
 	}
