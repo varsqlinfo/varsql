@@ -20,7 +20,8 @@ public interface SqlDataConstants {
 	public int DEFAULT_LIMIT_ROW_COUNT =1000; 
 	
 	enum ERROR{
-		SQL(10000)	// sql query error code 10000 번 부터 시작. 
+		SQL(10000)
+		,CONNECTION(10001)// sql query error code 10000 번 부터 시작. 
 		;
 		
 		int code = -1; 

@@ -40,6 +40,7 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseInfo;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
@@ -177,7 +178,7 @@ public class SQLServiceImpl{
 			
 			result.setItemList(reLst);
 			conn.commit();
-		} catch (Exception e) {
+		} catch (Throwable e ) {
 			if(conn != null) conn.rollback();
 			
 			boolean ssrvNullFlag = false; 
@@ -189,8 +190,13 @@ public class SQLServiceImpl{
 			ssrv.setEndtime(System.currentTimeMillis());
 			String tmpMsg = parseInfo.getMessage();
 			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
-						
-			result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
+			
+			if(e instanceof ConnectionFactoryException) {
+				result.setResultCode(SqlDataConstants.ERROR.CONNECTION.intVal());
+			}else {
+				result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
+			}
+			
 			result.addCustoms("errorLine", sqldx);
 			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 			result.setItemOne(tmpSqlSource);

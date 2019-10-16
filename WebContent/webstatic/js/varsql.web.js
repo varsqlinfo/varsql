@@ -303,6 +303,9 @@ _$base.req ={
 						(top || window).location.href=VARSQL.contextPath;
 					}
 					return ; 
+				}else if(resultCode == 10001){ // connection error
+					alert(data.message);
+					return ; 
 				}
 			}
 			try{
