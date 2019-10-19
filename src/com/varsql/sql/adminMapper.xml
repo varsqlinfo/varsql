@@ -368,14 +368,14 @@
 		where 1=1
 		and 
 		<choose>
-			<when test="category=='0'">
+			<when test='"2".equals(category)'>
 				SERVER_ID like '%'||#{keyword}||'%'
 			</when>
-			<when test="category=='1'">
+			<when test='"0".equals(category)'>
 				EXCP_TYPE like '%'||#{keyword}||'%'
 			</when>
-			<when test="category=='2'">
-				EXCP_TYPE like '%'||#{keyword}||'%'
+			<when test='"1".equals(category)'>
+				EXCP_CONT like '%'||#{keyword}||'%'
 			</when>
 	    	<otherwise>
 	      		EXCP_TITLE like '%'||#{keyword}||'%'
@@ -391,14 +391,14 @@
 		where 1=1
 		and 
 		<choose>
-			<when test="category=='0'">
+			<when test='"2".equals(category)'>
 				SERVER_ID like '%'||#{keyword}||'%'
 			</when>
-			<when test="category=='1'">
+			<when test='"0".equals(category)'>
 				EXCP_TYPE like '%'||#{keyword}||'%'
 			</when>
-			<when test="category=='2'">
-				EXCP_TYPE like '%'||#{keyword}||'%'
+			<when test='"1".equals(category)'>
+				EXCP_CONT like '%'||#{keyword}||'%'
 			</when>
 	    	<otherwise>
 	      		EXCP_TITLE like '%'||#{keyword}||'%'

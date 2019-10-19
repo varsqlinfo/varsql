@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.dao.BaseDAO;
+import com.varsql.app.util.VarsqlUtil;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.VartechReflectionUtils;
 
 
 @Repository
@@ -22,6 +24,9 @@ public class ErrorLogDAO extends BaseDAO{
 	 * @return
 	 */
 	public int selectErrorTotalCnt(SearchParameter searchParameter) {
+		System.out.println("11111111111111111111111");
+		System.out.println(VartechReflectionUtils.reflectionToString(searchParameter));
+		System.out.println("11111111111111111111111");
 		return getSqlSession().selectOne("adminMapper.selectErrorTotalCnt", searchParameter);
 	}
 	

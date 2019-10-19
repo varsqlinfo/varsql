@@ -80,9 +80,9 @@
 					<div class="form-group">
 						<div class="col-sm-12">
 							<div class="pull-right">
-								<button type="button" class="btn btn-default" @click="fieldClear()"><spring:message code="btn.add"/></button>
+								<button type="button" class="btn btn-default" :class="(isViewMode?'':'hide')" @click="fieldClear()"><spring:message code="btn.add"/></button>
 								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
-								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')" @click="deleteInfo()"><spring:message code="btn.delete"/></button>
 							</div>
 						</div>
 					</div>

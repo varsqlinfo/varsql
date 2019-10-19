@@ -2905,7 +2905,7 @@ _ui.SQL = {
 						,{ key : "formatUtil","name": "정렬" , hotkey :'Ctrl+Shift+F'}
 					]
 				}
-				,{key : "upperLowerCase", "name": "대소문자변환" 
+				,{key : "upperLowerCase", "name": "변환" 
 					,subMenu: [
 						{ key : "upper","name": "대문자변환",hotkey :'Ctrl+Shift+X'}
 						,{ key : "lower","name": "소문자" , hotkey :'Ctrl+Shift+Y'}
@@ -3291,10 +3291,13 @@ _ui.SQL = {
 			findPos = _self.getSelectionPosition(true);
 		}
 		var schTxt = orginTxt;
+		
+		var caseSearchOpt = findOpt.caseSearch == true?'' :'i';
+		
 		if(findOpt.regularSearch===true){
-			schTxt = new RegExp(schTxt,'i');
+			schTxt = new RegExp(schTxt,caseSearchOpt);
 		}else{
-			schTxt = new RegExp(schTxt.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),'i');
+			schTxt = new RegExp(schTxt.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),caseSearchOpt);
 		}
 		
 		if(replaceAllFlag ===true){ //  모두 바꾸기

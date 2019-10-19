@@ -52,11 +52,13 @@
 					<span class="varsql-menu-item-key">Ctrl+Y</span>
 				</a>
 			</li>
+			<%-- 
 			<li class="varsql-menu-item" data-menu-item="edit_compare">
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.edit.compare" /></span>
 				</a>
 			</li>
+			--%>
 		</ul>
 	</li>
 	<li class="top-menu-button">

@@ -110,7 +110,11 @@ var sqlLogStat ={
 			,format: "yyyy-mm-dd"
 			,autoclose: true
 		}).on('changeDate', function(e){
-			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number($('#searchGubun').val()));
+			var searchGbn = $('#searchGubun').val(); 
+			if(searchGbn != ''){
+				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number(searchGbn));
+			}
+			
 	    });
 		
 		$('#edt').datepicker({
@@ -118,12 +122,18 @@ var sqlLogStat ={
 			,format: "yyyy-mm-dd"
 			,autoclose: true
 		}).on('changeDate', function(e){
-			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+$('#searchGubun').val()));
+			var searchGbn = $('#searchGubun').val(); 
+			if(searchGbn != ''){
+				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
+			}
 	    });
 		
 		// 주별 등 change
 		$('#searchGubun').on('change',function (){
-			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+$('#searchGubun').val()));
+			var searchGbn = $('#searchGubun').val(); 
+			if(searchGbn != ''){
+				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
+			}
 		});
 		
 		$('#dbinfolist').on('change',function (){
@@ -290,7 +300,9 @@ var sqlLogStat ={
 									 	<div class="input-group input-daterange">
 								            <span class="input-group-addon" style="padding:0px 12px;background:auto;border:0px;">
 								            	조회구분
-								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}"><select id="searchGubun" name="searchGubun" class="input-sm">
+								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
+								            	<select id="searchGubun" name="searchGubun" class="input-sm">
+													<option value="">선택</option>
 													<option value="7">주</option>
 													<option value="30">월</option>
 													<option value="90">분기</option>

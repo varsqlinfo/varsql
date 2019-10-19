@@ -68,7 +68,7 @@
 	<div class="col-xs-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<spring:message code="manage.dbgroup.mapping" /> 
+				<spring:message code="manage.dbgroup.usermapping" /> 
 				<template v-if="detailItem.groupName">
 					[[<b>{{detailItem.groupName}}</b>]]
 				</template>
