@@ -21,7 +21,8 @@ public interface SqlDataConstants {
 	
 	enum ERROR{
 		SQL(10000)
-		,CONNECTION(10001)// sql query error code 10000 번 부터 시작. 
+		,CONNECTION(10001)// sql query error code 10000 번 부터 시작.
+		,RESULT_CONVERT(10002) // sql result set 변환 에러. 
 		;
 		
 		int code = -1; 

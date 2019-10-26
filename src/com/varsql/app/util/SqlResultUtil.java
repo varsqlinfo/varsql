@@ -11,7 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.varsql.app.common.constants.SqlDataConstants;
 import com.varsql.app.database.beans.SqlParamInfo;
+import com.varsql.app.exception.VarsqlResultConvertException;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -134,17 +136,24 @@ public class SqlResultUtil {
 		String tmpColumnType = "";
 		ArrayList rows = new ArrayList();
 		int totalCnt = 0 ; 
-		while (rs.next()) {
-			
-			row = new LinkedHashMap(count);
-			for (int colIdx = 1; colIdx <= count; colIdx++) {				
-				row = resultsetHandler.getDataValue(row, columns_key[colIdx-1], rs, colIdx, columns_type[colIdx-1], columns_type_name[colIdx-1]);
+		try {
+			while (rs.next()) {
+				
+				row = new LinkedHashMap(count);
+				for (int colIdx = 1; colIdx <= count; colIdx++) {				
+					row = resultsetHandler.getDataValue(row, columns_key[colIdx-1], rs, colIdx, columns_type[colIdx-1], columns_type_name[colIdx-1]);
+				}
+				rows.add(row);
+				++first;
+				totalCnt++;
+				
+				if(first >= last) break;
 			}
-			rows.add(row);
-			++first;
-			totalCnt++;
-			
-			if(first >= last) break;
+		}catch(SQLException e) {
+			ssrv.setData(rows);
+			ssrv.setResultCnt(totalCnt);
+			ssrv.setResultMessage(e.getMessage());
+			throw new VarsqlResultConvertException(SqlDataConstants.ERROR.RESULT_CONVERT.intVal(), ssrv , e);
 		}
 		ssrv.setData(rows);
 		ssrv.setResultCnt(totalCnt);

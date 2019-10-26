@@ -42,15 +42,15 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
         			return false; 
     			}
     		}
-    		
-    		String databaseName = vtConnection.getVdatabasename();
-    		
-    		if(databaseName ==null || "".equals(databaseName.trim())) {
-    			context.disableDefaultConstraintViolation();
-    			context.buildConstraintViolationWithTemplate( "{com.varsql.app.admin.beans.valid.ValidUrlDirectYn.databaseName}" ).addConstraintViolation();
-    			return false; 
-    		}
     	}
+    	
+    	String databaseName = vtConnection.getVdatabasename();
+		
+		if(databaseName ==null || "".equals(databaseName.trim())) {
+			context.disableDefaultConstraintViolation();
+			context.buildConstraintViolationWithTemplate( "{com.varsql.app.admin.beans.valid.ValidUrlDirectYn.databaseName}" ).addConstraintViolation();
+			return false; 
+		}
     	
         return true;
     }

@@ -31,6 +31,7 @@ import com.varsql.app.database.beans.SqlLogInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.beans.SqlUserHistoryInfo;
 import com.varsql.app.database.dao.SQLDAO;
+import com.varsql.app.exception.VarsqlResultConvertException;
 import com.varsql.app.util.SqlResultUtil;
 import com.varsql.app.util.VarsqlUtil;
 import com.varsql.core.common.constants.VarsqlConstants;
@@ -181,31 +182,39 @@ public class SQLServiceImpl{
 		} catch (Throwable e ) {
 			if(conn != null) conn.rollback();
 			
-			boolean ssrvNullFlag = false; 
-			if(ssrv==null) {
-				ssrvNullFlag = true; 
-				ssrv = new SqlSourceResultVO();
-			}
+			errorMsg = e.getMessage();
 			
-			ssrv.setEndtime(System.currentTimeMillis());
-			String tmpMsg = parseInfo.getMessage();
-			tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
-			
-			if(e instanceof ConnectionFactoryException) {
-				result.setResultCode(SqlDataConstants.ERROR.CONNECTION.intVal());
+			if(e instanceof VarsqlResultConvertException){
+				result.setResultCode(SqlDataConstants.ERROR.RESULT_CONVERT.intVal());
+				ssrv= ((VarsqlResultConvertException)e).getSsrv();
+				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 			}else {
-				result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
+				boolean ssrvNullFlag = false; 
+				if(ssrv==null) {
+					ssrvNullFlag = true; 
+					ssrv = new SqlSourceResultVO();
+				}
+				
+				ssrv.setEndtime(System.currentTimeMillis());
+				String tmpMsg = parseInfo.getMessage();
+				tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
+				
+				if(e instanceof ConnectionFactoryException) {
+					result.setResultCode(SqlDataConstants.ERROR.CONNECTION.intVal());
+				}else {
+					result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
+				}
+				
+				result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
+				
+				if(ssrvNullFlag) {
+					result.setMessage(errorMsg);
+				}
 			}
 			
 			result.addCustoms("errorLine", sqldx);
-			result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 			result.setItemOne(tmpSqlSource);
 			
-			errorMsg = e.getMessage();
-			
-			if(ssrvNullFlag) {
-				result.setMessage(errorMsg);
-			}
 			if(VarsqlUtil.isRuntimelocal()) {
 				logger.error(getClass().getName()+" sqlData : ", e);
 			}
@@ -337,7 +346,7 @@ public class SQLServiceImpl{
 	    }catch(SQLException e){
 	    	ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 	    	ssrv.setResultType(ResultType.FAIL.name());
-	    	ssrv.setResultMessage("error : "+e.getSQLState()+": "+ e.getLocalizedMessage());
+	    	ssrv.setResultMessage(String.format("errorcode :%s ; sql state : %s ; message : %s",e.getErrorCode() ,e.getSQLState() , e.getMessage()));
 	    	logger.error(getClass().getName()+" sqlData", e);
 	    	throw new SQLException(e);
 		} finally {

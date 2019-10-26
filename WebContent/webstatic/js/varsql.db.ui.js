@@ -4275,30 +4275,8 @@ _ui.sqlDataArea =  {
 		var msgViewFlag =false,gridViewFlag = false;
 		
 		var resultMsg = [];
-		
-		if(resultData.resultCode ==10000){
-			
-			var errQuery = resultData.item.query; 
-			msgViewFlag =true;
-			
-			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(resultData.item.result.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+resultData.message+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
-			logValEle.find('.log-query').text(errQuery);
-			
-			resultMsg.push(logValEle.html());
-			logValEle.empty();
-			logValEle= null; 
-			
-			if(_ui.SQL.getSqlEditorObj() !==false){
-				var stdPos = _ui.SQL.getSelectionPosition();
-				
-				var cursor =_ui.SQL.getSqlEditorObj().getSearchCursor(errQuery, stdPos);
-				
-				if(cursor.findNext()){
-					_ui.SQL.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
-				}
-			}
-			
-		}else{
+		var resultCode = resultData.resultCode; 
+		if(resultCode == 200){
 			var resData = resultData.items; 
     		var resultLen = resData.length;
     		
@@ -4329,6 +4307,38 @@ _ui.sqlDataArea =  {
 				}
 				    				
 				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
+			}
+		}else{
+			var errQuery = resultData.item.query; 
+			msgViewFlag =true;
+			var errorMessage; 
+			var msgItemResult = resultData.item.result; 
+			if(resultCode ==10002){
+				_self._currnetQueryReusltData =msgItemResult;
+				errorMessage = msgItemResult.resultMessage;
+				// todo click 시 변경되게 수정할것. 
+				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
+				_self.setGridData(_self._currnetQueryReusltData);
+				_self.viewResultColumnType();
+			}else{
+				errorMessage = resultData.message; 
+			}
+			
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+			logValEle.find('.log-query').text(errQuery);
+			
+			resultMsg.push(logValEle.html());
+			logValEle.empty();
+			logValEle= null; 
+			
+			if(_ui.SQL.getSqlEditorObj() !==false){
+				var stdPos = _ui.SQL.getSelectionPosition();
+				
+				var cursor =_ui.SQL.getSqlEditorObj().getSearchCursor(errQuery, stdPos);
+				
+				if(cursor.findNext()){
+					_ui.SQL.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
+				}
 			}
 		}
 		

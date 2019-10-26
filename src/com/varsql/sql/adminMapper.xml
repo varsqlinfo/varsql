@@ -119,6 +119,7 @@
 		set 
 			VNAME =#{vname}
 			,URL_DIRECT_YN = #{urlDirectYn} 
+			,VDATABASENAME =#{vdatabasename} 
 			<choose>
 				<when test='"Y".equals(urlDirectYn)'>
 					,VURL =#{vurl}
@@ -133,7 +134,6 @@
 				    	</otherwise>
 				  	</choose>
 					,VSERVERIP = #{vserverip} 
-					,VDATABASENAME =#{vdatabasename} 
 		    	</otherwise>
 		  	</choose>
 			, VDBSCHEMA =#{vdbschema}

@@ -111,13 +111,6 @@
 									<div v-if="errors.has('PORT')" class="help-block">{{ errors.first('PORT') }}</div>
 								</div>
 							</div>
-							<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
-								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
-								<div class="col-sm-8">
-									<input type="text" v-model="detailItem.VDATABASENAME" v-validate="'required'" name="DBNAME" class="form-control" />
-									<div v-if="errors.has('DBNAME')" class="help-block">{{ errors.first('DBNAME') }}</div>
-								</div>
-							</div>
 						</div>
 						<div v-else>
 							<div class="form-group" :class="errors.has('URL') ? 'has-error' :''">
@@ -128,6 +121,15 @@
 								</div>
 							</div>
 						</div>
+						
+						<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
+							<div class="col-sm-8">
+								<input type="text" v-model="detailItem.VDATABASENAME" v-validate="'required'" name="DBNAME" class="form-control" />
+								<div v-if="errors.has('DBNAME')" class="help-block">{{ errors.first('DBNAME') }}</div>
+							</div>
+						</div>
+						
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
 							<div class="col-sm-8">
