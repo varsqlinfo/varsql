@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="user.menu.edit.general" /></h1>
+        <h1 class="page-header"><spring:message code="user.prefernces.menu.general" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>

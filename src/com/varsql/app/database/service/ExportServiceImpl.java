@@ -158,6 +158,7 @@ public class ExportServiceImpl{
 		
 		logger.debug("tableSpecExport :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
+		logger.debug("MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() :{}", MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() );
 		
 		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 		

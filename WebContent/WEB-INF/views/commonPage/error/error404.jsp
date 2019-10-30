@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!doctype html>
 <html>
 <head>
@@ -14,10 +14,11 @@ html, body{width:100%;height:100%;overflow:hidden;}
 		<tbody>
 			<tr>
 				<td style="text-align: center;">
-					<div><a href="${pageContext.request.contextPath}">메인화면 가기</a></div>
+					<div><a href="javascript:history.go(-1)"><spring:message code="back.page" /></a></div>
+					<div><a href="${pageContext.request.contextPath}"><spring:message code="main.page" /></a></div>
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div>
-							등록되지 않은 페이지 입니다. <br/>
+							<spring:message code="error.message404" /><br/>
 						</div>
 						<div>&nbsp;</div>
 					</div>

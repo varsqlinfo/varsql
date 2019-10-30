@@ -42,7 +42,7 @@
 				</jsp:include>
 
 				<li>
-					<a href="javascript:;" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
+					<a href="<c:url value="/user/preferences?header=N" />" target="_blank" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
 				</li>
 				<li class="divider"></li>
 				<li>
@@ -72,10 +72,14 @@ var userHeader = {
 		})
 		
 		$('.preferences').on('click', function(e) {
+			return ; 
+			/*
+			// 191030 popup 로 호출 하게 철
 			userMain.addTabInfo({
 				conuid : 'preferences'
 				,name : '환경설정'
 			});
+			*/
 		})
 	},
 	messageLoad : function() {

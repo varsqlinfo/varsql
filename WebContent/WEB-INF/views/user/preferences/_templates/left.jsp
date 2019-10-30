@@ -4,22 +4,27 @@
 <ul class="nav left-menu">
     <li class="<c:if test="${fn:endsWith(originalURL,'/user/preferences')}"> active</c:if>">
         <a href="<c:url value="/user/preferences?header=${headerview}" />">
-        	<spring:message code="user.menu.edit.general" />
+        	<spring:message code="user.prefernces.menu.general" />
         </a>
     </li>
     <li class="<c:if test="${fn:endsWith(originalURL,'/preferences/password')}"> active</c:if>">
         <a href="<c:url value="/user/preferences/password?header=${headerview}" />">
-        	<spring:message code="user.menu.edit.pasword" />
+        	<spring:message code="user.prefernces.menu.pasword" />
         </a>
     </li>
     <li class="<c:if test="${fn:endsWith(originalURL,'/preferences/message')}"> active</c:if>">
         <a href="<c:url value="/user/preferences/message?header=${headerview}" />">
-        	<spring:message code="user.menu.edit.message" />
+        	<spring:message code="user.prefernces.menu.message" />
         </a>
     </li>
     <li class="<c:if test="${fn:endsWith(originalURL,'/preferences/qna')}"> active</c:if>">
         <a href="<c:url value="/user/preferences/qna?header=${headerview}" />">
-        	<spring:message code="user.menu.edit.qna" />
+        	<spring:message code="user.prefernces.menu.qna" />
+        </a>
+    </li>
+    <li class="<c:if test="${fn:endsWith(originalURL,'/preferences/sqlfile')}"> active</c:if>">
+        <a href="<c:url value="/user/preferences/sqlFile?header=${headerview}" />">
+        	<spring:message code="user.prefernces.menu.sqlfile" />
         </a>
     </li>
 </ul>

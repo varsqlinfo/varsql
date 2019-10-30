@@ -31,10 +31,10 @@ import com.vartech.common.app.beans.ResponseResult;
  */
 @Controller
 @RequestMapping("/database/preferences")
-public class PreferencesController {
+public class DatabasePreferencesController {
 
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(PreferencesController.class);
+	private static final Logger logger = LoggerFactory.getLogger(DatabasePreferencesController.class);
 	
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;

@@ -115,6 +115,13 @@
 	</div>
 </BODY>
 </html>
+<style>
+/*todo css파일로 옮길것.*/
+.ddl-object-info.active{
+	background-color: #e6e5e5;
+}
+</style>
+
 <script>
 
 VarsqlAPP.vueServiceBean({
@@ -133,18 +140,21 @@ VarsqlAPP.vueServiceBean({
 		,detailItem :{}
 		,exportObject : []
 	}
+	,mounted : function (){
+		var exportInfoArr = ${varsqlfn:objectToJson( exportServiceMenu)};
+		
+		for(var i =0, len = exportInfoArr.length; i<len; i++){
+			var item = exportInfoArr[i];
+			
+			item._isSelect = false; 
+			item.isActive = false; 
+		}
+		
+		this.exportObject = exportInfoArr;
+	}
 	,methods:{
 		init : function (){
-			var exportInfoArr = ${varsqlfn:objectToJson( exportServiceMenu)};
 			
-			for(var i =0, len = exportInfoArr.length; i<len; i++){
-				var item = exportInfoArr[i];
-				
-				item._isSelect = false; 
-				item.isActive = false; 
-			}
-			
-			this.exportObject = exportInfoArr;
 		}
 		//이전 , 다음
 		,moveStep : function (mode){
@@ -205,6 +215,11 @@ VarsqlAPP.vueServiceBean({
 					var selectKeyInfo; 
 					
 					for(var key in objItem){
+						
+						if(VARSQL.isUndefined(customItem[key])){
+							continue ; 
+						}
+						
 						_self.objExportInfo[key] = $.isArray(customItem[key])?customItem[key] : [];
 						if(firstFlag){
 							selectKeyInfo =key;

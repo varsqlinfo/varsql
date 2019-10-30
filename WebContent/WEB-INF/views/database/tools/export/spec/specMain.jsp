@@ -277,8 +277,26 @@ VarsqlAPP.vueServiceBean({
 					
 					_self.selectTableObj.setItem('source',list);
 					
+					var beforeTableList = [];
 					if(_self.selectSchema == _self.userSetting.schema){
-						_self.selectTableObj.setItem('target',(_self.userSetting.tables ||[]));
+						var beforeTables = _self.userSetting.tables;
+						var beforeTablelen = beforeTables.length; 
+						if(beforeTablelen > 0){
+							var tableNameObj ={};
+							for(var i =0; i <beforeTablelen; i++){
+								var item = beforeTables[i];
+								tableNameObj[item.name] = i; 
+							}
+							
+							for(var i =0,len = list.length; i <len; i++){
+								var item = list[i];
+								var beforeTableIdx = tableNameObj[item.name]; 
+								if(!VARSQL.isUndefined(beforeTableIdx)){
+									beforeTableList.push(beforeTables[beforeTableIdx]);
+								}
+							}
+						}
+						_self.selectTableObj.setItem('target',beforeTableList);
 					}else{
 						_self.selectTableObj.setItem('target',[]);
 					}

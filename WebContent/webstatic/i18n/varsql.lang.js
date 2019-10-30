@@ -50,6 +50,6 @@ VARSQL_LANG = {
 	,'btn.save' : 'Save'
 	
 	,'msg.close.window' : '창을 닫으시겠습니까?'
-	,'msg.loading' : '로그중입니다.'
+	,'msg.loading' : '로딩중 입니다.'
 	,'msg.refresh' : '새로고침 하시겠습니까?'
 }

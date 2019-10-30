@@ -98,26 +98,26 @@
 	<!-- Error Page -->
 	<error-page>
 		<error-code>403</error-code>
-		<location>/webstatic/error/error403.jsp</location>
+		<location>/error/error403</location>
 	</error-page>
 	
 	<error-page>
 		<error-code>404</error-code>
-		<location>/webstatic/error/error404.jsp</location>
+		<location>/error/error404</location>
 	</error-page>
 	
 	<error-page>
 		<error-code>500</error-code>
-		<location>/webstatic/error/error500.jsp</location>
+		<location>/error/error500</location>
 	</error-page>
 	
 	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>
-		<location>/webstatic/error/error500.jsp</location>
+		<location>/error/error500</location>
 	</error-page>
 	<error-page>
 		<exception-type>java.lang.NullPointerException</exception-type>
-		<location>/webstatic/error/error500.jsp</location>
+		<location>/error/error500</location>
 	</error-page>
 	
 	

@@ -83,10 +83,11 @@
 <entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
 
 <!-- user menu -->
-<entry key="user.menu.edit.general">프로필 수정</entry>
-<entry key="user.menu.edit.pasword">비밀번호 변경</entry>
-<entry key="user.menu.edit.message">메시지 관리</entry>
-<entry key="user.menu.edit.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.general">프로필 수정</entry>
+<entry key="user.prefernces.menu.pasword">비밀번호 변경</entry>
+<entry key="user.prefernces.menu.message">메시지 관리</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
 
 <entry key="login.form.id">아이디</entry>
 <entry key="login.form.pw">패스워드</entry>
@@ -314,6 +315,8 @@
 <entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택하세요.</entry>
 <entry key="msg.export.ddl.object.nodata">object를 선택해주세요.</entry>
 
-
+<entry key="back.page">이전</entry>
+<entry key="main.page">메인</entry>
+<entry key="error.message404">등록되지 않은 페이지 입니다.</entry>
 
 </properties>

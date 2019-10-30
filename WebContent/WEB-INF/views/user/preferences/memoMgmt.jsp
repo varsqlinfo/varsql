@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="user.menu.edit.message" /></h1>
+        <h1 class="page-header"><spring:message code="user.prefernces.menu.message" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
