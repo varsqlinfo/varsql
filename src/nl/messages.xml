@@ -290,6 +290,8 @@
 <entry key="user.edit.recv_id">받는사람</entry>
 <entry key="user.edit.msgcont">내용</entry>
 <entry key="detail.view">상세보기</entry>
+<entry key="user.preferences.sqlfile">SQL FILE</entry>
+<entry key="user.preferences.sqlcont">내용</entry>
 
 <!-- export table spec -->
 <entry key="msg.export.spec.step1">내보내기 정보</entry>

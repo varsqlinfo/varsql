@@ -24,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
@@ -57,7 +59,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/user")
-public class UserMainController {
+public class UserMainController extends AbstractController{
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(UserMainController.class);
@@ -77,7 +79,7 @@ public class UserMainController {
 		SecurityUtil.reloadUserDatabaseInfo();
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
-		return  new ModelAndView("/user/userMain",model);
+		return getModelAndView("/userMain", ViewPage.USER, model);
 	}
 	
 	/**
@@ -175,112 +177,6 @@ public class UserMainController {
 		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return userMainServiceImpl.updateMemoViewDate(paramMap);
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : qnalist
-	 * @Method 설명 : qna list
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 10. 
-	 * @변경이력  :
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/qnaList")
-	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
-	
-		return userMainServiceImpl.selectQna(searchParameter);
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : qna
-	 * @Method 설명 : qna 정보 등록. 
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 10. 
-	 * @변경이력  :
-	 * @param qnaInfo
-	 * @param result
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/insQna")
-	public @ResponseBody ResponseResult insQna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
-		
-		if(result.hasErrors()){
-			for(ObjectError errorVal : result.getAllErrors()){
-				logger.warn("###  GuestController qna check {}",errorVal.toString());
-			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
-		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
-			resultObject = userMainServiceImpl.saveQnaInfo(qnaInfo, true);
-		}
-		
-		return resultObject; 
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : qnaDelete
-	 * @Method 설명 : qna  삭제
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 10. 
-	 * @변경이력  :
-	 * @param qnaid
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/delQna")
-	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
-		
-		QnAInfo qnaInfo = new QnAInfo();
-		qnaInfo.setQnaid(qnaid);
-		
-		qnaInfo.setUserid(SecurityUtil.loginId());
-		
-		return userMainServiceImpl.deleteQnaInfo(qnaInfo);
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : qnaUpdate
-	 * @Method 설명 : qna 수정. 
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 10. 
-	 * @변경이력  :
-	 * @param qnaInfo
-	 * @param result
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/updQna")
-	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
-		
-		if(result.hasErrors()){
-			for(ObjectError errorVal : result.getAllErrors()){
-				logger.warn("###  GuestController qna check {}",errorVal.toString());
-			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
-		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
-			resultObject = userMainServiceImpl.saveQnaInfo(qnaInfo, false);
-		}
-		
-		return resultObject; 
 	}
 	
 	/**

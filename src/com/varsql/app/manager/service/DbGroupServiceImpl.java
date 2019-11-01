@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.dao.DbGroupDAO;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ParamMap;
@@ -78,7 +78,7 @@ public class DbGroupServiceImpl{
 		dbGroupInfo.setUserId(SecurityUtil.loginId());
 		
 		if("".equals(dbGroupInfo.getGroupId())){
-			dbGroupInfo.setGroupId(VarsqlUtil.generateUUID());
+			dbGroupInfo.setGroupId(VarsqlUtils.generateUUID());
 			result.setItemOne(dbGroupDAO.insertDbGroupInfo(dbGroupInfo));
 		}else{
 			result.setItemOne(dbGroupDAO.updateDbGroupInfo(dbGroupInfo));

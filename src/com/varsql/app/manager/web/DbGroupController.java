@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.manager.beans.DbGroupInfo;
 import com.varsql.app.manager.service.DbGroupServiceImpl;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -42,7 +43,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager/dbGroup")
-public class DbGroupController {
+public class DbGroupController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(DbGroupController.class);
@@ -108,7 +109,7 @@ public class DbGroupController {
 	 */
 	@RequestMapping({"/delete"})
 	public @ResponseBody ResponseResult delete(HttpServletRequest req) throws Exception {
-		return dbGroupServiceImpl.deleteDbGroupInfo(VarsqlUtil.getIncludeDefaultParam(req));
+		return dbGroupServiceImpl.deleteDbGroupInfo(VarsqlUtils.getIncludeDefaultParam(req));
 	}
 	
 	/**

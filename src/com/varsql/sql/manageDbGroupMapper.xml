@@ -10,7 +10,7 @@
 		select count(1) as totalcnt 
 		from VTDATABASE_GROUP 
 		where 1=1
-		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+		<if test="@com.varsql.app.util.MybatisUtils@isNotAdmin()">
 			and REG_ID =#{userId}	
 		</if>
 		and (GROUP_NAME like '%'||#{keyword}||'%' or GROUP_DESC like '%'||#{keyword}||'%') 
@@ -23,7 +23,7 @@
 		 	,to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
 		from VTDATABASE_GROUP a
 		where 1=1
-		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+		<if test="@com.varsql.app.util.MybatisUtils@isNotAdmin()">
 			and REG_ID =#{userId}	
 		</if>
 		and (GROUP_NAME like '%'||#{keyword}||'%' or GROUP_DESC like '%'||#{keyword}||'%') 
@@ -53,7 +53,7 @@
 			, UPD_ID = #{userId}
 			, UPD_DT = current_date
 		where	GROUP_ID = #{groupId}
-		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+		<if test="@com.varsql.app.util.MybatisUtils@isNotAdmin()">
 			and REG_ID =#{userId}	
 		</if>
 	</update>
@@ -62,7 +62,7 @@
 	<delete id="manageDbGroupMapper.deleteDbGroupInfo" parameterType="map">
 		delete from VTDATABASE_GROUP 
 		where GROUP_ID = #{groupId}
-		<if test="@com.varsql.app.util.MybatisUtil@isNotAdmin()">
+		<if test="@com.varsql.app.util.MybatisUtils@isNotAdmin()">
 			and REG_ID =#{dp_viewId}	
 		</if>
 	</delete>

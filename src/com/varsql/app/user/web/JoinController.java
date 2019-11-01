@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.JoinForm;
 import com.varsql.app.user.service.JoinServiceImpl;
 import com.vartech.common.app.beans.ResponseResult;
@@ -25,13 +27,23 @@ import com.vartech.common.encryption.EncryptDecryptException;
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: JoinController.java
+* @DESC		: 회원가입
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 11. 1. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
 @RequestMapping("/join")
-public class JoinController {
+public class JoinController extends AbstractController {
 
-	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(JoinController.class);
 	
 	@Autowired
@@ -39,7 +51,7 @@ public class JoinController {
 	
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("/join/joinForm");
+		return getModelAndView("/joinForm", ViewPage.JOIN);
 	}
 	
 	@RequestMapping(value="/save",method=RequestMethod.POST)

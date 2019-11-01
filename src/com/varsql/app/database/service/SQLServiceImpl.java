@@ -32,8 +32,8 @@ import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.beans.SqlUserHistoryInfo;
 import com.varsql.app.database.dao.SQLDAO;
 import com.varsql.app.exception.VarsqlResultConvertException;
-import com.varsql.app.util.SqlResultUtil;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.SqlResultUtils;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
@@ -142,7 +142,7 @@ public class SQLServiceImpl{
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 		
 		sqlLogInfo.setLogSql(sqlParamInfo.getSql());
-		sqlLogInfo.setUsrIp(VarsqlUtil.getClientIP(req));
+		sqlLogInfo.setUsrIp(VarsqlUtils.getClientIP(req));
 		
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size(); 
@@ -215,7 +215,7 @@ public class SQLServiceImpl{
 			result.addCustoms("errorLine", sqldx);
 			result.setItemOne(tmpSqlSource);
 			
-			if(VarsqlUtil.isRuntimelocal()) {
+			if(VarsqlUtils.isRuntimelocal()) {
 				logger.error(getClass().getName()+" sqlData : ", e);
 			}
 		}finally{
@@ -232,8 +232,8 @@ public class SQLServiceImpl{
 		sqlUserHistoryInfo.setVconnid(sqlLogInfo.getVconnid());
 		sqlUserHistoryInfo.setViewid(sqlLogInfo.getViewid());
 		sqlUserHistoryInfo.setHistoryId(VartechUtils.generateUUID());
-		sqlUserHistoryInfo.setStartTime(VarsqlUtil.getCurrentTimestamp(stddt));
-		sqlUserHistoryInfo.setEndTime(VarsqlUtil.getCurrentTimestamp(enddt));
+		sqlUserHistoryInfo.setStartTime(VarsqlUtils.getCurrentTimestamp(stddt));
+		sqlUserHistoryInfo.setEndTime(VarsqlUtils.getCurrentTimestamp(enddt));
 		sqlUserHistoryInfo.setDelayTime((int) ((enddt- stddt)/1000));
 		sqlUserHistoryInfo.setLogSql(sqlParamInfo.getSql());
 		sqlUserHistoryInfo.setUsrIp(sqlLogInfo.getUsrIp());
@@ -332,7 +332,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet(); 
 			
 			if(rs != null){
-				SqlResultUtil.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow);
+				SqlResultUtils.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -413,19 +413,19 @@ public class SQLServiceImpl{
 		
 		try {
 			if("csv".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
 				DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), os);
 			}else if("json".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
 				new ObjectMapper().writeValue(os, result.getData());
 			}else if("insert".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
 				DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, os);
 			}else if("xml".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
 				DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , os);
 			}else if("excel".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
 				DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , os);
 			}
 			
@@ -454,7 +454,7 @@ public class SQLServiceImpl{
 		
 		if("".equals(sqlParamInfo.getSqlId())){
 			sqlDAO.updateSqlFileTabDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경. 
-			sqlParamInfo.setSqlId(VarsqlUtil.generateUUID());
+			sqlParamInfo.setSqlId(VarsqlUtils.generateUUID());
 		    sqlDAO.saveQueryInfo(sqlParamInfo);
 		}else{
 			String mode = String.valueOf(sqlParamInfo.getCustom().get("mode")); 
@@ -587,16 +587,16 @@ public class SQLServiceImpl{
 		try {
 			String jsonString = sqlGridDownloadInfo.getGridData(); 
 			if("csv".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
 				DataExportUtil.jsonStringToCsv(jsonString, columnInfo, os);
 			}else if("json".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
 				DataExportUtil.toTextWrite(jsonString, os);
 			}else if("xml".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
 				DataExportUtil.jsonStringToXml(jsonString, columnInfo , os);
 			}else if("excel".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
 				DataExportUtil.jsonStringToExcel(jsonString, columnInfo , os);
 			}
 			

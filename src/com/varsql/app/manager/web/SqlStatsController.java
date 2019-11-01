@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.app.manager.service.SqlStatsServiceImpl;
@@ -41,7 +42,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager/stats")
-public class SqlStatsController {
+public class SqlStatsController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(SqlStatsController.class);

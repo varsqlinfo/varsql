@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.SqlGridDownloadInfo;
 import com.varsql.app.database.beans.SqlParamInfo;
 import com.varsql.app.database.service.SQLServiceImpl;
@@ -26,9 +27,9 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/sql/base")
-public class SQLController {
+public class SQLController extends AbstractController  {
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseController.class);
+	private static final Logger logger = LoggerFactory.getLogger(SQLController.class);
 	
 	@Autowired
 	private SQLServiceImpl sQLServiceImpl;

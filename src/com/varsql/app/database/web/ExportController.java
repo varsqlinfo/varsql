@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.PreferencesConstants;
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
 import com.varsql.core.db.DBObjectType;
@@ -37,7 +39,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/database/tools/export")
-public class ExportController {
+public class ExportController extends AbstractController  {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(ExportController.class);
@@ -68,7 +70,7 @@ public class ExportController {
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
 		
-		return  new ModelAndView("/database/tools/exportMain/spec/specMain",model);
+		return getModelAndView("/exportMain/spec/specMain", ViewPage.DATABASE_TOOLS, model);
 	}
 	
 	/**
@@ -127,10 +129,9 @@ public class ExportController {
 	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
-		model.put("exportServiceMenu", dbMetaEnum.getServiceMenu());
+		model.put("exportServiceMenu", MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid()).getServiceMenu());
 		
-		return  new ModelAndView("/database/tools/exportMain/ddl/ddlMain",model);
+		return getModelAndView("/exportMain/ddl/ddlMain", ViewPage.DATABASE_TOOLS, model);
 	}
 	
 	/**

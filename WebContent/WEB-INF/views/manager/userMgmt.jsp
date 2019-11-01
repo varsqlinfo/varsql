@@ -50,7 +50,7 @@
 								<tr role="row">
 									<th  style="width: 10px;"><div
 											class="text-center">
-											<input type="checkbox" id="allcheck" name="allcheck">
+											<input type="checkbox" :checked="selectAllCheck" @click="selectAll()">
 										</div>
 									</th>
 									<th style="width: 195px;">
@@ -241,9 +241,24 @@ VarsqlAPP.vueServiceBean( {
 		,clickItem :{}
 		,clickItemDbList :[]
 	}
-	
+	,computed :{
+		selectAllCheck : function (){
+			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length; 
+		}
+	}
 	,methods:{
-		init : function(){
+		selectAll : function (){
+			if(this.selectAllCheck){
+				this.selectItem = []; 
+			}else{
+				this.selectItem = [];
+				
+				for(var i =0 ;i <this.gridData.length; i++){
+					this.selectItem.push(this.gridData[i].VIEWID)
+				}
+			}
+		}
+		,init : function(){
 			var _self =this; 
 			_self.detailDialog = $('#detailInfo').dialog({
 				height: 490

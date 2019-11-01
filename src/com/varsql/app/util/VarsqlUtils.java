@@ -28,9 +28,9 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.HttpUtils;
 
-public class VarsqlUtil {
+public final class VarsqlUtils {
 	
-	private VarsqlUtil() {}
+	private VarsqlUtils() {}
 	
 	public static String generateUUID (){
 		return UUID.randomUUID().toString().replaceAll("-", ""); 

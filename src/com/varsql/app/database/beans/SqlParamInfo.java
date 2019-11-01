@@ -5,10 +5,17 @@ import com.varsql.core.db.beans.DatabaseParamInfo;
 
 /**
  * 
- * @FileName : DatabaseParamInfo.java
- * @Author   : ytkim
- * @Program desc : database parameter vo
- * @Hisotry :
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: SqlParamInfo.java
+* @DESC		: sql execute parameter vo
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 11. 1. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 public class SqlParamInfo extends DatabaseParamInfo{
 	

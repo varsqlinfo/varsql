@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.app.admin.dao.UserMenuMgmtDAO;
 import com.varsql.app.common.beans.DataCommonVO;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.utils.PagingUtil;
 

@@ -53,105 +53,6 @@
 		) 
 	</insert>
 	
-	<!-- 사용자 정보 업데이트 -->
-	<update id="userMapper.updateUserInfo" parameterType="userForm">
-		update VTUSER 
-		set 
-			 UNAME =#{uname}
-			, ORG_NM =#{orgNm}
-			, DEPT_NM =#{deptNm}
-			, UEMAIL =#{uemail}
-			, DESCRIPTION =#{description}
-			, LANG =#{lang}
-			, UPD_DT = CURRENT_TIMESTAMP
-		where VIEWID =#{viewid}
-	</update>
-	
-	<!-- current password check -->
-	<select id="userMapper.selectUserPasswordCheck" parameterType="passwordForm" resultType="string">
-		select UPW
-		from VTUSER a
-		where VIEWID =#{viewid}
-	</select>
-	
-	<!-- 패스워드 변경. -->
-	<update id="userMapper.updatePasswordInfo" parameterType="passwordForm">
-		update VTUSER 
-		set 
-			 UPW = #{upw}
-		where VIEWID =#{viewid}
-	</update>
-	
-	<!-- qna 총 수 -->
-	<select id="userMapper.selectQnaTotalCnt" parameterType="searchParameter" resultType="int">
-		select count(1) as totalcnt
-		from VTQNA a
-		where REG_ID =#{customParam.uid}
-		and DEL_YN !='Y'
-		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
-	</select>
-	
-	<!-- qna 목록보기 -->
-	<select id="userMapper.selectQna" parameterType="searchParameter" resultType="dataCommonVO">
-		select a.*
-			, to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT
-			, to_char(a.ANSWER_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_ANSWER_DT
-			,IFNULL(ANSWER_ID,'N') ANSWER_YN
-		from VTQNA a
-		where REG_ID =#{customParam.uid}
-		and DEL_YN !='Y'
-		and (TITLE like '%'||#{keyword}||'%' or QUESTION like '%'||#{keyword}||'%') 
-		order by a.REG_DT desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
-	</select>
-	
-	<!-- qna 상세보기 -->
-	<select id="userMapper.selectDetailQna" parameterType="qnaInfo" resultType="dataCommonVO">
-		select a.*, to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as CHAR_CRE_DT 
-		from VTQNA a
-		where DEL_YN !='Y'
-		and QNAID=#{qnaid}
-	</select>
-	
-	<!-- qna 정보 등록. -->
-	<insert id="userMapper.insertQnaInfo" parameterType="qnaInfo">
-		insert  into VTQNA (
-			QNAID 
-			, TITLE 
-			, QUESTION 
-			, REG_ID 
-			, REG_DT 
-		)
-		values(
-			#{qnaid}
-			, #{title}
-			, #{question}
-			, #{userid}
-			, CURRENT_TIMESTAMP
-		)
-	</insert>
-	
-	<!-- qna 업데이트 -->
-	<update id="userMapper.updateQnaInfo" parameterType="qnaInfo">
-		update VTQNA
-		set
-			TITLE =#{title}
-			,QUESTION =#{question}
-			,UPD_DT = CURRENT_TIMESTAMP
-		where QNAID=#{qnaid}
-		and REG_ID = #{userid}
-		and ANSWER_ID IS NULL
-	</update>
-	
-	<!-- q&a 정보 삭제. -->
-	<update id="userMapper.deleteQnaInfo" parameterType="qnaInfo">
-		update VTQNA 
-		set
-			DEL_YN ='Y'
-		where QNAID=#{qnaid}
-		and REG_ID = #{userid}
-		and ANSWER_ID IS NULL
-	</update>
-	
 	<!-- 사용자 조회  -->
 	<select id="userMapper.selectSearchUserList" parameterType="map" resultType="map">
 		select VIEWID,UID,UNAME
@@ -175,103 +76,8 @@
 		where c.SEND_ID  = d.VIEWID
 	</select>
 	
-	<!-- 사용자 메시지  목록 수-->
-	<select id="userMapper.selectUserMsgTotalcnt" parameterType="searchParameter" resultType="int">
-		select count(1) CNT
-		from VTMEMO a
-		<choose>
-			<when test="customParam.message_type == 'send'">
-				where REG_ID = #{customParam.uid}
-			</when>
-			<otherwise>
-				, VTMEMO_USER b 
-				where a.MEMO_ID = b.MEMO_ID 
-				and RECV_ID = #{customParam.uid}
-			</otherwise>
-		</choose>
-		and MEMO_TITLE like '%'||#{keyword}||'%'
-	</select>
 	
 	
-	<resultMap id="sendMsgInfoMap" type="hashmap">
-	    <id property="MEMO_ID" column="MEMO_ID" />
-	    <result property="MEMO_TITLE" column="MEMO_TITLE"/>
-	    <result property="MEMO_CONT" column="MEMO_CONT"/>
-	    <result property="REG_DT" column="REG_DT"/>
-	    <collection property="RECV_USER" javaType="java.util.ArrayList" resultMap="recvUserListMap"/>
-	</resultMap>
-	
-	<resultMap id="recvUserListMap" type="hashmap">
-	    <id property="UID" column="UID"/>
-	    <result property="RECV_NM" column="RECV_NM"/>
-	</resultMap>
-
-	
-	<!-- 사용자 메시지  send 목록 -->
-	<select id="userMapper.selectUserSendMsg" parameterType="searchParameter" resultMap="sendMsgInfoMap">
-		select c.* , d.UNAME as RECV_NM , d.UID
-		from (
-			select a.MEMO_ID
-			  ,a.MEMO_TITLE
-			  ,a.MEMO_CONT
-			  ,to_char(a.REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT 
-			  , b.RECV_ID
-			from  VTMEMO a left outer join VTMEMO_USER b
-			on a.MEMO_ID = b.MEMO_ID
-			where REG_ID = #{customParam.uid}
-			and DEL_YN = 'N'
-			and MEMO_TITLE like '%'||#{keyword}||'%' 
-			order by reg_dt desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
-		) c left outer join VTUSER d 
-		where c.RECV_ID  = d.VIEWID
-	</select>
-	
-	<!-- 사용자 메시지  recv 목록. -->
-	<select id="userMapper.selectUserRecvMsg" parameterType="searchParameter" resultType="map">
-		select c.* , d.UNAME as SEND_NM , d.UID  as VIEW_ID
-		from (
-			select a.MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT , SEND_ID 
-			, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT  , VIEW_DT
-			from VTMEMO a , VTMEMO_USER b 
-			where a.MEMO_ID = b.MEMO_ID 
-			and RECV_ID = #{customParam.uid}
-			and MEMO_TITLE like '%'||#{keyword}||'%' 
-			order by reg_dt desc OFFSET ${first}-1 ROWS FETCH FIRST ${last} ROWS ONLY
-		) c left outer join VTUSER d 
-		where c.SEND_ID  = d.VIEWID
-	</select>
-	
-	<!-- 메모 답장 목록. -->
-	<select id="userMapper.selectUserMsgReply" parameterType="map" resultType="hashmap">
-		select MEMO_TITLE , a.MEMO_ID, a.MEMO_CONT, to_char(REG_DT,'YYYY-MM-DD HH24:MI:SS') as REG_DT from VTMEMO a 
-		where PARENT_MEMO_ID = #{memoId}
-		and DEL_YN != 'Y'
-		order by REG_DT desc
-	</select>
-	
-	<!-- 메시지 삭제 -->
-	<update id="userMapper.deleteMsgInfo" parameterType="map" >
-		update VTMEMO
-		set
-			DEL_YN = 'Y'
-		where MEMO_ID = #{memoId}
-	</update>
-	
-	<!-- 메시지 사용자 삭제. -->
-	<delete id="userMapper.deleteMsgUser" parameterType="map" >
-		delete from VTMEMO_USER 
-		where 1=1
-		<choose>
-			<when test="message_type == 'send'">
-				and SEND_ID = (select REG_ID from VTMEMO WHERE MEMO_ID =#{memoId})
-				and VIEW_DT is null
-			</when>
-			<otherwise>
-				and RECV_ID = #{uid}
-			</otherwise>
-		</choose>
-		and MEMO_ID =#{memoId}
-	</delete>
 	
 	<!-- 메시지 정보 보내기  -->
 	<insert id="userMapper.insertSendMemoInfo" parameterType="memoInfo">
@@ -312,14 +118,6 @@
 			, #{recvId}
 		)
 	</insert>
-	
-	<!-- 사용자 정보.  -->
-	<select id="userMapper.selectUserDetail" parameterType="string" resultType="dataCommonVO">
-		select VIEWID, UID, UNAME, ORG_NM
-			, DEPT_NM, UEMAIL, DESCRIPTION, BLOCK_YN, LANG
-		from VTUSER
-		where viewid =#{viewid}
-	</select>
 	
 	<!-- 메시지 확인 날짜 업데이트-->
 	<update id="userMapper.updateMemoViewDate" parameterType="map">

@@ -14,7 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.varsql.app.common.beans.DownloadInfo;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.CheckUtils;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
 import com.vartech.common.utils.VartechReflectionUtils;
@@ -36,7 +37,7 @@ import com.vartech.common.utils.VartechReflectionUtils;
 *-----------------------------------------------------------------------------
  */
 @Controller
-public class DownloadController {
+public class DownloadController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(DownloadController.class);
@@ -51,13 +52,15 @@ public class DownloadController {
 		
 		String exportType = downloadInfo.getExportType();
 		
-		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim())?downloadInfo.getFileName() : "varsql-download."+ exportType; 
+		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim())?downloadInfo.getFileName() : "varsql-download."+ exportType;
+		
+		downloadName = CheckUtils.getValidFileName(downloadName);
 		
 		OutputStream os = res.getOutputStream();
 		
 		try {
 			if("text".equals(exportType)){
-				VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
 				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
 			}
 			if(os !=null) os.close();

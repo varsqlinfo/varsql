@@ -14,14 +14,15 @@ html, body{width:100%;height:100%;overflow:hidden;}
 		<tbody>
 			<tr>
 				<td style="text-align: center;">
-					<div><a href="javascript:history.go(-1)"><spring:message code="back.page" /></a></div>
-					<div><a href="${pageContext.request.contextPath}"><spring:message code="main.page" /></a></div>
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div>
 							<spring:message code="error.message404" /><br/>
 						</div>
 						<div>&nbsp;</div>
 					</div>
+					
+					<div><a href="javascript:history.go(-1)"><spring:message code="back.page" /></a></div>
+					<div><a href="${pageContext.request.contextPath}"><spring:message code="main.page" /></a></div>
 				</td>
 			</tr>
 		</tbody>

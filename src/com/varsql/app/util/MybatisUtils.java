@@ -6,7 +6,7 @@ import com.varsql.core.common.util.SecurityUtil;
  * 
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: MybatisUtil.java
+* @NAME		: MybatisUtils.java
 * @DESC		: mybatis method util
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
@@ -16,8 +16,8 @@ import com.varsql.core.common.util.SecurityUtil;
 
 *-----------------------------------------------------------------------------
  */
-public class MybatisUtil {
-	private MybatisUtil() {}
+public final class MybatisUtils {
+	private MybatisUtils() {}
 	
 	/**
 	 * 

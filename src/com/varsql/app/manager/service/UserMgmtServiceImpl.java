@@ -7,7 +7,8 @@ import com.varsql.app.common.dao.CommonDAO;
 import com.varsql.app.manager.dao.ManagerDAO;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.dao.UserMainDAO;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.user.dao.UserPreferencesDAO;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.auth.Authority;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
@@ -43,7 +44,7 @@ public class UserMgmtServiceImpl{
 	ManagerDAO manageDAO;
 	
 	@Autowired
-	UserMainDAO userMainDAO;
+	UserPreferencesDAO userPreferencesDAO;
 	
 	@Autowired
 	CommonDAO commonDAO;
@@ -113,7 +114,7 @@ public class UserMgmtServiceImpl{
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
 		
 		passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordInfo));
-		result.setResultCode(userMainDAO.updatePasswordInfo(passwordForm));
+		result.setResultCode(userPreferencesDAO.updatePasswordInfo(passwordForm));
 		result.setItemOne(passwordInfo);
 		
 		return result;

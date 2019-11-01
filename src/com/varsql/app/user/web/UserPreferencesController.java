@@ -1,11 +1,5 @@
 package com.varsql.app.user.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -22,23 +16,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.user.beans.MemoInfo;
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.beans.UserForm;
-import com.varsql.app.user.service.UserMainServiceImpl;
+import com.varsql.app.user.service.UserPreferencesServiceImpl;
+import com.varsql.app.util.CheckUtils;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.beans.DatabaseInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
-
-
 
 /**
  * 
@@ -57,12 +49,12 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/user/preferences")
-public class UserPreferencesController {
+public class UserPreferencesController extends AbstractController{
 
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesController.class);
 	
 	@Autowired
-	UserMainServiceImpl userMainServiceImpl;
+	UserPreferencesServiceImpl userPreferencesServiceImpl;
 	
 	/**
 	 * 
@@ -81,11 +73,15 @@ public class UserPreferencesController {
 	public ModelAndView preferencesMain(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		
+		setModelDefaultValue(req , model);
+		model.addAttribute("detailInfo" , userPreferencesServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
+		model.addAttribute("localeInfo" , LocaleConstants.values());
+		return getModelAndView("/general", ViewPage.USER_PREFERENCES, model);
+	}
+	
+	private void setModelDefaultValue(HttpServletRequest req, ModelMap model) {
 		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		model.addAttribute("detailInfo" , userMainServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
-		model.addAttribute("localeInfo" , LocaleConstants.values());
-		return  new ModelAndView("/user/preferences/general", model);
 	}
 	
 	/**
@@ -114,7 +110,7 @@ public class UserPreferencesController {
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			userForm.setViewid(SecurityUtil.loginId(req));
-			resultObject.setItemOne(userMainServiceImpl.updateUserInfo(userForm,req,res));
+			resultObject.setItemOne(userPreferencesServiceImpl.updateUserInfo(userForm,req,res));
 		}
 		
 		return  resultObject;
@@ -136,10 +132,9 @@ public class UserPreferencesController {
 	@RequestMapping({"/password"})
 	public ModelAndView preferencesPassword(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		setModelDefaultValue(req , model);
 		
-		return  new ModelAndView("/user/preferences/password", model);
+		return getModelAndView("/password", ViewPage.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -167,7 +162,7 @@ public class UserPreferencesController {
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			passwordForm.setViewid(SecurityUtil.loginId(req));
-			resultObject = userMainServiceImpl.updatePasswordInfo(passwordForm, resultObject); 
+			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm, resultObject); 
 		}
 		
 		return  resultObject;
@@ -188,10 +183,9 @@ public class UserPreferencesController {
 	@RequestMapping({"/message"})
 	public ModelAndView preferencesMessage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		setModelDefaultValue(req , model);
 		
-		return  new ModelAndView("/user/preferences/memoMgmt", model);
+		return getModelAndView("/memoMgmt", ViewPage.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -210,10 +204,9 @@ public class UserPreferencesController {
 	@RequestMapping({"/qna"})
 	public ModelAndView qna(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		setModelDefaultValue(req , model);
 		
-		return  new ModelAndView("/user/preferences/qna", model);
+		return getModelAndView("/qna", ViewPage.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -233,13 +226,13 @@ public class UserPreferencesController {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
-		return  userMainServiceImpl.selectUserMsg(searchParameter);
+		return userPreferencesServiceImpl.selectUserMsg(searchParameter);
 	}
 	
 	@RequestMapping({"/msgReplyList"})
 	public @ResponseBody ResponseResult msgReplyList(HttpServletRequest req) throws Exception {
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		return  userMainServiceImpl.selectUserMsgReply(paramMap);
+		return userPreferencesServiceImpl.selectUserMsgReply(paramMap);
 	}
 	
 	/**
@@ -259,7 +252,118 @@ public class UserPreferencesController {
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
 		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
-		return  userMainServiceImpl.deleteUserMsg( paramMap);
+		return userPreferencesServiceImpl.deleteUserMsg( paramMap);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : qnalist
+	 * @Method 설명 : qna list
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/qnaList")
+	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+	
+		return userPreferencesServiceImpl.selectQna(searchParameter);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : qna
+	 * @Method 설명 : qna 정보 등록. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaInfo
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/insQna")
+	public @ResponseBody ResponseResult insQna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		
+		if(result.hasErrors()){
+			for(ObjectError errorVal : result.getAllErrors()){
+				logger.warn("###  GuestController qna check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			qnaInfo.setUserid(SecurityUtil.loginId());
+			
+			if(CheckUtils.isEmpty(qnaInfo.getQnaid())) {
+				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
+			}else {
+				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
+			}
+		}
+		
+		return resultObject; 
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : qnaDelete
+	 * @Method 설명 : qna  삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaid
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/delQna")
+	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
+		
+		QnAInfo qnaInfo = new QnAInfo();
+		qnaInfo.setQnaid(qnaid);
+		
+		qnaInfo.setUserid(SecurityUtil.loginId());
+		
+		return userPreferencesServiceImpl.deleteQnaInfo(qnaInfo);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : qnaUpdate
+	 * @Method 설명 : qna 수정. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 1. 10. 
+	 * @변경이력  :
+	 * @param qnaInfo
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/updQna")
+	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		
+		if(result.hasErrors()){
+			for(ObjectError errorVal : result.getAllErrors()){
+				logger.warn("###  GuestController qna check {}",errorVal.toString());
+			}
+			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setItemList(result.getAllErrors());
+		}else{
+			qnaInfo.setUserid(SecurityUtil.loginId());
+			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
+		}
+		
+		return resultObject; 
 	}
 	
 	/**
@@ -276,11 +380,13 @@ public class UserPreferencesController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sqlFile"})
-	public ModelAndView sqlfile(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+	public ModelAndView sqlFile(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("headerview", ("N".equals(req.getParameter("header"))?"N":""));
-		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
+		setModelDefaultValue(req , model);
+		SecurityUtil.reloadUserDatabaseInfo();
+		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
-		return  new ModelAndView("/user/preferences/sqlFile", model);
+		return getModelAndView("/sqlFile", ViewPage.USER_PREFERENCES, model);
 	}
+	
 }

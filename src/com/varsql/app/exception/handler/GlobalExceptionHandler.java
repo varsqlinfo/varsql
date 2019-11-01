@@ -21,7 +21,7 @@ import org.springframework.web.util.NestedServletException;
 import com.varsql.app.common.service.CommonServiceImpl;
 import com.varsql.app.exception.DatabaseInvalidException;
 import com.varsql.app.exception.VarsqlAppException;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -266,7 +266,7 @@ public class GlobalExceptionHandler{
 	}
 	
 	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
-		if(VarsqlUtil.isAjaxRequest(request)){
+		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType("application/json;charset=UTF-8");
 			response.setStatus(HttpStatus.OK.value());
 			result.setResultCode(ResultConst.CODE.ERROR.toInt());

@@ -61,7 +61,7 @@
 		select suba.*, nvl2(subb.VCONNID,'Y','N') as BLOCK_YN from (
 			select a.VCONNID , a.VNAME, 
 				<choose>
-					<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
+					<when test="@com.varsql.app.util.MybatisUtils@isAdmin()">
 						 1 
 					</when>
 					<otherwise>
@@ -146,7 +146,7 @@
 		where VIEWID =#{userid}
 		and USER_ROLE not in 
 		<choose>
-			<when test="@com.varsql.app.util.MybatisUtil@isAdmin()">
+			<when test="@com.varsql.app.util.MybatisUtils@isAdmin()">
 				('ADMIN') 
 			</when>
 			<otherwise>

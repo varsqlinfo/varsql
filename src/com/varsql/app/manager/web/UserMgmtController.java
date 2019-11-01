@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.app.user.beans.PasswordForm;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -38,7 +39,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager/user")
-public class UserMgmtController {
+public class UserMgmtController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(UserMgmtController.class);
@@ -95,7 +96,7 @@ public class UserMgmtController {
 			) throws Exception {
 		DataCommonVO paramMap = new DataCommonVO();
 		
-		VarsqlUtil.setDefaultParam(paramMap);
+		VarsqlUtils.setDefaultParam(paramMap);
 		paramMap.put("userid", userid);
 		paramMap.put("blockYn", "N".equals(blockYn)?"N":"Y");
 		
@@ -137,7 +138,7 @@ public class UserMgmtController {
 	 */
 	@RequestMapping(value = "/userDetail", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "VIEWID", required = true )  String viewid , HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
+		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
 		
 		param.put("viewid", viewid);
 		
@@ -159,7 +160,7 @@ public class UserMgmtController {
 	 */
 	@RequestMapping(value = "/dbBlockInfo", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult removeAuth(@RequestParam(value = "VIEWID", required = true )  String viewid ,@RequestParam(value = "VCONNID", required = true )  String vconnid, HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
+		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
 		param.put("viewid", viewid);
 		param.put("vconnid", vconnid);
 		
@@ -182,7 +183,7 @@ public class UserMgmtController {
 	@RequestMapping(value = "/removeDbGroup", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult removeDbGroup(@RequestParam(value = "VIEWID", required = true )  String viewid 
 			,@RequestParam(value = "GROUP_ID", required = true )  String groupId, HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtil.getIncludeDefaultParam(req);
+		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
 		param.put("viewid", viewid);
 		param.put("groupId", groupId);
 		

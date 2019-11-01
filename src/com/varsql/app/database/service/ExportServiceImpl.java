@@ -19,7 +19,7 @@ import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.PreferencesConstants;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.dao.ExportDAO;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
@@ -175,7 +175,7 @@ public class ExportServiceImpl{
 		
 		exportFileName += exportFileName.endsWith(".xlsx") ?"" : ".xlsx";
 		
-		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
+		VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
 		
 		excelReport.write(res.getOutputStream());
 	}
@@ -229,9 +229,9 @@ public class ExportServiceImpl{
 		
 		exportFileName += exportFileName.endsWith(".sql") ?"" : ".sql";
 		
-		VarsqlUtil.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
+		VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName,VarsqlConstants.CHAR_SET));
 		
-		VarsqlUtil.textDownload(res.getOutputStream(), allDDLScript.toString());
+		VarsqlUtils.textDownload(res.getOutputStream(), allDDLScript.toString());
 		
 	}
 }

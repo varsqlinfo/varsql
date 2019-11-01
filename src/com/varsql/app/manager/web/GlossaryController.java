@@ -12,6 +12,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.manager.beans.GlossaryInfo;
 import com.varsql.app.manager.service.GlossaryServiceImpl;
 import com.vartech.common.app.beans.ParamMap;
@@ -39,7 +40,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager/glossary")
-public class GlossaryController {
+public class GlossaryController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(GlossaryController.class);

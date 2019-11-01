@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.plugin.service.PluginServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
@@ -36,7 +37,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/plugin")
-public class PluginController {
+public class PluginController extends AbstractController{
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(PluginController.class);

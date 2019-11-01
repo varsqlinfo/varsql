@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
 
@@ -29,7 +29,7 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 			throws ServletException, IOException {
 		String connid =req.getParameter(VarsqlParamConstants.CONN_UUID);
 		if (!authCheck(req, connid)) {
-			if(VarsqlUtil.isAjaxRequest(req)){
+			if(VarsqlUtils.isAjaxRequest(req)){
 				req.getRequestDispatcher("/error/invalidDatabase").forward(req, res);
 			}else{
 				req.getRequestDispatcher("/error/invalidDatabasePage").forward(req, res);

@@ -20,16 +20,26 @@ import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
 
 /**
- *날짜 관련 util
- * @author ytkim 
-*/
-public class SqlResultUtil {
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: SqlResultUtils.java
+* @DESC		: sql result utils
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 10. 31. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
+public final class SqlResultUtils {
 	
 	private static SimpleDateFormat timestampSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 	private static SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd"); 
 	private static SimpleDateFormat timeSDF = new SimpleDateFormat("HH:mm:ss.SSS"); 
 	
-	private SqlResultUtil(){}
+	private SqlResultUtils(){}
 	/**
 	 * resultSet을  리스트로 만드는 방법 
 	 * 리스트 형식 List<Map> rows = new ArrayList<Map>();

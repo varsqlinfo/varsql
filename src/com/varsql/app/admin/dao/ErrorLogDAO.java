@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.varsql.app.common.dao.BaseDAO;
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.VartechReflectionUtils;
 

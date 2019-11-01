@@ -15,15 +15,27 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.enums.ViewPage;
 import com.varsql.core.auth.Authority;
 
 
 
 /**
- * The Class OutsideController.
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: LoginController.java
+* @DESC		: 로그인  컨트롤러
+* @AUTHOR	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+* 2019. 11. 1. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
  */
 @Controller
-public class LoginController {
+public class LoginController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -54,10 +66,10 @@ public class LoginController {
 				}
 			}
 			
-			return new ModelAndView("redirect:"+url); // Go to admin home if already
+			return getRedirectModelAndView(url);
 		}
 
-		return new ModelAndView("/login/loginForm");
+		return getModelAndView("/loginForm", ViewPage.LOGIN);
 	}
 	
 	@RequestMapping(value="/login", params="mode")
@@ -65,11 +77,21 @@ public class LoginController {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("login", "fail");
 		
-		return  new ModelAndView("/login/loginForm",model);
+		return  getModelAndView("/loginForm", ViewPage.LOGIN , model);
 	}
 	
+	/**
+	 * 
+	 * @Method Name  : accessDenied
+	 * @Method 설명 : 권한없음
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 1. 
+	 * @변경이력  :
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/accessDenied")
-	public String accessDenied() throws Exception {
-		return "redirect:/login";
+	public ModelAndView accessDenied() throws Exception {
+		return getRedirectModelAndView("/login");
 	}
 }

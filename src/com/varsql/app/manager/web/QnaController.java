@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.manager.service.QnaServiceImpl;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.core.common.util.SecurityUtil;
@@ -43,7 +44,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager")
-public class QnaController {
+public class QnaController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(QnaController.class);
@@ -88,10 +89,6 @@ public class QnaController {
 			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = qnaServiceImpl.updateQnaAnswerContent(qnaInfo);
 		}
-		
-		
 		return resultObject;
-		
 	}
-
 }

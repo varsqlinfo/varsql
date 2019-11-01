@@ -114,7 +114,7 @@ VarsqlAPP.vueServiceBean({
 			};
 			
 			this.$ajax({
-				url :{type:VARSQL.uri.user, url:'/qnaList'}
+				url :{type:VARSQL.uri.user, url:'/preferences/qnaList'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.items;
@@ -136,7 +136,7 @@ VarsqlAPP.vueServiceBean({
 					}
 					
 					_this.$ajax({
-						url : {type:VARSQL.uri.user, url:'/insQna'}
+						url : {type:VARSQL.uri.user, url:'/preferences/insQna'}
 						,data : param 
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
@@ -175,7 +175,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			this.$ajax({
-				url : {type:VARSQL.uri.user, url:'/delQna'}
+				url : {type:VARSQL.uri.user, url:'/preferences/delQna'}
 				,data : {
 					qnaid : item.QNAID
 				}
@@ -184,9 +184,6 @@ VarsqlAPP.vueServiceBean({
 					_this.search();
 				}
 			});
-		}
-		,goMain : function (){
-			location.href ='${varsqlLogoutUrl}';
 		}
 	}
 });

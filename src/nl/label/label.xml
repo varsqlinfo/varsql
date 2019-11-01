@@ -20,6 +20,7 @@
 <entry key="std_time">시작시간</entry>
 <entry key="end_time">종료시간</entry>
 <entry key="file_name">파일명</entry>
+<entry key="sql_file_name">파일명</entry>
 <entry key="preferences">환경설정</entry>
 <entry key="object">오브젝트</entry>
 <entry key="export">내보내기</entry>
@@ -27,6 +28,7 @@
 <entry key="copy">복사</entry>
 <entry key="reply">답장</entry>
 <entry key="desc">설명</entry>
+<entry key="all">전체</entry>
 <entry key="remarks">비고</entry>
 
 
@@ -70,6 +72,7 @@
 <entry key="compare.detail">비교 상세</entry>
 
 <entry key="label.db">db</entry>
+<entry key="label.database">Database</entry>
 <entry key="label.remove">제거</entry>
 <entry key="label.user">사용자</entry>
 <entry key="label.username">사용자명</entry>

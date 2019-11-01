@@ -1,6 +1,6 @@
 package com.varsql.app.database.beans;
 
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 
 /**
  * 
@@ -62,7 +62,7 @@ public class SqlLogInfo{
 	public void setStartTime(long startTime){
 		
 		this.startTimeMillis  = startTime;
-		this.startTime=VarsqlUtil.getCurrentTimestamp(this.startTimeMillis);
+		this.startTime=VarsqlUtils.getCurrentTimestamp(this.startTimeMillis);
 		this.setDelayTime();
 	}
 	public int getSMm(){
@@ -88,7 +88,7 @@ public class SqlLogInfo{
 	}
 	public void setEndTime(long endTime){
 		this.endTimeMillis = endTime;
-		this.endTime=VarsqlUtil.getCurrentTimestamp(this.endTimeMillis);
+		this.endTime=VarsqlUtils.getCurrentTimestamp(this.endTimeMillis);
 		this.setDelayTime();
 	}
 	public int getDelayTime(){

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.enums.ViewPage;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 
@@ -31,17 +31,15 @@ import com.vartech.common.constants.ResultConst;
 *-----------------------------------------------------------------------------
  */
 @Controller
-public class VarsqlCommonController {
+public class VarsqlCommonController extends AbstractController {
 
 	/** The Constant logger. */
-	private final static Logger logger = LoggerFactory
-			.getLogger(VarsqlCommonController.class);
+	private final static Logger logger = LoggerFactory.getLogger(VarsqlCommonController.class);
 	
 	@RequestMapping({"","/"})
 	public ModelAndView welcome(HttpServletRequest req, HttpServletResponse res,
 			ModelAndView mav) throws Exception {
-		ModelMap model = mav.getModelMap();
-		return new ModelAndView("redirect:/login", model);
+		return getRedirectModelAndView("/login");
 	}
 
 	/**
@@ -81,10 +79,8 @@ public class VarsqlCommonController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/common/helpPage")
-	public ModelAndView helpPage(HttpServletRequest req, HttpServletResponse res,
-			ModelAndView mav) throws Exception {
-		ModelMap model = mav.getModelMap();
-		return new ModelAndView("/commonPage/help/mainHelp", model);
+	public ModelAndView helpPage(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		return getModelAndView("/help/mainHelp", ViewPage.COMMONPAGE);
 	}
 
 }

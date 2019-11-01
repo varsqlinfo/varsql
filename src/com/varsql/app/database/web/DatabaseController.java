@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.DatabaseServiceImpl;
 import com.varsql.app.database.service.PreferencesServiceImpl;
@@ -36,7 +38,7 @@ import com.vartech.common.app.beans.ResponseResult;
  */
 @Controller
 @RequestMapping("/database")
-public class DatabaseController {
+public class DatabaseController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseController.class);
@@ -60,7 +62,7 @@ public class DatabaseController {
 		
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo, true));
 		
-		return  new ModelAndView("/database/main",model);
+		return getModelAndView("/main",ViewPage.DATABASE , model);
 	}
 	
 	/**

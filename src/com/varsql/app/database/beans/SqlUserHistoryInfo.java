@@ -2,7 +2,7 @@ package com.varsql.app.database.beans;
 
 import java.sql.Timestamp;
 
-import com.varsql.app.util.VarsqlUtil;
+import com.varsql.app.util.VarsqlUtils;
 
 /**
  * 

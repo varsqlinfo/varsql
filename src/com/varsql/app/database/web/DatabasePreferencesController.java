@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.PreferencesServiceImpl;
 import com.vartech.common.app.beans.ResponseResult;
@@ -19,7 +21,7 @@ import com.vartech.common.app.beans.ResponseResult;
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: PreferencesController.java
+* @NAME		: DatabasePreferencesController.java
 * @DESC		: 환경설정 정보. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
@@ -31,7 +33,7 @@ import com.vartech.common.app.beans.ResponseResult;
  */
 @Controller
 @RequestMapping("/database/preferences")
-public class DatabasePreferencesController {
+public class DatabasePreferencesController extends AbstractController  {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(DatabasePreferencesController.class);
@@ -42,7 +44,7 @@ public class DatabasePreferencesController {
 	@RequestMapping({"/main"})
 	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferencesMain",model);
+		return getModelAndView("/preferencesMain", ViewPage.DATABASE, model);
 	}
 	
 	/**
@@ -59,7 +61,7 @@ public class DatabasePreferencesController {
 	@RequestMapping("/generalSetting")
 	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/generalSetting",model);
+		return getModelAndView("/generalSetting", ViewPage.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -76,7 +78,7 @@ public class DatabasePreferencesController {
 	@RequestMapping("/keySetting")
 	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/keySetting",model);
+		return getModelAndView("/keySetting", ViewPage.DATABASE_PREFERENCES, model);
 	}
 	
 	
@@ -95,7 +97,7 @@ public class DatabasePreferencesController {
 	@RequestMapping("/sqlFormatSetting")
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/sqlFormatSetting",model);
+		return getModelAndView("/sqlFormatSetting", ViewPage.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -112,7 +114,7 @@ public class DatabasePreferencesController {
 	@RequestMapping("/codeEditerSetting")
 	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/codeEditerSetting",model);
+		return getModelAndView("/codeEditerSetting", ViewPage.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -129,7 +131,7 @@ public class DatabasePreferencesController {
 	@RequestMapping("/exportSetting")
 	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return  new ModelAndView("/database/preferences/exportSetting",model);
+		return getModelAndView("/exportSetting", ViewPage.DATABASE_PREFERENCES, model);
 	}
 	
 	/**

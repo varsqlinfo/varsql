@@ -73,87 +73,91 @@
 	</div>
 </div>
 <script>
-var generalMain = {
-	init:function(){
-		var _self = this;
-		_self.initEvt();
-	}
-	,initEvt : function (){
-		var _self = this;
-		
-		$('.save-btn').on('click',function (){
-			$('#writeForm').submit();
-		});
-		
-		$('#writeForm').bootstrapValidator({
-			message: 'This value is not valid',
-			feedbackIcons: {
-				valid: 'glyphicon glyphicon-ok',
-				invalid: 'glyphicon glyphicon-remove',
-				validating: 'glyphicon glyphicon-refresh'
-			},
-			fields: {
-				uname : {
-					validators: {
-						notEmpty: { message: '필수 입력사항입니다.'}
-						,stringLength: { min: 3, max: 100, message: '크기는 3~100 사이여야 합니다'}
-					}
-			  	}	
-				,uemail : {
-					validators: {
-						notEmpty: { message: '필수 입력사항입니다.'}
-						,stringLength: { min: 0, max: 500, message: '크기는 0~250 사이여야 합니다'}
-						,emailAddress: {
-							message: 'The input is not a valid email address'
-						}
-				  }
-			  	}
-				,udept : {
-					validators: {
-						stringLength: { min: 0, max: 120, message: '크기는 0~120사이여야 합니다'}
-				  }
-			  	}
-			}
-		}).on('success.form.bv', function(e) {
-			// Prevent form submission
-			e.preventDefault();
-			
-			_self.saveInfo();
-		});
-	}
-	// 정보 저장.
-	,saveInfo : function (){
-		var _self = this;
-		
-		var params  =$('#writeForm').serializeJSON();
-		
-		VARSQL.req.ajax({
-			url: {type:VARSQL.uri.user, url:'/preferences/userInfoSave'},
-			cache: false,
-			type:"post",
-			data:params,
-			dataType: "json",
-			success: function(resData) {
-				if(resData.messageCode=='valid'){
-					var items = resData.items;
-					objLen = items.length;
-					if(objLen >0){
-						var item;
-						for(var i=0; i <objLen; i++){
-							item = items[i];
-							alert(item.field + "\n"+ item.defaultMessage)
-							return ; 
-						}
-					}
-				}
-				
-				location.href= location.href;
-			}
-		});
-	}
-}
 
-$(document).ready(function (){
-	generalMain.init();
-});
+(function (){
+	var generalMain = {
+		init:function(){
+			var _self = this;
+			_self.initEvt();
+		}
+		,initEvt : function (){
+			var _self = this;
+			
+			$('.save-btn').on('click',function (){
+				$('#writeForm').submit();
+			});
+			
+			$('#writeForm').bootstrapValidator({
+				message: 'This value is not valid',
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					uname : {
+						validators: {
+							notEmpty: { message: '필수 입력사항입니다.'}
+							,stringLength: { min: 3, max: 100, message: '크기는 3~100 사이여야 합니다'}
+						}
+				  	}	
+					,uemail : {
+						validators: {
+							notEmpty: { message: '필수 입력사항입니다.'}
+							,stringLength: { min: 0, max: 500, message: '크기는 0~250 사이여야 합니다'}
+							,emailAddress: {
+								message: 'The input is not a valid email address'
+							}
+					  }
+				  	}
+					,udept : {
+						validators: {
+							stringLength: { min: 0, max: 120, message: '크기는 0~120사이여야 합니다'}
+					  }
+				  	}
+				}
+			}).on('success.form.bv', function(e) {
+				// Prevent form submission
+				e.preventDefault();
+				
+				_self.saveInfo();
+			});
+		}
+		// 정보 저장.
+		,saveInfo : function (){
+			var _self = this;
+			
+			var params  =$('#writeForm').serializeJSON();
+			
+			VARSQL.req.ajax({
+				url: {type:VARSQL.uri.user, url:'/preferences/userInfoSave'},
+				cache: false,
+				type:"post",
+				data:params,
+				dataType: "json",
+				success: function(resData) {
+					if(resData.messageCode=='valid'){
+						var items = resData.items;
+						objLen = items.length;
+						if(objLen >0){
+							var item;
+							for(var i=0; i <objLen; i++){
+								item = items[i];
+								alert(item.field + "\n"+ item.defaultMessage)
+								return ; 
+							}
+						}
+					}
+					
+					location.href= location.href;
+				}
+			});
+		}
+	}
+
+	$(document).ready(function (){
+		generalMain.init();
+	});
+})()
+
 </script>
