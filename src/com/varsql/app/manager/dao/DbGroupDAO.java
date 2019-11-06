@@ -86,15 +86,21 @@ public class DbGroupDAO extends BaseDAO{
 	/**
 	 * 
 	 * @Method Name  : deleteDbGroupInfo
-	 * @Method 설명 : 삭제.
+	 * @Method 설명 : 삭제.  db 정보 , db 맵핑 정보 , 사용자 맵핑정보 삭제. 
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 7. 19. 
 	 * @변경이력  :
 	 * @param parameter
 	 * @return
 	 */
-	public Object deleteDbGroupInfo(ParamMap parameter) {
+	public int deleteDbGroupInfo(ParamMap parameter) {
 		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupInfo", parameter);
+	}
+	public int deleteDbGroupNDbMappingInfo(ParamMap parameter) {
+		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupNDbMappingInfo",parameter);
+	}
+	public int deleteDbGroupNUserMappingInfo(ParamMap parameter) {
+		return getSqlSession().delete("manageDbGroupMapper.deleteDbGroupNUserMappingInfo",parameter);
 	}
 	
 	/**

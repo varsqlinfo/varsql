@@ -35,6 +35,7 @@ VARSQL_LANG = {
 	,'varsql.m.0003' : ' 차단 하시겠습니까?'
 	,'varsql.m.0004' : ' 해제 하시겠습니까?'
 	,'varsql.m.0005' : '사용자의 {itemName} 그룹을 제거 하시겠습니까?\n그룹을 제거 하시면 그룹에 속한 모든 db를 접근할수 없습니다.'
+	,'varsql.m.0006' : '{groupName} 그룹을 제거 하시면 그룹에 속한 모든 db맵핑 정보와 사용자 정보가 삭제 됩니다.\n그룹을 삭제 하시겠습니까?'
 		
 
 	//error message code

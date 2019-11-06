@@ -97,10 +97,18 @@ public class DbGroupServiceImpl{
 	 * @param parameter
 	 * @return
 	 */
+	@Transactional
 	public ResponseResult deleteDbGroupInfo(ParamMap parameter) {
 		ResponseResult result = new ResponseResult();
 		
-		result.setItemOne(dbGroupDAO.deleteDbGroupInfo(parameter));
+		int resultCnt = dbGroupDAO.deleteDbGroupInfo(parameter);
+		
+		if(resultCnt > 0) {
+			dbGroupDAO.deleteDbGroupNDbMappingInfo(parameter);
+			dbGroupDAO.deleteDbGroupNUserMappingInfo(parameter);
+		}
+		
+		result.setItemOne(resultCnt);
 		
 		return result;
 	}

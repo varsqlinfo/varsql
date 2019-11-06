@@ -44,4 +44,13 @@ public final class MybatisUtils {
 	public static boolean isNotAdmin() {
 		return !SecurityUtil.isAdmin();
 	} 
+	
+	public static boolean isNumber(Object obj){
+		try {
+	        Integer.parseInt(obj.toString());
+	    } catch (NumberFormatException | NullPointerException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
 }

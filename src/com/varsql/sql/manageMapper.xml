@@ -59,7 +59,7 @@
 	<!-- select user db info -->
 	<select id="manageMapper.selectUserDbInfo" parameterType="map" resultType="map">
 		select suba.*, nvl2(subb.VCONNID,'Y','N') as BLOCK_YN from (
-			select a.VCONNID , a.VNAME, 
+			select a.VCONNID , a.VNAME,
 				<choose>
 					<when test="@com.varsql.app.util.MybatisUtils@isAdmin()">
 						 1 
@@ -75,9 +75,11 @@
 				,MANAGER_DB_CNT
 			from VTCONNECTION a , (
 				select VCONNID , max(type) as MANAGER_DB_CNT from (							
-					select VCONNID, 1 type from VTDATABASE_GROUP_DB where GROUP_ID in (
-						select GROUP_ID  from VTDATABASE_GROUP_USER where VIEWID = #{viewid}
-					)
+					select VCONNID, 1 type 
+					from VTDATABASE_GROUP a ,VTDATABASE_GROUP_DB b , VTDATABASE_GROUP_USER c 
+					where a.GROUP_ID = b.GROUP_ID
+					and b.GROUP_ID = c.GROUP_ID
+					and c.VIEWID = #{viewid}
 					union 
 					select VCONNID , 2 type from VTDATABASE_MANAGER where VIEWID =#{viewid}						
 				) group by VCONNID

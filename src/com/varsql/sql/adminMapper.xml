@@ -69,7 +69,7 @@
 			,VNAME 
 			,VURL
 			,VSERVERIP
-			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
+			<if test="@com.varsql.app.util.MybatisUtils@isNumber(vport)">
 			,VPORT
 			</if>
 			,VDATABASENAME 
@@ -92,7 +92,7 @@
 			,#{vname}
 			,#{vurl}
 			,#{vserverip}
-			<if test="@com.varsql.app.util.VarQueryUtil@isNumber(vport)">
+			<if test="@com.varsql.app.util.MybatisUtils@isNumber(vport)">
 			,#{vport}
 			</if>
 			,#{vdatabasename} 
@@ -126,7 +126,7 @@
 				</when>
 		    	<otherwise>
 		    		<choose>
-						<when test='@com.varsql.app.util.VarQueryUtil@isNumber(vport)'>
+						<when test='@com.varsql.app.util.MybatisUtils@isNumber(vport)'>
 							,VPORT = #{vport}
 						</when>
 				    	<otherwise>

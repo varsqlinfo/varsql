@@ -268,7 +268,7 @@ VarsqlAPP.vueServiceBean( {
 		,deleteInfo : function(){
 			var _self = this; 
 			
-			if(!confirm('['+_self.detailItem.groupName +'] 삭제하시겠습니까?')){
+			if(!confirm(VARSQL.messageFormat('varsql.m.0006', _self.detailItem))){
 				return ; 
 			}
 			

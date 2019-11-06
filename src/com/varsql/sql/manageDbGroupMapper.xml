@@ -58,7 +58,7 @@
 		</if>
 	</update>
 	
-	<!-- DB 그룹 삭제 -->
+	<!-- DB 그룹 삭제 start -->
 	<delete id="manageDbGroupMapper.deleteDbGroupInfo" parameterType="map">
 		delete from VTDATABASE_GROUP 
 		where GROUP_ID = #{groupId}
@@ -66,6 +66,20 @@
 			and REG_ID =#{dp_viewId}	
 		</if>
 	</delete>
+	
+	<!-- DB 그룹  and db 맵핑 정보 삭제  -->
+	<delete id="manageDbGroupMapper.deleteDbGroupNDbMappingInfo" parameterType="map">
+		delete from VTDATABASE_GROUP_DB 
+		where GROUP_ID = #{groupId}
+	</delete>
+	
+	<!-- DB 그룹  and 사용자  맵핑 정보 삭제  -->
+	<delete id="manageDbGroupMapper.deleteDbGroupNUserMappingInfo" parameterType="map">
+		delete from VTDATABASE_GROUP_USER 
+		where GROUP_ID = #{groupId}
+	</delete>
+	
+	<!-- DB 그룹 삭제 start -->
 	
 	<!-- db group 매핑정보 -->
 	<select id="manageDbGroupMapper.selectDbGroupMappingList" resultType="map">
