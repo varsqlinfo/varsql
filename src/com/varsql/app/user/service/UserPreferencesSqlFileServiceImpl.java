@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.user.dao.UserPreferencesDAO;
+import com.varsql.core.auth.Authority;
+import com.varsql.core.common.util.StringUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -69,10 +71,29 @@ public class UserPreferencesSqlFileServiceImpl{
 	 * @param param
 	 * @return
 	 */
-	public ResponseResult selectSqlFiledetail(ParamMap param) {
+	public ResponseResult selectSqlFileDetail(ParamMap param) {
 		ResponseResult result = new ResponseResult();
 		
-		result.setItemOne(userPreferencesDAO.selectSqlFiledetail(param));
+		result.setItemOne(userPreferencesDAO.selectSqlFileDetail(param));
+		
+		return result;
+	}
+	
+	/**
+	 *  
+	 * @Method Name  : deleteSqlFile
+	 * @Method 설명 : sql file 삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 7. 
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponseResult deleteSqlFile(ParamMap paramMap) {
+		ResponseResult result = new ResponseResult();
+		String[] sqlIdArr = StringUtil.split(paramMap.getString("selectItem"),",");
+		
+		result.setItemOne(userPreferencesDAO.deleteSqlFile(sqlIdArr, paramMap));
 		
 		return result;
 	}

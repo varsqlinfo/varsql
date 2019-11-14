@@ -97,14 +97,14 @@
 				fields: {
 					uname : {
 						validators: {
-							notEmpty: { message: '필수 입력사항입니다.'}
-							,stringLength: { min: 3, max: 100, message: '크기는 3~100 사이여야 합니다'}
+							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001') }
+							,stringLength: { min: 3, max: 100, message: VARSQL.messageFormat('varsql.form.0004',{range : '3~100'}) }
 						}
 				  	}	
 					,uemail : {
 						validators: {
-							notEmpty: { message: '필수 입력사항입니다.'}
-							,stringLength: { min: 0, max: 500, message: '크기는 0~250 사이여야 합니다'}
+							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001')}
+							,stringLength: { min: 0, max: 500, message: VARSQL.messageFormat('varsql.form.0004',{range : '0~250'}) }
 							,emailAddress: {
 								message: 'The input is not a valid email address'
 							}
@@ -112,7 +112,7 @@
 				  	}
 					,udept : {
 						validators: {
-							stringLength: { min: 0, max: 120, message: '크기는 0~120사이여야 합니다'}
+							stringLength: { min: 0, max: 120, message: VARSQL.messageFormat('varsql.form.0004',{range : '0~120'}) }
 					  }
 				  	}
 				}

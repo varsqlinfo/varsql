@@ -76,9 +76,6 @@
 		where c.SEND_ID  = d.VIEWID
 	</select>
 	
-	
-	
-	
 	<!-- 메시지 정보 보내기  -->
 	<insert id="userMapper.insertSendMemoInfo" parameterType="memoInfo">
 		insert  into VTMEMO (

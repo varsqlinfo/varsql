@@ -14,6 +14,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FileUtils;
 /**
  * 
  * 
@@ -37,24 +38,37 @@ public class ExportJarUtil {
 	
 	private static final String JAR_VERSION = "-0.0.1";
 	
-	private static final String EXPORT_PATH = "C:\\01.util\\tomcat\\webapps\\vsql\\WEB-INF\\lib/";
+	private static final String EXPORT_PATH = "C:\\02.varsql\\varsql-webapp\\webapps\\vsql\\WEB-INF\\lib/";
+	
+	enum COPY_JAR {
+		WEB_LIB("/WebContent/WEB-INF/lib");
+		
+		private String jarPath ="";
+		
+		COPY_JAR(String jarPath){
+			this.jarPath = getRootPath() + jarPath;
+		}
+		
+		public String getJarPath () {
+			return jarPath;
+		}
+	}
 	
 	enum JAR_TYPE{
 		APP("varsql-app","/WebContent/WEB-INF/classes", Arrays.asList("$$export") ,false ,"")
-		,WEB("varsql-web","/WebContent/WEB-INF", Arrays.asList("WEB-INF/lib","WEB-INF/classes","WEB-INF/web.xml","WEB-INF/varsql-fn.tld"), true ,"META-INF/resources/")
+		,WEB("varsql-web","/WebContent/WEB-INF", Arrays.asList("WEB-INF/lib","WEB-INF/classes","WEB-INF/web.xml"), true ,"META-INF/resources/")
 		,STATIC("varsql-static","/WebContent/webstatic",null,true ,"META-INF/resources/");
 		
-		public String jarNamePath ="";
-		public String sourcePath ="";
-		public List<String> excludeDirOrPath;
-		public boolean firstIncludeFlag;
-		public String addDir ="";
+		private String jarNamePath ="";
+		private String sourcePath ="";
+		private List<String> excludeDirOrPath;
+		private boolean firstIncludeFlag;
+		private String addDir ="";
 		
 		JAR_TYPE(String name , String path , List<String> excludeDirOrPath, boolean firstIncludeFlag, String addDir){
-			String rootPath = new File("").getAbsolutePath(); 
 			
 			this.jarNamePath = EXPORT_PATH+name+JAR_VERSION+".jar";
-			this.sourcePath = rootPath+path;
+			this.sourcePath = getRootPath()+path;
 			this.excludeDirOrPath = excludeDirOrPath;
 			this.firstIncludeFlag = firstIncludeFlag; 
 			this.addDir = addDir; 
@@ -70,13 +84,17 @@ public class ExportJarUtil {
 	
 	public ExportJarUtil(){}
 	
+	public static String getRootPath(){
+		return new File("").getAbsolutePath(); 
+	}
+	
 	public void zip(JAR_TYPE jarType) throws IOException {
 		
 		File sourceFile = new File(jarType.sourcePath); 
 		
 		if(!sourceFile.exists()) throw new IOException("src : ["+sourceFile+"] is not found");
 		
-		System.out.println("############start "+jarType.name()+ " ##############" );
+		System.out.println("\n############start "+jarType.name()+ " ##############" );
 		System.out.println(jarType);
 		
 		OutputStream os = new FileOutputStream(jarType.jarNamePath);
@@ -235,6 +253,40 @@ public class ExportJarUtil {
 		return path.replaceAll("[/\\\\]", java.util.regex.Matcher.quoteReplacement(File.separator));
 	}
 	
+	private void copyJarFile() throws IOException {
+		
+		System.out.println("\n############start copyJarFile ##############" );
+		
+		for (COPY_JAR copyJar : COPY_JAR.values()) {
+			File jarPathDir = new File(copyJar.getJarPath()); 
+			
+			if(!jarPathDir.exists()) throw new IOException("jar path : ["+jarPathDir+"] is not found");
+			
+			File[] allJarFile = jarPathDir.listFiles();
+			
+			boolean copyFlag = false; 
+			for (int i = 0; i < allJarFile.length; i++) {
+				File sourceFile = allJarFile[i];
+				File targetFile = new File(EXPORT_PATH , sourceFile.getName()); 
+				
+				copyFlag = false; 
+				
+				if(!targetFile.exists() && !targetFile.isFile()) {
+					copyFlag = true; 
+				}else {
+					if(sourceFile.lastModified() > targetFile.lastModified()) {
+						copyFlag = true; 
+					}
+				}
+				
+				if(copyFlag) {
+					System.out.println("copy jar : "+ sourceFile); 
+					FileUtils.copyFile(sourceFile,targetFile);
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		try {
 			System.out.println("start jar create");
@@ -245,7 +297,9 @@ public class ExportJarUtil {
 			zu.zip(JAR_TYPE.WEB);
 			zu.zip(JAR_TYPE.STATIC);
 			
-			System.out.println("end jar create");
+			zu.copyJarFile();
+			
+			System.out.println("------------end jar create------------");
 			System.out.println("export version  : " + JAR_VERSION);
 			System.out.println("export jar path : " + EXPORT_PATH);
 		} catch (Exception e) {
@@ -253,4 +307,5 @@ public class ExportJarUtil {
 			e.printStackTrace();
 		}
 	}
+
 }

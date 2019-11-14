@@ -115,12 +115,6 @@
 	</div>
 </BODY>
 </html>
-<style>
-/*todo css파일로 옮길것.*/
-.ddl-object-info.active{
-	background-color: #e6e5e5;
-}
-</style>
 
 <script>
 

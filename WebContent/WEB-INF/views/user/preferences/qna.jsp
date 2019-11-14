@@ -170,7 +170,7 @@ VarsqlAPP.vueServiceBean({
 			
 			var item = this.detailItem;
 			
-			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
+			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
 				return ; 	
 			}
 			

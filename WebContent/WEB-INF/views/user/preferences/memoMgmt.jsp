@@ -227,11 +227,11 @@ VarsqlAPP.vueServiceBean( {
 			var selectItem = _self.selectItem;
 			
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQLUI.alert.open('<spring:message code="msg.data.select" />');
+				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
 				return ; 
 			}
 			
-			if(!confirm('삭제 하시겠습니까?')){
+			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
 				return ; 
 			}
 			
@@ -275,7 +275,7 @@ VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendMemo.varsql'}
 			    ,data:params 
 			    ,success:function (resData){
-			    	VARSQLUI.toast.open('저장 되었습니다.');
+			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
 			    	
 			    	_this.viewItem(_this.detailItem)
 				}

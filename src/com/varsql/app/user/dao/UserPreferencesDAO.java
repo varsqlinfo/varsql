@@ -1,5 +1,6 @@
 package com.varsql.app.user.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -270,7 +271,37 @@ public class UserPreferencesDAO extends BaseDAO{
 		return getSqlSession().selectList("userPreferencesMapper.selectUserSqlFileList", searchParameter);
 	}
 
-	public Object selectSqlFiledetail(ParamMap param) {
-		return getSqlSession().selectOne("userPreferencesMapper.selectSqlFiledetail", param);
+	public Object selectSqlFileDetail(ParamMap param) {
+		return getSqlSession().selectOne("userPreferencesMapper.selectSqlFileDetail", param);
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : deleteSqlFileList
+	 * @Method 설명 : sql file 삭제.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 7. 
+	 * @변경이력  :
+	 * @param viewidArr
+	 * @param paramMap
+	 * @return
+	 */
+	public Object deleteSqlFile(String[] sqlIdArr, ParamMap paramMap) {
+		SqlSession batchSqlSession = getBatchSqlSession(getSqlSession());
+        
+        boolean result = false; 
+        try {
+            for(String id: sqlIdArr){
+            	paramMap.put("sqlId", id);
+            	batchSqlSession.update("userPreferencesMapper.deleteSqlFile", paramMap);
+            }
+            batchSqlSession.commit();
+            result = true; 
+        }catch(Throwable e) {
+        	batchSqlSession.rollback();
+        }finally{
+        	batchSqlSession.close();
+        }
+		return result;
 	}
 }

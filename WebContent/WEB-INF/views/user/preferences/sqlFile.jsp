@@ -14,7 +14,11 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+						<label>
+							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="btn.delete" /></button>
+						</label>
+					</div>
 					<div class="col-sm-8">
 						<div class="dataTables_filter">
 							<label style="float:left; margin-right: 5px;">
@@ -46,7 +50,7 @@
 								<tr role="row">
 									<th  style="width: 10px;"><div
 											class="text-center">
-											<input type="checkbox" id="allcheck" name="allcheck">
+											<input type="checkbox" :checked="selectAllCheck" @click="selectAll()" />
 										</div>
 									</th>
 									<th style="width: 195px;">
@@ -62,8 +66,8 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.VCONNID" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="modify(item)">{{item.GUERY_TITLE}}</a></td>
+									<td><input type="checkbox" :value="item.SQL_ID" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="detail(item)">{{item.GUERY_TITLE}}</a></td>
 									<td class="center">{{item.VNAME}}</td>
 									<td class="center">{{item.CHAR_REG_DT}}</td>
 								</tr>
@@ -89,18 +93,10 @@
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="form-group">
-						<div class="col-sm-12">
-							<div class="pull-right">
-								<button type="button" v-if="isDetailFlag" @click="deleteInfo()" class="btn btn-default"><spring:message code="btn.delete" /></button>
-							</div>
-						</div>
-					</div>
-					
-					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlfile" /></label></div>
 			
 						<div class="col-xs-12">
-							<input type="text" :value="detailItem.GUERY_TITLE" class="form-control" />
+							{{detailItem.GUERY_TITLE}}&nbsp;
 						</div>
 					</div>
 					<div class="form-group">
@@ -136,9 +132,22 @@ VarsqlAPP.vueServiceBean({
 		,vconnid : 'ALL'
 		,isDetailFlag :false
 	}
+	,computed :{
+		selectAllCheck : function (){
+			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length; 
+		}
+	}
 	,methods:{
-		init : function(){
-			
+		selectAll : function (){
+			if(this.selectAllCheck){
+				this.selectItem = []; 
+			}else{
+				this.selectItem = [];
+				
+				for(var i =0 ;i <this.gridData.length; i++){
+					this.selectItem.push(this.gridData[i].SQL_ID)
+				}
+			}
 		}
 		,search : function(no){
 			var _self = this; 
@@ -159,37 +168,7 @@ VarsqlAPP.vueServiceBean({
 				}
 			})
 		}
-		,save : function (mode){
-			var _this = this;
-			
-			this.$validator.validateAll().then(function (result){
-				if(result){
-					
-					var param ={};
-					var saveItem = _this.detailItem;
-					
-					for(var key in saveItem){
-						param[VARSQL.util.convertCamel(key)] = saveItem[key];
-					}
-					
-					_this.$ajax({
-						url : {type:VARSQL.uri.user, url:'/preferences/sqlFile/ins'}
-						,data : param 
-						,success:function (resData){
-							if(VARSQL.req.validationCheck(resData)){
-								if(resData.resultCode != 200){
-									alert(resData.message);
-									return ; 
-								}
-								_this.modify();
-								_this.search();
-							}
-						}
-					});
-				}
-			});
-		}
-		,modify : function (item){
+		,detail : function (item){
 			var _this = this; 
 		
 			_this.isDetailFlag = true; 
@@ -209,8 +188,8 @@ VarsqlAPP.vueServiceBean({
 					PR.prettyPrint();
 				}
 			});
-			
 		}
+		//delete
 		,deleteInfo : function(){
 			var _this = this;
 			
@@ -219,21 +198,21 @@ VarsqlAPP.vueServiceBean({
 			var selectItem = _this.selectItem;
 			
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQLUI.alert.open('<spring:message code="msg.data.select" />');
+				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
 				return ; 
 			}
 			
-			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
+			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
 				return ; 	
 			}
 			
 			this.$ajax({
-				url : {type:VARSQL.uri.user, url:'/preferences/sqlFile/del'}
+				url : {type:VARSQL.uri.user, url:'/preferences/sqlFile/delete'}
 				,data : {
 					selectItem : selectItem.join(',')
 				}
 				,success:function (resData){
-					_this.modify();
+					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0017'));
 					_this.search();
 				}
 			});

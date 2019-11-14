@@ -16,6 +16,7 @@
 <entry key="header.menu.file.new">새 파일</entry>
 <entry key="header.menu.file.save">저장</entry>
 <entry key="header.menu.file.allsave">모두 저장</entry>
+<entry key="header.menu.file.import_export">가져오기 및 내보내기...</entry>
 <entry key="header.menu.file.newwin">새창보기</entry>
 <entry key="header.menu.file.close">닫기</entry>
 

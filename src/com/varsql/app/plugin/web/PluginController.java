@@ -18,6 +18,7 @@ import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ParamConstants;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -74,11 +75,11 @@ public class PluginController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/historySearch")
+	@RequestMapping(value = "/history/search")
 	public @ResponseBody ResponseResult historySearch(HttpServletRequest req) throws Exception {
 		SearchParameter param = HttpUtils.getSearchParameter(req);
 		
-		param.addCustomParam("conuid", SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get("conuid"))));
+		param.addCustomParam(VarsqlParamConstants.CONN_UUID, SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get(VarsqlParamConstants.CONN_UUID))));
 		param.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
 		return pluginServiceImpl.historySearch(param);

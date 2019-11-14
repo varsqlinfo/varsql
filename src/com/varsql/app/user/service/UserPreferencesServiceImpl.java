@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.varsql.app.common.constants.VarsqlErrorCode;
 import com.varsql.app.user.beans.MemoInfo;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
@@ -107,7 +108,7 @@ public class UserPreferencesServiceImpl{
 			passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordForm.getUpw()));
 			resultObject.setItemOne(userPreferencesDAO.updatePasswordInfo(passwordForm)> 0);
 		}else{
-			resultObject.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+			resultObject.setResultCode(VarsqlErrorCode.PASSWORD_NOT_VALID.code());
 		}
 		
 		return resultObject;

@@ -277,7 +277,7 @@
 	</resultMap>
 	
 	<!-- sql file detail -->
-	<select id="userPreferencesMapper.selectSqlFiledetail" parameterType="map" resultMap="sqlFileClobMap">
+	<select id="userPreferencesMapper.selectSqlFileDetail" parameterType="map" resultMap="sqlFileClobMap">
 		select 
 			SQL_ID 
 			, GUERY_TITLE 
@@ -287,5 +287,12 @@
 		where VIEWID =#{uid}
 		and SQL_ID = #{sqlid}
 	</select>
+	
+	<!-- sql file 삭제 -->
+	<delete id="userPreferencesMapper.deleteSqlFile" parameterType="map">
+		delete from VTSQL_SQLFILE 
+		where VIEWID =#{uid}
+		and SQL_ID = #{sqlId}
+	</delete>
 	
 </mapper>

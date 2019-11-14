@@ -9,6 +9,7 @@
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 
+
 <c:set var="pageContextPath" value="${pageContext.request.contextPath}" />
 <c:set var="varsqlLoginUrl" value="${pageContextPath}/login_check" />
 <c:set var="varsqlLogoutUrl" value="${pageContextPath}/logout" />

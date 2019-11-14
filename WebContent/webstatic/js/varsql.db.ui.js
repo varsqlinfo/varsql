@@ -347,6 +347,9 @@ _ui.headerMenu ={
 						case 'allsave': // 모두 저장
 							$('.sql_toolbar_allsave_btn').trigger('click');
 							break;
+						case 'import-export': // 가져오기 및 내보내기
+							console.log('import')
+							break;
 						case 'newwin': // 새창 보기.
 							var popt = 'width='+screen.width-40+',height='+screen.height-40+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'; 
 							
@@ -540,6 +543,19 @@ _ui.headerMenu ={
 					break;
 			}
 		})
+	}
+	,openMenuDialog : function (title,type ,loadUrl, dialogOpt){
+		var _self = this; 
+		var dialogEleObj = _self.dialogObj[type];
+		if(!VARSQL.isUndefined(dialogEleObj)){
+			dialogEleObj.dialog( "open" );
+			return ; 
+		}
+		
+		var eleId =VARSQL.generateUUID();
+		
+		eleId
+		
 	}
 	//header 메뉴 환경설정처리.
 	,openPreferences : function (title , loadUrl){
@@ -4710,7 +4726,7 @@ _ui.registerPlugin({
 			
 			VARSQL.req.ajax({      
 			    loadSelector : _self.selector
-			    ,url:{type:VARSQL.uri.plugin, url:'/historySearch.varsql'}
+			    ,url:{type:VARSQL.uri.plugin, url:'/history/search.varsql'}
 			    ,data : params 
 			    ,success:function (res){
 			    	

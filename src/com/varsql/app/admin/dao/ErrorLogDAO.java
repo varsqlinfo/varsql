@@ -24,9 +24,6 @@ public class ErrorLogDAO extends BaseDAO{
 	 * @return
 	 */
 	public int selectErrorTotalCnt(SearchParameter searchParameter) {
-		System.out.println("11111111111111111111111");
-		System.out.println(VartechReflectionUtils.reflectionToString(searchParameter));
-		System.out.println("11111111111111111111111");
 		return getSqlSession().selectOne("adminMapper.selectErrorTotalCnt", searchParameter);
 	}
 	

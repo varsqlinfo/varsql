@@ -82,27 +82,27 @@ response.setDateHeader ("Expires", -1);
 				fields: {
 					currPw: {
 		                validators: {
-		                    notEmpty: { message: '필수 입력사항입니다.'}
+		                    notEmpty: { message: VARSQL.messageFormat('varsql.form.0001') }
 		                }
 		            }
 					,upw : {
 		                validators: {
-		                	 notEmpty: { message: '필수 입력사항입니다.'}
-	                    	,stringLength: {min: 4, max: 500, message: '최소 4글자 이상 이여야 합니다.' }
+		                	 notEmpty: { message: VARSQL.messageFormat('varsql.form.0001')}
+	                    	,stringLength: {min: 4, max: 500, message:  VARSQL.messageFormat('varsql.form.0002' , {len:4}) }
 		                    ,identical: {
 		                        field: 'confirmUpw',
-		                        message: '비밀번호가 같아야합니다.'
+		                        message: VARSQL.messageFormat('varsql.form.0003')
 		                    }
 		                }
 		            }
 		            ,confirmUpw : {
 		                validators: {
 		                    notEmpty: {
-		                        message: '필수 입력사항입니다.'
+		                        message: VARSQL.messageFormat('varsql.form.0001') 
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
-		                        message: '비밀번호가 같아야합니다.'
+		                        message: VARSQL.messageFormat('varsql.form.0003')
 		                    }
 		                }
 		            }
@@ -122,10 +122,7 @@ response.setDateHeader ("Expires", -1);
 			
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.user, url:'/preferences/passwordSave'},
-				cache: false,
-				type:"post",
 				data:params,
-				dataType: "json",
 				success: function(resData) {
 					if(resData.messageCode=='valid'){
 						var items = resData.items;
@@ -134,18 +131,18 @@ response.setDateHeader ("Expires", -1);
 							var item;
 							for(var i=0; i <objLen; i++){
 								item = items[i];
-								alert(item.field + "\n"+ item.defaultMessage)
+								VARSQLUI.alert.open(item.field + "\n"+ item.defaultMessage)
 								return ; 
 							}
 						}
 					}
 					
-					if(resData.resultCode == 403){
-						alert('현재 비밀번호가 맞지 않습니다');
+					if(resData.resultCode == 90000){
+						VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0007'));
 						return ; 
 					}
 					
-					alert('비밀번호가 변경되었습니다.');
+					VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0008'));
 					
 					location.href= location.href;
 				}
@@ -153,7 +150,5 @@ response.setDateHeader ("Expires", -1);
 		}
 	}
 })();
-
-
 
 </script>

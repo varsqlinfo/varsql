@@ -7,8 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.service.UserPreferencesSqlFileServiceImpl;
@@ -52,7 +55,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping({"/list"})
+	@RequestMapping(value={"/list"},method = RequestMethod.POST)
 	public @ResponseBody ResponseResult list(HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
@@ -70,12 +73,12 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping({"/detail"})
+	@RequestMapping(value={"/detail"},method = RequestMethod.POST)
 	public @ResponseBody ResponseResult detail(HttpServletRequest req) {
 		ParamMap param = HttpUtils.getServletRequestParam(req);
 		param.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
 		
-		return  userPreferencesSqlFileServiceImpl.selectSqlFiledetail(param);
+		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(param);
 	}
 	
 	/**
@@ -88,11 +91,13 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping({"/delete"})
-	public @ResponseBody ResponseResult delete(HttpServletRequest req) {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+	@RequestMapping(value={"/delete"} ,method = RequestMethod.POST)
+	public @ResponseBody ResponseResult delete(@RequestParam(value = "selectItem", required = true )  String selectItem , HttpServletRequest req){
+		DataCommonVO paramMap = new DataCommonVO();
 		
-		return  userPreferencesSqlFileServiceImpl.sqlFileList(searchParameter);
+		paramMap.put("selectItem", selectItem);
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		
+		return  userPreferencesSqlFileServiceImpl.deleteSqlFile(paramMap);
 	}
 }
