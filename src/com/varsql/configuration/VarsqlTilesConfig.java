@@ -2,17 +2,11 @@ package com.varsql.configuration;
 
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
-import org.springframework.web.servlet.view.tiles3.TilesView;
+
+import com.varsql.app.common.view.VarsqlTilesView;
 
 /**
  * 
@@ -46,7 +40,7 @@ public class VarsqlTilesConfig extends VarsqlWebMvcConfigurerAdapter {
     public UrlBasedViewResolver tilesviewResolvers() {
         UrlBasedViewResolver viewResolver = new UrlBasedViewResolver();
         viewResolver.setOrder(1);
-        viewResolver.setViewClass(TilesView.class);
+        viewResolver.setViewClass(VarsqlTilesView.class);
         return viewResolver;
     }
 

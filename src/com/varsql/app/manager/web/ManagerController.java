@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.core.common.util.SecurityUtil;
@@ -50,7 +50,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "userMgmt");
-		return getModelAndView("/userMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/userMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "qnaMgmt");
-		return getModelAndView("/qnaMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/qnaMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -90,7 +90,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "glossaryMgmt");
-		return getModelAndView("/glossaryMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/glossaryMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	/**
 	 * 
@@ -109,7 +109,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
-		return getModelAndView("/dbGroupMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/dbGroupMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
-		return getModelAndView("/dbGroupUserMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/dbGroupUserMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public class ManagerController extends AbstractController{
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
 		
-		return getModelAndView("/dbCompareMgmt", ViewPage.MANAGER,model);
+		return getModelAndView("/dbCompareMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -187,7 +187,7 @@ public class ManagerController extends AbstractController{
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
 		
-		return getModelAndView("/sqlLogStat", ViewPage.MANAGER,model);
+		return getModelAndView("/sqlLogStat", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
@@ -214,6 +214,6 @@ public class ManagerController extends AbstractController{
 		
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
 		
-		return getModelAndView("/sqlLogHistory", ViewPage.MANAGER,model);
+		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER,model);
 	}
 }

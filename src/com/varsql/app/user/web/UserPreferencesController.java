@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.PasswordForm;
 import com.varsql.app.user.beans.QnAInfo;
@@ -76,7 +76,7 @@ public class UserPreferencesController extends AbstractController{
 		setModelDefaultValue(req , model);
 		model.addAttribute("detailInfo" , userPreferencesServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
 		model.addAttribute("localeInfo" , LocaleConstants.values());
-		return getModelAndView("/general", ViewPage.USER_PREFERENCES, model);
+		return getModelAndView("/general", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
 	private void setModelDefaultValue(HttpServletRequest req, ModelMap model) {
@@ -134,7 +134,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
 		
-		return getModelAndView("/password", ViewPage.USER_PREFERENCES, model);
+		return getModelAndView("/password", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -185,7 +185,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
 		
-		return getModelAndView("/memoMgmt", ViewPage.USER_PREFERENCES, model);
+		return getModelAndView("/memoMgmt", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -206,7 +206,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
 		
-		return getModelAndView("/qna", ViewPage.USER_PREFERENCES, model);
+		return getModelAndView("/qna", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
 	/**
@@ -386,7 +386,7 @@ public class UserPreferencesController extends AbstractController{
 		SecurityUtil.reloadUserDatabaseInfo();
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
-		return getModelAndView("/sqlFile", ViewPage.USER_PREFERENCES, model);
+		return getModelAndView("/sqlFile", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.admin.service.ErrorLogServiceImpl;
+import com.varsql.app.common.web.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -33,7 +34,7 @@ import com.vartech.common.utils.PagingUtil;
  */
 @Controller
 @RequestMapping("/admin/errorlogMgmt")
-public class ErrorLogController{
+public class ErrorLogController extends AbstractController{
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(ErrorLogController.class);

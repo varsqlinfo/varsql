@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.JoinForm;
 import com.varsql.app.user.service.JoinServiceImpl;
@@ -51,7 +51,7 @@ public class JoinController extends AbstractController {
 	
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {
-		return getModelAndView("/joinForm", ViewPage.JOIN);
+		return getModelAndView("/joinForm", VIEW_PAGE.JOIN);
 	}
 	
 	@RequestMapping(value="/save",method=RequestMethod.POST)

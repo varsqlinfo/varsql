@@ -20,6 +20,7 @@ import com.varsql.app.admin.beans.Vtconnection;
 import com.varsql.app.admin.beans.VtconnectionOption;
 import com.varsql.app.admin.service.AdminServiceImpl;
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.web.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
@@ -42,7 +43,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/admin/main")
-public class AdminDbMgmtController{
+public class AdminDbMgmtController extends AbstractController{
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);

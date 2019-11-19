@@ -18,25 +18,19 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.MemoInfo;
-import com.varsql.app.user.beans.PasswordForm;
-import com.varsql.app.user.beans.QnAInfo;
-import com.varsql.app.user.beans.UserForm;
 import com.varsql.app.user.service.UserMainServiceImpl;
-import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
@@ -79,7 +73,7 @@ public class UserMainController extends AbstractController{
 		SecurityUtil.reloadUserDatabaseInfo();
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
 		
-		return getModelAndView("/userMain", ViewPage.USER, model);
+		return getModelAndView("/userMain", VIEW_PAGE.USER, model);
 	}
 	
 	/**

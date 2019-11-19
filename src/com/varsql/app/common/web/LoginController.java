@@ -15,7 +15,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.core.auth.Authority;
 
 
@@ -69,7 +69,7 @@ public class LoginController extends AbstractController {
 			return getRedirectModelAndView(url);
 		}
 
-		return getModelAndView("/loginForm", ViewPage.LOGIN);
+		return getModelAndView("/loginForm", VIEW_PAGE.LOGIN);
 	}
 	
 	@RequestMapping(value="/login", params="mode")
@@ -77,7 +77,7 @@ public class LoginController extends AbstractController {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("login", "fail");
 		
-		return  getModelAndView("/loginForm", ViewPage.LOGIN , model);
+		return  getModelAndView("/loginForm", VIEW_PAGE.LOGIN , model);
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.app.admin.service.ManagerMgmtServiceImpl;
 import com.varsql.app.common.beans.DataCommonVO;
+import com.varsql.app.common.web.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -33,7 +34,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/admin/managerMgmt")
-public class ManagerMgmtController{
+public class ManagerMgmtController extends AbstractController{
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(ManagerMgmtController.class);

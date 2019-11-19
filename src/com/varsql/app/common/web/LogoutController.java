@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 
 
 
@@ -30,7 +30,7 @@ public class LogoutController extends AbstractController {
 
 	@RequestMapping(value = "/logout")
 	public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/loginForm",ViewPage.LOGIN);
+		return getModelAndView("/loginForm",VIEW_PAGE.LOGIN);
 	}
 
 }

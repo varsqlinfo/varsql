@@ -20,6 +20,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.varsql.app.common.constants.ViewPageConstants;
 import com.varsql.app.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.app.common.interceptor.LanguageInterceptor;
 
@@ -57,8 +58,8 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
     public ViewResolver viewResolver() {
         // Example: the 'info' view logical name is mapped to the file '/WEB-INF/jsp/info.jsp'
         InternalResourceViewResolver bean = new InternalResourceViewResolver();
-        bean.setPrefix("/WEB-INF/views/");
-        bean.setSuffix(".jsp");
+        bean.setPrefix(ViewPageConstants.VIEW_PREFIX);
+        bean.setSuffix(ViewPageConstants.VIEW_SUFFIX);
         bean.setOrder(2);
         return bean;
     }

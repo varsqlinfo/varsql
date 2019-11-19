@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.user.beans.QnAInfo;
 import com.varsql.app.user.service.UserPreferencesServiceImpl;
@@ -52,7 +52,7 @@ public class GuestController extends AbstractController  {
 
 	@RequestMapping({"","/","/main"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
-		return getModelAndView("guestMain" , ViewPage.GUEST);
+		return getModelAndView("guestMain" , VIEW_PAGE.GUEST);
 	}
 	
 	/**

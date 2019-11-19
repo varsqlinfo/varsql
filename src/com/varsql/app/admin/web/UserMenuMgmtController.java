@@ -15,6 +15,7 @@ import com.varsql.app.admin.service.UserMenuMgmtServiceImpl;
 import com.varsql.app.common.beans.DataCommonVO;
 import com.varsql.app.common.constants.DBMenuConstants;
 import com.varsql.app.common.constants.VarsqlParamConstants;
+import com.varsql.app.common.web.AbstractController;
 
 
 /**
@@ -32,7 +33,7 @@ import com.varsql.app.common.constants.VarsqlParamConstants;
  */
 @Controller
 @RequestMapping("/admin/userMenu")
-public class UserMenuMgmtController{
+public class UserMenuMgmtController extends AbstractController{
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(UserMenuMgmtController.class);

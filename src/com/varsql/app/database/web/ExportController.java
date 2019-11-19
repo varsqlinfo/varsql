@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.PreferencesConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.ExportServiceImpl;
-import com.varsql.core.db.DBObjectType;
-import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.vartech.common.app.beans.ResponseResult;
@@ -70,7 +68,7 @@ public class ExportController extends AbstractController  {
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
 		
-		return getModelAndView("/exportMain/spec/specMain", ViewPage.DATABASE_TOOLS, model);
+		return getModelAndView("/exportMain/spec/specMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}
 	
 	/**
@@ -131,7 +129,7 @@ public class ExportController extends AbstractController  {
 		
 		model.put("exportServiceMenu", MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid()).getServiceMenu());
 		
-		return getModelAndView("/exportMain/ddl/ddlMain", ViewPage.DATABASE_TOOLS, model);
+		return getModelAndView("/exportMain/ddl/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}
 	
 	/**

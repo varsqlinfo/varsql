@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.DatabaseServiceImpl;
@@ -62,7 +62,7 @@ public class DatabaseController extends AbstractController {
 		
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo, true));
 		
-		return getModelAndView("/main",ViewPage.DATABASE , model);
+		return getModelAndView("/main",VIEW_PAGE.DATABASE , model);
 	}
 	
 	/**

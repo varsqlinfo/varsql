@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
 import com.varsql.app.database.service.PreferencesServiceImpl;
@@ -44,7 +44,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping({"/main"})
 	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/preferencesMain", ViewPage.DATABASE, model);
+		return getModelAndView("/preferencesMain", VIEW_PAGE.DATABASE, model);
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping("/generalSetting")
 	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/generalSetting", ViewPage.DATABASE_PREFERENCES, model);
+		return getModelAndView("/generalSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping("/keySetting")
 	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/keySetting", ViewPage.DATABASE_PREFERENCES, model);
+		return getModelAndView("/keySetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 	
 	
@@ -97,7 +97,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping("/sqlFormatSetting")
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/sqlFormatSetting", ViewPage.DATABASE_PREFERENCES, model);
+		return getModelAndView("/sqlFormatSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping("/codeEditerSetting")
 	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/codeEditerSetting", ViewPage.DATABASE_PREFERENCES, model);
+		return getModelAndView("/codeEditerSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	@RequestMapping("/exportSetting")
 	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		return getModelAndView("/exportSetting", ViewPage.DATABASE_PREFERENCES, model);
+		return getModelAndView("/exportSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 	
 	/**

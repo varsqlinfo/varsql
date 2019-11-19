@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.app.admin.service.AdminServiceImpl;
+import com.varsql.app.common.enums.VIEW_PAGE;
+import com.varsql.app.common.web.AbstractController;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -31,7 +33,7 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/admin")
-public class AdminController{
+public class AdminController extends AbstractController{
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
@@ -44,35 +46,35 @@ public class AdminController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "databaseMgmt");
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
-		return  new ModelAndView("/admin/databaseMgmt",model);
+		return getModelAndView("/databaseMgmt", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping({"/databaseOptMgmt"})
 	public ModelAndView databaseOptMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		return  new ModelAndView("/admin/databaseOptMgmt",model);
+		return getModelAndView("/databaseOptMgmt", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping(value = "/report")
 	public ModelAndView report(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "report");
-		return new ModelAndView("/admin/report",model);
+		return getModelAndView("/report", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping(value = "/managerMgmt")
 	public ModelAndView managerMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "managerMgmt");
-		return new ModelAndView("/admin/managerMgmt",model);
+		return getModelAndView("/managerMgmt", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping(value = "/databaseUserMgmt")
 	public ModelAndView databaseUserMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "databaseUserMgmt");
-		return new ModelAndView("/admin/databaseUserMgmt",model);
+		return getModelAndView("/databaseUserMgmt", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping(value = "/userMenuMgmt")
@@ -80,13 +82,13 @@ public class AdminController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "userMenuMgmt");
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
-		return new ModelAndView("/admin/userMenuMgmt",model);
+		return getModelAndView("/userMenuMgmt", VIEW_PAGE.ADMIN, model);
 	}
 	
 	@RequestMapping(value = "/errorlogMgmt")
 	public ModelAndView errorlogMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "errorlogMgmt");
-		return new ModelAndView("/admin/errorlogMgmt",model);
+		return getModelAndView("/errorlogMgmt", VIEW_PAGE.ADMIN, model);
 	}
 }

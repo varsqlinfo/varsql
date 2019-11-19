@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
 
 
@@ -38,17 +38,17 @@ public class ErrorController extends AbstractController {
 
 	@RequestMapping(value = "/error403")
 	public ModelAndView ModelAndView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/error403", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/error403", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	@RequestMapping(value = "/page403csrf")
 	public ModelAndView page403csrf(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/page403csrf", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/page403csrf", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	@RequestMapping(value = "/error404")
 	public ModelAndView error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/error404", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/error404", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	@RequestMapping(value = "/error500")
@@ -71,7 +71,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/connError")
 	public ModelAndView connError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/connError", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/connError", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/connCreateError")
 	public ModelAndView connCreateError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/connCreateError", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/connCreateError", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	/**
@@ -105,7 +105,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/blockUser")
 	public ModelAndView blockUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/blockUser", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/blockUser", VIEW_PAGE.COMMONPAGE);
 	}
 	
 	/**
@@ -146,6 +146,6 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/invalidDatabasePage")
 	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/invalidDatabasePage", ViewPage.COMMONPAGE);
+		return getModelAndView("/error/invalidDatabasePage", VIEW_PAGE.COMMONPAGE);
 	}
 }

@@ -6,12 +6,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.app.common.enums.ViewPage;
+import com.varsql.app.common.enums.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 
@@ -80,7 +79,7 @@ public class VarsqlCommonController extends AbstractController {
 	 */
 	@RequestMapping(value = "/common/helpPage")
 	public ModelAndView helpPage(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		return getModelAndView("/help/mainHelp", ViewPage.COMMONPAGE);
+		return getModelAndView("/help/mainHelp", VIEW_PAGE.COMMONPAGE);
 	}
 
 }
