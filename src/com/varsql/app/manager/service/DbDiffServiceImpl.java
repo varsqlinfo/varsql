@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 import com.varsql.app.common.beans.VtconnectionRVO;
 import com.varsql.app.common.dao.CommonDAO;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.DBObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.BaseObjectInfo;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.db.beans.DatabaseParamInfo;
 import com.varsql.core.db.beans.ddl.DDLCreateOption;
+import com.varsql.core.db.serviceobject.ObjectType;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
@@ -95,8 +95,8 @@ public class DbDiffServiceImpl{
 			dpi.setObjectType(objectType);
 			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
-			String objectId = DBObjectType.getDBObjectType(objectType).getObjectTypeId(); 
-			if(DBObjectType.TABLE.getObjectTypeId().equals(objectId)){
+			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId(); 
+			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){
 				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
 			}else{
 				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);

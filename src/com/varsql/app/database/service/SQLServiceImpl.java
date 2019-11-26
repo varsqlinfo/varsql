@@ -39,6 +39,7 @@ import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
@@ -84,10 +85,13 @@ public class SQLServiceImpl{
 	 */
 	public ResponseResult sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
 		ResponseResult result =new ResponseResult();
+		
+		String dbParserPrefix = DBType.getDbParser(sqlParamInfo.getDbType());
+		
 		if("varsql".equals(sqlParamInfo.getCustom().get("formatType"))){
-			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(), MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix(), VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n");
+			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(),dbParserPrefix , VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n");
 		}else{
-			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(), MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix())+"\n");
+			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(),dbParserPrefix )+"\n");
 		}
 		
 		return result; 
@@ -112,7 +116,7 @@ public class SQLServiceImpl{
 		
 		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlParamInfo.getConuid()); 
 		
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, MetaControlFactory.getDbInstanceFactory(sqlParamInfo.getDbType()).getDbParserPrefix());
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, DBType.getDbParser(sqlParamInfo.getDbType()));
 		
 		List<SqlSource> sqlList = parseInfo.getItems();
 		

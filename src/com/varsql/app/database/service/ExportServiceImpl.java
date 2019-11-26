@@ -23,7 +23,7 @@ import com.varsql.app.util.VarsqlUtils;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.DBObjectType;
+import com.varsql.core.db.serviceobject.ObjectType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseParamInfo;
@@ -98,7 +98,7 @@ public class ExportServiceImpl{
 		
 		ResponseResult result =new ResponseResult();
 		
-		result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(),preferencesInfo));
+		result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(),preferencesInfo));
 		
 		return result ;
 		
@@ -130,7 +130,7 @@ public class ExportServiceImpl{
 		
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			result.addCustoms(mode, dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(mode).getObjectTypeId() , databaseParam));
+			result.addCustoms(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId() , databaseParam));
 		}
 		
 		return result;
@@ -213,9 +213,9 @@ public class ExportServiceImpl{
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 			
-			preferencesInfo.setObjectType(DBObjectType.getDBObjectType( objectName).name());
+			preferencesInfo.setObjectType(ObjectType.getDBObjectType( objectName).name());
 			
-			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( objectName).getObjectTypeId(),preferencesInfo,ddlOption, objNmArr);
+			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( objectName).getObjectTypeId(),preferencesInfo,ddlOption, objNmArr);
 			
 			for (DDLInfo ddlInfo : ddlList) {
 				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE);

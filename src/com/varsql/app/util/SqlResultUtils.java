@@ -58,7 +58,7 @@ public final class SqlResultUtils {
 		
 		ResultSetMetaData rsmd = rs.getMetaData();
 		
-		ResultSetHandler resultsetHandler = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getVconnid()).getResultsetHandler();
+		ResultSetHandler resultsetHandler = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getConuid()).getResultsetHandler();
 	
 		int count = rsmd.getColumnCount();
 		String [] columns_key = new String[count];

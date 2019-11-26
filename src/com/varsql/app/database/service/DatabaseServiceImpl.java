@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.app.common.constants.VarsqlParamConstants;
-import com.varsql.app.common.constants.VarsqlParamConstants;
 import com.varsql.app.database.dao.DatabaseDAO;
-import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.DBObjectType;
+import com.varsql.core.db.serviceobject.ObjectType;
+import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.beans.DatabaseInfo;
@@ -99,20 +98,20 @@ public class DatabaseServiceImpl{
 		
 		try{
 			//System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
-			if(DBObjectType.TABLE.getObjectTypeId().equals(objectType) && databaseParamInfo.isLazyLoad()){
+			if(ObjectType.TABLE.getObjectTypeId().equals(objectType) && databaseParamInfo.isLazyLoad()){
 				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
-					result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+					result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 				} else {
-					result.setItemList(dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+					result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 				}
 			}else{
-				result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+				result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 			}
 		}catch(Exception e){
 			logger.error("dbObjectList objectType : [{}]",objectType);
 			logger.error("dbObjectList ", e);
 			try{
-				result.setItemList(MetaControlBean.OTHER.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+				result.setItemList(MetaControlFactory.getDbInstanceFactory(DBType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 			}catch(Exception subE){
 				logger.error("dbObjectList serverName : [{}]",objectType);
 				logger.error("dbObjectList ", subE);
@@ -139,7 +138,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(databaseParamInfo.getObjectType()).getObjectTypeId(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(databaseParamInfo.getObjectType()).getObjectTypeId(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("dbObjectMetadataList : ", e);
 		}
@@ -162,7 +161,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 		
 		try{
-			result.setItemOne(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( databaseParamInfo.getObjectType()).getObjectTypeId(),databaseParamInfo, databaseParamInfo.getObjectName()));
+			result.setItemOne(dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( databaseParamInfo.getObjectType()).getObjectTypeId(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
 			logger.error("createDDL : ", e);
 		}
