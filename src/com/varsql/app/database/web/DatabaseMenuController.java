@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.app.common.enums.VIEW_PAGE;
 import com.varsql.app.common.web.AbstractController;
 import com.varsql.app.database.beans.PreferencesInfo;
+import com.varsql.app.util.VarsqlUtils;
 
 /**
  * 
@@ -32,6 +33,10 @@ public class DatabaseMenuController extends AbstractController  {
 	public ModelAndView mainpage(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		
-		return getDialogModelAndView("/fileImportExport",VIEW_PAGE.DATABASE , model);
+		if(VarsqlUtils.isAjaxRequest(req)) {
+			return getDialogModelAndView("/file/fileImportExport",VIEW_PAGE.DATABASE_MENU , model);
+		}else {
+			return getPopupModelAndView("/file/fileImportExport",VIEW_PAGE.DATABASE_MENU , model);
+		}
 	}
 }

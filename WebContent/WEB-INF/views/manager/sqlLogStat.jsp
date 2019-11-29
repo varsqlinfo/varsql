@@ -1,10 +1,92 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<script>
-$(document).ready(function (){
-	sqlLogStat.init();
-});
 
+<!-- Page Heading -->
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header"><spring:message code="manage.menu.sqllogmgmt" /></h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="form-horizontal">
+						<div class="control-group">
+							 <div class="controls">
+							 	<div class="col-sm-3">
+								 	<input type="hidden" id="vconnid" name="vconnid" value="">
+								 	<input type="hidden" id="detailDate" name="detailDate" value="">
+									<select id="dbinfolist" class="form-control input-sm">
+										<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
+											<option value="${tmpInfo.VCONNID}">${tmpInfo.VNAME}</option>
+										</c:forEach>
+									</select>
+								</div>
+								<div class="col-xs-9">
+								 	<div class="form-group col-xs-8">
+									 	<div class="input-group input-daterange">
+								            <span class="input-group-addon" style="padding:0px 12px;background:auto;border:0px;">
+								            	조회구분
+								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
+								            	<select id="searchGubun" name="searchGubun" class="input-sm">
+													<option value="">선택</option>
+													<option value="7">주</option>
+													<option value="30">월</option>
+													<option value="90">분기</option>
+													<option value="365">년</option>
+												</select>
+								            </span>
+								            <input name="sdt" id="sdt" type="text" value="${startDate}"  class="input-sm form-control">
+								            <span class="input-group-addon">~</span>
+											<input name="edt" id="edt" type="text" value="${currentDate}"  class="input-sm form-control">
+						          		</div>
+						            </div>
+						            <div class="col-xs-4">
+							            	<button type="button" class="btn btn-sm btn-outline btn-primary btnSearch">
+												조회
+											</button>
+									</div>
+								</div>
+							 </div>
+					    </div>
+					</div>
+			    	
+			    </div>
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<div id="sqlDateChart" style="height:250px;margin:0 auto"></div>
+			</div>
+			<!-- /.panel-body -->
+		</div>
+		<!-- /.panel -->
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div id="dateDetailStatsChart" style="height:200px;margin:0 auto"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div id="sqlUserRankChart" style="height:200px;margin:0 auto"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.row -->
+
+
+<script>
+(function() {
+	
 var sqlLogStat ={
 	init:function (){
 		VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
@@ -269,86 +351,7 @@ var sqlLogStat ={
 	}
 };
 
+sqlLogStat.init();
+}());
 </script>
 
-<!-- Page Heading -->
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.sqllogmgmt" /></h1>
-    </div>
-    <!-- /.col-lg-12 -->
-</div>
-<div class="row">
-	<div class="col-lg-12">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<div class="row">
-					<div class="form-horizontal">
-						<div class="control-group">
-							 <div class="controls">
-							 	<div class="col-sm-3">
-								 	<input type="hidden" id="vconnid" name="vconnid" value="">
-								 	<input type="hidden" id="detailDate" name="detailDate" value="">
-									<select id="dbinfolist" class="form-control input-sm">
-										<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
-											<option value="${tmpInfo.VCONNID}">${tmpInfo.VNAME}</option>
-										</c:forEach>
-									</select>
-								</div>
-								<div class="col-xs-9">
-								 	<div class="form-group col-xs-8">
-									 	<div class="input-group input-daterange">
-								            <span class="input-group-addon" style="padding:0px 12px;background:auto;border:0px;">
-								            	조회구분
-								            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
-								            	<select id="searchGubun" name="searchGubun" class="input-sm">
-													<option value="">선택</option>
-													<option value="7">주</option>
-													<option value="30">월</option>
-													<option value="90">분기</option>
-													<option value="365">년</option>
-												</select>
-								            </span>
-								            <input name="sdt" id="sdt" type="text" value="${startDate}"  class="input-sm form-control">
-								            <span class="input-group-addon">~</span>
-											<input name="edt" id="edt" type="text" value="${currentDate}"  class="input-sm form-control">
-						          		</div>
-						            </div>
-						            <div class="col-xs-4">
-							            	<button type="button" class="btn btn-sm btn-outline btn-primary btnSearch">
-												조회
-											</button>
-									</div>
-								</div>
-							 </div>
-					    </div>
-					</div>
-			    	
-			    </div>
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<div id="sqlDateChart" style="height:250px;margin:0 auto"></div>
-			</div>
-			<!-- /.panel-body -->
-		</div>
-		<!-- /.panel -->
-		<div class="row">
-			<div class="col-lg-6">
-				<div class="panel panel-default">
-					<div class="panel-body">
-						<div id="dateDetailStatsChart" style="height:200px;margin:0 auto"></div>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-6">
-				<div class="panel panel-default">
-					<div class="panel-body">
-						<div id="sqlUserRankChart" style="height:200px;margin:0 auto"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- /.row -->

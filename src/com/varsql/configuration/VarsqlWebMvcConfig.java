@@ -1,7 +1,5 @@
 package com.varsql.configuration;
 
-import java.util.Locale;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -125,6 +125,14 @@ public class VarsqlWebMvcConfig extends VarsqlWebMvcConfigurerAdapter {
         final SessionLocaleResolver localeResolver = new SessionLocaleResolver();
        // localeResolver.setDefaultLocale(new Locale("en", "US"));
         return localeResolver;
+    }
+    
+    @Bean
+    public MultipartResolver multipartResolver() {
+       CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+       multipartResolver.setMaxUploadSize(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSize());
+       multipartResolver.setMaxUploadSizePerFile(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSizePerFile());
+       return multipartResolver;
     }
 
 }

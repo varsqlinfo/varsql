@@ -28,13 +28,18 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
 			throws ServletException, IOException {
 		String connid =req.getParameter(VarsqlParamConstants.CONN_UUID);
-		if (!authCheck(req, connid)) {
-			if(VarsqlUtils.isAjaxRequest(req)){
-				req.getRequestDispatcher("/error/invalidDatabase").forward(req, res);
-			}else{
-				req.getRequestDispatcher("/error/invalidDatabasePage").forward(req, res);
+		
+		if(VarsqlUtils.isRuntimelocal() && SecurityUtil.isAdmin()) {
+			return true;
+		}else {
+			if (!authCheck(req, connid)) {
+				if(VarsqlUtils.isAjaxRequest(req)){
+					req.getRequestDispatcher("/error/invalidDatabase").forward(req, res);
+				}else{
+					req.getRequestDispatcher("/error/invalidDatabasePage").forward(req, res);
+				}
+			    return false;
 			}
-		    return false;
 		}
 		return true;
 	}

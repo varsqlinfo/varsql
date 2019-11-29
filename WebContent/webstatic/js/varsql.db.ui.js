@@ -274,6 +274,7 @@ _ui.initEvt = function(){
 _ui.headerMenu ={
 	preferencesDialog : ''
 	,dialogObj : {}
+	,menuTypeInfo : {}
 	,init : function(){
 		var _self = this;
 		// theme 설정.
@@ -348,7 +349,10 @@ _ui.headerMenu ={
 							$('.sql_toolbar_allsave_btn').trigger('click');
 							break;
 						case 'import-export': // 가져오기 및 내보내기
-							console.log('import')
+							
+							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
+						
+							_self.openMenuDialog(VARSQL.messageFormat('menu.file.import_export'),'fileImportExport',{type:VARSQL.uri.database, url:'/menu/fileImportExport'}, {'width':450,'height' : 400});
 							break;
 						case 'newwin': // 새창 보기.
 							var popt = 'width='+screen.width-40+',height='+screen.height-40+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'; 
@@ -546,7 +550,7 @@ _ui.headerMenu ={
 	}
 	,openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 		var _self = this; 
-		var dialogEleObj = _self.dialogObj[type];
+		var dialogEleObj = _self.dialogObj[_self.menuTypeInfo[type]];
 		if(!VARSQL.isUndefined(dialogEleObj)){
 			dialogEleObj.dialog( "open" );
 			return ; 
@@ -554,8 +558,45 @@ _ui.headerMenu ={
 		
 		var eleId =VARSQL.generateUUID();
 		
-		eleId
+		_self.menuTypeInfo[type] = eleId;
 		
+		$('#varsqlExtensionsElementArea').append('<div id="'+eleId+'" class="database-menu-dialog" style="display:none;"></div>');
+		
+		var ele = $('#'+eleId);
+		
+		ele.attr('title',title);
+		
+		var param = {
+			conuid : _g_options.param.conuid
+			,prefKey : type
+		}
+		
+		VARSQL.req.ajax({
+			url:loadUrl
+			,data: param
+			,dataType : 'text'
+			,success:function (resData){
+				ele.html(resData);
+				
+				var menuDialog =ele.dialog({
+					width:450
+					,height:400
+					,modal: true
+					,buttons: {
+						Close:function (){
+							menuDialog.dialog( "close" );
+						}
+					}
+					,close: function() {
+						menuDialog.dialog( "close" );
+					}
+				});
+				
+				menuDialog.dialog("open");
+				
+				_self.dialogObj[eleId] = menuDialog;
+			}
+		});
 	}
 	//header 메뉴 환경설정처리.
 	,openPreferences : function (title , loadUrl){
@@ -4135,7 +4176,7 @@ _ui.SQL = {
 				}
 				,tColItem : [
 					{key:VARSQLCont.tableColKey.NAME ,label :'Column',width : 150}
-					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Cesc',width : 200}
+					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Desc',width : 200}
 				]
 				,tbodyItem :items
 			});

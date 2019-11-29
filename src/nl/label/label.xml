@@ -62,6 +62,7 @@
 <entry key="ip">IP</entry>
 <entry key="size">크기</entry>
 <entry key="loading">로딩중 입니다.</entry>
+<entry key="upload">업로드</entry>
 <entry key="select">선택</entry>
 <entry key="source">대상</entry>
 <entry key="target">타켓</entry>
@@ -95,6 +96,7 @@
 <entry key="label.birthday">Birthday</entry>
 <entry key="label.sex">Sex</entry>
 <entry key="label.category">Category</entry>
+<entry key="label.file.import_export">가져오기 및 내보내기...</entry>
 
 <entry key="label.user.preferences">환경설정</entry>
 

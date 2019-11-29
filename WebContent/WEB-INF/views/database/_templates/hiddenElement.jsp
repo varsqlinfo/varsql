@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+
+<div id="varsqlExtensionsElementArea" style="position:absolute;top:0px;left:0px;width:0px;height:0px;"></div>
+
 <div id="dbHiddenArea"></div>
 
 <%--메모 보내기 다이얼로그 --%>

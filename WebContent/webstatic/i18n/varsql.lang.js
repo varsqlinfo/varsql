@@ -59,6 +59,8 @@ VARSQL_LANG = {
 	,'btn.copy' : 'Copy'
 	,'btn.save' : 'Save'
 	
+	,'menu.file.import_export' : '가져오기 & 내보내기...'
+	
 	,'msg.close.window' : '창을 닫으시겠습니까?'
 	,'msg.loading' : '로딩중 입니다.'
 	,'msg.refresh' : '새로고침 하시겠습니까?'

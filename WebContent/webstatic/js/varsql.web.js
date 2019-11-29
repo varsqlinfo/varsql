@@ -58,6 +58,14 @@ _$base.staticResource  ={
 	          '/webstatic/css/datepicker/datepicker.css'
 	          ]
 	}
+	,'fileupload':{
+		'js' : [
+			'/webstatic/js/plugins/fileupload/filepond.js'
+			]
+	,'css' : [
+		'/webstatic/js/plugins/fileupload/filepond.css'
+		]
+	}
 };
 
 var _defaultOption = {

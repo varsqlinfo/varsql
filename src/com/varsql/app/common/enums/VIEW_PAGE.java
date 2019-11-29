@@ -2,6 +2,7 @@ package com.varsql.app.common.enums;
 
 public enum VIEW_PAGE{
 		DATABASE ("/database")
+		, DATABASE_MENU ("/database/menu")
 		, DATABASE_PREFERENCES ("/database/preferences")
 		, DATABASE_TOOLS ("/database/tools")
 		, LOGIN("/login")

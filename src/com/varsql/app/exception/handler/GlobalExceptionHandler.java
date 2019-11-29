@@ -13,9 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
 import com.varsql.app.common.service.CommonServiceImpl;
@@ -251,6 +254,36 @@ public class GlobalExceptionHandler{
 		
 		exceptionRequestHandle(request, response ,result);
 	}
+	
+	/**
+	 * 
+	 * @Method Name  : handleControllerException
+	 * @Method 설명 : upload error
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 29. 
+	 * @변경이력  :
+	 * @param request
+	 * @param ex
+	 * @return
+	 */
+	@ExceptionHandler(MultipartException.class)
+    public @ResponseBody ResponseResult handleControllerException(HttpServletRequest request, Throwable ex) {
+
+        HttpStatus status = getStatus(request);
+        
+        ResponseResult result = new ResponseResult();
+        result.setResultCode(status.value());
+        result.setMessage(ex.getMessage());
+        return result;
+    }
+
+    private HttpStatus getStatus(HttpServletRequest request) {
+        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+        if (statusCode == null) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return HttpStatus.valueOf(statusCode);
+    }
 	
 	@ExceptionHandler(value=MissingServletRequestParameterException.class)
 	public void missingServletRequestParameterExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){

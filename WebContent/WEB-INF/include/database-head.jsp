@@ -48,6 +48,9 @@
 <script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.autocomplete.js?version=${pubjs_ver}"></script>
 
+<script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
+
 <script>
 VARSQL.unload();
 </script>

@@ -5,6 +5,11 @@
 	<definition name="no-template" template="/WEB-INF/views/default_templates/noTemplate.jsp">
 	</definition>
 	
+	
+	<definition name="database-popup-template" template="/WEB-INF/views/database/_templates/popup/popupMain.jsp">
+		<put-attribute name="static-header" value="/WEB-INF/include/database-head.jsp" />
+	</definition>
+	
 	<!-- user main layout -->
 	<definition name="user-tiles" template="/WEB-INF/views/user/_templates/main.jsp">
 		<put-attribute name="title" value="user" type="string" />
@@ -67,6 +72,7 @@
     </definition>
     
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp" >
+        <put-attribute name="static-header" value="/WEB-INF/include/database-head.jsp" />
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
         <put-attribute name="left" value="/WEB-INF/views/database/dbcomm/dbLeftTemplate.jsp" />
         <put-attribute name="rightContent" value="/WEB-INF/views/database/dbcomm/dbRightTemplate.jsp" />
@@ -93,7 +99,7 @@
 	</definition>
 	
 	<!-- popup -->
-	<definition name="common.popup" extends="no-template">
+	<definition name="common.popup" extends="database-popup-template">
 		<put-attribute name="body" value="/WEB-INF/views/popup.jsp" />
 	</definition>
 	
