@@ -19,6 +19,7 @@ public class FileInfo {
 	private String saveFileName; 
 	private long size; 
 	private String extensions;
+	private String savePath;
 	public String getFileName() {
 		return fileName;
 	}
@@ -43,6 +44,12 @@ public class FileInfo {
 	}
 	public void setExtensions(String extensions) {
 		this.extensions = extensions;
+	}
+	public String getSavePath() {
+		return savePath;
+	}
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	} 
 	
 }

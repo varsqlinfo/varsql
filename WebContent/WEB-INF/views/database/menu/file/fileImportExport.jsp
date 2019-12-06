@@ -20,13 +20,13 @@
 					<div class="field-group">
 						<label class="col-xs-3"><spring:message code="file_name" /></label>
 						<div class="col-xs-9 padding0">
-							<input type="file" class="form-control text required input-sm" name="export_name">
+							<input type="file" class="form-control text required input-sm" name="file">
 						</div>
 					</div>
 				</form>
 			</div>
 			<div class="col-xs-12">
-				<button type="button" class="btn-md"><spring:message code="upload" /></button>
+				<button type="button" class="btn-md" @click="upload()"><spring:message code="upload" /></button>
 			</div>
 		</div>
 		
@@ -57,6 +57,13 @@ VarsqlAPP.vueServiceBean({
 			var _self = this; 
 			
 			_self.selectMenu = selectMenu;
+		}
+		,upload : function (){
+			
+			
+			VARSQL.req.uploadFile("#<varsql:namespace/>fileImportForm",{param :{read:true},success: function (resData){
+				console.log(resData)
+			}})
 		}
 	}
 });

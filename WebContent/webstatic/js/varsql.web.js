@@ -230,6 +230,42 @@ var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
 var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
 var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
 
+
+function fnReqCheck(data ,opts){
+	var resultCode = data.resultCode;  
+	
+	if(opts.disableResultCheck !== true){
+		if(resultCode== 401){ // 로그아웃
+			if(confirm(_$base.messageFormat('error.0001'))){
+				(top || window).location.href=VARSQL.contextPath;
+			}
+			return false; 
+		}else if(resultCode == 403){	// error
+			
+			var msg = data.message || _$base.messageFormat('error.403');
+			alert(msg);
+			return false;
+		}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
+			if(confirm(_$base.messageFormat('error.0002'))){
+				(top || window).location.href=VARSQL.contextPath;
+			}
+			return false; 
+		}else if(resultCode == 500){	// error
+			alert(data.message);
+			return false;
+		}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
+			if(confirm(_$base.messageFormat('error.0003'))){
+				(top || window).location.href=VARSQL.contextPath;
+			}
+			return false; 
+		}else if(resultCode == 10001){ // connection error
+			alert(data.message);
+			return false; 
+		}
+	}
+	
+	return true; 
+}
 /**
  * ajax 요청
  */
@@ -287,35 +323,8 @@ _$base.req ={
 			_this.isConnectError = false; 
 			var resultCode = data.resultCode;  
 			
-			if(option.disableResultCheck !== true){
-				if(resultCode== 401){ // 로그아웃
-					if(confirm(_$base.messageFormat('error.0001'))){
-						(top || window).location.href=VARSQL.contextPath;
-					}
-					return ; 
-				}else if(resultCode == 403){	// error
-					
-					var msg = data.message || _$base.messageFormat('error.403');
-					alert(msg);
-					return ;
-				}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
-					if(confirm(_$base.messageFormat('error.0002'))){
-						(top || window).location.href=VARSQL.contextPath;
-					}
-					return ; 
-				}else if(resultCode == 500){	// error
-					alert(data.message);
-					return ;
-				}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
-					if(confirm(_$base.messageFormat('error.0003'))){
-						(top || window).location.href=VARSQL.contextPath;
-					}
-					return ; 
-				}else if(resultCode == 10001){ // connection error
-					alert(data.message);
-					return ; 
-				}
-			}
+			if(!fnReqCheck(data,option)) return ; 
+			
 			try{
 				option.success.call(this, data, status, jqXHR);
 			}catch(e){
@@ -347,8 +356,71 @@ _$base.req ={
 				}
 			}
 		}
-		
 		return true; 
+	}
+	,uploadFile : function (formSelector , opts){
+		var _this =this; 
+		
+		var formData = new FormData($(formSelector)[0]);
+		
+		var urlObj = opts.url;
+		
+		if(_$base.isUndefined(urlObj)){
+			if(opts.multiple===true){
+				urlObj = '/upload/multiFile';
+			}else{
+				urlObj = '/upload/file';
+			}
+		}
+		
+		if(!_$base.isUndefined(opts.param)){
+			formData.set('param',JSON.stringify(opts.param));
+		}
+		
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url); 
+		
+		$.ajax({
+			type : 'post',
+			url : opts.url,
+			data : formData,
+			processData : false,
+			contentType : false,
+			beforeSend : function (xhr){
+				xhr.setRequestHeader($$csrf_header, $$csrf_token);
+			}
+			,success : function (data, status, jqXHR) {
+				_this.isConnectError = false; 
+				
+				if(!fnReqCheck(data,opts)) return ;
+				
+				try{
+					opts.success.call(this, data, status, jqXHR);
+				}catch(e){
+					console.log(e);
+				}
+			}
+			,error : function (xhr){
+				if (xhr.readyState == 4) {
+					// xhr.status , xhr.statusText check
+				}else if (xhr.readyState == 0) { // connection refused , access denied
+					
+					if(_this.isConnectError===true){
+						return ;
+					}
+					$(loadSelector).centerLoadingClose();
+					alert(_$base.messageFormat('error.0004'));
+					_this.isConnectError = true; 
+					
+					setTimeout(function() {
+						_this.isConnectError =false;
+					},2000 );
+					
+					return ;
+				}else {
+					//Other errors	
+				}
+			}
+		});
 	}
 	,ajaxSubmit:function (formid , opts){
 		
