@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+	<property name="LOG_DIR" value="${catalina.base}/logs/varsql" />
+	<property name="runtime" value="${varsql.runtime}" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+	
+	<appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/varsql.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/old/varsql.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30mb</maxFileSize> <!-- kb , mb , gb 로 설정 가능. -->
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory> <!-- 30일 이 자난 로그는 순서 대로 삭제.  -->
+		</rollingPolicy>
+		
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+	
+	<appender name="appErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/error.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/old/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30mb</maxFileSize> <!-- kb , mb , gb 로 설정 가능. -->
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory> <!-- 30일 이 자난 로그는 순서 대로 삭제.  -->
+		</rollingPolicy>
+		
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+	
+	<logger name="appErrorLog" level="info" additivity="false" >
+		<appender-ref ref="appErrorLog" />
+		
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<logger name="org.springframework" level="info" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<logger name="com.varsql" level="debug" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<logger name="com.varsql_query" level="debug" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<logger name="com.core.varsql_query" level="debug" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<!-- connection 정보 보기. -->
+	<logger name="jdbc.connection" level="INFO" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함-->
+	<logger name="jdbc.sqltiming" level="debug" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<!-- SQL문만을 로그로 남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 출력 -->
+	<logger name="jdbc.sqlonly" level="debug" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<!-- ResultSet을 제외한 모든 JDBC 호출 정보 -->
+	<logger name="jdbc.audit" level="debug" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<!-- ResultSet을 포함한 모든 JDBC 호출 정보 -->
+	<logger name="jdbc.resultset" level="error" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<!-- result set 결과 보기. -->
+	<logger name="jdbc.resultsettable" level="error" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	
+	<!-- mybatis log intercepter  
+	<logger name="vartech.dbcesu.sql" level="debug" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	 -->
+   <if condition='"local".equals("${runtime}")'>
+        <then>
+			<root level="debug">
+				<appender-ref ref="FILEOUT" />
+				<appender-ref ref="STDOUT" />
+			</root>
+        </then>
+        <else>
+            <root level="error">
+				<appender-ref ref="FILEOUT" />
+			</root>
+        </else>
+    </if>
+</configuration>

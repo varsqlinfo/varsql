@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<var-ddl>
+	<!-- 테이블 생성-->
+	<ddl id="tableScript"><![CDATA[
+	
+	]]></ddl>
+	
+	<!-- view 생성-->
+	<ddl id="viewScript"><![CDATA[
+	
+	]]></ddl>
+	
+	<!-- procedure 생성-->
+	<ddl id="procedureScript"><![CDATA[
+	
+	]]></ddl>
+	
+	<!-- function 생성-->
+	<ddl id="functionScript"><![CDATA[
+	
+	]]></ddl>
+	
+	<!-- package 생성-->
+	<ddl id="packageScript"><![CDATA[
+	
+	]]></ddl>
+	
+	<!-- trigger 생성-->
+	<ddl id="triggerScript"><![CDATA[
+		/* DROP TRIGGER ; */ 
+		CREATE OR REPLACE 
+	]]></ddl>
+	
+	<!-- index 생성-->
+	<ddl id="indexScript"><![CDATA[
+		
+	]]></ddl>
+	
+	<!-- sequence 생성-->
+	<ddl id="sequenceScript"><![CDATA[
+{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{/equals}}
+
+CREATE SEQUENCE [{{schema}}].[{{OBJECT_NAME}}]
+AS [int] 
+START WITH 0
+INCREMENT BY {{INCREMENT_BY}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+CACHE
+	]]></ddl>
+</var-ddl>

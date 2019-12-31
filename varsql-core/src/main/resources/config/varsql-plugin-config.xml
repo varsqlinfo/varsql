@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+varsql plugin 설정 파일
+
+플러그인 종류
+메뉴 , 컴포넌트 
+ 
+ -->
+<plugin>
+	<packages>
+		<package>com.varsql.app.plugin.ext</package>
+		<package>com.varsql.plugin.ext</package>
+	</packages>
+</plugin>

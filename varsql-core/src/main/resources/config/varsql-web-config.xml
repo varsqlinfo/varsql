@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-config>
+	<pagehelp>/common/helpPage</pagehelp> <!--help page 디폴트 호출 url-->
+	<page403>/error/error403</page403> <!--403 err 디폴트 호출 url-->
+	<page404>/error/error404</page404> <!--404 err 디폴트 호출 url-->
+	<page500>/error/error500</page500> <!--500 err 디폴트 호출 url-->
+</web-config>

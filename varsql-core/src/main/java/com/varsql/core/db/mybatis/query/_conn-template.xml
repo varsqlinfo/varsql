@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ 
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true"></setting>
+		<setting name="callSettersOnNulls" value="true"></setting>
+		<setting name="logPrefix" value="com.core.varsql_query"></setting>  
+	</settings>
+	
+	<typeAliases>
+		<typeAlias alias="databaseParamInfo" type="com.varsql.core.db.beans.DatabaseParamInfo"/>
+		<typeAlias alias="paramMap" type="com.vartech.common.app.beans.ParamMap"/>
+		<typeAlias alias="tableInfo" type="com.varsql.core.db.beans.TableInfo"/>
+		<typeAlias alias="columnInfo" type="com.varsql.core.db.beans.ColumnInfo"/>
+		<typeAlias alias="triggerInfo" type="com.varsql.core.db.beans.TriggerInfo"/>
+		<typeAlias alias="sequenceInfo" type="com.varsql.core.db.beans.SequenceInfo"/>
+		<typeAlias alias="objectInfo" type="com.varsql.core.db.beans.ObjectInfo"/>
+		<typeAlias alias="objectColumnInfo" type="com.varsql.core.db.beans.ObjectColumnInfo"/>
+	</typeAliases>
+	
+	<typeHandlers>
+  		<typeHandler jdbcType="LONGVARCHAR" javaType="String" handler="com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler"/>
+	</typeHandlers>
+	
+    <environments default="#{type}Env">
+        <environment id="#{connid}">
+          <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="#{driver}"/>
+                <property name="url" value="#{url}"/>
+                <property name="username" value="#{username}"/>
+                <property name="password" value="#{password}"/>
+	            <property name="poolMaximumActiveConnections" value="10"/>
+	            <property name="poolMaximumIdleConnections" value="10"/>
+	            <property name="poolMaximumCheckoutTime" value="20000"/>
+	            <property name="poolPingEnabled" value="true"/>
+	            <property name="poolPingQuery" value="#{validation_query}"/>
+	            <property name="poolPingConnectionsNotUsedFor" value="10000"/>
+	            <property name="poolTimeToWait" value="15000"/>
+            </dataSource>
+       </environment>
+    </environments>
+    <mappers>
+      #{mapperArea}
+    </mappers>
+</configuration>

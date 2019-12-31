@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="oracle.mata">
+
+	<!-- db 정보보기. -->
+	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT banner as INFO_VAL FROM v$version
+		where (
+			banner like 'Oracle%'
+			or banner like 'PL/SQL%'
+			or banner like 'CORE%'
+			or banner like 'TNS%'
+			or banner like 'PL/SQL%'
+		)
+	</select>	
+
+	<!-- ================= table start ================= -->
+	<!--  tableList 목록 보기. -->
+	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+			ATS.TABLE_NAME  AS "NAME" 
+			, nvl(ATC.COMMENTS,'')  AS "REMARKS"
+	
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_TABLES ATS LEFT JOIN USER_TAB_COMMENTS ATC 
+		ON ATS.TABLE_NAME = ATC.TABLE_NAME
+		where 1 = 1
+	</when>
+	<otherwise>
+		FROM ALL_TABLES ATS 	LEFT  JOIN ALL_TAB_COMMENTS ATC 
+		ON ATS.TABLE_NAME = ATC.TABLE_NAME 
+		and	ATS.OWNER =ATC.OWNER 
+		where	ATS.OWNER = #{schema}
+	</otherwise>
+</choose>
+		<if test="custom != null and custom.tableInfoList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+				ATS.TABLE_NAME in (${item})
+			</foreach>
+		</if>
+		ORDER  BY ATS.TABLE_NAME
+	</select>
+	
+	<!-- table adn column info -->
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select
+			atc.COLUMN_ID
+			,ATC.TABLE_NAME
+			,atc.COLUMN_NAME 
+			, atc.DATA_TYPE  
+			, atc.CHAR_LENGTH
+			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH,
+	                         'VARCHAR', atc.CHAR_LENGTH,
+	                         'VARCHAR2', atc.CHAR_LENGTH,
+	                         'NCHAR', atc.CHAR_LENGTH,
+	                         'NVARCHAR', atc.CHAR_LENGTH,
+	                         'NVARCHAR2', atc.CHAR_LENGTH,
+	                         atc.DATA_PRECISION) COLUMN_SIZE
+			, atc.DATA_SCALE as DECIMAL_DIGITS
+			, atc.NULLABLE  as IS_NULLABLE
+			, atc.DATA_DEFAULT as COLUMN_DEF
+			, nvl(ACC.COMMENTS,'')  AS "COMMENT" 
+			,(SELECT 
+				CASE WHEN MAX(P.CONSTRAINT_TYPE) != MIN(P.CONSTRAINT_TYPE) THEN 'MUL' 
+					WHEN MAX(P.CONSTRAINT_TYPE) = 'P' THEN 'PK' 
+					WHEN MIN(P.CONSTRAINT_TYPE) = 'R' THEN 'FK' 
+					WHEN MIN(P.CONSTRAINT_TYPE) = 'U' THEN 'UNI' 
+					ELSE '' END
+			<choose>
+				<when test="baseSchemaFlag">
+					FROM USER_CONS_COLUMNS D JOIN USER_CONSTRAINTS P 
+					ON D.TABLE_NAME = P.TABLE_NAME 
+					AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
+					AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+					where 1=1
+				</when>
+				<otherwise>
+					FROM ALL_CONS_COLUMNS D JOIN ALL_CONSTRAINTS P ON D.owner = P.owner 
+					and D.TABLE_NAME = P.TABLE_NAME 
+					AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
+					AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+					where D.owner =  #{schema} 
+				</otherwise>
+			</choose>	
+				and D.TABLE_NAME =atc.TABLE_NAME AND D.COLUMN_NAME =atc.COLUMN_NAME 
+               ) AS CONSTRAINTS
+          <choose>
+		<when test="baseSchemaFlag">
+			from USER_TAB_COLUMNS ATC 	left  join USER_COL_COMMENTS acc 
+			on atc.TABLE_NAME = acc.TABLE_NAME 
+			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
+			where 1=1
+		</when>
+		<otherwise>
+			from ALL_TAB_COLUMNS atc 	left  join ALL_COL_COMMENTS acc 
+			on atc.TABLE_NAME = acc.TABLE_NAME 
+			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
+			and	atc.OWNER = acc.OWNER 
+			where	atc.OWNER = #{schema}
+		</otherwise>
+	</choose>	
+			<if test="custom != null and custom.tableInfoList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+					atc.TABLE_NAME in (${item})
+				</foreach>
+			</if>
+			order  by ATC.TABLE_NAME , ATC.COLUMN_ID
+	</select>
+	
+	<!-- ================= table end ================= -->
+	
+	<!-- ================= view start ================= -->
+	
+	<!-- view 목록 보기 -->
+	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+		    ao.OBJECT_NAME  AS "name" 
+		    , nvl(atc.COMMENTS,'')  AS "remarks" 
+		    
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao 	LEFT  JOIN USER_TAB_COMMENTS atc 
+		ON ao.OBJECT_NAME = atc.TABLE_NAME 
+		where 1=1
+	</when>
+	<otherwise>
+		FROM ALL_OBJECTS ao 	LEFT  JOIN ALL_TAB_COMMENTS atc 
+		ON ao.OBJECT_NAME = atc.TABLE_NAME 
+		and	ao.OWNER =atc.OWNER 
+		where	ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and OBJECT_TYPE='VIEW'
+		ORDER  BY ao.OBJECT_NAME
+	</select>
+	
+	<!-- view and column info -->
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select TBL.* ,  col.*
+		from 
+		(
+			SELECT
+			    ao.OBJECT_NAME  AS "TABLE_NAME" 
+			    , nvl(ATC.COMMENTS,'')  AS "REMARKS" 
+
+	<choose>
+		<when test="baseSchemaFlag">
+			FROM USER_OBJECTS ao 	LEFT  JOIN USER_TAB_COMMENTS atc 
+			ON ao.OBJECT_NAME = atc.TABLE_NAME 
+			where 1 =1
+		</when>
+		<otherwise>
+			FROM ALL_OBJECTS ao 	LEFT  JOIN ALL_TAB_COMMENTS atc 
+			ON ao.OBJECT_NAME = atc.TABLE_NAME 
+			and	ao.OWNER =atc.OWNER 
+			where	ao.OWNER = #{schema}
+		</otherwise>
+	</choose>
+			and OBJECT_TYPE='VIEW'
+			<if test="custom != null and custom.tableInfoList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+					ao.OBJECT_NAME in (${item})
+				</foreach>
+			</if>
+			ORDER  BY ao.OBJECT_NAME
+		) tbl ,
+		(
+			select
+				atc.COLUMN_ID
+				,ATC.TABLE_NAME
+				,atc.COLUMN_NAME 
+				, atc.DATA_TYPE  
+				, atc.CHAR_LENGTH as DECIMAL_DIGITS
+				, atc.DATA_LENGTH as COLUMN_SIZE
+				, atc.NULLABLE  as IS_NULLABLE
+				, atc.DATA_DEFAULT as COLUMN_DEF
+				, nvl(ACC.COMMENTS,'')  AS "COMMENT" 
+	<choose>
+		<when test="baseSchemaFlag">
+			from USER_TAB_COLUMNS atc 	left  join USER_COL_COMMENTS acc 
+			on atc.TABLE_NAME = acc.TABLE_NAME 
+			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
+			where	1=1
+		</when>
+		<otherwise>
+			from ALL_TAB_COLUMNS atc 	left  join ALL_COL_COMMENTS acc 
+			on atc.TABLE_NAME = acc.TABLE_NAME 
+			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
+			and	atc.OWNER = acc.OWNER 
+			where	atc.OWNER = #{schema} 
+		</otherwise>
+	</choose>			
+			order  by atc.TABLE_NAME , atc.COLUMN_ID
+		)col 
+		where tbl.TABLE_NAME = col.TABLE_NAME
+	</select>
+	
+	<!-- ================= view end ================= -->
+	
+	<!-- procedure list -->
+	<select id="procedureList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT  
+		          OBJECT_NAME as NAME 
+		        , OBJECT_TYPE as TYPE
+		        , CREATED	as CREATED
+		        , STATUS	as STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao
+		WHERE 1=1
+	</when>
+	<otherwise>
+		FROM ALL_OBJECTS ao  
+		where OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND OBJECT_TYPE='PROCEDURE'
+		ORDER BY OBJECT_NAME 
+	</select>
+	
+	<!-- object info  info map start  -->
+	<resultMap id="objectInfoMap" type="objectInfo">
+	    <id property="name" column="OBJECT_NAME" />
+	    <result property="type" column="OBJECT_TYPE"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
+	</resultMap>
+
+	<resultMap id="objectColInfoMap" type="objectColumnInfo">
+	    <id property="no" column="SEQUENCE" />
+	    <result property="name" column="ARGUMENT_NAME"/>
+	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="columnType" column="IN_OUT"/>
+	</resultMap>
+	<!-- object info info map end  -->
+	
+	<!-- procedure arguments list -->
+	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		select procsb.OBJECT_NAME
+			, procsb.OBJECT_TYPE   
+			, procsb.CREATED   
+			, procsb.STATUS   
+		    , nvl(argsb.ARGUMENT_NAME ,'null') as ARGUMENT_NAME
+		    , argsb.DATA_TYPE 
+		    , argsb.IN_OUT 
+		    , argsb.SEQUENCE
+		from       
+		(
+		    SELECT  
+		              OBJECT_NAME 
+		            , OBJECT_TYPE 
+		            , CREATED
+		            , STATUS
+	<choose>
+		<when test="baseSchemaFlag">
+			FROM USER_OBJECTS ao
+			WHERE 1=1
+		</when>
+		<otherwise>
+			FROM ALL_OBJECTS ao  
+			where OWNER = #{schema}
+		</otherwise>
+	</choose>
+	    	AND OBJECT_TYPE=UPPER(#{objectType})
+		    ORDER BY OBJECT_NAME 
+		 ) procsb left outer join  (
+		        SELECT  
+		            object_name
+		            ,ARGUMENT_NAME
+					, DATA_TYPE
+					,IN_OUT
+					,SEQUENCE 
+					,OVERLOAD 
+		<choose>
+			<when test="baseSchemaFlag">
+				FROM USER_ARGUMENTS aa  
+				WHERE 1=1
+			</when>
+			<otherwise>
+				FROM  ALL_ARGUMENTS  aa
+				where OWNER = #{schema}
+			</otherwise>
+		</choose>
+		 ) argsb
+		 on procsb.OBJECT_NAME = argsb.OBJECT_NAME
+		 ORDER BY procsb.OBJECT_NAME, OVERLOAD, SEQUENCE
+	</select>
+	
+	<!-- package list -->
+	<select id="packageList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT  
+	          AO.OBJECT_NAME
+	        , AO.OBJECT_TYPE
+	        , AO.CREATED
+	        , (CASE WHEN 'VALID' = NVL (ao.status, 'VALID') AND 'VALID' = ao.status THEN 'VALID' ELSE 'INVALID' END) AS STATUS
+	        
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao
+		WHERE 1=1
+	</when>
+	<otherwise>
+		FROM ALL_OBJECTS ao  
+		where OWNER = #{schema}
+	</otherwise>
+</choose>    
+		AND   ao.OBJECT_TYPE = 'PACKAGE'
+		ORDER BY AO.OBJECT_TYPE DESC, AO.OBJECT_NAME 
+	</select>
+	
+	<!-- package body list -->
+	<select id="packageBodyList" parameterType="databaseParamInfo" resultType="hashmap">
+		select 
+			ap.OBJECT_NAME as packagename
+			,ap.PROCEDURE_NAME as name
+			,(
+				select case 
+				when instr(upper(replace(text,chr(9),' ')), ' FUNCTION ') > 0 then 'FUNCTION'
+				         when  instr(upper(replace(text,chr(9),' ')), ' PROCEDURE ') > 0 then 'PROCEDURE'
+				         else 'unknow' end
+				  from user_source
+				where 1=1
+				and  name = ap.object_name
+				and  upper(replace(text,chr(9),' ')) like '% '|| ap.procedure_name ||'%'
+				and rownum &lt;= 1
+			) as type
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_PROCEDURES ap
+		WHERE 1=1
+	</when>
+	<otherwise>
+		FROM ALL_PROCEDURES ap 
+		where OWNER = #{schema}
+	</otherwise>
+</choose>
+		 and ap.OBJECT_NAME = upper(#{objectName})
+	</select>
+	
+	<!-- function list -->
+	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT  
+		          OBJECT_NAME as NAME 
+		        , OBJECT_TYPE as TYPE
+		        , CREATED	as CREATED
+		        , STATUS	as STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao
+		WHERE 1=1
+	</when>
+	<otherwise>
+		FROM ALL_OBJECTS ao  
+		where OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND OBJECT_TYPE='FUNCTION'
+		ORDER BY OBJECT_NAME 
+	</select>
+	
+	
+	<!-- index list -->
+	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+		 SELECT 
+			ui.INDEX_NAME as NAME
+			,uc.STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
+		ON	ui.table_name = uc.table_name
+		AND	ui.index_name = uc.constraint_name
+		AND	uc.status = 'ENABLED'
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
+		ON  ui.OWNER = uc.OWNER
+		AND ui.table_name = uc.table_name
+		AND ui.index_name = uc.constraint_name
+		AND uc.status = 'ENABLED'  
+		where ui.OWNER = #{schema}
+	</otherwise>
+</choose>		
+		ORDER BY ui.table_name, ui.index_name
+	</select>
+	
+	<!-- index and column info -->
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		 select a.* ,b.* 
+		 from (
+			 SELECT 
+				ui.INDEX_NAME
+				,ui.TABLE_NAME
+				,ui.TABLESPACE_NAME as "TABLE_SPACE"
+				,ui.UNIQUENESS
+				,ui.TABLE_OWNER
+				,ui.COMPRESSION
+				,ui.LOGGING
+				,ui.PCT_FREE
+				,ui.INI_TRANS
+				,ui.MAX_TRANS
+				,ui.INITIAL_EXTENT
+				,ui.MIN_EXTENTS
+				,ui.MAX_EXTENTS
+				,ui.PCT_INCREASE
+				,ui.BUFFER_POOL
+				,CASE
+					WHEN uc.CONSTRAINT_TYPE = 'P' THEN 'PK'
+					WHEN ui.UNIQUENESS = 'UNIQUE' THEN 'UQ'
+					ELSE ''
+				 END
+					AS "TYPE"
+				,uc.STATUS
+	<choose>
+		<when test="baseSchemaFlag">
+			FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
+			ON	ui.TABLE_NAME = uc.TABLE_NAME
+			AND	ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND	uc.STATUS = 'ENABLED'
+			where 1 =1 
+		</when>
+		<otherwise>
+			FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
+			ON  ui.OWNER = uc.OWNER
+			and  ui.TABLE_NAME = uc.TABLE_NAME
+			AND ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND uc.STATUS = 'ENABLED'  
+			where ui.OWNER = #{schema}
+		</otherwise>
+	</choose>
+			<if test="custom != null and custom.indexNameList != null">
+				<foreach item="item" index="index" collection="custom.indexNameList" open="and (" close=")" separator="or">
+					ui.INDEX_NAME in (${item})
+				</foreach>
+			</if>
+		) a , (
+			select 
+				INDEX_NAME
+				,COLUMN_NAME
+				,COLUMN_POSITION as "ORDINAL_POSITION"
+				,DESCEND as "ASC_OR_DESC"
+	<choose>
+		<when test="baseSchemaFlag">
+			from USER_IND_COLUMNS
+		</when>
+		<otherwise>
+			from ALL_IND_COLUMNS
+			where INDEX_OWNER = #{schema}
+		</otherwise>
+	</choose>
+		)b
+		where a.INDEX_NAME = b.INDEX_NAME
+		ORDER BY a.TABLE_NAME, a.INDEX_NAME , b.ORDINAL_POSITION
+	</select>
+	
+	<!-- trigger list -->
+	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT ao.OBJECT_NAME as NAME
+	        ,ao.OBJECT_TYPE as TYPE
+	        ,ao.CREATED
+	        , (CASE WHEN at.status = 'ENABLED' AND ao.status = 'VALID' THEN 'VALID' ELSE 'INVALID' END) AS STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM user_objects ao INNER JOIN user_triggers at 
+		ON ao.OBJECT_NAME = at.TRIGGER_NAME
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_OBJECTS ao left outer join ALL_TRIGGERS at
+		ON ao.OBJECT_NAME = at.TRIGGER_NAME
+		where ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and ao.object_type = 'TRIGGER'
+		ORDER BY at.table_name, ao.object_name
+	</select>
+	
+	<!-- trigger info map -->
+	<resultMap id="triggerInfoMap" type="triggerInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="tblName" column="TABLE_NAME"/>
+	    <result property="eventType" column="EVENTTYPE"/>
+	    <result property="timing" column="TIMING"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<!-- trigger metadata -->
+	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
+		SELECT ao.OBJECT_NAME
+	        ,at.TABLE_NAME
+	        ,at.triggering_event AS EVENTTYPE
+	        ,at.when_clause AS TIMING
+	        ,ao.object_type AS TYPE
+	        ,ao.CREATED
+	        , (CASE WHEN at.status = 'ENABLED' AND ao.status = 'VALID' THEN 'VALID' ELSE 'INVALID' END) AS STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM user_objects ao INNER JOIN user_triggers at 
+		ON ao.OBJECT_NAME = at.TRIGGER_NAME
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_OBJECTS ao left outer join ALL_TRIGGERS at
+		ON ao.OBJECT_NAME = at.TRIGGER_NAME
+		where ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and ao.object_type = 'TRIGGER'
+		ORDER BY at.table_name, ao.object_name
+	</select>
+	
+	<!-- sequence info map -->
+	<resultMap id="sequenceInfoMap" type="sequenceInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="minValue" column="MIN_VALUE"/>
+	    <result property="maxValue" column="MAX_VALUE"/>
+	    <result property="incrementBy" column="INCREMENT_BY"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+
+	    <result property="cacheSize" column="CACHE_SIZE"/>
+	    <result property="cycleFlag" column="CYCLE_FLAG"/>
+	    <result property="orderFlag" column="ORDER_FLAG"/>
+	    <result property="lastDdlTime" column="LAST_DDL_TIME"/>
+	    <result property="lastNumber" column="LAST_NUMBER"/>
+	</resultMap>
+	
+	<!-- sequence list -->
+	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT 
+			  OBJECT_NAME as NAME 
+	        , OBJECT_TYPE as TYPE
+	        , CREATED	as CREATED
+	        , STATUS	as STATUS
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao INNER JOIN USER_SEQUENCES  alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and ao.object_type = 'SEQUENCE'
+		ORDER BY ao.OBJECT_NAME
+	</select> 
+	
+	<!-- 
+		시퀸스 목록 보기.
+	 -->
+	<select id="sequenceMetadata" parameterType="databaseParamInfo" resultMap="sequenceInfoMap">
+		SELECT 
+			ao.OBJECT_NAME
+			,ao.CREATED
+			,ao.LAST_DDL_TIME
+			,ao.STATUS
+			,alls.MIN_VALUE
+			,alls.MAX_VALUE
+			,alls.INCREMENT_BY
+			,alls.CACHE_SIZE
+			,alls.CYCLE_FLAG
+			,alls.ORDER_FLAG
+			,alls.LAST_NUMBER
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao INNER JOIN USER_SEQUENCES  alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and ao.object_type = 'SEQUENCE'
+		ORDER BY ao.OBJECT_NAME
+	</select>    
+	
+	<!-- 
+		시퀸스 script
+	 -->
+	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT 
+			ao.OBJECT_NAME
+			,ao.CREATED
+			,ao.LAST_DDL_TIME
+			,ao.STATUS
+			,alls.MIN_VALUE
+			,alls.MAX_VALUE
+			,alls.INCREMENT_BY
+			,alls.CACHE_SIZE
+			,alls.CYCLE_FLAG
+			,alls.ORDER_FLAG
+			,alls.LAST_NUMBER
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_OBJECTS ao INNER JOIN USER_SEQUENCES  alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where 1 =1 
+	</when>
+	<otherwise>
+		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
+		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
+	</otherwise>
+</choose>
+		and ao.object_type = 'SEQUENCE'
+		and ao.OBJECT_NAME = #{objectName}
+	</select>    
+	
+	
+	<!-- 
+		Table DDL Script
+	 -->
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT atc.TABLE_NAME
+			, atc.COLUMN_NAME
+			, atc.DATA_TYPE
+			, atc.DATA_TYPE_MOD
+			, atc.DATA_TYPE_OWNER
+			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH,
+		                         'VARCHAR', atc.CHAR_LENGTH,
+		                         'VARCHAR2', atc.CHAR_LENGTH,
+		                         'NCHAR', atc.CHAR_LENGTH,
+		                         'NVARCHAR', atc.CHAR_LENGTH,
+		                         'NVARCHAR2', atc.CHAR_LENGTH,
+		                         atc.DATA_PRECISION) COLUMN_SIZE
+			, atc.DATA_SCALE as DECIMAL_DIGITS
+			, atc.NULLABLE
+			, atc.CHAR_USED
+			, USER OWNER
+			, atc.DATA_DEFAULT
+<choose>
+	<when test="baseSchemaFlag">
+		from USER_TAB_COLUMNS atc
+		where	1=1
+	</when>
+	<otherwise>
+		from ALL_TAB_COLUMNS atc 
+		where	atc.OWNER = #{schema} 
+	</otherwise>
+</choose>		
+		AND atc.TABLE_NAME = #{objectName}
+		ORDER BY atc.COLUMN_ID
+	</select>
+
+	<!-- 
+		Table DDL Script => Primary key list
+	 -->
+	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
+		SELECT acc.CONSTRAINT_NAME, acc.COLUMN_NAME
+<choose>
+	<when test="baseSchemaFlag">
+		FROM USER_CONS_COLUMNS acc , USER_CONSTRAINTS ac 
+		where acc.TABLE_NAME = ac.TABLE_NAME 
+		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME 
+	</when>
+	<otherwise>
+		FROM ALL_CONS_COLUMNS acc , ALL_CONSTRAINTS ac
+		WHERE	acc.OWNER = ac.OWNER 
+		AND acc.TABLE_NAME = ac.TABLE_NAME 
+		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME
+		AND acc.OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND acc.TABLE_NAME = #{objectName}
+		AND ac.CONSTRAINT_TYPE in ('P')
+		ORDER BY acc.POSITION
+	</select>
+
+	<!-- 
+		Table DDL Script => Table, Column Comment Script
+	 -->
+	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
+		SELECT    'COMMENT ON TABLE '
+		       || '${schema}'
+		       || '.'
+		       || C.TABLE_NAME
+		       || ' IS '''
+		       || C.COMMENTS
+		       || ''';'
+		          AS COMMENT_TEXT
+<choose>
+	<when test="baseSchemaFlag">
+		from USER_TAB_COMMENTS c
+		where 1=1
+	</when>
+	<otherwise>
+		FROM ALL_TAB_COMMENTS c
+		where c.OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND C.COMMENTS IS NOT NULL
+		AND C.TABLE_NAME = #{objectName}
+		UNION ALL
+		SELECT    'COMMENT ON COLUMN '
+		       || '${schema}'
+		       || '.'
+		       || C.TABLE_NAME
+		       || '.'
+		       || C.COLUMN_NAME
+		       || ' IS '''
+		       || C.COMMENTS
+		       || ''';'
+<choose>
+	<when test="baseSchemaFlag">
+		from USER_COL_COMMENTS c
+		where 1=1
+	</when>
+	<otherwise>
+		FROM ALL_COL_COMMENTS c
+		where c.OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND C.COMMENTS IS NOT NULL
+		AND C.TABLE_NAME = #{objectName}
+	</select>
+
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
+		select COLUMN_NAME
+<choose>
+	<when test="baseSchemaFlag">
+		from USER_TAB_COLUMNS c
+		where 1=1
+	</when>
+	<otherwise>
+		FROM ALL_TAB_COLUMNS c
+		where OWNER = #{schema}
+	</otherwise>
+</choose>
+		AND TABLE_NAME = #{objectName}
+		order by TABLE_NAME, COLUMN_ID
+	</select>
+
+	<!-- 
+		 view script source
+	 -->
+	<select id="viewScriptSource" resultType="string" parameterType="databaseParamInfo">
+		select TEXT as SOURCE_TEXT
+	<choose>
+		<when test="baseSchemaFlag">
+		from USER_VIEWS
+		WHERE 1=1
+		</when>
+		<otherwise>
+		from ALL_VIEWS
+		where OWNER = #{schema}
+		</otherwise>
+	</choose>
+		AND VIEW_NAME = #{objectName}
+		order by VIEW_NAME
+	</select>
+
+	<!-- 
+		object function  , procedure 소스 
+	 -->
+	<select id="objectScriptSource" resultType="string" parameterType="databaseParamInfo">
+		SELECT
+	    	b.text AS source_text
+	  <choose>
+		<when test="baseSchemaFlag">
+		FROM user_objects a INNER JOIN user_source b 
+		ON a.object_name = b.name
+		and a.OBJECT_TYPE = b.type 
+		WHERE 1 = 1
+		</when>
+		<otherwise>
+		FROM ALL_OBJECTS a INNER JOIN ALL_SOURCE b 
+		ON a.object_name = b.name
+		and a.OBJECT_TYPE = b.type 
+		where a.OWNER = #{schema}
+		</otherwise>
+	</choose> 	
+		AND a.object_type =UPPER( #{objectType})
+		AND a.object_name =#{objectName}
+		ORDER BY b.line
+	</select>
+
+
+	<!-- 
+		get object type 
+	-->
+	<select id="sourceObjectType" resultType="string" parameterType="databaseParamInfo">
+		SELECT object_type as TYPE
+<choose>
+	<when test="baseSchemaFlag">
+		FROM user_objects
+		WHERE 1 = 1
+	</when>
+	<otherwise>
+		FROM all_objects
+		WHERE OWNER = #{schema}
+	</otherwise>
+</choose> 
+		AND object_name = UPPER (#{objectName})
+	<![CDATA[
+		AND ROWNUM <= 1
+	 ]]>
+	</select>
+
+	<!-- 
+		create index  Script 
+	 -->
+	<select id="indexScriptSource" resultType="hashmap" parameterType="databaseParamInfo">
+		SELECT 
+			  aic.COLUMN_POSITION
+			, ai.INDEX_NAME
+			, ai.TABLE_NAME
+			, ai.INDEX_TYPE
+			, ai.TABLE_OWNER
+			, ai.UNIQUENESS
+			, ai.COMPRESSION
+			, ai.TABLESPACE_NAME
+			, ai.LOGGING
+			, ai.PCT_FREE
+			, ai.INI_TRANS
+			, ai.MAX_TRANS
+			, ai.INITIAL_EXTENT
+			, ai.MIN_EXTENTS
+			, ai.MAX_EXTENTS
+			, NVL(ai.PCT_INCREASE,0) AS PCT_INCREASE
+			, ai.BUFFER_POOL
+			, aic.DESCEND
+			, aic.COLUMN_NAME
+			, aie.COLUMN_EXPRESSION
+	<choose>
+		<when test="baseSchemaFlag">
+		FROM USER_INDEXES ai INNER JOIN USER_IND_COLUMNS aic 
+		ON ai.INDEX_NAME     = aic.INDEX_NAME
+		AND ai.TABLE_NAME = aic.TABLE_NAME
+		LEFT JOIN USER_IND_EXPRESSIONS aie
+		ON 1 = 1
+		AND aie.INDEX_NAME      = aic.INDEX_NAME
+		AND aie.TABLE_NAME      = aic.TABLE_NAME
+		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
+		WHERE 1  = 1		
+		</when>
+		<otherwise>
+		FROM ALL_INDEXES ai INNER JOIN ALL_IND_COLUMNS aic 
+		ON ai.OWNER = aic.INDEX_OWNER
+		AND ai.INDEX_NAME = aic.INDEX_NAME
+		AND ai.TABLE_NAME = aic.TABLE_NAME
+		LEFT JOIN ALL_IND_EXPRESSIONS aie
+		ON 1 = 1
+		AND aie.INDEX_OWNER  = aic.INDEX_OWNER
+		AND aie.INDEX_NAME      = aic.INDEX_NAME
+		AND aie.TABLE_NAME      = aic.TABLE_NAME
+		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
+		where ai.OWNER = #{schema}
+		</otherwise>
+	</choose>	  
+		AND aic.INDEX_NAME      = UPPER( #{objectName})
+		ORDER BY aic.COLUMN_POSITION
+	</select>
+
+	<!-- 
+		프로시져의 아규먼트 목록을 리턴한다.
+	 -->
+	<select id="getProcedureInParamter" resultType="hashmap" parameterType="hashmap">
+		SELECT ua.position AS "order"
+			,ua.argument_name AS name
+			,DECODE (ua.data_type, 'REF CURSOR', 'SYS_REFCURSOR', ua.data_type) AS rdbtype
+			,ua.in_out AS type
+			,ua.data_length AS length
+			,ua.default_value as value
+		FROM user_arguments ua
+		WHERE 1=1
+		AND ua.object_name = UPPER (#{objectName})
+		AND ua.in_out in ('IN','IN/OUT')
+		AND ua.argument_name > ' '
+		and nvl(ua.package_name,'null') = case when #{package_name} is null then 'null' else UPPER (#{package_name}) end
+		ORDER BY ua.object_name, ua.overload, ua.sequence
+	</select>
+
+	<!-- 
+		프로시져의 아규먼트 목록을 리턴한다.
+	 -->
+	<select id="getProcedureOutParamter" resultType="hashmap" parameterType="hashmap">
+		SELECT ua.position AS "order"
+			,ua.argument_name AS name
+			,DECODE (ua.data_type, 'REF CURSOR', 'SYS_REFCURSOR', ua.data_type) AS rdbtype
+			,ua.in_out AS type
+			,ua.data_length AS length
+			,null as value
+		FROM user_arguments ua
+		WHERE 1=1
+		AND ua.object_name = UPPER (#{objectName})
+		AND ua.in_out in ('OUT', 'IN/OUT')
+		AND ua.argument_name > ' '
+		and nvl(ua.package_name,'null') = case when #{package_name} is null then 'null' else UPPER (#{package_name}) end
+		ORDER BY ua.object_name, ua.overload, ua.sequence
+	</select>    
+	
+</mapper>

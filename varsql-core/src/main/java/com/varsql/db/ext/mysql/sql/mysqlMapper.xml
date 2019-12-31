@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mysql.mata">
+	<!-- db 정보보기. -->
+	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
+		SHOW VARIABLES LIKE '%VERSION%'
+	</select>	
+
+	<!-- ================= table start ================= -->
+	<!--  tableList 목록 보기. -->
+	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT TABLE_NAME as "NAME" 
+			,TABLE_COMMENT  AS "REMARKS"
+		FROM INFORMATION_SCHEMA.TABLES tbl
+		WHERE TABLE_TYPE = 'BASE TABLE'
+		and upper(tbl.TABLE_SCHEMA) in (#{schema})
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.TABLE_NAME in (${item})
+			</foreach>
+		</if>
+		ORDER  BY TABLE_NAME
+	</select>
+	
+	<!-- table adn column info -->
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT   
+			a.table_name as "TABLE_NAME"
+			, a.column_name as "COLUMN_NAME"
+			, if ( isnull(CHARACTER_MAXIMUM_LENGTH),NUMERIC_PRECISION, CHARACTER_MAXIMUM_LENGTH ) as "COLUMN_SIZE"
+			, a.data_type as "DATA_TYPE"
+			, a.column_type as "TYPE_NAME_SIZE"
+			, a.is_nullable as "IS_NULLABLE"
+			, a.column_key as "CONSTRAINTS"
+			, a.column_default as "COLUMN_DEF"
+			, a.column_comment as "COMMENT" 
+			, a.collation_name as collation_name
+			, a.table_schema as "SCHEMA_NAME"
+			, a.extra as extra
+		FROM information_schema.columns a , INFORMATION_SCHEMA.TABLES tbl
+		where 1=1
+		and a.TABLE_SCHEMA = tbl.TABLE_SCHEMA
+		and a.TABLE_NAME = tbl.TABLE_NAME
+		and upper(a.TABLE_SCHEMA) in (#{schema})
+		and tbl.TABLE_TYPE = 'BASE TABLE'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				a.table_name in (${item}) 
+			</foreach>
+		</if>
+		order by a.table_name , a.ORDINAL_POSITION
+	</select>
+	
+	<!-- ================= table end ================= -->
+	
+	<!-- ================= view start ================= -->
+	
+	<!-- view 목록 보기 -->
+	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT TABLE_NAME as "NAME" 
+			,TABLE_COMMENT  AS "REMARKS"
+		FROM INFORMATION_SCHEMA.TABLES tbl
+		WHERE TABLE_TYPE in  ('VIEW', 'SYSTEM VIEW')
+<choose>
+	<when test="baseSchemaFlag">
+		
+	</when>
+	<otherwise>
+		and upper(TABLE_SCHEMA) in (#{schema})
+	</otherwise>
+</choose>
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.name in (${item})
+			</foreach>
+		</if>
+		ORDER  BY NAME
+	</select>
+	
+	<!-- view and column info -->
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT   
+			a.table_name as "TABLE_NAME"
+			, a.column_name as "COLUMN_NAME"
+			, if ( isnull(CHARACTER_MAXIMUM_LENGTH),NUMERIC_PRECISION, CHARACTER_MAXIMUM_LENGTH ) as "COLUMN_SIZE"
+			, a.data_type as "DATA_TYPE"
+			, a.column_type as "TYPE_NAME_SIZE"
+			, a.is_nullable as "IS_NULLABLE"
+			, a.column_key as "CONSTRAINTS"
+			, a.column_default as "COLUMN_DEF"
+			, a.column_comment as "COMMENT" 
+			, a.collation_name as collation_name
+			, a.table_schema as "SCHEMA_NAME"
+			, a.extra as extra
+		FROM information_schema.columns a , INFORMATION_SCHEMA.TABLES tbl
+		where 1=1
+		and a.TABLE_SCHEMA = tbl.TABLE_SCHEMA
+		and a.TABLE_NAME = tbl.TABLE_NAME
+		and upper(a.TABLE_SCHEMA) in (#{schema})
+		and tbl.TABLE_TYPE in ('VIEW', 'SYSTEM VIEW')
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				a.table_name in (${item}) 
+			</foreach>
+		</if>
+		order by a.table_name , a.ORDINAL_POSITION
+	</select>
+	
+	<!-- ================= view end ================= -->
+	
+	<!-- procedure list -->
+	<select id="procedureList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select
+		    routine_name as "NAME" 
+		    ,routine_comment as "REMARKS"
+		    ,created as `CREATED`
+		    , '' as "STATUS"
+		from
+			information_schema.ROUTINES
+		where 1=1
+		and routine_schema =#{schema}
+		and routine_type = 'PROCEDURE'
+	</select>
+	
+	<!-- object info  info map start  -->
+	<resultMap id="objectInfoMap" type="objectInfo">
+	    <id property="name" column="OBJECT_NAME" />
+	    <result property="type" column="OBJECT_TYPE"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
+	</resultMap>
+
+	<resultMap id="objectColInfoMap" type="objectColumnInfo">
+	    <id property="no" column="SEQUENCE" />
+	    <result property="name" column="ARGUMENT_NAME"/>
+	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="columnType" column="IN_OUT"/>
+	</resultMap>
+	<!-- object info info map end  -->
+	
+	<!-- procedure arguments list -->
+	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		select
+			a.routine_name as "OBJECT_NAME"
+			, a.routine_comment as "COMMENT"
+			, a.created as `CREATED`
+			,'' as "STATUS"
+			,p.PARAMETER_NAME  as ARGUMENT_NAME
+			,p.DATA_TYPE as DATA_TYPE
+			,p.parameter_mode as "IN_OUT"
+			,p.ORDINAL_POSITION as "SEQUENCE"
+		from
+			information_schema.ROUTINES a left outer join information_schema.parameters p			
+		on a.ROUTINE_SCHEMA =p.SPECIFIC_SCHEMA
+		and a.specific_name = p.specific_name
+		where 1=1
+		and a.ROUTINE_SCHEMA =#{schema}
+			<choose>
+				<when test='"procedure".equalsIgnoreCase(objectType)'>
+					and a.routine_type = 'PROCEDURE'
+				</when>
+				<when test='"function".equalsIgnoreCase(objectType)'>
+					and a.routine_type = 'FUNCTION'
+				</when>
+				<otherwise>
+					and a.routine_type =#{objectType}
+				</otherwise>
+			</choose>
+			<if test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					a.routine_name in (${item})
+				</foreach>
+			</if>
+		order by a.routine_name , p.ORDINAL_POSITION
+	</select>
+	
+	<!-- function list -->
+	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select
+		    routine_name as "NAME" 
+		    ,routine_comment as "REMARKS"
+		    ,created as `CREATED`
+		    , '' as "STATUS"
+		from
+			information_schema.ROUTINES
+		where 1=1
+		and upper(routine_schema) =#{schema}
+		and routine_type = 'FUNCTION'
+	</select>
+	
+	<!-- index list -->
+	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT
+			 index_name as "NAME" 
+		    , index_type
+		    , comment
+		    ,'' as "STATUS"
+		FROM information_schema.statistics 
+		WHERE upper(TABLE_SCHEMA) in (#{schema})
+	</select>
+	
+	<!-- index and column info -->
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT		 
+			idx.table_name AS  "TABLE_NAME"
+			,idx.index_name AS "INDEX_NAME" 
+			,idx.seq_in_index  AS "ORDINAL_POSITION"
+			,idx.column_name AS "COLUMN_NAME"
+			,idx.index_type  AS "TYPE"
+			, idx.collation AS ASC_OR_DESC
+		FROM information_schema.statistics idx
+		WHERE upper(TABLE_SCHEMA) in (#{schema})
+		<if test="custom != null and custom.objectNameList != null">
+			and
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				idx.index_name in (${item})
+			</foreach>
+		</if>
+		order by table_name , seq_in_index
+	</select>
+	
+	
+	<!-- trigger list -->
+	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT
+		     trigger_name as "NAME"
+		    , event_manipulation as event
+		    , event_object_table as "TABLE_NAME"
+		    , action_statement 
+		    , action_timing as timing
+		    , created as "CREATED"
+		    ,'' as "STATUS"
+		FROM INFORMATION_SCHEMA.TRIGGERS
+		WHERE upper(TRIGGER_SCHEMA) in (#{schema})
+		<if test="custom != null and custom.objectNameList != null">
+			and
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				trigger_name in (${item})
+			</foreach>
+		</if>
+		ORDER BY trigger_name
+	</select>
+	
+	<!-- trigger info map -->
+	<resultMap id="triggerInfoMap" type="triggerInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="tblName" column="TABLE_NAME"/>
+	    <result property="eventType" column="EVENTTYPE"/>
+	    <result property="timing" column="TIMING"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<!-- trigger metadata -->
+	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
+		SELECT
+		     trigger_name as "OBJECT_NAME"
+		    , event_manipulation as "EVENTTYPE"
+		    , event_object_table as "TABLE_NAME"
+		    , action_statement 
+		    , action_timing as timing
+		    , created as "CREATED"
+		    ,'' as "STATUS"
+		FROM INFORMATION_SCHEMA.TRIGGERS
+		WHERE upper(TRIGGER_SCHEMA) in (#{schema})
+		<if test="custom != null and custom.objectNameList != null">
+			and
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				trigger_name in (${item})
+			</foreach>
+		</if>
+		ORDER BY trigger_name
+	</select>
+	
+	<!-- table script -->
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+		show create table ${objectName}
+	</select>
+
+	<!-- view script -->
+	<select id="viewScript" parameterType="databaseParamInfo" resultType="paramMap">
+		show create view ${objectName}
+	</select>
+
+	<!-- function script -->
+	<select id="functionScript" parameterType="databaseParamInfo" resultType="paramMap">
+		show create function ${objectName}
+	</select>
+	
+	<!-- procedure script -->
+	<select id="procedureScript" parameterType="databaseParamInfo" resultType="paramMap">
+		show create procedure ${objectName}
+	</select>
+	
+	<!-- trigger script -->
+	<select id="triggerScript" parameterType="databaseParamInfo" resultType="paramMap">
+		show create trigger ${objectName}
+	</select>
+	
+</mapper>

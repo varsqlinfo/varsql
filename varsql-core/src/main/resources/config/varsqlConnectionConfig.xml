@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSources>
+	<dataSource name="varsql">
+		<property name="type" value="local"/>
+		<property name="driver" value="org.h2.Driver"/>
+		<property name="url" value="jdbc:h2:file:#resourePath#/varsql"/>
+		<property name="username" value="sa"/>
+		<property name="password" value="sa"/>
+		<property name="max_active" value="10"/>
+		<property name="pool_option" value="max_idle=5;min_idle=5;"/>
+		<property name="connection_option" value="sslConnection=true"/>
+		<property name="timebetweenevictionrunsmillis" value="60000"/>
+		<property name="test_while_idle" value="true"/>
+	</dataSource>
+</dataSources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<var-ddl>
+	<!-- 테이블 생성-->
+	<ddl id="tableScript"><![CDATA[
+/* DROP TABLE {{objectName}} CASCADE CONSTRAINT; */
+CREATE TABLE {{objectName}}(
+	{{scriptSource}}	
+);
+
+{{commnetSource}}
+	]]></ddl>
+	
+	<!-- view 생성-->
+	<ddl id="viewScript"><![CDATA[
+/* DROP VIEW {{objectName}}; */
+CREATE view {{objectName}}
+{{scriptSource}}	
+	]]></ddl>
+	
+	<!-- procedure 생성-->
+	<ddl id="procedureScript"><![CDATA[
+/* DROP PROCEDURE {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}		
+	]]></ddl>
+	
+	<!-- function 생성-->
+	<ddl id="functionScript"><![CDATA[
+/* DROP FUNCTION {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}	
+	]]></ddl>
+	
+	<!-- package 생성-->
+	<ddl id="packageScript"><![CDATA[
+/* DROP FUNCTION {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></ddl>
+	
+	<!-- trigger 생성-->
+	<ddl id="triggerScript"><![CDATA[
+/* DROP TRIGGER {{objectName}}; */ 
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></ddl>
+	
+	<!-- index 생성-->
+	<ddl id="indexScript"><![CDATA[
+/* DROP TRIGGER {{objectName}}; */ 
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></ddl>
+	
+	<!-- sequence 생성-->
+	<ddl id="sequenceScript"><![CDATA[
+CREATE SEQUENCE  "{{owner}}"."{{objectName}}"  
+MINVALUE 1 
+MAXVALUE 9999999999999999999999999999 
+INCREMENT BY 1 START WITH 8000 
+CACHE 20 NOORDER  NOCYCLE;
+	]]></ddl>
+</var-ddl>

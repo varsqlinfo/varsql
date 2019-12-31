@@ -1,0 +1,31 @@
+
+task generateCode {
+    doLast {
+        println 'Generating some code...'
+    }
+}
+
+task generateCustomConfig {
+    doLast {
+          println "Generating custom configuration..."
+    }
+}
+	
+eclipse { // 이클립스 project facets설정.
+	//프로젝트를 가져 오거나 동기화
+	synchronizationTasks generateCustomConfig
+	
+	// 자동 빌드
+	autoBuildTasks generateCode
+	
+	classpath {
+        defaultOutputDir = file("target")
+        file.whenMerged {
+            entries.each { entry ->
+                if (entry.kind == 'src' && entry.hasProperty('output')) {
+                    entry.output = entry.output.replace('bin/', "target/")
+                }
+            }
+        }
+    }
+}

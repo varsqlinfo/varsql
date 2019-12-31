@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="h2.mata">
+	<!-- db 정보보기. -->
+	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT H2VERSION()as INFO_VAL FROM DUAL
+	</select>	
+
+	<!-- ================= table start ================= -->
+	<!--  tableList 목록 보기. -->
+	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+			tbl.TABLE_NAME  AS "NAME" 
+			, tbl.REMARKS AS "REMARKS"
+		FROM INFORMATION_SCHEMA.TABLES  tbl
+		WHERE TABLE_SCHEMA = #{schema}
+		and tbl.TABLE_TYPE ='TABLE'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.TABLE_NAME in (${item})
+			</foreach>
+		</if>
+		ORDER BY TABLE_NAME 
+	</select>
+	
+	<!-- table adn column info -->
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select 
+			col.TABLE_NAME as "TABLE_NAME",
+			col.COLUMN_NAME as "COLUMN_NAME",
+			-- col.DATA_TYPE as "DATA_TYPE" ,   
+			col.TYPE_NAME as "DATA_TYPE" ,   
+			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH" ,   
+			col.NUMERIC_PRECISION as "COLUMN_SIZE" ,   
+			col.NUMERIC_SCALE as "DECIMAL_DIGITS" ,   
+			(CASE WHEN col.IS_NULLABLE = 'NO'  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
+			col.COLUMN_DEFAULT AS "COLUMN_DEF",
+			ind.INDEX_TYPE_NAME  as "CONSTRAINTS",
+			col.REMARKS as "COMMENT"
+		from information_schema.columns col left outer join information_schema.INDEXES  ind
+		on col.TABLE_SCHEMA = ind.TABLE_SCHEMA
+		and col.TABLE_NAME = ind.TABLE_NAME
+		and col.COLUMN_NAME = ind.COLUMN_NAME 
+		where col.TABLE_SCHEMA =  #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				col.table_name in (${item}) 
+			</foreach>
+		</if>
+		order by col.TABLE_NAME , col.ORDINAL_POSITION
+	</select>
+	
+	<!-- ================= table end ================= -->
+	
+	<!-- ================= view start ================= -->
+	
+	<!-- view 목록 보기 -->
+	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+			tbl.TABLE_NAME  AS "NAME" 
+			, tbl.REMARKS AS "REMARKS"
+		FROM INFORMATION_SCHEMA.views  tbl
+		WHERE TABLE_SCHEMA = #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.TABLE_NAME in (${item})
+			</foreach>
+		</if>
+		ORDER BY TABLE_NAME 
+	</select>
+	
+	<!-- view and column info -->
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select 
+			col.TABLE_NAME as "TABLE_NAME",
+			col.COLUMN_NAME as "COLUMN_NAME",
+			-- col.DATA_TYPE as "DATA_TYPE" ,   
+			col.TYPE_NAME as "DATA_TYPE" ,   
+			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH" ,   
+			col.NUMERIC_PRECISION as "COLUMN_SIZE" ,   
+			col.NUMERIC_SCALE as "DECIMAL_DIGITS" ,   
+			(CASE WHEN col.IS_NULLABLE = 'NO'  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
+			col.COLUMN_DEFAULT AS "COLUMN_DEF",
+			'' as "CONSTRAINTS",
+			col.REMARKS as "COMMENT"
+		from information_schema.columns col left outer join information_schema.constraints const
+		on col.TABLE_SCHEMA = const.TABLE_SCHEMA and col.TABLE_NAME = const.TABLE_NAME
+		where col.TABLE_SCHEMA =  #{schema}
+		<choose>
+			<when test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					col.table_name in (${item}) 
+				</foreach>
+			</when>
+			<otherwise>
+				and col.TABLE_NAME in (select TABLE_NAME  from information_schema.views)
+			</otherwise>
+		</choose>
+		order by col.TABLE_NAME , col.ORDINAL_POSITION
+	</select>
+	
+	<!-- ================= view end ================= -->
+	
+	<!-- object info  info map start  -->
+	<resultMap id="objectInfoMap" type="objectInfo">
+	    <id property="name" column="OBJECT_NAME" />
+	    <result property="type" column="OBJECT_TYPE"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
+	</resultMap>
+
+	<resultMap id="objectColInfoMap" type="objectColumnInfo">
+	    <id property="no" column="SEQUENCE" />
+	    <result property="name" column="ARGUMENT_NAME"/>
+	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="columnType" column="IN_OUT"/>
+	</resultMap>
+	<!-- object info info map end  -->
+	
+	<!-- function list -->
+	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select func.ALIAS_NAME AS "NAME" 
+			,'FUNCTION' as "TYPE"
+			, func.REMARKS  AS "REMARKS"
+			, '' as "CREATED"
+			, '' as "STATUS"
+		from information_schema.FUNCTION_ALIASES func
+		WHERE func.ALIAS_SCHEMA = #{schema}
+	</select>
+	
+	<select id="functionMeta" parameterType="databaseParamInfo" resultType="objectInfo">
+		select 
+			ALIAS_NAME as "OBJECT_NAME"
+			,JAVA_CLASS as "OBJECT_TYPE"
+			,JAVA_METHOD as "ARGUMENT_NAME"
+			,DATA_TYPE as "DATA_TYPE"
+			,'' as "CHAR_LENGTH"
+			,'' as "COLUMN_SIZE"
+			,'' as "DECIMAL_DIGITS"
+			,'' as "COMMENT"
+			,'' as "IN_OUT"
+		from information_schema.FUNCTION_ALIASES func
+		WHERE func.ALIAS_SCHEMA = #{schema}
+	</select>
+	
+	<!-- index list -->
+	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select 
+			 ind.INDEX_NAME as "NAME"
+			,'' as "STATUS"
+		from information_schema.INDEXES  ind
+		WHERE ind.TABLE_SCHEMA = #{schema}
+		group by ind.index_NAME
+		order by ind.TABLE_NAME, ind.index_NAME
+	</select>
+	
+	<!-- index and column info -->
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select 
+			TABLE_NAME,
+			INDEX_NAME,
+			COLUMN_NAME,
+			ORDINAL_POSITION,
+			INDEX_TYPE_NAME||'' as  "TYPE",
+			ASC_OR_DESC,
+			'' as "STATUS"
+		from information_schema.INDEXES  ind
+		WHERE ind.TABLE_SCHEMA = #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				ind.INDEX_NAME in (${item})
+			</foreach>
+		</if>
+		order by TABLE_NAME, index_NAME, ORDINAL_POSITION 
+	</select>
+	
+	
+	<!-- trigger list -->
+	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select 
+			TABLE_NAME as "TABLE_NAME",
+	        TRIGGER_NAME as "NAME" ,
+			'' as "CREATED"
+		from information_schema.TRIGGERS
+		WHERE TABLE_SCHEMA = #{schema}
+		order by TABLE_NAME , TRIGGER_NAME
+	</select>
+	
+	<!-- trigger info map -->
+	<resultMap id="triggerInfoMap" type="triggerInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="tblName" column="TABLE_NAME"/>
+	    <result property="eventType" column="EVENTTYPE"/>
+	    <result property="timing" column="TIMING"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<!-- trigger metadata -->
+	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
+		select 
+			TABLE_NAME as "TABLE_NAME",
+	        TRIGGER_NAME as "NAME" ,
+			TRIGGER_TYPE as "EVENTTYPE", 
+			'' as "STATUS"
+		from information_schema.TRIGGERS
+		WHERE TABLE_SCHEMA = #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				TRIGGER_NAME in (${item})
+			</foreach>
+		</if>
+		order by TABLE_NAME , TRIGGER_NAME
+	</select>
+	
+	<!-- sequence info map -->
+	<resultMap id="sequenceInfoMap" type="sequenceInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="minValue" column="MIN_VALUE"/>
+	    <result property="maxValue" column="MAX_VALUE"/>
+	    <result property="incrementBy" column="INCREMENT_BY"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+
+	    <result property="cacheSize" column="CACHE_SIZE"/>
+	    <result property="cycleFlag" column="CYCLE_FLAG"/>
+	    <result property="orderFlag" column="ORDER_FLAG"/>
+	    <result property="lastDdlTime" column="LAST_DDL_TIME"/>
+	    <result property="lastNumber" column="LAST_NUMBER"/>
+	</resultMap>
+	
+	<!-- sequence list -->
+	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select 
+			SEQUENCE_NAME as  "NAME",
+			INCREMENT as  "increment",
+			CURRENT_VALUE as "current_value"
+		from information_schema.SEQUENCES seq
+		WHERE seq.SEQUENCE_SCHEMA = #{schema}
+	</select> 
+	
+	<!-- 
+		시퀸스 목록 보기.
+	 -->
+	<select id="sequenceMetadata" parameterType="databaseParamInfo" resultMap="sequenceInfoMap">
+		select 
+			SEQUENCE_NAME as "OBJECT_NAME"
+			,'' as CREATED
+			,MIN_VALUE as "MIN_VALUE"
+			,INCREMENT as "INCREMENT_BY"
+			,CURRENT_VALUE as "LAST_NUMBER"
+		from information_schema.SEQUENCES seq
+		WHERE seq.SEQUENCE_SCHEMA = #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				seq.SEQUENCE_NAME in (${item})
+			</foreach>
+		</if>
+		order by SEQUENCE_NAME
+	</select>    
+	
+	<!-- 
+		시퀸스 script
+	 -->
+	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
+		select 
+			SEQUENCE_NAME as "OBJECT_NAME"
+			,'' as CREATED
+			,MIN_VALUE as "MIN_VALUE"
+			,INCREMENT as "INCREMENT_BY"
+			,CURRENT_VALUE as "LAST_NUMBER"
+		from information_schema.SEQUENCES seq
+		WHERE seq.SEQUENCE_SCHEMA = #{schema}
+		and seq.SEQUENCE_NAME = #{objectName}
+	</select>    
+	
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
+		select VIEW_DEFINITION
+		from information_schema.views
+		WHERE TABLE_SCHEMA = #{schema}
+		and TABLE_NAME =#{objectName}
+	</select>
+
+	<!-- 
+		create index  Script 
+	 -->
+	<select id="indexScript" resultType="string" parameterType="databaseParamInfo">
+		select 
+			SQL
+		from information_schema.INDEXES
+		WHERE TABLE_SCHEMA = #{schema}
+		and INDEX_NAME =#{objectName}
+		and ORDINAL_POSITION = 1
+	</select>
+	
+	<!-- create function script -->
+	<select id="functionScript" resultType="string" parameterType="databaseParamInfo">
+		select SOURCE
+		from information_schema.FUNCTION_ALIASES func
+		WHERE func.ALIAS_SCHEMA = 'PUBLIC'
+		and func.ALIAS_NAME = #{objectName}
+	</select>
+
+</mapper>

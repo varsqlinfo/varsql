@@ -1,0 +1,43 @@
+/*
+ * pub.multiselect.css: 0.0.1
+ * ========================================================================
+ * Copyright 2015 ytkim
+ * Licensed under MIT
+ * http://www.opensource.org/licenses/mit-license.php
+*/
+.pub-multiselect-area {
+	user-select: none;
+	-o-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	overflow-x:hidden;	
+	overflow-y:auto;
+    border: 1px solid #cccccc;
+}
+
+.pub-multiselect-area .empty-message {
+    text-align: center;
+    padding-top: 10px;
+    font-size: 10pt;
+}
+
+.pub-multiselect-area ul,.pub-multiselect-area ol ,.pub-multiselect-area li{
+	list-style:none;
+}
+
+.pub-multiselect-area .selected {
+	background: #5353f7;
+    color: #fff;
+}
+
+.pub-multiselect-area{
+	padding: 0px;
+    margin: 0px;
+}
+
+
+.pub-select-item{
+	cursor:pointer;
+}
