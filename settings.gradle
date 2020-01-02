@@ -9,6 +9,5 @@
 
 include 'varsql-web'
 include 'varsql-core'
-include 'varsql-doc'
 
 rootProject.name = 'varsql'
