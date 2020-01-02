@@ -11,12 +11,14 @@ bin/
 *.bak
 
 #directory
-.project
 .externalToolBuilders/
-.classpath
 .class
 
-
+#eclipse sub project config file
+*/.project
+*/.classpath
 */.settings
 
+#compile directory
 */target
+
