@@ -29,3 +29,13 @@ eclipse { // 이클립스 project facets설정.
         }
     }
 }
+
+jar{
+	baseName ='varsql-core'
+	version = '0.0.1'
+}
+
+war {
+    enabled = false;
+}
+

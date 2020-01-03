@@ -2,20 +2,34 @@ buildscript {
     repositories {
         jcenter()
     }
- 
-    dependencies {
-    	classpath 'com.bmuschko:gradle-cargo-plugin:2.7.0'
-    	classpath 'com.bmuschko:gradle-tomcat-plugin:2.5'
-    }
+}
+
+// minify
+plugins {
+	id "com.bmuschko.cargo" version "2.7.0"
+	id "com.bmuschko.tomcat-base" version "2.5"
+	
+	//id "com.eriwen.gradle.js" version "2.14.2-SNAPSHOT"
+	//id "com.eriwen.gradle.css" version "2.14.0"
+	
+}
+
+ext{
+	appVersion = '0.0.1'
+	cargoVersion = '2.7.0'
+	tomcatVersion = '2.5'
+	jsMinifyVersion = '2.14.1'
+	
+	webResourceConfig = [
+        staticFilesDir : "src/main/webapp",
+        baseDir: "META-INF/resources",
+        name : "varsql-web-"+appVersion
+    ]
 }
 
 def def_project= [
 	context : '/vsql'
 ]
-
-
-apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'com.bmuschko.tomcat-base'
 
 dependencies {
  	def cargoVersion = '1.7.9'
@@ -76,7 +90,8 @@ task generateCustomConfig {
     }
 }
 
-eclipse { // 이클립스 project facets설정.
+eclipse { 
+	// 이클립스 project facets설정.
 	project.natures "org.springsource.ide.eclipse.gradle.core.nature"
 	
 	//프로젝트를 가져 오거나 동기화
@@ -104,5 +119,44 @@ eclipse { // 이클립스 project facets설정.
                 }
             }
         }
+    }
+}
+
+jar{
+	baseName ='varsql-app-'+appVersion
+}
+
+//web resource jar packaging
+task webResourceJar(type: Jar) {
+	baseName=webResourceConfig.name;
+    from(fileTree(webResourceConfig.staticFilesDir)) {
+        into webResourceConfig.baseDir
+    }
+}
+
+war{
+	// war name
+	baseName ='varsql'
+	
+	exclude 'webstatic' ,'WEB-INF/*'
+	
+	classpath = classpath - sourceSets.main.output
+	
+	from (jar) {
+		into 'WEB-INF/lib'
+	}
+	
+	from (webResourceJar) {
+		into 'WEB-INF/lib'
+	}
+	
+	doLast {
+		
+		println("war export path : " + archivePath.parent)
+		
+		//불필요한 파익 삭제. 
+		delete fileTree(archivePath.parent) {
+			include '*.jar'
+		}
     }
 }
