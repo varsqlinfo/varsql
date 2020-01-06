@@ -130,15 +130,18 @@ jar{
 task webResourceJar(type: Jar) {
 	baseName=webResourceConfig.name;
     from(fileTree(webResourceConfig.staticFilesDir)) {
+    	exclude '**/web.xml', 'META-INF'
         into webResourceConfig.baseDir
     }
 }
 
 war{
 	// war name
-	baseName ='varsql'
+	baseName ='vsql'
 	
 	exclude 'webstatic' ,'WEB-INF/*'
+	
+	webXml = file('src/main/webapp/WEB-INF/web.xml')
 	
 	classpath = classpath - sourceSets.main.output
 	
@@ -151,12 +154,14 @@ war{
 	}
 	
 	doLast {
-		
 		println("war export path : " + archivePath.parent)
-		
 		//불필요한 파익 삭제. 
-		delete fileTree(archivePath.parent) {
-			include '*.jar'
+		def fileDelFlag = true; 
+		if(fileDelFlag){
+			delete fileTree(archivePath.parent) {
+				include '*.jar'
+			}
 		}
+		
     }
 }
