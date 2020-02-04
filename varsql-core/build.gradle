@@ -43,7 +43,5 @@ jar{
 	}
 }
 
-war {
-    enabled = false;
-}
+
 

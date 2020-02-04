@@ -39,7 +39,7 @@ public final class SQLManager {
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
 	
 	private Map<String, SqlSessionFactory> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionFactory>();
-	private String resource = "com/varsql/core/db/mybatis/query/_conn-template.xml";
+	private String resource = "com/varsql/core/db/mybatis/query/mybatis.template";
 	
 	private String defaultConfigTemplate; 
 	private PropertyDescriptor[] propertyDescs = PropertyUtils.getPropertyDescriptors(ConnectionInfo.class);

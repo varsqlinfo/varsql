@@ -152,6 +152,9 @@ subprojects {
 }
 
 project(':varsql-core') {
+	war {
+	    enabled = false
+	}
 }
 
 project(':varsql-web') {
