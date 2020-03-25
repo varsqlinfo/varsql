@@ -19,7 +19,7 @@ eclipse { // 이클립스 project facets설정.
 	autoBuildTasks generateCode
 	
 	classpath {
-        defaultOutputDir = file("target")
+        defaultOutputDir = file("target-notused")
         file.whenMerged {
             entries.each { entry ->
                 if (entry.kind == 'src' && entry.hasProperty('output')) {

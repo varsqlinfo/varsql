@@ -51,6 +51,8 @@ public class JoinController extends AbstractController {
 	
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("111111111bbb");
+		System.out.println("111111111bbb");
 		return getModelAndView("/joinForm", VIEW_PAGE.JOIN);
 	}
 	

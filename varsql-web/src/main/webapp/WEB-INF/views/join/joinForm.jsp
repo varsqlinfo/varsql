@@ -135,7 +135,7 @@ var joinForm = {
 				    .validateField('uid'); 
 				},
 				error: function(xhr, status, e) {
-					GAINEP.log(status + " : " + e + xhr.responseText);
+					VARSQL.log(status + " : " + e + xhr.responseText);
 				}
 			});
 		});
@@ -253,7 +253,7 @@ var joinForm = {
 				document.f.submit();
 			},
 			error: function(xhr, status, e) {
-				GAINEP.log(status + " : " + e + xhr.responseText);
+				VARSQL.log(status + " : " + e + xhr.responseText);
 			}
 		});
 	}

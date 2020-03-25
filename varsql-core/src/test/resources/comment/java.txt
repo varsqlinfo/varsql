@@ -1,0 +1,56 @@
+package com.varsql.core.pattern.util;
+
+import com.varsql.core.pattern.converter.CompositeConverter;
+
+
+public class CommentRemoveUtil extends AbstractConvertUtil{
+	
+	/**
+	멀티라인 주석.
+	*/
+	
+	// <!-- html 멀티 주석.-->
+	static enum CommentType {
+		JAVA, JSP, JAVASCRIPT, CSS, HTML, XML, PROPERTY, SQL;
+	}
+
+	public String convert(String cont, CommentType type) {
+		return convert(cont, type, false);
+	}
+
+	public String convert(String cont, CommentType type, boolean emptyLineRemove) {
+		String result = "";
+		switch (type) {
+		case JAVA:
+			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			break;
+		case JSP:
+			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK, BLOCK_JSP, BLOCK_HTML);
+			break;
+		case JAVASCRIPT:
+			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			break;
+		case CSS:
+			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			break;
+		case HTML:
+			result = convert(cont, CommentType.XML, false);
+			result = convert(result, CommentType.JAVASCRIPT, false);
+		case XML:
+			result = transform(cont, BLOCK_HTML, ELEMENT_IGNORE_START, ELEMENT_IGNORE_END );
+			break;
+		case PROPERTY:
+			result = transform(cont, LINE_IGNORE_PROPERTY, LINE_PROPERTY);
+			break;
+		default: //test comment
+			break;
+		}
+		
+		if (emptyLineRemove) {
+			return StringRegularUtils.removeBlank(result); // blank line remove
+		}
+
+		return result;
+	}
+
+}

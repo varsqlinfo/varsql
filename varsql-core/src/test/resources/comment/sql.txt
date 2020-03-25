@@ -1,0 +1,22 @@
+SELECT
+			object_name(so.id) as "TABLE_NAME",
+			sc.name as "COLUMN_NAME",
+			st.name as "DATA_TYPE" ,   
+			sc.length as "CHAR_LENGTH" ,   
+			sc.length as "COLUMN_SIZE" ,   
+			sc.xscale as "DECIMAL_DIGITS" ,   
+			prop.value as "COMMENT"
+		FROM sysobjects so INNER JOIN syscolumns sc ON (so.id = sc.id and so.type='V')
+			INNER JOIN systypes st ON (sc.xusertype = st.xusertype)
+			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id        
+			AND prop.minor_id = sc.colid      
+			AND prop.class = 1
+			AND prop.name = 'MS_Description'	
+		WHERE 1 = 1
+		/*
+		 comment area ( #{commentAreaParam})
+		*/
+			and so.uid = SCHEMA_ID ( #{schema})
+			--so.name in (${item})
+			so.name in (${item1})
+		ORDER BY so.id, sc.colid
