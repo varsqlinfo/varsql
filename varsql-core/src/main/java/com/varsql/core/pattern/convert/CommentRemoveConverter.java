@@ -20,9 +20,7 @@ public class CommentRemoveConverter extends AbstractConverter {
 					} else if (reIdx < ignoreCharIdx) {
 						return reIdx;
 					} else {
-						if (val.charAt(ignoreCharIdx - 1) == '\\') {
-							return reIdx;
-						} else if (ignoreCharIdx + 2 < reIdx) {
+						if (ignoreCharIdx + 2 < reIdx) {
 							return reIdx;
 						}
 					}
@@ -51,9 +49,7 @@ public class CommentRemoveConverter extends AbstractConverter {
 					} else if (reIdx < ignoreCharIdx) {
 						return reIdx;
 					} else {
-						if (val.charAt(ignoreCharIdx - 1) == '\\') {
-							return reIdx;
-						} else if (ignoreCharIdx + 2 < reIdx) {
+						if (ignoreCharIdx + 2 < reIdx) {
 							return reIdx;
 						}
 					}
@@ -68,16 +64,15 @@ public class CommentRemoveConverter extends AbstractConverter {
 
 	final static TokenInfo REGULAR_EXPRESSION = new TokenInfo.Builder("/", new String[] { "/" },
 			(val) -> "/" + val + "/").setStartDelimiterFunction((val, idx, chars) -> {
-				if (chars[0] == '/') {
-					for (int i = idx - 1; i >= 0; i--) {
-						char c = val.charAt(i);
-						if (!Character.isSpaceChar(c)) {
-							if (Character.isDigit(c) || Character.isLetter(c)) {
-								return false;
-							} else {
-								if (c == '(' || c == '=' || c == '!' || c == '&') {
-									return true;
-								}
+				
+				for (int i = idx - 1; i >= 0; i--) {
+					char c = val.charAt(i);
+					if (!Character.isSpaceChar(c)) {
+						if (Character.isDigit(c) || Character.isLetter(c)) {
+							return false;
+						} else {
+							if (c == '(' || c == '=' || c == '!' || c == '&') {
+								return true;
 							}
 						}
 					}
