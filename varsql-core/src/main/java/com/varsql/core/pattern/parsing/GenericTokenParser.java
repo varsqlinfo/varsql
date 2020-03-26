@@ -44,18 +44,19 @@ public class GenericTokenParser implements TokenParser {
 	 */
 	@Override
 	public boolean isStartDelimiter(TokenInfo tokenInfo, String cont, int startIndex, char... chars) {
-		if (tokenInfo.getStartDelimiterFunction() == null) {
-			int charsLength = chars.length;
-			int startDelimiterLen = tokenInfo.getStartDelimiterLen();
-			if (startDelimiterLen == charsLength) {
-				return Arrays.equals(chars, tokenInfo.getStartDelimiterChars());
-			} else if (startDelimiterLen < charsLength) {
-				return Arrays.equals(Arrays.copyOf(chars, startDelimiterLen), tokenInfo.getStartDelimiterChars());
-			}
-		} else {
+		boolean startDelimiterCheck = false; 
+		int charsLength = chars.length;
+		int startDelimiterLen = tokenInfo.getStartDelimiterLen();
+		if (startDelimiterLen == charsLength) {
+			startDelimiterCheck = Arrays.equals(chars, tokenInfo.getStartDelimiterChars());
+		} else if (startDelimiterLen < charsLength) {
+			startDelimiterCheck = Arrays.equals(Arrays.copyOf(chars, startDelimiterLen), tokenInfo.getStartDelimiterChars());
+		}
+		
+		if (startDelimiterCheck && tokenInfo.getStartDelimiterFunction() != null) {
 			return tokenInfo.getStartDelimiterFunction().test(cont, startIndex, chars);
 		}
-		return false;
+		return startDelimiterCheck;
 	}
 
 	/**
