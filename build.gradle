@@ -9,6 +9,7 @@
 buildscript {
 	repositories {
 		mavenCentral()
+		jcenter()
 	}
 }
 
@@ -28,8 +29,8 @@ subprojects {
     apply plugin: 'war'
     
     repositories {
-    	flatDir{dirs rootProject.file( 'libs' )}
         jcenter()
+    	flatDir{dirs rootProject.file( 'libs' )}
     }
     
     def def_version = [
@@ -44,6 +45,8 @@ subprojects {
 		,jspApi : '2.1' 
 		,slf4j : '1.7.29'
 		,tiles : '3.0.7'
+		,junit : '5.4.2'
+		,junitPlatform : '1.4.0'
 	]
     
     sourceCompatibility = 1.8
@@ -64,7 +67,18 @@ subprojects {
 	}
 	
 	dependencies {
-		testImplementation 'junit:junit:5.4.2'
+		//junit
+		testImplementation(
+			 'org.junit.jupiter:junit-jupiter:5.4.2'
+		)
+		testRuntimeOnly(
+			[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
+			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-params' , version: def_version.junit ]
+			
+			,[ group: 'org.junit.platform' , name: 'junit-platform-launcher' , version: def_version.junitPlatform ]
+			,[ group: 'org.junit.platform' , name: 'junit-platform-runner' , version: def_version.junitPlatform ]
+		) 
+		
 		
 		implementation fileTree (dir: rootProject.file( 'libs' ), include:['*.jar'])
 		
@@ -146,6 +160,11 @@ subprojects {
 			[ group: 'com.h2database' , name: 'h2' , version: '1.4.199' ]
 		) 
 	}
+	
+	test {
+	    useJUnitPlatform()
+	}
+	
 	
 	// JAVA file compile charset
 	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
