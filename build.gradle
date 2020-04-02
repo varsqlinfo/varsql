@@ -45,8 +45,8 @@ subprojects {
 		,jspApi : '2.1' 
 		,slf4j : '1.7.29'
 		,tiles : '3.0.7'
-		,junit : '5.4.2'
-		,junitPlatform : '1.4.0'
+		,junit : '5.2.0'
+		,junitPlatform : '1.5.0'
 	]
     
     sourceCompatibility = 1.8
@@ -69,16 +69,14 @@ subprojects {
 	dependencies {
 		//junit
 		testImplementation(
-			 'org.junit.jupiter:junit-jupiter:5.4.2'
-		)
-		testRuntimeOnly(
-			[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
+			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter' , version: def_version.junit ]
+			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
 			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-params' , version: def_version.junit ]
+			,[ group: 'org.junit.vintage' , name: 'junit-vintage-engine' , version: def_version.junit ]
 			
 			,[ group: 'org.junit.platform' , name: 'junit-platform-launcher' , version: def_version.junitPlatform ]
 			,[ group: 'org.junit.platform' , name: 'junit-platform-runner' , version: def_version.junitPlatform ]
-		) 
-		
+		)
 		
 		implementation fileTree (dir: rootProject.file( 'libs' ), include:['*.jar'])
 		

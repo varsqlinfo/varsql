@@ -1,5 +1,5 @@
 arguments=
-auto.sync=true
+auto.sync=false
 build.scans.enabled=false
 connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(6.0.1))
 connection.project.dir=
@@ -9,5 +9,5 @@ java.home=
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=true
-show.console.view=true
-show.executions.view=true
+show.console.view=false
+show.executions.view=false

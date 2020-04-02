@@ -10,8 +10,11 @@ import com.varsql.core.pattern.parsing.GenericTokenParser;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.TokenParser;
 
+
 public abstract class AbstractConverter implements Converter {
 	TokenParser parser;
+	
+	final static String LINE_SEPARATOR = System.lineSeparator();
 
 	public AbstractConverter() {
 		this.parser = new GenericTokenParser();

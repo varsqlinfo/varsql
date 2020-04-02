@@ -1,9 +1,9 @@
 package com.varsql.core.pattern.convert;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 import com.varsql.core.pattern.convert.CommentRemoveConverter;
 import com.varsql.core.pattern.convert.CommentRemoveConverter.CommentType;
@@ -47,7 +47,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 		
 		viewResult(result, CommentRemoveConverter.CommentType.JAVASCRIPT);
 		
-		assertFalse(result+ "\n // multi line comment not remove", result.indexOf("/*") > -1);
+		assertFalse(result.indexOf("/*") > -1, result+ "\n // multi line comment not remove");
 	}
 	
 	@Test
