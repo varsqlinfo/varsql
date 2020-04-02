@@ -15,7 +15,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	CommentRemoveConverter.CommentType logViewType = null;//CommentRemoveUtil.CommentType.JAVASCRIPT;
 	@Test
 	public void testJAVA() {
-		String cont = getResourceContent("/comment/java.txt");
+		String cont = getResourceContent("/comment/program/java.txt");
 		
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		
@@ -29,7 +29,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testJSP() {
-		String cont = getResourceContent("/comment/jsp.txt");
+		String cont = getResourceContent("/comment/program/jsp.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.JSP);
 		
@@ -41,7 +41,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testJAVASCRIPT(){
-		String cont = getResourceContent("/comment/javascript.txt");
+		String cont = getResourceContent("/comment/program/javascript.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.JAVASCRIPT);
 		
@@ -52,7 +52,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testCSS(){
-		String cont = getResourceContent("/comment/css.txt");
+		String cont = getResourceContent("/comment/program/css.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.CSS);
 		
@@ -63,7 +63,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testHTML(){
-		String cont = getResourceContent("/comment/html.txt");
+		String cont = getResourceContent("/comment/program/html.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.HTML);
 		
@@ -74,7 +74,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testXML(){
-		String cont = getResourceContent("/comment/xml.txt");
+		String cont = getResourceContent("/comment/program/xml.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.XML);
 		
@@ -85,7 +85,7 @@ public class CommentRemoveUtilTest extends BaseTest{
 	
 	@Test
 	public void testPROPERTY(){
-		String cont = getResourceContent("/comment/property.txt");
+		String cont = getResourceContent("/comment/program/property.txt");
 		CommentRemoveConverter cru = new CommentRemoveConverter();
 		String result = cru.convert(cont, CommentRemoveConverter.CommentType.PROPERTY);
 		

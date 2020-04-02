@@ -72,7 +72,7 @@ public class GenericTokenParser implements TokenParser {
 	 * @return
 	 */
 	@Override
-	public int findEndDelimiterIndex(TokenInfo tokenInfo, String cont, int startIndex) {
+	public TokenIndexInfo findEndDelimiterIndex(TokenInfo tokenInfo, String cont, int startIndex) {
 		if (tokenInfo.getEndDelimiterFunction() != null) {
 			int idx = tokenInfo.getEndDelimiterFunction().findDelimiterIndex(cont, startIndex);
 
@@ -81,7 +81,7 @@ public class GenericTokenParser implements TokenParser {
 					throw new ConverterException(String.format("delimiter not valid start delimeter : %s ,lastidx %s",
 							tokenInfo.getStartDelimiter(), idx));
 				}
-				return idx;
+				return new TokenIndexInfo(idx, 0);
 			}
 		} else {
 			if (tokenInfo.isMultipleEndDelimiter()) {
@@ -93,7 +93,7 @@ public class GenericTokenParser implements TokenParser {
 							throw new ConverterException(
 									String.format("delimiter not valid start delimeter : %s , end delimiter %s", tokenInfo.getStartDelimiter(), str));
 						}
-						return idx + str.length() - 1;
+						return new TokenIndexInfo(idx, str.length());
 					}
 				}
 			} else {
@@ -104,12 +104,13 @@ public class GenericTokenParser implements TokenParser {
 						throw new ConverterException(
 								String.format("delimiter not valid start delimeter : %s , end delimiter %s", tokenInfo.getStartDelimiter(), tokenInfo.getEndDelimiter()[0]));
 					}
-					return idx + tokenInfo.getEndDelimiter()[0].length() - 1;
+					
+					return new TokenIndexInfo(idx, tokenInfo.getEndDelimiter()[0].length());
 				}
 			}
 		}
 
-		return -1;
+		return null;
 	}
 
 }

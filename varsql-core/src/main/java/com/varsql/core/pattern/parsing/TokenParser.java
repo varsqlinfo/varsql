@@ -5,5 +5,5 @@ public interface TokenParser {
 
 	public boolean isStartDelimiter(TokenInfo tokenInfo, String cont, int startIndex, char... val);
 
-	public int findEndDelimiterIndex(TokenInfo tokenInfo, String cont, int startIndex);
+	public TokenIndexInfo findEndDelimiterIndex(TokenInfo tokenInfo, String cont, int startIndex);
 }

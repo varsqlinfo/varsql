@@ -7,6 +7,7 @@ import java.util.Stack;
 import org.apache.poi.ss.formula.functions.T;
 
 import com.varsql.core.pattern.parsing.GenericTokenParser;
+import com.varsql.core.pattern.parsing.TokenIndexInfo;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.TokenParser;
 
@@ -73,10 +74,13 @@ public abstract class AbstractConverter implements Converter {
 
 			} else {
 				TokenInfo statePattern = states.peek();
-				int suffixIdx = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
+				TokenIndexInfo tokenDelimiterFindInfo = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
+
+				int suffixIdx = tokenDelimiterFindInfo == null ? -1 : tokenDelimiterFindInfo.getIdx();
 
 				if (suffixIdx > -1) {
-					index = suffixIdx;
+					index = suffixIdx + tokenDelimiterFindInfo.getDelimiterLength() - (tokenDelimiterFindInfo.getDelimiterLength() > 0 ? 1 : 0);
+
 					try {
 						dest.append(getHandlerValue(handler, statePattern, cont.substring(startIdx, suffixIdx)));
 					} catch (Exception e) {
@@ -88,6 +92,7 @@ public abstract class AbstractConverter implements Converter {
 					dest.append(cont.substring(startIdx - statePattern.getStartDelimiterLen(), startIdx));
 					states.pop();
 				}
+
 			}
 		}
 		return dest.toString();
@@ -152,10 +157,13 @@ public abstract class AbstractConverter implements Converter {
 			} else {
 				TokenInfo statePattern = states.peek();
 
-				int suffixIdx = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
+				TokenIndexInfo tokenDelimiterFindInfo = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
+
+				int suffixIdx = tokenDelimiterFindInfo == null ? -1 : tokenDelimiterFindInfo.getIdx();
 
 				if (suffixIdx > -1) {
-					index = suffixIdx;
+					index = suffixIdx + tokenDelimiterFindInfo.getDelimiterLength()	- (tokenDelimiterFindInfo.getDelimiterLength() > 0 ? 1 : 0);
+
 					if (statePattern.isValueReturn()) {
 						result.add(getHandlerValue(handler, statePattern, cont.substring(startIdx, suffixIdx)));
 					}
@@ -163,6 +171,7 @@ public abstract class AbstractConverter implements Converter {
 				} else {
 					states.pop();
 				}
+
 			}
 		}
 		return result;
