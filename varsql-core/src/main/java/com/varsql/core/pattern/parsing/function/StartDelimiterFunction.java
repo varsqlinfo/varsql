@@ -1,16 +1,14 @@
 package com.varsql.core.pattern.parsing.function;
 
 /**
- * 
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: DelimiterFunction.java
-* @DESC		: delimiter check function 
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: StartDelimiterFunction.java
+* @desc		: start token check 
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
-* 2020. 3. 16. 			ytkim			최초작성
+*2020. 4. 3. 			ytkim			최초작성
 
 *-----------------------------------------------------------------------------
  */

@@ -1,4 +1,4 @@
-package com.varsql.core.sql.util;
+package com.varsql.core.pattern;
 
 /**
  * 

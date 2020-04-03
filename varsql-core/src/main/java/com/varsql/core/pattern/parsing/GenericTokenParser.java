@@ -5,16 +5,14 @@ import java.util.Arrays;
 import com.varsql.core.pattern.convert.ConverterException;
 
 /**
- * 
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: GenericTokenParser.java
-* @DESC		: Generic Token Parser 
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: GenericTokenParser.java
+* @desc		: Generic Token Parser  
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
-* 2020. 3. 24. 			ytkim			최초작성
+*2020. 4. 3. 			ytkim			최초작성
 
 *-----------------------------------------------------------------------------
  */

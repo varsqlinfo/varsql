@@ -4,14 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import com.varsql.core.pattern.parsing.GenericTokenParser;
 import com.varsql.core.pattern.parsing.TokenIndexInfo;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.TokenParser;
 
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: AbstractConverter.java
+* @desc		: 변환기  
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 3. 			ytkim			최초작성
 
+*-----------------------------------------------------------------------------
+ */
 public abstract class AbstractConverter implements Converter {
 	TokenParser parser;
 	
@@ -109,12 +118,12 @@ public abstract class AbstractConverter implements Converter {
 	}
 
 	@Override
-	public List<T> tokenData(String cont, TokenInfo... tokens) {
+	public <T> List<T> tokenData(String cont, TokenInfo... tokens) {
 		return tokenData(cont, null, tokens);
 	}
 
 	@Override
-	public List<T> tokenData(String cont, TokenHandler handler, TokenInfo... tokens) {
+	public <T> List<T> tokenData(String cont, TokenHandler handler, TokenInfo... tokens) {
 		cont = cont + System.lineSeparator();
 
 		final Stack<TokenInfo> states = new Stack<>();

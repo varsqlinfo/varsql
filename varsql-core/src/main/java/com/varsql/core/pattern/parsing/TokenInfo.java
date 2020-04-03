@@ -4,6 +4,18 @@ import com.varsql.core.pattern.parsing.function.ConvertFunction;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
 import com.varsql.core.pattern.parsing.function.StartDelimiterFunction;
 
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: TokenInfo.java
+* @desc		: 토큰 정보.  
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 3. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 public class TokenInfo {
 	private String startDelimiter;
 	private char[] startDelimiterChars;

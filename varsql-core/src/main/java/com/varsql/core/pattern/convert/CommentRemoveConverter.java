@@ -1,10 +1,23 @@
 package com.varsql.core.pattern.convert;
 
+import static com.varsql.core.pattern.StringRegularUtils.regExpSpecialCharactersCheck;
+
+import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
-import com.varsql.core.sql.util.StringRegularUtils;
-import static com.varsql.core.sql.util.StringRegularUtils.regExpSpecialCharactersCheck;
 
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: CommentRemoveConverter.java
+* @desc		: 프로그램(java, jsp, javascript, css, html, xml, property) 코멘트 지우기 
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 3. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 public class CommentRemoveConverter extends AbstractConverter {
 	// comment type
 	static enum CommentType {
@@ -28,7 +41,7 @@ public class CommentRemoveConverter extends AbstractConverter {
 
 			for (int i = idx - 1; i >= 0; i--) {
 				char c = val.charAt(i);
-				if (!Character.isSpaceChar(c)) { // ???? ??? ?? ?? ???? ??? ???? ??.
+				if (!Character.isSpaceChar(c)) { // 공백은 제외 하고 체크. 
 					return ":(=!&[|,?~><^+".indexOf(c) > -1 ? true : false;
 				}
 			}
@@ -101,7 +114,7 @@ public class CommentRemoveConverter extends AbstractConverter {
 	public String convert(String cont, CommentType type) {
 		return convert(cont, type, true);
 	}
-
+	
 	public String convert(String cont, CommentType type, boolean emptyLineRemove) {
 		String result = "";
 		switch (type) {

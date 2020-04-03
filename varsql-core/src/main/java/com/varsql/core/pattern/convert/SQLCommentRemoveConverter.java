@@ -1,13 +1,25 @@
 package com.varsql.core.pattern.convert;
 
-import static com.varsql.core.sql.util.StringRegularUtils.regExpSpecialCharactersCheck;
+import static com.varsql.core.pattern.StringRegularUtils.regExpSpecialCharactersCheck;
 
 import com.varsql.core.db.DBType;
+import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
-import com.varsql.core.sql.util.StringRegularUtils;
 
-public class SQLCommentRemoveConvert extends AbstractConverter {
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: SQLCommentRemoveConverter.java
+* @desc		: sql 코렌트 지우기 
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 3. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
+public class SQLCommentRemoveConverter extends AbstractConverter {
 	final static TokenInfo SINGLEQUOTE = new TokenInfo.Builder("'", new String[] { "'" }, (val) -> "'" + val + "'")
 			.setEndDelimiterFunction((val, idx) -> {
 				return regExpSpecialCharactersCheck('\'', val, idx);

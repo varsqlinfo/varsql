@@ -16,7 +16,7 @@ public class SQLCommentRemoveConvertTest extends BaseTest{
 	public void testORACLE() {
 		String cont = getResourceContent("/comment/sql/oracle.txt");
 		
-		SQLCommentRemoveConvert cru = new SQLCommentRemoveConvert();
+		SQLCommentRemoveConverter cru = new SQLCommentRemoveConverter();
 		
 		String result = cru.convert(cont, DBType.ORACLE);
 		viewResult(result, DBType.ORACLE);
@@ -29,7 +29,7 @@ public class SQLCommentRemoveConvertTest extends BaseTest{
 	@Test
 	public void testMYSQL() {
 		String cont = getResourceContent("/comment/sql/mysql.txt");
-		SQLCommentRemoveConvert cru = new SQLCommentRemoveConvert();
+		SQLCommentRemoveConverter cru = new SQLCommentRemoveConverter();
 		String result = cru.convert(cont, DBType.MYSQL);
 		
 		viewResult(result, DBType.MYSQL);
@@ -41,7 +41,7 @@ public class SQLCommentRemoveConvertTest extends BaseTest{
 	@Test
 	public void testMARIADB() {
 		String cont = getResourceContent("/comment/sql/mariadb.txt");
-		SQLCommentRemoveConvert cru = new SQLCommentRemoveConvert();
+		SQLCommentRemoveConverter cru = new SQLCommentRemoveConverter();
 		String result = cru.convert(cont, DBType.MARIADB);
 		
 		viewResult(result, DBType.MARIADB);
@@ -54,7 +54,7 @@ public class SQLCommentRemoveConvertTest extends BaseTest{
 	@Test
 	public void testMSSQL(){
 		String cont = getResourceContent("/comment/sql/mssql.txt");
-		SQLCommentRemoveConvert cru = new SQLCommentRemoveConvert();
+		SQLCommentRemoveConverter cru = new SQLCommentRemoveConverter();
 		String result = cru.convert(cont, DBType.MSSQL);
 		
 		viewResult(result, DBType.MSSQL);
@@ -66,7 +66,7 @@ public class SQLCommentRemoveConvertTest extends BaseTest{
 	@Test
 	public void testPOSTGRESQL(){
 		String cont = getResourceContent("/comment/sql/postgresql.txt");
-		SQLCommentRemoveConvert cru = new SQLCommentRemoveConvert();
+		SQLCommentRemoveConverter cru = new SQLCommentRemoveConverter();
 		String result = cru.convert(cont, DBType.POSTGRESQL);
 		
 		viewResult(result, DBType.POSTGRESQL);

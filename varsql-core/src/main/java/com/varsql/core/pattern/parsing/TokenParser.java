@@ -1,4 +1,17 @@
 package com.varsql.core.pattern.parsing;
+
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: TokenParser.java
+* @desc		: 
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 3. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
 public interface TokenParser {
 
 	public String perform(TokenInfo tokenInfo,String val);

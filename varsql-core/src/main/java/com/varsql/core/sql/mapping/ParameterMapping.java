@@ -2,7 +2,7 @@ package com.varsql.core.sql.mapping;
 
 import org.apache.ibatis.type.JdbcType;
 
-import com.varsql.core.sql.util.StringRegularUtils;
+import com.varsql.core.pattern.StringRegularUtils;
 
 public class ParameterMapping {
 	private String property;
