@@ -2,9 +2,9 @@ package com.varsql.core.db.ddl.script;
 
 import java.util.List;
 
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.ddl.DDLCreateOption;
-import com.varsql.core.db.beans.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
+import com.varsql.core.db.valueobject.ddl.DDLInfo;
 
 
 public interface DDLScript{

@@ -8,11 +8,11 @@ import java.util.Map;
 import org.apache.poi.hssf.util.HSSFColor;
 
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.beans.ColumnInfo;
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.TableInfo;
 import com.varsql.core.db.report.VarsqlReportConfig;
-import com.varsql.core.db.serviceobject.ObjectType;
+import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.TableInfo;
 import com.vartech.common.excel.ExcelHeaderVO;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.excel.ExcelReportVO;

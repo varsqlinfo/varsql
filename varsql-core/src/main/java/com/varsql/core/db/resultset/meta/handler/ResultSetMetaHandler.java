@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
-import com.varsql.core.db.beans.ColumnInfo;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
+import com.varsql.core.db.valueobject.ColumnInfo;
 
 public interface ResultSetMetaHandler{
 	public ColumnInfo getColumnInfo(ResultSet rs, DataTypeImpl dataTypeImpl) throws SQLException;

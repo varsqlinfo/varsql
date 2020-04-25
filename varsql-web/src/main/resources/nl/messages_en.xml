@@ -41,14 +41,14 @@
 <entry key="screen.admin">Admin</entry>
 
 <!-- admin menu -->
-<entry key="admin.menu.database">Databse 관리</entry>
-<entry key="admin.menu.databaseoptmgmt">Databse 옵션 관리</entry>
+<entry key="admin.menu.database">Database 관리</entry>
+<entry key="admin.menu.databaseoptmgmt">Database 옵션 관리</entry>
 <entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
 <entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
 
-									
+
 <!-- manage menu -->
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
 <entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
@@ -164,7 +164,7 @@
 <entry key="admin.userlist.search.head">사용자 검색</entry>
 <entry key="admin.managerlist.head">관리자 목록</entry>
 
-<entry key="admin.managerlist.dbuser">데이타 베이스 관리 매니저</entry>
+<entry key="admin.managerlist.dbuser">매니저 </entry>
 
 <entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
 

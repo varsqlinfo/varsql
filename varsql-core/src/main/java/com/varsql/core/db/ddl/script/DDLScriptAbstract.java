@@ -1,6 +1,6 @@
 package com.varsql.core.db.ddl.script;
 
-import com.varsql.core.db.beans.DataTypeInfo;
+import com.varsql.core.db.valueobject.DataTypeInfo;
 
 /**
  * 

@@ -14,18 +14,18 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.auth.Authority;
+import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.IndexInfo;
-import com.varsql.core.db.beans.ObjectColumnInfo;
-import com.varsql.core.db.beans.ObjectInfo;
-import com.varsql.core.db.beans.ServiceObject;
-import com.varsql.core.db.beans.TableInfo;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.serviceobject.ObjectType;
+import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.IndexInfo;
+import com.varsql.core.db.valueobject.ObjectColumnInfo;
+import com.varsql.core.db.valueobject.ObjectInfo;
+import com.varsql.core.db.valueobject.ServiceObject;
+import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.sql.util.SQLUtil;
 import com.vartech.common.utils.VartechReflectionUtils;
 

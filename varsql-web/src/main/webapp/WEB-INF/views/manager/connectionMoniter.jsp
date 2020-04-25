@@ -8,17 +8,17 @@ $(document).ready(function (){
 var sqlLogStat ={
 	init:function (){
 		VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
-		var _self = this; 
+		var _self = this;
 		_self.dblist();
 		_self.initEvt();
 		_self.initChart();
 	}
 	,initChart : function (){
-		var _self = this; 
-		
-		// main chart; 
+		var _self = this;
+
+		// main chart;
 		VARSQL.pluginUI.chart.bar("#sqlDateChart", {
-			
+
 			axis : [{
 		        x : {
 		            type : "block",
@@ -47,7 +47,7 @@ var sqlLogStat ={
 		    }
 			,widget : [{
 		        type : "tooltip"
-		    }, 
+		    },
 			{
 		        type : "title",
 		        text : "COUNT",
@@ -56,13 +56,13 @@ var sqlLogStat ={
 		        dx : -120,
 		        dy : -10
 		    }
-			
+
 			]
 		});
-		
-		// 상세차트. 
+
+		// 상세차트.
 		VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-			
+
 			axis : [{
 		        x : {
 		            type : "block",
@@ -93,19 +93,19 @@ var sqlLogStat ={
 			,widget : [
 				{ type : "title", text : "Query 구문별" },
 		        { type : "tooltip", orient: "center" },
-			
+
 			]
 		});
-		
-		
+
+
 	}
 	,initEvt:function (){
-		var _self = this; 
-		
+		var _self = this;
+
 		$('.btnSearch').on('click',function (){
 			_self.dbStatsInfo('#dbinfolist');
 		});
-		
+
 		$('#sdt').datepicker({
 			orientation: "top auto"
 			,format: "yyyy-mm-dd"
@@ -113,7 +113,7 @@ var sqlLogStat ={
 		}).on('changeDate', function(e){
 			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number($('#searchGubun').val()));
 	    });
-		
+
 		$('#edt').datepicker({
 			orientation: "top auto"
 			,format: "yyyy-mm-dd"
@@ -121,35 +121,35 @@ var sqlLogStat ={
 		}).on('changeDate', function(e){
 			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+$('#searchGubun').val()));
 	    });
-		
+
 		// 주별 등 change
 		$('#searchGubun').on('change',function (){
 			VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+$('#searchGubun').val()));
 		});
 	}
 	,dblist:function (no){
-		var _self = this; 
+		var _self = this;
 		var param = {
 			page:no?no:1
 		};
-		
+
 		VARSQL.req.ajax({
 			data:param
 			,url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
 			,success:function (resData){
-					
+
 				var result = resData.items;
 	    		var resultLen = result.length;
-	    		
+
 	    		var strHtm = [];
-	    		var item; 
+	    		var item;
 	    		for(var i = 0 ;i < resultLen; i ++){
 	    			item = result[i];
 	    			strHtm.push('<option value="'+item.VCONNID+'">'+item.VNAME+ '</option>');
 	    		}
-	    		
+
 	    		$('#dbinfolist').html(strHtm.join(''));
-	    		
+
 	    		$('#dbinfolist').on('change',function (){
 	    			_self.dbStatsInfo(this);
 	    		})
@@ -158,10 +158,10 @@ var sqlLogStat ={
 		});
 	}
 	,dbStatsInfo:function (sObj){
-		var _self = this; 
+		var _self = this;
 		sObj=$(sObj);
 		$('#vconnid').val(sObj.val());
-		
+
 		VARSQL.req.ajax({
 			type:'POST'
 			,data:{
@@ -172,14 +172,14 @@ var sqlLogStat ={
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
 			,dataType:'JSON'
 			,success:function (response){
-				var items = response.items ||[]; 
-				
+				var items = response.items ||[];
+
 				VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 					axis : [{
 				        data :items
 				    }]
 				});
-				
+
 				if(items.length > 0){
 					_self.dateDetailStats(items[items.length-1].VIEW_DATE);
 				}else{
@@ -189,7 +189,7 @@ var sqlLogStat ={
 		});
 	}
 	,dateDetailStats:function (sObj){
-		var _self = this; 
+		var _self = this;
 		if(sObj==''){
 			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
 				axis : [{
@@ -197,7 +197,7 @@ var sqlLogStat ={
 			    }]
 			});
 			_self.sqlUserRank('');
-			return ; 
+			return ;
 		}
 		$('#detailDate').val(sObj);
 		VARSQL.req.ajax({
@@ -208,8 +208,8 @@ var sqlLogStat ={
 			}
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
 			,success:function (response){
-				var items = response.items ||[]; 
-				
+				var items = response.items ||[];
+
 				if(items.length > 0){
 					VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
 						axis : [{
@@ -220,8 +220,8 @@ var sqlLogStat ={
 				}else{
 					_self.sqlUserRank('');
 				}
-				
-				return ; 
+
+				return ;
 			}
 		});
 	}
@@ -232,9 +232,9 @@ var sqlLogStat ={
 			        data :[]
 			    }]
 			});
-			return ; 
+			return ;
 		}
-		var date = $('#detailDate').val(); 
+		var date = $('#detailDate').val();
 		VARSQL.req.ajax({
 			data:{
 				vconnid:$('#vconnid').val()
@@ -244,10 +244,10 @@ var sqlLogStat ={
 			}
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
 			,success:function (response){
-				var names = {}; 
-				
+				var names = {};
+
 				var chartData = [];
-				
+
 				var items = response.result;
 				var aaa = {};
 				$.each(items , function (idx , item){
@@ -255,8 +255,8 @@ var sqlLogStat ={
 					aaa[item.LABEL] =  item.DATA;
 				});
 				chartData.push(aaa);
-				
-				// 상세차트. 
+
+				// 상세차트.
 				VARSQL.pluginUI.chart.pie("#sqlUserRankChart", {
 				    axis : {
 				        data : chartData
@@ -280,7 +280,7 @@ var sqlLogStat ={
 				        }
 				    ]
 				});
-				
+
 			}
 		});
 	}
@@ -334,7 +334,7 @@ var sqlLogStat ={
 							 </div>
 					    </div>
 					</div>
-			    	
+
 			    </div>
 			</div>
 			<!-- /.panel-heading -->

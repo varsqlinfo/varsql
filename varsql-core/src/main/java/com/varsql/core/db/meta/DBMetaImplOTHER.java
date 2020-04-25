@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.TableInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.TableInfo;
 
 /**
  * 

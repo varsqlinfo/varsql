@@ -1,7 +1,7 @@
 package com.varsql.core.db.util;
 
-import com.varsql.core.db.beans.ColumnInfo;
-import com.varsql.core.db.beans.DataTypeInfo;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.DataTypeInfo;
 
 /**
  * 

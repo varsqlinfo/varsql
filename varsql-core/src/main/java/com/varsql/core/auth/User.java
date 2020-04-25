@@ -9,13 +9,13 @@ import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.varsql.core.db.beans.DatabaseInfo;
+import com.varsql.core.db.valueobject.DatabaseInfo;
 
 /**
- * 
- * @FileName  : User.java
+ *
+ * @FileName  : VarsqlUser.java
  * @프로그램 설명 : login user info
- * @Date      : 2017. 3. 20. 
+ * @Date      : 2017. 3. 20.
  * @작성자      : ytkim
  * @변경이력 :
  */
@@ -23,7 +23,7 @@ public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	private String loginUUID;
-	private String uid;
+	private String viewid;
 	private String username;
 	private String password;
 	private String email;
@@ -35,20 +35,21 @@ public class User implements UserDetails {
 	private String block_yn;
 
 	/* Spring Security fields*/
-	private List<Role> authorities;
-	private Authority topAuthority;
+	private List<Authority> authorities;
+	private AuthorityType topAuthority;
 	private boolean accountNonExpired = true;
 	private boolean accountNonLocked = true;
 	private boolean credentialsNonExpired = true;
 	private boolean enabled = true;
 	private Map<String,DatabaseInfo> databaseInfo = new HashMap<String,DatabaseInfo>();
-	
-	public String getUid() {
-		return uid;
+
+
+	public String getViewid() {
+		return viewid;
 	}
 
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setViewid(String viewid) {
+		this.viewid = viewid;
 	}
 
 	public String getUsername() {
@@ -58,7 +59,7 @@ public class User implements UserDetails {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -74,7 +75,7 @@ public class User implements UserDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String getOrg_nm() {
 		return org_nm;
 	}
@@ -99,43 +100,42 @@ public class User implements UserDetails {
 		this.fullname = fullname;
 	}
 
-	
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.authorities;
 	}
-	
-	public void setAuthorities(List<Role> authorities) {
+
+	public void setAuthorities(List<Authority> authorities) {
 		this.authorities = authorities;
 	}
 
-	
+
 	public boolean isAccountNonExpired() {
 		return this.accountNonExpired;
 	}
-	
+
 	public void setAccountNonExpired(boolean accountNonExpired) {
 		this.accountNonExpired = accountNonExpired;
 	}
 
-	
+
 	public boolean isAccountNonLocked() {
 		return this.accountNonLocked;
 	}
-	
+
 	public void setAccountNonLocked(boolean accountNonLocked) {
 		this.accountNonLocked = accountNonLocked;
 	}
 
-	
+
 	public boolean isCredentialsNonExpired() {
 		return this.credentialsNonExpired;
 	}
-	
+
 	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
 		this.credentialsNonExpired = credentialsNonExpired;
 	}
 
-	
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -143,7 +143,7 @@ public class User implements UserDetails {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
 	public String getAccept_yn() {
 		return accept_yn;
 	}
@@ -151,7 +151,7 @@ public class User implements UserDetails {
 	public void setAccept_yn(String accept_yn) {
 		this.accept_yn = accept_yn;
 	}
-	
+
 	public Map<String,DatabaseInfo> getDatabaseInfo() {
 		return databaseInfo;
 	}
@@ -159,15 +159,39 @@ public class User implements UserDetails {
 	public void setDatabaseInfo(Map<String,DatabaseInfo> databaseInfo) {
 		this.databaseInfo = databaseInfo;
 	}
-	
-	public Authority getTopAuthority() {
+
+	public AuthorityType getTopAuthority() {
 		return topAuthority;
 	}
 
-	public void setTopAuthority(Authority topAuthority) {
+	public void setTopAuthority(AuthorityType topAuthority) {
 		this.topAuthority = topAuthority;
 	}
-	
+
+	public String getBlock_yn() {
+		return block_yn;
+	}
+
+	public void setBlock_yn(String block_yn) {
+		this.block_yn = block_yn;
+	}
+
+	public String getLoginUUID() {
+		return loginUUID;
+	}
+
+	public void setLoginUUID(String loginUUID) {
+		this.loginUUID = loginUUID;
+	}
+
+	public Locale getUserLocale() {
+		return userLocale;
+	}
+
+	public void setUserLocale(Locale userLocale) {
+		this.userLocale = userLocale;
+	}
+
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("User [id=");
@@ -196,29 +220,5 @@ public class User implements UserDetails {
 		builder.append(userLocale);
 		builder.append("]");
 		return builder.toString();
-	}
-
-	public String getBlock_yn() {
-		return block_yn;
-	}
-
-	public void setBlock_yn(String block_yn) {
-		this.block_yn = block_yn;
-	}
-
-	public String getLoginUUID() {
-		return loginUUID;
-	}
-
-	public void setLoginUUID(String loginUUID) {
-		this.loginUUID = loginUUID;
-	}
-
-	public Locale getUserLocale() {
-		return userLocale;
-	}
-
-	public void setUserLocale(Locale userLocale) {
-		this.userLocale = userLocale;
 	}
 }

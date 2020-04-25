@@ -10,7 +10,7 @@
 <entry key="screen.admin">관리자</entry>
 
 <!-- admin menu -->
-<entry key="admin.menu.database">Databse</entry>
+<entry key="admin.menu.database">Database</entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
 

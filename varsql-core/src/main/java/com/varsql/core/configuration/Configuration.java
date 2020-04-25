@@ -183,9 +183,6 @@ public class Configuration extends AbstractConfiguration{
 		vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
 		
 		logger.info("varsql Connection Info : {}" , vConInfo);
-		
-		// varsql  pool 생성.
-		ConnectionFactory.getInstance().createPool(vConInfo);
 	}
 	
 	/**
@@ -266,7 +263,7 @@ public class Configuration extends AbstractConfiguration{
 	}
 
 	public String getConnectionFile() {
-		return props.getProperty(Constants.CONFIG_DEFAULT_KEY);
+		return props.getProperty(Constants.DB_CONFIG_FILE);
 	}
 
 	public ConnectionInfo getVarsqlDB(){

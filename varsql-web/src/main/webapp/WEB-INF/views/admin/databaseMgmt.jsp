@@ -36,17 +36,14 @@
 				<div class="list-group" id="dbinfolist">
 					<template v-for="(item,index) in gridData">
 						<div class="list-group-item">
-							<a href="javascript:;" @click="itemView(item,'view')">
-								<span class="clickItem" >{{item.VNAME}}</span>
+							<a href="javascript:;" @click="itemView(item)">
+								<span class="clickItem" >{{item.vname}}</span>
 							</a>
-							<a href="javascript:;" @click="itemView(item,'opt')" style="float:right;">
-			    				<span class="clickItem pull-right glyphicon glyphicon-pencil" style="width:60px;">옵션</span>
-			    			</a>
 		    			</div>
 	    			</template>
 	    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
 				</div>
-				
+
 				<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 			</div>
 			<!-- /.panel-body -->
@@ -56,36 +53,48 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin-left:10px;font-weight:bold;">{{detailItem.VNAME}}</span></div>
+			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin-left:10px;font-weight:bold;">{{detailItem.vname}}</span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="view-area" :class="viewMode=='view'?'on':''">
-					<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
-						<div class="form-group">
-							<div class="col-sm-12">
-								<div class="pull-right">
-									<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
-									<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
-									<button type="button" class="btn btn-default" @click="save('poolInit')" :class="detailFlag===false?'hidden':''"><spring:message code="btn.save.andpoolnit"/></button>
-									<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
-									<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
-								</div>
-							</div>
+				<div class="form-group" style="height: 34px;margin-bottom:10px;">
+					<div class="col-sm-12">
+						<div class="pull-right">
+							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
+							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
+							<button type="button" class="btn btn-default" @click="save('poolInit')" :class="detailFlag===false?'hidden':''"><spring:message code="btn.save.andpoolnit"/></button>
+							<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
+							<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
 						</div>
-						<div id="warningMsgDiv"></div>
+					</div>
+				</div>
+
+				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
+					<div id="warningMsgDiv"></div>
+					<ul class="nav nav-tabs" style="margin-bottom:10px;margin-top:10px;">
+		              <li class="nav-item" :class="viewMode=='view'?'active':''" @click="itemViewMode('view')">
+		                <a class="nav-link" data-toggle="tab"><spring:message code="basic.information"/></a>
+		              </li>
+						<template v-if="detailFlag===true">
+							<li class="nav-item" :class="viewMode=='opt'?'active':''" @click="itemViewMode('opt')">
+			                 <a class="nav-link" data-toggle="tab"><spring:message code="options"/></a>
+			                </li>
+		    			</template>
+		            </ul>
+
+					<div class="view-area" data-view-mode="view" :class="viewMode=='view'?'on':''">
 						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
 							<div class="col-sm-8">
-								<input type="text" v-model="detailItem.VNAME" v-validate="'required'" name="NAME" class="form-control" />
+								<input type="text" v-model="detailItem.vname" v-validate="'required'" name="NAME" class="form-control" />
 								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
 							<div class="col-sm-8">
-								<select class="form-control text required" v-model="detailItem.VTYPE" @change="dbDriverLoad(detailItem.VTYPE)">
+								<select class="form-control text required" v-model="detailItem.vtype" @change="dbDriverLoad(detailItem.vtype)">
 									<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
-										<option value="${tmpInfo.URLPREFIX}" i18n="${tmpInfo.LANGKEY}">${tmpInfo.NAME}</option>
+										<option value="${tmpInfo.urlprefix}" i18n="${tmpInfo.langkey}">${tmpInfo.name}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -93,21 +102,21 @@
 						<div class="form-group">
 							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
-								<input type="checkbox" v-model="detailItem.URL_DIRECT_YN" true-value="Y" false-value="N" /><spring:message code="admin.form.db.urldirectmsg" />
+								<input type="checkbox" v-model="detailItem.urlDirectYn" true-value="Y" false-value="N" /><spring:message code="admin.form.db.urldirectmsg" />
 							</div>
 						</div>
-						<div v-if="detailItem.URL_DIRECT_YN!='Y'">
+						<div v-if="detailItem.urlDirectYn != 'Y'">
 							<div class="form-group" :class="errors.has('SERVERIP') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.serverip" /></label>
 								<div class="col-sm-8">
-									<input type="text" v-model="detailItem.VSERVERIP" v-validate="'required'" name="SERVERIP" class="form-control" />
+									<input type="text" v-model="detailItem.vserverip" v-validate="'required'" name="SERVERIP" class="form-control" />
 									<div v-if="errors.has('SERVERIP')" class="help-block">{{ errors.first('SERVERIP') }}</div>
 								</div>
 							</div>
 							<div class="form-group" :class="errors.has('PORT') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.port" /></label>
 								<div class="col-sm-8">
-									<input type="number" v-model="detailItem.VPORT" name="PORT" class="form-control" />
+									<input type="number" v-model="detailItem.vport" name="PORT" class="form-control" />
 									<div v-if="errors.has('PORT')" class="help-block">{{ errors.first('PORT') }}</div>
 								</div>
 							</div>
@@ -116,31 +125,31 @@
 							<div class="form-group" :class="errors.has('URL') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vurl" /></label>
 								<div class="col-sm-8">
-									<input type="text" v-model="detailItem.VURL" v-validate="'required'" name="URL" class="form-control" />
+									<input type="text" v-model="detailItem.vurl" v-validate="'required'" name="URL" class="form-control" />
 									<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
 							<div class="col-sm-8">
-								<input type="text" v-model="detailItem.VDATABASENAME" v-validate="'required'" name="DBNAME" class="form-control" />
+								<input type="text" v-model="detailItem.vdatabasename" v-validate="'required'" name="DBNAME" class="form-control" />
 								<div v-if="errors.has('DBNAME')" class="help-block">{{ errors.first('DBNAME') }}</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="false" v-model="detailItem.VID">
+								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="false" v-model="detailItem.vid">
 							</div>
 						</div>
-						
+
 						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
-								<input v-model="detailItem.VPW" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="false" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
+								<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="false" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
 								<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 							    <div class="help-block" v-if="errors.has('password')">
 							      {{ errors.first('password') }}
@@ -150,102 +159,89 @@
 							    </div>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
 							<div class="col-sm-8">
-								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.VDRIVER">
+								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.vdriver">
 									<template href="javascript:;" class="list-group-item" v-for="(item,index) in driverList">
-										<option :value="item.DRIVER_ID" :data-driver="item.DBDRIVER" selected="{{detailItem.VDRIVER==item.DRIVER_ID?true:(detailItem.VDRIVER==''&& index==0?true:false)}}">{{item.DRIVER_DESC}}({{item.DBDRIVER}})</option>
+										<option :value="item.driverId" :data-driver="item.dbdriver" selected="{{detailItem.vdriver==item.driverId?true:(detailItem.vdriver==''&& index==0?true:false)}}">{{item.driverDesc}}({{item.dbdriver}})</option>
 					    			</template>
 								</select>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.useyn" /></label>
 							<div class="col-sm-8">
-								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.USE_YN" checked>Y</label>
-								<label><input type="radio" name="useyn" value="N" v-model="detailItem.USE_YN" >N</label>
+								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.useYn" checked>Y</label>
+								<label><input type="radio" name="useyn" value="N" v-model="detailItem.useYn" >N</label>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.lazyloadyn" /></label>
 							<div class="col-sm-8">
-								<label><input type="radio" name="lazyloadyn" value="Y" v-model="detailItem.LAZYLOAD_YN" checked>Y</label>
-								<label><input type="radio" name="lazyloadyn" value="N" v-model="detailItem.LAZYLOAD_YN" >N</label>
+								<label><input type="radio" name="lazyloadyn" value="Y" v-model="detailItem.lazyloadYn" checked>Y</label>
+								<label><input type="radio" name="lazyloadyn" value="N" v-model="detailItem.lazyloadYn" >N</label>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.basetableyn" /></label>
 							<div class="col-sm-8">
-								<label><input type="radio" name="basetableyn" value="Y" v-model="detailItem.BASETABLE_YN" checked>Y</label>
-								<label><input type="radio" name="basetableyn" value="N" v-model="detailItem.BASETABLE_YN" >N</label>
+								<label><input type="radio" name="basetableyn" value="Y" v-model="detailItem.basetableYn" checked>Y</label>
+								<label><input type="radio" name="basetableyn" value="N" v-model="detailItem.basetableYn" >N</label>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.schemaviewyn" /></label>
 							<div class="col-sm-8">
-								<label><input type="radio" name="schemaviewyn" value="Y" v-model="detailItem.SCHEMA_VIEW_YN" checked>Y</label>
-								<label><input type="radio" name="schemaviewyn" value="N" v-model="detailItem.SCHEMA_VIEW_YN" >N</label>
+								<label><input type="radio" name="schemaviewyn" value="Y" v-model="detailItem.schemaViewYn" checked>Y</label>
+								<label><input type="radio" name="schemaviewyn" value="N" v-model="detailItem.schemaViewYn" >N</label>
 							</div>
 						</div>
-					</form>
-				</div>
-				<div class="view-area"  :class="viewMode=='opt'?'on':''">
-					<form id="optionsForm" name="optionsForm" class="form-horizontal" onsubmit="return false;">
-						<div class="form-group">
-							<div class="col-sm-12">
-								<div class="pull-right">
-									<button type="button" class="btn btn-default" @click="optionSave()"><spring:message code="btn.save"/></button>
-									<button type="button" class="btn btn-default" @click="optionSave('poolInit')"><spring:message code="btn.save.andpoolnit"/></button>
-									<button type="button" class="btn btn-default" @click="viewArea('view')"><spring:message code="btn.close"/></button>
-								</div>
-							</div>
-						</div>
-						<div id="optWarningMsgDiv"></div>
-						
+					</div>
+					<div class="view-area" data-view-mode="opt" :class="viewMode=='opt'?'on':''">
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.minidle" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="number" v-model="detailItem.MIN_IDLE">
+								<input class="form-control text required" type="number" v-model="detailItem.minIdle">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.maxactive" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="number" v-model="detailItem.MAX_ACTIVE">
+								<input class="form-control text required" type="number" v-model="detailItem.maxActive">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.timeout" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="number" v-model="detailItem.TIMEOUT">
+								<input class="form-control text required" type="number" v-model="detailItem.timeout">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.exportcount" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="number" v-model="detailItem.EXPORTCOUNT">
+								<input class="form-control text required" type="number" v-model="detailItem.exportcount">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.max_select_count" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="number" v-model="detailItem.MAX_SELECT_COUNT">
+								<input class="form-control text required" type="number" v-model="detailItem.maxSelectCount">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vquery" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" type="text" v-model="detailItem.VQUERY">
+								<input class="form-control text required" type="text" v-model="detailItem.vquery">
 							</div>
 						</div>
-					</form>
-				</div>
+					</div>
+				</form>
 			</div>
 			<!-- /.panel-body -->
 		</div>
@@ -258,7 +254,7 @@
 <script>
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
-	,validateCheck : true 
+	,validateCheck : true
 	,data: {
 		list_count :10
 		,detailFlag :false
@@ -274,14 +270,14 @@ VarsqlAPP.vueServiceBean( {
 			this.setDetailItem();
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dblist'}
 				,data : param
@@ -291,159 +287,144 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
+		,itemViewMode : function (mode){
+			this.viewArea(mode);
+		}
 		// 상세보기
-		,itemView : function(item, mode){
+		,itemView : function(item){
 			var _self = this;
-			
+
 			var param = {
-				vconnid : item.VCONNID
+				vconnid : item.vconnid
 			}
-			
-			_self.viewArea(mode);
-			
-			if(_self.detailItem.VCONNID == item.VCONNID){
-				return ; 
+
+			if(_self.detailItem.vconnid == item.vconnid){
+				return ;
 			}
-			
+
+			_self.errors.clear();
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbDetail'}
 				,data : param
 				,loadSelector : '.detail_area_wrapper'
 				,success: function(resData) {
-					var item  =resData.item; 
-					
-					if(item.VTYPE != _self.detailItem.VTYPE){
-						_self.dbDriverLoad(item.VTYPE);
+					var item  =resData.item;
+
+					if(item.vtype != _self.detailItem.vtype){
+						_self.dbDriverLoad(item.vtype);
 					}
-					
+
 					_self.setDetailItem(item);
 				}
 			})
 		}
 		,setUrlDirectInfo : function (){
-			this.detailItem.URL_DIRECT_YN = (this.detailItem.URL_DIRECT_YN=='N'?'Y':'N');
+			this.detailItem.urlDirectYn = (this.detailItem.urlDirectYn=='N'?'Y':'N');
 		}
 		,setDetailItem : function (item){
-			
+
 			if(VARSQL.isUndefined(item)){
 				this.$validator.reset()
 				this.viewMode = 'view';
 				this.detailFlag = false;
 				this.detailItem ={
-					EXPORTCOUNT: 1000
-					,MAX_SELECT_COUNT : 10000
-					,MAX_ACTIVE: 5
-					,MIN_IDLE: 2
-					,TIMEOUT: 18000
-					,VDBSCHEMA: ""
-					,VDATABASENAME: ""
-					,VPORT: ""
-					,VDRIVER: ""
-					,USE_YN: "Y"
-					,URL_DIRECT_YN:'N'
-					,VID: ""
-					,VNAME: ""
-					,VPOOLOPT: ""
-					,VPW: ""
-					,VQUERY: ""
-					,VTYPE: ""
-					,VSERVERIP: ""
-					,VURL: ""
-					,BASETABLE_YN: 'Y'
-					,LAZYLOAD_YN: 'N'
-					,SCHEMA_VIEW_YN: 'N'
+					exportcount: 1000
+					,maxSelectCount : 10000
+					,maxActive: 5
+					,minIdle: 2
+					,timeout: 18000
+					,vdbschema: ""
+					,vdatabasename: ""
+					,vport: ""
+					,vdriver: ""
+					,useYn: "Y"
+					,urlDirectYn:'N'
+					,vid: ""
+					,vname: ""
+					,vpoolopt: ""
+					,vpw: ""
+					,vquery: ""
+					,vtype: ""
+					,vserverip: ""
+					,vurl: ""
+					,basetableYn: 'Y'
+					,lazyloadYn: 'N'
+					,schemaViewYn: 'N'
 				}
 			}else{
-				this.detailFlag = true; 
-				this.detailItem = item;	
+				this.detailFlag = true;
+				this.detailItem = item;
 			}
-			 
+
 		}
 		,save : function (mode){
-			var _this = this; 
-			
+			var _this = this;
+
 			this.$validator.validateAll().then(function (result){
 				if(result){
 					var poolInitVal = 'N';
 					if(mode=='poolInit'){
-						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
+						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ;
 						poolInitVal = 'Y';
 					}
-					
+
 					var param = _this.getParamVal();
 					param.poolInit = poolInitVal;
-					
+
 					_this.$ajax({
 						url : {type:VARSQL.uri.admin, url:'/main/dbSave'}
-						,data : param 
+						,data : param
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
 									alert(resData.message);
-									return ; 
+									return ;
 								}
 								_this.search();
 								_this.setDetailItem();
 							}
 						}
 					});
-				}
-			});
-		}
-		// option save
-		,optionSave : function (mode){
-			var _this = this; 
-			
-			this.$validator.validateAll().then(function (result){
-				if(result){
-					var poolInitVal = 'N';
-					if(mode=='poolInit'){
-						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ; 
-						poolInitVal = 'Y';
+				}else{
+					var errorItem = _this.errors.items[0];
+
+					var viewMode = $('[name="'+errorItem.field+'"]').closest('.view-area').data('view-mode');
+
+					if(_this.viewMode != viewMode){
+						alert(errorItem.msg);
+						_this.viewMode = _this.viewMode=='opt' ?'view' : 'opt';
 					}
-					
-					var param = _this.getParamVal();
-					
-					param.poolInit = poolInitVal;
-					
-					_this.$ajax({
-						url : {type:VARSQL.uri.admin, url:'/main/dbOptSave'}
-						,data : param 
-						,success:function (resData){
-							if(VARSQL.req.validationCheck(resData)){
-								_this.search();
-								_this.setDetailItem();
-							}
-						}
-					});
+
+					return  ;
 				}
 			});
 		}
 		,getParamVal : function (){
 			var param = {};
-			var saveItem = this.detailItem; 
+			var saveItem = this.detailItem;
 			for(var key in saveItem){
-				param[VARSQL.util.convertCamel(key)] = saveItem[key];
+				param[key] = saveItem[key];
 			}
-			return param; 
+			return param;
 		}
 		// 정보 삭제 .
 		,deleteInfo : function (){
-			var _this = this; 
-			
-			if(typeof this.detailItem.VCONNID ==='undefined'){
+			var _this = this;
+
+			if(typeof this.detailItem.vconnid ==='undefined'){
 				$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
-				return ; 
+				return ;
 			}
-			
+
 			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
-				return ; 
+				return ;
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbDelete'}
 				,data: {
-					vconnid : _this.detailItem.VCONNID
+					vconnid : _this.detailItem.vconnid
 				}
 				,success:function (resData){
 					_this.setDetailItem();
@@ -457,9 +438,9 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,connectionCheck : function (){
 			var param = this.getParamVal();
-			
+
 			//param.vdriver = $('#vdriver option:selected').attr('data-driver');
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}
 				,data:param
@@ -467,7 +448,7 @@ VarsqlAPP.vueServiceBean( {
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.messageCode =='success'){
 							alert('<spring:message code="msg.success" />');
-							return 
+							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
 						}
@@ -477,35 +458,35 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// db driver list
 		,dbDriverLoad : function (val){
-			var _this = this; 
+			var _this = this;
 			var param = {
 				dbtype :val
-			}; 
-			
-			if(VARSQL.isUndefined(_this.detailItem.VCONNID) || _this.detailItem.VCONNID==''){
-				_this.detailItem.VDRIVER = '';
+			};
+
+			if(VARSQL.isUndefined(_this.detailItem.vconnid) || _this.detailItem.vconnid==''){
+				_this.detailItem.vdriver = '';
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbDriver'}
-				,data : param 
+				,data : param
 				,success:function (resData){
-					
+
 					var result = resData.items;
 		    		var resultLen = result.length;
-		    		
+
 		    		if(resultLen==0){
 		    			_this.driverList = [];
-		    			return ; 
+		    			return ;
 		    		}
-		    		
-		    		if(_this.detailItem.VDRIVER==''){
-		    			_this.detailItem.VDRIVER = resData.items[0].DRIVER_ID
+
+		    		if(_this.detailItem.vdriver==''){
+		    			_this.detailItem.vdriver = resData.items[0].driverId
 		    		}
-		    		
+
 		    		_this.driverList = result;
-		    		
-		    		return ; 
+
+		    		return ;
 				}
 			});
 		}

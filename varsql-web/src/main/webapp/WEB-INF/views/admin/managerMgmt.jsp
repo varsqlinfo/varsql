@@ -1,140 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<script>
-$(document).ready(function (){
-	fnInit();
-});
-
-function fnInit(){
-	$('.searchBtn1').click(function() {
-		fnSearch1();
-	});
-	
-	$('#searchVal1').keydown(function() {
-		if(event.keyCode =='13') fnSearch1();
-	});
-	
-	$('.searchBtn2').click(function() {
-		fnSearch2();
-	});
-	
-	$('#searchVal2').keydown(function() {
-		if(event.keyCode =='13') fnSearch2();
-	});
-	
-	fnSearch1();
-	fnSearch2();
-};
-
-function fnSearch1(no){
-	var param = {
-		page:no?no:1
-		,'searchVal':$('#searchVal1').val()
-	};
-	
-	VARSQL.req.ajax({
-		data:param
-		,url : {type:VARSQL.uri.admin, url:'/managerMgmt/userList'}
-		,success:function (resData){
-				
-			var result = resData.items;
-    		var resultLen = result.length;
-    		
-    		if(resultLen==0){
-    			$('.dataTableContent1').html('<tr><td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>');
-    			$('.pageNavigation1').pagingNav();
-    			return ; 
-    		}
-    		
-    		var strHtm = new Array();
-    		var item;
-    		var clazz;
-    		for(var i = 0 ;i < resultLen; i ++){
-    			item = result[i];
-    			clazz= i%2==0?'add':'even';
-    			strHtm.push('<tr class="gradeA '+clazz+'">');
-    			strHtm.push('	<td class=""><a href="javascript:;" viewid="'+item.VIEWID+'" mode="add" class="addManagerRole">'+item.UNAME+'</a></td>');
-    			strHtm.push('	<td class="">'+item.UID+'</td>');
-    			strHtm.push('	<td class="center">'+item.DEPT_NM+'</td>');
-    			strHtm.push('</tr>');
-    		}
-    		
-    		$('.dataTableContent1').html(strHtm.join(''));
-    		
-    		fnManagerRoleEvent('add');
-    		
-    		$('.pageNavigation1').pagingNav(resData.paging,fnSearch1);
-		}
-	});
-}
-
-function fnSearch2(no){
-	var param = {
-		page:no?no:1
-		,'searchVal':$('#searchVal2').val()
-	};
-	
-	VARSQL.req.ajax({
-		data:param
-		,url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
-		,dataType:'JSON'
-		,success:function (resData){
-				
-			var result = resData.items;
-    		var resultLen = result.length;
-    		
-    		if(resultLen==0){
-    			$('.dataTableContent2').html('<tr><td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>');
-    			$('.pageNavigation2').pagingNav();
-    			return ; 
-    		}
-    		
-    		var strHtm = new Array();
-    		var item;
-    		var clazz;
-    		for(var i = 0 ;i < resultLen; i ++){
-    			item = result[i];
-    			clazz= i%2==0?'add':'even';
-    			strHtm.push('<tr class="gradeA '+clazz+'">');
-    			strHtm.push('	<td class=""><a href="javascript:;" viewid="'+item.VIEWID+'" mode="del" class="delManagerRole">'+item.UNAME+'</a></td>');
-    			strHtm.push('	<td class="">'+item.UID+'</td>');
-    			strHtm.push('	<td class="center">'+item.DEPT_NM+'</td>');
-    			strHtm.push('</tr>');
-    		}
-    		
-    		$('.dataTableContent2').html(strHtm.join(''));
-    		
-    		fnManagerRoleEvent('del');
-    		
-    		$('.pageNavigation2').pagingNav(resData.paging,fnSearch2);
-		
-		}
-	});
-}
-
-function fnManagerRoleEvent(pType){
-	
-	$('.'+pType+'ManagerRole').click(function (){
-		var type= $(this).attr('mode');
-		if(!confirm(type=='add'?'<spring:message code="msg.add.manager.confirm"/>':'<spring:message code="msg.del.manager.confirm"/>')){
-			return ; 
-		}
-		
-		var param ={
-			viewid:$(this).attr('viewid')
-			,mode:type
-		};
-		VARSQL.req.ajax({
-			data:param
-			,url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerRoleMgmt'}
-			,success:function (resData){
-				fnSearch1();	
-				fnSearch2();
-			}
-		});
-	});
-}
-</script>
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
@@ -142,7 +7,7 @@ function fnManagerRoleEvent(pType){
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row">
+<div class="row display-off" id="varsqlVueArea">
 	<div class="col-sm-6">
 		<div class="panel panel-default">
 			<div class="panel-heading"><spring:message code="admin.userlist.search.head" /></div>
@@ -152,12 +17,9 @@ function fnManagerRoleEvent(pType){
 					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchVal1" name="searchVal1"
-									class="form-control"> <span
-									class="input-group-btn">
-									<button class="btn btn-default searchBtn1" type="button">
-										<span class="glyphicon glyphicon-search"></span>
-									</button>
+								<input type="text" value="" v-model="userSearchVal" class="form-control" @keydown.enter="userSearch()">
+								<span class="input-group-btn">
+									<button class="btn btn-default searchBtn" type="button" @click="userSearch()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
 							</div>
 						</div>
@@ -171,18 +33,23 @@ function fnManagerRoleEvent(pType){
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message
-											code="manage.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message
-											code="manage.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message
-											code="manage.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manage.userlist.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manage.userlist.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manage.userlist.dept" /></th>
 								</tr>
 							</thead>
-							<tbody class="dataTableContent1">
+							<tbody>
+								<template v-for="(item,index) in userGridData">
+					    			<tr class="gradeA " :class="index%2==0?'add':'even'" >
+										<td class=""><a href="javascript:;" @click="roleAction(item,'add')">{{item.uname}}</a></td>
+										<td class="">{{item.uid}}</td>
+										<td class="center">{{item.deptNm}}</td>
+									</tr>
+				    			</template>
+				    			<tr v-if="userGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>
 						</table>
-						<div class="pageNavigation1"></div>
+						<page-navigation :page-info="userPageInfo" callback="userSearch"></page-navigation>
 					</div>
 				</div>
 			</div>
@@ -190,7 +57,7 @@ function fnManagerRoleEvent(pType){
 		</div>
 		<!-- /.panel -->
 	</div>
-	
+
 	<div class="col-sm-6">
 		<div class="panel panel-default">
 			<div class="panel-heading"><spring:message code="admin.managerlist.head" /></div>
@@ -200,12 +67,9 @@ function fnManagerRoleEvent(pType){
 					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-								<input type="text" value="" id="searchVal2" name="searchVal2"
-									class="form-control"> <span
-									class="input-group-btn">
-									<button class="btn btn-default searchBtn2" type="button">
-										<span class="glyphicon glyphicon-search"></span>
-									</button>
+								<input type="text" value="" v-model="managerSearchVal" class="form-control" @keydown.enter="managerSearch()">
+								<span class="input-group-btn">
+									<button class="btn btn-default searchBtn" type="button" @click="managerSearch()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
 							</div>
 						</div>
@@ -219,18 +83,23 @@ function fnManagerRoleEvent(pType){
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message
-											code="manage.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message
-											code="manage.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message
-											code="manage.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manage.userlist.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manage.userlist.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manage.userlist.dept" /></th>
 								</tr>
 							</thead>
-							<tbody class="dataTableContent2">
+							<tbody>
+								<template v-for="(item,index) in managerGridData">
+					    			<tr class="gradeA " :class="index%2==0?'add':'even'" >
+										<td class=""><a href="javascript:;" @click="roleAction(item,'remove')">{{item.uname}}</a></td>
+										<td class="">{{item.uid}}</td>
+										<td class="center">{{item.deptNm}}</td>
+									</tr>
+				    			</template>
+				    			<tr v-if="managerGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>
 						</table>
-						<div class="pageNavigation2"></div>
+						<page-navigation :page-info="managerPageInfo" callback="managerSearch"></page-navigation>
 					</div>
 				</div>
 			</div>
@@ -240,3 +109,80 @@ function fnManagerRoleEvent(pType){
 	</div>
 </div>
 <!-- /.row -->
+
+
+<script>
+VarsqlAPP.vueServiceBean( {
+	el: '#varsqlVueArea'
+	,data: {
+		list_count :10
+		,userSearchVal : ''
+		,userGridData :  []
+		,userPageInfo : {}
+		,managerSearchVal : ''
+		,managerGridData :  []
+		,managerPageInfo : {}
+	}
+	,methods:{
+		init : function(){
+			this.userSearch();
+			this.managerSearch();
+		}
+		,userSearch : function(no){
+			var _self = this;
+
+			var param = {
+				pageNo: (no?no:1)
+				,'searchVal':_self.userSearchVal
+			};
+
+			this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/managerMgmt/userList'}
+				,data : param
+				,success: function(resData) {
+					_self.userGridData = resData.items;
+					_self.userPageInfo = resData.page;
+				}
+			})
+		}
+		,managerSearch : function(no){
+			var _self = this;
+
+			var param = {
+				pageNo: (no?no:1)
+				,'searchVal':_self.managerSearchVal
+			};
+
+			this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
+				,data : param
+				,success: function(resData) {
+					_self.managerGridData = resData.items;
+					_self.managerPageInfo = resData.page;
+				}
+			})
+		}
+		,roleAction : function (item,mode){
+			var _this = this;
+
+			if(!confirm(VARSQL.messageFormat(mode=='add'?'msg.add.manager.confirm':'msg.del.manager.confirm', {name:item.uname +'('+item.uid+')'}))){
+                return ;
+            }
+
+            var param ={
+                viewid : item.viewid
+                ,mode : mode
+            };
+
+            _this.$ajax({
+                data:param
+                ,url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerRoleMgmt'}
+                ,success:function (resData){
+                	_this.userSearch();
+                	_this.managerSearch();
+                }
+            });
+		}
+	}
+});
+</script>

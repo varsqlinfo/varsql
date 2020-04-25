@@ -1,8 +1,8 @@
 package com.varsql.db.ext.tibero;
 
-import com.varsql.core.db.beans.DataTypeInfo;
-import com.varsql.core.db.beans.VarSqlDbType;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
+import com.varsql.core.db.valueobject.DataTypeInfo;
+import com.varsql.core.db.valueobject.VarSqlDbType;
 
 /**
  * 

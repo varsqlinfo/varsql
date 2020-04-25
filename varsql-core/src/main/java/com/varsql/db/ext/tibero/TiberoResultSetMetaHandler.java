@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.varsql.core.common.util.StringUtil;
-import com.varsql.core.db.beans.ColumnInfo;
-import com.varsql.core.db.beans.DataTypeInfo;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.resultset.meta.handler.ResultSetMetaHandlerImpl;
 import com.varsql.core.db.util.DbMetaUtils;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.DataTypeInfo;
 
 /**
  * 

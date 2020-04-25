@@ -65,41 +65,47 @@ body {
 </style>
 <script>
 if(top != window){
-	top.location.href = location.href; 
+	top.location.href = location.href;
 }
 
 $(document).ready(function (){
-	
+
+
+	$('#vsql_login_id').val('varsqladmin');
+	$('#vsql_login_password').val('varsqladmin');
+	document.f.submit();
+
+
 	$('#id,#password').on('keypress' , function (e){
 		var keyCode = 0;
 		var shiftKey=false;
 		keyCode=e.keyCode;
 		shiftKey=e.shiftKey;
-		
+
 		if (((keyCode >= 65 && keyCode <= 90)&& !shiftKey)||((keyCode >= 97 && keyCode <= 122)&& shiftKey)){
 			$('.error-msg').empty().html("CapsLock이 켜져 있습니다");
 		}else{
 			$('.error-msg').empty().html("");
 		}
 	})
-	 
+
 	if(localStorage.getItem('varsqlLoginID') && localStorage.getItem('varsqlLoginID') !=''){
 		$('#rememberMe').prop('checked',true);
 		$('#vsql_login_id').val(localStorage.getItem('varsqlLoginID'));
 	}
-	
+
 	$('#vsql_login_password').keydown(function(event) {
 		if(event.keyCode =='13'){
 			$('.btn-login').trigger('click');
 		}
 	});
-	
+
 	$('.btn-login').on('click', function (){
-		var loginID = $.trim($('#vsql_login_id').val()); 
-	
+		var loginID = $.trim($('#vsql_login_id').val());
+
 		$('#vsql_login_id').val(loginID);
 		$('#vsql_login_password').val($.trim($('#vsql_login_password').val()))
-		
+
 		if($('#rememberMe').is(':checked')){
 			localStorage.setItem('varsqlLoginID', loginID);
 		}else{
@@ -116,8 +122,8 @@ $(document).ready(function (){
 			class="form-signin" role="form" onsubmit="return false;">
 			<h2 class="form-signin-heading" style="text-align:center;"><spring:message code="msg.please.sign.in" /></h2>
 			<sec:csrfInput/>
-			
-			<input class="form-control" id="vsql_login_id" name="vsql_login_id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off"> 
+
+			<input class="form-control" id="vsql_login_id" name="vsql_login_id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off">
 			<input class="form-control" id="vsql_login_password" name="vsql_login_password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
 			<div class="checkbox" style="margin-bottom:13px;">
 				<label style="padding-top:5px;">

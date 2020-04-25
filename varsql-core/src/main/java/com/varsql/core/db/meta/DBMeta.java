@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.IndexInfo;
-import com.varsql.core.db.beans.ObjectInfo;
-import com.varsql.core.db.beans.ServiceObject;
-import com.varsql.core.db.beans.TableInfo;
-import com.varsql.core.db.serviceobject.ObjectType;
+import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.IndexInfo;
+import com.varsql.core.db.valueobject.ObjectInfo;
+import com.varsql.core.db.valueobject.ServiceObject;
+import com.varsql.core.db.valueobject.TableInfo;
 
 /**
  * 

@@ -3,7 +3,7 @@ package com.varsql.core.db.report.table;
 import java.util.List;
 import java.util.Map;
 
-import com.varsql.core.db.beans.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.vartech.common.excel.ExcelReport;
 
 public interface TableReport{

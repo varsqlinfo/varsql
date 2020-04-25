@@ -10,14 +10,14 @@ task generateCustomConfig {
           println "Generating custom configuration..."
     }
 }
-	
+
 eclipse { // 이클립스 project facets설정.
 	//프로젝트를 가져 오거나 동기화
 	synchronizationTasks generateCustomConfig
-	
+
 	// 자동 빌드
 	autoBuildTasks generateCode
-	
+
 	classpath {
         defaultOutputDir = file("target-notused")
         file.whenMerged {
@@ -30,14 +30,20 @@ eclipse { // 이클립스 project facets설정.
     }
 }
 
+
+bootJar {
+    enabled = false
+}
+
 jar{
+	enabled=true
 	baseName ='varsql-core'
 	version = '0.0.1'
-	
+
 	from ('src/main/java'){
 		include '**/*.xml'
 	}
-	
+
 	doLast {
 		println("jar export path : " + archivePath.parent)
 	}

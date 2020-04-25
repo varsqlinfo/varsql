@@ -31,7 +31,8 @@ VARSQL_LANG = {
 	,'varsql.0015' : '[{itemText}] 삭제하시겠습니까?'
 	,'varsql.0016' : '삭제 하시겠습니까?'
 	,'varsql.0017' : '삭제 되었습니다'
-	
+	,'varsql.0018' : '이미 추가된 항목 입니다'
+
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
 	,'varsql.m.0003' : ' 차단 하시겠습니까?'
@@ -40,12 +41,12 @@ VARSQL_LANG = {
 	,'varsql.m.0006' : '{groupName} 그룹을 제거 하시면 그룹에 속한 모든 db맵핑 정보와 사용자 정보가 삭제 됩니다.\n그룹을 삭제 하시겠습니까?'
 	,'varsql.m.0007' : '현재 비밀번호가 맞지 않습니다'
 	,'varsql.m.0008' : '비밀번호가 변경되었습니다'
-		
+
 	,'varsql.form.0001' : '필수 입력사항입니다'
 	,'varsql.form.0002' : '최소 {len}글자 이상 이여야 합니다'
 	,'varsql.form.0003' : '비밀번호가 같아야합니다'
 	,'varsql.form.0004' : '크기는  {range} 사이여야 합니다'
-		
+
 
 	//error message code
 	,'error.0001' : '로그아웃 되었습니다.\n로그인창 으로 이동하시겠습니까?'
@@ -58,9 +59,12 @@ VARSQL_LANG = {
 	,'btn.close' : 'Close'
 	,'btn.copy' : 'Copy'
 	,'btn.save' : 'Save'
-	
+
 	,'menu.file.import_export' : '가져오기 & 내보내기...'
-	
+
+	,'msg.add.manager.confirm' : '"{name}" 님에게  매니저 권한을 추가 하시겠습니까?'
+	,'msg.del.manager.confirm' : '"{name}" 님의 메니저 권한을 제거 하면 맵핑된 DB의 메니저 권한도 사라집니다\n권한을 제거 하시겠습니까?'
+
 	,'msg.close.window' : '창을 닫으시겠습니까?'
 	,'msg.loading' : '로딩중 입니다.'
 	,'msg.refresh' : '새로고침 하시겠습니까?'

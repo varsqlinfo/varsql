@@ -60,20 +60,20 @@
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
-							
+
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')" @click="itemView(item)">
-									<td :title="item.SERVER_ID"><div class="text-ellipsis ellipsis0">{{item.SERVER_ID}}</div></td>
-									<td :title="item.EXCP_TYPE"><div class="text-ellipsis ellipsis0">{{item.EXCP_TYPE}}</div></td>
-									<td :title="item.EXCP_TITLE"><div class="text-ellipsis ellipsis0">{{item.EXCP_TITLE}}</div></td>
-									<td>{{item.REG_DT}}</td>
+									<td :title="item.serverId"><div class="text-ellipsis ellipsis0">{{item.serverId}}</div></td>
+									<td :title="item.excpType"><div class="text-ellipsis ellipsis0">{{item.excpType}}</div></td>
+									<td :title="item.excpTitle"><div class="text-ellipsis ellipsis0">{{item.excpTitle}}</div></td>
+									<td>{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="4"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -91,25 +91,25 @@
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.title" /></label>
 						<div class="col-xs-10">
-							<pre style="min-height:90px;">{{detailItem.EXCP_TITLE}}</pre>
+							<pre style="min-height:90px;">{{detailItem.excpTitle}}</pre>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.type" /></label>
 						<div class="col-xs-10">
-							<input class="form-control text required" v-model="detailItem.EXCP_TYPE" disabled="disabled">
+							<input class="form-control text required" v-model="detailItem.excpType" disabled="disabled">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.server" /></label>
 						<div class="col-xs-10">
-							<input class="form-control text required" v-model="detailItem.SERVER_ID" disabled="disabled">
+							<input class="form-control text required" v-model="detailItem.serverId" disabled="disabled">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.cont" /></label>
 						<div class="col-xs-10">
-							<textarea class="form-control text" rows="20" v-model="detailItem.EXCP_CONT" style="width:100%;" disabled="disabled"></textarea>
+							<textarea class="form-control text" rows="20" v-model="detailItem.excpCont" style="width:100%;" disabled="disabled"></textarea>
 						</div>
 					</div>
 				</form>
@@ -140,14 +140,14 @@ VarsqlAPP.vueServiceBean( {
 		// 검색
 		,search : function(no){
 			var _self = this;
-			
+
 			var param = {
 				pageNo: (no?no:1)
 				,countPerPage : _self.list_count
 				,'searchVal':_self.searchVal
 				,search_category : _self.searchCatg
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/errorlogMgmt/list'}
 				,data : param

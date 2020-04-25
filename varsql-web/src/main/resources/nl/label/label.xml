@@ -52,6 +52,8 @@
 <entry key="down">아래</entry>
 
 
+<entry key="information">정보 </entry>
+<entry key="basic.information">기본정보 </entry>
 <entry key="single">단일 </entry>
 <entry key="multiple">다중 </entry>
 <entry key="addflag">추가여부 </entry>
@@ -82,7 +84,7 @@
 <entry key="label.manager">매니저</entry>
 <entry key="label.block">차단</entry>
 <entry key="label.release">해제</entry>
-<entry key="label.id">아이디</entry>
+<entry key="label.id">아이디1</entry>
 <entry key="label.pw">패스워드</entry>
 <entry key="label.login">로그인</entry>
 

@@ -14,14 +14,14 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.beans.ColumnInfo;
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.ObjectColumnInfo;
-import com.varsql.core.db.beans.ObjectInfo;
-import com.varsql.core.db.beans.TableInfo;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.resultset.meta.handler.ResultSetMetaHandlerImpl;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.ObjectColumnInfo;
+import com.varsql.core.db.valueobject.ObjectInfo;
+import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.sql.util.SQLUtil;
 
 

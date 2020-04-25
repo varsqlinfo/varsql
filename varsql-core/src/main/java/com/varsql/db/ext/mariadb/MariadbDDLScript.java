@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.beans.DataTypeInfo;
-import com.varsql.core.db.beans.DatabaseParamInfo;
-import com.varsql.core.db.beans.ddl.DDLCreateOption;
-import com.varsql.core.db.beans.ddl.DDLInfo;
+import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
-import com.varsql.core.db.ddl.template.DDLTemplateFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.util.DbMetaUtils;
+import com.varsql.core.db.valueobject.DataTypeInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
+import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.vartech.common.app.beans.ParamMap;
 
 /**

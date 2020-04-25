@@ -2,8 +2,8 @@ package com.varsql.core.db.meta.datatype;
 
 import java.util.HashMap;
 
-import com.varsql.core.db.beans.DataTypeInfo;
-import com.varsql.core.db.beans.VarSqlDbType;
+import com.varsql.core.db.valueobject.DataTypeInfo;
+import com.varsql.core.db.valueobject.VarSqlDbType;
 
 public abstract class DataTypeImpl implements DataType{
 

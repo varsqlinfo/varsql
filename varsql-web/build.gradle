@@ -4,22 +4,26 @@ buildscript {
     }
 }
 
+configurations {
+     runtime.exclude module: 'spring-boot-starter-tomcat'
+     runtime.exclude module: 'tomcat-embed-jasper'
+     runtime.exclude module: 'lombok'
+}
+
+
 // minify
+/*
 plugins {
-	id "com.bmuschko.cargo" version "2.7.0"
-	id "com.bmuschko.tomcat-base" version "2.5"
-	
 	//id "com.eriwen.gradle.js" version "2.14.2-SNAPSHOT"
 	//id "com.eriwen.gradle.css" version "2.14.0"
-	
 }
+*/
+
 
 ext{
 	appVersion = '0.0.1'
-	cargoVersion = '2.7.0'
-	tomcatVersion = '2.5'
 	jsMinifyVersion = '2.14.1'
-	
+
 	webResourceConfig = [
         staticFilesDir : "src/main/webapp",
         baseDir: "META-INF/resources",
@@ -32,51 +36,9 @@ def def_project= [
 ]
 
 dependencies {
- 	def cargoVersion = '1.7.9'
-    cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion",
-          "org.codehaus.cargo:cargo-licensed-dtds:$cargoVersion",
-          "org.codehaus.cargo:cargo-ant:$cargoVersion"
-          
-	def tomcatVersion = '8.5.50'
-	tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-	tomcat "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
-	tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
-	    exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
-	}
+	compile project(':varsql-core')
 }
 
-cargo {
-	def $tomcatVersion = "apache-tomcat-8.5.50"
-    containerId = 'tomcat8x'
-    port = 18080
-
-    deployable {
-        context = def_project.context
-    }
-
-    local {
-    /*
-    	installer {
-	        installUrl = "http://us.mirrors.quenda.co/apache/tomcat/tomcat-8/v8.5.50/bin/"+$tomcatVersion+".zip"
-	        downloadDir = file("build/download") // install download directory
-	        extractDir = file("build/extract") // download file 설치 디렉토리           
-	    }
-        homeDir= file("build/extract/server/") // 홈디렉토리.
-    	outputFile = new File('logs/tomcat/server.log')       
-      
-*/      
-		startStopTimeout = 60000
-		homeDir= file("C:/00.newsource/tomcatserver/apache-tomcat-8.5.50")
-        containerProperties {
-            property 'cargo.tomcat.ajp.port', 19099
-        }
-        
-        systemProperties {
-            property 'varsql.runtime', 'local'
-            property 'com.varsql.install.root', 'C:/01.util/varsql-webappv.0.0.1/resources'
-        }
-    }
-}
 
 task generateCode {
     doLast {
@@ -90,16 +52,16 @@ task generateCustomConfig {
     }
 }
 
-eclipse { 
+eclipse {
 	// 이클립스 project facets설정.
 	project.natures "org.springsource.ide.eclipse.gradle.core.nature"
-	
+
 	//프로젝트를 가져 오거나 동기화
 	synchronizationTasks generateCustomConfig
-	
+
 	// 자동 빌드
 	autoBuildTasks generateCode
-	
+
     wtp {
     	component {
             contextPath = def_project.context // context path 지정
@@ -109,7 +71,7 @@ eclipse {
             facet name: 'jst.java', version: '1.8'
         }
     }
-    
+
     classpath {
         defaultOutputDir = file("target-notused")
         file.whenMerged {
@@ -122,7 +84,12 @@ eclipse {
     }
 }
 
+bootJar {
+    enabled = false
+}
+
 jar{
+	enabled=true
 	baseName ='varsql-app-'+appVersion
 }
 
@@ -130,38 +97,37 @@ jar{
 task webResourceJar(type: Jar) {
 	baseName=webResourceConfig.name;
     from(fileTree(webResourceConfig.staticFilesDir)) {
-    	exclude '**/web.xml', 'META-INF'
+    	exclude 'META-INF'
         into webResourceConfig.baseDir
     }
 }
 
 war{
+	enabled=true
 	// war name
-	baseName ='vsql'
-	
+	baseName ='vsql' +appVersion
+
 	exclude 'webstatic' ,'WEB-INF/*'
-	
-	webXml = file('src/main/webapp/WEB-INF/web.xml')
-	
+
 	classpath = classpath - sourceSets.main.output
-	
+
 	from (jar) {
 		into 'WEB-INF/lib'
 	}
-	
+
 	from (webResourceJar) {
 		into 'WEB-INF/lib'
 	}
-	
+
 	doLast {
 		println("war export path : " + archivePath.parent)
-		//불필요한 파익 삭제. 
-		def fileDelFlag = true; 
+		//불필요한 파익 삭제.
+		def fileDelFlag = true;
 		if(fileDelFlag){
 			delete fileTree(archivePath.parent) {
 				include '*.jar'
 			}
 		}
-		
+
     }
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
-import com.varsql.core.db.beans.ColumnInfo;
-import com.varsql.core.db.beans.DataTypeInfo;
-import com.varsql.core.db.beans.IndexInfo;
-import com.varsql.core.db.beans.ObjectColumnInfo;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.util.DbMetaUtils;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.DataTypeInfo;
+import com.varsql.core.db.valueobject.IndexInfo;
+import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.vartech.common.app.beans.ParamMap;
 
 public class IndexInfoHandler implements ResultHandler<ParamMap> {

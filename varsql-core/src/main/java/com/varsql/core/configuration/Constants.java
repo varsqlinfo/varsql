@@ -11,7 +11,7 @@ package com.varsql.core.configuration;
 public interface Constants {
 	
 	public final String CONFIG_DEFAULT_KEY = "com.varsql.config.file";
-	public final String CONFIG_FILE_NAME = "com.varsql.connection.file";
+	public final String DB_CONFIG_FILE = "com.varsql.connection.file";
 	public final String VARSQL_INSTALL_ROOT = "com.varsql.install.root";
 	public final String CONFIG_PROP_NAME = "varsqlConfig";
 	

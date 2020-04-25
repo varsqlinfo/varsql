@@ -1,31 +1,67 @@
 package com.varsql.core.auth;
 
-public enum Authority {
-	GUEST(-1, "screen.guest","/guest/"), USER(100, "screen.user","/user/"), MANAGER(500, "screen.manager","/manager/"), ADMIN(999, "screen.admin","/admin/");
-	
-	int priority = -1;
-	String i18N = "";
-	String mainPage = "";
-	
-	Authority(int _priority, String _i18N , String _mainPage){
-		this.priority = _priority;
-		this.i18N = _i18N;
-		this.mainPage = _mainPage;
-		
-	}
-	
-	public int getPriority(){
-		return this.priority;
-	}
-	
-	public String geti18N(){
-		return this.i18N;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+
+/**
+ * -----------------------------------------------------------------------------
+* @fileName		: VarsqlAuthority.java
+* @desc		: varsql authority
+* @author	: ytkim
+*-----------------------------------------------------------------------------
+  DATE			AUTHOR			DESCRIPTION
+*-----------------------------------------------------------------------------
+*2020. 4. 24. 			ytkim			최초작성
+
+*-----------------------------------------------------------------------------
+ */
+public class Authority implements GrantedAuthority {
+
+	private static final long serialVersionUID = 1L;
+	private String name;
+	private int priority;
+
+	private List<Privilege> privileges;
+
+	public String getName() {
+		return name;
 	}
 
-	public String mainPage() {
-		return mainPage;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String getMainPage() {
-		return mainPage;
+
+	public String getAuthority() {
+		return this.name;
+	}
+
+	public List<Privilege> getPrivileges() {
+		return privileges;
+	}
+
+	public void setPrivileges(List<Privilege> privileges) {
+		this.privileges = privileges;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Role [name=");
+		builder.append(name);
+		builder.append(", privileges=");
+		builder.append(privileges);
+		builder.append(", priority=");
+		//builder.append(priority);
+		builder.append("]");
+		return builder.toString();
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

@@ -16,14 +16,14 @@ class ParameterMappingUtilTest extends BaseTest{
 	@Test
 	void testSQLPARAM() {
 		ParameterMappingUtil pmu = new ParameterMappingUtil();
-		String cont = getResourceContent("/comment/sql.txt");
+		String cont = getResourceContent("/comment/program/sql.txt");
 		List<ParameterMapping> sqlList = pmu.sqlParameter(cont);
-		
+
 		assertTrue(" sql parameter size not equal \n"+sqlList, sqlList.size() == 2);
-		
+
 		assertEquals(sqlList.get(0).getProperty(), "schema");
 		assertEquals(sqlList.get(1).getProperty(), "item1");
-		
+
 	}
 
 }
