@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.dao.BaseDAO;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.SearchParameter;
 
@@ -179,7 +179,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public Object selectDetailQna(QnAInfo qnaInfo) {
+	public Object selectDetailQna(QnARequesetDTO qnaInfo) {
 		return getSqlSession().selectOne("userPreferencesMapper.selectDetailQna", qnaInfo);
 	}
 
@@ -193,7 +193,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int insertQnaInfo(QnAInfo qnaInfo){
+	public int insertQnaInfo(QnARequesetDTO qnaInfo){
 		return getSqlSession().insert("userPreferencesMapper.insertQnaInfo", qnaInfo );
 	}
 
@@ -207,7 +207,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int deleteQnaInfo(QnAInfo qnaInfo){
+	public int deleteQnaInfo(QnARequesetDTO qnaInfo){
 		return getSqlSession().delete("userPreferencesMapper.deleteQnaInfo", qnaInfo );
 	}
 
@@ -221,7 +221,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param paramMap
 	 * @return
 	 */
-	public int updateQnaInfo(QnAInfo qnaInfo){
+	public int updateQnaInfo(QnARequesetDTO qnaInfo){
 		return getSqlSession().update("userPreferencesMapper.updateQnaInfo", qnaInfo );
 	}
 

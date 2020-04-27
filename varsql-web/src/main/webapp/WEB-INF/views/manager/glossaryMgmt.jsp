@@ -40,7 +40,6 @@
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
-								<col style="width:50px;">
 								<col style="width:100px;">
 								<col style="width:100px;">
 								<col style="width:80px;">
@@ -49,7 +48,6 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th>&nbsp;</th>
 									<th class="text-center"><spring:message	code="manage.glossary.word" /></th>
 									<th class="text-center"><spring:message	code="manage.glossary.word_en" /></th>
 									<th class="text-center"><spring:message	code="manage.glossary.word_abbr" /></th>
@@ -59,15 +57,14 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" @click="itemView(item)" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')">
-									<td>{{item.WORD_IDX}}</td>
-									<td :title="item.WORD"><div class="text-ellipsis">{{item.WORD}}</div></td>
-									<td :title="item.WORD_EN"><div class="text-ellipsis">{{item.WORD_EN}}</div></td>
-									<td :title="item.WORD_ABBR">{{item.WORD_ABBR}}</td>
-									<td :title="item.WORD_DESC"><div class="text-ellipsis">{{item.WORD_DESC}}</div></td>
-									<td>{{item.CHAR_CRE_DT}}</td>
+									<td :title="item.word"><div class="text-ellipsis">{{item.word}}</div></td>
+									<td :title="item.wordEn"><div class="text-ellipsis">{{item.wordEn}}</div></td>
+									<td :title="item.wordAbbr">{{item.wordAbbr}}</td>
+									<td :title="item.wordDesc"><div class="text-ellipsis">{{item.wordDesc}}</div></td>
+									<td>{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="6"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td colspan="5"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -166,11 +163,11 @@ VarsqlAPP.vueServiceBean( {
 		,itemView : function (item){
 			this.isViewMode = true;
 			this.detailItem = {
-				wordIdx : item.WORD_IDX
-				, word : item.WORD
-				, wordEn : item.WORD_EN
-				, wordAbbr :item.WORD_ABBR
-				, wordDesc : item.WORD_DESC
+				wordIdx : item.wordIdx
+				, word : item.word
+				, wordEn : item.wordEn
+				, wordAbbr :item.wordAbbr
+				, wordDesc : item.wordDesc
 			};
 		}
 		// 검색
@@ -252,3 +249,4 @@ VarsqlAPP.vueServiceBean( {
 
 }());
 </script>
+

@@ -1,21 +1,26 @@
 package com.varsql.web.app.manager.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.manager.beans.GlossaryInfo;
-import com.varsql.web.app.manager.dao.GlossaryDAO;
-import com.vartech.common.app.beans.ParamMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.user.GlossaryRequestDTO;
+import com.varsql.web.model.entity.user.GlossaryEntity;
+import com.varsql.web.repository.spec.GlossarySpec;
+import com.varsql.web.repository.user.GlossaryEntityRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.PagingUtil;
+
 
 /**
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: GlossaryServiceImpl.java
-* @DESC		: 용어집  
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: GlossaryServiceImpl.java
+* @desc		: 용어집 
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
@@ -27,9 +32,7 @@ import com.vartech.common.utils.PagingUtil;
 public class GlossaryServiceImpl{
 	
 	@Autowired
-	GlossaryDAO glossaryDAO;
-	
-	
+	private GlossaryEntityRepository glossaryEntityRepository;
 	/**
 	 * 
 	 * @Method Name  : selectUserList
@@ -42,16 +45,12 @@ public class GlossaryServiceImpl{
 	 */
 	public ResponseResult selectGlossaryList(SearchParameter searchParameter) {
 		
-		ResponseResult result = new ResponseResult();
-		
-		int totalcnt = glossaryDAO.selectGlossaryTotalcnt(searchParameter);
-		
-		if(totalcnt > 0){
-			result.setItemList(glossaryDAO.selectGlossaryList(searchParameter));
-		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return result;
+		Page<GlossaryEntity> result = glossaryEntityRepository.findAll(
+			GlossarySpec.searchField(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
+
+		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
 
 	/**
@@ -64,18 +63,13 @@ public class GlossaryServiceImpl{
 	 * @param searchParameter
 	 * @return
 	 */
-	public ResponseResult saveGlossaryInfo(GlossaryInfo glossaryInfo) {
-		ResponseResult result = new ResponseResult();
+	public ResponseResult saveGlossaryInfo(GlossaryRequestDTO glossaryInfo) {
 		
-		glossaryInfo.setUserId(SecurityUtil.loginId());
+		GlossaryEntity entity = glossaryInfo.toModel();
 		
-		if("".equals(glossaryInfo.getWordIdx())){
-			result.setItemOne(glossaryDAO.insertGlossaryInfo(glossaryInfo));
-		}else{
-			result.setItemOne(glossaryDAO.updateGlossaryInfo(glossaryInfo));
-		}
+		entity = glossaryEntityRepository.save(entity);
 		
-		return result;
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 	
 	/**
@@ -88,12 +82,10 @@ public class GlossaryServiceImpl{
 	 * @param parameter
 	 * @return
 	 */
-	public ResponseResult deleteGlossaryInfo(ParamMap parameter) {
-		ResponseResult result = new ResponseResult();
-		
-		result.setItemOne(glossaryDAO.deleteGlossaryInfo(parameter));
-		
-		return result;
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult deleteGlossaryInfo(String wordIdx) {
+		glossaryEntityRepository.deleteByWordIdx(Long.valueOf(wordIdx));
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 	
 	

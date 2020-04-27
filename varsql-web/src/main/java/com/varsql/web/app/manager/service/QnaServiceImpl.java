@@ -1,17 +1,18 @@
 package com.varsql.web.app.manager.service;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.dao.QnaDAO;
-import com.varsql.web.app.user.beans.QnAInfo;
-import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.model.entity.user.QnAEntity;
+import com.varsql.web.repository.spec.QnASpec;
+import com.varsql.web.repository.user.QnAEntityRepository;
+import com.varsql.web.util.DefaultValueUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.PagingUtil;
 
 /**
  * 
@@ -31,7 +32,7 @@ import com.vartech.common.utils.PagingUtil;
 public class QnaServiceImpl{
 	
 	@Autowired
-	QnaDAO qnaDAO;
+	private QnAEntityRepository qnaEntityRepository; 
 	
 	/**
 	 * 
@@ -45,18 +46,12 @@ public class QnaServiceImpl{
 	 */
 	public ResponseResult selectQnaMgmtList(SearchParameter searchParameter) {
 		
-		ResponseResult result = new ResponseResult();
-		
-		int totalcnt = qnaDAO.selectQnaMgmtTotalCnt(searchParameter);
-		
-		if(totalcnt > 0){
-			result.setItemList(qnaDAO.selectQnaMgmtList(searchParameter));
-		}else{
-			result.setItemList(null);
-		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return result;
+		Page<QnAEntity> result = qnaEntityRepository.findAll(
+			QnASpec.searchField(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
+
+		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
 	
 	/**
@@ -69,13 +64,15 @@ public class QnaServiceImpl{
 	 * @param qnaInfo
 	 * @return
 	 */
-	public ResponseResult updateQnaAnswerContent(QnAInfo qnaInfo) {
+	public ResponseResult updateQnaAnswerContent(QnARequesetDTO qnaInfo) {
 		
-		ResponseResult result = new ResponseResult();
+		QnAEntity qnaEntity = qnaInfo.toModel();
 		
-		result.setItemOne(qnaDAO.updateQnaAnswerContent(qnaInfo) );
+		qnaEntity.setAnswerId(SecurityUtil.loginId());
+		qnaEntity.setAnswerDt(DefaultValueUtils.currentTimestamp());
 		
-		return result;
+		qnaEntity = qnaEntityRepository.save(qnaEntity);
+		return VarsqlUtils.getResponseResultItemOne(qnaEntity != null? 1 : 0);
 		
 	}
 }

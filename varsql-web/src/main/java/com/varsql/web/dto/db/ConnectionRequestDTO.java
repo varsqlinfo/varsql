@@ -1,4 +1,4 @@
-package com.varsql.web.dto.request;
+package com.varsql.web.dto.db;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

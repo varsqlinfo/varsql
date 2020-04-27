@@ -13,6 +13,8 @@ public class VarsqlApplication extends SpringBootServletInitializer {
 
 	static {
 		System.setProperty("com.varsql.install.root", "C:/zzz/resources/");
+		System.setProperty("spring.devtools.restart.enabled", "true");
+		System.setProperty("spring.devtools.livereload.enable", "true");
 	}
 
 	@Override

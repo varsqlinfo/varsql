@@ -18,10 +18,10 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.constants.VarsqlErrorCode;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -207,7 +207,7 @@ public class UserPreferencesServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult saveQnaInfo(QnAInfo qnaInfo, boolean insFlag) {
+	public ResponseResult saveQnaInfo(QnARequesetDTO qnaInfo, boolean insFlag) {
 
 		ResponseResult result = new ResponseResult();
 
@@ -231,7 +231,7 @@ public class UserPreferencesServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult deleteQnaInfo(QnAInfo qnaInfo) {
+	public ResponseResult deleteQnaInfo(QnARequesetDTO qnaInfo) {
 		ResponseResult result = new ResponseResult();
 		result.setItemOne(userPreferencesDAO.deleteQnaInfo(qnaInfo));
 		return result;
@@ -248,7 +248,7 @@ public class UserPreferencesServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult selectDetailQna(QnAInfo qnaInfo) {
+	public ResponseResult selectDetailQna(QnARequesetDTO qnaInfo) {
 		ResponseResult result = new ResponseResult();
 		result.setItemOne( userPreferencesDAO.selectDetailQna(qnaInfo));
 		return result;

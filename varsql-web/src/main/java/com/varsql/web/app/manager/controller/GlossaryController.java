@@ -10,11 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.web.app.manager.beans.GlossaryInfo;
 import com.varsql.web.app.manager.service.GlossaryServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.dto.user.GlossaryRequestDTO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -77,7 +78,7 @@ public class GlossaryController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/save"})
-	public @ResponseBody ResponseResult save(@Valid GlossaryInfo glossaryInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult save(@Valid GlossaryRequestDTO glossaryInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -105,9 +106,8 @@ public class GlossaryController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/delete"})
-	public @ResponseBody ResponseResult delete(HttpServletRequest req) throws Exception {
-		ParamMap parameter = HttpUtils.getServletRequestParam(req);
-		return glossaryServiceImpl.deleteGlossaryInfo(parameter);
+	public @ResponseBody ResponseResult delete(@RequestParam(value = "wordIdx" , required = true) String wordIdx) throws Exception {
+		return glossaryServiceImpl.deleteGlossaryInfo(wordIdx);
 	}
 	
 	

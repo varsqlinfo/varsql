@@ -1,12 +1,8 @@
 package com.varsql.web.configuration;
 
 import javax.annotation.PostConstruct;
-import javax.print.attribute.standard.Destination;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.config.Configuration.AccessLevel;
-import org.modelmapper.internal.bytebuddy.build.Plugin.Engine.Source;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +21,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -50,7 +45,6 @@ import com.varsql.web.constants.ViewPageConstants;
 *-----------------------------------------------------------------------------
  */
 @Configuration
-@EnableWebMvc
 @ComponentScan(
 	basePackages = { "com.varsql.web"},
 	includeFilters = {
@@ -60,7 +54,7 @@ import com.varsql.web.constants.ViewPageConstants;
 @Import(value = {
        VarsqlMainConfigurer.class
 })
-@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)  // "/error" request mapping 를 spring 기본을 사용하지 않기 위해 설정. 
 public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 
     private static final int CACHE_PERIOD = 31556926; // one year

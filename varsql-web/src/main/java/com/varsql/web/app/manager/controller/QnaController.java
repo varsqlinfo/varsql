@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.service.QnaServiceImpl;
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
@@ -71,7 +71,7 @@ public class QnaController extends AbstractController {
 
 
 	@RequestMapping(value="/updQna")
-	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
@@ -82,7 +82,6 @@ public class QnaController extends AbstractController {
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = qnaServiceImpl.updateQnaAnswerContent(qnaInfo);
 		}
 		return resultObject;

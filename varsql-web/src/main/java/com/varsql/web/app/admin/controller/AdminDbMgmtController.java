@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.web.app.admin.service.AdminServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.dto.request.ConnectionRequestDTO;
+import com.varsql.web.dto.db.ConnectionRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

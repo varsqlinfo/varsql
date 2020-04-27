@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.BaseDAO;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.vartech.common.app.beans.SearchParameter;
 
 /**
@@ -34,7 +34,7 @@ public class QnaDAO extends BaseDAO{
 		return getSqlSession().selectList("manageMapper.selectQnaMgmtList", searchParameter);
 	}
 
-	public int updateQnaAnswerContent(QnAInfo qnaInfo){
+	public int updateQnaAnswerContent(QnARequesetDTO qnaInfo){
 		return getSqlSession().update("manageMapper.updateQnaAnswerContent", qnaInfo);
 	}
 

@@ -122,26 +122,6 @@ public final class VarsqlUtils {
 		return "";
 	}
 
-	public static String objectToKeyLowerString(Object json) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-
-			SimpleModule module = new SimpleModule("LowerCaseKeySerializer");
-			module.addKeySerializer(Object.class, new LowerCaseKeySerializer());
-			mapper.registerModule(module);
-			return mapper.writeValueAsString(json);
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "";
-	}
 
 	/**
 	 *
@@ -333,7 +313,7 @@ public final class VarsqlUtils {
 		return responseResult;
 	}
 
-	public static ResponseResult getResponseResultItemList(List list) {
+	public static ResponseResult getResponseResultItemList(List<?> list) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(list);
 		return responseResult;
@@ -350,14 +330,5 @@ public final class VarsqlUtils {
 	public static String getErrorCodeMessage(BindingResult result) {
 		ObjectError errorInfo = result.getAllErrors().get(0);
 		return String.format("%s", errorInfo.getDefaultMessage());
-	}
-}
-
-class LowerCaseKeySerializer extends JsonSerializer {
-	@Override
-	public void serialize(Object value, JsonGenerator jgen,
-			SerializerProvider provider) throws IOException,
-			JsonProcessingException {
-		jgen.writeFieldName(value.toString().toLowerCase());
 	}
 }

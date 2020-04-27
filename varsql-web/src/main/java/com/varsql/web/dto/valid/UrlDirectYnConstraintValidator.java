@@ -3,7 +3,7 @@ package com.varsql.web.dto.valid;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.varsql.web.dto.request.ConnectionRequestDTO;
+import com.varsql.web.dto.db.ConnectionRequestDTO;
 
 public class UrlDirectYnConstraintValidator  implements ConstraintValidator<ValidUrlDirectYn, ConnectionRequestDTO> {
 

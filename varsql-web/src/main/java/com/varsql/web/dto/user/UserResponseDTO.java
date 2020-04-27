@@ -1,4 +1,4 @@
-package com.varsql.web.dto.response;
+package com.varsql.web.dto.user;
 
 import java.io.Serializable;
 

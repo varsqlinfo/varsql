@@ -1,4 +1,4 @@
-package com.varsql.web.dto.response;
+package com.varsql.web.dto.db;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

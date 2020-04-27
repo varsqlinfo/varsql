@@ -16,27 +16,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: GuestController.java
-* @DESC		: guest ?Ç¨?ö©?ûê
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: GuestController.java
+* @desc		:  guest controller
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
-* 2019. 1. 4. 			ytkim			ÏµúÏ¥à?ûë?Ñ±
+*2020. 4. 27. 			ytkim			ÏµúÏ¥àÏûëÏÑ±
 
 *-----------------------------------------------------------------------------
  */
@@ -56,12 +54,10 @@ public class GuestController extends AbstractController  {
 	}
 
 	/**
-	 *
-	 * @Method Name  : qnalist
-	 * @Method ?Ñ§Î™? : qna Î™©Î°ù
-	 * @?ûë?Ñ±?ûê   : ytkim
-	 * @?ûë?Ñ±?ùº   : 2019. 11. 1.
-	 * @Î≥?Í≤ΩÏù¥?†•  :
+	 * @method  : qnalist
+	 * @desc : qna list
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
 	 * @param req
 	 * @return
 	 * @throws Exception
@@ -75,12 +71,10 @@ public class GuestController extends AbstractController  {
 	}
 
 	/**
-	 *
-	 * @Method Name  : qna
-	 * @Method ?Ñ§Î™? : qna ?ì±Î°?.
-	 * @?ûë?Ñ±?ûê   : ytkim
-	 * @?ûë?Ñ±?ùº   : 2019. 11. 1.
-	 * @Î≥?Í≤ΩÏù¥?†•  :
+	 * @method  : qna
+	 * @desc : qna insert
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
 	 * @param qnaInfo
 	 * @param result
 	 * @param req
@@ -88,7 +82,7 @@ public class GuestController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/insQna")
-	public @ResponseBody ResponseResult qna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult qna(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 
@@ -100,7 +94,6 @@ public class GuestController extends AbstractController  {
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
 		}
 
@@ -108,12 +101,10 @@ public class GuestController extends AbstractController  {
 	}
 
 	/**
-	 *
-	 * @Method Name  : qnaDelete
-	 * @Method ?Ñ§Î™? : qna ?Ç≠?†ú.
-	 * @?ûë?Ñ±?ûê   : ytkim
-	 * @?ûë?Ñ±?ùº   : 2019. 11. 1.
-	 * @Î≥?Í≤ΩÏù¥?†•  :
+	 * @method  : qnaDelete
+	 * @desc : qna delete
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
 	 * @param qnaid
 	 * @param req
 	 * @return
@@ -122,21 +113,17 @@ public class GuestController extends AbstractController  {
 	@RequestMapping(value="/delQna")
 	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
 
-		QnAInfo qnaInfo = new QnAInfo();
+		QnARequesetDTO qnaInfo = new QnARequesetDTO();
 		qnaInfo.setQnaid(qnaid);
-
-		qnaInfo.setUserid(SecurityUtil.loginId());
 
 		return userPreferencesServiceImpl.deleteQnaInfo(qnaInfo);
 	}
 
 	/**
-	 *
-	 * @Method Name  : qnaUpdate
-	 * @Method ?Ñ§Î™? : qna ?óÖ?ç∞?ù¥?ä∏.
-	 * @?ûë?Ñ±?ûê   : ytkim
-	 * @?ûë?Ñ±?ùº   : 2019. 11. 1.
-	 * @Î≥?Í≤ΩÏù¥?†•  :
+	 * @method  : qnaUpdate
+	 * @desc : qna update
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
 	 * @param qnaInfo
 	 * @param result
 	 * @param req
@@ -144,7 +131,7 @@ public class GuestController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/updQna")
-	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
@@ -155,7 +142,6 @@ public class GuestController extends AbstractController  {
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 		}
 

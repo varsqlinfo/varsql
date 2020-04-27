@@ -19,12 +19,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.QnAInfo;
 import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.util.CheckUtils;
 import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ParamMap;
@@ -289,7 +289,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/insQna")
-	public @ResponseBody ResponseResult insQna(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult insQna(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
@@ -300,7 +300,6 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
 
 			if(CheckUtils.isEmpty(qnaInfo.getQnaid())) {
 				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
@@ -327,10 +326,9 @@ public class UserPreferencesController extends AbstractController{
 	@RequestMapping(value="/delQna")
 	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
 
-		QnAInfo qnaInfo = new QnAInfo();
+		QnARequesetDTO qnaInfo = new QnARequesetDTO();
 		qnaInfo.setQnaid(qnaid);
 
-		qnaInfo.setUserid(SecurityUtil.loginId());
 
 		return userPreferencesServiceImpl.deleteQnaInfo(qnaInfo);
 	}
@@ -349,7 +347,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/updQna")
-	public @ResponseBody ResponseResult qnaUpdate(@Valid QnAInfo qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
@@ -360,7 +358,6 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			qnaInfo.setUserid(SecurityUtil.loginId());
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 		}
 

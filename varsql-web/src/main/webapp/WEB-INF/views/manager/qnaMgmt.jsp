@@ -51,14 +51,14 @@
 							
 		    				<div v-if="index != 0"><hr class="dotline"></div>
 		    			
-							<strong class="primary-font">{{ item.TITLE}}</strong>
+							<strong class="primary-font">{{ item.title}}</strong>
 							<div class="btn-group pull-right">
 							</div>
-							<div><a>{{item.UNAME}}</a>&nbsp;{{item.CHAR_CRE_DT}}</div>
-							<div><p>{{ item.QUESTION}}</p></div>
+							<div><a>{{item.uname}}</a>&nbsp;{{item.regDt}}</div>
+							<div><p>{{ item.question}}</p></div>
 							
 							<div class="form-group">
-								<label>Answer ({{item.CHAR_ANSWER_DT}})</label>
+								<label>Answer ({{item.answerDt}})</label>
 								<textarea v-model="item.ANSWER" class="form-control answerTextArea" rows="3"></textarea>
 							</div>
 							<div class="text-right"><button type="button" class="btn btn-xs btn-primary" @click="save(item)">Save</button></div>
@@ -102,7 +102,7 @@ VarsqlAPP.vueServiceBean({
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal' : _self.searchVal
-				,answerYn : _self.answerYn
+				,search_category : _self.answerYn
 			};
 			
 			this.$ajax({

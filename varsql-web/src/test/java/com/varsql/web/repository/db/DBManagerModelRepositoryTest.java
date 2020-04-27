@@ -16,9 +16,9 @@ import com.varsql.test.BaseJpaTestCase;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.UserMgmtRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.db.DBTypeEntityRepository;
+import com.varsql.web.repository.user.UserMgmtRepository;
 
 class DBManagerModelRepositoryTest extends BaseJpaTestCase{
 
