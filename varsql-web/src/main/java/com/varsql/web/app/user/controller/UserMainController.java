@@ -67,7 +67,7 @@ public class UserMainController extends AbstractController{
 		DataCommonVO paramMap = new DataCommonVO();
 
 		paramMap.put("role", SecurityUtil.loginRole(req));
-		paramMap.put("uid", SecurityUtil.loginId(req));
+		paramMap.put("uid", SecurityUtil.userViewId(req));
 
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
@@ -93,7 +93,7 @@ public class UserMainController extends AbstractController{
 	public @ResponseBody ResponseResult searchUserList(HttpServletRequest req, HttpServletResponse response) throws Exception {
 
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return userMainServiceImpl.selectSearchUserList(paramMap);
 	}
@@ -125,7 +125,7 @@ public class UserMainController extends AbstractController{
 
 			String requestURI = req.getRequestURI();
 
-			memoInfo.setRegId(SecurityUtil.loginId(req));
+			memoInfo.setRegId(SecurityUtil.userViewId(req));
 			resultObject = userMainServiceImpl.insertSendMemoInfo(memoInfo, requestURI.indexOf("resendMemo") > -1 ? true : false);
 		}
 
@@ -148,7 +148,7 @@ public class UserMainController extends AbstractController{
 	public @ResponseBody ResponseResult message(HttpServletRequest req, HttpServletResponse response) throws Exception {
 
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return userMainServiceImpl.selectMessageInfo(paramMap);
 	}
@@ -169,7 +169,7 @@ public class UserMainController extends AbstractController{
 	public @ResponseBody ResponseResult updMsgViewDt(HttpServletRequest req, HttpServletResponse response) throws Exception {
 
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return userMainServiceImpl.updateMemoViewDate(paramMap);
 	}

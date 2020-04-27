@@ -163,7 +163,7 @@ public final class SecurityUtil {
 	 * @param userInfo
 	 */
 	public static void setUserInfo(Map userInfo){
-		userInfo.put(VarsqlConstants.PARAM_UID,loginId());
+		userInfo.put(VarsqlConstants.PARAM_UID,userViewId());
 		userInfo.put(VarsqlConstants.PARAM_ROLE,getUserRoleInfo());
 
 	}
@@ -178,15 +178,15 @@ public final class SecurityUtil {
 	 * @param auth
 	 * @return
 	 */
-	public static String loginId() {
+	public static String userViewId() {
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		return loginId(auth);
+		return userViewId(auth);
 	}
-	public static String loginId(HttpServletRequest req) {
+	public static String userViewId(HttpServletRequest req) {
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		return loginId(auth);
+		return userViewId(auth);
 	}
-	public static String loginId(Authentication auth) {
+	public static String userViewId(Authentication auth) {
 		if(auth == null ) return null;
 
 		if(auth.getPrincipal() instanceof User){
@@ -260,7 +260,6 @@ public final class SecurityUtil {
 	 * @return
 	 */
 	public static DatabaseInfo userDBInfo (String conuid){
-		System.out.println("loginInfo().getDatabaseInfo() : "+ loginInfo().getDatabaseInfo());
 		return loginInfo().getDatabaseInfo().get(conuid);
 	}
 
@@ -278,7 +277,7 @@ public final class SecurityUtil {
 		Collection<? extends GrantedAuthority> userRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
 		List<String> userRoleInfo = new ArrayList<String>();
-		userRoleInfo.add(loginId());
+		userRoleInfo.add(userViewId());
 
 		if(userRole!=null){
 			Iterator<? extends GrantedAuthority> iter= userRole.iterator();

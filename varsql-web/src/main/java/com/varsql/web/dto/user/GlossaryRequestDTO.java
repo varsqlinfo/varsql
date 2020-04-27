@@ -42,7 +42,7 @@ public class GlossaryRequestDTO{
 	@Size(max=2000)
 	private String wordDesc;
 
-	public GlossaryEntity toModel() {
+	public GlossaryEntity toEntity() {
 		return GlossaryEntity.builder()
 				.wordIdx(wordIdx)
 				.word(word)

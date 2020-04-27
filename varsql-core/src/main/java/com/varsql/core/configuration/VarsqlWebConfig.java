@@ -74,7 +74,6 @@ public class VarsqlWebConfig extends AbstractXmlLoad{
 				if ( is == null ) 				
 					throw new ConfigurationLoadException( this.getClass().getName() + " - Can't open jdf configuration file path: [" + propFile +"]");
 				
-				//System.out.println("jdf_last_modified : ["+jdf_last_modified +"] lastModified : ["+ jdf_file.lastModified()+"]");
 				SAXBuilder builder = new SAXBuilder();
 				Element root = builder.build(is).getRootElement();
 				

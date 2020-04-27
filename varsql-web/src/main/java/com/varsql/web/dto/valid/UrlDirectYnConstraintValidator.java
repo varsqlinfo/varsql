@@ -15,8 +15,6 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     @Override
     public boolean isValid(final ConnectionRequestDTO vtConnection, final ConstraintValidatorContext context) {
 
-    	System.out.println(vtConnection.getUrlDirectYn());
-
     	if("Y".equals(vtConnection.getUrlDirectYn())) {
     		String  url = vtConnection.getVurl();
 

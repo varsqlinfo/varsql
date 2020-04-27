@@ -2,8 +2,6 @@ package com.varsql.core.db.ddl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +22,6 @@ import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.varsql.core.db.DBType;
-import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.exception.VarsqlRuntimeException;
 
 public class DDLTemplateFactory {
@@ -36,38 +33,7 @@ public class DDLTemplateFactory {
 
 	private Map<String ,HashMap<String,Template>> ddlTemplateInfo = new HashMap<String,HashMap<String,Template>>();
 
-	Handlebars handlebars;
-
-	public static void main(String[] args) {
-
-		Map param = new HashMap();
-		param.put("objectName", "asdfasdf");
-		param.put("owner", "weblogic");
-//		System.out.println("=================");
-//		System.out.println(DDLTemplateFactory.getInstance().ddlRender("oracle", "sequenceScript" , param));
-
-
-		param.put("objectName", "bbbb");
-		param.put("owner", "dsdfsdf");
-
-
-		param.put("CREATED","2018-06-01");
-		param.put("LAST_DDL_TIME","2018-06-01");
-		param.put("SEQUENCE_OWNER","WEBLOGIC");
-		param.put("SEQUENCE_NAME","SEQ_EMPNO");
-		param.put("MIN_VALUE","1");
-		param.put("MAX_VALUE","9999999999999999");
-		param.put("INCREMENT_BY","1");
-		param.put("CYCLE_FLAG","N");
-		param.put("ORDER_FLAG","N");
-		param.put("CACHE_SIZE","20");
-		param.put("LAST_NUMBER","8000");
-
-
-		System.out.println(DDLTemplateFactory.getInstance().ddlRender("oracle", "sequenceScript" , param));
-		System.out.println("=================");
-
-	}
+	private Handlebars handlebars;
 
 	private DDLTemplateFactory(){
 		handlebars = new Handlebars();

@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-
-import com.varsql.core.sql.builder.SqlSourceBuilder;
 /**
  * 
  * @FileName : SqlFormatterDb2.java
@@ -25,18 +23,6 @@ public class VarsqlFormatterImpl extends VarsqlFormatter{
 	}
 	public VarsqlFormatterImpl(String sql) {
 		super(sql);
-	}
-	
-	public static void main(String[] args) throws IOException {
-		
-		String  ugly_sql_code = FileUtils.readFileToString(new File("c:/zzz/sqltest.txt"));
-		
-		String str = "C:/Users/Administrator/Desktop/db2sql.txt";
-		
-		VarsqlFormatterImpl aaa= new VarsqlFormatterImpl();
-		
-		System.out.println(aaa.execute(ugly_sql_code));
-		
 	}
 	
 	public Map<String, HashMap<String, String>> getSqlClause() {

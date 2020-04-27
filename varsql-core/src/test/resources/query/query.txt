@@ -1,0 +1,12 @@
+/* name
+test query 
+ */
+SELECT /*+FIRST_ROWS */
+	EMPNO
+	,ENAME	/* name */
+	-- , test
+FROM EMP
+WHERE EMPNO = 7655;
+/* name
+test query 
+ */

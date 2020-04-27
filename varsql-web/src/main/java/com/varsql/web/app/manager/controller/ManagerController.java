@@ -152,7 +152,7 @@ public class ManagerController extends AbstractController{
 
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
@@ -182,7 +182,7 @@ public class ManagerController extends AbstractController{
 
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
@@ -209,7 +209,7 @@ public class ManagerController extends AbstractController{
 		model.addAttribute("selectMenu", "sqlLog");
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		searchParameter.addCustomParam("allYn", "Y");
 
 		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));

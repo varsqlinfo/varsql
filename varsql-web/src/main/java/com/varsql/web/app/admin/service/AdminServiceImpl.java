@@ -191,7 +191,7 @@ public class AdminServiceImpl extends AbstractService{
 
 		ResponseResult resultObject = new ResponseResult();
 
-		vtConnection.setUserId(SecurityUtil.loginId());
+		vtConnection.setUserId(SecurityUtil.userViewId());
 
 		DBTypeDriverEntity dbDriverModel = dbTypeDriverModelRepository.findByDriverId(vtConnection.getVdriver());
 
@@ -209,7 +209,7 @@ public class AdminServiceImpl extends AbstractService{
 
 		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(vtConnection));
 
-		DBConnectionEntity result = dbConnectionModelRepository.save(vtConnection.toModel());
+		DBConnectionEntity result = dbConnectionModelRepository.save(vtConnection.toEntity());
 
 		resultObject.setItemOne(result != null? 1 : 0);
 

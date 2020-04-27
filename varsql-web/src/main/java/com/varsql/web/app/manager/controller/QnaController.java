@@ -64,7 +64,7 @@ public class QnaController extends AbstractController {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return qnaServiceImpl.selectQnaMgmtList(searchParameter);
 	}

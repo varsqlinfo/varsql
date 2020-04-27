@@ -52,7 +52,6 @@ public class CommentRemoveConverter extends AbstractConverter {
 
 			int newLineIdx = Math.min(val.indexOf('\n', startIdx), val.indexOf("\r", startIdx));
 
-			//System.out.println(val.charAt(startIdx)+": @@@@@ : " + val.substring(startIdx ,valLen > startIdx + 100 ?startIdx + 100 : valLen));
 			for (int i = startIdx; i < valLen; i++) {
 				reIdx = regExpSpecialCharactersCheck('/', val, i);
 

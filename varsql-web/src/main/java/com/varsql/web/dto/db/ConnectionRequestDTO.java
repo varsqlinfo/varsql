@@ -118,7 +118,7 @@ public class ConnectionRequestDTO{
 	@Size(max=1000)
 	private String vquery;
 
-	public DBConnectionEntity toModel() {
+	public DBConnectionEntity toEntity() {
 		return DBConnectionEntity.builder()
 				.vconnid(vconnid)
 				.vname(vname)

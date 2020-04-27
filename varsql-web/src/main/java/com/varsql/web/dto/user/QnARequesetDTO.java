@@ -41,7 +41,7 @@ public class QnARequesetDTO {
 	@Size(max=2000)
 	private String answer;
 
-	public QnAEntity toModel() {
+	public QnAEntity toEntity() {
 		return QnAEntity.builder()
 				.qnaid(qnaid)
 				.title(title)

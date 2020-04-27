@@ -201,6 +201,14 @@ subprojects {
 	    jpa = true
 	    querydslSourcesDir = querydslSrcDir
 	}
+	
+	compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
+	    options.annotationProcessorPath = configurations.querydsl
+	}
+
+	configurations {
+	    querydsl.extendsFrom compileClasspath
+	}
 
 	sourceSets {
 	    main {
@@ -210,12 +218,8 @@ subprojects {
 	    }
 	}
 
-	compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
-	    options.annotationProcessorPath = configurations.querydsl
-	}
-
-	configurations {
-	    querydsl.extendsFrom compileClasspath
+	tasks.withType(JavaCompile) {
+	    options.annotationProcessorGeneratedSourcesDirectory = file(querydslSrcDir)
 	}
 	
 	test {

@@ -75,7 +75,7 @@ public class DbGroupServiceImpl{
 	public ResponseResult saveDbGroupInfo(DbGroupInfo dbGroupInfo) {
 		ResponseResult result = new ResponseResult();
 		
-		dbGroupInfo.setUserId(SecurityUtil.loginId());
+		dbGroupInfo.setUserId(SecurityUtil.userViewId());
 		
 		if("".equals(dbGroupInfo.getGroupId())){
 			dbGroupInfo.setGroupId(VarsqlUtils.generateUUID());

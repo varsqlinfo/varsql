@@ -59,7 +59,7 @@ public class ManagerCommonController extends AbstractController{
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		return managerCommonServiceImpl.selectdbList(searchParameter);
 	}
 
@@ -68,7 +68,7 @@ public class ManagerCommonController extends AbstractController{
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		return managerCommonServiceImpl.selectUserList(searchParameter);
 	}
 }

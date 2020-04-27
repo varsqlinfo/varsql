@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -18,10 +20,14 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VarsqlErrorCode;
 import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.dto.user.UserReqeustDTO;
+import com.varsql.web.model.entity.user.QnAEntity;
+import com.varsql.web.repository.spec.QnASpec;
+import com.varsql.web.repository.user.QnAEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -35,6 +41,9 @@ public class UserPreferencesServiceImpl{
 
 	@Autowired
 	UserPreferencesDAO userPreferencesDAO;
+	
+	@Autowired
+	private QnAEntityRepository qnaEntityRepository;
 
 	/**
 	 *
@@ -62,7 +71,7 @@ public class UserPreferencesServiceImpl{
 	 * @param res
 	 * @return
 	 */
-	public boolean updateUserInfo(UserForm userForm, HttpServletRequest req, HttpServletResponse res) {
+	public boolean updateUserInfo(UserReqeustDTO userForm, HttpServletRequest req, HttpServletResponse res) {
 		boolean flag = userPreferencesDAO.updateUserInfo(userForm)> 0;
 
 		if(flag) {
@@ -182,20 +191,13 @@ public class UserPreferencesServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult selectQna(SearchParameter searchParameter) {
+	public ResponseResult searchQna(SearchParameter searchParameter) {
+		Page<QnAEntity> result = qnaEntityRepository.findAll(
+			QnASpec.userQnaSearch(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
 
-		ResponseResult result = new ResponseResult();
-
-		int totalcnt = userPreferencesDAO.selectQnaTotalCnt(searchParameter);
-
-		if(totalcnt > 0){
-			result.setItemList(userPreferencesDAO.selectQna(searchParameter));
-		}else{
-			result.setItemList(null);
-		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-
-		return result;
+		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
 	/**
 	 *
@@ -208,17 +210,9 @@ public class UserPreferencesServiceImpl{
 	 * @return
 	 */
 	public ResponseResult saveQnaInfo(QnARequesetDTO qnaInfo, boolean insFlag) {
-
-		ResponseResult result = new ResponseResult();
-
-		if(insFlag){
-			qnaInfo.setQnaid(VarsqlUtils.generateUUID());
-			result.setItemOne(userPreferencesDAO.insertQnaInfo(qnaInfo) );
-		}else{
-			result.setItemOne(userPreferencesDAO.updateQnaInfo(qnaInfo) );
-		}
-
-		return result;
+		QnAEntity entity= qnaInfo.toEntity();
+		entity = qnaEntityRepository.save(entity);
+		return VarsqlUtils.getResponseResultItemOne(entity==null? 0:1);
 	}
 
 	/**
@@ -231,26 +225,18 @@ public class UserPreferencesServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult deleteQnaInfo(QnARequesetDTO qnaInfo) {
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult deleteQnaInfo(String qnaid) {
+		
+		QnAEntity entity = qnaEntityRepository.findByQnaid(Long.valueOf(qnaid));
+		
+		if(entity.getAnswerId() ==null) {
+			qnaEntityRepository.delete(entity);
+		}
+		
 		ResponseResult result = new ResponseResult();
-		result.setItemOne(userPreferencesDAO.deleteQnaInfo(qnaInfo));
-		return result;
-	}
-
-
-	/**
-	 *
-	 * @Method Name  : selectDetailQna
-	 * @Method 설명 :  q&a 상세보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 3.
-	 * @변경이력  :
-	 * @param paramMap
-	 * @return
-	 */
-	public ResponseResult selectDetailQna(QnARequesetDTO qnaInfo) {
-		ResponseResult result = new ResponseResult();
-		result.setItemOne( userPreferencesDAO.selectDetailQna(qnaInfo));
+		result.setMessageCode("answer.msg.notdelete");
+		
 		return result;
 	}
 }

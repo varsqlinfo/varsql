@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.common.dao.BaseDAO;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.dto.user.UserReqeustDTO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.SearchParameter;
 
@@ -57,7 +57,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param userForm
 	 * @return
 	 */
-	public int updateUserInfo(UserForm userForm) {
+	public int updateUserInfo(UserReqeustDTO userForm) {
 		return getSqlSession().update("userPreferencesMapper.updateUserInfo", userForm);
 	}
 

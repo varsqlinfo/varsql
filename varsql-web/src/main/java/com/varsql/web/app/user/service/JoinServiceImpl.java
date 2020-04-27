@@ -4,11 +4,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.db.encryption.EncryptionFactory;
-import com.varsql.web.app.user.beans.JoinForm;
-import com.varsql.web.app.user.dao.JoinDAO;
+import com.varsql.web.dto.user.UserReqeustDTO;
+import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.encryption.EncryptDecryptException;
 
@@ -25,57 +26,51 @@ public class JoinServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
 
 	@Autowired
-	JoinDAO joinDAO ;
+	private UserMgmtRepository userMgmtRepository; 
 
 	/**
-	 *
-	 * @Method Name  : insertUserInfo
-	 * @Method 설명 : 사용자 정보 등록.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 29.
-	 * @변경이력  :
-	 * @param userForm
+	 * @method  : saveUser
+	 * @desc : 사용자 정보 등록.
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
+	 * @param joinForm
 	 * @return
 	 * @throws EncryptDecryptException
 	 */
-	public boolean insertUserInfo(JoinForm	joinForm) throws EncryptDecryptException {
-		String viewId = joinDAO.selectUserMaxVal();
-
-		try{
-			viewId=String.format("%07d", Integer.parseInt(viewId)+1);
-		}catch(Exception e){
-			viewId=String.format("%07d", 1);
-		}
-
-		joinForm.setUid(joinForm.getUid().trim());
-		joinForm.setUname(joinForm.getUname().trim());
+	public boolean saveUser(UserReqeustDTO joinForm) throws EncryptDecryptException {
 		joinForm.setUpw(EncryptionFactory.getInstance().encrypt(joinForm.getUpw()));
-		joinForm.setViewid(viewId);
-		joinForm.setRole(AuthorityType.GUEST.name());
-		joinForm.setAcceptYn("N");
-		joinForm.setCreId("join");
+		
+		UserEntity entity = joinForm.toEntity();
+		
+		entity.setUserRole(AuthorityType.GUEST.name());
+		entity.setAcceptYn("N");
+		
+		entity = userMgmtRepository.save(entity);
 
-		return joinDAO.insertUserInfo(joinForm) > 0;
+		return entity== null? false :true;
 	}
 
 	/**
-	 *
-	 * @Method Name  : selectIdCheck
-	 * @Method 설명 : id check
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 28.
-	 * @변경이력  :
-	 * @param paramMap
+	 * @method  : idCheck
+	 * @desc : id check
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
+	 * @param uid
 	 * @return
 	 */
-	public ResponseResult selectIdCheck(String uid) {
-
-		uid = uid.trim();
-
-		ResponseResult resultObject = new ResponseResult();
-		resultObject.setItemOne(joinDAO.selectIdCheck(uid));
-
-		return resultObject;
+	public ResponseResult idCheck(String uid) {
+		return VarsqlUtils.getResponseResultItemOne(userMgmtRepository.countByUid(uid));
 	}
-
+	
+	/**
+	 * @method  : emailCheck
+	 * @desc : email check
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
+	 * @param uemail
+	 * @return
+	 */
+	public ResponseResult emailCheck(String uemail) {
+		return VarsqlUtils.getResponseResultItemOne(userMgmtRepository.countByUemail(uemail));
+	}
 }

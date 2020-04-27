@@ -47,7 +47,7 @@ public class QnaServiceImpl{
 	public ResponseResult selectQnaMgmtList(SearchParameter searchParameter) {
 		
 		Page<QnAEntity> result = qnaEntityRepository.findAll(
-			QnASpec.searchField(searchParameter)
+			QnASpec.answerTypeSearch(searchParameter)
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
@@ -66,9 +66,9 @@ public class QnaServiceImpl{
 	 */
 	public ResponseResult updateQnaAnswerContent(QnARequesetDTO qnaInfo) {
 		
-		QnAEntity qnaEntity = qnaInfo.toModel();
+		QnAEntity qnaEntity = qnaInfo.toEntity();
 		
-		qnaEntity.setAnswerId(SecurityUtil.loginId());
+		qnaEntity.setAnswerId(SecurityUtil.userViewId());
 		qnaEntity.setAnswerDt(DefaultValueUtils.currentTimestamp());
 		
 		qnaEntity = qnaEntityRepository.save(qnaEntity);

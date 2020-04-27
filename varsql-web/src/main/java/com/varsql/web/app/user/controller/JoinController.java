@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.user.beans.JoinForm;
 import com.varsql.web.app.user.service.JoinServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.user.UserReqeustDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.encryption.EncryptDecryptException;
@@ -51,13 +51,11 @@ public class JoinController extends AbstractController {
 
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("111111111bbb");
-		System.out.println("111111111bbb");
 		return getModelAndView("/joinForm", VIEW_PAGE.JOIN);
 	}
 
 	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public @ResponseBody ResponseResult insertUserInfo(@Valid JoinForm	joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) throws EncryptDecryptException {
+	public @ResponseBody ResponseResult insertUserInfo(@Valid UserReqeustDTO joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) throws EncryptDecryptException {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 
@@ -69,20 +67,25 @@ public class JoinController extends AbstractController {
 			resultObject.setItemList(result.getAllErrors());
 		}
 
-		int idCheck = joinServiceImpl.selectIdCheck(joinForm.getUid()).getItem();
+		Long idCheck = joinServiceImpl.idCheck(joinForm.getUid()).getItem();
 
 		if(idCheck > 0){
 			resultObject.setResultCode(ResultConst.CODE.DUPLICATES.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.CONFLICT.toString());
 		}
 
-		resultObject.setItemOne(joinServiceImpl.insertUserInfo(joinForm));
+		resultObject.setItemOne(joinServiceImpl.saveUser(joinForm));
 
 		return resultObject;
 	}
 
 	@RequestMapping(value = "/idCheck")
-	public @ResponseBody ResponseResult idCheck(@RequestParam(value = "uid")  String uid) {
-		return joinServiceImpl.selectIdCheck(uid);
+	public @ResponseBody ResponseResult idCheck(@RequestParam(value = "uid" , required = true)  String uid) {
+		return joinServiceImpl.idCheck(uid);
+	}
+	
+	@RequestMapping(value = "/emailCheck")
+	public @ResponseBody ResponseResult emailCheck(@RequestParam(value = "uemail" , required = true)  String uemail) {
+		return joinServiceImpl.emailCheck(uemail);
 	}
 }

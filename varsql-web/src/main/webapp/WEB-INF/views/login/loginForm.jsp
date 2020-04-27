@@ -73,7 +73,7 @@ $(document).ready(function (){
 
 	$('#vsql_login_id').val('varsqladmin');
 	$('#vsql_login_password').val('varsqladmin');
-	document.f.submit();
+	//document.f.submit();
 
 
 	$('#id,#password').on('keypress' , function (e){

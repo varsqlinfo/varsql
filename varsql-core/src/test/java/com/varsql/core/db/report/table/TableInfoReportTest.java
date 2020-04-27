@@ -7,15 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.util.HSSFColor;
+import org.junit.jupiter.api.Test;
 
 import com.varsql.core.db.report.VarsqlReportConfig;
+import com.varsql.core.test.BaseTest;
 import com.vartech.common.excel.ExcelHeaderVO;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.excel.ExcelReportVO;
 
-public class TableInfoReportTest{
-
-	public static void main(String[] args) throws IOException {
+class TableInfoReportTest extends BaseTest{
+	
+	@Test
+	public void testExport() throws IOException{
 		
 		ExcelReportVO[] columnArr1 = new ExcelReportVO[VarsqlReportConfig.TABLE_COLUMN.values().length];
 		

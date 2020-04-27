@@ -259,7 +259,7 @@ public final class VarsqlUtils {
 	 */
 	public static ParamMap setDefaultParam(ParamMap paramInfo) {
 		// dp  = default parameter;
-		paramInfo.put("dp_viewId", SecurityUtil.loginId());
+		paramInfo.put("dp_viewId", SecurityUtil.userViewId());
 		return paramInfo;
 	}
 

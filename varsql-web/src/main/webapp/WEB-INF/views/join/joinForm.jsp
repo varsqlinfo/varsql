@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<%@ page import=" java.util.*, java.io.*" %>
 <!doctype html>
 <HTML>
 
@@ -83,8 +82,8 @@
     
     <div style="display:none;">
 		<form name="f" action="${varsqlLoginUrl}" method="post" onsubmit="return false;">
-				<input type="text" id="id" name="id" value=""> 
-				<input type="password" id="password" name="password" value="">
+			<input type="text" id="vsql_login_id" name="vsql_login_id" value=""> 
+			<input type="password" id="vsql_login_password" name="vsql_login_password" value="">
 		</form>
 	</div>
     <!--/form-->
@@ -133,9 +132,33 @@ var joinForm = {
 				    .data('bootstrapValidator')
 				    .updateStatus('uid', 'VALIDATING')
 				    .validateField('uid'); 
+				}
+			});
+		});
+		
+		var emailChecVal = -1; 
+		
+		$('#uemail').focusout(function(e) {
+			
+			var tmpVal =  $.trim($(this).val()); 
+			
+			$(this).val(tmpVal);
+			
+			VARSQL.req.ajax({
+				url: {type:VARSQL.uri.join, url:'/emailCheck'},
+				data:{
+					uemail : $.trim(tmpVal)
 				},
-				error: function(xhr, status, e) {
-					VARSQL.log(status + " : " + e + xhr.responseText);
+				success: function(resData) {
+					if(resData.item  > 0){
+						emailChecVal = 1; 
+					}else{
+						emailChecVal = 0;
+					}
+					$('#joinForm')
+				    .data('bootstrapValidator')
+				    .updateStatus('uemail', 'VALIDATING')
+				    .validateField('uemail'); 
 				}
 			});
 		});
@@ -157,7 +180,7 @@ var joinForm = {
 		                     callback: function (value, validator, $field) {
 		                   	  	return idChecVal < 1;
 		                     }
-		                 }
+		                }
 					}
 			  	}	
 				,uname: {
@@ -178,6 +201,12 @@ var joinForm = {
 						,emailAddress: {
 							message: 'The input is not a valid email address'
 						}
+						,callback: {
+		                     message: '이미 존재하는 이메일 입니다.',
+		                     callback: function (value, validator, $field) {
+		                   	  	return emailChecVal < 1;
+		                     }
+		                }
 				  }
 			  	}
 				,upw: {
@@ -247,8 +276,8 @@ var joinForm = {
 						return ;
 					}
 				}
-				$('#id').val( $('#uid').val());
-				$('#password').val($('#upw').val());
+				$('#vsql_login_id').val( $('#uid').val());
+				$('#vsql_login_password').val($('#upw').val());
 				
 				document.f.submit();
 			},

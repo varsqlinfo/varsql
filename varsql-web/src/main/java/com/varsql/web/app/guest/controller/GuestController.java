@@ -48,9 +48,9 @@ public class GuestController extends AbstractController  {
 	@Autowired
 	private UserPreferencesServiceImpl userPreferencesServiceImpl;
 
-	@RequestMapping({"","/","/main"})
+	@RequestMapping(value = {"","/","/main"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
-		return getModelAndView("guestMain" , VIEW_PAGE.GUEST);
+		return getModelAndView("/guestMain" , VIEW_PAGE.GUEST);
 	}
 
 	/**
@@ -64,10 +64,7 @@ public class GuestController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
-
-		return userPreferencesServiceImpl.selectQna(searchParameter);
+		return userPreferencesServiceImpl.searchQna(HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -111,12 +108,8 @@ public class GuestController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/delQna")
-	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
-
-		QnARequesetDTO qnaInfo = new QnARequesetDTO();
-		qnaInfo.setQnaid(qnaid);
-
-		return userPreferencesServiceImpl.deleteQnaInfo(qnaInfo);
+	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true) String qnaid) throws Exception {
+		return userPreferencesServiceImpl.deleteQnaInfo(qnaid);
 	}
 
 	/**

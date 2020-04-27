@@ -19,12 +19,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.beans.PasswordForm;
-import com.varsql.web.app.user.beans.UserForm;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.util.CheckUtils;
 import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ParamMap;
@@ -75,7 +75,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 
 		setModelDefaultValue(req , model);
-		model.addAttribute("detailInfo" , userPreferencesServiceImpl.selectUserDetail(SecurityUtil.loginId(req)));
+		model.addAttribute("detailInfo" , userPreferencesServiceImpl.selectUserDetail(SecurityUtil.userViewId(req)));
 		model.addAttribute("localeInfo" , LocaleConstants.values());
 		return getModelAndView("/general", VIEW_PAGE.USER_PREFERENCES, model);
 	}
@@ -100,7 +100,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/userInfoSave"})
-	public @ResponseBody ResponseResult userInfoSave(@Valid UserForm userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public @ResponseBody ResponseResult userInfoSave(@Valid UserReqeustDTO userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -110,7 +110,6 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			userForm.setViewid(SecurityUtil.loginId(req));
 			resultObject.setItemOne(userPreferencesServiceImpl.updateUserInfo(userForm,req,res));
 		}
 
@@ -162,7 +161,7 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
 			resultObject.setItemList(result.getAllErrors());
 		}else{
-			passwordForm.setViewid(SecurityUtil.loginId(req));
+			passwordForm.setViewid(SecurityUtil.userViewId(req));
 			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm, resultObject);
 		}
 
@@ -225,7 +224,7 @@ public class UserPreferencesController extends AbstractController{
 	@RequestMapping({"/listMsg"})
 	public @ResponseBody ResponseResult preferenceslistMsg(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return userPreferencesServiceImpl.selectUserMsg(searchParameter);
 	}
@@ -251,7 +250,7 @@ public class UserPreferencesController extends AbstractController{
 	@RequestMapping({"/deleteMsg"})
 	public @ResponseBody ResponseResult preferencesdeleteMsg(HttpServletRequest req) throws Exception {
 		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return userPreferencesServiceImpl.deleteUserMsg( paramMap);
 	}
@@ -269,10 +268,7 @@ public class UserPreferencesController extends AbstractController{
 	 */
 	@RequestMapping(value = "/qnaList")
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
-
-		return userPreferencesServiceImpl.selectQna(searchParameter);
+		return userPreferencesServiceImpl.searchQna(HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -324,13 +320,8 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/delQna")
-	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true)  String qnaid,HttpServletRequest req) throws Exception {
-
-		QnARequesetDTO qnaInfo = new QnARequesetDTO();
-		qnaInfo.setQnaid(qnaid);
-
-
-		return userPreferencesServiceImpl.deleteQnaInfo(qnaInfo);
+	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true) String qnaid) throws Exception {
+		return userPreferencesServiceImpl.deleteQnaInfo(qnaid);
 	}
 
 	/**

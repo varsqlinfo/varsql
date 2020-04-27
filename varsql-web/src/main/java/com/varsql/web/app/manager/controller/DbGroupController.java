@@ -205,7 +205,7 @@ public class DbGroupController extends AbstractController {
 		
 		paramMap.put("selectItem", selectItem);
 		paramMap.put("groupId", vconid);
-		paramMap.put("uid", SecurityUtil.loginId(req));
+		paramMap.put("uid", SecurityUtil.userViewId(req));
 		paramMap.put("mode", mode);
 		
 		return dbGroupServiceImpl.updateDbGroupUser(paramMap);

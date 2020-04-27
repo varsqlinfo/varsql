@@ -75,13 +75,8 @@ public final class VarsqlFormatterUtil {
 	public static ResponseResult formatResponseResult(String sql, String dbType, FORMAT_TYPE format_type){
 		ResponseResult result = new ResponseResult();
 		
-		//sql = Native2Ascii.nativeToAscii(sql);
-		
-		//System.out.println(" formatResponseResult " + sql);
-		
 		String resultSql = "";
 				
-		
 		if(format_type.equals(FORMAT_TYPE.VARSQL)){
 			resultSql = new VarsqlFormatterImpl().execute(sql); 
 		}else{

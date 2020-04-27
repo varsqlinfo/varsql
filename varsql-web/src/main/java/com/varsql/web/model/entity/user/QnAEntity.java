@@ -61,7 +61,7 @@ public class QnAEntity extends AabstractAuditorModel{
 	private String delYn;
 	
 	@OneToOne
-	@JoinColumn(name = REG_ID , referencedColumnName = UserEntity.VIEWID)
+	@JoinColumn(name = "REG_ID" , referencedColumnName = UserEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
 	private UserEntity author;
 
 	@Builder

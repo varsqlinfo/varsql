@@ -68,8 +68,6 @@ public class FileUploadController extends AbstractController {
 		
 		ParamMap param = VarsqlUtils.stringToObject(jsonParam);
 		
-		System.out.println("param : "+param);
-		
 		ResponseResult result = new ResponseResult(); 
         if (uploadfile.isEmpty()) {
         	result.setMessage("select file");
@@ -122,20 +120,12 @@ public class FileUploadController extends AbstractController {
 		FileInfo fileInfo;
 		int fileLen = files.size(); 
 		
-		System.out.println(System.getProperty("com.varsql.install.root"));
-		System.out.println(System.getProperty("catalina.home"));
-		System.out.println(System.getProperty("com.varsql.install.root"));
-		System.out.println(Configuration.getInstance().getInstallRoot());
-		System.out.println(Configuration.getInstance().getFileUploadPath());
-		
 		String uploadDir = fileUploadPath+File.separator +DateUtils.getCurrentDate("yyyyMMdd");
 		
 		final File dir = new File(uploadDir);
 		if(!dir.isDirectory()){
 			dir.mkdirs();
 		}
-		
-		System.out.println("uploadDir : "+ uploadDir);
 		
 		for (int i = 0; i < fileLen ; i++) {
 			MultipartFile mfileInfo = files.get(i);

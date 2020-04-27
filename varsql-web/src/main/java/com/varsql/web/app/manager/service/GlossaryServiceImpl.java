@@ -33,13 +33,12 @@ public class GlossaryServiceImpl{
 	
 	@Autowired
 	private GlossaryEntityRepository glossaryEntityRepository;
+	
 	/**
-	 * 
-	 * @Method Name  : selectUserList
-	 * @Method 설명 : 사용자 목록 보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 12. 1. 
-	 * @변경이력  :
+	 * @method  : selectGlossaryList
+	 * @desc : 용어집 보기.
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
 	 * @param searchParameter
 	 * @return
 	 */
@@ -49,23 +48,21 @@ public class GlossaryServiceImpl{
 			GlossarySpec.searchField(searchParameter)
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
-
+		
 		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
 
 	/**
-	 * 
-	 * @Method Name  : saveGlossaryInfo
-	 * @Method 설명 : 저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
-	 * @변경이력  :
-	 * @param searchParameter
+	 * @method  : saveGlossaryInfo
+	 * @desc : 저장
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
+	 * @param glossaryInfo
 	 * @return
 	 */
 	public ResponseResult saveGlossaryInfo(GlossaryRequestDTO glossaryInfo) {
 		
-		GlossaryEntity entity = glossaryInfo.toModel();
+		GlossaryEntity entity = glossaryInfo.toEntity();
 		
 		entity = glossaryEntityRepository.save(entity);
 		
@@ -73,13 +70,11 @@ public class GlossaryServiceImpl{
 	}
 	
 	/**
-	 * 
-	 * @Method Name  : deleteGlossaryInfo
-	 * @Method 설명 : 삭제.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
-	 * @변경이력  :
-	 * @param parameter
+	 * @method  : deleteGlossaryInfo
+	 * @desc : 삭제
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 27. 
+	 * @param wordIdx
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)

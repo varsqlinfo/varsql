@@ -37,7 +37,7 @@ public class AppUUIDGenerator implements IdentifierGenerator, Configurable {
 	@Override
 	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 		try {
-			String uuid = java.util.UUID.randomUUID().toString().replaceAll("_", "");
+			String uuid = java.util.UUID.randomUUID().toString().replaceAll("-", "");
 			return prefix + uuid;
 		} catch (RuntimeException he) {
 			he.printStackTrace();

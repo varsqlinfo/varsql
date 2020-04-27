@@ -28,7 +28,11 @@ public class JPAAuditorAware implements AuditorAware<String> {
 		if (null == authentication || !authentication.isAuthenticated()) {
 			return Optional.empty();
 		}
-
-		return Optional.of(((User) authentication.getPrincipal()).getViewid());
+		
+		if(authentication.getPrincipal() instanceof User) {
+			return Optional.of(((User) authentication.getPrincipal()).getViewid());
+		}else {
+			return Optional.of(authentication.getPrincipal().toString());
+		}
 	}
 }

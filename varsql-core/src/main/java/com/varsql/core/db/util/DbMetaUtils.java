@@ -34,7 +34,6 @@ public final class DbMetaUtils {
 	
 	public static String getTypeName(DataTypeInfo dataTypeInfo, ColumnInfo column, String typeName, String columnSize, String degitsLen) {
 		
-		//System.out.println(typeName+" :: "+  dataTypeInfo.getDbType() +" >> "+columnSize +" :: " + degitsLen);
 		if(dataTypeInfo.isSizeYn() && columnSize !=null &&  !"".equals(columnSize)){
 			
 			String addStr =typeName+"(" + columnSize;

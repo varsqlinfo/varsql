@@ -459,7 +459,6 @@ class MapEntryConverter implements Converter {
         AbstractMap map = (AbstractMap) value;
         for (Object obj : map.entrySet()) {
             Entry entry = (Entry) obj;
-            //System.out.println(entry.getValue().toString());
             writer.startNode(entry.getKey().toString());
             writer.setValue(String.valueOf(entry.getValue()));
             writer.endNode();

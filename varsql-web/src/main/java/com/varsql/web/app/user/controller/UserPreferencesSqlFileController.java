@@ -58,7 +58,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	@RequestMapping(value={"/list"},method = RequestMethod.POST)
 	public @ResponseBody ResponseResult list(HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return  userPreferencesSqlFileServiceImpl.sqlFileList(searchParameter);
 	}
@@ -76,7 +76,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	@RequestMapping(value={"/detail"},method = RequestMethod.POST)
 	public @ResponseBody ResponseResult detail(HttpServletRequest req) {
 		ParamMap param = HttpUtils.getServletRequestParam(req);
-		param.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		param.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(param);
 	}
@@ -96,7 +96,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 		DataCommonVO paramMap = new DataCommonVO();
 
 		paramMap.put("selectItem", selectItem);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.loginId(req));
+		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return  userPreferencesSqlFileServiceImpl.deleteSqlFile(paramMap);
 	}

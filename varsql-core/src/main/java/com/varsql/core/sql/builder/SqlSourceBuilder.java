@@ -1,6 +1,5 @@
 package com.varsql.core.sql.builder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +20,6 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.util.JdbcConstants;
 import com.varsql.core.connection.pool.ConnectionValidation;
 import com.varsql.core.sql.util.SqlReplaceUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -43,27 +40,6 @@ public class SqlSourceBuilder {
 	
 	
 	private SqlSourceBuilder(){}
-	
-	public static void main(String[] args) {
-		String sql;
-		
-		String dbType = JdbcConstants.ORACLE; 
-		
-		try {
-			sql = FileUtils.readFileToString(new File("c:/zzz/sqltest.txt"));
-			
-			HashMap param = new HashMap();
-			
-			List<SqlSource> statements = SqlSourceBuilder.getSqlSourceList(sql,param, dbType);
-			
-			for(SqlSource statement : statements){
-				
-				System.out.println("main sysout " + statement.getQuery());
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * 
@@ -106,18 +82,13 @@ public class SqlSourceBuilder {
 		}
 		return result;
 	}
-	
 	/**
-	 * 
-	 * @Method Name  : getSqlSource
-	 * @Method 설명 : sqlSource 구하기
-	 * @작성일   : 2015. 4. 9. 
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param newQuery
-	 * @param param 
+	 * @method  : getSqlSource
+	 * @desc : sqlSource 구하기
+	 * @author   : ytkim
+	 * @date   : 2015. 4. 9. 
+	 * @param sql
 	 * @return
-	 * @throws ParseException 
 	 */
 	public static SqlSource getSqlSource(String sql) {
 		return getSqlSource(sql , new HashMap());
