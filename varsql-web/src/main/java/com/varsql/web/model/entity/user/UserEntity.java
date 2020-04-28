@@ -1,6 +1,6 @@
 package com.varsql.web.model.entity.user;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
 import com.varsql.web.model.entity.db.DBManagerEntity;
@@ -49,7 +50,8 @@ public class UserEntity extends AabstractAuditorModel{
 
 	@Column(name ="UID")
 	private String uid;
-
+	
+	@JsonIgnore
 	@Column(name ="UPW")
 	private String upw;
 
@@ -82,12 +84,8 @@ public class UserEntity extends AabstractAuditorModel{
 
 	@NotAudited
 	@JsonManagedReference
-	@OneToMany(mappedBy = "userModel", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<DBManagerEntity> dbList;
-
-//	@ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = VIEWID)
-//    private DBManagerModel dbManagerModel;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<DBManagerEntity> dbList;
 
 	@Builder
 	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail, String userRole, String description, String acceptYn, String blockYn) {
@@ -129,13 +127,4 @@ public class UserEntity extends AabstractAuditorModel{
 	public final static String ACCEPT_YN="acceptYn";
 
 	public final static String BLOCK_YN="blockYn";
-
-	public final static String REG_ID="regId";
-
-	public final static String REG_DT="regDt";
-
-	public final static String UPD_ID="updId";
-
-	public final static String UPD_DT="updDt";
-
 }

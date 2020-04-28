@@ -34,5 +34,6 @@ public class JPAAuditorAware implements AuditorAware<String> {
 		}else {
 			return Optional.of(authentication.getPrincipal().toString());
 		}
+		
 	}
 }

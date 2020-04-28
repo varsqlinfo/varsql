@@ -26,5 +26,18 @@ public final class ValidateUtils {
 		}
 		return Long.valueOf(val);
 	}
+	
+	/**
+	 * @method  : notEmptyValue
+	 * @desc : 업데이트시 id 가 있을경우 업데이트 하지 않기 위해서 null처리. 
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 29. 
+	 * @param id
+	 * @param val
+	 * @return
+	 */
+	public static String updateValueNull(String id, String val) {
+		return id !=null && !"".equals(id) ? null: val;
+	}
 }
 

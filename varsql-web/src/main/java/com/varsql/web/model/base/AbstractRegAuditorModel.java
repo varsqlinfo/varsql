@@ -1,4 +1,5 @@
 package com.varsql.web.model.base;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -24,13 +25,14 @@ import lombok.Setter;
 
 *-----------------------------------------------------------------------------
  */
+@SuppressWarnings("serial")
 @Setter
 @Getter
 @MappedSuperclass
 @EntityListeners(value = { AuditingEntityListener.class })
-public abstract class AbstractRegAuditorModel {
+public abstract class AbstractRegAuditorModel implements Serializable{
 
-    @CreatedBy
+	@CreatedBy
     @Column(name="REG_ID", nullable = false, updatable = false)
     private String regId;
 

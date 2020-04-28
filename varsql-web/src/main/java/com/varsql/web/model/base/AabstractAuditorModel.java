@@ -7,6 +7,8 @@ import javax.persistence.MappedSuperclass;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,11 +28,13 @@ import lombok.Setter;
 @Getter
 @MappedSuperclass
 public abstract class AabstractAuditorModel extends AbstractRegAuditorModel{
-
+	
+	@JsonIgnore
     @LastModifiedBy
     @Column(name="UPD_ID")
     private String updId;
 
+	@JsonIgnore
     @LastModifiedDate
     @Column(name="UPD_DT")
     private LocalDateTime updDt;

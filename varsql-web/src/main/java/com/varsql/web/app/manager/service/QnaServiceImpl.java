@@ -5,8 +5,9 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.dao.QnaDAO;
+import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.user.QnARequesetDTO;
-import com.varsql.web.model.entity.user.QnAEntity;
+import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.repository.user.QnAEntityRepository;
 import com.varsql.web.util.DefaultValueUtils;
@@ -29,7 +30,7 @@ import com.vartech.common.app.beans.SearchParameter;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class QnaServiceImpl{
+public class QnaServiceImpl extends AbstractService{
 	
 	@Autowired
 	private QnAEntityRepository qnaEntityRepository; 
@@ -52,6 +53,7 @@ public class QnaServiceImpl{
 		);
 
 		return VarsqlUtils.getResponseResult(result, searchParameter);
+		
 	}
 	
 	/**
@@ -65,13 +67,14 @@ public class QnaServiceImpl{
 	 * @return
 	 */
 	public ResponseResult updateQnaAnswerContent(QnARequesetDTO qnaInfo) {
+		QnAEntity qnaEntity = qnaEntityRepository.findByQnaid(qnaInfo.getQnaid());
 		
-		QnAEntity qnaEntity = qnaInfo.toEntity();
-		
+		qnaEntity.setAnswer(qnaInfo.getAnswer());
 		qnaEntity.setAnswerId(SecurityUtil.userViewId());
 		qnaEntity.setAnswerDt(DefaultValueUtils.currentTimestamp());
 		
-		qnaEntity = qnaEntityRepository.save(qnaEntity);
+		qnaEntityRepository.save(qnaEntity);
+		
 		return VarsqlUtils.getResponseResultItemOne(qnaEntity != null? 1 : 0);
 		
 	}

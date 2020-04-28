@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.user;
+package com.varsql.web.model.entity.app;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

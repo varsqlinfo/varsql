@@ -3,6 +3,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 
 /**
@@ -21,7 +22,7 @@ public class DBConnectionSpec extends DefaultSpec{
 
 	public static Specification<DBConnectionEntity> getDelYn() {
     	return (root, query, criteriaBuilder) -> {
-    		Predicate predicate = criteriaBuilder.equal(root.get(DBConnectionEntity.DEL_YN), "N");
+    		Predicate predicate = criteriaBuilder.notEqual(root.get(DBConnectionEntity.DEL_YN), true);
     		return predicate;
     	};
     }

@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.varsql.web.common.service.AbstractService;
-import com.varsql.web.model.entity.sql.SqlExceptionLogEntity;
-import com.varsql.web.repository.spec.SqlExceptionLogSpec;
+import com.varsql.web.model.entity.app.ExceptionLogEntity;
+import com.varsql.web.repository.spec.ExceptionLogSpec;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -41,8 +41,8 @@ public class ErrorLogServiceImpl  extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectErrorList(SearchParameter searchParameter) {
-		Page<SqlExceptionLogEntity> result = sqlExceptionLogEntityRepository.findAll(
-			SqlExceptionLogSpec.searchField(searchParameter)
+		Page<ExceptionLogEntity> result = sqlExceptionLogEntityRepository.findAll(
+			ExceptionLogSpec.searchField(searchParameter)
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 

@@ -121,6 +121,7 @@ public class JPAConfigurer {
         hibernateProperties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
         hibernateProperties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
         hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
+        hibernateProperties.setProperty("hibernate.default_batch_fetch_size", "10"); // join할때 
 
         hibernateProperties.setProperty("org.hibernate.envers.audit_table_prefix", "ZAUD_");	// audit 테이블명 prefix
         hibernateProperties.setProperty("org.hibernate.envers.audit_table_suffix", "");		// suffix

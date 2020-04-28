@@ -35,7 +35,6 @@ class DBConnectionModelRepositoryTest extends BaseJpaTestCase{
 				.vdbversion(ValidateUtils.longValueOf("1"))
 				.vdbschema("PUBLIC")
 				.useYn("Y")
-				.delYn("N")
 				.basetableYn("N")
 				.schemaViewYn("N")
 				.lazyloadYn("Y")

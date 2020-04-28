@@ -21,11 +21,12 @@ import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
+import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VarsqlErrorCode;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
-import com.varsql.web.model.entity.user.QnAEntity;
+import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.repository.user.QnAEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
@@ -36,7 +37,7 @@ import com.vartech.common.encryption.EncryptDecryptException;
 import com.vartech.common.utils.PagingUtil;
 
 @Service
-public class UserPreferencesServiceImpl{
+public class UserPreferencesServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesServiceImpl.class);
 
 	@Autowired
@@ -196,7 +197,7 @@ public class UserPreferencesServiceImpl{
 			QnASpec.userQnaSearch(searchParameter)
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
-
+		
 		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
 	/**
@@ -228,7 +229,7 @@ public class UserPreferencesServiceImpl{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult deleteQnaInfo(String qnaid) {
 		
-		QnAEntity entity = qnaEntityRepository.findByQnaid(Long.valueOf(qnaid));
+		QnAEntity entity = qnaEntityRepository.findByQnaid(qnaid);
 		
 		if(entity.getAnswerId() ==null) {
 			qnaEntityRepository.delete(entity);

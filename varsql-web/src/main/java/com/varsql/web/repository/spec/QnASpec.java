@@ -10,7 +10,8 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.model.entity.user.QnAEntity;
+import com.varsql.web.model.EntityFieldConstants;
+import com.varsql.web.model.entity.app.QnAEntity;
 import com.vartech.common.app.beans.SearchParameter;
 
 /**
@@ -32,8 +33,10 @@ public class QnASpec extends DefaultSpec {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-
-			predicates.add(delYn( root ,cb));
+			
+			root.fetch(EntityFieldConstants.REG_INFO);
+			
+			predicates.add(delYn(root, cb));
 
 			switch (param.getCategory()) {
 			case "Y":
@@ -46,8 +49,8 @@ public class QnASpec extends DefaultSpec {
 				break;
 			}
 
-			predicates.add(titleOrQuestion( root ,cb , param));
-
+			titleOrQuestion(predicates, root ,cb , param);
+			
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
 	}
@@ -57,11 +60,13 @@ public class QnASpec extends DefaultSpec {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			
+			root.fetch(EntityFieldConstants.REG_INFO);
+			
 			predicates.add(delYn( root ,cb));
 			
-			predicates.add(cb.equal(root.get(QnAEntity.REG_ID), SecurityUtil.userViewId()));
+			predicates.add(cb.equal(root.get(EntityFieldConstants.REG_ID), SecurityUtil.userViewId()));
 			
-			predicates.add(titleOrQuestion( root ,cb , param));
+			titleOrQuestion( predicates ,root ,cb , param);
 			
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
@@ -70,18 +75,22 @@ public class QnASpec extends DefaultSpec {
 	 * @method  : titleOrQuestion
 	 * @desc : title or question search
 	 * @author   : ytkim
+	 * @param predicates 
 	 * @date   : 2020. 4. 27. 
 	 * @param root
 	 * @param cb
 	 * @param param
 	 * @return
 	 */
-	private static Predicate titleOrQuestion(Root<?> root, CriteriaBuilder cb, SearchParameter param) {
+	private static void titleOrQuestion(List<Predicate> predicates, Root<?> root, CriteriaBuilder cb, SearchParameter param) {
 		String keyword = param.getKeyword();
-		return cb.or(
-			cb.like(root.get(QnAEntity.TITLE), contains(keyword)),
-			cb.like(root.get(QnAEntity.QUESTION), contains(keyword))
-		);
+		
+		if(keyword != null && !"".equals(keyword)) {
+			predicates.add(cb.or(
+				cb.like(root.get(QnAEntity.TITLE), contains(keyword)),
+				cb.like(root.get(QnAEntity.QUESTION), contains(keyword))
+			));
+		}
 	}
 	
 	/**
@@ -94,7 +103,7 @@ public class QnASpec extends DefaultSpec {
 	 * @return
 	 */
 	private static Predicate delYn(Root<?> root, CriteriaBuilder cb) {
-		return cb.notEqual(root.get(QnAEntity.DEL_YN), "Y");
+		return cb.notEqual(root.get(QnAEntity.DEL_YN), true);
 	}
 
 }

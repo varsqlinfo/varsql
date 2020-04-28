@@ -2,11 +2,13 @@ package com.varsql.web.model.entity.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
@@ -33,15 +35,15 @@ public class DBManagerEntity extends AbstractRegAuditorModel{
 	@Column(name =UserEntity.VIEWID)
 	private String viewid;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	@JoinColumn(name = UserEntity.VIEWID, nullable = false, insertable =false , updatable =false)
-	private UserEntity userModel;
-
-	@ManyToOne
+	private UserEntity user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	@JoinColumn(name = DBConnectionEntity.VCONNID, nullable = false , insertable =false , updatable =false)
-	private DBConnectionEntity dbConnectionModel;
+	private DBConnectionEntity dbConnInfo;
 
 	@Builder
 	public DBManagerEntity(String vconnid, String viewid) {

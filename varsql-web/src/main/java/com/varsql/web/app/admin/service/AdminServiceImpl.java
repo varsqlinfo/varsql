@@ -236,7 +236,7 @@ public class AdminServiceImpl extends AbstractService{
 	public boolean deleteVtconnectionInfo(String vconnid) {
 
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
-		dbInfo.setDelYn("Y");
+		dbInfo.setDelYn(true);
 		DBConnectionEntity result = dbConnectionModelRepository.save(dbInfo);
 
 		return result != null;

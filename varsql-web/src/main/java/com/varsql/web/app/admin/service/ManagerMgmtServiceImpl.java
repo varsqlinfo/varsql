@@ -110,7 +110,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 
 		List<UserResponseDTO> result =new ArrayList<>();
 		dbModelInfo.stream().forEach(item->{
-			UserResponseDTO urd = domainMapper.convertToDomain(item.getUserModel(), UserResponseDTO.class);
+			UserResponseDTO urd = domainMapper.convertToDomain(item.getUser(), UserResponseDTO.class);
 
 			result.add(urd);
 		});

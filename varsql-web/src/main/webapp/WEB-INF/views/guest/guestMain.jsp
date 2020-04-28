@@ -48,12 +48,12 @@
 		<form class="form-horizontal" onsubmit="return false; ">
 			<div class="form-group" :class="errors.has('TITLE') ? 'has-error' :''">
 				<label><spring:message code="guest.form.title" /></label> 
-				<input type="text" v-model="detailItem.TITLE"  v-validate="'required'" name="TITLE" class="form-control" />
+				<input type="text" v-model="detailItem.title"  v-validate="'required'" name="TITLE" class="form-control" />
 				<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
 			</div>
 			<div class="form-group" :class="errors.has('QUESTION') ? 'has-error' :''">
 				<label><spring:message code="guest.form.question" /></label>
-				<textarea v-model="detailItem.QUESTION" rows="3" v-validate="'required'" name="QUESTION" class="form-control"></textarea>
+				<textarea v-model="detailItem.question" rows="3" v-validate="'required'" name="QUESTION" class="form-control"></textarea>
 				<div v-if="errors.has('QUESTION')" class="help-block">{{errors.first('QUESTION')}}</div>
 			</div>
 
@@ -86,7 +86,7 @@
 					<hr v-if="index!=0" class="dotline" />
 	    			
 					<strong class="primary-font">{{item.title}}</strong> 
-	    			<div class="btn-group pull-right" v-if="item.answer==''">
+	    			<div class="btn-group pull-right" v-if="item.answerYn =='N'">
 		    			<button type="button" class="btn btn-default btn-xs" @click="qnaModify(item)">
 		    			    <i class="fa fa-edit"></i>
 		    			</button>
@@ -98,7 +98,7 @@
 	    			<div>{{item.regDt}}</div>
 	    			<p>{{item.question}}</p>
 	    			
-	    			<template v-if="item.ANSWER_YN != 'N'">
+	    			<template v-if="item.answerYn != 'N'">
 		    			<div class="replymargin30">
 							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
 							<small class="pull-right text-muted">
@@ -159,7 +159,7 @@ VarsqlAPP.vueServiceBean({
 					var saveItem = _this.detailItem;
 					
 					for(var key in saveItem){
-						param[VARSQL.util.convertCamel(key)] = saveItem[key];
+						param[key] = saveItem[key];
 					}
 					
 					_this.$ajax({
@@ -183,8 +183,8 @@ VarsqlAPP.vueServiceBean({
 			
 			if(VARSQL.isUndefined(item)){
 				this.detailItem = {
-					TITLE : ''
-					,QUESTION :''
+					title : ''
+					,question :''
 				}
 				this.isDetailFlag = false;
 			}else{
@@ -202,7 +202,7 @@ VarsqlAPP.vueServiceBean({
 			this.$ajax({
 				url : {type:VARSQL.uri.guest, url:'/delQna'}
 				,data : {
-					qnaid : item.QNAID
+					qnaid : item.qnaid
 				}
 				,success:function (resData){
 					_this.search();

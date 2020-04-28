@@ -3,7 +3,7 @@ package com.varsql.web.dto.user;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import com.varsql.web.model.entity.user.GlossaryEntity;
+import com.varsql.web.model.entity.app.GlossaryEntity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

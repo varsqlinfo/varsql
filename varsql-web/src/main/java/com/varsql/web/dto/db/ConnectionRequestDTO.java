@@ -134,7 +134,6 @@ public class ConnectionRequestDTO{
 				.vdbversion(ValidateUtils.longValueOf(vdbversion))
 				.vdbschema(vdbschema)
 				.useYn(useYn)
-				.delYn("N")
 				.basetableYn(basetableYn)
 				.schemaViewYn(schemaViewYn)
 				.lazyloadYn(lazyloadYn)

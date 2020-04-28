@@ -1,20 +1,26 @@
-package com.varsql.web.model.entity.user;
+package com.varsql.web.model.entity.app;
 
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.converter.BooleanToDelYnConverter;
+import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
 import lombok.Builder;
@@ -50,22 +56,31 @@ public class QnAEntity extends AabstractAuditorModel{
 
 	@Column(name ="ANSWER")
 	private String answer;
-
+	
+	@JsonIgnore
 	@Column(name ="ANSWER_ID")
 	private String answerId;
 
 	@Column(name ="ANSWER_DT")
 	private Timestamp answerDt;
-
+	
+	@JsonIgnore
 	@Column(name ="DEL_YN")
-	private String delYn;
+	@Convert(converter = BooleanToDelYnConverter.class)
+	private boolean delYn;
 	
 	@OneToOne
-	@JoinColumn(name = "REG_ID" , referencedColumnName = UserEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
-	private UserEntity author;
+	@JoinColumn(name = "REG_ID" , referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
+	private RegInfoEntity regInfo;
+	
+	@Transient
+	@JsonProperty
+	private String answerYn;
+	
+	
 
 	@Builder
-	public QnAEntity(String qnaid, String title, String question, String answer, String answerId, Timestamp answerDt, String delYn) {
+	public QnAEntity(String qnaid, String title, String question, String answer, String answerId, Timestamp answerDt, boolean delYn) {
 		this.qnaid = qnaid;
 		this.title = title;
 		this.question = question;
@@ -88,13 +103,9 @@ public class QnAEntity extends AabstractAuditorModel{
 	public final static String ANSWER_DT="answerDt";
 
 	public final static String DEL_YN="delYn";
-
-	public final static String REG_ID="regId";
-
-	public final static String REG_DT="regDt";
-
-	public final static String UPD_ID="updId";
 	
-	public final static String UPD_DT="updDt";
+	public String getAnswerYn() {
+		return this.answerId==null || "".equals(this.answerId) ?"N" :"Y";
+	}
 
 }

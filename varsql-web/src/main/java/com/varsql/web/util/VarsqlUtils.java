@@ -4,14 +4,19 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
@@ -33,7 +38,8 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.constants.VarsqlParamConstants;
-import com.varsql.web.model.convert.DomainMapper;
+import com.varsql.web.model.converter.DomainMapper;
+import com.varsql.web.model.entity.user.UserEntity;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -292,7 +298,7 @@ public final class VarsqlUtils {
 		responseResult.setPage(PagingUtil.getPageObject(result.getTotalPages(), searchParameter));
 		return responseResult;
 	}
-
+	
 	public static ResponseResult getResponseResult(List <?> result, DomainMapper domainMapper, Class<?> mapperClass) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));

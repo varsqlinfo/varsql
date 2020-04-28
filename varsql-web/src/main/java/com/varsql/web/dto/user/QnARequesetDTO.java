@@ -3,8 +3,8 @@ package com.varsql.web.dto.user;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.user.QnAEntity;
 import com.varsql.web.util.ValidateUtils;
 
 import lombok.Getter;
@@ -46,6 +46,6 @@ public class QnARequesetDTO {
 				.qnaid(qnaid)
 				.title(title)
 				.question(question)
-				.delYn("N").build();
+				.answer(answer).build();
 	}
 }

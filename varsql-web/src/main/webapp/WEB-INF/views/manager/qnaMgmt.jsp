@@ -54,12 +54,12 @@
 							<strong class="primary-font">{{ item.title}}</strong>
 							<div class="btn-group pull-right">
 							</div>
-							<div><a>{{item.uname}}</a>&nbsp;{{item.regDt}}</div>
+							<div><a>{{item.regInfo.uid}}/{{item.regInfo.uname}}</a>&nbsp;{{item.regDt}}</div>
 							<div><p>{{ item.question}}</p></div>
 							
 							<div class="form-group">
 								<label>Answer ({{item.answerDt}})</label>
-								<textarea v-model="item.ANSWER" class="form-control answerTextArea" rows="3"></textarea>
+								<textarea v-model="item.answer" class="form-control answerTextArea" rows="3"></textarea>
 							</div>
 							<div class="text-right"><button type="button" class="btn btn-xs btn-primary" @click="save(item)">Save</button></div>
 		    			</template>
@@ -116,12 +116,15 @@ VarsqlAPP.vueServiceBean({
 		}
 		,save : function (item){
 			var _this = this;
-			var param ={};
+			var param ={
+				qnaid : item.qnaid
+				,title : "update"
+				,question : "update"
+				,answer : item.answer
+			};
 			
-			for(var key in item){
-				param[VARSQL.util.convertCamel(key)] = item[key];
-			}
 			
+						
 			_this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/updQna'}
 				,data : param 

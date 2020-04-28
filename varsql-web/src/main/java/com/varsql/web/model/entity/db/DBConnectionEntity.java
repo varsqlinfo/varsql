@@ -1,9 +1,10 @@
 package com.varsql.web.model.entity.db;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import org.hibernate.envers.NotAudited;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.converter.BooleanToDelYnConverter;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -94,7 +96,8 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 	private String schemaViewYn;
 
 	@Column(name ="DEL_YN")
-	private String delYn;
+	@Convert(converter=BooleanToDelYnConverter.class)
+	private boolean delYn;
 
 	@Column(name ="BASETABLE_YN")
 	private String basetableYn;
@@ -119,11 +122,11 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 
 	@NotAudited
 	@JsonManagedReference
-	@OneToMany(mappedBy = "dbConnectionModel",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<DBManagerEntity> managerList;
+	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<DBManagerEntity> managerList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, String delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount) {
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;

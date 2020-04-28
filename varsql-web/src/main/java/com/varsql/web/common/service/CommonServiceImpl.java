@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.CommUtil;
-import com.varsql.web.model.entity.sql.SqlExceptionLogEntity;
+import com.varsql.web.model.entity.app.ExceptionLogEntity;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 
 /**
@@ -43,7 +43,7 @@ public class CommonServiceImpl{
 		try{
 			String exceptionTitle = e.getMessage();
 
-			sqlExceptionLogEntityRepository.save(SqlExceptionLogEntity.builder()
+			sqlExceptionLogEntityRepository.save(ExceptionLogEntity.builder()
 					.excpType(exceptionType)
 					.excpCont(CommUtil.getExceptionStr(e).substring(0 , 2000))
 					.excpTitle(exceptionTitle.length() > 1500 ?exceptionTitle.substring(0,1500) :  exceptionTitle)

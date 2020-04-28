@@ -1,4 +1,4 @@
-package com.varsql.web.model.convert;
+package com.varsql.web.model.converter;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;

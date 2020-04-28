@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.GlossaryRequestDTO;
-import com.varsql.web.model.entity.user.GlossaryEntity;
+import com.varsql.web.model.entity.app.GlossaryEntity;
 import com.varsql.web.repository.spec.GlossarySpec;
 import com.varsql.web.repository.user.GlossaryEntityRepository;
 import com.varsql.web.util.VarsqlUtils;

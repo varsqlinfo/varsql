@@ -48,7 +48,6 @@ public class UserReqeustDTO{
 	@Size(max=500)
 	private String confirmUpw;
 	
-	
 	public UserEntity toEntity() {
 		return UserEntity.builder()
 				.uid(uid)
