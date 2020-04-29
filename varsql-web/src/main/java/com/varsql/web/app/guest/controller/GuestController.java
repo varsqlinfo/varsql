@@ -42,7 +42,6 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/guest")
 public class GuestController extends AbstractController  {
 
-	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(GuestController.class);
 
 	@Autowired

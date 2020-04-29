@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
+import com.varsql.web.model.converter.DbPasswordEncodeConverter;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -68,6 +69,7 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 
 	@Column(name ="VPW")
 	@JsonIgnore
+	@Convert(converter = DbPasswordEncodeConverter.class)
 	private String vpw;
 
 	@Column(name ="MAX_ACTIVE")

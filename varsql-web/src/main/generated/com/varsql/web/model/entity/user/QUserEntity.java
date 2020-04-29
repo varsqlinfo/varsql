@@ -22,9 +22,9 @@ public class QUserEntity extends EntityPathBase<UserEntity> {
 
     public final com.varsql.web.model.base.QAabstractAuditorModel _super = new com.varsql.web.model.base.QAabstractAuditorModel(this);
 
-    public final StringPath acceptYn = createString("acceptYn");
+    public final BooleanPath acceptYn = createBoolean("acceptYn");
 
-    public final StringPath blockYn = createString("blockYn");
+    public final BooleanPath blockYn = createBoolean("blockYn");
 
     public final SetPath<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity> dbList = this.<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity>createSet("dbList", com.varsql.web.model.entity.db.DBManagerEntity.class, com.varsql.web.model.entity.db.QDBManagerEntity.class, PathInits.DIRECT2);
 
