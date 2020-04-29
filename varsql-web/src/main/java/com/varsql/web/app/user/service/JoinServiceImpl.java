@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.AuthorityType;
-import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.UserMgmtRepository;
@@ -38,12 +37,10 @@ public class JoinServiceImpl{
 	 * @throws EncryptDecryptException
 	 */
 	public boolean saveUser(UserReqeustDTO joinForm) throws EncryptDecryptException {
-		joinForm.setUpw(EncryptionFactory.getInstance().encrypt(joinForm.getUpw()));
-		
 		UserEntity entity = joinForm.toEntity();
 		
 		entity.setUserRole(AuthorityType.GUEST.name());
-		entity.setAcceptYn("N");
+		entity.setAcceptYn(false);
 		
 		entity = userMgmtRepository.save(entity);
 

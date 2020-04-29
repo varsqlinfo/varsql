@@ -1,13 +1,7 @@
 package com.varsql.web.repository.spec;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.criteria.Predicate;
-
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.web.model.entity.app.GlossaryEntity;
-import com.varsql.web.model.entity.app.QnAEntity;
 import com.vartech.common.app.beans.SearchParameter;
 
 /**

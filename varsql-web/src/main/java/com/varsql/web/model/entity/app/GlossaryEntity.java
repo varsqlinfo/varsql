@@ -23,6 +23,9 @@ import lombok.Setter;
 @Entity
 @Table(name = GlossaryEntity._TB_NAME)
 public class GlossaryEntity extends AabstractAuditorModel{
+	
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTGLOSSARY";
 	
 	@Id

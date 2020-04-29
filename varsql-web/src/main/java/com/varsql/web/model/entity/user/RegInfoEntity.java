@@ -1,7 +1,5 @@
 package com.varsql.web.model.entity.user;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +8,6 @@ import javax.persistence.Table;
 import org.springframework.data.annotation.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.varsql.web.model.base.AabstractAuditorModel;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +19,8 @@ import lombok.Setter;
 @Immutable
 @Entity
 @Table(name = RegInfoEntity._TB_NAME)
-public class RegInfoEntity implements Serializable{
+public class RegInfoEntity{
+	
 	public final static String _TB_NAME= UserEntity._TB_NAME;
 
 	@Id

@@ -24,7 +24,7 @@ public class QDBManagerEntity extends EntityPathBase<DBManagerEntity> {
 
     public final com.varsql.web.model.base.QAbstractRegAuditorModel _super = new com.varsql.web.model.base.QAbstractRegAuditorModel(this);
 
-    public final QDBConnectionEntity dbConnectionModel;
+    public final QDBConnectionEntity dbConnInfo;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDt = _super.regDt;
@@ -32,7 +32,7 @@ public class QDBManagerEntity extends EntityPathBase<DBManagerEntity> {
     //inherited
     public final StringPath regId = _super.regId;
 
-    public final com.varsql.web.model.entity.user.QUserEntity userModel;
+    public final com.varsql.web.model.entity.user.QUserEntity user;
 
     public final StringPath vconnid = createString("vconnid");
 
@@ -56,8 +56,8 @@ public class QDBManagerEntity extends EntityPathBase<DBManagerEntity> {
 
     public QDBManagerEntity(Class<? extends DBManagerEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.dbConnectionModel = inits.isInitialized("dbConnectionModel") ? new QDBConnectionEntity(forProperty("dbConnectionModel")) : null;
-        this.userModel = inits.isInitialized("userModel") ? new com.varsql.web.model.entity.user.QUserEntity(forProperty("userModel")) : null;
+        this.dbConnInfo = inits.isInitialized("dbConnInfo") ? new QDBConnectionEntity(forProperty("dbConnInfo")) : null;
+        this.user = inits.isInitialized("user") ? new com.varsql.web.model.entity.user.QUserEntity(forProperty("user")) : null;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.sql;
+package com.varsql.web.model.entity.app;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QSqlExceptionLogEntity is a Querydsl query type for SqlExceptionLogEntity
+ * QExceptionLogEntity is a Querydsl query type for ExceptionLogEntity
  */
 @Generated("com.querydsl.codegen.EntitySerializer")
-public class QSqlExceptionLogEntity extends EntityPathBase<SqlExceptionLogEntity> {
+public class QExceptionLogEntity extends EntityPathBase<ExceptionLogEntity> {
 
-    private static final long serialVersionUID = -114406796L;
+    private static final long serialVersionUID = -212918025L;
 
-    public static final QSqlExceptionLogEntity sqlExceptionLogEntity = new QSqlExceptionLogEntity("sqlExceptionLogEntity");
+    public static final QExceptionLogEntity exceptionLogEntity = new QExceptionLogEntity("exceptionLogEntity");
 
     public final com.varsql.web.model.base.QAbstractRegAuditorModel _super = new com.varsql.web.model.base.QAbstractRegAuditorModel(this);
 
@@ -37,16 +37,16 @@ public class QSqlExceptionLogEntity extends EntityPathBase<SqlExceptionLogEntity
 
     public final StringPath serverId = createString("serverId");
 
-    public QSqlExceptionLogEntity(String variable) {
-        super(SqlExceptionLogEntity.class, forVariable(variable));
+    public QExceptionLogEntity(String variable) {
+        super(ExceptionLogEntity.class, forVariable(variable));
     }
 
-    public QSqlExceptionLogEntity(Path<? extends SqlExceptionLogEntity> path) {
+    public QExceptionLogEntity(Path<? extends ExceptionLogEntity> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QSqlExceptionLogEntity(PathMetadata metadata) {
-        super(SqlExceptionLogEntity.class, metadata);
+    public QExceptionLogEntity(PathMetadata metadata) {
+        super(ExceptionLogEntity.class, metadata);
     }
 
 }

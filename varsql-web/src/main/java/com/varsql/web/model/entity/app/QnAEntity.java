@@ -1,6 +1,7 @@
 package com.varsql.web.model.entity.app;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -35,6 +36,8 @@ import lombok.Setter;
 @Entity
 @Table(name = QnAEntity._TB_NAME)
 public class QnAEntity extends AabstractAuditorModel{
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTQNA";
 	
 	@Id
@@ -70,15 +73,13 @@ public class QnAEntity extends AabstractAuditorModel{
 	private boolean delYn;
 	
 	@OneToOne
-	@JoinColumn(name = "REG_ID" , referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
+	@JoinColumn(name = "REG_ID", referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
 	
 	@Transient
 	@JsonProperty
-	private String answerYn;
+	private String answerYn; // 답변 여부를  알기위해 추가. 
 	
-	
-
 	@Builder
 	public QnAEntity(String qnaid, String title, String question, String answer, String answerId, Timestamp answerDt, boolean delYn) {
 		this.qnaid = qnaid;
@@ -107,5 +108,4 @@ public class QnAEntity extends AabstractAuditorModel{
 	public String getAnswerYn() {
 		return this.answerId==null || "".equals(this.answerId) ?"N" :"Y";
 	}
-
 }

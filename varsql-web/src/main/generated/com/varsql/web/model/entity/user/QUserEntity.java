@@ -26,7 +26,7 @@ public class QUserEntity extends EntityPathBase<UserEntity> {
 
     public final StringPath blockYn = createString("blockYn");
 
-    public final ListPath<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity> dbList = this.<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity>createList("dbList", com.varsql.web.model.entity.db.DBManagerEntity.class, com.varsql.web.model.entity.db.QDBManagerEntity.class, PathInits.DIRECT2);
+    public final SetPath<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity> dbList = this.<com.varsql.web.model.entity.db.DBManagerEntity, com.varsql.web.model.entity.db.QDBManagerEntity>createSet("dbList", com.varsql.web.model.entity.db.DBManagerEntity.class, com.varsql.web.model.entity.db.QDBManagerEntity.class, PathInits.DIRECT2);
 
     public final StringPath deptNm = createString("deptNm");
 

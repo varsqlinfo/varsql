@@ -24,13 +24,13 @@ public class QDBConnectionEntity extends EntityPathBase<DBConnectionEntity> {
 
     public final StringPath basetableYn = createString("basetableYn");
 
-    public final StringPath delYn = createString("delYn");
+    public final BooleanPath delYn = createBoolean("delYn");
 
     public final NumberPath<Long> exportcount = createNumber("exportcount", Long.class);
 
     public final StringPath lazyloadYn = createString("lazyloadYn");
 
-    public final ListPath<DBManagerEntity, QDBManagerEntity> managerList = this.<DBManagerEntity, QDBManagerEntity>createList("managerList", DBManagerEntity.class, QDBManagerEntity.class, PathInits.DIRECT2);
+    public final SetPath<DBManagerEntity, QDBManagerEntity> managerList = this.<DBManagerEntity, QDBManagerEntity>createSet("managerList", DBManagerEntity.class, QDBManagerEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> maxActive = createNumber("maxActive", Long.class);
 

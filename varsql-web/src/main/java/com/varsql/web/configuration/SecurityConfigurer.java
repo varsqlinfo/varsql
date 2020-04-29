@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -134,6 +137,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 	    return new HttpSessionEventPublisher();
 	}
+	
+	@Bean("varsqlPasswordEncoder")
+    public PasswordEncoder varsqlPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected UserDetailsService userDetailsService() {
@@ -149,4 +157,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     	 auth.authenticationProvider(varsqlAuthenticationProvider);
     }
+    
+    
 }

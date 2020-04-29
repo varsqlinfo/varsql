@@ -288,14 +288,14 @@ public final class VarsqlUtils {
 	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.getContent());
-		responseResult.setPage(PagingUtil.getPageObject(result.getTotalPages(), searchParameter));
+		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
 		return responseResult;
 	}
 
 	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter, DomainMapper domainMapper, Class<?> mapperClass) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.getContent().stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));
-		responseResult.setPage(PagingUtil.getPageObject(result.getTotalPages(), searchParameter));
+		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
 		return responseResult;
 	}
 	

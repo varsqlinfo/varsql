@@ -1,7 +1,5 @@
 package com.varsql.web.model.entity.db;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = DBTypeEntity._TB_NAME)
-public class DBTypeEntity implements Serializable{
+public class DBTypeEntity{
+	
 	public final static String _TB_NAME="VTDBTYPE";
 
 	@Id

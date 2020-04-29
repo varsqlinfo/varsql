@@ -8,7 +8,6 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
@@ -25,6 +24,8 @@ import lombok.NoArgsConstructor;
 @IdClass(DBManagerId.class)
 @Table(name = DBManagerEntity._TB_NAME)
 public class DBManagerEntity extends AbstractRegAuditorModel{
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTDATABASE_MANAGER";
 
 	@Id

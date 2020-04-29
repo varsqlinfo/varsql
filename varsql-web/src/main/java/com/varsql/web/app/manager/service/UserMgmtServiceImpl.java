@@ -1,13 +1,14 @@
 package com.varsql.web.app.manager.service;
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.configuration.Configuration;
-import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.web.app.manager.dao.ManagerDAO;
 import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
@@ -47,6 +48,9 @@ public class UserMgmtServiceImpl{
 
 	@Autowired
 	CommonDAO commonDAO;
+	
+	@Resource(name="varsqlPasswordEncoder")
+	private PasswordEncoder passwordEncoder;
 
 	/**
 	 *
@@ -112,7 +116,7 @@ public class UserMgmtServiceImpl{
 
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
 
-		passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordInfo));
+		passwordForm.setUpw(passwordEncoder.encode(passwordInfo));
 		result.setResultCode(userPreferencesDAO.updatePasswordInfo(passwordForm));
 		result.setItemOne(passwordInfo);
 

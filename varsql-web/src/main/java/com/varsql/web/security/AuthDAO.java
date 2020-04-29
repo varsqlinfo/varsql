@@ -9,14 +9,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.Authority;
+import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.LocaleConstants;
@@ -26,7 +29,6 @@ import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.sql.util.SQLUtil;
 import com.varsql.web.model.entity.user.UserEntity;
@@ -34,7 +36,6 @@ import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.security.repository.UserRepository;
 import com.vartech.common.app.beans.ParamMap;
-import com.vartech.common.encryption.EncryptDecryptException;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -55,6 +56,9 @@ public final class AuthDAO {
 
 	@Autowired
 	private UserLogHistRepository userLogHistRepository;// = (UserLogHistRepository)BeanUtils.getBean("userLogHistRepository");
+	
+	@Resource(name="varsqlPasswordEncoder")
+	private PasswordEncoder passwordEncoder;
 
 	/**
 	 *
@@ -81,12 +85,12 @@ public final class AuthDAO {
 
 			if(userModel==null){
 				return null;
-				//throw new UsernameNotFoundException("Wrong username or password :"+ username);
+				//throw new UsernameNotFoundException("Wrong username or password ");
 			}
-
-			if(userModel.getUpw().equals(EncryptionFactory.getInstance().encrypt(password))){
+			
+			if(!passwordEncoder.matches(password, userModel.getUpw())){
 				return null;
-				//throw new UsernameNotFoundException("Wrong username or password :"+ username);
+				//throw new UsernameNotFoundException("Wrong username or password ");
 			}
 
 			User user = new User();
@@ -96,16 +100,16 @@ public final class AuthDAO {
 			user.setPassword("");
 			user.setFullname(userModel.getUname());
 
-			if("Y".equals(userModel.getBlockYn())){ //차단된 사용자 체크.
-				user.setBlock_yn("Y");
+			if(userModel.isBlockYn()){ //차단된 사용자 체크.
+				user.setBlockYn(true);
 				return user;
 			}
 
 			user.setUserLocale(LocaleConstants.parseLocaleString(userModel.getLang()));
-			user.setOrg_nm(userModel.getOrgNm());
-			user.setDept_nm(userModel.getDeptNm());
+			user.setOrgNm(userModel.getOrgNm());
+			user.setDeptNm(userModel.getDeptNm());
 			user.setEmail(userModel.getUemail());
-			user.setAccept_yn(userModel.getAcceptYn()+"");
+			user.setAcceptYn(userModel.isAcceptYn());
 
 			String userRole = userModel.getUserRole();
 
@@ -130,9 +134,6 @@ public final class AuthDAO {
 			user.setAuthorities(roles);
 
 			return user;
-		} catch (EncryptDecryptException e) {
-			logger.error(this.getClass().getName() , e);
-			throw new UsernameNotFoundException(new StringBuilder().append("Wrong username or password :").append(username).append(" ").append(e.getMessage()).toString());
 		}catch(Exception e){
 			logger.error(this.getClass().getName() , e);
 			throw new UsernameNotFoundException(new StringBuilder().append("Wrong username or password :").append(username).append(" ").append(e.getMessage()).toString());

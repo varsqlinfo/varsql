@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.EntityFieldConstants;
+import com.varsql.web.model.EntityValueConstants;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.vartech.common.app.beans.SearchParameter;
 
@@ -34,15 +35,13 @@ public class QnASpec extends DefaultSpec {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			
-			root.fetch(EntityFieldConstants.REG_INFO);
-			
 			predicates.add(delYn(root, cb));
 
-			switch (param.getCategory()) {
-			case "Y":
+			switch (EntityValueConstants.SCH_CATG_ALLYN.valueOf(param.getCategory())) {
+			case Y:
 				predicates.add(root.get(QnAEntity.ANSWER_ID).isNotNull());
 				break;
-			case "N":
+			case N:
 				predicates.add(root.get(QnAEntity.ANSWER_ID).isNull());
 				break;
 			default:
@@ -59,8 +58,6 @@ public class QnASpec extends DefaultSpec {
 		
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			
-			root.fetch(EntityFieldConstants.REG_INFO);
 			
 			predicates.add(delYn( root ,cb));
 			

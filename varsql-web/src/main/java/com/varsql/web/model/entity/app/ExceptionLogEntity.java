@@ -1,5 +1,7 @@
 package com.varsql.web.model.entity.app;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +23,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = ExceptionLogEntity._TB_NAME)
 public class ExceptionLogEntity extends AbstractRegAuditorModel{
+	
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTSQL_EXCEPTIONLOG";
 
 	@Id
@@ -46,7 +51,7 @@ public class ExceptionLogEntity extends AbstractRegAuditorModel{
 
 	@Column(name ="EXCP_CONT")
 	private String excpCont;
-
+	
 	@Builder
 	public ExceptionLogEntity(String excpId, String serverId, String excpType, String excpTitle, String excpCont) {
 		this.excpId = excpId;

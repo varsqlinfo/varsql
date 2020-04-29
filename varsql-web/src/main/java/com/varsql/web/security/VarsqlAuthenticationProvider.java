@@ -38,7 +38,7 @@ public class VarsqlAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("Username not match.");
 		}
 		
-		if("Y".equals(user.getBlock_yn())){
+		if(user.isBlockYn()){
 			throw new BlockingUserException("block user");
 		}
 

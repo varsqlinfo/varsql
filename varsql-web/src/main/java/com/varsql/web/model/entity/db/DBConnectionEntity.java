@@ -35,6 +35,8 @@ import lombok.Setter;
 @Audited
 @Table(name = DBConnectionEntity._TB_NAME)
 public class DBConnectionEntity extends AabstractAuditorModel{
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTCONNECTION";
 
 	@Id

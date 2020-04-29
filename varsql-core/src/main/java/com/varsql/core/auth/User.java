@@ -29,10 +29,10 @@ public class User implements UserDetails {
 	private String email;
 	private Locale userLocale;
 	private String fullname;
-	private String org_nm;
-	private String dept_nm;
-	private String accept_yn;
-	private String block_yn;
+	private String orgNm;
+	private String deptNm;
+	private boolean acceptYn;
+	private boolean blockYn;
 
 	/* Spring Security fields*/
 	private List<Authority> authorities;
@@ -76,22 +76,6 @@ public class User implements UserDetails {
 		this.email = email;
 	}
 
-	public String getOrg_nm() {
-		return org_nm;
-	}
-
-	public void setOrg_nm(String org_nm) {
-		this.org_nm = org_nm;
-	}
-
-	public String getDept_nm() {
-		return dept_nm;
-	}
-
-	public void setDept_nm(String dept_nm) {
-		this.dept_nm = dept_nm;
-	}
-
 	public String getFullname() {
 		return fullname;
 	}
@@ -126,7 +110,6 @@ public class User implements UserDetails {
 		this.accountNonLocked = accountNonLocked;
 	}
 
-
 	public boolean isCredentialsNonExpired() {
 		return this.credentialsNonExpired;
 	}
@@ -135,21 +118,12 @@ public class User implements UserDetails {
 		this.credentialsNonExpired = credentialsNonExpired;
 	}
 
-
 	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public String getAccept_yn() {
-		return accept_yn;
-	}
-
-	public void setAccept_yn(String accept_yn) {
-		this.accept_yn = accept_yn;
 	}
 
 	public Map<String,DatabaseInfo> getDatabaseInfo() {
@@ -168,14 +142,6 @@ public class User implements UserDetails {
 		this.topAuthority = topAuthority;
 	}
 
-	public String getBlock_yn() {
-		return block_yn;
-	}
-
-	public void setBlock_yn(String block_yn) {
-		this.block_yn = block_yn;
-	}
-
 	public String getLoginUUID() {
 		return loginUUID;
 	}
@@ -192,33 +158,37 @@ public class User implements UserDetails {
 		this.userLocale = userLocale;
 	}
 
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("User [id=");
-		builder.append(username);
-		builder.append(", email=");
-		builder.append(email);
-		builder.append(", password=");
-		builder.append(password);
-		builder.append(", fullname=");
-		builder.append(fullname);
-		builder.append(", topAuthority=");
-		builder.append(topAuthority);
-		builder.append(", authorities=");
-		builder.append(authorities);
-		builder.append(", accountNonExpired=");
-		builder.append(accountNonExpired);
-		builder.append(", accountNonLocked=");
-		builder.append(accountNonLocked);
-		builder.append(", credentialsNonExpired=");
-		builder.append(credentialsNonExpired);
-		builder.append(", enabled=");
-		builder.append(enabled);
-		builder.append(", accept_yn=");
-		builder.append(accept_yn);
-		builder.append(", userLocale=");
-		builder.append(userLocale);
-		builder.append("]");
-		return builder.toString();
+	public String getOrgNm() {
+		return orgNm;
 	}
+
+	public void setOrgNm(String orgNm) {
+		this.orgNm = orgNm;
+	}
+
+	public String getDeptNm() {
+		return deptNm;
+	}
+
+	public void setDeptNm(String deptNm) {
+		this.deptNm = deptNm;
+	}
+
+	public boolean isAcceptYn() {
+		return acceptYn;
+	}
+
+	public void setAcceptYn(boolean acceptYn) {
+		this.acceptYn = acceptYn;
+	}
+
+	public boolean isBlockYn() {
+		return blockYn;
+	}
+
+	public void setBlockYn(boolean blockYn) {
+		this.blockYn = blockYn;
+	}
+	
+	
 }

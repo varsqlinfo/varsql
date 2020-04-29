@@ -24,10 +24,10 @@
 						</label>
 						<label style="float:left; margin-right: 5px;">
 							<select v-model="searchCatg" class="form-control input-sm">
-								<option	value=""><spring:message code="admin.errorlog.title" /></option>
-								<option value="0"><spring:message code="admin.errorlog.type" /></option>
-								<option value="1"><spring:message code="admin.errorlog.cont" /></option>
-								<option	value="2"><spring:message code="admin.errorlog.server" /></option>
+								<option	value="title"><spring:message code="admin.errorlog.title" /></option>
+								<option value="type"><spring:message code="admin.errorlog.type" /></option>
+								<option value="cont"><spring:message code="admin.errorlog.cont" /></option>
+								<option	value="server"><spring:message code="admin.errorlog.server" /></option>
 							</select>
 						</label>
 						<div class="input-group floatright">

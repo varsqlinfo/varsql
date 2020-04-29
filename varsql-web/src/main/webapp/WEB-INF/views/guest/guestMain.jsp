@@ -96,15 +96,13 @@
 		    			</button>
 	    			</div>
 	    			<div>{{item.regDt}}</div>
-	    			<p>{{item.question}}</p>
+	    			<div><pre>{{item.question}}</pre></div>
 	    			
 	    			<template v-if="item.answerYn != 'N'">
 		    			<div class="replymargin30">
 							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
-							<small class="pull-right text-muted">
-								<i class="fa fa-clock-o fa-fw"></i>{{item.answerDt}}
-							</small>
-							<p>{{item.answer}}</p>
+							<i class="fa fa-clock-o fa-fw"></i>{{item.answerDt}}
+							<div><pre>{{item.answer}}</pre></div>
 		    			</div>
 	    			</template>
     			</div>

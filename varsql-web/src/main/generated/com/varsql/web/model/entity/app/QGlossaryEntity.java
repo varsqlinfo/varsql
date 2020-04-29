@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.user;
+package com.varsql.web.model.entity.app;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.EntitySerializer")
 public class QGlossaryEntity extends EntityPathBase<GlossaryEntity> {
 
-    private static final long serialVersionUID = -257659310L;
+    private static final long serialVersionUID = 1869314912L;
 
     public static final QGlossaryEntity glossaryEntity = new QGlossaryEntity("glossaryEntity");
 

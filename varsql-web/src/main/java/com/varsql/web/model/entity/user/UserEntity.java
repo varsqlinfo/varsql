@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,8 @@ import org.hibernate.envers.NotAudited;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.converter.BooleanToYnConverter;
+import com.varsql.web.model.converter.PasswordEncodeConverter;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
@@ -34,6 +37,8 @@ import lombok.Setter;
 @Entity
 @Table(name = UserEntity._TB_NAME)
 public class UserEntity extends AabstractAuditorModel{
+	private static final long serialVersionUID = 1L;
+	
 	public final static String _TB_NAME="VTUSER";
 
 	@Id
@@ -52,6 +57,7 @@ public class UserEntity extends AabstractAuditorModel{
 	private String uid;
 	
 	@JsonIgnore
+	@Convert(converter = PasswordEncodeConverter.class)
 	@Column(name ="UPW")
 	private String upw;
 
@@ -77,10 +83,12 @@ public class UserEntity extends AabstractAuditorModel{
 	private String description;
 
 	@Column(name ="ACCEPT_YN")
-	private String acceptYn;
-
+	@Convert(converter = BooleanToYnConverter.class)
+	private boolean acceptYn;
+	
 	@Column(name ="BLOCK_YN")
-	private String blockYn;
+	@Convert(converter = BooleanToYnConverter.class)
+	private boolean blockYn;
 
 	@NotAudited
 	@JsonManagedReference
@@ -88,7 +96,7 @@ public class UserEntity extends AabstractAuditorModel{
     private Set<DBManagerEntity> dbList;
 
 	@Builder
-	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail, String userRole, String description, String acceptYn, String blockYn) {
+	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail, String userRole, String description, boolean acceptYn, boolean blockYn) {
 		this.viewid = viewid;
 		this.uid = uid;
 		this.upw = upw;

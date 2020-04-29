@@ -1,7 +1,5 @@
 package com.varsql.web.model.entity.db;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = DBTypeDriverEntity._TB_NAME)
-public class DBTypeDriverEntity implements Serializable{
+public class DBTypeDriverEntity {
+	
 	public final static String _TB_NAME="VTDBTYPE_DRIVER";
 
 	@Id

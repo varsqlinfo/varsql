@@ -55,7 +55,7 @@
 							<div class="btn-group pull-right">
 							</div>
 							<div><a>{{item.regInfo.uid}}/{{item.regInfo.uname}}</a>&nbsp;{{item.regDt}}</div>
-							<div><p>{{ item.question}}</p></div>
+							<div><pre>{{ item.question}}</pre></div>
 							
 							<div class="form-group">
 								<label>Answer ({{item.answerDt}})</label>

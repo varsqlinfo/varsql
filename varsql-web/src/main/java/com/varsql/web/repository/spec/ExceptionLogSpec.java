@@ -1,10 +1,9 @@
 package com.varsql.web.repository.spec;
-import javax.persistence.criteria.Predicate;
+import java.util.Arrays;
 
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.vartech.common.app.beans.SearchParameter;
 
 /**
@@ -26,18 +25,28 @@ public class ExceptionLogSpec extends DefaultSpec{
     	String keyword = param.getKeyword();
 
         return (root, query, criteriaBuilder) -> {
-        	switch (param.getCategory()) {
-	            case "0":
+        	switch (SCH_CATG.findCode(param.getCategory())) {
+	            case TYPE:
 	            	return criteriaBuilder.like(root.get(ExceptionLogEntity.EXCP_TYPE),contains(keyword));
-	            case "1":
+	            case CONT:
 	            	return criteriaBuilder.like(root.get(ExceptionLogEntity.EXCP_CONT),contains(keyword));
-	            case "2":
+	            case SERVER:
 	            	return criteriaBuilder.like(root.get(ExceptionLogEntity.SERVER_ID),contains(keyword));
 	            default :
 	            	return criteriaBuilder.like(root.get(ExceptionLogEntity.EXCP_TITLE),contains(keyword));
 	        }
         };
-
     }
-
+    
+    // 검색 카테고리.
+ 	public static enum SCH_CATG{
+ 		TITLE, TYPE, CONT, SERVER; 
+ 		
+ 		public static SCH_CATG findCode(String catg) {
+ 			return Arrays.stream(values())
+ 		            .filter(item -> item.name().equals(catg.toUpperCase()))
+ 		            .findAny()
+ 		            .orElse(TITLE);
+ 		}
+ 	}
 }

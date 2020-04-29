@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.user;
+package com.varsql.web.model.entity.app;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.EntitySerializer")
 public class QQnAEntity extends EntityPathBase<QnAEntity> {
 
-    private static final long serialVersionUID = 1603114358L;
+    private static final long serialVersionUID = -1281747032L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -30,9 +30,7 @@ public class QQnAEntity extends EntityPathBase<QnAEntity> {
 
     public final StringPath answerId = createString("answerId");
 
-    public final QUserEntity author;
-
-    public final StringPath delYn = createString("delYn");
+    public final BooleanPath delYn = createBoolean("delYn");
 
     public final StringPath qnaid = createString("qnaid");
 
@@ -43,6 +41,8 @@ public class QQnAEntity extends EntityPathBase<QnAEntity> {
 
     //inherited
     public final StringPath regId = _super.regId;
+
+    public final com.varsql.web.model.entity.user.QRegInfoEntity regInfo;
 
     public final StringPath title = createString("title");
 
@@ -70,7 +70,7 @@ public class QQnAEntity extends EntityPathBase<QnAEntity> {
 
     public QQnAEntity(Class<? extends QnAEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.author = inits.isInitialized("author") ? new QUserEntity(forProperty("author")) : null;
+        this.regInfo = inits.isInitialized("regInfo") ? new com.varsql.web.model.entity.user.QRegInfoEntity(forProperty("regInfo")) : null;
     }
 
 }

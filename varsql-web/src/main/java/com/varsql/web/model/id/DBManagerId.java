@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of= {"vconnid","viewid"})
 public class DBManagerId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
