@@ -1,9 +1,15 @@
 package com.varsql.web.app.manager.service;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.util.SecurityUtil;
@@ -14,13 +20,19 @@ import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.CommonDAO;
+import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.spec.UserSpec;
+import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.encryption.EncryptDecryptException;
 import com.vartech.common.encryption.PasswordUtil;
-import com.vartech.common.utils.PagingUtil;
 
 /**
  *
@@ -38,7 +50,7 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class UserMgmtServiceImpl{
+public class UserMgmtServiceImpl extends AbstractService{
 
 	@Autowired
 	ManagerDAO manageDAO;
@@ -48,6 +60,9 @@ public class UserMgmtServiceImpl{
 
 	@Autowired
 	CommonDAO commonDAO;
+	
+	@Autowired
+	private UserMgmtRepository userMgmtRepository;
 	
 	@Resource(name="varsqlPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
@@ -63,19 +78,13 @@ public class UserMgmtServiceImpl{
 	 * @return
 	 */
 	public ResponseResult selectUserList(SearchParameter searchParameter) {
+		
+		Page<UserEntity> result = userMgmtRepository.findAll(
+			UserSpec.likeUnameOrUid(SecurityUtil.isAdmin(), searchParameter.getKeyword())
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
 
-		ResponseResult result = new ResponseResult();
-
-		searchParameter.addCustomParam("isAdmin",SecurityUtil.isAdmin());
-
-		int totalcnt = manageDAO.selectUserTotalcnt(searchParameter);
-
-		if(totalcnt > 0){
-			result.setItemList(manageDAO.selectUserList(searchParameter));
-		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-
-		return result;
+		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, UserResponseDTO.class);
 	}
 
 	/**
@@ -88,14 +97,21 @@ public class UserMgmtServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult updateAccept(DataCommonVO paramMap) {
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult updateAccept(String acceptyn, String selectItem) {
 		ResponseResult result = new ResponseResult();
-		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
-		String role = paramMap.getString("acceptyn").equals("Y")?AuthorityType.USER.name():AuthorityType.GUEST.name();
-
-		paramMap.put("role", role);
-
-		result.setItemOne(manageDAO.updateAccept(viewidArr, paramMap));
+		String[] viewidArr = StringUtil.split(selectItem,",");
+		AuthorityType role = "Y".equals(acceptyn)?AuthorityType.USER:AuthorityType.GUEST;
+		
+		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
+			item.setUserRole(role.name());
+			item.setAcceptYn("Y".equals(acceptyn)?true:false);
+			return item; 
+		}).collect(Collectors.toList());
+		
+		userMgmtRepository.saveAll(users);
+		
+		result.setItemOne(1);
 
 		return result;
 	}
@@ -237,5 +253,4 @@ public class UserMgmtServiceImpl{
 
 		return result;
 	}
-
 }

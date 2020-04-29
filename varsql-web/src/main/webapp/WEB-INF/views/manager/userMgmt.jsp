@@ -72,14 +72,14 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.VIEWID" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="detailView(item)">{{item.UNAME}}</a></td>
-									<td>{{item.UID}}</td>
-									<td class="center">{{item.CHAR_CRE_DT}}</td>
-									<td class="center">{{item.ACCEPT_YN}}</td>
+									<td><input type="checkbox" :value="item.viewid" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="detailView(item)">{{item.uname}}</a></td>
+									<td>{{item.uid}}</td>
+									<td class="center">{{item.regDt}}</td>
+									<td class="center">{{item.acceptYn?'Y':'N'}}</td>
 									<td class="center">
 										<button class="btn btn-xs btn-default" @click="initPassword(item)" >초기화</button>
-										<span>{{item.INITPW}}</span>
+										<span>{{item.initpw}}</span>
 									</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
@@ -108,25 +108,25 @@
 					</colgroup>
 					<tbody class="dataTableContent">
 						<tr>
-							<th><spring:message code="label.username"/></th><td>{{clickItem.UNAME}}</td>
+							<th><spring:message code="label.username"/></th><td>{{clickItem.uname}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.id"/></th><td>{{clickItem.UID}}</td>
+							<th><spring:message code="label.id"/></th><td>{{clickItem.uid}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.email" text="email"/></th><td>{{clickItem.UEMAIL}}</td>
+							<th><spring:message code="label.email" text="email"/></th><td>{{clickItem.uemail}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.orgnm" text="orgnm"/></th><td>{{clickItem.ORG_NM}}</td>
+							<th><spring:message code="label.orgnm" text="orgnm"/></th><td>{{clickItem.orgNm}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.deptnm" text="orgnm"/></th><td>{{clickItem.DEPT_NM}}</td>
+							<th><spring:message code="label.deptnm" text="orgnm"/></th><td>{{clickItem.deptNm}}</td>
 						</tr>
 						<tr>
 							<th><spring:message code="label.block"/></th>
 							<td>
-								<template v-if="clickItem.BLOCK_YN">
-									<template v-if="clickItem.BLOCK_YN=='N'">
+								<template v-if="clickItem.blockYn">
+									<template v-if="clickItem.blockYn=='N'">
 										<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
 									</template>
 									<template v-else>
@@ -186,21 +186,21 @@
 												</thead>
 												<tbody>
 													<tr v-for="(item,index) in clickItemDbList">
-														<td class="text-left">{{item.VNAME}}</td>
+														<td class="text-left">{{item.vname}}</td>
 														<td >
 															<template v-if="(item.MANAGER_DB_CNT > 1)">
 																MANAGER
 															</template>
 															<template v-else>
 																<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
-																	<template v-if="item.BLOCK_YN == 'N'">
+																	<template v-if="item.blockYn == 'N'">
 																		<button type="button" class="btn btn-xs btn-danger" @click="dbBlockInfo(item, 'block')"><spring:message code="label.block" text="차단"/></button>
 																	</template>
 																	<template v-else>
 																		<button type="button" class="btn btn-xs btn-primary" @click="dbBlockInfo(item, 'cancel')"><spring:message code="label.release" text="해제"/></button>
 																	</template>
 																</template>
-																<template v-else>{{item.BLOCK_YN=='N'?'Y':'N'}}</template>
+																<template v-else>{{item.blockYn=='N'?'Y':'N'}}</template>
 															</template>
 														</td>
 													</tr>
@@ -254,7 +254,7 @@ VarsqlAPP.vueServiceBean( {
 				this.selectItem = [];
 				
 				for(var i =0 ;i <this.gridData.length; i++){
-					this.selectItem.push(this.gridData[i].VIEWID)
+					this.selectItem.push(this.gridData[i].viewid)
 				}
 			}
 		}
@@ -310,7 +310,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			var param = {
-				userid : clickItem.VIEWID
+				userid : clickItem.viewid
 				,blockYn: mode
 			}
 			
@@ -320,7 +320,7 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					
 					if(resData.item > 0){
-						clickItem.BLOCK_YN = mode; 
+						clickItem.blockYn = mode; 
 					}
 				}
 			});
@@ -385,19 +385,19 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
-					sItem.INITPW = resData.item;
+					sItem.initpw = resData.item;
 					
 					alert(VARSQL.messageFormat('varsql.m.0001'));
 					
 					setTimeout(function (){
-						sItem.INITPW ='';
+						sItem.initpw ='';
 					}, 5000);
 				}
 			})
 		}
 		,dbBlockInfo : function (item, mode){
 			
-			var confirmMsg =this.clickItem.UNAME +' ['+item.VNAME+']';
+			var confirmMsg =this.clickItem.uname +' ['+item.vname+']';
 			
 			if(mode=='block'){
 				confirmMsg += VARSQL.messageFormat('varsql.m.0003');
@@ -411,16 +411,16 @@ VarsqlAPP.vueServiceBean( {
 			
 			var param = VARSQL.util.objectMerge({},item);
 			param.mode = mode; 
-			param.VIEWID = this.clickItem.VIEWID;
+			param.viewid = this.clickItem.viewid;
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/dbBlockInfo'}
 				,data : param
 				,success: function(resData) {
 					if(resData.item > 0){
 						if(mode=='block'){
-							item.BLOCK_YN = 'Y';
+							item.blockYn = 'Y';
 						}else{
-							item.BLOCK_YN = 'N';
+							item.blockYn = 'N';
 						}
 					}
 				}

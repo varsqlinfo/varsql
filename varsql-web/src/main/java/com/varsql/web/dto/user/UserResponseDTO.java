@@ -31,9 +31,9 @@ public class UserResponseDTO implements Serializable{
 
 	private String description;
 
-	private String acceptYn;
+	private boolean acceptYn;
 
-	private String blockYn;
+	private boolean blockYn;
 
 	private String regId;
 

@@ -70,12 +70,8 @@ public class UserMgmtController extends AbstractController {
 	public @ResponseBody ResponseResult updAcceptYn(@RequestParam(value = "acceptyn", required = true )  String acceptyn
 			,@RequestParam(value = "selectItem", required = true )  String selectItem
 			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
 
-		paramMap.put("acceptyn", acceptyn);
-		paramMap.put("selectItem", selectItem);
-
-		return userMgmtServiceImpl.updateAccept(paramMap);
+		return userMgmtServiceImpl.updateAccept(acceptyn ,selectItem);
 	}
 
 	/**

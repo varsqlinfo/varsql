@@ -16,7 +16,6 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.spec.DBManagerSpec;
 import com.varsql.web.repository.spec.UserSpec;
@@ -42,13 +41,10 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(ManagerMgmtServiceImpl.class);
 
 	@Autowired
-	DBConnectionEntityRepository  dbConnectionModelRepository;
+	private UserMgmtRepository userMgmtRepository;
 
 	@Autowired
-	UserMgmtRepository userMgmtRepository;
-
-	@Autowired
-	DBManagerEntityRepository dbManagerRepository;
+	private DBManagerEntityRepository dbManagerRepository;
 
 
 	/**
@@ -62,7 +58,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	public ResponseResult searchRoleUserList(AuthorityType auth,SearchParameter searchParameter) {
 
 		Page<UserEntity> result = userMgmtRepository.findAll(
-			UserSpec.getVnameOrVurl(auth, (searchParameter.getKeyword()))
+			UserSpec.likeUnameOrUid(auth, (searchParameter.getKeyword()))
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
@@ -80,19 +76,20 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateManagerRole(String mode, String viewid) {
+		
+		logger.info("updateManagerRole  mode : {} , viewid : {} ",mode,viewid);
+		
 		UserEntity  userInfo = userMgmtRepository.findByViewid(viewid);
-
-		ResponseResult resultObject = new ResponseResult();
-
+		
 		userInfo.setUserRole("add".equals(mode)? AuthorityType.MANAGER.name() : AuthorityType.USER.name());
 
 		userInfo = userMgmtRepository.save(userInfo);
 
-		dbManagerRepository.deleteByViewid(viewid);
+		if(!"add".equals(mode)) {
+			dbManagerRepository.deleteByViewid(viewid);
+		}
 
-		resultObject.setItemOne(userInfo != null ? 1 : 0);
-
-		return resultObject;
+		return VarsqlUtils.getResponseResultItemOne(userInfo != null ? 1 : 0);
 	}
 
 	/**
@@ -130,25 +127,25 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateDbManager(String selectItem ,String vconnid, String mode) {
+		logger.info("updateManagerRole  mode :{}, vconnid :{} ,viewid : {} ",mode, vconnid, selectItem);
+		
 		String[] viewidArr = StringUtil.split(selectItem,",");
-
-		ResponseResult resultObject = new ResponseResult();
-
+		
 		List<DBManagerEntity> addManagerList = new ArrayList<>();
 		for(String id: viewidArr){
 			addManagerList.add(DBManagerEntity.builder().vconnid(vconnid).viewid(id).build());
         }
-
+		
+		int result = 0;
 		if(addManagerList.size() > 0) {
 			if("del".equals(mode)){
 				dbManagerRepository.deleteAll(addManagerList);
 			}else{
 				dbManagerRepository.saveAll(addManagerList);
 			}
-
-			resultObject.setItemOne(1);
+			result = 1;
 		}
 
-		return resultObject;
+		return VarsqlUtils.getResponseResultItemOne(result);
 	}
 }

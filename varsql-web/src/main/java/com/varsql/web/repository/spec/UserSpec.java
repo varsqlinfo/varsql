@@ -29,6 +29,17 @@ public class UserSpec extends DefaultSpec{
     		return predicate;
     	};
     }
+	
+	public static Specification<UserEntity> userRoleNotIn(boolean isAdmin) {
+		return (root, query, criteriaBuilder) -> {
+			if(isAdmin) {
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityType.ADMIN.name()));
+			}else {
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityType.ADMIN.name(), AuthorityType.MANAGER.name()));
+			}
+			
+		};
+	}
 
     public static Specification<UserEntity> getUnameOrUid(String keyword) {
         return (root, query, criteriaBuilder) -> {
@@ -48,8 +59,12 @@ public class UserSpec extends DefaultSpec{
     	};
     }
 
-    public static Specification<UserEntity> getVnameOrVurl(AuthorityType userAuth, String name) {
+    public static Specification<UserEntity> likeUnameOrUid(AuthorityType userAuth, String name) {
         return Specification.where(getUserRole(userAuth)).and(getUnameOrUid(name));
+    }
+    
+    public static Specification<UserEntity> likeUnameOrUid(boolean isAdmin, String name) {
+    	return Specification.where(userRoleNotIn(isAdmin)).and(getUnameOrUid(name));
     }
 
     public static Specification<UserEntity> detailInfo(String uid) {
