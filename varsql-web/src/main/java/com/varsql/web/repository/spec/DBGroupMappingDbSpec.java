@@ -1,6 +1,5 @@
 package com.varsql.web.repository.spec;
 
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -23,6 +22,10 @@ import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
  */
 public class DBGroupMappingDbSpec extends DefaultSpec{
 
+	// 그룹에 속한  db 정보 보기.
+    public static Specification<DBGroupMappingDbEntity> dbGroupConnList(String groupId) {
+    	return Specification.where(joinVconnid()).and(groupId(groupId));
+    }
     
 	private static Specification<DBGroupMappingDbEntity> groupId(String groupId) {
 		return (root, query, criteriaBuilder) -> {
@@ -31,11 +34,6 @@ public class DBGroupMappingDbSpec extends DefaultSpec{
 		};
 	}
 
-    // 권한 있는 db connection 정보 보기.
-    public static Specification<DBGroupMappingDbEntity> dbGroupConnList(String groupId) {
-    	return Specification.where(joinVconnid()).and(groupId(groupId));
-    }
-    
     private static Specification<DBGroupMappingDbEntity> joinVconnid() {
     	return (root, query, cb) -> {
     		root.fetch(DBGroupMappingDbEntity.JOIN_CONNINFO);
@@ -43,6 +41,4 @@ public class DBGroupMappingDbSpec extends DefaultSpec{
     		return cb.equal(root.get(DBGroupMappingDbEntity.JOIN_CONNINFO).get(DBConnectionEntity.USE_YN), EntityValueConstants.YN.Y.name());
     	};
     }
-    
-    
 }

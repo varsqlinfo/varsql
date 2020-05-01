@@ -61,12 +61,12 @@ public class DBGroupEntity extends AabstractAuditorModel{
 	private RegInfoEntity regInfo;
 	
 	@JsonManagedReference
-	@OneToMany(mappedBy = "userInfo", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private Set<DBGroupMappingUserEntity> userInfos;
+	@OneToMany(mappedBy = "groupUserEntity", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<DBGroupMappingUserEntity> groupUserList;
 	
 	@JsonManagedReference
-	@OneToMany(mappedBy = "connInfo", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-	private Set<DBGroupMappingDbEntity> connInfos;
+	@OneToMany(mappedBy = "groupDbEntity", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private Set<DBGroupMappingDbEntity> groupDbList;
 
 	@Builder
 	public DBGroupEntity(String groupId, String groupName, String groupDesc) {

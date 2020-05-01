@@ -1,6 +1,5 @@
 package com.varsql.web.model.entity.db;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -32,6 +31,12 @@ public class DBGroupMappingDbEntity extends AbstractRegAuditorModel{
 	@Id
 	private String vconnid;
 	
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GROUP_ID" ,updatable = false, insertable = false)
+	private DBGroupEntity groupDbEntity;
+	
+	// 그룹 커넥션 정보를 얻기 위한 것
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	@JoinColumn(name = DBConnectionEntity.VCONNID, nullable = false , insertable =false , updatable =false)

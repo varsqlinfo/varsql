@@ -142,23 +142,23 @@ VarsqlAPP.vueServiceBean( {
 				,useDragMove : false
 				,useDragSort : false
 				,sourceItem : {
-					optVal : 'VIEWID'
-					,optTxt : 'UNAME'
+					optVal : 'viewid'
+					,optTxt : 'uname'
 					,items : []
 				}
 				,targetItem : {
-					optVal : 'VIEWID'
-					,optTxt : 'UNAME'
+					optVal : 'viewid'
+					,optTxt : 'uname'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){
 					if($.isArray(moveItem)){
-						_self.addDbGroupMappingInfo('add', moveItem);
+						return _self.addDbGroupMappingInfo('add', moveItem);
 					}
 				}
 				,compleateTargetMove : function (moveItem){
 					if($.isArray(moveItem)){
-						_self.addDbGroupMappingInfo('del', moveItem);
+						return  _self.addDbGroupMappingInfo('del', moveItem);
 					}
 				}
 			}); 
@@ -215,7 +215,7 @@ VarsqlAPP.vueServiceBean( {
 			VARSQL.req.ajax({
 				data:param
 				,loadSelector: '#main-content'
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupnuserMappingList'}
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMappingList'}
 				,success:function (resData){
 					var result = resData.items;
 		    		_self.selectObj.setItem('target', result);
@@ -225,6 +225,11 @@ VarsqlAPP.vueServiceBean( {
 		// 맵핑 정보 추가. 
 		,addDbGroupMappingInfo : function (mode, moveItem){
 			var _self = this;
+			
+			if(!_self.detailItem.groupId){
+				alert(VARSQL.messageFormat('varsql.0003'));
+				return false;
+			}
 			
 			if(this.isViewMode ===false) return ; 
 

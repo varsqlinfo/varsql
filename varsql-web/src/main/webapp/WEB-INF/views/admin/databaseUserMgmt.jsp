@@ -116,12 +116,12 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,compleateSourceMove : function (moveItem){
 					if($.isArray(moveItem)){
-						_self.addDbManager('down', moveItem);
+						return _self.addDbManager('down', moveItem);
 					}
 				}
 				,compleateTargetMove : function (moveItem){
 					if($.isArray(moveItem)){
-						_self.addDbManager('up', moveItem);
+						return _self.addDbManager('up', moveItem);
 					}
 				}
 			});
@@ -179,12 +179,6 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					var result = resData.items;
 		    		var resultLen = result.length;
-
-					if(resultLen==0){
-		    			$('#target').html('<spring:message code="msg.nodata" />');
-		    			return ;
-		    		}
-
 		    		_self.selectObj.setItem('target', _self.getItemFormatter(result));
 				}
 			})
@@ -204,7 +198,7 @@ VarsqlAPP.vueServiceBean( {
 
 			if(!_self.detailItem.vconnid){
 				alert(VARSQL.messageFormat('varsql.0003'));
-				return ;
+				return false;
 			}
 
 			var param ={

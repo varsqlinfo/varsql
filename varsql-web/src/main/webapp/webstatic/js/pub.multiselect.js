@@ -75,6 +75,7 @@ var pluginName = "pubMultiselect"
 	,message : { // 방향키 있을때 메시지
 		addEmpty : false
 		,delEmpty : false
+		,duplicate :false
 	}
 	,beforeMove : false
 	,beforeItemMove : false
@@ -692,23 +693,21 @@ Plugin.prototype ={
 
 			var addItemCount = _this.targetElement.find(opts.itemSelector+':not(.ui-draggable)').length;
 
-			_this.targetElement.find('.empty-message').remove();
-
 			var addItemKey = [];
+			var addElements = [];
+			var addItemMap = {};
+			var dupChkFlag = true;
 
 			selectVal.each(function (i, item){
 				tmpObj = $(item);
 				tmpVal=_this.getItemVal(tmpObj);
-
-				if(opts.duplicateCheck===true && _this.addItemList[_this.config.currPage][tmpVal]){
-				  if($.isFunction(opts.message.duplicate)){
-						opts.message.duplicate.call();
-					}else if(opts.message.duplicate !== false){
-						alert(opts.message.duplicate);
-					}
-
-					return false;
+				
+				var addChkFlag = typeof _this.addItemList[_this.config.currPage][tmpVal] ==='undefined'; 
+				if(dupChkFlag && addChkFlag){
+					dupChkFlag = false; 
 				}
+
+				if(!addChkFlag) return true; 
 
 				if($.isFunction(opts.beforeItemMove)){
 					if(opts.beforeItemMove(tmpObj) === false){
@@ -738,11 +737,11 @@ Plugin.prototype ={
 
 				addItemKey.push(tmpVal);
 
-				_this.addItemList[_this.config.currPage][tmpVal] =_addItem;
+				addItemMap[tmpVal] =_addItem;
 
 				strHtm.push(_this.getItemHtml('target',tmpVal ,selectItem ));
 
-				tmpObj.addClass(opts.addItemClass);
+				addElements.push(tmpObj);
 
 				if($.isFunction(opts.afterSourceMove)){
 					opts.afterSourceMove(tmpObj);
@@ -753,10 +752,30 @@ Plugin.prototype ={
 				return ;
 			}
 
-			if($.isFunction(opts.compleateSourceMove)){
-				opts.compleateSourceMove(addItemKey);
+			if(opts.duplicateCheck===true && dupChkFlag){
+			  if($.isFunction(opts.message.duplicate)){
+					opts.message.duplicate.call();
+				}else if(opts.message.duplicate !== false){
+					alert(opts.message.duplicate);
+				}
+
+				return false;
 			}
 
+			if($.isFunction(opts.compleateSourceMove)){
+				if(opts.compleateSourceMove(addItemKey)===false) return false;
+			}
+
+			_this.targetElement.find('.empty-message').remove();
+
+			for(var i =0; i <addElements.length; i++){
+				addElements[i].addClass(opts.addItemClass);
+			}
+
+			for(var key in addItemMap){
+				_this.addItemList[_this.config.currPage][key] =addItemMap[key];
+			}
+			
 			if(returnFlag===true){
 				return strHtm.join('');
 			}else{
@@ -798,7 +817,7 @@ Plugin.prototype ={
 				removeItem = _this.options.sourceItem.items[_this.config.itemKey.sourceIdx[tmpKey]];
 
 				if($.isFunction(_this.options.beforeTargetMove)){
-					_this.options.beforeTargetMove($(item));
+					if(_this.options.beforeTargetMove($(item))===false) return false;
 				}
 
 				var removeFlag = false;
@@ -826,7 +845,7 @@ Plugin.prototype ={
 					_this.options.afterTargetMove(removeItem);
 				}
 			});
-
+			
 			if(Object.keys(_this.addItemList[_this.config.currPage]).length < 1){
 				_this.targetElement.empty().html(_this.getEmptyMessage());
 			}

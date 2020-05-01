@@ -108,8 +108,8 @@ public class DbGroupController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/delete"})
-	public @ResponseBody ResponseResult delete(HttpServletRequest req) throws Exception {
-		return dbGroupServiceImpl.deleteDbGroupInfo(VarsqlUtils.getIncludeDefaultParam(req));
+	public @ResponseBody ResponseResult delete(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
+		return dbGroupServiceImpl.deleteDbGroupInfo(groupId);
 	}
 	
 	/**
@@ -126,7 +126,7 @@ public class DbGroupController extends AbstractController {
 	@RequestMapping({"/dbGroupMappingList"})
 	public @ResponseBody ResponseResult dbGroupMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
 		
-		return dbGroupServiceImpl.selectDbGroupMappingList(groupId);
+		return dbGroupServiceImpl.groupNDbMappingList(groupId);
 	}
 	
 	/**
@@ -151,7 +151,7 @@ public class DbGroupController extends AbstractController {
 			) throws Exception {
 	
 		
-		return dbGroupServiceImpl.updateDbGroupMappingInfo(selectItem ,groupId ,mode);
+		return dbGroupServiceImpl.updateGroupNDbMappingInfo(selectItem ,groupId ,mode);
 	}
 	
 	/**
@@ -165,42 +165,28 @@ public class DbGroupController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbGroupnuserMappingList"})
-	public @ResponseBody ResponseResult dbGroupnuserMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
-		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put("groupId", groupId);
-		
-		return dbGroupServiceImpl.selectDbGroupUserMappingList(paramMap);
+	@RequestMapping({"/dbGroupUserMappingList"})
+	public @ResponseBody ResponseResult dbGroupUserMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
+		return dbGroupServiceImpl.groupNUserMappingList(groupId);
 	}
 	
 	/**
-	 * 
-	 * @Method Name  : addDbGroupUser
-	 * @Method 설명 : db 그룹 사용자 추가 삭제. 
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16. 
-	 * @변경이력  :
-	 * @param selectItem
+	 * @method  : addDbGroupUser
+	 * @desc : db 그룹 사용자 추가 삭제. 
+	 * @author   : ytkim
+	 * @date   : 2019. 8. 16. 
 	 * @param vconid
+	 * @param selectItem
 	 * @param mode
 	 * @param req
 	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping({"/addDbGroupUser"})
-	public @ResponseBody ResponseResult addDbGroupUser(@RequestParam(value = "groupId", required = true) String vconid
+	public @ResponseBody ResponseResult addDbGroupUser(@RequestParam(value = "groupId", required = true) String groupId
 			,@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
-			, HttpServletRequest req
-			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+			) {
 		
-		paramMap.put("selectItem", selectItem);
-		paramMap.put("groupId", vconid);
-		paramMap.put("uid", SecurityUtil.userViewId(req));
-		paramMap.put("mode", mode);
-		
-		return dbGroupServiceImpl.updateDbGroupUser(paramMap);
+		return dbGroupServiceImpl.updateGroupNUserMappingInfo(selectItem, groupId, mode);
 	}
 }

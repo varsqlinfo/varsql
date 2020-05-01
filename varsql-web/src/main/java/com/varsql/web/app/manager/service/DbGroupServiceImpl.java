@@ -1,8 +1,6 @@
 package com.varsql.web.app.manager.service;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,25 +10,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
-import com.varsql.web.app.manager.dao.DbGroupDAO;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.dto.db.DbGroupRequestDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
+import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
+import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
 import com.varsql.web.repository.spec.DBGroupMappingDbSpec;
+import com.varsql.web.repository.spec.DBGroupMappingUserSpec;
 import com.varsql.web.repository.spec.DBGroupSpec;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 
 /**
 *-----------------------------------------------------------------------------
@@ -50,14 +47,13 @@ public class DbGroupServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(DbGroupServiceImpl.class);
 	
 	@Autowired
-	DbGroupDAO dbGroupDAO;
-	
-	@Autowired
 	private DBGroupEntityRepository dbGroupEntityRepository;
 	
 	@Autowired
 	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
 	
+	@Autowired
+	private DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
 	
 	/**
 	 * 
@@ -101,36 +97,26 @@ public class DbGroupServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 7. 19. 
 	 * @변경이력  :
-	 * @param parameter
-	 * @return
-	 */
-	@Transactional
-	public ResponseResult deleteDbGroupInfo(ParamMap parameter) {
-		ResponseResult result = new ResponseResult();
-		
-		int resultCnt = dbGroupDAO.deleteDbGroupInfo(parameter);
-		
-		if(resultCnt > 0) {
-			dbGroupDAO.deleteDbGroupNDbMappingInfo(parameter);
-			dbGroupDAO.deleteDbGroupNUserMappingInfo(parameter);
-		}
-		
-		result.setItemOne(resultCnt);
-		
-		return result;
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : selectDbGroupMappingList
-	 * @Method 설명 : db 그룹 맵핑 목록. 
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 12. 
-	 * @변경이력  :
 	 * @param groupId
 	 * @return
 	 */
-	public ResponseResult selectDbGroupMappingList(String groupId) {
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult deleteDbGroupInfo(String groupId) {
+		
+		dbGroupEntityRepository.deleteByGroupId(groupId);
+		
+		return VarsqlUtils.getResponseResultItemOne(1);
+	}
+
+	/**
+	 * @method  : groupNDbMappingList
+	 * @desc : 그룹 에 맵핑된 db 목록. 
+	 * @author   : ytkim
+	 * @date   : 2019. 8. 12. 
+	 * @param groupId
+	 * @return
+	 */
+	public ResponseResult groupNDbMappingList(String groupId) {
 		
 		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId));
 		
@@ -139,8 +125,18 @@ public class DbGroupServiceImpl extends AbstractService{
 		}).collect(Collectors.toList()));
 	}
 	
+	/**
+	 * @method  : updateGroupNDbMappingInfo
+	 * @desc : 그룹  db 맵핑 정보 업데이트. 
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 2. 
+	 * @param selectItem
+	 * @param groupId
+	 * @param mode
+	 * @return
+	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
-	public ResponseResult updateDbGroupMappingInfo(String selectItem, String groupId, String mode) {
+	public ResponseResult updateGroupNDbMappingInfo(String selectItem, String groupId, String mode) {
 		
 		logger.info("updateDbGroupMappingInfo  mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
 		
@@ -163,60 +159,55 @@ public class DbGroupServiceImpl extends AbstractService{
 		return VarsqlUtils.getResponseResultItemOne(result);
 	}
 	
-	
 	/**
-	 * 
-	 * @Method Name  : selectDbGroupUserMappingList
-	 * @Method 설명 : db 맵핑 사용자 목록.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 1. 23. 
-	 * @변경이력  :
-	 * @param paramMap
+	 * @method  : groupNUserMappingList
+	 * @desc : db그룹  사용자 목록.
+	 * @author   : ytkim
+	 * @date   : 2018. 1. 23. 
+	 * @param groupId
 	 * @return
 	 */
-	public ResponseResult selectDbGroupUserMappingList(DataCommonVO paramMap) {
-		ResponseResult resultObject = new ResponseResult();
-		resultObject.setItemList(dbGroupDAO.selectDbGroupUserMappingList(paramMap));
-		return resultObject;
+	public ResponseResult groupNUserMappingList(String groupId) {
+		
+		List<DBGroupMappingUserEntity> result = dbGroupMappingUserEntityRepository.findAll(DBGroupMappingUserSpec.dbGroupUserList(groupId));
+		
+		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
+			return domainMapper.convertToDomain(item.getUserInfo(), UserResponseDTO.class); 
+		}).collect(Collectors.toList()));
+		
 	}
 	
 	/**
-	 * 
-	 * @Method Name  : updateDbGroupUser
-	 * @Method 설명 : db그룹 사용자 추가, 삭제.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16. 
-	 * @변경이력  :
-	 * @param paramMap
+	 * @method  : updateGroupNUserMappingInfo
+	 * @desc : db그룹 사용자 추가, 삭제.
+	 * @author   : ytkim
+	 * @date   : 2019. 8. 16. 
+	 * @param selectItem
+	 * @param groupId
+	 * @param mode
 	 * @return
 	 */
-	public ResponseResult updateDbGroupUser(DataCommonVO paramMap) {
-		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
-		SecurityUtil.setUserInfo(paramMap);
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult updateGroupNUserMappingInfo(String selectItem, String groupId, String mode) {
+		logger.info("updateGroupNUserMappingInfo  mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
 		
-		ResponseResult resultObject = new ResponseResult();
-		Map<String,String> addResultInfo = new HashMap<String,String>();
+		String[] vconnidArr = StringUtil.split(selectItem,",");
 		
-		if("del".equals(paramMap.getString("mode"))){
-			paramMap.put("viewidArr", viewidArr);
-			dbGroupDAO.deleteDbGroupUser(paramMap);
-		}else{
-			for(String id: viewidArr){
-	        	paramMap.put("viewid", id);
-	        	try{
-	        		dbGroupDAO.updateDbGroupUser(paramMap);
-	        		addResultInfo.put(id,ResultConst.CODE.SUCCESS.name());
-	        	}catch(Exception e){
-	        		addResultInfo.put(id,e.getMessage());
-	    		}
-	        }
-			
-			resultObject.setItemOne(addResultInfo);
+		List<DBGroupMappingUserEntity> dbGroupUserList = new ArrayList<>();
+		for(String id: vconnidArr){
+			dbGroupUserList.add(DBGroupMappingUserEntity.builder().groupId(groupId).viewid(id).build());
+        }
+		
+		int result = 0;
+		if(dbGroupUserList.size() > 0) {
+			if("del".equals(mode)){
+				dbGroupMappingUserEntityRepository.deleteAll(dbGroupUserList);
+			}else{
+				dbGroupMappingUserEntityRepository.saveAll(dbGroupUserList);
+			}
+			result = 1;
 		}
-		
-		return resultObject;
+		return VarsqlUtils.getResponseResultItemOne(result);
 	}
-
-	
 	
 }

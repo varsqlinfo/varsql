@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -28,12 +29,15 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 	public final static String _TB_NAME="VTDATABASE_GROUP_USER";
 	
 	@Id
-	@Column(name ="GROUP_ID")
 	private String groupId;
 	
 	@Id
-	@Column(name ="VIEWID")
 	private String viewid;
+	
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GROUP_ID" ,updatable = false, insertable = false)
+	private DBGroupEntity groupUserEntity;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
@@ -46,6 +50,9 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 		this.viewid = viewid;
 
 	}
+	
+	public final static String JOIN_CONNINFO="userInfo";
+	
 	public final static String GROUP_ID="groupId";
 
 	public final static String VIEWID="viewid";

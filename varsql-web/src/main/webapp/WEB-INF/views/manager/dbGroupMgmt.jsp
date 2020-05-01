@@ -173,6 +173,10 @@ VarsqlAPP.vueServiceBean( {
 				,useMultiSelect : true
 				,useDragMove : false
 				,useDragSort : false
+				,duplicateCheck : true
+				,message :{
+					duplicate: VARSQL.messageFormat('varsql.0018')
+				}
 				,sourceItem : {
 					optVal : 'vconnid'
 					,optTxt : 'vname'
