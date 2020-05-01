@@ -128,7 +128,12 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> managerList;
-
+	
+//	@NotAudited
+//	@JsonManagedReference
+//	@OneToMany(mappedBy = "groupConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//	private Set<DBGroupMappingDbEntity> dbGroupList;
+	
 	@Builder
 	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount) {
 		this.vconnid = vconnid;
@@ -159,6 +164,10 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 		this.maxSelectCount = maxSelectCount;
 
 	}
+	
+	public static final String JOIN_MANAGER_LIST = "managerList";
+	
+	public static final String JOIN_GROUPLIST = "dbGroupList";
 
 	public final static String VCONNID="vconnid";
 

@@ -100,45 +100,32 @@ public class UserMgmtController extends AbstractController {
 	}
 
 	/**
-	 *
-	 * @Method Name  : initPassword
-	 * @Method 설명 : 패스워드 초기화
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 30.
-	 * @변경이력  :
+	 * @method  : initPassword
+	 * @desc : 패스워드 초기화
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 30. 
 	 * @param viewid
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({"/initPassword"})
-	public @ResponseBody ResponseResult initPassword(@RequestParam(value = "VIEWID", required = true )  String viewid) throws Exception {
-
-		PasswordForm userForm = new PasswordForm();
-
-		userForm.setViewid(viewid);
-
-		return userMgmtServiceImpl.initPassword(userForm);
+	public @ResponseBody ResponseResult initPassword(@RequestParam(value = "viewid", required = true )  String viewid) throws Exception {
+		return userMgmtServiceImpl.initPassword(viewid);
 	}
 
 	/**
-	 *
-	 * @Method Name  : userDetail
-	 * @Method 설명 : 사용자 상세 보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 30.
-	 * @변경이력  :
+	 * @method  : userDetail
+	 * @desc : 사용자 상세 보기.
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 30. 
 	 * @param viewid
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/userDetail", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "VIEWID", required = true )  String viewid , HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
-
-		param.put("viewid", viewid);
-
-		return userMgmtServiceImpl.userDetail(param);
+	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "VIEWID", required = true )  String viewid) throws Exception {
+		return userMgmtServiceImpl.userDetail(viewid);
 	}
 
 	/**

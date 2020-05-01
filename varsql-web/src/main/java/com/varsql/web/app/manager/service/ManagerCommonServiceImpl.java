@@ -2,19 +2,28 @@ package com.varsql.web.app.manager.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.varsql.web.app.manager.dao.ManagerCommonDAO;
+import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.dto.db.DBConnectionResponseDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.spec.DBConnectionSpec;
+import com.varsql.web.repository.spec.UserSpec;
+import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.PagingUtil;
 
 /**
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: ManagerCommonServiceImpl.java
-* @DESC		: 매니저 공통 처리.
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: ManagerCommonServiceImpl.java
+* @desc		: 매니저 공통 처리. 
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
@@ -23,77 +32,55 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class ManagerCommonServiceImpl{
+public class ManagerCommonServiceImpl extends AbstractService{
 	
 	@Autowired
-	ManagerCommonDAO managerCommonDAO;
+	private UserMgmtRepository userMgmtRepository;
 	
-	public List<Object> selectUserdbList(SearchParameter searchParameter) {
-		return managerCommonDAO.selectdbList(searchParameter); 
+	@Autowired
+	private DBConnectionEntityRepository dbConnectionModelRepository;
+	
+	public List<DBConnectionEntity> selectUserdbList(SearchParameter searchParameter) {
+		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
+			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , searchParameter.getKeyword())
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
+		
+		return result.getContent(); 
 	}
+	
 	/**
-	 * 
-	 * @Method Name  : selectdbList
-	 * @Method 설명 : db 사용자 목록.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 1. 23. 
-	 * @변경이력  :
+	 * @method  : selectdbList
+	 * @desc : db 목록.
+	 * @author   : ytkim
+	 * @date   : 2018. 1. 23
 	 * @param searchParameter
 	 * @return
 	 */
 	public ResponseResult selectdbList(SearchParameter searchParameter) {
 		
-		ResponseResult resultObject = new ResponseResult();
-		
-		int totalcnt = managerCommonDAO.selectdbListTotalCnt(searchParameter);
-		
-		if(totalcnt > 0){
-			resultObject.setItemList(managerCommonDAO.selectdbList(searchParameter));
-		}else{
-			resultObject.setItemList(null);
-		}
-		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return resultObject;
+		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
+			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , searchParameter.getKeyword())
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
+
+		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, DBConnectionResponseDTO.class);
 	}
+	
 	/**
-	 * 
-	 * @Method Name  : selectUserList
-	 * @Method 설명 : 사용자 목록 보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16. 
-	 * @변경이력  :
+	 * @method  : selectUserList
+	 * @desc : 사용자 목록
+	 * @author   : ytkim
+	 * @date   : 2019. 8. 16. 
 	 * @param searchParameter
 	 * @return
 	 */
 	public ResponseResult selectUserList(SearchParameter searchParameter) {
-		ResponseResult resultObject = new ResponseResult();
-		resultObject.setItemList(managerCommonDAO.selectUserList(searchParameter));
-		return resultObject;
-	}
-	
-	/**
-	 * 
-	 * @Method Name  : selectUserPagingList
-	 * @Method 설명 : 사용자 페이징 정보 목록. 
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16. 
-	 * @변경이력  :
-	 * @param searchParameter
-	 * @return
-	 */
-	public ResponseResult selectUserPagingList(SearchParameter searchParameter) {
-		ResponseResult resultObject = new ResponseResult();
-		
-		int totalcnt = managerCommonDAO.selectUserListTotalCnt(searchParameter);
-		
-		if(totalcnt > 0){
-			resultObject.setItemList(managerCommonDAO.selectUserList(searchParameter));
-		}else{
-			resultObject.setItemList(null);
-		}
-		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return resultObject;
+		Page<UserEntity> result = userMgmtRepository.findAll(
+			UserSpec.likeUnameOrUid(SecurityUtil.isAdmin(), searchParameter.getKeyword())
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
+
+		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, UserResponseDTO.class);
 	}
 }

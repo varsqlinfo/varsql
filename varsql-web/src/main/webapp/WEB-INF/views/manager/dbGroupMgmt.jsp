@@ -53,8 +53,8 @@
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td :title="item.groupName"><a href="javascript:;" @click="itemView(item)"> {{item.groupName}}</a></td>
-									<td :title="item.regId"><div class="text-ellipsis">{{item.regId}}</div></td>
-									<td>{{item.charCreDt}}</td>
+									<td :title="item.regId"><div class="text-ellipsis">{{item.regInfo.viewName}}</div></td>
+									<td>{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
@@ -174,13 +174,13 @@ VarsqlAPP.vueServiceBean( {
 				,useDragMove : false
 				,useDragSort : false
 				,sourceItem : {
-					optVal : 'VCONNID'
-					,optTxt : 'VNAME'
+					optVal : 'vconnid'
+					,optTxt : 'vname'
 					,items : []
 				}
 				,targetItem : {
-					optVal : 'VCONNID'
-					,optTxt : 'VNAME'
+					optVal : 'vconnid'
+					,optTxt : 'vname'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){

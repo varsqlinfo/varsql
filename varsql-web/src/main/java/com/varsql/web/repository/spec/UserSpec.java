@@ -37,7 +37,6 @@ public class UserSpec extends DefaultSpec{
 			}else {
 				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityType.ADMIN.name(), AuthorityType.MANAGER.name()));
 			}
-			
 		};
 	}
 

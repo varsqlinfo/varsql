@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.model.id.DBManagerId;
+import com.varsql.web.model.id.DBVconnidNViewIdID;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-@IdClass(DBManagerId.class)
+@IdClass(DBVconnidNViewIdID.class)
 @Table(name = DBManagerEntity._TB_NAME)
 public class DBManagerEntity extends AbstractRegAuditorModel{
 	private static final long serialVersionUID = 1L;

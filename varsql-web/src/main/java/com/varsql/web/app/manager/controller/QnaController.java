@@ -25,16 +25,14 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: QnaController.java
-* @DESC		: Qna 관리
-* @AUTHOR	: ytkim
+ * -----------------------------------------------------------------------------
+* @fileName		: QnaController.java
+* @desc		: Qna 관리
+* @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
-* 2019. 8. 20. 			ytkim			최초작성
+*2020. 4. 30. 			ytkim			최초작성
 
 *-----------------------------------------------------------------------------
  */
@@ -49,12 +47,10 @@ public class QnaController extends AbstractController {
 	QnaServiceImpl qnaServiceImpl;
 
 	/**
-	 *
-	 * @Method Name  : qnaMgmtList
-	 * @Method 설명 : qna 매니저 목록.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 1. 10.
-	 * @변경이력  :
+	 * @method  : qnaMgmtList
+	 * @desc : qna 매니저 목록.
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 30. 
 	 * @param req
 	 * @return
 	 * @throws Exception
@@ -69,14 +65,24 @@ public class QnaController extends AbstractController {
 		return qnaServiceImpl.selectQnaMgmtList(searchParameter);
 	}
 
-
+	/**
+	 * @method  : qnaUpdate
+	 * @desc : qna update
+	 * @author   : ytkim
+	 * @date   : 2020. 4. 30. 
+	 * @param qnaInfo
+	 * @param result
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/updQna")
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
-				logger.warn("###  GuestController qna check {}",errorVal.toString());
+				logger.info("###  QnaController qna qnaUpdate {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());

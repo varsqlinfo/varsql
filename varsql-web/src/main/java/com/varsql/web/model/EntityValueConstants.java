@@ -1,7 +1,7 @@
 package com.varsql.web.model;
 
 public interface EntityValueConstants {
-	enum DEL_YN{
+	enum YN{
 		Y,N
 	}
 	// ALL(전체) , Y(승락) , N(거부) 

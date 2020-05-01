@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
-import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.user.UserEntity;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +13,14 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(of= {"vconnid","viewid"})
-public class DBManagerId implements Serializable {
+public class DBVconnidNViewIdID implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Column(name =DBConnectionEntity.VCONNID)
+	@Column(name ="VCONNID")
 	private String vconnid;
 
-	@Column(name =UserEntity.VIEWID)
+	@Column(name ="VIEWID")
 	private String viewid;
 
 }

@@ -1,22 +1,36 @@
 package com.varsql.web.app.manager.service;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
-import com.varsql.web.app.manager.beans.DbGroupInfo;
 import com.varsql.web.app.manager.dao.DbGroupDAO;
 import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.db.DBConnectionResponseDTO;
+import com.varsql.web.dto.db.DbGroupRequestDTO;
+import com.varsql.web.model.entity.db.DBGroupEntity;
+import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
+import com.varsql.web.repository.db.DBGroupEntityRepository;
+import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
+import com.varsql.web.repository.spec.DBGroupMappingDbSpec;
+import com.varsql.web.repository.spec.DBGroupSpec;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
-import com.vartech.common.utils.PagingUtil;
 
 /**
 *-----------------------------------------------------------------------------
@@ -32,10 +46,17 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class DbGroupServiceImpl{
+public class DbGroupServiceImpl extends AbstractService{
+	private static final Logger logger = LoggerFactory.getLogger(DbGroupServiceImpl.class);
 	
 	@Autowired
 	DbGroupDAO dbGroupDAO;
+	
+	@Autowired
+	private DBGroupEntityRepository dbGroupEntityRepository;
+	
+	@Autowired
+	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
 	
 	
 	/**
@@ -50,41 +71,27 @@ public class DbGroupServiceImpl{
 	 */
 	public ResponseResult selectDbGroupList(SearchParameter searchParameter) {
 		
-		ResponseResult result = new ResponseResult();
+		Page<DBGroupEntity> result = dbGroupEntityRepository.findAll(
+			DBGroupSpec.searchKeyWord(searchParameter.getKeyword())
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
 		
-		int totalcnt = dbGroupDAO.selectDbGroupTotalcnt(searchParameter);
-		
-		if(totalcnt > 0){
-			result.setItemList(dbGroupDAO.selectDbGroupList(searchParameter));
-		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return result;
+		return VarsqlUtils.getResponseResult(result, searchParameter);
 	}
-
+	
 	/**
-	 * 
-	 * @Method Name  : saveDbGroupInfo
-	 * @Method 설명 : 저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
-	 * @변경이력  :
-	 * @param searchParameter
+	 * @method  : saveDbGroupInfo
+	 * @desc : 저장
+	 * @author   : ytkim
+	 * @date   : 2018. 7. 19. 
+	 * @param dbGroupInfo
 	 * @return
 	 */
-	public ResponseResult saveDbGroupInfo(DbGroupInfo dbGroupInfo) {
-		ResponseResult result = new ResponseResult();
+	public ResponseResult saveDbGroupInfo(DbGroupRequestDTO dbGroupInfo) {
+		DBGroupEntity entity = dbGroupInfo.toEntity();
+		entity = dbGroupEntityRepository.save(entity);
 		
-		dbGroupInfo.setUserId(SecurityUtil.userViewId());
-		
-		if("".equals(dbGroupInfo.getGroupId())){
-			dbGroupInfo.setGroupId(VarsqlUtils.generateUUID());
-			result.setItemOne(dbGroupDAO.insertDbGroupInfo(dbGroupInfo));
-		}else{
-			result.setItemOne(dbGroupDAO.updateDbGroupInfo(dbGroupInfo));
-		}
-		
-		return result;
+		return VarsqlUtils.getResponseResultItemOne(entity != null? 1 : 0);
 	}
 	
 	/**
@@ -120,41 +127,40 @@ public class DbGroupServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 8. 12. 
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param groupId
 	 * @return
 	 */
-	public ResponseResult selectDbGroupMappingList(DataCommonVO paramMap) {
-		ResponseResult resultObject = new ResponseResult();
-		resultObject.setItemList(dbGroupDAO.selectDbGroupMappingList(paramMap));
-		return resultObject;
+	public ResponseResult selectDbGroupMappingList(String groupId) {
+		
+		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId));
+		
+		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
+			return domainMapper.convertToDomain(item.getConnInfo(), DBConnectionResponseDTO.class); 
+		}).collect(Collectors.toList()));
 	}
 	
-	@Transactional
-	public ResponseResult updateDbGroupMappingInfo(DataCommonVO paramMap) {
-		String[] vconnidArr = StringUtil.split(paramMap.getString("selectItem"),",");
-		SecurityUtil.setUserInfo(paramMap);
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult updateDbGroupMappingInfo(String selectItem, String groupId, String mode) {
 		
-		ResponseResult resultObject = new ResponseResult();
-		Map<String,String> addResultInfo = new HashMap<String,String>();
+		logger.info("updateDbGroupMappingInfo  mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
 		
-		if("del".equals(paramMap.getString("mode"))){
-			paramMap.put("vconnidArr", vconnidArr);
-			dbGroupDAO.deleteDbGroupMappingInfo(paramMap);
-		}else{
-			for(String id: vconnidArr){
-	        	paramMap.put("vconnid", id);
-	        	try{
-	        		dbGroupDAO.insertDbGroupMappingInfo(paramMap);
-	        		addResultInfo.put(id,ResultConst.CODE.SUCCESS.name());
-	        	}catch(Exception e){
-	        		addResultInfo.put(id,e.getMessage());
-	    		}
-	        }
-			
-			resultObject.setItemOne(addResultInfo);
+		String[] vconnidArr = StringUtil.split(selectItem,",");
+		
+		List<DBGroupMappingDbEntity> dbConnList = new ArrayList<>();
+		for(String id: vconnidArr){
+			dbConnList.add(DBGroupMappingDbEntity.builder().groupId(groupId).vconnid(id).build());
+        }
+		
+		int result = 0;
+		if(dbConnList.size() > 0) {
+			if("del".equals(mode)){
+				dbGroupMappingDbEntityRepository.deleteAll(dbConnList);
+			}else{
+				dbGroupMappingDbEntityRepository.saveAll(dbConnList);
+			}
+			result = 1;
 		}
-		
-		return resultObject;
+		return VarsqlUtils.getResponseResultItemOne(result);
 	}
 	
 	
@@ -210,5 +216,7 @@ public class DbGroupServiceImpl{
 		
 		return resultObject;
 	}
+
+	
 	
 }

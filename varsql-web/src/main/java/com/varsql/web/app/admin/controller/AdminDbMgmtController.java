@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.varsql.web.app.admin.service.AdminServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.dto.db.ConnectionRequestDTO;
+import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -115,7 +115,7 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbConnectionCheck")
-	public @ResponseBody ResponseResult dbConnectionCheck(@Valid ConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult dbConnectionCheck(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
@@ -149,7 +149,7 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbSave")
-	public @ResponseBody ResponseResult dbSave(@Valid ConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult dbSave(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());

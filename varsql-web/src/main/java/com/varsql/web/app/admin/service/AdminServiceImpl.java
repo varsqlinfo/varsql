@@ -18,8 +18,8 @@ import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.sql.util.SQLUtil;
 import com.varsql.web.common.service.AbstractService;
-import com.varsql.web.dto.db.ConnectionRequestDTO;
-import com.varsql.web.dto.db.ConnectionResponseDTO;
+import com.varsql.web.dto.db.DBConnectionRequestDTO;
+import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
@@ -71,7 +71,7 @@ public class AdminServiceImpl extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, ConnectionResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, DBConnectionResponseDTO.class);
 	}
 
 	/**
@@ -85,11 +85,7 @@ public class AdminServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectDetailObject(String vconnid) {
-		ResponseResult resultObject = new ResponseResult();
-
-		resultObject.setItemOne(dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)));
-
-		return resultObject;
+		return VarsqlUtils.getResponseResultItemOne(dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)));
 	}
 
 	/**
@@ -102,7 +98,7 @@ public class AdminServiceImpl extends AbstractService{
 	 * @param vtConnection
 	 * @return
 	 */
-	public ResponseResult connectionCheck(ConnectionRequestDTO vtConnection) {
+	public ResponseResult connectionCheck(DBConnectionRequestDTO vtConnection) {
 
 		ResponseResult resultObject = new ResponseResult();
 
@@ -187,7 +183,7 @@ public class AdminServiceImpl extends AbstractService{
 	 * @param vtConnection
 	 * @return
 	 */
-	public ResponseResult saveVtconnectionInfo(ConnectionRequestDTO vtConnection) {
+	public ResponseResult saveVtconnectionInfo(DBConnectionRequestDTO vtConnection) {
 
 		ResponseResult resultObject = new ResponseResult();
 

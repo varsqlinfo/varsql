@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.app;
+package com.varsql.web.model.entity.sql;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,25 +16,23 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("serial")
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = ExceptionLogEntity._TB_NAME)
-public class ExceptionLogEntity extends AbstractRegAuditorModel{
-	
-	private static final long serialVersionUID = 1L;
-	
+@Table(name = SqlExceptionlogEntity._TB_NAME)
+public class SqlExceptionlogEntity extends AbstractRegAuditorModel{
 	public final static String _TB_NAME="VTSQL_EXCEPTIONLOG";
 
 	@Id
-	@GenericGenerator(name = "excpIdGenerator"
+	@GenericGenerator(name = "sExcpIdGenerator"
 		, strategy = "com.varsql.web.model.id.generator.AppUUIDGenerator"
 		, parameters = @Parameter(
             name = AppUUIDGenerator.PREFIX_PARAMETER,
             value = ""
 		)
 	)
-    @GeneratedValue(generator = "excpIdGenerator")
+    @GeneratedValue(generator = "sExcpIdGenerator")
 	@Column(name ="EXCP_ID")
 	private String excpId;
 
@@ -49,9 +47,10 @@ public class ExceptionLogEntity extends AbstractRegAuditorModel{
 
 	@Column(name ="EXCP_CONT")
 	private String excpCont;
-	
+
+
 	@Builder
-	public ExceptionLogEntity(String excpId, String serverId, String excpType, String excpTitle, String excpCont) {
+	public SqlExceptionlogEntity(String excpId, String serverId, String excpType, String excpTitle, String excpCont) {
 		this.excpId = excpId;
 		this.serverId = serverId;
 		this.excpType = excpType;
@@ -59,7 +58,6 @@ public class ExceptionLogEntity extends AbstractRegAuditorModel{
 		this.excpCont = excpCont;
 
 	}
-
 	public final static String EXCP_ID="excpId";
 
 	public final static String SERVER_ID="serverId";
@@ -69,9 +67,5 @@ public class ExceptionLogEntity extends AbstractRegAuditorModel{
 	public final static String EXCP_TITLE="excpTitle";
 
 	public final static String EXCP_CONT="excpCont";
-
-	public final static String REG_ID="regId";
-
-	public final static String REG_DT="regDt";
 
 }

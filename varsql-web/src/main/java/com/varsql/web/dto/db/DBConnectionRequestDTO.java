@@ -31,7 +31,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ValidUrlDirectYn
-public class ConnectionRequestDTO{
+public class DBConnectionRequestDTO{
 	@Size(max=5)
 	private String vconnid;
 

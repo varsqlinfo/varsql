@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +17,6 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.app.manager.dao.ManagerDAO;
-import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.CommonDAO;
@@ -99,7 +99,6 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
-		ResponseResult result = new ResponseResult();
 		String[] viewidArr = StringUtil.split(selectItem,",");
 		AuthorityType role = "Y".equals(acceptyn)?AuthorityType.USER:AuthorityType.GUEST;
 		
@@ -110,10 +109,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 		}).collect(Collectors.toList());
 		
 		userMgmtRepository.saveAll(users);
-		
-		result.setItemOne(1);
 
-		return result;
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 
 	/**
@@ -127,16 +124,14 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @return
 	 * @throws EncryptDecryptException
 	 */
-	public ResponseResult initPassword(PasswordForm passwordForm) throws EncryptDecryptException {
-		ResponseResult result = new ResponseResult();
-
+	public ResponseResult initPassword(String viewid) throws EncryptDecryptException {
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
+		
+		UserEntity entity= userMgmtRepository.findByViewid(viewid);
+		entity.setUpw(passwordInfo);
+		entity = userMgmtRepository.save(entity);
 
-		passwordForm.setUpw(passwordEncoder.encode(passwordInfo));
-		result.setResultCode(userPreferencesDAO.updatePasswordInfo(passwordForm));
-		result.setItemOne(passwordInfo);
-
-		return result;
+		return VarsqlUtils.getResponseResultItemOne(passwordInfo);
 	}
 
 	/**
@@ -146,16 +141,16 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 11. 29.
 	 * @변경이력  :
-	 * @param param
+	 * @param viewid
 	 * @return
 	 */
-	public ResponseResult userDetail(ParamMap param) {
+	public ResponseResult userDetail(String viewid) {
 		ResponseResult result = new ResponseResult();
 
-		result.setItemOne(manageDAO.selectUserDetail(param.getString("viewid")));
-		result.setItemList(manageDAO.selectUserDbInfo(param));
-		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
-		result.addCustoms("dbGroup",manageDAO.selectUserDbGroup(param));
+		result.setItemOne(domainMapper.convertToDomain(userMgmtRepository.findByViewid(viewid), UserResponseDTO.class));
+//		result.setItemList(manageDAO.selectUserDbInfo(viewid));
+//		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
+//		result.addCustoms("dbGroup",manageDAO.selectUserDbGroup(viewid));
 
 		return result;
 	}

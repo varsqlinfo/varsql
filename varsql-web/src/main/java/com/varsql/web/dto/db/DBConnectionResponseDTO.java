@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ConnectionResponseDTO{
+public class DBConnectionResponseDTO{
 	private String vconnid;
 
 	private String vname;

@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.manager.beans.DbGroupInfo;
 import com.varsql.web.app.manager.service.DbGroupServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.dto.db.DbGroupRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -80,7 +80,7 @@ public class DbGroupController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/save"})
-	public @ResponseBody ResponseResult save(@Valid DbGroupInfo dbGroupInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult save(@Valid DbGroupRequestDTO dbGroupInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -126,10 +126,7 @@ public class DbGroupController extends AbstractController {
 	@RequestMapping({"/dbGroupMappingList"})
 	public @ResponseBody ResponseResult dbGroupMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
 		
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put("groupId", groupId);
-		
-		return dbGroupServiceImpl.selectDbGroupMappingList(paramMap);
+		return dbGroupServiceImpl.selectDbGroupMappingList(groupId);
 	}
 	
 	/**
@@ -152,13 +149,9 @@ public class DbGroupController extends AbstractController {
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			, HttpServletRequest req
 			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
+	
 		
-		paramMap.put("selectItem", selectItem);
-		paramMap.put("groupId", groupId);
-		paramMap.put("mode", mode);
-		
-		return dbGroupServiceImpl.updateDbGroupMappingInfo(paramMap);
+		return dbGroupServiceImpl.updateDbGroupMappingInfo(selectItem ,groupId ,mode);
 	}
 	
 	/**

@@ -3,9 +3,9 @@ package com.varsql.web.dto.valid;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.varsql.web.dto.db.ConnectionRequestDTO;
+import com.varsql.web.dto.db.DBConnectionRequestDTO;
 
-public class UrlDirectYnConstraintValidator  implements ConstraintValidator<ValidUrlDirectYn, ConnectionRequestDTO> {
+public class UrlDirectYnConstraintValidator  implements ConstraintValidator<ValidUrlDirectYn, DBConnectionRequestDTO> {
 
     @Override
     public void initialize(final ValidUrlDirectYn arg0) {
@@ -13,7 +13,7 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     }
 
     @Override
-    public boolean isValid(final ConnectionRequestDTO vtConnection, final ConstraintValidatorContext context) {
+    public boolean isValid(final DBConnectionRequestDTO vtConnection, final ConstraintValidatorContext context) {
 
     	if("Y".equals(vtConnection.getUrlDirectYn())) {
     		String  url = vtConnection.getVurl();

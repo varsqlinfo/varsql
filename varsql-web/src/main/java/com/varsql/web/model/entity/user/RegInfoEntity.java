@@ -4,10 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +42,10 @@ public class RegInfoEntity{
 	@Column(name ="DEPT_NM")
 	private String deptNm;
 	
+	@Transient
+	@JsonProperty
+	private String viewName;
+	
 	
 	public final static String VIEWID="viewid";
 
@@ -50,4 +56,8 @@ public class RegInfoEntity{
 	public final static String ORG_NM="orgNm";
 
 	public final static String DEPT_NM="deptNm";
+	
+	public String getViewName() {
+		return String.format("%s/%s", this.uid , this.uname);
+	}
 }

@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.manager.beans.DbGroupInfo;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.BaseDAO;
+import com.varsql.web.dto.db.DbGroupRequestDTO;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.SearchParameter;
 
@@ -65,7 +65,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @param dbGroupInfo
 	 * @return
 	 */
-	public Object insertDbGroupInfo(DbGroupInfo dbGroupInfo) {
+	public Object insertDbGroupInfo(DbGroupRequestDTO dbGroupInfo) {
 		return getSqlSession().insert("manageDbGroupMapper.insertDbGroupInfo",dbGroupInfo);
 	}
 	
@@ -79,7 +79,7 @@ public class DbGroupDAO extends BaseDAO{
 	 * @param dbGroupInfo
 	 * @return
 	 */
-	public Object updateDbGroupInfo(DbGroupInfo dbGroupInfo) {
+	public Object updateDbGroupInfo(DbGroupRequestDTO dbGroupInfo) {
 		return getSqlSession().update("manageDbGroupMapper.updateDbGroupInfo",dbGroupInfo);
 	}
 	

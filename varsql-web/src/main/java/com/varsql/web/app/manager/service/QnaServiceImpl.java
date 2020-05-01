@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.manager.dao.QnaDAO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.model.entity.app.QnAEntity;

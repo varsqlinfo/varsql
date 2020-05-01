@@ -1,7 +1,6 @@
 package com.varsql.web.model.entity.app;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -44,7 +43,7 @@ public class QnAEntity extends AabstractAuditorModel{
 	@GenericGenerator(name = "qnaidGenerator", strategy = "com.varsql.web.model.id.generator.AppUUIDGenerator"
 		, parameters = @Parameter(
             name = AppUUIDGenerator.PREFIX_PARAMETER,
-            value = "Q_"
+            value = "QA_"
 		)
 	)
     @GeneratedValue(generator = "qnaidGenerator")

@@ -1,0 +1,54 @@
+package com.varsql.web.model.entity.app;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
+import com.varsql.web.model.id.NoteCompositeID;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@IdClass(NoteCompositeID.class)
+@Table(name = NoteMappingUserEntity._TB_NAME)
+public class NoteMappingUserEntity{
+	public final static String _TB_NAME="VTNOTE_USER";
+	
+	@Id
+	private String noteId;
+	
+	@Id
+	private String sendId;
+	
+	@Id
+	private String recvId;
+
+	@Column(name ="VIEW_DT")
+	private String viewDt;
+
+
+	@Builder
+	public NoteMappingUserEntity(String noteId, String sendId, String recvId, String viewDt) {
+		this.noteId = noteId;
+		this.sendId = sendId;
+		this.recvId = recvId;
+		this.viewDt = viewDt;
+
+	}
+	public final static String NOTE_ID="noteId";
+
+	public final static String SEND_ID="sendId";
+
+	public final static String RECV_ID="recvId";
+
+	public final static String VIEW_DT="viewDt";
+
+}

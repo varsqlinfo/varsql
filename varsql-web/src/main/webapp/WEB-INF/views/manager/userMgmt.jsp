@@ -381,11 +381,14 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// pasword 초기화
 		,initPassword :function(sItem){
+			var _self = this; 
+			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
-					sItem.initpw = resData.item;
+					
+					_self.$set(sItem, "initpw", resData.item)
 					
 					alert(VARSQL.messageFormat('varsql.m.0001'));
 					
