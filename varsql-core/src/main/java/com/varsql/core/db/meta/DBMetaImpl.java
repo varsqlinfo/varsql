@@ -270,7 +270,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	 * 
 	 * @Method Name  : getProcedures
 	 * @Method 설명 : 프로시저 정보 목록 보기.
-	 * @Method override : @see com.varsql.core.db.meta.DBMeta#getProcedures(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.meta.DBMeta#getProcedures(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 8. 29. 
 	 * @변경이력  :
@@ -353,7 +353,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	 * 
 	 * @Method Name  : getFunctionMetadata
 	 * @Method 설명 : function 정보 보기
-	 * @Method override : @see com.varsql.core.db.meta.DBMeta#getFunctionMetadata(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.meta.DBMeta#getFunctionMetadata(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 8. 29. 
 	 * @변경이력  :

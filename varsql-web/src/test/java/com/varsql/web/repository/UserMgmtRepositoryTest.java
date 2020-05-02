@@ -18,7 +18,7 @@ import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
 import com.varsql.web.repository.user.UserMgmtRepository;
-import com.varsql.web.util.ValidateUtils;
+import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
 class UserMgmtRepositoryTest extends BaseJpaTestCase{

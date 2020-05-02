@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.util.ValidateUtils;
+import com.varsql.web.util.ConvertUtils;
 
 import lombok.Getter;
 import lombok.Setter;

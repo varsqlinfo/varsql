@@ -1,43 +1,101 @@
 package com.varsql.web.util;
 
+import java.util.Collection;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * -----------------------------------------------------------------------------
-* @fileName		: ValidateUtils.java
-* @desc		: 유효성 체크 util
-* @author	: ytkim
+ * 
+*-----------------------------------------------------------------------------
+* @PROJECT	: varsql
+* @NAME		: ValidateUtils.java
+* @DESC		: validate util
+* @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
 *-----------------------------------------------------------------------------
-*2020. 4. 20. 			ytkim			최초작성
+* 2019. 10. 31. 			ytkim			최초작성
 
 *-----------------------------------------------------------------------------
  */
 public final class ValidateUtils {
-
-	private ValidateUtils() {}
-
-	public static Long longValueOf(Integer val) {
-		return longValueOf(val+"");
+	
+	private ValidateUtils(){}
+	
+	/**
+	 * 
+	 * @Method Name  : isNull
+	 * @Method 설명 : null check
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 10. 31. 
+	 * @변경이력  :
+	 * @param obj
+	 * @return
+	 */
+	public static boolean isNull(Object obj) {
+		return obj == null;
 	}
-
-	public static Long longValueOf(String val) {
-		if(val ==null || "".equals(val.trim())) {
-			return null;
-		}
-		return Long.valueOf(val);
+	
+	public static boolean isNotNull(Object obj) {
+		return obj != null;
 	}
 	
 	/**
-	 * @method  : notEmptyValue
-	 * @desc : 업데이트시 id 가 있을경우 업데이트 하지 않기 위해서 null처리. 
-	 * @author   : ytkim
-	 * @date   : 2020. 4. 29. 
-	 * @param id
-	 * @param val
+	 * 
+	 * @Method Name  : isEmpty
+	 * @Method 설명 : 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 10. 31. 
+	 * @변경이력  :
+	 * @param obj
 	 * @return
 	 */
-	public static String updateValueNull(String id, String val) {
-		return id !=null && !"".equals(id) ? null: val;
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Object obj) {
+		if(obj == null) {
+			return true; 
+		}else if(obj instanceof String) {
+			return StringUtils.isEmpty(obj.toString());
+		}else if (obj instanceof Collection) {
+			return CollectionUtils.isEmpty((Collection)obj);
+		}else {
+			return ObjectUtils.isEmpty(obj);
+		}
 	}
+	
+	public static boolean isNumber(Object obj){
+		try {
+	        Integer.parseInt(obj.toString());
+	    } catch (NumberFormatException | NullPointerException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
+	
+	public static String getValidFileName(String fileName) {
+		fileName = fileName.replace("../", "");
+		fileName = fileName.replace("..\\", "");
+		
+		return fileName; 
+	}
+	
+	/**
+	 * 
+	 * @Method Name  : getValidFilePathName
+	 * @Method 설명 : 파일 경로 체크. 
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 1. 
+	 * @변경이력  :
+	 * @param filePathName
+	 * @return
+	 */
+	public static String getValidFilePathName(String filePathName) {
+		filePathName = filePathName.replace("../", "");
+		filePathName = filePathName.replace("..\\", "");
+		
+		return filePathName; 
+	}
+	
 }
-

@@ -1225,7 +1225,7 @@ _ui.dbSchemaObject ={
 		
 		VARSQL.req.ajax({      
 			loadSelector : _getSelector('schemaObject',_selectorType.PLUGIN)
-			,url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+			,url:{type:VARSQL.uri.database, url:'/dbObjectList'}
 			,data : param 
 			,success:function (resData){
 				_g_cache.setSOMetaInitFlag($contentId, true);
@@ -1239,7 +1239,7 @@ _ui.dbSchemaObject ={
 			param.custom = {allMetadata : "Y"};
 			
 			VARSQL.req.ajax({      
-				url:{type:VARSQL.uri.database, url:'/dbObjectList.varsql'}
+				url:{type:VARSQL.uri.database, url:'/dbObjectList'}
 				,data : param 
 				,success:function (resData){
 					resData.refreshFlag = false; 
@@ -2050,7 +2050,7 @@ _ui.dbObjectMetadata= {
 		
 		VARSQL.req.ajax({
 			loadSelector : _self.selector.contEleId
-			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList.varsql'}
+			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList'}
 			,data : _getParam(param)
 			,success:function (resData){
 				
@@ -2100,7 +2100,7 @@ _ui.dbObjectMetadata= {
 		var param =_getParam({'objectType':sObj.objectType ,objectName:sObj.objectName});
 		
 		VARSQL.req.ajax({
-			url:{type:VARSQL.uri.database, url:'/createDDL.varsql'}
+			url:{type:VARSQL.uri.database, url:'/createDDL'}
 			,loadSelector : _self.selector.contEleId
 			,data:param
 			,success:function (resData){
@@ -3240,7 +3240,7 @@ _ui.SQL = {
 				var params = { searchVal : request };
 				
 				VARSQL.req.ajax({      
-				    url:{type:VARSQL.uri.user, url:'/searchUserList.varsql'}
+				    url:{type:VARSQL.uri.user, url:'/searchUserList'}
 				    ,data: params
 				    ,success:function (data){
 				    	//서버에서 json 데이터 response 후 목록에 뿌려주기 위함 VIEWID,UID,UNAME
@@ -3534,7 +3534,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
-		    ,url:{type:VARSQL.uri.sql, url:'/base/saveQuery.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/saveQuery'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var item = res.item; 
@@ -3585,7 +3585,7 @@ _ui.SQL = {
 			
 			VARSQL.req.ajax({      
 				loadSelector : '#sql_editor_wrapper'
-			    ,url:{type:VARSQL.uri.sql, url:'/base/saveAllQuery.varsql'}
+			    ,url:{type:VARSQL.uri.sql, url:'/base/saveAllQuery'}
 			    ,data : params
 			    ,success:function (resData){
 			    	
@@ -3646,7 +3646,7 @@ _ui.SQL = {
 						
 						VARSQL.req.ajax({      
 						    loadSelector : '#sql_editor_wrapper'
-						    ,url:{type:VARSQL.uri.user, url:'/sendMemo.varsql'}
+						    ,url:{type:VARSQL.uri.user, url:'/sendMemo'}
 						    ,data:params 
 						    ,success:function (resData){
 						    	_self.memoDialog.dialog( "close" );
@@ -3674,7 +3674,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileTab.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileTab'}
 		    ,data:_g_options.param 
 		    ,success:function (res){
 		    	var items = res.items
@@ -3711,7 +3711,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlList.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlList'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var items = res.items;
@@ -3750,7 +3750,7 @@ _ui.SQL = {
 		    				params['sqlId'] = sqlId;
 		    				VARSQL.req.ajax({
 			    			    loadSelector : '#sql_editor_wrapper'
-			    			    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileDetailInfo.varsql'}
+			    			    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFileDetailInfo'}
 			    			    ,data:params
 			    			    ,success:function (res){
 			    			    	_self.addTabSqlEditorInfo(res.item);
@@ -3771,7 +3771,7 @@ _ui.SQL = {
 		    			params['sqlId'] = sqlId;
 		    			VARSQL.req.ajax({
 		    				loadSelector : '#sql_editor_wrapper'
-		    			    ,url:{type:VARSQL.uri.sql, url:'/base/delSqlSaveInfo.varsql'}
+		    			    ,url:{type:VARSQL.uri.sql, url:'/base/delSqlSaveInfo'}
 		    			    ,data:params 
 		    			    ,success:function (res){
 		    			    	itemArea.remove();
@@ -4053,7 +4053,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
 		    ,data:params 
 		    ,success:function (resData){
 		    	_ui.sqlDataArea.viewResult(resData)             
@@ -4086,7 +4086,7 @@ _ui.SQL = {
 		
 		VARSQL.req.ajax({      
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFormat.varsql'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFormat'}
 		    ,data:params 
 		    ,success:function (res){
 		    	var formatSql = res.item; 
@@ -4150,7 +4150,7 @@ _ui.SQL = {
 					
 					VARSQL.req.download({
 						type: 'post'
-						,url: {type:VARSQL.uri.sql, url:'/base/dataExport.varsql'}
+						,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
 						,params:params
 					});
 				}
@@ -4490,7 +4490,7 @@ _ui.sqlDataArea =  {
 						
 						VARSQL.req.download({
 							type: 'post'
-							,url: {type:VARSQL.uri.sql, url:'/base/gridDownload.varsql'}
+							,url: {type:VARSQL.uri.sql, url:'/base/gridDownload'}
 							,params: params
 						});
 						
@@ -4672,7 +4672,7 @@ _ui.registerPlugin({
 			
 			VARSQL.req.ajax({      
 			    loadSelector : _self.selector
-			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search.varsql'}
+			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search'}
 			    ,data : params 
 			    ,success:function (res){
 			    	_self.gridObj.setData(res.items,'reDraw');
@@ -4767,7 +4767,7 @@ _ui.registerPlugin({
 			
 			VARSQL.req.ajax({      
 			    loadSelector : _self.selector
-			    ,url:{type:VARSQL.uri.plugin, url:'/history/search.varsql'}
+			    ,url:{type:VARSQL.uri.plugin, url:'/history/search'}
 			    ,data : params 
 			    ,success:function (res){
 			    	

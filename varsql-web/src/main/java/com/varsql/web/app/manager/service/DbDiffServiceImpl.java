@@ -1,6 +1,8 @@
 package com.varsql.web.app.manager.service;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +14,13 @@ import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
-import com.varsql.web.common.beans.VtconnectionRVO;
 import com.varsql.web.common.dao.CommonDAO;
-import com.vartech.common.app.beans.ParamMap;
+import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
+import com.vartech.common.utils.VartechUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -33,10 +37,14 @@ import com.vartech.common.constants.ResultConst;
  */
 @Service
 public class DbDiffServiceImpl{
+	
+	private static final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
 
 	@Autowired
 	CommonDAO commonDAO;
 
+	@Autowired
+	private DBConnectionEntityRepository  dbConnectionEntityRepository;
 	/**
 	 *
 	 * @Method Name  : objectTypeList
@@ -44,25 +52,22 @@ public class DbDiffServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 1. 2.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconnid
 	 * @return
 	 */
-	public ResponseResult objectTypeList(ParamMap paramMap) {
+	public ResponseResult objectTypeList(String vconnid) {
 
 		ResponseResult resultObject = new ResponseResult();
 
-		VtconnectionRVO vtConnRVO = commonDAO.selectDetailObject(paramMap);
+		DBConnectionEntity vtConnRVO = dbConnectionEntityRepository.findByVconnid(vconnid);
 
 		if(vtConnRVO==null){
 			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
 			resultObject.setItemList(null);
 		}else{
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVtype());
 			resultObject.setItemList(dbMetaEnum.getServiceMenu());
-
-			DatabaseParamInfo dpi =  getDatabaseParamInfo(vtConnRVO);
-
-			resultObject.addCustoms("schemaInfo",dbMetaEnum.getSchemas(dpi));
+			resultObject.addCustoms("schemaInfo",dbMetaEnum.getSchemas(  getDatabaseParamInfo(vtConnRVO)));
 		}
 
 		return resultObject;
@@ -70,6 +75,7 @@ public class DbDiffServiceImpl{
 
 	/**
 	 *
+	 * @param objectType 
 	 * @Method Name  : objectList
 	 * @Method 설명 : object list
 	 * @작성자   : ytkim
@@ -78,23 +84,21 @@ public class DbDiffServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult objectList(ParamMap paramMap) {
+	public ResponseResult objectList(String vconnid, String schema, String objectType) {
 
 		ResponseResult resultObject = new ResponseResult();
 
-		VtconnectionRVO vtConnRVO = commonDAO.selectDetailObject(paramMap);
+		DBConnectionEntity vtConnRVO = dbConnectionEntityRepository.findByVconnid(vconnid);
 
 		if(vtConnRVO==null){
 			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
 			resultObject.setItemList(null);
 		}else{
 			DatabaseParamInfo dpi = getDatabaseParamInfo(vtConnRVO);
-			dpi.setSchema(paramMap.getString("schema", dpi.getSchema()));
-
-			String objectType = paramMap.getString("objectType");
+			dpi.setSchema(schema);
 			dpi.setObjectType(objectType);
 
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVTYPE());
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVtype());
 			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){
 				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
@@ -116,19 +120,18 @@ public class DbDiffServiceImpl{
 		return resultObject;
 	}
 
-
-	private DatabaseParamInfo getDatabaseParamInfo(VtconnectionRVO vtConnRVO) {
+	private DatabaseParamInfo getDatabaseParamInfo(DBConnectionEntity vtConnRVO) {
 		DatabaseParamInfo dpi = new DatabaseParamInfo();
-		dpi.setConuid(null, SecurityUtil.loginUser().getViewid(), new DatabaseInfo(vtConnRVO.getVCONNID()
+		dpi.setConuid(null, SecurityUtil.loginUser().getViewid(), new DatabaseInfo(vtConnRVO.getVconnid()
 				, null
-				, vtConnRVO.getVTYPE()
-				, vtConnRVO.getVNAME()
-				, vtConnRVO.getVDBSCHEMA()
-				, vtConnRVO.getBASETABLE_YN()
-				, vtConnRVO.getLAZYLOAD_YN()
-				, vtConnRVO.getVDBVERSION()
-				, vtConnRVO.getSCHEMA_VIEW_YN()
-				, vtConnRVO.getMAX_SELECT_COUNT()
+				, vtConnRVO.getVtype()
+				, vtConnRVO.getVname()
+				, vtConnRVO.getVdbschema()
+				, vtConnRVO.getBasetableYn()
+				, vtConnRVO.getLazyloadYn()
+				, ConvertUtils.longValueOf(vtConnRVO.getVdbversion())
+				, vtConnRVO.getSchemaViewYn()
+				, ConvertUtils.intValue(vtConnRVO.getMaxSelectCount())
 			)
 		);
 

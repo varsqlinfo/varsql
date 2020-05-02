@@ -105,7 +105,7 @@ section#content:after{content:"";display:block;clear:both;}
 				<span>
 					<select class="input-sm" v-model="diffItem.source" @change="sourceChange(diffItem.source)" style="width:18%">
 						<option value=""><spring:message code="select" text="선택"/></option>
-						<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+						<option v-for="(item,index) in dbList" :value="item.vconnid">{{item.vname}}</option>
 					</select>
 					<select class="input-sm" v-model="diffItem.sourceSchema" style="width:12%" @change="sourceSchemaChange(diffItem.sourceSchema)">
 						<option value=""><spring:message code="select" text="선택"/></option>
@@ -117,7 +117,7 @@ section#content:after{content:"";display:block;clear:both;}
 				<span>
 					<select class="input-sm" v-model="diffItem.target" @change="targetChange(diffItem.target)" style="width:18%">
 						<option value=""><spring:message code="select" text="선택"/></option>
-						<option v-for="(item,index) in dbList" :value="item.VCONNID">{{item.VNAME}}</option>
+						<option v-for="(item,index) in dbList" :value="item.vconnid">{{item.vname}}</option>
 					</select>
 					<select class="input-sm" v-model="diffItem.targetSchema" style="width:12%">
 						<option value=""><spring:message code="select" text="선택"/></option>
@@ -381,7 +381,7 @@ VarsqlAPP.vueServiceBean( {
 			var dbListMap = {};
 			for(var i =0, len = dbList.length; i< len ;i++){
 				var dbInfo = dbList[i];
-				dbListMap[dbInfo.VCONNID] = dbInfo; 
+				dbListMap[dbInfo.vconnid] = dbInfo; 
 			}
 			
 			_self.dbListMap = dbListMap;
@@ -1309,8 +1309,6 @@ VarsqlAPP.vueServiceBean( {
 		,sourceChange : function (val){
 			var _self = this; 
 			
-			_self.diffItem.sourceSchema = _self.dbListMap[val].VDBSCHEMA;
-			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}
 				,data : {
@@ -1319,14 +1317,22 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector : '#varsqlVueArea'
 				,success: function(resData) {
 					_self.objectList = resData.items;
-					_self.sourceSchemaList = resData.customs.schemaInfo;
+					var schemaInfo = resData.customs.schemaInfo; 
+					
+					if(schemaInfo.indexOf(_self.dbListMap[val].vdbschema) > -1){
+						_self.diffItem.sourceSchema = _self.dbListMap[val].vdbschema;
+					}else{
+						_self.diffItem.sourceSchema = schemaInfo[0];
+					}
+					
+					_self.sourceSchemaList = schemaInfo;
 				}
 			})
 		}
 		,targetChange : function (val){
 			var _self = this; 
 			
-			_self.diffItem.targetSchema = _self.dbListMap[val].VDBSCHEMA;
+			_self.diffItem.targetSchema = _self.dbListMap[val].vdbschema;
 			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}
@@ -1377,7 +1383,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			VARSQL.req.download({
 				type: 'post'
-				,url: '/download.varsql'
+				,url: '/download'
 				,params: params
 			});
 		}

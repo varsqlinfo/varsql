@@ -191,7 +191,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 	 * 
 	 * @Method Name  : getTrigger
 	 * @Method 설명 : trigger ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScriptImpl#getTrigger(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScriptImpl#getTrigger(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 9. 19. 
 	 * @변경이력  :

@@ -12,8 +12,6 @@ public class PasswordEncodeConverter implements AttributeConverter<String, Strin
 	
 	@Override
 	public String convertToDatabaseColumn(String attribute) {
-		System.out.println("11111111111111 : "+ attribute);
-		
 		return ((PasswordEncoder)BeanUtils.getBean("varsqlPasswordEncoder")).encode(attribute);
 	}
 	

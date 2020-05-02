@@ -19,61 +19,101 @@ public class DatabaseInfo implements java.io.Serializable {
 	private boolean basetableYn;
 	private boolean lazyLoad;
 	private boolean schemaViewYn;
-	private String version;
+	private long version;
 	private int maxSelectCount;
 	
-	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,String version, String schemaViewYn, int maxSelectCount){
+	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,long version, String schemaViewYn, int maxSelectCount){
 		this.vconnid= vconnid;
 		this.connUUID= connUUID;
 		this.type= type.toUpperCase();
 		this.name= name;
 		this.schema= schema;
-		this.basetableYn= ("Y".equals(basetableYn) ? true :false);
-		this.lazyLoad= ("Y".equals(lazyLoad) ? true :false);
-		this.schemaViewYn= ("Y".equals(schemaViewYn) ? true :false);
+		this.basetableYn= "Y".equals(basetableYn);
+		this.lazyLoad= "Y".equals(lazyLoad);
+		this.schemaViewYn= "Y".equals(schemaViewYn);
 		this.version= version;
 		this.maxSelectCount = maxSelectCount; 
 	}
-	
+
 	public String getVconnid() {
 		return vconnid;
 	}
-	
-	public String getType() {
-		return type;
+
+	public void setVconnid(String vconnid) {
+		this.vconnid = vconnid;
 	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getSchema() {
-		return schema;
-	}
-	
-	public String getVersion() {
-		return version;
-	}
-	
+
 	public String getConnUUID() {
 		return connUUID;
 	}
-	
+
+	public void setConnUUID(String connUUID) {
+		this.connUUID = connUUID;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
+
 	public boolean isBasetableYn() {
 		return basetableYn;
 	}
-	
+
+	public void setBasetableYn(boolean basetableYn) {
+		this.basetableYn = basetableYn;
+	}
+
 	public boolean isLazyLoad() {
 		return lazyLoad;
 	}
+
+	public void setLazyLoad(boolean lazyLoad) {
+		this.lazyLoad = lazyLoad;
+	}
+
 	public boolean isSchemaViewYn() {
 		return schemaViewYn;
 	}
 
-	/**
-	 * @return the maxSelectCount
-	 */
+	public void setSchemaViewYn(boolean schemaViewYn) {
+		this.schemaViewYn = schemaViewYn;
+	}
+
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
+	}
+
 	public int getMaxSelectCount() {
 		return maxSelectCount;
 	}
+
+	public void setMaxSelectCount(int maxSelectCount) {
+		this.maxSelectCount = maxSelectCount;
+	}
+	
+	
 }

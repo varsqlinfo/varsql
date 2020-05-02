@@ -255,7 +255,7 @@ VarsqlAPP.vueServiceBean( {
 			this.replyList = [];
 			
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList.varsql'}
+			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList'}
 			    ,data : VARSQL.util.getConvertCamelObject(item) 
 			    ,success:function (resData){
 			    	_self.replyList = resData.items;
@@ -272,7 +272,7 @@ VarsqlAPP.vueServiceBean( {
 			params.recvId = 'resend';
 			
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/resendMemo.varsql'}
+			    url:{type:VARSQL.uri.user, url:'/resendMemo'}
 			    ,data:params 
 			    ,success:function (resData){
 			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));

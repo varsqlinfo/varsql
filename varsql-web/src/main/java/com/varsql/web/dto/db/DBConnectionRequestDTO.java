@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Range;
 
 import com.varsql.web.dto.valid.ValidUrlDirectYn;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.util.ValidateUtils;
+import com.varsql.web.util.ConvertUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -123,7 +123,7 @@ public class DBConnectionRequestDTO{
 				.vconnid(vconnid)
 				.vname(vname)
 				.vserverip(vserverip)
-				.vport(ValidateUtils.longValueOf(vport))
+				.vport(ConvertUtils.longValueOf(vport))
 				.vdatabasename(vdatabasename)
 				.vurl(vurl)
 				.vdriver(vdriver)
@@ -131,17 +131,17 @@ public class DBConnectionRequestDTO{
 				.vid(vid)
 				.vpw(vpw)
 				.urlDirectYn(urlDirectYn)
-				.vdbversion(ValidateUtils.longValueOf(vdbversion))
+				.vdbversion(ConvertUtils.longValueOf(vdbversion))
 				.vdbschema(vdbschema)
 				.useYn(useYn)
 				.basetableYn(basetableYn)
 				.schemaViewYn(schemaViewYn)
 				.lazyloadYn(lazyloadYn)
-				.maxActive(ValidateUtils.longValueOf(maxActive))
-				.minIdle(ValidateUtils.longValueOf(minIdle))
-				.timeout(ValidateUtils.longValueOf(timeout))
-				.exportcount(ValidateUtils.longValueOf(exportcount))
-				.maxSelectCount(ValidateUtils.longValueOf(maxSelectCount))
+				.maxActive(ConvertUtils.longValueOf(maxActive))
+				.minIdle(ConvertUtils.longValueOf(minIdle))
+				.timeout(ConvertUtils.longValueOf(timeout))
+				.exportcount(ConvertUtils.longValueOf(exportcount))
+				.maxSelectCount(ConvertUtils.longValueOf(maxSelectCount))
 				.vquery(vquery).build();
 	}
 }

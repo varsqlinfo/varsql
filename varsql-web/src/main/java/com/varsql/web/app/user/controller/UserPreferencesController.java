@@ -25,7 +25,7 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
-import com.varsql.web.util.CheckUtils;
+import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -297,7 +297,7 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 
-			if(CheckUtils.isEmpty(qnaInfo.getQnaid())) {
+			if(ValidateUtils.isEmpty(qnaInfo.getQnaid())) {
 				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
 			}else {
 				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);

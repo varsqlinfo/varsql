@@ -24,6 +24,7 @@ import lombok.Setter;
 
 *-----------------------------------------------------------------------------
  */
+@SuppressWarnings("serial")
 @Setter
 @Getter
 @MappedSuperclass

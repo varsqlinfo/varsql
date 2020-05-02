@@ -24,5 +24,5 @@ public class DBConnectionResponseDTO{
 	private String regDt;
 
 	private String regId;
-
+	
 }

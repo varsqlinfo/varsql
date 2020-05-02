@@ -9,14 +9,14 @@
 	</settings>
 	
 	<typeAliases>
-		<typeAlias alias="databaseParamInfo" type="com.varsql.core.db.beans.DatabaseParamInfo"/>
+		<typeAlias alias="databaseParamInfo" type="com.varsql.core.db.valueobject.DatabaseParamInfo"/>
 		<typeAlias alias="paramMap" type="com.vartech.common.app.beans.ParamMap"/>
-		<typeAlias alias="tableInfo" type="com.varsql.core.db.beans.TableInfo"/>
-		<typeAlias alias="columnInfo" type="com.varsql.core.db.beans.ColumnInfo"/>
-		<typeAlias alias="triggerInfo" type="com.varsql.core.db.beans.TriggerInfo"/>
-		<typeAlias alias="sequenceInfo" type="com.varsql.core.db.beans.SequenceInfo"/>
-		<typeAlias alias="objectInfo" type="com.varsql.core.db.beans.ObjectInfo"/>
-		<typeAlias alias="objectColumnInfo" type="com.varsql.core.db.beans.ObjectColumnInfo"/>
+		<typeAlias alias="tableInfo" type="com.varsql.core.db.valueobject.TableInfo"/>
+		<typeAlias alias="columnInfo" type="com.varsql.core.db.valueobject.ColumnInfo"/>
+		<typeAlias alias="triggerInfo" type="com.varsql.core.db.valueobject.TriggerInfo"/>
+		<typeAlias alias="sequenceInfo" type="com.varsql.core.db.valueobject.SequenceInfo"/>
+		<typeAlias alias="objectInfo" type="com.varsql.core.db.valueobject.ObjectInfo"/>
+		<typeAlias alias="objectColumnInfo" type="com.varsql.core.db.valueobject.ObjectColumnInfo"/>
 	</typeAliases>
 	
 	<typeHandlers>
@@ -31,8 +31,8 @@
                 <property name="url" value="#{url}"/>
                 <property name="username" value="#{username}"/>
                 <property name="password" value="#{password}"/>
-	            <property name="poolMaximumActiveConnections" value="10"/>
-	            <property name="poolMaximumIdleConnections" value="10"/>
+	            <property name="poolMaximumActiveConnections" value="5"/>
+	            <property name="poolMaximumIdleConnections" value="5"/>
 	            <property name="poolMaximumCheckoutTime" value="20000"/>
 	            <property name="poolPingEnabled" value="true"/>
 	            <property name="poolPingQuery" value="#{validation_query}"/>

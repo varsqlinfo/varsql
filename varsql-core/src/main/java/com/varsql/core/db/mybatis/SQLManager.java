@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -39,7 +40,7 @@ public final class SQLManager {
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
 	
 	private Map<String, SqlSessionFactory> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionFactory>();
-	private String resource = "com/varsql/core/db/mybatis/query/mybatis.template";
+	private String resource = "template/mybatis/mybatis.template";
 	
 	private String defaultConfigTemplate; 
 	private PropertyDescriptor[] propertyDescs = PropertyUtils.getPropertyDescriptors(ConnectionInfo.class);
@@ -100,11 +101,15 @@ public final class SQLManager {
 				propValObj = PropertyUtils.getProperty(connInfo, propName);
 				propVal = (propValObj==null ?"" : propValObj.toString() );
 				
-				propVal = propVal.replaceAll("&amp;", "&").replaceAll("&", "&amp;");
+				if("password".equals(propName)) {
+					propVal = EncryptionFactory.getInstance().decrypt(propVal);
+				}else {
+					propVal = propVal.replaceAll("&amp;", "&").replaceAll("&", "&amp;");
+				}
 				
 				xmlTemplate = xmlTemplate.replaceAll("#\\{"+propName+"\\}",  propVal);
 			}
-			String mapperPath = String.format("com/varsql/db/ext/%s/sql/%sMapper.xml",connInfo.getType(), connInfo.getType()); 
+			String mapperPath = String.format("db/ext/%sMapper.xml",connInfo.getType(), connInfo.getType()); 
 			if(Thread.currentThread().getContextClassLoader().getResourceAsStream(mapperPath) != null){
 				xmlTemplate = xmlTemplate.replaceAll("#\\{mapperArea\\}", "<mapper resource=\""+mapperPath+"\"/>" );
 			}else{

@@ -15,6 +15,8 @@ public class DbPasswordEncodeConverter implements AttributeConverter<String, Str
 	
 	@Override
 	public String convertToDatabaseColumn(String attribute) {
+		if(attribute==null || "".equals(attribute)) return null; 
+		
 		try {
 			return EncryptionFactory.getInstance().encrypt(attribute);
 		} catch (EncryptDecryptException e) {

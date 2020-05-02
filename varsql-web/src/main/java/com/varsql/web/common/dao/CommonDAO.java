@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.common.beans.VtconnectionRVO;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -24,7 +23,7 @@ import com.vartech.common.app.beans.ParamMap;
 @Repository
 public class CommonDAO extends BaseDAO{
 
-	public VtconnectionRVO selectDetailObject(Map paramMap) {
+	public Object selectDetailObject(Map paramMap) {
 		return getSqlSession().selectOne("commonMapper.selectDetailObject", paramMap);
 	}
 

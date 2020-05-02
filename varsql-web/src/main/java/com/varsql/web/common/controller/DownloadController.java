@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.web.common.beans.DownloadInfo;
-import com.varsql.web.util.CheckUtils;
+import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
@@ -54,7 +54,7 @@ public class DownloadController extends AbstractController {
 
 		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim())?downloadInfo.getFileName() : "varsql-download."+ exportType;
 
-		downloadName = CheckUtils.getValidFileName(downloadName);
+		downloadName = ValidateUtils.getValidFileName(downloadName);
 
 		OutputStream os = res.getOutputStream();
 

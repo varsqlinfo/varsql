@@ -2,14 +2,12 @@ package com.varsql.web.configuration;
 
 import javax.servlet.ServletContextListener;
 
-import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
-import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
@@ -33,7 +31,14 @@ public class VarsqlWebConfigurer implements WebMvcConfigurer {
 			factory.setContextPath("/vsql");
 		};
 	}
+	
+	@Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
 
+
+	
 	@Bean
 	public ServletListenerRegistrationBean<ServletContextListener> listenerRegistrationBean() {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>();

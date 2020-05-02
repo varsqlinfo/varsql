@@ -49,7 +49,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getTable
 	 * @Method 설명 : table ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getTable(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getTable(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -136,7 +136,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getView
 	 * @Method 설명 : view ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getView(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getView(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -184,7 +184,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getIndex
 	 * @Method 설명 : index ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getIndex(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getIndex(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -231,7 +231,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getFunction
 	 * @Method 설명 : function ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getFunction(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getFunction(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -276,7 +276,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getProcedure
 	 * @Method 설명 : Procedure ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getProcedure(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getProcedure(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -322,7 +322,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getTrigger
 	 * @Method 설명 : trigger ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getTrigger(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getTrigger(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :
@@ -368,7 +368,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 * 
 	 * @Method Name  : getSequence
 	 * @Method 설명 : sequence ddl
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getSequence(com.varsql.core.db.beans.DatabaseParamInfo, java.lang.String[])
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getSequence(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 6. 18. 
 	 * @변경이력  :

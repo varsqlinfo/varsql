@@ -249,7 +249,7 @@ public final class AuthDAO {
 						, rs.getString(VarsqlConstants.CONN_DBSCHEMA)
 						, rs.getString(VarsqlConstants.CONN_BASETABLE_YN)
 						, rs.getString(VarsqlConstants.CONN_LAZYLOAD_YN)
-						, rs.getString(VarsqlConstants.CONN_VDBVERSION)
+						, rs.getLong(VarsqlConstants.CONN_VDBVERSION)
 						, rs.getString(VarsqlConstants.CONN_SCHEMA_VIEW_YN)
 						, rs.getInt(VarsqlConstants.CONN_MAX_SELECT_COUNT)
 						)

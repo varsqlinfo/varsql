@@ -202,10 +202,11 @@ public class AdminServiceImpl extends AbstractService{
 		}else {
 			vtConnection.setVdbschema(schemeType);
 		}
+		
+		DBConnectionEntity saveEntity = vtConnection.toEntity();
+		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(saveEntity));
 
-		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(vtConnection));
-
-		DBConnectionEntity result = dbConnectionModelRepository.save(vtConnection.toEntity());
+		DBConnectionEntity result = dbConnectionModelRepository.save(saveEntity);
 
 		resultObject.setItemOne(result != null? 1 : 0);
 

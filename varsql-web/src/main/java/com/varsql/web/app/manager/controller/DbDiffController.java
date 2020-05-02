@@ -54,24 +54,16 @@ public class DbDiffController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/objectType"})
-	public @ResponseBody ResponseResult objectType(@RequestParam(value = "vconnid") String vconnid ,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult objectType(@RequestParam(value = "vconnid", required = true) String vconnid ,HttpServletRequest req) throws Exception {
 		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		
-		paramMap.put("vconnid", vconnid);
-		
-		return dbDiffServiceImpl.objectTypeList(paramMap);
+		return dbDiffServiceImpl.objectTypeList(vconnid);
 	}
 	
 	@RequestMapping({"/objectList"})
-	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid") String vconnid ,
-			@RequestParam(value = "objectType") String objectType ,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid 
+			,@RequestParam(value = "objectType" ,required = true) String objectType
+			,@RequestParam(value = "schema" ,required = true) String schema) throws Exception {
 		
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		
-		paramMap.put("vconnid", vconnid);
-		paramMap.put("objectType", objectType);
-		
-		return dbDiffServiceImpl.objectList(paramMap);
+		return dbDiffServiceImpl.objectList(vconnid, schema, objectType);
 	}
 }

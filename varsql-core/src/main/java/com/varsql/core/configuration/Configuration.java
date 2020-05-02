@@ -13,6 +13,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -183,6 +184,15 @@ public class Configuration extends AbstractConfiguration{
 		vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
 		
 		logger.info("varsql Connection Info : {}" , vConInfo);
+		
+		// 기본 디비 connection pool 생성. connection 정보를 얻기위한 pool
+		ConnectionInfo baseConInfo = new ConnectionInfo(); 
+		BeanUtils.copyProperties(baseConInfo, vConInfo);
+		
+		baseConInfo.setMax_active(2);
+		baseConInfo.setMin_idle(1);
+		
+		ConnectionFactory.getInstance().createPool(baseConInfo);
 	}
 	
 	/**

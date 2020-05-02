@@ -9,4 +9,5 @@ import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
 public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnectionEntity, String>, JpaSpecificationExecutor<DBConnectionEntity>  {
+	public DBConnectionEntity findByVconnid(String vconnid);
 }
