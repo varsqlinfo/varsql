@@ -32,13 +32,6 @@ public class VarsqlWebConfigurer implements WebMvcConfigurer {
 		};
 	}
 	
-	@Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
-
-
-	
 	@Bean
 	public ServletListenerRegistrationBean<ServletContextListener> listenerRegistrationBean() {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>();

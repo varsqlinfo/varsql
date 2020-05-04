@@ -48,8 +48,7 @@ public class SqlStatsServiceImpl{
 	 * @return
 	 */
 	public ResponseResult dbSqlDateStats(String vconid, String s_date, String e_date) {
-		//return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDateStat(vconid, s_date, e_date));
-		return null; 
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDateStat(vconid, s_date, e_date));
 	}
 
 	/**

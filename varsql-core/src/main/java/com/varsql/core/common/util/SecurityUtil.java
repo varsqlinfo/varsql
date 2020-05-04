@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.User;
-import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
@@ -163,8 +163,8 @@ public final class SecurityUtil {
 	 * @param userInfo
 	 */
 	public static void setUserInfo(Map userInfo){
-		userInfo.put(VarsqlConstants.PARAM_UID,userViewId());
-		userInfo.put(VarsqlConstants.PARAM_ROLE,getUserRoleInfo());
+		userInfo.put(VarsqlKeyConstants.PARAM_UID,userViewId());
+		userInfo.put(VarsqlKeyConstants.PARAM_ROLE,getUserRoleInfo());
 
 	}
 

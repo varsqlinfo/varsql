@@ -134,7 +134,6 @@ subprojects {
 			[ group: 'org.springframework.boot' , name: 'spring-boot-devtools']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-data-jpa' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-security']
-			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-actuator' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-web' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket']
 			,[ group: 'org.springframework.security' , name: 'spring-security-taglibs' , version: def_version.springSecurity ]
@@ -189,7 +188,11 @@ subprojects {
 		)
 		
 		implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2' 
-
+    	
+    	
+    	// 내장 톰켓. 
+    	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    
 		// db driver
 		implementation(
 			[ group: 'com.h2database' , name: 'h2' , version: '1.4.199' ]

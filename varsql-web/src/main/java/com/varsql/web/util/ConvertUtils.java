@@ -1,5 +1,13 @@
 package com.varsql.web.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
+import com.varsql.core.common.constants.VarsqlConstants;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: ConvertUtils.java
@@ -13,6 +21,7 @@ package com.varsql.web.util;
 *-----------------------------------------------------------------------------
  */
 public final class ConvertUtils {
+	private final static SimpleDateFormat sdf =new SimpleDateFormat(VarsqlConstants.DATE_TIME_FORMAT);
 
 	private ConvertUtils() {}
 	
@@ -54,6 +63,14 @@ public final class ConvertUtils {
 	 */
 	public static int intValue(Long val) {
 		return val != null ? val.intValue() : null;
+	}
+	
+	public static LocalDateTime stringToLocalDateTime(String strDate) {
+		return LocalDateTime.parse(strDate, DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
+	}
+	
+	public static Date stringToDate(String strDate) throws ParseException {
+		return sdf.parse(strDate);
 	}
 }
 

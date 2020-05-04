@@ -23,8 +23,10 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
@@ -62,15 +64,15 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     @PostConstruct
     public void init() {
     }
-
-    @Bean
-    public ViewResolver viewResolver() {
-        // Example: the 'info' view logical name is mapped to the file '/WEB-INF/jsp/info.jsp'
-        InternalResourceViewResolver bean = new InternalResourceViewResolver();
-        bean.setPrefix(ViewPageConstants.VIEW_PREFIX);
-        bean.setSuffix(ViewPageConstants.VIEW_SUFFIX);
-        bean.setOrder(2);
-        return bean;
+    
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix(ViewPageConstants.VIEW_PREFIX);
+        resolver.setSuffix(ViewPageConstants.VIEW_SUFFIX);
+        resolver.setOrder(2);
+        //resolver.setViewClass(JstlView.class);
+        registry.viewResolver(resolver);
     }
 
     @Bean

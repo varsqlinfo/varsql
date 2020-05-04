@@ -22,7 +22,7 @@ import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.common.util.UUIDUtil;
@@ -234,7 +234,7 @@ public final class AuthDAO {
 			boolean flag = Configuration.getInstance().useConnUID();
 			while(rs.next()){
 
-				vconnid = rs.getString(VarsqlConstants.CONN_ID);
+				vconnid = rs.getString(VarsqlKeyConstants.CONN_ID);
 				newVconnidList.add(vconnid);
 
 				if(flag){
@@ -245,14 +245,14 @@ public final class AuthDAO {
 
 				userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
 						, uuid
-						, rs.getString(VarsqlConstants.CONN_TYPE)
-						, rs.getString(VarsqlConstants.CONN_NAME)
-						, rs.getString(VarsqlConstants.CONN_DBSCHEMA)
-						, rs.getString(VarsqlConstants.CONN_BASETABLE_YN)
-						, rs.getString(VarsqlConstants.CONN_LAZYLOAD_YN)
-						, rs.getLong(VarsqlConstants.CONN_VDBVERSION)
-						, rs.getString(VarsqlConstants.CONN_SCHEMA_VIEW_YN)
-						, rs.getInt(VarsqlConstants.CONN_MAX_SELECT_COUNT)
+						, rs.getString(VarsqlKeyConstants.CONN_TYPE)
+						, rs.getString(VarsqlKeyConstants.CONN_NAME)
+						, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
+						, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
+						, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
+						, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
+						, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
+						, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
 						)
 				);
 			}

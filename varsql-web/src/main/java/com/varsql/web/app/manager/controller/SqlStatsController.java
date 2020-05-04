@@ -70,7 +70,7 @@ public class SqlStatsController extends AbstractController {
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
-
+		
 		return sqlStatsServiceImpl.dbSqlDateStats(vconid, s_date, e_date);
 	}
 

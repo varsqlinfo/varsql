@@ -10,7 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.beans.ConnectionInfo;
@@ -119,35 +119,35 @@ public final class ConnectionFactory implements ConnectionContext{
 			
 			ConnectionInfo connInfo = new ConnectionInfo();
 		
-			connInfo.setConnid(rs.getString(VarsqlConstants.CONN_ID));
-			connInfo.setAliasName(rs.getString(VarsqlConstants.CONN_NAME));
-			connInfo.setType(rs.getString(VarsqlConstants.CONN_TYPE).toLowerCase());
-			connInfo.setDriver(rs.getString(VarsqlConstants.DBDRIVER));
+			connInfo.setConnid(rs.getString(VarsqlKeyConstants.CONN_ID));
+			connInfo.setAliasName(rs.getString(VarsqlKeyConstants.CONN_NAME));
+			connInfo.setType(rs.getString(VarsqlKeyConstants.CONN_TYPE).toLowerCase());
+			connInfo.setDriver(rs.getString(VarsqlKeyConstants.DBDRIVER));
 			
-			String urlDirectYn=rs.getString(VarsqlConstants.CONN_URL_DIRECT_YN);
+			String urlDirectYn=rs.getString(VarsqlKeyConstants.CONN_URL_DIRECT_YN);
 			
 			if("Y".equals(urlDirectYn)){
-				connInfo.setUrl(rs.getString(VarsqlConstants.CONN_URL));
+				connInfo.setUrl(rs.getString(VarsqlKeyConstants.CONN_URL));
 			}else {
 				// jdbc url 생성.
-				connInfo.setUrl(VarsqlJdbcUtil.getJdbcUrl(rs.getString(VarsqlConstants.CONN_URL_FORMAT)
-						, rs.getString(VarsqlConstants.CONN_SERVERIP)
-						, rs.getString(VarsqlConstants.CONN_PORT)
-						, rs.getString(VarsqlConstants.CONN_DATABASENAME)
+				connInfo.setUrl(VarsqlJdbcUtil.getJdbcUrl(rs.getString(VarsqlKeyConstants.CONN_URL_FORMAT)
+						, rs.getString(VarsqlKeyConstants.CONN_SERVERIP)
+						, rs.getString(VarsqlKeyConstants.CONN_PORT)
+						, rs.getString(VarsqlKeyConstants.CONN_DATABASENAME)
 				));
 			}
 			
-			connInfo.setUsername(rs.getString(VarsqlConstants.CONN_VID));
-			connInfo.setPassword(rs.getString(VarsqlConstants.CONN_PW));
-			connInfo.setPool_opt(rs.getString(VarsqlConstants.CONN_POOLOPT));
-			connInfo.setConnection_opt(rs.getString(VarsqlConstants.CONN_CONNOPT));
-			connInfo.setMax_active(NumberUtils.toInt(rs.getString(VarsqlConstants.CONN_MAX_ACTIVE), 10));
-			connInfo.setMin_idle(NumberUtils.toInt(rs.getString(VarsqlConstants.CONN_MIN_IDLE), 3));
-			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString(VarsqlConstants.CONN_TIMEOUT), 18000));
-			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlConstants.CONN_EXPORTCOUNT), 1000));
+			connInfo.setUsername(rs.getString(VarsqlKeyConstants.CONN_VID));
+			connInfo.setPassword(rs.getString(VarsqlKeyConstants.CONN_PW));
+			connInfo.setPool_opt(rs.getString(VarsqlKeyConstants.CONN_POOLOPT));
+			connInfo.setConnection_opt(rs.getString(VarsqlKeyConstants.CONN_CONNOPT));
+			connInfo.setMax_active(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_MAX_ACTIVE), 10));
+			connInfo.setMin_idle(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_MIN_IDLE), 3));
+			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_TIMEOUT), 18000));
+			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_EXPORTCOUNT), 1000));
 			
-			String conn_query = rs.getString(VarsqlConstants.CONN_QUERY);
-			String dbvalidation_query = rs.getString(VarsqlConstants.VALIDATION_QUERY);
+			String conn_query = rs.getString(VarsqlKeyConstants.CONN_QUERY);
+			String dbvalidation_query = rs.getString(VarsqlKeyConstants.VALIDATION_QUERY);
 			
 			conn_query = conn_query ==null?"":conn_query;
 			dbvalidation_query = dbvalidation_query ==null?"":dbvalidation_query;

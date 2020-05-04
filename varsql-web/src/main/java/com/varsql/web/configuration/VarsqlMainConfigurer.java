@@ -67,7 +67,10 @@ public class VarsqlMainConfigurer {
     public StringHttpMessageConverter converter() {
 		StringHttpMessageConverter converter = new StringHttpMessageConverter();
 
-        converter.setSupportedMediaTypes(new ArrayList<MediaType>(){{
+        converter.setSupportedMediaTypes(new ArrayList<MediaType>(){
+			private static final long serialVersionUID = 1735295099855086282L;
+
+		{
         	add(new MediaType("text", "plain", Charset.forName(VarsqlConstants.CHAR_SET)));
         }});;
         return converter;
