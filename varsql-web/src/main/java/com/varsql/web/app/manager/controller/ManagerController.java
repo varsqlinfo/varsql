@@ -150,12 +150,7 @@ public class ManagerController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbCompareMgmt");
 
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-		searchParameter.addCustomParam("allYn", "Y");
-
-		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
 		return getModelAndView("/dbCompareMgmt", VIEW_PAGE.MANAGER,model);
 	}
@@ -180,12 +175,7 @@ public class ManagerController extends AbstractController{
 		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
 		model.addAttribute("currentDate", DateUtils.getCurrentDate());
 
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-		searchParameter.addCustomParam("allYn", "Y");
-
-		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
 		return getModelAndView("/sqlLogStat", VIEW_PAGE.MANAGER,model);
 	}
@@ -207,12 +197,7 @@ public class ManagerController extends AbstractController{
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-		searchParameter.addCustomParam("allYn", "Y");
-
-		model.addAttribute("dbList", dbnUserServiceImpl.selectUserdbList(searchParameter));
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
 		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER,model);
 	}

@@ -686,14 +686,14 @@ VarsqlAPP.vueServiceBean( {
 								if(addFlag) compareLog.push('\n');
 							}else{
 								compareFlag = true; 
-								compareLog.push('대상 테이블에 ['+sourceColKey+ '] 컬럼이 존재 하지 않습니다.\n');
+								compareLog.push('타켓 테이블에 ['+sourceColKey+ '] 컬럼이 존재 하지 않습니다.\n');
 							}
 						}
 					}
 					
 					for(var targetColKey in targetColMap){
 						compareFlag = true; 
-						compareLog.push('타켓 테이블에 ['+targetColKey+ '] 컬럼이 존재 하지 않습니다.\n');
+						compareLog.push('대상 테이블에 ['+targetColKey+ '] 컬럼이 존재 하지 않습니다.\n');
 					}
 					
 					compareLog.push('</div>');

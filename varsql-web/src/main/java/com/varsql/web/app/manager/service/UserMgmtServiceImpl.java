@@ -3,10 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +62,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	@Autowired
 	private UserMgmtRepository userMgmtRepository;
 	
-	@Resource(name="varsqlPasswordEncoder")
+	@Autowired
+	@Qualifier("varsqlPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
 
 	/**

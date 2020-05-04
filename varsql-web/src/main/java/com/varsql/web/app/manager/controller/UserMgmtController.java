@@ -45,7 +45,7 @@ public class UserMgmtController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(UserMgmtController.class);
 
 	@Autowired
-	UserMgmtServiceImpl userMgmtServiceImpl;
+	private UserMgmtServiceImpl userMgmtServiceImpl;
 
 	@RequestMapping({"/userList"})
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {

@@ -5,9 +5,9 @@ buildscript {
 }
 
 configurations {
-     runtime.exclude module: 'spring-boot-starter-tomcat'
-     runtime.exclude module: 'tomcat-embed-jasper'
-     runtime.exclude module: 'lombok'
+   //  runtime.exclude module: 'spring-boot-starter-tomcat'
+   //  runtime.exclude module: 'tomcat-embed-jasper'
+   //  runtime.exclude module: 'lombok'
 }
 
 
@@ -37,6 +37,10 @@ def def_project= [
 
 dependencies {
 	compile project(':varsql-core')
+	
+	compile("org.springframework.boot:spring-boot-starter-web") 
+	testCompile("org.springframework.boot:spring-boot-starter-test")
+
 }
 
 

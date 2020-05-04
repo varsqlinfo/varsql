@@ -1,5 +1,6 @@
 package com.varsql.web.app.manager.service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,13 +41,11 @@ public class ManagerCommonServiceImpl extends AbstractService{
 	@Autowired
 	private DBConnectionEntityRepository dbConnectionModelRepository;
 	
-	public List<DBConnectionEntity> selectUserdbList(SearchParameter searchParameter) {
-		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
-			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , searchParameter.getKeyword())
-			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
-		);
-		
-		return result.getContent(); 
+	
+	public List<DBConnectionResponseDTO> selectdbList() {
+		return dbConnectionModelRepository.findAll(
+			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , "")
+		).stream().map(item -> domainMapper.convertToDomain(item, DBConnectionResponseDTO.class)).collect(Collectors.toList());
 	}
 	
 	/**
@@ -55,16 +54,17 @@ public class ManagerCommonServiceImpl extends AbstractService{
 	 * @author   : ytkim
 	 * @date   : 2018. 1. 23
 	 * @param searchParameter
+	 * @param allFlag 
 	 * @return
 	 */
 	public ResponseResult selectdbList(SearchParameter searchParameter) {
-		
 		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
 			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , searchParameter.getKeyword())
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
 		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, DBConnectionResponseDTO.class);
+		
 	}
 	
 	/**

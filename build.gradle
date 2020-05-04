@@ -114,15 +114,18 @@ subprojects {
 			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter-api' , version: def_version.junit ]
 			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
 			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-params' , version: def_version.junit ]
-			,[ group: 'org.junit.vintage' , name: 'junit-vintage-engine' , version: def_version.junit ]
+			//,[ group: 'org.junit.vintage' , name: 'junit-vintage-engine' , version: def_version.junit ]
 
 			,[ group: 'org.junit.platform' , name: 'junit-platform-launcher' , version: def_version.junitPlatform ]
 			,[ group: 'org.junit.platform' , name: 'junit-platform-runner' , version: def_version.junitPlatform ]
 			// mockito
 			,[ group: 'org.mockito', name: 'mockito-core', version: def_version.mockito ]
 
-			,[ group: 'org.springframework.boot', name: 'spring-boot-starter-test' ]
 		)
+		
+		testImplementation('org.springframework.boot:spring-boot-starter-test') {
+			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		}
 
 		implementation fileTree (dir: rootProject.file( 'libs' ), include:['*.jar'])
 
@@ -131,6 +134,7 @@ subprojects {
 			[ group: 'org.springframework.boot' , name: 'spring-boot-devtools']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-data-jpa' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-security']
+			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-actuator' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-web' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket']
 			,[ group: 'org.springframework.security' , name: 'spring-security-taglibs' , version: def_version.springSecurity ]
@@ -186,8 +190,6 @@ subprojects {
 		
 		implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2' 
 
-		implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
-
 		// db driver
 		implementation(
 			[ group: 'com.h2database' , name: 'h2' , version: '1.4.199' ]
@@ -197,15 +199,19 @@ subprojects {
 	def querydslSrcDir = 'src/main/generated'
 
 	querydsl {
-	    library = "com.querydsl:querydsl-apt"
 	    jpa = true
+	    library = "com.querydsl:querydsl-apt"
 	    querydslSourcesDir = querydslSrcDir
+	}
+	
+	configurations {
+	    querydsl.extendsFrom compileClasspath
 	}
 	
 	compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
 	    options.annotationProcessorPath = configurations.querydsl
 	}
-
+	
 	configurations {
 	    querydsl.extendsFrom compileClasspath
 	}
@@ -217,11 +223,10 @@ subprojects {
 	        }
 	    }
 	}
-
 	tasks.withType(JavaCompile) {
 	    options.annotationProcessorGeneratedSourcesDirectory = file(querydslSrcDir)
 	}
-	
+
 	test {
 	    useJUnitPlatform()
 

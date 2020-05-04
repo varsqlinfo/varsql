@@ -8,7 +8,7 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div class="row">
+<div class="row display-off" id="varsqlVueArea">
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -17,11 +17,10 @@
 						<div class="control-group">
 							 <div class="controls">
 							 	<div class="col-sm-3">
-								 	<input type="hidden" id="vconnid" name="vconnid" value="">
-								 	<input type="hidden" id="detailDate" name="detailDate" value="">
-									<select id="dbinfolist" class="form-control input-sm">
+									<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control input-sm">
+										<option value=""><spring:message code="select" /></option>
 										<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
-											<option value="${tmpInfo.VCONNID}">${tmpInfo.VNAME}</option>
+											<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 										</c:forEach>
 									</select>
 								</div>
@@ -45,9 +44,9 @@
 						          		</div>
 						            </div>
 						            <div class="col-xs-4">
-							            	<button type="button" class="btn btn-sm btn-outline btn-primary btnSearch">
-												조회
-											</button>
+						            	<button type="button" @click="dbStatsInfo()" class="btn btn-sm btn-outline btn-primary btnSearch">
+											조회
+										</button>
 									</div>
 								</div>
 							 </div>
@@ -85,273 +84,268 @@
 
 
 <script>
-(function() {
-	
-var sqlLogStat ={
-	init:function (){
-		VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
-		var _self = this; 
-		_self.initEvt();
-		_self.initChart();
+VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
+
+
+VarsqlAPP.vueServiceBean( {
+	el: '#varsqlVueArea'
+	,validateCheck : true
+	,data: {
+		vconnid :''
+		,detailDate : ''
 	}
-	,initChart : function (){
-		var _self = this; 
-		
-		// main chart; 
-		VARSQL.pluginUI.chart.bar("#sqlDateChart", {
-			
-			axis : [{
-		        x : {
-		            type : "block",
-		            domain : "X_COL",
-					line : "solid"
-		        },
-		        y : {
-		            type : "range",
-		            domain : "Y_COL",
-		            step : 10,
-					line : true
-		        },
-		        data : []
-		    }],
-		    brush : [{
-		        type : "column",
-		        outerPadding : 20,
-		        target : "Y_COL"
-		    }],
-			 event : {
-		        click : function(obj, e) {
-		            if (obj) {
-						_self.dateDetailStats(obj.data.VIEW_DATE);
-					}
-		        }
-		    }
-			,widget : [{
-		        type : "tooltip"
-		    }, 
-			{
-		        type : "title",
-		        text : "COUNT",
-		        align : "start",
-		        orient : "center",
-		        dx : -120,
-		        dy : -10
-		    }
-			
-			]
-		});
-		
-		// 상세차트. 
-		VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-			
-			axis : [{
-		        x : {
-		            type : "block",
-		            domain : "X_COL",
-					line : true
-		        },
-		        y : {
-		            type : "range",
-		            domain : "Y_COL",
-		            step : 5,
-					line : true
-		        },
-		        data : []
-		    }],
-		    brush : [{
-		        type : "column",
-		        outerPadding : 20,
-		        target : "Y_COL",
-		        animate : true
-		    }],
-			 event : {
-		        click : function(obj, e) {
-		            if (obj) {
-						_self.sqlUserRank(obj.data.X_COL);
-					}
-		        }
-		    }
-			,widget : [
-				{ type : "title", text : "Query 구문별" },
-		        { type : "tooltip", orient: "center" },
-			
-			]
-		});
-		
-		
-	}
-	,initEvt:function (){
-		var _self = this; 
-		
-		$('.btnSearch').on('click',function (){
-			_self.dbStatsInfo('#dbinfolist');
-		});
-		
-		$('#sdt').datepicker({
-			orientation: "top auto"
-			,format: "yyyy-mm-dd"
-			,autoclose: true
-		}).on('changeDate', function(e){
-			var searchGbn = $('#searchGubun').val(); 
-			if(searchGbn != ''){
-				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number(searchGbn));
-			}
-			
-	    });
-		
-		$('#edt').datepicker({
-			orientation: "top auto"
-			,format: "yyyy-mm-dd"
-			,autoclose: true
-		}).on('changeDate', function(e){
-			var searchGbn = $('#searchGubun').val(); 
-			if(searchGbn != ''){
-				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
-			}
-	    });
-		
-		// 주별 등 change
-		$('#searchGubun').on('change',function (){
-			var searchGbn = $('#searchGubun').val(); 
-			if(searchGbn != ''){
-				VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
-			}
-		});
-		
-		$('#dbinfolist').on('change',function (){
-			_self.dbStatsInfo(this);
-		})
-	}
-	,dbStatsInfo:function (sObj){
-		var _self = this; 
-		sObj=$(sObj);
-		$('#vconnid').val(sObj.val());
-		
-		VARSQL.req.ajax({
-			type:'POST'
-			,data:{
-				vconnid:$('#vconnid').val()
-				,s_date: $('#sdt').val()+' 00:00:00'
-				,e_date: $('#edt').val()+' 23:59:59'
-			}
-			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
-			,dataType:'JSON'
-			,success:function (response){
-				var items = response.items ||[]; 
-				
-				VARSQL.pluginUI.chart.bar("#sqlDateChart", {
-					axis : [{
-				        data :items
-				    }]
-				});
-				
-				if(items.length > 0){
-					_self.dateDetailStats(items[items.length-1].VIEW_DATE);
-				}else{
-					_self.dateDetailStats('');
-				}
-			}
-		});
-	}
-	,dateDetailStats:function (sObj){
-		var _self = this; 
-		if(sObj==''){
-			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-				axis : [{
-			        data :[]
-			    }]
-			});
-			_self.sqlUserRank('');
-			return ; 
+	,methods:{
+		init : function(){
+			this.initChart();
+			this.initEvt();
 		}
-		$('#detailDate').val(sObj);
-		VARSQL.req.ajax({
-			data:{
-				vconnid:$('#vconnid').val()
-				,s_date:  sObj+' 00:00:00'
-				,e_date:  sObj+' 23:59:59'
-			}
-			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
-			,success:function (response){
-				var items = response.items ||[]; 
+		,initEvt : function (){
+			$('#sdt').datepicker({
+				orientation: "top auto"
+				,format: "yyyy-mm-dd"
+				,autoclose: true
+			}).on('changeDate', function(e){
+				var searchGbn = $('#searchGubun').val(); 
+				if(searchGbn != ''){
+					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number(searchGbn));
+				}
 				
-				if(items.length > 0){
-					VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+		    });
+			
+			$('#edt').datepicker({
+				orientation: "top auto"
+				,format: "yyyy-mm-dd"
+				,autoclose: true
+			}).on('changeDate', function(e){
+				var searchGbn = $('#searchGubun').val(); 
+				if(searchGbn != ''){
+					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
+				}
+		    });
+			
+			// 주별 등 change
+			$('#searchGubun').on('change',function (){
+				var searchGbn = $('#searchGubun').val(); 
+				if(searchGbn != ''){
+					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
+				}
+			});
+		}
+		,initChart : function (){
+			var _self = this; 
+			
+			// main chart; 
+			VARSQL.pluginUI.chart.bar("#sqlDateChart", {
+				
+				axis : [{
+			        x : {
+			            type : "block",
+			            domain : "X_COL",
+						line : "solid"
+			        },
+			        y : {
+			            type : "range",
+			            domain : "Y_COL",
+			            step : 10,
+						line : true
+			        },
+			        data : []
+			    }],
+			    brush : [{
+			        type : "column",
+			        outerPadding : 20,
+			        target : "Y_COL"
+			    }],
+				 event : {
+			        click : function(obj, e) {
+			            if (obj) {
+							_self.dateDetailStats(obj.data.VIEW_DATE);
+						}
+			        }
+			    }
+				,widget : [{
+			        type : "tooltip"
+			    }, 
+				{
+			        type : "title",
+			        text : "COUNT",
+			        align : "start",
+			        orient : "center",
+			        dx : -120,
+			        dy : -10
+			    }
+				
+				]
+			});
+			
+			// 상세차트. 
+			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+				
+				axis : [{
+			        x : {
+			            type : "block",
+			            domain : "X_COL",
+						line : true
+			        },
+			        y : {
+			            type : "range",
+			            domain : "Y_COL",
+			            step : 5,
+						line : true
+			        },
+			        data : []
+			    }],
+			    brush : [{
+			        type : "column",
+			        outerPadding : 20,
+			        target : "Y_COL",
+			        animate : true
+			    }],
+				 event : {
+			        click : function(obj, e) {
+			            if (obj) {
+							_self.sqlUserRank(obj.data.X_COL);
+						}
+			        }
+			    }
+				,widget : [
+					{ type : "title", text : "Query 구문별" },
+			        { type : "tooltip", orient: "center" },
+				
+				]
+			});
+		}
+		
+		,dbStatsInfo:function (sObj){
+			var _self = this; 
+			sObj=$(sObj);
+			
+			this.$ajax({
+				type:'POST'
+				,data:{
+					vconnid: _self.vconnid
+					,s_date: $('#sdt').val()+' 00:00:00'
+					,e_date: $('#edt').val()+' 23:59:59'
+				}
+				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
+				,dataType:'JSON'
+				,success:function (response){
+					var items = response.items ||[]; 
+					
+					VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 						axis : [{
 					        data :items
 					    }]
 					});
-					_self.sqlUserRank('all');
-				}else{
-					_self.sqlUserRank('');
+					
+					if(items.length > 0){
+						_self.dateDetailStats(items[items.length-1].VIEW_DATE);
+					}else{
+						_self.dateDetailStats('');
+					}
 				}
-				
+			});
+		}
+		,dateDetailStats:function (sObj){
+			var _self = this; 
+			if(sObj==''){
+				VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+					axis : [{
+				        data :[]
+				    }]
+				});
+				_self.sqlUserRank('');
 				return ; 
 			}
-		});
-	}
-	,sqlUserRank : function (type){
-		if(type==''){
-			VARSQL.pluginUI.chart.bar("#sqlUserRankChart", {
-				axis : [{
-			        data :[]
-			    }]
+			_self.detailDate = sObj; 
+			this.$ajax({
+				data:{
+					vconnid: _self.vconnid
+					,s_date:  sObj+' 00:00:00'
+					,e_date:  sObj+' 23:59:59'
+				}
+				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
+				,success:function (response){
+					var items = response.items ||[]; 
+					
+					if(items.length > 0){
+						VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
+							axis : [{
+						        data :items
+						    }]
+						});
+						_self.sqlUserRank('all');
+					}else{
+						_self.sqlUserRank('');
+					}
+					
+					return ; 
+				}
 			});
-			return ; 
 		}
-		var date = $('#detailDate').val(); 
-		VARSQL.req.ajax({
-			data:{
-				vconnid:$('#vconnid').val()
-				,s_date:date+' 00:00:00'
-				,e_date:date+' 23:59:59'
-				,command_type :type
-			}
-			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
-			,success:function (response){
-				var names = {}; 
-				
-				var chartData = [];
-				
-				var items = response.result;
-				var aaa = {};
-				$.each(items , function (idx , item){
-					names[item.LABEL] = item.LABEL;
-					aaa[item.LABEL] =  item.DATA;
+		,sqlUserRank : function (type){
+			var _self =this; 
+			if(type==''){
+				VARSQL.pluginUI.chart.bar("#sqlUserRankChart", {
+					axis : [{
+				        data :[]
+				    }]
 				});
-				chartData.push(aaa);
-				
-				// 상세차트. 
-				VARSQL.pluginUI.chart.pie("#sqlUserRankChart", {
-				    axis : {
-				        data : chartData
-				    },
-				    brush : {
-				        type : "pie",
-		 		        format : function(k, v) {
-		 		            return names[k] + ": " + v;
-		 		        },
-				        showText : true
-				    },
-				    widget : [
-				    	{
-				            type : "title",
-				            text :"[ "+type+" ] Query user Top 5"
-				        }, {
-				            type : "tooltip",
-				            orient : "left"
-				        }, {
-				            type : "legend"
-				        }
-				    ]
-				});
-				
+				return ; 
 			}
-		});
+			var date = _self.detailDate; 
+			this.$ajax({
+				data:{
+					vconnid: _self.vconnid
+					,s_date:date+' 00:00:00'
+					,e_date:date+' 23:59:59'
+					,command_type :type
+				}
+				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
+				,success:function (response){
+					var names = {}; 
+					
+					var chartData = [];
+					
+					var items = response.result;
+					var aaa = {};
+					$.each(items , function (idx , item){
+						names[item.LABEL] = item.LABEL;
+						aaa[item.LABEL] =  item.DATA;
+					});
+					chartData.push(aaa);
+					
+					// 상세차트. 
+					VARSQL.pluginUI.chart.pie("#sqlUserRankChart", {
+					    axis : {
+					        data : chartData
+					    },
+					    brush : {
+					        type : "pie",
+			 		        format : function(k, v) {
+			 		            return names[k] + ": " + v;
+			 		        },
+					        showText : true
+					    },
+					    widget : [
+					    	{
+					            type : "title",
+					            text :"[ "+type+" ] Query user Top 5"
+					        }, {
+					            type : "tooltip",
+					            orient : "left"
+					        }, {
+					            type : "legend"
+					        }
+					    ]
+					});
+					
+				}
+			});
+		}
+		
 	}
-};
+});
 
-sqlLogStat.init();
-}());
 </script>
 

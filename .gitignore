@@ -4,7 +4,11 @@
 # Ignore Gradle build output directory
 build
 
+#query dsl dir
+generated
+
 bin/
+
 
 #file extension
 *.tmp

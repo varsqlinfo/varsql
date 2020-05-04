@@ -52,15 +52,6 @@ public class SqlStatsController extends AbstractController {
 	@Autowired
 	ManagerCommonServiceImpl dbnUserServiceImpl;
 
-	@RequestMapping({"/dbList"})
-	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return dbnUserServiceImpl.selectdbList(searchParameter);
-	}
-
 	/**
 	 *
 	 * @Method Name  : dbSqlDateStats
@@ -75,17 +66,12 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDateStats"})
-	public @ResponseBody Map dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = false, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = false, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
-		paramMap.put(VarsqlParamConstants.SEARCH_START_DATE, s_date);
-		paramMap.put(VarsqlParamConstants.SEARCH_END_DATE, e_date);
-
-		return sqlStatsServiceImpl.dbSqlDateStats(paramMap);
+		return sqlStatsServiceImpl.dbSqlDateStats(vconid, s_date, e_date);
 	}
 
 	/**

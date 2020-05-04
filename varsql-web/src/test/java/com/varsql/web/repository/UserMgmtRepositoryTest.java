@@ -1,25 +1,20 @@
 package com.varsql.web.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.test.BaseJpaTestCase;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBManagerEntity;
-import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.db.DBConnectionEntityRepository;
-import com.varsql.web.repository.spec.DBConnectionSpec;
 import com.varsql.web.repository.user.UserMgmtRepository;
-import com.varsql.web.util.ConvertUtils;
-import com.vartech.common.app.beans.ResponseResult;
 
 class UserMgmtRepositoryTest extends BaseJpaTestCase{
 

@@ -9,10 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -57,18 +55,12 @@ public class ManagerCommonController extends AbstractController{
 	@RequestMapping({"/dbList"})
 	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		return managerCommonServiceImpl.selectdbList(searchParameter);
 	}
 
 	@RequestMapping({"/userList"})
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 		return managerCommonServiceImpl.selectUserList(searchParameter);
 	}
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.web.app.manager.dao.SqlStatsDAO;
 import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
@@ -32,6 +34,9 @@ public class SqlStatsServiceImpl{
 	@Autowired
 	SqlStatsDAO sqlStatsDAO;
 	
+	@Autowired
+	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
+	
 	/**
 	 * 
 	 * @Method Name  : dbSqlDateStats
@@ -42,12 +47,9 @@ public class SqlStatsServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map dbSqlDateStats(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		
-		List result = sqlStatsDAO.dbSqlDateStats(paramMap);
-		json.put("items", result);
-		return json;
+	public ResponseResult dbSqlDateStats(String vconid, String s_date, String e_date) {
+		//return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDateStat(vconid, s_date, e_date));
+		return null; 
 	}
 
 	/**
@@ -109,5 +111,6 @@ public class SqlStatsServiceImpl{
 		
 		return resultObject;
 	}
+
 
 }

@@ -9,11 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,8 @@ import com.vartech.common.utils.VartechUtils;
  * @Program desc : 인증 dao
  * @Hisotry :
  */
-@Service("authDao")
+@Service
+@Qualifier("authDao")
 public final class AuthDAO {
 	final private String role_delim = ";";
 
@@ -57,7 +57,8 @@ public final class AuthDAO {
 	@Autowired
 	private UserLogHistRepository userLogHistRepository;// = (UserLogHistRepository)BeanUtils.getBean("userLogHistRepository");
 	
-	@Resource(name="varsqlPasswordEncoder")
+	@Autowired
+	@Qualifier("varsqlPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
 
 	/**
