@@ -98,4 +98,28 @@ public final class ValidateUtils {
 		return filePathName; 
 	}
 	
+	/**
+	 * @method  : isBlank
+	 * @desc : whitespace(" "), 공백문자(""), null이면 true
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 5. 
+	 * @param val
+	 * @return
+	 */
+	public static boolean isBlank(String val) {
+		return StringUtils.isBlank(val); 
+	}
+	
+	/**
+	 * @method  : isNotBlank
+	 * @desc : isBlank 반대
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 5. 
+	 * @param val
+	 * @return
+	 */
+	public static boolean isNotBlank(String val) {
+		return StringUtils.isNotBlank(val); 
+	}
+	
 }

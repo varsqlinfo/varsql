@@ -102,12 +102,24 @@ subprojects {
 		implementation group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok
 		annotationProcessor( [group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
 		testAnnotationProcessor([group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
-
+		
+		/*
 		implementation group: 'com.querydsl' , name: 'querydsl-apt'
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
 
 		implementation group: 'com.querydsl' , name: 'querydsl-jpa'
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
+		
+		*/
+		
+		implementation(
+			[group: 'com.querydsl' , name: 'querydsl-apt']
+			,[group: 'com.querydsl' , name: 'querydsl-jpa']
+		)
+		
+		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
+		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
+		
 		
 		//junit
 		testImplementation(

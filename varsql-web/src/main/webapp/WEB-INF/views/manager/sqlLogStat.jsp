@@ -284,6 +284,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,sqlUserRank : function (type){
+			
 			var _self =this; 
 			if(type==''){
 				VARSQL.pluginUI.chart.bar("#sqlUserRankChart", {
@@ -307,13 +308,14 @@ VarsqlAPP.vueServiceBean( {
 					
 					var chartData = [];
 					
-					var items = response.result;
-					var aaa = {};
+					var items = response.items;
+					var countData = {};
 					$.each(items , function (idx , item){
-						names[item.LABEL] = item.LABEL;
-						aaa[item.LABEL] =  item.DATA;
+						var label = item.xCol; 
+						names[label] = label;
+						countData[label] =  item.yCol;
 					});
-					chartData.push(aaa);
+					chartData.push(countData);
 					
 					// 상세차트. 
 					VARSQL.pluginUI.chart.pie("#sqlUserRankChart", {

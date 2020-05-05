@@ -88,17 +88,12 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDayStats"})
-	public @ResponseBody Map dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = false, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = false, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
-		paramMap.put(VarsqlParamConstants.SEARCH_START_DATE, s_date);
-		paramMap.put(VarsqlParamConstants.SEARCH_END_DATE, e_date);
-
-		return sqlStatsServiceImpl.dbSqlDayStats(paramMap);
+		return sqlStatsServiceImpl.dbSqlDayStats(vconid, s_date, e_date);
 	}
 
 	/**
@@ -116,19 +111,13 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDayUserRank"})
-	public @ResponseBody Map dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = false, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = false, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			,@RequestParam(value = "command_type", required = false,defaultValue = "" )  String command_type
 			) throws Exception {
 
-		DataCommonVO paramMap = new DataCommonVO();
-		paramMap.put(VarsqlParamConstants.VCONNID, vconid);
-		paramMap.put(VarsqlParamConstants.SEARCH_START_DATE, s_date);
-		paramMap.put(VarsqlParamConstants.SEARCH_END_DATE, e_date);
-		paramMap.put("command_type", StringUtil.allTrim(command_type.toUpperCase()));
-
-		return sqlStatsServiceImpl.dbSqlDayUserRank(paramMap);
+		return sqlStatsServiceImpl.dbSqlDayUserRank(vconid, s_date, e_date ,command_type);
 	}
 	/**
 	 * @Method Name  : logList

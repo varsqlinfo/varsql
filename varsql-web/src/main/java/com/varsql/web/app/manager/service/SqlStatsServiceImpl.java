@@ -61,11 +61,8 @@ public class SqlStatsServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map dbSqlDayStats(DataCommonVO paramMap) {
-		Map json = new HashMap();
-		List result = sqlStatsDAO.dbSqlDayStats(paramMap);
-		json.put("items", result);
-		return json;
+	public ResponseResult dbSqlDayStats(String vconid, String s_date, String e_date) {
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDayStat(vconid, s_date, e_date));
 	}
 
 	/**
@@ -78,12 +75,9 @@ public class SqlStatsServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public Map dbSqlDayUserRank(DataCommonVO paramMap) {
+	public ResponseResult dbSqlDayUserRank(String vconid, String s_date, String e_date, String command_type) {
 		
-		Map json = new HashMap();
-		json.put("result", sqlStatsDAO.dbSqlDayUserRank(paramMap));
-		
-		return json;
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findDayUserRank(vconid, s_date, e_date, command_type));
 	}
 	
 	/**
@@ -109,6 +103,11 @@ public class SqlStatsServiceImpl{
 		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
 		return resultObject;
+	}
+
+	public Map dbSqlDayUserRank() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

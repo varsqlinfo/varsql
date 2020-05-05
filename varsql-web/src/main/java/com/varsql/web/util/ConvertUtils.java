@@ -84,5 +84,30 @@ public final class ConvertUtils {
 	public static String dateToStringDateTime(LocalDateTime date) {
 		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
 	}
+	
+	public static String toUpperCase(String str) {
+		return toUpperCase(str,false); 
+	}
+	
+	public static String toUpperCase(String str, boolean blankChk) {
+		if(blankChk) {
+			return ValidateUtils.isNotBlank(str) ? str.toUpperCase(): ""; 
+		}else {
+			return str.toUpperCase(); 
+		}
+	}
+	public static String toLowerCase(String str) {
+		return toLowerCase(str, false); 
+	}
+	
+	public static String toLowerCase(String str, boolean blankChk) {
+		if(blankChk) {
+			return ValidateUtils.isNotBlank(str) ? str.toLowerCase() : ""; 
+		}else {
+			return str.toLowerCase(); 
+		}
+	}
+	
+	
 }
 
