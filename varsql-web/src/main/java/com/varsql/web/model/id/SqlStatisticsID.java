@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 
-import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.user.UserEntity;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

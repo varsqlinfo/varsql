@@ -108,7 +108,7 @@ subprojects {
 
 		implementation group: 'com.querydsl' , name: 'querydsl-jpa'
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
-
+		
 		//junit
 		testImplementation(
 			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter-api' , version: def_version.junit ]

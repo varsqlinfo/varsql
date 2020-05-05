@@ -28,19 +28,19 @@ public class SqlStatisticsEntity{
 	private LocalDateTime startTime;
 
 	@Column(name ="S_MM")
-	private int sMm;
+	private Integer sMm;
 
 	@Column(name ="S_DD")
-	private int sDd;
+	private Integer sDd;
 
 	@Column(name ="S_HH")
-	private int sHh;
+	private Integer sHh;
 
 	@Column(name ="END_TIME")
 	private LocalDateTime endTime;
 
 	@Column(name ="DELAY_TIME")
-	private int delayTime;
+	private Integer delayTime;
 
 	@Column(name ="RESULT_COUNT")
 	private double resultCount;

@@ -140,12 +140,12 @@ VarsqlAPP.vueServiceBean( {
 				axis : [{
 			        x : {
 			            type : "block",
-			            domain : "X_COL",
+			            domain : "xCol",
 						line : "solid"
 			        },
 			        y : {
 			            type : "range",
-			            domain : "Y_COL",
+			            domain : "yCol",
 			            step : 10,
 						line : true
 			        },
@@ -154,12 +154,12 @@ VarsqlAPP.vueServiceBean( {
 			    brush : [{
 			        type : "column",
 			        outerPadding : 20,
-			        target : "Y_COL"
+			        target : "yCol"
 			    }],
 				 event : {
 			        click : function(obj, e) {
 			            if (obj) {
-							_self.dateDetailStats(obj.data.VIEW_DATE);
+							_self.dateDetailStats(obj.data.viewDt);
 						}
 			        }
 			    }
@@ -184,12 +184,12 @@ VarsqlAPP.vueServiceBean( {
 				axis : [{
 			        x : {
 			            type : "block",
-			            domain : "X_COL",
+			            domain : "xCol",
 						line : true
 			        },
 			        y : {
 			            type : "range",
-			            domain : "Y_COL",
+			            domain : "yCol",
 			            step : 5,
 						line : true
 			        },
@@ -198,13 +198,13 @@ VarsqlAPP.vueServiceBean( {
 			    brush : [{
 			        type : "column",
 			        outerPadding : 20,
-			        target : "Y_COL",
+			        target : "yCol",
 			        animate : true
 			    }],
 				 event : {
 			        click : function(obj, e) {
 			            if (obj) {
-							_self.sqlUserRank(obj.data.X_COL);
+							_self.sqlUserRank(obj.data.xCol);
 						}
 			        }
 			    }
@@ -239,7 +239,7 @@ VarsqlAPP.vueServiceBean( {
 					});
 					
 					if(items.length > 0){
-						_self.dateDetailStats(items[items.length-1].VIEW_DATE);
+						_self.dateDetailStats(items[items.length-1].viewDt);
 					}else{
 						_self.dateDetailStats('');
 					}

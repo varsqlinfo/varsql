@@ -2,6 +2,7 @@ package com.varsql.web.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -71,6 +72,17 @@ public final class ConvertUtils {
 	
 	public static Date stringToDate(String strDate) throws ParseException {
 		return sdf.parse(strDate);
+	}
+	
+	public static String dateToStringDate(LocalDate date) {
+		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_FORMAT));
+	}
+	public static String dateToStringDate(LocalDateTime date) {
+		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_FORMAT));
+	}
+	
+	public static String dateToStringDateTime(LocalDateTime date) {
+		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
 	}
 }
 
