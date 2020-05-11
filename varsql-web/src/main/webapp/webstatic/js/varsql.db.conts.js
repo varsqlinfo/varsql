@@ -109,6 +109,9 @@ var TABLE_COL_KEYS ={
 	,SIZE :'length'
 }
 
+// db 비교 키 값.
+var COMPARE_COL_KEY = ['name','typeAndLength','constraints','defaultVal','nullable','comment'];
+
 var DEFINE_INFO = {
 	MARIADB : {
 		type :'text/x-mariadb'
@@ -209,6 +212,8 @@ VARSQLCont.init  = function (dbType, uiBase){
 	_this.dataType = dataType;
 	_this.constants = _constants;
 	_this.tableColKey = TABLE_COL_KEYS;
+	
+	_this.compareColKey = COMPARE_COL_KEY;
 }
 
 }(VARSQLCont));

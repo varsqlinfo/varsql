@@ -16,7 +16,7 @@
 					<div class="col-sm-6">
 						<select id="dbinfolist" class="form-control input-sm">
 							<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
-								<option value="${tmpInfo.VCONNID}">${tmpInfo.VNAME}</option>
+								<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 							</c:forEach>
 						</select>
 					</div>
@@ -67,22 +67,22 @@
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(item.ERROR_LOG && item.ERROR_LOG != '')?'error-row':(index%2==0?'add':'even')">
 									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis ellipsis10">{{item.LOG_SQL}}</div></a></td>
 									<td :title="item.U_NM_ID"><div class="text-ellipsis ellipsis5">{{item.U_NM_ID}}</div></td>
-									<td :title="item.USR_IP"><div class="text-ellipsis ellipsis5">{{item.USR_IP}}</div></td>
+									<td :title="item.USR_IP"><div class="text-ellipsis ellipsis5">{{item.usrIp}}</div></td>
 									<td>
-										{{item.VIEW_STARTDT}}<br>{{item.VIEW_ENDDT}}
+										{{item.startTime}}<br>{{item.endTime}}
 									</td>
 									<td>
-										<template v-if="(item.ERROR_LOG && item.ERROR_LOG != '')">
+										<template v-if="(item.errorLog && item.errorLog != '')">
 											<div class="text-center"><i class="fa fa-close"></i></div>
 										</template>
 										<template v-else>
 											<div class="text-center"><i class="fa fa-check"></i></div>
 										</template>
 									</td>
-									<td>{{item.DELAY_TIME}}</td>
+									<td>{{item.delayTime}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="7"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td colspan="6"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -103,7 +103,7 @@
 				<form id="addForm" name="addForm" class="form-horizontal" >
 					<div class="form-group">
 						<div class="col-lg-12">
-							IP : {{detailItem.USR_IP}}
+							IP : {{detailItem.usrIp}}
 						</div>
 						<div class="col-lg-12">
 							<div style="padding-top:10px;">SQL</div>
@@ -115,7 +115,7 @@
 						<div class="col-lg-12">
 							<div style="padding-top:10px;">ERROR LOG</div>
 							<div style="height:200px;">
-								<textarea id="epSqlErrorArea" v-model="detailItem.ERROR_LOG" style="width:100%;height:100%;"></textarea>
+								<textarea id="epSqlErrorArea" style="width:100%;height:100%;">{{detailItem.errorLog}}</textarea>
 							</div>
 						</div>
 						
@@ -140,23 +140,13 @@ VarsqlAPP.vueServiceBean( {
 		,detailItem :{}
 	}
 	,methods:{
-		// 추가.
-		fieldClear : function (){
-			this.detailItem = {
-				wordIdx:''
-				, word :''
-				, wordEn :''
-				, wordAbbr :''
-				, wordDesc : '' 
-			};
-		}
 		// 상세
-		,itemView : function (item){
+		itemView : function (item){
 			var ele = $('#epLogSqlArea');
 			
 			this.detailItem = item;
 			
-			ele.empty().html(item.LOG_SQL);
+			ele.empty().html(item.logSql);
 			ele.removeClass('prettyprinted');
 			PR.prettyPrint();
 		}

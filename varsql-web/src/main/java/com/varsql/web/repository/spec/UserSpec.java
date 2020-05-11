@@ -65,6 +65,10 @@ public class UserSpec extends DefaultSpec{
     public static Specification<UserEntity> likeUnameOrUid(boolean isAdmin, String name) {
     	return Specification.where(userRoleNotIn(isAdmin)).and(getUnameOrUid(name));
     }
+    
+    public static Specification<UserEntity> findUser(String name) {
+    	return Specification.where(userRoleNotIn(true)).and(getUnameOrUid(name));
+    }
 
     public static Specification<UserEntity> detailInfo(String uid) {
     	return Specification.where(getUid(uid));

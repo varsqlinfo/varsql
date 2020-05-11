@@ -41,6 +41,7 @@
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.conts.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.plugin.ui.js?version=${pubjs_ver}"></script>

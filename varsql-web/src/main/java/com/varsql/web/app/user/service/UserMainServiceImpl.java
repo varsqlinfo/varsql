@@ -1,22 +1,48 @@
 package com.varsql.web.app.user.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.web.app.user.beans.MemoInfo;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.dao.UserMainDAO;
+import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.user.NoteRequestDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.app.NoteEntity;
+import com.varsql.web.model.entity.app.NoteMappingUserEntity;
+import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.spec.NoteSpec;
+import com.varsql.web.repository.spec.UserSpec;
+import com.varsql.web.repository.user.NoteEntityRepository;
+import com.varsql.web.repository.user.NoteMappingUserEntityRepository;
+import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.DefaultValueUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 
 @Service
-public class UserMainServiceImpl{
+public class UserMainServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(UserMainServiceImpl.class);
 	@Autowired
 	UserMainDAO userMainDAO;
+	
+	@Autowired
+	private UserMgmtRepository userMgmtRepository;
+	
+	@Autowired
+	private NoteEntityRepository noteEntityRepository;
+	
+	@Autowired
+	private NoteMappingUserEntityRepository noteMappingUserEntityRepository;
 
 	/**
 	 * 
@@ -28,12 +54,12 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult selectSearchUserList(ParamMap paramMap) {
-		ResponseResult result = new ResponseResult();
-		
-		result.setItemList(userMainDAO.selectSearchUserList(paramMap));
-		
-		return result; 
+	public ResponseResult selectSearchUserList(SearchParameter searchParameter) {
+		List<UserEntity> result = userMgmtRepository.findAll(
+			UserSpec.findUser(searchParameter.getKeyword())
+		);
+
+		return VarsqlUtils.getResponseResult(result, domainMapper, UserResponseDTO.class);
 	}
 	
 	/**
@@ -46,23 +72,35 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	@Transactional
-	public ResponseResult insertSendMemoInfo(MemoInfo memoInfo, boolean resendFlag) {
-		ResponseResult result = new ResponseResult();
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult insertSendMemoInfo(NoteRequestDTO noteInfo, boolean resendFlag) {
 		
 		if(resendFlag) {
-			memoInfo.setMemoCont(memoInfo.getReMemoCont());
-			memoInfo.setMemoTitle("[re]" + memoInfo.getMemoTitle());
-			memoInfo.setRecvId(userMainDAO.selectSendMemoUser(memoInfo));
-			memoInfo.setParentMemoId(memoInfo.getMemoId());
+			noteInfo.setNoteCont(noteInfo.getReNoteCont());
+			noteInfo.setNoteTitle("[re]" + noteInfo.getNoteTitle());
+			noteInfo.setRecvId(userMainDAO.selectSendMemoUser(noteInfo));
+			noteInfo.setParentNoteId(noteInfo.getNoteId());
 		}
 		
-		memoInfo.setMemoId(VarsqlUtils.generateUUID());
+		NoteEntity saveInfo = noteInfo.toEntity();
+		saveInfo = noteEntityRepository.save(saveInfo);
 		
-		userMainDAO.insertSendMemoInfo(memoInfo);
-		result.setItemOne(userMainDAO.insertSendUserInfo(memoInfo));
+		String [] recvArr = noteInfo.getRecvId().split(";;");
+
+		List<NoteMappingUserEntity>  recvList = new ArrayList<>();
 		
-		return result; 
+		String sendId = SecurityUtil.userViewId();
+		for (int i = 0; i < recvArr.length; i++) {
+			recvList.add(NoteMappingUserEntity.builder()
+					.noteId(saveInfo.getNoteId())
+					.sendId(sendId)
+					.recvId(recvArr[i])
+					.build());
+		}
+	
+		noteMappingUserEntityRepository.saveAll(recvList);
+		
+		return VarsqlUtils.getResponseResultItemOne(1); 
 	}
 	
 	/**
@@ -75,12 +113,8 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult selectMessageInfo(ParamMap paramMap) {
-		ResponseResult result = new ResponseResult();
-		
-		result.setItemList(userMainDAO.selectMessageInfo(paramMap));
-			
-		return result; 
+	public ResponseResult selectMessageInfo() {
+		return VarsqlUtils.getResponseResultItemList(noteEntityRepository.findAll(NoteSpec.userNoteList(SecurityUtil.userViewId()))); 
 	}
 	
 	/**
@@ -93,11 +127,14 @@ public class UserMainServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult updateMemoViewDate(ParamMap paramMap) {
-		ResponseResult result = new ResponseResult();
+	public ResponseResult updateNoteViewDate(String noteId) {
 		
-		result.setItemOne(userMainDAO.updateMemoViewDate(paramMap));
+		NoteMappingUserEntity noteMappingInfo = noteMappingUserEntityRepository.findByNoteId(noteId);
 		
-		return result;
+		noteMappingInfo.setViewDt(DefaultValueUtils.currentTimestamp());
+		
+		noteMappingUserEntityRepository.save(noteMappingInfo);
+		
+		return VarsqlUtils.getResponseResultItemOne(1); 
 	}
 }

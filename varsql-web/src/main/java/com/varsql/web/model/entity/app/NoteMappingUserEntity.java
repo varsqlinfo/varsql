@@ -1,9 +1,14 @@
 package com.varsql.web.model.entity.app;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.varsql.web.model.id.NoteCompositeID;
@@ -32,11 +37,15 @@ public class NoteMappingUserEntity{
 	private String recvId;
 
 	@Column(name ="VIEW_DT")
-	private String viewDt;
+	private Timestamp viewDt;
+	
+	@ManyToOne
+	@JoinColumn(name ="noteId")
+	private NoteEntity noteInfo;
 
 
 	@Builder
-	public NoteMappingUserEntity(String noteId, String sendId, String recvId, String viewDt) {
+	public NoteMappingUserEntity(String noteId, String sendId, String recvId, Timestamp viewDt) {
 		this.noteId = noteId;
 		this.sendId = sendId;
 		this.recvId = recvId;

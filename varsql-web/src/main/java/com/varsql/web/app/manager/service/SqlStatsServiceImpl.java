@@ -1,18 +1,16 @@
 package com.varsql.web.app.manager.service;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.varsql.web.app.manager.dao.SqlStatsDAO;
-import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.web.model.entity.sql.SqlHistoryEntity;
+import com.varsql.web.repository.spec.SqlHistorySpec;
+import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.PagingUtil;
 
 /**
  * 
@@ -36,6 +34,9 @@ public class SqlStatsServiceImpl{
 	
 	@Autowired
 	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
+	
+	@Autowired
+	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
 	
 	/**
 	 * 
@@ -90,7 +91,17 @@ public class SqlStatsServiceImpl{
 	 * @param searchParameter
 	 * @return
 	 */
-	public ResponseResult selectLogSearch(SearchParameter searchParameter) {
+	public ResponseResult findSqlLog(String vconnid,SearchParameter searchParameter) {
+		
+		
+		Page<SqlHistoryEntity> result = sqlHistoryEntityRepository.findAll(
+			SqlHistorySpec.logSqlSearch(vconnid, searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter , SqlHistoryEntity.START_TIME)
+		);
+
+		return VarsqlUtils.getResponseResult(result, searchParameter);
+		
+		/*
 		ResponseResult resultObject = new ResponseResult();
 		
 		int totalcnt = sqlStatsDAO.selectLogSearchTotalCnt(searchParameter);
@@ -103,12 +114,7 @@ public class SqlStatsServiceImpl{
 		resultObject.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
 		
 		return resultObject;
+		*/
 	}
-
-	public Map dbSqlDayUserRank() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

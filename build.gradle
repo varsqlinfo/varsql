@@ -99,9 +99,9 @@ subprojects {
 	}
 
 	dependencies {
-		implementation group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok
 		annotationProcessor( [group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
 		testAnnotationProcessor([group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
+		implementation group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok
 		
 		/*
 		implementation group: 'com.querydsl' , name: 'querydsl-apt'

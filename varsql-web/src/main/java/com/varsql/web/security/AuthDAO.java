@@ -44,8 +44,7 @@ import com.vartech.common.utils.VartechUtils;
  * @Program desc : 인증 dao
  * @Hisotry :
  */
-@Service
-@Qualifier("authDao")
+@Service(value = "authDao")
 public final class AuthDAO {
 	final private String role_delim = ";";
 

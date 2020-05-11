@@ -47,10 +47,7 @@ public class SqlStatsController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(SqlStatsController.class);
 
 	@Autowired
-	SqlStatsServiceImpl sqlStatsServiceImpl;
-
-	@Autowired
-	ManagerCommonServiceImpl dbnUserServiceImpl;
+	private SqlStatsServiceImpl sqlStatsServiceImpl;
 
 	/**
 	 *
@@ -59,19 +56,19 @@ public class SqlStatsController extends AbstractController {
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconid
+	 * @param vconnid
 	 * @param s_date
 	 * @param e_date
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDateStats"})
-	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 		
-		return sqlStatsServiceImpl.dbSqlDateStats(vconid, s_date, e_date);
+		return sqlStatsServiceImpl.dbSqlDateStats(vconnid, s_date, e_date);
 	}
 
 	/**
@@ -81,19 +78,19 @@ public class SqlStatsController extends AbstractController {
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconid
+	 * @param vconnid
 	 * @param s_date
 	 * @param e_date
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDayStats"})
-	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 
-		return sqlStatsServiceImpl.dbSqlDayStats(vconid, s_date, e_date);
+		return sqlStatsServiceImpl.dbSqlDayStats(vconnid, s_date, e_date);
 	}
 
 	/**
@@ -103,7 +100,7 @@ public class SqlStatsController extends AbstractController {
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconid
+	 * @param vconnid
 	 * @param s_date
 	 * @param e_date
 	 * @param command_type
@@ -111,13 +108,13 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/dbSqlDayUserRank"})
-	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconid
+	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			,@RequestParam(value = "command_type", required = false,defaultValue = "" )  String command_type
 			) throws Exception {
 
-		return sqlStatsServiceImpl.dbSqlDayUserRank(vconid, s_date, e_date ,command_type);
+		return sqlStatsServiceImpl.dbSqlDayUserRank(vconnid, s_date, e_date ,command_type);
 	}
 	/**
 	 * @Method Name  : logList
@@ -125,7 +122,7 @@ public class SqlStatsController extends AbstractController {
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 7. 26.
 	 * @변경이력  :
-	 * @param vconid
+	 * @param vconnid
 	 * @param s_date
 	 * @param e_date
 	 * @param command_type
@@ -133,11 +130,9 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping({"/logList"})
-	public @ResponseBody ResponseResult logList(HttpServletRequest req) throws Exception {
-
+	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid ,HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-
-		return sqlStatsServiceImpl.selectLogSearch(searchParameter);
+		return sqlStatsServiceImpl.findSqlLog(vconnid,searchParameter);
 	}
 
 }

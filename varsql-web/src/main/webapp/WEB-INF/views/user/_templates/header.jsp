@@ -87,7 +87,7 @@ var userHeader = {
 		VARSQL.req.ajax({
 			url : {
 				type : VARSQL.uri.user,
-				url : '/message.vsql'
+				url : '/message'
 			},
 			data : {},
 			success : function(res) {

@@ -4,11 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
 import lombok.Builder;
@@ -54,6 +57,10 @@ public class SqlHistoryEntity{
 
 	@Column(name ="ERROR_LOG")
 	private String errorLog;
+	
+	@OneToOne
+	@JoinColumn(name = "VIEWID", referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
+	private RegInfoEntity regInfo;
 
 
 	@Builder

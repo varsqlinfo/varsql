@@ -377,6 +377,9 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self = this;
 			
+			
+			VARSQLCont.init('other' , {});
+			
 			var dbList = _self.dbList;
 			var dbListMap = {};
 			for(var i =0, len = dbList.length; i< len ;i++){
@@ -582,7 +585,7 @@ VarsqlAPP.vueServiceBean( {
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
 			
-			var compareColKey = ['name','typeAndLength','constraints','defaultVal','nullable','comment'];
+			var compareColKey = VARSQLCont.compareColKey;
 			var compareColKeyLength =compareColKey.length;
 			var maxLen = Math.max(sourceItems.length,targetItems.length);
 			
@@ -873,7 +876,9 @@ VarsqlAPP.vueServiceBean( {
 				
 				compareSourceColList =sourceColList;
 				compareTargetColList =targetColList;
-			
+				
+				var compareColKey = VARSQLCont.compareColKey;
+				var compareColKeyLength =compareColKey.length;
 			
 				if( sourceColList.length > 0  && targetColList.length > 0){
 					
@@ -914,17 +919,15 @@ VarsqlAPP.vueServiceBean( {
 						}
 						
 						var equlasFlag = true; 
-						for(var colKey in sourceCol){
-							if(colKey.lastIndexOf('_ne') == (colKey.length-3)){
-								delete sourceCol[colKey];
-								continue; 
-							}
+						for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
+							var colKey = compareColKey[colKeyIdx];
 							
 							sourceCol[colKey+'_ne'] =false;
 							if(targetCol[colKey+'_ne']) targetCol[colKey+'_ne'] =false;
 							
 							var targetColVal = targetCol[colKey]; 
 							if(!VARSQL.isUndefined(targetColVal)){
+								
 								if($.trim(sourceCol[colKey]) != $.trim(targetColVal)){
 									sourceCol[colKey+'_ne'] = true;
 									targetCol[colKey+'_ne'] = true;

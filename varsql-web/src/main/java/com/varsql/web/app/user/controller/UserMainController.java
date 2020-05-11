@@ -18,20 +18,22 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.web.app.user.beans.MemoInfo;
 import com.varsql.web.app.user.service.UserMainServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
@@ -64,11 +66,6 @@ public class UserMainController extends AbstractController{
 
 	@RequestMapping({"","/","/main"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
-
-		paramMap.put("role", SecurityUtil.loginRole(req));
-		paramMap.put("uid", SecurityUtil.userViewId(req));
-
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		DatabaseUtils.reloadUserDatabaseInfo();
@@ -92,10 +89,9 @@ public class UserMainController extends AbstractController{
 	@RequestMapping({"/searchUserList"})
 	public @ResponseBody ResponseResult searchUserList(HttpServletRequest req, HttpServletResponse response) throws Exception {
 
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
-		return userMainServiceImpl.selectSearchUserList(paramMap);
+		return userMainServiceImpl.selectSearchUserList(searchParameter);
 	}
 
 	/**
@@ -112,7 +108,7 @@ public class UserMainController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/sendMemo", "/resendMemo"})
-	public @ResponseBody ResponseResult sendMemo(@Valid MemoInfo memoInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult sendMemo(@Valid NoteRequestDTO memoInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -124,8 +120,6 @@ public class UserMainController extends AbstractController{
 		}else{
 
 			String requestURI = req.getRequestURI();
-
-			memoInfo.setRegId(SecurityUtil.userViewId(req));
 			resultObject = userMainServiceImpl.insertSendMemoInfo(memoInfo, requestURI.indexOf("resendMemo") > -1 ? true : false);
 		}
 
@@ -146,11 +140,7 @@ public class UserMainController extends AbstractController{
 	 */
 	@RequestMapping({"/message"})
 	public @ResponseBody ResponseResult message(HttpServletRequest req, HttpServletResponse response) throws Exception {
-
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return userMainServiceImpl.selectMessageInfo(paramMap);
+		return userMainServiceImpl.selectMessageInfo();
 	}
 
 	/**
@@ -166,12 +156,8 @@ public class UserMainController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/updMsgViewDt"})
-	public @ResponseBody ResponseResult updMsgViewDt(HttpServletRequest req, HttpServletResponse response) throws Exception {
-
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return userMainServiceImpl.updateMemoViewDate(paramMap);
+	public @ResponseBody ResponseResult updMsgViewDt(@RequestParam(value = "noteId" , required = true) String noteId) throws Exception {
+		return userMainServiceImpl.updateNoteViewDate(noteId);
 	}
 
 	/**

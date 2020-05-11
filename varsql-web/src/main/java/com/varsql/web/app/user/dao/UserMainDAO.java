@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.user.beans.MemoInfo;
 import com.varsql.web.common.dao.BaseDAO;
+import com.varsql.web.dto.user.NoteRequestDTO;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -50,14 +50,14 @@ public class UserMainDAO extends BaseDAO{
 	 * @param memoInfo
 	 * @return
 	 */
-	public String selectSendMemoUser(MemoInfo memoInfo) {
+	public String selectSendMemoUser(NoteRequestDTO memoInfo) {
 		return getSqlSession().selectOne("userMapper.selectSendMemoUser", memoInfo);
 	}
 
-	public int insertSendMemoInfo(MemoInfo memoInfo) {
+	public int insertSendMemoInfo(NoteRequestDTO memoInfo) {
 		return getSqlSession().insert("userMapper.insertSendMemoInfo", memoInfo );
 	}
-	public int insertSendUserInfo(MemoInfo memoInfo) {
+	public int insertSendUserInfo(NoteRequestDTO memoInfo) {
 		SqlSession batch = getSqlSession(true);
 		String [] recvArr = memoInfo.getRecvId().split(";;");
 
