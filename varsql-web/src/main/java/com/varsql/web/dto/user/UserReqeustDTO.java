@@ -3,7 +3,7 @@ package com.varsql.web.dto.user;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.varsql.web.app.user.beans.valid.ValidPassword;
+import com.varsql.web.dto.valid.ValidPassword;
 import com.varsql.web.model.entity.user.UserEntity;
 
 import lombok.Getter;

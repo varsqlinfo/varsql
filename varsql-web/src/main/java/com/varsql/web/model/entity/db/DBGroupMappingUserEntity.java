@@ -39,7 +39,7 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
-	@JoinColumn(name = UserEntity.VIEWID, nullable = false, insertable =false , updatable =false)
+	@JoinColumn(name = "VIEWID", nullable = false, insertable =false , updatable =false)
 	private UserEntity userInfo;
 
 	@Builder

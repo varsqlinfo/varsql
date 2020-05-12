@@ -7,7 +7,9 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -15,6 +17,7 @@ import org.hibernate.annotations.Parameter;
 
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
+import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
 import lombok.Builder;
@@ -55,6 +58,10 @@ public class NoteEntity extends AbstractRegAuditorModel{
 	@Column(name ="DEL_YN")
 	@Convert(converter=BooleanToDelYnConverter.class)
 	private boolean delYn;
+	
+	@OneToOne
+	@JoinColumn(name = "REG_ID" ,nullable = false, insertable =false , updatable =false)
+	private RegInfoEntity regInfo;
 	
 	@OneToMany(mappedBy="noteInfo")
 	private Set<NoteMappingUserEntity> recvList; 

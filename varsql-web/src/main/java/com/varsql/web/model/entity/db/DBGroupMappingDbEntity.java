@@ -39,7 +39,7 @@ public class DBGroupMappingDbEntity extends AbstractRegAuditorModel{
 	// 그룹 커넥션 정보를 얻기 위한 것
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
-	@JoinColumn(name = DBConnectionEntity.VCONNID, nullable = false , insertable =false , updatable =false)
+	@JoinColumn(name = "VCONNID", nullable = false , insertable =false , updatable =false)
 	private DBConnectionEntity connInfo;
 
 	@Builder

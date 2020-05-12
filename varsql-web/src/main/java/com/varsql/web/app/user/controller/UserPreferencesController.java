@@ -18,11 +18,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.util.ValidateUtils;
@@ -75,7 +75,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 
 		setModelDefaultValue(req , model);
-		model.addAttribute("detailInfo" , userPreferencesServiceImpl.selectUserDetail(SecurityUtil.userViewId(req)));
+		model.addAttribute("detailInfo" , userPreferencesServiceImpl.findUserInfo(SecurityUtil.userViewId(req)));
 		model.addAttribute("localeInfo" , LocaleConstants.values());
 		return getModelAndView("/general", VIEW_PAGE.USER_PREFERENCES, model);
 	}
@@ -151,7 +151,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/passwordSave"})
-	public @ResponseBody ResponseResult passwordSave(@Valid PasswordForm passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult passwordSave(@Valid PasswordRequestDTO passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){

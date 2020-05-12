@@ -38,12 +38,12 @@ public class DBManagerEntity extends AbstractRegAuditorModel{
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
-	@JoinColumn(name = UserEntity.VIEWID, nullable = false, insertable =false , updatable =false)
+	@JoinColumn(name = "VIEWID", nullable = false, insertable =false , updatable =false)
 	private UserEntity user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
-	@JoinColumn(name = DBConnectionEntity.VCONNID, nullable = false , insertable =false , updatable =false)
+	@JoinColumn(name = "VCONNID", nullable = false , insertable =false , updatable =false)
 	private DBConnectionEntity dbConnInfo;
 
 	@Builder

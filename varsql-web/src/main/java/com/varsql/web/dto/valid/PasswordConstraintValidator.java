@@ -1,4 +1,4 @@
-package com.varsql.web.app.user.beans.valid;
+package com.varsql.web.dto.valid;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

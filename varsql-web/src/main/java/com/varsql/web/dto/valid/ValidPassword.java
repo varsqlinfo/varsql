@@ -1,4 +1,4 @@
-package com.varsql.web.app.user.beans.valid;
+package com.varsql.web.dto.valid;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

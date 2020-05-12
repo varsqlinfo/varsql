@@ -19,16 +19,19 @@ import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.encryption.EncryptionFactory;
-import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VarsqlErrorCode;
+import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.app.QnAEntity;
+import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.repository.user.QnAEntityRepository;
+import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -45,6 +48,9 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	
 	@Autowired
 	private QnAEntityRepository qnaEntityRepository;
+	
+	@Autowired
+	private UserMgmtRepository userMgmtRepository;
 
 	/**
 	 *
@@ -56,8 +62,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @param loginId
 	 * @return
 	 */
-	public Map selectUserDetail(String loginId) {
-		return userPreferencesDAO.selectUserDetail(loginId);
+	public UserEntity findUserInfo(String viewid) {
+		return userMgmtRepository.findByViewid(viewid);
 	}
 
 	/**
@@ -73,7 +79,18 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public boolean updateUserInfo(UserReqeustDTO userForm, HttpServletRequest req, HttpServletResponse res) {
-		boolean flag = userPreferencesDAO.updateUserInfo(userForm)> 0;
+		
+		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
+		
+		userInfo.setLang(userForm.getLang());
+		userInfo.setUname(userForm.getUname());
+		userInfo.setOrgNm(userForm.getOrgNm());
+		userInfo.setDeptNm(userForm.getDeptNm());
+		userInfo.setDescription(userForm.getDescription());
+		
+		userInfo = userMgmtRepository.save(userInfo);
+		
+		boolean flag = userInfo != null;
 
 		if(flag) {
 			// 언어 변경시 처리.
@@ -108,7 +125,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @return
 	 * @throws EncryptDecryptException
 	 */
-	public ResponseResult updatePasswordInfo(PasswordForm passwordForm, ResponseResult resultObject) throws EncryptDecryptException {
+	public ResponseResult updatePasswordInfo(PasswordRequestDTO passwordForm, ResponseResult resultObject) throws EncryptDecryptException {
 		String password = userPreferencesDAO.selectUserPasswordCheck(passwordForm);
 
 		if(passwordForm.getCurrPw().equals(EncryptionFactory.getInstance().decrypt(password))){

@@ -25,26 +25,26 @@
 						<div class="form-group">
 							<label class="col-lg-2 control-label" for="inputError"><spring:message code="label.id" text="ID"/></label>
 							<div class="col-lg-10">
-								<input type="text"  id=uid name="uid" value="${detailInfo.UID}" class="form-control text required" disabled>
+								<input type="text"  id=uid name="uid" value="${detailInfo.uid}" class="form-control text required" disabled>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-2 control-label" for="inputError"><spring:message code="label.email" text="email"/></label>
 							<div class="col-lg-10">
-								<input type="text"  id=uemail name="uemail" value="${detailInfo.UEMAIL}" class="form-control text required">
+								<input type="text"  id=uemail name="uemail" value="${detailInfo.uemail}" class="form-control text required" disabled>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-2 control-label" for="inputError"><spring:message code="join.form.name" text="URL"/></label>
 							<div class="col-lg-10">
-								 <input type="text" class="form-control" id="uname" name="uname"  value="${detailInfo.UNAME}" placeholder="<spring:message code="join.form.name"/>"/>
+								 <input type="text" class="form-control" id="uname" name="uname"  value="${detailInfo.uname}" placeholder="<spring:message code="join.form.name"/>"/>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-2 control-label"><spring:message code="join.form.dept"/></label>
 
 				            <div class="col-lg-10">
-				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.DEPT_NM}" placeholder="<spring:message code="join.form.dept"/>"/>
+				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.deptNm}" placeholder="<spring:message code="join.form.dept"/>"/>
 				            </div>
 						</div>
 						<div class="form-group">
@@ -54,7 +54,7 @@
 				            	<select class="form-control" id="lang" name="lang">
 				            		<option value=""><spring:message code="join.form.locale"/></option>
 				            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
-										<option value="${item.locale}" ${item.locale == detailInfo.LANG ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>       
+										<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>       
 									</c:forEach>
 				            	</select>
 				            </div>
@@ -63,7 +63,7 @@
 							<label class="col-lg-2 control-label"><spring:message code="join.form.desc"/></label>
 
 				            <div class="col-lg-10">
-				                <textarea class="form-control" rows="3" id="description" name="description" placeholder="<spring:message code="join.form.desc"/>" >${detailInfo.DESCRIPTION}</textarea>
+				                <textarea class="form-control" rows="3" id="description" name="description" placeholder="<spring:message code="join.form.desc"/>" >${detailInfo.description}</textarea>
 				            </div>
 						</div>
 					</form>

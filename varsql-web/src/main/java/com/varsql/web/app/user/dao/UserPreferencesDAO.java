@@ -7,9 +7,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.web.app.user.beans.PasswordForm;
 import com.varsql.web.common.dao.BaseDAO;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.vartech.common.app.beans.ParamMap;
@@ -71,7 +71,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param passwordForm
 	 * @return
 	 */
-	public int updatePasswordInfo(PasswordForm passwordForm) {
+	public int updatePasswordInfo(PasswordRequestDTO passwordForm) {
 		return getSqlSession().update("userPreferencesMapper.updatePasswordInfo", passwordForm);
 	}
 
@@ -85,7 +85,7 @@ public class UserPreferencesDAO extends BaseDAO{
 	 * @param passwordForm
 	 * @return
 	 */
-	public String selectUserPasswordCheck(PasswordForm passwordForm) {
+	public String selectUserPasswordCheck(PasswordRequestDTO passwordForm) {
 		return getSqlSession().selectOne("userPreferencesMapper.selectUserPasswordCheck", passwordForm);
 	}
 

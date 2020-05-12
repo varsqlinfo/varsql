@@ -59,7 +59,7 @@ public class SqlHistoryEntity{
 	private String errorLog;
 	
 	@OneToOne
-	@JoinColumn(name = "VIEWID", referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
+	@JoinColumn(name = "VIEWID" ,nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
 
 

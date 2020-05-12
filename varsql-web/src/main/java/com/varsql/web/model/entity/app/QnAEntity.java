@@ -72,7 +72,7 @@ public class QnAEntity extends AabstractAuditorModel{
 	private boolean delYn;
 	
 	@OneToOne
-	@JoinColumn(name = "REG_ID", referencedColumnName = RegInfoEntity.VIEWID ,nullable = false, insertable =false , updatable =false)
+	@JoinColumn(name = "REG_ID", nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
 	
 	@Transient

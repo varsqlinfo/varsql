@@ -1,10 +1,10 @@
 package com.varsql.web.model.entity.app;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
@@ -39,8 +39,8 @@ public class NoteMappingUserEntity{
 	@Column(name ="VIEW_DT")
 	private Timestamp viewDt;
 	
-	@ManyToOne
-	@JoinColumn(name ="noteId")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name ="NOTE_ID" ,insertable =false, updatable =false)
 	private NoteEntity noteInfo;
 
 

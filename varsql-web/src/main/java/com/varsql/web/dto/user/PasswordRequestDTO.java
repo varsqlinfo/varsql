@@ -1,12 +1,11 @@
-package com.varsql.web.app.user.beans;
+package com.varsql.web.dto.user;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
+import com.varsql.web.dto.valid.ValidPassword;
 
-import com.varsql.web.app.user.beans.valid.ValidPassword;
-
-public class PasswordForm {
+public class PasswordRequestDTO {
 	
 	private String viewid;
 	
