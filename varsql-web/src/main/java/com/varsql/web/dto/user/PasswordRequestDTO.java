@@ -5,6 +5,11 @@ import javax.validation.constraints.Size;
 
 import com.varsql.web.dto.valid.ValidPassword;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PasswordRequestDTO {
 	
 	private String viewid;
@@ -20,35 +25,4 @@ public class PasswordRequestDTO {
 	@Size(max=500)
 	private String confirmUpw;
 
-	public String getUpw() {
-		return upw;
-	}
-
-	public void setUpw(String upw) {
-		this.upw = upw;
-	}
-
-	public String getCurrPw() {
-		return currPw;
-	}
-
-	public void setCurrPw(String currPw) {
-		this.currPw = currPw;
-	}
-
-	public String getViewid() {
-		return viewid;
-	}
-
-	public void setViewid(String viewid) {
-		this.viewid = viewid;
-	}
-
-	public String getConfirmUpw() {
-		return confirmUpw;
-	}
-
-	public void setConfirmUpw(String confirmUpw) {
-		this.confirmUpw = confirmUpw;
-	}
 }

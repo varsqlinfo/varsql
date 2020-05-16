@@ -1,10 +1,6 @@
 package com.varsql.web.dto.user;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
-import com.varsql.web.model.entity.app.NoteEntity;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +11,7 @@ import lombok.Setter;
  * 
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: NoteRequestDTO.java
+* @NAME		: NoteResponseDTO.java
 * @DESC		: 쪽지 정보. 
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
@@ -29,33 +25,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class NoteRequestDTO{
+public class NoteResponseDTO{
 	private String noteId;
 	
-	@NotEmpty
-	@Size(max=1000)
 	private String noteTitle;
 	
 	private String noteCont;
 	
 	private String parentNoteId;
 	
-	private String reNoteCont;
+	private String regDt;
 
-	private boolean delYn;
-	
-	@NotEmpty
-	private String recvId;
-	
-	
-	public NoteEntity toEntity() {
-		return NoteEntity.builder()
-				.noteId(noteId)
-				.noteTitle(noteTitle)
-				.noteCont(noteCont)
-				.parentNoteId(parentNoteId)
-				.delYn(delYn)
-				.build();
-	}
+	private List<String> recvUsers;
 
 }

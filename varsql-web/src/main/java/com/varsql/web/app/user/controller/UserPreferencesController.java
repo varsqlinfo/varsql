@@ -22,11 +22,12 @@ import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
-import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.util.ValidateUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -162,7 +163,7 @@ public class UserPreferencesController extends AbstractController{
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			passwordForm.setViewid(SecurityUtil.userViewId(req));
-			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm, resultObject);
+			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm);
 		}
 
 		return  resultObject;
@@ -222,17 +223,15 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/listMsg"})
-	public @ResponseBody ResponseResult preferenceslistMsg(HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult preferenceslistMsg(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
-		return userPreferencesServiceImpl.selectUserMsg(searchParameter);
+		return userPreferencesServiceImpl.selectUserMsg(messageType, searchParameter);
 	}
 
 	@RequestMapping({"/msgReplyList"})
-	public @ResponseBody ResponseResult msgReplyList(HttpServletRequest req) throws Exception {
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		return userPreferencesServiceImpl.selectUserMsgReply(paramMap);
+	public @ResponseBody ResponseResult msgReplyList(NoteRequestDTO noteInfo) throws Exception {
+		return userPreferencesServiceImpl.selectUserMsgReply(noteInfo);
 	}
 
 	/**
@@ -248,11 +247,10 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/deleteMsg"})
-	public @ResponseBody ResponseResult preferencesdeleteMsg(HttpServletRequest req) throws Exception {
-		ParamMap paramMap = HttpUtils.getServletRequestParam(req);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return userPreferencesServiceImpl.deleteUserMsg( paramMap);
+	public @ResponseBody ResponseResult preferencesdeleteMsg(@RequestParam(value = "messageType" , required = true)  String messageType
+			,@RequestParam(value = "selectItem" , required = true)  String selectItem) throws Exception {
+		
+		return userPreferencesServiceImpl.deleteUserMsg( messageType,  selectItem);
 	}
 
 	/**

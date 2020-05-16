@@ -293,6 +293,14 @@ public final class VarsqlUtils {
 		responseResult.setItemList(result.stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));
 		return responseResult;
 	}
+	
+	public static ResponseResult getResponseResult(List <?> result, long totalCount , SearchParameter searchParameter) {
+		ResponseResult responseResult = new ResponseResult();
+		responseResult.setItemList(result);
+		responseResult.setPage(PagingUtil.getPageObject(totalCount, searchParameter));
+		return responseResult;
+	}
+
 
 	/**
 	 * @method  : getResponseResultItemOne

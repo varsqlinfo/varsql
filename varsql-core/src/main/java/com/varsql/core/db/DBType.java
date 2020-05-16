@@ -23,7 +23,8 @@ public enum DBType {
 	,INGRES("ingres",JdbcConstants.MARIADB)
 	,H2("h2",JdbcConstants.H2)
 	,TIBERO("tibero",JdbcConstants.ORACLE)
-	,SYBASE("tibero",JdbcConstants.SYBASE)
+	,CUBRID("cubrid",JdbcConstants.MARIADB)
+	,SYBASE("sybase",JdbcConstants.SYBASE)
 	,OTHER("other",JdbcConstants.MARIADB);
 	
 	private String dbVenderName;

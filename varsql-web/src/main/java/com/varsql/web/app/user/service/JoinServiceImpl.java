@@ -11,6 +11,7 @@ import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -37,6 +38,7 @@ public class JoinServiceImpl{
 	 * @throws EncryptDecryptException
 	 */
 	public boolean saveUser(UserReqeustDTO joinForm) throws EncryptDecryptException {
+		logger.debug("saveUser {} " , VartechUtils.reflectionToString(joinForm));
 		UserEntity entity = joinForm.toEntity();
 		
 		entity.setUserRole(AuthorityType.GUEST.name());

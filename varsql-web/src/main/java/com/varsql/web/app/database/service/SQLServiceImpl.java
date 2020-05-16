@@ -137,7 +137,7 @@ public class SQLServiceImpl{
 
 		SqlLogInfo sqlLogInfo= new SqlLogInfo();
 		sqlLogInfo.setVconnid(sqlParamInfo.getVconnid());
-		sqlLogInfo.setViewid(sqlParamInfo.getUserid());
+		sqlLogInfo.setViewid(sqlParamInfo.getViewid());
 		sqlLogInfo.setStartTime(stddt);
 
 		sqlLogInfo.setSMm(Integer.valueOf(mmddHH[0]));

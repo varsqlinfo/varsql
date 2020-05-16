@@ -1,7 +1,8 @@
 package com.varsql.web.app.user.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,39 +19,44 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
-import com.varsql.core.db.encryption.EncryptionFactory;
-import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VarsqlErrorCode;
+import com.varsql.web.dto.user.NoteRequestDTO;
+import com.varsql.web.dto.user.NoteResponseDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserReqeustDTO;
-import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.QnASpec;
+import com.varsql.web.repository.user.NoteEntityRepository;
+import com.varsql.web.repository.user.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.user.QnAEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.PasswordUtils;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.encryption.EncryptDecryptException;
-import com.vartech.common.utils.PagingUtil;
 
 @Service
 public class UserPreferencesServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesServiceImpl.class);
 
 	@Autowired
-	UserPreferencesDAO userPreferencesDAO;
-	
-	@Autowired
 	private QnAEntityRepository qnaEntityRepository;
 	
 	@Autowired
 	private UserMgmtRepository userMgmtRepository;
+	
+	@Autowired
+	private NoteEntityRepository noteEntityRepository;
+	
+	@Autowired
+	private NoteMappingUserEntityRepository noteMappingUserEntityRepository;
 
 	/**
 	 *
@@ -79,6 +85,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public boolean updateUserInfo(UserReqeustDTO userForm, HttpServletRequest req, HttpServletResponse res) {
+		
+		logger.debug("updateUserInfo : {}" , userForm);
 		
 		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
 		
@@ -125,12 +133,16 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @return
 	 * @throws EncryptDecryptException
 	 */
-	public ResponseResult updatePasswordInfo(PasswordRequestDTO passwordForm, ResponseResult resultObject) throws EncryptDecryptException {
-		String password = userPreferencesDAO.selectUserPasswordCheck(passwordForm);
-
-		if(passwordForm.getCurrPw().equals(EncryptionFactory.getInstance().decrypt(password))){
-			passwordForm.setUpw(EncryptionFactory.getInstance().encrypt(passwordForm.getUpw()));
-			resultObject.setItemOne(userPreferencesDAO.updatePasswordInfo(passwordForm)> 0);
+	public ResponseResult updatePasswordInfo(PasswordRequestDTO passwordForm) throws EncryptDecryptException {
+		
+		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
+		
+		ResponseResult resultObject = new ResponseResult();
+		if(userInfo.getUpw().equals(PasswordUtils.encode(passwordForm.getCurrPw()))){
+			
+			userInfo.setUpw(passwordForm.getUpw());
+			userInfo = userMgmtRepository.save(userInfo);
+			resultObject.setItemOne(userInfo != null?1 :0);
 		}else{
 			resultObject.setResultCode(VarsqlErrorCode.PASSWORD_NOT_VALID.code());
 		}
@@ -140,6 +152,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 
 	/**
 	 *
+	 * @param messageType 
 	 * @Method Name  : selectUserMsg
 	 * @Method 설명 : 사용자 메시지 목록 [환경 설정]
 	 * @작성자   : ytkim
@@ -148,19 +161,32 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @param searchParameter
 	 * @return
 	 */
-	public ResponseResult selectUserMsg(SearchParameter searchParameter) {
-		ResponseResult result = new ResponseResult();
-
-		int totalcnt = userPreferencesDAO.selectUserMsgTotalcnt(searchParameter);
-
-		if(totalcnt > 0){
-			result.setItemList(userPreferencesDAO.selectUserMsg(searchParameter));
-		}else{
-			result.setItemList(null);
+	public ResponseResult selectUserMsg(String messageType, SearchParameter searchParameter) {
+		
+		Page<NoteEntity> result =null; 
+		if ("send".equals(messageType)) {
+			result = noteEntityRepository.findAll(NoteSpec.sendMsg(SecurityUtil.userViewId() ,searchParameter.getKeyword()) , VarsqlUtils.convertSearchInfoToPage(searchParameter));
+		}else {
+			result = noteEntityRepository.findAll(NoteSpec.sendMsg(SecurityUtil.userViewId() ,searchParameter.getKeyword()) , VarsqlUtils.convertSearchInfoToPage(searchParameter));
 		}
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-
-		return result;
+		
+		List<NoteResponseDTO> noteList = new ArrayList<>();
+		result.getContent().forEach(item ->{
+			NoteResponseDTO noteResDto = domainMapper.convertToDomain(item, NoteResponseDTO.class);
+			
+			List<String> recvUsers = new ArrayList<>();
+			
+			if(item.getRecvList()!=null) {
+				item.getRecvList().stream().forEach(recvItem->{
+					recvUsers.add(recvItem.getRecvInfo().getUname()+"("+recvItem.getRecvInfo().getUid()+")");
+				});
+				noteResDto.setRecvUsers(recvUsers);
+			}
+			
+			noteList.add(noteResDto);
+		});
+		
+		return VarsqlUtils.getResponseResult(noteList, result.getTotalElements() , searchParameter);
 	}
 
 	/**
@@ -173,10 +199,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @param searchParameter
 	 * @return
 	 */
-	public ResponseResult selectUserMsgReply(ParamMap ParamMap) {
-		ResponseResult result = new ResponseResult();
-		result.setItemList(userPreferencesDAO.selectUserMsgReply(ParamMap));
-		return result;
+	public ResponseResult selectUserMsgReply(NoteRequestDTO noteInfo) {
+		return VarsqlUtils.getResponseResultItemList(noteEntityRepository.findAll(NoteSpec.findUserReply(noteInfo.getNoteId())));
 	}
 
 	/**
@@ -189,14 +213,19 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult deleteUserMsg(ParamMap paramMap) {
-		ResponseResult result = new ResponseResult();
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult deleteUserMsg(String messageType, String selectItem) {
 
-		String[] viewidArr = StringUtil.split(paramMap.getString("selectItem"),",");
-
-		result.setItemOne(userPreferencesDAO.deleteUserMsg(viewidArr,paramMap));
-
-		return result;
+		String[] noteIdArr = StringUtil.split(selectItem,",");
+		
+    	if("send".equals(messageType)){ // 보낸 메시지 삭제시 만 처리.
+    		noteEntityRepository.saveAllMsgDelYn(noteIdArr);
+    		noteMappingUserEntityRepository.deleteSendMsgInfo(noteIdArr , SecurityUtil.userViewId());
+    	}else {
+    		noteMappingUserEntityRepository.deleteRecvMsgInfo(noteIdArr , SecurityUtil.userViewId());
+    	}
+        	
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 
 	/**
@@ -257,4 +286,5 @@ public class UserPreferencesServiceImpl extends AbstractService{
 		
 		return result;
 	}
+
 }

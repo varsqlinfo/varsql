@@ -7,9 +7,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 
 /**
@@ -30,7 +30,7 @@ import com.varsql.web.util.VarsqlUtils;
 @RequestMapping("/database/menu")
 public class DatabaseMenuController extends AbstractController  {
 	@RequestMapping({"/fileImportExport"})
-	public ModelAndView mainpage(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
 		if(VarsqlUtils.isAjaxRequest(req)) {

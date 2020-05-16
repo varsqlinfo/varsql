@@ -15,7 +15,6 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.app.manager.dao.ManagerDAO;
-import com.varsql.web.app.user.dao.UserPreferencesDAO;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.CommonDAO;
 import com.varsql.web.common.service.AbstractService;
@@ -52,9 +51,6 @@ public class UserMgmtServiceImpl extends AbstractService{
 
 	@Autowired
 	ManagerDAO manageDAO;
-
-	@Autowired
-	UserPreferencesDAO userPreferencesDAO;
 
 	@Autowired
 	CommonDAO commonDAO;

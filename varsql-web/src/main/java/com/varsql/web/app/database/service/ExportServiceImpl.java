@@ -24,10 +24,10 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.app.database.dao.ExportDAO;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.constants.PreferencesConstants;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.EnumMapperValue;
 import com.vartech.common.app.beans.ResponseResult;
@@ -68,7 +68,7 @@ public class ExportServiceImpl{
 	 * @param model
 	 * @throws Exception
 	 */
-	public void selectExportConfigInfo(PreferencesInfo preferencesInfo, ModelMap model) throws Exception {
+	public void selectExportConfigInfo(PreferencesRequestDTO preferencesInfo, ModelMap model) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 
 		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
@@ -92,7 +92,7 @@ public class ExportServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult selectExportTableInfo(PreferencesInfo preferencesInfo) throws Exception {
+	public ResponseResult selectExportTableInfo(PreferencesRequestDTO preferencesInfo) throws Exception {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
 
 		ResponseResult result =new ResponseResult();
@@ -149,7 +149,7 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception
 	 */
-	public void tableSpecExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, HttpServletResponse res) throws Exception {
 
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 
@@ -189,7 +189,7 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception
 	 */
-	public void ddlExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletResponse res) throws Exception {
 		String jsonString = preferencesInfo.getPrefVal();
 
 		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));

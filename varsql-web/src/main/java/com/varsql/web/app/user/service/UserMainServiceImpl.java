@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.user.dao.UserMainDAO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
@@ -25,15 +24,12 @@ import com.varsql.web.repository.user.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 
 @Service
 public class UserMainServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(UserMainServiceImpl.class);
-	@Autowired
-	UserMainDAO userMainDAO;
 	
 	@Autowired
 	private UserMgmtRepository userMgmtRepository;
@@ -75,15 +71,20 @@ public class UserMainServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult insertSendMemoInfo(NoteRequestDTO noteInfo, boolean resendFlag) {
 		
+		logger.debug("insertSendMemoInfo resendFlag : {} , noteInfo : {} ", resendFlag, noteInfo );
+		
 		if(resendFlag) {
 			noteInfo.setNoteCont(noteInfo.getReNoteCont());
 			noteInfo.setNoteTitle("[re]" + noteInfo.getNoteTitle());
-			noteInfo.setRecvId(userMainDAO.selectSendMemoUser(noteInfo));
 			noteInfo.setParentNoteId(noteInfo.getNoteId());
 		}
 		
 		NoteEntity saveInfo = noteInfo.toEntity();
 		saveInfo = noteEntityRepository.save(saveInfo);
+		
+		if(resendFlag) {
+			noteInfo.setRecvId(saveInfo.getRegId());
+		}
 		
 		String [] recvArr = noteInfo.getRecvId().split(";;");
 

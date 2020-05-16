@@ -42,7 +42,7 @@ public class DatabaseParamInfo{
 	private String dbType;
 
 	// userid
-	private String userid;
+	private String viewid;
 
 	private boolean basetableYn;
 
@@ -61,8 +61,8 @@ public class DatabaseParamInfo{
 		setConuid(conuid, user.getViewid() , user.getDatabaseInfo().get(conuid));
 	}
 
-	public void setConuid(String conuid,String userid ,DatabaseInfo dbInfo) {
-		this.userid =userid;
+	public void setConuid(String conuid,String viewid ,DatabaseInfo dbInfo) {
+		this.viewid =viewid;
 		this.conuid = conuid;
 		this.vconnid = dbInfo.getVconnid();
 		this.type = dbInfo.getType();
@@ -142,8 +142,8 @@ public class DatabaseParamInfo{
 
 	}
 
-	public String getUserid() {
-		return userid;
+	public String getViewid() {
+		return viewid;
 	}
 
 	public String getBaseSchema() {

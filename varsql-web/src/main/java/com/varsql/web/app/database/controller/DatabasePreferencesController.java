@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -147,7 +147,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/save")
-	public @ResponseBody ResponseResult save(PreferencesInfo preferencesInfo, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult save(PreferencesRequestDTO preferencesInfo, HttpServletRequest req) throws Exception {
 		return preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 	}
 

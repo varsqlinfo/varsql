@@ -14,11 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
@@ -59,7 +59,7 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping("/specMain")
-	public ModelAndView specMain(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView specMain(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 
 		ModelMap model = mav.getModelMap();
 
@@ -85,7 +85,7 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping("/specMain/tableList")
-	public @ResponseBody ResponseResult tableList(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult tableList(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 
 		logger.debug("export specMain tableInfoList : {} ", preferencesInfo);
 
@@ -106,7 +106,7 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping("/spec/tableExport")
-	public void tableExport(PreferencesInfo preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
+	public void tableExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
 		exportServiceImpl.tableSpecExport(preferencesInfo, res);
 	}
 
@@ -166,7 +166,7 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping("/ddl/export")
-	public void ddlExport(PreferencesInfo preferencesInfo, HttpServletResponse res) throws Exception {
+	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletResponse res) throws Exception {
 		exportServiceImpl.ddlExport(preferencesInfo, res);
 	}
 

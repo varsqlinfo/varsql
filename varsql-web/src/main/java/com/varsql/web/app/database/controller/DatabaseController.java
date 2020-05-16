@@ -13,12 +13,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 
 
@@ -51,7 +51,7 @@ public class DatabaseController extends AbstractController {
 
 
 	@RequestMapping({"/","/main"})
-	public ModelAndView mainpage(PreferencesInfo preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
 		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());

@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.service.UserPreferencesSqlFileServiceImpl;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VarsqlParamConstants;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -74,11 +72,8 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @return
 	 */
 	@RequestMapping(value={"/detail"},method = RequestMethod.POST)
-	public @ResponseBody ResponseResult detail(HttpServletRequest req) {
-		ParamMap param = HttpUtils.getServletRequestParam(req);
-		param.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(param);
+	public @ResponseBody ResponseResult detail(@RequestParam(value = "sqlId" , required = true)  String sqlId) {
+		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(sqlId);
 	}
 
 	/**
@@ -93,11 +88,6 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 */
 	@RequestMapping(value={"/delete"} ,method = RequestMethod.POST)
 	public @ResponseBody ResponseResult delete(@RequestParam(value = "selectItem", required = true )  String selectItem , HttpServletRequest req){
-		DataCommonVO paramMap = new DataCommonVO();
-
-		paramMap.put("selectItem", selectItem);
-		paramMap.put(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
-
-		return  userPreferencesSqlFileServiceImpl.deleteSqlFile(paramMap);
+		return  userPreferencesSqlFileServiceImpl.deleteSqlFiles(selectItem);
 	}
 }

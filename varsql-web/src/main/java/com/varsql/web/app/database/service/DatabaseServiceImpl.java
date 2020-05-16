@@ -205,7 +205,7 @@ public class DatabaseServiceImpl{
 			Map param = new HashMap();
 
 			param.put(VarsqlParamConstants.VCONNID, databaseParamInfo.getVconnid());
-			param.put(VarsqlParamConstants.VIEWID, databaseParamInfo.getUserid());
+			param.put(VarsqlParamConstants.VIEWID, databaseParamInfo.getViewid());
 			param.put("reqUrl", "main");
 			databaseDAO.insertDbConnectionHistory(param);
 		}catch(Exception e){

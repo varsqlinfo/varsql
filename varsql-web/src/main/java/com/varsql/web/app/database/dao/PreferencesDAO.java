@@ -2,9 +2,9 @@ package com.varsql.web.app.database.dao;
 
 import org.springframework.stereotype.Repository;
 
-import com.varsql.web.app.database.beans.PreferencesInfo;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.dao.BaseDAO;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
 
 @Repository
 public class PreferencesDAO extends BaseDAO{
@@ -19,10 +19,10 @@ public class PreferencesDAO extends BaseDAO{
 	 * @param b 
 	 * @return
 	 */
-	public String selectPreferencesInfo(PreferencesInfo preferencesInfo) {
+	public String selectPreferencesInfo(PreferencesRequestDTO preferencesInfo) {
 		return selectPreferencesInfo(preferencesInfo, false);
 	}
-	public String selectPreferencesInfo(PreferencesInfo preferencesInfo, boolean defaultVal) {
+	public String selectPreferencesInfo(PreferencesRequestDTO preferencesInfo, boolean defaultVal) {
 		DataCommonVO dcv = getSqlSession().selectOne("userPreferencesMapper.selectPreferencesInfo", preferencesInfo);
 		
 		if(dcv ==null){
@@ -46,7 +46,7 @@ public class PreferencesDAO extends BaseDAO{
 	 * @param preferencesInfo
 	 * @return
 	 */
-	public int insertPreferencesInfo(PreferencesInfo preferencesInfo) {
+	public int insertPreferencesInfo(PreferencesRequestDTO preferencesInfo) {
 		return getSqlSession().insert("userPreferencesMapper.insertPreferencesInfo", preferencesInfo);
 	}
 	
@@ -60,7 +60,7 @@ public class PreferencesDAO extends BaseDAO{
 	 * @param preferencesInfo
 	 * @return
 	 */
-	public int updatePreferencesInfo(PreferencesInfo preferencesInfo) {
+	public int updatePreferencesInfo(PreferencesRequestDTO preferencesInfo) {
 		return getSqlSession().insert("userPreferencesMapper.updatePreferencesInfo", preferencesInfo);
 	}
 }

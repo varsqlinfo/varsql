@@ -9,8 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.NoteCompositeID;
 
 import lombok.Builder;
@@ -42,7 +44,10 @@ public class NoteMappingUserEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name ="NOTE_ID" ,insertable =false, updatable =false)
 	private NoteEntity noteInfo;
-
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "RECV_ID" ,nullable = false, insertable =false , updatable =false)
+	private RegInfoEntity recvInfo;
 
 	@Builder
 	public NoteMappingUserEntity(String noteId, String sendId, String recvId, Timestamp viewDt) {

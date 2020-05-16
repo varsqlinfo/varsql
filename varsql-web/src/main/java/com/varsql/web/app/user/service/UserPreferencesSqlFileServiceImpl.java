@@ -1,17 +1,23 @@
 package com.varsql.web.app.user.service;
 
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.Authority;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
-import com.varsql.web.app.user.dao.UserPreferencesDAO;
-import com.vartech.common.app.beans.ParamMap;
+import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.dto.sql.SqlFileResponseDTO;
+import com.varsql.web.model.entity.sql.SqlFileEntity;
+import com.varsql.web.repository.spec.SqlFileSpec;
+import com.varsql.web.repository.sql.SqlFileEntityRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.PagingUtil;
 
 /**
  * 
@@ -28,11 +34,11 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
-public class UserPreferencesSqlFileServiceImpl{
+public class UserPreferencesSqlFileServiceImpl extends AbstractService{
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileServiceImpl.class);
 	
 	@Autowired
-	UserPreferencesDAO userPreferencesDAO;
+	private SqlFileEntityRepository sqlFileEntityRepository;
 
 	/**
 	 * 
@@ -46,19 +52,16 @@ public class UserPreferencesSqlFileServiceImpl{
 	 */
 	public ResponseResult sqlFileList(SearchParameter searchParameter) {
 		
-		ResponseResult result = new ResponseResult();
+		Page<SqlFileEntity> result = sqlFileEntityRepository.findAll(SqlFileSpec.searchSqlFile(searchParameter.getKeyword())
+			,VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
 		
-		int totalcnt = userPreferencesDAO.selectUserSqlFileTotalCnt(searchParameter);
+		return VarsqlUtils.getResponseResult(result.getContent().stream().map(item ->{
+			SqlFileResponseDTO resultItem = domainMapper.convertToDomain(item, SqlFileResponseDTO.class); 
+			resultItem.setVname(item.getConnInfo().getVname());
+			return resultItem; 
+		}).collect(Collectors.toList()), result.getTotalElements(), searchParameter);
 		
-		if(totalcnt > 0){
-			result.setItemList(userPreferencesDAO.selectUserSqlFileList(searchParameter));
-		}else{
-			result.setItemList(null);
-		}
-		
-		result.setPage(PagingUtil.getPageObject(totalcnt, searchParameter));
-		
-		return result;
 	}
 	
 	/**
@@ -71,12 +74,8 @@ public class UserPreferencesSqlFileServiceImpl{
 	 * @param param
 	 * @return
 	 */
-	public ResponseResult selectSqlFileDetail(ParamMap param) {
-		ResponseResult result = new ResponseResult();
-		
-		result.setItemOne(userPreferencesDAO.selectSqlFileDetail(param));
-		
-		return result;
+	public ResponseResult selectSqlFileDetail(String sqlId) {
+		return VarsqlUtils.getResponseResultItemOne(sqlFileEntityRepository.findOne(SqlFileSpec.findSqlFile(sqlId)).get());
 	}
 	
 	/**
@@ -89,12 +88,14 @@ public class UserPreferencesSqlFileServiceImpl{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult deleteSqlFile(ParamMap paramMap) {
-		ResponseResult result = new ResponseResult();
-		String[] sqlIdArr = StringUtil.split(paramMap.getString("selectItem"),",");
+	public ResponseResult deleteSqlFiles(String selectItem) {
 		
-		result.setItemOne(userPreferencesDAO.deleteSqlFile(sqlIdArr, paramMap));
+		logger.debug("deleteSqlFiles : {}" , selectItem);
 		
-		return result;
+		String[] sqlIdArr = StringUtil.split(selectItem,",");
+		
+		sqlFileEntityRepository.deleteSqlFiles(SecurityUtil.userViewId() , sqlIdArr);
+		
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 }

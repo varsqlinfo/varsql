@@ -4,8 +4,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.web.app.database.beans.PreferencesInfo;
-import com.varsql.web.app.database.dao.PreferencesDAO;
+import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.model.entity.user.UserDBPreferencesEntity;
+import com.varsql.web.repository.spec.UserDBPreferencesSpec;
+import com.varsql.web.repository.user.UserDBPreferencesEntityRepository;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -21,7 +24,7 @@ public class PreferencesServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(PreferencesServiceImpl.class);
 	
 	@Autowired
-	private PreferencesDAO preferencesDAO ;
+	private UserDBPreferencesEntityRepository userDBPreferencesEntityRepository ;
 	
 	/**
 	 * 
@@ -33,11 +36,12 @@ public class PreferencesServiceImpl{
 	 * @param preferencesInfo
 	 * @return
 	 */
-	public String selectPreferencesInfo(PreferencesInfo preferencesInfo) {
+	public String selectPreferencesInfo(PreferencesRequestDTO preferencesInfo) {
 		return selectPreferencesInfo(preferencesInfo, false);
 	}
-	public String selectPreferencesInfo(PreferencesInfo preferencesInfo ,boolean flag) {
-		return preferencesDAO.selectPreferencesInfo(preferencesInfo, flag);
+	public String selectPreferencesInfo(PreferencesRequestDTO preferencesInfo ,boolean flag) {
+		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).get(); 
+		return  item==null ? (flag ? "{}" : null) : (item.getPrefVal() ==null? "{}" :item.getPrefVal()) ;
 	}
 	
 	/**
@@ -50,15 +54,17 @@ public class PreferencesServiceImpl{
 	 * @param preferencesInfo
 	 * @return
 	 */
-	public ResponseResult savePreferencesInfo(PreferencesInfo preferencesInfo) {
-		ResponseResult responseResult = new ResponseResult();
-		int result = 0; 
-		if(preferencesDAO.selectPreferencesInfo(preferencesInfo)==null){
-			result =preferencesDAO.insertPreferencesInfo(preferencesInfo);
-		}else{
-			result = preferencesDAO.updatePreferencesInfo(preferencesInfo);
+	public ResponseResult savePreferencesInfo(PreferencesRequestDTO preferencesInfo) {
+		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).get(); 
+		
+		if(item==null) {
+			item = preferencesInfo.toEntity();
+		}else {
+			item.setPrefVal(preferencesInfo.getPrefVal());
 		}
-		responseResult.setItemOne(result);
-		return responseResult; 
+		
+		userDBPreferencesEntityRepository.save(item);
+		
+		return VarsqlUtils.getResponseResultItemOne(1); 
 	}
 }

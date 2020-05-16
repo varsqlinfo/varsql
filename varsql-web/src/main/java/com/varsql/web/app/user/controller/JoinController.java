@@ -47,7 +47,7 @@ public class JoinController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(JoinController.class);
 
 	@Autowired
-	JoinServiceImpl joinServiceImpl;
+	private JoinServiceImpl joinServiceImpl;
 
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {

@@ -2,14 +2,18 @@ package com.varsql.web.model.entity.sql;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
 import lombok.Builder;
@@ -35,7 +39,7 @@ public class SqlFileEntity extends AabstractAuditorModel{
     @GeneratedValue(generator = "sqlIdGenerator")
 	@Column(name ="SQL_ID")
 	private String sqlId;
-
+	
 	@Column(name ="VCONNID")
 	private String vconnid;
 
@@ -50,6 +54,10 @@ public class SqlFileEntity extends AabstractAuditorModel{
 
 	@Column(name ="SQL_PARAM")
 	private String sqlParam;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "VCONNID" ,nullable = false, insertable =false , updatable =false)
+	private DBConnectionEntity connInfo;
 
 	@Builder
 	public SqlFileEntity(String sqlId, String vconnid, String viewid, String gueryTitle, String queryCont, String sqlParam) {
