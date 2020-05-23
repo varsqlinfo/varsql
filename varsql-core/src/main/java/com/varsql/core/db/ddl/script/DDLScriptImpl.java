@@ -26,7 +26,7 @@ import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 
 /**
  * 
@@ -433,7 +433,7 @@ StringBuilder ddlStrBuf;
 		} catch (SQLException e) {
 			throw e;
 		}finally{
-			SQLUtil.close(conn, null ,rs);
+			SqlUtils.close(conn, null ,rs);
 		}
 		return keyColumn;
 	}

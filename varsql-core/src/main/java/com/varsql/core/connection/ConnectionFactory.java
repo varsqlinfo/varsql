@@ -201,6 +201,21 @@ public final class ConnectionFactory implements ConnectionContext{
 		createConnectionInfo(connid);
 	}
 	
+	/**
+	 * @method  : poolShutdown
+	 * @desc : 연결 해제 . 
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 24. 
+	 * @param connid
+	 * @throws SQLException
+	 * @throws ConnectionFactoryException
+	 */
+	public synchronized void poolShutdown(String connid) throws SQLException, ConnectionFactoryException  {
+		if(connectionConfig.containsKey(connid)){
+			ConnectionFactory.getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
+		}
+	}
+	
 	private static class FactoryHolder{
         private static final ConnectionFactory instance = new ConnectionFactory();
     }

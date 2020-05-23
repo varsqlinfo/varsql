@@ -26,7 +26,7 @@ import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 
@@ -102,7 +102,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			logger.error("getVersion {} ",e.getMessage());
 			logger.error("getVersion ",e);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 		
 		return result;
@@ -158,7 +158,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			logger.error("getSchemas {} ",e.getMessage());
 			logger.error("getSchemas",e);
 		} finally{
-			SQLUtil.close(conn, null ,rs); 
+			SqlUtils.close(conn, null ,rs); 
 		}
 		
 
@@ -187,7 +187,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		try {
 			return dBMetaDataUtil.tableInfo(dataParamInfo,conn, "TABLE");
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -215,7 +215,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			}
 			return dBMetaDataUtil.tableAndColumnsInfo(dataParamInfo,conn, dbInstanceFactory,"TABLE" ,tableList);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -238,7 +238,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		try {
 			return dBMetaDataUtil.tableInfo(dataParamInfo,conn, "VIEW");
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -262,7 +262,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			}
 			return dBMetaDataUtil.tableAndColumnsInfo(dataParamInfo, conn, dbInstanceFactory, "VIEW" ,tableList);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -285,7 +285,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		try {
 			return dBMetaDataUtil.proceduresInfo(dataParamInfo,conn);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 			
@@ -322,7 +322,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			
 			return dBMetaDataUtil.proceduresAndMetadatas(dataParamInfo, conn, dbInstanceFactory,objectInfoList);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -345,7 +345,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		try {
 			return dBMetaDataUtil.functionInfo(dataParamInfo,conn);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -383,7 +383,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			
 			return dBMetaDataUtil.functionAndMetadatas(dataParamInfo, conn, dbInstanceFactory,objectInfoList);
 		}finally{
-			SQLUtil.close(conn, null, null);
+			SqlUtils.close(conn, null, null);
 		}
 	}
 	
@@ -430,7 +430,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		} catch (SQLException e) {
 			throw e;
 		}finally{
-			SQLUtil.close(conn, null ,rs);
+			SqlUtils.close(conn, null ,rs);
 		}
 		return keyColumn; 
 	}
@@ -505,7 +505,7 @@ public abstract class DBMetaImpl implements DBMeta{
 		} catch (SQLException e) {
 			throw e;
 		}finally{
-			SQLUtil.close(conn, null ,rs);
+			SqlUtils.close(conn, null ,rs);
 		}
 		return indexInfoList; 
 	}
@@ -544,7 +544,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			}
 			rs.close();
 		}finally{
-			SQLUtil.close(pstmt ,rs);
+			SqlUtils.close(pstmt ,rs);
 		}
 		return reval;
 	}

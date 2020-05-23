@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
@@ -163,7 +165,7 @@ public class AdminServiceImpl extends AbstractService{
 			failMessage = e.getMessage();
 			logger.error(this.getClass().getName() , e);
 		}finally{
-			SQLUtil.close(connChk , pstmt, null);
+			SqlUtils.close(connChk , pstmt, null);
 		}
 
 		resultObject.setMessageCode(result);
@@ -254,10 +256,28 @@ public class AdminServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectDbDriverList(String dbType) {
-		ResponseResult resultObject = new ResponseResult();
-		resultObject.setItemList(dbTypeDriverModelRepository.findByDbtype(dbType));
+		return VarsqlUtils.getResponseResultItemList(dbTypeDriverModelRepository.findByDbtype(dbType));
+	}
 
-		return resultObject;
+	/**
+	 * @method  : connectionClose
+	 * @desc : db 연결 전부 닫기
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 24. 
+	 * @param vtConnection
+	 * @return
+	 */
+	public ResponseResult connectionClose(@Valid DBConnectionRequestDTO vtConnection) {
+		ResponseResult resultObject = new ResponseResult();
+		try {
+			ConnectionFactory.getInstance().poolShutdown(vtConnection.getVconnid());
+			resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
+		} catch (Exception e) {
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessage(e.getMessage());
+		}
+		
+		return resultObject; 
 	}
 
 }

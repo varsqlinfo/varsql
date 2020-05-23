@@ -62,6 +62,7 @@
 							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
 							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
 							<button type="button" class="btn btn-default" @click="save('poolInit')" :class="detailFlag===false?'hidden':''"><spring:message code="btn.save.andpoolnit"/></button>
+							<button type="button" class="btn btn-primary" @click="connectionClose()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.close"/></button>
 							<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
 							<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
 						</div>
@@ -441,6 +442,25 @@ VarsqlAPP.vueServiceBean( {
 
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}
+				,loadSelector : 'body'
+				,data:param
+				,success:function (resData){
+					if(VARSQL.req.validationCheck(resData)){
+						if(resData.messageCode =='success'){
+							alert('<spring:message code="msg.success" />');
+							return
+						}else{
+							alert(resData.messageCode  +'\n'+ resData.message);
+						}
+					}
+				}
+			});
+		}
+		,connectionClose : function (){
+			var param = this.getParamVal();
+
+			this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionClose'}
 				,loadSelector : 'body'
 				,data:param
 				,success:function (resData){

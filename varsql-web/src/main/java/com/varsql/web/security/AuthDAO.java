@@ -29,7 +29,7 @@ import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
@@ -147,7 +147,7 @@ public final class AuthDAO {
 		try {
 			getUserDataBaseInfo(conn,pstmt, rs, SecurityUtil.loginInfo());
 		}finally{
-			SQLUtil.close(conn , pstmt, rs);
+			SqlUtils.close(conn , pstmt, rs);
 		}
 
 	}

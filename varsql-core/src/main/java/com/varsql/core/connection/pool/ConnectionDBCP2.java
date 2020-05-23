@@ -115,7 +115,7 @@ public class ConnectionDBCP2 implements ConnectionPoolInterface{
 			PoolingDriver pd = (PoolingDriver) DriverManager.getDriver(DBCP_JDBC_PREFIX);
 			pd.closePool(nm);
 		}catch(Exception e){
-			
+			logger.error("poolName : {}", nm , e);
 		}
 	}
 

@@ -132,6 +132,7 @@
 <entry key="btn.add">추가</entry>
 <entry key="btn.save.andpoolnit"><![CDATA[저장 & DB 풀초기화]]></entry>
 <entry key="btn.connnection.check">연결 테스트</entry>
+<entry key="btn.connnection.close">연결 닫기</entry>
 <entry key="btn.login">로그인</entry>
 <entry key="btn.accept">수락</entry>
 <entry key="btn.denial">거부</entry>

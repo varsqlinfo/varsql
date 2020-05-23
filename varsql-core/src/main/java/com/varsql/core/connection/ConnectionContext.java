@@ -1,6 +1,5 @@
 package com.varsql.core.connection;
 
-import java.sql.SQLException;
 import com.varsql.core.exception.ConnectionFactoryException;
 
 /**

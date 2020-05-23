@@ -123,6 +123,20 @@ public class AdminDbMgmtController extends AbstractController{
 
 		return resultObject;
 	}
+	
+	@RequestMapping(value = "/dbConnectionClose")
+	public @ResponseBody ResponseResult dbConnectionClose(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
+		ResponseResult resultObject = new ResponseResult();
+		if(result.hasErrors()){
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setMessage(VarsqlUtils.getErrorCodeMessage(result));
+		}else{
+			resultObject = adminServiceImpl.connectionClose(vtConnection);
+		}
+		
+		return resultObject;
+	}
 
 	/**
 	 *

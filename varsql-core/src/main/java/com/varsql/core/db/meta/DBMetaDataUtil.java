@@ -22,7 +22,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 
 
 /**
@@ -55,7 +55,7 @@ public final class DBMetaDataUtil {
 				reLst.add(tableInfo);
 			}
 		}finally{
-			SQLUtil.close(rs);
+			SqlUtils.close(rs);
 		}
 
 		return reLst;
@@ -99,7 +99,7 @@ public final class DBMetaDataUtil {
 				reLst.add(tableInfo);
 			}
 		}finally{
-			SQLUtil.close(colRs);
+			SqlUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -123,7 +123,7 @@ public final class DBMetaDataUtil {
 				reLst.add(oi);
 			}
 		}finally{
-			SQLUtil.close(rs);
+			SqlUtils.close(rs);
 		}
 		return reLst;
 	}
@@ -166,7 +166,7 @@ public final class DBMetaDataUtil {
 				colRs.close();
 			}
 		}finally{
-			SQLUtil.close(colRs);
+			SqlUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -209,7 +209,7 @@ public final class DBMetaDataUtil {
 				colRs.close();
 			}
 		}finally{
-			SQLUtil.close(colRs);
+			SqlUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -232,7 +232,7 @@ public final class DBMetaDataUtil {
 				reLst.add(oi);
 			}
 		}finally{
-			SQLUtil.close(rs);
+			SqlUtils.close(rs);
 		}
 		return reLst;
 	}
