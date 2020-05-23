@@ -3,10 +3,13 @@ package com.varsql.core.sql.mapping;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.test.BaseTest;
 
 class ParameterMappingUtilTest extends BaseTest{
@@ -15,13 +18,15 @@ class ParameterMappingUtilTest extends BaseTest{
 	void testSQLPARAM() {
 		ParameterMappingUtil pmu = new ParameterMappingUtil();
 		String cont = getResourceContent("/query/sqlParam.txt");
-		List<ParameterMapping> sqlList = pmu.sqlParameter(cont);
-
-		assertTrue(" sql parameter size not equal \n"+sqlList, sqlList.size() == 2);
-
+		
+		Map<String,String> data = new HashMap<>();
+		data.put("item1", "asdf");
+		ConvertResult convertResult = pmu.sqlParameter(cont,data, "?" );
+		
+		List<ParameterMapping> sqlList = (List<ParameterMapping>) convertResult.getParameterInfo();
+		//System.out.println(convertResult.getCont());
+		assertTrue(" sql parameter size not equal \n"+sqlList, sqlList.size() == 3);
+		
 		assertEquals(sqlList.get(0).getProperty(), "schema");
-		assertEquals(sqlList.get(1).getProperty(), "item1");
-
 	}
-
 }

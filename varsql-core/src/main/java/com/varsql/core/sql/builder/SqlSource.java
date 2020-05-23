@@ -1,6 +1,9 @@
 package com.varsql.core.sql.builder;
 
 import java.util.List;
+import java.util.Map;
+
+import com.varsql.core.sql.mapping.ParameterMapping;
 
 public class SqlSource {
 	private String commandType;
@@ -8,7 +11,8 @@ public class SqlSource {
 	private String query;
 	private String calluserid;
 	private SqlSourceResultVO result;
-	private List param;
+	private List<ParameterMapping> paramList;
+	private Map orginSqlParam; 
 	
 	public String getCommandType() {
 		return commandType;
@@ -56,12 +60,20 @@ public class SqlSource {
 		this.query = query;
 	}
 	
-	public List getParam() {
-		return param;
+	public List<ParameterMapping> getParamList() {
+		return paramList;
 	}
 
-	public void setParam(List param) {
-		this.param = param;
+	public void setParamList(List<ParameterMapping> paramList) {
+		this.paramList = paramList;
+	}
+	
+	public Map getOrginSqlParam() {
+		return orginSqlParam;
+	}
+
+	public void setOrginSqlParam(Map orginSqlParam) {
+		this.orginSqlParam = orginSqlParam;
 	}
 	
 	@Override
@@ -72,11 +84,9 @@ public class SqlSource {
 			.append("] commandType : [").append(commandType)
 			.append("] statementType : [").append(statementType)
 			.append("] query : [").append(query)
-			.append("] param : [").append(param)
+			.append("] param : [").append(paramList)
 			.append("]")
 			.toString();
 	}
-
-	
 }
 

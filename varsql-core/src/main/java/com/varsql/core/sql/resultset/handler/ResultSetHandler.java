@@ -13,7 +13,7 @@ import java.util.Map;
  * @변경이력 :
  */
 public interface ResultSetHandler{
-	public Map getDataValue(Map addMap, String columnName, ResultSet rs, int columnIdx, String varType , String columnTypeName) throws SQLException ;
+	public Map getDataValue(Map addMap, String keyName, String columnName, ResultSet rs, int columnIdx, String varType , String columnTypeName) throws SQLException ;
 	public Number getNumber(ResultSet rs , int columnIdx) throws SQLException ;
 	public Number getNumber(ResultSet rs , String columnName) throws SQLException ;
 	

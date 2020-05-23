@@ -37,9 +37,11 @@ public class TiberoDBMeta extends DBMetaImpl{
 	
 	public TiberoDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-				, new ServiceObject(ObjectType.PROCEDURE)
-				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			, new ServiceObject(ObjectType.FUNCTION, true, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			, new ServiceObject(ObjectType.INDEX, true, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			, new ServiceObject(ObjectType.PROCEDURE)
+			, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 		);
 	}
 	

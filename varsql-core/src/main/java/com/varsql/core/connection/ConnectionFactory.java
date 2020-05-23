@@ -18,7 +18,7 @@ import com.varsql.core.connection.pool.ConnectionPoolInterface;
 import com.varsql.core.connection.pool.PoolType;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.exception.ConnectionFactoryException;
-import com.varsql.core.sql.util.SQLUtil;
+import com.varsql.core.sql.util.SqlUtils;
 
 /**
  * 
@@ -181,7 +181,7 @@ public final class ConnectionFactory implements ConnectionContext{
 			logger.error("empty connection info" , e);
 			throw new ConnectionFactoryException("empty connection info : [" +connid+"]" , e);
 		}finally{
-			SQLUtil.close(conn , pstmt, rs);
+			SqlUtils.close(conn , pstmt, rs);
 		}
 	}
 

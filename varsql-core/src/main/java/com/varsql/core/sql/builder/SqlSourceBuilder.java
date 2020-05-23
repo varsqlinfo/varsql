@@ -1,12 +1,9 @@
 package com.varsql.core.sql.builder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +17,11 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.varsql.core.common.constants.SqlConstants;
 import com.varsql.core.connection.pool.ConnectionValidation;
-import com.varsql.core.sql.util.SqlReplaceUtils;
+import com.varsql.core.pattern.convert.ConvertResult;
+import com.varsql.core.sql.mapping.ParameterMapping;
+import com.varsql.core.sql.mapping.ParameterMappingUtil;
 import com.vartech.common.app.beans.ResponseResult;
 
 
@@ -38,6 +38,7 @@ public class SqlSourceBuilder {
 	
 	private static String removeClassNameRegular = "^SQL|Statement$|^DB2|^Oracle|^Mysql|^Hive|^Odps|^Phoenix|^PG|^SQLServer|^H2|^Mariadb|^Tibero";
 	
+	private static ParameterMappingUtil parameterMappingUtil = new ParameterMappingUtil();
 	
 	private SqlSourceBuilder(){}
 	
@@ -122,7 +123,7 @@ public class SqlSourceBuilder {
 	private static SqlSource getSqlSourceBean(SQLStatement statement,String tmpQuery, Map<String, String> param) {
 		
 		SqlSource sqlSource = new SqlSource();
-		
+		sqlSource.setOrginSqlParam(param);
 		
 		if(statement instanceof SQLSelectStatement){
 			sqlSource.setCommandType("SELECT");
@@ -150,7 +151,7 @@ public class SqlSourceBuilder {
 		if(param != null){
 			SqlStatement sqlstate = getSqlStatement(tmpQuery, param, false);
 			sqlSource.setQuery(sqlstate.sql);
-			sqlSource.setParam(sqlstate.parameter);
+			sqlSource.setParamList(sqlstate.parameter);
 		}else{
 			sqlSource.setQuery(tmpQuery);
 		}
@@ -168,103 +169,16 @@ public class SqlSourceBuilder {
 	 * @param variables
 	 * @return
 	 */
-	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote) {
-		
-		String regular =SqlReplaceUtils.PARAM_REG;
-		
-		String dollar =SqlReplaceUtils.PARAM_DOLLAR
-				,sharp=SqlReplaceUtils.PARAM_SHARP;
-		
-		if(!addSingleQuote){
-			regular =SqlReplaceUtils.PARAM_REG_SINGLEQUOTE;
-			
-			dollar = "'"+dollar;
-			sharp = "'"+sharp;
-		}
-		
-		Pattern pattern = Pattern.compile(regular);
-		Matcher matcher = pattern.matcher(sql);
-		
-		boolean flag = matcher.find();
-		if(flag) {
-			StringBuffer buffer = new StringBuffer();
-			List paramList = new ArrayList();
-			boolean lineCommentStartFlag  = false ,mlineCommentStartFlag  = false;  
-			while (flag) {
-				String matchGroup  = matcher.group(0);
-				String variableKey  = matcher.group(2);
-				
-				if(matchGroup != null){
-					if(matchGroup.startsWith(dollar)) {
-						if(addSingleQuote){
-							matcher.appendReplacement(buffer,"'"+matchGroup.replace("$","\\$")+"'");
-						}else{
-							if (variables.containsKey(variableKey)) {
-								matcher.appendReplacement(buffer, variables.get(variableKey));
-							}else {
-								matcher.appendReplacement(buffer, "NULL");
-							}
-						}
-					}else {
-						if("/*".equals(matchGroup)) {
-							mlineCommentStartFlag = true; 
-						}
-						if(mlineCommentStartFlag && "*/".equals(matchGroup)) {
-							mlineCommentStartFlag = false; 
-						}
-						if(mlineCommentStartFlag) {
-							flag = matcher.find();
-							continue; 
-						}
-						
-						if("--".equals(matchGroup)) {
-							lineCommentStartFlag = true; 
-						}
-						if(lineCommentStartFlag && ("\r\n".equals(matchGroup) || "\n".equals(matchGroup)|| "\r".equals(matchGroup))) {
-							lineCommentStartFlag = false; 
-						}
-						
-						if(lineCommentStartFlag) {
-							flag = matcher.find();
-							continue; 
-						}
-						
-						if(matchGroup.startsWith(sharp)) {
-							if(addSingleQuote){
-								matcher.appendReplacement(buffer, "'"+matchGroup+"'");
-							}else{
-								if (variables.containsKey(variableKey)) {
-									paramList.add(variables.get(variableKey));
-								}else {
-									paramList.add("");
-								}
-								matcher.appendReplacement(buffer, "?");
-								
-							}
-						}
-					}
-				}
-				flag = matcher.find();
-			}
-			matcher.appendTail(buffer);
-			
-			return new SqlStatement( buffer.toString(), paramList);
-			
-		}else {
-			return new SqlStatement( sql, null);
-		}
-	}
-	
 	private static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
-		SqlSource sqlSource;
-		sqlSource = new SqlSource();
+		SqlSource sqlSource = new SqlSource();
 		sqlSource.setCommandType("OTHER");
-			
+		sqlSource.setOrginSqlParam(param);
+		
 		if(param != null){
 			SqlStatement sqlstate = getSqlStatement(query, param, false);
 			sqlSource.setQuery(sqlstate.sql);
-			sqlSource.setParam(sqlstate.parameter);
+			sqlSource.setParamList(sqlstate.parameter);
 		}else{
 			sqlSource.setQuery(query);
 		}
@@ -272,13 +186,24 @@ public class SqlSourceBuilder {
 		
 		return queries;
 	}
+	
+	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote) {
+		
+		ConvertResult convertResult = parameterMappingUtil.sqlParameter(sql, variables);
+		
+		if(convertResult.getParameterInfo().size() > 0) {
+			return new SqlStatement(convertResult.getCont(), (List<ParameterMapping>)convertResult.getParameterInfo());
+		}else {
+			return new SqlStatement(convertResult.getCont(), null);
+		}
+	}
 }
 
 class SqlStatement{
 	public String sql; 
-	public List parameter;
+	public List<ParameterMapping> parameter;
 	
-	SqlStatement(String sql , List parameter){
+	SqlStatement(String sql , List<ParameterMapping> parameter){
 		this.sql = sql ; 
 		this.parameter =parameter;
 	}

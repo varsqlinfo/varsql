@@ -31,38 +31,38 @@ public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map getDataValue(Map dataMap, String columnName, ResultSet rs, int colIdx, String varsqlType ,String columnTypeName) throws SQLException {
+	public Map getDataValue(Map dataMap, String keyName, String columnName, ResultSet rs, int colIdx, String varsqlType ,String columnTypeName) throws SQLException {
 		if("number".equals(varsqlType)){
-			dataMap.put(columnName,getNumber(rs, colIdx));
+			dataMap.put(keyName,getNumber(rs, colIdx));
 		}else if("string".equals(varsqlType)){
-			dataMap.put(columnName,getString(rs, colIdx));
+			dataMap.put(keyName,getString(rs, colIdx));
 		}else if( "clob".equals(varsqlType)){
-			dataMap.put(columnName , getClob(rs, colIdx));
+			dataMap.put(keyName , getClob(rs, colIdx));
 		}else if( "blob".equals(varsqlType)){
-			dataMap.put(columnName , getBlob(rs, colIdx));
+			dataMap.put(keyName , getBlob(rs, colIdx));
 		}else if("timestamp".equals(varsqlType)){
-			dataMap.put(columnName, getTimeStamp(rs, colIdx));
+			dataMap.put(keyName, getTimeStamp(rs, colIdx));
 		}else if("date".equals(varsqlType)){
-			dataMap.put(columnName, getDate(rs, colIdx));
+			dataMap.put(keyName, getDate(rs, colIdx));
 		}else if("time".equals(varsqlType)){
-			dataMap.put(columnName,getTime(rs, colIdx));
+			dataMap.put(keyName,getTime(rs, colIdx));
 		}else if("sqlxml".equals(varsqlType)){
-			dataMap.put(columnName,getSQLXML(rs, colIdx));
+			dataMap.put(keyName,getSQLXML(rs, colIdx));
 		}else if("binary".equals(varsqlType)){
 			/*
 			if("RAW".equals(columnTypeName)) {
-				dataMap.put(columnName,getRAW(rs, colIdx));
+				dataMap.put(keyName,getRAW(rs, colIdx));
 			}else {
-				dataMap.put(columnName,getBinary(rs, colIdx));
+				dataMap.put(keyName,getBinary(rs, colIdx));
 			}
 			*/
-			dataMap.put(columnName,"[Binary]"+columnTypeName);
+			dataMap.put(keyName,"[Binary]"+columnTypeName);
 		}else if("nclob".equals(varsqlType)){
-			dataMap.put(columnName,getNCLOB(rs, colIdx));
+			dataMap.put(keyName,getNCLOB(rs, colIdx));
 		}else if("raw".equals(varsqlType)){
-			dataMap.put(columnName,getNCLOB(rs, colIdx));
+			dataMap.put(keyName,getNCLOB(rs, colIdx));
 		}else{
-			dataMap.put(columnName,getObject(rs, colIdx));
+			dataMap.put(keyName,getObject(rs, colIdx));
 		}
 		
 		return dataMap; 

@@ -1,7 +1,6 @@
 package com.varsql.db.ext.cubrid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +14,7 @@ import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
@@ -57,71 +52,15 @@ public class CubridDDLScript extends DDLScriptImpl {
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			
 			if(ddlOption.isAddDropClause()){
 				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 			
-			List<ParamMap> srcList = client.selectList("tableScript", dataParamInfo);
-
-			ddlStr.append("CREATE TABLE " + name + "(\n");
+			ParamMap source = client.selectOne("tableScript", dataParamInfo);
 			
-			String dataType = "";
-			
-			dataParamInfo.setObjectName(name);
-			
-			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			ParamMap source;
-			for (int i = 0; i < srcList.size(); i++) {
-				source = srcList.get(i);
-				dataType = String.valueOf(source.get("DATA_TYPE"));
-				
-				DataTypeInfo dataTypeInfo = dataTypeImpl.getDataType(dataType);
-				
-				ddlStr.append("\t");
-				if (i > 0){
-					ddlStr.append(",");
-				}
-				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
-				
-				ddlStr.append(DbMetaUtils.getTypeName(dataTypeInfo ,null ,dataTypeInfo.getDataTypeName(), source.getString(MetaColumnConstants.COLUMN_SIZE) ,source.getString(MetaColumnConstants.DECIMAL_DIGITS)));
-				
-				ddlStr.append(getDefaultValue(source.getString("DATA_DEFAULT"), dataTypeInfo , true));
-				
-				ddlStr.append(getNotNullValue(source.getString("NULLABLE")));
-				
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			List srcPkList = client.selectList("tableScriptPk", dataParamInfo);
-			Map pkMap;
-			for (int i = 0; i < srcPkList.size(); i++) {
-				pkMap = (HashMap) srcPkList.get(i);
-				if (i == 0)
-					ddlStr.append(BlankConstants.TAB).append(",CONSTRAINT ")
-							.append(pkMap.get("CONSTRAINT_NAME"))
-							.append(" PRIMARY KEY ( ")
-							.append(pkMap.get("COLUMN_NAME"));
-				else {
-					ddlStr.append(", " + pkMap.get("COLUMN_NAME"));
-				}
-
-				if (i == srcPkList.size() - 1) {
-					ddlStr.append(")").append(BlankConstants.NEW_LINE);
-				}
-			}
-
-			ddlStr.append(");").append(BlankConstants.NEW_LINE_TWO);
-			
-			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);
-			for (int i = 0; i < srcCommentList.size(); i++) {
-				ddlStr.append((String) srcCommentList.get(i)).append(BlankConstants.NEW_LINE);
-			}
-			if(srcCommentList.size() > 0){
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-			
+			ddlStr.append(source.getString("CREATE TABLE")).append(BlankConstants.NEW_LINE_TWO);
 			ddlInfo.setCreateScript(ddlStr.toString());
+			
 			reval.add(ddlInfo);
 		}
 
@@ -137,7 +76,6 @@ public class CubridDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		
-		boolean addFlag;
 		for (String name : objNmArr) {
 			
 			ddlStr = new StringBuilder();
@@ -150,20 +88,10 @@ public class CubridDDLScript extends DDLScriptImpl {
 			if(ddlOption.isAddDropClause()){
 				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
-
-			List<String> scrList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			addFlag = false; 
-			for (int i = 0; i < scrList.size(); i++) {
-				if(addFlag==false && !"".equals(StringUtils.trim(scrList.get(i)))){
-					addFlag = true; 
-				}
-				
-				if(addFlag){
-					ddlStr.append(scrList.get(i));
-				}
-			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+			
+			ddlStr.append(source.getString("Create View")).append(BlankConstants.NEW_LINE_TWO);
 			
 			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
@@ -180,6 +108,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
+		
 		for (String name : objNmArr) {
 			
 			ddlInfo = new DDLInfo();
@@ -187,22 +116,36 @@ public class CubridDDLScript extends DDLScriptImpl {
 			dataParamInfo.setObjectName(name);
 			
 			ddlStr = new StringBuilder();
-			List srcScriptList = sqlSesseion.selectList("indexScriptSource", dataParamInfo);
+			
+			if(ddlOption.isAddDropClause()){
+				ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+			}
+			
+			List srcScriptList = sqlSesseion.selectList("indexScript", dataParamInfo);
+			ddlStr.append("CREATE ");
 	
 			Map indexMap;
 			if (srcScriptList.size() > 0) {
-				if(ddlOption.isAddDropClause()){
-					ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+				indexMap = (Map) srcScriptList.get(0);
+				if ("UQ".equals(indexMap.get("INDEX_TYPE")))
+					ddlStr.append(" UNIQUE INDEX ");
+				else {
+					ddlStr.append(" INDEX ");
 				}
-				
+	
+				ddlStr.append( indexMap.get("INDEX_NAME") + " ON ");
+				ddlStr.append( indexMap.get("TABLE_NAME") + "\n ( ");
+	
 				for (int i = 0; i < srcScriptList.size(); i++) {
 					indexMap = (Map) srcScriptList.get(i);
-					
-					ddlStr.append(indexMap.get("SOURCES"));
+	
+					ddlStr.append(i > 0 ?"" :",");
+					ddlStr.append( indexMap.get("COLUMN_NAME"));
 				}
-				
-				ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+				ddlStr.append("\t ) \n ");
 			}
+			
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 			
 			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
@@ -233,17 +176,25 @@ public class CubridDDLScript extends DDLScriptImpl {
 				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			List<String> scrList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+			List<Map> scriptInfoList = sqlSesseion.selectList("functionScript", dataParamInfo);
 			addFlag = false; 
-			for (int i = 0; i < scrList.size(); i++) {
-				if(addFlag==false && !"".equals(StringUtils.trim(scrList.get(i)))){
-					addFlag = true; 
-				}
+			
+			
+			Map param = scriptInfoList.get(0);
+			
+			StringBuffer argsSb = new StringBuffer();
+			for (int i = 0; i < scriptInfoList.size(); i++) {
+				Map scriptInfoMap = scriptInfoList.get(i);
+				argsSb.append(scriptInfoMap.get("")).append(scriptInfoMap.get(""));
 				
-				if(addFlag){
-					ddlStr.append(scrList.get(i));
-				}
 			}
+			
+			param.put("schema", dataParamInfo.getSchema());
+			
+			param.put("ddlOption", ddlOption);
+			param.put("ARGUMENTS",argsSb.toString());
+			
+			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "functionScript", param));
 			
 			ddlStr.append(BlankConstants.NEW_LINE_TWO);
 			
@@ -255,45 +206,50 @@ public class CubridDDLScript extends DDLScriptImpl {
 	}
 	
 	@Override
-	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
+	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
+		logger.debug(" Procedure DDL Generation... ");
 		
 		SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());
-		
-		logger.debug(" Procedure DDL Generation...");
 		
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
 		for (String name : objNmArr) {
 			
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			ddlStr = new StringBuilder();
+			
 			dataParamInfo.setObjectName(name);
 			
 			if(ddlOption.isAddDropClause()){
 				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
-
-			List<String> scrList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			addFlag = false; 
-			for (int i = 0; i < scrList.size(); i++) {
-				if(addFlag==false && !"".equals(StringUtils.trim(scrList.get(i)))){
-					addFlag = true; 
-				}
+			
+			List<Map> scriptInfoList = sqlSesseion.selectList("procedureScript", dataParamInfo);
+			
+			Map param = scriptInfoList.get(0);
+			
+			StringBuffer argsSb = new StringBuffer();
+			for (int i = 0; i < scriptInfoList.size(); i++) {
+				Map scriptInfoMap = scriptInfoList.get(i);
 				
-				if(addFlag){
-					ddlStr.append(scrList.get(i));
-				}
+				argsSb.append(scriptInfoMap.get("COLUMN_NAME")).append(" ").append(scriptInfoMap.get("DATA_TYPE"));
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			param.put("schema", dataParamInfo.getSchema());
+			
+			param.put("ddlOption", ddlOption);
+			param.put("ARGUMENTS",argsSb.toString());
+			
+			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "procedureScript", param));
+			
+			ddlStr.append(BlankConstants.NEW_LINE_TWO);
 			
 			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
-
+		
 		return reval;
 	}
 	

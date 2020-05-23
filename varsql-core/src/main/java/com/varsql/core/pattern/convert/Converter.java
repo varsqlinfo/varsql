@@ -1,7 +1,5 @@
 package com.varsql.core.pattern.convert;
 
-import java.util.List;
-
 import com.varsql.core.pattern.parsing.TokenInfo;
 
 /**
@@ -17,10 +15,10 @@ import com.varsql.core.pattern.parsing.TokenInfo;
 *-----------------------------------------------------------------------------
  */
 public interface Converter {
-	public String transform(String cont, TokenInfo... tokens);
-	public String transform(String cont, TokenHandler handler, TokenInfo... tokens);
+	public ConvertResult transform(String cont, TokenInfo... tokens);
+	public ConvertResult transform(String cont, TokenHandler handler, TokenInfo... tokens);
 	
-	public <T> List<T> tokenData(String cont, TokenInfo... tokens);
-	public <T> List<T> tokenData(String cont, TokenHandler handler, TokenInfo... tokens);
+	public ConvertResult tokenData(String cont, TokenInfo... tokens);
+	public ConvertResult tokenData(String cont, TokenHandler handler, TokenInfo... tokens);
 	
 }

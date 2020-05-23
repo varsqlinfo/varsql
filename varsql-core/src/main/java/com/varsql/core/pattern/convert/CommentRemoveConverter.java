@@ -20,7 +20,7 @@ import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
  */
 public class CommentRemoveConverter extends AbstractConverter {
 	// comment type
-	static enum CommentType {
+	public static enum CommentType {
 		JAVA, JSP, JAVASCRIPT, CSS, HTML, XML, PROPERTY;
 	}
 
@@ -52,6 +52,7 @@ public class CommentRemoveConverter extends AbstractConverter {
 
 			int newLineIdx = Math.min(val.indexOf('\n', startIdx), val.indexOf("\r", startIdx));
 
+			//System.out.println(val.charAt(startIdx)+": @@@@@ : " + val.substring(startIdx ,valLen > startIdx + 100 ?startIdx + 100 : valLen));
 			for (int i = startIdx; i < valLen; i++) {
 				reIdx = regExpSpecialCharactersCheck('/', val, i);
 
@@ -115,34 +116,42 @@ public class CommentRemoveConverter extends AbstractConverter {
 	}
 	
 	public String convert(String cont, CommentType type, boolean emptyLineRemove) {
-		String result = "";
+		ConvertResult convertResult=null;
+		
+		String result=null;
+		
 		switch (type) {
 		case JAVA:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
 			break;
 		case JSP:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK, BLOCK_JSP, BLOCK_HTML);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK, BLOCK_JSP, BLOCK_HTML);
 			break;
 		case JAVASCRIPT:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK, REGULAR_EXPRESSION);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK, REGULAR_EXPRESSION);
 			break;
 		case CSS:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
 			break;
 		case HTML:
 			result = convert(cont, CommentType.XML, emptyLineRemove);
 			result = convert(result, CommentType.JAVASCRIPT, emptyLineRemove);
 			break;
 		case XML:
-			result = transform(cont, BLOCK_HTML, ELEMENT_IGNORE_START, ELEMENT_IGNORE_END);
+			convertResult = transform(cont, BLOCK_HTML, ELEMENT_IGNORE_START, ELEMENT_IGNORE_END);
 			break;
 		case PROPERTY:
-			result = transform(cont, LINE_IGNORE_PROPERTY, LINE_PROPERTY);
+			convertResult = transform(cont, LINE_IGNORE_PROPERTY, LINE_PROPERTY);
 			break;
 		default:
 			result = convert(cont, CommentType.JAVA, emptyLineRemove);
 			break;
 		}
+		
+		if(convertResult != null) {
+			result = convertResult.getCont();
+		}
+		
 		if (emptyLineRemove) {
 			return StringRegularUtils.removeBlank(result); // blank line remove
 		}

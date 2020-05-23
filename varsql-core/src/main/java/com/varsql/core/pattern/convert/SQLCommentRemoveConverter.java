@@ -2,7 +2,6 @@ package com.varsql.core.pattern.convert;
 
 import static com.varsql.core.pattern.StringRegularUtils.regExpSpecialCharactersCheck;
 
-import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
@@ -20,6 +19,32 @@ import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
 *-----------------------------------------------------------------------------
  */
 public class SQLCommentRemoveConverter extends AbstractConverter {
+	public static enum DBType {
+		MYSQL("mysql" )
+		,DB2("db2")
+		,ORACLE("oracle")
+		,MSSQL("mssql")
+		,MARIADB("mariadb")
+		,DERBY("derby")
+		,HIVE("hive")
+		,HSQLDB("hsqldb")
+		,POSTGRESQL("postgresql")
+		,INGRES("ingres")
+		,H2("h2")
+		,TIBERO("tibero")
+		,SYBASE("tibero")
+		,OTHER("other");
+		
+		private String dbVenderName;
+
+		private DBType(String db){
+			this.dbVenderName =db; 
+		}
+
+		public String getDbVenderName() {
+			return dbVenderName;
+		}
+	}
 	final static TokenInfo SINGLEQUOTE = new TokenInfo.Builder("'", new String[] { "'" }, (val) -> "'" + val + "'")
 			.setEndDelimiterFunction((val, idx) -> {
 				return regExpSpecialCharactersCheck('\'', val, idx);
@@ -61,27 +86,32 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 	}
 
 	public String convert(String cont, DBType type, boolean emptyLineRemove) {
-		String result = "";
+		ConvertResult convertResult=null;
+		
+		
 		switch (type) {
 		case ORACLE:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, HINT_ORACLE2, LINE, HINT_ORACLE, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, HINT_ORACLE2, LINE, HINT_ORACLE, BLOCK);
 			break;
 
 		case MYSQL:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
 			break;
 
 		case MARIADB:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
 			break;
 
 		case SYBASE:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, LINE_SYBASE, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, LINE_SYBASE, BLOCK);
 			break;
 		default:
-			result = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
 			break;
 		}
+		
+		String result=convertResult.getCont();
+		
 		if (emptyLineRemove) {
 			return StringRegularUtils.removeBlank(result); // blank line remove
 		}
