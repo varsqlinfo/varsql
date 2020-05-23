@@ -1,5 +1,7 @@
 package com.varsql.web.model.entity.sql;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,10 +43,10 @@ public class SqlHistoryEntity{
 	private String viewid;
 
 	@Column(name ="START_TIME")
-	private String startTime;
+	private Timestamp startTime;
 
 	@Column(name ="END_TIME")
-	private String endTime;
+	private Timestamp endTime;
 
 	@Column(name ="DELAY_TIME")
 	private int delayTime;
@@ -64,7 +66,7 @@ public class SqlHistoryEntity{
 
 
 	@Builder
-	public SqlHistoryEntity(String vconnid, String viewid, String historyid, String startTime, String endTime, int delayTime, String logSql, String usrIp, String errorLog) {
+	public SqlHistoryEntity(String vconnid, String viewid, String historyid, Timestamp startTime, Timestamp endTime, int delayTime, String logSql, String usrIp, String errorLog) {
 		this.vconnid = vconnid;
 		this.viewid = viewid;
 		this.historyid = historyid;

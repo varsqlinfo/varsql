@@ -11,8 +11,13 @@ import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
 public interface SqlFileEntityRepository extends DefaultJpaRepository, JpaRepository<SqlFileEntity, String>, JpaSpecificationExecutor<SqlFileEntity>  {
-	
+
 	@Query("delete from SqlFileEntity c where c.viewid = :viewid and c.sqlId in :sqlIds")
 	void deleteSqlFiles(@Param("viewid") String viewid ,@Param("sqlIds") String [] sqlIds);
-		
+
+	void findSqlFile();
+
+	@Query("delete from SqlFileEntity c where c.vconnid = :vconnid and c.sqlId = :sqlId")
+	void deleteSqlFileInfo(@Param("vconnid") String vconnid,@Param("sqlId") String sqlId);
+
 }

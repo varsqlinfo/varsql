@@ -46,11 +46,11 @@ public class SqlFileEntity extends AabstractAuditorModel{
 	@Column(name ="VIEWID")
 	private String viewid;
 
-	@Column(name ="GUERY_TITLE")
-	private String gueryTitle;
+	@Column(name ="SQL_TITLE")
+	private String sqlTitle;
 
-	@Column(name ="QUERY_CONT")
-	private String queryCont;
+	@Column(name ="SQL_CONT")
+	private String sqlCont;
 
 	@Column(name ="SQL_PARAM")
 	private String sqlParam;
@@ -60,12 +60,12 @@ public class SqlFileEntity extends AabstractAuditorModel{
 	private DBConnectionEntity connInfo;
 
 	@Builder
-	public SqlFileEntity(String sqlId, String vconnid, String viewid, String gueryTitle, String queryCont, String sqlParam) {
+	public SqlFileEntity(String sqlId, String vconnid, String viewid, String sqlTitle, String sqlCont, String sqlParam) {
 		this.sqlId = sqlId;
 		this.vconnid = vconnid;
 		this.viewid = viewid;
-		this.gueryTitle = gueryTitle;
-		this.queryCont = queryCont;
+		this.sqlTitle = sqlTitle;
+		this.sqlCont = sqlCont;
 		this.sqlParam = sqlParam;
 	}
 	public final static String SQL_ID="sqlId";
@@ -74,9 +74,9 @@ public class SqlFileEntity extends AabstractAuditorModel{
 
 	public final static String VIEWID="viewid";
 
-	public final static String GUERY_TITLE="gueryTitle";
+	public final static String SQL_TITLE="sqlTitle";
 
-	public final static String QUERY_CONT="queryCont";
+	public final static String SQL_CONT="sqlCont";
 
 	public final static String SQL_PARAM="sqlParam";
 }

@@ -20,6 +20,14 @@ import com.varsql.web.model.entity.sql.SqlFileEntity;
 *-----------------------------------------------------------------------------
  */
 public class SqlFileSpec extends DefaultSpec{
+	public static Specification<SqlFileEntity> searchVconnSqlFile(String vconnid , String keyword) {
+		return Specification.where(viewid()).and(vconnid(vconnid)).and(likeTitleOrCont(keyword));
+	}
+	
+	public static Specification<SqlFileEntity> detailSqlFile(String vconnid, String sqlId) {
+		return Specification.where(viewid()).and(vconnid(vconnid)).and(sqlId(sqlId));
+	}
+	
     public static Specification<SqlFileEntity> searchSqlFile(String keyword) {
         return Specification.where(viewid()).and(likeTitleOrCont(keyword));
     }
@@ -32,8 +40,8 @@ public class SqlFileSpec extends DefaultSpec{
     private static Specification<SqlFileEntity> likeTitleOrCont(String keyword) {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.or(
-	    		criteriaBuilder.like(root.get(SqlFileEntity.GUERY_TITLE),contains(keyword))
-	    		,criteriaBuilder.like(root.get(SqlFileEntity.QUERY_CONT),contains(keyword))
+	    		criteriaBuilder.like(root.get(SqlFileEntity.SQL_TITLE),contains(keyword))
+	    		,criteriaBuilder.like(root.get(SqlFileEntity.SQL_CONT),contains(keyword))
 	    	);
         };
     }
@@ -43,6 +51,12 @@ public class SqlFileSpec extends DefaultSpec{
     	return (root, query, cb) -> {
     		return cb.equal(root.get(SqlFileEntity.VIEWID), SecurityUtil.userViewId());
 		};
+    }
+    
+    private static Specification<SqlFileEntity> vconnid(String vconnid) {
+    	return (root, query, cb) -> {
+    		return cb.equal(root.get(SqlFileEntity.VCONNID), vconnid);
+    	};
     }
     
     // sql id 
