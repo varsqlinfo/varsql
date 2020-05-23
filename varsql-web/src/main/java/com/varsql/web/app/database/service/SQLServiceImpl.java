@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.core.common.constants.VarsqlConstants;
@@ -38,15 +37,19 @@ import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.util.SQLUtil;
-import com.varsql.web.app.database.beans.SqlGridDownloadInfo;
-import com.varsql.web.app.database.beans.SqlLogInfo;
-import com.varsql.web.app.database.beans.SqlParamInfo;
-import com.varsql.web.app.database.beans.SqlUserHistoryInfo;
-import com.varsql.web.app.database.dao.SQLDAO;
-import com.varsql.web.common.beans.DataCommonVO;
+import com.varsql.core.sql.mapping.ParameterMapping;
+import com.varsql.core.sql.util.SqlParamUtils;
+import com.varsql.core.sql.util.SqlUtils;
 import com.varsql.web.constants.SqlDataConstants;
+import com.varsql.web.dto.sql.SqlExecuteDTO;
+import com.varsql.web.dto.sql.SqlFileRequestDTO;
+import com.varsql.web.dto.sql.SqlGridDownloadInfo;
+import com.varsql.web.dto.sql.SqlLogInfo;
 import com.varsql.web.exception.VarsqlResultConvertException;
+import com.varsql.web.model.entity.sql.SqlHistoryEntity;
+import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
+import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
+import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 import com.varsql.web.util.SqlResultUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
@@ -67,9 +70,12 @@ import com.vartech.common.utils.VartechUtils;
 @Service
 public class SQLServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
-
+	
 	@Autowired
-	private SQLDAO sqlDAO ;
+	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
+	
+	@Autowired
+	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
 
 	/**
 	 *
@@ -82,7 +88,7 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult sqlFormat(SqlParamInfo sqlParamInfo) throws Exception {
+	public ResponseResult sqlFormat(SqlExecuteDTO sqlParamInfo) throws Exception {
 		ResponseResult result =new ResponseResult();
 
 		String dbParserPrefix = DBType.getDbParser(sqlParamInfo.getDbType());
@@ -104,25 +110,25 @@ public class SQLServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 9.
 	 * @변경이력  :
-	 * @param sqlParamInfo
+	 * @param sqlExecuteInfo
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult sqlData(SqlParamInfo sqlParamInfo, HttpServletRequest req) throws Exception {
+	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 
-		Map sqlParamMap = VartechUtils.stringToObject(sqlParamInfo.getSqlParam(), HashMap.class);
+		Map sqlParamMap = VartechUtils.stringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
 
-		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlParamInfo.getConuid());
+		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlExecuteInfo.getConuid());
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlParamInfo.getSql(),sqlParamMap, DBType.getDbParser(sqlParamInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(),sqlParamMap, DBType.getDbParser(sqlExecuteInfo.getDbType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
-		int limit = sqlParamInfo.getLimit();
+		int limit = sqlExecuteInfo.getLimit();
 
 		if(!SecurityUtil.isAdmin()) {
-			sqlParamInfo.setLimit(limit > dbinfo.getMaxSelectCount() ? dbinfo.getMaxSelectCount() : limit);
+			sqlExecuteInfo.setLimit(limit > dbinfo.getMaxSelectCount() ? dbinfo.getMaxSelectCount() : limit);
 		}
 
 		ArrayList<SqlSourceResultVO> reLst = new ArrayList<SqlSourceResultVO>();
@@ -136,15 +142,14 @@ public class SQLServiceImpl{
 		String[] mmddHH = DateUtils.dateformat("MM-dd-HH", stddt).split("-");
 
 		SqlLogInfo sqlLogInfo= new SqlLogInfo();
-		sqlLogInfo.setVconnid(sqlParamInfo.getVconnid());
-		sqlLogInfo.setViewid(sqlParamInfo.getViewid());
+		sqlLogInfo.setVconnid(sqlExecuteInfo.getVconnid());
+		sqlLogInfo.setViewid(sqlExecuteInfo.getViewid());
 		sqlLogInfo.setStartTime(stddt);
 
 		sqlLogInfo.setSMm(Integer.valueOf(mmddHH[0]));
 		sqlLogInfo.setSDd(Integer.valueOf(mmddHH[1]));
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 
-		sqlLogInfo.setLogSql(sqlParamInfo.getSql());
 		sqlLogInfo.setUsrIp(VarsqlUtils.getClientIP(req));
 
 		SqlSource tmpSqlSource =null;
@@ -152,7 +157,7 @@ public class SQLServiceImpl{
 
 		String errorMsg = "";
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
+			conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getVconnid());
 			conn.setAutoCommit(false);
 			for (sqldx =0;sqldx <sqlSize; sqldx++) {
 				tmpSqlSource = sqlList.get(sqldx);
@@ -162,16 +167,15 @@ public class SQLServiceImpl{
 				tmpSqlSource.setResult(ssrv);
 				ssrv.setStarttime(System.currentTimeMillis());
 
-				getRequestSqlData(sqlParamInfo,conn,tmpSqlSource, dbinfo);
+				getRequestSqlData(sqlExecuteInfo, conn, tmpSqlSource, dbinfo);
 
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
 				ssrv.setResultMessage((ssrv.getDelay())+" SECOND : "+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
 
 				sqlLogInfo.setStartTime(ssrv.getStarttime());
-				sqlLogInfo.setLogSql(tmpSqlSource.getQuery());
 				sqlLogInfo.setCommandType(tmpSqlSource.getCommandType());
-				sqlLogInfo.setEndTime(System.currentTimeMillis());
+				sqlLogInfo.setEndTime(ssrv.getEndtime());
 
 				sqlLogInsert(sqlLogInfo);
 
@@ -224,25 +228,27 @@ public class SQLServiceImpl{
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);
-				SQLUtil.close(conn);
+				SqlUtils.close(conn);
 			}
 		}
 
 		long enddt = System.currentTimeMillis();
-
-		SqlUserHistoryInfo  sqlUserHistoryInfo= new SqlUserHistoryInfo();
-
-		sqlUserHistoryInfo.setVconnid(sqlLogInfo.getVconnid());
-		sqlUserHistoryInfo.setViewid(sqlLogInfo.getViewid());
-		sqlUserHistoryInfo.setHistoryId(VartechUtils.generateUUID());
-		sqlUserHistoryInfo.setStartTime(VarsqlUtils.getCurrentTimestamp(stddt));
-		sqlUserHistoryInfo.setEndTime(VarsqlUtils.getCurrentTimestamp(enddt));
-		sqlUserHistoryInfo.setDelayTime((int) ((enddt- stddt)/1000));
-		sqlUserHistoryInfo.setLogSql(sqlParamInfo.getSql());
-		sqlUserHistoryInfo.setUsrIp(sqlLogInfo.getUsrIp());
-		sqlUserHistoryInfo.setErrorLog(errorMsg);
-
-		sqlDAO.insertUserHistory(sqlUserHistoryInfo);
+		
+		try {
+			sqlHistoryEntityRepository.save(SqlHistoryEntity.builder()
+				.vconnid(sqlLogInfo.getVconnid())
+				.viewid(sqlLogInfo.getViewid())
+				.startTime(VarsqlUtils.getTimestamp(stddt))
+				.endTime(VarsqlUtils.getTimestamp(enddt))
+				.delayTime((int) ((enddt- stddt)/1000))
+				.logSql(sqlExecuteInfo.getSql())
+				.usrIp(sqlLogInfo.getUsrIp())
+				.errorLog(errorMsg)
+				.build()
+			);
+		}catch(Throwable e) {
+			logger.error(" sqlData sqlHistoryEntity : ", e);
+		}
 
 		return  result;
 	}
@@ -275,11 +281,25 @@ public class SQLServiceImpl{
 		}else{
 			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 
-			List param= tmpSqlSource.getParam();
-
-			if(param != null){
-				for(int i =0 ;i < param.size() ;i++){
-					pstmt.setObject(i+1, param.get(i));
+			List<ParameterMapping> paramList= tmpSqlSource.getParamList();
+			
+			if(paramList != null){
+				Map orginParamMap = tmpSqlSource.getOrginSqlParam();
+				
+				for(int i =0 ;i < paramList.size() ;i++){
+					ParameterMapping param = paramList.get(i);
+					Object objVal;
+					if(param.isFunction()) {
+						objVal = SqlParamUtils.functionValue(param, orginParamMap); 
+					}else {
+						objVal = orginParamMap.get(param.getProperty());
+					}
+					
+					if(param.getJdbcType()==null) {
+						pstmt.setObject(i, objVal);
+					}else {
+						param.getJdbcType().setParameter(pstmt, i, objVal);
+					}
 				}
 			}
 
@@ -308,7 +328,7 @@ public class SQLServiceImpl{
 
 	/**
 	 *
-	 * @param sqlParamInfo
+	 * @param sqlExecuteInfo
 	 * @Method Name  : getResultData
 	 * @Method 설명 : 데이타 얻기
 	 * @작성일   : 2015. 4. 9.
@@ -322,12 +342,12 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected void getRequestSqlData(SqlParamInfo sqlParamInfo, Connection conn, SqlSource tmpSqlSource, DatabaseInfo dbInfo) throws SQLException {
+	protected void getRequestSqlData(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, DatabaseInfo dbInfo) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
 
-		int maxRow = sqlParamInfo.getLimit();
+		int maxRow = sqlExecuteInfo.getLimit();
 
 	    try{
 			stmt  = getStatement(conn, tmpSqlSource, maxRow);
@@ -335,7 +355,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet();
 
 			if(rs != null){
-				SqlResultUtils.resultSetHandler(rs, ssrv, sqlParamInfo, maxRow);
+				SqlResultUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -353,7 +373,7 @@ public class SQLServiceImpl{
 	    	logger.error(getClass().getName()+" sqlData", e);
 	    	throw new SQLException(e);
 		} finally {
-	    	SQLUtil.close(stmt, rs);
+	    	SqlUtils.close(stmt, rs);
 	    }
 	}
 
@@ -370,10 +390,21 @@ public class SQLServiceImpl{
 	 */
 	private void sqlLogInsert(SqlLogInfo logInfo) {
 		try{
-		    sqlDAO.insertSqlUserLog(logInfo);
+			sqlStatisticsEntityRepository.save(SqlStatisticsEntity.builder()
+				.vconnid(logInfo.getVconnid())
+				.viewid(logInfo.getViewid())
+				.startTime(VarsqlUtils.getLocalDateTime(logInfo.getStartTime()))
+				.endTime(VarsqlUtils.getLocalDateTime(logInfo.getEndTime()))
+				.delayTime(logInfo.getDelayTime())
+				.sMm(logInfo.getSMm())
+				.sDd(logInfo.getSDd())
+				.sHh(logInfo.getSHh())
+				.resultCount(logInfo.getResultCount())
+				.commandType(logInfo.getCommandType())
+				.build()
+			);
 	    }catch(Exception e){
-	    	logger.error(getClass().getName()+" sqlLogInsert {}", VartechUtils.reflectionToString(logInfo));
-	    	logger.error(getClass().getName()+" sqlLogInsert ", e);
+	    	logger.error(" sqlLogInsert {}", e.getMessage() , e);
 	    }
 	}
 
@@ -381,7 +412,7 @@ public class SQLServiceImpl{
 	 * 데이타 내보내기.
 	 * @param paramMap
 	 */
-	public void dataExport(ParamMap paramMap, SqlParamInfo sqlParamInfo, HttpServletResponse res) throws Exception {
+	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlParamInfo, HttpServletResponse res) throws Exception {
 
 		String exportType = sqlParamInfo.getExportType();
 
@@ -407,7 +438,7 @@ public class SQLServiceImpl{
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+" dataExport ", e);
 		}finally{
-			SQLUtil.close(conn);
+			SqlUtils.close(conn);
 		}
 
 		String exportFileName = paramMap.getString("fileName", tmpName);
@@ -440,128 +471,6 @@ public class SQLServiceImpl{
 			IOUtils.closeQuietly(os);
 		}
 	}
-
-	public void columnInfoExport(DataCommonVO paramMap,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * 쿼리 저장.
-	 * @param sqlParamInfo
-	 */
-	@Transactional(rollbackFor=Exception.class)
-	public ResponseResult saveQuery(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-
-		if("".equals(sqlParamInfo.getSqlId())){
-			sqlDAO.updateSqlFileTabDisable(sqlParamInfo);   // 이전 활성 view mode  N으로 변경.
-			sqlParamInfo.setSqlId(VarsqlUtils.generateUUID());
-		    sqlDAO.saveQueryInfo(sqlParamInfo);
-		}else{
-			String mode = String.valueOf(sqlParamInfo.getCustom().get("mode"));
-
-			if("addTab".equals(mode)){
-				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
-				sqlDAO.insertSqlFileTabInfo(sqlParamInfo); // 이전 활성 view mode  N으로 변경.
-			}else if("delTab".equals(mode)){
-				deleteSqlFileTabInfo(sqlParamInfo);
-			}else if("viewTab".equals(mode)){
-				sqlDAO.updateSqlFileTabDisable(sqlParamInfo);
-				sqlDAO.updateSqlFileTabEnable(sqlParamInfo);
-			}else{
-				sqlDAO.updateQueryInfo(sqlParamInfo);
-
-				if("query_del".equals(mode)){
-					deleteSqlFileTabInfo(sqlParamInfo);
-				}
-			}
-		}
-
-		result.setItemOne(sqlParamInfo);
-
-		return result;
-	}
-
-	private void deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
-		try{
-			int tabLen = -1;
-			try{
-				tabLen = Integer.parseInt(String.valueOf(sqlParamInfo.getCustom().get("len")));
-			}catch(Exception e){
-				tabLen = -1;
-			}
-
-			if(tabLen ==0){
-				sqlDAO.deleteAllSqlFileTabInfo(sqlParamInfo);
-			}else{
-				sqlDAO.deleteSqlFileTabInfo(sqlParamInfo);
-			}
-		}catch(Exception e){
-			throw e;
-		}
-
-	}
-
-	/**
-	 *
-	 * @Method Name  : saveAllQuery
-	 * @Method 설명 : sql 파일 모두저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult saveAllQuery(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		Map<String,Object> customParam = (Map<String,Object>)sqlParamInfo.getCustom();
-
-		String sqlIdStr = String.valueOf(customParam.get("sqlIdArr"));
-
-		String[] sqlIdArr= sqlIdStr.split(";");
-		Map<String , Integer> reval = new HashMap<String , Integer>();
-		for (int i = 0; i < sqlIdArr.length; i++) {
-			String sqlId = sqlIdArr[i];
-
-			sqlParamInfo.setSqlId(sqlId);
-			sqlParamInfo.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
-			sqlParamInfo.setSql(String.valueOf(customParam.get(sqlId)));
-
-			reval.put(sqlId, sqlDAO.updateQueryInfo(sqlParamInfo));
-		}
-
-		result.setItemOne(reval);
-
-		return result;
-	}
-
-	/**
-	 * 사용자 sql 목록 보기.
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult selectSqlFileList(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		result.setItemList(sqlDAO.selectSqlFileList(sqlParamInfo));
-		return result;
-	}
-
-	/**
-	 * sql 저장 정보 삭제 .
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	@Transactional(rollbackFor=Throwable.class)
-	public ResponseResult deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
-
-		ResponseResult result = new ResponseResult();
-		result.setItemOne( sqlDAO.deleteSqlSaveInfo(sqlParamInfo));
-		deleteSqlFileTabInfo(sqlParamInfo);
-		return result;
-	}
-
 	/**
 	 *
 	 * @Method Name  : gridDownload
@@ -611,40 +520,5 @@ public class SQLServiceImpl{
 		}finally {
 			IOUtils.closeQuietly(os);
 		}
-
-
-
-	}
-
-	/**
-	 *
-	 * @Method Name  : selectSqlFileTabList
-	 * @Method 설명 : sql file tab list
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 7.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		result.setItemList(sqlDAO.selectSqlFileTabList(sqlParamInfo));
-		return result;
-	}
-
-	/**
-	 *
-	 * @Method Name  : sqlFileDetailInfo
-	 * @Method 설명 : sql file 상세보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult sqlFileDetailInfo(SqlParamInfo sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		result.setItemOne(sqlDAO.selectSqlFileDetailInfo(sqlParamInfo));
-		return result;
 	}
 }

@@ -1,4 +1,4 @@
-package com.varsql.web.app.database.beans;
+package com.varsql.web.dto.sql;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.constants.SqlDataConstants;
@@ -7,8 +7,8 @@ import com.varsql.web.constants.SqlDataConstants;
  *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: SqlParamInfo.java
-* @DESC		: sql execute parameter vo
+* @NAME		: SqlFileRequestDTO.java
+* @DESC		: sql file info
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -17,13 +17,7 @@ import com.varsql.web.constants.SqlDataConstants;
 
 *-----------------------------------------------------------------------------
  */
-public class SqlParamInfo extends DatabaseParamInfo{
-
-	// sql_id
-	private String sqlId;
-
-	// sql_id
-	private String sqlTitle;
+public class SqlExecuteDTO extends DatabaseParamInfo{
 
 	// sql
 	private String sql;
@@ -38,7 +32,7 @@ public class SqlParamInfo extends DatabaseParamInfo{
 
 	private String columnInfo;
 
-	public SqlParamInfo(){
+	public SqlExecuteDTO(){
 		super();
 	}
 
@@ -85,21 +79,5 @@ public class SqlParamInfo extends DatabaseParamInfo{
 
 	public void setColumnInfo(String columnInfo) {
 		this.columnInfo = columnInfo;
-	}
-
-	public String getSqlId() {
-		return sqlId;
-	}
-
-	public void setSqlId(String sqlId) {
-		this.sqlId = sqlId;
-	}
-
-	public String getSqlTitle() {
-		return sqlTitle;
-	}
-
-	public void setSqlTitle(String sqlTitle) {
-		this.sqlTitle = sqlTitle;
 	}
 }

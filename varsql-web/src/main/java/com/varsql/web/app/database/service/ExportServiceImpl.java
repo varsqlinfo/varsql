@@ -24,7 +24,6 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.web.app.database.dao.ExportDAO;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
@@ -50,9 +49,6 @@ import com.vartech.common.utils.VartechUtils;
 @Service
 public class ExportServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
-
-	@Autowired
-	private ExportDAO exportDAO;
 
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;

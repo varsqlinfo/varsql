@@ -14,8 +14,10 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.app.database.dao.DatabaseDAO;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.model.entity.db.DBConnHistEntity;
+import com.varsql.web.repository.db.DBConnHistEntityRepository;
+import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -29,9 +31,10 @@ import com.vartech.common.app.beans.ResponseResult;
 @Service
 public class DatabaseServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
-
+	
 	@Autowired
-	private DatabaseDAO databaseDAO ;
+	private DBConnHistEntityRepository dbConnHistEntityRepository;
+
 	/**
 	 *
 	 * @Method Name  : schemas
@@ -202,12 +205,13 @@ public class DatabaseServiceImpl{
 	 */
 	public void insertDbConnectionHistory(DatabaseParamInfo databaseParamInfo) {
 		try{
-			Map param = new HashMap();
-
-			param.put(VarsqlParamConstants.VCONNID, databaseParamInfo.getVconnid());
-			param.put(VarsqlParamConstants.VIEWID, databaseParamInfo.getViewid());
-			param.put("reqUrl", "main");
-			databaseDAO.insertDbConnectionHistory(param);
+			dbConnHistEntityRepository.save(DBConnHistEntity.builder()
+				.vconnid(databaseParamInfo.getVconnid())
+				.viewid(databaseParamInfo.getViewid())
+				.connTime(DefaultValueUtils.currentTimestamp())
+				.reqUrl("main")
+				.build()
+			);
 		}catch(Exception e){
 			logger.error("insertDbConnectionHistory : ", e);
 		}

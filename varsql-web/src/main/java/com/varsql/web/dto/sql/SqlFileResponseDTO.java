@@ -1,5 +1,6 @@
 package com.varsql.web.dto.sql;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,10 +17,18 @@ public class SqlFileResponseDTO{
 
 	private String viewid;
 
-	private String gueryTitle;
+	private String sqlTitle;
 
-	private String queryCont;
+	private String sqlCont;
 
 	private String sqlParam;
+	
+	@Builder
+	public SqlFileResponseDTO(String sqlId, String sqlTitle, String sqlCont, String sqlParam) {
+		this.sqlId = sqlId;
+		this.sqlTitle = sqlTitle;
+		this.sqlCont = sqlCont;
+		this.sqlParam = sqlParam;
+	}
 
 }

@@ -40,7 +40,7 @@ public class PreferencesServiceImpl{
 		return selectPreferencesInfo(preferencesInfo, false);
 	}
 	public String selectPreferencesInfo(PreferencesRequestDTO preferencesInfo ,boolean flag) {
-		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).get(); 
+		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).orElse(null);
 		return  item==null ? (flag ? "{}" : null) : (item.getPrefVal() ==null? "{}" :item.getPrefVal()) ;
 	}
 	
@@ -55,15 +55,15 @@ public class PreferencesServiceImpl{
 	 * @return
 	 */
 	public ResponseResult savePreferencesInfo(PreferencesRequestDTO preferencesInfo) {
-		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).get(); 
+		UserDBPreferencesEntity userDBPreferencesEntity = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).orElse(null);
 		
-		if(item==null) {
-			item = preferencesInfo.toEntity();
+		if(userDBPreferencesEntity==null) {
+			userDBPreferencesEntity = preferencesInfo.toEntity();
 		}else {
-			item.setPrefVal(preferencesInfo.getPrefVal());
+			userDBPreferencesEntity.setPrefVal(preferencesInfo.getPrefVal());
 		}
 		
-		userDBPreferencesEntityRepository.save(item);
+		userDBPreferencesEntityRepository.save(userDBPreferencesEntity);
 		
 		return VarsqlUtils.getResponseResultItemOne(1); 
 	}

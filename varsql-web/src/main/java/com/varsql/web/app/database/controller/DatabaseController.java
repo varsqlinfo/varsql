@@ -57,7 +57,7 @@ public class DatabaseController extends AbstractController {
 		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());
 
 		preferencesInfo.setPrefKey("main.database.setting");
-
+		
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
 
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo, true));

@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.web.app.database.beans.SqlLogInfo;
-import com.varsql.web.app.database.beans.SqlParamInfo;
-import com.varsql.web.app.database.beans.SqlUserHistoryInfo;
 import com.varsql.web.common.dao.BaseDAO;
+import com.varsql.web.dto.sql.SqlLogInfo;
+import com.varsql.web.dto.sql.SqlFileRequestDTO;
+import com.varsql.web.dto.sql.SqlUserHistoryInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.sort.TreeDataSort;
 
@@ -47,7 +47,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int saveQueryInfo(SqlParamInfo sqlParamInfo) {
+	public int saveQueryInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().insert("sqlServiceMapper.saveQueryInfo", sqlParamInfo );
 	}
 	
@@ -61,7 +61,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateQueryInfo(SqlParamInfo sqlParamInfo) {
+	public int updateQueryInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().update("sqlServiceMapper.updateQueryInfo", sqlParamInfo );
 	}
 	
@@ -75,7 +75,7 @@ public class SQLDAO extends BaseDAO{
 	 * @변경이력  :
 	 * @param sqlParamInfo
 	 */
-	public int insertSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+	public int insertSqlFileTabInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().update("sqlServiceMapper.insertSqlFileTabInfo", sqlParamInfo);
 		
 	}
@@ -90,7 +90,7 @@ public class SQLDAO extends BaseDAO{
 	 * @return
 	 */
 	@Transactional
-	public int deleteSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+	public int deleteSqlFileTabInfo(SqlFileRequestDTO sqlParamInfo) {
 		SqlSession sqlSession = getSqlSession();
 		
 		sqlSession.update("sqlServiceMapper.updateSqlFileTabPrevSqlIdInfo",sqlParamInfo);
@@ -108,7 +108,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int deleteAllSqlFileTabInfo(SqlParamInfo sqlParamInfo) {
+	public int deleteAllSqlFileTabInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().delete("sqlServiceMapper.deleteAllSqlFileTabInfo", sqlParamInfo);
 	}
 	
@@ -122,7 +122,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateSqlFileTabDisable(SqlParamInfo sqlParamInfo) {
+	public int updateSqlFileTabDisable(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().update("sqlServiceMapper.updateSqlFileTabDisable", sqlParamInfo);
 	}
 	
@@ -136,15 +136,15 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public int updateSqlFileTabEnable(SqlParamInfo sqlParamInfo) {
+	public int updateSqlFileTabEnable(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().update("sqlServiceMapper.updateSqlFileTabEnable", sqlParamInfo);
 	}
 
-	public List selectSqlFileList(SqlParamInfo sqlParamInfo) {
+	public List selectSqlFileList(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().selectList("sqlServiceMapper.selectSqlFileList", sqlParamInfo );
 	}
 	
-	public int deleteSqlSaveInfo(SqlParamInfo sqlParamInfo) {
+	public int deleteSqlSaveInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().delete("sqlServiceMapper.deleteSqlSaveInfo", sqlParamInfo );
 	}
 	
@@ -170,7 +170,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public List selectSqlFileTabList(SqlParamInfo sqlParamInfo) {
+	public List selectSqlFileTabList(SqlFileRequestDTO sqlParamInfo) {
 		
 		class TabListResultHandler implements ResultHandler<Map> {
 			
@@ -201,7 +201,7 @@ public class SQLDAO extends BaseDAO{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public Map selectSqlFileDetailInfo(SqlParamInfo sqlParamInfo) {
+	public Map selectSqlFileDetailInfo(SqlFileRequestDTO sqlParamInfo) {
 		return getSqlSession().selectOne("sqlServiceMapper.selectSqlFileDetailInfo", sqlParamInfo);
 	}
 }

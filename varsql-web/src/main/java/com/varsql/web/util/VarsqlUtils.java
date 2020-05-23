@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +36,7 @@ import com.varsql.web.model.converter.DomainMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.PagingUtil;
 
@@ -177,12 +182,28 @@ public final class VarsqlUtils {
 		out.close();
 	}
 
-	public static String getCurrentTimestamp(){
-		return getCurrentTimestamp(System.currentTimeMillis());
+	public static String getCurrentDateString(){
+		return DateUtils.getCurrentDate();
 	}
 
-	public static String getCurrentTimestamp(long time){
+	public static String getMillitimeToDateString(long time){
 		return new Timestamp(time).toString();
+	}
+	
+	public static Timestamp getTimestamp(long time){
+		return new Timestamp(time);
+	}
+	
+	public static LocalDateTime getLocalDateTime(long time){
+		return Instant.ofEpochMilli(time)
+				  .atZone(ZoneId.systemDefault())
+				  .toLocalDateTime();
+	}
+	
+	public static LocalDate getLocalDate(long time){
+		return Instant.ofEpochMilli(time)
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
 	}
 
 	public static String getClientIP(HttpServletRequest request) {

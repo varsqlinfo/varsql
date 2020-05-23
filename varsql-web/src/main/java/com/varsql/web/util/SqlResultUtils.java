@@ -10,12 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
-import com.varsql.web.app.database.beans.SqlParamInfo;
 import com.varsql.web.constants.SqlDataConstants;
+import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.exception.VarsqlResultConvertException;
 
 /**
@@ -40,25 +41,26 @@ public final class SqlResultUtils {
 	 * 리스트 형식 List<Map> rows = new ArrayList<Map>();
 	 * @param rs
 	 * @param ssrv
-	 * @param sqlParamInfo
+	 * @param sqlExecuteInfo
 	 * @param maxRow
 	 * @param vconnid
 	 * @return
 	 * @throws SQLException
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlParamInfo sqlParamInfo, int maxRow) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, int maxRow) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
 
 		ResultSetMetaData rsmd = rs.getMetaData();
 
-		ResultSetHandler resultsetHandler = MetaControlFactory.getConnidToDbInstanceFactory(sqlParamInfo.getConuid()).getResultsetHandler();
+		ResultSetHandler resultsetHandler = MetaControlFactory.getConnidToDbInstanceFactory(sqlExecuteInfo.getConuid()).getResultsetHandler();
 
 		int count = rsmd.getColumnCount();
-		String [] columns_key = new String[count];
-		String [] columns_type = new String[count];
-		String [] columns_type_name = new String[count];
+		String [] columnNameArr = new String[count];
+		String [] columnGridKeyArr = GridUtils.getAliasKeyArr(count);
+		String [] columnTypeArr = new String[count];
+		String [] columnTypeNameArr = new String[count];
 
 		int columnType=-1;
 		String columnTypeName = "";
@@ -83,7 +85,8 @@ public final class SqlResultUtils {
 			}else{
 				columnKeyCheck.put(columnName, 0);
 			}
-			columns_key[i] = columnName;
+			columnNameArr[i] = columnName;
+			columnNameArr[i] = columnName;
 
 			columnInfo = new GridColumnInfo();
 			columnInfo.setLabel(columnName);
@@ -98,35 +101,35 @@ public final class SqlResultUtils {
 
 			if(columnType == Types.INTEGER||columnType ==Types.NUMERIC||columnType ==Types.BIGINT||columnType ==Types.DECIMAL
 					||columnType ==Types.DOUBLE||columnType ==Types.FLOAT||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
-				columns_type[i] = "number";
+				columnTypeArr[i] = "number";
 				columnInfo.setAlign("right");
 				isNumber = true;
 			}else if(columnType == Types.DATE ){
-				columns_type[i] = "date";
+				columnTypeArr[i] = "date";
 			}else if(columnType == Types.TIME ){
-				columns_type[i] = "time";
+				columnTypeArr[i] = "time";
 			}else if(columnType == Types.TIMESTAMP ){
-				columns_type[i] = "timestamp";
+				columnTypeArr[i] = "timestamp";
 			}else if(columnType == Types.BLOB ){
-				columns_type[i] = "blob";
+				columnTypeArr[i] = "blob";
 			}else if(columnType == Types.CLOB ){
-				columns_type[i] = "clob";
+				columnTypeArr[i] = "clob";
 			}else if(columnType == Types.REF ){
-				columns_type[i] = "ref";
+				columnTypeArr[i] = "ref";
 			}else if(columnType == Types.NCLOB ){
-				columns_type[i] = "nclob";
+				columnTypeArr[i] = "nclob";
 			}else if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
-				columns_type[i] = "binary";
+				columnTypeArr[i] = "binary";
 			}else if(columnType == Types.SQLXML ){
-				columns_type[i] = "sqlxml";
+				columnTypeArr[i] = "sqlxml";
 			}else{
-				columns_type[i] = "string";
+				columnTypeArr[i] = "string";
 			}
-			columns_type_name[i] = columnTypeName;
+			columnTypeNameArr[i] = columnTypeName;
 
 			columnNumberTypeFlag.add(isNumber);
 
-			columnInfo.setType(columns_type[i]);
+			columnInfo.setType(columnTypeArr[i]);
 			columnInfoList.add(columnInfo);
 		}
 
@@ -143,10 +146,9 @@ public final class SqlResultUtils {
 		int totalCnt = 0 ;
 		try {
 			while (rs.next()) {
-
 				row = new LinkedHashMap(count);
-				for (int colIdx = 1; colIdx <= count; colIdx++) {
-					row = resultsetHandler.getDataValue(row, columns_key[colIdx-1], rs, colIdx, columns_type[colIdx-1], columns_type_name[colIdx-1]);
+				for (int colIdx = 0; colIdx < count; colIdx++) {
+					row = resultsetHandler.getDataValue(row, columnGridKeyArr[colIdx], columnNameArr[colIdx], rs, colIdx+1, columnTypeArr[colIdx], columnTypeNameArr[colIdx]);
 				}
 				rows.add(row);
 				++first;

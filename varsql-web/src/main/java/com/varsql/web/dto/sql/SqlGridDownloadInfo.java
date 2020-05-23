@@ -1,4 +1,4 @@
-package com.varsql.web.app.database.beans;
+package com.varsql.web.dto.sql;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
