@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
+import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
@@ -379,7 +381,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	 */
 	@Override
 	public List<DDLInfo> getSequences(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-StringBuilder ddlStrBuf;
+		StringBuilder ddlStrBuf;
 		
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
@@ -396,10 +398,14 @@ StringBuilder ddlStrBuf;
 				ddlStrBuf.append("/* DROP SEQUENCE " + objNm + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 			
-			List<String> srcProcList = sqlSesseion.selectList("sequenceScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append(srcProcList.get(j));
-			}
+			Map param = sqlSesseion.selectOne("sequenceScript", dataParamInfo);
+			
+			param.put("schema", dataParamInfo.getSchema());
+			
+			param.put("ddlOption", ddlOption);
+			
+			ddlStrBuf.append(DDLTemplateFactory.getInstance().ddlRender(DBType.OTHER.getDbVenderName(), "sequenceScript", param));
+			
 			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 			
 			ddlInfo.setCreateScript(ddlStrBuf.toString());

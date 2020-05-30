@@ -29,7 +29,7 @@ public class DDLTemplateFactory {
 
 	private final String TEMPLATE_PACKAGE= "template/ddl/";
 	private final String XML_PREFIX= "ddl_";
-	private final String DEFAULT_FILE= "default";
+	private final String DEFAULT_FILE= "other";
 
 	private Map<String ,HashMap<String,Template>> ddlTemplateInfo = new HashMap<String,HashMap<String,Template>>();
 

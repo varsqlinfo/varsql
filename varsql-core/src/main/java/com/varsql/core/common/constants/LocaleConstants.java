@@ -1,8 +1,11 @@
 package com.varsql.core.common.constants;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.varsql.core.common.util.StringUtil;
+
 
 /**
  * 
@@ -18,16 +21,6 @@ public enum LocaleConstants {
 	private String locale;
 	private String i18n; 
 	
-	private static List<String> ALL_LANG;
-	
-	static {
-		ALL_LANG = new ArrayList<String>();
-
-		for(LocaleConstants item : LocaleConstants.values()){
-			ALL_LANG.add(item.name().toLowerCase());
-		}
-	}
-	
 	LocaleConstants(String locale){
 		this.locale = locale; 
 		this.i18n = locale +".lang"; 
@@ -41,31 +34,39 @@ public enum LocaleConstants {
 		return i18n;
 	}
 	
-	
 	public static Locale parseLocaleString(String locale) {
-		if(locale != null) {
-			
-			LocaleConstants reval= null; 
-			String upperCaseStr = locale.toUpperCase(); 
-			if(ALL_LANG.contains(upperCaseStr)) {
-				reval = LocaleConstants.valueOf(upperCaseStr);
-			}else {
-				if(locale.length() > 2) {
-					locale = locale.substring(0,2);
-					
-					upperCaseStr = locale.toUpperCase();
-					
-					if(ALL_LANG.contains(upperCaseStr)) {
-						reval = LocaleConstants.valueOf(upperCaseStr);
-					}
-				}
-			}
+		if(!StringUtil.isBlank(locale)) {
+			LocaleConstants reval = getLocaleConstantsVal(locale.toUpperCase());
 			
 			if(reval !=null) {
 				return new Locale(reval.getLocale());
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * locale constants 정보 얻기
+	 * @param locale
+	 * @return
+	 */
+	private static LocaleConstants getLocaleConstantsVal(String locale) {
+		String secondLocale = null; 
+		if(locale.length() > 2) {
+			secondLocale = locale.substring(0,2);
+		}
+		
+		LocaleConstants secondLocaleConstants= null; 
+		for(LocaleConstants localeConstant : LocaleConstants.values()) {
+			if(localeConstant.name().equals(locale)) {
+				return localeConstant; 
+			}
+			
+			if(localeConstant.name().equals(secondLocale)) {
+				secondLocaleConstants = localeConstant; 
+			}
+		}
+		return secondLocaleConstants; 
 	}
 
 }

@@ -3,6 +3,8 @@ package com.varsql.core.common.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class StringUtil {
 	public static String paramReplace(String delim, String str, String key, String replace){
 		if(str.indexOf(delim) < 0) return str; 
@@ -108,5 +110,9 @@ public class StringUtil {
 		}
 		
 		return str; 
+	}
+	
+	public static boolean isBlank(String str) {
+		return StringUtils.isBlank(str);
 	}
 }

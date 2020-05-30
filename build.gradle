@@ -214,8 +214,8 @@ subprojects {
 	def querydslSrcDir = 'src/main/generated'
 
 	querydsl {
-	    jpa = true
 	    library = "com.querydsl:querydsl-apt"
+	    jpa = true
 	    querydslSourcesDir = querydslSrcDir
 	}
 	
@@ -247,7 +247,7 @@ subprojects {
 
    		//exclude '**/*' // 빌드시 제외 하고 싶을때 사용.
 	}
-
+	
 	// JAVA file compile charset
 	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 }

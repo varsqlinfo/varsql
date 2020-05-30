@@ -28,21 +28,21 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.resultset.handler.ResultSetHandlerImplOTHER;
 
 /**
- * 
+ *
  * @FileName  : SQLManager.java
  * @프로그램 설명 : mybatis manager
- * @Date      : 2018. 4. 12. 
+ * @Date      : 2018. 4. 12.
  * @작성자      : ytkim
  * @변경이력 :
  */
 public final class SQLManager {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
-	
+
 	private Map<String, SqlSessionFactory> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionFactory>();
 	private String resource = "template/mybatis/mybatis.template";
-	
-	private String defaultConfigTemplate; 
+
+	private String defaultConfigTemplate;
 	private PropertyDescriptor[] propertyDescs = PropertyUtils.getPropertyDescriptors(ConnectionInfo.class);
 	private static class MybatisConfigHolder {
 		private static final SQLManager instance = new SQLManager();// null
@@ -55,21 +55,21 @@ public final class SQLManager {
 	private SQLManager() {
 		try{
 			defaultConfigTemplate = IOUtils.toString( Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
-			
+
 			logger.info("SQLManager defaultConfigTemplate {} ", defaultConfigTemplate);
 		}catch(Exception e){
 			logger.error("SQLManager defaultConfigTemplate ", e);
 			throw new VarsqlRuntimeException("MybatisSessionFactory IOException", e);
 		}
 	}
-	
+
 	public SqlSession getSqlSession(String sessionType) throws ConnectionFactoryException {
 		if (!sqlSessionMap.containsKey(sessionType)) {
 			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
 		}
 		return sqlSessionMap.get(sessionType).openSession();
 	}
-	
+
 	public Connection getConnection(String sessionType) throws ConnectionException {
 		try {
 			return getSqlSession(sessionType).getConnection();
@@ -77,45 +77,45 @@ public final class SQLManager {
 			throw new ConnectionException("connection error Cause: "+ e.getMessage());
 		}
 	}
-	
+
 	public void setSQLMapper(ConnectionInfo connInfo , Object obj){
 		String xmlTemplate ="";
 		StringBuilder sb = new StringBuilder();
 		try{
-			
+
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
 				logger.error("SQLManager setSQLMapper access denied object {}", obj );
-				throw new VarsqlRuntimeException("SQLManager setSQLMapper access denied object "+obj); 
+				throw new VarsqlRuntimeException("SQLManager setSQLMapper access denied object "+obj);
 			}
-			
+
 			String sessionType = connInfo.getConnid();
-			
+
 			PropertyDescriptor propertyDesc = null;
 			xmlTemplate =defaultConfigTemplate;
 			String propName;
-			Object propValObj ; 
-			String propVal ; 
+			Object propValObj ;
+			String propVal ;
 			for (int i = 0; i < propertyDescs.length; i++) {
 				propertyDesc = propertyDescs[i];
 				propName =propertyDesc.getName();
 				propValObj = PropertyUtils.getProperty(connInfo, propName);
 				propVal = (propValObj==null ?"" : propValObj.toString() );
-				
+
 				if("password".equals(propName)) {
-					propVal = EncryptionFactory.getInstance().decrypt(propVal);
+					;
 				}else {
 					propVal = propVal.replaceAll("&amp;", "&").replaceAll("&", "&amp;");
 				}
-				
+
 				xmlTemplate = xmlTemplate.replaceAll("#\\{"+propName+"\\}",  propVal);
 			}
-			String mapperPath = String.format("db/ext/%sMapper.xml",connInfo.getType(), connInfo.getType()); 
+			String mapperPath = String.format("db/ext/%sMapper.xml",connInfo.getType(), connInfo.getType());
 			if(Thread.currentThread().getContextClassLoader().getResourceAsStream(mapperPath) != null){
 				xmlTemplate = xmlTemplate.replaceAll("#\\{mapperArea\\}", "<mapper resource=\""+mapperPath+"\"/>" );
 			}else{
 				xmlTemplate = xmlTemplate.replaceAll("#\\{mapperArea\\}", "");
 			}
-			
+
 			Reader reader = new StringReader(xmlTemplate);
 			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, sessionType);
 			sqlSessionMap.put(connInfo.getConnid() , sqlSessionFactory);

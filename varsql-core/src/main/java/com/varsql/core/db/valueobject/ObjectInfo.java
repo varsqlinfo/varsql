@@ -14,6 +14,8 @@ public class ObjectInfo extends BaseObjectInfo{
 	// type
 	private String type;
 	
+	private String returnType;
+	
 	// status
 	private String status;
 	
@@ -56,6 +58,14 @@ public class ObjectInfo extends BaseObjectInfo{
 
 	public void setCreated(String created) {
 		this.created = created;
+	}
+
+	public String getReturnType() {
+		return returnType;
+	}
+
+	public void setReturnType(String returnType) {
+		this.returnType = returnType;
 	}
 }
 

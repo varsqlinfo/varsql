@@ -4,21 +4,24 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Transient;
 import javax.sql.DataSource;
 
 import com.varsql.core.common.util.CommUtil;
 
 
 public class ConnectionInfo implements Serializable {
-	
+
 	private static final long serialVersionUID = -3088926375387532055L;
-	
+
 	private String connid;
 	private String aliasName;
 	private String type;
 	private String driver;
 	private String url;
 	private String username;
+
+	@Transient
 	private String password;
 	private int connectionTimeOut;
 	private int exportCount;
@@ -32,7 +35,7 @@ public class ConnectionInfo implements Serializable {
 	private Map connection_opt;
 	private Map pool_opt;
 	private DataSource datasource;
-	
+
 	public String getConnid() {
 		return connid;
 	}
@@ -127,24 +130,24 @@ public class ConnectionInfo implements Serializable {
 	}
 
 	public void setConnection_opt(String connection_opt) {
-		if(null == connection_opt || "".equals(connection_opt)) return ; 
-		
+		if(null == connection_opt || "".equals(connection_opt)) return ;
+
 		String [] tmpOpt = CommUtil.split(connection_opt, ";");
-		
+
 		if(this.connection_opt ==null) this.connection_opt=new HashMap();
-		
+
 		String [] optVal = null;
 		String tmpKey = "";
 		for (int i = 0; i < tmpOpt.length; i++) {
-			
+
 			tmpKey=tmpOpt[i];
-			
+
 			if("".equals(tmpKey.trim())){
-				continue; 
+				continue;
 			}
-			
+
 			optVal = CommUtil.split(tmpKey, "=");
-			
+
 			this.connection_opt.put(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ) );
 		}
 	}
@@ -155,26 +158,26 @@ public class ConnectionInfo implements Serializable {
 
 	public void setPool_opt(String pool_opt) {
 		if(null == pool_opt || "".equals(pool_opt)) return ;
-		
+
 		String [] tmpOpt = CommUtil.split(pool_opt, ";");
-		
+
 		if(this.pool_opt ==null) this.pool_opt=new HashMap();
-		
+
 		String [] optVal = null;
 		String tmpKey = "";
 		for (int i = 0; i < tmpOpt.length; i++) {
-			
+
 			tmpKey=tmpOpt[i];
-			
+
 			if("".equals(tmpKey.trim())){
-				continue; 
+				continue;
 			}
-			
+
 			optVal = CommUtil.split(tmpKey, "=");
 			this.pool_opt.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
 		}
 	}
-	
+
 	public int getMin_idle() {
 		return min_idle;
 	}
@@ -182,7 +185,7 @@ public class ConnectionInfo implements Serializable {
 	public void setMin_idle(int min_idle) {
 		this.min_idle = min_idle;
 	}
-	
+
 	public long getMax_wait() {
 		return max_wait;
 	}
@@ -190,7 +193,7 @@ public class ConnectionInfo implements Serializable {
 	public void setMax_wait(int max_wait) {
 		this.max_wait = max_wait;
 	}
-	
+
 	public String getVersion() {
 		return version;
 	}
@@ -202,7 +205,7 @@ public class ConnectionInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		
+
 		StringBuilder result = new StringBuilder();
 	    String NEW_LINE = System.getProperty("line.separator");
 

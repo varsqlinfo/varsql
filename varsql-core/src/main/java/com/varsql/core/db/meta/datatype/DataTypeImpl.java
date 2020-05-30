@@ -138,6 +138,8 @@ public abstract class DataTypeImpl implements DataType{
 		put("9999", new  DataTypeInfo("OTHER", false , false , false,VarSqlDbType.OTHER));
 		put("OTHER", get("9999"));
 		
+		put("STRING", new DataTypeInfo("VARCHAR", false , false ,true, VarSqlDbType.STRING));
+		
 	}};
 	
 	protected DataTypeImpl(){}

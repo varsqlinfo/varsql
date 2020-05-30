@@ -11,7 +11,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * 
+ *
  * @FileName : ConnectionProvider.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 21.
@@ -19,47 +19,47 @@ import com.zaxxer.hikari.HikariDataSource;
  * @변경이력	:
  */
 public class ConnectionHIKARI implements ConnectionPoolInterface{
-	
+
 	private static Logger log = LoggerFactory.getLogger(ConnectionHIKARI.class);
-	
+
 	@Override
 	public void createDataSource(ConnectionInfo connInfo) throws ConnectionFactoryException {
 		try{
 			log.info("!!!!!!!!!!!!!!!!! connection create start !!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			
+
 			String poolName = connInfo.getConnid();
-			
+
 			HikariConfig config = new HikariConfig();
-			
+
 			config.setJdbcUrl( connInfo.getUrl() );
-			String driverClass =DataSourceProperty.getInstance().getProp(connInfo.getType().toUpperCase()); 
+			String driverClass =DataSourceProperty.getInstance().getProp(connInfo.getType().toUpperCase());
 			if(null !=driverClass && !"".equals(driverClass)){
 				config.setDataSourceClassName(driverClass);
 			}else{
 				Class.forName(connInfo.getDriver());
 			}
-			
+
 	        config.setUsername( connInfo.getUsername() );
 	        config.setPassword(connInfo.getPassword() );
 	        config.setMaximumPoolSize(connInfo.getMax_active());
 	        config.setConnectionTestQuery(connInfo.getValidation_query());
 	        config.setConnectionTimeout(connInfo.getConnectionTimeOut() *1000);
-	        
+
 	        /*
 	        config.addDataSourceProperty( "cachePrepStmts" , "true" );
 	        config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
 	        config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
 	        */
-	        
+
 	        config.setPoolName(poolName);
-			
+
 			log.info("openConnectionPool.Config : {}" ,config);
-			
+
 			poolShutdown(connInfo);
-			
+
 			connInfo.setDatasource(new HikariDataSource( config ));
-			
-			
+
+
 			log.info("poolName : {}", poolName);
 			log.info("connInfo : {}", connInfo);
 			log.info("!!!!!!!!!!!!!!!!! connection end !!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -67,7 +67,7 @@ public class ConnectionHIKARI implements ConnectionPoolInterface{
 			throw new ConnectionFactoryException(e.getMessage() , e);
 		}
 	}
-	
+
 	public Connection getConnection(ConnectionInfo ci) throws ConnectionFactoryException {
 		try{
 			return ci.getDatasource().getConnection();
@@ -75,7 +75,7 @@ public class ConnectionHIKARI implements ConnectionPoolInterface{
 			throw new ConnectionFactoryException(e.getMessage() , e);
 		}
 	}
-		
+
 	public void poolShutdown(ConnectionInfo ci) throws ConnectionFactoryException {
 		try{
 			if(ci.getDatasource() != null){

@@ -91,6 +91,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 			
+			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
 			ddlStr.append(source.getString("Create View")).append(BlankConstants.NEW_LINE_TWO);
 			
 			ddlInfo.setCreateScript(ddlStr.toString());
@@ -139,10 +140,10 @@ public class CubridDDLScript extends DDLScriptImpl {
 				for (int i = 0; i < srcScriptList.size(); i++) {
 					indexMap = (Map) srcScriptList.get(i);
 	
-					ddlStr.append(i > 0 ?"" :",");
+					ddlStr.append(i > 0 ?", " :"");
 					ddlStr.append( indexMap.get("COLUMN_NAME"));
 				}
-				ddlStr.append("\t ) \n ");
+				ddlStr.append(")").append(BlankConstants.NEW_LINE);
 			}
 			
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
@@ -163,7 +164,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 			
 			ddlInfo = new DDLInfo();
@@ -177,8 +178,6 @@ public class CubridDDLScript extends DDLScriptImpl {
 			}
 
 			List<Map> scriptInfoList = sqlSesseion.selectList("functionScript", dataParamInfo);
-			addFlag = false; 
-			
 			
 			Map param = scriptInfoList.get(0);
 			
@@ -214,6 +213,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
+		
 		for (String name : objNmArr) {
 			
 			ddlInfo = new DDLInfo();
@@ -225,7 +225,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			if(ddlOption.isAddDropClause()){
 				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
-			
+
 			List<Map> scriptInfoList = sqlSesseion.selectList("procedureScript", dataParamInfo);
 			
 			Map param = scriptInfoList.get(0);
@@ -233,8 +233,8 @@ public class CubridDDLScript extends DDLScriptImpl {
 			StringBuffer argsSb = new StringBuffer();
 			for (int i = 0; i < scriptInfoList.size(); i++) {
 				Map scriptInfoMap = scriptInfoList.get(i);
+				argsSb.append(scriptInfoMap.get("")).append(scriptInfoMap.get(""));
 				
-				argsSb.append(scriptInfoMap.get("COLUMN_NAME")).append(" ").append(scriptInfoMap.get("DATA_TYPE"));
 			}
 			
 			param.put("schema", dataParamInfo.getSchema());

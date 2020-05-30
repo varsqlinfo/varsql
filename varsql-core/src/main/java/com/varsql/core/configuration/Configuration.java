@@ -30,28 +30,28 @@ import com.vartech.common.encryption.PasswordType;
 
 
 /**
- * 
+ *
  * @FileName : Configuration.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 28.
- * @프로그램설명: varsql 관련 설정값 읽는 클래스. 
+ * @프로그램설명: varsql 관련 설정값 읽는 클래스.
  * @변경이력	:
  */
 public class Configuration extends AbstractConfiguration{
 	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
-	
+
 	final String VARSQL_INSTALL_PATH = getInstallRoot();
 	final String CONFIG_FILE= "etc/varsqlConfig.properties";
 	final String CONNECTION_FILE= "config/varsqlConnectionConfig.xml";
-	
+
 	private Properties props = new Properties();
-	
+
 	XPath xpath = XPathFactory.newInstance().newXPath();
-	
+
 	private ConnectionInfo vConInfo = new ConnectionInfo();
-	
+
 	private final String TYPE = "varsql.type";
-	
+
 	private final String USE_CONNID_KEY = "varsql.connid.uuid.use";
 	private final String INIT_PASSWORD_TYPE = "varsql.init.password.type";
 	private final String INIT_PASSWORD_SIZE = "varsql.init.password.size";
@@ -60,21 +60,21 @@ public class Configuration extends AbstractConfiguration{
 	private final String FILE_UPLOAD_SIZEPERFILE = "file.upload.sizeperfile";
 
 	private PasswordType passwordType;
-	
+
 	private int passwordLen;
-	
-	private boolean useConnUID = true; 
-	
+
+	private boolean useConnUID = true;
+
 	private String fileUploadPath="";
-	
+
 	private int fileUploadSize=0;
-	
+
 	private int fileUploadSizePerFile=0;
-	
+
 	private Configuration(){
 		initialize();
 	}
-	
+
 	protected void initialize() {
 		try{
 			initConfig();
@@ -84,41 +84,41 @@ public class Configuration extends AbstractConfiguration{
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
-	 * initialize config file 
+	 * initialize config file
 	 * @Method Name  : initConfig
 	 * @Author : ytkim
 	 * @Method desc :
-	 * @History : 
+	 * @History :
 	 * @throws Exception
 	 */
 	private void initConfig() throws Exception {
 		String configPropFile = getSystemProperty(Constants.CONFIG_DEFAULT_KEY);
-		
+
 		logger.info("VARSQL_INSTALL_PATH : {}",VARSQL_INSTALL_PATH);
 		logger.info("configuration system property : {}",configPropFile);
-		
+
 		File propFile = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
-		
+
 		if(null != configPropFile && !"".equals(configPropFile)){
 			propFile = new File(configPropFile);
 		}
-		
+
 		logger.info("config property file : {}",propFile);
-		
+
 		if ( ! propFile.canRead() ){
-			
+
 			logger.info("Can't open configuration file path: {}", propFile);
-			
+
 			throw new ConfigurationException( this.getClass().getName() + " - Can't open configuration file path: " + propFile);
 		}
-			
+
 		FileInputStream jdf_fin = new FileInputStream(propFile);
-		
+
 		try{
 			props.load(jdf_fin);
-			
+
 			setConfigProperty();
 			jdf_fin.close();
 		}finally{
@@ -129,16 +129,16 @@ public class Configuration extends AbstractConfiguration{
 	private void setConfigProperty() {
 		useConnUID  = Boolean.parseBoolean(props.getProperty(USE_CONNID_KEY, "true"));
 		passwordLen  = Integer.parseInt(props.getProperty(INIT_PASSWORD_SIZE, "8"));
-		
+
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
 		fileUploadSize  = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZE, "10485760"));
 		fileUploadSizePerFile = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "5242880"));
-		
-		String initPasswordType = ""; 
-				
+
+		String initPasswordType = "";
+
 		try{
 			initPasswordType = props.getProperty(INIT_PASSWORD_TYPE,"");
-			
+
 			if(!"".equals(initPasswordType)){
 				passwordType = PasswordType.valueOf(initPasswordType.toUpperCase());
 			}
@@ -148,63 +148,63 @@ public class Configuration extends AbstractConfiguration{
 			passwordType = PasswordType.LOWERORNUMBER;
 		}
 	}
-	
+
 	public PasswordType passwordType (){
-		return passwordType; 
+		return passwordType;
 	}
-	
+
 	public int passwordInitSize (){
-		return passwordLen; 
+		return passwordLen;
 	}
 	/**
-	 * 커넥션 초기화 
+	 * 커넥션 초기화
 	 * @Method Name  : initConnection
 	 * @Author : ytkim
 	 * @Method desc :
-	 * @History : 
+	 * @History :
 	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	private void initConnection() throws ClassNotFoundException, Exception {
 		File connectionFile = new File(VARSQL_INSTALL_PATH, CONNECTION_FILE);
-		
+
 		String connectionFileInfo = getConnectionFile();
-		
+
 		if(null != connectionFileInfo && !"".equals(connectionFileInfo)){
 			connectionFile = new File(connectionFileInfo);
 		}
-		
+
 		if(!connectionFile.exists()){
 			logger.info("Can't open configuration file path key[com.varsql.connection.file] : {}", connectionFile);
 			throw new ConfigurationException( this.getClass().getName() + " - Can't open configuration file path key[com.varsql.connection.file] : " + connectionFile);
 		}
-		
+
 		parseXml(connectionFile);
-		
+
 		vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
-		
+
 		logger.info("varsql Connection Info : {}" , vConInfo);
-		
+
 		// 기본 디비 connection pool 생성. connection 정보를 얻기위한 pool
-		ConnectionInfo baseConInfo = new ConnectionInfo(); 
+		ConnectionInfo baseConInfo = new ConnectionInfo();
 		BeanUtils.copyProperties(baseConInfo, vConInfo);
-		
+
 		baseConInfo.setMax_active(2);
 		baseConInfo.setMin_idle(1);
-		
+
 		ConnectionFactory.getInstance().createPool(baseConInfo);
 	}
-	
+
 	/**
 	 * 커넥션 정보 파싱
 	 * @Method Name  : parseXml
 	 * @Author : ytkim
 	 * @Method desc :
-	 * @History : 
+	 * @History :
 	 * @param xmlFile
 	 */
 	private void parseXml(File xmlFile) {
-		
+
 		try {
 
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -213,7 +213,7 @@ public class Configuration extends AbstractConfiguration{
 			doc.getDocumentElement().normalize();
 
 			NodeList dataSource = doc.getElementsByTagName("dataSource");
-			
+
 			Element eElement = (Element)dataSource.item(0);
 
 			vConInfo.setAliasName(eElement.getAttribute("name"));
@@ -227,7 +227,7 @@ public class Configuration extends AbstractConfiguration{
 			vConInfo.setConnection_opt(getStringValue(eElement,"connection_option",""));
 			vConInfo.setTimebetweenevictionrunsmillis(Long.parseLong(getStringValue(eElement,"timebetweenevictionrunsmillis","")));
 			vConInfo.setTest_while_idle(getStringValue(eElement,"test_while_idle",""));
-			
+
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);
 			throw new Error(io);
@@ -244,30 +244,30 @@ public class Configuration extends AbstractConfiguration{
 	}
 
 	private String getStringValue(Element rootNode, String nm ,String initVal) throws XPathExpressionException {
-		Object e = xpath.evaluate("//property[@name='"+nm+"']", rootNode,XPathConstants.NODE); 
+		Object e = xpath.evaluate("//property[@name='"+nm+"']", rootNode,XPathConstants.NODE);
 		return e==null?initVal:((Node)e).getAttributes().getNamedItem("value").getTextContent();
 	}
-	
-	public Properties getProperties() {
+
+	private Properties getProperties() {
 		return props;
 	}
-	
+
 	private String getSystemProperty(String key){
 		return System.getProperty(key);
 	}
-	
+
 	private static class ConfigurationHolder{
         private static final Configuration instance = new Configuration();
     }
-	
+
 	public static Configuration getInstance() {
 		return ConfigurationHolder.instance;
     }
-	
-	public String getType() {
-		return props.getProperty(TYPE , "local");
+
+	public String getDbType() {
+		return props.getProperty(TYPE , "h2");
 	}
-	
+
 	public boolean useConnUID() {
 		return useConnUID;
 	}
@@ -290,5 +290,13 @@ public class Configuration extends AbstractConfiguration{
 
 	public int getFileUploadSizePerFile() {
 		return fileUploadSizePerFile;
+	}
+
+	public String getCharset() {
+		return getProperties().getProperty("varsql.default.charset","utf-8");
+	}
+
+	public String getSecurityKey() {
+		return getProperties().getProperty("varsql.secret.key","MTZkNzMwM2QtMDQ4NS0zOTlhLWEyZmMtODAwNTg0NDY0NzZk");
 	}
 }

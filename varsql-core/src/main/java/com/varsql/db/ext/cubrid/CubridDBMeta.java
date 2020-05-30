@@ -37,8 +37,9 @@ public class CubridDBMeta extends DBMetaImpl{
 	
 	public CubridDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.PROCEDURE, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 		);
@@ -73,7 +74,7 @@ public class CubridDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
 		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("functionMeta" ,dataParamInfo);
 	}
 	
@@ -182,5 +183,14 @@ public class CubridDBMeta extends DBMetaImpl{
 	@Override
 	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceArr) throws Exception {
 		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
+	}
+	
+	@Override
+	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
+		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
+	}
+	@Override
+	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
+		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("procedureMeta" ,dataParamInfo);
 	}
 }

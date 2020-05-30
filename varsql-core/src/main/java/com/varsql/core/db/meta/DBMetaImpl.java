@@ -63,9 +63,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	private void addBaseMenu() {
 		addServiceMenu(
 			new ServiceObject(ObjectType.TABLE),
-			new ServiceObject(ObjectType.VIEW),
-			new ServiceObject(ObjectType.FUNCTION),
-			new ServiceObject(ObjectType.INDEX)
+			new ServiceObject(ObjectType.VIEW)
 		);
 	}
 	

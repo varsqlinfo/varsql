@@ -103,12 +103,12 @@ public class SqlSourceBuilder {
 	
 	private static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , String dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
-		SqlStatement tmpSqlStatement = getSqlStatement(sql, null, true);
+		//SqlStatement tmpSqlStatement = getSqlStatement(sql, null, true);
 		
-		List<SQLStatement> statements = SQLUtils.toStatementList(tmpSqlStatement.sql, dbType);
+		List<SQLStatement> statements = SQLUtils.toStatementList(sql, dbType);
 		
 		if(statements.size() ==1) {
-			queries.add(getSqlSourceBean(statements.get(0), tmpSqlStatement.sql, param));
+			queries.add(getSqlSourceBean(statements.get(0), sql, param));
 		}else {
 			String tmpQuery = "";
 			for(SQLStatement statement : statements){

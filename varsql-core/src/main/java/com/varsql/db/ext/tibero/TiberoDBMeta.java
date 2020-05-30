@@ -86,7 +86,7 @@ public class TiberoDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
 		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 	

@@ -30,6 +30,7 @@ import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.vartech.common.excel.ExcelExport;
 import com.vartech.common.excel.ExcelReportVO;
+import com.vartech.common.utils.VartechUtils;
 
 public class DataExportUtil {
 	private static CSVFormat csvFormat = CSVFormat.DEFAULT.withRecordSeparator('\n');
@@ -97,6 +98,8 @@ public class DataExportUtil {
 		
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
 		
+		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
+		
 		try {
 			XStream magicApi = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("-_", "_")));
 			magicApi.alias(rowName, Map.class);
@@ -115,7 +118,7 @@ public class DataExportUtil {
 	        	rowInfo = new HashMap();
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
 	        		String fieldName = parser.getCurrentName();
-	        		rowInfo.put(fieldName, parser.getText());
+	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
 	        	}
 	        	out.write(magicApi.toXML(rowInfo));
 				out.newLine();
@@ -128,6 +131,14 @@ public class DataExportUtil {
 		}
 	}
 	
+	private static Map<String, String> getKeyMap(List<GridColumnInfo> columnInfos) {
+		Map<String,String> columnKeyLabel = new HashMap<>();
+		columnInfos.stream().forEach(item ->{
+			columnKeyLabel.put(item.getKey(),item.getLabel());
+		});
+		return columnKeyLabel;
+	}
+
 	/**
 	 * 
 	 * @Method Name  : toCSVWrite
@@ -189,6 +200,8 @@ public class DataExportUtil {
 		JsonFactory factory = new JsonFactory();
 		
 		boolean firstFlag = true; 
+		
+		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
     	
     	JsonParser parser = factory.createParser(jsonString);
         parser.nextToken();                                     //start reading the file
@@ -196,7 +209,7 @@ public class DataExportUtil {
         	rowInfo = new HashMap();
         	while (parser.nextToken() != JsonToken.END_OBJECT) {
         		String fieldName = parser.getCurrentName();
-        		rowInfo.put(fieldName, parser.getText());
+        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
         	}
         	if(firstFlag) {
         		firstFlag = false; 
@@ -209,6 +222,10 @@ public class DataExportUtil {
         parser.close();
 	}
 	
+	private static String getColumnKeyLabelInfo(String fieldName, Map<String, String> columnKeyLabel) {
+		return columnKeyLabel.get(fieldName);
+	}
+
 	public static void toExcelWrite(List allInfo, List<GridColumnInfo> columnInfos,  OutputStream output) throws IOException{
 		int colSize =columnInfos.size(); 
 		ExcelReportVO[] columnArr = new ExcelReportVO[colSize];
@@ -327,6 +344,39 @@ public class DataExportUtil {
         }
         parser.close();
         out.close();
+	}
+	
+	
+	public static void jsonStringToJson(String jsonString, List<GridColumnInfo> columnInfos, OutputStream os) throws IOException{
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (os));
+		
+		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
+		
+		try {
+			
+			Map rowInfo =null;
+			JsonFactory factory = new JsonFactory();
+			out.write("[");
+	    	JsonParser parser = factory.createParser(jsonString);
+	        parser.nextToken();                        //start reading the file
+	        boolean firstFlag = true; 
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        	rowInfo = new HashMap();
+	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
+	        		String fieldName = parser.getCurrentName();
+	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
+	        	}
+	        	out.write((firstFlag ?"":",")+ VartechUtils.objectToString(rowInfo));
+	        	
+	        	if(firstFlag) firstFlag = false; 
+	        }
+	    	out.write("]");
+	        parser.close();
+	        out.close();
+		}finally {
+			if(out != null)out.close();
+		}
+		
 	}
 	
 	public static void toInsertQueryWrite(List allInfo, List<Boolean> columnInfoList,String tmpName, OutputStream output) throws IOException{
