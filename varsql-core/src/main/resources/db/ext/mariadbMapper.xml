@@ -136,6 +136,7 @@
 	    <result property="type" column="OBJECT_TYPE"/>
 	    <result property="created" column="CREATED"/>
 	    <result property="status" column="STATUS"/>
+	    <result property="returnType" column="RETURN_TYPE"/>
 	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
 	</resultMap>
 

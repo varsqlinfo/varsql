@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="postgresql.mata">
+	<!-- db 정보보기. -->
+	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT version()
+	</select>	
+
+	<!-- ================= table start ================= -->
+	<!--  tableList 목록 보기. -->
+	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+		   	relname as "NAME"
+		    ,pg_catalog.obj_description(oid,'pg_class') as "REMARKS"
+		FROM pg_catalog.pg_class a,
+		    information_schema.tables b
+		WHERE a.relname = b.table_name
+		    AND b.table_type = 'BASE TABLE'
+		    AND b.table_schema = #{schema}
+		    <if test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					a.relname in (${item})
+				</foreach>
+			</if>
+		order BY a.relname
+	</select>
+	
+	<!-- table adn column info -->
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT
+			cols.table_name as "TABLE_NAME"
+			, cols.COLUMN_NAME as "COLUMN_NAME"
+			, cols.data_type  as "DATA_TYPE"
+			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
+			, cols.character_maximum_length as "CHAR_LENGTH" 
+			,(CASE WHEN  cols.character_maximum_length is null  then cols.numeric_precision ELSE cols.character_maximum_length END)   as "COLUMN_SIZE" 
+			,cols.numeric_scale as "DECIMAL_DIGITS" 
+			,cols.column_default as "COLUMN_DEF"
+			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
+			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
+				WHEN tc.constraint_type ='UNIQUE' then 'UNI'
+				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
+		FROM information_schema.columns as cols 
+		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
+		left join information_schema.table_constraints as tc  on kcu.constraint_name =tc.constraint_name
+		left join information_schema.tables as tbls on cols.table_name = tbls.table_name
+		left join pg_catalog.pg_class as pc on pc.relname = cols.table_name
+		WHERE cols.table_schema = #{schema}
+		AND tbls.table_type = 'BASE TABLE'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbls.table_name in (${item}) 
+			</foreach>
+		</if>
+		order by cols.table_name , cols.ordinal_position
+	</select>
+	
+	<!-- ================= table end ================= -->
+	
+	<!-- ================= view start ================= -->
+	
+	<!-- view 목록 보기 -->
+	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT
+		   	relname as "NAME"
+		    ,pg_catalog.obj_description(oid,'pg_class') as "REMARKS"
+		FROM pg_catalog.pg_class a,
+		    information_schema.tables b
+		WHERE a.relname = b.table_name
+		    AND b.table_type = 'VIEW'
+		    AND b.table_schema = #{schema}
+		    <if test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					relname in (${item})
+				</foreach>
+			</if>
+		order BY a.relname
+	</select>
+	
+	<!-- view and column info -->
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT
+			cols.table_name as "TABLE_NAME"
+			, cols.COLUMN_NAME as "COLUMN_NAME"
+			, cols.data_type  as "DATA_TYPE"
+			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
+			, cols.character_maximum_length as "CHAR_LENGTH" 
+			,(CASE WHEN  cols.character_maximum_length is null  then cols.numeric_precision ELSE cols.character_maximum_length END)   as "COLUMN_SIZE" 
+			,cols.numeric_scale as "DECIMAL_DIGITS" 
+			,cols.column_default as "COLUMN_DEF"
+			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
+			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
+				WHEN tc.constraint_type ='UNIQUE' then 'UNI'
+				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
+		FROM information_schema.columns as cols 
+		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
+		left join information_schema.table_constraints as tc  on kcu.constraint_name =tc.constraint_name
+		left join information_schema.tables as tbls on cols.table_name = tbls.table_name
+		left join pg_catalog.pg_class as pc on pc.relname = cols.table_name
+		WHERE cols.table_schema = #{schema}
+		AND tbls.table_type = 'VIEW'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbls.table_name in (${item}) 
+			</foreach>
+		</if>
+		order by cols.table_name , cols.ordinal_position
+	</select>
+	
+	<!-- ================= view end ================= -->
+	
+	<!-- object info  info map start  -->
+	<resultMap id="objectInfoMap" type="objectInfo">
+	    <id property="name" column="OBJECT_NAME" />
+	    <result property="type" column="OBJECT_TYPE"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="returnType" column="RETURN_TYPE"/>
+	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
+	</resultMap>
+
+	<resultMap id="objectColInfoMap" type="objectColumnInfo">
+	    <id property="no" column="SEQUENCE" />
+	    <result property="name" column="ARGUMENT_NAME"/>
+	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="columnType" column="IN_OUT"/>
+	</resultMap>
+	<!-- object info info map end  -->
+	
+	<!-- function list -->
+	<select id="functionList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT  proname as "OBJECT_NAME"
+				, 'FUNCTION' as "OBJECT_TYPE"
+				, proargtypes as definer
+				, array_cat(COALESCE(proargnames, array['none']), array['RETURNS ' || text(typname)]) as "REMARKS" 
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype != 2278
+	</select>
+	
+	<select id="functionMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT  proname as "OBJECT_NAME"
+				,pg_catalog.pg_get_function_arguments(proname::regproc) as "ARGUMENTS"
+				, text(typname) as "RETURN_TYPES"
+				,proargdefaults as "DEFAULT_VALUE"
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype != 2278
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				proname in (${item}) 
+			</foreach>
+		</if>
+		ORDER BY  proname
+	</select>
+	
+	
+	<!-- procedure list -->
+	<select id="procedureList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT  proname as "OBJECT_NAME"
+				, 'FUNCTION' as "OBJECT_TYPE"
+				, proargtypes as definer
+				, array_cat(COALESCE(proargnames, array['none']), array['RETURNS ' || text(typname)]) as "REMARKS" 
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype = 2278
+	</select>
+	
+	<select id="procedureMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT  proname as "OBJECT_NAME"
+				,pg_catalog.pg_get_function_arguments(proname::regproc) as "ARGUMENTS"
+				, text(typname) as "RETURN_TYPES"
+				,proargdefaults as "DEFAULT_VALUE"
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype = 2278
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				proname in (${item}) 
+			</foreach>
+		</if>
+		ORDER BY  proname
+	</select>
+	
+	<!-- index list -->
+	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select
+			n.nspname as "schema_name",
+		    t.relname  as "table_name",
+		    c.relname  as "NAME",
+			'' as "STATUS"
+		from
+		          pg_catalog.pg_class c
+		     join pg_catalog.pg_namespace n on n.oid        = c.relnamespace
+		     join pg_catalog.pg_index i     on i.indexrelid = c.oid
+		     join pg_catalog.pg_class t     on i.indrelid   = t.oid
+		where
+		        c.relkind = 'i'
+		    and n.nspname = #{schema}
+		    and pg_catalog.pg_table_is_visible(c.oid)
+			ORDER BY t.relname,   c.relname 
+	</select>
+	
+	<!-- index and column info -->
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select pc.relname AS "TABLE_NAME", 
+			t.relname AS "INDEX_NAME",
+			pa.attname AS "COLUMN_NAME",
+			pa.attnum AS "ORDINAL_POSITION",
+			'' as "TYPE",
+			'' as "STATUS",
+			'' as "ASC_OR_DESC"
+		from pg_catalog.pg_attribute as pa 
+		inner join pg_catalog.pg_index pi on pa.attrelid  = pi.indexrelid
+		inner join pg_catalog.pg_class pc     on pi.indrelid   = pc.oid
+		inner join pg_catalog.pg_class t     on pi.indexrelid   = t.oid
+		where 1=1
+		and pc.relnamespace = (select oid from pg_catalog.pg_namespace pn where nspname = #{schema})
+		and pg_catalog.pg_table_is_visible(pc.oid)
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				t.relname in (${item})
+			</foreach>
+		</if>
+		ORDER BY pc.relname, t.relname ,  pa.attnum 
+	</select>
+	
+	
+	<!-- trigger list -->
+	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
+		select event_object_schema as table_schema,
+		       event_object_table as "TABLE_NAME",
+		       trigger_schema,
+		       trigger_name as "NAME",
+		       string_agg(event_manipulation, ',') as "EVENT",
+		       action_timing as "ACTIVATION",
+		       action_condition as "STATEMENT",
+		       action_statement as "DEFINITION"
+		from information_schema.triggers
+		where trigger_schema = #{schema}
+		group by 1,2,3,4,6,7,8
+		order by table_schema,
+		         "TABLE_NAME"
+	</select>
+	
+	<!-- trigger info map -->
+	<resultMap id="triggerInfoMap" type="triggerInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="tblName" column="TABLE_NAME"/>
+	    <result property="eventType" column="EVENTTYPE"/>
+	    <result property="timing" column="TIMING"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<!-- trigger metadata -->
+	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
+		
+		select event_object_schema as table_schema,
+		       event_object_table as "TABLE_NAME",
+		       trigger_schema,
+		       trigger_name as "NAME",
+		       string_agg(event_manipulation, ',') as "EVENTTYPE",
+		       action_timing as "ACTIVATION",
+		       action_condition as "STATEMENT",
+		       action_statement as "DEFINITION",
+		        '' as "STATUS"
+		from information_schema.triggers a
+		where trigger_schema = #{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				a.trigger_name in (${item})
+			</foreach>
+		</if>
+		group by 1,2,3,4,6,7,8
+		order by table_schema, "TABLE_NAME"
+	</select>
+	
+	<!-- sequence info map -->
+	<resultMap id="sequenceInfoMap" type="sequenceInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="minValue" column="MIN_VALUE"/>
+	    <result property="maxValue" column="MAX_VALUE"/>
+	    <result property="incrementBy" column="INCREMENT_BY"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+
+	    <result property="cacheSize" column="CACHE_SIZE"/>
+	    <result property="cycleFlag" column="CYCLE_FLAG"/>
+	    <result property="orderFlag" column="ORDER_FLAG"/>
+	    <result property="lastDdlTime" column="LAST_DDL_TIME"/>
+	    <result property="lastNumber" column="LAST_NUMBER"/>
+	</resultMap>
+	
+	<!-- sequence list -->
+	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT a.sequence_name as  "NAME"
+			,REGEXP_REPLACE(xpath('/row/last_value/text()',(query_to_xml(format('select last_value from %I.%I', sequence_schema, sequence_name), false, true, '')))::text,'[{}]','','gi') as "CURRENT_VALUE"
+			,increment as  "INCREMENT"
+			,minimum_value 
+			, maximum_value 
+			, start_value 
+			,cycle_option as "CYCLE_OPTION"
+		FROM information_schema.sequences a
+		where sequence_schema =#{schema}
+	</select> 
+	
+	<!-- 
+		시퀸스 목록 보기.
+	 -->
+	<select id="sequenceMetadata" parameterType="databaseParamInfo" resultMap="sequenceInfoMap">
+		SELECT a.sequence_name as  "OBJECT_NAME"
+			,REGEXP_REPLACE(xpath('/row/last_value/text()',(query_to_xml(format('select last_value from %I.%I', sequence_schema, sequence_name), false, true, '')))::text,'[{}]','','gi') as "LAST_NUMBER"
+			,increment as  "INCREMENT_BY"
+			,minimum_value as  "MIN_VALUE"
+			, maximum_value as  "MAX_VALUE"
+			, start_value as  "START_VALUE"
+			,cycle_option as "CYCLE_OPTION"
+		FROM information_schema.sequences a
+		where sequence_schema =#{schema}
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				a.sequence_name in (${item})
+			</foreach>
+		</if>
+		order by sequence_name
+	</select>    
+	
+	<!-- 
+		시퀸스 script
+	 -->
+	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT a.sequence_name as  "OBJECT_NAME"
+			,REGEXP_REPLACE(xpath('/row/last_value/text()',(query_to_xml(format('select last_value from %I.%I', sequence_schema, sequence_name), false, true, '')))::text,'[{}]','','gi') as "LAST_NUMBER"
+			,increment as  "INCREMENT_BY"
+			,minimum_value as  "MIN_VALUE"
+			, maximum_value as  "MAX_VALUE"
+			, start_value as  "START_VALUE"
+			,cycle_option as "CYCLE_OPTION"
+		FROM information_schema.sequences a
+		where sequence_schema =#{schema}
+		and	a.sequence_name = #{objectName}
+	</select>    
+	
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="tableScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT
+                b.nspname as schema_name,
+                b.relname as "TABLE_NAME",
+                a.attname as "COLUMN_NAME",
+                pg_catalog.format_type(a.atttypid, a.atttypmod) as "DATA_TYPE",
+                CASE WHEN
+                    (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
+                     FROM pg_catalog.pg_attrdef d
+                     WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef) IS NOT NULL THEN
+                    'DEFAULT '|| (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
+                                  FROM pg_catalog.pg_attrdef d
+                                  WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)
+                ELSE
+                    ''
+                END as "COLUMN_DEF",
+                CASE WHEN a.attnotnull = true THEN
+                    'NOT NULL'
+                ELSE
+                    'NULL'
+                END as "NULLABLE",
+                a.attnum as attnum,
+                e.max_attnum as max_attnum
+            FROM
+                pg_catalog.pg_attribute a
+                INNER JOIN
+                 (SELECT c.oid,
+                    n.nspname,
+                    c.relname
+                  FROM pg_catalog.pg_class c
+                       LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                  WHERE c.oid = (
+					  SELECT c.oid FROM pg_catalog.pg_class c
+						LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+							WHERE relkind = 'r'
+							AND n.nspname = #{schema}
+							AND relname = #{objectName}
+				  )
+                  ORDER BY 2, 3) b
+                ON a.attrelid = b.oid
+                INNER JOIN
+                 (SELECT
+                      a.attrelid,
+                      max(a.attnum) as max_attnum
+                  FROM pg_catalog.pg_attribute a
+                  WHERE a.attnum > 0
+                    AND NOT a.attisdropped
+                  GROUP BY a.attrelid) e
+                ON a.attrelid=e.attrelid
+            WHERE a.attnum > 0
+              AND NOT a.attisdropped
+            ORDER BY a.attnum
+	</select>
+	
+	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
+		SELECT conname as "CONSTRAINT_NAME", pg_get_constraintdef(c.oid) as "CONSTRAINDDEF"
+		FROM pg_constraint c
+		WHERE conrelid=(
+		    SELECT attrelid FROM pg_attribute
+		    WHERE attrelid = (
+		        SELECT oid FROM pg_class WHERE relname = #{objectName}
+		            AND relnamespace = (SELECT ns.oid FROM pg_namespace ns WHERE ns.nspname =  #{schema})
+		    ) AND attname='tableoid'
+		)
+	</select>
+	
+	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
+		<![CDATA[
+		select COMMENT_SCRIPT as "COMMENT_SCRIPT" from (	
+			SELECT 
+				'COMMENT ON TABLE '|| PS.RELNAMe || ' IS '|| ' ''' ||PD.DESCRIPTION || ''';' as COMMENT_SCRIPT
+				, 0 as sort_order
+			FROM pg_catalog.PG_STAT_ALL_TABLES  PS
+			  ,pg_catalog.PG_DESCRIPTION      PD
+			WHERE  PS.RELID   = PD.OBJOID 
+			AND PS.RELNAME  = #{objectName}
+			AND PD.OBJSUBID  = 0
+			union
+			SELECT 
+				'COMMENT ON COLUMN '|| PS.RELNAME ||'.'||PA.ATTNAME || ' is ' || ' ''' || PD.DESCRIPTION || ''';' as COMMENT_SCRIPT
+				,PA.ATTNUM as sort_order
+			FROM PG_STAT_ALL_TABLES PS
+			  ,PG_DESCRIPTION     PD
+			  ,PG_ATTRIBUTE       PA
+			WHERE PS.SCHEMANAME = #{schema}
+			AND PS.RELNAME  = #{objectName}
+			AND PS.RELID   = PD.OBJOID
+			AND PD.OBJSUBID <> 0
+			AND PD.OBJOID    = PA.ATTRELID
+			AND PD.OBJSUBID  = PA.ATTNUM
+		) as  a
+		order by sort_order
+		]]>
+	</select>
+	
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="viewScript" resultType="paramMap" parameterType="databaseParamInfo">
+		select table_name , view_definition  as "VIEW_SOURCE"
+		from information_schema.views
+		where table_schema = #{schema}
+		and table_name = #{objectName}
+	</select>
+
+	<!-- 
+		create index  Script 
+	 -->
+	<select id="indexScript" resultType="paramMap" parameterType="databaseParamInfo">
+		select indexname, replace(pg_get_indexdef(format('%I.%I', schemaname, indexname)::regclass), ' INDEX ', ' INDEX IF NOT EXISTS ') as "CREATE_SOURCE"
+		from pg_indexes
+		where schemaname = #{schema}
+		and indexname = #{objectName}
+	</select>
+	
+	<!-- create function script -->
+	<select id="functionScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
+				, 'FUNCTION' as "OBJECT_TYPE"
+				, proargtypes as definer
+				, array_cat(COALESCE(proargnames, array['none']), array['RETURNS ' || text(typname)]) as "REMARKS" 
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype != 2278
+		AND proname= #{objectName}
+	</select>
+	
+	<!-- create procedure script -->
+	<select id="procedureScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
+				, 'FUNCTION' as "OBJECT_TYPE"
+				, proargtypes as definer
+				, array_cat(COALESCE(proargnames, array['none']), array['RETURNS ' || text(typname)]) as "REMARKS" 
+		FROM pg_catalog.pg_namespace n 
+			inner join pg_catalog.pg_proc p ON pronamespace = n.oid 
+			left join pg_catalog.pg_type t on t.oid = p.prorettype
+		WHERE 1=1  
+			AND nspname = #{schema}
+			and prorettype = 2278
+		AND proname= #{objectName}
+	</select>
+	
+	<!-- create trigger script -->
+	<select id="triggerScript" resultType="paramMap" parameterType="databaseParamInfo">
+		select tgname
+			,pg_get_triggerdef(oid) as "CREATE_SOURCE"
+		from pg_trigger a ,information_schema.triggers b
+		where a.tgname = b.trigger_name
+		and trigger_schema = #{schema} 
+		and tgname= #{objectName}
+	</select>
+
+</mapper>

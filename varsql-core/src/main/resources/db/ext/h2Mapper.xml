@@ -114,6 +114,7 @@
 	    <result property="type" column="OBJECT_TYPE"/>
 	    <result property="created" column="CREATED"/>
 	    <result property="status" column="STATUS"/>
+	    <result property="returnType" column="RETURN_TYPE"/>
 	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
 	</resultMap>
 
@@ -275,6 +276,7 @@
 			SEQUENCE_NAME as "OBJECT_NAME"
 			,'' as CREATED
 			,MIN_VALUE as "MIN_VALUE"
+			,MAX_VALUE as "MAX_VALUE"
 			,INCREMENT as "INCREMENT_BY"
 			,CURRENT_VALUE as "LAST_NUMBER"
 		from information_schema.SEQUENCES seq

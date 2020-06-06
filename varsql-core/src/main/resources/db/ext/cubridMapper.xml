@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cubrid.mata">
+	<!-- db 정보보기. -->
+	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT 'VERSION : CUBRID ' || VERSION() ||  ' , charset = ' || CHARSET('abc')
+	</select>	
+
+	<!-- ================= table start ================= -->
+	<!--  tableList 목록 보기. -->
+	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT class_name "NAME"
+			, comment "REMARKS"
+		FROM DB_CLASS tbl
+		WHERE  tbl.is_system_class = 'NO' 
+		AND tbl.class_type = 'CLASS'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.class_name in (${item})
+			</foreach>
+		</if>
+		ORDER BY tbl.class_name
+	</select>
+	
+	<!-- table adn column info -->
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select 
+			tbl.class_name as "TABLE_NAME"
+			,col.attr_name as "COLUMN_NAME"
+			,col.data_type as "DATA_TYPE"
+			,(CASE WHEN  col.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
+			,col.prec as "CHAR_LENGTH" 
+			,col.prec as "COLUMN_SIZE" 
+			,col.scale as "DECIMAL_DIGITS" 
+			, col.default_value as "COLUMN_DEF"
+			,col.comment AS "COMMENT"
+			, col.attr_type as "extra"
+			, (case when k.key_order >= 0 then 'PK' else '' end) as "CONSTRAINTS"
+			, k.key_order
+			, k.asc_desc
+		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
+		    left join db_index x on col.class_name = x.class_name and x.is_primary_key = 'YES'
+		    left join db_index_key k on x.index_name = k.index_name and x.class_name = k.class_name and col.attr_name = k.key_attr_name
+		where  1=1
+		AND tbl.is_system_class = 'NO'
+		AND tbl.class_type = 'CLASS'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				col.class_name in (${item}) 
+			</foreach>
+		</if>
+		order BY tbl.class_name , col.def_order
+	</select>
+	
+	<!-- ================= table end ================= -->
+	
+	<!-- ================= view start ================= -->
+	
+	<!-- view 목록 보기 -->
+	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
+		SELECT class_name "NAME"
+			, comment "REMARKS"
+		FROM DB_CLASS tbl
+		WHERE  tbl.is_system_class = 'NO' 
+		AND tbl.class_type = 'VCLASS'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				tbl.class_name in (${item})
+			</foreach>
+		</if>
+		ORDER BY tbl.class_name
+	</select>
+	
+	<!-- view and column info -->
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		select 
+			tbl.class_name as "TABLE_NAME"
+			,col.attr_name as "COLUMN_NAME"
+			,col.data_type as "DATA_TYPE"
+			,(CASE WHEN  col.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
+			,col.prec as "CHAR_LENGTH" 
+			,col.prec as "COLUMN_SIZE" 
+			,col.scale as "DECIMAL_DIGITS" 
+			, col.default_value as "COLUMN_DEF"
+			,col.comment AS "COMMENT"
+			, col.attr_type as "extra"
+			, (case when k.key_order >= 0 then 'PK' else '' end) as "CONSTRAINTS"
+			, k.key_order
+			, k.asc_desc
+		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
+		    left join db_index x on col.class_name = x.class_name and x.is_primary_key = 'YES'
+		    left join db_index_key k on x.index_name = k.index_name and x.class_name = k.class_name and col.attr_name = k.key_attr_name
+		where  1=1
+		AND tbl.is_system_class = 'NO'
+		AND tbl.class_type = 'VCLASS'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				col.class_name in (${item}) 
+			</foreach>
+		</if>
+		order BY tbl.class_name , col.def_order
+	</select>
+	
+	<!-- ================= view end ================= -->
+	
+	<!-- object info  info map start  -->
+	<resultMap id="objectInfoMap" type="objectInfo">
+	    <id property="name" column="OBJECT_NAME" />
+	    <result property="type" column="OBJECT_TYPE"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="returnType" column="RETURN_TYPE"/>
+	    <collection property="colList" javaType="java.util.ArrayList" resultMap="objectColInfoMap"/>
+	</resultMap>
+
+	<resultMap id="objectColInfoMap" type="objectColumnInfo">
+	    <id property="no" column="SEQUENCE" />
+	    <result property="name" column="ARGUMENT_NAME"/>
+	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="columnType" column="IN_OUT"/>
+	</resultMap>
+	<!-- object info info map end  -->
+	
+	<!-- function list -->
+	<select id="functionList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		select func.sp_name AS "OBJECT_NAME" 
+			,func.sp_type as "TYPE"
+			, func.comment AS "REMARKS"
+			, '' as "CREATED"
+			, '' as "STATUS"
+		FROM db_stored_procedure   func
+		WHERE sp_type = 'FUNCTION'
+	</select>
+	
+	<select id="functionMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT dsp.sp_name as "OBJECT_NAME",
+			dsp.sp_type as "OBJECT_TYPE",
+			dsp.return_type as "RETURN_TYPE",
+			dsp.arg_count,
+			dsp.lang as "LANG",
+			dsp.target as "SOURCE",
+			dspa.arg_name AS "ARGUMENT_NAME",
+			dspa.data_type AS "DATA_TYPE",
+			dspa.mode as "IN_OUT",
+			dsp.COMMENT as "COMMENT"
+		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
+		ON dsp.sp_name = dspa.sp_name
+		WHERE 1=1
+		AND dsp.sp_type = 'FUNCTION'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				dsp.sp_name in (${item}) 
+			</foreach>
+		</if>
+		ORDER BY  dspa.sp_name , dspa.index_of
+	</select>
+	
+	
+	<!-- procedure list -->
+	<select id="procedureList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		select func.sp_name AS "OBJECT_NAME" 
+			,func.sp_type as "OBJECT_TYPE"
+			, func.comment AS "REMARKS"
+			, '' as "CREATED"
+			, '' as "STATUS"
+		FROM db_stored_procedure   func
+		WHERE sp_type = 'PROCEDURE'
+	</select>
+	
+	<select id="procedureMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		SELECT dsp.sp_name as "OBJECT_NAME",
+			dsp.sp_type as "OBJECT_TYPE",
+			dsp.return_type as "RETURN_TYPE",
+			dsp.arg_count,
+			dsp.lang as "LANG",
+			dsp.target as "SOURCE",
+			dspa.arg_name AS "ARGUMENT_NAME",
+			dspa.data_type AS "DATA_TYPE",
+			dspa.mode as "IN_OUT",
+			dsp.COMMENT as "COMMENT"
+		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
+		ON dsp.sp_name = dspa.sp_name
+		WHERE 1=1
+		AND dsp.sp_type = 'PROCEDURE'
+		<if test="custom != null and custom.objectNameList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+				dsp.sp_name in (${item}) 
+			</foreach>
+		</if>
+		ORDER BY  dspa.sp_name , dspa.index_of
+	</select>
+	
+	<!-- index list -->
+	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT 
+			ind.index_name as "NAME"
+			,'' as "STATUS"
+		FROM 
+			db_index ind
+			WHERE ind.class_name IN (
+				SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
+				AND tbl.class_type = 'CLASS'
+			)
+		ORDER BY ind.class_name,  ind.index_name
+	</select>
+	
+	<!-- index and column info -->
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+		SELECT 
+			a.class_name AS "TABLE_NAME",
+			a.index_name AS "INDEX_NAME",
+			b.key_attr_name AS "COLUMN_NAME",
+			b.key_order AS "ORDINAL_POSITION",
+			b.key_prefix_length AS column_length,
+			CASE WHEN a.is_primary_key =  'YES' THEN 'PK'
+	         WHEN a.is_foreign_key = 'YES' THEN 'FK'
+	         WHEN a.is_unique = 'YES' then 'UQ'
+	        ELSE ' ' END as "TYPE",
+			(CASE WHEN  a.is_reverse = 'NO'  then 'ASC' ELSE 'DESC' END)  as "ASC_OR_DESC",
+			'' as "STATUS"
+		FROM 
+			db_index a 
+			left join db_index_key b on  a.index_name = b.index_name
+		WHERE 1=1
+		    <if test="custom != null and custom.objectNameList != null">
+				<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+					a.index_name in (${item})
+				</foreach>
+			</if>
+		    AND a.class_name  IN (
+				SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
+				AND tbl.class_type = 'CLASS'
+			)
+		ORDER BY a.class_name,  a.index_name , b.key_order
+	</select>
+	
+	
+	<!-- trigger list -->
+	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT 
+			NAME AS "NAME"
+			, target_class AS "TABLE_NAME"
+			, comment AS "REMARKS"
+			, event 
+		 	, condition AS statement
+		 	,a.*
+		FROM db_trigger a	
+		ORDER BY target_class , name
+	</select>
+	
+	<!-- trigger info map -->
+	<resultMap id="triggerInfoMap" type="triggerInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="tblName" column="TABLE_NAME"/>
+	    <result property="eventType" column="EVENTTYPE"/>
+	    <result property="timing" column="TIMING"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<!-- trigger metadata -->
+	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
+		SELECT 
+			NAME AS "NAME"
+			, target_class AS "TABLE_NAME"
+			, comment AS "REMARKS"
+			, event  as "EVENTTYPE"
+		 	, condition AS statement
+		 	, '' as "STATUS"
+		FROM db_trigger a	
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				a.name in (${item})
+			</foreach>
+		</if>
+		ORDER BY target_class , name
+	</select>
+	
+	<!-- sequence info map -->
+	<resultMap id="sequenceInfoMap" type="sequenceInfo">
+	    <result property="name" column="OBJECT_NAME" />
+	    <result property="minValue" column="MIN_VALUE"/>
+	    <result property="maxValue" column="MAX_VALUE"/>
+	    <result property="incrementBy" column="INCREMENT_BY"/>
+	    <result property="created" column="CREATED"/>
+	    <result property="status" column="STATUS"/>
+
+	    <result property="cacheSize" column="CACHE_SIZE"/>
+	    <result property="cycleFlag" column="CYCLE_FLAG"/>
+	    <result property="orderFlag" column="ORDER_FLAG"/>
+	    <result property="lastDdlTime" column="LAST_DDL_TIME"/>
+	    <result property="lastNumber" column="LAST_NUMBER"/>
+	</resultMap>
+	
+	<!-- sequence list -->
+	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
+		SELECT 
+			NAME as  "NAME",
+			owner,
+			current_val as "current_value",
+			increment_val as  "increment",
+			max_val,
+			min_val,
+			cyclic,
+			started,
+			class_name,
+			att_name,
+			cached_num,
+			COMMENT
+		FROM db_serial
+	</select> 
+	
+	<!-- 
+		시퀸스 목록 보기.
+	 -->
+	<select id="sequenceMetadata" parameterType="databaseParamInfo" resultMap="sequenceInfoMap">
+		SELECT 
+			name as  "OBJECT_NAME",
+			owner,
+			current_val as "LAST_NUMBER",
+			increment_val as  "INCREMENT_BY",
+			max_val as "MAX_VALUE",
+			min_val as "MIN_VALUE",
+			comment AS "COMMENT",
+			cached_num as "CACHED"
+		FROM db_serial seq
+		<if test="custom != null and custom.objectNameList != null">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
+				seq.NAME in (${item})
+			</foreach>
+		</if>
+		order by NAME
+	</select>    
+	
+	<!-- 
+		시퀸스 script
+	 -->
+	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT 
+			NAME as  "OBJECT_NAME",
+			owner,
+			current_val as "LAST_NUMBER",
+			increment_val as  "INCREMENT_BY",
+			max_val as "MAX_VALUE",
+			min_val as "MIN_VALUE",
+			COMMENT AS "COMMENT",
+			cached_num as "CACHED"
+		FROM db_serial seq
+		where seq.NAME = #{objectName}
+	</select>    
+	
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="tableScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SHOW CREATE TABLE ${objectName}
+	</select>
+	
+	<!-- 
+	 view script 생성  create 문	
+	 -->
+	<select id="viewScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SHOW CREATE VIEW ${objectName}
+	</select>
+
+	<!-- 
+		create index  Script 
+	 -->
+	<select id="indexScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT 
+			a.class_name AS "TABLE_NAME",
+			a.index_name AS "INDEX_NAME",
+			b.key_attr_name AS "COLUMN_NAME",
+			b.key_order AS "COLUMN_POSITION",
+			b.key_prefix_length AS column_length,
+			CASE WHEN a.is_primary_key =  'YES' THEN 'PK'
+	         WHEN a.is_foreign_key = 'YES' THEN 'FK'
+	         WHEN a.is_unique = 'YES' then 'UQ'
+	        ELSE ' ' END as "INDEX_TYPE",
+			(CASE WHEN  a.is_reverse = 'NO'  then 'ASC' ELSE 'DESC' END)  as "ASC_OR_DESC",
+			'' as "STATUS"
+		FROM 
+			db_index a left join db_index_key b on  a.index_name = b.index_name
+		WHERE 1=1
+		    AND a.index_name = #{objectName}
+		ORDER BY a.class_name,  a.index_name , b.key_order
+	</select>
+	
+	<!-- create function script -->
+	<select id="functionScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT dsp.sp_name as "OBJECT_NAME",
+			dsp.sp_type as "TYPE",
+			dsp.return_type as "RETURN_TYPE",
+			dsp.arg_count,
+			dsp.lang as "LANG",
+			dsp.target as "SOURCE",
+			dspa.data_type AS "DATA_TYPE",
+			dspa.mode as "IN_OUT",
+			dsp.COMMENT as "COMMENT"
+		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
+		ON dsp.sp_name = dspa.sp_name
+		WHERE 1=1
+		AND dsp.sp_type = 'FUNCTION'
+		AND dsp.sp_name= #{objectName}
+	</select>
+	
+	<!-- create procedure script -->
+	<select id="procedureScript" resultType="paramMap" parameterType="databaseParamInfo">
+		SELECT dsp.sp_name as "OBJECT_NAME",
+			dsp.sp_type as "TYPE",
+			dsp.return_type as "RETURN_TYPE",
+			dsp.arg_count,
+			dsp.lang as "LANG",
+			dsp.target as "SOURCE",
+			dspa.data_type AS "DATA_TYPE",
+			dspa.mode as "IN_OUT",
+			dsp.COMMENT as "COMMENT"
+		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
+		ON dsp.sp_name = dspa.sp_name
+		WHERE 1=1
+		AND dsp.sp_type = 'PROCEDURE'
+		AND dsp.sp_name= #{objectName}
+	</select>
+
+</mapper>
