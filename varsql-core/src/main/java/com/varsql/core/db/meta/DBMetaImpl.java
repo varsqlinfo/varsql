@@ -546,4 +546,31 @@ public abstract class DBMetaImpl implements DBMeta{
 		}
 		return reval;
 	}
+	
+	protected DatabaseParamInfo setObjectNameList(DatabaseParamInfo dataParamInfo , String ... names) {
+		if(names!=null && names.length > 0){
+			StringBuilder sb =new StringBuilder();
+			
+			List<String> indexNameList = new ArrayList<String>();
+			
+			boolean  addFlag = false; 
+			for (int i = 0; i < names.length; i++) {
+				sb.append(addFlag ? ",":"" ).append("'").append(names[i]).append("'");
+				
+				addFlag = true;
+				if(i!=0 && (i+1)%1000==0){
+					indexNameList.add(sb.toString());
+					sb =new StringBuilder();
+					addFlag = false; 
+				}
+			}
+			
+			if(sb.length() > 0){
+				indexNameList.add(sb.toString());
+			}
+			
+			dataParamInfo.addCustom("objectNameList", indexNameList);
+		}
+		return dataParamInfo; 
+	}
 }

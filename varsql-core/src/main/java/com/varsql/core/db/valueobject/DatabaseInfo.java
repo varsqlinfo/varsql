@@ -1,16 +1,16 @@
 package com.varsql.core.db.valueobject;
 
 /**
- * 
+ *
  * @FileName  : DatabaseInfo.java
  * @프로그램 설명 : database info
- * @Date      : 2019. 4. 19. 
+ * @Date      : 2019. 4. 19.
  * @작성자      : ytkim
  * @변경이력 :
  */
 public class DatabaseInfo implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String vconnid;
 	private String connUUID;
 	private String type;
@@ -21,7 +21,7 @@ public class DatabaseInfo implements java.io.Serializable {
 	private boolean schemaViewYn;
 	private long version;
 	private int maxSelectCount;
-	
+
 	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,long version, String schemaViewYn, int maxSelectCount){
 		this.vconnid= vconnid;
 		this.connUUID= connUUID;
@@ -32,7 +32,7 @@ public class DatabaseInfo implements java.io.Serializable {
 		this.lazyLoad= "Y".equals(lazyLoad);
 		this.schemaViewYn= "Y".equals(schemaViewYn);
 		this.version= version;
-		this.maxSelectCount = maxSelectCount; 
+		this.maxSelectCount = maxSelectCount;
 	}
 
 	public String getVconnid() {
@@ -114,6 +114,6 @@ public class DatabaseInfo implements java.io.Serializable {
 	public void setMaxSelectCount(int maxSelectCount) {
 		this.maxSelectCount = maxSelectCount;
 	}
-	
-	
+
+
 }

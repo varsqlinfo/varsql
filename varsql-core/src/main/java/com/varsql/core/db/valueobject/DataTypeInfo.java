@@ -1,5 +1,7 @@
 package com.varsql.core.db.valueobject;
 
+import com.varsql.core.db.VarSqlDbDataType;
+
 public class DataTypeInfo {
 	
 	// db type
@@ -13,16 +15,16 @@ public class DataTypeInfo {
 	private boolean range;
 	
 	// 문자 , 숫자 , 날짜 , 기타 등등  구분 
-	private VarSqlDbType varsqlType;
+	private VarSqlDbDataType varsqlType;
 	
 	public DataTypeInfo(String dataTypeName, boolean num , boolean range){
 		this(dataTypeName, num, range, false);
 	}
 	public DataTypeInfo(String dataTypeName, boolean num , boolean range, boolean sizeYn){
-		this(dataTypeName, num, range, sizeYn, VarSqlDbType.OTHER);
+		this(dataTypeName, num, range, sizeYn, VarSqlDbDataType.OTHER);
 	}
 	
-	public DataTypeInfo(String dataTypeName, boolean num , boolean range, boolean sizeYn, VarSqlDbType type){
+	public DataTypeInfo(String dataTypeName, boolean num , boolean range, boolean sizeYn, VarSqlDbDataType type){
 		this.dataTypeName =dataTypeName;
 		this.num =num;
 		this.range = range;
@@ -62,10 +64,10 @@ public class DataTypeInfo {
 		this.sizeYn = sizeYn;
 	}
 	
-	public VarSqlDbType getDbType() {
+	public VarSqlDbDataType getDbType() {
 		return varsqlType;
 	}
-	public void setDbType(VarSqlDbType dbType) {
+	public void setDbType(VarSqlDbDataType dbType) {
 		this.varsqlType = dbType;
 	}
 	

@@ -144,7 +144,11 @@ public final class ConnectionFactory implements ConnectionContext{
 				connInfo.setPassword(rs.getString(VarsqlKeyConstants.CONN_PW));
 			}else {
 				try {
-					connInfo.setPassword(EncryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
+					String str = rs.getString(VarsqlKeyConstants.CONN_PW);
+					connInfo.setPassword("");
+					if(str != null) {
+						connInfo.setPassword(EncryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
+					}
 				}catch(Exception e) {
 					logger.error("EncryptionFactory.getInstance().decrypt : {} ", connInfo.getConnid() ,e);
 				}
@@ -155,6 +159,7 @@ public final class ConnectionFactory implements ConnectionContext{
 			connInfo.setMax_active(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_MAX_ACTIVE), 10));
 			connInfo.setMin_idle(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_MIN_IDLE), 3));
 			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_TIMEOUT), 18000));
+			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_EXPORTCOUNT), 1000));
 			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_EXPORTCOUNT), 1000));
 
 			String conn_query = rs.getString(VarsqlKeyConstants.CONN_QUERY);

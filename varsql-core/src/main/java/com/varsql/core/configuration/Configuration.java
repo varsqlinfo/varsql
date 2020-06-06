@@ -98,11 +98,14 @@ public class Configuration extends AbstractConfiguration{
 
 		logger.info("VARSQL_INSTALL_PATH : {}",VARSQL_INSTALL_PATH);
 		logger.info("configuration system property : {}",configPropFile);
+		logger.info("configuration filename : {}",CONFIG_FILE);
 
-		File propFile = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
+		File propFile =null;
 
 		if(null != configPropFile && !"".equals(configPropFile)){
 			propFile = new File(configPropFile);
+		}else {
+			propFile = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
 		}
 
 		logger.info("config property file : {}",propFile);
