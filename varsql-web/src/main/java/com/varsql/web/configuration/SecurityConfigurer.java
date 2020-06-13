@@ -12,6 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -19,6 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.configuration.VarsqlWebConfig;
+import com.varsql.web.security.RememberMeService;
 import com.varsql.web.security.UserService;
 import com.varsql.web.security.VarsqlAccessDeniedHandler;
 import com.varsql.web.security.VarsqlAuthenticationFailHandler;
@@ -60,6 +63,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler;
+	
+	
+	final private String REMEMBERME_KEY = "varsqlRememberKey";
+	final private String REMEMBERME_PARAMETER = "varsql-remember-me";
+	final private String REMEMBERME_COOKIENAME = "varsql-remember-me-ck";
 
 
 	@Override
@@ -78,6 +86,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		configureHttpSecurity(http);
+		configureRememberMe(http);
     }
 
 	private void configureHttpSecurity(HttpSecurity http) throws Exception {
@@ -157,5 +166,21 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     	 auth.authenticationProvider(varsqlAuthenticationProvider);
     }
     
+    @Bean
+    public PersistentTokenRepository tokenRepository() {
+        return new RememberMeService();
+    }
+    
+    
+    private void configureRememberMe(HttpSecurity http) throws Exception {
+        http.rememberMe()
+               .key(REMEMBERME_KEY)
+               .rememberMeParameter(REMEMBERME_PARAMETER)
+               .rememberMeCookieName(REMEMBERME_COOKIENAME)
+               .alwaysRemember(true)
+               .tokenValiditySeconds(60 * 60 * 24 * 7)
+               .tokenRepository(tokenRepository())
+               .userDetailsService(userDetailsService());
+	}
     
 }

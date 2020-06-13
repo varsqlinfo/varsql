@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.util.CommUtil;
@@ -28,6 +29,9 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 	@Autowired
 	private AuthDAO authDao;
 	
+	@Autowired
+	PersistentTokenBasedRememberMeServices rememberMeService;
+	
     public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
     	
     	if (authentication != null && authentication.getDetails() != null) {
@@ -36,6 +40,7 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 			} catch (Exception e) {
 				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
 			}
+			rememberMeService.logout(request, response, authentication);
 		}
     }
 }
