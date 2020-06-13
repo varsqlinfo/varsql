@@ -55,6 +55,18 @@ public enum DBType {
 		return DBType.OTHER.dbParser;
 	}
 
+	public static DBType getDBType(String db) {
+		if(db != null) {
+			db = db.toUpperCase();
+			for (DBType dbType : values()) {
+				if(db.equalsIgnoreCase(dbType.name())) {
+					return dbType;
+				}
+			}
+		}
+		return DBType.OTHER;
+	}
+
 	public boolean equals(String type) {
 		type = type.toUpperCase();
 		for (DBType dbType : values()) {

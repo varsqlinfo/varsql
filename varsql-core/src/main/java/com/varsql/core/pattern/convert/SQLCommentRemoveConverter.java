@@ -2,6 +2,7 @@ package com.varsql.core.pattern.convert;
 
 import static com.varsql.core.pattern.StringRegularUtils.regExpSpecialCharactersCheck;
 
+import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
@@ -9,7 +10,7 @@ import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: SQLCommentRemoveConverter.java
-* @desc		: sql 코렌트 지우기 
+* @desc		: sql 코렌트 지우기
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -19,37 +20,12 @@ import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
 *-----------------------------------------------------------------------------
  */
 public class SQLCommentRemoveConverter extends AbstractConverter {
-	public static enum DBType {
-		MYSQL("mysql" )
-		,DB2("db2")
-		,ORACLE("oracle")
-		,MSSQL("mssql")
-		,MARIADB("mariadb")
-		,DERBY("derby")
-		,HIVE("hive")
-		,HSQLDB("hsqldb")
-		,POSTGRESQL("postgresql")
-		,INGRES("ingres")
-		,H2("h2")
-		,TIBERO("tibero")
-		,SYBASE("tibero")
-		,OTHER("other");
-		
-		private String dbVenderName;
 
-		private DBType(String db){
-			this.dbVenderName =db; 
-		}
-
-		public String getDbVenderName() {
-			return dbVenderName;
-		}
-	}
 	final static TokenInfo SINGLEQUOTE = new TokenInfo.Builder("'", new String[] { "'" }, (val) -> "'" + val + "'")
 			.setEndDelimiterFunction((val, idx) -> {
 				return regExpSpecialCharactersCheck('\'', val, idx);
 			}).build();
-	
+
 	//new line -> mac = "\r" , window = "\r\n" , linux = "\n"
 	private static String[] NEW_LINE_ARR = new String[] { "\n", "\r" };
 
@@ -72,7 +48,7 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 	final static TokenInfo HINT_ORACLE = new TokenInfo.Builder("/*+", new String[] { "*/" }, (val) -> {
 		return "/*+" + val + "*/";
 	}).setValueReturn(true).build();
-	
+
 	final static TokenInfo HINT_ORACLE2 = new TokenInfo.Builder("--+", null, (val) -> "--+").setValueReturn(true).build();
 
 	final static TokenInfo BLOCK = new TokenInfo.Builder("/*", new String[] { "*/" }).setValueReturn(false).build();
@@ -81,14 +57,22 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 		return regExpSpecialCharactersCheck('"', val, idx);
 	}).build();
 
+	public String convert(String cont, String type) {
+		return convert(cont, DBType.getDBType(type));
+	}
+
+	public String convert(String cont, String type, boolean emptyLineRemove) {
+		return convert(cont, DBType.getDBType(type), emptyLineRemove);
+	}
+
 	public String convert(String cont, DBType type) {
 		return convert(cont, type, true);
 	}
 
 	public String convert(String cont, DBType type, boolean emptyLineRemove) {
 		ConvertResult convertResult=null;
-		
-		
+
+
 		switch (type) {
 		case ORACLE:
 			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, HINT_ORACLE2, LINE, HINT_ORACLE, BLOCK);
@@ -109,9 +93,9 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, BLOCK);
 			break;
 		}
-		
+
 		String result=convertResult.getCont();
-		
+
 		if (emptyLineRemove) {
 			return StringRegularUtils.removeBlank(result); // blank line remove
 		}

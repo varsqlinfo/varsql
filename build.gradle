@@ -7,7 +7,6 @@
  */
 
 buildscript {
-
 	ext {
         springBootVersion = '2.2.6.RELEASE'
         springDependencyVersion = '1.0.9.RELEASE'
@@ -42,6 +41,8 @@ configurations.all {
 def def_build= [
 	dir : 'target'
 ]
+
+ext.varsqlVersion = '1.0.0'
 
 subprojects {
     apply plugin: 'java'
@@ -79,6 +80,7 @@ subprojects {
 		,junitPlatform : '1.5.0'
 		,mockito: '3.3.3'
 		,lombok : '1.18.10'
+		,querydslSql : '4.3.1'
 	]
 
     sourceCompatibility = 1.8
@@ -102,25 +104,27 @@ subprojects {
 		annotationProcessor( [group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
 		testAnnotationProcessor([group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
 		implementation group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok
-		
+
 		/*
 		implementation group: 'com.querydsl' , name: 'querydsl-apt'
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
 
 		implementation group: 'com.querydsl' , name: 'querydsl-jpa'
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
-		
 		*/
-		
+
+
 		implementation(
 			[group: 'com.querydsl' , name: 'querydsl-apt']
 			,[group: 'com.querydsl' , name: 'querydsl-jpa']
+			,[group: 'com.querydsl' , name: 'querydsl-sql' ,version: def_version.querydslSql]
+			,[group: 'com.querydsl' , name: 'querydsl-sql-spring', version: def_version.querydslSql]
 		)
-		
+
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
 		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
-		
-		
+
+
 		//junit
 		testImplementation(
 			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter-api' , version: def_version.junit ]
@@ -134,7 +138,7 @@ subprojects {
 			,[ group: 'org.mockito', name: 'mockito-core', version: def_version.mockito ]
 
 		)
-		
+
 		testImplementation('org.springframework.boot:spring-boot-starter-test') {
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}
@@ -190,6 +194,10 @@ subprojects {
 		implementation group: 'commons-codec' , name: 'commons-codec' , version: '1.11'
 
 		implementation group: 'com.alibaba' , name: 'druid' , version: '1.1.12'
+
+		// sql formatter
+		implementation group: 'com.github.vertical-blank', name: 'sql-formatter', version: '1.0'
+
 		implementation group: 'com.thoughtworks.xstream' , name: 'xstream' , version: '1.4.11'
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'
 		implementation group: 'com.github.jknack' , name: 'handlebars' , version: '4.1.0'
@@ -198,13 +206,13 @@ subprojects {
 			[ group: 'javax.servlet' , name: 'javax.servlet-api' , version: '4.0.0' ]
 			, [ group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: def_version.jspApi ]
 		)
-		
-		implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2' 
-    	
-    	
-    	// 내장 톰켓. 
+
+		implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2'
+
+
+    	// 내장 톰켓.
     	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
-    
+
 		// db driver
 		implementation(
 			[ group: 'com.h2database' , name: 'h2' , version: '1.4.199' ]
@@ -218,15 +226,15 @@ subprojects {
 	    jpa = true
 	    querydslSourcesDir = querydslSrcDir
 	}
-	
+
 	configurations {
 	    querydsl.extendsFrom compileClasspath
 	}
-	
+
 	compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
 	    options.annotationProcessorPath = configurations.querydsl
 	}
-	
+
 	configurations {
 	    querydsl.extendsFrom compileClasspath
 	}
@@ -247,7 +255,7 @@ subprojects {
 
    		//exclude '**/*' // 빌드시 제외 하고 싶을때 사용.
 	}
-	
+
 	// JAVA file compile charset
 	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 }
