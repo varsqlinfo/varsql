@@ -39,9 +39,12 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 	// line comment
 	final static TokenInfo LINE = new TokenInfo.Builder("--", NEW_LINE_ARR).setValueReturn(false).setEndDelimiterFunction(newLineEndDelFn).build();
 	final static TokenInfo LINE_SYBASE = new TokenInfo.Builder("//", NEW_LINE_ARR).setValueReturn(false).setEndDelimiterFunction(newLineEndDelFn).build();
-
+	
+	final static TokenInfo MYBATIS_PARAM_IGNORE = new TokenInfo.Builder("#{", null, (val) -> "#{")  .build();
+	
 	// mysql line comment
 	final static TokenInfo LINE_MYSQL_IGNORE = new TokenInfo.Builder("\\#", null, (val) -> "\\#").build();
+	
 
 	final static TokenInfo LINE_MYSQL = new TokenInfo.Builder("#", NEW_LINE_ARR).setValueReturn(false).setEndDelimiterFunction(newLineEndDelFn).build();
 
@@ -79,11 +82,11 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 			break;
 
 		case MYSQL:
-			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, MYBATIS_PARAM_IGNORE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
 			break;
 
 		case MARIADB:
-			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
+			convertResult = transform(cont, DOUBLEQUOTE, SINGLEQUOTE, LINE, MYBATIS_PARAM_IGNORE, LINE_MYSQL_IGNORE, LINE_MYSQL, BLOCK);
 			break;
 
 		case SYBASE:

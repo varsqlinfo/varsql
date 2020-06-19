@@ -177,10 +177,20 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                .key(REMEMBERME_KEY)
                .rememberMeParameter(REMEMBERME_PARAMETER)
                .rememberMeCookieName(REMEMBERME_COOKIENAME)
-               .alwaysRemember(true)
-               .tokenValiditySeconds(60 * 60 * 24 * 7)
+               .rememberMeServices(persistentTokenBasedRememberMeServices())
                .tokenRepository(tokenRepository())
                .userDetailsService(userDetailsService());
 	}
+    
+    @Bean
+   	public PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices() {
+   	    PersistentTokenBasedRememberMeServices persistenceTokenBasedservice = new PersistentTokenBasedRememberMeServices(REMEMBERME_KEY, userDetailsService(), tokenRepository());
+   	    persistenceTokenBasedservice.setParameter(REMEMBERME_PARAMETER);
+   	    persistenceTokenBasedservice.setAlwaysRemember(false);
+   	    persistenceTokenBasedservice.setCookieName(REMEMBERME_COOKIENAME);
+   	    persistenceTokenBasedservice.setTokenValiditySeconds(60 * 60 * 24 * 7);		// 토큰 유효시간 1주일 설정
+   	    return persistenceTokenBasedservice;
+   	  }
+    
     
 }

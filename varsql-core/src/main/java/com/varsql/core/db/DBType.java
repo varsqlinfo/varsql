@@ -23,9 +23,9 @@ public enum DBType {
 	,INGRES("ingres",JdbcConstants.MARIADB)
 	,H2("h2",JdbcConstants.H2)
 	,TIBERO("tibero",JdbcConstants.ORACLE)
-	,CUBRID("cubrid",JdbcConstants.MARIADB)
+	,CUBRID("cubrid",JdbcConstants.H2)
 	,SYBASE("sybase",JdbcConstants.SYBASE)
-	,OTHER("other",JdbcConstants.MARIADB);
+	,OTHER("other",JdbcConstants.H2);
 
 	private String dbVenderName;
 	private String dbParser;

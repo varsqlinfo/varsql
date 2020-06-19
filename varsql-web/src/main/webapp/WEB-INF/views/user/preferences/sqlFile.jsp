@@ -38,8 +38,8 @@
 						</div>
 					</div>
 				</div>
-				
-				
+
+
 				<div class="table-responsive">
 					<div id="dataTables-example_wrapper"
 						class="dataTables_wrapper form-inline" role="grid">
@@ -66,17 +66,17 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.SQL_ID" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="detail(item)">{{item.GUERY_TITLE}}</a></td>
-									<td class="center">{{item.VNAME}}</td>
-									<td class="center">{{item.CHAR_REG_DT}}</td>
+									<td><input type="checkbox" :value="item.sqlId" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="detail(item)">{{item.sqlTitle}}</a></td>
+									<td class="center">{{item.vname}}</td>
+									<td class="center">{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
 									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -88,22 +88,21 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="detail.view" /><span style="margin-left:10px;font-weight:bold;">{{detailItem.TITLE}}</span></div>
+			<div class="panel-heading"><spring:message code="detail.view" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlfile" /></label></div>
-			
+
 						<div class="col-xs-12">
-							{{detailItem.GUERY_TITLE}}&nbsp;
+							{{detailItem.sqlTitle}}&nbsp;
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
 						<div class="col-xs-12">
-							<pre id="prettyprintArea" class="user-select-on prettyprint lang-sql prettyprinted" contenteditable="true" style="width:100%;height:370px;">
-							</pre>
+							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
 						</div>
 					</div>
 				</form>
@@ -115,10 +114,27 @@
 	<!-- /.col-lg-8 -->
 </div>
 
-<link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
-<script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js?version=${prettify_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
+<link href="${pageContextPath}/webstatic/css/editor/codemirror.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/editor/show-hint.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/editor/theme/eclipse.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
 
+<!-- sql editor -->
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/search.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/searchcursor.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/matchbrackets.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/closebrackets.js?version=${codemirror_ver}"></script>
+
+<style>
+.CodeMirror {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #c5bbbb;
+}
+</style>
 <script>
 VarsqlAPP.vueServiceBean({
 	el: '#varsqlVueArea'
@@ -131,34 +147,53 @@ VarsqlAPP.vueServiceBean({
 		,detailItem : {}
 		,vconnid : 'ALL'
 		,isDetailFlag :false
+		,fileViewEditor : {}
 	}
 	,computed :{
 		selectAllCheck : function (){
-			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length; 
+			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length;
 		}
 	}
 	,methods:{
-		selectAll : function (){
+		init : function() {
+
+			$(this.$el).removeClass('display-off')
+
+			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('sqlFileViewer'), {
+				mode: 'text/x-sql',
+				indentWithTabs: true,
+				smartIndent: true,
+				autoCloseBrackets: true,
+				indentUnit : 4,
+				lineNumbers: true,
+				height:500,
+				lineWrapping: false,
+				matchBrackets : true,
+				theme: "eclipse",
+				readOnly:true
+			});
+		}
+		,selectAll : function (){
 			if(this.selectAllCheck){
-				this.selectItem = []; 
+				this.selectItem = [];
 			}else{
 				this.selectItem = [];
-				
+
 				for(var i =0 ;i <this.gridData.length; i++){
-					this.selectItem.push(this.gridData[i].SQL_ID)
+					this.selectItem.push(this.gridData[i].sqlId)
 				}
 			}
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 				,vconnid : _self.vconnid
 			};
-			
+
 			this.$ajax({
 				url :{type:VARSQL.uri.user, url:'/preferences/sqlFile/list'}
 				,data : param
@@ -169,43 +204,42 @@ VarsqlAPP.vueServiceBean({
 			})
 		}
 		,detail : function (item){
-			var _this = this; 
-		
-			_this.isDetailFlag = true; 
+			var _this = this;
+
+			_this.isDetailFlag = true;
 			this.$ajax({
 				url : {type:VARSQL.uri.user, url:'/preferences/sqlFile/detail'}
 				,loadSelector : '#main-content'
 				,data : {
-					sqlid : item.SQL_ID
+					sqlId : item.sqlId
 				}
 				,success:function (resData){
 					_this.detailItem = resData.item;
-					
+
 					var ele = $('#prettyprintArea');
-					
-					ele.empty().html(_this.detailItem.QUERY_CONT).removeClass('prettyprinted');
-					ele.scrollTop(0);
-					PR.prettyPrint();
+
+					_this.fileViewEditor.setValue(_this.detailItem.sqlCont||'');
+					_this.fileViewEditor.setHistory({done:[],undone:[]});
 				}
 			});
 		}
 		//delete
 		,deleteInfo : function(){
 			var _this = this;
-			
+
 			var item = _this.detailItem;
-			
+
 			var selectItem = _this.selectItem;
-			
+
 			if(VARSQL.isDataEmpty(selectItem)){
 				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
-				return ; 
+				return ;
 			}
-			
+
 			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
-				return ; 	
+				return ;
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.user, url:'/preferences/sqlFile/delete'}
 				,data : {

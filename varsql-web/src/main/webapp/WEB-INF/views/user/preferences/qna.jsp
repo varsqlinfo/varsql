@@ -24,16 +24,16 @@
 					<template v-for="(item,index) in gridData">
 						<div class="list-group-item">
 							<a href="javascript:;" @click="qnaModify(item)">
-								<span class="clickItem" >{{item.TITLE}}</span>
+								<span class="clickItem" >{{item.title}}</span>
 							</a>
 							<div class="pull-right">
-			    				<span style="width:60px;">{{item.CHAR_CRE_DT}}</span>
+			    				<span style="width:60px;">{{item.regDt}}</span>
 			    			</div>
 		    			</div>
 	    			</template>
 	    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
 				</div>
-				
+
 				<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 			</div>
 			<!-- /.panel-body -->
@@ -43,7 +43,7 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="detail.view" /><span style="margin-left:10px;font-weight:bold;">{{detailItem.TITLE}}</span></div>
+			<div class="panel-heading"><spring:message code="detail.view" /><span style="margin-left:10px;font-weight:bold;">{{detailItem.title}}</span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
@@ -52,33 +52,33 @@
 							<div class="pull-right">
 								<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="btn.add"/></button>
 								<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
-								<button type="button" v-if="isDetailFlag && detailItem.ANSWER_YN == 'N'" @click="deleteInfo()" class="btn btn-default"><spring:message code="btn.delete" /></button>
+								<button type="button" v-if="isDetailFlag && detailItem.answerYn == 'N'" @click="deleteInfo()" class="btn btn-primary"><spring:message code="btn.delete" /></button>
 							</div>
 						</div>
 					</div>
-					
-					<div class="form-group" :class="errors.has('TITLE') ? 'has-error' :''">
+
+					<div class="form-group" :class="errors.has('Title') ? 'has-error' :''">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="guest.form.title" /></label></div>
-			
+
 						<div class="col-xs-12">
-							<input type="text" v-model="detailItem.TITLE"  v-validate="'required'" name="TITLE" class="form-control" />
-							<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
+							<input type="text" v-model="detailItem.title"  v-validate="'required'" name="Title" class="form-control" />
+							<div v-if="errors.has('Title')" class="help-block">{{errors.first('Title')}}</div>
 						</div>
 					</div>
-					<div class="form-group" :class="errors.has('QUESTION') ? 'has-error' :''">
+					<div class="form-group" :class="errors.has('Question') ? 'has-error' :''">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="guest.form.question" /></label></div>
 						<div class="col-xs-12">
-							<textarea v-model="detailItem.QUESTION" rows="3" v-validate="'required'" name="QUESTION" class="form-control"></textarea>
-							<div v-if="errors.has('QUESTION')" class="help-block">{{errors.first('QUESTION')}}</div>
+							<textarea v-model="detailItem.question" rows="3" v-validate="'required'" name="Question" class="form-control"></textarea>
+							<div v-if="errors.has('Question')" class="help-block">{{errors.first('Question')}}</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-xs-12">
 							<label class="control-label"><spring:message code="guest.form.answer" /></label>
-							<span v-if="detailItem.ANSWER_YN != 'N'">({{detailItem.CHAR_ANSWER_DT}})</span>
+							<span v-if="detailItem.answerYn != 'N'">({{detailItem.answerDt}})</span>
 						</div>
 						<div class="col-xs-12">
-							<pre style="height:200px;overflow:auto;">{{detailItem.ANSWER}}</pre>
+							<pre style="height:200px;overflow:auto;">{{detailItem.answer}}</pre>
 						</div>
 					</div>
 				</form>
@@ -105,14 +105,14 @@ VarsqlAPP.vueServiceBean({
 			this.qnaModify();
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url :{type:VARSQL.uri.user, url:'/preferences/qnaList'}
 				,data : param
@@ -124,25 +124,21 @@ VarsqlAPP.vueServiceBean({
 		}
 		,save : function (mode){
 			var _this = this;
-			
+
 			this.$validator.validateAll().then(function (result){
 				if(result){
-					
+
 					var param ={};
 					var saveItem = _this.detailItem;
-					
-					for(var key in saveItem){
-						param[VARSQL.util.convertCamel(key)] = saveItem[key];
-					}
-					
+
 					_this.$ajax({
 						url : {type:VARSQL.uri.user, url:'/preferences/insQna'}
-						,data : param 
+						,data : param
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
 									alert(resData.message);
-									return ; 
+									return ;
 								}
 								_this.qnaModify();
 								_this.search();
@@ -153,31 +149,31 @@ VarsqlAPP.vueServiceBean({
 			});
 		}
 		,qnaModify : function (item){
-			
+
 			if(VARSQL.isUndefined(item)){
 				this.detailItem = {
-					TITLE : ''
-					,QUESTION :''
+					title : ''
+					,question :''
 				}
 				this.isDetailFlag = false;
 			}else{
-				this.isDetailFlag = true; 
-				this.detailItem = item;	
+				this.isDetailFlag = true;
+				this.detailItem = item;
 			}
 		}
 		,deleteInfo : function(){
 			var _this = this;
-			
+
 			var item = this.detailItem;
-			
+
 			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
-				return ; 	
+				return ;
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.user, url:'/preferences/delQna'}
 				,data : {
-					qnaid : item.QNAID
+					qnaid : item.qnaid
 				}
 				,success:function (resData){
 					_this.qnaModify();

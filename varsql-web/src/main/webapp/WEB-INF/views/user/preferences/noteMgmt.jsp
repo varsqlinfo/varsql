@@ -80,14 +80,14 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.MEMO_ID" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="viewItem(item)"> {{item.MEMO_TITLE}} </a></td>
-									<td class="center">{{item.SEND_NM}}</td>
-									<td class="center">{{item.REG_DT}}</td>
-									<td class="center">{{item.VIEW_DT}}</td>
+									<td><input type="checkbox" :value="item.noteId" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="viewItem(item)"> {{item.noteTitle}} </a></td>
+									<td class="center">{{item.sendNm}}</td>
+									<td class="center">{{item.regDt}}</td>
+									<td class="center">{{item.viewDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td colspan="5"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -110,12 +110,12 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td><input type="checkbox" :value="item.MEMO_ID" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="viewItem(item)"> {{item.MEMO_TITLE}} </a></td>
-									<td class="center">{{item.REG_DT}}</td>
+									<td><input type="checkbox" :value="item.noteId" v-model="selectItem"></td>
+									<td><a href="javascript:;" @click="viewItem(item)"> {{item.noteTitle}} </a></td>
+									<td class="center">{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -136,12 +136,12 @@
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="form-group">
 						<div class="col-sm-12">
-							<div class="form-control text required">{{detailItem.MEMO_TITLE}}</div>
+							<div class="form-control text required">{{detailItem.noteTitle}}</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-12">
-							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.MEMO_CONT}}</textarea>
+							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.noteCont}}</textarea>
 						</div>
 					</div>
 					
@@ -150,18 +150,18 @@
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div style="height:100px;overflow:auto;border:1px solid #ddd;">
-								<div v-for="(item,index) in detailItem.RECV_USER">
-									 {{item.RECV_NM}} <span>(</span> {{item.UID}}<span>)</span>
-								</div>
+									<div v-for="(item,index) in detailItem.recvUsers">
+										 {{item}}
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div v-else>
 						<div class="pull-right" style="margin-bottom:10px;">
-							<button type="button" class="btn btn-sm btn-primary" @click="resendMemo()"><spring:message code="reply" text="답장"/></button>
+							<button type="button" class="btn btn-sm btn-primary" @click="resendNote()"><spring:message code="reply" text="답장"/></button>
 						</div>
-						<textarea class="form-control text required" rows="5" v-model="detailItem.RE_MEMO_CONT"></textarea>
+						<textarea class="form-control text required" rows="5" v-model="detailItem.reNoteCont"></textarea>
 						
 						<div style="margin-top:10px;">
 							<table 
@@ -185,10 +185,10 @@
 								<tbody class="dataTableContent">
 									<tr v-for="(item,index) in replyList" class="gradeA" :class="(index%2==0?'add':'even')">
 										<td>
-											<a href="javascript:;" @click="replyViewItem(item)" class="text-ellipsis">{{item.MEMO_CONT}}</a>
-											<textarea rows="5" class="wh100" :class="item._visible==true?'view':'hidden'">{{item.MEMO_CONT}}</textarea>
+											<a href="javascript:;" @click="replyViewItem(item)" class="text-ellipsis">{{item.noteCont}}</a>
+											<textarea rows="5" class="wh100" :class="item._visible==true?'view':'hidden'">{{item.noteCont}}</textarea>
 										</td>
-										<td class="center">{{item.REG_DT}}</td>
+										<td class="center">{{item.regDt}}</td>
 									</tr>
 									<tr v-if="replyList.length === 0">
 										<td colspan="2"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
@@ -219,7 +219,7 @@ VarsqlAPP.vueServiceBean( {
 		,detailItem :{}
 		,selectItem :[]
 		,replyList :[]
-		,reMemoItem :{}
+		,reNoteItem :{}
 	}
 	,methods:{
 		deleteMsg : function(){
@@ -236,8 +236,8 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			var param = {
-				message_type : _self.message_type
-				,selectItem:selectItem.join(',')
+				messageType : _self.message_type
+				,selectItem : selectItem.join(',')
 			};
 			
 			this.$ajax({
@@ -250,13 +250,13 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,viewItem : function (item){
 			var _self =this; 
-			item.RE_MEMO_CONT ='';
+			item.reNoteCont ='';
 			this.detailItem = item;
 			this.replyList = [];
 			
 			this.$ajax({
 			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList'}
-			    ,data : VARSQL.util.getConvertCamelObject(item) 
+			    ,data : VARSQL.util.copyObject(item) 
 			    ,success:function (resData){
 			    	_self.replyList = resData.items;
 				}
@@ -265,14 +265,14 @@ VarsqlAPP.vueServiceBean( {
 		,allCheck : function (sEle){
 			console.log($(sEle));
 		}
-		,resendMemo  : function (){
+		,resendNote  : function (){
 			var _this =this; 
 			
-			var params = VARSQL.util.getConvertCamelObject(this.detailItem);
+			var params = VARSQL.util.copyObject(this.detailItem);
 			params.recvId = 'resend';
 			
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/resendMemo'}
+			    url:{type:VARSQL.uri.user, url:'/resendNote'}
 			    ,data:params 
 			    ,success:function (resData){
 			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
@@ -282,7 +282,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,replyViewItem : function (item){
-			this.reMemoItem = item; 
+			this.reNoteItem = item; 
 			
 			Vue.set(item, '_visible',  !item._visible)
 		}
@@ -294,7 +294,7 @@ VarsqlAPP.vueServiceBean( {
 			
 			var param = {
 				pageNo : (no?no:1)
-				,message_type : _self.message_type
+				,messageType : _self.message_type
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
