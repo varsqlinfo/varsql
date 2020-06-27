@@ -18,6 +18,7 @@ import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -58,8 +59,8 @@ public class CubridDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = client.selectOne("tableScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("CREATE TABLE")).append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(source.getString("CREATE TABLE")).append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			
 			reval.add(ddlInfo);
 		}
@@ -92,9 +93,9 @@ public class CubridDDLScript extends DDLScriptImpl {
 			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 			
 			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
-			ddlStr.append(source.getString("Create View")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("Create View")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 	
@@ -146,9 +147,9 @@ public class CubridDDLScript extends DDLScriptImpl {
 				ddlStr.append(")").append(BlankConstants.NEW_LINE);
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 		
@@ -194,10 +195,9 @@ public class CubridDDLScript extends DDLScriptImpl {
 			param.put("ARGUMENTS",argsSb.toString());
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "functionScript", param));
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 		
@@ -244,9 +244,9 @@ public class CubridDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "procedureScript", param));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 		
@@ -299,9 +299,9 @@ public class CubridDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 
@@ -344,8 +344,8 @@ public class CubridDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "sequenceScript", param));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
 			reval.add(ddlInfo);
 		}
 		

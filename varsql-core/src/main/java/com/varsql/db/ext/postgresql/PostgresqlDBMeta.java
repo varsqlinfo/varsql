@@ -25,7 +25,7 @@ import com.vartech.common.utils.VartechUtils;
 
 /**
  * 
- * @FileName : CubridDBMeta.java
+ * @FileName : PostgresqlDBMeta.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 13.
  * @프로그램설명:

@@ -1,27 +1,21 @@
 package com.varsql.db.ext.mariadb;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
+import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -62,8 +56,8 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = client.selectOne("tableScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("Create Table")).append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(source.getString("Create Table")).append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
 			
 			reval.add(ddlInfo);
 		}
@@ -95,9 +89,9 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("Create View")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("Create View")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
 			reval.add(ddlInfo);
 		}
 	
@@ -117,7 +111,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			ddlInfo.setCreateScript("");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",DBType.MARIADB));
 			reval.add(ddlInfo);
 		}
 		
@@ -148,9 +142,9 @@ public class MariadbDDLScript extends DDLScriptImpl {
 
 			ParamMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("Create Function")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("Create Function")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
 			
 			reval.add(ddlInfo);
 		}
@@ -178,9 +172,9 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("Create Procedure")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("Create Procedure")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
 			reval.add(ddlInfo);
 		}
 
@@ -223,9 +217,9 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			
 			ParamMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
 			
-			ddlStr.append(source.getString("Create Trigger")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("Create Trigger")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
 			reval.add(ddlInfo);
 		}
 

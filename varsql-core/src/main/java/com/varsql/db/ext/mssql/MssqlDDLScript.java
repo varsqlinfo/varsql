@@ -23,6 +23,7 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
@@ -121,7 +122,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 
@@ -163,9 +164,9 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 	
@@ -200,11 +201,11 @@ public class MssqlDDLScript extends DDLScriptImpl {
 					
 					ddlStr.append(indexMap.get("SOURCES"));
 				}
-				
-				ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 			}
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 		
@@ -245,9 +246,8 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 		
@@ -288,9 +288,9 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 
@@ -343,9 +343,8 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
-			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 
@@ -388,8 +387,8 @@ public class MssqlDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.MSSQL.getDbVenderName(), "sequenceScript", param));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
 			reval.add(ddlInfo);
 		}
 		

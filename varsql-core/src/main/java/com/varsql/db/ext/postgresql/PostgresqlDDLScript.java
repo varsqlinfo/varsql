@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,17 +17,16 @@ import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
  * 
- * @FileName  : CubridDDLScript.java
- * @프로그램 설명 : Cubrid ddl 
+ * @FileName  : PostgresqlDDLScript.java
+ * @프로그램 설명 : Postgresql ddl 
  * @Date      : 2019. 1. 20. 
  * @작성자      : ytkim
  * @변경이력 :
@@ -108,7 +106,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 
@@ -140,9 +138,9 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 			
 			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
-			ddlStr.append(source.getString("VIEW_SOURCE")).append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(source.getString("VIEW_SOURCE")).append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 	
@@ -173,9 +171,9 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			Map indexInfo = sqlSesseion.selectOne("indexScript", dataParamInfo);
 			ddlStr.append(indexInfo.get(MetaColumnConstants.CREATE_SOURCE));
 	
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 		
@@ -208,9 +206,9 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 		
@@ -242,10 +240,10 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			Map scriptInfo = sqlSesseion.selectOne("procedureScript", dataParamInfo);
 			
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 		
@@ -289,9 +287,9 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			Map scriptInfo = sqlSesseion.selectOne("triggerScript", dataParamInfo);
 			
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 
@@ -334,8 +332,8 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "sequenceScript", param));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.POSTGRESQL));
 			reval.add(ddlInfo);
 		}
 		

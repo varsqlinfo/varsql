@@ -12,6 +12,7 @@ import com.alibaba.druid.sql.visitor.VisitorFeature;
 import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.github.vertical_blank.sqlformatter.core.FormatConfig;
 import com.varsql.core.common.constants.BlankConstants;
+import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
 import com.varsql.core.sql.util.SqlReplaceUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -109,6 +110,17 @@ public final class VarsqlFormatterUtil {
 		result.setItemOne(resultSql);
 
 		return result;
+	}
+	
+	public static String ddlFormat(String sql, DBType dbType){
+		switch (dbType) {
+			case TIBERO:
+			case ORACLE:
+				return sql;
 
+			default:
+				return SqlFormatter.format(sql, FormatConfig.builder().indent(BlankConstants.TAB).build());
+		}
+		
 	}
 }

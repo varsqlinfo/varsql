@@ -22,7 +22,7 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
-	private String loginUUID;
+	private boolean loginRememberMe;
 	private String viewid;
 	private String username;
 	private String password;
@@ -142,14 +142,6 @@ public class User implements UserDetails {
 		this.topAuthority = topAuthority;
 	}
 
-	public String getLoginUUID() {
-		return loginUUID;
-	}
-
-	public void setLoginUUID(String loginUUID) {
-		this.loginUUID = loginUUID;
-	}
-
 	public Locale getUserLocale() {
 		return userLocale;
 	}
@@ -188,6 +180,14 @@ public class User implements UserDetails {
 
 	public void setBlockYn(boolean blockYn) {
 		this.blockYn = blockYn;
+	}
+
+	public boolean isLoginRememberMe() {
+		return loginRememberMe;
+	}
+
+	public void setLoginRememberMe(boolean loginRememberMe) {
+		this.loginRememberMe = loginRememberMe;
 	}
 	
 	

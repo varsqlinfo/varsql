@@ -1,7 +1,6 @@
 package com.varsql.db.ext.oracle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ import com.vartech.common.utils.VartechUtils;
 
 /**
  *
- * @FileName : DBMetaImplOracle.java
+ * @FileName : OracleDBMeta.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 13.
  * @프로그램설명:

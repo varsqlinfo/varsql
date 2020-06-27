@@ -6,8 +6,8 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 
 /**
  * 
- * @FileName  : DataTypeDB2.java
- * @프로그램 설명 : db2 data type
+ * @FileName  : PostgresqlDataType.java
+ * @프로그램 설명 : Postgresql data type
  * @Date      : 2015. 6. 18. 
  * @작성자      : ytkim
  * @변경이력 :

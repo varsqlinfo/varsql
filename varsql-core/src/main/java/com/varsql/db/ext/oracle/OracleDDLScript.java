@@ -24,9 +24,18 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.VartechUtils;
 
+/**
+ * 
+ * @FileName  : OracleDDLScript.java
+ * @프로그램 설명 : oracle ddl
+ * @Date      : 2019. 7. 3. 
+ * @작성자      : ytkim
+ * @변경이력 :
+ */
 public class OracleDDLScript extends DDLScriptImpl {
 	Logger logger = LoggerFactory.getLogger(OracleDDLScript.class);
 	
@@ -116,7 +125,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 
@@ -164,9 +173,9 @@ public class OracleDDLScript extends DDLScriptImpl {
 				ddlStr.append(source).append(BlankConstants.NEW_LINE);
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 	
@@ -247,9 +256,9 @@ public class OracleDDLScript extends DDLScriptImpl {
 				
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 		
@@ -286,9 +295,9 @@ public class OracleDDLScript extends DDLScriptImpl {
 				ddlStr.append( srcList.get(i));
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 		
@@ -346,9 +355,9 @@ public class OracleDDLScript extends DDLScriptImpl {
 				}
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 
@@ -395,9 +404,9 @@ public class OracleDDLScript extends DDLScriptImpl {
 				ddlStr.append( scrList.get(i));
 			}
 			
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 		
@@ -441,8 +450,8 @@ public class OracleDDLScript extends DDLScriptImpl {
 			
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.ORACLE.getDbVenderName(), "sequenceScript", param));
 			
-			ddlStr.append(BlankConstants.NEW_LINE_TWO);
-			ddlInfo.setCreateScript(ddlStr.toString());
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
 			reval.add(ddlInfo);
 		}
 		
