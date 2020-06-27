@@ -24,16 +24,17 @@ import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.security.repository.UserRepository;
+import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.VartechUtils;
 
@@ -55,7 +56,7 @@ public final class AuthDAO {
 
 	@Autowired
 	private UserLogHistRepository userLogHistRepository;// = (UserLogHistRepository)BeanUtils.getBean("userLogHistRepository");
-	
+
 	@Autowired
 	@Qualifier("varsqlPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
@@ -76,10 +77,15 @@ public final class AuthDAO {
 		String username = userInfo.getString("username");
 		String password = userInfo.getString("password");
 
-		return loadUserByUsername(username, password);
+		return loadUserByUsername(username, password, false);
 	}
 
-	public User loadUserByUsername(String username, String password) {
+	public User loadUserByUsername(String username, boolean remembermeFlag) {
+
+		return loadUserByUsername(username, null, true);
+	}
+
+	public User loadUserByUsername(String username, String password, boolean remembermeFlag) {
 		try {
 			UserEntity userModel= userRepository.findByUid(username);
 
@@ -87,14 +93,16 @@ public final class AuthDAO {
 				return null;
 				//throw new UsernameNotFoundException("Wrong username or password ");
 			}
-			
-			if(!passwordEncoder.matches(password, userModel.getUpw())){
-				return null;
-				//throw new UsernameNotFoundException("Wrong username or password ");
+
+			if(remembermeFlag==false) {
+				if(!passwordEncoder.matches(password, userModel.getUpw())){
+					return null;
+					//throw new UsernameNotFoundException("Wrong username or password ");
+				}
 			}
 
 			User user = new User();
-			user.setLoginUUID(UUIDUtil.generateUUID());
+			user.setLoginRememberMe(remembermeFlag);
 			user.setViewid(userModel.getViewid());
 			user.setUsername(userModel.getUid());
 			user.setPassword("");
@@ -113,24 +121,17 @@ public final class AuthDAO {
 
 			String userRole = userModel.getUserRole();
 
-			String [] roleArr = StringUtil.split(userRole, role_delim);
 
 			List<Authority> roles = new ArrayList<Authority>();
 			Authority r = new Authority();
 
-			AuthorityType maxPriority = AuthorityType.GUEST;
-			for (int i = 0; i < roleArr.length; i++) {
-				String roleName = roleArr[i];
-				AuthorityType rolePriority = AuthorityType.valueOf(roleName);
-				r = new Authority();
-				r.setName(roleName);
-				r.setPriority(rolePriority.getPriority());
-				roles.add(r);
+			AuthorityType authType = AuthorityType.valueOf(userRole);
+			r = new Authority();
+			r.setName(userRole);
+			r.setPriority(authType.getPriority());
+			roles.add(r);
 
-				maxPriority = rolePriority.getPriority() > maxPriority.getPriority() ? rolePriority : maxPriority;
-			}
-
-			user.setTopAuthority(maxPriority);
+			user.setTopAuthority(authType);
 			user.setAuthorities(roles);
 
 			return user;
@@ -140,12 +141,14 @@ public final class AuthDAO {
 		}
 	}
 
-	public void getUserDataBaseInfo() throws Exception {
+	public void getUserDataBaseInfo(){
 		Connection conn =ConnectionFactory.getInstance().getConnection();
 		PreparedStatement pstmt= null;
 		ResultSet rs= null;
 		try {
 			getUserDataBaseInfo(conn,pstmt, rs, SecurityUtil.loginInfo());
+		}catch(SQLException e) {
+			throw new VarsqlAppException("database load exception : "+e.getMessage(), e);
 		}finally{
 			SqlUtils.close(conn , pstmt, rs);
 		}
@@ -169,6 +172,7 @@ public final class AuthDAO {
 					.usrIp(cpi.getIp())
 					.browser(cpi.getBrowser())
 					.deviceType(cpi.getDeviceType())
+					.histTime(DefaultValueUtils.currentTimestamp())
 					.platform(cpi.getOsType()).build());
 		} catch (Exception e) {
 			logger.error(this.getClass().getName() +" addLog ", e);
@@ -194,7 +198,8 @@ public final class AuthDAO {
 
 	  	StringBuffer query = new StringBuffer();
 
-	  	query.append(" select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ");
+	  	String dbColumnQuery = "select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ";
+	  	query.append( dbColumnQuery);
 
 		AuthorityType tmpAuthority = user.getTopAuthority();
 
@@ -204,16 +209,20 @@ public final class AuthDAO {
 			query.append(" 1 != 1 ");
 		}else {
 			query.append(" A.VCONNID IN ( ");
-			query.append(" 	select distinct VCONNID ");
-			query.append(" 	from VTDATABASE_GROUP a ,VTDATABASE_GROUP_DB b , VTDATABASE_GROUP_USER c ");
-			query.append(" 	where a.GROUP_ID = b.GROUP_ID ");
-			query.append(" 	and b.GROUP_ID = c.GROUP_ID ");
-			query.append(" 	and c.VIEWID = '"+user.getViewid()+"' ");
-			query.append(" 	and b.VCONNID not in ( select VCONNID from VTDATABASE_BLOCK_USER where VIEWID ='"+user.getViewid()+"' )  ");
+			query.append(" select d.VCONNID ");
+			query.append(" from VTDATABASE_GROUP a inner join VTDATABASE_GROUP_DB b on a.GROUP_ID = b.GROUP_ID ");
+			query.append(" inner join VTDATABASE_GROUP_USER c on b.GROUP_ID = c.GROUP_ID ");
+			query.append(" inner join VTCONNECTION d on b.VCONNID = d.VCONNID ");
+			query.append(" left outer join VTDATABASE_BLOCK_USER e on d.VCONNID = e.VCONNID and c.VIEWID =e.VIEWID ");
+			query.append(" where c.VIEWID = '"+user.getViewid()+"'  ");
+			query.append(" and e.viewid is null ");
+			query.append(" and d.USE_YN = 'Y' ");
+			query.append(" group by d.VCONNID ");
 			query.append(" ) ");
 
 			if(tmpAuthority.equals(AuthorityType.MANAGER)){
-				query.append("  or a.VCONNID in ( select VCONNID from VTDATABASE_MANAGER where VIEWID = '"+user.getViewid()+"' ) ");
+				query.append(" union ");
+				query.append(dbColumnQuery+ "  A.VCONNID in ( select VCONNID from VTDATABASE_MANAGER where VIEWID = '"+user.getViewid()+"' ) ");
 			}
 		}
 
@@ -226,7 +235,7 @@ public final class AuthDAO {
 			String vconnid;
 			String uuid = "";
 
-			String loginUUID = user.getLoginUUID();
+			String viewid = user.getViewid();
 			Map<String, DatabaseInfo> beforeDatabaseInfo = user.getDatabaseInfo();
 
 			List<String> newVconnidList = new ArrayList<String>();
@@ -237,7 +246,7 @@ public final class AuthDAO {
 				newVconnidList.add(vconnid);
 
 				if(flag){
-					uuid = UUIDUtil.nameUUIDFromBytes(loginUUID+vconnid);
+					uuid = UUIDUtil.nameUUIDFromBytes(viewid+vconnid);
 				}else{
 					uuid = vconnid;
 				}
@@ -252,7 +261,7 @@ public final class AuthDAO {
 						, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
 						, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
 						, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
-						)
+					)
 				);
 			}
 

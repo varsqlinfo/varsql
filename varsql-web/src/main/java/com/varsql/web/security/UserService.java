@@ -9,7 +9,7 @@ import com.varsql.core.auth.User;
 
 
 /**
- * 
+ *
  * @FileName : UserService.java
  * @Author   : ytkim
  * @Program desc :
@@ -17,17 +17,17 @@ import com.varsql.core.auth.User;
  */
 @Service
 public class UserService implements UserDetailsService {
-	
+
 	@Autowired
 	private AuthDAO authDao;
-	
+
 	@Override
 	public User loadUserByUsername(final String username) throws UsernameNotFoundException {
 		return authDao.loadUserByUsername(username);
-		
+
 	}
 
 	public User loadUserByUsername(String username, String password) {
-		return authDao.loadUserByUsername(username, password);
+		return authDao.loadUserByUsername(username, password, false);
 	}
 }
