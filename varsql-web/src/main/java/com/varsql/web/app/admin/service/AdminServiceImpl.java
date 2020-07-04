@@ -1,31 +1,46 @@
 package com.varsql.web.app.admin.service;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.validation.Valid;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.codehaus.janino.Java;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.sql.util.SqlUtils;
 import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
+import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverEntityRepository;
 import com.varsql.web.repository.db.DBTypeEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
@@ -55,6 +70,12 @@ public class AdminServiceImpl extends AbstractService{
 
 	@Autowired
 	private DBTypeDriverEntityRepository dbTypeDriverModelRepository;
+
+	@Autowired
+	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
+
+	@Autowired
+	private DBManagerEntityRepository dbManagerRepository;
 
 	/**
 	 *
@@ -184,8 +205,12 @@ public class AdminServiceImpl extends AbstractService{
 	 * @변경이력  :
 	 * @param vtConnection
 	 * @return
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws BeansException
 	 */
-	public ResponseResult saveVtconnectionInfo(DBConnectionRequestDTO vtConnection) {
+	public ResponseResult saveVtconnectionInfo(DBConnectionRequestDTO vtConnection) throws BeansException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
 		ResponseResult resultObject = new ResponseResult();
 
@@ -204,24 +229,54 @@ public class AdminServiceImpl extends AbstractService{
 		}else {
 			vtConnection.setVdbschema(schemeType);
 		}
-		
-		DBConnectionEntity saveEntity = vtConnection.toEntity();
+
+		DBConnectionEntity reqEntity = vtConnection.toEntity();
+
+		DBConnectionEntity saveEntity= null;
+		if(reqEntity.getVconnid() != null) {
+			saveEntity= dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
+			if(saveEntity!= null) {
+				copyNonNullProperties(reqEntity, saveEntity, "vpw");
+			}
+		}
+
+		if(saveEntity==null) {
+			saveEntity= reqEntity;
+		}
+
 		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(saveEntity));
 
 		DBConnectionEntity result = dbConnectionModelRepository.save(saveEntity);
 
 		resultObject.setItemOne(result != null? 1 : 0);
-
-		if("Y".equals(vtConnection.getPoolInit())){
-			try {
-				ConnectionFactory.getInstance().resetConnectionPool(vtConnection.getVconnid());
-				resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
-			} catch (Exception e) {
-				resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
-				resultObject.setMessage(e.getMessage());
-			}
-		}
 		return resultObject;
+	}
+
+	public static void copyNonNullProperties(Object src, Object target, String... checkProperty) throws BeansException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	    BeanUtils.copyProperties(src, target, getNullPropertyNames(src, checkProperty));
+	}
+
+	public static String[] getNullPropertyNames (Object source, String[] checkProperty) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	    final BeanWrapper src = new BeanWrapperImpl(source);
+	    java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+	    List<String> prop = Arrays.asList(checkProperty);
+	    Set<String> emptyNames = new HashSet<String>();
+	    for(java.beans.PropertyDescriptor pd : pds) {
+	    	String name = pd.getName();
+
+	    	if(prop.contains(name)) {
+	    		Object srcValue = src.getPropertyValue(pd.getName());
+		        if (srcValue == null || "".equals(srcValue)) {
+		        	emptyNames.add(name);
+		        }else {
+		        	if("".equals(srcValue.toString().trim())) {
+		        		PropertyUtils.setProperty(source, name, srcValue.toString().trim());
+		        	}
+		        }
+	    	}
+	    }
+	    String[] result = new String[emptyNames.size()];
+	    return emptyNames.toArray(result);
 	}
 
 	/**
@@ -232,11 +287,16 @@ public class AdminServiceImpl extends AbstractService{
 	 * @param vconnid
 	 * @return
 	 */
+
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public boolean deleteVtconnectionInfo(String vconnid) {
 
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
 		dbInfo.setDelYn(true);
 		DBConnectionEntity result = dbConnectionModelRepository.save(dbInfo);
+
+		dbGroupMappingDbEntityRepository.deleteByVconnid(vconnid);
+		dbManagerRepository.deleteByVconnid(vconnid);
 
 		return result != null;
 	}
@@ -263,21 +323,41 @@ public class AdminServiceImpl extends AbstractService{
 	 * @method  : connectionClose
 	 * @desc : db 연결 전부 닫기
 	 * @author   : ytkim
-	 * @date   : 2020. 5. 24. 
-	 * @param vtConnection
+	 * @date   : 2020. 5. 24.
+	 * @param vconnid
 	 * @return
 	 */
-	public ResponseResult connectionClose(@Valid DBConnectionRequestDTO vtConnection) {
+	public ResponseResult connectionClose(@Valid String vconnid) {
 		ResponseResult resultObject = new ResponseResult();
 		try {
-			ConnectionFactory.getInstance().poolShutdown(vtConnection.getVconnid());
+			ConnectionFactory.getInstance().poolShutdown(vconnid);
 			resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
 		} catch (Exception e) {
 			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
 			resultObject.setMessage(e.getMessage());
 		}
-		
-		return resultObject; 
+
+		return resultObject;
+	}
+
+	/**
+	 * @method  : dbConnectionReset
+	 * @desc : db connection pool 초기화
+	 * @author   : ytkim
+	 * @date   : 2020. 7. 4.
+	 * @param vconnid
+	 * @return
+	 */
+	public ResponseResult dbConnectionReset(String vconnid) {
+		ResponseResult resultObject = new ResponseResult();
+		try {
+			ConnectionFactory.getInstance().resetConnectionPool(vconnid);
+			resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
+		} catch (Exception e) {
+			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setMessage(e.getMessage());
+		}
+		return resultObject;
 	}
 
 }

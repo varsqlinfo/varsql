@@ -14,4 +14,6 @@ public interface DBManagerEntityRepository extends DefaultJpaRepository, JpaRepo
 	public DBManagerEntity findByVconnid(String vconnid);
 
 	public void deleteByViewid(String id);
+
+	public void deleteByVconnid(String vconnid);
 }

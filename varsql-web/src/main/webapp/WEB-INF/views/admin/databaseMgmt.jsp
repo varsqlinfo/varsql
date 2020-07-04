@@ -36,8 +36,13 @@
 				<div class="list-group" id="dbinfolist">
 					<template v-for="(item,index) in gridData">
 						<div class="list-group-item">
-							<a href="javascript:;" @click="itemView(item)">
-								<span class="clickItem" >{{item.vname}}</span>
+							<a href="javascript:;">
+								<span class="clickItem" @click="itemView(item)">{{item.vname}}</span>
+
+								<span class="pull-right">
+									<button class="btn btn-xs btn-primary" @click="connectionReset(item)">초기화</button>
+									<button class="btn btn-xs btn-default" @click="connectionClose(item)">닫기</button>
+								</span>
 							</a>
 		    			</div>
 	    			</template>
@@ -61,8 +66,6 @@
 						<div class="pull-right">
 							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
 							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
-							<button type="button" class="btn btn-default" @click="save('poolInit')" :class="detailFlag===false?'hidden':''"><spring:message code="btn.save.andpoolnit"/></button>
-							<button type="button" class="btn btn-primary" @click="connectionClose()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.close"/></button>
 							<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
 							<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
 						</div>
@@ -143,13 +146,14 @@
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="false" v-model="detailItem.vid">
+								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="off" v-model="detailItem.vid">
 							</div>
 						</div>
 
 						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
+								<input type="password" name="password_fake" value="" style="display:none;" />
 								<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="false" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
 								<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 							    <div class="help-block" v-if="errors.has('password')">
@@ -364,14 +368,7 @@ VarsqlAPP.vueServiceBean( {
 
 			this.$validator.validateAll().then(function (result){
 				if(result){
-					var poolInitVal = 'N';
-					if(mode=='poolInit'){
-						if(!confirm('<spring:message code="msg.saveAndpoolInit.confirm"/>')) return ;
-						poolInitVal = 'Y';
-					}
-
 					var param = _this.getParamVal();
-					param.poolInit = poolInitVal;
 
 					_this.$ajax({
 						url : {type:VARSQL.uri.admin, url:'/main/dbSave'}
@@ -401,9 +398,9 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,getParamVal : function (){
+		,getParamVal : function (item){
 			var param = {};
-			var saveItem = this.detailItem;
+			var saveItem = item || this.detailItem;
 			for(var key in saveItem){
 				param[key] = saveItem[key];
 			}
@@ -414,11 +411,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.vconnid ==='undefined'){
-				$('#warningMsgDiv').html('<spring:message code="msg.warning.select" />');
+				$('#warningMsgDiv').html(VARSQL.messageFormat('varsql.0004'));
 				return ;
 			}
 
-			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
+			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
 				return ;
 			}
 
@@ -447,7 +444,7 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.messageCode =='success'){
-							alert('<spring:message code="msg.success" />');
+							alert(VARSQL.messageFormat('success'));
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
@@ -456,17 +453,44 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,connectionClose : function (){
-			var param = this.getParamVal();
+		,connectionClose : function (item){
+			if(!confirm(VARSQL.messageFormat('varsql.a.0001'))){
+				return ;
+			}
 
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionClose'}
 				,loadSelector : 'body'
-				,data:param
+				,data : {
+					vconnid : item.vconnid
+				}
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
-						if(resData.messageCode =='success'){
-							alert('<spring:message code="msg.success" />');
+						if(resData.resultCode ==200){
+							alert(VARSQL.messageFormat('varsql.a.0002'));
+							return
+						}else{
+							alert(resData.messageCode  +'\n'+ resData.message);
+						}
+					}
+				}
+			});
+		}
+		,connectionReset : function (item){
+			if(!confirm(VARSQL.messageFormat('varsql.a.0003'))){
+				return ;
+			}
+
+			this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionReset'}
+				,loadSelector : 'body'
+				,data : {
+					vconnid : item.vconnid
+				}
+				,success:function (resData){
+					if(VARSQL.req.validationCheck(resData)){
+						if(resData.resultCode ==200){
+							alert(VARSQL.messageFormat('success'));
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
@@ -499,10 +523,7 @@ VarsqlAPP.vueServiceBean( {
 		    			return ;
 		    		}
 
-		    		if(_this.detailItem.vdriver==''){
-		    			_this.detailItem.vdriver = resData.items[0].driverId
-		    		}
-
+		    		_this.detailItem.vdriver = resData.items[0].driverId
 		    		_this.driverList = result;
 
 		    		return ;

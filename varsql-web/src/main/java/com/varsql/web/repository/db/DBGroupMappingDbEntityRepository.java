@@ -10,4 +10,6 @@ import com.varsql.web.repository.DefaultJpaRepository;
 @Repository
 public interface DBGroupMappingDbEntityRepository extends DefaultJpaRepository, JpaRepository<DBGroupMappingDbEntity, Long> , JpaSpecificationExecutor<DBGroupMappingDbEntity>  {
 
+	void deleteByVconnid(String vconnid);
+
 }
