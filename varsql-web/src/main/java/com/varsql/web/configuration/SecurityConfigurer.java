@@ -12,16 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.configuration.VarsqlWebConfig;
-import com.varsql.web.security.RememberMeService;
+import com.varsql.web.security.RememberMeTokenRepository;
+import com.varsql.web.security.RememberMeUserService;
 import com.varsql.web.security.UserService;
 import com.varsql.web.security.VarsqlAccessDeniedHandler;
 import com.varsql.web.security.VarsqlAuthenticationFailHandler;
@@ -46,6 +47,10 @@ import com.varsql.web.security.VarsqlAuthenticationSuccessHandler;
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
+	final static private String REMEMBERME_KEY = "varsqlRememberKey";
+	final static private String REMEMBERME_PARAMETER = "varsqlRememberMe";
+	final static private String REMEMBERME_COOKIENAME = "varsql-remember-me-ck";
+
 	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
@@ -63,12 +68,15 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler;
-	
-	
-	final private String REMEMBERME_KEY = "varsqlRememberKey";
-	final private String REMEMBERME_PARAMETER = "varsql-remember-me";
-	final private String REMEMBERME_COOKIENAME = "varsql-remember-me-ck";
 
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private RememberMeTokenRepository rememberMeTokenRepository;
+
+	@Autowired
+	private RememberMeUserService rememberMeUserService;
 
 	@Override
     public void configure(WebSecurity web) throws Exception {
@@ -85,8 +93,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
-		configureHttpSecurity(http);
 		configureRememberMe(http);
+		configureHttpSecurity(http);
     }
 
 	private void configureHttpSecurity(HttpSecurity http) throws Exception {
@@ -94,6 +102,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		http.headers()
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
+		.and()
+			.requestCache().requestCache(requestCache())
 		.and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -134,18 +144,23 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	        .addLogoutHandler(varsqlAuthenticationLogoutHandler)
 	        .logoutSuccessHandler(varsqlAuthenticationLogoutSuccessHandler)
 	        .invalidateHttpSession(true)
-	        .deleteCookies("JSESSIONID").permitAll()
+	        .deleteCookies("JSESSIONID" ).permitAll()
 	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
 		.and()
 			.httpBasic();
+	}
+	
+	@Bean("varsqlRequestCache")
+	public RequestCache requestCache() {
+	   return new HttpSessionRequestCache();
 	}
 
 	@Bean
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 	    return new HttpSessionEventPublisher();
 	}
-	
+
 	@Bean("varsqlPasswordEncoder")
     public PasswordEncoder varsqlPasswordEncoder(){
         return new BCryptPasswordEncoder();
@@ -153,7 +168,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected UserDetailsService userDetailsService() {
-    	return new UserService();
+    	if(userService==null) {
+    		userService = new UserService();
+    	}
+    	return userService;
     }
 
     @Bean
@@ -165,32 +183,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     	 auth.authenticationProvider(varsqlAuthenticationProvider);
     }
-    
-    @Bean
-    public PersistentTokenRepository tokenRepository() {
-        return new RememberMeService();
-    }
-    
-    
+
     private void configureRememberMe(HttpSecurity http) throws Exception {
         http.rememberMe()
                .key(REMEMBERME_KEY)
                .rememberMeParameter(REMEMBERME_PARAMETER)
                .rememberMeCookieName(REMEMBERME_COOKIENAME)
-               .rememberMeServices(persistentTokenBasedRememberMeServices())
-               .tokenRepository(tokenRepository())
-               .userDetailsService(userDetailsService());
+               .tokenValiditySeconds(60 * 60 * 24 * 7)
+               .authenticationSuccessHandler(varsqlAuthenticationSuccessHandler)
+               .alwaysRemember(false)
+               .tokenRepository(rememberMeTokenRepository)
+               .userDetailsService(rememberMeUserService).and();
 	}
-    
-    @Bean
-   	public PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices() {
-   	    PersistentTokenBasedRememberMeServices persistenceTokenBasedservice = new PersistentTokenBasedRememberMeServices(REMEMBERME_KEY, userDetailsService(), tokenRepository());
-   	    persistenceTokenBasedservice.setParameter(REMEMBERME_PARAMETER);
-   	    persistenceTokenBasedservice.setAlwaysRemember(false);
-   	    persistenceTokenBasedservice.setCookieName(REMEMBERME_COOKIENAME);
-   	    persistenceTokenBasedservice.setTokenValiditySeconds(60 * 60 * 24 * 7);		// 토큰 유효시간 1주일 설정
-   	    return persistenceTokenBasedservice;
-   	  }
-    
-    
 }
