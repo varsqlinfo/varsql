@@ -41,7 +41,7 @@ public class ManagerMgmtController extends AbstractController{
 	private final static Logger logger = LoggerFactory.getLogger(ManagerMgmtController.class);
 
 	@Autowired
-	ManagerMgmtServiceImpl managerMgmtServiceImpl;
+	private ManagerMgmtServiceImpl managerMgmtServiceImpl;
 
 	/**
 	 * @method  : userList

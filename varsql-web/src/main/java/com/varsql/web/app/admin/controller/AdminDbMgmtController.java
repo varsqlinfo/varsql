@@ -45,7 +45,7 @@ public class AdminDbMgmtController extends AbstractController{
 	private final static Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);
 
 	@Autowired
-	AdminServiceImpl adminServiceImpl;
+	private AdminServiceImpl adminServiceImpl;
 
 	/**
 	 *

@@ -39,7 +39,7 @@ public class AdminController extends AbstractController{
 	private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
 
 	@Autowired
-	AdminServiceImpl adminServiceImpl;
+	private AdminServiceImpl adminServiceImpl;
 
 	/**
 	 * @method  : mainpage
