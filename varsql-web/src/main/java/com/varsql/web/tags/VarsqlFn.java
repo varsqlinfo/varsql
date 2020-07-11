@@ -1,5 +1,7 @@
 package com.varsql.web.tags;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.varsql.web.constants.WebStaticResourceVersion;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.DateUtils;
@@ -30,7 +32,7 @@ public final class VarsqlFn{
 		return VarsqlUtils.isRuntimelocal();
 	}
 
-	public static long randomVal(int val) {
+	public static long randomVal(Integer val) {
 		return java.lang.Math.round(java.lang.Math.random() * val);
 	}
 
@@ -54,5 +56,15 @@ public final class VarsqlFn{
 		}
 	}
 
+	public static String contextPath(HttpServletRequest request) {
+		return request.getContextPath();
+	}
 
+	public static String loginUrl(HttpServletRequest request) {
+		return request.getContextPath()+"/login_check";
+	}
+
+	public static String logoutUrl(HttpServletRequest request) {
+		return request.getContextPath()+"/logout";
+	}
 }
