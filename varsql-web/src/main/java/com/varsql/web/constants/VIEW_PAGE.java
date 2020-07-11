@@ -5,6 +5,7 @@ public enum VIEW_PAGE{
 	, DATABASE_MENU ("/database/menu")
 	, DATABASE_PREFERENCES ("/database/preferences")
 	, DATABASE_TOOLS ("/database/tools")
+	, DATABASE_UTILS ("/database/utils")
 	, LOGIN("/login")
 	, JOIN("/join")
 	, GUEST("/guest")
