@@ -10,7 +10,7 @@
 					<span class="varsql-menu-item-key">Ctrl+Shift+N</span>
 				</a>
 			</li>
-			
+
 			<li class="varsql-menu-item" data-menu-item="file_save" data-sql-editor-menu="y">
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.file.save" /></span>
@@ -58,7 +58,7 @@
 					<span class="varsql-menu-item-key">Ctrl+Y</span>
 				</a>
 			</li>
-			<%-- 
+			<%--
 			<li class="varsql-menu-item" data-menu-item="edit_compare">
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.edit.compare" /></span>
@@ -86,7 +86,7 @@
 				<a href="javascript:;">
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.import" /></span>
 				</a>
-			</li> 
+			</li>
 			 --%>
 			<li class="header-dropdown-submenu">
 				<a href="javascript:;">
@@ -101,12 +101,12 @@
 					</li>
 				</ul>
 			</li>
-			<!-- 
+			<!--
 			<li class="varsql-menu-item" data-menu-item="tool_setting">
 				<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
 			</li>
 			 -->
-			 
+
 			<li class="divider"></li>
 			<li class="header-dropdown-submenu">
 				<a href="javascript:;">
@@ -144,12 +144,28 @@
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.initlayout" /></span>
 				</a>
 			</li>
+			<li class="divider"></li>
+			<li class="header-dropdown-submenu">
+				<a href="javascript:;">
+					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils" /></span>
+				</a>
+				<ul class="varsql-sub-menu">
+					<li class="varsql-menu-item" data-menu-item="tool_utils_genexceltoddl">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.genexceltoddl" /></span></a>
+					</li>
+					<!--
+					<li class="varsql-menu-item" data-menu-item="tool_utils_genexceltoddl">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.genexceltoddl" /></span></a>
+					</li>
+					 -->
+				</ul>
+			</li>
 		</ul>
 	</li>
 	<li class="top-menu-button">
 		<a href="javascript:;" class="varsql-top-menu-label" data-toggle="header-dropdown"><spring:message code="header.menu.help" /></a>
 		<ul class="varsql-top-menu">
-			<!-- 
+			<!--
 			<li class="varsql-menu-item" data-menu-item="help_help">
 				<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.help.help" /></span></a>
 			</li>

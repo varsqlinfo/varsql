@@ -26,7 +26,7 @@ var  portalDefaultTemplate = {
 		+'	<a @click="goPage(pageInfo.currPage + 1)">»</a>'
 		+'</li>'
 		+'</ul></div>'
-		
+
 	,'grid1Template' : '<div class="text-center"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
 		+'	<a @click="goPage(pageInfo.currPage - 1)">«</a>'
@@ -48,7 +48,7 @@ var  portalDefaultTemplate = {
 
 Vue.config.devtools = true;
 Vue.prototype.$ajax = VARSQL.req.ajax;
-	
+
 VarsqlAPP.message ={
 	empty : '데이타가 없습니다.'
 }
@@ -57,7 +57,7 @@ VarsqlAPP.message ={
 Vue.component('list-cont', {
 	created :function() {
 		var templateName = this.listType+'Template';
-		var templateCont = portalDefaultTemplate[templateName]; 
+		var templateCont = portalDefaultTemplate[templateName];
 
 		if(typeof templateCont ==='undefined'){
 			templateCont  = portalDefaultTemplate['type1Template'];
@@ -67,7 +67,7 @@ Vue.component('list-cont', {
 	}
 	,props: {
 		list : Array,
-		listType : String, 
+		listType : String,
 		columnKey : Object
 	}
 	,data:function(){
@@ -94,7 +94,7 @@ Vue.component('list-cont', {
 	}
 })
 
-// page navigation component add 
+// page navigation component add
 Vue.component('page-navigation', {
 	template: portalDefaultTemplate.pageNavTemplate,
 	props: {
@@ -103,37 +103,37 @@ Vue.component('page-navigation', {
 	}
 	,methods: {
 		range : function (start, end) {
-			
+
 			if(typeof start ==='undefined') return [];
-			
+
 			var reArr = [];
-			
+
 			for(start ; start <= end;start++){
 				reArr.push(start);
 			}
-			
+
 			return reArr;
 		}
 		,goPage : function (pageNo) {
 
 			if(pageNo < 1){
-				pageNo =1; 
-				return ; 
+				pageNo =1;
+				return ;
 			}
-			
+
 			if(pageNo > this.pageInfo.totalPage){
-				pageNo= this.pageInfo.totalPage; 
-				return ; 
+				pageNo= this.pageInfo.totalPage;
+				return ;
 			}
 
 			if(this.pageInfo.currPage == pageNo){
-				return ; 
+				return ;
 			}
 			this.pageInfo.currPage = pageNo;
 
-			
+
 			var callback = this.$parent[this.callback];
-			
+
 			if(typeof callback === 'undefined'){
 				callback = this.$parent['search'];
 			}
@@ -144,9 +144,9 @@ Vue.component('page-navigation', {
 })
 
 /**
- * @method VarsqlAPP.addTemplate 
+ * @method VarsqlAPP.addTemplate
  * @description 템플릿 add
- */	
+ */
 VarsqlAPP.addTemplate  = function (template){
 	if($.isPlainObject(template)){
 		for(var key in template){
@@ -160,7 +160,7 @@ VarsqlAPP.addTemplate  = function (template){
 /**
  * @method VarsqlAPP.addMessage
  * @description 메시지 add
- */	
+ */
 VarsqlAPP.addMessage = function (msg){
 	for(var key in msg){
 		VarsqlAPP.message[key]= msg[key];
@@ -174,6 +174,9 @@ var defaultOpt = {
 		detailItem :{}
 	}
 	,mounted  : function() {
+
+		$(this.$el).removeClass('display-off')
+
 		this.init();
 		this.search(1);
     }
@@ -183,7 +186,7 @@ var defaultOpt = {
 	}
 }
 /**
- * @method addMethod 
+ * @method addMethod
  * @description vue method 추가.
  * @param prefix
  * @param opts
@@ -191,31 +194,29 @@ var defaultOpt = {
  * @returns
  */
 function addMethod(prefix , opts){
-	var methodObj = opts[prefix]; 
-	
+	var methodObj = opts[prefix];
+
 	if(typeof methodObj !=='undefined'){
 		for(var key in methodObj){
 			opts.methods[prefix+'_'+key] = methodObj[key];
-		} 
+		}
 		delete opts[prefix];
 	}
-	return opts; 
+	return opts;
 }
 
 VarsqlAPP.vueServiceBean = function (opts){
-	var _evts = {} 
+	var _evts = {}
 		,_srvs = {};
-	
+
 	opts = VARSQL.util.objectMerge({},defaultOpt,opts);
-	
+
 	if(opts.validateCheck ===true){
 		Vue.use(VeeValidate)
 	}
-	
+
 	var vueObj = new Vue(opts);
-	
-	$(opts.el).removeClass('display-off')
-	
+
 	return vueObj;
 }
 })(Vue , portalDefaultTemplate, jQuery);

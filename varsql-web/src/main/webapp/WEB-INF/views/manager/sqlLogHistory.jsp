@@ -65,8 +65,8 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(item.ERROR_LOG && item.ERROR_LOG != '')?'error-row':(index%2==0?'add':'even')">
-									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis ellipsis10">{{item.LOG_SQL}}</div></a></td>
-									<td :title="item.U_NM_ID"><div class="text-ellipsis ellipsis5">{{item.U_NM_ID}}</div></td>
+									<td :title="item.LOG_SQL"><a href="javascript:;" @click="itemView(item)"><div class="text-ellipsis ellipsis10">{{item.logSql}}</div></a></td>
+									<td :title="item.U_NM_ID"><div class="text-ellipsis ellipsis5">{{item.regInfo.uid}}</div></td>
 									<td :title="item.USR_IP"><div class="text-ellipsis ellipsis5">{{item.usrIp}}</div></td>
 									<td>
 										{{item.startTime}}<br>{{item.endTime}}

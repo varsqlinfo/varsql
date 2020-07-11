@@ -70,12 +70,6 @@ if(top != window){
 
 $(document).ready(function (){
 
-
-	$('#vsql_login_id').val('varsqladmin');
-	$('#vsql_login_password').val('varsqladmin');
-	//document.f.submit();
-
-
 	$('#id,#password').on('keypress' , function (e){
 		var keyCode = 0;
 		var shiftKey=false;
@@ -90,7 +84,7 @@ $(document).ready(function (){
 	})
 
 	if(localStorage.getItem('varsqlLoginID') && localStorage.getItem('varsqlLoginID') !=''){
-		$('#rememberMe').prop('checked',true);
+		$('#varsqlRememberMe').prop('checked',true);
 		$('#vsql_login_id').val(localStorage.getItem('varsqlLoginID'));
 	}
 
@@ -106,7 +100,7 @@ $(document).ready(function (){
 		$('#vsql_login_id').val(loginID);
 		$('#vsql_login_password').val($.trim($('#vsql_login_password').val()))
 
-		if($('#rememberMe').is(':checked')){
+		if($('#varsqlRememberMe').is(':checked')){
 			localStorage.setItem('varsqlLoginID', loginID);
 		}else{
 			localStorage.removeItem('varsqlLoginID');
@@ -118,7 +112,7 @@ $(document).ready(function (){
 </head>
 <body>
 	<div class="container">
-		<form name="f" action="${varsqlLoginUrl}" method="post"
+		<form name="f" action="${varsqlfn:loginUrl(pageContext.request)}" method="post"
 			class="form-signin" role="form" onsubmit="return false;">
 			<h2 class="form-signin-heading" style="text-align:center;"><spring:message code="msg.please.sign.in" /></h2>
 			<sec:csrfInput/>
@@ -127,7 +121,7 @@ $(document).ready(function (){
 			<input class="form-control" id="vsql_login_password" name="vsql_login_password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
 			<div class="checkbox" style="margin-bottom:13px;">
 				<label style="padding-top:5px;">
-					<input type="checkbox" id="rememberMe" value="remember-me"> Remember me
+					<input type="checkbox" id="varsqlRememberMe" name="varsqlRememberMe" value="on"> Remember me
 				</label>
 				<div class="pull-right" style="display:none;">
 					<select name="lang" style="padding:3px;">

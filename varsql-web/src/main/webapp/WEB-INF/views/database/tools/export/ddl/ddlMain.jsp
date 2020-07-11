@@ -198,7 +198,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			VARSQL.req.ajax({
-				url : {type:VARSQL.uri.database, url:'/tools/export/ddl/objInfo.vsql'}
+				url : {type:VARSQL.uri.database, url:'/tools/export/ddl/objInfo'}
 				,data: param
 				,loadSelector : '.preferences-body'
 				,success:function (resData){
@@ -249,7 +249,7 @@ VarsqlAPP.vueServiceBean({
 			
 			VARSQL.req.download({
 				type: 'post'
-				,url: {type:VARSQL.uri.database, url:'/tools/export/ddl/export.vsql'}
+				,url: {type:VARSQL.uri.database, url:'/tools/export/ddl/export'}
 				,params : param
 			});
 			

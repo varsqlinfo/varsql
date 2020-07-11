@@ -79,10 +79,10 @@
             </div>
         </div>
     </form>
-    
+
     <div style="display:none;">
-		<form name="f" action="${varsqlLoginUrl}" method="post" onsubmit="return false;">
-			<input type="text" id="vsql_login_id" name="vsql_login_id" value=""> 
+		<form name="f" action="${varsqlfn:loginUrl(pageContext.request)}" method="post" onsubmit="return false;">
+			<input type="text" id="vsql_login_id" name="vsql_login_id" value="">
 			<input type="password" id="vsql_login_password" name="vsql_login_password" value="">
 		</form>
 	</div>
@@ -95,28 +95,28 @@
 <script>
 var joinForm = {
 	init : function (){
-		var _this = this; 
-		
+		var _this = this;
+
 		_this.initEvt();
 	}
 	,initEvt : function (){
 		var _this = this;
-	
+
 		$('.btnMain').click(function (){
 			location.href ='<c:url value="/" />';
 		});
-		
+
 		$('.btn-join').on('click',function (){
 			$('#joinForm').submit();
 		});
-		
-		var idChecVal = -1; 
+
+		var idChecVal = -1;
 		$('#uid').focusout(function(e) {
-			
-			var tmpVal =  $.trim($(this).val()); 
-			
+
+			var tmpVal =  $.trim($(this).val());
+
 			$(this).val(tmpVal);
-			
+
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.join, url:'/idCheck'},
 				data:{
@@ -124,26 +124,26 @@ var joinForm = {
 				},
 				success: function(resData) {
 					if(resData.item  > 0){
-						idChecVal = 1; 
+						idChecVal = 1;
 					}else{
 						idChecVal = 0;
 					}
 					$('#joinForm')
 				    .data('bootstrapValidator')
 				    .updateStatus('uid', 'VALIDATING')
-				    .validateField('uid'); 
+				    .validateField('uid');
 				}
 			});
 		});
-		
-		var emailChecVal = -1; 
-		
+
+		var emailChecVal = -1;
+
 		$('#uemail').focusout(function(e) {
-			
-			var tmpVal =  $.trim($(this).val()); 
-			
+
+			var tmpVal =  $.trim($(this).val());
+
 			$(this).val(tmpVal);
-			
+
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.join, url:'/emailCheck'},
 				data:{
@@ -151,18 +151,18 @@ var joinForm = {
 				},
 				success: function(resData) {
 					if(resData.item  > 0){
-						emailChecVal = 1; 
+						emailChecVal = 1;
 					}else{
 						emailChecVal = 0;
 					}
 					$('#joinForm')
 				    .data('bootstrapValidator')
 				    .updateStatus('uemail', 'VALIDATING')
-				    .validateField('uemail'); 
+				    .validateField('uemail');
 				}
 			});
 		});
-		
+
 		$('#joinForm').bootstrapValidator({
 			message: 'This value is not valid',
 			feedbackIcons: {
@@ -182,7 +182,7 @@ var joinForm = {
 		                     }
 		                }
 					}
-			  	}	
+			  	}
 				,uname: {
 					validators: {
 						notEmpty: { message: '필수 입력사항입니다.'}
@@ -193,7 +193,7 @@ var joinForm = {
 		                     }
 		                 }
 					}
-			  	}	
+			  	}
 				,uemail: {
 					validators: {
 						notEmpty: { message: '필수 입력사항입니다.'}
@@ -240,18 +240,18 @@ var joinForm = {
 	                    }
 	                }
 	            }
-			  	
+
 			}
 		}).on('success.form.bv', function(e) {
 			// Prevent form submission
 			e.preventDefault();
-			
+
 			_this.saveInfo();
 		});
 	}
 	,saveInfo: function (){
 		var params  =$('#joinForm').serializeJSON();
-		
+
 		VARSQL.req.ajax({
 			url: {type:VARSQL.uri.join, url:'/save'},
 			cache: false,
@@ -267,7 +267,7 @@ var joinForm = {
 						for(var i=0; i <objLen; i++){
 							item = items[i];
 							alert(item.field + "\n"+ item.defaultMessage)
-							return ; 
+							return ;
 						}
 					}
 				}else{
@@ -278,7 +278,7 @@ var joinForm = {
 				}
 				$('#vsql_login_id').val( $('#uid').val());
 				$('#vsql_login_password').val($('#upw').val());
-				
+
 				document.f.submit();
 			},
 			error: function(xhr, status, e) {
@@ -291,4 +291,4 @@ var joinForm = {
 $(document).ready(function (){
 	joinForm.init();
 });
-</script>	
+</script>

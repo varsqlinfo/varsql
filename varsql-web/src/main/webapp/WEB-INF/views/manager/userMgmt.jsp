@@ -14,10 +14,10 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-sm-6">
-						<label> 
+						<label>
 							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
 						</label>
-						<label> 
+						<label>
 							<button type="button" class="btn btn-xs btn-danger" @click="acceptYn('N')"><spring:message code="btn.denial" /></button>
 						</label>
 					</div>
@@ -87,7 +87,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -125,12 +125,12 @@
 						<tr>
 							<th><spring:message code="label.block"/></th>
 							<td>
-								<template v-if="clickItem.blockYn">
-									<template v-if="clickItem.blockYn=='N'">
-										<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
+								<template v-if="clickItem !==false">
+									<template v-if="clickItem.blockYn">
+										<button type="button" class="btn btn-xs btn-info" @click="userBlock('N')"><spring:message code="release"/></button>
 									</template>
 									<template v-else>
-										<button type="button" class="btn btn-xs btn-info" @click="userBlock('N')"><spring:message code="release"/></button>
+										<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
 									</template>
 								</template>
 							</td>
@@ -138,7 +138,7 @@
 						<tr>
 							<th valign="top" style="vertical-align: top;"><spring:message code="remarks" text="orgnm"/></th><td><textarea rows="3" style="width:100%;overflow:auto;" disabled="disabled">{{clickItem.DESCRIPTION}}</textarea></td>
 						</tr>
-						
+
 						<tr>
 							<td colspan="2">
 								<div class="col-lg-6 padding0" style="padding-right:10px;">
@@ -157,7 +157,7 @@
 												</thead>
 												<tbody>
 													<tr v-for="(item,index) in dbGroup">
-														<td class="text-left">{{item.GROUP_NAME}}</td>
+														<td class="text-left">{{item.groupName}}</td>
 														<td >
 															<button type="button" @click="removeDbGroupInfo(item)"><spring:message code="label.remove" text="제거"/></button>
 														</td>
@@ -188,11 +188,11 @@
 													<tr v-for="(item,index) in clickItemDbList">
 														<td class="text-left">{{item.vname}}</td>
 														<td >
-															<template v-if="(item.MANAGER_DB_CNT > 1)">
+															<template v-if="(item.manager)">
 																MANAGER
 															</template>
 															<template v-else>
-																<template v-if="(item.MANAGER_CNT > 0 || clickItemCustom.isAdmin)">
+																<template v-if="(item.manager===false)">
 																	<template v-if="item.blockYn == 'N'">
 																		<button type="button" class="btn btn-xs btn-danger" @click="dbBlockInfo(item, 'block')"><spring:message code="label.block" text="차단"/></button>
 																	</template>
@@ -221,13 +221,13 @@
 		</div>
 	</div>
 	<!-- /.col-lg-12 -->
-	
+
 </div>
 <!-- /.row -->
 
 <script>
 (function() {
-	
+
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
@@ -238,28 +238,28 @@ VarsqlAPP.vueServiceBean( {
 		,currentItem :{}
 		,selectItem :[]
 		,dbGroup : []
-		,clickItem :{}
+		,clickItem : false
 		,clickItemDbList :[]
 	}
 	,computed :{
 		selectAllCheck : function (){
-			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length; 
+			return this.gridData.length > 0 && this.gridData.length == this.selectItem.length;
 		}
 	}
 	,methods:{
 		selectAll : function (){
 			if(this.selectAllCheck){
-				this.selectItem = []; 
+				this.selectItem = [];
 			}else{
 				this.selectItem = [];
-				
+
 				for(var i =0 ;i <this.gridData.length; i++){
 					this.selectItem.push(this.gridData[i].viewid)
 				}
 			}
 		}
 		,init : function(){
-			var _self =this; 
+			var _self =this;
 			_self.detailDialog = $('#detailInfo').dialog({
 				height: 490
 				,width: 500
@@ -276,23 +276,23 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,acceptYn : function(obj){
-			var _self = this; 
+			var _self = this;
 			var selectItem = _self.selectItem;
-			
+
 			if(VARSQL.isDataEmpty(selectItem)){
 				VARSQLUI.alert.open('<spring:message code="msg.data.select" />');
-				return ; 
+				return ;
 			}
-			
+
 			if(!confirm(obj=='Y'?'<spring:message code="msg.accept.msg" />':'<spring:message code="msg.denial.msg" />')){
-				return ; 
+				return ;
 			}
-			
+
 			var param = {
 				acceptyn:obj
 				,selectItem:selectItem.join(',')
 			};
-			
+
 			this.$ajax({
 				data:param
 				,url : {type:VARSQL.uri.manager, url:'/user/acceptYn'}
@@ -302,38 +302,38 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,userBlock : function(mode){
-			var _self = this; 
+			var _self = this;
 			var clickItem = _self.clickItem;
-			
-			if(!confirm(mode=='Y'?'<spring:message code="msg.confirm.block.y" />':'<spring:message code="msg.confirm.block.n" />')){
-				return ; 
+
+			if(!confirm(mode=='Y'?VARSQL.messageFormat('varsql.m.0003'):VARSQL.messageFormat('varsql.m.0004'))){
+				return ;
 			}
-			
+
 			var param = {
-				userid : clickItem.viewid
+				viewid : clickItem.viewid
 				,blockYn: mode
 			}
-			
+
 			this.$ajax({
 				data:param
 				,url : {type:VARSQL.uri.manager, url:'/user/blockYn'}
 				,success:function (resData){
-					
+
 					if(resData.item > 0){
-						clickItem.blockYn = mode; 
+						clickItem.blockYn = !clickItem.blockYn;
 					}
 				}
 			});
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/userList'}
 				,data : param
@@ -345,13 +345,16 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// remove db group
 		,removeDbGroupInfo : function (item){
-			var _self = this; 
-			var param = item;
-			
-			if(!confirm(VARSQL.messageFormat('varsql.m.0005', {itemName : item.GROUP_NAME}))){
-				return ;; 
+			var _self = this;
+			var param = {
+				viewid : this.clickItem.viewid
+				,groupId : item.groupId
+			};
+
+			if(!confirm(VARSQL.messageFormat('varsql.m.0005', {itemName : item.groupName}))){
+				return ;;
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/removeDbGroup'}
 				,data : param
@@ -362,36 +365,36 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 상세보기
 		,detailView : function(item){
-			var _self = this; 
-			_self.currentItem = item; 
-			
+			var _self = this;
+			_self.currentItem = item;
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/userDetail'}
 				,data : item
 				,loadSelector : '#main-content'
 				,success: function(resData) {
 					_self.clickItem =resData.item;
-					_self.clickItemDbList =resData.items;
-					_self.clickItemCustom =resData.customs;
+					_self.clickItemDbList =resData.items || [];
+					_self.clickItemCustom =resData.customs|| [];
 					_self.dbGroup =resData.customs.dbGroup;
-					
+
 					//_self.detailDialog.dialog("open");
 				}
 			})
 		}
 		// pasword 초기화
 		,initPassword :function(sItem){
-			var _self = this; 
-			
+			var _self = this;
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
-					
+
 					_self.$set(sItem, "initpw", resData.item)
-					
+
 					alert(VARSQL.messageFormat('varsql.m.0001'));
-					
+
 					setTimeout(function (){
 						sItem.initpw ='';
 					}, 5000);
@@ -399,21 +402,21 @@ VarsqlAPP.vueServiceBean( {
 			})
 		}
 		,dbBlockInfo : function (item, mode){
-			
+
 			var confirmMsg =this.clickItem.uname +' ['+item.vname+']';
-			
+
 			if(mode=='block'){
 				confirmMsg += VARSQL.messageFormat('varsql.m.0003');
 			}else{
 				confirmMsg += VARSQL.messageFormat('varsql.m.0004');
 			}
-			
+
 			if(!confirm(confirmMsg)){
-				return ; 
+				return ;
 			}
-			
+
 			var param = VARSQL.util.objectMerge({},item);
-			param.mode = mode; 
+			param.mode = mode;
 			param.viewid = this.clickItem.viewid;
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/dbBlockInfo'}

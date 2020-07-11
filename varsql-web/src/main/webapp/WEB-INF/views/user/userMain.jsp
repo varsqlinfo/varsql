@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <script>
+(function() {
+
 
 VARSQL.unload();
 
@@ -12,37 +14,39 @@ var userMain = {
 	,tabItemTemplate : ''
 	,tabObj : ''
 	,preferencesUrl : '<c:url value="/user/preferences?header=N" />'
+	,tabInfo :( ${conTabInfo} ||[])
 	,init : function (){
-		var _self = this; 
-		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html(); 
+		var _self = this;
+		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html();
 		_self.initTab();
 		_self.evtInit();
 	}
 	,evtInit : function (){
-		var _self = this; 
-		
+		var _self = this;
+
 		$(_self._userConnectionInfo).on('change',function (){
 			var selectObj = $(this);
-			
+
 			if(selectObj.val()=='') return ;
-			
+
 			var sEle =$(_self._userConnectionInfo+" option:selected");
-			
+
 			var sItemInfo = {
 				conuid : sEle.val()
 				,'name' : sEle.attr('vname')
 			};
-			
+
 			_self.addTabInfo(sItemInfo);
 		});
 	}
 	,initTab : function (){
-		var _self =this; 
-		
+		var _self =this;
+
 		_self.tabObj = $.pubTab('#connection_tab',{
-			items :[]
+			items :_self.tabInfo
 			,height : 20
 			,dropItemHeight : 'auto'
+			,activeFirstItem :false
 			,itemKey :{							// item key mapping
 				title :'name'
 				,id :'conuid'
@@ -54,14 +58,14 @@ var userMain = {
 					,html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
 					,click : function (item, idx){
 						var sconid = item.conuid;
-					
+
 						if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length) {
 							alert('로드중입니다.');
 							return ;
 						}
-						
+
 						if(!confirm('새로고침 하시겠습니까?')) return ;
-						
+
 						$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
 					}
 				}
@@ -69,14 +73,16 @@ var userMain = {
 					html :  '<i class="fa fa-close" style="cursor:pointer;"></i>'
 					,click : function (item, idx){
 						var tmpid = item.conuid;
-						
-						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ; 
-						
+
+						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ;
+
 						_self.tabObj.removeItem(item);
-						
+
+						_self.saveConnTabInfo(item , 'del');
+
 						$('.tabs_'+tmpid).remove();
 						$('#wrapper_'+tmpid).remove();
-						
+
 						if(_self.tabObj.getItemLength() < 1){
 							$(_self._userConnectionInfo).val('');
 							$('#connectionMsg').show();
@@ -84,55 +90,114 @@ var userMain = {
 					}
 				}
 			}
-			,click : function (item){
-				var sconid = item.conuid; 
-				
-				$('.db_sql_view_area').css('z-index',1);
-				$('#wrapper_'+sconid).css('z-index',100);
-				
-				if(sconid =='preferences'){
-					$(_self._userConnectionInfo).val('');
-					return ; 
+			,click : function (item, customInfo){
+				var sconid = item.conuid;
+
+				_self.loadDbPage(item);
+
+				if(customInfo && customInfo.mode != 'add'){
+					_self.saveConnTabInfo(item , 'view');
 				}
-				
-				$(_self._userConnectionInfo).val(sconid);
-				
-				return ; 
+
+				return ;
 			}
 		})
+
+		var viewItem= _self.tabInfo.length > 0?_self.tabInfo[0] : false;
+
+		for(var i =0 ;i <_self.tabInfo.length;i++){
+			var item = _self.tabInfo[i];
+
+			if(item.viewYn ===true){
+				viewItem = item;
+				break;
+			}
+		}
+
+		if(viewItem !== false){
+			_self.tabObj.setActive(viewItem);
+			_self.loadDbPage(viewItem);
+		}
 	}
 	// add tab
 	,addTabInfo : function (sItem){
-		var _self =this;		
-		
-		var sconid = sItem.conuid; 
-		
+		var _self =this;
+
+		var sconid = sItem.conuid;
+
 		if(_self.tabObj.isItem(sconid)){
-			_self.tabObj.itemClick(sItem);
-			return ; 
+			_self.tabObj.itemClick(sItem , {view:true});
+			return ;
 		}
-		
-		_self.tabObj.addItem({item:sItem});
-		
+
+		_self.saveConnTabInfo(sItem , 'add'); // conn tab 정보 저장.
+
+		_self.tabObj.addItem({item:sItem} , {mode:'add'});
+
+		_self.loadDbPage(sItem);
+
+	}
+	// load db page
+	,loadDbPage : function (sItem){
+		var _self =this;
+
+		var sconid = sItem.conuid;
+
+		$(_self._userConnectionInfo).val(sconid);
+
+		if($('#wrapper_'+sconid).length > 0){
+			_self.dbShowHide(sconid);
+			return ;
+		}
+
 		$('#connection_select_msg_wrapper').show();
-		
+
 		sItem.url= _self.getDbClientUrl(sconid);
-		 
+
 		$(_self._connectionIframe).append(VARSQL.util.renderHtml(_self.iframeLoadTemplate, sItem));
-		
+
 		$('.iframe_'+sconid).on('load',function(){
 			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
 		});
-		
+
+		_self.dbShowHide(sconid);
+
 		$('#connectionMsg').hide();
+	}
+	// db page show hide
+	,dbShowHide : function (sconid){
+		$('.db_sql_view_area').css('z-index',1);
+		$('#wrapper_'+sconid).css('z-index',100);
+	}
+	// connection tab info save
+	,saveConnTabInfo : function (item , mode){
+		var _self =this;
+
+		var params;
+
+		params = VARSQL.util.objectMerge ({},item);
+		params.mode = mode;
+
+		if(mode=='add'){
+			params.prevVconnid = (_self.tabObj.getLastItem().conuid ||'');
+		}
+
+		VARSQL.req.ajax({
+		    url:{type:VARSQL.uri.database, url:'/connTabInfo'}
+		    ,data:params
+		    ,success:function (res){
+		    	var item = res.item;
+
+			}
+		});
 	}
 	,getDbClientUrl : function (sconid){
 		if(sconid =='preferences'){
-			return this.preferencesUrl; 
+			return this.preferencesUrl;
 		}else{
 			return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
 		}
-	} 
+	}
 	,activeClose : function (){
 		this.tabObj.rightIconClick(this.tabObj.getSelectItem());
 	}
@@ -141,6 +206,14 @@ var userMain = {
 $(function (){
 	userMain.init();
 })
+
+window.userMain = {
+	activeClose : function (){
+		userMain.activeClose();
+	}
+}
+
+}());
 
 </script>
 <!-- Page Heading -->
@@ -170,15 +243,16 @@ $(function (){
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">
-						<div class="var-db-select-text">접속할 <img src="${pageContext.request.contextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>	
+						<div class="var-db-select-text">접속할 <img src="${pageContext.request.contextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </div>
-<div id="memoTemplate_view_dialog" style="display:none;">
-	<div class="memo-view-area">
-		<textarea id="memo_content" name="memo_content"></textarea>
+<div id="noteTemplate_view_dialog" style="display:none;">
+	<div class="note-view-area">
+		<div>보낸사람 : <span id="noteSendInfo"></span></div>
+		<textarea id="note_content" name="note_content" style="height: calc(100% - 20px);"></textarea>
 	</div>
 </div>

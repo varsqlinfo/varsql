@@ -21,6 +21,21 @@ var _$base = {
 	,author:'ytkim'
 };
 
+var defaultPopupPosition = {
+	align : 'top'
+	,topMargin : 10
+	,top:2
+	,left:2
+	,ieDualCenter : false
+	,browser : {
+		msie : 40
+		,mozilla : 70
+		,chrome :70
+		,'default' : 70
+		,safari : 70
+	}
+}
+
 if(parent && parent.VARSQL && parent.VARSQL.ui){
 	$('html').addClass(parent.VARSQL.ui.getTheme());
 }
@@ -60,15 +75,15 @@ _$base.confirm = {
  */
 _$base.alert = {
 	template : function (opt){
-		
+
 	}
 	,open : function (opt){
-		
+
 		var msg = opt;
 		if(VARSQL.isObject(opt) && !VARSQL.isUndefined(opt.key)){
 			msg = VARSQL.messageFormat(opt.key, opt);
 		}
-		
+
 		return alert(msg);
 	}
 }
@@ -103,16 +118,16 @@ _$base.toast = {
 	 * @method _$base.dialog.view
 	 * @param opt {Object} toast option
 	 * @description toast view
-	 */	
+	 */
 	,open :function (option){
-		
+
 		if(typeof option !=='object'){
 			option = {text: option};
 		}
-		
-		var opt = this.options[option.icon]; 
+
+		var opt = this.options[option.icon];
 		opt = opt?opt : this.options['info'];
-		
+
 		// 기본 옵션 셋팅
 		var setOpt = $.extend({}, {
 			 hideAfter: 2000
@@ -123,105 +138,217 @@ _$base.toast = {
 			, showHideTransition: 'fade'
 			//, beforeShow : function(){$('.jq-toast-wrap').css("margin" , "0 0 0 -155px") }
 		},opt);
-		
-		var tmpP = window ; 
-		
+
+		var tmpP = window ;
+
 		if(parent){
 			if(typeof tmpP.$ === 'undefined' && typeof tmpP.$.toast === 'undefined' ){
 				tmpP = parent;
 			}
 		}
-		
+
 		tmpP.$.toast($.extend(true,setOpt, option));
 	}
 }
 
-window.VARSQLUI = _$base; 
-})(VARSQL, jQuery);
+_$base.popup = {
+	open : function (url, opt){
+		var targetId = VARSQL.generateUUID().replace(/-/g,'')
+			, tmpParam = opt.param?opt.param:{}
+			, tmpMethod = opt.method ? opt.method : 'get'
+			, tmpIsNewYn = opt.isNewYn=='Y' ? 'Y' : 'N'
+			, tmpPopOption = opt.viewOption?opt.viewOption:''
+			, tmpPosition =  $.extend({},defaultPopupPosition,( $.isPlainObject(opt.position)?opt.position:{align:opt.position} ))
+			, tmpName = (opt.name?( escape(opt.name).replace(/[ \{\}\[\]\/?.,;:|\)*~`!^\-+┼<>@\#$%&\'\"\\(\=]/gi,'') ):targetId.replace(/-/g,''));
 
+		var urlIdx = url.indexOf('?');
+		var openUrl = urlIdx > -1 ?url.substring(0,urlIdx):url;
 
-(function($) {
-    $.fn.pagingNav = function(options, callback) {
-        if(!options){
-        	$(this).html('');
-			return false;
-		}
-		
-		var currP = options.currPage ;
-		if(currP == "0") currP = 1;
-		var preP_is = options.prePage_is;
-		var nextP_is = options.nextPage_is;
-		var currS = options.currStartPage;
-		var currE = options.currEndPage;
+		tmpPopOption = tmpPopOption.replace(/\s/gi,'');
 
-		if(currE == "0") currE = 1;
-		var nextO = 1*currP+1;
-		var preO = currP - 1;
-		
-		var strHTML=new Array();
+		if(tmpPopOption != ''){
 
-		strHTML.push('<div class="text-center">');
-		strHTML.push('	<ul class="pagination">');
-			
-		if (preP_is=="true"){
-			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
-		}else{
-			if (currP<=1)
-			{
-				strHTML.push('	<li class="disabled"><a href="javascript:">&laquo;</a></li>');
-			}else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+preO+'">&laquo;</a></li>');
-			}
-		}
-		var no=0;
+			var popupOptArr = tmpPopOption.split(',');
+			var tmpItem ,_t=0 , _l=0 ,_w=1050, _h=0, addFlag ,tmpOpt='',addScrollbarOpt = true, addStatusOpt=false, addResizeableOpt=true;
 
-		for (no = currS*1; no <= currE*1; no++){
-
-			if ( no == currP ){
-				strHTML.push('	<li class="active"><a href="javascript:">'+no+'</a></li>');
-			}
-			else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+no+'">'+no+'</a></li>');
-			}
-		}
-
-		if(nextP_is=="true"){
-			strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');		
-		}else{
-			if (currP==currE)
-			{
-				strHTML.push('	<li class="disabled"><a href="javascript:">&raquo;</a></li>');
-			}else{
-				strHTML.push('	<li><a href="javascript:" class="page-click" pageno="'+nextO+'">&raquo;</a></li>');	
-			}
-		}
-
-		strHTML.push('	</ul>');
-		strHTML.push('</div>');
-		
-		this.empty('');
-		this.html(strHTML.join(''));
-		
-		var initFlag = this.data('initFlag');
-		
-		if(initFlag != 'true'){
-			this.data('initFlag', 'true')
-			this.on('click',' .page-click', function() {
-				var sNo = $(this).attr('pageno');
-				
-				
-				if (typeof callback == 'function') {
-					callback(sNo);
-				} else {
-					try {
-						nextPage(sNo);
-					} catch (e) {
-					}
+			for(var i = 0 ;i < popupOptArr.length; i++){
+				tmpItem = popupOptArr[i];
+				addFlag = true;
+				if(tmpItem.toLowerCase().indexOf('width=')==0){
+					_w= tmpItem.replace(/[^0-9]/g,'');
+					addFlag = false;
 				}
-			});
+				if(tmpItem.toLowerCase().indexOf('height=')==0){
+					_h= tmpItem.replace(/[^0-9]/g,'');
+					addFlag = false;
+				}
+				if(tmpItem.toLowerCase().indexOf('top=')==0){
+					_t= tmpItem.replace(/[^0-9]/g,'');
+					addFlag = false;
+				}
+				if(tmpItem.toLowerCase().indexOf('left=')==0){
+					_l= tmpItem.replace(/[^0-9]/g,'');
+					addFlag = false;
+				}
+				if(tmpItem.toLowerCase().indexOf('scrollbars=')==0){
+					addScrollbarOpt= false;
+				}
+
+				if(tmpItem.toLowerCase().indexOf('resizable=')==0){
+					addResizeableOpt= false;
+				}
+
+				tmpOpt += (addFlag ? ( (tmpOpt==''?'':',') + tmpItem ) : '');
+			}
+
+			tmpOpt += addScrollbarOpt?',scrollbars=yes':'';
+			tmpOpt += addResizeableOpt?',resizable=yes':'';
+
+			if(typeof opt.position=='undefined' && _h !=0 ){
+				tmpPosition.align='center';
+			}
+			var tmpTopMargin = tmpPosition.topMargin
+				,tmpLeftMargin = tmpPosition.leftMargin;
+
+			var heightMargin = tmpPosition.browser['default'];
+			_h= ( _h==0 ? (screen.availHeight-heightMargin- tmpTopMargin) :_h);
+
+			_h =addStatusOpt?_h-23:_h;
+			var _viewPosition = {};
+
+			if(tmpPosition.align=='top'){
+
+				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
+
+				var _top = 0 , _left = 0;
+
+				_viewPosition.top = typeof screen['availTop']!=='undefined' ?screen['availTop'] : (window.screenTop || screen.top);
+				if(_t!=0){
+					_viewPosition.top = (_viewPosition.top > 0? _viewPosition.top- _t : _viewPosition.top+_t);
+				}else{
+					_viewPosition.top = (_viewPosition.top > 0? _viewPosition.top- tmpTopMargin : _viewPosition.top+tmpTopMargin);
+				}
+
+			}else if(tmpPosition.align=='left'){
+				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
+				_viewPosition.left =0;
+			}else if(tmpPosition.align=='right'){
+				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
+				_viewPosition.left = window.screen.availWidth-_w;
+			}else if(tmpPosition.align=='bottom'){
+				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
+				_viewPosition.top = window.screen.availHeight-_h;
+			}else{
+				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
+			}
+
+			_viewPosition.top = isNaN(tmpTopMargin)?_viewPosition.top:_viewPosition.top+tmpTopMargin;
+			_viewPosition.left = isNaN(tmpLeftMargin)?_viewPosition.left:_viewPosition.left+tmpLeftMargin
+
+			tmpPopOption = tmpOpt+', width=' + _w + 'px, height=' + _h + 'px, top=' + _viewPosition.top + 'px, left=' + _viewPosition.left+'px';
 		}
-		
-		return this; 
-	};
-	
-})(jQuery);
+		tmpParam=VARSQL.util.getParameter(url , tmpParam);
+
+		if(tmpIsNewYn=='N'){
+			var winObj = window.open('', tmpName, tmpPopOption);
+
+			if(winObj && winObj.VARSQL){
+				winObj.focus();
+				return winObj;
+			}
+		}
+
+		// get method
+		if('get' ==tmpMethod){
+
+			tmpParam=VARSQL.util.paramToArray(tmpParam);
+
+			if(tmpParam.length > 0)	openUrl =openUrl+'?'+tmpParam.join('&');
+
+			return window.open(openUrl, tmpName,tmpPopOption);
+
+		}else{  // post method
+			var inputStr = [];
+			inputStr.push('<!doctype html><head>');
+			inputStr.push('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta charset="UTF-8" /></head>');
+			inputStr.push('<form action="'+openUrl+'" method="post" id="'+targetId+'" name="'+targetId+'">');
+
+			var tmpVal;
+			for(var key in tmpParam){
+				tmpVal = tmpParam[key];
+
+				inputStr.push('<input type="hidden" name="'+key+'" value=\''+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'\'/>');
+			}
+			inputStr.push('</form>');
+			inputStr.push('<script type="text/javascript">try{document.charset="utf-8";}catch(e){}document.'+targetId+'.submit();</'+'script>');
+
+			var tmpPopupObj=window.open('about:blank', tmpName, tmpPopOption);
+
+			try{
+				tmpPopupObj.document.write(inputStr.join(''));
+				tmpPopupObj.focus();
+			}catch(e){
+				tmpPopupObj=window.open('about:blank', tmpName+targetId, tmpPopOption);
+				try{
+					tmpPopupObj.document.write(inputStr.join(''));
+					tmpPopupObj.focus();
+				}catch(e1){
+					console.log(e1);
+				}
+			}
+		}
+	}
+}
+
+function popupPosition(_w,_h , tr , lr, tmpName ,ieDualCenter){
+	_h=  parseInt(_h,10);
+	_w = parseInt(_w,10);
+	tr = parseInt(tr,10);
+	lr = parseInt(lr,10);
+	tr =tr? tr :2;
+	lr =lr? lr :2;
+
+	var dualScreenLeft = window.screenX || window.screenLeft || screen.left
+		,dualScreenTop = window.screenY || window.screenTop || screen.top
+		, width = window.innerWidth || document.documentElement.clientWidth || screen.width
+		, height = window.innerHeight || document.documentElement.clientHeight || screen.height;
+
+	var ua = window.navigator.userAgent;
+	var old_ie= ua.indexOf('MSIE');
+	var new_ie= ua.indexOf('Trident/');
+	var _top = 0 , _left = 0 ;
+
+	if(old_ie >-1 || new_ie >-1){
+		if(ieDualCenter){
+
+			var dualScreenLeft = window.screenLeft || screen.left
+				,dualScreenTop = window.screenTop || screen.top
+				,width = window.innerWidth || document.documentElement.clientWidth || screen.width
+				,height = window.innerHeight || document.documentElement.clientHeight || screen.height;
+
+			_left = ((width / 2) - (_w / 2)) + dualScreenLeft;
+			_top = ((height / 2) - (_h / 2)) + dualScreenTop;
+		}else{
+			width=window.screen.availWidth;
+			height=window.screen.availHeight;
+			dualScreenTop= 0 ;
+			dualScreenLeft =0 ;
+			_top = ((height / tr) - (_h / tr))+ dualScreenTop;
+			_top = _top < 0 ? 0 :_top;
+			_left = ((width / lr) - (_w / lr)) + dualScreenLeft;
+		}
+	}else{
+		width=window.screen.availWidth;
+		height=window.screen.availHeight;
+		_top = ((height / tr) - (_h / tr))+ window.screen.availTop;
+		_left = ((width / lr) - (_w / lr))+window.screen.availLeft;
+	}
+
+	return {
+		top : _top
+		,left :  _left
+	}
+}
+
+window.VARSQLUI = _$base;
+})(VARSQL, jQuery);

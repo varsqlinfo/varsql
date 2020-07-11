@@ -47,7 +47,7 @@
 		<!-- form start -->
 		<form class="form-horizontal" onsubmit="return false; ">
 			<div class="form-group" :class="errors.has('TITLE') ? 'has-error' :''">
-				<label><spring:message code="guest.form.title" /></label> 
+				<label><spring:message code="guest.form.title" /></label>
 				<input type="text" v-model="detailItem.title"  v-validate="'required'" name="TITLE" class="form-control" />
 				<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
 			</div>
@@ -71,7 +71,7 @@
 			<div class="panel-heading">
 				<spring:message code="guest.form.question" />
 				<div class="input-group">
-					<input type="text" v-model="searchVal" @keydown.enter="search()" class="form-control input-sm" placeholder="<spring:message code="msg.search.placeholder" />"> 
+					<input type="text" v-model="searchVal" @keydown.enter="search()" class="form-control input-sm" placeholder="<spring:message code="msg.search.placeholder" />">
 					<span class="input-group-btn"  class="form-control">
 						<button type="button" class="btn btn-warning btn-sm searchBtn"  @click="search()">
 							<spring:message code="btn.search" />
@@ -82,38 +82,38 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div v-for="(item,index) in gridData">
-					
+
 					<hr v-if="index!=0" class="dotline" />
-	    			
-					<strong class="primary-font">{{item.title}}</strong> 
+
+					<strong class="primary-font">{{item.title}}</strong>
 	    			<div class="btn-group pull-right" v-if="item.answerYn =='N'">
 		    			<button type="button" class="btn btn-default btn-xs" @click="qnaModify(item)">
 		    			    <i class="fa fa-edit"></i>
 		    			</button>
-		    			
+
 		    			<button type="button" class="btn btn-primary btn-xs" style="margin-left:10px" @click="deleteInfo(item)">
 		    			    <i class="fa fa-trash-o"></i>
 		    			</button>
 	    			</div>
 	    			<div>{{item.regDt}}</div>
 	    			<div><pre>{{item.question}}</pre></div>
-	    			
+
 	    			<template v-if="item.answerYn != 'N'">
 		    			<div class="replymargin30">
-							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong> 
+							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong>
 							<i class="fa fa-clock-o fa-fw"></i>{{item.answerDt}}
 							<div><pre>{{item.answer}}</pre></div>
 		    			</div>
 	    			</template>
     			</div>
-    			
+
     			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
-				
+
 				<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 			</div>
 		</div>
 	</div>
-	
+
 <script>
 VarsqlAPP.vueServiceBean({
 	el: '#varsqlVueArea'
@@ -130,14 +130,14 @@ VarsqlAPP.vueServiceBean({
 			this.qnaModify();
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url :{type:VARSQL.uri.guest, url:'/qnaList'}
 				,data : param
@@ -149,25 +149,25 @@ VarsqlAPP.vueServiceBean({
 		}
 		,save : function (mode){
 			var _this = this;
-			
+
 			this.$validator.validateAll().then(function (result){
 				if(result){
-					
+
 					var param ={};
 					var saveItem = _this.detailItem;
-					
+
 					for(var key in saveItem){
 						param[key] = saveItem[key];
 					}
-					
+
 					_this.$ajax({
 						url : {type:VARSQL.uri.guest, url:'/insQna'}
-						,data : param 
+						,data : param
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
 									alert(resData.message);
-									return ; 
+									return ;
 								}
 								_this.qnaModify();
 								_this.search();
@@ -178,7 +178,7 @@ VarsqlAPP.vueServiceBean({
 			});
 		}
 		,qnaModify : function (item){
-			
+
 			if(VARSQL.isUndefined(item)){
 				this.detailItem = {
 					title : ''
@@ -186,17 +186,17 @@ VarsqlAPP.vueServiceBean({
 				}
 				this.isDetailFlag = false;
 			}else{
-				this.isDetailFlag = true; 
-				this.detailItem = item;	
+				this.isDetailFlag = true;
+				this.detailItem = item;
 			}
 		}
 		,deleteInfo : function(item){
 			var _this = this;
-			
+
 			if(!confirm('<spring:message code="msg.delete.confirm"/>')){
-				return ; 	
+				return ;
 			}
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.guest, url:'/delQna'}
 				,data : {
@@ -208,7 +208,7 @@ VarsqlAPP.vueServiceBean({
 			});
 		}
 		,goMain : function (){
-			location.href ='${varsqlLogoutUrl}';
+			location.href ='${varsqlfn:logoutUrl(pageContext.request)}';
 		}
 	}
 });

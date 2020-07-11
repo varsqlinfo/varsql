@@ -6,17 +6,17 @@
 <div id="dbHiddenArea"></div>
 
 <%--메모 보내기 다이얼로그 --%>
-<div id="memoTemplate" style="display:none;overflow: hidden;" title="<spring:message code="msg.sendmsg.title" />">
+<div id="noteTemplate" style="display:none;overflow: hidden;" title="<spring:message code="msg.sendmsg.title" />">
 	<div>
 		<div class="col-xs-6">
 			<div class="panel">
 				<div class="panel-heading">
-					<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
+					<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" autocomplete="false" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
 					<div id="recv_autocomplete_area" class=""></div>
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
-					<div class="list-group memo-recv-id-cont" id="recvIdArr">
+					<div class="list-group note-recv-id-cont" id="recvIdArr">
 					</div>
 				</div>
 				<!-- /.panel-body -->
@@ -27,10 +27,10 @@
 		<div class="col-xs-6">
 			<div class="panel">
 				<div class="panel-heading">
-					<input type="text" id="memoTitle" name="memoTitle" value="" class="form-control" placeholder="<spring:message code="title" />">
+					<input type="text" id="noteTitle" name="noteTitle" value="" class="form-control" placeholder="<spring:message code="title" />">
 				</div>
 				<div>
-					<textarea id="memoContent" name="memoContent" class="form-control" style="height: 230px;" placeholder="<spring:message code="content" />"></textarea>
+					<textarea id="noteContent" name="noteContent" class="form-control" style="height: 230px;" placeholder="<spring:message code="content" />"></textarea>
 				</div>
 			</div>
 		</div>
@@ -171,7 +171,7 @@
 <div id="data-export-modal" title="<spring:message code="data.export" />">
 	<div class="export-dialog-area">
 		<div id="data-export-column-list" class="export-column-area">
-			
+
 		</div>
 		<div class="export-type-area">
 			<div style="margin-bottom:5px;">

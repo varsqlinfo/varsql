@@ -1323,9 +1323,9 @@ VarsqlAPP.vueServiceBean( {
 					var schemaInfo = resData.customs.schemaInfo; 
 					
 					if(schemaInfo.indexOf(_self.dbListMap[val].vdbschema) > -1){
-						_self.diffItem.sourceSchema = _self.dbListMap[val].vdbschema;
+						_self.diffItem.sourceSchema = _self.dbListMap[val].vdbschema||'';
 					}else{
-						_self.diffItem.sourceSchema = schemaInfo[0];
+						_self.diffItem.sourceSchema = schemaInfo[0]||'';
 					}
 					
 					_self.sourceSchemaList = schemaInfo;

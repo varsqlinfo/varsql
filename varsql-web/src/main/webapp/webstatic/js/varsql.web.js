@@ -41,7 +41,7 @@ _$base.staticResource  ={
 	get:function (type){
 		return this[type];
 	}
-	,'juiChart' : 
+	,'juiChart' :
 		{
 			'js' : [
 			        '/webstatic/js/plugins/jui/core.min.js',
@@ -114,7 +114,7 @@ _$base.isUndefined = function(obj){
 };
 
 /**
- * array contain 
+ * array contain
  */
 _$base.inArray =function(array,val){
     for(var i = 0,l = array.length; i<l; i++){
@@ -124,28 +124,28 @@ _$base.inArray =function(array,val){
 }
 
 /**
- * message  
+ * message
  */
 _$base.messageFormat =function (fmt,msgParam){
-	
+
 	if(_$base.isUndefined(msgParam)){
 		var reval = VARSQL_LANG[fmt];
-		
+
 		if(!_$base.isUndefined(reval)){
-			return reval; 
+			return reval;
 		}
 	}else{
 		var tmpFmt = VARSQL_LANG[fmt];
-		fmt = tmpFmt ? tmpFmt :fmt; 
+		fmt = tmpFmt ? tmpFmt :fmt;
 	}
-	
+
 	msgParam = msgParam||{};
-	
+
 	var strFlag = false
 		,objFlag = false
-		,arrFlag = false; 
+		,arrFlag = false;
 
-	var arrLen = -1; 
+	var arrLen = -1;
 
 	if(typeof msgParam ==='string'){
 		strFlag = true;
@@ -155,11 +155,11 @@ _$base.messageFormat =function (fmt,msgParam){
 		if (objFlag) {
 			if(Array.isArray){
 				arrFlag =Array.isArray(msgParam);
-				arrLen = msgParam.length; 
+				arrLen = msgParam.length;
 			}else {
 				arrFlag = Object.prototype.toString.call(msgParam) === '[object Array]';
 			}
-			objFlag = arrFlag?false:true; 
+			objFlag = arrFlag?false:true;
 		}
 	}
 
@@ -173,21 +173,21 @@ _$base.messageFormat =function (fmt,msgParam){
 				key = this.$$index;
 				this.$$index++
 			}
-			
+
 			if(key < arrLen){
 				return msgParam[key];
 			}
 			return match;
 		}else{
 			return typeof msgParam[key] !== 'undefined' ? msgParam[key] : match;
-		}       
+		}
     });
 	return _langInfo(key,lang);
 }
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){
-		if( _defaultOption.logLevel > 1 ) return ; 
+		if( _defaultOption.logLevel > 1 ) return ;
 		Array.prototype.unshift.call(arguments,"vsql debug : ");
 		this._consoleApply('debug',arguments);
 	}
@@ -231,24 +231,24 @@ var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
 
 
 function fnReqCheck(data ,opts){
-	var resultCode = data.resultCode;  
-	
+	var resultCode = data.resultCode;
+
 	if(opts.disableResultCheck !== true){
 		if(resultCode== 401){ // 로그아웃
 			if(confirm(_$base.messageFormat('error.0001'))){
 				(top || window).location.href=VARSQL.contextPath;
 			}
-			return false; 
+			return false;
 		}else if(resultCode == 403){	// error
-			
+
 			var msg = data.message || _$base.messageFormat('error.403');
 			alert(msg);
 			return false;
-		}else if(resultCode == 412){ // 유효하지않은 요청입니다. 
+		}else if(resultCode == 412){ // 유효하지않은 요청입니다.
 			if(confirm(_$base.messageFormat('error.0002'))){
 				(top || window).location.href=VARSQL.contextPath;
 			}
-			return false; 
+			return false;
 		}else if(resultCode == 500){	// error
 			alert(data.message);
 			return false;
@@ -256,14 +256,14 @@ function fnReqCheck(data ,opts){
 			if(confirm(_$base.messageFormat('error.0003'))){
 				(top || window).location.href=VARSQL.contextPath;
 			}
-			return false; 
-		}else if(resultCode == 10001){ // connection error
-			alert(data.message);
-			return false; 
+			return false;
+		}else if(resultCode >= 80000 && resultCode < 90000){ // connection error
+			alert(_$base.messageFormat('error.'+resultCode));
+			return false;
 		}
 	}
-	
-	return true; 
+
+	return true;
 }
 /**
  * ajax 요청
@@ -271,59 +271,59 @@ function fnReqCheck(data ,opts){
 _$base.req ={
 	isConnectError : false
 	,ajax:function (option){
-		var _this =this; 
+		var _this =this;
 		var urlObj = option.url;
-		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url); 
-		
+		option.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
+
 		var loadSelector = option.loadSelector ?option.loadSelector :false;
-		
+
 		if(option.dataType == 'jsonp'){
 			option.timeout = option.timeout || 10000;
 		}
-		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option); 
-		
+		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option);
+
 		ajaxOpt.beforeSend = function (xhr){
 			xhr.setRequestHeader($$csrf_header, $$csrf_token);
-			
+
 			if($(loadSelector).length > 0){
 				$(loadSelector).centerLoading({
-					contentClear:false 
+					contentClear:false
 				});
 			}
-			
+
 			if($.isFunction(option.beforeSend)){
 				option.beforeSend(xhr);
 			}
 		}
-		
+
 		ajaxOpt.error = function (xhr){
 			if (xhr.readyState == 4) {
 				// xhr.status , xhr.statusText check
 			}else if (xhr.readyState == 0) { // connection refused , access denied
-				
+
 				if(_this.isConnectError===true){
 					return ;
 				}
 				$(loadSelector).centerLoadingClose();
 				alert(_$base.messageFormat('error.0004'));
-				_this.isConnectError = true; 
-				
+				_this.isConnectError = true;
+
 				setTimeout(function() {
 					_this.isConnectError =false;
 				},2000 );
-				
+
 				return ;
 			}else {
-				//Other errors	
+				//Other errors
 			}
 		}
-		
+
 		ajaxOpt.success =  function (data, status, jqXHR) {
-			_this.isConnectError = false; 
-			var resultCode = data.resultCode;  
-			
-			if(!fnReqCheck(data,option)) return ; 
-			
+			_this.isConnectError = false;
+			var resultCode = data.resultCode;
+
+			if(!fnReqCheck(data,option)) return ;
+
 			try{
 				option.success.call(this, data, status, jqXHR);
 			}catch(e){
@@ -331,11 +331,11 @@ _$base.req ={
 				console.log(e);
 			}
 		}
-		
+
 		$.ajax(ajaxOpt).done(function (xhr){
 			if(loadSelector){
 				$(loadSelector).centerLoadingClose();
-			} 
+			}
 		}).fail(function (xhr){
 			if(loadSelector) {
 				$(loadSelector).centerLoadingClose();
@@ -351,19 +351,19 @@ _$base.req ={
 				for(var i=0; i <objLen; i++){
 					item = items[i];
 					alert(item.field + "\n"+ item.defaultMessage)
-					return false; 
+					return false;
 				}
 			}
 		}
-		return true; 
+		return true;
 	}
 	,uploadFile : function (formSelector , opts){
-		var _this =this; 
-		
+		var _this =this;
+
 		var formData = new FormData($(formSelector)[0]);
-		
+
 		var urlObj = opts.url;
-		
+
 		if(_$base.isUndefined(urlObj)){
 			if(opts.multiple===true){
 				urlObj = '/upload/multiFile';
@@ -371,13 +371,13 @@ _$base.req ={
 				urlObj = '/upload/file';
 			}
 		}
-		
+
 		if(!_$base.isUndefined(opts.param)){
 			formData.set('param',JSON.stringify(opts.param));
 		}
-		
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url); 
-		
+
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
+
 		$.ajax({
 			type : 'post',
 			url : opts.url,
@@ -388,10 +388,10 @@ _$base.req ={
 				xhr.setRequestHeader($$csrf_header, $$csrf_token);
 			}
 			,success : function (data, status, jqXHR) {
-				_this.isConnectError = false; 
-				
+				_this.isConnectError = false;
+
 				if(!fnReqCheck(data,opts)) return ;
-				
+
 				try{
 					opts.success.call(this, data, status, jqXHR);
 				}catch(e){
@@ -402,44 +402,44 @@ _$base.req ={
 				if (xhr.readyState == 4) {
 					// xhr.status , xhr.statusText check
 				}else if (xhr.readyState == 0) { // connection refused , access denied
-					
+
 					if(_this.isConnectError===true){
 						return ;
 					}
 					$(loadSelector).centerLoadingClose();
 					alert(_$base.messageFormat('error.0004'));
-					_this.isConnectError = true; 
-					
+					_this.isConnectError = true;
+
 					setTimeout(function() {
 						_this.isConnectError =false;
 					},2000 );
-					
+
 					return ;
 				}else {
-					//Other errors	
+					//Other errors
 				}
 			}
 		});
 	}
 	,ajaxSubmit:function (formid , opts){
-		
+
 		var formObj = $(formid)
 			,tmpParam = opts.params?opts.params:{}
 			,urlObj = opts.url
 			,inputStr = [];
-		
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);  
-		
+
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
+
 		var tmpVal;
 		for(var key in tmpParam){
 			tmpVal = tmpParam[key];
 			inputStr.push('<input type="hidden" name="'+key+'" value="'+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'"/>');
 		}
-		
+
 		formObj.empty();
 		formObj.append(inputStr.join(''));
-		
-		opts.beforeSubmit=function(arr, formObj, opts) { 
+
+		opts.beforeSubmit=function(arr, formObj, opts) {
 			//_cursorWaitStart();
 			return true;
 		}
@@ -450,44 +450,44 @@ _$base.req ={
 		var tmpMethod = opts.method?opts.method:'post'
 			,tmpParam = opts.params?opts.params:{}
 			,urlObj = opts.url;
-			
+
 		if($('#varsql_hidden_down_area').length < 1){
 			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
 				+'<iframe name="varsql_hidden_down_iframe"  style="width:0px;height:0px;"></iframe><div id="varsql_hidden_down_form_area"></div><div>';
 			$('body').append(strHtm);
 		}
-		
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);  
-		
+
+		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
+
 		var contHtm = [];
 		contHtm.push('<form action="'+opts.url+'" method="post" name="varsql_hidden_down_form" target="varsql_hidden_down_iframe">');
-		
+
 		var tmpVal;
-		
+
 		var token = {};
 		contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
 			'key' : $$csrf_param ,val :$$csrf_token
 		}));
-		
+
 		for(var key in tmpParam){
 			tmpVal = tmpParam[key];
-			
+
 			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
 				'key' : key ,val : (typeof tmpVal==='string' ?tmpVal:JSON.stringify(tmpVal))
 			}));
 		}
 		contHtm.push('</form>');
-		
+
 		$('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
-		
+
 		document.varsql_hidden_down_form.submit();
-		
+
 	}
 };
 
 jQuery.fn.centerLoading = function(options) {
 	this.config = {
-		closeAutoYn: 'N' ,	
+		closeAutoYn: 'N' ,
 		timeOut:1000,
 		action: 'slide',
 		height: 0,
@@ -502,17 +502,17 @@ jQuery.fn.centerLoading = function(options) {
 		cursor:	'wait',
 		contentClear : false
 	}
-	
+
 	var id,w,h;
-		
+
 	var config = $.extend({},this.config, options);
 	id = this.attr('id');
 
 	w = config.width==0?this.width():config.width;
 	h = config.height==0?this.height():config.height;
 
-	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;	
-	
+	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;
+
 	var loadStr = '<div class="centerLoading" style="z-index:100;position:absolute;width:100%; height:100%;">'
 	if(config.content){
 		if(config.centerYn=='Y'){
@@ -524,15 +524,15 @@ jQuery.fn.centerLoading = function(options) {
 		loadStr +='<div style="height:100%;background-repeat:no-repeat;cursor:'+config.cursor+';background-image:url('+config.loadingImg+');background-position:'+(config.centerYn=='Y'?'center center':'')+'"></div>';
 	}
 	loadStr +='</div>';
-	
+
 	if(!config.contentClear){
 		this.prepend(loadStr);
 	}else{
 		this.html(loadStr);
 	}
-	
-	var cssPosition = this.css('position'); 
-	
+
+	var cssPosition = this.css('position');
+
 	if (cssPosition != 'relative' &&  cssPosition != 'absolute') {
 		this.css('position','relative');
 		var heightVal = this.css('height') ||'';
@@ -541,14 +541,14 @@ jQuery.fn.centerLoading = function(options) {
 		this.attr('var-css-key',addCssKey);
 	}
 	config.action == 'slide'?jQuery(this).slideDown('slow') : config.action == 'fade'?jQuery(this).fadeIn('slow'):jQuery(this).show();
-	
+
 	return this;
 };
 
 jQuery.fn.centerLoadingClose= function(options) {
-	
+
 	this.find('.centerLoading').remove();
-	var posVal = (this.attr('var-css-key')||''); 
+	var posVal = (this.attr('var-css-key')||'');
 	if(posVal.indexOf('relative') > -1){
 		this.css('position','');
 		this.removeAttr('var-css-key');
@@ -559,11 +559,11 @@ _$base.progress = {
 	start:function (divObj){
 		try{
 			var obj = $(divObj);
-			
+
 			var modalcls = divObj.replace(/^[.#]/, '');
-			
+
 			$(divObj).prepend('<div class="'+modalcls+'dialog-modal transbg" style="position:absolute;z-index:100000;text-align:center;border:1px solid;background: #CCC; filter:alpha(opacity=50); -moz-opacity:0.5; opacity: 0.5;display:table-cell;vertical-align:middle"><span><span style="font-weight:bold;background: #fff;">기다리시오....인내심을 가지고..</span></span></div>');
-			
+
 			$("."+modalcls +'dialog-modal > span').css('line-height',obj.outerHeight() +'px');
 			$("."+modalcls +'dialog-modal').css('width',obj.outerWidth());
 			$("."+modalcls +'dialog-modal').css('height',obj.outerHeight());
@@ -582,7 +582,7 @@ _$base.progress = {
 };
 
 _$base.isDataEmpty =function (opt){
-	return $.isEmptyObject(opt); 
+	return $.isEmptyObject(opt);
 };
 
 /**
@@ -592,7 +592,7 @@ _$base.addCsrfElement =function (eleSelector){
 	$(eleSelector).append(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
 		'key' : $$csrf_param ,val :$$csrf_token
 	}));
-	return $.isEmptyObject(opt); 
+	return $.isEmptyObject(opt);
 };
 
 /**
@@ -602,19 +602,19 @@ _$base.check = {
 	getCheckVal:function (opt){
 		var option ={delim:','}
 			,rv = [];
-		
+
 		if ( typeof opt === "string" ) {
-			option.selector = opt; 
+			option.selector = opt;
 		}
-		
+
 		$(option.selector+':checked').each(function (){
 			rv.push($(this).val());
 		});
-		
-		return rv; 
+
+		return rv;
 	}
 	,allCheck : function (allSelector, itemSelector){
-		
+
 		if($(allSelector).is(":checked")){
 			$(itemSelector).prop("checked", true);
 		}else{
@@ -628,7 +628,7 @@ _$base.check = {
 /**
  * @method _$base.unload
  * @description 페이지 빠져나가기
- */	
+ */
 _$base.unload =function (){
 	// F5, ctrl + F5, ctrl + r 새로고침 막기
 	$(document).keydown(function (e) {
@@ -641,7 +641,7 @@ _$base.unload =function (){
         } else if (e.which === 82 && e.ctrlKey) {
         	keychk = true;
         }
-	    
+
 	    if(keychk){
 			if(!confirm(_$base.messageFormat('varsql.0001'))){
 				return false;
@@ -649,14 +649,14 @@ _$base.unload =function (){
 				location.reload();
 	        }
 	    }
-	}); 
+	});
 }
 
 /**
  * js, css 동적 로드
  */
 _$base.loadResource = function (resource, type){
-	var _self = _$base; 
+	var _self = _$base;
 	function _load(_url , type){
 		_url = _self.getContextPathUrl(_url);
 		try{
@@ -670,7 +670,7 @@ _$base.loadResource = function (resource, type){
 			_$base.log.error(e);
 		};
 	}
-	
+
 	if(Object.prototype.toString.call(resource) == '[object Array]'){
 		var len = resource.length;
 		for(var i =0; i <len ; i++){
@@ -707,12 +707,12 @@ _$base.generateUUID = function() {
 };
 
 /**
- * 매칭되는 글자수 
+ * 매칭되는 글자수
  */
 _$base.matchCount = function(str,ms) {
 	var re = new RegExp(ms, "ig");
     var resultArray = str.match(re);
-    return resultArray.length;	
+    return resultArray.length;
 };
 
 /**
@@ -731,26 +731,26 @@ _$base.endsWith = function(str ,searchString, position) {
 //array으로 변환
 function paramToArray(param){
 	var tmpArr = new Array();
-	var tmpVal;	
+	var tmpVal;
 	for(var key in param) {
 		if(key) {
 			tmpVal = param[key];
 			tmpArr.push( key+'='+ ( (typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal) ) );
 		}
 	}
-	return tmpArr; 
+	return tmpArr;
 }
 
 function getParameter(url, param){
-	
+
 	var paramSplit  = url.split('?');
 	var paramLen = paramSplit.length;
-	
+
 	if(paramLen < 2) return param;
-	
+
 	var rtnval = param ? param : new Object();
 	var parameters = paramSplit[1].split('&');
-	
+
 	var tmpKey='';
 	for(var i = 0 ; i < parameters.length ; i++){
 		var tmpPara = parameters[i].split('=');
@@ -767,14 +767,14 @@ function getParameter(url, param){
 		}
 		rtnval[tmpKey] = rtnval[tmpKey]+lastParam
 	}
-	
-	return rtnval; 
+
+	return rtnval;
 }
 
 /**
  * @method VARSQL.str
  * @param str
- * @description 글자 형식 처리. 
+ * @description 글자 형식 처리.
  */
 _$base.str = {
 	trim : function(str) {
@@ -833,31 +833,31 @@ _$base.util = {
      * @description 날자 범위 지정하기
      */
 	,setRangeDate :function(sdtObj, edtObj, cdt, rangeNum, type){
-		
+
 		if(isNaN(rangeNum)) return false;
-		
-		var _self = this; 
-		var flag = rangeNum >0 ?true:false; 
-		
+
+		var _self = this;
+		var flag = rangeNum >0 ?true:false;
+
 		sdtObj = $(sdtObj);
 		edtObj = $(edtObj);
-		
+
 		if(flag){
 			var sdt = sdtObj.val()
 				,tmped = _self.calcDate(sdt, rangeNum,type);
-			
+
 			if(parseInt(_self.removeSpecial(sdt), 10) > parseInt(_self.removeSpecial(cdt),10)){
 				sdtObj.val(cdt);
-				tmped = cdt; 
+				tmped = cdt;
 			}else if(parseInt(_self.removeSpecial(tmped), 10) > parseInt(_self.removeSpecial(cdt),10)){
-				tmped = cdt; 
+				tmped = cdt;
 			}
-			
+
 			edtObj.val(tmped);
 		}else{
 			var sdt = edtObj.val()
 				,tmped = _self.calcDate(sdt,rangeNum, type);
-		
+
 			if(parseInt(_self.removeSpecial(sdt), 10) > parseInt(_self.removeSpecial(cdt),10)){
 				edtObj.val(cdt);
 				tmped = _self.calcDate(cdt, rangeNum, type);
@@ -865,21 +865,24 @@ _$base.util = {
 			sdtObj.val(tmped);
 		}
 	}
+	,copyObject : function (obj){
+		return this.objectMerge({},obj);
+	}
 	/**
 	 * @method objectMerge
 	 * @param target
 	 * @param source
 	 * @description object merge
-	 */	
+	 */
 	,objectMerge : function () {
 		var objMergeRecursive = function (dst, src) {
-		    
+
 			for (var p in src) {
 				if (!src.hasOwnProperty(p)) {continue;}
-				
+
 				var srcItem = src[p] ;
 				if (srcItem=== undefined) {continue;}
-				
+
 				if ( typeof srcItem!== 'object' || srcItem=== null) {
 					dst[p] = srcItem;
 				} else if (typeof dst[p]!=='object' || dst[p] === null) {
@@ -919,13 +922,13 @@ _$base.util = {
 		for(var key in obj){
 			param[_fnConvertCamel(key)] = obj[key];
 		}
-		return param; 
+		return param;
 	}
 	,removeUnderscore : function (str, lowerCaseFlag){
 	    if(str == '') {
 	        return str;
 	    }
-	    
+
 	    if(lowerCaseFlag){
 	    	str = str.toLowerCase();
 	    }
@@ -934,26 +937,35 @@ _$base.util = {
 	        return word;
 	    });
 	    returnStr = returnStr.replace(/_/g, "");
-	    
-	    return returnStr; 
+
+	    return returnStr;
 	}
-	
+
 	// camel 변환
 	,convertCamel : _fnConvertCamel
 	,convertUnderscoreCase : _fnConvertUnderscoreCase
 	,toLowerCase: _fnToLowerCase
 	,toUpperCase : _fnToUpperCase
+	,paramToArray : paramToArray
+	,getParameter : getParameter
+	,browserSize : function(){
+		return {
+			width : (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
+			,height : (window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight)
+		}
+
+	}
 }
 
 /**
- * 숫자 계산  
+ * 숫자 계산
  */
 _$base.math = {
 	cal :function(a, b , calType, fixNum) {
-		
+
 		a = isNaN(a) ? 0 : a;
 		b = isNaN(b) ? 0 : b;
-		
+
 		var reval =0.0;
 		if(calType=='+'){
 			reval= a+b;
@@ -964,25 +976,25 @@ _$base.math = {
 		}else if(calType=='*'){
 			reval= a*b;
 		}
-		
+
 		if(fixNum){
 			return reval.toFixed(fixNum);
 		}else{
-			var dotIdxA =(a+'').split('.')[1]; 
+			var dotIdxA =(a+'').split('.')[1];
 			dotIdxA = dotIdxA?dotIdxA.length : 0;
-			
-			var dotIdxB =(b+'').split('.')[1]; 
+
+			var dotIdxB =(b+'').split('.')[1];
 			dotIdxB = dotIdxB?dotIdxB.length : 0;
-			
+
 			fixNum= dotIdxA >dotIdxB?dotIdxA : dotIdxB;
-			
+
 			if(fixNum < 1){
 				var revalDot =(reval+'').split('.')[1];
 				revalDot = revalDot?revalDot.length : 0;
 				fixNum= fixNum >revalDot?fixNum : revalDot;
 			}
 		}
-		
+
 		return fixNum > 0 ? reval.toFixed(fixNum) : reval;
 	}
 	,sum :function(a, b) {
@@ -991,37 +1003,37 @@ _$base.math = {
 	//배열 sum
 	,arraySum :function(array, key) {
 		if(array.length < 1) return 0;
-		
-		var _self = this; 
-		
+
+		var _self = this;
+
 		var result =0.0, tmpVal= 0.0, maxFixed=0,dotIdx
-			,flag = key ? true :false; 
-		
+			,flag = key ? true :false;
+
 		$.each(array, function(){
 			tmpVal = flag?this[key]:this;
-			
+
 			if(isNaN(tmpVal)){
 				tmpVal = (tmpVal+'').replace(/[$,]+/g,'');
 				tmpVal = isNaN(tmpVal)?0:tmpVal;
 			}
-			
-			dotIdx =(tmpVal+'').split('.')[1]; 
+
+			dotIdx =(tmpVal+'').split('.')[1];
 			dotIdx = dotIdx?dotIdx.length : maxFixed;
 			maxFixed = maxFixed > dotIdx?maxFixed :dotIdx;
-			
-			result = (_self.sum(parseFloat(result) , parseFloat(tmpVal))).toFixed(maxFixed); 
+
+			result = (_self.sum(parseFloat(result) , parseFloat(tmpVal))).toFixed(maxFixed);
 		});
-		
+
 		return result;
 	}
 	// 배열 평균 구하기 함수
 	,average : function (array, key) {
 		if(array.length < 1) return 0;
 		var tmpSum = this.arraySum(array,key);
-		
-		var dotIdx =(tmpSum+'').split('.')[1]; 
+
+		var dotIdx =(tmpSum+'').split('.')[1];
 		dotIdx = dotIdx?dotIdx.length : 0;
-		
+
 		return (tmpSum / array.length).toFixed(dotIdx);
 	}
 }
@@ -1147,7 +1159,7 @@ function contains(arr , element) {
 
 //camel 변환
 function _fnConvertCamel(camelStr){
-	
+
     if(camelStr == '') {
         return camelStr;
     }
@@ -1157,15 +1169,15 @@ function _fnConvertCamel(camelStr){
         return _fnToUpperCase(word);
     });
     returnStr = returnStr.replace(/_/g, "");
-    
-    return returnStr; 
+
+    return returnStr;
 }
 //camel case -> underscorecase 변환
 function _fnConvertUnderscoreCase(str){
 	if(str == '') {
 		return str;
 	}
-	return str.split(/(?=[A-Z])/).join('_').toUpperCase(); 
+	return str.split(/(?=[A-Z])/).join('_').toUpperCase();
 }
 
 function _fnToLowerCase(str){
@@ -1176,7 +1188,7 @@ function _fnToUpperCase(str){
 	return (str || '').toUpperCase()
 }
 
-window.VARSQL = _$base; 
+window.VARSQL = _$base;
 
 })( window );
 

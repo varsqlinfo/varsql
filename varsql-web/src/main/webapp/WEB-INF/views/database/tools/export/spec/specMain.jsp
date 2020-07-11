@@ -248,7 +248,7 @@ VarsqlAPP.vueServiceBean({
 			
 			VARSQL.req.download({
 				type: 'post'
-				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport.vsql'}
+				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport'}
 				,params : param
 			});
 		}
@@ -269,7 +269,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			VARSQL.req.ajax({
-				url : {type:VARSQL.uri.database, url:'/tools/export/specMain/tableList.vsql'}
+				url : {type:VARSQL.uri.database, url:'/tools/export/specMain/tableList'}
 				,data: param
 				,loadSelector : '.table-select-area'
 				,success:function (resData){
