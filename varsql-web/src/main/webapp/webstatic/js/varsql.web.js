@@ -646,6 +646,7 @@ _$base.unload =function (){
 			if(!confirm(_$base.messageFormat('varsql.0001'))){
 				return false;
 			}else{
+				$('#varsql_page_load_msg_wrapper').show();
 				location.reload();
 	        }
 	    }

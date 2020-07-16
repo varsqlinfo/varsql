@@ -16,16 +16,15 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.db.encryption.EncryptionFactory;
-import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ConnectionException;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.core.sql.resultset.handler.ResultSetHandlerImplOTHER;
 
 /**
  *
@@ -39,7 +38,8 @@ public final class SQLManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
 
-	private Map<String, SqlSessionFactory> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionFactory>();
+	private Map<String, SqlSessionTemplate> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionTemplate>();
+	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
 	private String resource = "template/mybatis/mybatis.template";
 
 	private String defaultConfigTemplate;
@@ -67,12 +67,16 @@ public final class SQLManager {
 		if (!sqlSessionMap.containsKey(sessionType)) {
 			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
 		}
-		return sqlSessionMap.get(sessionType).openSession();
+
+		return sqlSessionMap.get(sessionType);
 	}
 
 	public Connection getConnection(String sessionType) throws ConnectionException {
 		try {
-			return getSqlSession(sessionType).getConnection();
+			if(!sqlSessionFactoryMap.containsKey(sessionType)) {
+				getSqlSession(sessionType);
+			}
+			return sqlSessionFactoryMap.get(sessionType).openSession().getConnection();
 		}catch(Throwable e) {
 			throw new ConnectionException("connection error Cause: "+ e.getMessage());
 		}
@@ -118,7 +122,9 @@ public final class SQLManager {
 
 			Reader reader = new StringReader(xmlTemplate);
 			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, sessionType);
-			sqlSessionMap.put(connInfo.getConnid() , sqlSessionFactory);
+
+			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
+			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
 			logger.error("xml template :  {} ", xmlTemplate);
 			logger.error("SQLManager :{} ", e.getMessage() , e);

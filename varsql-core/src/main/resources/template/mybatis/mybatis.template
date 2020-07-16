@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
- 
+
 <configuration>
 	<settings>
 		<setting name="cacheEnabled" value="true"></setting>
 		<setting name="callSettersOnNulls" value="true"></setting>
-		<setting name="logPrefix" value="com.core.varsql_query"></setting>  
+		<setting name="logPrefix" value="com.core.varsql_query"></setting>
 	</settings>
-	
+
 	<typeAliases>
 		<typeAlias alias="databaseParamInfo" type="com.varsql.core.db.valueobject.DatabaseParamInfo"/>
 		<typeAlias alias="paramMap" type="com.vartech.common.app.beans.ParamMap"/>
@@ -17,27 +17,41 @@
 		<typeAlias alias="sequenceInfo" type="com.varsql.core.db.valueobject.SequenceInfo"/>
 		<typeAlias alias="objectInfo" type="com.varsql.core.db.valueobject.ObjectInfo"/>
 		<typeAlias alias="objectColumnInfo" type="com.varsql.core.db.valueobject.ObjectColumnInfo"/>
+
+		<!-- datasource -->
+		<typeAlias type="com.varsql.core.db.mybatis.DataSourceFactory" alias="varsqlPool" />
 	</typeAliases>
-	
+
+
 	<typeHandlers>
   		<typeHandler jdbcType="LONGVARCHAR" javaType="String" handler="com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler"/>
 	</typeHandlers>
-	
+
     <environments default="#{type}Env">
         <environment id="#{connid}">
           <transactionManager type="JDBC"/>
-            <dataSource type="POOLED">
-                <property name="driver" value="#{driver}"/>
+            <dataSource type="varsqlPool">
+                <property name="driverClassName" value="#{driver}"/>
                 <property name="url" value="#{url}"/>
                 <property name="username" value="#{username}"/>
                 <property name="password" value="#{password}"/>
-	            <property name="poolMaximumActiveConnections" value="5"/>
-	            <property name="poolMaximumIdleConnections" value="5"/>
-	            <property name="poolMaximumCheckoutTime" value="20000"/>
-	            <property name="poolPingEnabled" value="true"/>
-	            <property name="poolPingQuery" value="#{validation_query}"/>
-	            <property name="poolPingConnectionsNotUsedFor" value="10000"/>
-	            <property name="poolTimeToWait" value="15000"/>
+
+                <property name="initialSize" value="5" />
+				<property name="maxTotal" value="10" />
+				<property name="maxIdle" value="10" />
+				<property name="minIdle" value="0" />
+				<property name="validationQuery" value="#{validation_query}" />
+
+				<property name="testOnBorrow" value="false"/>
+				<property name="testOnReturn" value="false"/>
+
+				<property name="testWhileIdle" value="true" />
+				<property name="timeBetweenEvictionRunsMillis" value="150000" />
+
+				<property name="numTestsPerEvictionRun" value="5"/>
+				<property name="minEvictableIdleTimeMillis" value="-1"/>
+				<property name="poolPreparedStatements" value="true"/>
+
             </dataSource>
        </environment>
     </environments>

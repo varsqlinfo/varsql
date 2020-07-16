@@ -228,7 +228,7 @@ window.userMain = {
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
 						<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
-						<div>[{{name}}] db 정보를 로드중입니다.</div>
+						<div>[{{name}}] <spring:message code="msg.dbdata.load" text="db loading" /> </div>
 					</div>
 				</td>
 			</tr>
@@ -243,13 +243,25 @@ window.userMain = {
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">
-						<div class="var-db-select-text">접속할 <img src="${pageContext.request.contextPath}/webstatic/imgs/Database.gif">db를 선택하시오.</div>
+						<div class="var-db-select-text"><spring:message code="msg.connect.db.select" arguments="${pageContext.request.contextPath}" text="Select database" /></div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </div>
+
+<table id="varsql_page_load_msg_wrapper" class="wh100-absolute page-reload-msg">
+	<tbody>
+		<tr>
+			<td style="text-align: center; font-size: 3em;">
+				<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
+				<div>페이지를 로드중입니다.</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
 <div id="noteTemplate_view_dialog" style="display:none;">
 	<div class="note-view-area">
 		<div>보낸사람 : <span id="noteSendInfo"></span></div>
