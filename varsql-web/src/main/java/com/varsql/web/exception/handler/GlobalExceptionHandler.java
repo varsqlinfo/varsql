@@ -30,6 +30,7 @@ import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
+import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -68,7 +69,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=SQLException.class)
 	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error("sqlExceptionHandle "+ getClass().getName(),ex);
+		logger.error("sqlExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("sqlExceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ResultConst.CODE.ERROR.toInt());
@@ -92,7 +94,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=VarsqlAppException.class)
 	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("varsqlAppExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("varsqlAppExceptionHandler :{} ", ex.getMessage() , ex);
 
 		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
 
@@ -118,7 +121,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=VarsqlRuntimeException.class)
 	public void varsqlRuntimeExceptionHandler(VarsqlRuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("VarsqlRuntimeException url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("VarsqlRuntimeException :{} ", ex.getMessage() , ex);
 
 		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 
@@ -144,7 +148,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=ConnectionException.class)
 	public void connectionExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("connectionExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("connectionExceptionHandler :{} ", ex.getMessage() , ex);
 
 		commonServiceImpl.insertExceptionLog("connectionException",ex);
 
@@ -166,7 +171,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=ConnectionFactoryException.class)
 	public void connectionFactoryExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("connectionFactoryExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("connectionFactoryExceptionHandler :{} ", ex.getMessage() , ex);
 
 		commonServiceImpl.insertExceptionLog("connectionFactoryException",ex);
 
@@ -188,7 +194,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=DatabaseInvalidException.class)
 	public void databaseInvalidExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("databaseInvalidExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("databaseInvalidExceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(request, response ,result,"invalidDatabasePage");
@@ -208,7 +215,9 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=RuntimeException.class)
 	public void runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 
-		logger.error("runtimeExceptionHandle : ", getClass().getName(),ex);
+		logger.error("runtimeExceptionHandle url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("runtimeExceptionHandle :{} ", ex.getMessage() , ex);
+
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 
@@ -229,7 +238,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value= {ClassNotFoundException.class, NoClassDefFoundError.class})
 	public void classExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
 
-		logger.error("classExceptionHandler : ", getClass().getName(),ex);
+		logger.error("classExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("classExceptionHandler : {} ", ex.getMessage() ,ex);
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 		exceptionRequestHandle(request, response ,result);
@@ -238,7 +248,8 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=Exception.class)
 	public void exceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error("exceptionHandler : {}",getClass().getName(),ex);
+		logger.error("exceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("exceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
 
@@ -257,7 +268,7 @@ public class GlobalExceptionHandler{
 
 	/**
 	 *
-	 * @Method Name  : handleControllerException
+	 * @Method Name  : multipartexceptionHandler
 	 * @Method 설명 : upload error
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 11. 29.
@@ -267,7 +278,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(MultipartException.class)
-    public @ResponseBody ResponseResult handleControllerException(HttpServletRequest request, Throwable ex) {
+    public @ResponseBody ResponseResult multipartexceptionHandler(HttpServletRequest request, Throwable ex) {
 
         HttpStatus status = getStatus(request);
 
@@ -279,7 +290,10 @@ public class GlobalExceptionHandler{
 
 	@ExceptionHandler(NoHandlerFoundException.class)
     public void handle404(Exception ex,HttpServletRequest request ,  HttpServletResponse response) {
-		logger.error("handle404 : ", getClass().getName(),ex);
+
+		logger.error("handle404 url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("handle404 :{} ", ex.getMessage() , ex);
+
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 		exceptionRequestHandle(request, response ,result , "error404");
@@ -294,9 +308,9 @@ public class GlobalExceptionHandler{
     }
 
 	@ExceptionHandler(value=MissingServletRequestParameterException.class)
-	public void missingServletRequestParameterExceptionHandle(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void missingServletRequestParameterExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
-		logger.error(getClass().getName(),ex);
+		logger.error("missingServletRequestParameterExceptionHandler:{}",ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(request, response ,result, "error403");

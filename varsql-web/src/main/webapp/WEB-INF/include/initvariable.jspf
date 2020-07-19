@@ -1,12 +1,4 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="varsqlfn" uri="http://varsql.vartech.com/varsqlfn"%>
-
-<c:set var="pubjs_ver" value="${varsqlfn:pubJsVersion()}" />
-<c:set var="codemirror_ver" value="${varsqlfn:staticResourceVersion('codemirror')}" />
-<c:set var="css_ver" value="${varsqlfn:staticResourceVersion('css')}" />
-<c:set var="prettify_ver" value="${varsqlfn:staticResourceVersion('prettify')}" />
-
 <script>
 var global_page_context_path ="${pageContextPath}";
 </script>

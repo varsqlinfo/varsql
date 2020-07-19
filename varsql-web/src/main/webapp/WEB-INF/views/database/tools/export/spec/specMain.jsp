@@ -38,18 +38,18 @@
 						<div class="field-group">
 							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.table.definition" /></label>
 							<div class="col-xs-9">
-								<label class="checkbox-inline"> 
-									<input type="checkbox" name="addTableDefinitionFlag" v-model="userSetting.addTableDefinitionFlag" value="true"><spring:message code="addflag" /> 
+								<label class="checkbox-inline">
+									<input type="checkbox" name="addTableDefinitionFlag" v-model="userSetting.addTableDefinitionFlag" value="true"><spring:message code="addflag" />
 								</label>
 							</div>
 						</div>
 						<div class="field-group">
 							<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.column.multi.sheet" /></label>
 							<div class="col-xs-9">
-								<label class="radio-inline"> 
-									<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="false" checked><spring:message code="single" /> 
+								<label class="radio-inline">
+									<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="false" checked><spring:message code="single" />
 								</label>
-								<label class="radio-inline"> 
+								<label class="radio-inline">
 									<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="true"> <spring:message code="multiple" />
 								</label>
 							</div>
@@ -57,17 +57,17 @@
 					</form>
 				</div>
 			</div>
-			
+
 			<div class="process-step" :class="step==2?'active':''">
 				<div class="col-xs-12">
 					<div class="process-title"><spring:message code="msg.export.spec.step2" /></div>
-					
+
 					<c:if test="${schemaInfo ne ''}">
 						<div style="padding: 5px 0px 0px;">
 							<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </label>
 							<select v-model="selectSchema" @change="getTableList()" style="width: calc(100% - 55px);">
 								<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
-									<option value="${item}">${item}</option>    
+									<option value="${item}">${item}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -93,7 +93,7 @@
 						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.value" /></div>
 						<div>
 							<ul id="target" class="pub-select-target pub-multiselect-area" style="height: 200px;width: 100%;">
-							
+
 							</ul>
 						</div>
 						<div class="pull-right">
@@ -105,7 +105,7 @@
 					</div>
 				</div>
 			</div>
-				
+
 			<div class="process-step" :class="step==3?'active':''">
 				<div class="col-xs-12">
 					<div class="process-title"><spring:message code="msg.export.spec.column.title" /></div>
@@ -130,7 +130,7 @@
 						<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="msg.select.value" /></div>
 						<div>
 							<ul id="columnTarget" class="pub-select-target pub-multiselect-area" style="height: 200px;width: 100%;">
-							
+
 							</ul>
 						</div>
 						<div class="pull-right">
@@ -186,12 +186,12 @@ VarsqlAPP.vueServiceBean({
 		,selectSchema : ''
 		,selectTableObj : {}
 		,selectColumnObj : {}
-		,userSetting : VARSQL.util.objectMerge({exportName:'table_spec',sheetFlag:'false', schema:'${schemaInfo}'},${userSettingInfo})
+		,userSetting : VARSQL.util.objectMerge({exportName:'table_spec',sheetFlag:'false', schema:'${schemaInfo}', tables:[]},${userSettingInfo})
 		,detailItem :{}
 	}
 	,methods:{
 		init : function (){
-			this.selectSchema = this.userSetting.schema; 
+			this.selectSchema = this.userSetting.schema;
 			this.setUserConfigInfo();
 		}
 		//이전 , 다음
@@ -212,25 +212,25 @@ VarsqlAPP.vueServiceBean({
 		}
 		// 완료
 		,complete : function (){
-			var _self = this; 
+			var _self = this;
 			if(_self.selectTableObj.getTargetItem().length < 1){
 				this.step=2;
     			alert('<spring:message code="msg.table.select" />');
-    			return ; 
+    			return ;
     		}
-			
+
 			if(_self.selectColumnObj.getTargetItem().length < 1){
     			alert('<spring:message code="msg.column.select" />');
-    			return ; 
+    			return ;
     		}
-			
+
 			_self.exportInfo();
 		}
 		,exportInfo : function (){
-			var _self = this; 
-			
+			var _self = this;
+
 			var info = $("#firstConfigForm").serializeJSON();
-			
+
 			var prefVal = {
 				exportName : _self.userSetting.exportName
 				,schema : _self.selectSchema
@@ -239,13 +239,13 @@ VarsqlAPP.vueServiceBean({
 				,tables : _self.selectTableObj.getTargetItem()
 				,columns: _self.selectColumnObj.getTargetItem()
 			};
-			
+
 			var param = {
 				prefVal : JSON.stringify(prefVal)
 				,schema : _self.selectSchema
 				,conuid : '${param.conuid}'
 			};
-			
+
 			VARSQL.req.download({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport'}
@@ -253,44 +253,44 @@ VarsqlAPP.vueServiceBean({
 			});
 		}
 		,setUserConfigInfo : function (){
-			var _self = this; 
-			
+			var _self = this;
+
 			_self.setTableSelect();
 			_self.getTableList();
 			_self.setColumnSelect();
-			
+
 		}
 		,getTableList : function(){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				conuid : '${param.conuid}'
 				,schema : this.selectSchema
 			}
-			
+
 			VARSQL.req.ajax({
 				url : {type:VARSQL.uri.database, url:'/tools/export/specMain/tableList'}
 				,data: param
 				,loadSelector : '.table-select-area'
 				,success:function (resData){
 					var list = resData.items;
-					
+
 					_self.selectTableObj.setItem('source',list);
-					
+
 					var beforeTableList = [];
 					if(_self.selectSchema == _self.userSetting.schema){
 						var beforeTables = _self.userSetting.tables;
-						var beforeTablelen = beforeTables.length; 
+						var beforeTablelen = beforeTables.length;
 						if(beforeTablelen > 0){
 							var tableNameObj ={};
 							for(var i =0; i <beforeTablelen; i++){
 								var item = beforeTables[i];
-								tableNameObj[item.name] = i; 
+								tableNameObj[item.name] = i;
 							}
-							
+
 							for(var i =0,len = list.length; i <len; i++){
 								var item = list[i];
-								var beforeTableIdx = tableNameObj[item.name]; 
+								var beforeTableIdx = tableNameObj[item.name];
 								if(!VARSQL.isUndefined(beforeTableIdx)){
 									beforeTableList.push(beforeTables[beforeTableIdx]);
 								}
@@ -300,16 +300,16 @@ VarsqlAPP.vueServiceBean({
 					}else{
 						_self.selectTableObj.setItem('target',[]);
 					}
-					
-					
+
+
 				}
 			});
 		}
 		// table select info
 		,setTableSelect: function (){
-			var _self = this; 
-			
-			var tmpSourceItem = [] , paramSourceItem=[]; 
+			var _self = this;
+
+			var tmpSourceItem = [] , paramSourceItem=[];
 
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				targetSelector : '#target'
@@ -331,14 +331,14 @@ VarsqlAPP.vueServiceBean({
 						//console.log(e,sEle);
 					}
 				}
-			}); 
+			});
 		}
 		//컬럼 select
 		,setColumnSelect: function (){
-			var _self = this; 
-			
-			var tmpSourceItem = [] , paramSourceItem=${varsqlfn:objectToJson(columnInfo)}; 
-			
+			var _self = this;
+
+			var tmpSourceItem = [] , paramSourceItem=${varsqlfn:objectToJson(columnInfo)};
+
 			var userSettingColumn = _self.userSetting.columns;
 			userSettingColumn = $.isArray(userSettingColumn) &&  userSettingColumn.length > 0 ? userSettingColumn : paramSourceItem;
 
