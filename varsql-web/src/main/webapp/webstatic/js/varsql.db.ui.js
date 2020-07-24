@@ -484,7 +484,7 @@ _ui.headerMenu ={
 						case 'utils':	//유틸리티
 							var componentInfo;
 							if(menu_mode3 =='genexceltoddl'){
-								var popt = 'width=800,height=700,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
+								var popt = 'width=1000,height=480,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/genExcelToDDL?conuid='+_g_options.param.conuid), {
 									name : 'genexceltoddl'

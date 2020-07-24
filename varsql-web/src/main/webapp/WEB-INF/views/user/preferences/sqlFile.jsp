@@ -216,8 +216,6 @@ VarsqlAPP.vueServiceBean({
 				,success:function (resData){
 					_this.detailItem = resData.item;
 
-					var ele = $('#prettyprintArea');
-
 					_this.fileViewEditor.setValue(_this.detailItem.sqlCont||'');
 					_this.fileViewEditor.setHistory({done:[],undone:[]});
 				}

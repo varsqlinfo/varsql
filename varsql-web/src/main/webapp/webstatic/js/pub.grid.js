@@ -41,6 +41,8 @@ var _initialized = false
 		,addStyle : false	// 추가할 style method
 		,dblClick : false	// row dblclick event
 		,dblClickCheck : false	// double click row checkbox checked true 여부.
+		,pasteBefore :false
+		,pasteAfter :false
 	}
 	,formatter :{
 		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점 
@@ -3500,6 +3502,13 @@ Plugin.prototype ={
 		
 		if(_this.options.editable===true){
 			// paste event
+				_this.options.rowOptions.pasteBefore
+			var pasteBeforeFn = _this.options.rowOptions.pasteBefore;
+			var pasteBeforeFnFlag = isFunction(pasteBeforeFn); 
+
+			var pasteAfterFn = _this.options.rowOptions.pasteAfter;
+			var pasteAfterFnFlag = isFunction(pasteAfterFn); 
+
 			_this.element.pasteArea.on('paste.pubGrid', function (e){
 				
 				var orginEvt = e.originalEvent;
@@ -3510,6 +3519,10 @@ Plugin.prototype ={
 					content = e.clipboardData.getData('text/plain');
 				}else if( window.clipboardData  && window.clipboardData.getData ){
 					content = window.clipboardData.getData('Text');
+				}
+
+				if(pasteBeforeFnFlag){
+					content = pasteBeforeFn.call(null , content);
 				}
 
 				if(content !=''){
@@ -3565,6 +3578,10 @@ Plugin.prototype ={
 					},true, false);
 
 					_this.setData(tbodyItems,'reDraw_paste' ,{focus:true,index: _this.config.scroll.viewIdx});
+
+					if(pasteAfterFnFlag){
+						pasteAfterFn.call(null , content);
+					}
 				}
 			})
 		}

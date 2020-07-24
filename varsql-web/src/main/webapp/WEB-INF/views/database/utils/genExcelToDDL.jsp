@@ -13,11 +13,11 @@
 			<div class="panel-heading">
 				<div class="field-group" style="height: 42px;">
 					<label class="col-xs-2 control-label">Table Name : </label>
-					<div class="col-xs-7" style="padding:0px 5px 0px 5px;">
-						<input class="form-control text required input-md" name="tableName" id="tableName" placeholder="Table Name">
+					<div class="col-xs-10">
+						<input class="form-control text required input-md" name="tableName" id="tableName" style="margin:0px 5px 0px 5px;width: calc(100% - 120px);" placeholder="Table Name">
+						<button @click="convertDDL()" class="varsql-btn-info btn-md" style="padding: 3px 10px;width: 100px;vertical-align: top;">Excel ->  DDL</button>
 					</div>
 
-					<label class="col-xs-3 control-label"><button @click="convertDDL()" class="varsql-btn-info btn-md w100">Excel ->  DDL</button> </label>
 				</div>
 			</div>
 			<!-- /.panel-heading -->

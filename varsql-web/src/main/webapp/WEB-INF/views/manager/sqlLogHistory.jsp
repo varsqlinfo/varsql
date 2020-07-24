@@ -107,8 +107,8 @@
 						</div>
 						<div class="col-lg-12">
 							<div style="padding-top:10px;">SQL</div>
-							<div style="height:200px;">
-								<pre id="epLogSqlArea" class="user-select-on prettyprint lang-sql" style="width:100%;height:100%;"></pre>
+							<div style="height:300px;">
+								<textarea id="epLogSqlArea" rows="10" class="form-control input-init-type"></textarea>
 							</div>
 						</div>
 						
@@ -128,6 +128,28 @@
 </div>
 <!-- /.row -->
 
+<link href="${pageContextPath}/webstatic/css/editor/codemirror.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/editor/show-hint.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/editor/theme/eclipse.css?version=${codemirror_ver}" rel="stylesheet" type="text/css">
+
+<!-- sql editor -->
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/search.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/searchcursor.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/matchbrackets.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/closebrackets.js?version=${codemirror_ver}"></script>
+
+<style>
+.CodeMirror {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #c5bbbb;
+}
+</style>
+
 <script>
 
 VarsqlAPP.vueServiceBean( {
@@ -138,17 +160,34 @@ VarsqlAPP.vueServiceBean( {
 		,pageInfo : {}
 		,gridData :  []
 		,detailItem :{}
+		,fileViewEditor :{}
 	}
 	,methods:{
+		init : function() {
+
+			$(this.$el).removeClass('display-off')
+
+			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('epLogSqlArea'), {
+				mode: 'text/x-sql',
+				indentWithTabs: true,
+				smartIndent: true,
+				autoCloseBrackets: true,
+				indentUnit : 4,
+				lineNumbers: true,
+				height:500,
+				lineWrapping: false,
+				matchBrackets : true,
+				theme: "eclipse",
+				readOnly:true
+			});
+		}
 		// 상세
-		itemView : function (item){
-			var ele = $('#epLogSqlArea');
+		,itemView : function (item){
 			
 			this.detailItem = item;
 			
-			ele.empty().html(item.logSql);
-			ele.removeClass('prettyprinted');
-			PR.prettyPrint();
+			this.fileViewEditor.setValue(item.logSql||'');
+			this.fileViewEditor.setHistory({done:[],undone:[]});
 		}
 		// 검색
 		,search : function(no){

@@ -59,7 +59,7 @@
 								<tr v-for="(item,index) in gridData" @click="itemView(item)" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')">
 									<td :title="item.word"><div class="text-ellipsis">{{item.word}}</div></td>
 									<td :title="item.wordEn"><div class="text-ellipsis">{{item.wordEn}}</div></td>
-									<td :title="item.wordAbbr">{{item.wordAbbr}}</td>
+									<td :title="item.wordAbbr"><div class="text-ellipsis">{{item.wordAbbr}}</div></td>
 									<td :title="item.wordDesc"><div class="text-ellipsis">{{item.wordDesc}}</div></td>
 									<td>{{item.regDt}}</td>
 								</tr>
