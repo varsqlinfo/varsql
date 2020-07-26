@@ -81,6 +81,7 @@ subprojects {
 		,mockito: '3.3.3'
 		,lombok : '1.18.10'
 		,querydslSql : '4.3.1'
+		,jstl : '1.2.5'
 	]
 
     sourceCompatibility = 1.8
@@ -202,16 +203,22 @@ subprojects {
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'
 		implementation group: 'com.github.jknack' , name: 'handlebars' , version: '4.1.0'
 
-		providedCompile(
-			[ group: 'javax.servlet' , name: 'javax.servlet-api' , version: '4.0.0' ]
-			, [ group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: def_version.jspApi ]
+		// jstl apache 모듈로 변경.
+		implementation(
+			[group: 'org.apache.taglibs', name: 'taglibs-standard-spec', version: def_version.jstl ]
+			,[group: 'org.apache.taglibs', name: 'taglibs-standard-jstlel', version: def_version.jstl ]
 		)
-
-		implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2'
-
+		//implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2'  //2020-07-26
 
     	// 내장 톰켓.
     	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+
+    	providedCompile(
+			[ group: 'javax.servlet' , name: 'javax.servlet-api' , version: '4.0.0' ]
+			, [ group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: def_version.jspApi ]
+			, [ group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat']
+			, [ group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper']
+		)
 
 		// db driver
 		implementation(
