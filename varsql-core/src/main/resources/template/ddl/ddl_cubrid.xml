@@ -10,19 +10,18 @@
 
 	]]></ddl>
 
-	<!-- procedure 생성-->
-	<ddl id="procedureScript"><![CDATA[
-
-	]]></ddl>
-
 	<!-- function 생성-->
 	<ddl id="functionScript"><![CDATA[
-
+		CREATE FUNCTION {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
+		AS LANGUAGE {{LANG}}
+		NAME {{SOURCE}};
 	]]></ddl>
 
-	<!-- package 생성-->
-	<ddl id="packageScript"><![CDATA[
-
+	<!-- procedure 생성-->
+	<ddl id="procedureScript"><![CDATA[
+		CREATE PROCEDURE {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
+		AS LANGUAGE {{LANG}}
+		NAME {{SOURCE}};
 	]]></ddl>
 
 	<!-- trigger 생성-->
@@ -38,40 +37,38 @@
 
 	<!-- sequence 생성-->
 	<ddl id="sequenceScript"><![CDATA[
-{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{#equals true ddlOption.addDropClause}}/* DROP SERIAL {{OBJECT_NAME}}; */
 {{/equals}}
 
-CREATE SEQUENCE [{{schema}}].[{{OBJECT_NAME}}]
-AS [int]
-START WITH 0
+CREATE SERIAL {{OBJECT_NAME}}
+START WITH 1
 INCREMENT BY {{INCREMENT_BY}}
 MINVALUE {{MIN_VALUE}}
 MAXVALUE {{MAX_VALUE}}
-CACHE
 	]]></ddl>
 
 	<!-- 컬럼 추가-->
 	<ddl id="alterAddColumn"><![CDATA[
-		alter table {{TABLE_NAME}} add {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
+		alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
 	]]></ddl>
 
 	<!-- 컬럼명 수정 추가-->
 	<ddl id="alterRenameColumn"><![CDATA[
-		sp_rename '{{TABLE_NAME}}.[{{COLUMN_NAME}}]', '{{NEW_COLUMN_NAME}}'
+		alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} as {{NEW_COLUMN_NAME}}
 	]]></ddl>
 
 	<!-- 컬럼 수정 추가-->
 	<ddl id="alterModifyColumn"><![CDATA[
-		alter table {{TABLE_NAME}} ALTER COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
 	]]></ddl>
 
 	<!-- 컬럼명 수정 추가-->
 	<ddl id="alterDropColumn"><![CDATA[
-		alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+		alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
 	]]></ddl>
 
 	<!-- 테이블명 수정 추가-->
 	<ddl id="renameTable"><![CDATA[
-		sp_rename '{{TABLE_NAME}}', '{{NEW_TABLE_NAME}}'
+		rename table  {{TABLE_NAME}} as  {{NEW_TABLE_NAME}}
 	]]></ddl>
 </var-ddl>

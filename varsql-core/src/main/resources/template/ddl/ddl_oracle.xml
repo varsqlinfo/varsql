@@ -2,48 +2,73 @@
 <var-ddl>
 	<!-- 테이블 생성-->
 	<ddl id="tableScript"><![CDATA[
-	
+
 	]]></ddl>
-	
+
 	<!-- view 생성-->
 	<ddl id="viewScript"><![CDATA[
-	
+
 	]]></ddl>
-	
+
 	<!-- procedure 생성-->
 	<ddl id="procedureScript"><![CDATA[
-	
+
 	]]></ddl>
-	
+
 	<!-- function 생성-->
 	<ddl id="functionScript"><![CDATA[
-	
+
 	]]></ddl>
-	
+
 	<!-- package 생성-->
 	<ddl id="packageScript"><![CDATA[
-	
+
 	]]></ddl>
-	
+
 	<!-- trigger 생성-->
 	<ddl id="triggerScript"><![CDATA[
-		/* DROP TRIGGER ; */ 
-		CREATE OR REPLACE 
+		/* DROP TRIGGER ; */
+		CREATE OR REPLACE
 	]]></ddl>
-	
+
 	<!-- index 생성-->
 	<ddl id="indexScript"><![CDATA[
-		
+
 	]]></ddl>
-	
+
 	<!-- sequence 생성-->
 	<ddl id="sequenceScript"><![CDATA[
 {{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
 {{/equals}}
-CREATE SEQUENCE "{{schema}}"."{{OBJECT_NAME}}"  
-MINVALUE {{MIN_VALUE}} 
-MAXVALUE {{MAX_VALUE}} 
+CREATE SEQUENCE "{{schema}}"."{{OBJECT_NAME}}"
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
 INCREMENT BY {{INCREMENT_BY}} START WITH {{LAST_NUMBER}}
 CACHE {{CACHE_SIZE}} {{#equals 'Y' ORDER_FLAG}}ORDER{{else}}NOORDER{{/equals}} {{#equals 'Y' CYCLE_FLAG}}CYCLE{{else}}NOCYCLE{{/equals}};
+	]]></ddl>
+
+	<!-- 컬럼 추가-->
+	<ddl id="alterAddColumn"><![CDATA[
+		alter table {{TABLE_NAME}} add ({{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}})
+	]]></ddl>
+
+	<!-- 컬럼명 수정 추가-->
+	<ddl id="alterRenameColumn"><![CDATA[
+		alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} to {{NEW_COLUMN_NAME}}
+	]]></ddl>
+
+	<!-- 컬럼 수정 추가-->
+	<ddl id="alterModifyColumn"><![CDATA[
+		alter table {{TABLE_NAME}} MODIFY({{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}});
+	]]></ddl>
+
+	<!-- 컬럼명 수정 추가-->
+	<ddl id="alterDropColumn"><![CDATA[
+		alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+	]]></ddl>
+
+	<!-- 테이블명 수정 추가-->
+	<ddl id="renameTable"><![CDATA[
+		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
 	]]></ddl>
 </var-ddl>
