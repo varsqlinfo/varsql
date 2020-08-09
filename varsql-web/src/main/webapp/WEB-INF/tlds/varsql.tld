@@ -25,4 +25,14 @@
 			<required>true</required>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>varsqlInfo</name>
+		<tag-class>com.varsql.web.tags.VarsqlInfo</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>attribute</name>
+			<required>true</required>
+		</attribute>
+	</tag>
 </taglib>

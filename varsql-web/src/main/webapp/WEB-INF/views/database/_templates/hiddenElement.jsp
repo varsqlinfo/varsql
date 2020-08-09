@@ -55,11 +55,10 @@
 	</div>
 	<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
 		<div style="padding-top :10px;">
-			<div style="font-weight: bold;font-size: 14pt;">Varsql</div>
-			<div style="padding-top:10px;">Version : 0.5</div>
-			<div style="padding-top:10px;"><a href="mailto:varsqlinfo@gmail.com">varsqlinfo@gmail.com</a></div>
-			<div style="padding-top:10px;"><a href="https://varsql.com/" target="_blank">VARSQL site</a></div>
-			<!-- div style="padding-top:10px;">email : ytechinfo@gamil.com</div -->
+			<div style="font-weight: bold;font-size: 14pt;"><varsql:varsqlInfo attribute="name"/></div>
+			<div style="padding-top:10px;">Version : <varsql:varsqlInfo attribute="version"/></div>
+			<div style="padding-top:10px;"><a href="mailto:<varsql:varsqlInfo attribute="email"/>"><varsql:varsqlInfo attribute="email"/></a></div>
+			<div style="padding-top:10px;">Site : <a href="<varsql:varsqlInfo attribute="homepage"/>" target="_blank"><varsql:varsqlInfo attribute="homepage"/></a></div>
 		</div>
 	</div>
 </div>
