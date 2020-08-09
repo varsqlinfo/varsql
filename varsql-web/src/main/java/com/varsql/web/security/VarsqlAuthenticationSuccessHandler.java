@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,9 @@ import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.CommUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.StringUtil;
+import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.util.VarsqlUtils;
 
 /**
  *
@@ -45,8 +49,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	@Autowired
 	@Qualifier("authDao")
 	private AuthDAO authDao;
-	
-	
+
 	@Autowired
 	@Qualifier("varsqlRequestCache")
 	private RequestCache requestCache;
@@ -59,31 +62,53 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	public void onAuthenticationSuccess(final HttpServletRequest request,
 			final HttpServletResponse response,
 			final Authentication authentication) throws IOException, ServletException {
-		
+
 		User userInfo = SecurityUtil.loginUser();
-		final String targetUrl = userRedirectTargetUrl(request ,response, userInfo, authentication);
+		String targetUrl = userRedirectTargetUrl(request ,response, userInfo, authentication);
 
 		if (response.isCommitted()) {
-			logger.debug("Response has already been committed. Unable to redirect to "
-					+ targetUrl);
+			logger.debug("Response has already been committed. Unable to redirect to {} ", targetUrl);
 			return;
 		}
 
 		authDao.addLog(userInfo , "login", CommUtil.getClientPcInfo(request));
-		
-		super.clearAuthenticationAttributes(request);
-		
+
 		if(userInfo.isLoginRememberMe()) {
-			
-			SavedRequest savedRequest = requestCache.getRequest(request, response);
-		    if(savedRequest != null) {
-		    	redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
-		    }else {
-		    	redirectStrategy.sendRedirect(request, response, targetUrl);
-		    }
-		    return ; 
+			try {
+	    		DatabaseUtils.reloadUserDatabaseInfo(); // database information reload
+	    	}catch(Throwable e) {
+	    		logger.error("database information reload error {} ", e.getMessage());
+	    	}
+			super.clearAuthenticationAttributes(request);
+
+			String queryStr = request.getQueryString();
+			//String reqUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "") +(StringUtil.isBlank(queryStr)?"":"?"+queryStr);
+			String reqUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+			logger.debug("remember me request uri : {}, query string :{}" , reqUrl , queryStr);
+		    request.getRequestDispatcher(reqUrl).forward(request, response);
+		    return ;
 		}else {
+
+			if(!VarsqlUtils.isAjaxRequest(request)) {
+				SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+			    if(savedRequest != null) {
+
+			    	String contextPath =request.getContextPath();
+
+			    	int contextPosIdx = targetUrl.indexOf(contextPath);
+
+			    	if(contextPosIdx > -1) {
+			    		String url = targetUrl.substring(contextPosIdx + contextPath.length());
+				    	if(!"".equals(url) && !"/".equals(url)) {
+				    		targetUrl = savedRequest.getRedirectUrl();
+				    	}
+			    	}
+			    }
+			}
+		    logger.debug("login targer url : {}", targetUrl);
 			redirectStrategy.sendRedirect(request, response, targetUrl);
+			super.clearAuthenticationAttributes(request);
 		}
 	}
 
