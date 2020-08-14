@@ -70,7 +70,7 @@ subprojects {
 		,springSecurity: '5.2.1.RELEASE'
 		,servletApi: '4.0.0'
 		,jackson : '2.9.9'
-		,poi : '3.17'
+		,poi : '4.1.2'
 		,tiles : '3.0.7'
 		,tomcat : '8.5.49'
 		,jspApi : '2.3.3'

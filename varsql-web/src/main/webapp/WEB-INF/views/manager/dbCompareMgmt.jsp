@@ -33,10 +33,10 @@ aside#resizable, section#content{
     -moz-box-sizing: border-box;
 }
 
-aside#resizable { width: 40%; height: 700px; padding: 0.5em; float:left;}
+aside#resizable { width: 40%; height: 720px; padding: 0.5em; float:left;}
 aside#resizable h3 { text-align: center; margin: 0; }
 
-section#content{width:calc(100% - 42%);height:700px; margin-left: 5px; vertical-align: top; float:left;}
+section#content{width:calc(100% - 42%);height:720px; margin-left: 5px; vertical-align: top; float:left;}
 section#content:after{content:"";display:block;clear:both;}
 
 /* jquery UI override */
@@ -147,12 +147,29 @@ section#content:after{content:"";display:block;clear:both;}
 										</button>
 									</span>
 								</div>
+								<div class="col-xs-12">
+									<div style="float:right;">
+										<template v-if="currentObjectType == 'table'">
+											<span style="margin-right:5px;">
+												<label for="caseSensitive" style="margin-bottom:0px;">Case sensitive</label> 
+												<input style="margin:0px;" id="caseSensitive" type="checkbox" v-model="caseSensitive" value="Y">
+											</span>
+											<span style="margin-right:5px;">
+												<label for="compareView" style="margin-bottom:0px;">Compare view</label> 
+												<input style="margin:0px;" id="compareView" type="checkbox" v-model="compareView" value="Y">
+											</span>
+										</template>
+										<span>
+											<label for="scrollSync" style="margin-bottom:0px;">Scroll sync</label>
+											<input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y">
+										</span>
+									</div>
+								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
 												<spring:message code="source" text="대상"/> <span class="object-count"> [{{resultInfo.sourceCount}}]</span>
-												<span><label for="scrollSync" style="margin-bottom:0px;">scrollSync</label> <input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y"></span>
 											</span>
 										</div>
 										<div id="sourceObjectMeta" class="row source-object-meta"></div>
@@ -178,7 +195,7 @@ section#content:after{content:"";display:block;clear:both;}
 								<span><spring:message code="compare.result" text="비교결과"/></span>
 								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
-							<div id="compareResultArea" class="panel-body" style="height:400px;overflow:auto;padding:0px;">
+							<div id="compareResultArea" class="panel-body" style="height:380px;overflow:auto;padding:0px;">
 <style>
 .result-table{
 }
@@ -280,6 +297,8 @@ section#content:after{content:"";display:block;clear:both;}
 
 
 <script>
+(function() {
+	
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,data: {
@@ -295,7 +314,9 @@ VarsqlAPP.vueServiceBean( {
 			,targetSchema : ''
 			,objectType : ''
 		}
-		,scrollSync : 'Y'
+		,caseSensitive : false	// 대소문자 체크
+		,scrollSync : true		// object scroll sync
+		,compareView : true		// 테이블 없는 컬럼 체크
 		,currentObjectType : ''
 		,currentObject : {}
 		,loading:false
@@ -325,6 +346,18 @@ VarsqlAPP.vueServiceBean( {
 		,compareSourceItem:{}
 		,compareTargetItem:{}
 	}
+	,watch : {
+		compareView : function (){
+			if(this.compareObjectName ==''){
+				this.tableObjectMetaView('',true);
+			}else{
+				this.tableObjectMetaView(this.compareObjectName);
+			}
+		}
+		,caseSensitive : function (){
+			this.objectCompare(false);
+		}
+	}
 	,computed: {
 		compareResult : function (){
 			
@@ -333,42 +366,9 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			if(this.sourceItems !==false && this.targetItems !== false){
-				var compareFn = this[this.diffItem.objectType+'Compare'];
-				
+				this.objectCompare(true);
 				this.isCompleteCompare = true; 
 				this.loading =false;
-				var resultVal = '';
-				if(compareFn){
-					resultVal =compareFn.call(this);
-				}else{
-					resultVal = this.otherCompare.call(this);
-				}
-				
-				this.resultInfo.sourceCount = this.sourceItems.length;
-				this.resultInfo.targetCount = this.targetItems.length;
-				
-				var options = {
-					  shouldSort: true,
-					  threshold: 0.1,
-					  location: 0,
-					  distance: 100,
-					  maxPatternLength: 32,
-					  minMatchCharLength: 1,
-					  keys: [
-					    "name",
-					    "remarks",
-						"_lower_name",
-					]
-				};
-						
-				this.sourceSearchObj = new Fuse(this.sourceItems, options);
-				this.targetSearchObj = new Fuse(this.targetItems, options);
-				
-				this.sameInfo.htm = this.sameInfo.htm.join('\n'); 
-				this.differentInfo.htm =this.differentInfo.htm.join('\n');
-				this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
-				
-				this.resultReport = resultVal;
 			}
 			return '';
 		}
@@ -467,6 +467,52 @@ VarsqlAPP.vueServiceBean( {
 				}
 	        });
 		}
+		,objectCompare : function (initFlag){
+			var compareFn = this[this.diffItem.objectType+'Compare'];
+			
+			if(initFlag){
+				this.resultInfo.sourceCount = 0;
+				this.resultInfo.targetCount = 0;
+				
+				this.resultInfo.sourceCount = this.sourceItems.length;
+				this.resultInfo.targetCount = this.targetItems.length;
+				
+				var options = {
+					  shouldSort: true,
+					  threshold: 0.1,
+					  location: 0,
+					  distance: 100,
+					  maxPatternLength: 32,
+					  minMatchCharLength: 1,
+					  keys: [
+					    "name",
+					    "remarks",
+						"_lower_name",
+					]
+				};
+						
+				this.sourceSearchObj = new Fuse(this.sourceItems, options);
+				this.targetSearchObj = new Fuse(this.targetItems, options);
+			}
+			
+			this.resultReport = '';
+			this.sameInfo ={cnt: 0 , htm :[]};
+			this.differentInfo ={cnt: 0 , htm :[]};
+			this.emptyInfo ={cnt: 0 , htm :[]};
+			
+			var resultVal = '';
+			if(compareFn){
+				resultVal =compareFn.call(this);
+			}else{
+				resultVal = this.otherCompare.call(this);
+			}
+			
+			this.sameInfo.htm = this.sameInfo.htm.join('\n'); 
+			this.differentInfo.htm =this.differentInfo.htm.join('\n');
+			this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
+			
+			this.resultReport = resultVal;	
+		}
 		// object search
 		,searchObject : function (){
 			if(this.isCompleteCompare !== true){
@@ -512,14 +558,6 @@ VarsqlAPP.vueServiceBean( {
 			this.loading =true; 
 			_self.targetItems = false;
 			_self.sourceItems = false;
-			
-			_self.resultInfo.sourceCount = 0;
-			_self.resultInfo.targetCount = 0;
-			
-			_self.resultReport = '';
-			_self.sameInfo ={cnt: 0 , htm :[]};
-			_self.differentInfo ={cnt: 0 , htm :[]};
-			_self.emptyInfo ={cnt: 0 , htm :[]};
 			
 			_self.compareObjectName = '';
 			_self.isCompleteCompare = false; 
@@ -728,7 +766,7 @@ VarsqlAPP.vueServiceBean( {
 			
 		}
 		,isScrollSync : function (){
-			return this.scrollSync =='Y';
+			return this.scrollSync;
 		}
 		// 테이블 데이터 비교.
 		,tableObjectView : function (resData, mode){
@@ -1019,6 +1057,18 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			var targetColumnGridObj = $.pubGrid('#targetColumn');
+			
+			if(!this.compareView){
+				var len = compareTargetColList.length;
+				var newCompareTargetColList = [];
+				for(var i =0 ; i < len; i++){
+					var item = compareTargetColList[i];
+					if(!VARSQL.isUndefined(item.name)){
+						newCompareTargetColList.push(item);
+					}
+				}
+				compareTargetColList = newCompareTargetColList;
+			}
 			
 			if(targetColumnGridObj){
 				targetColumnGridObj.setData(compareTargetColList,'reDraw');
@@ -1393,4 +1443,5 @@ VarsqlAPP.vueServiceBean( {
 	}
 });
 
+}());
 </script>

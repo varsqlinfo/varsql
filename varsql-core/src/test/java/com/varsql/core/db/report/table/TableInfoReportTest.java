@@ -51,15 +51,15 @@ class TableInfoReportTest extends BaseTest{
 		
 		List<List<ExcelHeaderVO>> haderInfoList = new ArrayList<List<ExcelHeaderVO>>();
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-			.addHeaderVO("Database", 0, 1).addHeaderVO("asdf ", 2, 3 , HSSFColor.WHITE.index)
-			.addHeaderVO("Table Name", 4, 5).addHeaderVO("asdf", 6, 7, HSSFColor.WHITE.index).build());
+			.addHeaderVO("Database", 0, 1).addHeaderVO("asdf ", 2, 3 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
+			.addHeaderVO("Table Name", 4, 5).addHeaderVO("asdf", 6, 7, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Table Name", 0, 1).addHeaderVO("asdf2", 2, 3 , HSSFColor.WHITE.index)
-				.addHeaderVO("Entity", 4, 5).addHeaderVO("ccc4", 6, 7, HSSFColor.WHITE.index).build());
+				.addHeaderVO("Table Name", 0, 1).addHeaderVO("asdf2", 2, 3 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
+				.addHeaderVO("Entity", 4, 5).addHeaderVO("ccc4", 6, 7, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Desc", 0, 1).addHeaderVO("asdf2", 2, 7 , HSSFColor.WHITE.index).build());
+				.addHeaderVO("Desc", 0, 1).addHeaderVO("asdf2", 2, 7 , HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		
 		ExcelReport report = new ExcelReport();

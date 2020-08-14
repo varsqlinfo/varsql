@@ -1,10 +1,14 @@
 package com.varsql.core.db.report.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor;
 
 import com.varsql.core.db.MetaControlFactory;
@@ -35,6 +39,15 @@ public abstract class TableReportImpl implements TableReport{
 		ExcelReport report;
 		
 		List<TableInfo> tableList= MetaControlFactory.getDbInstanceFactory(dataParamInfo.getDbType()).getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(),dataParamInfo,tableNmArr );
+		
+		List<String> tableNames= Arrays.asList(tableNmArr);
+		
+		Collections.sort(tableList, new Comparator<TableInfo>() {
+			@Override
+			public int compare(TableInfo o1, TableInfo o2) {
+				return tableNames.indexOf(o1.getName()) > tableNames.indexOf(o2.getName()) ? 1 : -1;
+			}
+		});
 		
 		if(addTableDefinitionFlag){
 			List<ExcelReportVO> tableLabelInfo = new ArrayList<ExcelReportVO>();
@@ -90,7 +103,7 @@ public abstract class TableReportImpl implements TableReport{
 		report.setHaderInfoList(getHeaderInfoList());
 		
 		if(multiSheetFlag){
-			report.createSheet(tableNmArr[0]);
+			report.createSheet(tableList.get(0).getName());
 		}else{
 			report.createSheet("Table Column Info");
 		}
@@ -133,15 +146,15 @@ public abstract class TableReportImpl implements TableReport{
 		List<List<ExcelHeaderVO>> haderInfoList = new ArrayList<List<ExcelHeaderVO>>();
 		
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-			.addHeaderVO("Database", 0, 1).addHeaderVO("{databaseName}", 2,2 , HSSFColor.WHITE.index)
-			.addHeaderVO("Table Name", 3, 4).addHeaderVO("{tableName}", 5, 6, HSSFColor.WHITE.index).build());
+			.addHeaderVO("Database", 0, 1).addHeaderVO("{databaseName}", 2,2 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
+			.addHeaderVO("Table Name", 3, 4).addHeaderVO("{tableName}", 5, 6, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Table Space", 0, 1).addHeaderVO("{tableSpace}", 2,2 , HSSFColor.WHITE.index)
-				.addHeaderVO("Entity", 3, 4).addHeaderVO("{entity}",5, 6, HSSFColor.WHITE.index).build());
+				.addHeaderVO("Table Space", 0, 1).addHeaderVO("{tableSpace}", 2,2 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
+				.addHeaderVO("Entity", 3, 4).addHeaderVO("{entity}",5, 6, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Desc", 0, 1).addHeaderVO("{comment}", 2, 6 , HSSFColor.WHITE.index).build());
+				.addHeaderVO("Desc", 0, 1).addHeaderVO("{comment}", 2, 6 , HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
 		
 		return haderInfoList;
 	}
