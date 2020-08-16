@@ -2,9 +2,6 @@
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 
-<%
-long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
-
 <!-- Bootstrap Core CSS -->
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 <!-- Custom Fonts -->
@@ -12,11 +9,10 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.tree.css?version=<%=versionNum%>" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.preferences.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.tree.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
-
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
@@ -28,8 +24,10 @@ long versionNum = java.lang.Math.round(java.lang.Math.random() * 20000); %>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
 
-<script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
+
+
 

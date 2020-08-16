@@ -3,7 +3,6 @@
 <%@ include file="/WEB-INF/include/initvariable.jspf"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
-
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 

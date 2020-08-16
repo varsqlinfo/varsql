@@ -101,11 +101,6 @@
 					</li>
 				</ul>
 			</li>
-			<!--
-			<li class="varsql-menu-item" data-menu-item="tool_setting">
-				<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
-			</li>
-			 -->
 
 			<li class="divider"></li>
 			<li class="header-dropdown-submenu">
@@ -153,12 +148,11 @@
 					<li class="varsql-menu-item" data-menu-item="tool_utils_genexceltoddl">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.genexceltoddl" /></span></a>
 					</li>
-					<!--
-					<li class="varsql-menu-item" data-menu-item="tool_utils_genexceltoddl">
-						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.genexceltoddl" /></span></a>
-					</li>
-					 -->
 				</ul>
+			</li>
+			<li class="divider"></li>
+			<li class="varsql-menu-item" data-menu-item="tool_setting">
+				<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.setting" /></span></a>
 			</li>
 		</ul>
 	</li>

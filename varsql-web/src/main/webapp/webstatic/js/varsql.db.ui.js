@@ -5205,7 +5205,8 @@ function generateSQL(scriptInfo){
 
 			tmpval = queryParameter(param_yn, item, keyMode);
 
-			if(item[VARSQLCont.tableColKey.CONSTRAINTS] =='PK'){
+			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
+			if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
 				keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 			}else{
 				if(!firstFlag){
@@ -5228,8 +5229,8 @@ function generateSQL(scriptInfo){
 
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
-
-			if(item[VARSQLCont.tableColKey.CONSTRAINTS] == 'PK'){
+			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
+			if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
 				tmpval = queryParameter(param_yn, item, keyMode);
 
 				keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);

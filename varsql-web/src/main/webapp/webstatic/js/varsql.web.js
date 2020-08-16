@@ -947,6 +947,9 @@ _$base.util = {
 	,convertUnderscoreCase : _fnConvertUnderscoreCase
 	,toLowerCase: _fnToLowerCase
 	,toUpperCase : _fnToUpperCase
+	,capitalize : function (str){
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
 	,paramToArray : paramToArray
 	,getParameter : getParameter
 	,browserSize : function(){

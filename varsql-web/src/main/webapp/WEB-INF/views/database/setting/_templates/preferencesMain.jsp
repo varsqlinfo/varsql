@@ -27,7 +27,7 @@
 
 <script>
 $('.pub-main-body').on('selectstart', function (e){
-	return false; 	
+	return false;
 })
 
 $(document).ready(function (){
@@ -38,13 +38,13 @@ function init(){
 	var treeItem = [];
 	treeItem.push({id:'top'	,pid:''	,name:'preferences-top'});
 	treeItem.push({id:'1',pid:'top',name:'일반',url:'<c:url value="/database/preferences/generalSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'2',pid:'top',name:'SQL포멧설정',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});	
-	treeItem.push({id:'3',pid:'top',name:'단축키',url:'<c:url value="/database/preferences/keySetting?conuid=${param.conuid}" />'});	
-	treeItem.push({id:'4',pid:'top',name:'코드편집기',url:'<c:url value="/database/preferences/codeEditerSetting?conuid=${param.conuid}" />'});	
-	treeItem.push({id:'4-1',pid:'4',name:'글꼴',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});	
-	treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});	
+	treeItem.push({id:'2',pid:'top',name:'SQL포멧설정',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
+	treeItem.push({id:'3',pid:'top',name:'단축키',url:'<c:url value="/database/preferences/keySetting?conuid=${param.conuid}" />'});
+	treeItem.push({id:'4',pid:'top',name:'코드편집기',url:'<c:url value="/database/preferences/codeEditerSetting?conuid=${param.conuid}" />'});
+	treeItem.push({id:'4-1',pid:'4',name:'글꼴',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
+	treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
 	treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/database/preferences/exportSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'6',pid:'top',name:'코드 생성설정',url:'<c:url value="/database/preferences/keySetting?conuid=${param.conuid}" />'});
+	treeItem.push({id:'6',pid:'top',name:'코드 생성설정',url:'<c:url value="/database/preferences/contentMenuSetting?conuid=${param.conuid}" />'});
 
 	$.pubTree("#preferences_area", {
 		source : treeItem

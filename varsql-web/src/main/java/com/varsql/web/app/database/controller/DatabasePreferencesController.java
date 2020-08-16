@@ -134,6 +134,12 @@ public class DatabasePreferencesController extends AbstractController  {
 		return getModelAndView("/exportSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 
+	@RequestMapping("/contextMenuSetting")
+	public ModelAndView contextMenuSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		return getModelAndView("/contextMenuSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
+	}
+
 	/**
 	 *
 	 * @Method Name  : save
