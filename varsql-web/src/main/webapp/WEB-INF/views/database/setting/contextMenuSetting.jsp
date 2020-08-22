@@ -1,23 +1,71 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<div id="varsqlVueArea">
-	<div class="col-xs-2">
-		<ul>
-			<li>일반</li>
-			<li>mybatis</li>
-			<li>JAVA</li>
-		</ul>
+<style>
+ul >li{
+    clear: both;
+}
+</style>
+<div id="varsqlVueArea" class="display-off">
+	<div class="col-xs-12"  style="height:140px;overflow:auto;">
+		<div class="col-xs-5">
+			<ul>
+				<li v-for="(item,index) in contextItems">
+					<a>
+						<span>{{item.name}}</span>
+
+						<span class="pull-right">
+							<button class="btn btn-sm btn-default" @click="addChildItem(item)"><spring:message code="btn.sub.add"/></button>
+							<button class="btn btn-sm btn-default" @click="removeItem(contextItems,index,item)"><spring:message code="btn.delete"/></button>
+						</span>
+					</a>
+					<template v-if="item.child.length > 0">
+						<ul class="sub-list">
+							<li v-for="(childItem,index2) in item.child">
+								<a>
+									<span>{{childItem.name}}</span>
+									<span class="pull-right">
+										<button class="btn btn-sm btn-default" @click="removeItem(item.child, index2, childItem)"><spring:message code="btn.delete"/></button>
+									</span>
+								</a>
+							</li>
+						</ul>
+					</template>
+				</li>
+			</ul>
+		</div>
+		<div class="col-xs-7">
+			<div class="col-sm-12">
+				<div class="pull-right">
+					<button type="button" class="btn btn-md btn-default" @click="newItem()"><spring:message code="btn.new"/></button>
+					<button type="button" class="btn btn-md btn-default" @click="save()" v-show="this.addMode=='new'"><spring:message code="btn.save"/></button>
+				</div>
+			</div>
+			<div class="col-xs-12">
+				<div class="field-group">
+					<label class="col-xs-2 control-label">컨텍스트명</label>
+					<div class="col-xs-10">
+						<input v-model="deteilItem.name" class="form-control text required input-sm">
+					</div>
+				</div>
+				<div class="field-group">
+					<label class="col-xs-2 control-label">정렬순서</label>
+					<div class="col-xs-10">
+						<input v-model="deteilItem.sortOrder" class="form-control text required input-sm">
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="col-xs-10">
-		<div>
-			<div class="col-xs-5">
+	<div class="col-xs-12" style="height:300px;">
+		<div class="col-xs-8 h100">
+			<div class="col-xs-5 h100">
 				template :
-				<textarea id="genSourceCode" v-model="template" style="width:100%;height:200px;" @blur="setProperty()"></textarea>
+				<textarea id="genSourceCode" v-model="template" class="wh100" @blur="setProperty()"></textarea>
 			</div>
-			<div class="col-xs-7">
+			<div class="col-xs-7 h100">
 				<div>
-					<table style="width:100%;">
+					<table class="w100">
 					    <colgroup style="width:130px;"></colgroup>
 					    <colgroup style="width:*;"></colgroup>
 					    <tr>
@@ -31,19 +79,19 @@
 					        </td>
 					        <td>
 					        	code :
-					            <textarea v-model="propItem.code"  style="width:100%;height:200px;"></textarea>
+					            <textarea v-model="propItem.code"  style="width:100%;height: 150px"></textarea>
 					        </td>
 					    </tr>
 					</table>
 				</div>
-				<div>
-					 <pre>{{propItem.compileValue}}</pre>
+				<div style="height:calc(100% - 150px);">
+					 <pre class="wh100">{{propItem.compileValue}}</pre>
 				</div>
 			</div>
 		</div>
-		<div>
+		<div class="col-xs-4 h100">
 			<div><button @click="generate()">gensource</button></div>
-			<textarea id="resultCode" style="width:100%;height:100%;">{{resultCode}}</textarea>
+			<textarea id="resultCode" class="wh100">{{resultCode}}</textarea>
 		</div>
 	</div>
 </div>
@@ -102,8 +150,6 @@ Handlebars.registerHelper("capitalize", function(text, options) {
     return  VARSQL.util.capitalize(text);;
 });
 
-
-
 var allPropArr = [
     {
         key : 'classProperty'
@@ -117,11 +163,30 @@ var allPropArr = [
     }
 ]
 
+var contextItems = [
+	{
+		name : '일반'
+		,sortOrder : 1
+		,child :[]
+	}
+	,{
+		name : 'mybatis'
+		,sortOrder : 2
+		,child :[]
+	}
+	,{
+		name : 'JAVA'
+		,sortOrder : 3
+		,child :[]
+	}
+]
+
 VarsqlAPP.vueServiceBean( {
     el: '#varsqlVueArea'
     ,validateCheck : true
     ,data: {
-        template : ''
+        addMode : 'new'
+    	,template : ''
         ,allTemplateProp : allPropArr
         ,resultCode : ''
         ,propItem : {
@@ -129,6 +194,8 @@ VarsqlAPP.vueServiceBean( {
             ,code : ''
             ,compileValue :''
         }
+        ,deteilItem :{}
+        ,contextItems : contextItems
     }
     ,watch: {
         'propItem.code': {
@@ -140,8 +207,38 @@ VarsqlAPP.vueServiceBean( {
     }
     ,methods:{
         init : function(){
-            this.template = document.getElementById('template').innerHTML;
+        	this.newItem();
+        	this.template = document.getElementById('template').innerHTML;
         }
+    	,newItem : function (){
+    		this.addMode = 'new';
+			this.deteilItem = {
+				name : ''
+				,sortOrder : this.contextItems.length +1
+				,child :[]
+			}
+    	}
+    	,addChildItem : function (pItem) {
+			this.addMode = 'child';
+    		var item = {
+				name : 'sub-menu'
+				,sortOrder : pItem.child.length +1
+			}
+    		pItem.child.push(item);
+
+    		this.deteilItem = item;
+    	}
+    	,save : function (){
+			this.contextItems.push(this.deteilItem);
+    	}
+    	,removeItem : function (items,index,item){
+    		if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+				return ;
+			}
+
+			items.splice(index,1);
+
+    	}
         , generate : function(){
             var template = Handlebars.compile(this.template);
             var allTemplateProp = this.allTemplateProp;
@@ -180,10 +277,6 @@ VarsqlAPP.vueServiceBean( {
             if(item.code !=''  && item.compileValue ==''){
 
             }
-
-
-
-
         }
         ,removeTemplateProp : function (idx){
             this.allTemplateProp.splice(idx,1);

@@ -133,41 +133,39 @@
 <entry key="ko.lang">한국어</entry>
 <entry key="en.lang">English</entry>
 
-
-
-
 <!-- button message -->
-<entry key="btn.search">조회</entry>
-<entry key="btn.compare">비교</entry>
-<entry key="btn.save">저장</entry>
-<entry key="btn.delete">삭제</entry>
-<entry key="btn.add">추가</entry>
-<entry key="btn.new">신규</entry>
-<entry key="btn.sub.add">하위 추가</entry>
-<entry key="btn.save.andpoolnit"><![CDATA[저장 & DB 풀초기화]]></entry>
-<entry key="btn.connnection.check">연결 테스트</entry>
-<entry key="btn.connnection.close">연결 닫기</entry>
-<entry key="btn.login">로그인</entry>
-<entry key="btn.accept">수락</entry>
-<entry key="btn.denial">거부</entry>
+<entry key="btn.search">Search</entry>
+<entry key="btn.compare">Compare</entry>
+<entry key="btn.save">Sae</entry>
+<entry key="btn.delete">Delete</entry>
+<entry key="btn.add">Add</entry>
+<entry key="btn.new">New</entry>
+<entry key="btn.sub.add">Add child</entry>
 
-<entry key="btn.profile">프로파일</entry>
-<entry key="btn.setting">셋팅</entry>
-<entry key="btn.signup">회원가입</entry>
-<entry key="btn.logout">로그아웃</entry>
+<entry key="btn.save.andpoolnit"><![CDATA[Save & DB pool init]]></entry>
+<entry key="btn.connnection.check">Connect test</entry>
+<entry key="btn.connnection.close">Connect close</entry>
+<entry key="btn.login">Login</entry>
+<entry key="btn.accept">Accept</entry>
+<entry key="btn.denial">Denial</entry>
+
+<entry key="btn.profile">Profile</entry>
+<entry key="btn.setting">Setting</entry>
+<entry key="btn.signup">Signup</entry>
+<entry key="btn.logout">Logout</entry>
 
 <!-- toolbar button -->
 <entry key="btn.toolbar.execute">실행</entry>
-<entry key="btn.toolbar.newfile">새 파일</entry>
-<entry key="btn.toolbar.save">저장</entry>
-<entry key="btn.toolbar.allsave">모두 저장</entry>
+<entry key="btn.toolbar.newfile">New file</entry>
+<entry key="btn.toolbar.save">Save</entry>
+<entry key="btn.toolbar.allsave">Save All</entry>
 
-<entry key="btn.toolbar.cut">잘라내기</entry>
-<entry key="btn.toolbar.copy">복사하기</entry>
-<entry key="btn.toolbar.eraser">지우기</entry>
+<entry key="btn.toolbar.cut">Cut</entry>
+<entry key="btn.toolbar.copy">Copy</entry>
+<entry key="btn.toolbar.eraser">Delete</entry>
 
-<entry key="btn.toolbar.undo">실행취소</entry>
-<entry key="btn.toolbar.redo">다시실행</entry>
+<entry key="btn.toolbar.undo">Undo</entry>
+<entry key="btn.toolbar.redo">Redo</entry>
 <entry key="btn.toolbar.linewrapper">자동 줄 바꿈</entry>
 <entry key="btn.toolbar.format">쿼리 정리 </entry>
 <entry key="btn.toolbar.send">메시지보내기 </entry>

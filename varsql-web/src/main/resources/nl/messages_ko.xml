@@ -3,21 +3,96 @@
 <properties>
 
 <comment>varsql</comment>
+<entry key="page.title.varsql">Varsql</entry>
+<entry key="varsql.info">Varsql정보</entry>
+<entry key="user.home.title">- VarSQL -</entry>
+<entry key="manager.home.title">-- Manager --</entry>
+<entry key="admin.home.title">--- Admin ---</entry>
+<entry key="user.preferences.title">환경설정</entry>
+<entry key="msg.please.sign.in">VARSQL 로그인</entry>
+
+<!-- 파일 메뉴 -->
+<entry key="header.menu.file">파일</entry>
+<entry key="header.menu.file.new">새 파일</entry>
+<entry key="header.menu.file.save">저장</entry>
+<entry key="header.menu.file.allsave">모두 저장</entry>
+<entry key="header.menu.file.import_export">가져오기 및 내보내기...</entry>
+<entry key="header.menu.file.newwin">새창보기</entry>
+<entry key="header.menu.file.close">닫기</entry>
+
+<!-- 편집 메뉴 -->
+<entry key="header.menu.edit">편집</entry>
+<entry key="header.menu.edit.paste">붙여넣기</entry>
+<entry key="header.menu.edit.undo">실행취소</entry>
+<entry key="header.menu.edit.redo">다시실행</entry>
+<entry key="header.menu.edit.find">찾기</entry>
+<entry key="header.menu.edit.compare">쿼리 비교</entry>
+
+<!-- 검색 메뉴 -->
+<entry key="header.menu.search">검색</entry>
+<entry key="header.menu.search.find">찾기</entry>
+
+<!-- 도구 메뉴 -->
+<entry key="header.menu.tool">도구</entry>
+<entry key="header.menu.tool.import">가져오기</entry>
+<entry key="header.menu.tool.export">내보내기</entry>
+<entry key="header.menu.tool.export.specification">테이블 명세서</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">데이타</entry>
+<entry key="header.menu.tool.setting">설정</entry>
+<entry key="header.menu.tool.show.plugin">컴포넌트보기</entry>
+<entry key="header.menu.tool.show.glossary">용어집</entry>
+<entry key="header.menu.tool.show.history">History</entry>
+
+<entry key="header.menu.tool.theme">테마설정</entry>
+<entry key="header.menu.tool.theme.light">light</entry>
+<entry key="header.menu.tool.theme.dark">dark</entry>
+
+<entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
+
+<entry key="header.menu.tool.utils">유틸리티</entry>
+<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[Excel -> DDL]]></entry>
+
+<!-- 도움말 메뉴 -->
+<entry key="header.menu.help">도움말</entry>
+<entry key="header.menu.help.help">도움말 항목</entry>
+<entry key="header.menu.help.dbinfo">DB 정보</entry>
+<entry key="header.menu.help.info">VARSQL 정보</entry>
 
 <entry key="screen">화면</entry>
 <entry key="screen.user">사용자</entry>
-<entry key="screen.manage">매니저</entry>
+<entry key="screen.manager">매니저</entry>
 <entry key="screen.admin">관리자</entry>
 
 <!-- admin menu -->
-<entry key="admin.menu.database">Database</entry>
+<entry key="admin.menu.database">Database 관리</entry>
+<entry key="admin.menu.databaseoptmgmt">Database 옵션 관리</entry>
+<entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
+<entry key="admin.menu.errorlog">Error Log</entry>
+
 
 <!-- manage menu -->
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
-<entry key="manage.menu.logmgmt">로그 관리</entry>
+<entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manage.menu.dbgroup">DB 그룹관리</entry>
+<entry key="manage.menu.dbgroupnuser"><![CDATA[DB 그룹 & 사용자관리]]></entry>
+<entry key="manage.menu.glossary"><![CDATA[용어집]]></entry>
+<entry key="manage.menu.logmgmt">로그</entry>
+<entry key="manage.menu.dbcomparemgmt">DB 비교</entry>
+<entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
+<entry key="manage.menu.sqllog">SQL 로그</entry>
+<entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
 
+<!-- user menu -->
+<entry key="user.prefernces.menu.general">프로필 수정</entry>
+<entry key="user.prefernces.menu.pasword">비밀번호 변경</entry>
+<entry key="user.prefernces.menu.message">메시지 관리</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
 
 <entry key="login.form.id">아이디</entry>
 <entry key="login.form.pw">패스워드</entry>
@@ -25,69 +100,183 @@
 <!-- guest  -->
 <entry key="guest.title">환영합니다.</entry>
 <entry key="guest.message"><![CDATA[님 아직 권한이 처리 되지 않았습니다<br/> 관리자에게 문의하시기 바랍니다.]]></entry>
+<entry key="btn.contact">문의</entry>
 <entry key="btn.login.screen">로그인 화면</entry>
+<entry key="guest.form.title">제목</entry>
+<entry key="guest.form.question">문의사항</entry>
+<entry key="guest.form.answer">답변</entry>
 
 <!-- join form -->
 <entry key="join.form.title">회원가입</entry>
+<entry key="join.form.uid">아이디</entry>
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
 <entry key="join.form.dept">소속</entry>
+<entry key="join.form.desc">설명</entry>
+<entry key="join.form.locale">언어선택</entry>
 
 <entry key="join.form.password">비밀번호</entry>
 <entry key="join.form.password.confirm">비밀번호 확인</entry>
 <entry key="btn.join">가입신청</entry>
 <entry key="btn.main">메인으로</entry>
 
+<!-- user form  -->
+<entry key="user.form.password.current">현재 비밀번호</entry>
+<entry key="user.form.password.new">신규 비밀번호</entry>
+<entry key="user.form.password.confirm">확인 비밀번호</entry>
 
-<!-- button message -->
-<entry key="btn.save">저장</entry>
-<entry key="btn.delete">삭제</entry>
-<entry key="btn.add">추가</entry>
-<entry key="btn.connnection.check">연결 테스트</entry>
-<entry key="btn.login">로그인</entry>
+<entry key="msg.analyzing">분석 중입니다.</entry>
+<entry key="msg.auth_db_list">권한 있는 DB 목록</entry>
 
+<!-- editor msg -->
+<entry key="msg.editor.newfile">새파일</entry>
+<entry key="msg.editor.info">새 파일을 클릭하시면 쿼리를 실행하실수 있는 에디터가 열립니다.</entry>
 
-<entry key="btn.profile">프로파일</entry>
-<entry key="btn.setting">셋팅</entry>
-<entry key="btn.signup">회원가입</entry>
-<entry key="btn.logout">로그아웃</entry>
 
 <entry key="msg.email.empty">이메일을 입력하세요</entry>
+<entry key="msg.title.empty">제목을 입력하세요</entry>
+<entry key="msg.contactus.empty">문의사항을 입력하세요</entry>
 <entry key="msg.name.empty">이름을 입력하세요</entry>
 <entry key="msg.password.empty">패스워드를 입력하세요</entry>
 <entry key="msg.password.differrent">패스워드가 같지 않습니다</entry>
 <entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
 <entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
 <entry key="msg.save.confirm">저장 하시겠습니까?</entry>
+<entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
+<entry key="msg.save.success">저장 되었습니다</entry>
+<entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
-<entry key="msg.nodata">No data</entry>
+<entry key="msg.nodata">데이타가 없습니다.</entry>
 <entry key="msg.success">성공</entry>
+<entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
+<entry key="msg.data.select">데이터를 선택하시오.</entry>
+<entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
+<entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
+<entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
+<entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
+<entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
+<entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
+<entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
+<entry key="msg.confirm.block.n">스키마를 선택하세요.</entry>
 
 
+<entry key="msg.select.value">선택된 값</entry>
 <entry key="msg.warning.select">선택하시오</entry>
 <entry key="msg.records.per.page">페이지 당 레코드</entry>
+<entry key="msg.table.dbclick.move">* 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
+<entry key="msg.column.dbclick.move">* 컬럼을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
 
+<entry key="msg.table.select">테이블을 선택화세요.</entry>
+<entry key="msg.column.select">컬럼을 선택화세요</entry>
+
+<entry key="database.preferences">환경설정</entry>
+<entry key="database.tools">도구</entry>
 
 <entry key="admin.form.header">Database info</entry>
-<entry key="admin.form.db.vname">db명</entry>
+<entry key="admin.form.db.vname">연결명</entry>
 <entry key="admin.form.db.vurl">Url</entry>
+<entry key="admin.form.db.serverip">Server IP</entry>
+<entry key="admin.form.db.port">Port</entry>
+<entry key="admin.form.db.urldirectmsg">Url 직접 입력</entry>
+<entry key="admin.form.db.databasename">DB Name(SID)</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
+<entry key="admin.form.db.useyn">사용여부</entry>
+<entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>
 <entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
+<entry key="admin.form.db.lazyloadyn">Async 로드</entry>
+<entry key="admin.form.db.basetableyn">Base 테이블 사용여부</entry>
 <entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
+
+<entry key="admin.form.db.max_select_count">Limit Select Row</entry>
+<entry key="admin.form.db.maxactive">Max Active</entry>
+<entry key="admin.form.db.minidle">Min Idle</entry>
+<entry key="admin.form.db.timeout">Timeout</entry>
+<entry key="admin.form.db.exportcount">내보내기 카운트</entry>
+
+<entry key="admin.userlist.search.head">사용자 목록</entry>
+<entry key="admin.managerlist.head">매니저 목록</entry>
+
+<entry key="admin.managerlist.dbuser">매니저 </entry>
+
+<entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
+
+<entry key="admin.errorlog.title">에러 메시지</entry>
+<entry key="admin.errorlog.type">타입</entry>
+<entry key="admin.errorlog.cont">에러 내용</entry>
+<entry key="admin.errorlog.server">host</entry>
+
+
 
 
 <entry key="manage.userlist.head">사용자 목록</entry>
 <entry key="manage.userlist.name">이름</entry>
 <entry key="manage.userlist.id">아이디</entry>
+<entry key="manage.userlist.dept">소속</entry>
+<entry key="manage.userlist.init.password">패스워드 초기화</entry>
 <entry key="manage.userlist.date">등록일</entry>
 <entry key="manage.userlist.access">수락여부</entry>
+<entry key="manage.userlist.useyn">사용여부</entry>
+<entry key="manage.userlist.dept">소속</entry>
+<entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
+<entry key="manage.answeryn">답변여부</entry>
+<entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
 
 
+<entry key="manage.glossary.word">용어</entry>
+<entry key="manage.glossary.word_en">영문명</entry>
+<entry key="manage.glossary.word_abbr">약어명</entry>
+<entry key="manage.glossary.desc">설명</entry>
+
+<entry key="manage.dbgroup.nm">그룹명</entry>
+<entry key="manage.dbgroup.mapping">DB 그룹맵핑</entry>
+<entry key="manage.dbgroup.usermapping">그룹 사용자 맵핑</entry>
 
 
+<entry key="manage.log.command">Command</entry>
+<entry key="manage.log.query">Query</entry>
+<entry key="manage.log.delay">걸린시간</entry>
+
+<entry key="user.edit.msgtitle">제목</entry>
+<entry key="user.edit.send_id">보낸사람</entry>
+<entry key="user.edit.recv_id">받는사람</entry>
+<entry key="user.edit.msgcont">내용</entry>
+<entry key="detail.view">상세보기</entry>
+<entry key="user.preferences.sqlfile">SQL FILE</entry>
+<entry key="user.preferences.sqlcont">내용</entry>
+
+<!-- export table spec -->
+<entry key="msg.export.spec.step1">내보내기 정보</entry>
+<entry key="msg.export.spec.step2">테이블 선택</entry>
+<entry key="msg.export.spec.step3">완료</entry>
+<entry key="msg.export.spec.table.definition">테이블정의서 </entry>
+<entry key="msg.export.spec.column.multi.sheet">컬럼다중시트여부</entry>
+<entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
+<entry key="msg.export.spec.column.title">Export 컬럼 정보</entry>
+<entry key="msg.export.spec.schema.select">스키마를 선택하세요.</entry>
+
+<!-- export ddl info-->
+<entry key="msg.export.ddl.info">내보내기 정보</entry>
+
+<entry key="msg.export.ddl.step1">object 선택</entry>
+<entry key="msg.export.ddl.step2">상세선택</entry>
+<entry key="msg.export.ddl.step3">완료</entry>
+<entry key="msg.export.multi.file">다중파일여부</entry>
+<entry key="msg.export.multi.file.single">한파일</entry>
+<entry key="msg.export.multi.file.multi">object별 파일</entry>
+<entry key="msg.select.object">선택된 object</entry>
+<entry key="msg.export.ddl.object.select.title">Export Object 선택</entry>
+<entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택하세요.</entry>
+<entry key="msg.export.ddl.object.nodata">object를 선택해주세요.</entry>
+
+<!-- 메인 화면  -->
+<entry key="msg.dbdata.load">db 정보를 로드중입니다.</entry>
+<entry key="msg.connect.db.select"><![CDATA[접속할 db <img src="{0}/webstatic/imgs/Database.gif"> 선택하시오.]]></entry>
+
+<entry key="error.message404">등록되지 않은 페이지 입니다.</entry>
 
 </properties>

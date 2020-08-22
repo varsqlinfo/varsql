@@ -94,23 +94,6 @@
 <entry key="user.form.password.new">신규 비밀번호</entry>
 <entry key="user.form.password.confirm">확인 비밀번호</entry>
 
-<!-- button message -->
-<entry key="btn.save">Save</entry>
-<entry key="btn.delete">Delete</entry>
-<entry key="btn.add">Add</entry>
-<entry key="btn.save.andpoolnit"><![CDATA[저장 & DB 풀초기화]]></entry>
-<entry key="btn.connnection.check">Connection Test</entry>
-<entry key="btn.login">Login</entry>
-<entry key="btn.accept">Accept</entry>
-<entry key="btn.denial">denial</entry>
-
-
-<entry key="btn.profile">Profile</entry>
-<entry key="btn.setting">Setting</entry>
-<entry key="btn.signup">Sign up</entry>
-<entry key="btn.logout">Logout</entry>
-<entry key="btn.search">Search</entry>
-
 <entry key="msg.email.empty">이메일을 입력하세요</entry>
 <entry key="msg.title.empty">제목을 입력하세요</entry>
 <entry key="msg.contactus.empty">문의사항을 입력하세요</entry>
@@ -168,8 +151,6 @@
 
 <entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
 
-
-
 <entry key="manage.userlist.head">사용자 목록</entry>
 <entry key="manage.userlist.name">이름</entry>
 <entry key="manage.userlist.id">아이디</entry>
@@ -183,7 +164,12 @@
 <entry key="manage.answeryn">답변여부</entry>
 <entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
 
-
+<!-- user menu -->
+<entry key="user.prefernces.menu.general">General</entry>
+<entry key="user.prefernces.menu.pasword">Password</entry>
+<entry key="user.prefernces.menu.message">Note</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
 
 <entry key="user.edit.msgtitle">Title</entry>
 <entry key="user.edit.send_id">sender</entry>
