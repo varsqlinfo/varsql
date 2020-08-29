@@ -68,7 +68,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -113,6 +113,21 @@
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_type" /></label>
+						<div class="col-sm-8">
+							<select	v-model="detailItem.wordType" class="form-control text required">
+								<option v-for="(item,index) in wordTypeArr" :value="item.type">{{item.name}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_length" /></label>
+						<div class="col-sm-8">
+							<input class="form-control text required" v-model="detailItem.wordLength">
+							<div>char,string -> 정수값 , number, float -> (0,1)</div>
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.desc" /></label>
 						<div class="col-sm-8">
 							<textarea class="form-control text" rows="3" v-model="detailItem.wordDesc" style="width:100%;"></textarea>
@@ -128,8 +143,6 @@
 
 <script>
 (function() {
-	
-
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
@@ -137,26 +150,25 @@ VarsqlAPP.vueServiceBean( {
 		,searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
-		,detailItem :{
-			word :''
-			, wordEn :''
-			, wordAbbr :''
-			, wordDesc : '' 
-			, wordIdx:''
-			
-		}
+		,detailItem :{}
 		,isViewMode : false
+		,wordTypeArr : VARSQLCont.allDataType()
 	}
 	,methods:{
+		init :function (){
+			this.fieldClear();
+		}
 		// 추가.
-		fieldClear : function (){
+		,fieldClear : function (){
 			this.isViewMode = false;
 			this.detailItem = {
 				wordIdx:''
 				, word :''
 				, wordEn :''
 				, wordAbbr :''
-				, wordDesc : '' 
+				, wordDesc : ''
+				, wordType : 'string'
+				, wordLength : 0
 			};
 		}
 		// 상세
@@ -168,18 +180,20 @@ VarsqlAPP.vueServiceBean( {
 				, wordEn : item.wordEn
 				, wordAbbr :item.wordAbbr
 				, wordDesc : item.wordDesc
+				, wordType : item.wordType
+				, wordLength : item.wordLength
 			};
 		}
 		// 검색
 		,search : function(no){
 			var _self = this;
-			
+
 			var param = {
 				pageNo: (no?no:1)
 				,countPerPage : _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/glossary/list'}
 				,data : param
@@ -192,9 +206,9 @@ VarsqlAPP.vueServiceBean( {
 		// 저장
 		,saveInfo : function (){
 			var _self = this;
-			
+
 			var param = this.detailItem;
-			
+
 			_self.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/glossary/save'}
 				,data : param
@@ -208,16 +222,16 @@ VarsqlAPP.vueServiceBean( {
 								for(var i=0; i <objLen; i++){
 									item = items[i];
 									alert(item.field + "\n"+ item.defaultMessage)
-									return ; 
+									return ;
 								}
 							}
 						}else{
-							var message = resData.messageCode; 
+							var message = resData.messageCode;
 							alert(resData.messageCode +'\n'+ resData.message);
-							return ; 
+							return ;
 						}
 					}
-					
+
 					_self.fieldClear();
 					_self.search();
 				}
@@ -225,16 +239,16 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 삭제.
 		,deleteInfo : function(){
-			var _self = this; 
-			
+			var _self = this;
+
 			if(!confirm('['+_self.detailItem.word +'] 삭제하시겠습니까?')){
-				return ; 
+				return ;
 			}
-			
+
 			var param = {
 				wordIdx : _self.detailItem.wordIdx
 			};
-			
+
 			this.$ajax({
 				data:param
 				,url : {type:VARSQL.uri.manager, url:'/glossary/delete'}

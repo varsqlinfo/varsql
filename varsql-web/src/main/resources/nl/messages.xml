@@ -231,6 +231,8 @@
 <entry key="manage.glossary.word_en">영문명</entry>
 <entry key="manage.glossary.word_abbr">약어명</entry>
 <entry key="manage.glossary.desc">설명</entry>
+<entry key="manage.glossary.word_type">데이터 타입</entry>
+<entry key="manage.glossary.word_length">길이</entry>
 
 <entry key="manage.dbgroup.nm">그룹명</entry>
 <entry key="manage.dbgroup.mapping">DB 그룹맵핑</entry>

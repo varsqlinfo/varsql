@@ -44,9 +44,9 @@ var _dto = {
 	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'char'}
 	,'12':{name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
 	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'91':{name : 'DATE',isNum : false ,val : 'current_date', javaType:'String'}
-	,'92':{name : 'TIME',isNum : false ,val : 'current_time', javaType:'String'}
-	,'93':{name : 'TIMESTAMP',isNum : false ,val : 'current_timestamp', javaType:'String'}
+	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'String'}
+	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'String'}
+	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'String'}
 	,'-2':{name : 'BINARY',isNum : false ,val : '', javaType:'String'}
 	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'String'}
 	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'String'}
@@ -122,7 +122,7 @@ var DEFINE_INFO = {
 	,MYSQL : {
 		type :'text/x-mssql'
 	}
-	,ORACLE : { 
+	,ORACLE : {
 		type : 'text/x-plsql'
 		,hint : setHints('VARCHAR2,NVARCHAR2,NCHAR2')
 		,setDataType :  function (pdto){
@@ -132,11 +132,11 @@ var DEFINE_INFO = {
 			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
 			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
 			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
-			
-			return pdto; 
+
+			return pdto;
 		}
 	}
-	,TIBERO :{ 
+	,TIBERO :{
 		type : 'text/x-plsql'
 		,hint : setHints('VARCHAR2,NVARCHAR2,NCHAR2,NUMBER')
 		,setDataType :  function (pdto){
@@ -146,11 +146,11 @@ var DEFINE_INFO = {
 			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
 			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
 			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
-			
-			return pdto; 
+
+			return pdto;
 		}
 	}
-	,H2 : { 
+	,H2 : {
 		type : 'text/x-mariadb'
 	}
 	,'DEFAULT' : {
@@ -162,7 +162,7 @@ var defaultInfo = DEFINE_INFO['DEFAULT'];
 // vendor 정보 얻기.
 function getDBTypeObj (dbType , field){
 	var dbTypeInfo = DEFINE_INFO[dbType] || defaultInfo;
-	
+
 	if(typeof field ==='undefined') {
 		return dbTypeInfo;
 	}else{
@@ -170,7 +170,7 @@ function getDBTypeObj (dbType , field){
 	}
 }
 
-// set db type 
+// set db type
 function setDtoInfo (dbType , pdto){
 	var dbTypeInfo = getDBTypeObj (dbType);
 	try{
@@ -182,7 +182,7 @@ function setDtoInfo (dbType , pdto){
 function setNameKeyMapping (pdto){
 	for(var key  in pdto){
 		var item = pdto[key];
-		pdto[item.name] =item; 
+		pdto[item.name] =item;
 	}
 	return pdto;
 }
@@ -190,8 +190,8 @@ function setNameKeyMapping (pdto){
 var dataType = {};
 
 dataType.getDataTypeInfo = function (dataType){
-	var tmpDataType= _dto[dataType]; 
-	
+	var tmpDataType= _dto[dataType];
+
 	if(typeof  tmpDataType !=='undefined'){
 		return  tmpDataType;
 	}else{
@@ -199,20 +199,38 @@ dataType.getDataTypeInfo = function (dataType){
 	}
 }
 
+VARSQLCont.allDataType = function (){
+	var result =[];
+	var dupChk ={};
+	for(var key in _dto){
+		var item = _dto[key];
+
+		if(!dupChk[item.name]){
+			result.push({
+				type : item.name
+				,name : item.name
+			})
+			dupChk[item.name] = true;
+		}
+	}
+
+	return result;
+}
+
 VARSQLCont.init  = function (dbType, uiBase){
-	var _this =this; 
-	
+	var _this =this;
+
 	uiBase.sqlHints = DEFAULT_HINTS.concat(getDBTypeObj(dbType , 'hint'));
 	uiBase.mimetype =getDBTypeObj(dbType , 'type');
-	
+
 	setDtoInfo(dbType, _dto);
-	_dto = setNameKeyMapping (_dto); // name 을 키로 등록. 
-	
+	_dto = setNameKeyMapping (_dto); // name 을 키로 등록.
+
 	_this._dto = _dto;
 	_this.dataType = dataType;
 	_this.constants = _constants;
 	_this.tableColKey = TABLE_COL_KEYS;
-	
+
 	_this.compareColKey = COMPARE_COL_KEY;
 }
 

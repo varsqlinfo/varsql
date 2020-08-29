@@ -23,11 +23,11 @@ import lombok.Setter;
 @Entity
 @Table(name = GlossaryEntity._TB_NAME)
 public class GlossaryEntity extends AabstractAuditorModel{
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public final static String _TB_NAME="VTGLOSSARY";
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType. AUTO)
 	@Column(name ="WORD_IDX")
@@ -45,13 +45,21 @@ public class GlossaryEntity extends AabstractAuditorModel{
 	@Column(name ="WORD_DESC")
 	private String wordDesc;
 
+	@Column(name ="WORD_TYPE")
+	private String wordType;
+
+	@Column(name ="WORD_LENGTH")
+	private String wordLength;
+
 	@Builder
-	public GlossaryEntity(Long wordIdx, String word, String wordEn, String wordAbbr, String wordDesc) {
+	public GlossaryEntity(Long wordIdx, String word, String wordEn, String wordAbbr, String wordDesc, String wordType, String wordLength) {
 		this.wordIdx = wordIdx;
 		this.word = word;
 		this.wordEn = wordEn;
 		this.wordAbbr = wordAbbr;
 		this.wordDesc = wordDesc;
+		this.wordType = wordType;
+		this.wordLength = wordLength;
 	}
 	public final static String WORD_IDX="wordIdx";
 
@@ -60,6 +68,10 @@ public class GlossaryEntity extends AabstractAuditorModel{
 	public final static String WORD_EN="wordEn";
 
 	public final static String WORD_ABBR="wordAbbr";
+
+	public final static String WORD_TYPE="wordType";
+
+	public final static String WORD_LENGTH="wordLength";
 
 	public final static String WORD_DESC="wordDesc";
 

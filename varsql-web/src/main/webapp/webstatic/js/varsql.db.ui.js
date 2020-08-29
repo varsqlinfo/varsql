@@ -445,7 +445,13 @@ _ui.headerMenu ={
 							_self.exportInfo(menu_mode3);
 							break;
 						case 'setting':	//설정.
-							_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid));
+							//_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid));
+
+							VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid), {
+								name : 'preferencesMain'
+								,viewOption : 'width=1000,height=600,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
+							});
+
 							break;
 						case 'show':	//추가 항목 보기.
 
@@ -484,7 +490,7 @@ _ui.headerMenu ={
 						case 'utils':	//유틸리티
 							var componentInfo;
 							if(menu_mode3 =='genexceltoddl'){
-								var popt = 'width=1000,height=480,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
+								var popt = 'width=1000,height=600,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/genExcelToDDL?conuid='+_g_options.param.conuid), {
 									name : 'genexceltoddl'
@@ -3549,8 +3555,10 @@ _ui.SQL = {
 			var dataLen = Object.keys(data||{}).length;
 			if(dataLen < 1) data = {'' :''};
 
+			var template = Handlebars.compile(_self.getParamTemplate(true));
+
 			for(var key in data){
-				paramHtm.push(Mustache.render(_self.getParamTemplate(true), {key: key , val : data[key]}));
+				paramHtm.push(template({key: key , val : data[key]}));
 			}
 
 			if('init_data' ==mode){

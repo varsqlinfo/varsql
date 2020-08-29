@@ -8,7 +8,7 @@
 
 </head>
 
-<BODY class="setting-body">
+<BODY class="db-util-body wh100-absolute">
 	<tiles:insertAttribute name="body" />
 	<iframe style="display:none;width:0px;height:0px;" id="downloadForm" name="downloadForm"></iframe>
 </BODY>

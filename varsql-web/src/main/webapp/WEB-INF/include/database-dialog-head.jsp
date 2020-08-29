@@ -22,7 +22,9 @@
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.conts.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
