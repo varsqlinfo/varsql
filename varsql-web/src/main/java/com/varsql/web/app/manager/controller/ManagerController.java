@@ -44,7 +44,7 @@ public class ManagerController extends AbstractController{
 	private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 
 	@Autowired
-	ManagerCommonServiceImpl dbnUserServiceImpl;
+	private ManagerCommonServiceImpl dbnUserServiceImpl;
 
 	@RequestMapping({"", "/","/main"})
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {

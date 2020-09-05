@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,8 +18,14 @@ import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
+@NoArgsConstructor
 @Table(name = SqlHistoryEntity._TB_NAME)
 public class SqlHistoryEntity{
 	public final static String _TB_NAME="VTSQL_HISTORY";
@@ -60,10 +67,9 @@ public class SqlHistoryEntity{
 	@Column(name ="ERROR_LOG")
 	private String errorLog;
 	
-	@OneToOne
-	@JoinColumn(name = "VIEWID" ,nullable = false, insertable =false , updatable =false)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "VIEWID", nullable = false, insertable =false, updatable =false)
 	private RegInfoEntity regInfo;
-
 
 	@Builder
 	public SqlHistoryEntity(String vconnid, String viewid, String historyid, Timestamp startTime, Timestamp endTime, int delayTime, String logSql, String usrIp, String errorLog) {

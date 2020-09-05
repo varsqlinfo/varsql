@@ -14,14 +14,19 @@ import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.configuration.Configuration;
-import com.varsql.web.app.manager.dao.ManagerDAO;
-import com.varsql.web.common.beans.DataCommonVO;
-import com.varsql.web.common.dao.CommonDAO;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.db.DBBlockUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.repository.db.DBBlockUserEntityRepository;
+import com.varsql.web.repository.db.DBGroupEntityRepository;
+import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
+import com.varsql.web.repository.db.DBManagerEntityRepository;
+import com.varsql.web.repository.spec.DBGroupSpec;
+import com.varsql.web.repository.spec.DBManagerSpec;
 import com.varsql.web.repository.spec.UserSpec;
+import com.varsql.web.repository.user.UserDBConnectionEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
@@ -50,14 +55,23 @@ import com.vartech.common.encryption.PasswordUtil;
 public class UserMgmtServiceImpl extends AbstractService{
 
 	@Autowired
-	ManagerDAO manageDAO;
+	private UserMgmtRepository userMgmtRepository;
 
 	@Autowired
-	CommonDAO commonDAO;
-	
+	private DBManagerEntityRepository dbManagerEntityRepository;
+
 	@Autowired
-	private UserMgmtRepository userMgmtRepository;
-	
+	private DBBlockUserEntityRepository dbBlockUserEntityRepository;
+
+	@Autowired
+	private DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
+
+	@Autowired
+	private DBGroupEntityRepository dbGroupEntityRepository;
+
+	@Autowired
+	private UserDBConnectionEntityRepository userDBConnectionEntityRepository;
+
 	@Autowired
 	@Qualifier("varsqlPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
@@ -73,7 +87,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectUserList(SearchParameter searchParameter) {
-		
+
 		Page<UserEntity> result = userMgmtRepository.findAll(
 			UserSpec.likeUnameOrUid(SecurityUtil.isAdmin(), searchParameter.getKeyword())
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
@@ -96,13 +110,13 @@ public class UserMgmtServiceImpl extends AbstractService{
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
 		String[] viewidArr = StringUtil.split(selectItem,",");
 		AuthorityType role = "Y".equals(acceptyn)?AuthorityType.USER:AuthorityType.GUEST;
-		
+
 		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
 			item.setUserRole(role.name());
 			item.setAcceptYn("Y".equals(acceptyn)?true:false);
-			return item; 
+			return item;
 		}).collect(Collectors.toList());
-		
+
 		userMgmtRepository.saveAll(users);
 
 		return VarsqlUtils.getResponseResultItemOne(1);
@@ -121,7 +135,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 */
 	public ResponseResult initPassword(String viewid) throws EncryptDecryptException {
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
-		
+
 		UserEntity entity= userMgmtRepository.findByViewid(viewid);
 		entity.setUpw(passwordInfo);
 		entity = userMgmtRepository.save(entity);
@@ -143,15 +157,16 @@ public class UserMgmtServiceImpl extends AbstractService{
 		ResponseResult result = new ResponseResult();
 
 		result.setItemOne(domainMapper.convertToDomain(userMgmtRepository.findByViewid(viewid), UserResponseDTO.class));
-//		result.setItemList(manageDAO.selectUserDbInfo(viewid));
-//		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
-//		result.addCustoms("dbGroup",manageDAO.selectUserDbGroup(viewid));
+		result.setItemList(userDBConnectionEntityRepository.userConnInfo(viewid));
+		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
+		result.addCustoms("dbGroup",dbGroupEntityRepository.findAll(DBGroupSpec.userGroupList(viewid)));
 
 		return result;
 	}
 
 	/**
 	 *
+	 * @param param
 	 * @Method Name  : removeAuth
 	 * @Method 설명 : 권한 지우기
 	 * @작성자   : ytkim
@@ -160,14 +175,16 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @param param
 	 * @return
 	 */
-	public ResponseResult removeAuth(ParamMap param) {
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult removeAuth(String viewid, String vconnid, ParamMap param) {
 		ResponseResult result = new ResponseResult();
 
 		boolean chkFlag = false;
 		if(SecurityUtil.isAdmin()){
 			chkFlag =true;
 		}else{
-			int cnt = manageDAO.selectDbManagerCheck(param);
+
+			long cnt = dbManagerEntityRepository.count(DBManagerSpec.findVconnidManagerCheck(vconnid, viewid));
 			if(cnt > 0){
 				chkFlag =true;
 			}
@@ -175,13 +192,15 @@ public class UserMgmtServiceImpl extends AbstractService{
 
 		if(chkFlag){
 			if("block".equals(param.getString("mode"))) {
-				result.setItemOne(manageDAO.inserDbBlockUser(param));
+				dbBlockUserEntityRepository.save(DBBlockUserEntity.builder().viewid(viewid).vconnid(vconnid).build());
 			}else {
-				result.setItemOne(manageDAO.deleteDbBlockUser(param));
+				dbBlockUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
 			}
 		}else {
 			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
 		}
+
+		result.setItemOne(1);
 
 		return result;
 	}
@@ -196,20 +215,33 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult updateBlockYn(DataCommonVO paramMap) {
+	public ResponseResult updateBlockYn(String viewid, String blockYn) {
 		ResponseResult result = new ResponseResult();
 
 		boolean chkFlag = false;
 		if(SecurityUtil.isAdmin()){
 			chkFlag =true;
 		}else if(SecurityUtil.isManager()){
-			if(commonDAO.selectManagerCheck(paramMap) > 0) {
+			long cnt = userMgmtRepository.count(UserSpec.managerCheck(viewid));
+			if(cnt > 0){
 				chkFlag =true;
 			}
 		}
 
 		if(chkFlag){
-			result.setItemOne(manageDAO.updateBlockYn(paramMap));
+			UserEntity userInfo =userMgmtRepository.findByViewid(viewid);
+
+			if(SecurityUtil.loginUser().getTopAuthority().getPriority() > AuthorityType.valueOf(userInfo.getUserRole()).getPriority()){
+				if("Y".equals(blockYn)) {
+					userInfo.setBlockYn(true);
+				}else {
+					userInfo.setBlockYn(false);
+				}
+
+				userInfo = userMgmtRepository.save(userInfo);
+			}
+
+			result.setItemOne(1);
 		}else {
 			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
 		}
@@ -227,7 +259,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @param param
 	 * @return
 	 */
-	public ResponseResult removeDbGroup(ParamMap param) {
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult removeDbGroup(String groupId, String viewid) {
 		ResponseResult result = new ResponseResult();
 
 		boolean chkFlag = false;
@@ -236,11 +269,13 @@ public class UserMgmtServiceImpl extends AbstractService{
 		}
 
 		if(chkFlag){
-			result.setItemOne(manageDAO.deleteUserDbGroup(param));
+			dbGroupMappingUserEntityRepository.deleteByGroupIdAndViewid(groupId, viewid);
+			result.setItemOne(1);
 		}else {
 			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
 		}
 
 		return result;
 	}
+
 }

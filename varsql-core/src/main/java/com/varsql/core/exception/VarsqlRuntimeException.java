@@ -1,35 +1,35 @@
 package com.varsql.core.exception;
- 
+
 /**
- * 
+ *
  * @FileName  : VarsqlRuntimeException.java
  * @프로그램 설명 :
- * @Date      : 2018. 4. 3. 
+ * @Date      : 2018. 4. 3.
  * @작성자      : ytkim
  * @변경이력 :
  */
 public class VarsqlRuntimeException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private int errorCode;
 	private String errorMessage;
 	private String messageCode;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public VarsqlRuntimeException() {
 		super();
 	}
-	
+
 	public VarsqlRuntimeException(int errorCode,Exception exeception) {
 		this(errorCode,null, exeception);
 	}
-	
+
 	public VarsqlRuntimeException(int errorCode, String messageCode ,Exception exeception) {
 		this(errorCode, messageCode , null, exeception);
 	}

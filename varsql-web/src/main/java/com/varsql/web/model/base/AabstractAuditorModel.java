@@ -24,11 +24,12 @@ import lombok.Setter;
 
 *-----------------------------------------------------------------------------
  */
-@SuppressWarnings("serial")
 @Setter
 @Getter
 @MappedSuperclass
 public abstract class AabstractAuditorModel extends AbstractRegAuditorModel{
+	
+	private static final long serialVersionUID = 7893362241769774670L;
 	
 	@JsonIgnore
     @LastModifiedBy

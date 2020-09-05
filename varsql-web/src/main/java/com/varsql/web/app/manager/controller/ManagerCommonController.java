@@ -39,7 +39,7 @@ public class ManagerCommonController extends AbstractController{
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCommonController.class);
 
 	@Autowired
-	ManagerCommonServiceImpl managerCommonServiceImpl;
+	private ManagerCommonServiceImpl managerCommonServiceImpl;
 
 	/**
 	 *

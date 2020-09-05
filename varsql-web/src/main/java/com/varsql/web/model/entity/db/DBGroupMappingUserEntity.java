@@ -49,7 +49,7 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 
 	}
 	
-	public final static String JOIN_CONNINFO="userInfo";
+	public final static String JOIN_USERINFO="userInfo";
 	
 	public final static String GROUP_ID="groupId";
 

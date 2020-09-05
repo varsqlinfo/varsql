@@ -11,8 +11,10 @@ import javax.persistence.Table;
 import com.varsql.web.model.id.SqlStatisticsID;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 @IdClass(SqlStatisticsID.class)
 @Table(name = SqlStatisticsEntity._TB_NAME)
 public class SqlStatisticsEntity{

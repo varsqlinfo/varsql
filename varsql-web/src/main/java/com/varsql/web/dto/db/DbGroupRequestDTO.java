@@ -11,7 +11,7 @@ import lombok.Setter;
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: DbGroupRequestDTO.java
-* @desc		: db group 
+* @desc		: db group
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -22,16 +22,16 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DbGroupRequestDTO{
+public class DBGroupRequestDTO{
 	private String groupId;
-	
+
 	@NotNull
 	@Size(max=255)
 	private String groupName;
 
 	@Size(max=2000)
 	private String groupDesc;
-	
+
 	public DBGroupEntity toEntity() {
 		return DBGroupEntity.builder()
 				.groupName(groupName)

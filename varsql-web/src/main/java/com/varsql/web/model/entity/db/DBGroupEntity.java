@@ -75,6 +75,8 @@ public class DBGroupEntity extends AabstractAuditorModel{
 		this.groupDesc = groupDesc;
 	}
 	
+	public final static String JOIN_GROUP_USER="groupUserList";
+	
 	public final static String GROUP_ID="groupId";
 
 	public final static String GROUP_NAME="groupName";

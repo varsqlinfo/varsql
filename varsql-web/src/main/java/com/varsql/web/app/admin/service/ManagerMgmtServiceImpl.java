@@ -103,7 +103,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult searchDatabaseManager(String vconnid) {
-		List<DBManagerEntity> dbModelInfo = dbManagerRepository.findAll(DBManagerSpec.vconnid(vconnid));
+		List<DBManagerEntity> dbModelInfo = dbManagerRepository.findAll(DBManagerSpec.findAllVconnidManager(vconnid));
 
 		List<UserResponseDTO> result =new ArrayList<>();
 		dbModelInfo.stream().forEach(item->{

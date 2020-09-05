@@ -23,13 +23,6 @@ import com.varsql.web.model.entity.user.UserEntity;
  */
 public class UserSpec extends DefaultSpec{
 
-	public static Specification<UserEntity> getUserRole(AuthorityType userAuth ) {
-    	return (root, query, criteriaBuilder) -> {
-    		Predicate predicate = criteriaBuilder.equal(root.get(UserEntity.USER_ROLE), userAuth.name());
-    		return predicate;
-    	};
-    }
-	
 	public static Specification<UserEntity> userRoleNotIn(boolean isAdmin) {
 		return (root, query, criteriaBuilder) -> {
 			if(isAdmin) {
@@ -58,7 +51,11 @@ public class UserSpec extends DefaultSpec{
     	};
     }
 
-    public static Specification<UserEntity> likeUnameOrUid(AuthorityType userAuth, String name) {
+    public static Specification<UserEntity> managerCheck(String viewid) {
+    	return Specification.where(getUserRole(AuthorityType.MANAGER)).and(blockyn()).and(viewid(viewid));
+    }
+    
+	public static Specification<UserEntity> likeUnameOrUid(AuthorityType userAuth, String name) {
         return Specification.where(getUserRole(userAuth)).and(getUnameOrUid(name));
     }
     
@@ -72,5 +69,25 @@ public class UserSpec extends DefaultSpec{
 
     public static Specification<UserEntity> detailInfo(String uid) {
     	return Specification.where(getUid(uid));
+    }
+    
+    // auth check
+    private static Specification<UserEntity> getUserRole(AuthorityType userAuth ) {
+    	return (root, query, criteriaBuilder) -> {
+    		Predicate predicate = criteriaBuilder.equal(root.get(UserEntity.USER_ROLE), userAuth.name());
+    		return predicate;
+    	};
+    }
+    
+    private static Specification<UserEntity> viewid(String viewid) {
+    	return (root, query, criteriaBuilder) -> {
+    		return criteriaBuilder.equal(root.get(UserEntity.VIEWID), viewid);
+    	};
+	}
+    
+    private static Specification<UserEntity> blockyn() {
+    	return (root, query, criteriaBuilder) -> {
+    		return criteriaBuilder.isFalse(root.get(UserEntity.BLOCK_YN));
+    	};
     }
 }

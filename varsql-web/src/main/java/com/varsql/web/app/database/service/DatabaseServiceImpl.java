@@ -1,12 +1,16 @@
 package com.varsql.web.app.database.service;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.auth.User;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
@@ -14,11 +18,16 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.db.DBConnTabRequestDTO;
+import com.varsql.web.dto.db.DBConnTabResponseDTO;
 import com.varsql.web.model.entity.db.DBConnHistEntity;
+import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
+import com.varsql.web.repository.db.DBConnTabEntityRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.sort.TreeDataSort;
 
 /**
  *
@@ -31,9 +40,12 @@ import com.vartech.common.app.beans.ResponseResult;
 @Service
 public class DatabaseServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
-	
+
 	@Autowired
 	private DBConnHistEntityRepository dbConnHistEntityRepository;
+
+	@Autowired
+	private DBConnTabEntityRepository dbConnTabEntityRepository;
 
 	/**
 	 *
@@ -143,7 +155,7 @@ public class DatabaseServiceImpl{
 		try{
 			result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(databaseParamInfo.getObjectType()).getObjectTypeId(),databaseParamInfo, databaseParamInfo.getObjectName()));
 		}catch(Exception e){
-			logger.error("dbObjectMetadataList : ", e);
+			logger.error("dbObjectMetadataList : {} ", e.getMessage() , e);
 		}
 		return result;
 	}
@@ -215,5 +227,90 @@ public class DatabaseServiceImpl{
 		}catch(Exception e){
 			logger.error("insertDbConnectionHistory : ", e);
 		}
+	}
+
+	/**
+	 * @method  : connTabInfo
+	 * @desc : conn info 등록.
+	 * @author   : ytkim
+	 * @date   : 2020. 7. 3.
+	 * @param databaseParamInfo
+	 * @return
+	 */
+	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
+	public ResponseResult connTabInfo(DBConnTabRequestDTO dbConnTabRequestDTO) {
+
+		ResponseResult result = new ResponseResult();
+
+		String mode = String.valueOf(dbConnTabRequestDTO.getCustom().get("mode"));
+
+		if("add".equals(mode)){
+			DBConnTabEntity connTabInfo = dbConnTabRequestDTO.toEntity();
+
+			dbConnTabEntityRepository.updateConnTabDisable(dbConnTabRequestDTO.getViewid());
+			connTabInfo = dbConnTabEntityRepository.save(connTabInfo);
+
+		}else if("del".equals(mode)){
+			DBConnTabEntity dte = dbConnTabEntityRepository.findByViewidAndVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getVconnid());
+
+			dbConnTabEntityRepository.updateNextTabPrevVconnid(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid() , dte.getPrevVconnid());
+
+			dbConnTabEntityRepository.deleteConnTabInfo(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid());
+		}else if("view".equals(mode)){
+			dbConnTabEntityRepository.updateConnTabDisable(dbConnTabRequestDTO.getViewid());
+			dbConnTabEntityRepository.updateConnTabEnable(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid());
+		}
+
+		result.setItemOne(dbConnTabRequestDTO);
+
+		return result;
+	}
+
+	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
+	public List findTabInfo() {
+		TreeDataSort tds = new TreeDataSort("conuid", "prevConuid");
+
+		try {
+			String viewid = SecurityUtil.userViewId();
+
+			List<DBConnTabEntity> tabList = dbConnTabEntityRepository.findAllByViewid(viewid);
+
+			User user = SecurityUtil.loginUser();
+			Map<String, DatabaseInfo> databaseInfo= user.getDatabaseInfo();
+			Map<String,String> vconnidNconuid = user.getVconnidNconuid();
+
+			List<String> notExistsVconnid = new ArrayList<>();
+
+
+
+			tabList.forEach(item ->{
+				String vconnid = item.getVconnid();
+				if(vconnidNconuid.containsKey(vconnid)) {
+					String conuid = vconnidNconuid.get(vconnid);
+					DatabaseInfo di= databaseInfo.get(conuid);
+
+					tds.sortTreeData(
+						DBConnTabResponseDTO.builder()
+						.conuid(conuid)
+						.name(di.getName())
+						.prevConuid(vconnidNconuid.get(item.getPrevVconnid()))
+						.viewYn(item.isViewYn())
+						.build()
+					);
+				}else {
+					notExistsVconnid.add(vconnid);
+				}
+			});
+
+			if(notExistsVconnid.size() > 0) {
+				dbConnTabEntityRepository.deleteAllTabInfo(viewid, notExistsVconnid);
+			}
+
+		}catch(Exception e) {
+			logger.error("findTabInfo : {} ", e.getMessage() , e);
+		}
+		List sortList = tds.getSortList();
+
+		return sortList ==null? new ArrayList() :sortList;
 	}
 }

@@ -16,10 +16,10 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
 /**
- * 
+ *
  * @FileName  : SQLController.java
  * @프로그램 설명 :  sql 관련 공통으로 처리할 controller
- * @Date      : 2015. 6. 22. 
+ * @Date      : 2015. 6. 22.
  * @작성자      : ytkim
  * @변경이력 :
  */
@@ -28,10 +28,10 @@ import com.vartech.common.utils.HttpUtils;
 public class SQLFileController extends AbstractController  {
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(SQLFileController.class);
-	
+
 	@Autowired
 	private SQLFileServiceImpl sqlFileServiceImpl;
-	
+
 	/**
 	 * 쿼리 저장
 	 * @param vconnid
@@ -43,36 +43,36 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/saveQuery"})
-	public @ResponseBody ResponseResult saveQuery( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
+	@RequestMapping({"/saveSql"})
+	public @ResponseBody ResponseResult saveSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		return sqlFileServiceImpl.saveQuery(sqlParamInfo);
+		return sqlFileServiceImpl.saveSql(sqlParamInfo);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : saveAllQuery
 	 * @Method 설명 : sql 모두 저장.
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26. 
+	 * @작성일   : 2018. 11. 26.
 	 * @변경이력  :
 	 * @param sqlParamInfo
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/saveAllQuery"})
-	public @ResponseBody ResponseResult saveAllQuery( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
+	@RequestMapping({"/saveAllSql"})
+	public @ResponseBody ResponseResult saveAllSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		return sqlFileServiceImpl.saveAllQuery(sqlParamInfo);
+		return sqlFileServiceImpl.saveAllSql(sqlParamInfo);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : sqlFileDetailInfo
 	 * @Method 설명 : sql file 상세보기.
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26. 
+	 * @작성일   : 2018. 11. 26.
 	 * @변경이력  :
 	 * @param sqlParamInfo
 	 * @param req
@@ -84,7 +84,7 @@ public class SQLFileController extends AbstractController  {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sqlFileServiceImpl.sqlFileDetailInfo(sqlParamInfo);
 	}
-		
+
 	/**
 	 * sql 저장 목록 보기.
 	 * @param vconnid
@@ -95,17 +95,17 @@ public class SQLFileController extends AbstractController  {
 	 */
 	@RequestMapping({"/sqlList"})
 	public @ResponseBody ResponseResult sqlList(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		
+
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		
+
 		return sqlFileServiceImpl.selectSqlFileList(sqlParamInfo);
 	}
-	
+
 	@RequestMapping({"/sqlFileTab"})
 	public @ResponseBody ResponseResult sqlFileTab(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		
+
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		
+
 		return sqlFileServiceImpl.selectSqlFileTabList(sqlParamInfo);
 	}
 	/**

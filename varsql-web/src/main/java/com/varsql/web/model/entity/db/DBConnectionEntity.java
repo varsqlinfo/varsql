@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@SuppressWarnings("serial")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,8 +37,7 @@ import lombok.Setter;
 @Audited
 @Table(name = DBConnectionEntity._TB_NAME)
 public class DBConnectionEntity extends AabstractAuditorModel{
-	private static final Long serialVersionUID = 1L;
-	
+
 	public final static String _TB_NAME="VTCONNECTION";
 
 	@Id
@@ -128,12 +128,12 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> managerList;
-	
+
 //	@NotAudited
 //	@JsonManagedReference
 //	@OneToMany(mappedBy = "groupConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
-	
+
 	@Builder
 	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount) {
 		this.vconnid = vconnid;
@@ -164,9 +164,9 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 		this.maxSelectCount = maxSelectCount;
 
 	}
-	
+
 	public static final String JOIN_MANAGER_LIST = "managerList";
-	
+
 	public static final String JOIN_GROUPLIST = "dbGroupList";
 
 	public final static String VCONNID="vconnid";

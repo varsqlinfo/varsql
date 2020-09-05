@@ -44,13 +44,13 @@ public class QnaController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(QnaController.class);
 
 	@Autowired
-	QnaServiceImpl qnaServiceImpl;
+	private QnaServiceImpl qnaServiceImpl;
 
 	/**
 	 * @method  : qnaMgmtList
 	 * @desc : qna 매니저 목록.
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 30. 
+	 * @date   : 2020. 4. 30.
 	 * @param req
 	 * @return
 	 * @throws Exception
@@ -69,7 +69,7 @@ public class QnaController extends AbstractController {
 	 * @method  : qnaUpdate
 	 * @desc : qna update
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 30. 
+	 * @date   : 2020. 4. 30.
 	 * @param qnaInfo
 	 * @param result
 	 * @param req

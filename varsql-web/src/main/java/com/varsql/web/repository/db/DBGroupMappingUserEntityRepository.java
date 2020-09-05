@@ -9,5 +9,7 @@ import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
 public interface DBGroupMappingUserEntityRepository extends DefaultJpaRepository, JpaRepository<DBGroupMappingUserEntity, Long> , JpaSpecificationExecutor<DBGroupMappingUserEntity>  {
-
+	
+	void deleteByGroupIdAndViewid(String groupId, String viewid);
+	
 }

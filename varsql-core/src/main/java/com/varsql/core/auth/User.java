@@ -43,6 +43,8 @@ public class User implements UserDetails {
 	private boolean enabled = true;
 	private Map<String,DatabaseInfo> databaseInfo = new HashMap<String,DatabaseInfo>();
 
+	private Map<String,String> vconnidNconuid = new HashMap<String, String>();
+
 
 	public String getViewid() {
 		return viewid;
@@ -189,6 +191,14 @@ public class User implements UserDetails {
 	public void setLoginRememberMe(boolean loginRememberMe) {
 		this.loginRememberMe = loginRememberMe;
 	}
-	
-	
+
+	public Map<String,String> getVconnidNconuid() {
+		return vconnidNconuid;
+	}
+
+	public void setVconnidNconuid(Map<String,String> vconnidNconuid) {
+		this.vconnidNconuid = vconnidNconuid;
+	}
+
+
 }

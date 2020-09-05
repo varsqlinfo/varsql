@@ -14,7 +14,7 @@ import com.varsql.core.common.util.StringUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
-import com.varsql.web.dto.db.DbGroupRequestDTO;
+import com.varsql.web.dto.db.DBGroupRequestDTO;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
@@ -83,7 +83,7 @@ public class DbGroupServiceImpl extends AbstractService{
 	 * @param dbGroupInfo
 	 * @return
 	 */
-	public ResponseResult saveDbGroupInfo(DbGroupRequestDTO dbGroupInfo) {
+	public ResponseResult saveDbGroupInfo(DBGroupRequestDTO dbGroupInfo) {
 		DBGroupEntity entity = dbGroupInfo.toEntity();
 		entity = dbGroupEntityRepository.save(entity);
 		

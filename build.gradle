@@ -183,7 +183,10 @@ subprojects {
 			,[ group: 'ch.qos.logback' , name: 'logback-classic' , version: '1.2.3']
 			,[ group: 'org.codehaus.janino' , name: 'janino' , version: '3.0.12']
 		)
-
+		
+		// xml to json
+		implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.2'
+		
 		implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
 		implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
 		implementation group: 'org.jdom' , name: 'jdom' , version: '1.1.3'

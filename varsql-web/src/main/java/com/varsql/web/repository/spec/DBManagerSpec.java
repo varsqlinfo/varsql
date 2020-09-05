@@ -19,18 +19,30 @@ import com.varsql.web.model.entity.db.DBManagerEntity;
  */
 public class DBManagerSpec extends DefaultSpec{
 
-	public static Specification<DBManagerEntity> vconnid(String vconnid) {
-    	return (root, query, criteriaBuilder) -> {
-    		Predicate predicate = criteriaBuilder.equal(root.get(DBManagerEntity.VCONNID), vconnid);
-    		return predicate;
-    	};
+	public static Specification<DBManagerEntity> findVconnidManagerCheck(String vconnid, String viewid) {
+    	return Specification.where(vconnid(vconnid)).and(viewid(viewid));
     }
-
-	public static Specification<DBManagerEntity> viewid(String viewid) {
-		return (root, query, criteriaBuilder) -> {
-			Predicate predicate = criteriaBuilder.equal(root.get(DBManagerEntity.VIEWID), viewid);
-			return predicate;
-		};
+	
+	public static Specification<DBManagerEntity> findAllVconnidManager(String vconnid) {
+    	return Specification.where(vconnid(vconnid));
+    }
+	
+	public static Specification<DBManagerEntity> findViewid(String viewid) {
+		return Specification.where(viewid(viewid));
 	}
+	
+	private static Specification<DBManagerEntity> viewid(String viewid) {
+		return (root, query, cb) -> {
+    		return cb.equal(root.get(DBManagerEntity.VIEWID), viewid);
+    	};
+	}
+	
+	private static Specification<DBManagerEntity> vconnid(String vconnid) {
+		return (root, query, cb) -> {
+    		return cb.equal(root.get(DBManagerEntity.VCONNID), vconnid);
+    	};
+	}
+	
+	
 
 }

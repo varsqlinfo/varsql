@@ -26,9 +26,8 @@ public final class DatabaseUtils {
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @return
-	 * @throws Exception
 	 */
-	public static void reloadUserDatabaseInfo() throws Exception{
+	public static void reloadUserDatabaseInfo(){
 		new DatabaseService().getUserDatabaseInfo();
 	}
 	

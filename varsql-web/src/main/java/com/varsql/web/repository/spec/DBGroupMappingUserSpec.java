@@ -1,10 +1,13 @@
 package com.varsql.web.repository.spec;
 
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
+import com.varsql.web.model.entity.user.UserEntity;
 
 /**
  * -----------------------------------------------------------------------------
@@ -22,8 +25,10 @@ public class DBGroupMappingUserSpec extends DefaultSpec{
 
 	// 그룹에 속한  사용자  정보 보기.
     public static Specification<DBGroupMappingUserEntity> dbGroupUserList(String groupId) {
-    	return Specification.where(joinVconnid()).and(groupId(groupId));
+    	return Specification.where(joinViewid()).and(groupId(groupId));
     }
+    
+    
     
 	private static Specification<DBGroupMappingUserEntity> groupId(String groupId) {
 		return (root, query, criteriaBuilder) -> {
@@ -32,9 +37,9 @@ public class DBGroupMappingUserSpec extends DefaultSpec{
 		};
 	}
 
-    private static Specification<DBGroupMappingUserEntity> joinVconnid() {
+    private static Specification<DBGroupMappingUserEntity> joinViewid() {
     	return (root, query, cb) -> {
-    		root.fetch(DBGroupMappingUserEntity.JOIN_CONNINFO);
+    		root.fetch(DBGroupMappingUserEntity.JOIN_USERINFO);
     		return cb.equal(cb.literal(1), 1);
     	};
     }

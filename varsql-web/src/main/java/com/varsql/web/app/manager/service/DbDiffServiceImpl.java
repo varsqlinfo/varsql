@@ -14,13 +14,11 @@ import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
-import com.varsql.web.common.dao.CommonDAO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
-import com.vartech.common.utils.VartechUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -39,9 +37,6 @@ import com.vartech.common.utils.VartechUtils;
 public class DbDiffServiceImpl{
 	
 	private static final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
-
-	@Autowired
-	CommonDAO commonDAO;
 
 	@Autowired
 	private DBConnectionEntityRepository  dbConnectionEntityRepository;

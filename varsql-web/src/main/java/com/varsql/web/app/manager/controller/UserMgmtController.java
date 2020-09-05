@@ -87,16 +87,10 @@ public class UserMgmtController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/blockYn", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult blockYn(@RequestParam(value = "userid", required = true )  String userid
+	public @ResponseBody ResponseResult blockYn(@RequestParam(value = "viewid", required = true )  String viewid
 			,@RequestParam(value = "blockYn", required = true )  String blockYn
 			) throws Exception {
-		DataCommonVO paramMap = new DataCommonVO();
-
-		VarsqlUtils.setDefaultParam(paramMap);
-		paramMap.put("userid", userid);
-		paramMap.put("blockYn", "N".equals(blockYn)?"N":"Y");
-
-		return userMgmtServiceImpl.updateBlockYn(paramMap);
+		return userMgmtServiceImpl.updateBlockYn(viewid, blockYn);
 	}
 
 	/**
@@ -124,7 +118,7 @@ public class UserMgmtController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/userDetail", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "VIEWID", required = true )  String viewid) throws Exception {
+	public @ResponseBody ResponseResult userDetail(@RequestParam(value = "viewid", required = true )  String viewid) throws Exception {
 		return userMgmtServiceImpl.userDetail(viewid);
 	}
 
@@ -142,12 +136,13 @@ public class UserMgmtController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbBlockInfo", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult removeAuth(@RequestParam(value = "VIEWID", required = true )  String viewid ,@RequestParam(value = "VCONNID", required = true )  String vconnid, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult removeAuth(@RequestParam(value = "viewid", required = true )  String viewid 
+			,@RequestParam(value = "vconnid", required = true )  String vconnid
+			,@RequestParam(value = "mode", required = true )  String mode
+			, HttpServletRequest req) throws Exception {
 		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
-		param.put("viewid", viewid);
-		param.put("vconnid", vconnid);
 
-		return userMgmtServiceImpl.removeAuth(param);
+		return userMgmtServiceImpl.removeAuth(viewid, vconnid, param);
 	}
 
 	/**
@@ -164,12 +159,9 @@ public class UserMgmtController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/removeDbGroup", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult removeDbGroup(@RequestParam(value = "VIEWID", required = true )  String viewid
-			,@RequestParam(value = "GROUP_ID", required = true )  String groupId, HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
-		param.put("viewid", viewid);
-		param.put("groupId", groupId);
+	public @ResponseBody ResponseResult removeDbGroup(@RequestParam(value = "viewid", required = true )  String viewid
+			,@RequestParam(value = "groupId", required = true )  String groupId, HttpServletRequest req) throws Exception {
 
-		return userMgmtServiceImpl.removeDbGroup(param);
+		return userMgmtServiceImpl.removeDbGroup(groupId, viewid);
 	}
 }

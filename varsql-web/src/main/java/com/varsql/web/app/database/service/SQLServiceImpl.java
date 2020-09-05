@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.varsql.core.common.code.VarsqlErrorCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
@@ -42,9 +43,8 @@ import com.varsql.core.sql.util.SqlParamUtils;
 import com.varsql.core.sql.util.SqlUtils;
 import com.varsql.web.constants.SqlDataConstants;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
-import com.varsql.web.dto.sql.SqlFileRequestDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
-import com.varsql.web.dto.sql.SqlLogInfo;
+import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.VarsqlResultConvertException;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
@@ -70,10 +70,10 @@ import com.vartech.common.utils.VartechUtils;
 @Service
 public class SQLServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
-	
+
 	@Autowired
 	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
-	
+
 	@Autowired
 	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
 
@@ -117,7 +117,7 @@ public class SQLServiceImpl{
 	 */
 	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 
-		Map sqlParamMap = VartechUtils.stringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
+		Map sqlParamMap = VartechUtils.jsonStringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
 
 		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlExecuteInfo.getConuid());
 
@@ -141,7 +141,7 @@ public class SQLServiceImpl{
 		long stddt = System.currentTimeMillis();
 		String[] mmddHH = DateUtils.dateformat("MM-dd-HH", stddt).split("-");
 
-		SqlLogInfo sqlLogInfo= new SqlLogInfo();
+		SqlLogInfoDTO sqlLogInfo= new SqlLogInfoDTO();
 		sqlLogInfo.setVconnid(sqlExecuteInfo.getVconnid());
 		sqlLogInfo.setViewid(sqlExecuteInfo.getViewid());
 		sqlLogInfo.setStartTime(stddt);
@@ -167,7 +167,7 @@ public class SQLServiceImpl{
 				tmpSqlSource.setResult(ssrv);
 				ssrv.setStarttime(System.currentTimeMillis());
 
-				getRequestSqlData(sqlExecuteInfo, conn, tmpSqlSource, dbinfo);
+				getRequestSqlData(sqlExecuteInfo, conn, tmpSqlSource, dbinfo, true);
 
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
@@ -192,7 +192,7 @@ public class SQLServiceImpl{
 			errorMsg = e.getMessage();
 
 			if(e instanceof VarsqlResultConvertException){
-				result.setResultCode(SqlDataConstants.ERROR.RESULT_CONVERT.intVal());
+				result.setResultCode(VarsqlErrorCode.SQL_RESULT_CONVERT.code());
 				ssrv= ((VarsqlResultConvertException)e).getSsrv();
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 			}else {
@@ -207,9 +207,13 @@ public class SQLServiceImpl{
 				tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 
 				if(e instanceof ConnectionFactoryException) {
-					result.setResultCode(SqlDataConstants.ERROR.CONNECTION.intVal());
+					if(((ConnectionFactoryException)e).getErrorCode() ==VarsqlErrorCode.DB_POOL_CLOSE.code()) {
+						result.setResultCode(VarsqlErrorCode.DB_POOL_CLOSE.code());
+					}else {
+						result.setResultCode(VarsqlErrorCode.DB_POOL_ERROR.code());
+					}
 				}else {
-					result.setResultCode(SqlDataConstants.ERROR.SQL.intVal());
+					result.setResultCode(VarsqlErrorCode.SQL.code());
 				}
 
 				result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
@@ -233,7 +237,7 @@ public class SQLServiceImpl{
 		}
 
 		long enddt = System.currentTimeMillis();
-		
+
 		try {
 			sqlHistoryEntityRepository.save(SqlHistoryEntity.builder()
 				.vconnid(sqlLogInfo.getVconnid())
@@ -282,19 +286,19 @@ public class SQLServiceImpl{
 			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 
 			List<ParameterMapping> paramList= tmpSqlSource.getParamList();
-			
+
 			if(paramList != null){
 				Map orginParamMap = tmpSqlSource.getOrginSqlParam();
-				
-				for(int i =0 ;i < paramList.size() ;i++){
-					ParameterMapping param = paramList.get(i);
+
+				for(int i =1 ;i <= paramList.size() ;i++){
+					ParameterMapping param = paramList.get(i-1);
 					Object objVal;
 					if(param.isFunction()) {
-						objVal = SqlParamUtils.functionValue(param, orginParamMap); 
+						objVal = SqlParamUtils.functionValue(param, orginParamMap);
 					}else {
 						objVal = orginParamMap.get(param.getProperty());
 					}
-					
+
 					if(param.getJdbcType()==null) {
 						pstmt.setObject(i, objVal);
 					}else {
@@ -342,7 +346,7 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected void getRequestSqlData(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, DatabaseInfo dbInfo) throws SQLException {
+	protected void getRequestSqlData(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, DatabaseInfo dbInfo ,boolean gridKeyAlias) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
@@ -355,7 +359,7 @@ public class SQLServiceImpl{
 			rs = stmt.getResultSet();
 
 			if(rs != null){
-				SqlResultUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow);
+				SqlResultUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow , gridKeyAlias);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
 			}else{
@@ -369,9 +373,9 @@ public class SQLServiceImpl{
 	    }catch(SQLException e){
 	    	ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 	    	ssrv.setResultType(ResultType.FAIL.name());
-	    	ssrv.setResultMessage(String.format("errorcode :%s ; sql state : %s ; message : %s",e.getErrorCode() ,e.getSQLState() , e.getMessage()));
-	    	logger.error(getClass().getName()+" sqlData", e);
-	    	throw new SQLException(e);
+	    	ssrv.setResultMessage(String.format("error code :%s ;\nsql state : %s ;\nmessage : %s",e.getErrorCode() ,e.getSQLState() , e.getMessage()));
+	    	logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
+	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
 	    	SqlUtils.close(stmt, rs);
 	    }
@@ -388,7 +392,7 @@ public class SQLServiceImpl{
 	 * @param tmpSqlSource
 	 * @param ssrv
 	 */
-	private void sqlLogInsert(SqlLogInfo logInfo) {
+	private void sqlLogInsert(SqlLogInfoDTO logInfo) {
 		try{
 			sqlStatisticsEntityRepository.save(SqlStatisticsEntity.builder()
 				.vconnid(logInfo.getVconnid())
@@ -433,7 +437,7 @@ public class SQLServiceImpl{
 
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
-			getRequestSqlData(sqlParamInfo,conn,sqlSource, dbinfo);
+			getRequestSqlData(sqlParamInfo,conn,sqlSource, dbinfo, false);
 			result = sqlSource.getResult();
 		} catch (SQLException e) {
 			logger.error(getClass().getName()+" dataExport ", e);
@@ -485,9 +489,9 @@ public class SQLServiceImpl{
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletResponse res) throws IOException {
 		String exportType = sqlGridDownloadInfo.getExportType();
 
-		List<GridColumnInfo> columnInfo = Arrays.asList(VartechUtils.stringToObject(sqlGridDownloadInfo.getHeaderInfo(), GridColumnInfo[].class , true));
+		List<GridColumnInfo> columnInfo = Arrays.asList(VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getHeaderInfo(), GridColumnInfo[].class , true));
 
-		//List<Map> downloadData = VartechUtils.stringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
+		//List<Map> downloadData = VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
 
 		logger.info("grid download : {} " , sqlGridDownloadInfo);
 
@@ -503,7 +507,7 @@ public class SQLServiceImpl{
 				DataExportUtil.jsonStringToCsv(jsonString, columnInfo, os);
 			}else if("json".equals(exportType)){
 				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toTextWrite(jsonString, os);
+				DataExportUtil.jsonStringToJson(jsonString, columnInfo, os);
 			}else if("xml".equals(exportType)){
 				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
 				DataExportUtil.jsonStringToXml(jsonString, columnInfo , os);

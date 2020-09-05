@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.web.app.database.dao.SQLDAO;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.sql.SqlFileRequestDTO;
 import com.varsql.web.dto.sql.SqlFileResponseDTO;
@@ -34,58 +33,160 @@ public class SQLFileServiceImpl{
 	private static final Logger logger = LoggerFactory.getLogger(SQLFileServiceImpl.class);
 
 	@Autowired
-	private SQLDAO sqlDAO;
-	
+	private SqlFileEntityRepository sqlFileEntityRepository;
+
 	@Autowired
-	private SqlFileEntityRepository sqlFileEntityRepository; 
-	
-	@Autowired
-	private SqlFileTabEntityRepository sqlFileTabEntityRepository; 
+	private SqlFileTabEntityRepository sqlFileTabEntityRepository;
 
 	/**
 	 * 쿼리 저장.
 	 * @param sqlFileRequestDTO
 	 */
-	public ResponseResult saveQuery(SqlFileRequestDTO sqlFileRequestDTO) {
+	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
+	public ResponseResult saveSql(SqlFileRequestDTO sqlFileRequestDTO) {
 		ResponseResult result = new ResponseResult();
-		
+
+		String mode = String.valueOf(sqlFileRequestDTO.getCustom().get("mode"));
+
 		SqlFileEntity sqlFileInfo = sqlFileRequestDTO.toEntity();
-		
-		if("".equals(sqlFileRequestDTO.getSqlId())){
+
+		if("newfile".equals(mode)){
+
 			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
-			
-			sqlFileEntityRepository.save(sqlFileInfo);
+
+			sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
 		}else{
-			String mode = String.valueOf(sqlFileRequestDTO.getCustom().get("mode"));
 
 			if("addTab".equals(mode)){
 				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
-				sqlDAO.insertSqlFileTabInfo(sqlFileRequestDTO); // 이전 활성 view mode  N으로 변경.
-				
-				sqlFileTabEntityRepository.save(SqlFileTabEntity.builder()
-					.vconnid(sqlFileRequestDTO.getVconnid())
-					.viewid(sqlFileRequestDTO.getViewid())
-					.sqlId(sqlFileRequestDTO.getSqlId())
-					.prevSqlId(sqlFileRequestDTO.getPrevSqlId())
-					.build()
-				);
+				SqlFileTabEntity sqlFileTabEntity= SqlFileTabEntity.builder().vconnid(sqlFileRequestDTO.getVconnid()).viewid(sqlFileRequestDTO.getViewid()).sqlId(sqlFileRequestDTO.getSqlId())
+					.prevSqlId(sqlFileRequestDTO.getPrevSqlId()).viewYn(true).build();
+
+				sqlFileTabEntity = sqlFileTabEntityRepository.save(sqlFileTabEntity);
+
 			}else if("delTab".equals(mode)){
-				sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				deleteSqlFileTabInfo(sqlFileRequestDTO);
 			}else if("viewTab".equals(mode)){
 				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
 				sqlFileTabEntityRepository.updateSqlFileTabEnable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 			}else{
-				sqlFileEntityRepository.save(sqlFileInfo);
+
+				sqlFileInfo = sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId())).orElse(null);
+
+				if(sqlFileRequestDTO.getSqlCont() !=null) sqlFileInfo.setSqlCont(sqlFileRequestDTO.getSqlCont());
+				if(sqlFileRequestDTO.getSqlParam() !=null) sqlFileInfo.setSqlParam(sqlFileRequestDTO.getSqlParam());
+				if(sqlFileRequestDTO.getSqlTitle() !=null) sqlFileInfo.setSqlTitle(sqlFileRequestDTO.getSqlTitle());
+
+				sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
 
 				if("query_del".equals(mode)){
-					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+					deleteSqlFileTabInfo(sqlFileRequestDTO);
 				}
 			}
 		}
 
+		if(sqlFileInfo != null) sqlFileRequestDTO.setSqlId(sqlFileInfo.getSqlId());
+
 		result.setItemOne(sqlFileRequestDTO);
 
 		return result;
+	}
+
+	/**
+	 *
+	 * @Method Name  : saveAllQuery
+	 * @Method 설명 : sql 파일 모두저장.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26.
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
+	public ResponseResult saveAllSql(SqlFileRequestDTO sqlParamInfo) {
+		Map<String,Object> customParam = (Map<String,Object>)sqlParamInfo.getCustom();
+
+		String sqlIdStr = String.valueOf(customParam.get("sqlIdArr"));
+
+		String[] sqlIdArr= sqlIdStr.split(";");
+
+		SqlFileEntity sfe;
+		List<SqlFileEntity> sqlFileInfos = new ArrayList<>();
+		for (int i = 0; i < sqlIdArr.length; i++) {
+			String sqlId = sqlIdArr[i];
+
+			sfe = sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlParamInfo.getVconnid(), sqlId)).orElse(null);
+
+			sfe.setSqlId(sqlId);
+			sfe.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
+			sfe.setSqlCont(String.valueOf(customParam.get(sqlId)));
+
+			sqlFileInfos.add(sfe);
+		}
+
+		sqlFileEntityRepository.saveAll(sqlFileInfos);
+
+		return VarsqlUtils.getResponseResultItemOne(1);
+	}
+
+	/**
+	 * 사용자 sql 목록 보기.
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult selectSqlFileList(SqlFileRequestDTO sqlParamInfo) {
+
+		List<SqlFileResponseDTO> files = new ArrayList<>();
+		sqlFileEntityRepository.findAll(SqlFileSpec.findVconnSqlFileName(sqlParamInfo.getVconnid(), String.valueOf(sqlParamInfo.getCustom().get("searchVal")))).forEach(item ->{
+			files.add(SqlFileResponseDTO.builder()
+				.sqlId(item.getSqlId())
+				.sqlTitle(item.getSqlTitle())
+				.build()
+			);
+		});
+
+		return VarsqlUtils.getResponseResultItemList(files);
+	}
+
+	/**
+	 * sql 저장 정보 삭제 .
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
+	public ResponseResult deleteSqlSaveInfo(SqlFileRequestDTO sqlFileRequestDTO) {
+		sqlFileEntityRepository.deleteSqlFileInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId());
+		deleteSqlFileTabInfo(sqlFileRequestDTO);
+
+		return VarsqlUtils.getResponseResultItemOne(1);
+	}
+
+	/**
+	 *
+	 * @Method Name  : selectSqlFileTabList
+	 * @Method 설명 : sql file tab list
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 7.
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult selectSqlFileTabList(SqlFileRequestDTO sqlParamInfo) {
+		return VarsqlUtils.getResponseResultItemList(sqlFileTabEntityRepository.findSqlFileTab(sqlParamInfo.getVconnid() , sqlParamInfo.getViewid()));
+	}
+
+	/**
+	 *
+	 * @Method Name  : sqlFileDetailInfo
+	 * @Method 설명 : sql file 상세보기.
+	 * @작성자   : ytkim
+	 * @작성일   : 2018. 11. 26.
+	 * @변경이력  :
+	 * @param sqlParamInfo
+	 * @return
+	 */
+	public ResponseResult sqlFileDetailInfo(SqlFileRequestDTO sqlParamInfo) {
+		return VarsqlUtils.getResponseResultItemOne(sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlParamInfo.getVconnid(), sqlParamInfo.getSqlId())).orElse(null));
 	}
 
 	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO) {
@@ -106,100 +207,5 @@ public class SQLFileServiceImpl{
 			logger.error("deleteSqlFileTabInfo" ,e);
 		}
 
-	}
-
-	/**
-	 *
-	 * @Method Name  : saveAllQuery
-	 * @Method 설명 : sql 파일 모두저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult saveAllQuery(SqlFileRequestDTO sqlParamInfo) {
-		Map<String,Object> customParam = (Map<String,Object>)sqlParamInfo.getCustom();
-
-		String sqlIdStr = String.valueOf(customParam.get("sqlIdArr"));
-
-		String[] sqlIdArr= sqlIdStr.split(";");
-		
-		List<SqlFileEntity> sqlFileInfos = new ArrayList<>();
-		for (int i = 0; i < sqlIdArr.length; i++) {
-			String sqlId = sqlIdArr[i];
-
-			sqlParamInfo.setSqlId(sqlId);
-			sqlParamInfo.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
-			sqlParamInfo.setSql(String.valueOf(customParam.get(sqlId)));
-			
-			sqlFileInfos.add(sqlParamInfo.toEntity());
-		}
-		
-		sqlFileEntityRepository.saveAll(sqlFileInfos);
-
-		return VarsqlUtils.getResponseResultItemOne(1);
-	}
-
-	/**
-	 * 사용자 sql 목록 보기.
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult selectSqlFileList(SqlFileRequestDTO sqlParamInfo) {
-		
-		List<SqlFileResponseDTO> files = new ArrayList<>();
-		sqlFileEntityRepository.findAll(SqlFileSpec.searchVconnSqlFile(sqlParamInfo.getVconnid(), String.valueOf(sqlParamInfo.getCustom().get("searchVal")))).forEach(item ->{
-			files.add(SqlFileResponseDTO.builder()
-				.sqlId(item.getSqlId())
-				.sqlTitle(item.getSqlTitle())
-				.build()
-			);
-		});
-		
-		return VarsqlUtils.getResponseResultItemList(files);
-	}
-
-	/**
-	 * sql 저장 정보 삭제 .
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
-	public ResponseResult deleteSqlSaveInfo(SqlFileRequestDTO sqlFileRequestDTO) {
-		sqlFileEntityRepository.deleteSqlFileInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId());
-		sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
-		
-		return VarsqlUtils.getResponseResultItemOne(1);
-	}
-
-	/**
-	 *
-	 * @Method Name  : selectSqlFileTabList
-	 * @Method 설명 : sql file tab list
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 7.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult selectSqlFileTabList(SqlFileRequestDTO sqlParamInfo) {
-		ResponseResult result = new ResponseResult();
-		result.setItemList(sqlDAO.selectSqlFileTabList(sqlParamInfo));
-		return result;
-	}
-
-	/**
-	 *
-	 * @Method Name  : sqlFileDetailInfo
-	 * @Method 설명 : sql file 상세보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 11. 26.
-	 * @변경이력  :
-	 * @param sqlParamInfo
-	 * @return
-	 */
-	public ResponseResult sqlFileDetailInfo(SqlFileRequestDTO sqlParamInfo) {
-		return VarsqlUtils.getResponseResultItemOne(sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlParamInfo.getVconnid(), sqlParamInfo.getSqlId())).orElse(null));
 	}
 }

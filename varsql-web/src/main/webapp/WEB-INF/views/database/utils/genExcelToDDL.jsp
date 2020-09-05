@@ -8,7 +8,7 @@
     <!-- /.col-lg-12 -->
 </div>
 <div class="row display-off page-content" id="varsqlVueArea">
-	<div class="col-xs-3 h100">
+	<div class="col-xs-4 h100">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="field-group" style="height: 42px;">
@@ -49,7 +49,7 @@
 		</div>
 		<!-- /.panel -->
 	</div>
-	<div class="col-xs-4 h100" >
+	<div class="col-xs-3 h100" >
 		<div class="panel panel-default detail_area_wrapper" >
 			<div class="panel-heading">DDL</div>
 			<!-- /.panel-heading -->
@@ -94,15 +94,22 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			function addColumnItem (sItem, colName){
-				var typeInfo = VARSQLCont.dataType.getDataTypeInfo(sItem.wordType);
-				var typeAndLength = sItem.wordType;
-	        	if(typeInfo.isDate){
+				var typeAndLength ='';
+				var wordType = sItem.wordType;
+				if(wordType){
+					var typeInfo = VARSQLCont.dataType.getDataTypeInfo(wordType);
+					var typeAndLength = wordType;
+		        	if(typeInfo.isDate){
 
-	        	}else{
-					if(sItem.wordLength){
-						typeAndLength = typeAndLength + '('+sItem.wordLength+')';
-					}
-	        	}
+		        	}else{
+						if(sItem.wordLength){
+							typeAndLength = typeAndLength + '('+sItem.wordLength+')';
+						}
+		        	}
+				}
+
+				colName = colName.split(' ').join('_');
+
 	        	_this.tableGridObj.addRow({
 	        		name : colName
 	        		,typeAndLength : typeAndLength
@@ -114,11 +121,12 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			_this.glossaryGridObj = $.pubGrid('#glossaryInfo', {
-				asideOptions :{lineNumber : {enabled : true	,width : 30}}
+				asideOptions :{lineNumber : {enabled : false	,width : 30}}
 				,tColItem : [
 					{ label: 'WORD', key: 'word',width:80 },
 					{ label: 'EN', key: 'wordEn' },
 					{ label: 'ABBR', key: 'wordAbbr', width:45},
+					{ label: 'TYPE', key: 'wordType',width:45},
 					{ label: 'DESC', key: 'wordDesc',width:45},
 				]
 				,tbodyItem :[]

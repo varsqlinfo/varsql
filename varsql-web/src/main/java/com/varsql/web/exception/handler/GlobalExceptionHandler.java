@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -76,7 +77,7 @@ public class GlobalExceptionHandler{
 		result.setResultCode(ResultConst.CODE.ERROR.toInt());
 		result.setMessage(ex.getMessage());
 
-		exceptionRequestHandle(request, response ,result,"connError");
+		exceptionRequestHandle(ex, request, response ,result,"connError");
 	}
 
 
@@ -104,7 +105,7 @@ public class GlobalExceptionHandler{
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	/**
@@ -131,7 +132,7 @@ public class GlobalExceptionHandler{
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	/**
@@ -146,7 +147,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=ConnectionException.class)
-	public void connectionExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void connectionExceptionHandler(ConnectionException ex,HttpServletRequest request ,  HttpServletResponse response){
 
 		logger.error("connectionExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("connectionExceptionHandler :{} ", ex.getMessage() , ex);
@@ -154,7 +155,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("connectionException",ex);
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(request, response ,result,"connError");
+		exceptionRequestHandle(ex, request, response ,result,"connError");
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=ConnectionFactoryException.class)
-	public void connectionFactoryExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void connectionFactoryExceptionHandler(ConnectionFactoryException ex,HttpServletRequest request ,  HttpServletResponse response){
 
 		logger.error("connectionFactoryExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("connectionFactoryExceptionHandler :{} ", ex.getMessage() , ex);
@@ -177,7 +178,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("connectionFactoryException",ex);
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(request, response ,result,"connCreateError");
+		exceptionRequestHandle(ex, request, response ,result,"connCreateError");
 	}
 
 	/**
@@ -192,13 +193,13 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=DatabaseInvalidException.class)
-	public void databaseInvalidExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void databaseInvalidExceptionHandler(DatabaseInvalidException ex,HttpServletRequest request ,  HttpServletResponse response){
 
 		logger.error("databaseInvalidExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("databaseInvalidExceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(request, response ,result,"invalidDatabasePage");
+		exceptionRequestHandle(ex, request, response ,result,"invalidDatabasePage");
 	}
 
 	/**
@@ -221,7 +222,7 @@ public class GlobalExceptionHandler{
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	/**
@@ -236,13 +237,13 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value= {ClassNotFoundException.class, NoClassDefFoundError.class})
-	public void classExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
+	public void classExceptionHandler(Exception ex, HttpServletRequest request , HttpServletResponse response){
 
 		logger.error("classExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("classExceptionHandler : {} ", ex.getMessage() ,ex);
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	@ExceptionHandler(value=Exception.class)
@@ -263,7 +264,7 @@ public class GlobalExceptionHandler{
 			}
 		}
 
-		exceptionRequestHandle(request, response ,result);
+		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	/**
@@ -289,14 +290,14 @@ public class GlobalExceptionHandler{
     }
 
 	@ExceptionHandler(NoHandlerFoundException.class)
-    public void handle404(Exception ex,HttpServletRequest request ,  HttpServletResponse response) {
+    public void handle404(NoHandlerFoundException ex,HttpServletRequest request ,  HttpServletResponse response) {
 
 		logger.error("handle404 url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("handle404 :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
-		exceptionRequestHandle(request, response ,result , "error404");
+		exceptionRequestHandle(ex,request, response ,result , "error404");
     }
 
     private HttpStatus getStatus(HttpServletRequest request) {
@@ -313,23 +314,27 @@ public class GlobalExceptionHandler{
 		logger.error("missingServletRequestParameterExceptionHandler:{}",ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(request, response ,result, "error403");
+		exceptionRequestHandle(ex,request, response ,result, "error403");
 	}
 
-	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result ) {
-		exceptionRequestHandle(request ,response , result  , "error500");
+	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result) {
+		exceptionRequestHandle(ex,request ,response , result  , "error500");
 	}
 
-	private void exceptionRequestHandle(HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
+	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
 		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType("application/json;charset=UTF-8");
 			response.setStatus(HttpStatus.OK.value());
 			result.setResultCode(ResultConst.CODE.ERROR.toInt());
+			
+			if(!SecurityUtil.isAdmin()) {
+				result.setMessage(result.getResultCode() + " :: " + ex.getClass());
+			}
 
 			Writer writer=null;
 			try {
 				writer = response.getWriter();
-				writer.write(VartechUtils.objectToString(result));
+				writer.write(VartechUtils.objectToJsonString(result));
 			} catch (IOException e) {
 				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
 			}finally{

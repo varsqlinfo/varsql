@@ -10,6 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.code.VarsqlErrorCode;
 import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
@@ -37,6 +38,8 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
 
+	private ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
+
 	private ConnectionFactory(){}
 
 	@Override
@@ -53,6 +56,9 @@ public final class ConnectionFactory implements ConnectionContext{
 		ConnectionInfo connInfo  = getConnectionInfo(connid);
 
 		if(connInfo != null){
+			if(connectionShutdownInfo.containsKey(connid)) {
+				throw new ConnectionFactoryException(VarsqlErrorCode.DB_POOL_CLOSE.code(), "");
+			}
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}
 
@@ -187,7 +193,6 @@ public final class ConnectionFactory implements ConnectionContext{
 			}
 
 			ConnectionFactory.getInstance().getPoolBean().createDataSource(connInfo);
-
 			connectionConfig.put(connid, connInfo);
 
 			SQLManager.getInstance().setSQLMapper(connInfo, this);
@@ -215,6 +220,8 @@ public final class ConnectionFactory implements ConnectionContext{
 	 */
 	public synchronized void resetConnectionPool(String connid) throws SQLException, ConnectionFactoryException  {
 		createConnectionInfo(connid);
+
+		if(connectionShutdownInfo.containsKey(connid)) connectionShutdownInfo.remove(connid);
 	}
 
 	/**
@@ -230,6 +237,8 @@ public final class ConnectionFactory implements ConnectionContext{
 		if(connectionConfig.containsKey(connid)){
 			ConnectionFactory.getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
 		}
+
+		connectionShutdownInfo.put(connid, true);
 	}
 
 	private static class FactoryHolder{

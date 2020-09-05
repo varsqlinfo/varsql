@@ -1,5 +1,10 @@
 package com.varsql.web.repository.spec;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.criteria.Predicate;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.common.util.SecurityUtil;
@@ -27,6 +32,35 @@ public class UserDBPreferencesSpec extends DefaultSpec{
 				, cb.equal(root.get(UserDBPreferencesEntity.VIEWID), SecurityUtil.userViewId())
 				, cb.equal(root.get(UserDBPreferencesEntity.PREF_KEY), preferencesInfo.getPrefKey())
 			);
+		};
+	}
+
+	public static Specification<UserDBPreferencesEntity> findPrefVal(PreferencesRequestDTO[] preferencesInfos) {
+		return Specification.where(viewId(preferencesInfos)).or(prefKeyAndGubun(preferencesInfos));
+	}	
+	
+	private static Specification<UserDBPreferencesEntity> viewId(PreferencesRequestDTO[] preferencesInfos) {
+		return (root, query, cb) -> {
+			return cb.equal(root.get(UserDBPreferencesEntity.VIEWID), SecurityUtil.userViewId());
+		};
+	}
+	
+	private static Specification<UserDBPreferencesEntity> prefKeyAndGubun(PreferencesRequestDTO[] preferencesInfos) {
+		return (root, query, cb) -> {
+			
+			
+			List<Predicate> predicates = new ArrayList<>();
+			
+			for (int i = 0; i < preferencesInfos.length; i++) {
+				PreferencesRequestDTO  preferencesInfo = preferencesInfos[i];
+				predicates.add(cb.and(
+					cb.equal(root.get(UserDBPreferencesEntity.VCONNID), preferencesInfo.getVconnid())
+					, cb.equal(root.get(UserDBPreferencesEntity.PREF_KEY), preferencesInfo.getPrefKey())
+				));
+			}
+			
+			return cb.or(predicates.toArray(new Predicate[0]));
+			
 		};
 	}
     

@@ -18,7 +18,7 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * 
+ *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: DbDiffController.java
@@ -37,16 +37,16 @@ public class DbDiffController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(DbDiffController.class);
-	
+
 	@Autowired
-	DbDiffServiceImpl dbDiffServiceImpl;
-	
+	private DbDiffServiceImpl dbDiffServiceImpl;
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : objectType
 	 * @Method 설명 : db ojecet type list
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 12. 18. 
+	 * @작성일   : 2018. 12. 18.
 	 * @변경이력  :
 	 * @param vconnid
 	 * @param req
@@ -55,15 +55,15 @@ public class DbDiffController extends AbstractController {
 	 */
 	@RequestMapping({"/objectType"})
 	public @ResponseBody ResponseResult objectType(@RequestParam(value = "vconnid", required = true) String vconnid ,HttpServletRequest req) throws Exception {
-		
+
 		return dbDiffServiceImpl.objectTypeList(vconnid);
 	}
-	
+
 	@RequestMapping({"/objectList"})
-	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid 
+	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid
 			,@RequestParam(value = "objectType" ,required = true) String objectType
 			,@RequestParam(value = "schema" ,required = true) String schema) throws Exception {
-		
+
 		return dbDiffServiceImpl.objectList(vconnid, schema, objectType);
 	}
 }

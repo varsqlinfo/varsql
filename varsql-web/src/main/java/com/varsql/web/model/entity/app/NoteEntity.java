@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.entity.user.RegInfoEntity;
@@ -63,6 +64,7 @@ public class NoteEntity extends AbstractRegAuditorModel{
 	@JoinColumn(name = "REG_ID" ,nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy="noteInfo")
 	private Set<NoteMappingUserEntity> recvList; 
 

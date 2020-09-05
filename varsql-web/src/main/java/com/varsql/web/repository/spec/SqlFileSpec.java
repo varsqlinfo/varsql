@@ -3,8 +3,6 @@ package com.varsql.web.repository.spec;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.model.EntityFieldConstants;
-import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
 
 /**
@@ -20,7 +18,11 @@ import com.varsql.web.model.entity.sql.SqlFileEntity;
 *-----------------------------------------------------------------------------
  */
 public class SqlFileSpec extends DefaultSpec{
-	public static Specification<SqlFileEntity> searchVconnSqlFile(String vconnid , String keyword) {
+	public static Specification<SqlFileEntity> findVconnSqlFileName(String vconnid , String keyword) {
+		return Specification.where(viewid()).and(vconnid(vconnid)).and(likeTitle(keyword));
+	}
+	
+	public static Specification<SqlFileEntity> findVconnSqlFileNameOrCont(String vconnid , String keyword) {
 		return Specification.where(viewid()).and(vconnid(vconnid)).and(likeTitleOrCont(keyword));
 	}
 	
@@ -28,15 +30,23 @@ public class SqlFileSpec extends DefaultSpec{
 		return Specification.where(viewid()).and(vconnid(vconnid)).and(sqlId(sqlId));
 	}
 	
-    public static Specification<SqlFileEntity> searchSqlFile(String keyword) {
+    public static Specification<SqlFileEntity> findSqlFileNameOrCont(String keyword) {
         return Specification.where(viewid()).and(likeTitleOrCont(keyword));
     }
     
     public static Specification<SqlFileEntity> findSqlFile(String sqlId) {
         return Specification.where(viewid()).and(sqlId(sqlId));
     }
-
-	 // sql file queryTitle or queryCont search
+    
+    private static Specification<SqlFileEntity> likeTitle(String keyword) {
+    	return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.or(
+	    		criteriaBuilder.like(root.get(SqlFileEntity.SQL_TITLE),contains(keyword))
+	    	);
+        };
+	}
+    
+	// sql file queryTitle or queryCont search
     private static Specification<SqlFileEntity> likeTitleOrCont(String keyword) {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.or(

@@ -21,14 +21,12 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
-import com.varsql.web.dto.user.UserReqeustDTO;
+import com.varsql.web.dto.user.UserModReqeustDTO;
 import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.ValidateUtils;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
@@ -56,7 +54,7 @@ public class UserPreferencesController extends AbstractController{
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesController.class);
 
 	@Autowired
-	UserPreferencesServiceImpl userPreferencesServiceImpl;
+	private UserPreferencesServiceImpl userPreferencesServiceImpl;
 
 	/**
 	 *
@@ -101,7 +99,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/userInfoSave"})
-	public @ResponseBody ResponseResult userInfoSave(@Valid UserReqeustDTO userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public @ResponseBody ResponseResult userInfoSave(@Valid UserModReqeustDTO userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
@@ -186,7 +184,7 @@ public class UserPreferencesController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
 
-		return getModelAndView("/memoMgmt", VIEW_PAGE.USER_PREFERENCES, model);
+		return getModelAndView("/noteMgmt", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 
 	/**
@@ -211,7 +209,7 @@ public class UserPreferencesController extends AbstractController{
 	}
 
 	/**
-	 * @Method Name  : preferenceslistMsg
+	 * @Method Name  : listMsg
 	 * @Method 설명 : 메시지 목록보기
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29.
@@ -223,7 +221,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @throws Exception
 	 */
 	@RequestMapping({"/listMsg"})
-	public @ResponseBody ResponseResult preferenceslistMsg(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult listMsg(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		return userPreferencesServiceImpl.selectUserMsg(messageType, searchParameter);
@@ -249,7 +247,7 @@ public class UserPreferencesController extends AbstractController{
 	@RequestMapping({"/deleteMsg"})
 	public @ResponseBody ResponseResult preferencesdeleteMsg(@RequestParam(value = "messageType" , required = true)  String messageType
 			,@RequestParam(value = "selectItem" , required = true)  String selectItem) throws Exception {
-		
+
 		return userPreferencesServiceImpl.deleteUserMsg( messageType,  selectItem);
 	}
 

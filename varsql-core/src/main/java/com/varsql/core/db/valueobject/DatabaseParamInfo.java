@@ -76,6 +76,14 @@ public class DatabaseParamInfo{
 		setSchema(this.schema);
 	}
 
+	protected String getVconnid(String conuid) {
+		User user = SecurityUtil.loginInfo();
+		if(user.getDatabaseInfo().containsKey(conuid)) {
+			return user.getDatabaseInfo().get(conuid).getVconnid();
+		}
+		return null;
+	}
+
 	public String getVconnid() {
 		return vconnid;
 	}

@@ -25,12 +25,13 @@ import lombok.Setter;
 
 *-----------------------------------------------------------------------------
  */
-@SuppressWarnings("serial")
 @Setter
 @Getter
 @MappedSuperclass
 @EntityListeners(value = { AuditingEntityListener.class })
 public abstract class AbstractRegAuditorModel implements Serializable{
+
+	private static final long serialVersionUID = 7893362241769774670L;
 
 	@CreatedBy
     @Column(name="REG_ID", nullable = false, updatable = false)

@@ -60,8 +60,8 @@ public class UserMainServiceImpl extends AbstractService{
 	
 	/**
 	 * 
-	 * @Method Name  : insertSendMemoInfo
-	 * @Method 설명 : sql 보내기
+	 * @Method Name  : insertSendNoteInfo
+	 * @Method 설명 : 쪽지 정보 저장
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29. 
 	 * @변경이력  :
@@ -69,22 +69,21 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
-	public ResponseResult insertSendMemoInfo(NoteRequestDTO noteInfo, boolean resendFlag) {
+	public ResponseResult insertSendNoteInfo(NoteRequestDTO noteInfo, boolean resendFlag) {
 		
-		logger.debug("insertSendMemoInfo resendFlag : {} , noteInfo : {} ", resendFlag, noteInfo );
+		logger.debug("insertSendNoteInfo resendFlag : {} , noteInfo : {} ", resendFlag, noteInfo );
 		
 		if(resendFlag) {
+			NoteEntity orginNoteInfo= noteEntityRepository.findByNoteId(noteInfo.getNoteId());
 			noteInfo.setNoteCont(noteInfo.getReNoteCont());
 			noteInfo.setNoteTitle("[re]" + noteInfo.getNoteTitle());
 			noteInfo.setParentNoteId(noteInfo.getNoteId());
+			noteInfo.setRecvId(orginNoteInfo.getRegInfo().getViewid());
 		}
 		
 		NoteEntity saveInfo = noteInfo.toEntity();
+		saveInfo.setNoteId(resendFlag ? null : saveInfo.getNoteId());
 		saveInfo = noteEntityRepository.save(saveInfo);
-		
-		if(resendFlag) {
-			noteInfo.setRecvId(saveInfo.getRegId());
-		}
 		
 		String [] recvArr = noteInfo.getRecvId().split(";;");
 
@@ -107,7 +106,7 @@ public class UserMainServiceImpl extends AbstractService{
 	/**
 	 * 
 	 * @Method Name  : selectMessageInfo
-	 * @Method 설명 : 메시지 목록. 
+	 * @Method 설명 : 쪽지 목록. 
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 8. 16. 
 	 * @변경이력  :
@@ -120,8 +119,8 @@ public class UserMainServiceImpl extends AbstractService{
 	
 	/**
 	 * 
-	 * @Method Name  : updateMemoViewDate
-	 * @Method 설명 : 메모 확인일  업데이트.
+	 * @Method Name  : updateNoteViewDate
+	 * @Method 설명 : 쪽지 확인일  업데이트.
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29. 
 	 * @변경이력  :
@@ -130,11 +129,12 @@ public class UserMainServiceImpl extends AbstractService{
 	 */
 	public ResponseResult updateNoteViewDate(String noteId) {
 		
-		NoteMappingUserEntity noteMappingInfo = noteMappingUserEntityRepository.findByNoteId(noteId);
+		NoteMappingUserEntity noteMappingInfo = noteMappingUserEntityRepository.findByNoteIdAndRecvId(noteId, SecurityUtil.userViewId());
 		
-		noteMappingInfo.setViewDt(DefaultValueUtils.currentTimestamp());
-		
-		noteMappingUserEntityRepository.save(noteMappingInfo);
+		if(noteMappingInfo != null) {
+			noteMappingInfo.setViewDt(DefaultValueUtils.currentTimestamp());
+			noteMappingInfo = noteMappingUserEntityRepository.save(noteMappingInfo);
+		}
 		
 		return VarsqlUtils.getResponseResultItemOne(1); 
 	}

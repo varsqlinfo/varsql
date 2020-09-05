@@ -16,8 +16,8 @@ public interface RememberMeEntityRepository extends JpaRepository<RememberMeEnti
 	RememberMeEntity findBySeries(String seriesId);
 
 	void deleteByUsername(String username);
-	
+
 	@Modifying
-	@Query(value = "update RememberMeEntity as ste set ste.tokenValue = :tokenValue, ste.lastUsed = :lastUsed where ste.series= :series")
+	@Query(value = "update RememberMeEntity as ste set ste.token = :tokenValue, ste.lastUsed = :lastUsed where ste.series= :series")
 	void updateToken(@Param("series")String series, @Param("tokenValue") String tokenValue, @Param("lastUsed") Date lastUsed);
 }

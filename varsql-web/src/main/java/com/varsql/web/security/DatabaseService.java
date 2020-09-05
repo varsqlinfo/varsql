@@ -12,7 +12,7 @@ import com.varsql.web.util.BeanUtils;
  */
 public class DatabaseService  {
 	
-	public void getUserDatabaseInfo() throws Exception {
+	public void getUserDatabaseInfo() {
 		((AuthDAO)BeanUtils.getBean("authDao")).getUserDataBaseInfo();  
 	}
 }

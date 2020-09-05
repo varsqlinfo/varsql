@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.user.service.UserMainServiceImpl;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
@@ -36,6 +37,7 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
+import com.vartech.common.utils.VartechUtils;
 
 
 
@@ -62,7 +64,10 @@ public class UserMainController extends AbstractController{
 	private static final Logger logger = LoggerFactory.getLogger(UserMainController.class);
 
 	@Autowired
-	UserMainServiceImpl userMainServiceImpl;
+	private UserMainServiceImpl userMainServiceImpl;
+
+	@Autowired
+	private DatabaseServiceImpl databaseServiceImpl;
 
 	@RequestMapping({"","/","/main"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
@@ -70,6 +75,9 @@ public class UserMainController extends AbstractController{
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		DatabaseUtils.reloadUserDatabaseInfo();
 		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+
+		// tab 정보
+		model.addAttribute("conTabInfo", VartechUtils.objectToJsonString(databaseServiceImpl.findTabInfo()));
 
 		return getModelAndView("/userMain", VIEW_PAGE.USER, model);
 	}
@@ -96,23 +104,23 @@ public class UserMainController extends AbstractController{
 
 	/**
 	 *
-	 * @Method Name  : sendMemo
-	 * @Method 설명 : 메시지 보내기
+	 * @Method Name  : sendNote
+	 * @Method 설명 : 쪽지 보내기
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 5. 2.
 	 * @변경이력  :
-	 * @param memoInfo
+	 * @param noteInfo
 	 * @param result
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sendMemo", "/resendMemo"})
-	public @ResponseBody ResponseResult sendMemo(@Valid NoteRequestDTO memoInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	@RequestMapping({"/sendNote", "/resendNote"})
+	public @ResponseBody ResponseResult sendNote(@Valid NoteRequestDTO noteInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController sendMemo check {}",errorVal.toString());
+				logger.warn("###  UserMainController sendNote check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
 			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
@@ -120,7 +128,7 @@ public class UserMainController extends AbstractController{
 		}else{
 
 			String requestURI = req.getRequestURI();
-			resultObject = userMainServiceImpl.insertSendMemoInfo(memoInfo, requestURI.indexOf("resendMemo") > -1 ? true : false);
+			resultObject = userMainServiceImpl.insertSendNoteInfo(noteInfo, requestURI.indexOf("resendNote") > -1 ? true : false);
 		}
 
 		return  resultObject;

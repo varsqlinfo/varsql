@@ -21,11 +21,11 @@ import lombok.NoArgsConstructor;
 @Table(name = DBBlockUserEntity._TB_NAME)
 public class DBBlockUserEntity extends AbstractRegAuditorModel{
 	public final static String _TB_NAME="VTDATABASE_BLOCK_USER";
-	
+
 	@Id
 	@Column(name ="VCONNID")
 	private String vconnid;
-	
+
 	@Id
 	@Column(name ="VIEWID")
 	private String viewid;
@@ -35,7 +35,7 @@ public class DBBlockUserEntity extends AbstractRegAuditorModel{
 		this.vconnid = vconnid;
 		this.viewid = viewid;
 	}
-	
+
 	public final static String VCONNID="vconnid";
 
 	public final static String VIEWID="viewid";

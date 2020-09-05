@@ -10,12 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.varsql.core.common.code.VarsqlErrorCode;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
-import com.varsql.web.constants.SqlDataConstants;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.exception.VarsqlResultConvertException;
 
@@ -48,6 +48,9 @@ public final class SqlResultUtils {
 	 * @throws SQLException
 	 */
 	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, int maxRow) throws SQLException{
+		return resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, true);
+	}
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, int maxRow, boolean gridKeyAlias) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -90,7 +93,14 @@ public final class SqlResultUtils {
 
 			columnInfo = new GridColumnInfo();
 			columnInfo.setLabel(columnName);
-			columnInfo.setKey(columnName);
+			if(gridKeyAlias) {
+				columnInfo.setKey(columnGridKeyArr[i]);
+
+			}else {
+				columnInfo.setKey(columnName);
+				columnGridKeyArr[i]= columnName;
+			}
+
 			columnInfo.setDbType(columnTypeName);
 
 			if(count > 10) columnInfo.setWidth(70);
@@ -160,7 +170,7 @@ public final class SqlResultUtils {
 			ssrv.setData(rows);
 			ssrv.setResultCnt(totalCnt);
 			ssrv.setResultMessage(e.getMessage());
-			throw new VarsqlResultConvertException(SqlDataConstants.ERROR.RESULT_CONVERT.intVal(), ssrv , e);
+			throw new VarsqlResultConvertException(VarsqlErrorCode.SQL_RESULT_CONVERT.code(), ssrv, e);
 		}
 		ssrv.setData(rows);
 		ssrv.setResultCnt(totalCnt);

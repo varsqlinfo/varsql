@@ -38,7 +38,7 @@ import lombok.Setter;
 @Table(name = UserEntity._TB_NAME)
 public class UserEntity extends AabstractAuditorModel{
 	private static final long serialVersionUID = 1L;
-	
+
 	public final static String _TB_NAME="VTUSER";
 
 	@Id
@@ -55,7 +55,7 @@ public class UserEntity extends AabstractAuditorModel{
 
 	@Column(name ="UID")
 	private String uid;
-	
+
 	@JsonIgnore
 	@Convert(converter = PasswordEncodeConverter.class)
 	@Column(name ="UPW")
@@ -85,7 +85,7 @@ public class UserEntity extends AabstractAuditorModel{
 	@Column(name ="ACCEPT_YN")
 	@Convert(converter = BooleanToYnConverter.class)
 	private boolean acceptYn;
-	
+
 	@Column(name ="BLOCK_YN")
 	@Convert(converter = BooleanToYnConverter.class)
 	private boolean blockYn;

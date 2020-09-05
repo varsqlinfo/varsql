@@ -1,5 +1,7 @@
 package com.varsql.web.model.entity.user;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,8 +23,10 @@ import lombok.Setter;
 @Immutable
 @Entity
 @Table(name = RegInfoEntity._TB_NAME)
-public class RegInfoEntity{
+public class RegInfoEntity implements Serializable{
 	
+	private static final long serialVersionUID = 9083643697661453334L;
+
 	public final static String _TB_NAME= UserEntity._TB_NAME;
 
 	@Id

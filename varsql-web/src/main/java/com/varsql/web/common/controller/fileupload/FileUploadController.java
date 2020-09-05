@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.varsql.core.configuration.Configuration;
-import com.varsql.web.common.beans.FileInfo;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.dto.file.FileInfo;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;

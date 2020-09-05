@@ -1,7 +1,6 @@
 package com.varsql.web.model.id;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 
@@ -25,6 +24,6 @@ public class SqlFileTabID implements Serializable {
 	private String viewid;
 	
 	@Column(name ="SQL_ID")
-	private LocalDateTime sqlId;
+	private String sqlId;
 
 }

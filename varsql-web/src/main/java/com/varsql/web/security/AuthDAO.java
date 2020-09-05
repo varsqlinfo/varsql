@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public final class AuthDAO {
 	 * @throws UsernameNotFoundException
 	 */
 	public User loadUserByUsername(final String userInfoJson) throws UsernameNotFoundException {
-		ParamMap userInfo = VartechUtils.stringToObject(userInfoJson);
+		ParamMap userInfo = VartechUtils.jsonStringToObject(userInfoJson);
 		String username = userInfo.getString("username");
 		String password = userInfo.getString("password");
 
@@ -238,6 +239,8 @@ public final class AuthDAO {
 			String viewid = user.getViewid();
 			Map<String, DatabaseInfo> beforeDatabaseInfo = user.getDatabaseInfo();
 
+			Map<String, String> vconnidNconuid = new HashMap<>();
+
 			List<String> newVconnidList = new ArrayList<String>();
 			boolean flag = Configuration.getInstance().useConnUID();
 			while(rs.next()){
@@ -250,6 +253,8 @@ public final class AuthDAO {
 				}else{
 					uuid = vconnid;
 				}
+
+				vconnidNconuid.put(vconnid, uuid);
 
 				userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
 						, uuid
@@ -265,6 +270,7 @@ public final class AuthDAO {
 				);
 			}
 
+			/*
 			List<String> beforeVconnidList = new ArrayList<String>();
 
 			if(beforeDatabaseInfo != null) {
@@ -272,8 +278,6 @@ public final class AuthDAO {
 					beforeVconnidList.add(databaseInfo.getValue().getVconnid());
 				}
 			}
-
-			/*
 	        Collections.sort(beforeVconnidList);
 	        Collections.sort(newVconnidList);
 
@@ -283,6 +287,7 @@ public final class AuthDAO {
 	        };
 	        */
 			user.setDatabaseInfo(userDatabaseInfo);
+			user.setVconnidNconuid(vconnidNconuid);
 		}
 		return userDatabaseInfo;
 	}

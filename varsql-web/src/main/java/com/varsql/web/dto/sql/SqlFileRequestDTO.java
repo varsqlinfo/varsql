@@ -25,16 +25,16 @@ import lombok.Setter;
 @Setter
 public class SqlFileRequestDTO extends DatabaseParamInfo{
 
-	// sql_id
+	// sql id
 	private String sqlId;
-	
+
 	private String prevSqlId;
 
-	// sql_id
+	// sql title
 	private String sqlTitle;
 
-	// sql
-	private String sql;
+	// sql content
+	private String sqlCont;
 
 	// limit count
 	private int limit;
@@ -51,14 +51,14 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 	}
 
 	public int getLimit() {
-		return limit > -1 ? this.limit : SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT; 
+		return limit > -1 ? this.limit : SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT;
 	}
-	
+
 	public SqlFileEntity toEntity() {
 		return SqlFileEntity.builder()
 			.sqlId(sqlId)
-			.sqlTitle(sqlTitle)
-			.sqlCont(sql)
+			.sqlTitle(sqlTitle ==null ? "":sqlTitle)
+			.sqlCont(sqlCont)
 			.sqlParam(sqlParam)
 			.vconnid(getVconnid())
 			.viewid(getViewid())

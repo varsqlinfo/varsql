@@ -30,10 +30,8 @@ public class VarsqlAuthenticationProvider implements AuthenticationProvider {
 		userInfo.put("username", username);
 		userInfo.put("password", password);
 		
-		//User user = userService.loadUserByUsername(VartechUtils.objectToString(userInfo));
 		User user = userService.loadUserByUsername(username , password);
 		
-
 		if (user == null) {
 			throw new BadCredentialsException("Username not match.");
 		}

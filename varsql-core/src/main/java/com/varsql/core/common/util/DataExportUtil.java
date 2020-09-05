@@ -366,7 +366,7 @@ public class DataExportUtil {
 	        		String fieldName = parser.getCurrentName();
 	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
 	        	}
-	        	out.write((firstFlag ?"":",")+ VartechUtils.objectToString(rowInfo));
+	        	out.write((firstFlag ?"":",")+ VartechUtils.objectToJsonString(rowInfo));
 	        	
 	        	if(firstFlag) firstFlag = false; 
 	        }

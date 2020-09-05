@@ -56,7 +56,7 @@ import com.varsql.web.constants.ViewPageConstants;
 @Import(value = {
        VarsqlMainConfigurer.class
 })
-@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)  // "/error" request mapping 를 spring 기본을 사용하지 않기 위해 설정. 
+@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)  // "/error" request mapping 를 spring 기본을 사용하지 않기 위해 설정.
 public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 
     private static final int CACHE_PERIOD = 31556926; // one year
@@ -64,7 +64,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     @PostConstruct
     public void init() {
     }
-    
+
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();

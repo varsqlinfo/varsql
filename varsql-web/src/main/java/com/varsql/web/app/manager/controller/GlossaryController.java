@@ -25,12 +25,12 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * 
- * 
+ *
+ *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: GlossaryController.java
-* @DESC		: 용어집 
+* @DESC		: 용어집
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -45,16 +45,16 @@ public class GlossaryController extends AbstractController {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(GlossaryController.class);
-	
+
 	@Autowired
-	GlossaryServiceImpl glossaryServiceImpl;
+	private GlossaryServiceImpl glossaryServiceImpl;
 
 	/**
-	 * 
+	 *
 	 * @Method Name  : list
 	 * @Method 설명 : 목록
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
+	 * @작성일   : 2018. 7. 19.
 	 * @변경이력  :
 	 * @param req
 	 * @return
@@ -65,13 +65,13 @@ public class GlossaryController extends AbstractController {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return glossaryServiceImpl.selectGlossaryList(searchParameter);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : save
 	 * @Method 설명 : 추가.
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
+	 * @작성일   : 2018. 7. 19.
 	 * @변경이력  :
 	 * @param req
 	 * @return
@@ -90,16 +90,16 @@ public class GlossaryController extends AbstractController {
 		}else{
 			resultObject = glossaryServiceImpl.saveGlossaryInfo(glossaryInfo);
 		}
-		
+
 		return resultObject;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : delete
 	 * @Method 설명 : 삭제
 	 * @작성자   : ytkim
-	 * @작성일   : 2018. 7. 19. 
+	 * @작성일   : 2018. 7. 19.
 	 * @변경이력  :
 	 * @param req
 	 * @return
@@ -109,7 +109,7 @@ public class GlossaryController extends AbstractController {
 	public @ResponseBody ResponseResult delete(@RequestParam(value = "wordIdx" , required = true) String wordIdx) throws Exception {
 		return glossaryServiceImpl.deleteGlossaryInfo(wordIdx);
 	}
-	
-	
-	
+
+
+
 }

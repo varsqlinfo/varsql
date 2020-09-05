@@ -157,7 +157,7 @@ public class ExportServiceImpl{
 
 		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 
-		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
+		DataCommonVO settingInfo = VartechUtils.jsonStringToObject(jsonString, DataCommonVO.class);
 
 		List<Map> tables = (List<Map>)settingInfo.get("tables");
 		List<Map> columns = (List<Map>)settingInfo.get("columns");
@@ -191,7 +191,7 @@ public class ExportServiceImpl{
 		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
 
-		DataCommonVO settingInfo = VartechUtils.stringToObject(jsonString, DataCommonVO.class);
+		DataCommonVO settingInfo = VartechUtils.jsonStringToObject(jsonString, DataCommonVO.class);
 
 		Map<String, List<Map>> exportInfo = (Map<String, List<Map>>)settingInfo.get("exportInfo");
 
@@ -213,7 +213,7 @@ public class ExportServiceImpl{
 			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( objectName).getObjectTypeId(),preferencesInfo,ddlOption, objNmArr);
 
 			for (DDLInfo ddlInfo : ddlList) {
-				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE);
+				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE_TWO);
 			}
 
 			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);

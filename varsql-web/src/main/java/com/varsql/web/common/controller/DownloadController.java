@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
-import com.varsql.web.common.beans.DownloadInfo;
+import com.varsql.web.dto.file.DownloadInfo;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.VartechReflectionUtils;

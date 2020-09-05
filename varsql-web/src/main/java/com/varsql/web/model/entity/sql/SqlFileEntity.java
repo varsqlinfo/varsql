@@ -6,12 +6,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.varsql.web.model.base.AabstractAuditorModel;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
@@ -19,15 +22,18 @@ import com.varsql.web.model.id.generator.AppUUIDGenerator;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @SuppressWarnings("serial")
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
+@DynamicUpdate
 @Table(name = SqlFileEntity._TB_NAME)
 public class SqlFileEntity extends AabstractAuditorModel{
 	public final static String _TB_NAME="VTSQL_SQLFILE";
-	
+
 	@Id
 	@GenericGenerator(name = "sqlIdGenerator"
 		, strategy = "com.varsql.web.model.id.generator.AppUUIDGenerator"
@@ -39,7 +45,7 @@ public class SqlFileEntity extends AabstractAuditorModel{
     @GeneratedValue(generator = "sqlIdGenerator")
 	@Column(name ="SQL_ID")
 	private String sqlId;
-	
+
 	@Column(name ="VCONNID")
 	private String vconnid;
 
@@ -49,12 +55,14 @@ public class SqlFileEntity extends AabstractAuditorModel{
 	@Column(name ="SQL_TITLE")
 	private String sqlTitle;
 
-	@Column(name ="SQL_CONT")
+	@Column(name ="SQL_CONT" ,columnDefinition="CLOB")
+	@Lob
 	private String sqlCont;
 
 	@Column(name ="SQL_PARAM")
 	private String sqlParam;
 	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "VCONNID" ,nullable = false, insertable =false , updatable =false)
 	private DBConnectionEntity connInfo;

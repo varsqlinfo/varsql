@@ -1,4 +1,6 @@
 package com.varsql.web.app.database.service;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,23 @@ public class PreferencesServiceImpl{
 		UserDBPreferencesEntity item = userDBPreferencesEntityRepository.findOne(UserDBPreferencesSpec.findPrefVal(preferencesInfo)).orElse(null);
 		return  item==null ? (flag ? "{}" : null) : (item.getPrefVal() ==null? "{}" :item.getPrefVal()) ;
 	}
+	
+
+	/**
+	 * 
+	 * @Method Name  : selectPreferencesInfos
+	 * @Method 설명 : 설정값 다중으로 가져오기
+	 * @작성자   : ytkim
+	 * @작성일   : 2020. 8. 15. 
+	 * @변경이력  :
+	 * @param preferencesInfo
+	 * @return
+	 */
+	public List<UserDBPreferencesEntity> selectPreferencesInfos(PreferencesRequestDTO... preferencesInfo) {
+		List<UserDBPreferencesEntity> items = userDBPreferencesEntityRepository.findAll(UserDBPreferencesSpec.findPrefVal(preferencesInfo));
+		return items; 
+	}
+	
 	
 	/**
 	 * 

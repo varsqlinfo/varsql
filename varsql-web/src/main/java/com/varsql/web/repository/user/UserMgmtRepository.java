@@ -14,4 +14,6 @@ public interface UserMgmtRepository extends UserRepository ,JpaSpecificationExec
 	
 	List<UserEntity> findByViewidIn(List<String> viewids);
 	
+	
+	
 }

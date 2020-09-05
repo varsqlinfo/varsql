@@ -119,14 +119,20 @@ public class CubridDDLScript extends DDLScriptImpl {
 			
 			ddlStr = new StringBuilder();
 			
+			List srcScriptList = sqlSesseion.selectList("indexScript", dataParamInfo);
+			
+			Map indexMap;
+			
 			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+				if (srcScriptList.size() > 0) {
+					indexMap = (Map) srcScriptList.get(0);
+					ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + " ON ").append(indexMap.get("TABLE_NAME")).append("; */").append(BlankConstants.NEW_LINE_TWO);
+				}
 			}
 			
-			List srcScriptList = sqlSesseion.selectList("indexScript", dataParamInfo);
 			ddlStr.append("CREATE ");
 	
-			Map indexMap;
+			
 			if (srcScriptList.size() > 0) {
 				indexMap = (Map) srcScriptList.get(0);
 				if ("UQ".equals(indexMap.get("INDEX_TYPE")))
@@ -143,6 +149,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 	
 					ddlStr.append(i > 0 ?", " :"");
 					ddlStr.append( indexMap.get("COLUMN_NAME"));
+					ddlStr.append(" ").append( indexMap.get("ASC_OR_DESC"));
 				}
 				ddlStr.append(")").append(BlankConstants.NEW_LINE);
 			}

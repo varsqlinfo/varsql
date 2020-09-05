@@ -1,7 +1,9 @@
 package com.varsql.core.connection.pool;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -16,6 +18,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.code.VarsqlErrorCode;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 
@@ -27,7 +30,7 @@ import com.varsql.core.exception.ConnectionFactoryException;
  * @프로그램설명: pool 셋팅
  * @변경이력	:
  */
-public class ConnectionDBCP2 implements ConnectionPoolInterface{
+public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 
 	private static final String POOL_DRIVER = "org.apache.commons.dbcp2.PoolingDriver";
 
@@ -106,14 +109,20 @@ public class ConnectionDBCP2 implements ConnectionPoolInterface{
 		try{
 			return DriverManager.getConnection(DBCP_JDBC_PREFIX+connInfo.getConnid());
 		}catch(Exception e){
-			throw new ConnectionFactoryException(e.getMessage() , e);
+			String [] poolNames = driver.getPoolNames();
+			String connid = connInfo.getConnid();
+
+			if(Arrays.stream(poolNames).anyMatch(connid::equals)) {
+				throw new ConnectionFactoryException(e.getMessage() , e);
+			}
+
+			throw new ConnectionFactoryException(VarsqlErrorCode.DB_POOL_CLOSE.code(),e.getMessage() , e);
 		}
 	}
 
 	public void poolShutdown(String nm) throws ConnectionFactoryException {
 		try{
-			PoolingDriver pd = (PoolingDriver) DriverManager.getDriver(DBCP_JDBC_PREFIX);
-			pd.closePool(nm);
+			driver.closePool(nm);
 		}catch(Exception e){
 			logger.error("poolName : {}", nm , e);
 		}

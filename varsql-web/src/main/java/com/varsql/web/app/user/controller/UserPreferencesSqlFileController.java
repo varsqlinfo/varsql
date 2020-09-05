@@ -41,7 +41,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileController.class);
 
 	@Autowired
-	UserPreferencesSqlFileServiceImpl userPreferencesSqlFileServiceImpl;
+	private UserPreferencesSqlFileServiceImpl userPreferencesSqlFileServiceImpl;
 
 	/**
 	 *
@@ -54,11 +54,11 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @return
 	 */
 	@RequestMapping(value={"/list"},method = RequestMethod.POST)
-	public @ResponseBody ResponseResult list(HttpServletRequest req) {
+	public @ResponseBody ResponseResult list(@RequestParam(value = "vconnid", required = true)  String vconnid, HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
 
-		return  userPreferencesSqlFileServiceImpl.sqlFileList(searchParameter);
+		return  userPreferencesSqlFileServiceImpl.sqlFileList(vconnid, searchParameter);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @return
 	 */
 	@RequestMapping(value={"/detail"},method = RequestMethod.POST)
-	public @ResponseBody ResponseResult detail(@RequestParam(value = "sqlId" , required = true)  String sqlId) {
+	public @ResponseBody ResponseResult detail(@RequestParam(value = "sqlId", required = true)  String sqlId) {
 		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(sqlId);
 	}
 

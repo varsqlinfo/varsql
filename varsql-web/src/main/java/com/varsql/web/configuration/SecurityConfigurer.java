@@ -103,8 +103,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
 		.and()
-			.requestCache().requestCache(requestCache())
-		.and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			.ignoringAntMatchers("/login/**","/logout","/webstatic/**","/error/**","/favicon.ico")
@@ -114,6 +112,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+			.sessionAuthenticationErrorUrl("/login")  // remmember me error 처리 페이지. 추가. 
 			//.maximumSessions(1)	// 중복 로그인 카운트
 			.sessionFixation().changeSessionId()	// session 공격시 session id 변경.
 		.and() // login

@@ -64,7 +64,7 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 			Writer writer=null;
 			try {
 				writer = response.getWriter();
-				writer.write(VartechUtils.objectToString(result));
+				writer.write(VartechUtils.objectToJsonString(result));
 			} catch (IOException e) {
 				logger.error("VarsqlAccessDeniedHandler " ,e);
 			}finally{

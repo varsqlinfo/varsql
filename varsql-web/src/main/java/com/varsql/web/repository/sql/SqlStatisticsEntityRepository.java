@@ -26,18 +26,18 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 
 	@Transactional(readOnly = true , value=ResourceConfigConstants.APP_TRANSMANAGER)
 	public class SqlStatisticsEntityCustomImpl extends QuerydslRepositorySupport implements SqlStatisticsEntityCustom {
-		
+
 		public SqlStatisticsEntityCustomImpl() {
 			super(SqlStatisticsEntity.class);
 		}
-		
-		// 통계 처리. 
+
+		// 통계 처리.
 		@Override
 		public List<SqlStatisticsReponseDTO> findSqlDateStat(String vconid, String s_date, String e_date) {
 			final QSqlStatisticsEntity sqlStat = QSqlStatisticsEntity.sqlStatisticsEntity;
-			
-			//StringExpression viewDt = QueryDslUtils.toChar(sqlStat.startTime.max(),"yyyy-mm-dd"); 
-			
+
+			//StringExpression viewDt = QueryDslUtils.toChar(sqlStat.startTime.max(),"yyyy-mm-dd");
+
 			return from(sqlStat)
 				.select(Projections.constructor(SqlStatisticsReponseDTO.class,sqlStat.startTime.max(),sqlStat.sMm, sqlStat.sDd ,sqlStat.vconnid.count().as("YCol")))
 				.where(sqlStat.vconnid.eq(vconid).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
@@ -46,14 +46,14 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 				.fetch().stream().map(item ->{
 					item.setViewDt(ConvertUtils.dateToStringDate(item.getStartTime()));
 					item.setXCol(String.format("%02d%02d", item.getSMm(),item.getSDd()));
-					return item; 
+					return item;
 			}).collect(Collectors.toList());
 		}
 
 		@Override
 		public List<SqlStatisticsReponseDTO> findSqlDayStat(String vconid, String s_date, String e_date) {
 			final QSqlStatisticsEntity sqlStat = QSqlStatisticsEntity.sqlStatisticsEntity;
-			
+
 			return from(sqlStat)
 				.select(new QSqlStatisticsReponseDTO(sqlStat.commandType.as("xCol") ,sqlStat.vconnid.count().as("yCol")))
 				.where(sqlStat.vconnid.eq(vconid).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
@@ -64,14 +64,14 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 		@Override
 		public List<SqlStatisticsReponseDTO> findDayUserRank(String vconid, String s_date, String e_date, String commandType) {
 			final QSqlStatisticsEntity sqlStat = QSqlStatisticsEntity.sqlStatisticsEntity;
-			
+
 			QUserEntity user = QUserEntity.userEntity;
-			
-			BooleanExpression commandTypeChk = null; 
+
+			BooleanExpression commandTypeChk = null;
 			if(ValidateUtils.isNotBlank(commandType) && !"all".contentEquals(commandType)) {
 				commandTypeChk = sqlStat.commandType.eq(ConvertUtils.toUpperCase(commandType));
 			}
-			
+
 			return from(user)
 			.select(new QSqlStatisticsReponseDTO(user.uname.as("viewid") ,sqlStat.vconnid.count().as("cnt")))
 			.innerJoin(sqlStat)
@@ -81,13 +81,13 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 			.orderBy(sqlStat.vconnid.count().asc())
 			.limit(5)
 			.fetch();
-			
-			
+
+
 			//new QSqlStatisticsReponseDTO(sqlStat.viewid.as("xCol") ,sqlStat.vconnid.count().as("yCol"))
-			
+
 			//from(sqlStat).join(JPAExpressions.)
-			
-			//return null; 
+
+			//return null;
 			/*
 			return from(sqlStat)
 				.select(sqlStat.viewid.as("viewid") , sqlStat.vconnid.count().as("cnt"))
@@ -103,8 +103,8 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 
 interface SqlStatisticsEntityCustom {
 	List<SqlStatisticsReponseDTO> findSqlDateStat(String vconid, String s_date, String e_date);
-	
+
 	List<SqlStatisticsReponseDTO> findSqlDayStat(String vconid, String s_date, String e_date);
-	
+
 	List<SqlStatisticsReponseDTO> findDayUserRank(String vconid, String s_date, String e_date , String commandType);
 }

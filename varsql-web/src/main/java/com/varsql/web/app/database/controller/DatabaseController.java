@@ -2,6 +2,7 @@ package com.varsql.web.app.database.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,11 @@ import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.util.BeanUtils;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -53,12 +57,15 @@ public class DatabaseController extends AbstractController {
 	@RequestMapping({"/","/main"})
 	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
+
 		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
 		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());
 
 		preferencesInfo.setPrefKey("main.database.setting");
-		
+
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
+		
+		BeanUtilsBean.getInstance().copyProperties(new PreferencesRequestDTO(), preferencesInfo);
 
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, preferencesServiceImpl.selectPreferencesInfo(preferencesInfo, true));
 
@@ -153,5 +160,11 @@ public class DatabaseController extends AbstractController {
 	@RequestMapping(value = "/dbInfo")
 	public @ResponseBody ResponseResult dbInfo(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
 		return databaseServiceImpl.dbInfo(databaseParamInfo);
+	}
+
+	@RequestMapping(value = "/connTabInfo")
+	public @ResponseBody ResponseResult connTabInfo(DBConnTabRequestDTO dbConnTabRequestDTO, HttpServletRequest req) throws Exception {
+		dbConnTabRequestDTO.setCustom(HttpUtils.getServletRequestParam(req));
+		return databaseServiceImpl.connTabInfo(dbConnTabRequestDTO);
 	}
 }
