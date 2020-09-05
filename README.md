@@ -1,5 +1,5 @@
 # varsql
-
+	site : https://varsql.com/
 	varsql websqltool sqltool 
 
 # 개발환경
@@ -8,3 +8,5 @@
 - gradle : 6.0.1
 - spring boot : 2.2.6
 - lombok : 1.18.10
+
+
