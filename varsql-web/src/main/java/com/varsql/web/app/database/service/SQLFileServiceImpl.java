@@ -202,6 +202,7 @@ public class SQLFileServiceImpl{
 				sqlFileTabEntityRepository.deleteAllSqlFileTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
 			}else{
 				sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				sqlFileTabEntityRepository.updateSqlFilePrevID(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId(), sqlFileRequestDTO.getPrevSqlId());
 			}
 		}catch(Exception e){
 			logger.error("deleteSqlFileTabInfo" ,e);
