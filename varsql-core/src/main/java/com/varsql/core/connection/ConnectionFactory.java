@@ -17,7 +17,7 @@ import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.pool.ConnectionPoolInterface;
 import com.varsql.core.connection.pool.PoolType;
-import com.varsql.core.db.encryption.EncryptionFactory;
+import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.sql.util.SqlUtils;
@@ -153,7 +153,7 @@ public final class ConnectionFactory implements ConnectionContext{
 					String str = rs.getString(VarsqlKeyConstants.CONN_PW);
 					connInfo.setPassword("");
 					if(str != null) {
-						connInfo.setPassword(EncryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
+						connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
 					}
 				}catch(Exception e) {
 					logger.error("EncryptionFactory.getInstance().decrypt : {} ", connInfo.getConnid() ,e);

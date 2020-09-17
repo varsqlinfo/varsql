@@ -23,9 +23,9 @@ import java.util.Map;
  */
 public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 	
-	private static SimpleDateFormat timestampSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
-	private static SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd"); 
-	private static SimpleDateFormat timeSDF = new SimpleDateFormat("HH:mm:ss.SSS"); 
+	final private SimpleDateFormat timestampSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+	final private SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd"); 
+	final private SimpleDateFormat timeSDF = new SimpleDateFormat("HH:mm:ss.SSS"); 
 	
 	protected ResultSetHandlerImpl(){}
 	
@@ -224,8 +224,9 @@ public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 	}
 	
 	private String getSQLXML(SQLXML val) throws SQLException {
-		if(isNull(val)) return null; 
-		return val != null ? val.getString() : null;
+		if(isNull(val)) return null;
+		
+		return val.getString();
 	}
 	
 	@Override

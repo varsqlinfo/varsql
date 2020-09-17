@@ -14,7 +14,7 @@ import com.varsql.core.exception.ConfigurationException;
 
 /**
  * 
- * @FileName : Validation.java
+ * @FileName : ValidationProperty.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 28.
  * @프로그램설명: query validation check 클래스. 
@@ -23,7 +23,7 @@ import com.varsql.core.exception.ConfigurationException;
 public class ValidationProperty{
 	Logger log = LoggerFactory.getLogger(ValidationProperty.class);
 	
-	final String Config_File= "etc/validation.properties";
+	final String Config_File= "db/validation.properties";
 	
 	private Properties props = new Properties();
 	

@@ -99,7 +99,7 @@ public class DataExportUtil {
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
 		
 		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
-		
+		JsonParser parser = null; 
 		try {
 			XStream magicApi = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("-_", "_")));
 			magicApi.alias(rowName, Map.class);
@@ -112,7 +112,7 @@ public class DataExportUtil {
 			out.newLine();
 			out.write("<items>");
 			out.newLine();
-	    	JsonParser parser = factory.createParser(jsonString);
+	    	parser = factory.createParser(jsonString);
 	        parser.nextToken();                                     //start reading the file
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
 	        	rowInfo = new HashMap();
@@ -127,6 +127,7 @@ public class DataExportUtil {
 	        parser.close();
 	        out.close();
 		}finally {
+			if(parser != null)parser.close();
 			if(out != null)out.close();
 		}
 	}
@@ -165,16 +166,20 @@ public class DataExportUtil {
 	public static void toCSVWrite(List allInfo,char delimiter, List<GridColumnInfo> columnInfos,  OutputStream output) throws IOException{
 		CSVPrinter printer = new CSVPrinter(new OutputStreamWriter( output ,VarsqlConstants.CHAR_SET),csvFormat.withDelimiter(delimiter));
 		
-		int size =allInfo.size(); 
-		if(size > 0){
-			Map recordMap = (Map)allInfo.get(0);
-			printer.printRecord(recordMap.keySet());
-			for (int i = 0; i < size; i++) {
-				recordMap =(Map)allInfo.get(i);
-				printer.printRecord(recordMap.values());
+		try {
+			int size =allInfo.size(); 
+			if(size > 0){
+				Map recordMap = (Map)allInfo.get(0);
+				printer.printRecord(recordMap.keySet());
+				for (int i = 0; i < size; i++) {
+					recordMap =(Map)allInfo.get(i);
+					printer.printRecord(recordMap.values());
+				}
 			}
-		}
-		printer.close();
+			printer.close();
+		}finally{
+    		if(printer!=null)printer.close();
+    	}
 	}
 	
 	/**
@@ -203,23 +208,29 @@ public class DataExportUtil {
 		
 		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
     	
-    	JsonParser parser = factory.createParser(jsonString);
-        parser.nextToken();                                     //start reading the file
-        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
-        	rowInfo = new HashMap();
-        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-        		String fieldName = parser.getCurrentName();
-        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
-        	}
-        	if(firstFlag) {
-        		firstFlag = false; 
-        		printer.printRecord(rowInfo.keySet());
-        	}
-        	
-        	printer.printRecord(rowInfo.values());
-        }
-        printer.close();
-        parser.close();
+		JsonParser parser =null; 
+    	try {
+    		parser = factory.createParser(jsonString);
+	        parser.nextToken();                                     //start reading the file
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        	rowInfo = new HashMap();
+	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
+	        		String fieldName = parser.getCurrentName();
+	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
+	        	}
+	        	if(firstFlag) {
+	        		firstFlag = false; 
+	        		printer.printRecord(rowInfo.keySet());
+	        	}
+	        	
+	        	printer.printRecord(rowInfo.values());
+	        }
+	        printer.close();
+	        parser.close();
+    	}finally{
+    		if(parser!=null)parser.close();
+    		if(printer!=null)printer.close();
+    	}
 	}
 	
 	private static String getColumnKeyLabelInfo(String fieldName, Map<String, String> columnKeyLabel) {
@@ -254,20 +265,26 @@ public class DataExportUtil {
 		Map rowInfo =null;
 		JsonFactory factory = new JsonFactory();
 		
-    	JsonParser parser = factory.createParser(jsonString);
-        parser.nextToken();                                     //start reading the file
-        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
-        	rowInfo = new HashMap();
-        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-        		String fieldName = parser.getCurrentName();
-        		rowInfo.put(fieldName, parser.getText());
-        	}
-        	
-        	export.addRow(rowInfo);
-        }
-        
-        export.write(output);
-        parser.close(); 
+    	JsonParser parser = null;
+    	
+    	try {
+    		parser = factory.createParser(jsonString);
+	        parser.nextToken();                                     //start reading the file
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        	rowInfo = new HashMap();
+	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
+	        		String fieldName = parser.getCurrentName();
+	        		rowInfo.put(fieldName, parser.getText());
+	        	}
+	        	
+	        	export.addRow(rowInfo);
+	        }
+	        
+	        export.write(output);
+	        parser.close();
+    	}finally{
+    		if(parser!=null)parser.close();
+    	}
 	}
 	
 	/**
@@ -294,56 +311,63 @@ public class DataExportUtil {
 		boolean firstFlag = true; 
 		int keyLen = -1;
 		
-    	JsonParser parser = factory.createParser(jsonString);
-        parser.nextToken();                                     //start reading the file
-        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
-        	rowInfo = new HashMap();
-        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-        		String fieldName = parser.getCurrentName();
-        		rowInfo.put(fieldName, parser.getText());
-        	}
-        	
-        	if(firstFlag) {
-        		firstFlag = false; 
-    			
-    			Object[] keyArr = rowInfo.keySet().toArray();
-    			keyLen = keyArr.length;
-    			boolean firstCommaFlag =true; 
-    			for (int i= 0; i <keyLen; i++) {
-    				insQuery.append(firstCommaFlag?"":",").append(keyArr[i]);
-    				firstCommaFlag = false; 
-    			}
-    			
-    			insQuery.append(" ) values ( ");
-    			String insertPrefix = insQuery.toString();
-    			
-    			Object [] valueArr = null;
-    			Object val = null;
-        	}
-        	
-        	String insertPrefix = insQuery.toString();
-        	
-			Object [] valueArr = null;
-			Object val = null;
-			valueArr = rowInfo.values().toArray();
-			insQuery.setLength(0);
-			insQuery.append(insertPrefix);
-			firstFlag =true; 
-			for(int j=0 ;j<keyLen; j++){
-				val = valueArr[j];
-				if(columnInfoList.get(j)){
-					insQuery.append(firstFlag?"":",").append("".equals(val)?0:val);
-				}else{
-					insQuery.append(firstFlag?"":",").append("'").append(escape(val)).append("'");
+    	JsonParser parser = null;
+    	
+    	try {
+    		parser = factory.createParser(jsonString);
+	        parser.nextToken();                                     //start reading the file
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        	rowInfo = new HashMap();
+	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
+	        		String fieldName = parser.getCurrentName();
+	        		rowInfo.put(fieldName, parser.getText());
+	        	}
+	        	
+	        	if(firstFlag) {
+	        		firstFlag = false; 
+	    			
+	    			Object[] keyArr = rowInfo.keySet().toArray();
+	    			keyLen = keyArr.length;
+	    			boolean firstCommaFlag =true; 
+	    			for (int i= 0; i <keyLen; i++) {
+	    				insQuery.append(firstCommaFlag?"":",").append(keyArr[i]);
+	    				firstCommaFlag = false; 
+	    			}
+	    			
+	    			insQuery.append(" ) values ( ");
+	    			String insertPrefix = insQuery.toString();
+	    			
+	    			Object [] valueArr = null;
+	    			Object val = null;
+	        	}
+	        	
+	        	String insertPrefix = insQuery.toString();
+	        	
+				Object [] valueArr = null;
+				Object val = null;
+				valueArr = rowInfo.values().toArray();
+				insQuery.setLength(0);
+				insQuery.append(insertPrefix);
+				firstFlag =true; 
+				for(int j=0 ;j<keyLen; j++){
+					val = valueArr[j];
+					if(columnInfoList.get(j)){
+						insQuery.append(firstFlag?"":",").append("".equals(val)?0:val);
+					}else{
+						insQuery.append(firstFlag?"":",").append("'").append(escape(val)).append("'");
+					}
+					firstFlag =false;
 				}
-				firstFlag =false;
-			}
-			insQuery.append(");");
-			out.write(insQuery.toString());
-			out.newLine();
-        }
-        parser.close();
-        out.close();
+				insQuery.append(");");
+				out.write(insQuery.toString());
+				out.newLine();
+	        }
+	        parser.close();
+	        out.close();
+    	}finally{
+    		if(parser!=null)parser.close();
+    		if(out!=null)out.close();
+    	}
 	}
 	
 	
@@ -352,12 +376,12 @@ public class DataExportUtil {
 		
 		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
 		
+		JsonParser parser = null; 
 		try {
-			
 			Map rowInfo =null;
 			JsonFactory factory = new JsonFactory();
 			out.write("[");
-	    	JsonParser parser = factory.createParser(jsonString);
+	    	parser = factory.createParser(jsonString);
 	        parser.nextToken();                        //start reading the file
 	        boolean firstFlag = true; 
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
@@ -373,10 +397,10 @@ public class DataExportUtil {
 	    	out.write("]");
 	        parser.close();
 	        out.close();
-		}finally {
-			if(out != null)out.close();
-		}
-		
+		}finally{
+    		if(parser!=null)parser.close();
+    		if(out!=null)out.close();
+    	}
 	}
 	
 	public static void toInsertQueryWrite(List allInfo, List<Boolean> columnInfoList,String tmpName, OutputStream output) throws IOException{
@@ -445,8 +469,12 @@ public class DataExportUtil {
 	 */
 	public static void toTextWrite(String downText ,OutputStream output) throws IOException{
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-		out.write(downText);
-		out.close();
+		try {
+			out.write(downText);
+			out.close();
+		}finally{
+    		if(out!=null)out.close();
+    	}
 	}
 	
 	private static String escape(Object str) {

@@ -6,8 +6,8 @@ import javax.persistence.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.db.encryption.EncryptionFactory;
-import com.vartech.common.encryption.EncryptDecryptException;
+import com.varsql.core.crypto.DBPasswordCryptionFactory;
+import com.vartech.common.crypto.EncryptDecryptException;
 
 @Converter
 public class DbPasswordEncodeConverter implements AttributeConverter<String, String> {
@@ -18,7 +18,7 @@ public class DbPasswordEncodeConverter implements AttributeConverter<String, Str
 		if(attribute==null || "".equals(attribute)) return null; 
 		
 		try {
-			return EncryptionFactory.getInstance().encrypt(attribute);
+			return DBPasswordCryptionFactory.getInstance().encrypt(attribute);
 		} catch (EncryptDecryptException e) {
 			logger.error("DbConnPwEncodeConverter : {} " , e.getMessage() , e);
 		}
@@ -31,7 +31,7 @@ public class DbPasswordEncodeConverter implements AttributeConverter<String, Str
 		if(s==null || "".equals(s)) return null; 
 		
 		try {
-			return EncryptionFactory.getInstance().decrypt(s);
+			return DBPasswordCryptionFactory.getInstance().decrypt(s);
 		} catch (EncryptDecryptException e) {
 			logger.error("DbConnPwEncodeConverter : {} " , e.getMessage() , e);
 		}

@@ -6,10 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.varsql.core.db.encryption.EncryptionFactory;
 import com.varsql.test.BaseJpaTestCase;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.crypto.EncryptDecryptException;
 
 class UserRepositoryTest extends BaseJpaTestCase{
 

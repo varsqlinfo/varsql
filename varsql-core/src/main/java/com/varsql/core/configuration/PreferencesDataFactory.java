@@ -33,7 +33,7 @@ public class PreferencesDataFactory{
 
 	XPath xpath = XPathFactory.newInstance().newXPath();
 
-	private final String TEMPLATE_PACKAGE= "classpath*:db/preferences/pref*.xml";
+	private final String TEMPLATE_PACKAGE= "classpath*:preferences/*/*.xml";
 	private final String DEFAULT_KEY_NAME= "key";
 
 	private Map<String ,String> defaultPreferencesInfo = new HashMap<String,String>();
@@ -68,7 +68,7 @@ public class PreferencesDataFactory{
 	 * @History :
 	 */
 	private void initConfig() throws IOException {
-		logger.debug("default preferences template file path : {}, prefix : {} ", TEMPLATE_PACKAGE);
+		logger.debug("default preferences template file path : {} ", TEMPLATE_PACKAGE);
 		
 		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);

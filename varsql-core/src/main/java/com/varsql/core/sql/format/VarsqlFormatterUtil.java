@@ -87,23 +87,21 @@ public final class VarsqlFormatterUtil {
 			resultSql = new VarsqlFormatterImpl().execute(sql);
 			//resultSql = SqlFormatter.format(sql);
 		}else{
-			resultSql = SqlFormatter.format(sql, FormatConfig.builder().indent(BlankConstants.TAB).build());
 			/*
+			resultSql = SqlFormatter.format(sql, FormatConfig.builder().indent(BlankConstants.TAB).build());
+			*/
+			
 			try{
-				sql = SqlReplaceUtils.paramReplace(sql, true);
 				SQLStatementParser parser = SQLParserUtils.createSQLStatementParser(sql, dbType, DEFAULT_FEATURES);
 
 				parser.setKeepComments(true);
 				List<SQLStatement> statementList = parser.parseStatementList();
 
 				resultSql =SQLUtils.toSQLString(statementList, dbType, null, formatOpt);
-
-				resultSql = SqlReplaceUtils.paramReplace(resultSql, false);
 			}catch(Exception e){
 				resultSql =new VarsqlFormatterImpl().execute(sql);
 				result.setMessage(e.getMessage());
 			}
-			*/
 		}
 
 		//resultSql = Native2Ascii.asciiToNative(resultSql);

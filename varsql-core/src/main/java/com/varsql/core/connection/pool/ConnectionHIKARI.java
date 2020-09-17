@@ -4,7 +4,6 @@ import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.configuration.prop.DataSourceProperty;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.zaxxer.hikari.HikariConfig;
@@ -32,13 +31,6 @@ public class ConnectionHIKARI extends ConnectionPoolAbstract{
 			HikariConfig config = new HikariConfig();
 
 			config.setJdbcUrl( connInfo.getUrl() );
-			String driverClass =DataSourceProperty.getInstance().getProp(connInfo.getType().toUpperCase());
-			if(null !=driverClass && !"".equals(driverClass)){
-				config.setDataSourceClassName(driverClass);
-			}else{
-				Class.forName(connInfo.getDriver());
-			}
-
 	        config.setUsername( connInfo.getUsername() );
 	        config.setPassword(connInfo.getPassword() );
 	        config.setMaximumPoolSize(connInfo.getMax_active());

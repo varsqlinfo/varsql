@@ -33,8 +33,8 @@ import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
-import com.vartech.common.encryption.EncryptDecryptException;
-import com.vartech.common.encryption.PasswordUtil;
+import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.crypto.password.PasswordUtil;
 
 /**
  *

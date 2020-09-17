@@ -47,12 +47,12 @@ public class OracleDBMeta extends DBMetaImpl{
 
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
 	}
 
 	@Override
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class OracleDBMeta extends DBMetaImpl{
 
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
 	}
 	@Override
 	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception	{
@@ -72,28 +72,28 @@ public class OracleDBMeta extends DBMetaImpl{
 
 	@Override
 	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
 	}
 
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 
 
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
 	}
 	@Override
 	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
@@ -124,19 +124,19 @@ public class OracleDBMeta extends DBMetaImpl{
 			dataParamInfo.addCustom("indexNameList", indexNameList);
 		}
 
-		SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
+		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
 
 		return handler.getIndexInfoList();
 	}
 
 	@Override
 	public List getTriggers(DatabaseParamInfo dataParamInfo){
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("triggerList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerList" ,dataParamInfo);
 	}
 
 	@Override
 	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
 	}
 
 	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
@@ -165,7 +165,7 @@ public class OracleDBMeta extends DBMetaImpl{
 			dataParamInfo.addCustom("tableInfoList", tableInfoList);
 		}
 
-		SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());
+		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
 
 		logger.debug("DBMetaImplORACLE tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
@@ -188,18 +188,18 @@ public class OracleDBMeta extends DBMetaImpl{
 
 	@Override
 	public List<ObjectInfo> getSequences(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("sequenceList" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceList" ,dataParamInfo);
 	}
 
 	@Override
 	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceArr) throws Exception {
-		return SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
 	}
 
 	@Override
 	public <T>T getExtensionMetadata(DatabaseParamInfo dataParamInfo, String serviceName, Map param) throws Exception {
 		if("package".equalsIgnoreCase(serviceName)){
-			return (T)SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid()).selectList("packageList" ,dataParamInfo);
+			return (T)SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("packageList" ,dataParamInfo);
 		}
 
 		return null;

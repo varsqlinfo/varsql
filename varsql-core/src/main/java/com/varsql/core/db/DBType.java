@@ -66,8 +66,8 @@ public enum DBType {
 		}
 		return DBType.OTHER;
 	}
-
-	public boolean equals(String type) {
+	
+	public boolean equalsName(String type) {
 		type = type.toUpperCase();
 		for (DBType dbType : values()) {
 			if(dbType.name().equals(type)) {

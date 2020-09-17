@@ -56,6 +56,7 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 	
 	@SuppressWarnings("unused")
 	private void initialize(boolean initflag) throws ConfigurationLoadException {
+		FileInputStream is =null; 
 		synchronized(lock){	
 			try{
 				
@@ -72,10 +73,7 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 					throw new ConfigurationLoadException( this.getClass().getName() + " - Can't open configuration file path: " + propFile);
 				}
 					
-				FileInputStream is = new FileInputStream(propFile);
-				
-				if ( is == null ) 				
-					throw new ConfigurationLoadException( this.getClass().getName() + " - Can't open jdf configuration file path: [" + propFile +"]");
+				is = new FileInputStream(propFile);
 				
 				SAXBuilder builder = new SAXBuilder();
 				Element root = builder.build(is).getRootElement();
@@ -85,6 +83,8 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 				throw new ConfigurationLoadException( this.getClass().getName() +  e.getMessage());
 			}catch(Exception e){
 				throw new ConfigurationLoadException( this.getClass().getName() + e.getLocalizedMessage()+"\n"+ e.getMessage());
+			}finally {
+				if(is != null) try{is.close();}catch(Exception e) {}
 			}
 		} // end of sunchronized(lock);
 	}

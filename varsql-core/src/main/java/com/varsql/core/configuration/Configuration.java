@@ -26,7 +26,8 @@ import com.varsql.core.connection.ConnectionContext;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConfigurationException;
-import com.vartech.common.encryption.PasswordType;
+import com.vartech.common.crypto.password.PasswordType;
+import com.vartech.common.crypto.password.PasswordUtil;
 
 
 /**
@@ -41,7 +42,7 @@ public class Configuration extends AbstractConfiguration{
 	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
 	final String VARSQL_INSTALL_PATH = getInstallRoot();
-	final String CONFIG_FILE= "etc/varsqlConfig.properties";
+	final String CONFIG_FILE= "config/varsqlConfig.properties";
 	final String CONNECTION_FILE= "config/varsqlConnectionConfig.xml";
 
 	private Properties props = new Properties();
@@ -299,7 +300,15 @@ public class Configuration extends AbstractConfiguration{
 		return getProperties().getProperty("varsql.default.charset","utf-8");
 	}
 
-	public String getSecurityKey() {
-		return getProperties().getProperty("varsql.secret.key","MTZkNzMwM2QtMDQ4NS0zOTlhLWEyZmMtODAwNTg0NDY0NzZk");
+	public String getDbPwSecurityKey() {
+		return getProperties().getProperty("varsql.db.pw.secret.key","MTZkNzMwM2QtMDQ4NS0zOTlhLWEyZmMtODAwNTg0NDY0NzZk");
+	}
+
+	public String getDbPWCryptoType() {
+		return getProperties().getProperty("varsql.db.pw.crpyto","aes");
+	}
+
+	public String getDbPWCustomClass() {
+		return getProperties().getProperty("varsql.db.pw.custom.class","");
 	}
 }

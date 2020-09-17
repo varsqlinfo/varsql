@@ -1,11 +1,10 @@
 package com.varsql.core.sql.format;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 /**
  * 
  * @FileName : SqlFormatterDb2.java
@@ -29,25 +28,25 @@ public class VarsqlFormatterImpl extends VarsqlFormatter{
 		
 		Map<String,HashMap<String ,String>> SQL_CLAUSE = super.getSqlClause();
 		
-		SQL_CLAUSE.put("with", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-			put(OPT_BEFOREINDENT,"-1");
-		}});
+		SQL_CLAUSE.put("with",Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+			,OPT_BEFOREINDENT,"-1"
+		)));
 		
-		SQL_CLAUSE.put("when", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-			put(OPT_BEFOREINDENT,"-1");
-			put(OPT_LASTINDENT,"1");
-		}});
+		SQL_CLAUSE.put("when",Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+			,OPT_BEFOREINDENT,"-1"
+			,OPT_LASTINDENT,"1"
+		)));
 		
-		SQL_CLAUSE.put("then", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,new_line_string);
-			put(OPT_BEFOREINDENT,"-1");
+		SQL_CLAUSE.put("then",Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,new_line_string
+			,OPT_BEFOREINDENT,"-1"
 
-		}});
+		)));
 		
 		return SQL_CLAUSE;
 	}

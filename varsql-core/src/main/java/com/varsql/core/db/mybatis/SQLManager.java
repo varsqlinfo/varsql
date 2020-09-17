@@ -3,7 +3,6 @@ package com.varsql.core.db.mybatis;
 import java.beans.PropertyDescriptor;
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,12 +16,13 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.SqlSessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 
@@ -37,10 +37,10 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 public final class SQLManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
+	final private String resource = "db/template/mybatis/mybatis.template";
 
 	private Map<String, SqlSessionTemplate> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionTemplate>();
 	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
-	private String resource = "template/mybatis/mybatis.template";
 
 	private String defaultConfigTemplate;
 	private PropertyDescriptor[] propertyDescs = PropertyUtils.getPropertyDescriptors(ConnectionInfo.class);
@@ -54,7 +54,7 @@ public final class SQLManager {
 
 	private SQLManager() {
 		try{
-			defaultConfigTemplate = IOUtils.toString( Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
+			defaultConfigTemplate = IOUtils.toString( Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), VarsqlConstants.CHAR_SET);
 
 			logger.info("SQLManager defaultConfigTemplate {} ", defaultConfigTemplate);
 		}catch(Exception e){
@@ -63,7 +63,7 @@ public final class SQLManager {
 		}
 	}
 
-	public SqlSession getSqlSession(String sessionType) throws ConnectionFactoryException {
+	public SqlSessionTemplate sqlSessionTemplate(String sessionType) throws ConnectionFactoryException {
 		if (!sqlSessionMap.containsKey(sessionType)) {
 			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
 		}
@@ -71,20 +71,20 @@ public final class SQLManager {
 		return sqlSessionMap.get(sessionType);
 	}
 
-	public Connection getConnection(String sessionType) throws ConnectionException {
-		try {
-			if(!sqlSessionFactoryMap.containsKey(sessionType)) {
-				getSqlSession(sessionType);
-			}
-			return sqlSessionFactoryMap.get(sessionType).openSession().getConnection();
-		}catch(Throwable e) {
-			throw new ConnectionException("connection error Cause: "+ e.getMessage());
+	public SqlSession openSession(String sessionType) throws ConnectionFactoryException {
+		if (!sqlSessionFactoryMap.containsKey(sessionType)) {
+			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
 		}
+
+		return SqlSessionUtils.getSqlSession(sqlSessionFactoryMap.get(sessionType));
+	}
+
+	public void closeSession(String sessionType, SqlSession session) throws ConnectionFactoryException {
+		SqlSessionUtils.closeSqlSession(session, sqlSessionFactoryMap.get(sessionType));
 	}
 
 	public void setSQLMapper(ConnectionInfo connInfo , Object obj){
 		String xmlTemplate ="";
-		StringBuilder sb = new StringBuilder();
 		try{
 
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
@@ -133,58 +133,58 @@ public final class SQLManager {
 	}
 
 	public <T> T selectOne(String sessionType,String statement) {
-		return getSqlSession(sessionType).<T>selectOne(statement);
+		return sqlSessionTemplate(sessionType).<T>selectOne(statement);
 	}
 
 	public <T> T selectOne(String sessionType, String statement, Object parameter) {
-		return getSqlSession(sessionType).<T>selectOne(statement, parameter);
+		return sqlSessionTemplate(sessionType).<T>selectOne(statement, parameter);
 	}
 
 	public <K, V> Map<K, V> selectMap(String sessionType,String statement, String mapKey) {
-		return getSqlSession(sessionType).<K, V>selectMap(statement, mapKey);
+		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, mapKey);
 	}
 
 	public <K, V> Map<K, V> selectMap(String sessionType,String statement, Object parameter, String mapKey) {
-		return getSqlSession(sessionType).<K, V>selectMap(statement, parameter, mapKey);
+		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, parameter, mapKey);
 	}
 
 	public <K, V> Map<K, V> selectMap(String sessionType,String statement, Object parameter, String mapKey, RowBounds rowBounds) {
-		return getSqlSession(sessionType).<K, V>selectMap(statement, parameter, mapKey, rowBounds);
+		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, parameter, mapKey, rowBounds);
 	}
 
 	public <T> Cursor<T> selectCursor(String sessionType,String statement) {
-		return getSqlSession(sessionType).selectCursor(statement);
+		return sqlSessionTemplate(sessionType).selectCursor(statement);
 	}
 
 	public <T> Cursor<T> selectCursor(String sessionType,String statement, Object parameter) {
-		return getSqlSession(sessionType).selectCursor(statement, parameter);
+		return sqlSessionTemplate(sessionType).selectCursor(statement, parameter);
 	}
 
 	public <T> Cursor<T> selectCursor(String sessionType,String statement, Object parameter, RowBounds rowBounds) {
-		return getSqlSession(sessionType).selectCursor(statement, parameter, rowBounds);
+		return sqlSessionTemplate(sessionType).selectCursor(statement, parameter, rowBounds);
 	}
 
 	public <E> List<E> selectList(String sessionType,String statement) {
-		return getSqlSession(sessionType).<E>selectList(statement);
+		return sqlSessionTemplate(sessionType).<E>selectList(statement);
 	}
 
 	public <E> List<E> selectList(String sessionType,String statement, Object parameter) {
-		return getSqlSession(sessionType).<E>selectList(statement, parameter);
+		return sqlSessionTemplate(sessionType).<E>selectList(statement, parameter);
 	}
 
 	public <E> List<E> selectList(String sessionType,String statement, Object parameter, RowBounds rowBounds) {
-		return getSqlSession(sessionType).<E>selectList(statement, parameter, rowBounds);
+		return sqlSessionTemplate(sessionType).<E>selectList(statement, parameter, rowBounds);
 	}
 
 	public void select(String sessionType,String statement, ResultHandler handler) {
-		getSqlSession(sessionType).select(statement, handler);
+		sqlSessionTemplate(sessionType).select(statement, handler);
 	}
 
 	public void select(String sessionType,String statement, Object parameter, ResultHandler handler) {
-		getSqlSession(sessionType).select(statement, parameter, handler);
+		sqlSessionTemplate(sessionType).select(statement, parameter, handler);
 	}
 
 	public void select(String sessionType,String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
-		getSqlSession(sessionType).select(statement, parameter, rowBounds, handler);
+		sqlSessionTemplate(sessionType).select(statement, parameter, rowBounds, handler);
 	}
 }

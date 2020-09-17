@@ -22,7 +22,7 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
-import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.crypto.EncryptDecryptException;
 
 
 

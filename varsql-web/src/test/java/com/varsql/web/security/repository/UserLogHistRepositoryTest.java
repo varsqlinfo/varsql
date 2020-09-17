@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.varsql.test.BaseJpaTestCase;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
-import com.varsql.web.security.repository.UserLogHistRepository;
-import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.VartechUtils;
 
 class UserLogHistRepositoryTest extends BaseJpaTestCase{

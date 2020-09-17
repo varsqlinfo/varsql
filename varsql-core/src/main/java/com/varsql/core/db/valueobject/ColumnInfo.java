@@ -133,5 +133,16 @@ public class ColumnInfo {
 	public void setConstraints(String constraints) {
 		this.constraints = constraints;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("name : ").append(name)
+				.append(" dataType : ").append(dataType)
+				.append(" typeAndLength : ").append(typeAndLength)
+				.append(" comment : ").append(comment)
+				.append(" constraints : ").append(constraints)
+				.toString();
+	}
 }
 

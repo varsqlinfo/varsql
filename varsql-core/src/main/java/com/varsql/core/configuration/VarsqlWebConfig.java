@@ -53,6 +53,7 @@ public class VarsqlWebConfig extends AbstractXmlLoad{
 
 	private void initialize(boolean initflag) throws ConfigurationLoadException {
 		synchronized(lock){
+			FileInputStream is =null; 
 			try{
 
 				logger.info("configuration web xml property : {}",Constants.WEB_CONFIG_FILE);
@@ -68,16 +69,20 @@ public class VarsqlWebConfig extends AbstractXmlLoad{
 					throw new ConfigurationLoadException( this.getClass().getName() + " - Can't open configuration file path: " + propFile);
 				}
 
-				FileInputStream is = new FileInputStream(propFile);
+				is = new FileInputStream(propFile);
 
 				SAXBuilder builder = new SAXBuilder();
 				Element root = builder.build(is).getRootElement();
 
 				getConfigInfo(root);
+				
+				is.close();
 			}catch(ConfigurationLoadException e) {
 				throw new ConfigurationLoadException( this.getClass().getName() +  e.getMessage());
 			}catch(Exception e){
 				throw new ConfigurationLoadException( this.getClass().getName() + e.getLocalizedMessage()+"\n"+ e.getMessage());
+			}finally {
+				if(is != null) try{is.close();}catch(Exception e) {}
 			}
 		} // end of sunchronized(lock);
 	}

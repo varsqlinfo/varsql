@@ -10,7 +10,7 @@ import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.encryption.EncryptDecryptException;
+import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.VartechUtils;
 
 /**

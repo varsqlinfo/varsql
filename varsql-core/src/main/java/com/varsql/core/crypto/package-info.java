@@ -8,4 +8,4 @@
  * @작성자      : ytkim
  * @변경이력 :
  */
-package com.varsql.core.db.encryption;
+package com.varsql.core.crypto;

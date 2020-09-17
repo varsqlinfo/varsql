@@ -5,7 +5,7 @@ import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 /**
  *
- * @FileName  : SQLManager.java
+ * @FileName  : DataSourceFactory.java
  * @프로그램 설명 : mybatis manager
  * @Date      : 2018. 4. 12.
  * @작성자      : ytkim

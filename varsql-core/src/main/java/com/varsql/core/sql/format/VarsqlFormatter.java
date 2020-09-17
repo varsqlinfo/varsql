@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
 /**
  * 
  * @FileName : SqlFormatter.java
@@ -359,10 +362,6 @@ public abstract class VarsqlFormatter implements VarsqlFormatterInterface{
 		else result.append(white_string);
 	}
 	
-	private void newline() {
-		result.append(new_line_string);
-	}
-	
 	private void tabIns(){
 		result.append(indent_string);
 	}
@@ -432,160 +431,159 @@ public abstract class VarsqlFormatter implements VarsqlFormatterInterface{
 		return this.FORMAT_CLAUSE;
 	}
 
-	@SuppressWarnings("serial")
 	public Map<String, HashMap<String, String>> getSqlClause() {
 		Map<String,HashMap<String ,String>> SQL_CLAUSE = new LinkedHashMap<String,HashMap<String ,String>>();
 		//########################enter############################
 		
-		SQL_CLAUSE.put("create", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-		}});
+		SQL_CLAUSE.put("create", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+		)));
 		
-		SQL_CLAUSE.put("select", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,new_line_string);
-			put(OPT_LASTINDENT,"1");
-		}});
+		SQL_CLAUSE.put("select", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,new_line_string
+			,OPT_LASTINDENT,"1"
+		)));
 		
-		SQL_CLAUSE.put("insert", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
+		SQL_CLAUSE.put("insert", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
 		
-		SQL_CLAUSE.put("update", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
+		SQL_CLAUSE.put("update", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
 		
-		SQL_CLAUSE.put("delete", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
+		SQL_CLAUSE.put("delete", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
 		
-		SQL_CLAUSE.put("/*", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
+		SQL_CLAUSE.put("/*", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
 		
-		SQL_CLAUSE.put("*/", new HashMap<String,String>(){{
-			put(OPT_LAST,new_line_string);
-		}});
+		SQL_CLAUSE.put("*/", Maps.newHashMap(ImmutableMap.of(
+			OPT_LAST,new_line_string
+		)));
 		
-		SQL_CLAUSE.put("--", new HashMap<String,String>(){{
-		}});
+		SQL_CLAUSE.put("--", Maps.newHashMap(ImmutableMap.of(
+		)));
 		
-		SQL_CLAUSE.put("set", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
+		SQL_CLAUSE.put("set", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
 			
-			put(CLAUSE_UPDATE+OPT_BEFORE,new_line_string);
-			put(CLAUSE_UPDATE+OPT_LAST,new_line_string);
+			,CLAUSE_UPDATE+OPT_BEFORE,new_line_string
+			,CLAUSE_UPDATE+OPT_LAST,new_line_string
 			
-			put(CLAUSE_UPDATE+OPT_LASTINDENT,"1");
-		}});
-		SQL_CLAUSE.put("where", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(CLAUSE_DELETE+OPT_BEFORE,new_line_string);
-			put(OPT_LAST,tab_string);
+			,CLAUSE_UPDATE+OPT_LASTINDENT,"1"
+		)));
+		SQL_CLAUSE.put("where", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,CLAUSE_DELETE+OPT_BEFORE,new_line_string
+			,OPT_LAST,tab_string
 			
-			put(CLAUSE_UPDATE+OPT_BEFOREINDENT,"-1");
-		}});
-		SQL_CLAUSE.put("and", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,tab_string);
-		}});
-		SQL_CLAUSE.put("or", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,tab_string);
-		}});
-		SQL_CLAUSE.put("group", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
-		SQL_CLAUSE.put("order", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
-		SQL_CLAUSE.put("having", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,tab_string);
-		}});
-		SQL_CLAUSE.put("values", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
-		SQL_CLAUSE.put("from", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-			put(OPT_BEFOREINDENT,"-1");
-//			put(OPT_LASTINDENT,"1");
+			,CLAUSE_UPDATE+OPT_BEFOREINDENT,"-1"
+		)));
+		SQL_CLAUSE.put("and", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,tab_string
+		)));
+		SQL_CLAUSE.put("or", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,tab_string
+		)));
+		SQL_CLAUSE.put("group", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
+		SQL_CLAUSE.put("order", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
+		SQL_CLAUSE.put("having", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,tab_string
+		)));
+		SQL_CLAUSE.put("values", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
+		SQL_CLAUSE.put("from", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+			,OPT_BEFOREINDENT,"-1"
+//			,OPT_LASTINDENT,"1"
 //			
-//			put(CLAUSE_DELETE+OPT_BEFORE,white_string);
-//			put(CLAUSE_DELETE+OPT_BEFOREINDENT,"0");
-//			put(CLAUSE_DELETE+OPT_LASTINDENT,"0");
-		}});
-		SQL_CLAUSE.put("union", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-		}});
+//			CLAUSE_DELETE+OPT_BEFORE,white_string
+//			CLAUSE_DELETE+OPT_BEFOREINDENT,"0"
+//			CLAUSE_DELETE+OPT_LASTINDENT,"0"
+		)));
+		SQL_CLAUSE.put("union", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+		)));
 		
-		SQL_CLAUSE.put("on", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put(",", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_LAST,white_string);
-		}});
+		SQL_CLAUSE.put("on", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put(",", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_LAST,white_string
+		)));
 		
-		SQL_CLAUSE.put(";", new HashMap<String,String>(){{
-			put(OPT_LAST,new_line_string);
-			put(OPT_INITINDENT,"0");
-		}});
+		SQL_CLAUSE.put(";", Maps.newHashMap(ImmutableMap.of(
+			OPT_LAST,new_line_string
+			,OPT_INITINDENT,"0"
+		)));
 		
-		SQL_CLAUSE.put("(", new HashMap<String,String>(){{
-			put(OPT_LAST,new_line_string);
-			put(OPT_LASTINDENT,"1");
+		SQL_CLAUSE.put("(", Maps.newHashMap(ImmutableMap.of(
+			OPT_LAST,new_line_string
+			,OPT_LASTINDENT,"1"
 			
-			put(CLAUSE_FROM+OPT_LAST,new_line_string);
-			put(CLAUSE_FROM+OPT_LASTINDENT,"0");
-		}});
-		SQL_CLAUSE.put(")", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-			put(OPT_BEFOREINDENT,"-1");
-		}});
+			,CLAUSE_FROM+OPT_LAST,new_line_string
+			,CLAUSE_FROM+OPT_LASTINDENT,"0"
+		)));
+		SQL_CLAUSE.put(")", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+			,OPT_BEFOREINDENT,"-1"
+		)));
 		
-		SQL_CLAUSE.put("call", new HashMap<String,String>(){{
-			put(OPT_BEFORE,new_line_string);
-		}});
+		SQL_CLAUSE.put("call", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,new_line_string
+		)));
 		
 		
 		//########################tab############################
-		SQL_CLAUSE.put("left", new HashMap<String,String>(){{
-			put(OPT_BEFORE,tab_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("right", new HashMap<String,String>(){{
-			put(OPT_BEFORE,tab_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("inner", new HashMap<String,String>(){{
-			put(OPT_BEFORE,tab_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("outer", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("by", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("join", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("into", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,white_string);
-		}});
-		SQL_CLAUSE.put("as", new HashMap<String,String>(){{
-			put(OPT_BEFORE,white_string);
-			put(OPT_LAST,white_string);
-		}});
+		SQL_CLAUSE.put("left", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,tab_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("right", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,tab_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("inner", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,tab_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("outer", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("by", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("join", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("into", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,white_string
+		)));
+		SQL_CLAUSE.put("as", Maps.newHashMap(ImmutableMap.of(
+			OPT_BEFORE,white_string
+			,OPT_LAST,white_string
+		)));
 		
 		return SQL_CLAUSE;
 	}

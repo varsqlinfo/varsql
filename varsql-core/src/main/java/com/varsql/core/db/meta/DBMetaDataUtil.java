@@ -5,8 +5,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -67,6 +69,7 @@ public final class DBMetaDataUtil {
 		ResultSet colRs = null;
 		String schema = dataParamInfo.getSchema();
 		try {
+			
 			DatabaseMetaData dbmd = conn.getMetaData();
 			
 			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
@@ -75,6 +78,9 @@ public final class DBMetaDataUtil {
 			List<ColumnInfo> columnList = null;
 			String tableNm = "";
 			
+			Map<String , HashSet<String>> pkMap = new HashMap<String , HashSet<String>>();
+			Map<String , TableInfo> tableInfoMap = new HashMap<String , TableInfo>();
+			
 			for(TableInfo tableInfo: tableList){
 				columnList = new ArrayList<ColumnInfo>();
 				
@@ -82,22 +88,31 @@ public final class DBMetaDataUtil {
 				
 				colRs = dbmd.getPrimaryKeys(null, schema, tableNm);
 				
-				Set<String> keyColumn = new HashSet<String>();
+				HashSet<String> keyColumn = new HashSet<String>();
 				while(colRs.next()){
 					keyColumn.add(colRs.getString(MetaColumnConstants.COLUMN_NAME));
 				}
 				colRs.close();
 				
-				colRs = dbmd.getColumns(null, schema, tableNm, null);
+				pkMap.put(tableNm, keyColumn);
 				
-				while(colRs.next()){
-					columnList.add(resultSetMetaHandlerImpl.getColumnInfo(colRs, dataTypeImpl, keyColumn));
-				}
+				tableInfoMap.put(tableNm, tableInfo);
 				
-				colRs.close();
 				tableInfo.setColList(columnList);
+				
 				reLst.add(tableInfo);
 			}
+			
+			colRs = dbmd.getColumns(null, schema, null, null);
+			
+			while(colRs.next()){
+				tableNm = colRs.getString(MetaColumnConstants.TABLE_NAME);
+				
+				if(tableInfoMap.containsKey(tableNm)) {
+					tableInfoMap.get(tableNm).getColList().add(resultSetMetaHandlerImpl.getColumnInfo(colRs, dataTypeImpl, pkMap.get(tableNm)));
+				}
+			}
+			colRs.close();
 		}finally{
 			SqlUtils.close(colRs);
 		}
