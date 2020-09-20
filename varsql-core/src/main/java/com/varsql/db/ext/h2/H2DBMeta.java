@@ -1,7 +1,6 @@
 package com.varsql.db.ext.h2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -33,7 +32,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class H2DBMeta extends DBMetaImpl{
 
-	private static Logger logger = LoggerFactory.getLogger(H2DBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(H2DBMeta.class);
 
 	public H2DBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory

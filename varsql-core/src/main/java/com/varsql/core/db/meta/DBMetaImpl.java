@@ -41,7 +41,7 @@ import com.vartech.common.utils.VartechReflectionUtils;
  */
 public abstract class DBMetaImpl implements DBMeta{
 
-	private static Logger logger = LoggerFactory.getLogger(DBMetaImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(DBMetaImpl.class);
 
 	protected MetaControlBean dbInstanceFactory;
 	protected List<ServiceObject> serviceMenu =new LinkedList<ServiceObject>();

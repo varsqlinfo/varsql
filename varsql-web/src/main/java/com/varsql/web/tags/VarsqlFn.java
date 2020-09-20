@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.varsql.web.constants.WebStaticResourceVersion;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.DateUtils;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -21,7 +22,7 @@ import com.vartech.common.utils.DateUtils;
 public final class VarsqlFn{
 
 	public static String objectToJson(Object json) {
-		return VarsqlUtils.objectToString(json);
+		return VartechUtils.objectToJsonString(json);
 	}
 
 	public static String currentDate(String foramt) {

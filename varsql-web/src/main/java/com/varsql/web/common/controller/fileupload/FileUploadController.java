@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.VarsqlInfoConstants;
 import com.varsql.web.dto.file.FileInfo;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -46,16 +49,16 @@ import com.vartech.common.utils.VartechUtils;
 public class FileUploadController extends AbstractController {
 
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
-	
+	private final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+
 	String fileUploadPath = Configuration.getInstance().getFileUploadPath();
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : fileUpload
 	 * @Method 설명 : unit file upload
 	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29. 
+	 * @작성일   : 2019. 11. 29.
 	 * @변경이력  :
 	 * @param uploadfile
 	 * @return
@@ -65,37 +68,32 @@ public class FileUploadController extends AbstractController {
 	public @ResponseBody ResponseResult fileUpload(@RequestParam(value = "file", required = true) MultipartFile uploadfile
 			,@RequestParam(value = "param", required = true, defaultValue = "{}") String jsonParam) throws IOException {
 		logger.debug("Single file upload!");
-		
-		ParamMap param = VarsqlUtils.stringToObject(jsonParam);
-		
-		ResponseResult result = new ResponseResult(); 
-        if (uploadfile.isEmpty()) {
-        	result.setMessage("select file");
-        }else {
-        	List<FileInfo> fileLists= uploadFile(Arrays.asList(uploadfile));
-        	
-        	if(fileLists.size() > 0) {
-        		FileInfo fileInfo = fileLists.get(0);
-        		if(param.getBoolean("read")) {
-        			
-        		}else {
-        			
-        		}
-        		result.setItemOne(fileInfo);
-        	}else {
-        		result.setMessage("select file");
-        	}
+
+		ParamMap param = VartechUtils.jsonStringToObject(jsonParam);
+
+		ResponseResult result = new ResponseResult();
+
+		List<FileInfo> fileLists = null;
+        if (!uploadfile.isEmpty()) {
+        	fileLists= uploadFile(Arrays.asList(uploadfile));
         }
-        
+
+        if(fileLists !=null && fileLists.size() > 0) {
+        	result.setItemList(fileLists);
+    	}else {
+    		result.setResultCode(VarsqlAppCode.COMM_FILE_EMPTY.code());
+    		result.setMessage("select file");
+    	}
+
         return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : multiFileUpload
 	 * @Method 설명 : multi file upload
 	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29. 
+	 * @작성일   : 2019. 11. 29.
 	 * @변경이력  :
 	 * @param uploadfile
 	 * @return
@@ -105,54 +103,54 @@ public class FileUploadController extends AbstractController {
 	public @ResponseBody ResponseResult multiFileUpload(@RequestParam(value = "file", required = true) MultipartFile uploadfile
 			,@RequestParam(value = "param", required = true, defaultValue = "{}") String jsonParam) throws IOException {
 		List<FileInfo> fileLists  =uploadFile(Arrays.asList(uploadfile));
-		
+
 		ResponseResult result = new ResponseResult();
-		
+
 		result.setItemList(fileLists);
-		
-		return result; 	
+
+		return result;
 	}
-	
+
 	private List<FileInfo> uploadFile(List<MultipartFile> files) throws IllegalStateException, IOException {
 		List<FileInfo> fileLists = new ArrayList<FileInfo>();
-		
+
 		File uploadFile;
 		FileInfo fileInfo;
-		int fileLen = files.size(); 
-		
+		int fileLen = files.size();
+
 		String uploadDir = fileUploadPath+File.separator +DateUtils.getCurrentDate("yyyyMMdd");
-		
+
 		final File dir = new File(uploadDir);
 		if(!dir.isDirectory()){
 			dir.mkdirs();
 		}
-		
+
 		for (int i = 0; i < fileLen ; i++) {
 			MultipartFile mfileInfo = files.get(i);
-			
-			String orginName = mfileInfo.getOriginalFilename(); 
-			
+
+			String orginName = mfileInfo.getOriginalFilename();
+
 			if(StringUtils.isEmpty(orginName)) {
-				continue ; 
+				continue ;
 			}
-			
-			String extensions = FilenameUtils.getExtension(orginName); 
-			String saveFileName = VartechUtils.generateUUID() +"."+extensions; 
+
+			String extensions = FilenameUtils.getExtension(orginName);
+			String saveFileName = VartechUtils.generateUUID() +"."+extensions;
 			fileInfo = new FileInfo();
-			
+
 			fileInfo.setFileName(orginName);
 			fileInfo.setSize(mfileInfo.getSize());
 			fileInfo.setExtensions(extensions);
 			fileInfo.setSaveFileName(saveFileName);
 			fileInfo.setSavePath(uploadDir);
-			
+
 			uploadFile = new File(uploadDir,fileInfo.getSaveFileName());
-			
-			mfileInfo.transferTo(uploadFile);	
-			
+
+			mfileInfo.transferTo(uploadFile);
+
 			fileLists.add(fileInfo);
 		}
-		
-		return fileLists; 
+
+		return fileLists;
 	}
 }

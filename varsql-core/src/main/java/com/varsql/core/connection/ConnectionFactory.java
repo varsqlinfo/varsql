@@ -10,7 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.code.VarsqlErrorCode;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
@@ -32,7 +32,7 @@ import com.varsql.core.sql.util.SqlUtils;
  */
 public final class ConnectionFactory implements ConnectionContext{
 
-	private final static Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+	private final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
 	private PoolType connectionPoolType = PoolType.DBCP2;
 
@@ -57,7 +57,7 @@ public final class ConnectionFactory implements ConnectionContext{
 
 		if(connInfo != null){
 			if(connectionShutdownInfo.containsKey(connid)) {
-				throw new ConnectionFactoryException(VarsqlErrorCode.DB_POOL_CLOSE.code(), "");
+				throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE.code(), "");
 			}
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}

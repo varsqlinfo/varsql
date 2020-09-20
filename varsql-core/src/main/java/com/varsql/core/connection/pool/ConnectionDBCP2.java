@@ -18,7 +18,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.code.VarsqlErrorCode;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 
@@ -36,7 +36,7 @@ public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 
 	protected final String DBCP_JDBC_PREFIX= "jdbc:apache:commons:dbcp:";
 
-	private static Logger logger = LoggerFactory.getLogger(ConnectionDBCP2.class);
+	private final Logger logger = LoggerFactory.getLogger(ConnectionDBCP2.class);
 
 	PoolingDriver driver;
 
@@ -116,7 +116,7 @@ public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 				throw new ConnectionFactoryException(e.getMessage() , e);
 			}
 
-			throw new ConnectionFactoryException(VarsqlErrorCode.DB_POOL_CLOSE.code(),e.getMessage() , e);
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE.code(),e.getMessage() , e);
 		}
 	}
 

@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.varsql.core.common.code.VarsqlErrorCode;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.beans.GridColumnInfo;
@@ -88,7 +88,6 @@ public final class SqlResultUtils {
 			}else{
 				columnKeyCheck.put(columnName, 0);
 			}
-			columnNameArr[i] = columnName;
 			columnNameArr[i] = columnName;
 
 			columnInfo = new GridColumnInfo();
@@ -170,7 +169,7 @@ public final class SqlResultUtils {
 			ssrv.setData(rows);
 			ssrv.setResultCnt(totalCnt);
 			ssrv.setResultMessage(e.getMessage());
-			throw new VarsqlResultConvertException(VarsqlErrorCode.SQL_RESULT_CONVERT.code(), ssrv, e);
+			throw new VarsqlResultConvertException(VarsqlAppCode.EC_SQL_RESULT_CONVERT.code(), ssrv, e);
 		}
 		ssrv.setData(rows);
 		ssrv.setResultCnt(totalCnt);

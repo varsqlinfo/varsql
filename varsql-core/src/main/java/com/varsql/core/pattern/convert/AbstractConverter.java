@@ -12,7 +12,7 @@ import com.varsql.core.pattern.parsing.TokenParser;
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: AbstractConverter.java
-* @desc		: 변환기  
+* @desc		: 변환기
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -23,13 +23,13 @@ import com.varsql.core.pattern.parsing.TokenParser;
  */
 public abstract class AbstractConverter implements Converter {
 	TokenParser parser;
-	
+
 	final static String LINE_SEPARATOR = System.lineSeparator();
 
 	public AbstractConverter() {
 		this.parser = new GenericTokenParser();
 	}
-	
+
 	public AbstractConverter(TokenParser parser) {
 		this.parser = parser;
 	}
@@ -85,9 +85,11 @@ public abstract class AbstractConverter implements Converter {
 				TokenInfo statePattern = states.peek();
 				TokenIndexInfo tokenDelimiterFindInfo = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
 
-				int suffixIdx = tokenDelimiterFindInfo == null ? -1 : tokenDelimiterFindInfo.getIdx();
-
-				if (suffixIdx > -1) {
+				if(tokenDelimiterFindInfo == null) {
+					dest.append(cont.substring(startIdx - statePattern.getStartDelimiterLen(), startIdx));
+					states.pop();
+				}else {
+					int suffixIdx = tokenDelimiterFindInfo.getIdx();
 					index = suffixIdx + tokenDelimiterFindInfo.getDelimiterLength() - (tokenDelimiterFindInfo.getDelimiterLength() > 0 ? 1 : 0);
 
 					try {
@@ -96,20 +98,15 @@ public abstract class AbstractConverter implements Converter {
 						throw new RuntimeException(e.getMessage());
 					}
 					states.pop();
-
-				} else {
-					dest.append(cont.substring(startIdx - statePattern.getStartDelimiterLen(), startIdx));
-					states.pop();
 				}
-
 			}
 		}
-		
+
 		return new ConvertResult(dest.toString());
 	}
 
 	private String getHandlerValue(TokenHandler handler, TokenInfo startPattern, String token) {
-		
+
 		if (handler == null)
 			return parser.perform(startPattern, token);
 
@@ -126,7 +123,7 @@ public abstract class AbstractConverter implements Converter {
 	@Override
 	public ConvertResult tokenData(String cont, TokenHandler handler, TokenInfo... tokens) {
 	    final StringBuilder dest = new StringBuilder();
-	    
+
 	    cont = cont + System.lineSeparator();
 		final Stack<TokenInfo> states = new Stack<>();
 
@@ -157,7 +154,7 @@ public abstract class AbstractConverter implements Converter {
 					index = index + startPattern.getStartDelimiterLen();
 
 					if (startPattern.isEmptyEndDelimiter()) {
-					  String val = getHandlerValue(handler, startPattern, ""); 
+					  String val = getHandlerValue(handler, startPattern, "");
 					  dest.append(val);
 						if (startPattern.isValueReturn()) {
 							result.add(val);
@@ -174,26 +171,26 @@ public abstract class AbstractConverter implements Converter {
 
 				TokenIndexInfo tokenDelimiterFindInfo = parser.findEndDelimiterIndex(statePattern, cont, startIdx);
 
-				int suffixIdx = tokenDelimiterFindInfo == null ? -1 : tokenDelimiterFindInfo.getIdx();
+				if(tokenDelimiterFindInfo == null) {
+					dest.append(cont.substring(startIdx - statePattern.getStartDelimiterLen(), startIdx));
+					states.pop();
+				}else {
+					int suffixIdx = tokenDelimiterFindInfo.getIdx();
 
-				if (suffixIdx > -1) {
 					index = suffixIdx + tokenDelimiterFindInfo.getDelimiterLength()	- (tokenDelimiterFindInfo.getDelimiterLength() > 0 ? 1 : 0);
 
-					String val = getHandlerValue(handler, statePattern, cont.substring(startIdx, suffixIdx)); 
-					
+					String val = getHandlerValue(handler, statePattern, cont.substring(startIdx, suffixIdx));
+
 					dest.append(val);
-					
+
 					if (statePattern.isValueReturn()) {
 						result.add(val);
 					}
 					states.pop();
-				} else {
-					dest.append(cont.substring(startIdx - statePattern.getStartDelimiterLen(), startIdx));
-					states.pop();
 				}
 			}
 		}
-		
+
 		return new ConvertResult(dest.toString(),result);
 	}
 }

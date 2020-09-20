@@ -25,7 +25,7 @@ import com.varsql.core.db.DBType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 
 public class DDLTemplateFactory {
-	private final static Logger logger = LoggerFactory.getLogger(DDLTemplateFactory.class);
+	private final Logger logger = LoggerFactory.getLogger(DDLTemplateFactory.class);
 
 	private final String TEMPLATE_PACKAGE= "db/template/ddl/";
 	private final String XML_PREFIX= "ddl_";

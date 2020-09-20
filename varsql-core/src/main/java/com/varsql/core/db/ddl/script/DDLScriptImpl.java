@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
@@ -37,8 +35,6 @@ import com.varsql.core.sql.util.SqlUtils;
  * @변경이력 :
  */
 public abstract class DDLScriptImpl extends DDLScriptAbstract{
-	Logger logger = LoggerFactory.getLogger(DDLScriptImpl.class);
-
 	protected MetaControlBean dbInstanceFactory;
 
 	protected DDLScriptImpl(MetaControlBean dbInstanceFactory ){

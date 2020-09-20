@@ -17,6 +17,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.ResourceUtils;
 import com.vartech.common.utils.VartechUtils;
 
 
@@ -25,11 +26,11 @@ import com.vartech.common.utils.VartechUtils;
  * @FileName : PreferencesDataFactory.java
  * @작성자 	 : ytkim
  * @Date	 : 2020. 09. 04.
- * @프로그램설명: varsql 환경설정 기본 값 
+ * @프로그램설명: varsql 환경설정 기본 값
  * @변경이력	:
  */
 public class PreferencesDataFactory{
-	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
 	XPath xpath = XPathFactory.newInstance().newXPath();
 
@@ -37,7 +38,7 @@ public class PreferencesDataFactory{
 	private final String DEFAULT_KEY_NAME= "key";
 
 	private Map<String ,String> defaultPreferencesInfo = new HashMap<String,String>();
-	
+
 	private static class ConfigurationHolder{
         private static final PreferencesDataFactory instance = new PreferencesDataFactory();
     }
@@ -61,7 +62,7 @@ public class PreferencesDataFactory{
 
 	/**
 	 * initialize config file
-	 * @throws IOException 
+	 * @throws IOException
 	 * @Method Name  : initConfig
 	 * @Author : ytkim
 	 * @Method desc :
@@ -69,28 +70,24 @@ public class PreferencesDataFactory{
 	 */
 	private void initConfig() throws IOException {
 		logger.debug("default preferences template file path : {} ", TEMPLATE_PACKAGE);
-		
-		ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
-		Resource[] resources = resolver.getResources(TEMPLATE_PACKAGE) ;
-		
+
+		Resource[] resources = ResourceUtils.getPackageResources(TEMPLATE_PACKAGE);
+
 		for (Resource resource: resources){
-			
-			String xml = IOUtils.toString(resource.getInputStream(), Charset.forName(VarsqlConstants.CHAR_SET));
-			
+
+			String xml = ResourceUtils.getResourceString(resource);
 			JsonNode node = VartechUtils.xmlToJsonNode(xml);
-			
 			if(node.get(DEFAULT_KEY_NAME) == null) {
-				logger.debug("key empty resource name : {} , path : {} ",resource.getFilename() ,resource.getFile().getPath());
-				continue; 
+				logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
+				continue;
 			}
-			
+
 			String key =node.get(DEFAULT_KEY_NAME).asText();
 
 			defaultPreferencesInfo.put(key, VartechUtils.objectToJsonString(node));
 		}
 	}
-	
+
 	public String getDefaultValue(String key) {
 		return defaultPreferencesInfo.get(key);
 	}

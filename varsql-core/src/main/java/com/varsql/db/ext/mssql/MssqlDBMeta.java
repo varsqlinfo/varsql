@@ -1,7 +1,6 @@
 package com.varsql.db.ext.mssql;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class MssqlDBMeta extends DBMetaImpl{
 
-	private static Logger logger = LoggerFactory.getLogger(MssqlDBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(MssqlDBMeta.class);
 
 	public MssqlDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory

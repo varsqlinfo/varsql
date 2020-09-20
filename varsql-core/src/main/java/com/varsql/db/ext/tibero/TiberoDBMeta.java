@@ -1,7 +1,6 @@
 package com.varsql.db.ext.tibero;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ import com.vartech.common.utils.VartechUtils;
  * @변경이력	:
  */
 public class TiberoDBMeta extends DBMetaImpl{
-	private static Logger logger = LoggerFactory.getLogger(TiberoDBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(TiberoDBMeta.class);
 
 	public TiberoDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory

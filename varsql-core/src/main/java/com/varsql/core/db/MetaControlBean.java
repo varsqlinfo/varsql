@@ -1,13 +1,11 @@
 package com.varsql.core.db;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.druid.util.JdbcConstants;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.DBMetaImpl;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
@@ -33,6 +31,8 @@ import com.vartech.common.utils.VartechReflectionUtils;
  */
 public class MetaControlBean {
 
+	private final static Logger logger = LoggerFactory.getLogger(MetaControlBean.class);
+
 	private DBMetaImpl dbMetaImpl;
 	private DDLScriptImpl ddlScriptImpl;
 	private ResultSetHandler resultSetHandler;
@@ -40,8 +40,6 @@ public class MetaControlBean {
 	private TableReportImpl tableReportImpl;
 
 	private ResultSetMetaHandlerImpl resultSetMetaHandlerImpl;
-
-	private static Logger logger;
 
 	private String dbVenderName;
 
@@ -53,28 +51,28 @@ public class MetaControlBean {
 		try {
 			this.dataTypeImpl=(DataTypeImpl)getBeanObject(DataTypeImpl.class, "DataType");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory dataTypeImpl ",e);
+			logger.info("DbInstanceFactory dataTypeImpl ",e);
 		}
 
 		// meta load
 		try {
 			this.dbMetaImpl=(DBMetaImpl)getBeanObject(DBMetaImpl.class, "DBMeta");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory dbMetaImpl ",e);
+			logger.info("DbInstanceFactory dbMetaImpl ",e);
 		}
 
 		// script object load
 		try {
 			this.ddlScriptImpl=(DDLScriptImpl)getBeanObject(DDLScriptImpl.class, "DDLScript");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory ddlScriptImpl ",e);
+			logger.info("DbInstanceFactory ddlScriptImpl ",e);
 		}
 
 		//result set handler
 		try {
 			this.resultSetHandler=(ResultSetHandlerImpl)getBeanObject(ResultSetHandlerImpl.class, "ResultSetHandler");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory ResultsetHandler ",e);
+			logger.info("DbInstanceFactory ResultsetHandler ",e);
 		}
 
 
@@ -82,14 +80,14 @@ public class MetaControlBean {
 		try {
 			this.resultSetMetaHandlerImpl=(ResultSetMetaHandlerImpl)getBeanObject(ResultSetMetaHandlerImpl.class, "ResultSetMetaHandler");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory resultSetMetaHandlerImpl ",e);
+			logger.info("DbInstanceFactory resultSetMetaHandlerImpl ",e);
 		}
 
 		// tableReportImpl set meata handler load
 		try {
 			this.tableReportImpl = (TableReportImpl)getBeanObject(TableReportImpl.class, "TableReport");
 		} catch (Exception e) {
-			logger().info("DbInstanceFactory TableReportImpl ",e);
+			logger.info("DbInstanceFactory TableReportImpl ",e);
 		}
 	}
 
@@ -191,8 +189,8 @@ public class MetaControlBean {
 				return (T)this.dbMetaImpl.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger().error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtil.join(objNm));
-			logger().error("getDBMeta callMethodName " , e);
+			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtil.join(objNm));
+			logger.error("getDBMeta callMethodName " , e);
 		}
 		return null;
 	}
@@ -210,8 +208,8 @@ public class MetaControlBean {
 				return (T)this.dbMetaImpl.getExtensionObject(paramInfo, dbObjType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger().error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMetaImpl.getClass(), callMethodName);
-			logger().error("getDBObjectList callMethodName " , e);
+			logger.error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMetaImpl.getClass(), callMethodName);
+			logger.error("getDBObjectList callMethodName " , e);
 		}
 		return null;
 	}
@@ -235,8 +233,8 @@ public class MetaControlBean {
 				throw new VarsqlMethodNotFoundException(String.format("MetaControlBean getDDLScript ->  %s method not found ", callMethodName));
 			}
 		}catch(Exception e){
-			logger().error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScriptImpl.getClass(), callMethodName, StringUtil.join(objNm));
-			logger().error("getDDLScript callMethodName " , e);
+			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScriptImpl.getClass(), callMethodName, StringUtil.join(objNm));
+			logger.error("getDDLScript callMethodName " , e);
 		}
 		return null;
 	}
@@ -251,14 +249,6 @@ public class MetaControlBean {
 
 	public ResultSetMetaHandlerImpl getResultSetMetaHandlerImpl() {
 		return resultSetMetaHandlerImpl;
-	}
-
-	private static Logger logger(){
-		if(logger ==null){
-			logger = LoggerFactory.getLogger(MetaControlBean.class);
-		}
-
-		return logger;
 	}
 
 	public TableReportImpl getTableReportImpl() {

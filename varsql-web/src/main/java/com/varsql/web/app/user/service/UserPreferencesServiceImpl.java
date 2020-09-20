@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.varsql.core.common.code.VarsqlErrorCode;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.StringUtil;
@@ -29,6 +29,7 @@ import com.varsql.web.dto.user.NoteResponseDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserModReqeustDTO;
+import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.user.UserEntity;
@@ -45,7 +46,7 @@ import com.vartech.common.crypto.EncryptDecryptException;
 
 @Service
 public class UserPreferencesServiceImpl extends AbstractService{
-	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(UserPreferencesServiceImpl.class);
 
 	@Autowired
 	private QnAEntityRepository qnaEntityRepository;
@@ -95,35 +96,33 @@ public class UserPreferencesServiceImpl extends AbstractService{
 
 		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
 
+		if(userInfo==null) throw new VarsqlAppException("user infomation not found : " + SecurityUtil.userViewId());
+
 		userInfo.setLang(userForm.getLang());
 		userInfo.setUname(userForm.getUname());
 		userInfo.setOrgNm(userForm.getOrgNm());
 		userInfo.setDeptNm(userForm.getDeptNm());
 		userInfo.setDescription(userForm.getDescription());
 
-		userInfo = userMgmtRepository.save(userInfo);
+		userMgmtRepository.save(userInfo);
 
-		boolean flag = userInfo != null;
+		// 언어 변경시 처리.
+		Locale userLocale= LocaleConstants.parseLocaleString(userForm.getLang());
 
-		if(flag) {
-			// 언어 변경시 처리.
-			Locale userLocale= LocaleConstants.parseLocaleString(userForm.getLang());
-
-			if(userLocale != null  && !userLocale.equals(SecurityUtil.loginInfo().getUserLocale())) {
-				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(req);
-				if (localeResolver == null) {
-					throw new IllegalStateException("No LocaleResolver found.");
-				}
-
-				if(localeResolver.resolveLocale(req) != userLocale) {
-					localeResolver.setLocale(req, res, userLocale);
-				}
-
-				SecurityUtil.loginInfo().setUserLocale(userLocale);
+		if(userLocale != null  && !userLocale.equals(SecurityUtil.loginInfo().getUserLocale())) {
+			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(req);
+			if (localeResolver == null) {
+				throw new IllegalStateException("No LocaleResolver found.");
 			}
+
+			if(localeResolver.resolveLocale(req) != userLocale) {
+				localeResolver.setLocale(req, res, userLocale);
+			}
+
+			SecurityUtil.loginInfo().setUserLocale(userLocale);
 		}
 
-		return flag;
+		return true;
 	}
 
 	/**
@@ -146,10 +145,10 @@ public class UserPreferencesServiceImpl extends AbstractService{
 
 		if(passwordEncoder.matches(passwordForm.getCurrPw(), userInfo.getUpw())){
 			userInfo.setUpw(passwordForm.getUpw());
-			userInfo = userMgmtRepository.save(userInfo);
-			resultObject.setItemOne(userInfo != null?1 :0);
+			userMgmtRepository.save(userInfo);
+			resultObject.setItemOne(1);
 		}else{
-			resultObject.setResultCode(VarsqlErrorCode.PASSWORD_NOT_VALID.code());
+			resultObject.setResultCode(VarsqlAppCode.COMM_PASSWORD_NOT_VALID.code());
 		}
 
 		return resultObject;
@@ -263,8 +262,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 */
 	public ResponseResult saveQnaInfo(QnARequesetDTO qnaInfo, boolean insFlag) {
 		QnAEntity entity= qnaInfo.toEntity();
-		entity = qnaEntityRepository.save(entity);
-		return VarsqlUtils.getResponseResultItemOne(entity==null? 0:1);
+		qnaEntityRepository.save(entity);
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 
 	/**

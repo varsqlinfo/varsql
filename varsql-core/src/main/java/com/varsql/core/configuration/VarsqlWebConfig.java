@@ -24,7 +24,7 @@ import com.vartech.common.app.beans.ParamMap;
  */
 public class VarsqlWebConfig extends AbstractXmlLoad{
 
-	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
 	private ParamMap<String,Object> CONFIG_INFO = new ParamMap<String,Object>();
 	private Object lock = new Object();
@@ -53,7 +53,7 @@ public class VarsqlWebConfig extends AbstractXmlLoad{
 
 	private void initialize(boolean initflag) throws ConfigurationLoadException {
 		synchronized(lock){
-			FileInputStream is =null; 
+			FileInputStream is =null;
 			try{
 
 				logger.info("configuration web xml property : {}",Constants.WEB_CONFIG_FILE);
@@ -75,7 +75,7 @@ public class VarsqlWebConfig extends AbstractXmlLoad{
 				Element root = builder.build(is).getRootElement();
 
 				getConfigInfo(root);
-				
+
 				is.close();
 			}catch(ConfigurationLoadException e) {
 				throw new ConfigurationLoadException( this.getClass().getName() +  e.getMessage());

@@ -2,82 +2,77 @@ package com.varsql.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.configuration.VarsqlWebConfig.XmlElementsInfo;
 import com.varsql.core.configuration.xml.AbstractXmlLoad;
 import com.varsql.core.configuration.xml.XmlField;
 import com.varsql.core.exception.ConfigurationLoadException;
 import com.vartech.common.app.beans.ParamMap;
 
 /**
- * 
+ *
  * @FileName  : VarsqlPluginConfig.java
  * @프로그램 설명 : varsql plugin config
- * @Date      : 2019. 11. 14. 
+ * @Date      : 2019. 11. 14.
  * @작성자      : ytkim
  * @변경이력 :
  */
 public class VarsqlPluginConfig extends AbstractXmlLoad{
-	
-	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
-	
+
+	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
+
 	private ParamMap<String,Object> CONFIG_INFO = new ParamMap<String,Object>();
 	private Object lock = new Object();
-	
-	
+
+
 	private String[] packageArr;
-	
+
 	private static class Holder {
 		private static final VarsqlPluginConfig instance = new VarsqlPluginConfig();
 	}
-	
+
 	public static VarsqlPluginConfig newIntance() {
 		return Holder.instance;
 	}
-	
+
 	private VarsqlPluginConfig() {
 		try {
 			initialize(true);
 		} catch (ConfigurationLoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("varsql plugin init error : {}" , e.getMessage());
+			logger.error("varsql plugin init error" , logger);
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void initialize(boolean initflag) throws ConfigurationLoadException {
-		FileInputStream is =null; 
-		synchronized(lock){	
+		FileInputStream is =null;
+		synchronized(lock){
 			try{
-				
+
 				logger.info("configuration plugin xml property : {}",Constants.PLUGIN_CONFIG_FILE);
-				
+
 				File propFile = new File(getInstallRoot(), Constants.PLUGIN_CONFIG_FILE);
-				
+
 				logger.info("config plugin xml path : {}",propFile);
-				
+
 				if ( ! propFile.canRead() ){
-					
+
 					logger.info("Can't open configuration file path: {}", propFile);
-					
+
 					throw new ConfigurationLoadException( this.getClass().getName() + " - Can't open configuration file path: " + propFile);
 				}
-					
+
 				is = new FileInputStream(propFile);
-				
+
 				SAXBuilder builder = new SAXBuilder();
 				Element root = builder.build(is).getRootElement();
-				
+
 				getConfigInfo(root);
 			}catch(ConfigurationLoadException e) {
 				throw new ConfigurationLoadException( this.getClass().getName() +  e.getMessage());
@@ -88,12 +83,12 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 			}
 		} // end of sunchronized(lock);
 	}
-	
+
 	private void getConfigInfo(Element root) throws RuntimeException {
 		CONFIG_INFO = getXmlElementsInfo(root);
-		
+
 		Object packageObj= ((ParamMap)CONFIG_INFO.get(XmlElementsInfo.PACKAGES.getFieldName())).get(XmlElementsInfo.PACKAGE.getFieldName());
-		
+
 		if(packageObj instanceof List) {
 			List packageList = ((List)packageObj);
 			packageArr = (String[])packageList.toArray(new String[packageList.size()]);
@@ -102,14 +97,14 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 			packageArr[0] = packageObj.toString();
 		}
 	}
-	
+
 	public String[] getPackageArr() {
 		return this.packageArr;
 	}
-	
+
 	enum XmlElementsInfo implements XmlField{
 		PACKAGES("packages"),PACKAGE("package");
-		
+
 		private String fieldName;
 		private String[] fieldAttr;
 		private XmlField.OBJECT_TYPE objectType;
@@ -121,18 +116,18 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 			this.fieldName = _fieldName;
 			this.objectType = _objectType;
 		}
-		
+
 		XmlElementsInfo(String _fieldName,XmlField.OBJECT_TYPE _objectType, String ... attr){
 			this.fieldName = _fieldName;
 			this.objectType = _objectType;
 			this.fieldAttr = attr;
 		}
-		
+
 		@Override
 		public String getFieldName(){
 			return this.fieldName;
 		}
-		
+
 		@Override
 		public String[] getFieldAttr() {
 			return this.fieldAttr;

@@ -1,5 +1,7 @@
 package com.varsql.core.common.constants;
 
+import java.nio.charset.Charset;
+
 import com.varsql.core.configuration.Configuration;
 
 /**
@@ -25,4 +27,20 @@ public interface VarsqlConstants {
 
 	// default charset
 	final String CHAR_SET = Configuration.getInstance().getCharset();
+
+	// sql 관련 상수.
+	enum SQL{
+		PARAM("?");
+
+		private String code;
+
+		SQL(String code) {
+			this.code  = code;
+		}
+
+		public String val() {
+			return this.code;
+		}
+
+	}
 }

@@ -16,7 +16,7 @@ import com.varsql.core.common.beans.ClientPcInfo;
 
 public final class CommUtil {
 	private static final Logger logger = LoggerFactory.getLogger(CommUtil.class);
-	
+
 	final static String HOSTNAME;
 	static {
 		String hostName = "";
@@ -26,19 +26,21 @@ public final class CommUtil {
 	    }else if (env.containsKey("HOSTNAME")) {
 	    	hostName=env.get("HOSTNAME");
 	    }
-	    
+
 	    if("".equals(hostName)) {
 	    	try {
 				hostName = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
-				
+
 			}
 	    }
-	    
-	    HOSTNAME = hostName; 
+
+	    HOSTNAME = hostName;
 	}
+
+	private CommUtil() {}
 	/**
-	 * 
+	 *
 	 * @param str
 	 * @return boolean
 	 */
@@ -46,7 +48,7 @@ public final class CommUtil {
 	    char c;
 
 	    if("".equals(str)) return false;
-	    
+
 	    for(int i = 0 ; i < str.length() ; i++){
 	        c = str.charAt(i);
 	        if(c < 48 || c > 59){
@@ -55,7 +57,7 @@ public final class CommUtil {
 	    }
 	    return true;
 	}
-	
+
 	/**
 	 * remove "," in string.
 	 * @return String
@@ -67,7 +69,7 @@ public final class CommUtil {
 		}
 		return s.replaceAll("\\,", "");
 	}
-	
+
 	/**
 	 * space remove
 	 * "te st"
@@ -75,27 +77,27 @@ public final class CommUtil {
 	 * @return String "test"
 	 */
 	public static String trim(String s) {
-		
-		if ( s == null ) return ""; 
-			
+
+		if ( s == null ) return "";
+
 		return s.replaceAll("\\p{Space}", "");
 	}
-	
+
 	/**
 	 * @param key
-	 * @param initVal 
+	 * @param initVal
 	 * @param delim
 	 * @return String[]
 	 */
 	public static String[] split(String str, String delim){
-		
+
 		if("".equals(str)) return new String[0];
-		
+
 		int position=0;
-		int delimiterIdx = 0; 
+		int delimiterIdx = 0;
 		int strLen = str.length();
 		List<String> resultList = new ArrayList<String>();
-		
+
 		int len = delim.length();
 		while(position <= strLen){
 			delimiterIdx = str.indexOf(delim,position);
@@ -107,15 +109,15 @@ public final class CommUtil {
 			}
 			position = delimiterIdx+len;
 		}
-				
+
 		return (String[]) resultList.toArray(new String[]{});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : getExceptionStr
 	 * @Method 설명 : get exception content string
-	 * @작성일   : 2019. 4. 15. 
+	 * @작성일   : 2019. 4. 15.
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @param e
@@ -124,16 +126,16 @@ public final class CommUtil {
 	public static String getExceptionStr(Throwable e) {
 		return ExceptionUtils.getStackTrace(e);
 	}
-	
+
 	public static String getHostname () {
 		return HOSTNAME;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @Method Name  : getClientPcInfo
 	 * @Method 설명 : client info
-	 * @작성일   : 2019. 9. 21. 
+	 * @작성일   : 2019. 9. 21.
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @param request
@@ -151,20 +153,20 @@ public final class CommUtil {
             osType = "Windows";
         } else if (userAgent.indexOf("Mac OS") >= 0) {
             osType = "Mac";
-            
+
             if(userAgent.indexOf("iPhone") >= 0) {
                 deviceType = "iPhone";
             } else if(userAgent.indexOf("iPad") >= 0) {
                 deviceType = "iPad";
             }
-            
+
         } else if (userAgent.indexOf("X11") >= 0) {
             osType = "Unix";
         } else if (userAgent.indexOf("android") >= 0) {
             osType = "Android";
             deviceType = "Android";
         }
-        
+
         String userAgentLower = userAgent.toLowerCase();
         try {
 	        if (userAgentLower.contains("msie")) {
@@ -191,7 +193,7 @@ public final class CommUtil {
         }
 
         ClientPcInfo cpi = new ClientPcInfo();
-        
+
         cpi.setUserAgent(userAgent);
         cpi.setOsType(osType);
         cpi.setDeviceType(deviceType);
@@ -200,10 +202,10 @@ public final class CommUtil {
         return cpi;
 	}
 	/**
-	 * 
+	 *
 	 * @Method Name  : getClientIp
-	 * @Method 설명 : ip 정보. 
-	 * @작성일   : 2019. 9. 21. 
+	 * @Method 설명 : ip 정보.
+	 * @작성일   : 2019. 9. 21.
 	 * @작성자   : ytkim
 	 * @변경이력  :
 	 * @param req
@@ -211,7 +213,7 @@ public final class CommUtil {
 	 */
 	public static String getClientIp(HttpServletRequest req) {
 
-		String[] headerKeyArr = {  "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP" 
+		String[] headerKeyArr = {  "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP"
 				,"HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR", "HTTP_X_FORWARDED"
 				,"HTTP_FORWARDED_FOR", "HTTP_X_CLUSTER_CLIENT_IP", "HTTP_FORWARDED"
 		};
@@ -225,8 +227,5 @@ public final class CommUtil {
 		}
 
 		return req.getRemoteAddr();
-
 	}
-	
-	
 }

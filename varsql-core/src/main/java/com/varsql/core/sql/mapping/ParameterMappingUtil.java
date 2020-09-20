@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.varsql.core.common.constants.SqlConstants;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.pattern.convert.AbstractConverter;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.pattern.convert.TokenHandler;
@@ -31,7 +31,7 @@ public class ParameterMappingUtil extends AbstractConverter {
 	}
 	
 	public ConvertResult sqlParameter(String cont, Map parameter) {
-		return sqlParameter(cont, parameter, SqlConstants.SQL_PARAM);
+		return sqlParameter(cont, parameter, VarsqlConstants.SQL.PARAM.val());
 	}
 	public ConvertResult sqlParameter(String cont, Map parameter ,String replaceParamChar) {
 		List<ParameterMapping> paramList = new LinkedList<ParameterMapping>();

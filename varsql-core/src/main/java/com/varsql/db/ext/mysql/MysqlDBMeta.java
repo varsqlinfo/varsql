@@ -34,7 +34,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class MysqlDBMeta extends DBMetaImpl{
 
-	private static Logger logger = LoggerFactory.getLogger(MysqlDBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(MysqlDBMeta.class);
 
 	public MysqlDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory

@@ -1,7 +1,5 @@
 package com.varsql.core.crypto;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +8,6 @@ import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.crypto.impl.AESEncryptDecrypt;
 import com.vartech.common.crypto.impl.AbstractCrypto;
 import com.vartech.common.crypto.impl.VartechSeed;
-import com.vartech.common.exception.VartechRuntimeException;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -22,7 +19,7 @@ import com.vartech.common.utils.VartechReflectionUtils;
  * @변경이력 :
  */
 public class DBPasswordCryptionFactory {
-	private final static Logger logger = LoggerFactory.getLogger(DBPasswordCryptionFactory.class);
+	private final Logger logger = LoggerFactory.getLogger(DBPasswordCryptionFactory.class);
 
 	private AbstractCrypto abstractCrypto;
 

@@ -19,7 +19,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class ConnectionHIKARI extends ConnectionPoolAbstract{
 
-	private static Logger log = LoggerFactory.getLogger(ConnectionHIKARI.class);
+	private final Logger log = LoggerFactory.getLogger(ConnectionHIKARI.class);
 
 	@Override
 	public void createDataSource(ConnectionInfo connInfo) throws ConnectionFactoryException {

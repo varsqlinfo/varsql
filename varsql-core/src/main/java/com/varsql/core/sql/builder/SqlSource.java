@@ -12,17 +12,17 @@ public class SqlSource {
 	private String calluserid;
 	private SqlSourceResultVO result;
 	private List<ParameterMapping> paramList;
-	private Map orginSqlParam; 
-	
+	private Map orginSqlParam;
+
 	public String getCommandType() {
 		return commandType;
 	}
 
 	public void setCommandType(String commandType) {
-		 
+
 		this.commandType = commandType != null? commandType.toUpperCase() : VarsqlCommandType.UNKNOWN.name();
 		this.statementType = VarsqlStatementType.PREPARED;
-		
+
 		if(this.commandType.equalsIgnoreCase(VarsqlCommandType.CALL.name())){
 			this.statementType = VarsqlStatementType.CALLABLE;
 		}
@@ -43,7 +43,7 @@ public class SqlSource {
 	public void setCalluserid(String calluserid) {
 		this.calluserid = calluserid;
 	}
-	
+
 	public SqlSourceResultVO getResult() {
 		return result;
 	}
@@ -51,7 +51,7 @@ public class SqlSource {
 	public void setResult(SqlSourceResultVO result) {
 		this.result = result;
 	}
-	
+
 	public String getQuery() {
 		return query;
 	}
@@ -59,7 +59,7 @@ public class SqlSource {
 	public void setQuery(String query) {
 		this.query = query;
 	}
-	
+
 	public List<ParameterMapping> getParamList() {
 		return paramList;
 	}
@@ -67,7 +67,7 @@ public class SqlSource {
 	public void setParamList(List<ParameterMapping> paramList) {
 		this.paramList = paramList;
 	}
-	
+
 	public Map getOrginSqlParam() {
 		return orginSqlParam;
 	}
@@ -75,7 +75,7 @@ public class SqlSource {
 	public void setOrginSqlParam(Map orginSqlParam) {
 		this.orginSqlParam = orginSqlParam;
 	}
-	
+
 	@Override
 	public String toString() {
 		return new StringBuffer()

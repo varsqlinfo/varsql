@@ -21,22 +21,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.common.beans.DataCommonVO;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.model.converter.DomainMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.PagingUtil;
 
@@ -56,93 +46,6 @@ public final class VarsqlUtils {
 		}else{
 			return false;
 		}
-	}
-
-	public static String getVconnID(HttpServletRequest req) {
-		return (String) req.getAttribute(VarsqlParamConstants.VCONNID);
-	}
-
-	public static <T> T stringToObject(String jsonString) {
-		return (T) stringToObject(jsonString, ParamMap.class);
-	}
-
-	public static <T> T stringToObject(String jsonString, Class<T> valueType) {
-		return stringToObject(jsonString, valueType, false);
-	}
-
-	/**
-	 *
-	 * @Method Name : stringToObject
-	 * @Method 설명 : string to object , 프로퍼티 업을때 err여부.
-	 * @작성자 : ytkim
-	 * @작성일 : 2018. 10. 12.
-	 * @변경이력 :
-	 * @param jsonString
-	 * @param valueType
-	 * @param ignoreProp
-	 * @return
-	 */
-	public static <T> T stringToObject(String jsonString, Class<T> valueType, boolean ignoreProp) {
-		try {
-			ObjectMapper om = new ObjectMapper();
-			if (ignoreProp) {
-				om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			} else {
-				om.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			}
-			return om.readValue(jsonString, valueType);
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static String objectToString(Object json) {
-		try {
-			 ObjectMapper objectMapper = new ObjectMapper();
-			 objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-			return objectMapper.writeValueAsString(json);
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "";
-	}
-
-
-	/**
-	 *
-	 * @Method Name  : setPagingParam
-	 * @Method 설명 : 페이징 파라미터 셋팅
-	 * @작성일   : 2015. 4. 27.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param paramMap
-	 * @return
-	 */
-	public static DataCommonVO setPagingParam(DataCommonVO paramMap) {
-		int page = paramMap.getInt(VarsqlParamConstants.SEARCH_NO, VarsqlParamConstants.SEARCH_DEFAULT_FIRST);
-		int rows = paramMap.getInt(VarsqlParamConstants.SEARCH_ROW,VarsqlParamConstants.SEARCH_DEFAULT_ROW);
-
-		int first = (page-1)*rows ;
-
-		paramMap.put(VarsqlParamConstants.SEARCH_FIRST, first);
-		paramMap.put(VarsqlParamConstants.SEARCH_ROW, rows);
-
-		return paramMap;
 	}
 
 	/**
@@ -182,49 +85,23 @@ public final class VarsqlUtils {
 		out.close();
 	}
 
-	public static String getCurrentDateString(){
-		return DateUtils.getCurrentDate();
-	}
-
-	public static String getMillitimeToDateString(long time){
-		return new Timestamp(time).toString();
-	}
-	
 	public static Timestamp getTimestamp(long time){
 		return new Timestamp(time);
 	}
-	
+
 	public static LocalDateTime getLocalDateTime(long time){
 		return Instant.ofEpochMilli(time)
 				  .atZone(ZoneId.systemDefault())
 				  .toLocalDateTime();
 	}
-	
+
 	public static LocalDate getLocalDate(long time){
 		return Instant.ofEpochMilli(time)
 				.atZone(ZoneId.systemDefault())
 				.toLocalDate();
 	}
 
-	public static String getClientIP(HttpServletRequest request) {
-	     String ip = request.getHeader("X-FORWARDED-FOR");
-
-	     if (ip == null || ip.length() == 0) {
-	         ip = request.getHeader("Proxy-Client-IP");
-	     }
-
-	     if (ip == null || ip.length() == 0) {
-	         ip = request.getHeader("WL-Proxy-Client-IP");  // 웹로직
-	     }
-
-	     if (ip == null || ip.length() == 0) {
-	         ip = request.getRemoteAddr() ;
-	     }
-
-	     return ip;
-	}
-
-	public String getClientIpAddr(HttpServletRequest request) {
+	public static String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
@@ -308,13 +185,13 @@ public final class VarsqlUtils {
 		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
 		return responseResult;
 	}
-	
+
 	public static ResponseResult getResponseResult(List <?> result, DomainMapper domainMapper, Class<?> mapperClass) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));
 		return responseResult;
 	}
-	
+
 	public static ResponseResult getResponseResult(List <?> result, long totalCount , SearchParameter searchParameter) {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result);

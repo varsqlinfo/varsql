@@ -1,33 +1,22 @@
 package com.varsql.core.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.springframework.core.io.Resource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionContext;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConfigurationException;
 import com.vartech.common.crypto.password.PasswordType;
-import com.vartech.common.crypto.password.PasswordUtil;
+import com.vartech.common.utils.VartechUtils;
 
 
 /**
@@ -39,15 +28,13 @@ import com.vartech.common.crypto.password.PasswordUtil;
  * @변경이력	:
  */
 public class Configuration extends AbstractConfiguration{
-	private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
 	final String VARSQL_INSTALL_PATH = getInstallRoot();
 	final String CONFIG_FILE= "config/varsqlConfig.properties";
-	final String CONNECTION_FILE= "config/varsqlConnectionConfig.xml";
+	final String CONNECTION_CONFIG_FILE= "config/varsqlConnectionConfig.xml";
 
 	private Properties props = new Properties();
-
-	XPath xpath = XPathFactory.newInstance().newXPath();
 
 	private ConnectionInfo vConInfo = new ConnectionInfo();
 
@@ -101,33 +88,26 @@ public class Configuration extends AbstractConfiguration{
 		logger.info("configuration system property : {}",configPropFile);
 		logger.info("configuration filename : {}",CONFIG_FILE);
 
-		File propFile =null;
+		Resource configResource;
 
 		if(null != configPropFile && !"".equals(configPropFile)){
-			propFile = new File(configPropFile);
+			configResource = ResourceUtils.getResource(configPropFile);
 		}else {
-			propFile = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
+			File file = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
+			if(file.exists()) {
+				configResource = ResourceUtils.getResource(file.getPath());
+			}else {
+				configResource = ResourceUtils.getResource(CONFIG_FILE);
+			}
 		}
 
-		logger.info("config property file : {}",propFile);
-
-		if ( ! propFile.canRead() ){
-
-			logger.info("Can't open configuration file path: {}", propFile);
-
-			throw new ConfigurationException( this.getClass().getName() + " - Can't open configuration file path: " + propFile);
+		if (configResource ==null ){
+			throw new ConfigurationException("Can't open configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONFIG_FILE ,configPropFile));
 		}
 
-		FileInputStream jdf_fin = new FileInputStream(propFile);
+		props.load(configResource.getInputStream());
 
-		try{
-			props.load(jdf_fin);
-
-			setConfigProperty();
-			jdf_fin.close();
-		}finally{
-			if(jdf_fin != null) jdf_fin.close();
-		}
+		setConfigProperty();
 	}
 
 	private void setConfigProperty() {
@@ -170,22 +150,28 @@ public class Configuration extends AbstractConfiguration{
 	 * @throws Exception
 	 */
 	private void initConnection() throws ClassNotFoundException, Exception {
-		File connectionFile = new File(VARSQL_INSTALL_PATH, CONNECTION_FILE);
-
 		String connectionFileInfo = getConnectionFile();
+		Resource connectionResource;
+
+		logger.info("connection default config file : {}",CONNECTION_CONFIG_FILE);
 
 		if(null != connectionFileInfo && !"".equals(connectionFileInfo)){
-			connectionFile = new File(connectionFileInfo);
+			logger.info("connection config read file path : {}", connectionFileInfo);
+			connectionResource = ResourceUtils.getResource(connectionFileInfo);
+		}else {
+			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_CONFIG_FILE);
+			if(file.exists()) {
+				connectionResource = ResourceUtils.getResource(file.getPath());
+			}else {
+				connectionResource = ResourceUtils.getResource(CONNECTION_CONFIG_FILE);
+			}
 		}
 
-		if(!connectionFile.exists()){
-			logger.info("Can't open configuration file path key[com.varsql.connection.file] : {}", connectionFile);
-			throw new ConfigurationException( this.getClass().getName() + " - Can't open configuration file path key[com.varsql.connection.file] : " + connectionFile);
+		if(connectionResource==null){
+			throw new ConfigurationException("Can't open connection configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONNECTION_CONFIG_FILE ,connectionFileInfo));
 		}
 
-		parseXml(connectionFile);
-
-		vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
+		parseXml(connectionResource);
 
 		logger.info("varsql Connection Info : {}" , vConInfo);
 
@@ -205,51 +191,30 @@ public class Configuration extends AbstractConfiguration{
 	 * @Author : ytkim
 	 * @Method desc :
 	 * @History :
-	 * @param xmlFile
+	 * @param connectionResource
 	 */
-	private void parseXml(File xmlFile) {
+	private void parseXml(Resource connectionResource) {
 
 		try {
+			JsonNode jsonInfo =VartechUtils.xmlToJsonNode(ResourceUtils.getResourceString(connectionResource, getCharset()));
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList dataSource = doc.getElementsByTagName("dataSource");
-
-			Element eElement = (Element)dataSource.item(0);
-
-			vConInfo.setAliasName(eElement.getAttribute("name"));
-			vConInfo.setType(getStringValue(eElement, "type","local"));
-			vConInfo.setDriver(getStringValue(eElement,"driver","org.apache.derby.jdbc.EmbeddedDriver"));
-			vConInfo.setUrl(getStringValue(eElement,"url","").replace("#resourePath#", getInstallRoot()));
-			vConInfo.setUsername(getStringValue(eElement,"username",""));
-			vConInfo.setPassword(getStringValue(eElement,"password",""));
-			vConInfo.setMax_active(Integer.parseInt(getStringValue(eElement,"max_active","10")));
-			vConInfo.setPool_opt(getStringValue(eElement,"pool_option",""));
-			vConInfo.setConnection_opt(getStringValue(eElement,"connection_option",""));
-			vConInfo.setTimebetweenevictionrunsmillis(Long.parseLong(getStringValue(eElement,"timebetweenevictionrunsmillis","")));
-			vConInfo.setTest_while_idle(getStringValue(eElement,"test_while_idle",""));
+			vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
+			vConInfo.setAliasName(jsonInfo.get("name").asText(""));
+			vConInfo.setType(jsonInfo.get("name").asText("local"));
+			vConInfo.setDriver(jsonInfo.get("driver").asText("org.h2.Driver"));
+			vConInfo.setUrl(jsonInfo.get("url").asText("org.h2.Driver").replace("#resourePath#", getInstallRoot()));
+			vConInfo.setUsername(jsonInfo.get("username").asText(""));
+			vConInfo.setPassword(jsonInfo.get("password").asText(""));
+			vConInfo.setMax_active(jsonInfo.get("max_active").asInt(10));
+			vConInfo.setPool_opt(jsonInfo.get("pool_option").asText(""));
+			vConInfo.setConnection_opt(jsonInfo.get("connection_option").asText(""));
+			vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
+			vConInfo.setTest_while_idle(jsonInfo.get("test_while_idle").asText());
 
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);
 			throw new Error(io);
-		} catch (XPathExpressionException jdomex) {
-			logger.error("CONNECTION_FILE XPathExpressionException",jdomex);
-			throw new Error(jdomex);
-		} catch (ParserConfigurationException e) {
-			logger.error("CONNECTION_FILE ParserConfigurationException",e);
-			throw new Error(e);
-		} catch (SAXException e) {
-			logger.error("CONNECTION_FILE SAXException",e);
-			throw new Error(e);
 		}
-	}
-
-	private String getStringValue(Element rootNode, String nm ,String initVal) throws XPathExpressionException {
-		Object e = xpath.evaluate("//property[@name='"+nm+"']", rootNode,XPathConstants.NODE);
-		return e==null?initVal:((Node)e).getAttributes().getNamedItem("value").getTextContent();
 	}
 
 	private Properties getProperties() {

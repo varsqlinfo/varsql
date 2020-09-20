@@ -32,7 +32,7 @@ import com.vartech.common.utils.VartechUtils;
  * @변경이력	:
  */
 public class OracleDBMeta extends DBMetaImpl{
-	private static Logger logger = LoggerFactory.getLogger(OracleDBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(OracleDBMeta.class);
 
 	public OracleDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory

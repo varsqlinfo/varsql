@@ -23,9 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.varsql.core.common.code.VarsqlErrorCode;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.type.ResultType;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
@@ -36,6 +35,7 @@ import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
+import com.varsql.core.sql.builder.VarsqlCommandType;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.mapping.ParameterMapping;
@@ -54,6 +54,7 @@ import com.varsql.web.util.SqlResultUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.exception.VartechRuntimeException;
 import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.StringUtil;
 import com.vartech.common.utils.StringUtil.EscapeType;
@@ -69,7 +70,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Service
 public class SQLServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 
 	@Autowired
 	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
@@ -150,7 +151,7 @@ public class SQLServiceImpl{
 		sqlLogInfo.setSDd(Integer.valueOf(mmddHH[1]));
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 
-		sqlLogInfo.setUsrIp(VarsqlUtils.getClientIP(req));
+		sqlLogInfo.setUsrIp(VarsqlUtils.getClientIp(req));
 
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size();
@@ -192,7 +193,7 @@ public class SQLServiceImpl{
 			errorMsg = e.getMessage();
 
 			if(e instanceof VarsqlResultConvertException){
-				result.setResultCode(VarsqlErrorCode.SQL_RESULT_CONVERT.code());
+				result.setResultCode(VarsqlAppCode.EC_SQL_RESULT_CONVERT.code());
 				ssrv= ((VarsqlResultConvertException)e).getSsrv();
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 			}else {
@@ -207,13 +208,13 @@ public class SQLServiceImpl{
 				tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtil.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 
 				if(e instanceof ConnectionFactoryException) {
-					if(((ConnectionFactoryException)e).getErrorCode() ==VarsqlErrorCode.DB_POOL_CLOSE.code()) {
-						result.setResultCode(VarsqlErrorCode.DB_POOL_CLOSE.code());
+					if(((ConnectionFactoryException)e).getErrorCode() ==VarsqlAppCode.EC_DB_POOL_CLOSE.code()) {
+						result.setResultCode(VarsqlAppCode.EC_DB_POOL_CLOSE.code());
 					}else {
-						result.setResultCode(VarsqlErrorCode.DB_POOL_ERROR.code());
+						result.setResultCode(VarsqlAppCode.EC_DB_POOL_ERROR.code());
 					}
 				}else {
-					result.setResultCode(VarsqlErrorCode.SQL.code());
+					result.setResultCode(VarsqlAppCode.EC_SQL.code());
 				}
 
 				result.setMessage(tmpMsg+StringUtil.escape(ssrv.getResultMessage(), EscapeType.html));
@@ -259,64 +260,6 @@ public class SQLServiceImpl{
 
 	/**
 	 *
-	 * @Method Name  : getStatement
-	 * @Method 설명 : 실행할 statement 얻기
-	 * @작성일   : 2015. 4. 9.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param conn
-	 * @param tmpSqlSource
-	 * @param maxRow
-	 * @return
-	 * @throws SQLException
-	 */
-	private Statement getStatement(Connection conn, SqlSource tmpSqlSource, int maxRow) throws SQLException {
-
-		Statement stmt = null;
-		if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
-			stmt = conn.createStatement();
-			setMaxRow(stmt, maxRow);
-			stmt.execute(tmpSqlSource.getQuery());
-		}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
-			CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
-			//setMaxRow(callStatement, maxRow);
-			callStatement.execute();
-			stmt = callStatement;
-		}else{
-			PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
-
-			List<ParameterMapping> paramList= tmpSqlSource.getParamList();
-
-			if(paramList != null){
-				Map orginParamMap = tmpSqlSource.getOrginSqlParam();
-
-				for(int i =1 ;i <= paramList.size() ;i++){
-					ParameterMapping param = paramList.get(i-1);
-					Object objVal;
-					if(param.isFunction()) {
-						objVal = SqlParamUtils.functionValue(param, orginParamMap);
-					}else {
-						objVal = orginParamMap.get(param.getProperty());
-					}
-
-					if(param.getJdbcType()==null) {
-						pstmt.setObject(i, objVal);
-					}else {
-						param.getJdbcType().setParameter(pstmt, i, objVal);
-					}
-				}
-			}
-
-			setMaxRow(pstmt, maxRow);
-			pstmt.execute();
-			stmt = pstmt;
-		}
-
-		return stmt;
-	}
-
-	/**
-	 *
 	 * @Method Name  : setMaxRow
 	 * @Method 설명 : row 갯수 셋팅
 	 * @작성일   : 2015. 4. 9.
@@ -354,31 +297,77 @@ public class SQLServiceImpl{
 		int maxRow = sqlExecuteInfo.getLimit();
 
 	    try{
-			stmt  = getStatement(conn, tmpSqlSource, maxRow);
+	    	boolean hasResults;
+			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
+				stmt  = conn.createStatement();
+				setMaxRow(stmt, maxRow);
+				hasResults = stmt.execute(tmpSqlSource.getQuery());
+			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
+				CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
+				//setMaxRow(callStatement, maxRow);
+				hasResults = callStatement.execute();
+				stmt= callStatement;
+			}else{
+				PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
+				setSqlParameter(pstmt , maxRow, tmpSqlSource);
+				setMaxRow(pstmt, maxRow);
+				hasResults = pstmt.execute();
 
-			rs = stmt.getResultSet();
+				stmt= pstmt;
+			}
 
-			if(rs != null){
+			if(hasResults==true) {
+				rs = stmt.getResultSet();
 				SqlResultUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow , gridKeyAlias);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
-				ssrv.setResultMessage("success result count : "+ssrv.getResultCnt());
+				ssrv.setResultMessage(String.format("select count : %s ",ssrv.getResultCnt()));
 			}else{
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 				ssrv.setResultCnt(stmt.getUpdateCount());
-				ssrv.setResultMessage("success update count : "+ ssrv.getResultCnt());
+
+				if(VarsqlCommandType.isUpdateCountCommand(tmpSqlSource.getCommandType())) {
+					ssrv.setResultMessage(String.format("%s count : %s" , tmpSqlSource.getCommandType(), ssrv.getResultCnt()));
+				}else {
+					ssrv.setResultMessage(String.format("%s success" , tmpSqlSource.getCommandType()));
+				}
+
 			}
 
-			ssrv.setResultType(ResultType.SUCCESS.name());
+			ssrv.setResultType(SqlDataConstants.RESULT_TYPE.SUCCESS.val());
 
 	    }catch(SQLException e){
 	    	ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
-	    	ssrv.setResultType(ResultType.FAIL.name());
+	    	ssrv.setResultType(SqlDataConstants.RESULT_TYPE.FAIL.val());
 	    	ssrv.setResultMessage(String.format("error code :%s ;\nsql state : %s ;\nmessage : %s",e.getErrorCode() ,e.getSQLState() , e.getMessage()));
 	    	logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
 	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
 	    	SqlUtils.close(stmt, rs);
 	    }
+	}
+
+	private void setSqlParameter(PreparedStatement pstmt, int maxRow, SqlSource tmpSqlSource) throws SQLException {
+		List<ParameterMapping> paramList= tmpSqlSource.getParamList();
+
+		if(paramList != null){
+			Map orginParamMap = tmpSqlSource.getOrginSqlParam();
+
+			for(int i =1 ;i <= paramList.size() ;i++){
+				ParameterMapping param = paramList.get(i-1);
+				Object objVal;
+				if(param.isFunction()) {
+					objVal = SqlParamUtils.functionValue(param, orginParamMap);
+				}else {
+					objVal = orginParamMap.get(param.getProperty());
+				}
+
+				if(param.getJdbcType()==null) {
+					pstmt.setObject(i, objVal);
+				}else {
+					param.getJdbcType().setParameter(pstmt, i, objVal);
+				}
+			}
+		}
 	}
 
 	/**
@@ -443,6 +432,10 @@ public class SQLServiceImpl{
 			logger.error(getClass().getName()+" dataExport ", e);
 		}finally{
 			SqlUtils.close(conn);
+		}
+
+		if(result == null) {
+			throw new VartechRuntimeException("sql data empty");
 		}
 
 		String exportFileName = paramMap.getString("fileName", tmpName);

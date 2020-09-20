@@ -38,4 +38,23 @@ public interface SqlDataConstants {
 			return this.val+"";
 		}
 	}
+
+	enum RESULT_TYPE{
+		SUCCESS("success")
+		,FAIL("fail");
+
+		String val;
+		RESULT_TYPE(String val){
+			this.val = val;
+		}
+
+		public String val() {
+			return this.val+"";
+		}
+
+		@Override
+		public String toString() {
+			return this.val+"";
+		}
+	}
 }
