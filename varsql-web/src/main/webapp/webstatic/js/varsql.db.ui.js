@@ -702,25 +702,11 @@ _ui.headerMenu ={
 // 환경 설정 관련
 _ui.preferences= {
 	save : function (prefInfo , callback){
-
-		prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
-
-		var param = {
+		VARSQLApi.preferences.save({
 			conuid : _g_options.param.conuid
 			,prefKey : 'main.database.setting'
-			,prefVal : JSON.stringify(prefInfo)
-		}
-		VARSQL.req.ajax({
-			url:{type:VARSQL.uri.database, url:'/preferences/save'}
-			,data: param
-			,success:function (resData){
-
-				if(VARSQL.isFunction(callback)){
-					callback.call(null, resData);
-					return ;
-				}
-			}
-		});
+			,prefVal : JSON.stringify(VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo))
+		}, callback);
 	}
 }
 
@@ -3306,9 +3292,12 @@ _ui.SQL = {
 
 		$.pubAutocomplete('#recv_user_search' , {
 			minLength : 0
-			,itemkey : 'uid'
+			,itemkey : function (item){
+				return item.uname+'('+item.uid+')'
+			}
 			,viewAreaSelector:'#recv_autocomplete_area'
 			,autoClose:false
+			,useFilter :false
 			,searchDelay : 100
 			,autocompleteTemplate : function (baseHtml){
 				return '<div class="">'+baseHtml+'</div>';
@@ -3345,7 +3334,7 @@ _ui.SQL = {
 				return false;
 			}
 			,renderItem : function (matchData,item){
-				return item.uname+'('+matchData+')';
+				return matchData;
 			}
 		});
 	}
@@ -3452,6 +3441,7 @@ _ui.SQL = {
 		var isNext;
 
 		if(replaceAllFlag ===true){
+			findPos = {line: 0, ch: 0};
 			var replaceCount =0;
 
 			isNext = cursor.find(isReverseFlag);
@@ -3476,10 +3466,6 @@ _ui.SQL = {
 		if(wrapSearch===true && isNext===false){
 			VARSQLUI.alert.open({key:'varsql.0012' , findText: orginTxt});
 			return ;
-		}
-
-		if(replaceAllFlag ===true){
-			findPos = {line: 0, ch: 0};
 		}
 
 		if(isNext){
@@ -3584,6 +3570,10 @@ _ui.SQL = {
 		mode = mode || 'query';
 
 		if(mode=='query'){
+			if(_self.getSqlEditorObj() ===false){
+				return ;
+			}
+
 			params =VARSQL.util.objectMerge ({},_g_options.param,{
 				'sqlCont' :_self.getSqlEditorObj().getValue()
 				,'sqlId' : $('#sqlFileId').val()
@@ -4431,10 +4421,10 @@ _ui.sqlDataArea =  {
 				item = resData[i];
 
 				tmpMsg= item.resultMessage;
-				if(item.resultType=='FAIL' || item.viewType=='msg'){
+				if(item.resultType=='fail' || item.viewType=='msg'){
 					msgViewFlag = true;
 
-					if(item.resultType=='FAIL'){
+					if(item.resultType=='fail'){
     					resultClass = 'error';
 					}
 				}
