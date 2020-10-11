@@ -175,7 +175,8 @@
 		<div class="export-type-area">
 			<div style="margin-bottom:5px;">
 				<label class="control-label">Export Name</label>
-				<input class="" id="exportFileName" name="exportFileName" value="">
+				<input class="" type="text" id="exportFileName" name="exportFileName" value="">
+				<input type="hidden" id="exportObjectName" name="exportObjectName" value="">
 			</div>
 			<div>
 				<label class="control-label">LIMIT COUNT</label>

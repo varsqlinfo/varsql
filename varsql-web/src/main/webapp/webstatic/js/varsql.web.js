@@ -13,8 +13,38 @@ if (typeof window != "undefined") {
 	}
 }
 
-(function( window, undefined ) {
+(function( window ) {
 'use strict';
+
+if (typeof Object.assign != 'function') {
+  // Must be writable: true, enumerable: false, configurable: true
+  Object.defineProperty(Object, "assign", {
+    value: function assign(target, varArgs) { // .length of function is 2
+      'use strict';
+      if (target == null) { // TypeError if undefined or null
+        throw new TypeError('Cannot convert undefined or null to object');
+      }
+
+      var to = Object(target);
+
+      for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+
+        if (nextSource != null) { // Skip over if undefined or null
+          for (var nextKey in nextSource) {
+            // Avoid bugs when hasOwnProperty is shadowed
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+              to[nextKey] = nextSource[nextKey];
+            }
+          }
+        }
+      }
+      return to;
+    },
+    writable: true,
+    configurable: true
+  });
+}
 
 var _$base = {
 	version:'0.1'
@@ -59,10 +89,10 @@ _$base.staticResource  ={
 	}
 	,'fileupload':{
 		'js' : [
-			'/webstatic/js/plugins/fileupload/filepond.js'
-			]
-	,'css' : [
-		'/webstatic/js/plugins/fileupload/filepond.css'
+
+		]
+		,'css' : [
+
 		]
 	}
 };
@@ -105,6 +135,17 @@ _$base.isFunction = function(obj){
 _$base.isObject = function(obj){
 	return typeof obj==='object';
 };
+
+/**
+ * array check
+ */
+_$base.isArray = function (obj){
+	if(Array.isArray){
+		return Array.isArray(obj)
+	}else{
+		return Object.prototype.toString.call(obj) === '[object Array]';
+	}
+}
 
 /**
  * undefined check
@@ -182,7 +223,6 @@ _$base.messageFormat =function (fmt,msgParam){
 			return typeof msgParam[key] !== 'undefined' ? msgParam[key] : match;
 		}
     });
-	return _langInfo(key,lang);
 }
 //웹 로그 쌓기
 _$base.log={
@@ -347,12 +387,9 @@ _$base.req ={
 			var items = resData.items;
 			var objLen = items.length;
 			if(objLen >0){
-				var item;
-				for(var i=0; i <objLen; i++){
-					item = items[i];
-					alert(item.field + "\n"+ item.defaultMessage)
-					return false;
-				}
+				var item = items[0];
+				alert(item.field + "\n"+ item.defaultMessage)
+				return false;
 			}
 		}
 		return true;
@@ -633,12 +670,17 @@ _$base.unload =function (){
 	// F5, ctrl + F5, ctrl + r 새로고침 막기
 	$(document).keydown(function (e) {
 		var keychk = false;
-	    if (e.which === 116) {
+
+		var keyCode = e.which;
+
+		if (keyCode === 122) {
+			return false;
+		}else if (keyCode === 116) {
             if (typeof e == "object") {
                 e.keyCode = 0;
             }
             keychk = true;
-        } else if (e.which === 82 && e.ctrlKey) {
+        } else if (keyCode === 82 && e.ctrlKey) {
         	keychk = true;
         }
 
@@ -783,6 +825,14 @@ _$base.str = {
 	}
 	,allLineTrim : function(str) {
 		return str.replace(/^\s+|\s+$/gm,'');
+	}
+	// 왼쪽 공백 제거
+	,ltrim : function(str) {
+		 return str.replace(/^\s+/,"");
+	}
+	// 오른쪽 공백 제거
+	,rtrim : function(str) {
+		 return str.replace(/\s+$/,"");
 	}
 }
 
@@ -1185,11 +1235,11 @@ function _fnConvertUnderscoreCase(str){
 }
 
 function _fnToLowerCase(str){
-	return (str || '').toLowerCase()
+	return (str || '').toLowerCase();
 }
 
 function _fnToUpperCase(str){
-	return (str || '').toUpperCase()
+	return (str || '').toUpperCase();
 }
 
 window.VARSQL = _$base;

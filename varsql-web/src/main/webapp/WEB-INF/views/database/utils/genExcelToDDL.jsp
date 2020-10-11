@@ -64,6 +64,8 @@
 </div>
 <!-- /.row -->
 
+<varsql:editorResource editorHeight="100%"/>
+
 <script>
 VARSQLCont.init('other' , {});
 
@@ -82,13 +84,18 @@ VarsqlAPP.vueServiceBean( {
 		,tableName : ''
 		,glossaryGridObj : {}
 		,tableGridObj : {}
+		,tableDDLEditor:{}
 	}
 	,methods:{
 		init : function(){
 			var _this =this;
-
+			
 			_this.initGlossary();
 			_this.initExcelTableInfo();
+			
+			this.tableDDLEditor = CodeMirror.fromTextArea(document.getElementById('tableDDLInfo'), {
+				mode: 'text/x-sql'
+			})
 		}
 		,initGlossary : function (){
 			var _this = this;
@@ -286,7 +293,8 @@ VarsqlAPP.vueServiceBean( {
 	            ddlStr.push('\t, CONSTRAINT ' + tableName + '_pk' + ' PRIMARY KEY (' + keyCols.join(',') + ')');
 	        }
 	        ddlStr.push('\n);');
-	        $('#tableDDLInfo').val(ddlStr.join(''));
+	        
+	        this.tableDDLEditor.setValue(ddlStr.join(''))
 		}
 	}
 });

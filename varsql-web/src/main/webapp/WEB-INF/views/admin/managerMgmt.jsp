@@ -39,13 +39,11 @@
 								</tr>
 							</thead>
 							<tbody>
-								<template v-for="(item,index) in userGridData">
-					    			<tr class="gradeA " :class="index%2==0?'add':'even'" >
-										<td class=""><a href="javascript:;" @click="roleAction(item,'add')">{{item.uname}}</a></td>
-										<td class="">{{item.uid}}</td>
-										<td class="center">{{item.deptNm}}</td>
-									</tr>
-				    			</template>
+				    			<tr v-for="(item,index) in userGridData" class="gradeA " :class="index%2==0?'add':'even'" >
+									<td class=""><a href="javascript:;" @click="roleAction(item,'add')">{{item.uname}}</a></td>
+									<td class="">{{item.uid}}</td>
+									<td class="center">{{item.deptNm}}</td>
+								</tr>
 				    			<tr v-if="userGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>
 						</table>
@@ -89,13 +87,11 @@
 								</tr>
 							</thead>
 							<tbody>
-								<template v-for="(item,index) in managerGridData">
-					    			<tr class="gradeA " :class="index%2==0?'add':'even'" >
-										<td class=""><a href="javascript:;" @click="roleAction(item,'remove')">{{item.uname}}</a></td>
-										<td class="">{{item.uid}}</td>
-										<td class="center">{{item.deptNm}}</td>
-									</tr>
-				    			</template>
+				    			<tr v-for="(item,index) in managerGridData" class="gradeA " :class="index%2==0?'add':'even'" >
+									<td class=""><a href="javascript:;" @click="roleAction(item,'remove')">{{item.uname}}</a></td>
+									<td class="">{{item.uid}}</td>
+									<td class="center">{{item.deptNm}}</td>
+								</tr>
 				    			<tr v-if="managerGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>
 						</table>

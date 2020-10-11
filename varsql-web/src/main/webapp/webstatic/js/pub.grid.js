@@ -9,7 +9,7 @@
 */
 
 ;(function($, window, document) {
-"use stric1t";
+"use strict";
 /**
 af :  add function
 ap  : add parameter
@@ -2767,6 +2767,10 @@ Plugin.prototype ={
 	 * @description resize 하기
 	 */
 	,resizeDraw :function (opt){
+		if(this.gridElement.is(':visible') ===false){
+			return ;
+		}
+		
 		this.calcDimension('resize',opt);
 		return ;
 	}
@@ -3322,7 +3326,7 @@ Plugin.prototype ={
 					,colIdx = intValue(rowColArr[1]);
 
 				var rowItem = _this.options.tbodyItem[rowIdx]
-					colItem = _this.config.tColItem[colIdx];
+					,colItem = _this.config.tColItem[colIdx];
 
 				if(editable ===true){
 					if(colItem.editor===false) return ;
@@ -3714,7 +3718,7 @@ Plugin.prototype ={
 			var selRow = this.element.body.find('.pubGrid-edit-area');
 
 			var editRowInfo = this.config.editRowInfo
-				rowIdx = editRowInfo.idx
+				,rowIdx = editRowInfo.idx
 				,rowItem = editRowInfo.rowItem
 				,colItem = editRowInfo.colItem;
 
@@ -5027,7 +5031,7 @@ var _$util = {
 
 		var reForm =[];
 
-		var editor = colItem.editor||{};;
+		var editor = colItem.editor||{};
 
 		reForm.push( '<div class="pubGrid-edit-area pubGrid-edit-type-'+editor.type+'">');
 		if(editor.type =='select'){

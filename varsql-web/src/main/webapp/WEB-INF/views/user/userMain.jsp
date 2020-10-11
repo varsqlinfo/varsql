@@ -47,6 +47,7 @@ var userMain = {
 			,height : 20
 			,dropItemHeight : 'auto'
 			,activeFirstItem :false
+			,enableClickEventChange : true
 			,itemKey :{							// item key mapping
 				title :'name'
 				,id :'conuid'

@@ -7,9 +7,9 @@
 <%@ include file="/WEB-INF/include/database-dialog-head.jsp"%>
 
 </head>
-<BODY class="preferences">
+<BODY class="menu-tools">
 	<div id="specMain" class="wh100">
-		<div class="preferences-nav col-xs-3">
+		<div class="menu-tools-nav col-xs-3">
 			<ul>
 				<li :class="step==1?'active':''" @click="selectStep(1)">
 					<a href="javascript:;"><spring:message code="msg.export.spec.step1" /></a>
@@ -22,7 +22,7 @@
 				</li>
 			</ul>
 		</div>
-		<div class="preferences-body process-step-area col-xs-9 scroll-y">
+		<div class="menu-tools-body process-step-area col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
 					<div class="process-title"><spring:message code="msg.table.export.info" /></div>

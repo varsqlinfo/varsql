@@ -449,7 +449,7 @@ _ui.headerMenu ={
 
 							VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid), {
 								name : 'preferencesMain'
-								,viewOption : 'width=1000,height=600,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
+								,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
 							});
 
 							break;
@@ -3154,7 +3154,7 @@ _ui.SQL = {
 
 		// sql 실행
 		$('.sql_toolbar_execute_btn').on('click',function (evt){
-			_self.sqlData(evt);
+			_self.sqlData();
 		});
 
 		// 새파일
@@ -3951,6 +3951,9 @@ _ui.SQL = {
 				,"Shift-Ctrl-R" : function (){
 					// 검색 재정의
 				}
+				,"F11": function(cm) {
+					_self.sqlData();
+		        }
 			},
 			hintOptions: {tables:tableHint}
 		});
@@ -4178,52 +4181,65 @@ _ui.SQL = {
 		var items = data.items;
 
 		var modalEle = $('#data-export-modal');
+
 		if(modalEle.length > 0){
 			modalEle.dialog( "open" );
 			$('#exportFileName').val(tmpName);
+			$('#exportObjectName').val(tmpName);
 			$.pubGrid('#data-export-column-list').setData(items);
 			$.pubGrid('#data-export-column-list').setCheckItems('all');
+			return ;
 		}else{
 			$(_g_options.hiddenArea).append($('#dataExportTemplate').html());
-			$('#exportFileName').val(tmpName);
 			modalEle = $('#data-export-modal');
+			$('#exportFileName').val(tmpName);
+			$('#exportObjectName').val(tmpName);
+		}
+
+		function exportData(){
+			var chkItems =$.pubGrid('#data-export-column-list').getCheckItems();
+			var chkItemLen = chkItems.length;
+			if(chkItemLen < 1){
+				VARSQLUI.alert.open({key:'varsql.0006'});
+				return ;
+			}
+
+			if(!confirm(VARSQL.messageFormat('varsql.0008'))) return false;
+
+			var columnNameArr = [];
+			for(var i =0 ;i < chkItemLen;i++){
+				var item = chkItems[i];
+				columnNameArr.push(item[VARSQLCont.tableColKey.NAME]);
+			}
+
+			var params =VARSQL.util.objectMerge ({}, _g_options.param,{
+				exportType : VARSQL.check.radio('input:radio[name="exportType"]')
+				,columnInfo : columnNameArr.join(',')
+				,objectName : $('#exportObjectName').val()
+				,fileName: $('#exportFileName').val()
+				,limit: $('#exportCount').val()
+			});
+
+			VARSQL.req.download({
+				type: 'post'
+				,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
+				,params:params
+			});
 		}
 
 		modalEle.dialog({
 			height: 350
 			,width: 640
 			,modal: true
+			,show : false
 			,buttons: {
-				"Export":function (){
+				"Export & Close":function (){
+					if(exportData() ===false) return ;
 
-					var chkItems =$.pubGrid('#data-export-column-list').getCheckItems();
-					var chkItemLen = chkItems.length;
-					if(chkItemLen < 1){
-						VARSQLUI.alert.open({key:'varsql.0006'});
-						return ;
-					}
-
-					if(!confirm(VARSQL.messageFormat('varsql.0008'))) return ;
-
-					var columnNameArr = [];
-					for(var i =0 ;i < chkItemLen;i++){
-						var item = chkItems[i];
-						columnNameArr.push(item[VARSQLCont.tableColKey.NAME]);
-					}
-
-					var params =VARSQL.util.objectMerge ({}, _g_options.param,{
-						exportType : VARSQL.check.radio('input:radio[name="exportType"]')
-						,columnInfo : columnNameArr.join(',')
-						,objectName : tmpName
-						,fileName: $('#exportFileName').val()
-						,limit: $('#exportCount').val()
-					});
-
-					VARSQL.req.download({
-						type: 'post'
-						,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
-						,params:params
-					});
+					$( this ).dialog( "close" );
+				}
+				,"Export":function (){
+					exportData();
 				}
 				,Cancel: function() {
 					$( this ).dialog( "close" );
@@ -4236,7 +4252,8 @@ _ui.SQL = {
 
 		if(VARSQL.isUndefined($.pubGrid('#data-export-column-list'))){
 			$.pubGrid('#data-export-column-list',{
-				asideOptions :{
+				autoResize :false
+				,asideOptions :{
 					lineNumber : {enabled : true,width : 30}
 					,rowSelector :{
 						enabled : true

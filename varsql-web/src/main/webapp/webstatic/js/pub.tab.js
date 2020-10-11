@@ -16,6 +16,7 @@
 			width:'auto'			//tab width
 			,itemMaxWidth : -1		// tab max width
 			,activeFirstItem : true	//로드시 첫번째 item 활성화 여부
+			,enableClickEventChange : false // click event item 변경시에만 활성화
 			,itemPadding: 5			// item padding 값
 			,height : '22px'		// tab height
 			,leftMargin : 30		// 왼쪽에 item 있을경우 더 이동할 space
@@ -244,13 +245,19 @@
 
 			customInfo = customInfo || {};
 			var clickEle = $(this.tabElement.find('.pubTab-item').get(idx));
-
+			
 			var opts = this.options;
+			var tabItem = opts.items[idx]; 
+			
+			
+			if(opts.enableClickEventChange ===true && this.isActive(tabItem)){ // 변경 되었을때만 event 처리.
+				return ; 
+			}
 
-			this.setActive(opts.items[idx]);
+			this.setActive(tabItem);
 
 			if($.isFunction(opts.click)){
-				opts.click.call(clickEle,opts.items[idx], customInfo);
+				opts.click.call(clickEle, tabItem, customInfo);
 			}
 
 			//$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');

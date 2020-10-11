@@ -7,7 +7,7 @@
  * url : https://github.com/ytechinfo/pub
  * demo : http://pub.moaview.com/
 */
-;(function ($, window, document, undefined) {
+;(function ($, window, document) {
 if (!Object.keys) {
   Object.keys = function(obj) {
     var keys = [];
@@ -701,13 +701,13 @@ Plugin.prototype ={
 			selectVal.each(function (i, item){
 				tmpObj = $(item);
 				tmpVal=_this.getItemVal(tmpObj);
-				
-				var addChkFlag = typeof _this.addItemList[_this.config.currPage][tmpVal] ==='undefined'; 
+
+				var addChkFlag = typeof _this.addItemList[_this.config.currPage][tmpVal] ==='undefined';
 				if(dupChkFlag && addChkFlag){
-					dupChkFlag = false; 
+					dupChkFlag = false;
 				}
 
-				if(!addChkFlag) return true; 
+				if(!addChkFlag) return true;
 
 				if($.isFunction(opts.beforeItemMove)){
 					if(opts.beforeItemMove(tmpObj) === false){
@@ -775,7 +775,7 @@ Plugin.prototype ={
 			for(var key in addItemMap){
 				_this.addItemList[_this.config.currPage][key] =addItemMap[key];
 			}
-			
+
 			if(returnFlag===true){
 				return strHtm.join('');
 			}else{
@@ -845,7 +845,7 @@ Plugin.prototype ={
 					_this.options.afterTargetMove(removeItem);
 				}
 			});
-			
+
 			if(Object.keys(_this.addItemList[_this.config.currPage]).length < 1){
 				_this.targetElement.empty().html(_this.getEmptyMessage());
 			}

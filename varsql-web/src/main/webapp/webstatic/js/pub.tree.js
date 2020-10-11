@@ -42,6 +42,7 @@
 		,rootArr		: []
 		,topMenuView	: false
 		,openDepth		: 'all'
+		,firstItemClick : false 	// 첫번째 item click 여부.
 		,subMenuCall	:''
 		,toggle : function(obj_id){
 			
@@ -85,14 +86,13 @@
 		
 		_this.init();
 		_this.initEvt();
-	
+		_this.firstItemEnable();
 	}
 
 	pubTree.prototype={
 		init : function (){
 			var _this = this; 
 			_this._requestItems();
-		
 		}
 		,_requestItems : function (type){
 			var _this = this
@@ -115,7 +115,7 @@
 		,initEvt : function (){
 			var _this  = this
 				,_opt = _this.options; 
-			$(this.selector).on('click','.pubtree-item', function (e){
+			$(this.selector).on('click.pubtree','.pubtree-item', function (e){
 				var sObj = $(this); 
 				var treeId = sObj.closest('[data-tree-id]').attr('data-tree-id');
 
@@ -133,13 +133,34 @@
 				}
 			})
 
-			$(this.selector).on('dblclick','.pubtree-item', function (e){
+			$(this.selector).on('dblclick.pubtree','.pubtree-item', function (e){
 				_this.toggle($(this));
 			})
 
-			$(this.selector).on('click','.pub-tree-join-icon', function (e){
+			$(this.selector).on('click.pubtree','.pub-tree-join-icon', function (e){
 				_this.toggle($(this));
 			})
+		}
+		,firstItemEnable : function (){
+			var _this = this; 
+
+			if(_this.options.firstItemClick ===true){
+
+				var rootArr =  this.options.rootArr;
+				var rootArrLen =rootArr.length;
+				
+				if(rootArr.length > 0){
+					if(_this.options.topMenuView ===true){
+						_this.nodeClick(rootArr[0]);
+					}else{
+						var tNode =this.options.treeItem[rootArr[0]];
+
+						if(tNode.childNodes.length > 0){
+							_this.nodeClick(tNode.childNodes[0]);
+						}
+					}
+				}
+			}
 		}
 		,nodeClick : function (id){
 			var _this  = this;
@@ -236,6 +257,9 @@
 			var id=o[this.options.itemKey.id];
 			
 			var tNode = this.createNode(pid);
+
+			tNode['id'] = id; 
+			tNode['pid'] = pid; 
 
 			for(var key in o){
 				if(o[key]!==undefined) tNode[key]= o[key];

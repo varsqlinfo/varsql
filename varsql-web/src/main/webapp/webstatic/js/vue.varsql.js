@@ -209,13 +209,26 @@ VarsqlAPP.vueServiceBean = function (opts){
 	var _evts = {}
 		,_srvs = {};
 
-	opts = VARSQL.util.objectMerge({},defaultOpt,opts);
+	var initOpt = {};
+	var initMethodName = '';
+
+	if(!VARSQL.isUndefined(opts['mounted'])){
+		initOpt = {methods :{}};
+		initMethodName = 'fn'+VARSQL.generateUUID().replace(/-/g,'');
+		initOpt.methods[initMethodName] = defaultOpt.mounted;
+	}
+
+	opts = VARSQL.util.objectMerge(initOpt,defaultOpt,opts);
 
 	if(opts.validateCheck ===true){
 		Vue.use(VeeValidate)
 	}
 
 	var vueObj = new Vue(opts);
+
+	if(initMethodName !=''){
+		vueObj[initMethodName].call(vueObj);
+	}
 
 	return vueObj;
 }

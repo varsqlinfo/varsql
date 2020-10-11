@@ -33,17 +33,19 @@
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="list-group" id="dbinfolist">
+				<div class="list-group" id="dbinfolist" style="padding:0px 15px;">
 					<template v-for="(item,index) in gridData">
-						<div class="list-group-item">
-							<a href="javascript:;">
-								<span class="clickItem" @click="itemView(item)">{{item.vname}}</span>
-
+						<div class="list-group-item row">
+							<div class="col-sm-5 padding0">
+								<span class="clickItem" @click="itemView(item)"><a href="javascript:;">{{item.vname}}</a></span>
+							</div>
+							<div class="col-sm-7 padding0">
 								<span class="pull-right">
-									<button class="btn btn-xs btn-primary" @click="connectionReset(item)">초기화</button>
-									<button class="btn btn-xs btn-default" @click="connectionClose(item)">닫기</button>
+									<button class="btn btn-xs btn-primary" @click="viewPasswordDialog(item)"><spring:message code="btn.password.view"/></button>
+									<button class="btn btn-xs btn-primary" @click="connectionReset(item)"><spring:message code="btn.pool.init"/></button>
+									<button class="btn btn-xs btn-default" @click="connectionClose(item)"><spring:message code="btn.pool.close"/></button>
 								</span>
-							</a>
+							</div>
 		    			</div>
 	    			</template>
 	    			<div class="text-center" v-if="gridData.length === 0"><spring:message code="msg.nodata"/></div>
@@ -253,8 +255,17 @@
 		<!-- /.panel -->
 	</div>
 	<!-- /.col-lg-8 -->
+
+	<div id="passwordViewTemplate" title="Password view">
+		<div>
+			<div>Login password : <input v-model="userPw" type="password" class="form-control text"> </div>
+			<div style="padding: 5px 0px;" class="pull-right"><button type="button" @click="passwordView()" class="db btn btn-default">Password view</button> </div>
+			<div style="clear:both;">password : <input v-model="dbPw" type="text" class="form-control text" disabled="disabled" style="width: calc(100% - 64px);display: inline-block;"></div>
+		</div>
+	</div>
 </div>
 <!-- /.row -->
+
 
 <script>
 VarsqlAPP.vueServiceBean( {
@@ -269,10 +280,23 @@ VarsqlAPP.vueServiceBean( {
 		,detailItem :{}
 		,viewMode : 'view'
 		,driverList : []
+		,dbPwViewItem :{}
+		,userPw : ''
+		,dbPw : ''
 	}
 	,methods:{
 		init : function(){
 			this.setDetailItem();
+
+			$('#passwordViewTemplate').dialog({
+				height: 200
+				,width: 400
+				,modal: true
+				,autoOpen :false
+				,close: function() {
+					$( this ).dialog( "close" );
+				}
+			});
 		}
 		,search : function(no){
 			var _self = this;
@@ -323,6 +347,40 @@ VarsqlAPP.vueServiceBean( {
 					_self.setDetailItem(item);
 				}
 			})
+		}
+		,viewPasswordDialog : function (item){
+			this.dbPwViewItem= item;
+			this.userPw = '';
+			this.dbPw = '';
+			$('#passwordViewTemplate').dialog('open');
+		}
+		,passwordView : function (){
+			this.userPw = VARSQL.str.trim(this.userPw);
+
+			if(this.userPw == ''){
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0023'));
+				return ;
+			}
+
+			var _this=this;
+
+			var param =  {
+				vconnid : _this.dbPwViewItem.vconnid
+				,userPw : this.userPw
+			}
+
+			_this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/main/dbPwView'}
+				,data : param
+				,success:function (resData){
+					if(resData.resultCode != 200){
+						alert(resData.message);
+						return ;
+					}else{
+						_this.dbPw = resData.item;
+					}
+				}
+			});
 		}
 		,setUrlDirectInfo : function (){
 			this.detailItem.urlDirectYn = (this.detailItem.urlDirectYn=='N'?'Y':'N');
@@ -444,7 +502,7 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.messageCode =='success'){
-							alert(VARSQL.messageFormat('success'));
+							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
@@ -490,7 +548,7 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode ==200){
-							alert(VARSQL.messageFormat('success'));
+							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);

@@ -9,52 +9,65 @@
 </head>
 
 <BODY class="preferences-body">
-	<div class="preferences">
-		<div class="navi-area col">
-			<div class="preferences-left-search">
+	<div id="preferencesMain" class="preferences display-off">
+		<div class="preferences-nav col-xs-3">
+			<div class="preferences-menu-search">
 				<input type="text" id="preferences_text" value=""/>
 			</div>
-			<div class="preferences-left-body">
+			<div class="preferences-menu-container">
 				<div id="preferences_area"></div>
 			</div>
 		</div>
-		<div class="content-area-frame col scroll-y">
-			<iframe id="view_iframe" name="view_iframe"	class="content-view-iframe"></iframe>
+		<div class="preferences-body padding0 col-xs-9">
+			<div class="preferences-body-header">
+				<div id="preferencesDesc">{{detailItem.desc}}</div>
+			</div>
+			<div class="preferences-body-cont">
+				<template v-if="!VARSQL.isUndefined(detailItem.url) && detailItem.url !=''">
+					<iframe :src="detailItem.url"	class="preferences-body-iframe"></iframe>
+				</template>
+			</div>
 		</div>
 	</div>
 </BODY>
 </html>
 
 <script>
-$('.pub-main-body').on('selectstart', function (e){
-	return false;
-})
+VarsqlAPP.vueServiceBean({
+	el: '#preferencesMain'
+	,data: {
+		detailItem :{}
+	}
+	,mounted : function (){
 
-$(document).ready(function (){
-	init();
-})
+	}
+	,methods:{
+		init : function (){
+			var _this =this;
+			var treeItem = [];
+			treeItem.push({id:'top'	,pid:''	,name:'preferences-top'});
+			/*
+			treeItem.push({id:'1',pid:'top',name:'일반',url:'<c:url value="/database/preferences/generalSetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'2',pid:'top',name:'SQL포멧설정',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'3',pid:'top',name:'단축키',url:'<c:url value="/database/preferences/keySetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'4',pid:'top',name:'코드편집기',url:'<c:url value="/database/preferences/codeEditerSetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'4-1',pid:'4',name:'글꼴',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
+			treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/database/preferences/exportSetting?conuid=${param.conuid}" />'});
+			*/
+			treeItem.push({id:'6',pid:'top',name:'코드 생성설정',desc :'DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성' ,url:'<c:url value="/database/preferences/contextMenuSetting?conuid=${param.conuid}" />'});
 
-function init(){
-	var treeItem = [];
-	treeItem.push({id:'top'	,pid:''	,name:'preferences-top'});
-	treeItem.push({id:'1',pid:'top',name:'일반',url:'<c:url value="/database/preferences/generalSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'2',pid:'top',name:'SQL포멧설정',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'3',pid:'top',name:'단축키',url:'<c:url value="/database/preferences/keySetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'4',pid:'top',name:'코드편집기',url:'<c:url value="/database/preferences/codeEditerSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'4-1',pid:'4',name:'글꼴',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/database/preferences/exportSetting?conuid=${param.conuid}" />'});
-	treeItem.push({id:'6',pid:'top',name:'코드 생성설정',url:'<c:url value="/database/preferences/contentMenuSetting?conuid=${param.conuid}" />'});
-
-	$.pubTree("#preferences_area", {
-		source : treeItem
-		,useIcon :{icon : false}
-		,click : function (sObj){
-			$('#view_iframe').attr('src',sObj.item.url);
+			$.pubTree("#preferences_area", {
+				source : treeItem
+				,firstItemClick :true
+				,useIcon :{icon : false}
+				,click : function (sObj){
+					_this.detailItem = sObj.item;
+				}
+			}); // 트리 객체 네임  div명
 		}
-	}); // 트리 객체 네임  div명
-
-}
+	}
+});
 </script>
 
 

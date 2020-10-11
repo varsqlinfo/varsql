@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <%
-response.setHeader("Cache-Control","no-cache"); 
-response.setHeader("Pragma","no-cache"); 
+response.setHeader("Cache-Control","no-cache");
+response.setHeader("Pragma","no-cache");
 response.setDateHeader ("Expires", -1);
 %>
 <div class="row">
@@ -15,7 +15,7 @@ response.setDateHeader ("Expires", -1);
 	<div class="col-xs-12 fill">
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class="row">	
+				<div class="row">
 					<div class="col-sm-12">
 						<div class="pull-right margin-bottom5">
 							<button type="button" class="btn btn-default save-btn">
@@ -24,7 +24,7 @@ response.setDateHeader ("Expires", -1);
 						</div>
 					</div>
 				</div>
-				
+
 				<div>
 					<form id="passwordResetForm" class="form-horizontal required-validate" method="post" onsubmit="return false;">
 						<div class="form-group">
@@ -67,11 +67,11 @@ response.setDateHeader ("Expires", -1);
 		}
 		,initEvt : function (){
 			var _self = this;
-			
+
 			$('.save-btn').on('click',function (){
 				$('#passwordResetForm').submit();
 			});
-			
+
 			$('#passwordResetForm').bootstrapValidator({
 				message: 'This value is not valid',
 				feedbackIcons: {
@@ -98,7 +98,7 @@ response.setDateHeader ("Expires", -1);
 		            ,confirmUpw : {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.messageFormat('varsql.form.0001') 
+		                        message: VARSQL.messageFormat('varsql.form.0001')
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
@@ -110,16 +110,16 @@ response.setDateHeader ("Expires", -1);
 			}).on('success.form.bv', function(e) {
 				// Prevent form submission
 				e.preventDefault();
-				
+
 				_self.saveInfo();
 			});
 		}
 		// 정보 저장.
 		,saveInfo : function (){
 			var _self = this;
-			
+
 			var params  =$('#passwordResetForm').serializeJSON();
-			
+
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.user, url:'/preferences/passwordSave'},
 				data:params,
@@ -132,18 +132,18 @@ response.setDateHeader ("Expires", -1);
 							for(var i=0; i <objLen; i++){
 								item = items[i];
 								VARSQLUI.alert.open(item.field + "\n"+ item.defaultMessage)
-								return ; 
+								return ;
 							}
 						}
 					}
-					
-					if(resData.resultCode == 90000){
+
+					if(resData.resultCode == 50001){
 						VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0007'));
-						return ; 
+						return ;
 					}
-					
+
 					VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0008'));
-					
+
 					location.href= location.href;
 				}
 			});
