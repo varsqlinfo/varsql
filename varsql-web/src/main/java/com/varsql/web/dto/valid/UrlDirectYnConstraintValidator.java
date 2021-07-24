@@ -9,7 +9,7 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
 
     @Override
     public void initialize(final ValidUrlDirectYn arg0) {
-
+    	
     }
 
     @Override

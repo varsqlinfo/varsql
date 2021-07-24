@@ -49,14 +49,14 @@ public final class VarsqlFormatterUtil {
 	private VarsqlFormatterUtil(){};
 
 	public static String format(String sql){
-		return SQLUtils.format(sql, null);
+		return SQLUtils.format(sql, DBType.OTHER.getDbParser());
 	}
 
-	public static String format(String sql, String dbType){
+	public static String format(String sql, DBType dbType){
 		return format(sql , dbType , FORMAT_TYPE.DRUID);
 	}
 
-	public static String format(String sql, String dbType, FORMAT_TYPE format_type){
+	public static String format(String sql, DBType dbType, FORMAT_TYPE format_type){
 		return formatResponseResult(sql, dbType, format_type).getItem();
 	}
 
@@ -72,11 +72,11 @@ public final class VarsqlFormatterUtil {
 	 * @param format_type
 	 * @return
 	 */
-	public static ResponseResult formatResponseResult(String sql, String dbType){
+	public static ResponseResult formatResponseResult(String sql, DBType dbType){
 		return formatResponseResult(sql, dbType, FORMAT_TYPE.DRUID);
 	}
 
-	public static ResponseResult formatResponseResult(String sql, String dbType, FORMAT_TYPE format_type){
+	public static ResponseResult formatResponseResult(String sql, DBType dbType, FORMAT_TYPE format_type){
 		ResponseResult result = new ResponseResult();
 
 		String resultSql = "";
@@ -92,12 +92,12 @@ public final class VarsqlFormatterUtil {
 			*/
 			
 			try{
-				SQLStatementParser parser = SQLParserUtils.createSQLStatementParser(sql, dbType, DEFAULT_FEATURES);
+				SQLStatementParser parser = SQLParserUtils.createSQLStatementParser(sql, dbType.getDbParser(), DEFAULT_FEATURES);
 
 				parser.setKeepComments(true);
 				List<SQLStatement> statementList = parser.parseStatementList();
 
-				resultSql =SQLUtils.toSQLString(statementList, dbType, null, formatOpt);
+				resultSql =SQLUtils.toSQLString(statementList, dbType.getDbParser(), null, formatOpt);
 			}catch(Exception e){
 				resultSql =new VarsqlFormatterImpl().execute(sql);
 				result.setMessage(e.getMessage());

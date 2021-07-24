@@ -25,7 +25,13 @@ public abstract class AbstractConfiguration{
 				return Thread.currentThread().getContextClassLoader().getResource("").getFile();
 			}
 		}
-
-		return installRoot.replaceAll("\\\\", "/");
+		
+		installRoot= installRoot.replaceAll("\\\\", "/");
+		
+		if(installRoot.endsWith("/")) {
+			installRoot = installRoot.substring(0, installRoot.length()-1);
+		}
+		
+		return installRoot;
 	}
 }

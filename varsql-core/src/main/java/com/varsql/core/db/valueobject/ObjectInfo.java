@@ -2,6 +2,8 @@ package com.varsql.core.db.valueobject;
 
 import java.util.List;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * 
  * @FileName  : ObjectInfo.java
@@ -10,6 +12,7 @@ import java.util.List;
  * @작성자      : ytkim
  * @변경이력 :
  */
+@Alias("objectInfo")
 public class ObjectInfo extends BaseObjectInfo{
 	// type
 	private String type;

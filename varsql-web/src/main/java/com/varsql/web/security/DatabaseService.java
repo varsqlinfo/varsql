@@ -1,6 +1,6 @@
 package com.varsql.web.security;
 
-import com.varsql.web.util.BeanUtils;
+import com.varsql.web.util.VarsqlBeanUtils;
 
 /**
  * 
@@ -13,6 +13,6 @@ import com.varsql.web.util.BeanUtils;
 public class DatabaseService  {
 	
 	public void getUserDatabaseInfo() {
-		((AuthDAO)BeanUtils.getBean("authDao")).getUserDataBaseInfo();  
+		((AuthDAO)VarsqlBeanUtils.getStringBean("authDao")).getUserDataBaseInfo();  
 	}
 }

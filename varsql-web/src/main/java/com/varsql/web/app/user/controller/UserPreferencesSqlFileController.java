@@ -38,7 +38,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/user/preferences/sqlFile")
 public class UserPreferencesSqlFileController extends AbstractController{
 
-	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileController.class);
 
 	@Autowired
 	private UserPreferencesSqlFileServiceImpl userPreferencesSqlFileServiceImpl;
@@ -53,7 +53,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value={"/list"},method = RequestMethod.POST)
+	@RequestMapping(value="/list", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult list(@RequestParam(value = "vconnid", required = true)  String vconnid, HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
@@ -71,7 +71,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value={"/detail"},method = RequestMethod.POST)
+	@RequestMapping(value="/detail",method = RequestMethod.POST)
 	public @ResponseBody ResponseResult detail(@RequestParam(value = "sqlId", required = true)  String sqlId) {
 		return  userPreferencesSqlFileServiceImpl.selectSqlFileDetail(sqlId);
 	}
@@ -86,8 +86,9 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value={"/delete"} ,method = RequestMethod.POST)
+	@RequestMapping(value="/delete" ,method = RequestMethod.POST)
 	public @ResponseBody ResponseResult delete(@RequestParam(value = "selectItem", required = true )  String selectItem , HttpServletRequest req){
+		logger.debug("remove sql file removeIds : {}" , selectItem);
 		return  userPreferencesSqlFileServiceImpl.deleteSqlFiles(selectItem);
 	}
 }

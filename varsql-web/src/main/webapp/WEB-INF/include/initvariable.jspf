@@ -1,4 +1,10 @@
-<%@ page language="java" pageEncoding="UTF-8" %>
+<%@ page language="java" pageEncoding="UTF-8" %><%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%><%@ taglib prefix="varsqlfn" uri="http://varsql.vartech.com/varsqlfn"%>
+
 <script>
 var global_page_context_path ="${pageContextPath}";
+
+var $varsqlConfig ={
+	viewId : '<varsql:userViewId/>'
+	,logoutUrl :'${varsqlfn:logoutUrl(pageContext.request)}'
+}
 </script>

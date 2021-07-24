@@ -153,6 +153,7 @@ _$base.toast = {
 
 _$base.popup = {
 	open : function (url, opt){
+		opt = opt ||{};
 		var targetId = VARSQL.generateUUID().replace(/-/g,'')
 			, tmpParam = opt.param?opt.param:{}
 			, tmpMethod = opt.method ? opt.method : 'get'
@@ -280,18 +281,23 @@ _$base.popup = {
 				inputStr.push('<input type="hidden" name="'+key+'" value=\''+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'\'/>');
 			}
 			inputStr.push('</form>');
-			inputStr.push('<script type="text/javascript">try{document.charset="utf-8";}catch(e){}document.'+targetId+'.submit();</'+'script>');
+			inputStr.push('<script async type="text/javascript">try{document.charset="utf-8";}catch(e){}document.'+targetId+'.submit();</'+'script>');
 
 			var tmpPopupObj=window.open('about:blank', tmpName, tmpPopOption);
 
 			try{
+				try{tmpPopupObj.document.open();}catch(e){console.log(e)}
 				tmpPopupObj.document.write(inputStr.join(''));
 				tmpPopupObj.focus();
+				try{tmpPopupObj.document.close();}catch(e){console.log(e)}
 			}catch(e){
 				tmpPopupObj=window.open('about:blank', tmpName+targetId, tmpPopOption);
 				try{
+					try{tmpPopupObj.document.open();}catch(e){console.log(e)}
 					tmpPopupObj.document.write(inputStr.join(''));
 					tmpPopupObj.focus();
+					
+					try{tmpPopupObj.document.close();}catch(e){console.log(e)}
 				}catch(e1){
 					console.log(e1);
 				}

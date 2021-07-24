@@ -18,7 +18,7 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
 import com.varsql.core.sql.resultset.handler.ResultSetHandlerImpl;
-import com.vartech.common.utils.StringUtil;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -93,7 +93,7 @@ public class MetaControlBean {
 
 	private Object getBeanObject(Class clazz, String classSuffix) throws Exception {
 		String nameLowerCase = getDbVenderName().toLowerCase();
-		String cls = String.format("%s.%s.%s%s", "com.varsql.db.ext", nameLowerCase, StringUtil.capitalize(nameLowerCase), classSuffix);
+		String cls = String.format("%s.%s.%s%s", "com.varsql.db.ext", nameLowerCase, StringUtils.capitalize(nameLowerCase), classSuffix);
 
 		try{
 			Class.forName(cls);
@@ -179,7 +179,7 @@ public class MetaControlBean {
 	@SuppressWarnings("unchecked")
 	public <T>T getDBObjectMeta(String metaType, DatabaseParamInfo paramInfo, String ... objNm){
 
-		String callMethodName =String.format("get%sMetadata", StringUtil.capitalize(metaType));
+		String callMethodName =String.format("get%sMetadata", StringUtils.capitalize(metaType));
 
 		try{
 			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class ,objNm.getClass())){
@@ -189,7 +189,7 @@ public class MetaControlBean {
 				return (T)this.dbMetaImpl.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtil.join(objNm));
+			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtils.join(objNm));
 			logger.error("getDBMeta callMethodName " , e);
 		}
 		return null;
@@ -198,7 +198,7 @@ public class MetaControlBean {
 	@SuppressWarnings("unchecked")
 	public <T>T getDBObjectList(String dbObjType, DatabaseParamInfo paramInfo){
 
-		String callMethodName =String.format("get%ss", StringUtil.capitalize(dbObjType));
+		String callMethodName =String.format("get%ss", StringUtils.capitalize(dbObjType));
 
 		try{
 			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class)){
@@ -221,7 +221,7 @@ public class MetaControlBean {
 
 	public <T>T getDDLScript(String dbObjType, DatabaseParamInfo paramInfo, DDLCreateOption ddlOption, String ... objNm){
 
-		String callMethodName =String.format("get%ss", StringUtil.capitalize(dbObjType));
+		String callMethodName =String.format("get%ss", StringUtils.capitalize(dbObjType));
 
 		try{
 			if(VartechReflectionUtils.hasMethod(this.ddlScriptImpl.getClass(), callMethodName, DatabaseParamInfo.class, DDLCreateOption.class, objNm.getClass())){
@@ -233,7 +233,7 @@ public class MetaControlBean {
 				throw new VarsqlMethodNotFoundException(String.format("MetaControlBean getDDLScript ->  %s method not found ", callMethodName));
 			}
 		}catch(Exception e){
-			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScriptImpl.getClass(), callMethodName, StringUtil.join(objNm));
+			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScriptImpl.getClass(), callMethodName, StringUtils.join(objNm));
 			logger.error("getDDLScript callMethodName " , e);
 		}
 		return null;

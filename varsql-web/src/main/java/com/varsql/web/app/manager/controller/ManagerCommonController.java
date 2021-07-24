@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
@@ -35,8 +36,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager/comm")
 public class ManagerCommonController extends AbstractController{
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(ManagerCommonController.class);
+	private final Logger logger = LoggerFactory.getLogger(ManagerCommonController.class);
 
 	@Autowired
 	private ManagerCommonServiceImpl managerCommonServiceImpl;
@@ -52,13 +52,13 @@ public class ManagerCommonController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbList"})
+	@RequestMapping(value = "/dbList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return managerCommonServiceImpl.selectdbList(searchParameter);
 	}
 
-	@RequestMapping({"/userList"})
+	@RequestMapping(value = "/userList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return managerCommonServiceImpl.selectUserList(searchParameter);

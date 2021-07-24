@@ -1,5 +1,9 @@
 package com.varsql.web.dto.file;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 
 *-----------------------------------------------------------------------------
@@ -14,42 +18,37 @@ package com.varsql.web.dto.file;
 
 *-----------------------------------------------------------------------------
  */
+@Getter
+@Setter
 public class FileInfo {
-	private String fileName; 
-	private String saveFileName; 
-	private long size; 
-	private String extensions;
-	private String savePath;
-	public String getFileName() {
-		return fileName;
+	private String fileDiv;
+	private String fileContId;
+	private String fileId;
+	private String fileFieldName;
+    private String fileName;
+    private String orginFileName;
+    private String fileDownloadUri;
+    private String fileType;
+    private String filePath;
+    private String fileExt;
+    private String userId;
+    private long fileSize;
+    
+    @Builder
+    public FileInfo(String fileDiv, String fileContId, String fileId, String fileFieldName, String fileName, String orginFileName, String fileDownloadUri, String fileType, String filePath
+    		, String fileExt, String userId, long fileSize) {
+    	this.fileDiv = fileDiv;
+    	this.fileContId = fileContId;
+    	this.fileId = fileId;
+    	this.fileFieldName = fileFieldName;
+    	this.fileName = fileName;
+    	this.orginFileName = orginFileName;
+    	this.fileDownloadUri = fileDownloadUri;
+    	this.fileType = fileType;
+    	this.filePath = filePath;
+    	this.fileExt = fileExt;
+    	this.userId = userId;
+    	this.fileSize = fileSize;
 	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	
-	public String getSaveFileName() {
-		return saveFileName;
-	}
-	public void setSaveFileName(String saveFileName) {
-		this.saveFileName = saveFileName;
-	}
-	public long getSize() {
-		return size;
-	}
-	public void setSize(long size) {
-		this.size = size;
-	}
-	public String getExtensions() {
-		return extensions;
-	}
-	public void setExtensions(String extensions) {
-		this.extensions = extensions;
-	}
-	public String getSavePath() {
-		return savePath;
-	}
-	public void setSavePath(String savePath) {
-		this.savePath = savePath;
-	} 
 	
 }

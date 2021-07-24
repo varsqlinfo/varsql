@@ -2,7 +2,6 @@ package com.varsql.web.repository.db;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.varsql.core.common.util.StringUtil;
 import com.varsql.test.BaseJpaTestCase;
 import com.varsql.web.model.entity.db.DBManagerEntity;
-import com.varsql.web.model.entity.db.DBTypeEntity;
-import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.db.DBManagerEntityRepository;
-import com.varsql.web.repository.db.DBTypeEntityRepository;
-import com.varsql.web.repository.user.UserMgmtRepository;
+import com.vartech.common.utils.StringUtils;
 
 class DBManagerModelRepositoryTest extends BaseJpaTestCase{
 
@@ -30,7 +24,7 @@ class DBManagerModelRepositoryTest extends BaseJpaTestCase{
 
 	@BeforeEach
 	public void initBefore() {
-		String[] viewidArr = StringUtil.split("000001",",");
+		String[] viewidArr = StringUtils.split("000001",",");
 
 
 		addManagerList = new ArrayList<>();

@@ -40,7 +40,6 @@ public class AppUUIDGenerator implements IdentifierGenerator, Configurable {
 			String uuid = java.util.UUID.randomUUID().toString().replaceAll("-", "");
 			return prefix + uuid;
 		} catch (RuntimeException he) {
-			he.printStackTrace();
 			throw he;
 		}
 	}

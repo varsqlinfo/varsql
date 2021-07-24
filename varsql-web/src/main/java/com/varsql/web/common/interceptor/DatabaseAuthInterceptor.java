@@ -12,7 +12,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.exception.DatabaseInvalidException;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.utils.StringUtils;
 
 /**
  * 
@@ -29,16 +31,11 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 			throws ServletException, IOException {
 		String connid =req.getParameter(VarsqlParamConstants.CONN_UUID);
 		
-		if(VarsqlUtils.isRuntimelocal() && SecurityUtil.isAdmin()) {
+		if(StringUtils.isBlank(connid) && VarsqlUtils.isRuntimelocal() && SecurityUtil.isAdmin()) {
 			return true;
 		}else {
 			if (!authCheck(req, connid)) {
-				if(VarsqlUtils.isAjaxRequest(req)){
-					req.getRequestDispatcher("/error/invalidDatabase").forward(req, res);
-				}else{
-					req.getRequestDispatcher("/error/invalidDatabasePage").forward(req, res);
-				}
-			    return false;
+				throw new DatabaseInvalidException(String.format("Database invalid request userViewId : %s , connid : %s", SecurityUtil.userViewId() , connid));
 			}
 		}
 		return true;

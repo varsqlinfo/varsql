@@ -38,7 +38,7 @@ bootJar {
 jar{
 	enabled=true
 	baseName ='varsql-core'
-	version = '0.0.1'
+	version = project.property('varsqlVersion')
 
 	from ('src/main/java'){
 		include '**/*.xml'

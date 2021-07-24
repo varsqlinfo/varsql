@@ -18,7 +18,7 @@
 				<ul class="top-setting-menu dropdown-menu">
 					<%@ include file="/WEB-INF/include/screen.jsp"%>
 					<li>
-						<a href="<c:url value="/logout" />">
+						<a href="${varsqlfn:logoutUrl(pageContext.request)}">
 							<i class="fa fa-fw fa-power-off"></i>
 							<spring:message	code="btn.logout" />
 						</a>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE var-ddl SYSTEM  "ddlTemplate.dtd">
+
+<var-ddl>
+	<!-- 테이블 생성-->
+	<tableScript><![CDATA[
+/* DROP TABLE {{objectName}} CASCADE CONSTRAINT; */
+CREATE TABLE {{objectName}}(
+	{{scriptSource}}
+);
+
+{{commnetSource}}
+	]]></tableScript>
+
+	<!-- view 생성-->
+	<viewScript><![CDATA[
+/* DROP VIEW {{objectName}}; */
+CREATE view {{objectName}}
+{{scriptSource}}
+	]]></viewScript>
+
+	<!-- function 생성-->
+	<functionScript><![CDATA[
+/* DROP FUNCTION {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></functionScript>
+
+	<!-- procedure 생성-->
+	<procedureScript><![CDATA[
+/* DROP PROCEDURE {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></procedureScript>
+
+	<!-- trigger 생성-->
+	<triggerScript><![CDATA[
+/* DROP TRIGGER {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></triggerScript>
+
+	<!-- index 생성-->
+	<indexScript><![CDATA[
+/* DROP TRIGGER {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></indexScript>
+
+	<!-- sequence 생성-->
+	<sequenceScript><![CDATA[
+CREATE SEQUENCE {{OBJECT_NAME}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+INCREMENT BY {{INCREMENT_BY}} START WITH 0
+CACHE {{CACHE}} NOORDER  NOCYCLE	]]></sequenceScript>
+
+	<!-- 컬럼 추가-->
+	<alterAddColumn><![CDATA[
+
+	]]></alterAddColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<alterRenameColumn><![CDATA[
+
+	]]></alterRenameColumn>
+
+	<!-- 컬럼 수정 추가-->
+	<alterModifyColumn><![CDATA[
+
+	]]></alterModifyColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<alterDropColumn><![CDATA[
+
+	]]></alterDropColumn>
+
+	<!-- 테이블명 수정 추가-->
+	<renameTable><![CDATA[
+		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
+	]]></renameTable>
+</var-ddl>

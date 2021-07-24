@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.web.app.admin.service.ManagerMgmtServiceImpl;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -37,8 +37,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/admin/managerMgmt")
 public class ManagerMgmtController extends AbstractController{
 
-	/** The Constant logger. */
-	private final static Logger logger = LoggerFactory.getLogger(ManagerMgmtController.class);
+	private final Logger logger = LoggerFactory.getLogger(ManagerMgmtController.class);
 
 	@Autowired
 	private ManagerMgmtServiceImpl managerMgmtServiceImpl;
@@ -52,7 +51,7 @@ public class ManagerMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/userList"})
+	@RequestMapping(value="/userList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
@@ -68,13 +67,13 @@ public class ManagerMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/managerList"})
+	@RequestMapping(value="/managerList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult managerlist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return managerMgmtServiceImpl.searchRoleUserList(AuthorityType.MANAGER , searchParameter);
 	}
 
-	@RequestMapping({"/managerRoleMgmt"})
+	@RequestMapping(value = "/managerRoleMgmt", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult managerRoleMgmt(@RequestParam(value = "mode", required = true, defaultValue = "del" )  String mode
 			,@RequestParam(value = "viewid", required = true)  String viewid
 			) throws Exception {
@@ -93,7 +92,7 @@ public class ManagerMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/addDbManager"})
+	@RequestMapping(value="/addDbManager", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "vconnid", required = true) String vconnid
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
@@ -102,7 +101,7 @@ public class ManagerMgmtController extends AbstractController{
 		return managerMgmtServiceImpl.updateDbManager(selectItem, vconnid, mode);
 	}
 
-	@RequestMapping({"/dbManagerList"})
+	@RequestMapping(value="/dbManagerList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbManagerList(@RequestParam(value = "vconnid", required = true) String vconnid) throws Exception {
 		return managerMgmtServiceImpl.searchDatabaseManager(vconnid);
 	}

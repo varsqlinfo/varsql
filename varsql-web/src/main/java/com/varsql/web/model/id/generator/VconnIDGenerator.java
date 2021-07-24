@@ -47,7 +47,6 @@ public class VconnIDGenerator implements IdentifierGenerator, Configurable {
 
 			return vconnid;
 		} catch (RuntimeException he) {
-			he.printStackTrace();
 			throw he;
 		}
 	}

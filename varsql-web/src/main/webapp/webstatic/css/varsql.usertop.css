@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url("varsql.common.css");
 body {
   height: 100%;
@@ -59,7 +60,6 @@ a {
   height: 22px;
   border-radius: 5px;
   padding-bottom: 2px;
-  outline: none;
 }
 
 #user-header .connection-tab-area {
@@ -83,9 +83,11 @@ a {
 }
 
 #user-header .user-right-menu-area {
-  float: right;
   padding-right: 10px;
-  padding-top: 4px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 30px;
 }
 
 #user-header .user-right-menu-area > .user-right-menu {
@@ -94,41 +96,33 @@ a {
   max-width: 175px;
   padding: 0px;
   margin: 0px;
+  height: 30px;
 }
 
 #user-header .user-right-menu-area > .user-right-menu > li {
   float: left;
   list-style: none;
   position: relative;
-  margin: 0px 8px;
 }
 
 #user-header .user-right-menu-area > .user-right-menu > li > a {
   color: #000000;
   list-style: none;
+  padding: 6px 8px 7px;
 }
 
-#user-header .user-right-menu-area > .user-right-menu > li .ui-memo-btn {
-  padding-top: 3px;
+#user-header .user-right-menu-area > .user-right-menu > li > a:hover {
+  color: #000000;
+  background: #e6e5e5;
 }
 
-#user-header .user-right-menu-area > .user-right-menu > li .ui-memo-btn .alram-count {
-  position: absolute;
-  position: absolute;
+#user-header .user-right-menu-area > .user-right-menu > li .ui-note-btn > i {
+  padding: 9px 0px 8px;
+}
+
+#user-header .user-right-menu-area > .user-right-menu > li .ui-note-btn.on > i {
+  color: #fb0101;
   font-weight: bold;
-  font-size: 11px;
-  color: #ffffff;
-  top: -6px;
-  right: -5px;
-  z-index: 1;
-  background: #ff3400;
-  padding: 0 3px 0px 3px;
-  border-radius: 15px;
-  display: none;
-}
-
-#user-header .user-right-menu-area > .user-right-menu > li .ui-memo-btn .alram-count.on {
-  display: block;
 }
 
 #user-header .user-right-menu-area > .user-right-menu > li > .user-profile {
@@ -139,7 +133,6 @@ a {
 #user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu {
   float: right;
   position: absolute;
-  margin-top: 5px;
   background: #ffffff;
   border: 1px solid #d5d5d8;
   color: #000000;
@@ -151,18 +144,8 @@ a {
   padding: 5px 0;
 }
 
-#user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu .memo-item {
-  width: 250px;
-  padding: 3px 10px;
-}
-
-#user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu .memo-item .memo-text {
-  width: calc(100% - 115px);
-  margin-right: 3px;
-}
-
 #user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu a:hover, #user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu a:focus {
-  background-color: #f4f4f4;
+  background-color: #fbfbfb;
 }
 
 #user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu li.divider {
@@ -170,7 +153,7 @@ a {
   height: 1px;
   margin: 5px 0px;
   overflow: hidden;
-  background-color: #dddddd;
+  background-color: #d5d5d8;
 }
 
 #user-header .user-right-menu-area > .user-right-menu > li .dropdown-menu > li {
@@ -196,6 +179,14 @@ a {
   width: 100%;
   top: 30px;
   bottom: 30px;
+}
+
+.page-reload-msg {
+  z-index: 1000;
+  background-color: #fffbfb;
+  top: 0px;
+  left: 0px;
+  display: none;
 }
 
 .main-logo-area {
@@ -241,62 +232,129 @@ a {
   text-align: center;
 }
 
-.memo-view-area {
+.alarm-msg-area {
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #d5d5d8;
+  right: 0px;
+  min-width: 160px;
+  border-radius: 3px;
+  padding: 5px 0;
+  display: none;
+}
+
+.alarm-msg-area > li {
+  cursor: pointer;
+  width: 100%;
+  height: 55px;
+  vertical-align: middle;
+  margin: auto;
+  line-height: 50px;
+}
+
+.note-view-area {
   width: 100%;
   height: 100%;
   padding: 3px 5px;
 }
 
-.memo-view-area textarea {
-  width: 100%;
+.note-view-area .note-list-area {
   height: 100%;
-  resize: none;
-  border-width: 1px;
-  border-color: #d5d5d8;
-  -webkit-box-sizing: border-box !important;
-  box-sizing: border-box !important;
+  background: #ffffff;
+  border: 1px solid #d5d5d8;
+  padding: 5px;
+}
+
+.note-view-area .note-list-area .note-list-tab {
+  height: 22px;
+  border-bottom: 1px solid #d5d5d8;
+}
+
+.note-view-area .note-list-area .note-list-tab > ul {
+  height: 100%;
+  display: inline;
+  border-bottom: 0px solid #d5d5d8;
+}
+
+.note-view-area .note-list-area .note-list {
+  height: calc(100% - 22px);
+  overflow: auto;
+}
+
+.note-view-area .note-list-area .note-list > ul {
+  position: relative;
+}
+
+.note-view-area .note-list-area .note-list > ul > li {
+  list-style: none;
+  margin: 0px;
+  padding: 3px 0px;
+}
+
+.note-view-area .note-list-area .note-list .note-item {
+  width: 100%;
+  display: block;
+}
+
+.note-view-area .note-list-area .note-list .note-item .note-text {
+  width: calc(100% - 122px);
+  margin-right: 5px;
+  float: left;
+}
+
+.note-view-area .note-list-area .note-list .note-item .note-date {
+  width: 112px;
+  text-align: right;
 }
 
 .ui-widget-overlay {
   background: #aaaaaa;
-  opacity: .3;
-  filter: Alpha(Opacity=0.3);
   width: 100%;
   height: 100%;
   position: fixed;
   top: 0px;
   left: 0px;
   z-index: 2000;
+  opacity: 0.3;
+  -moz-opacity: 0.3;
+  -khtml-opacity: 0.3;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+  filter: alpha(opacity=30);
 }
 
 .ui-dialog {
   z-index: 1000;
   padding: 0px;
-  background: #f4f4f4;
+  background: #fbfbfb;
   border: 1px solid #d5d5d8;
   outline: none;
 }
 
 .ui-dialog .ui-dialog-titlebar {
-  background: #dddddd;
+  background: #d5d5d8;
   font-weight: bold;
   padding: 7px 8px;
   border-bottom: 1px solid #d5d5d8;
 }
 
 .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 13pt;
   float: right;
-  content: 'X';
+  content: "";
   cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 2px 1px;
-  font-weight: bold;
+  width: 23px;
+  height: 24px;
+  margin-top: -3px;
+  padding: 2px 4px;
   overflow: hidden;
+  line-height: 18px;
 }
 
 .ui-dialog .ui-dialog-content {
+  position: relative;
   padding: 5px 5px;
+  overflow: auto;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
@@ -315,13 +373,13 @@ a {
   transition-duration: 0.4s;
   cursor: pointer;
   border: 1px solid #d5d5d8;
-  background: #dddddd;
+  background: #d5d5d8;
   padding: 2px 11px;
   margin-left: 5px;
 }
 
 .ui-dialog .ui-dialog-titlebar-close:before {
-  content: "X";
+  content: "";
 }
 
 .ui-dialog .ui-button:hover {

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -39,8 +40,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/database/tools/export")
 public class ExportController extends AbstractController  {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(ExportController.class);
+	private final Logger logger = LoggerFactory.getLogger(ExportController.class);
 
 	@Autowired
 	private ExportServiceImpl exportServiceImpl;
@@ -58,7 +58,7 @@ public class ExportController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/specMain")
+	@RequestMapping(value="/specMain" , method = RequestMethod.GET)
 	public ModelAndView specMain(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 
 		ModelMap model = mav.getModelMap();
@@ -84,7 +84,7 @@ public class ExportController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/specMain/tableList")
+	@RequestMapping(value="/specMain/tableList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult tableList(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 
 		logger.debug("export specMain tableInfoList : {} ", preferencesInfo);
@@ -105,7 +105,7 @@ public class ExportController extends AbstractController  {
 	 * @param res
 	 * @throws Exception
 	 */
-	@RequestMapping("/spec/tableExport")
+	@RequestMapping(value="/spec/tableExport", method = RequestMethod.POST)
 	public void tableExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
 		exportServiceImpl.tableSpecExport(preferencesInfo, res);
 	}
@@ -123,7 +123,7 @@ public class ExportController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddlMain")
+	@RequestMapping(value="/ddlMain", method =  RequestMethod.GET)
 	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
@@ -145,7 +145,7 @@ public class ExportController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddl/objInfo")
+	@RequestMapping(value="/ddl/objInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult objInfo(DatabaseParamInfo paramInfo, HttpServletRequest req) throws Exception {
 		paramInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return  exportServiceImpl.selectExportDbObjectInfo(paramInfo);
@@ -165,7 +165,7 @@ public class ExportController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/ddl/export")
+	@RequestMapping(value="/ddl/export", method = RequestMethod.POST)
 	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletResponse res) throws Exception {
 		exportServiceImpl.ddlExport(preferencesInfo, res);
 	}

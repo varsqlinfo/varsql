@@ -2,13 +2,13 @@ package com.varsql.core.configuration.prop;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.configuration.Configuration;
-import com.varsql.core.configuration.Constants;
 import com.varsql.core.exception.ConfigurationException;
 
 
@@ -61,13 +61,10 @@ public class ValidationProperty{
 			throw new ConfigurationException( this.getClass().getName() + " - Can't open Validation file path: " + propFile);
 		}
 
-		FileInputStream jdf_fin = new FileInputStream(propFile);
-
-		try{
+		try(FileInputStream jdf_fin = new FileInputStream(propFile)){
 			props.load(jdf_fin);
-			jdf_fin.close();
-		}finally{
-			if(jdf_fin != null) jdf_fin.close();
+		}catch(IOException e) {
+			throw new ConfigurationException(e);
 		}
 	}
 

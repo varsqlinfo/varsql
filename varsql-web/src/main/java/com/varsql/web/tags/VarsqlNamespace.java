@@ -8,7 +8,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.varsql.core.common.util.UUIDUtil;
-import com.vartech.common.utils.VartechUtils;
+import com.varsql.web.exception.VarsqlTagException;
 
 public class VarsqlNamespace extends TagSupport {
 
@@ -33,8 +33,7 @@ public class VarsqlNamespace extends TagSupport {
 		
 			jw.write(String.format("%s%s",prefix, namespace));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new VarsqlTagException("tag error ",e); 
 		}
 		
 		return SKIP_BODY;

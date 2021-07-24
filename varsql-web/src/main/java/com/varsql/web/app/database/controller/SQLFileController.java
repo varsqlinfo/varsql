@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.database.service.SQLFileServiceImpl;
@@ -26,8 +27,7 @@ import com.vartech.common.utils.HttpUtils;
 @Controller
 @RequestMapping("/sql/file")
 public class SQLFileController extends AbstractController  {
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(SQLFileController.class);
+	private final Logger logger = LoggerFactory.getLogger(SQLFileController.class);
 
 	@Autowired
 	private SQLFileServiceImpl sqlFileServiceImpl;
@@ -43,7 +43,7 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/saveSql"})
+	@RequestMapping(value = "/saveSql", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult saveSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sqlFileServiceImpl.saveSql(sqlParamInfo);
@@ -61,7 +61,7 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/saveAllSql"})
+	@RequestMapping(value = "/saveAllSql", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult saveAllSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sqlFileServiceImpl.saveAllSql(sqlParamInfo);
@@ -79,7 +79,7 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sqlFileDetailInfo"})
+	@RequestMapping(value = "/sqlFileDetailInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlFileDetailInfo( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
 		return sqlFileServiceImpl.sqlFileDetailInfo(sqlParamInfo);
@@ -93,7 +93,7 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sqlList"})
+	@RequestMapping(value = "/sqlList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlList(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
@@ -101,7 +101,7 @@ public class SQLFileController extends AbstractController  {
 		return sqlFileServiceImpl.selectSqlFileList(sqlParamInfo);
 	}
 
-	@RequestMapping({"/sqlFileTab"})
+	@RequestMapping(value = "/sqlFileTab", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlFileTab(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 
 		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
@@ -116,7 +116,7 @@ public class SQLFileController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/delSqlSaveInfo"})
+	@RequestMapping(value = "/delSqlSaveInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult delSqlSaveInfo(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		return sqlFileServiceImpl.deleteSqlSaveInfo(sqlParamInfo);
 	}

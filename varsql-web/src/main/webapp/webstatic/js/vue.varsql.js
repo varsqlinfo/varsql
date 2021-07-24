@@ -12,7 +12,6 @@ if (typeof window != "undefined") {
 	}
 }
 
-
 var  portalDefaultTemplate = {
 	'pageNavTemplate' : '<div class="text-center"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
@@ -39,10 +38,13 @@ var  portalDefaultTemplate = {
 		+'	<a @click="goPage(pageInfo.currPage + 1)">»</a>'
 		+'</li>'
 	+'</ul></div>'
+
+	,stepTemplate : '<div class="process-step-area"><div class="process-step-btn-area">'
+	+ '<button type="button" class="" :class="[cssClass, (step == 1 ? \'disabled\' :\'\') ]" @click="moveHandle(\'prev\')">{{buttons.prev}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step != endStep)" @click="moveHandle(\'next\')">{{buttons.next}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step == endStep)" @click="moveHandle(\'complete\')">{{buttons.complete}}</button>'
+	+ '</div></div>'
 };
-
-
-
 
 (function( Vue ,portalDefaultTemplate, $) {
 
@@ -139,6 +141,287 @@ Vue.component('page-navigation', {
 			}
 
 			callback.call(null,pageNo);
+		}
+	}
+})
+
+// step button component add
+Vue.component('step-button', {
+	
+	template : '<div class="process-step-area"><div class="process-step-btn-area">'
+	+ '<button type="button" class="" :class="[cssClass, (step == 1 ? \'disabled\' :\'\') ]" @click="moveHandle(\'prev\')">{{buttons.prev}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step != endStep)" @click="moveHandle(\'next\')">{{buttons.next}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step == endStep)" @click="moveHandle(\'complete\')">{{buttons.complete}}</button>'
+	+ '</div></div>'
+	
+	//template: portalDefaultTemplate.stepTemplate
+	, props: {
+		step : {type: Number, default: 1 }
+		,endStep : Number
+		,buttons : {type: Object,	default: {
+			prev : VARSQL.messageFormat('step.prev')
+			,next : VARSQL.messageFormat('step.next')
+			,complete :VARSQL.messageFormat('step.complete')
+		}}
+		,cssClass : {type: String,	default: 'btn-md' }
+		,moveStep : {type: String,	default: 'moveStep' } 
+		,complete :  {type: String,	default: 'complete' } 
+	}
+	
+	,methods: {
+		moveHandle : function (mode){
+			var step = -9999;
+
+			if(mode=='complete'){
+				var callback = this.$parent[this.complete];
+
+				if(typeof callback === 'undefined'){
+					throw 'complete function empty  setting function name : [' + this.complete +']'
+				}
+				callback.call(this.$parent);
+				return ; 
+			}
+
+			if(mode == 'prev'){
+				if(this.step > 1){
+					step = this.step-1;
+				}
+			}else if(mode == 'next'){
+				if(this.step < this.endStep){
+					step = this.step+1;
+				}
+			}
+
+			if(step == -9999){
+				return ; 
+			}else{
+				if(step < 1){
+					step = 1; 	
+				}else if(step >= this.endStep){
+					step = this.endStep;
+				}
+			}
+
+			if(this.step == step) return ; 
+
+			this.move(step);
+		}
+		,move : function(step){
+			var callback = this.$parent[this.moveStep];
+
+			if(typeof callback === 'undefined'){
+				throw 'moveStep function empty  setting function name : [' + this.moveStep +']'
+			}
+			
+			var result = callback.call(this.$parent,step); 
+			if(result===false){
+				return ; 
+			};
+			this.step = step; 
+			this.$emit('update:step', step);
+		}
+	}
+})
+
+// file upload component
+Vue.component('file-upload', {
+	
+	template :
+	'<div :id="id" class="file-upload-area">'
+	+' <div class="file-upload-btn-area">'
+	+'  <button class="btn btn-success select-file-button">'
+	+'		<i class="glyphicon glyphicon-plus"></i>'
+	+'		<span>{{buttons.add}}</span>'
+	+'	</button>'
+	+'  <button @click="uploadFile()" class="btn btn-success upload-file-button">'
+	+'		<i class="glyphicon glyphicon-plus"></i>'
+	+'		<span>{{buttons.send}}</span>'
+	+'	</button>'
+	+'  <button @click="removeFile()" class="btn btn-success cancel-file-button">'
+	+'		<i class="glyphicon glyphicon-plus"></i>'
+	+'		<span>{{buttons.remove}}</span>'
+	+'	</button>'
+	+' </div>'
+	+'<div :id="id+\'_previews\'" class="file-upload-preview">'
+	+'	<div v-if="fileAddMsgViewFlag" class="file-upload-preview-msg">Drop files here or click to upload.</div>'
+	+'</div>'
+	+'<div v-if="isViewUploadFile">'
+	+'  <div>업로드된 파일</div>'
+	+'  <div class="file-upload-list">'
+	+'   <template v-for="(item,index) in fileList">'
+	+'	  <div class="file-upload-file-item">'
+	+'		<span class="clickItem">{{item.orginFileName}}</span>'
+	+'	  </div>'
+	+'   </template>'
+	+'  </div>'
+	+'</div>'
+	
+	//template: portalDefaultTemplate.stepTemplate
+	, props: {
+		id: {
+			type: String,
+			required: true,
+			default: "fileUploadEle"
+		}
+		,options : {
+			type: Object
+			, default :{}
+		}
+		,accept : {
+			type: String
+			, default :''
+		}
+		,callback : {
+			type: Object
+			, default :{
+				success : function (){}
+				,successmultiple : function (){}
+			}
+		}
+		,fileList : {
+			type: Array
+			, default : []
+		}
+		,buttons :{
+			type: Object
+			, default :{
+				add : VARSQL.messageFormat('file.add')
+				,send : VARSQL.messageFormat('file.send')
+				,remove : VARSQL.messageFormat('file.remove')
+			}
+		}
+		,isViewUploadFile : {
+			type: Boolean
+			, default : true
+		}
+	}
+	,data : function (){
+
+		var strHtm = [];
+		strHtm.push('	<ul class="file-row">');
+		strHtm.push('	  <li class="file-action-btn">');
+		strHtm.push('		<button data-dz-remove class="btn btn-warning cancel">');
+		strHtm.push('			<i class="glyphicon glyphicon-ban-circle"></i>');
+		strHtm.push('			<span>Cancel</span>');
+		strHtm.push('		</button>');
+		strHtm.push('	  </li>');
+		strHtm.push('	  <li class="file-info">');
+		strHtm.push('		<span class="file-name text-ellipsis" data-dz-name></span> <span class="file-size" data-dz-size></span>');
+		strHtm.push('	  </li>');
+		strHtm.push('	  <li class="file-progress">');
+		strHtm.push('		<div class="error-view-area"><strong class="error text-danger" data-dz-errormessage></strong></div>');
+		strHtm.push('		<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">');
+		strHtm.push('			<div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>');
+		strHtm.push('		</div>');
+		strHtm.push('	  </li>');
+		strHtm.push('	</ul>');
+
+		return {
+			previewTemplate : strHtm.join('')
+			,fileAddMsgViewFlag : true
+		}
+	}
+	,watch :{
+		accept : function (newval){
+			this.dropzone.hiddenFileInput.setAttribute("accept", this.getAcceptExtensions(newval));
+			this.dropzone.options.acceptedFiles = this.getAcceptExtensions(newval); 
+		}
+		,fileList : function (){
+			this.$emit('update:fileList', this.fileList);
+		}
+	}
+	,mounted : function() {
+		var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
+		var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
+		
+		var headers = {};
+		headers[$$csrf_header] = $$csrf_token;
+		
+		var _this = this; 
+		
+		var dropzoneOpt = VARSQL.util.objectMerge({ 
+			url: "http://www.varsql.com", // upload url
+			thumbnailWidth: 50,
+			thumbnailHeight: 50,
+			parallelUploads: 20,
+			uploadMultiple : true,
+			maxFilesize: 10,
+			autoQueue: false,
+			previewTemplate :  this.previewTemplate,
+			previewsContainer: "#"+this.id+"_previews", 
+			headers : headers,
+			clickable: [".select-file-button" ,".file-upload-preview" ]// select file selector
+		}, this.options); 
+		
+		
+		if(this.accept != ''){
+			dropzoneOpt.acceptedFiles = this.getAcceptExtensions(this.accept); 
+		}
+		
+		var dropzone = new Dropzone(this.$el, dropzoneOpt);
+
+		dropzone.on("addedfile", function(file) {
+			_this.fileAddMsgViewFlag = false; 
+			file.previewElement.querySelector('.file-name').title = file.name;
+		});
+		
+		dropzone.on("removedfile", function(file) {
+			if(dropzone.files.length < 1){
+				_this.fileAddMsgViewFlag = true;
+			}else{
+				_this.fileAddMsgViewFlag = false;
+			}
+		});
+		
+		if(dropzoneOpt.uploadMultiple ===true){
+			
+			dropzone.on('successmultiple', function(files, resp){
+				for(var i =0 ;i <files.length;i++){
+					this.removeFile(files[i]);
+				}
+				
+				if(VARSQL.reqCheck(resp)){
+					_this.fileList = _this.fileList.concat(resp.items);
+					_this.callback.successmultiple (files,resp);
+				}
+			});
+			
+			dropzone.on('completemultiple', function (file) {
+				//var resData = JSON.parse(file.xhr.responseText);
+				//_this.fileList = _this.fileList.concat(resData.items);
+	        });
+		}else{
+			dropzone.on('success', function(file, resp){
+				this.removeFile(file);
+				if(VARSQL.reqCheck(resp)){
+					_this.fileList = _this.fileList.concat(resp.items);
+					_this.callback.success (file,resp);
+				}
+			});
+			
+			dropzone.on('complete', function (file) {
+				//var resData = JSON.parse(file.xhr.responseText);
+				//_this.fileList = _this.fileList.concat(resData.items);
+			});
+		}
+
+		_this.dropzone = dropzone;
+	}
+	,methods: {
+		uploadFile : function (){
+			var _this = this; 
+
+			this.dropzone.options.params = function (){
+				return _this.options.params;
+			};
+			
+			this.dropzone.enqueueFiles(this.dropzone.getFilesWithStatus(Dropzone.ADDED));
+		}
+		,removeFile : function (){
+			this.dropzone.removeAllFiles(true);
+		}
+		,getAcceptExtensions : function (exts){
+			 return '.'+ VARSQL.str.allTrim(exts).split(',').join(',.'); 
 		}
 	}
 })

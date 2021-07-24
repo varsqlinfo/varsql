@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,14 +20,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import com.ctc.wstx.shaded.msv_core.verifier.ErrorInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.converter.DomainMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.PagingUtil;
 
@@ -79,10 +83,11 @@ public final class VarsqlUtils {
 	 * @throws IOException
 	 */
 	public static void textDownload(OutputStream output, String cont) throws IOException{
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-		out.write(cont);
-		out.newLine();
-		out.close();
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output,VarsqlConstants.CHAR_SET))){
+			out.write(cont);
+			out.newLine();
+			out.close();
+		}
 	}
 
 	public static Timestamp getTimestamp(long time){
@@ -221,15 +226,60 @@ public final class VarsqlUtils {
 	}
 
 	/**
-	 * @method  : getErrorCodeMessage
-	 * @desc : binding error 메시지 처리.
+	 * @method  : mapToJsonObjectString
+	 * @desc : key  & json vlaue ->  json object string
 	 * @author   : ytkim
 	 * @date   : 2020. 4. 17.
 	 * @param result
 	 * @return
 	 */
-	public static String getErrorCodeMessage(BindingResult result) {
-		ObjectError errorInfo = result.getAllErrors().get(0);
-		return String.format("%s", errorInfo.getDefaultMessage());
+	public static String mapToJsonObjectString(Map<String,String>  info) {
+			
+		StringBuffer returnVal = new StringBuffer();
+		boolean firstFlag = true;
+		returnVal.append("{");
+		
+		for( Map.Entry<String, String> item : info.entrySet() ){
+			String key = item.getKey();
+			String prefVal = item.getValue();
+			
+			returnVal.append(firstFlag?"" : ",").append("\"").append(key).append("\":").append(prefVal);
+			
+			firstFlag = false; 
+        }
+
+		returnVal.append("}");
+		
+		return returnVal.toString();
+	}
+	
+	public static ResponseResult getResponseResultValidItem(ResponseResult resultObject, BindingResult result) {
+		resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
+		resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+		
+		
+		List<FieldError> fieldErrors = result.getFieldErrors();
+		
+		String errorMessage = "";
+		if(fieldErrors.size() >0) {
+			FieldError errorInfo = fieldErrors.get(0);
+			errorMessage= String.format("field : %s\nmessage : %s\nvalue : %s", errorInfo.getField(), errorInfo.getDefaultMessage() , errorInfo.getRejectedValue());
+			
+			resultObject.setItemOne(errorInfo.getField());
+		}else {
+			List<ObjectError> allErrors = result.getAllErrors();
+			if(allErrors.size() >0) {
+				ObjectError errorInfo = allErrors.get(0);
+				resultObject.setItemOne(errorInfo.getCode());
+				errorMessage= String.format("code : %s, message : %s", errorInfo.getCode() , errorInfo.getDefaultMessage());
+			}else {
+				resultObject.setItemOne(result.getGlobalError().getCode());
+				errorMessage= String.format("code : %s, message : %s", result.getGlobalError().getCode() ,result.getGlobalError().getDefaultMessage()); 
+			}
+		}
+		
+		resultObject.setMessage(errorMessage);
+		return resultObject; 
+		
 	}
 }

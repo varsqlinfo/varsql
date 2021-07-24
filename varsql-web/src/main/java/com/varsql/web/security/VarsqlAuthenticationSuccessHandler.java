@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +18,7 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
@@ -28,9 +28,10 @@ import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.CommUtil;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
+import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
 import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.utils.HttpUtils;
 
 /**
  *
@@ -42,7 +43,7 @@ import com.varsql.web.util.VarsqlUtils;
  */
 @Component
 public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-	private static final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationSuccessHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationSuccessHandler.class);
 
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -63,7 +64,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			final HttpServletResponse response,
 			final Authentication authentication) throws IOException, ServletException {
 
-		User userInfo = SecurityUtil.loginUser();
+		User userInfo = SecurityUtil.loginInfo();
 		String targetUrl = userRedirectTargetUrl(request ,response, userInfo, authentication);
 
 		if (response.isCommitted()) {
@@ -71,7 +72,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			return;
 		}
 
-		authDao.addLog(userInfo , "login", CommUtil.getClientPcInfo(request));
+		authDao.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtil.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
 			try {
@@ -84,8 +85,20 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			String queryStr = request.getQueryString();
 			//String reqUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "") +(StringUtil.isBlank(queryStr)?"":"?"+queryStr);
 			String reqUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "");
-			logger.debug("remember me request uri : {}, query string :{}" , reqUrl , queryStr);
-		    request.getRequestDispatcher(reqUrl).forward(request, response);
+			
+			logger.debug("remember me forward request uri : {}, query string :{}" , reqUrl , queryStr);
+			request.getRequestDispatcher(reqUrl).forward(new RememberMeHttpServletRequestWapper(request, response), response);
+			
+			/*
+			if(VarsqlUtils.isAjaxRequest(request)) {
+				logger.debug("remember me forward request uri : {}, query string :{}" , reqUrl , queryStr);
+				request.getRequestDispatcher(reqUrl).forward(request, response);
+			}else {
+				logger.debug("remember me sendRedirect request uri : {}, query string :{}" , reqUrl , queryStr);
+				redirectStrategy.sendRedirect(request, response, reqUrl);
+			}
+			*/
+			
 		    return ;
 		}else {
 

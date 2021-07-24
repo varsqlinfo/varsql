@@ -35,8 +35,8 @@ import com.vartech.common.constants.ResultConst;
  */
 @Service
 public class DbDiffServiceImpl{
-	
-	private static final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
+
+	private final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
 
 	@Autowired
 	private DBConnectionEntityRepository  dbConnectionEntityRepository;
@@ -70,7 +70,7 @@ public class DbDiffServiceImpl{
 
 	/**
 	 *
-	 * @param objectType 
+	 * @param objectType
 	 * @Method Name  : objectList
 	 * @Method 설명 : object list
 	 * @작성자   : ytkim
@@ -117,7 +117,7 @@ public class DbDiffServiceImpl{
 
 	private DatabaseParamInfo getDatabaseParamInfo(DBConnectionEntity vtConnRVO) {
 		DatabaseParamInfo dpi = new DatabaseParamInfo();
-		dpi.setConuid(null, SecurityUtil.loginUser().getViewid(), new DatabaseInfo(vtConnRVO.getVconnid()
+		dpi.setConuid(null, SecurityUtil.loginInfo().getViewid(), new DatabaseInfo(vtConnRVO.getVconnid()
 				, null
 				, vtConnRVO.getVtype()
 				, vtConnRVO.getVname()

@@ -173,47 +173,73 @@
 
 		</div>
 		<div class="export-type-area">
-			<div style="margin-bottom:5px;">
-				<label class="control-label">Export Name</label>
-				<input class="" type="text" id="exportFileName" name="exportFileName" value="">
-				<input type="hidden" id="exportObjectName" name="exportObjectName" value="">
-			</div>
-			<div>
-				<label class="control-label">LIMIT COUNT</label>
-				<input class="" id="exportCount" name="exportCount" value="1000">
-			</div>
-			<ul class="export-type">
-				<li>
-					<label class="checkbox-container">CSV
-					  <input type="radio" name="exportType" value="csv" checked="checked">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container">JSON
-					  <input type="radio" name="exportType" value="json">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container">INSERT Query
-					  <input type="radio" name="exportType" value="insert">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container">XML
-					  <input type="radio" name="exportType" value="xml">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container">Excel
-					  <input type="radio" name="exportType" value="excel">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-			</ul>
+			<table class="w100">
+				<colgroup>
+					<col style="width:85px">
+					<col style="width:*;">
+				</colgroup>
+				<tr>
+					<td><label class="control-label">Export Name</label></td>
+					<td>
+						<input class="" type="text" id="exportFileName" name="exportFileName" value="">
+						<input type="hidden" id="exportObjectName" name="exportObjectName" value="">
+					</td>
+				</tr>
+				<tr>
+					<td><label class="control-label">Limit Count</label></td>
+					<td>
+						<input class="" id="exportCount" name="exportCount" value="1000">
+					</td>
+				</tr>
+				<tr>
+					<td class="vertical-top"><label class="control-label">Export Type</label></td>
+					<td>
+						<ul class="export-type">
+							<li>
+								<label class="checkbox-container">CSV
+								  <input type="radio" name="exportType" value="csv" checked="checked">
+								  <span class="radiomark"></span>
+								</label>
+							</li>
+							<li>
+								<label class="checkbox-container">JSON
+								  <input type="radio" name="exportType" value="json">
+								  <span class="radiomark"></span>
+								</label>
+							</li>
+							<li>
+								<label class="checkbox-container">INSERT Query
+								  <input type="radio" name="exportType" value="insert">
+								  <span class="radiomark"></span>
+								</label>
+							</li>
+							<li>
+								<label class="checkbox-container">XML
+								  <input type="radio" name="exportType" value="xml">
+								  <span class="radiomark"></span>
+								</label>
+							</li>
+							<li>
+								<label class="checkbox-container">Excel
+								  <input type="radio" name="exportType" value="excel">
+								  <span class="radiomark"></span>
+								</label>
+							</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><button class="btn btn-sm" id="exportAdvancedBtn">Advanced</button></td>
+				</tr>
+				<tr id="exportConditionQueryArea" class="display-off">
+					<td class="vertical-top"><label class="control-label">Condition</label></td>
+					<td>
+						<div>ex: and column_name = 'test' <br/>
+						and column_name1 = 'test2'</div>
+						<textarea class="wh100" id="exportConditionQuery" name="conditionQuery" rows="5"></textarea>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>

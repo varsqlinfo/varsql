@@ -61,8 +61,6 @@ public class ServiceConfigurer implements AsyncConfigurer {
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        // You may customize the handler that manages exceptions thrown during an asynchronous method execution
-        // See http://www.concretepage.com/spring-4/spring-4-async-exception-handling-with-asyncuncaughtexceptionhandler
         return null;
     }
 

@@ -14,22 +14,21 @@ public class NoteSpec extends DefaultSpec {
     public static Specification<NoteEntity> userNoteList(String viewid) {
     	return Specification.where(recvUser(viewid, true)).and(delYn());
     }
-    
+
     // 보낸 메시지 보기
     public static Specification<NoteEntity> sendMsg(String viewid ,String keyword) {
     	return Specification.where(sendMsgUser(viewid, keyword)).and(delYn());
     }
-    
+
     //받은 메시지 보기.
     public static Specification<NoteEntity> recvMsg(String viewid ,String keyword) {
     	return Specification.where(recvUser(viewid,  false)).and(delYn());
     }
-    
-    
+
     public static Specification<NoteEntity> findUserReply(String parentNoteId) {
     	return Specification.where(delYn()).and(replyList(parentNoteId));
     }
-    
+
 	private static Specification<NoteEntity> replyList(String parentNoteId) {
 		return (root, query, cb) -> {
     		return cb.equal(root.get(NoteEntity.PARENT_NOTE_ID) , parentNoteId);
@@ -44,12 +43,12 @@ public class NoteSpec extends DefaultSpec {
 	    	);
     	};
 	}
-	
-	// manager 권한을 가진 db
+
+	// 받는 사용자 체크.
     private static Specification<NoteEntity> recvUser(String viewid , boolean viewCheckFlag) {
     	return (root, query, cb) -> {
     		Join<NoteEntity, NoteMappingUserEntity> join = root.join(NoteEntity.JOIN_RECV_LIST);
-    		
+
     		if(viewCheckFlag) {
     			return cb.and(
 					cb.equal(join.get(NoteMappingUserEntity.RECV_ID), viewid)
@@ -60,10 +59,10 @@ public class NoteSpec extends DefaultSpec {
 					cb.equal(join.get(NoteMappingUserEntity.RECV_ID), viewid)
 		    	);
     		}
-    		
+
     	};
     }
-    
+
     private static Specification<NoteEntity> delYn() {
     	return (root, query, cb) -> {
     		return cb.isFalse(root.get(NoteEntity.DEL_YN));

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
@@ -37,10 +38,10 @@ import com.vartech.common.utils.VartechReflectionUtils;
 public class DownloadController extends AbstractController {
 
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(DownloadController.class);
+	private final Logger logger = LoggerFactory.getLogger(DownloadController.class);
 
 
-	@RequestMapping({"/download"})
+	@RequestMapping(value="/download", method = RequestMethod.POST)
 	public void gridDownload(DownloadInfo downloadInfo, HttpServletRequest req ,HttpServletResponse res) throws Exception {
 
 		if(logger.isDebugEnabled()) {
@@ -53,18 +54,14 @@ public class DownloadController extends AbstractController {
 
 		downloadName = ValidateUtils.getValidFileName(downloadName);
 
-		OutputStream os = res.getOutputStream();
-
-		try {
+		try(OutputStream os = res.getOutputStream()) {
 			if("text".equals(exportType)){
 				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
 				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
 			}
 			if(os !=null) os.close();
 		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			if(os !=null) try {os.close();}catch(Exception e) {}
+			logger.error("grid download error : {}", e.getMessage() ,e);
 		}
 
 	}

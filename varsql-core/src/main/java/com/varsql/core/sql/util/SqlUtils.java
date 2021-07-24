@@ -269,13 +269,16 @@ public final class SqlUtils {
 
 		if ((val instanceof Clob)) {
 			StringBuffer output = new StringBuffer();
-			Reader input = rs.getCharacterStream(key);
-			char[] buffer = new char[1024];
-			while ((byteRead = input.read(buffer, 0, 1024)) != -1) {
-				output.append(buffer, 0, byteRead);
+			
+			try(Reader input = rs.getCharacterStream(key)){
+				char[] buffer = new char[1024];
+				while ((byteRead = input.read(buffer, 0, 1024)) != -1) {
+					output.append(buffer, 0, byteRead);
+				}
+				input.close();
+			}catch(IOException e) {
+				throw e;
 			}
-			input.close();
-
 			val = output.toString();
 		}
 

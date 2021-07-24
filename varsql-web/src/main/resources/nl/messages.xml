@@ -16,6 +16,8 @@
 <entry key="header.menu.file.new">새 파일</entry>
 <entry key="header.menu.file.save">저장</entry>
 <entry key="header.menu.file.allsave">모두 저장</entry>
+<entry key="header.menu.file.import">가져오기...</entry>
+<entry key="header.menu.file.export">내보내기...</entry>
 <entry key="header.menu.file.import_export">가져오기 및 내보내기...</entry>
 <entry key="header.menu.file.newwin">새창보기</entry>
 <entry key="header.menu.file.close">닫기</entry>
@@ -159,6 +161,7 @@
 <entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">스키마를 선택하세요.</entry>
+<entry key="msg.note.arrived">메모가 도착했습니다.</entry>
 
 
 <entry key="msg.select.value">선택된 값</entry>

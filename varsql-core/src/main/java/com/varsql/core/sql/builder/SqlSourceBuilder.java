@@ -18,6 +18,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.varsql.core.connection.pool.ConnectionValidation;
+import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMappingUtil;
@@ -56,10 +57,10 @@ public class SqlSourceBuilder {
 	}
 
 	public static List<SqlSource> parse(String query, Map<String,String> param) {
-		return getSqlSourceList(query, param, null);
+		return getSqlSourceList(query, param, DBType.OTHER);
 	}
 
-	public static List<SqlSource> parse(String query, Map<String,String> param, String dbType) {
+	public static List<SqlSource> parse(String query, Map<String,String> param, DBType dbType) {
 		try{
 			return getSqlSourceList(query, param, dbType);
 		}catch(Exception e){
@@ -69,7 +70,7 @@ public class SqlSourceBuilder {
 		}
 	}
 
-	public static ResponseResult parseResponseResult(String query, Map<String,String> param, String dbType) {
+	public static ResponseResult parseResponseResult(String query, Map<String,String> param, DBType dbType) {
 		ResponseResult result = new ResponseResult();
 		try{
 			result.setItemList(getSqlSourceList(query, param, dbType));
@@ -94,24 +95,24 @@ public class SqlSourceBuilder {
 		return getSqlSource(sql , new HashMap());
 	}
 	public static SqlSource getSqlSource(String sql, Map<String, String> param) {
-		return getSqlSource(sql , param , null);
+		return getSqlSource(sql , param , DBType.OTHER);
 	}
-	public static SqlSource getSqlSource(String sql, Map<String, String> param, String dbType) {
+	public static SqlSource getSqlSource(String sql, Map<String, String> param, DBType dbType) {
 		return getSqlSourceList(sql , param , dbType).get(0);
 	}
 
-	private static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , String dbType) {
+	private static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , DBType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
 		//SqlStatement tmpSqlStatement = getSqlStatement(sql, null, true);
 
-		List<SQLStatement> statements = SQLUtils.toStatementList(sql, dbType);
+		List<SQLStatement> statements = SQLUtils.toStatementList(sql, dbType.getDbParser());
 
 		if(statements.size() ==1) {
 			queries.add(getSqlSourceBean(statements.get(0), sql, param));
 		}else {
 			String tmpQuery = "";
 			for(SQLStatement statement : statements){
-				tmpQuery = SQLUtils.toSQLString(statement, dbType , null);
+				tmpQuery = SQLUtils.toSQLString(statement, dbType.getDbParser() , null);
 				queries.add(getSqlSourceBean(statement, tmpQuery, param));
 			}
 		}

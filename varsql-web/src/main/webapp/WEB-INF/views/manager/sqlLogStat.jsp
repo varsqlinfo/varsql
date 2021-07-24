@@ -84,7 +84,7 @@
 
 
 <script>
-VARSQL.loadResource([VARSQL.staticResource.get('juiChart'),VARSQL.staticResource.get('datepicker') ]);
+VARSQL.loadResource(['juiChart','datepicker']);
 
 
 VarsqlAPP.vueServiceBean( {

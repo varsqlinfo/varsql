@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,24 +26,18 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.user.service.UserMainServiceImpl;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.util.DatabaseUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
 
 
-
 /**
- *
- *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: UserMainController.java
@@ -60,8 +54,7 @@ import com.vartech.common.utils.VartechUtils;
 @RequestMapping("/user")
 public class UserMainController extends AbstractController{
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(UserMainController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserMainController.class);
 
 	@Autowired
 	private UserMainServiceImpl userMainServiceImpl;
@@ -69,7 +62,7 @@ public class UserMainController extends AbstractController{
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
 
-	@RequestMapping({"","/","/main"})
+	@RequestMapping(value={"","/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
@@ -94,7 +87,7 @@ public class UserMainController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/searchUserList"})
+	@RequestMapping(value={"/searchUserList"}, method = RequestMethod.POST)
 	public @ResponseBody ResponseResult searchUserList(HttpServletRequest req, HttpServletResponse response) throws Exception {
 
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
@@ -115,16 +108,14 @@ public class UserMainController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sendNote", "/resendNote"})
-	public @ResponseBody ResponseResult sendNote(@Valid NoteRequestDTO noteInfo, BindingResult result,HttpServletRequest req) throws Exception {
+	@RequestMapping(value={"/sendNote", "/resendNote"}, method = RequestMethod.POST)
+	public @ResponseBody ResponseResult sendNote(@Valid NoteRequestDTO noteInfo, BindingResult result, HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController sendNote check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 
 			String requestURI = req.getRequestURI();
@@ -146,9 +137,11 @@ public class UserMainController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/message"})
-	public @ResponseBody ResponseResult message(HttpServletRequest req, HttpServletResponse response) throws Exception {
-		return userMainServiceImpl.selectMessageInfo();
+	@RequestMapping(value={"/message"}, method = RequestMethod.POST)
+	public @ResponseBody ResponseResult message(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		
+		return userMainServiceImpl.selectMessageInfo(messageType, searchParameter);
 	}
 
 	/**
@@ -163,7 +156,7 @@ public class UserMainController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/updMsgViewDt"})
+	@RequestMapping(value={"/updMsgViewDt"}, method = RequestMethod.POST)
 	public @ResponseBody ResponseResult updMsgViewDt(@RequestParam(value = "noteId" , required = true) String noteId) throws Exception {
 		return userMainServiceImpl.updateNoteViewDate(noteId);
 	}
@@ -179,7 +172,7 @@ public class UserMainController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/connectionInfo")
+	@RequestMapping(value="/connectionInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult connectionInfo(HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
@@ -187,9 +180,9 @@ public class UserMainController extends AbstractController{
 
 		Collection<DatabaseInfo> dataBaseInfo = SecurityUtil.loginInfo(req).getDatabaseInfo().values();
 
-		List databaseList =new ArrayList();
+		List<HashMap<String,String>> databaseList =new ArrayList<>();
 		dataBaseInfo.forEach(item -> {
-			Map addMap = new HashMap();
+			HashMap<String,String> addMap = new HashMap<>();
 
 			addMap.put("uuid", item.getConnUUID());
 			addMap.put("type", item.getType());

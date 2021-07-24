@@ -39,7 +39,7 @@ import com.vartech.common.sort.TreeDataSort;
  */
 @Service
 public class DatabaseServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 
 	@Autowired
 	private DBConnHistEntityRepository dbConnHistEntityRepository;
@@ -275,13 +275,11 @@ public class DatabaseServiceImpl{
 
 			List<DBConnTabEntity> tabList = dbConnTabEntityRepository.findAllByViewid(viewid);
 
-			User user = SecurityUtil.loginUser();
+			User user = SecurityUtil.loginInfo();
 			Map<String, DatabaseInfo> databaseInfo= user.getDatabaseInfo();
 			Map<String,String> vconnidNconuid = user.getVconnidNconuid();
 
 			List<String> notExistsVconnid = new ArrayList<>();
-
-
 
 			tabList.forEach(item ->{
 				String vconnid = item.getVconnid();

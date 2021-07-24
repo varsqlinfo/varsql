@@ -71,7 +71,7 @@
 						   		<a href="javascript:;" :title="objInfo.name">{{ objInfo.name }}</a>
 						   	</li>
 						</template>
-						<li v-if="Object.keys(selectObjectItems).length == 0">
+						<li v-if="VARSQL.getLength(selectObjectItems) < 1">
 							<p class="no-data"><spring:message code="msg.export.ddl.object.nodata" /></p>
 						</li>
 					</ul>
@@ -106,11 +106,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="process-step-btn-area">
-				<button type="button" class="btn-md" :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
-				<button type="button" class="btn-md" :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
-				<button type="button" class="btn-md" :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
-			</div>
+			
+			<step-button :step.sync="step" :end-step="endStep" ref="stepButton"></step-button>
+			
 		</div>
 	</div>
 </BODY>
@@ -150,48 +148,49 @@ VarsqlAPP.vueServiceBean({
 		init : function (){
 
 		}
-		//이전 , 다음
-		,moveStep : function (mode){
-			if(mode == 'prev'){
-				if(this.step > 1){
-					this.selectStep(this.step-1);
-				}
-			}else if(mode == 'next'){
-				if(this.step < this.endStep){
-					this.selectStep(this.step+1);
-				}
-			}
-		}
-		// step 선택
 		,selectStep : function (step){
+			this.$refs.stepButton.move(step);
+		}
+		,moveStep : function (step){
 			var _self = this;
 
-			this.step = step;
-
-			if(this.step != 3){
-				return ;
+			if(step < 3){
+				return true;
 			}
 
 			var objItem = _self.selectObjectItems;
-
+			
 			var dbObjType = [];
+			var activeObjItem = {};
+			var firstFlag = true; 
 			for(var key in objItem){
-
+				
+				if(firstFlag){
+					activeObjItem = objItem[key];
+				}
+				
+				if(objItem[key].isActive){
+					activeObjItem = objItem[key];
+				}
+				
 				if(typeof _self.objExportInfo[key] ==='undefined'){
 					dbObjType.push(key);
 				}
+				
+				firstFlag = false; 
 			}
-
+			
+			if(VARSQL.getLength(_self.selectObjectItems) < 1){
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0006'));
+				this.selectStep(2);
+				return false;
+			}
+			
 			if(dbObjType.length < 1){
-				var item = _self.selectObjectItems[Object.keys(_self.selectObjectItems)[0]];
-
-				if(!VARSQL.isUndefined(item)){
-					_self.setSelectObject(item);
-				}
-
+				this.setSelectObject(activeObjItem);
 				return ;
 			}
-
+			
 			var param = {
 				conuid : '${param.conuid}'
 				,ddlObjInfo : dbObjType.join(',')
@@ -260,8 +259,7 @@ VarsqlAPP.vueServiceBean({
 		// object 선택.
 		,selectItem : function (objInfo){
 			objInfo._isSelect = objInfo._isSelect ? false :true;
-
-			objInfo.isActive = false;
+			
 
 			if(objInfo._isSelect){
 				this.selectObjectItems[objInfo.contentid] =objInfo
@@ -274,12 +272,16 @@ VarsqlAPP.vueServiceBean({
 
 			var _self =this;
 
-			sObj.isActive = true;
-
 			var objName = sObj.contentid;
-
+			
+			for(var key in _self.selectObjectItems){
+				_self.selectObjectItems[key].isActive = false; 
+			}
+			
+			sObj.isActive = true;
+			
 			if(_self.selectExportObject != ''){
-				_self.selectExportObject.isActive = false;
+				//_self.selectExportObject.isActive = false;
 				_self.selectExportInfo[_self.selectExportObject.contentid] = _self.selectDbObjectInfo.getTargetItem();
 			}
 

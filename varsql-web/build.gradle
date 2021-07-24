@@ -21,7 +21,7 @@ plugins {
 
 
 ext{
-	appVersion = '0.0.1'
+	appVersion = project.property('varsqlVersion')
 	jsMinifyVersion = '2.14.1'
 
 	webResourceConfig = [
@@ -120,6 +120,7 @@ war{
 	}
 
 	doLast {
+		println("appVersion : " + appVersion)
 		println("war export path : " + archivePath.parent)
 		//불필요한 파익 삭제.
 		def fileDelFlag = true;

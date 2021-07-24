@@ -19,15 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
 import com.varsql.web.constants.ViewPageConstants;
@@ -91,7 +90,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {
     	ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultEncoding(VarsqlConstants.CHAR_SET);
 
         messageSource.setCacheMillis(180);
         messageSource.setFallbackToSystemLocale(false);
@@ -159,7 +158,6 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     public LocaleResolver localeResolver()
     {
         final SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-       // localeResolver.setDefaultLocale(new Locale("en", "US"));
         return localeResolver;
     }
 
@@ -168,6 +166,8 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
        multipartResolver.setMaxUploadSize(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSize());
        multipartResolver.setMaxUploadSizePerFile(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSizePerFile());
+       multipartResolver.setDefaultEncoding(VarsqlConstants.CHAR_SET);
+       multipartResolver.setMaxInMemorySize(com.varsql.core.configuration.Configuration.getInstance().getFileUploadMaxInMemorySize());
        return multipartResolver;
     }
 }

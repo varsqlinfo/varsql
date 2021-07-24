@@ -49,17 +49,19 @@ public class VarsqlTilesView extends TilesView{
 		 
 		String url  = this.getUrl();
 		
-		if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX)) {
+		if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX) || url.endsWith(ViewPageConstants.POPUP_SUFFIX)) {
+			exposeModelAsRequestAttributes(model,request);
 			
 			Request tilesRequest = new ServletRequest(container.getApplicationContext(), request, response);
-			Definition definition = container.getDefinitionsFactory().getDefinition("common.dialog", tilesRequest);
-			definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.DIALOG_SUFFIX)));
-			container.render(definition, tilesRequest);
 			
-		}else if(url.endsWith(ViewPageConstants.POPUP_SUFFIX)) {
-			Request tilesRequest = new ServletRequest(container.getApplicationContext(), request, response);
-			Definition definition = container.getDefinitionsFactory().getDefinition("common.popup", tilesRequest);
-			definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.POPUP_SUFFIX)));
+			Definition definition = null; 
+			if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX)) {
+				definition = container.getDefinitionsFactory().getDefinition("common.dialog", tilesRequest);
+				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.DIALOG_SUFFIX)));
+			}else {
+				definition = container.getDefinitionsFactory().getDefinition("common.popup", tilesRequest);
+				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.POPUP_SUFFIX)));
+			}
 			
 			container.render(definition, tilesRequest); 
 		}else {

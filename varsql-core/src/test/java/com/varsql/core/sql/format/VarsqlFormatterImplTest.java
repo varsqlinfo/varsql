@@ -14,5 +14,5 @@ class VarsqlFormatterImplTest extends BaseTest {
 
 		System.out.println(aaa.execute(ugly_sql_code));
 	}
-
+	
 }

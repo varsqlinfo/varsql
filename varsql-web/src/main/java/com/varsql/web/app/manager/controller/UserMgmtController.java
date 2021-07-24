@@ -12,11 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.UserMgmtServiceImpl;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -41,13 +38,12 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager/user")
 public class UserMgmtController extends AbstractController {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(UserMgmtController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserMgmtController.class);
 
 	@Autowired
 	private UserMgmtServiceImpl userMgmtServiceImpl;
 
-	@RequestMapping({"/userList"})
+	@RequestMapping(value = "/userList", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
@@ -97,12 +93,12 @@ public class UserMgmtController extends AbstractController {
 	 * @method  : initPassword
 	 * @desc : 패스워드 초기화
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 30. 
+	 * @date   : 2020. 4. 30.
 	 * @param viewid
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/initPassword"})
+	@RequestMapping(value = "/initPassword", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult initPassword(@RequestParam(value = "viewid", required = true )  String viewid) throws Exception {
 		return userMgmtServiceImpl.initPassword(viewid);
 	}
@@ -111,7 +107,7 @@ public class UserMgmtController extends AbstractController {
 	 * @method  : userDetail
 	 * @desc : 사용자 상세 보기.
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 30. 
+	 * @date   : 2020. 4. 30.
 	 * @param viewid
 	 * @param req
 	 * @return
@@ -125,7 +121,7 @@ public class UserMgmtController extends AbstractController {
 	/**
 	 *
 	 * @Method Name  : removeAuth
-	 * @Method 설명 : db 권한 삭제.
+	 * @Method 설명 : 사용자 db 권한 차단.
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 11. 30.
 	 * @변경이력  :
@@ -136,13 +132,11 @@ public class UserMgmtController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbBlockInfo", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult removeAuth(@RequestParam(value = "viewid", required = true )  String viewid 
+	public @ResponseBody ResponseResult userDbBlock(@RequestParam(value = "viewid", required = true )  String viewid
 			,@RequestParam(value = "vconnid", required = true )  String vconnid
 			,@RequestParam(value = "mode", required = true )  String mode
 			, HttpServletRequest req) throws Exception {
-		ParamMap param = VarsqlUtils.getIncludeDefaultParam(req);
-
-		return userMgmtServiceImpl.removeAuth(viewid, vconnid, param);
+		return userMgmtServiceImpl.userDbBlock(viewid, vconnid, VarsqlUtils.getIncludeDefaultParam(req));
 	}
 
 	/**

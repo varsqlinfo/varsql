@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -42,7 +43,7 @@ import com.vartech.common.utils.HttpUtils;
 public class AdminDbMgmtController extends AbstractController{
 
 	/** The Constant logger. */
-	private final static Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);
+	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);
 
 	@Autowired
 	private AdminServiceImpl adminServiceImpl;
@@ -60,7 +61,7 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/dblist")
+	@RequestMapping(value = "/dblist", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dblist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
@@ -110,13 +111,11 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/dbConnectionCheck")
+	@RequestMapping(value = "/dbConnectionCheck", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionCheck(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setMessage(VarsqlUtils.getErrorCodeMessage(result));
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject = adminServiceImpl.connectionCheck(vtConnection);
 		}
@@ -124,14 +123,19 @@ public class AdminDbMgmtController extends AbstractController{
 		return resultObject;
 	}
 
-	@RequestMapping(value = "/dbConnectionClose")
+	@RequestMapping(value = "/dbConnectionClose", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionClose(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
 		return adminServiceImpl.connectionClose(vconnid);
 	}
 
-	@RequestMapping(value = "/dbConnectionReset")
+	@RequestMapping(value = "/dbConnectionReset", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionReset(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
 		return adminServiceImpl.dbConnectionReset(vconnid);
+	}
+	
+	@RequestMapping(value = "/dbConnectionCopy", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbConnectionCopy(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
+		return adminServiceImpl.dbConnectionCopy(vconnid);
 	}
 
 	/**
@@ -154,13 +158,11 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/dbSave")
+	@RequestMapping(value = "/dbSave", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbSave(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setMessage(VarsqlUtils.getErrorCodeMessage(result));
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject = adminServiceImpl.saveVtconnectionInfo(vtConnection);
 		}
@@ -179,8 +181,14 @@ public class AdminDbMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/dbDelete")
-	public @ResponseBody ResponseResult dbDelete(@RequestParam(value = "vconnid")  String vconnid) throws Exception {
+	@RequestMapping(value = "/dbDelete", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbDelete(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
 		return VarsqlUtils.getResponseResultItemOne(adminServiceImpl.deleteVtconnectionInfo(vconnid));
+	}
+	
+	@RequestMapping(value = "/dbPwView", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbPwView(@RequestParam(value = "vconnid", required = true)  String vconnid
+			,@RequestParam(value = "userPw", required = true)  String userPw) throws Exception {
+		return adminServiceImpl.viewVtConntionPwInfo(vconnid, userPw);
 	}
 }

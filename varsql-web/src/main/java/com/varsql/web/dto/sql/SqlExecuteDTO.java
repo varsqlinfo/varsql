@@ -80,4 +80,14 @@ public class SqlExecuteDTO extends DatabaseParamInfo{
 	public void setColumnInfo(String columnInfo) {
 		this.columnInfo = columnInfo;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return new StringBuilder()
+				.append("sql : ").append(sql)
+				.append(" , sqlParam : ").append(sqlParam)
+				.append(" , columnInfo : ").append(columnInfo)
+				.toString();
+	}
 }

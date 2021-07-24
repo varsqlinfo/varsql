@@ -1,1 +1,10 @@
-SELECT /*+FIRST_ROWS */EMPNO,ENAME	/* name */-- , test FROM EMP WHERE EMPNO = 7655;
+SELECT ProductNumber,
+CASE ProductLine
+WHEN 'R' THEN 'Road'	--test
+WHEN 'M' THEN 'Mountain'	--test2
+WHEN 'T' THEN 'Touring'
+WHEN 'S' THEN 'Other sale items'
+ELSE 'Not for sale'
+END as test , Name
+FROM Production.Product
+ORDER BY ProductNumber; GO

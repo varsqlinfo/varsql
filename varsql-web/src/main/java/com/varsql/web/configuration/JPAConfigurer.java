@@ -63,7 +63,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 })
 public class JPAConfigurer {
 
-	private static final Logger logger = LoggerFactory.getLogger(JPAConfigurer.class);
+	private final Logger logger = LoggerFactory.getLogger(JPAConfigurer.class);
 
     @Autowired
     private Environment env;
@@ -151,7 +151,8 @@ public class JPAConfigurer {
     public com.querydsl.sql.Configuration querydslConfiguration() {
         SQLTemplates templates = H2Templates.builder().build();
 
-        String dbType = Configuration.getInstance().getDbType();
+        DBType dbType = DBType.getDBType(Configuration.getInstance().getDbType());
+
         if(DBType.MYSQL.equals(dbType)) {
         	templates = MySQLTemplates.builder().build();
         }else if(DBType.MSSQL.equals(dbType)) {

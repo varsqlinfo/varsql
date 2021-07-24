@@ -27,7 +27,7 @@ import com.vartech.common.app.beans.SearchParameter;
  */
 @Service
 public class ErrorLogServiceImpl  extends AbstractService{
-	private static final Logger logger = LoggerFactory.getLogger(ErrorLogServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(ErrorLogServiceImpl.class);
 
 	@Autowired
 	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;

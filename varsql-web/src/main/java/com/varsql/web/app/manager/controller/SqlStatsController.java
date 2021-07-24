@@ -1,7 +1,5 @@
 package com.varsql.web.app.manager.controller;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -9,14 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
-import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.app.manager.service.SqlStatsServiceImpl;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.vartech.common.app.beans.ResponseResult;
@@ -43,8 +38,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager/stats")
 public class SqlStatsController extends AbstractController {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(SqlStatsController.class);
+	private final Logger logger = LoggerFactory.getLogger(SqlStatsController.class);
 
 	@Autowired
 	private SqlStatsServiceImpl sqlStatsServiceImpl;
@@ -62,12 +56,12 @@ public class SqlStatsController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbSqlDateStats"})
+	@RequestMapping(value = "/dbSqlDateStats", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
-		
+
 		return sqlStatsServiceImpl.dbSqlDateStats(vconnid, s_date, e_date);
 	}
 
@@ -84,7 +78,7 @@ public class SqlStatsController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbSqlDayStats"})
+	@RequestMapping(value = "/dbSqlDayStats", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
@@ -107,7 +101,7 @@ public class SqlStatsController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbSqlDayUserRank"})
+	@RequestMapping(value = "/dbSqlDayUserRank", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
 			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
@@ -129,7 +123,7 @@ public class SqlStatsController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/logList"})
+	@RequestMapping(value = "/logList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid ,HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return sqlStatsServiceImpl.findSqlLog(vconnid,searchParameter);

@@ -9,7 +9,7 @@ public class CustomRevisionListener implements RevisionListener {
 	@Override
 	public void newRevision(Object revisionEntity) {
 		CustomRevisionEntity revision = (CustomRevisionEntity) revisionEntity;
-		revision.setUserName(SecurityUtil.loginUser().getUsername());
+		revision.setUserName(SecurityUtil.loginInfo().getUsername());
 	}
 
 }

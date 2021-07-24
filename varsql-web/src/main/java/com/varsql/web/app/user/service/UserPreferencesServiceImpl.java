@@ -21,7 +21,6 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
@@ -43,6 +42,7 @@ import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.utils.StringUtils;
 
 @Service
 public class UserPreferencesServiceImpl extends AbstractService{
@@ -61,7 +61,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	private NoteMappingUserEntityRepository noteMappingUserEntityRepository;
 
 	@Autowired
-	@Qualifier("varsqlPasswordEncoder")
+	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
 	private PasswordEncoder passwordEncoder;
 
 	/**
@@ -176,7 +176,10 @@ public class UserPreferencesServiceImpl extends AbstractService{
 
 		List<NoteResponseDTO> noteList = new ArrayList<>();
 		result.getContent().forEach(item ->{
+
 			NoteResponseDTO noteResDto = domainMapper.convertToDomain(item, NoteResponseDTO.class);
+
+			noteResDto.setRegUserInfo(item.getRegInfo().getUname()+"("+item.getRegInfo().getUid()+")");
 
 			List<String> recvUsers = new ArrayList<>();
 
@@ -220,7 +223,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult deleteUserMsg(String messageType, String selectItem) {
 
-		String[] noteIdArr = StringUtil.split(selectItem,",");
+		String[] noteIdArr = StringUtils.split(selectItem,",");
 
     	if("send".equals(messageType)){ // 보낸 메시지 삭제시 만 처리.
     		noteEntityRepository.saveAllMsgDelYn(noteIdArr);

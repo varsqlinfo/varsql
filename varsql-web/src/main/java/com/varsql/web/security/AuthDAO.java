@@ -30,6 +30,7 @@ import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
@@ -48,18 +49,17 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Service(value = "authDao")
 public final class AuthDAO {
-	final private String role_delim = ";";
 
-	private static final Logger logger = LoggerFactory.getLogger(AuthDAO.class);
-
-	@Autowired
-	private UserRepository userRepository;// = (UserRepository)BeanUtils.getBean("userRepository");
+	private final Logger logger = LoggerFactory.getLogger(AuthDAO.class);
 
 	@Autowired
-	private UserLogHistRepository userLogHistRepository;// = (UserLogHistRepository)BeanUtils.getBean("userLogHistRepository");
+	private UserRepository userRepository;
 
 	@Autowired
-	@Qualifier("varsqlPasswordEncoder")
+	private UserLogHistRepository userLogHistRepository;
+
+	@Autowired
+	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
 	private PasswordEncoder passwordEncoder;
 
 	/**
@@ -142,12 +142,94 @@ public final class AuthDAO {
 		}
 	}
 
+	/**
+	 *
+	 * @Method Name  : getUserDataBaseInfo
+	 * @Method 설명 :
+	 * @작성일   : 2015. 6. 22.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @return
+	 * @throws SQLException
+	 */
 	public void getUserDataBaseInfo(){
 		Connection conn =ConnectionFactory.getInstance().getConnection();
 		PreparedStatement pstmt= null;
 		ResultSet rs= null;
 		try {
-			getUserDataBaseInfo(conn,pstmt, rs, SecurityUtil.loginInfo());
+
+			User user = SecurityUtil.loginInfo();
+			StringBuffer query = new StringBuffer();
+
+		  	String dbColumnQuery = "select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ";
+		  	query.append( dbColumnQuery);
+
+			AuthorityType tmpAuthority = user.getTopAuthority();
+
+			if (tmpAuthority.equals(AuthorityType.ADMIN)) {
+				query.append(" 1 = 1 ");
+			}else if(tmpAuthority.equals(AuthorityType.GUEST)){
+				query.append(" 1 != 1 ");
+			}else {
+				query.append(" A.VCONNID IN ( ");
+				query.append(" select d.VCONNID ");
+				query.append(" from VTDATABASE_GROUP a inner join VTDATABASE_GROUP_DB b on a.GROUP_ID = b.GROUP_ID ");
+				query.append(" inner join VTDATABASE_GROUP_USER c on b.GROUP_ID = c.GROUP_ID ");
+				query.append(" inner join VTCONNECTION d on b.VCONNID = d.VCONNID ");
+				query.append(" left outer join VTDATABASE_BLOCK_USER e on d.VCONNID = e.VCONNID and c.VIEWID =e.VIEWID ");
+				query.append(" where c.VIEWID = '"+user.getViewid()+"'  ");
+				query.append(" and e.viewid is null ");
+				query.append(" and d.USE_YN = 'Y' ");
+				query.append(" group by d.VCONNID ");
+				query.append(" ) ");
+
+				if(tmpAuthority.equals(AuthorityType.MANAGER)){
+					query.append(" union ");
+					query.append(dbColumnQuery+ "  A.VCONNID in ( select VCONNID from VTDATABASE_MANAGER where VIEWID = '"+user.getViewid()+"' ) ");
+				}
+			}
+
+			Map<String, DatabaseInfo> userDatabaseInfo = new LinkedHashMap<String, DatabaseInfo>();
+
+			if(!tmpAuthority.equals(AuthorityType.GUEST)){
+				pstmt  = conn.prepareStatement(query.toString());
+				rs= pstmt.executeQuery();
+
+				String vconnid;
+				String uuid = "";
+
+				String viewid = user.getViewid();
+
+				Map<String, String> vconnidNconuid = new HashMap<>();
+
+				List<String> newVconnidList = new ArrayList<String>();
+
+				while(rs.next()){
+
+					vconnid = rs.getString(VarsqlKeyConstants.CONN_ID);
+					newVconnidList.add(vconnid);
+
+					uuid = UUIDUtil.vconnidUUID(viewid, vconnid);
+
+					vconnidNconuid.put(vconnid, uuid);
+
+					userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
+							, uuid
+							, rs.getString(VarsqlKeyConstants.CONN_TYPE)
+							, rs.getString(VarsqlKeyConstants.CONN_NAME)
+							, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
+							, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
+							, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
+							, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
+							, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
+							, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
+						)
+					);
+				}
+
+				user.setDatabaseInfo(userDatabaseInfo);
+				user.setVconnidNconuid(vconnidNconuid);
+			}
 		}catch(SQLException e) {
 			throw new VarsqlAppException("database load exception : "+e.getMessage(), e);
 		}finally{
@@ -183,112 +265,26 @@ public final class AuthDAO {
 
 	/**
 	 *
-	 * @Method Name  : getUserDataBaseInfo
-	 * @Method 설명 : 사용자 권한 맵핑된 데이타 베이스 정보 추출.
-	 * @작성일   : 2015. 6. 22.
+	 * @Method Name  : passwordCheck
+	 * @Method 설명 : 사용자 비밀번호 체크
+	 * @작성일   : 2019. 9. 20.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param conn
-	 * @param pstmt
-	 * @param rs
-	 * @param user
-	 * @return
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	private Map<String, DatabaseInfo> getUserDataBaseInfo(Connection conn, PreparedStatement pstmt,ResultSet rs, User user) throws SQLException {
+	public boolean passwordCheck(String username, String password) {
+		UserEntity userModel= userRepository.findByUid(username);
 
-	  	StringBuffer query = new StringBuffer();
-
-	  	String dbColumnQuery = "select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ";
-	  	query.append( dbColumnQuery);
-
-		AuthorityType tmpAuthority = user.getTopAuthority();
-
-		if (tmpAuthority.equals(AuthorityType.ADMIN)) {
-			query.append(" 1 = 1 ");
-		}else if(tmpAuthority.equals(AuthorityType.GUEST)){
-			query.append(" 1 != 1 ");
-		}else {
-			query.append(" A.VCONNID IN ( ");
-			query.append(" select d.VCONNID ");
-			query.append(" from VTDATABASE_GROUP a inner join VTDATABASE_GROUP_DB b on a.GROUP_ID = b.GROUP_ID ");
-			query.append(" inner join VTDATABASE_GROUP_USER c on b.GROUP_ID = c.GROUP_ID ");
-			query.append(" inner join VTCONNECTION d on b.VCONNID = d.VCONNID ");
-			query.append(" left outer join VTDATABASE_BLOCK_USER e on d.VCONNID = e.VCONNID and c.VIEWID =e.VIEWID ");
-			query.append(" where c.VIEWID = '"+user.getViewid()+"'  ");
-			query.append(" and e.viewid is null ");
-			query.append(" and d.USE_YN = 'Y' ");
-			query.append(" group by d.VCONNID ");
-			query.append(" ) ");
-
-			if(tmpAuthority.equals(AuthorityType.MANAGER)){
-				query.append(" union ");
-				query.append(dbColumnQuery+ "  A.VCONNID in ( select VCONNID from VTDATABASE_MANAGER where VIEWID = '"+user.getViewid()+"' ) ");
-			}
+		if(userModel==null){
+			return false;
 		}
 
-		Map<String, DatabaseInfo> userDatabaseInfo = new LinkedHashMap<String, DatabaseInfo>();
-
-		if(!tmpAuthority.equals(AuthorityType.GUEST)){
-			pstmt  = conn.prepareStatement(query.toString());
-			rs= pstmt.executeQuery();
-
-			String vconnid;
-			String uuid = "";
-
-			String viewid = user.getViewid();
-			Map<String, DatabaseInfo> beforeDatabaseInfo = user.getDatabaseInfo();
-
-			Map<String, String> vconnidNconuid = new HashMap<>();
-
-			List<String> newVconnidList = new ArrayList<String>();
-			boolean flag = Configuration.getInstance().useConnUID();
-			while(rs.next()){
-
-				vconnid = rs.getString(VarsqlKeyConstants.CONN_ID);
-				newVconnidList.add(vconnid);
-
-				if(flag){
-					uuid = UUIDUtil.nameUUIDFromBytes(viewid+vconnid);
-				}else{
-					uuid = vconnid;
-				}
-
-				vconnidNconuid.put(vconnid, uuid);
-
-				userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
-						, uuid
-						, rs.getString(VarsqlKeyConstants.CONN_TYPE)
-						, rs.getString(VarsqlKeyConstants.CONN_NAME)
-						, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
-						, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
-						, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
-						, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
-						, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
-						, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
-					)
-				);
-			}
-
-			/*
-			List<String> beforeVconnidList = new ArrayList<String>();
-
-			if(beforeDatabaseInfo != null) {
-				for(Map.Entry<String, DatabaseInfo> databaseInfo: beforeDatabaseInfo.entrySet()) {
-					beforeVconnidList.add(databaseInfo.getValue().getVconnid());
-				}
-			}
-	        Collections.sort(beforeVconnidList);
-	        Collections.sort(newVconnidList);
-
-	        boolean isEqual = newVconnidList.equals(beforeVconnidList);      //false
-	        if(!isEqual) {
-	        	user.setDatabaseInfo(userDatabaseInfo);
-	        };
-	        */
-			user.setDatabaseInfo(userDatabaseInfo);
-			user.setVconnidNconuid(vconnidNconuid);
+		if(!passwordEncoder.matches(password, userModel.getUpw())){
+			return false;
 		}
-		return userDatabaseInfo;
+
+		return true;
 	}
+
+
 }

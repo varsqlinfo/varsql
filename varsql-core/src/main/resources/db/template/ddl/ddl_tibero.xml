@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE var-ddl SYSTEM  "ddlTemplate.dtd">
+
+<var-ddl>
+	<!-- 테이블 생성-->
+	<tableScript><![CDATA[
+
+	]]></tableScript>
+
+	<!-- view 생성-->
+	<viewScript><![CDATA[
+
+	]]></viewScript>
+
+	<!-- function 생성-->
+	<functionScript><![CDATA[
+
+	]]></functionScript>
+
+	<!-- procedure 생성-->
+	<procedureScript><![CDATA[
+
+	]]></procedureScript>
+
+	<!-- trigger 생성-->
+	<triggerScript><![CDATA[
+/* DROP TRIGGER ; */
+CREATE OR REPLACE
+	]]></triggerScript>
+
+	<!-- index 생성-->
+	<indexScript><![CDATA[
+
+	]]></indexScript>
+
+	<!-- sequence 생성-->
+	<sequenceScript><![CDATA[
+{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{/equals}}
+CREATE SEQUENCE "{{schema}}"."{{OBJECT_NAME}}"
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+INCREMENT BY {{INCREMENT_BY}} START WITH {{LAST_NUMBER}}
+CACHE {{CACHE_SIZE}} {{#equals 'Y' ORDER_FLAG}}ORDER{{else}}NOORDER{{/equals}} {{#equals 'Y' CYCLE_FLAG}}CYCLE{{else}}NOCYCLE{{/equals}};
+	]]></sequenceScript>
+
+	<!-- 컬럼 추가-->
+	<alterAddColumn><![CDATA[
+alter table {{TABLE_NAME}} add ({{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}})
+	]]></alterAddColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<alterRenameColumn><![CDATA[
+alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} to {{NEW_COLUMN_NAME}}
+	]]></alterRenameColumn>
+
+	<!-- 컬럼 수정 추가-->
+	<alterModifyColumn><![CDATA[
+alter table {{TABLE_NAME}} MODIFY({{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}});
+	]]></alterModifyColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<alterDropColumn><![CDATA[
+alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+	]]></alterDropColumn>
+
+	<!-- 테이블명 수정 추가-->
+	<renameTable><![CDATA[
+alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
+	]]></renameTable>
+</var-ddl>

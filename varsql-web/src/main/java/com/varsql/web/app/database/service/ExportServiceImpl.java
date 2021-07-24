@@ -48,7 +48,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Service
 public class ExportServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
 
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;

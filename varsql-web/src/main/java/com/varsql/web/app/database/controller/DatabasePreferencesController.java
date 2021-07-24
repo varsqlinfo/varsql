@@ -8,13 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.configuration.PreferencesDataFactory;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -35,13 +39,12 @@ import com.vartech.common.app.beans.ResponseResult;
 @RequestMapping("/database/preferences")
 public class DatabasePreferencesController extends AbstractController  {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(DatabasePreferencesController.class);
+	private final Logger logger = LoggerFactory.getLogger(DatabasePreferencesController.class);
 
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
 
-	@RequestMapping({"/main"})
+	@RequestMapping(value={"/main"}, method = RequestMethod.GET)
 	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/preferencesMain", VIEW_PAGE.DATABASE, model);
@@ -58,7 +61,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @return
 	* @throws Exception
 	 */
-	@RequestMapping("/generalSetting")
+	@RequestMapping(value="/generalSetting", method = RequestMethod.GET)
 	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/generalSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
@@ -75,7 +78,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @return
 	* @throws Exception
 	 */
-	@RequestMapping("/keySetting")
+	@RequestMapping(value="/keySetting", method = RequestMethod.GET)
 	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/keySetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
@@ -94,7 +97,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @return
 	* @throws Exception
 	 */
-	@RequestMapping("/sqlFormatSetting")
+	@RequestMapping(value="/sqlFormatSetting", method = RequestMethod.GET)
 	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/sqlFormatSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
@@ -111,7 +114,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @return
 	* @throws Exception
 	 */
-	@RequestMapping("/codeEditerSetting")
+	@RequestMapping(value="/codeEditerSetting", method = RequestMethod.GET)
 	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/codeEditerSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
@@ -128,15 +131,21 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @return
 	* @throws Exception
 	 */
-	@RequestMapping("/exportSetting")
+	@RequestMapping(value="/exportSetting", method = RequestMethod.GET)
 	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/exportSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 
-	@RequestMapping("/contextMenuSetting")
-	public ModelAndView contextMenuSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	@RequestMapping(value="/contextMenuSetting", method = RequestMethod.GET)
+	public ModelAndView contextMenuSetting(PreferencesRequestDTO preferencesInfo, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
+
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.CONTEXTMENU_SERVICEOBJECT.key());
+
+		String prefVal = preferencesServiceImpl.selectPreferencesInfo(preferencesInfo);
+
+		model.addAttribute(VarsqlParamConstants.SETTING_INFO, prefVal == null? PreferencesDataFactory.getInstance().getDefaultValue(PreferencesConstants.PREFKEY.CONTEXTMENU_SERVICEOBJECT.key()) :prefVal);
 		return getModelAndView("/contextMenuSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 
@@ -152,7 +161,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/save")
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult save(PreferencesRequestDTO preferencesInfo, HttpServletRequest req) throws Exception {
 		return preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 	}

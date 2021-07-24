@@ -21,10 +21,12 @@ class ParameterMappingUtilTest extends BaseTest{
 		
 		Map<String,String> data = new HashMap<>();
 		data.put("item1", "asdf");
+		data.put("page_id", "test");
 		ConvertResult convertResult = pmu.sqlParameter(cont,data, "?" );
 		
 		List<ParameterMapping> sqlList = (List<ParameterMapping>) convertResult.getParameterInfo();
-		//System.out.println(convertResult.getCont());
+		System.out.println(sqlList);
+		System.out.println(convertResult.getCont());
 		assertTrue(" sql parameter size not equal \n"+sqlList, sqlList.size() == 3);
 		
 		assertEquals(sqlList.get(0).getProperty(), "schema");

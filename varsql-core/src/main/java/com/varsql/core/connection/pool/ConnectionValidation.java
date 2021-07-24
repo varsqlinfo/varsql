@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.exception.ConfigurationException;
 
 /**
@@ -56,7 +57,7 @@ public class ConnectionValidation {
 				    }
 				    return ;
 				}
-				propPath = java.net.URLDecoder.decode(pathUrl.getPath(),"utf-8");
+				propPath = java.net.URLDecoder.decode(pathUrl.getPath(),VarsqlConstants.CHAR_SET);
 			}
 
 			File propFile = new File(propPath);

@@ -164,7 +164,7 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 		this.maxSelectCount = maxSelectCount;
 
 	}
-
+	
 	public static final String JOIN_MANAGER_LIST = "managerList";
 
 	public static final String JOIN_GROUPLIST = "dbGroupList";

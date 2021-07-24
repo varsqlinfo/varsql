@@ -3,6 +3,8 @@ package com.varsql.core.db.valueobject;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.ibatis.type.Alias;
+
 import com.varsql.core.auth.User;
 import com.varsql.core.common.util.SecurityUtil;
 
@@ -13,6 +15,7 @@ import com.varsql.core.common.util.SecurityUtil;
  * @Program desc : database parameter vo
  * @Hisotry :
  */
+@Alias("databaseParamInfo")
 public class DatabaseParamInfo{
 
 	private String conuid;

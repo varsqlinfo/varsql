@@ -14,7 +14,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 		<tbody>
 			<tr>
 				<td style="text-align: center;">
-					<div><a href="${pageContext.request.contextPath}">메인화면 가기</a></div>
+					<div><a href="${pageContext.request.contextPath}">로그인 화면 가기</a></div>
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div>접근 금지 사용자  입니다 </div>
 						<div>관리자에게 문의 하세요.</div>

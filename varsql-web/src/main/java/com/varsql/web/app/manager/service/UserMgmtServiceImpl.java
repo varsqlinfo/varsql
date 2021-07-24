@@ -12,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.StringUtil;
+import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
+import com.varsql.web.app.websocket.service.WebSocketServiceImpl;
 import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.db.DBBlockUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.db.DBBlockUserEntityRepository;
@@ -35,6 +38,7 @@ import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.crypto.password.PasswordUtil;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -73,7 +77,10 @@ public class UserMgmtServiceImpl extends AbstractService{
 	private UserDBConnectionEntityRepository userDBConnectionEntityRepository;
 
 	@Autowired
-	@Qualifier("varsqlPasswordEncoder")
+	private WebSocketServiceImpl webSocketServiceImpl;
+
+	@Autowired
+	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
 	private PasswordEncoder passwordEncoder;
 
 	/**
@@ -108,7 +115,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
-		String[] viewidArr = StringUtil.split(selectItem,",");
+		String[] viewidArr = StringUtils.split(selectItem,",");
 		AuthorityType role = "Y".equals(acceptyn)?AuthorityType.USER:AuthorityType.GUEST;
 
 		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
@@ -176,7 +183,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
-	public ResponseResult removeAuth(String viewid, String vconnid, ParamMap param) {
+	public ResponseResult userDbBlock(String viewid, String vconnid, ParamMap param) {
 		ResponseResult result = new ResponseResult();
 
 		boolean chkFlag = false;
@@ -193,6 +200,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(chkFlag){
 			if("block".equals(param.getString("mode"))) {
 				dbBlockUserEntityRepository.save(DBBlockUserEntity.builder().viewid(viewid).vconnid(vconnid).build());
+
+				webSocketServiceImpl.sendUserMessage(MessageDTO.builder().type(MessageType.USER_DB_BLOCK).message("block").build().addItem("vconuid", UUIDUtil.vconnidUUID(viewid, vconnid)), viewid);
 			}else {
 				dbBlockUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
 			}
@@ -231,14 +240,20 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(chkFlag){
 			UserEntity userInfo =userMgmtRepository.findByViewid(viewid);
 
-			if(SecurityUtil.loginUser().getTopAuthority().getPriority() > AuthorityType.valueOf(userInfo.getUserRole()).getPriority()){
-				if("Y".equals(blockYn)) {
+			if(SecurityUtil.loginInfo().getTopAuthority().getPriority() > AuthorityType.valueOf(userInfo.getUserRole()).getPriority()){
+				boolean blockYFlag = "Y".equals(blockYn);
+				if(blockYFlag) {
 					userInfo.setBlockYn(true);
 				}else {
 					userInfo.setBlockYn(false);
 				}
 
 				userInfo = userMgmtRepository.save(userInfo);
+
+				if(blockYFlag) {
+					webSocketServiceImpl.sendUserMessage(MessageDTO.builder()
+							.type(MessageType.USER_BLOCK).message("block").build(), userInfo.getViewid());
+				}
 			}
 
 			result.setItemOne(1);

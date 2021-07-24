@@ -17,6 +17,8 @@ SELECT
 		 comment area ( #{commentAreaParam})
 		*/
 			and so.uid = SCHEMA_ID ( #{schema})
+			and so.uid = SCHEMA_ID ( #{schema})
+			and so.uid = SCHEMA_ID ( #{schema})
 			--so.name in (${item})
 			so.name in (${item1})
 		ORDER BY so.id, sc.colid

@@ -21,6 +21,9 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
  */
 public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
+	
+	final public static String ANONYMOUS_USERNAME = "anonymous";
+	final public static String ANONYMOUS_ROLE = "ROLE_ANONYMOUS";
 
 	private boolean loginRememberMe;
 	private String viewid;
@@ -44,8 +47,7 @@ public class User implements UserDetails {
 	private Map<String,DatabaseInfo> databaseInfo = new HashMap<String,DatabaseInfo>();
 
 	private Map<String,String> vconnidNconuid = new HashMap<String, String>();
-
-
+	
 	public String getViewid() {
 		return viewid;
 	}
@@ -200,5 +202,15 @@ public class User implements UserDetails {
 		this.vconnidNconuid = vconnidNconuid;
 	}
 
-
+	public static class AnonymousUser {
+		public AnonymousUser() {
+		}
+		
+		public User build() {
+			User user = new User();
+			user.setViewid(ANONYMOUS_USERNAME);
+			user.setUsername(ANONYMOUS_USERNAME);
+			return user;
+		}
+	}
 }

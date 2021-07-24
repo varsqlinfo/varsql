@@ -16,6 +16,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.RequestUtil;
 import com.varsql.core.common.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
@@ -27,7 +28,7 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 	private String accessDeniedUrl;
 	private String csrfDeniedUrl;
 
-	private static final Logger logger = LoggerFactory.getLogger(VarsqlAccessDeniedHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(VarsqlAccessDeniedHandler.class);
 
 	public VarsqlAccessDeniedHandler() {
 	}
@@ -46,7 +47,7 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 
 		if(RequestUtil.isAjaxRequest(request)){
 
-			response.setContentType("application/json;charset=UTF-8");
+			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
 
 			ResponseResult result = new ResponseResult();
@@ -61,22 +62,15 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 				result.setResultCode(ResultConst.CODE.LOGIN_INVALID.toInt());
 			}
 
-			Writer writer=null;
-			try {
-				writer = response.getWriter();
+			try (Writer writer = response.getWriter()){
 				writer.write(VartechUtils.objectToJsonString(result));
 			} catch (IOException e) {
 				logger.error("VarsqlAccessDeniedHandler " ,e);
-			}finally{
-				if(writer!=null){ try {writer.close();} catch (IOException e) {}};
 			}
 		}else{
 			if (accessDeniedException instanceof CsrfException && !response.isCommitted()) {
-	            // Remove the session cookie so that client knows it's time to obtain a new CSRF token
-	            String pCookieName = "CSRF-TOKEN";
-	            Cookie cookie = new Cookie(pCookieName, "");
+	            Cookie cookie = new Cookie("CSRF-TOKEN", "");
 	            cookie.setMaxAge(0);
-	            cookie.setHttpOnly(false);
 	            cookie.setPath("/");
 	            response.addCookie(cookie);
 	            response.sendRedirect(request.getContextPath()+csrfDeniedUrl);

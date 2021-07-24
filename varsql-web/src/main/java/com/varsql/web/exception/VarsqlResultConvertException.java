@@ -4,6 +4,14 @@ import java.sql.SQLException;
 
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 
+/**
+*
+* @FileName  : VarsqlResultConvertException.java
+* @Date      : 2020. 11. 12.
+* @작성자      : ytkim
+* @변경이력 :
+* @프로그램 설명 : varsql result convert exception
+*/
 public class VarsqlResultConvertException extends RuntimeException {
 
 	/**

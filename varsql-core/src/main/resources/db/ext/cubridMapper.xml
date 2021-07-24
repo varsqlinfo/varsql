@@ -39,12 +39,22 @@
 			, col.default_value as "COLUMN_DEF"
 			,col.comment AS "COMMENT"
 			, col.attr_type as "extra"
-			, (case when k.key_order >= 0 then 'PK' else '' end) as "CONSTRAINTS"
-			, k.key_order
-			, k.asc_desc
+			, k.col_const as "CONSTRAINTS"
 		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
-		    left join db_index x on col.class_name = x.class_name and x.is_primary_key = 'YES'
-		    left join db_index_key k on x.index_name = k.index_name and x.class_name = k.class_name and col.attr_name = k.key_attr_name
+		    left join  (
+				select key_attr_name, x.class_name,  CASE WHEN max(x.is_primary_key) =  'YES' THEN 'PK'
+						 WHEN max(x.is_foreign_key) = 'YES' THEN 'FK'
+						 WHEN max(x.is_unique) = 'YES' then 'UQ'
+						ELSE ' ' END as "COL_CONST" 
+					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
+				from db_index x , db_index_key k
+				where x.index_name = k.index_name and x.class_name = k.class_name
+				 AND k.class_name  IN (
+					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
+					AND tbl.class_type = 'CLASS'
+				)
+				group by key_attr_name , x.class_name
+			) k on tbl.class_name = k.class_name and col.attr_name = k.key_attr_name
 		where  1=1
 		AND tbl.is_system_class = 'NO'
 		AND tbl.class_type = 'CLASS'
@@ -90,12 +100,22 @@
 			, col.default_value as "COLUMN_DEF"
 			,col.comment AS "COMMENT"
 			, col.attr_type as "extra"
-			, (case when k.key_order >= 0 then 'PK' else '' end) as "CONSTRAINTS"
-			, k.key_order
-			, k.asc_desc
+			, k.col_const as "CONSTRAINTS"
 		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
-		    left join db_index x on col.class_name = x.class_name and x.is_primary_key = 'YES'
-		    left join db_index_key k on x.index_name = k.index_name and x.class_name = k.class_name and col.attr_name = k.key_attr_name
+		    left join  (
+				select key_attr_name, x.class_name,  CASE WHEN max(x.is_primary_key) =  'YES' THEN 'PK'
+						 WHEN max(x.is_foreign_key) = 'YES' THEN 'FK'
+						 WHEN max(x.is_unique) = 'YES' then 'UQ'
+						ELSE ' ' END as "COL_CONST" 
+					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
+				from db_index x , db_index_key k
+				where x.index_name = k.index_name and x.class_name = k.class_name
+				 AND k.class_name  IN (
+					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
+					AND tbl.class_type = 'VCLASS'
+				)
+				group by key_attr_name , x.class_name
+			) k on tbl.class_name = k.class_name and col.attr_name = k.key_attr_name
 		where  1=1
 		AND tbl.is_system_class = 'NO'
 		AND tbl.class_type = 'VCLASS'
@@ -225,7 +245,7 @@
 	         WHEN a.is_foreign_key = 'YES' THEN 'FK'
 	         WHEN a.is_unique = 'YES' then 'UQ'
 	        ELSE ' ' END as "TYPE",
-			(CASE WHEN  a.is_reverse = 'NO'  then 'ASC' ELSE 'DESC' END)  as "ASC_OR_DESC",
+			b.asc_desc  as "ASC_OR_DESC",
 			'' as "STATUS"
 		FROM 
 			db_index a 
@@ -386,7 +406,7 @@
 	         WHEN a.is_foreign_key = 'YES' THEN 'FK'
 	         WHEN a.is_unique = 'YES' then 'UQ'
 	        ELSE ' ' END as "INDEX_TYPE",
-			(CASE WHEN  a.is_reverse = 'NO'  then 'ASC' ELSE 'DESC' END)  as "ASC_OR_DESC",
+			b.asc_desc  as "ASC_OR_DESC",
 			'' as "STATUS"
 		FROM 
 			db_index a left join db_index_key b on  a.index_name = b.index_name

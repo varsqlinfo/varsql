@@ -169,7 +169,7 @@ public class CubridDBMeta extends DBMetaImpl{
 			}
 		}
 
-		sqlSession.select(queryId ,dataParamInfo,tableInfoHandler);
+		sqlSession.select(queryId, dataParamInfo, tableInfoHandler);
 
 		return tableInfoHandler.getTableInfoList();
 	}

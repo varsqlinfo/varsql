@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,29 +35,29 @@ import com.vartech.common.app.beans.ResponseResult;
 public class ErrorController extends AbstractController {
 
 	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
+	private final Logger logger = LoggerFactory.getLogger(ErrorController.class);
 
-	@RequestMapping(value = {"", "/"})
+	@RequestMapping(value = {"", "/"}, method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView errorMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/defaultErrorPage", VIEW_PAGE.COMMONPAGE);
 	}
 
-	@RequestMapping(value = "/error403")
+	@RequestMapping(value = "/error403", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error403(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/error403", VIEW_PAGE.COMMONPAGE);
 	}
 
-	@RequestMapping(value = "/page403csrf")
+	@RequestMapping(value = "/page403csrf", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView page403csrf(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/page403csrf", VIEW_PAGE.COMMONPAGE);
 	}
 
-	@RequestMapping(value = "/error404")
+	@RequestMapping(value = "/error404", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/error404", VIEW_PAGE.COMMONPAGE);
 	}
 
-	@RequestMapping(value = "/error500")
+	@RequestMapping(value = "/error500", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error500(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/error500", VIEW_PAGE.COMMONPAGE);
 	}
@@ -72,7 +73,7 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/connError")
+	@RequestMapping(value = "/connError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView connError(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/connError", VIEW_PAGE.COMMONPAGE);
 	}
@@ -89,7 +90,7 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/connCreateError")
+	@RequestMapping(value = "/connCreateError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView connCreateError(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/connCreateError", VIEW_PAGE.COMMONPAGE);
 	}
@@ -106,7 +107,7 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/blockUser")
+	@RequestMapping(value = "/blockUser", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView blockUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/blockUser", VIEW_PAGE.COMMONPAGE);
 	}
@@ -124,7 +125,7 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/invalidDatabase")
+	@RequestMapping(value = "/invalidDatabase", method ={RequestMethod.GET,RequestMethod.POST})
 	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ResponseResult result = new ResponseResult();
 		result.setStatus(500);
@@ -146,8 +147,25 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/invalidDatabasePage")
+	@RequestMapping(value = "/invalidDatabasePage", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/invalidDatabasePage", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/invalidDatabase", VIEW_PAGE.COMMONPAGE);
+	}
+	
+	/**
+	 *
+	 * @Method Name  : dataDownloadError
+	 * @Method 설명 : data download exception
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 1.
+	 * @변경이력  :
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/dataDownloadError", method ={RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView dataDownloadError(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return getModelAndView("/error/dataDownloadError", VIEW_PAGE.COMMONPAGE);
 	}
 }

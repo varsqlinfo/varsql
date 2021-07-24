@@ -21,8 +21,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.configuration.VarsqlWebConfig;
-import com.varsql.web.security.RememberMeTokenRepository;
-import com.varsql.web.security.RememberMeUserService;
+import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.constants.SecurityConstants;
+import com.varsql.web.security.RestAuthenticationEntryPoint;
 import com.varsql.web.security.UserService;
 import com.varsql.web.security.VarsqlAccessDeniedHandler;
 import com.varsql.web.security.VarsqlAuthenticationFailHandler;
@@ -30,6 +31,9 @@ import com.varsql.web.security.VarsqlAuthenticationLogoutHandler;
 import com.varsql.web.security.VarsqlAuthenticationLogoutSuccessHandler;
 import com.varsql.web.security.VarsqlAuthenticationProvider;
 import com.varsql.web.security.VarsqlAuthenticationSuccessHandler;
+import com.varsql.web.security.VarsqlBasicAuthenticationEntryPoint;
+import com.varsql.web.security.rememberme.RememberMeTokenRepository;
+import com.varsql.web.security.rememberme.RememberMeUserService;
 
 /**
  * -----------------------------------------------------------------------------
@@ -46,13 +50,13 @@ import com.varsql.web.security.VarsqlAuthenticationSuccessHandler;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-	final static private String REMEMBERME_KEY = "varsqlRememberKey";
-	final static private String REMEMBERME_PARAMETER = "varsqlRememberMe";
-	final static private String REMEMBERME_COOKIENAME = "varsql-remember-me-ck";
+	
 
 	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+	
+	@Autowired
+	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
 	@Autowired
 	private VarsqlAuthenticationProvider varsqlAuthenticationProvider;
@@ -143,11 +147,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	        .addLogoutHandler(varsqlAuthenticationLogoutHandler)
 	        .logoutSuccessHandler(varsqlAuthenticationLogoutSuccessHandler)
 	        .invalidateHttpSession(true)
-	        .deleteCookies("JSESSIONID" ).permitAll()
+	        .deleteCookies("JSESSIONID",  SecurityConstants.REMEMBERME_COOKIENAME).permitAll()
 	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
 		.and()
-			.httpBasic();
+			.httpBasic()
+            .authenticationEntryPoint(varsqlBasicAuthenticationEntryPoint);
 	}
 	
 	@Bean("varsqlRequestCache")
@@ -160,7 +165,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	    return new HttpSessionEventPublisher();
 	}
 
-	@Bean("varsqlPasswordEncoder")
+	@Bean(ResourceConfigConstants.APP_PASSWORD_ENCODER)
     public PasswordEncoder varsqlPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
@@ -185,9 +190,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     private void configureRememberMe(HttpSecurity http) throws Exception {
         http.rememberMe()
-               .key(REMEMBERME_KEY)
-               .rememberMeParameter(REMEMBERME_PARAMETER)
-               .rememberMeCookieName(REMEMBERME_COOKIENAME)
+               .key(SecurityConstants.REMEMBERME_KEY)
+               .rememberMeParameter(SecurityConstants.REMEMBERME_PARAMETER)
+               .rememberMeCookieName(SecurityConstants.REMEMBERME_COOKIENAME)
                .tokenValiditySeconds(60 * 60 * 24 * 7)
                .authenticationSuccessHandler(varsqlAuthenticationSuccessHandler)
                .alwaysRemember(false)

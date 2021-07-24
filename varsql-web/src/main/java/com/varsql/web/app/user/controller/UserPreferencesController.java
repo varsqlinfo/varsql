@@ -12,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,9 +28,9 @@ import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserModReqeustDTO;
 import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.ValidateUtils;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 /**
@@ -51,7 +52,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/user/preferences")
 public class UserPreferencesController extends AbstractController{
 
-	private static final Logger logger = LoggerFactory.getLogger(UserPreferencesController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserPreferencesController.class);
 
 	@Autowired
 	private UserPreferencesServiceImpl userPreferencesServiceImpl;
@@ -69,7 +70,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"","/","/main"})
+	@RequestMapping(value={"","/","/main"}, method =RequestMethod.GET)
 	public ModelAndView preferencesMain(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 
@@ -98,16 +99,14 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/userInfoSave"})
+	@RequestMapping(value={"/userInfoSave"}, method = RequestMethod.POST)
 	public @ResponseBody ResponseResult userInfoSave(@Valid UserModReqeustDTO userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject.setItemOne(userPreferencesServiceImpl.updateUserInfo(userForm,req,res));
 		}
@@ -128,7 +127,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/password"})
+	@RequestMapping(value={"/password"}, method =RequestMethod.GET)
 	public ModelAndView preferencesPassword(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
@@ -149,16 +148,14 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/passwordSave"})
+	@RequestMapping(value="/passwordSave", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult passwordSave(@Valid PasswordRequestDTO passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController passwordSave check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			passwordForm.setViewid(SecurityUtil.userViewId(req));
 			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm);
@@ -179,7 +176,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/message"})
+	@RequestMapping(value="/message", method = RequestMethod.GET)
 	public ModelAndView preferencesMessage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
@@ -200,7 +197,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/qna"})
+	@RequestMapping(value= "/qna", method = RequestMethod.GET)
 	public ModelAndView qna(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
@@ -220,14 +217,14 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/listMsg"})
+	@RequestMapping(value="/listMsg", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult listMsg(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		return userPreferencesServiceImpl.selectUserMsg(messageType, searchParameter);
 	}
 
-	@RequestMapping({"/msgReplyList"})
+	@RequestMapping(value="/msgReplyList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult msgReplyList(NoteRequestDTO noteInfo) throws Exception {
 		return userPreferencesServiceImpl.selectUserMsgReply(noteInfo);
 	}
@@ -244,7 +241,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/deleteMsg"})
+	@RequestMapping(value="/deleteMsg", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult preferencesdeleteMsg(@RequestParam(value = "messageType" , required = true)  String messageType
 			,@RequestParam(value = "selectItem" , required = true)  String selectItem) throws Exception {
 
@@ -262,7 +259,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/qnaList")
+	@RequestMapping(value = "/qnaList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnalist(HttpServletRequest req) throws Exception {
 		return userPreferencesServiceImpl.searchQna(HttpUtils.getSearchParameter(req));
 	}
@@ -280,7 +277,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/insQna")
+	@RequestMapping(value="/insQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult insQna(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
@@ -288,9 +285,7 @@ public class UserPreferencesController extends AbstractController{
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 
 			if(ValidateUtils.isEmpty(qnaInfo.getQnaid())) {
@@ -315,7 +310,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/delQna")
+	@RequestMapping(value="/delQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaDelete(@RequestParam(value = "qnaid" , required=true) String qnaid) throws Exception {
 		return userPreferencesServiceImpl.deleteQnaInfo(qnaid);
 	}
@@ -333,7 +328,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/updQna")
+	@RequestMapping(value="/updQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
@@ -341,9 +336,7 @@ public class UserPreferencesController extends AbstractController{
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 		}
@@ -364,7 +357,7 @@ public class UserPreferencesController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sqlFile"})
+	@RequestMapping(value={"/sqlFile"}, method =RequestMethod.GET)
 	public ModelAndView sqlFile(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);

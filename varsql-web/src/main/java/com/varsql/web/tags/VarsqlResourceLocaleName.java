@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.varsql.core.common.constants.LocaleConstants;
+import com.varsql.web.exception.VarsqlTagException;
 
 public class VarsqlResourceLocaleName extends TagSupport {
 
@@ -31,7 +32,7 @@ public class VarsqlResourceLocaleName extends TagSupport {
 				jw.write(name+"."+uLocale.toString());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new VarsqlTagException("tag error ",e); 
 		}
 
 		return SKIP_BODY;

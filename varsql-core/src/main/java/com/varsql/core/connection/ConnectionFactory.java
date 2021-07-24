@@ -21,6 +21,7 @@ import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.sql.util.SqlUtils;
+import com.vartech.common.crypto.EncryptDecryptException;
 
 /**
  *
@@ -149,14 +150,10 @@ public final class ConnectionFactory implements ConnectionContext{
 			if(ConnectionContext.DEFAULT_CONN_ID.equals(connInfo.getConnid())) {
 				connInfo.setPassword(rs.getString(VarsqlKeyConstants.CONN_PW));
 			}else {
-				try {
-					String str = rs.getString(VarsqlKeyConstants.CONN_PW);
-					connInfo.setPassword("");
-					if(str != null) {
-						connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
-					}
-				}catch(Exception e) {
-					logger.error("EncryptionFactory.getInstance().decrypt : {} ", connInfo.getConnid() ,e);
+				String str = rs.getString(VarsqlKeyConstants.CONN_PW);
+				connInfo.setPassword("");
+				if(str != null && !"".equals(str)) {
+					connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString(VarsqlKeyConstants.CONN_PW)));
 				}
 			}
 
@@ -182,7 +179,6 @@ public final class ConnectionFactory implements ConnectionContext{
 
 			connInfo.setValidation_query(validation_query);
 
-
 			try{
 				Class.forName(connInfo.getDriver());
 			}catch(Exception e){
@@ -198,6 +194,9 @@ public final class ConnectionFactory implements ConnectionContext{
 			SQLManager.getInstance().setSQLMapper(connInfo, this);
 
 			return connInfo;
+		}catch(EncryptDecryptException e) {
+			logger.error("password decrypt error" , e);
+			throw new ConnectionFactoryException("password decrypt error" , e);
 		}catch (Exception e) {
 			logger.error("empty connection info" , e);
 			throw new ConnectionFactoryException("empty connection info : [" +connid+"]" , e);
@@ -219,9 +218,9 @@ public final class ConnectionFactory implements ConnectionContext{
 	 * @throws Exception
 	 */
 	public synchronized void resetConnectionPool(String connid) throws SQLException, ConnectionFactoryException  {
-		createConnectionInfo(connid);
-
 		if(connectionShutdownInfo.containsKey(connid)) connectionShutdownInfo.remove(connid);
+		
+		createConnectionInfo(connid);
 	}
 
 	/**

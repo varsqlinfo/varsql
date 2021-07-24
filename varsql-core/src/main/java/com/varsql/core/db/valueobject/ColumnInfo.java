@@ -2,6 +2,8 @@ package com.varsql.core.db.valueobject;
 
 import java.math.BigDecimal;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * 
  * @FileName  : ColumnInfo.java
@@ -10,6 +12,7 @@ import java.math.BigDecimal;
  * @작성자      : ytkim
  * @변경이력 :
  */
+@Alias("columnInfo")
 public class ColumnInfo {
 	private int no;  
 	// 컬럼 명. 

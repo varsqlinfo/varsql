@@ -8,7 +8,7 @@
 				<ul>
 					<li v-for="(item,index) in contextItems">
 						<a :class="deteilItem == item?'active':''">
-							<span @click="viewItem(item,'catg')">{{item.name}}</span>
+							<span @click="viewItem(item,'parent')">{{item.name}}</span>
 
 							<span class="pull-right">
 								<button class="btn btn-sm btn-default" @click="addChildItem(item)"><spring:message code="btn.sub.add"/></button>
@@ -34,7 +34,7 @@
 				<div class="col-sm-12 padding0">
 					<div class="pull-right">
 						<button type="button" class="btn btn-md btn-default" @click="newItem()"><spring:message code="btn.new"/></button>
-						<button type="button" class="btn btn-md btn-default" @click="save()" v-show="this.viewMode=='new'"><spring:message code="btn.save"/></button>
+						<button type="button" class="btn btn-md btn-default" @click="save()" v-show="viewItemType=='new'"><spring:message code="btn.save"/></button>
 					</div>
 				</div>
 				<div class="col-xs-12 padding0">
@@ -44,17 +44,20 @@
 							<input v-model="deteilItem.name" class="form-control text required input-sm">
 						</div>
 					</div>
-					<div class="field-group">
-						<label class="col-xs-2 control-label">정렬순서</label>
+					<div class="field-group" v-show="viewItemType=='child'">
+						<label class="col-xs-2 control-label">보기 방식</label>
 						<div class="col-xs-10">
-							<input v-model="deteilItem.sortOrder" class="form-control text required input-sm">
+							<select v-model="deteilItem.viewMode" class="form-control text required input-sm">
+								<option value="editor">Editor</option>
+								<option value="dialog">Dialog</option>
+							</select>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="col-xs-12 padding0" style="height:calc(100% - 170px);min-height:300px;padding-bottom: 10px;">
+		<div class="col-xs-12 padding0" style="height:calc(100% - 175px);min-height:300px;padding-bottom: 5px;">
 			<div id="subCodeDisabled" class="wh100-abs" style="z-index: 10;position: absolute;background: #efefef;opacity: 0.7;"></div>
 			<div class="col-xs-12" style="height: 220px;">
 				<div class="col-xs-7 padding0 h100">
@@ -110,86 +113,20 @@
 <varsql:editorResource editorHeight="100%"/>
 
 <script>
-
-Handlebars.registerHelper("camelCase", function(text, options) {
-    return VARSQL.util.convertCamel(text);
-});
-
-Handlebars.registerHelper("upperCase", function(text, options) {
-    return VARSQL.util.toUpperCase(text);
-});
-
-Handlebars.registerHelper("lowerCase", function(text, options) {
-    return VARSQL.util.capitalize(text);
-});
-
-Handlebars.registerHelper("capitalize", function(text, options) {
-    return  VARSQL.util.capitalize(text);;
-});
-
-Handlebars.registerHelper("addChar", function(idx,ch) {
-	return idx > 0 ? ch : '';
-});
-
-Handlebars.registerHelper("addPreSuffix", function(prefix, suffix , text) {
-	return prefix + text + suffix;
-});
-
-Handlebars.registerHelper("isPk", function(item) {
-
-	var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
-	if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
-		return true;
-	}
-	return false;
-});
-
-Handlebars.registerHelper("pkColumns", function(items) {
-	var reval = [];
-
-	var constraintsKey = VARSQLCont.tableColKey.CONSTRAINTS;
-	for(var i =0 ; i<items.length;i++){
-		var item = items[i];
-		var constraintVal = item[constraintsKey];
-		if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
-			reval.push(item);
-		}
-	}
-
-	return reval;
-});
-
-Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,options) {
-    var operators = {
-         '==': function(a, b){ return a==b},
-         '===': function(a, b){ return a===b},
-         '!=': function(a, b){ return a!=b},
-         '!==': function(a, b){ return a!==b},
-         '<': function(a, b){ return a<b},
-         '<=': function(a, b){ return a<=b},
-         '>': function(a, b){ return a>b},
-         '>=': function(a, b){ return a>=b},
-         '&&': function(a, b){ return a&&b},
-         '||': function(a, b){ return a||b},
-      }
-    var a1 = operators[o1](v1,v2);
-    var a2 = operators[o2](v3,v4);
-    var isTrue = operators[mainOperator](a1, a2);
-    return isTrue ? options.fn(this) : options.inverse(this);
-});
-
 (function (){
-	var tableInfo = {"name":"test_table"  ,"remarks":"test table"};
-
-	var columns = [
-	    {"no":0,"name":"test_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(32)","length":32,"nullable":"N","comment":"","constraints":"PK","autoincrement":null,"defaultVal":""},{"no":0,"name":"link_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(32)","length":32,"nullable":"N","comment":"","constraints":"PK","autoincrement":null,"defaultVal":""},{"no":0,"name":"open_type","dataType":"CHAR","typeName":"CHAR","typeAndLength":"CHAR(1)","length":1,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"open_option","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(1000)","length":1000,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"img_src","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(500)","length":500,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"sort_order","dataType":"NUMERIC","typeName":"NUMERIC","typeAndLength":"NUMERIC(6)","length":6,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"reg_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(50)","length":50,"nullable":"N","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"reg_dt","dataType":"TIMESTAMP","typeName":"TIMESTAMP","typeAndLength":"TIMESTAMP","length":19,"nullable":"N","comment":"","constraints":"","autoincrement":null,"defaultVal":"CURRENT_TIMESTAMP"}
-	];
 	var allContextInfo =  ${settingInfo};
+	
+	var defaultTableColumnInfo = {
+        'table' : {"name":"test_table"  ,"remarks":"test table"}
+        ,'columns' : [
+    	    {"no":0,"name":"test_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(32)","length":32,"nullable":"N","comment":"","constraints":"PK","autoincrement":null,"defaultVal":""},{"no":0,"name":"link_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(32)","length":32,"nullable":"N","comment":"","constraints":"PK","autoincrement":null,"defaultVal":""},{"no":0,"name":"open_type","dataType":"CHAR","typeName":"CHAR","typeAndLength":"CHAR(1)","length":1,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"open_option","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(1000)","length":1000,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"img_src","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(500)","length":500,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"sort_order","dataType":"NUMERIC","typeName":"NUMERIC","typeAndLength":"NUMERIC(6)","length":6,"nullable":"Y","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"reg_id","dataType":"STRING","typeName":"VARCHAR","typeAndLength":"VARCHAR(50)","length":50,"nullable":"N","comment":"","constraints":"","autoincrement":null,"defaultVal":""},{"no":0,"name":"reg_dt","dataType":"TIMESTAMP","typeName":"TIMESTAMP","typeAndLength":"TIMESTAMP","length":19,"nullable":"N","comment":"","constraints":"","autoincrement":null,"defaultVal":"CURRENT_TIMESTAMP"}
+    	]
+    };
 
 	VarsqlAPP.vueServiceBean( {
 	    el: '#varsqlVueArea'
 	    ,data: {
-	        viewMode : 'new'
+	        viewItemType : 'new'
 	        ,resultCode : ''
 	        ,mainTemplateEditor : {}
 	        ,subCodeTemplateEditor : {}
@@ -203,7 +140,7 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 	    	this.templateInfo = this.createSubItem();
 
 	    	try{
-	    		this.contextItems = VARSQL.isArray(allContextInfo)?allContextInfo : allContextInfo.items
+	    		this.contextItems = allContextInfo;
 
 	    		if(!VARSQL.isArray(this.contextItems)){
 	    			if(confirm(VARSQL.messageFormat('varsql.0022'))){
@@ -264,14 +201,33 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 	    	}
 	    	// 정보 저장 및 적용.
 	    	,contextSave :function (){
-	    		if(!confirm(VARSQL.messageFormat('varsql.0020'))){
+	    		
+	    		var contextItems = this.contextItems; 
+	    		
+	    		for(var i =0; i < contextItems.length;i++){
+	    			var item =contextItems[i];
+	    			var templateInfos = item.templateInfos; 
+	    			for(var j =0; j < templateInfos.length;j++){
+	    				var templateInfo = templateInfos[j];
+	    				
+	    				var result =VARSQLTemplate.render.generateSource(templateInfo, defaultTableColumnInfo);
+	    				
+	    				if(result.isError){
+	    	    			VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0026'));
+	    	    			this.viewItem(templateInfo, 'child');
+	    	    			return ; 
+	    	    		}
+	    			}
+	    		}
+	    		
+	    		if(!confirm(VARSQL.messageFormat('varsql.0024'))){
 	    			return ;
 	    		}
 
 	    		VARSQLApi.preferences.save({
 	    			conuid : this.conuid
 	    			,prefKey : 'main.contextmenu.serviceobject'
-	    			,prefVal : JSON.stringify(this.contextItems)
+	    			,prefVal : JSON.stringify(contextItems)
 	    		});
 	    	}
 	    	// 초기화
@@ -294,12 +250,12 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 	    	// item 보기
 	    	,viewItem : function (item, type){
 
-	    		this.viewMode = 'view';
+	    		this.viewItemType = type;
 	    		this.deteilItem = item;
 	    		this.resultCode = '';
 
 	    		var codeDetailInfo = {};
-	    		if(type =='catg'){
+	    		if(type == 'parent'){
 	    			this.templateInfo = this.createSubItem();
 	    		}else{
 	    			this.templateInfo = item;
@@ -308,10 +264,11 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 
 	    		this.setSubArea();
 	    		this.setGenCode(codeDetailInfo);
+	    		this.generate();
 	    	}
 	    	// 신규
 	    	,newItem : function (){
-	    		this.viewMode = 'new';
+	    		this.viewItemType = 'new';
 				this.deteilItem = {
 					name : ''
 					,templateInfos :[]
@@ -331,17 +288,16 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 	    	,createSubItem : function (pItem){
 	    		return {
 					name : 'sub-menu'
+					,viewMode : 'editor'
 					,main : ''
 					,propItems : []
 				};
 	    	}
+	    	// 하위 메뉴 추가.
 	    	,addChildItem : function (pItem) {
-				this.viewMode = 'child';
 	    		var item = this.createSubItem(pItem);
-
 	    		pItem.templateInfos.push(item);
-
-	    		this.deteilItem = item;
+	    		this.viewItem(item, 'child');
 	    	}
 	    	// 신규  item 정보 저장
 	    	,save : function (){
@@ -356,45 +312,28 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 
 				items.splice(index,1);
 	    	}
+	    	//  generate source 
 	        , generate : function(){
-
-	        	var template='';
-	            try{
-	            	template = Handlebars.compile(this.templateInfo.main);
-	            }catch(e){
-	            	this.errorHandler('main',e);
-	            	return ;
-	            }
-	            var allPropItems = this.templateInfo.propItems;
-
-	            var allParam = {
-	                'table' : tableInfo
-	                ,'columns' : columns
-	            };
-
-	            for(var i=0; i< allPropItems.length; i++){
-	                var item = allPropItems[i];
-	                this.compilePropCode(item);
-	                allParam[item.key] = VARSQL.str.rtrim(item.compileValue);
-	            }
-
-	            var html = template(allParam);
-	            this.resultCode = html;
+	        	
+	        	var result =VARSQLTemplate.render.generateSource(this.templateInfo, defaultTableColumnInfo, false);
+				
+				if(result.isError){
+	    			VARSQLUI.toast.open(result.errorInfo.msg);
+	    			return ; 
+	    		}else{
+	    			this.resultCode =result.value;
+	    		}
 	        }
+	    	// property template code render
 	        , compilePropCode : function (item){
 	            var propItem = item || this.codeDetailInfo;
+	            var _this =this; 
 
-	            try{
-	            	if(propItem.code){
-	            		var template = Handlebars.compile(propItem.code);
-	                    propItem.compileValue = template({
-	                        'table' : tableInfo
-	                        ,'columns' : columns
-	                    });
-	            	}
-	            }catch(e){
-	            	this.errorHandler('prop',e);
-	            }
+            	if(propItem.code){
+                    propItem.compileValue = VARSQLTemplate.render.text(propItem.code, defaultTableColumnInfo, function (e){
+                    	_this.errorHandler('prop',e);
+                    });
+            	}
 	        }
 	        , setGenCode : function(item){
 
@@ -408,14 +347,13 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
 	        }
 	        , setProperty: function(){
 	            var source = this.templateInfo.main;
-	            var parser;
-	            try{
-	            	parser = Handlebars.parse(source);
-	            	this.generate();
-	            }catch(e){
-	            	this.errorHandler('main',e);
-	            	return ;
-	            }
+	            var _this =this; 
+            	var	parser = VARSQLTemplate.parse(source ,function (e){
+					_this.errorHandler('main',e);
+				});
+            	if(parser ===false) return false; 
+            	
+            	this.generate();
 
 	            var len = parser.body.length;
 	            var currentPropItems = this.templateInfo.propItems;

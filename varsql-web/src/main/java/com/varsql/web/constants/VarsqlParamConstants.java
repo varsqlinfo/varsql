@@ -40,6 +40,7 @@ public interface VarsqlParamConstants {
 	
 	final public String SCREEN_CONFIG_INFO ="screen_config_info";
 	final public String DATABASE_SCREEN_SETTING ="database_screen_setting";
+	final public String SETTING_INFO ="settingInfo";
 	final public String JSON_REUSLT ="result";
 	final public String JSON_PAGING ="paging";
 }

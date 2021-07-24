@@ -5,10 +5,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.GridUtils;
@@ -71,16 +75,29 @@ public final class SqlResultUtils {
 		List<GridColumnInfo> columnInfoList = new ArrayList<GridColumnInfo>();
 		List<Boolean> columnNumberTypeFlag = new ArrayList<Boolean>();
 		String columnName = "";
-
+		
+		String viewColumnInfo = sqlExecuteInfo.getColumnInfo(); 
+		
+		Set<String> viewColumnCheck = Collections.emptySet();
+		boolean columnChkFlag = false; 
+		if(viewColumnInfo !=null  && !"".equals(viewColumnInfo)) {
+			columnChkFlag = true; 
+			viewColumnCheck =  new HashSet<String>(Arrays.asList(viewColumnInfo.toUpperCase().split(",")));
+		}
+		
 		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
 
 		int idx = 0;
 		for (int i = 0; i < count; i++) {
 			idx = i+1;
 			columnName= rsmd.getColumnName(idx);
+			if(columnChkFlag  && !viewColumnCheck.contains(columnName.toUpperCase())) {
+				continue ; 
+			}
+
 			columnType = rsmd.getColumnType(idx);
 			columnTypeName = rsmd.getColumnTypeName(idx);
-
+			
 			if(columnKeyCheck.containsKey(columnName)){
 				int idxVal =columnKeyCheck.get(columnName)+1;
 				columnKeyCheck.put(columnName, idxVal);
@@ -150,14 +167,15 @@ public final class SqlResultUtils {
 		ssrv.setColumn(columnInfoList);
 
 		Map row = null;
-		String tmpColumnType = "";
 		ArrayList rows = new ArrayList();
 		int totalCnt = 0 ;
 		try {
 			while (rs.next()) {
 				row = new LinkedHashMap(count);
 				for (int colIdx = 0; colIdx < count; colIdx++) {
-					row = resultsetHandler.getDataValue(row, columnGridKeyArr[colIdx], columnNameArr[colIdx], rs, colIdx+1, columnTypeArr[colIdx], columnTypeNameArr[colIdx]);
+					if(columnNameArr[colIdx] != null) {
+						row = resultsetHandler.getDataValue(row, columnGridKeyArr[colIdx], columnNameArr[colIdx], rs, colIdx+1, columnTypeArr[colIdx], columnTypeNameArr[colIdx]);
+					}
 				}
 				rows.add(row);
 				++first;

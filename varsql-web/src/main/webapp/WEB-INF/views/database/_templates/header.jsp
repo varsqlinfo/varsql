@@ -24,11 +24,18 @@
 				</a>
 			</li>
 			<li class="divider"></li>
-			<li class="varsql-menu-item" data-menu-item="file_import-export">
+			<li class="varsql-menu-item" data-menu-item="file_import">
 				<a href="javascript:;">
-					<span class="varsql-menu-item-text"><spring:message code="header.menu.file.import_export" /></span>
+					<span class="varsql-menu-item-text"><spring:message code="header.menu.file.import" /></span>
 				</a>
 			</li>
+			<%--
+			<li class="varsql-menu-item" data-menu-item="file_export">
+				<a href="javascript:;">
+					<span class="varsql-menu-item-text"><spring:message code="header.menu.file.export" /></span>
+				</a>
+			</li>
+			 --%>
 			<li class="divider"></li>
 			<li class="varsql-menu-item" data-menu-item="file_newwin">
 				<a href="javascript:;">

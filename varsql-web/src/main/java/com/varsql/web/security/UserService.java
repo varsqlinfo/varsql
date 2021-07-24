@@ -30,4 +30,8 @@ public class UserService implements UserDetailsService {
 	public User loadUserByUsername(String username, String password) {
 		return authDao.loadUserByUsername(username, password, false);
 	}
+	
+	public boolean passwordCheck(String username, String password) {
+		return authDao.passwordCheck(username, password);
+	}
 }

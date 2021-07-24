@@ -213,21 +213,11 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/glossary/save'}
 				,data : param
 				,success: function(resData) {
-					if(resData.resultCode != 200){
-						if(resData.messageCode=='valid'){
-							var items = resData.items;
-							objLen = items.length;
-							if(objLen >0){
-								var item;
-								for(var i=0; i <objLen; i++){
-									item = items[i];
-									alert(item.field + "\n"+ item.defaultMessage)
-									return ;
-								}
-							}
-						}else{
-							var message = resData.messageCode;
-							alert(resData.messageCode +'\n'+ resData.message);
+					if(!VARSQL.req.validationCheck(resData)){
+						return ; 
+					}else{
+						if(resData.resultCode != 200){
+							alert(resData.message);
 							return ;
 						}
 					}

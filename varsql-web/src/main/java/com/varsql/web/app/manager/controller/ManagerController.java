@@ -9,16 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
-import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.DateUtils;
-import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -40,13 +37,12 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager")
 public class ManagerController extends AbstractController{
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
+	private final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 
 	@Autowired
 	private ManagerCommonServiceImpl dbnUserServiceImpl;
 
-	@RequestMapping({"", "/","/main"})
+	@RequestMapping(value = {"", "/","/main"}, method =RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "userMgmt");
@@ -66,7 +62,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/qnaMgmt"})
+	@RequestMapping(value = {"/qnaMgmt"}, method =RequestMethod.GET)
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "qnaMgmt");
@@ -86,7 +82,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/glossaryMgmt"})
+	@RequestMapping(value = {"/glossaryMgmt"}, method =RequestMethod.GET)
 	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "glossaryMgmt");
@@ -105,7 +101,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbGroupMgmt"})
+	@RequestMapping(value = {"/dbGroupMgmt"}, method =RequestMethod.GET)
 	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
@@ -125,7 +121,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/dbGroupUserMgmt")
+	@RequestMapping(value="/dbGroupUserMgmt", method =RequestMethod.GET)
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
@@ -145,7 +141,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/dbCompareMgmt"})
+	@RequestMapping(value = {"/dbCompareMgmt"}, method =RequestMethod.GET)
 	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbCompareMgmt");
@@ -168,7 +164,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sqlLogStat"})
+	@RequestMapping(value = {"/sqlLogStat"}, method =RequestMethod.GET)
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
@@ -193,7 +189,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/sqlLogHistory"})
+	@RequestMapping(value = {"/sqlLogHistory"}, method =RequestMethod.GET)
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");

@@ -36,7 +36,7 @@ public class UserDBPreferencesSpec extends DefaultSpec{
 	}
 
 	public static Specification<UserDBPreferencesEntity> findPrefVal(PreferencesRequestDTO[] preferencesInfos) {
-		return Specification.where(viewId(preferencesInfos)).or(prefKeyAndGubun(preferencesInfos));
+		return Specification.where(viewId(preferencesInfos)).and(prefKeyAndGubun(preferencesInfos));
 	}	
 	
 	private static Specification<UserDBPreferencesEntity> viewId(PreferencesRequestDTO[] preferencesInfos) {
@@ -47,7 +47,6 @@ public class UserDBPreferencesSpec extends DefaultSpec{
 	
 	private static Specification<UserDBPreferencesEntity> prefKeyAndGubun(PreferencesRequestDTO[] preferencesInfos) {
 		return (root, query, cb) -> {
-			
 			
 			List<Predicate> predicates = new ArrayList<>();
 			

@@ -27,6 +27,9 @@ public interface VarsqlConstants {
 
 	// default charset
 	final String CHAR_SET = Configuration.getInstance().getCharset();
+	
+	
+	final String JSON_CONTENT_TYPE = "application/json;charset=" + CHAR_SET; 
 
 	// sql 관련 상수.
 	enum SQL{

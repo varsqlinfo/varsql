@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.common.util.SecurityUtil;
@@ -17,9 +18,9 @@ import com.varsql.web.app.manager.service.QnaServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -40,8 +41,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager")
 public class QnaController extends AbstractController {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(QnaController.class);
+	private final Logger logger = LoggerFactory.getLogger(QnaController.class);
 
 	@Autowired
 	private QnaServiceImpl qnaServiceImpl;
@@ -55,7 +55,7 @@ public class QnaController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/qnaMgmtList"})
+	@RequestMapping(value = "/qnaMgmtList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaMgmtList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
@@ -76,7 +76,7 @@ public class QnaController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/updQna")
+	@RequestMapping(value="/updQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
@@ -84,9 +84,7 @@ public class QnaController extends AbstractController {
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.info("###  QnaController qna qnaUpdate {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject = qnaServiceImpl.updateQnaAnswerContent(qnaInfo);
 		}

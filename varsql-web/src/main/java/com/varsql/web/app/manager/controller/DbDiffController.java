@@ -7,14 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.DbDiffServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.HttpUtils;
 
 
 /**
@@ -35,8 +34,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager/diff")
 public class DbDiffController extends AbstractController {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(DbDiffController.class);
+	private final Logger logger = LoggerFactory.getLogger(DbDiffController.class);
 
 	@Autowired
 	private DbDiffServiceImpl dbDiffServiceImpl;
@@ -53,13 +51,13 @@ public class DbDiffController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/objectType"})
+	@RequestMapping(value = "/objectType", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult objectType(@RequestParam(value = "vconnid", required = true) String vconnid ,HttpServletRequest req) throws Exception {
 
 		return dbDiffServiceImpl.objectTypeList(vconnid);
 	}
 
-	@RequestMapping({"/objectList"})
+	@RequestMapping(value = "/objectList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid
 			,@RequestParam(value = "objectType" ,required = true) String objectType
 			,@RequestParam(value = "schema" ,required = true) String schema) throws Exception {

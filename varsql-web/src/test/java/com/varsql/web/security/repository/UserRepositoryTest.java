@@ -66,8 +66,6 @@ class UserRepositoryTest extends BaseJpaTestCase{
 		// Run the test
 		final UserEntity result = userRepository.findByUid(id);
 
-		// Verify the results
-		//assertEquals(EncryptionFactory.getInstance().encrypt("123456"), result.getUpw());
 	}
 
 }

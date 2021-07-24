@@ -1,5 +1,7 @@
 package com.varsql.core.db.valueobject;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * 
  * @FileName  : ObjectColumnInfo.java
@@ -8,6 +10,7 @@ package com.varsql.core.db.valueobject;
  * @작성자      : ytkim
  * @변경이력 :
  */
+@Alias("objectColumnInfo")
 public class ObjectColumnInfo {
 	private int no;  
 	// 컬럼 명. 

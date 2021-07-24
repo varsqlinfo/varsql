@@ -3,21 +3,21 @@
 <script>
 (function() {
 
+VARSQL.unload('top');
 
-VARSQL.unload();
-
-var userMain = {
+var $userMain = {
 	_userConnectionInfo :'#user_connection_info'
 	,_connectionTab :'#user_connection_info_tab'
 	,_connectionIframe :'#user_connection_info_iframe'
 	,iframeLoadTemplate : ''
+	,userDbBlockTemplate : ''
 	,tabItemTemplate : ''
 	,tabObj : ''
-	,preferencesUrl : '<c:url value="/user/preferences?header=N" />'
 	,tabInfo :( ${conTabInfo} ||[])
 	,init : function (){
 		var _self = this;
 		_self.iframeLoadTemplate = $('#iframeLoadTemplate').html();
+		_self.userDbBlockTemplate = $('#userDbBlockTemplate').html();
 		_self.initTab();
 		_self.evtInit();
 	}
@@ -60,14 +60,7 @@ var userMain = {
 					,click : function (item, idx){
 						var sconid = item.conuid;
 
-						if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length) {
-							alert('로드중입니다.');
-							return ;
-						}
-
-						if(!confirm('새로고침 하시겠습니까?')) return ;
-
-						$('.iframe_'+sconid).attr('src', _self.getDbClientUrl(sconid));
+						_self.viewDb(item , true);
 					}
 				}
 				,right :{
@@ -120,6 +113,24 @@ var userMain = {
 			_self.loadDbPage(viewItem);
 		}
 	}
+	,viewDb : function (item , refreshFlag){
+		var sconid = item.conuid;
+		
+		if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length > 0) {
+			alert('loading...');
+			return ;
+		}
+		
+		if(refreshFlag){
+			if(!confirm('새로고침 하시겠습니까?')){
+				return ;
+			}
+			
+			this.viewLoadMessage();
+		}
+		
+		$('.iframe_'+sconid).attr('src', this.getDbClientUrl(sconid));
+	}
 	// add tab
 	,addTabInfo : function (sItem){
 		var _self =this;
@@ -159,6 +170,7 @@ var userMain = {
 
 		$('.iframe_'+sconid).on('load',function(){
 			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
+			_self.viewLoadMessage(true);
 		});
 
 		_self.dbShowHide(sconid);
@@ -193,24 +205,46 @@ var userMain = {
 		});
 	}
 	,getDbClientUrl : function (sconid){
-		if(sconid =='preferences'){
-			return this.preferencesUrl;
-		}else{
-			return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
-		}
+		return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
 	}
 	,activeClose : function (){
 		this.tabObj.rightIconClick(this.tabObj.getSelectItem());
 	}
+	,blockTab : function (tabInfo){
+		var sconid = tabInfo.vconuid;
+		$('#wrapper_'+sconid).empty().html(this.userDbBlockTemplate);
+	}
+	,viewLoadMessage : function (hideFlag){
+		if(hideFlag ===true){
+			$('#varsql_page_load_msg_wrapper').hide();
+		}else{
+			$('#varsql_page_load_msg_wrapper').show();
+		}
+	}
 }
 
 $(function (){
-	userMain.init();
+	$userMain.init();
 })
 
 window.userMain = {
 	activeClose : function (){
-		userMain.activeClose();
+		$userMain.activeClose();
+	}
+	,blockTab : function (tabInfo){
+		$userMain.blockTab(tabInfo);
+	}
+	,pageRefresh : function (){
+		var activeItem = $userMain.tabObj.getActive();
+		if(activeItem.idx > -1){
+			this.viewLoadMessage();
+			$userMain.viewDb(activeItem.item);
+		}else{
+			location.reload();
+		}
+	}
+	,viewLoadMessage : function (hideFlag){
+		$userMain.viewLoadMessage(hideFlag);
 	}
 }
 
@@ -252,6 +286,20 @@ window.userMain = {
 	</div>
 </div>
 
+
+<script id="userDbBlockTemplate" type="text/varsql">
+<table class="wh100-absolute">
+	<tbody>
+		<tr>
+			<td style="text-align: center; font-size: 3em;">
+				<div>DB가 차단되었습니다.</div>
+				<div>관리자에게 문의하세요.</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</script>
+
 <table id="varsql_page_load_msg_wrapper" class="wh100-absolute page-reload-msg">
 	<tbody>
 		<tr>
@@ -262,10 +310,3 @@ window.userMain = {
 		</tr>
 	</tbody>
 </table>
-
-<div id="noteTemplate_view_dialog" style="display:none;">
-	<div class="note-view-area">
-		<div>보낸사람 : <span id="noteSendInfo"></span></div>
-		<textarea id="note_content" name="note_content" style="height: calc(100% - 20px);"></textarea>
-	</div>
-</div>

@@ -13,7 +13,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.util.StringUtil;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
@@ -24,6 +23,7 @@ import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.sql.util.SqlUtils;
+import com.vartech.common.utils.StringUtils;
 
 
 /**
@@ -51,7 +51,7 @@ public final class DBMetaDataUtil {
 			while (rs.next()) {
 				tableInfo= new TableInfo();
 				tableInfo.setName(rs.getString(MetaColumnConstants.TABLE_NAME));
-				tableInfo.setRemarks(StringUtil.nullToString(rs.getString(MetaColumnConstants.REMARKS)));
+				tableInfo.setRemarks(StringUtils.nullToString(rs.getString(MetaColumnConstants.REMARKS)));
 
 				reLst.add(tableInfo);
 			}
@@ -131,9 +131,9 @@ public final class DBMetaDataUtil {
 			while(rs.next()){
 				oi =  new ObjectInfo();
 
-				oi.setName(StringUtil.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_NAME)));
-				oi.setRemarks(StringUtil.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_NAME)));
-				oi.setType(StringUtil.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_TYPE)));
+				oi.setName(StringUtils.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_NAME)));
+				oi.setRemarks(StringUtils.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_NAME)));
+				oi.setType(StringUtils.nullToString(rs.getString(MetaColumnConstants.PROCEDURE_TYPE)));
 				reLst.add(oi);
 			}
 		}finally{
@@ -170,7 +170,7 @@ public final class DBMetaDataUtil {
 
 					oci.setName(cName);
 					oci.setDataType(colRs.getString(MetaColumnConstants.TYPE_NAME));
-					oci.setComment(StringUtil.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
+					oci.setComment(StringUtils.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
 					oci.setColumnType(colRs.getString(MetaColumnConstants.PROCEDURE_COL_TYPE));
 
 					columnList.add(oci);
@@ -212,7 +212,7 @@ public final class DBMetaDataUtil {
 
 					oci.setName(cName);
 					oci.setDataType(colRs.getString(MetaColumnConstants.TYPE_NAME));
-					oci.setComment(StringUtil.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
+					oci.setComment(StringUtils.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
 					oci.setColumnType(colRs.getString(MetaColumnConstants.PROCEDURE_COL_TYPE));
 
 					columnList.add(oci);
@@ -240,9 +240,9 @@ public final class DBMetaDataUtil {
 			ObjectInfo oi = null;
 			while(rs.next()){
 				oi =  new ObjectInfo();
-				oi.setName(StringUtil.nullToString(rs.getString(MetaColumnConstants.FUNCTION_NAME)));
-				oi.setRemarks(StringUtil.nullToString(rs.getString(MetaColumnConstants.REMARKS)));
-				oi.setType(StringUtil.nullToString(rs.getString(MetaColumnConstants.FUNCTION_TYPE)));
+				oi.setName(StringUtils.nullToString(rs.getString(MetaColumnConstants.FUNCTION_NAME)));
+				oi.setRemarks(StringUtils.nullToString(rs.getString(MetaColumnConstants.REMARKS)));
+				oi.setType(StringUtils.nullToString(rs.getString(MetaColumnConstants.FUNCTION_TYPE)));
 				reLst.add(oi);
 			}
 		}finally{

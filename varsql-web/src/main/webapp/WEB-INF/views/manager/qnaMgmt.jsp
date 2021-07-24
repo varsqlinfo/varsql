@@ -123,8 +123,6 @@ VarsqlAPP.vueServiceBean({
 				,answer : item.answer
 			};
 			
-			
-						
 			_this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/updQna'}
 				,data : param 
@@ -136,10 +134,10 @@ VarsqlAPP.vueServiceBean({
 						}
 						
 						if(resData.item > 0){
-							alert('<spring:message code="msg.save.success" />');
+							VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
 							return ; 
 						}else{
-							alert('<spring:message code="msg.save.fail" />');
+							VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
 							return ; 
 						}
 					}

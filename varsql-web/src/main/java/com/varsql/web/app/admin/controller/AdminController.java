@@ -6,9 +6,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.app.admin.service.AdminServiceImpl;
@@ -36,7 +39,7 @@ import com.vartech.common.utils.HttpUtils;
 public class AdminController extends AbstractController{
 
 	/** The Constant logger. */
-	private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
+	private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
 	@Autowired
 	private AdminServiceImpl adminServiceImpl;
@@ -52,8 +55,9 @@ public class AdminController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"", "/","/main"})
+	@RequestMapping(value = {"", "/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		logger.debug("admin mainpage");
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "databaseMgmt");
 		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
@@ -71,35 +75,35 @@ public class AdminController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/databaseOptMgmt"})
+	@RequestMapping(value ={"/databaseOptMgmt"}, method = RequestMethod.GET)
 	public ModelAndView databaseOptMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		return getModelAndView("/databaseOptMgmt", VIEW_PAGE.ADMIN, model);
 	}
 
-	@RequestMapping(value = "/report")
+	@RequestMapping(value = "/report", method = RequestMethod.GET)
 	public ModelAndView report(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "report");
 		return getModelAndView("/report", VIEW_PAGE.ADMIN, model);
 	}
 
-	@RequestMapping(value = "/managerMgmt")
+	@RequestMapping(value = "/managerMgmt", method = RequestMethod.GET)
 	public ModelAndView managerMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "managerMgmt");
 		return getModelAndView("/managerMgmt", VIEW_PAGE.ADMIN, model);
 	}
 
-	@RequestMapping(value = "/databaseUserMgmt")
+	@RequestMapping(value = "/databaseUserMgmt", method = RequestMethod.GET)
 	public ModelAndView databaseUserMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "databaseUserMgmt");
 		return getModelAndView("/databaseUserMgmt", VIEW_PAGE.ADMIN, model);
 	}
 
-	@RequestMapping(value = "/userMenuMgmt")
+	@RequestMapping(value = "/userMenuMgmt", method = RequestMethod.GET)
 	public ModelAndView userMenuMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "userMenuMgmt");
@@ -107,7 +111,7 @@ public class AdminController extends AbstractController{
 		return getModelAndView("/userMenuMgmt", VIEW_PAGE.ADMIN, model);
 	}
 
-	@RequestMapping(value = "/errorlogMgmt")
+	@RequestMapping(value = "/errorlogMgmt", method = RequestMethod.GET)
 	public ModelAndView errorlogMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "errorlogMgmt");

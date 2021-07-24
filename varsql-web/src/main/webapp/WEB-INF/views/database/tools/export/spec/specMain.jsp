@@ -22,7 +22,7 @@
 				</li>
 			</ul>
 		</div>
-		<div class="menu-tools-body process-step-area col-xs-9 scroll-y">
+		<div class="menu-tools-body col-xs-9 scroll-y">
 			<div class="process-step" :class="step==1?'active':''">
 				<div class="col-xs-12">
 					<div class="process-title"><spring:message code="msg.table.export.info" /></div>
@@ -167,11 +167,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="process-step-btn-area">
-				<button type="button" class="btn-md"  :class="step == 1 ? 'disabled' :''" @click="moveStep('prev')"><spring:message code="label.prev" /></button>
-				<button type="button" class="btn-md"  :class="step == endStep ? 'disabled' :''" @click="moveStep('next')"><spring:message code="label.next" /></button>
-				<button type="button" class="btn-md"  :class="step != endStep ? 'disabled' :''" @click="complete()"><spring:message code="label.complete" /></button>
-			</div>
+			
+			<step-button :step.sync="step" :end-step="endStep" ref="stepButton"></step-button>
+			
 		</div>
 	</div>
 </BODY>
@@ -194,20 +192,11 @@ VarsqlAPP.vueServiceBean({
 			this.selectSchema = this.userSetting.schema;
 			this.setUserConfigInfo();
 		}
-		//이전 , 다음
-		,moveStep : function (mode){
-			if(mode == 'prev'){
-				if(this.step > 1){
-					this.step -= 1;
-				}
-			}else if(mode == 'next'){
-				if(this.step < this.endStep){
-					this.step += 1;
-				}
-			}
-		}
-		// step 선택
 		,selectStep : function (step){
+			this.$refs.stepButton.move(step);
+		}
+		//step 선택
+		,moveStep : function (step){
 			this.step = step;
 		}
 		// 완료

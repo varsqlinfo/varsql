@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.TypeHandler;
- 
+
+@MappedJdbcTypes(JdbcType.LONGNVARCHAR)
 public class LONGVARCHARHandler implements TypeHandler{
  
     @Override
@@ -15,8 +17,12 @@ public class LONGVARCHARHandler implements TypeHandler{
     public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType)
            throws SQLException {
         String s = (String) parameter;
-        StringReader reader = new StringReader(s);
-        ps.setCharacterStream(i, reader, s.length());
+        try(StringReader reader = new StringReader(s)){
+        	ps.setCharacterStream(i, reader, s.length());
+        }catch(SQLException e) {
+        	throw e; 
+        }
+        
     }
  
     @Override

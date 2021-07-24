@@ -36,14 +36,14 @@ import lombok.Setter;
 @Table(name = QnAEntity._TB_NAME)
 public class QnAEntity extends AabstractAuditorModel{
 	private static final long serialVersionUID = 1L;
-	
+
 	public final static String _TB_NAME="VTQNA";
-	
+
 	@Id
 	@GenericGenerator(name = "qnaidGenerator", strategy = "com.varsql.web.model.id.generator.AppUUIDGenerator"
 		, parameters = @Parameter(
             name = AppUUIDGenerator.PREFIX_PARAMETER,
-            value = "QA_"
+            value = "QA"
 		)
 	)
     @GeneratedValue(generator = "qnaidGenerator")
@@ -58,27 +58,27 @@ public class QnAEntity extends AabstractAuditorModel{
 
 	@Column(name ="ANSWER")
 	private String answer;
-	
+
 	@JsonIgnore
 	@Column(name ="ANSWER_ID")
 	private String answerId;
 
 	@Column(name ="ANSWER_DT")
 	private Timestamp answerDt;
-	
+
 	@JsonIgnore
 	@Column(name ="DEL_YN")
 	@Convert(converter = BooleanToDelYnConverter.class)
 	private boolean delYn;
-	
+
 	@OneToOne
 	@JoinColumn(name = "REG_ID", nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
-	
+
 	@Transient
 	@JsonProperty
-	private String answerYn; // 답변 여부를  알기위해 추가. 
-	
+	private String answerYn; // 답변 여부를  알기위해 추가.
+
 	@Builder
 	public QnAEntity(String qnaid, String title, String question, String answer, String answerId, Timestamp answerDt, boolean delYn) {
 		this.qnaid = qnaid;
@@ -103,7 +103,7 @@ public class QnAEntity extends AabstractAuditorModel{
 	public final static String ANSWER_DT="answerDt";
 
 	public final static String DEL_YN="delYn";
-	
+
 	public String getAnswerYn() {
 		return this.answerId==null || "".equals(this.answerId) ?"N" :"Y";
 	}

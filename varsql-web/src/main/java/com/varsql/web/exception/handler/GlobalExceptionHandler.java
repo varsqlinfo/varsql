@@ -21,11 +21,13 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.CommonServiceImpl;
+import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.exception.DatabaseInvalidException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.VarsqlUtils;
@@ -51,7 +53,7 @@ import com.vartech.common.utils.VartechUtils;
 @ControllerAdvice
 public class GlobalExceptionHandler{
 
-	private static final Logger logger = LoggerFactory.getLogger("appErrorLog");
+	private final Logger logger = LoggerFactory.getLogger("appErrorLog");
 
 	@Autowired
 	private CommonServiceImpl commonServiceImpl;
@@ -288,9 +290,20 @@ public class GlobalExceptionHandler{
         result.setMessage(ex.getMessage());
         return result;
     }
-
+	
+	/**
+	 *
+	 * @Method Name  : noHandlerFoundExceptionHandler
+	 * @Method 설명 : 404
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 29.
+	 * @변경이력  :
+	 * @param request
+	 * @param ex
+	 * @return
+	 */
 	@ExceptionHandler(NoHandlerFoundException.class)
-    public void handle404(NoHandlerFoundException ex,HttpServletRequest request ,  HttpServletResponse response) {
+    public void noHandlerFoundExceptionHandler(NoHandlerFoundException ex,HttpServletRequest request ,  HttpServletResponse response) {
 
 		logger.error("handle404 url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("handle404 :{} ", ex.getMessage() , ex);
@@ -300,21 +313,39 @@ public class GlobalExceptionHandler{
 		exceptionRequestHandle(ex,request, response ,result , "error404");
     }
 
-    private HttpStatus getStatus(HttpServletRequest request) {
-        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-        if (statusCode == null) {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return HttpStatus.valueOf(statusCode);
-    }
-
+    /**
+	 *
+	 * @Method Name  : missingServletRequestParameterExceptionHandler
+	 * @Method 설명 : missing parameter exception
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 29.
+	 * @변경이력  :
+	 * @param request
+	 * @param ex
+	 * @return
+	 */
 	@ExceptionHandler(value=MissingServletRequestParameterException.class)
 	public void missingServletRequestParameterExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
 
 		logger.error("missingServletRequestParameterExceptionHandler:{}",ex.getMessage() , ex);
 
-		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(ex,request, response ,result, "error403");
+		exceptionRequestHandle(ex,request, response ,new ResponseResult(), "error403");
+	}
+	
+	/**
+	 *
+	 * @Method Name  : dataDownloadExceptionHandler
+	 * @Method 설명 : data download exception
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 29.
+	 * @변경이력  :
+	 * @param request
+	 * @param ex
+	 * @return
+	 */
+	@ExceptionHandler(value=DataDownloadException.class)
+	public void dataDownloadExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+		exceptionRequestHandle(ex,request ,response , new ResponseResult()  , "dataDownloadError");
 	}
 
 	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result) {
@@ -323,24 +354,22 @@ public class GlobalExceptionHandler{
 
 	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
 		if(VarsqlUtils.isAjaxRequest(request)){
-			response.setContentType("application/json;charset=UTF-8");
+			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
 			result.setResultCode(ResultConst.CODE.ERROR.toInt());
-			
+
 			if(!SecurityUtil.isAdmin()) {
 				result.setMessage(result.getResultCode() + " :: " + ex.getClass());
 			}
 
-			Writer writer=null;
-			try {
-				writer = response.getWriter();
+			try (Writer writer= response.getWriter()){
 				writer.write(VartechUtils.objectToJsonString(result));
 			} catch (IOException e) {
 				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
-			}finally{
-				if(writer!=null){ try {writer.close();} catch (IOException e) {}};
 			}
 		}else{
+			
+			request.setAttribute("errorMessage", ex.getMessage());
 			try {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);
 				dispatcher.forward(request, response);
@@ -349,4 +378,12 @@ public class GlobalExceptionHandler{
 			}
 		}
 	}
+	
+	 private HttpStatus getStatus(HttpServletRequest request) {
+	        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+	        if (statusCode == null) {
+	            return HttpStatus.INTERNAL_SERVER_ERROR;
+	        }
+	        return HttpStatus.valueOf(statusCode);
+	    }
 }

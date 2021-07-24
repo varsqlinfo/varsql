@@ -68,8 +68,12 @@
 						<div class="pull-right">
 							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
 							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
-							<button type="button" class="btn btn-primary" @click="connectionCheck()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.connnection.check"/></button>
-							<button type="button" class="btn btn-danger"  @click="deleteInfo()" :class="detailFlag===false?'hidden':''"><spring:message code="btn.delete"/></button>
+							
+							<template v-if="detailFlag===true">
+								<button type="button" class="btn btn-default" @click="copy()"><spring:message code="btn.copy"/></button>
+								<button type="button" class="btn btn-primary" @click="connectionCheck()"><spring:message code="btn.connnection.check"/></button>
+								<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+							</template>
 						</div>
 					</div>
 				</div>
@@ -258,7 +262,7 @@
 
 	<div id="passwordViewTemplate" title="Password view">
 		<div>
-			<div>Login password : <input v-model="userPw" type="password" class="form-control text"> </div>
+			<div>Login password : <input v-model="userPw" type="password" @keyup.enter="passwordView()" class="form-control text"> </div>
 			<div style="padding: 5px 0px;" class="pull-right"><button type="button" @click="passwordView()" class="db btn btn-default">Password view</button> </div>
 			<div style="clear:both;">password : <input v-model="dbPw" type="text" class="form-control text" disabled="disabled" style="width: calc(100% - 64px);display: inline-block;"></div>
 		</div>
@@ -299,20 +303,20 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,search : function(no){
-			var _self = this;
+			var _this = this;
 
 			var param = {
 				pageNo: (no?no:1)
-				,rows: _self.list_count
-				,'searchVal':_self.searchVal
+				,rows: _this.list_count
+				,'searchVal':_this.searchVal
 			};
 
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dblist'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
-					_self.pageInfo = resData.page;
+					_this.gridData = resData.items;
+					_this.pageInfo = resData.page;
 				}
 			})
 		}
@@ -321,17 +325,17 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 상세보기
 		,itemView : function(item){
-			var _self = this;
+			var _this = this;
 
 			var param = {
 				vconnid : item.vconnid
 			}
 
-			if(_self.detailItem.vconnid == item.vconnid){
+			if(_this.detailItem.vconnid == item.vconnid){
 				return ;
 			}
 
-			_self.errors.clear();
+			_this.errors.clear();
 
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/main/dbDetail'}
@@ -340,11 +344,11 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					var item  =resData.item;
 
-					if(item.vtype != _self.detailItem.vtype){
-						_self.dbDriverLoad(item.vtype);
+					if(item.vtype != _this.detailItem.vtype){
+						_this.dbDriverLoad(item.vtype);
 					}
 
-					_self.setDetailItem(item);
+					_this.setDetailItem(item);
 				}
 			})
 		}
@@ -439,6 +443,8 @@ VarsqlAPP.vueServiceBean( {
 								}
 								_this.search();
 								_this.setDetailItem();
+							}else{
+								//resData.item
 							}
 						}
 					});
@@ -530,6 +536,27 @@ VarsqlAPP.vueServiceBean( {
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
 						}
+					}
+				}
+			});
+		}
+		,copy : function (){
+			var _this = this; 
+			var param = this.getParamVal();
+
+			this.$ajax({
+				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCopy'}
+				,loadSelector : 'body'
+				,data:param
+				,success:function (resData){
+					if(resData.resultCode ==200){
+						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0027'));
+						_this.search();
+						
+						_this.itemView({vconnid : resData.item});
+						return
+					}else{
+						alert(resData.messageCode  +'\n'+ resData.message);
 					}
 				}
 			});

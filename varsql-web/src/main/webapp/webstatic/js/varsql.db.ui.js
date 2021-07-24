@@ -114,9 +114,6 @@ _ui.pluginProxy = {
 	createScriptSql :function (scriptObj){
 		_ui.SQL.addCreateScriptSql(scriptObj);
 	}
-	,createJavaProgram: function (scriptObj){
-		_ui.JAVA.createJavaProgram(scriptObj);
-	}
 	,getActiveObjectMenu : function (){
 		return _ui.dbSchemaObject.selectObjectMenu;
 	}
@@ -173,9 +170,13 @@ VARSQL.ui.getTheme = function (){
 VARSQL.ui.create = function (_opts){
 
 	VARSQLCont.init(_opts.dbtype , _ui.base);
-
+	
+	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
+	
+	delete _opts.userSettingInfo['main.database.setting'];
+	
 	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
-
+	
 	_ui.initContextMenu();
 	_ui.headerMenu.init();
 	_ui.initEditorOpt();
@@ -306,7 +307,6 @@ _ui.initEvt = function(){
 _ui.headerMenu ={
 	preferencesDialog : ''
 	,dialogObj : {}
-	,menuTypeInfo : {}
 	,init : function(){
 		var _self = this;
 		// theme 설정.
@@ -380,11 +380,17 @@ _ui.headerMenu ={
 						case 'allsave': // 모두 저장
 							$('.sql_toolbar_allsave_btn').trigger('click');
 							break;
-						case 'import-export': // 가져오기 및 내보내기
+						case 'import': // 가져오기 및 내보내기
 
 							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 
-							_self.openMenuDialog(VARSQL.messageFormat('menu.file.import_export'),'fileImportExport',{type:VARSQL.uri.database, url:'/menu/fileImportExport'}, {'width':450,'height' : 400});
+							_self.openMenuDialog(VARSQL.messageFormat('menu.file.import'),'fileImport',{type:VARSQL.uri.database, url:'/menu/fileImport'}, {'width':600,'height' : 400});
+							break;
+						case 'export': // 가져오기 및 내보내기
+							
+							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
+							
+							_self.openMenuDialog(VARSQL.messageFormat('menu.file.export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
 							break;
 						case 'newwin': // 새창 보기.
 							var dimension = VARSQL.util.browserSize();
@@ -481,7 +487,7 @@ _ui.headerMenu ={
 							break;
 						case 'layout':	//레이아웃 초기화
 							if(confirm(VARSQL.messageFormat('varsql.0013'))){
-								_ui.preferences.save({layoutConfig : ''} , function (){
+								_ui.preferences.save('init', function (){
 									location.href = location.href;
 									return ;
 								});
@@ -597,21 +603,11 @@ _ui.headerMenu ={
 	}
 	,openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 		var _self = this;
-		var dialogEleObj = _self.dialogObj[_self.menuTypeInfo[type]];
+		var dialogEleObj = _self.dialogObj[type];
 		if(!VARSQL.isUndefined(dialogEleObj)){
 			dialogEleObj.dialog( "open" );
 			return ;
 		}
-
-		var eleId =VARSQL.generateUUID();
-
-		_self.menuTypeInfo[type] = eleId;
-
-		$('#varsqlExtensionsElementArea').append('<div id="'+eleId+'" class="database-menu-dialog" style="display:none;"></div>');
-
-		var ele = $('#'+eleId);
-
-		ele.attr('title',title);
 
 		var param = {
 			conuid : _g_options.param.conuid
@@ -623,12 +619,20 @@ _ui.headerMenu ={
 			,data: param
 			,dataType : 'text'
 			,success:function (resData){
+				var eleId = 'openMenuDialog_'+type; 
+				
+				$('#varsqlExtensionsElementArea').append('<div id="'+eleId+'"></div>');
+				eleId = '#'+eleId;
+				
+				var ele =$(eleId);
 				ele.html(resData);
-
-				var menuDialog =ele.dialog({
-					width:450
-					,height:400
+				ele.attr('title',title);
+				
+				var menuDialog =VARSQLUI.dialog.open(eleId, VARSQL.util.objectMerge({
+					width :  450
+					,height : 400
 					,modal: true
+					,resizable: false
 					,buttons: {
 						Close:function (){
 							menuDialog.dialog( "close" );
@@ -637,11 +641,11 @@ _ui.headerMenu ={
 					,close: function() {
 						menuDialog.dialog( "close" );
 					}
-				});
+				},dialogOpt));
 
 				menuDialog.dialog("open");
 
-				_self.dialogObj[eleId] = menuDialog;
+				_self.dialogObj[type] = menuDialog;
 			}
 		});
 	}
@@ -699,13 +703,20 @@ _ui.headerMenu ={
 	}
 }
 
+
 // 환경 설정 관련
 _ui.preferences= {
 	save : function (prefInfo , callback){
+		if(prefInfo =='init'){
+			prefInfo = {} ;
+		}else{
+			prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
+		}
+		
 		VARSQLApi.preferences.save({
 			conuid : _g_options.param.conuid
 			,prefKey : 'main.database.setting'
-			,prefVal : JSON.stringify(VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo))
+			,prefVal : JSON.stringify(prefInfo)
 		}, callback);
 	}
 }
@@ -1353,7 +1364,65 @@ _ui.addDbServiceObject('table',{
 			VARSQLHints.setTableInfo(tableHint);
 
 			if(resData.refreshFlag===false) return ;
-
+			
+			var contextItems = [
+				{header: "title" , "key": "contextTitle"}
+				,{divider:true}
+				,{key : "dataview" , "name": VARSQL.messageFormat('dataview')
+					,subMenu: [
+						{ key : "dataview_all","name": VARSQL.messageFormat('data') , mode: "selectStar"}
+						,{ key : "dataview_count","name": VARSQL.messageFormat('count') ,mode:"selectCount"}
+					]
+				}
+				,{key : "copy" , "name": VARSQL.messageFormat('copy')}
+				,{divider:true}
+				,{key : "sql_create", "name": "sql"
+					,subMenu: [
+						{ key : "selectStar","name": "select *" , mode: "selectStar"}
+						,{ key : "select","name": "select column" ,mode:"select"}
+						,{ key : "selectCount","name": "select count" ,mode:"selectCount"}
+						,{ key : "insert","name": "insert" , mode:"insert"}
+						,{ key : "update","name": "update" ,mode:"update"}
+						,{ key : "delete","name": "delete" ,mode:"delete"}
+						,{ key : "drop","name": "drop" , mode:"drop"}
+					]
+				}
+			];
+			
+			var settingItems = _g_options.userSettingInfo['main.contextmenu.serviceobject'];
+			
+			settingItems = VARSQL.isArray(settingItems) ? settingItems : [];
+			
+			var userContextItems = [];
+			for(var i =0 ;i <settingItems.length;i++){
+				var userItem = settingItems[i];
+				
+				var pItemKey = 'uCustomItem_'+i; 
+				
+				var addItem = {key : pItemKey	,name : userItem.name ,subMenu : []};
+				
+				var templateInfos = userItem.templateInfos;
+				
+				for(var j =0 ;j < templateInfos.length; j++){
+					var templateInfo = templateInfos[j]; 
+					templateInfo.key = pItemKey +'_'+ j; 
+					templateInfo.isTemplate =true; 
+					
+					addItem.subMenu.push(templateInfo);
+				}
+				userContextItems.push(addItem);
+			}
+			contextItems = contextItems.concat(userContextItems);
+			
+			contextItems = contextItems.concat([
+				{divider:true}
+				,{key :'export', "name": VARSQL.messageFormat('export')
+					,subMenu:[
+						{key : "export_data","name": VARSQL.messageFormat('data.export')}
+					]
+				}
+			]);
+			
 			var tableObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				setting : {
 					enabled : true
@@ -1399,15 +1468,14 @@ _ui.addDbServiceObject('table',{
 							if(!_ui.SQL.getSqlEditorObj()){
 								return [
 									{key :'sql_create' , depth :0	}
-									,{key :'mybatis-sql_create' , depth :0}
 								];
 							}
 							return [];
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
+							var sItem = this.gridItem;
 							var tmpName = sItem.name;
-
+							
 							if(key=='dataview_all'){
 								_ui.SQL._sqlData('select * from '+getTableName(tmpName),false);
 								return ;
@@ -1440,8 +1508,24 @@ _ui.addDbServiceObject('table',{
 								return ;
 							}
 
-							if(key.indexOf('java_') == 0){
-								_ui.pluginProxy.createJavaProgram(params);
+							if(sObj.isTemplate===true){
+								
+								var result =VARSQLTemplate.render.generateSource(sObj, {
+					                'table' : sItem
+					                ,'columns' : cacheData.items
+					            });
+								
+								if(result.isError){
+									VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0025'));
+					            	return ;
+					    		}
+					            
+								var resultCode = result.value; 
+					            if(sObj.viewMode=='editor'){
+					            	_ui.SQL.addSqlEditContent(resultCode, false);
+					            }else{
+					            	_ui.text.copy(resultCode, 'java');
+					            }
 								return ;
 							}
 
@@ -1449,61 +1533,7 @@ _ui.addDbServiceObject('table',{
 							params.param_yn = sObj.param_yn;
 							_ui.pluginProxy.createScriptSql(params);
 						},
-						items: [
-							{header: "title" , "key": "contextTitle"}
-							,{divider:true}
-							,{key : "dataview" , "name": "데이타 보기"
-								,subMenu: [
-									{ key : "dataview_all","name": "데이터" , mode: "selectStar"}
-									,{ key : "dataview_count","name": "카운트" ,mode:"selectCount"}
-								]
-							}
-							,{key : "copy" , "name": "복사"}
-							,{divider:true}
-							,{key : "sql_create", "name": "sql생성"
-								,subMenu: [
-									{ key : "selectStar","name": "select *" , mode: "selectStar"}
-									,{ key : "select","name": "select column" ,mode:"select"}
-									,{ key : "selectCount","name": "select count" ,mode:"selectCount"}
-									,{ key : "insert","name": "insert" , mode:"insert"}
-									,{ key : "update","name": "update" ,mode:"update"}
-									,{ key : "delete","name": "delete" ,mode:"delete"}
-									,{ key : "drop","name": "drop" , mode:"drop"}
-								]
-							}
-							,{key : "mybatis-sql_create","name": "mybatis Sql생성"
-								,subMenu : [
-									{ key : "mybatis_insert","name": "insert" ,mode:"insert" ,param_yn:'Y'}
-									,{ key : "mybatis_update","name": "update" ,mode:"update" ,param_yn:'Y'}
-									,{ key : "mybatis_delete","name": "delete" ,mode:"delete",param_yn:'Y'}
-									,{ key : "mybatis_insert_camel_case","name": "insertCamelCase" ,mode:"insert|camel" ,param_yn:'Y'}
-									,{ key : "mybatis_update_camel_case","name": "updateCamelCase" ,mode:"update|camel" ,param_yn:'Y'}
-									,{ key : "mybatis_delete_camel_case","name": "deleteCamelCase" ,mode:"delete|camel",param_yn:'Y'}
-								]
-							}
-							,{key : "create_java","name": "java 모델생성"
-								,subMenu:[
-									{key : "java_jpa","name": "jpa Model"}
-									,{key : "java_jpa2","name": "jpa Model(length추가)"}
-									,{key : "java_jpares","name": "jpa res dto"}
-									,{key : "java_jpareq","name": "jpa req dto"}
-									,{key : "java_jpa2","name": "jpa Model(length추가)"}
-									,{key : "java_column","name": "컬럼명"}
-									,{key : "java_camel_case_naming","name": "Camel case naming"}
-									,{key : "java_json","name": "json형식"}
-									,{key : "java_valid","name": "우효성 체크 Bean"}
-
-									]
-							}
-							,{divider:true}
-							,{key :'export', "name": "내보내기"
-								,subMenu:[
-									{key : "export_data","name": "데이타 내보내기"}
-								]
-							}
-							,{divider:true}
-							,{key : "settingBtn" , "name": "설정(활성/비활성)"}
-						]
+						items: contextItems
 					}
 				}
 			});
@@ -2037,7 +2067,7 @@ _ui.dbObjectMetadata= {
 					}else {
 						var callMethodStr = '_'+convertCamel(objType+'_'+metaTabKey);
 
-						if(cacheData && $.isArray(cacheData.items)){
+						if(cacheData && VARSQL.isArray(cacheData.items)){
 							_self[callMethodStr](cacheData, tabParam, metaTabKey, false);
 							return ;
 						}else{
@@ -2829,7 +2859,7 @@ _ui.SQL = {
 	// file name 저장.
 	,sqlFileNameSave : function (){
 		var nameTxt = $('#editorSqlFileNameText').val();
-		if($.trim(nameTxt)==''){
+		if(VARSQL.str.trim(nameTxt)==''){
 			$('#editorSqlFileNameText').focus();
 			VARSQLUI.alert.open({key:'varsql.0010'});
 			return ;
@@ -3541,7 +3571,7 @@ _ui.SQL = {
 			var dataLen = Object.keys(data||{}).length;
 			if(dataLen < 1) data = {'' :''};
 
-			var template = Handlebars.compile(_self.getParamTemplate(true));
+			var template = VARSQLTemplate.compile(_self.getParamTemplate(true));
 
 			for(var key in data){
 				paramHtm.push(template({key: key , val : data[key]}));
@@ -3682,7 +3712,7 @@ _ui.SQL = {
 
 		if(_self.getSqlEditorObj() !==false){
 			sqlVal= _self.getSql();
-			sqlVal=$.trim(sqlVal);
+			sqlVal=VARSQL.str.trim(sqlVal);
 		}
 
 		$('#noteTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_제목');
@@ -4037,7 +4067,7 @@ _ui.SQL = {
 			var k = $(this).find('.sql-param-key').val()
 				,v=$(this).find('.sql-param-value').val();
 
-			if($.trim(k) != ''){
+			if(VARSQL.str.trim(k) != ''){
 				sqlParam[k] = v;
 			}
 		})
@@ -4105,7 +4135,7 @@ _ui.SQL = {
 	,_sqlData :function (sqlVal, paramFlag){
 		var _self = this;
 
-		sqlVal=$.trim(sqlVal);
+		sqlVal=VARSQL.str.trim(sqlVal);
 		if('' == sqlVal){
 			return ;
 		}
@@ -4139,7 +4169,7 @@ _ui.SQL = {
 		var _self = this;
 		var sqlVal = _self.getSql();
 		var tmpEditor =_self.getSqlEditorObj();
-		sqlVal=$.trim(sqlVal);
+		sqlVal=VARSQL.str.trim(sqlVal);
 
 		var startSelection;
 
@@ -4186,14 +4216,27 @@ _ui.SQL = {
 			modalEle.dialog( "open" );
 			$('#exportFileName').val(tmpName);
 			$('#exportObjectName').val(tmpName);
+			$('#exportConditionQueryArea').addClass('display-off');
+			$('#exportConditionQuery').val('');
 			$.pubGrid('#data-export-column-list').setData(items);
 			$.pubGrid('#data-export-column-list').setCheckItems('all');
+			
 			return ;
 		}else{
 			$(_g_options.hiddenArea).append($('#dataExportTemplate').html());
 			modalEle = $('#data-export-modal');
 			$('#exportFileName').val(tmpName);
 			$('#exportObjectName').val(tmpName);
+			
+			var exportConditionArea = $('#exportConditionQueryArea');
+			$('#exportAdvancedBtn').on('click',function (e){
+				
+				if(exportConditionArea.hasClass('display-off')){
+					exportConditionArea.removeClass('display-off');
+				}else{
+					exportConditionArea.addClass('display-off');
+				}
+			})
 		}
 
 		function exportData(){
@@ -4218,6 +4261,7 @@ _ui.SQL = {
 				,objectName : $('#exportObjectName').val()
 				,fileName: $('#exportFileName').val()
 				,limit: $('#exportCount').val()
+				,conditionQuery: (!$('#exportConditionQueryArea').hasClass('display-off') ? $('#exportConditionQuery').val():'')
 			});
 
 			VARSQL.req.download({
@@ -4228,8 +4272,8 @@ _ui.SQL = {
 		}
 
 		modalEle.dialog({
-			height: 350
-			,width: 640
+			height: 430
+			,width: 730
 			,modal: true
 			,show : false
 			,buttons: {
@@ -4263,8 +4307,8 @@ _ui.SQL = {
 					}
 				}
 				,tColItem : [
-					{key:VARSQLCont.tableColKey.NAME ,label :'Column',width : 150}
-					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Desc',width : 200}
+					{key:VARSQLCont.tableColKey.NAME ,label :'Column'}
+					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Desc'}
 				]
 				,tbodyItem :items
 			});
@@ -4708,7 +4752,7 @@ _ui.registerPlugin({
 
 							val = val.split(' ').join('_');
 
-							if($.trim(variableText)==''){
+							if(VARSQL.str.trim(variableText)==''){
 								variableText = val;
 							}else{
 								variableText = variableText+'_'+val;
@@ -4748,7 +4792,7 @@ _ui.registerPlugin({
 			var _self = this;
 			var schVal = $(_self.selector+' #glossarySearchTxt').val();
 
-			schVal = $.trim(schVal);
+			schVal = VARSQL.str.trim(schVal);
 
 			if(schVal.length < 1){
 				return ;
@@ -4840,7 +4884,7 @@ _ui.registerPlugin({
 			var _self = this;
 			var schVal = $(_self.selector+' #historySearchTxt').val();
 
-			schVal = $.trim(schVal);
+			schVal = VARSQL.str.trim(schVal);
 
 			if(mode != 'scroll'){
 				_self.pageNo = 1;
@@ -4971,173 +5015,6 @@ _ui.text={
 	}
 }
 
-_ui.JAVA = {
-	createJavaProgram : function (scriptInfo){
-		var _self = this;
-		var key = scriptInfo.gubunKey
-			,tmpName = scriptInfo.objName
-			,data = scriptInfo.item
-
-		var dataArr = data.items, tmpval , item;
-
-		var len = dataArr.length;
-
-		var newLine = VARSQLCont.constants.newline
-			,tabStr = VARSQLCont.constants.tab;
-
-		function javaCreate (createType){
-			var codeStr =[];
-
-			if(createType =='valid'){
-				codeStr.push('import javax.validation.constraints.Max;' +newLine);
-				codeStr.push('import javax.validation.constraints.Min;' +newLine);
-				codeStr.push('import javax.validation.constraints.NotNull;' +newLine);
-				codeStr.push('import javax.validation.constraints.Past;' +newLine);
-				codeStr.push('import javax.validation.constraints.Size;' +newLine);
-			}
-
-			codeStr.push(newLine);
-
-			var jpaFlag =createType.indexOf('jpa') == 0;
-
-			var classSuffix = createType =='jpares'?'Response' :(createType =='jpareq' ? 'Request':'');
-			var className = capitalizeFirstLetter(convertCamel(tmpName))+classSuffix;
-
-			if(createType =='jpa' || createType =='jpa2'){
-				codeStr.push('@Entity'+newLine);
-				codeStr.push('@Table(name = '+className+'._TB_NAME)'+newLine);
-			}else {
-				if(createType =='jpares'){
-					codeStr.push('@Getter'+newLine);
-					codeStr.push('@Setter'+newLine);
-				}else if(createType =='jpareq'){
-					codeStr.push('@Getter'+newLine);
-					codeStr.push('@Setter'+newLine);
-					codeStr.push('@NoArgsConstructor'+newLine);
-				}
-			}
-
-			codeStr.push('public class '+className +'{' +newLine);
-
-			var methodStr = [];
-			var constructorStr= [];
-			var argumentStr= [];
-			var memberConstantStr= [];
-
-			if(createType =='jpares'){
-				//constructorStr.push(tabStr+'public '+capitalizeFirstLetter(convertCamel(tmpName))+classSuffix+'('+tmpName+' entity) {' +newLine);
-			}else{
-				codeStr.push(tabStr+'public final static String _TB_NAME="'+tmpName+'";' +newLine +newLine);
-
-				constructorStr.push(tabStr+'@Builder'+newLine);
-				constructorStr.push(tabStr+'public '+className +'(#args#) {' +newLine);
-			}
-
-			for(var i=0; i < len; i++){
-				item = dataArr[i];
-				var tmpDbType = VARSQLCont.dataType.getDataTypeInfo(item[VARSQLCont.tableColKey.TYPE_NAME])
-					,tmpJavaType=tmpDbType.javaType;
-
-				var tmpColumnNm,tmpMethodNm, orginColumnNm;
-				orginColumnNm = item[VARSQLCont.tableColKey.NAME];
-				if(createType =='column'){
-					tmpColumnNm = orginColumnNm;
-					tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
-				}else{
-					tmpColumnNm = convertCamel(orginColumnNm);
-					tmpMethodNm = capitalizeFirstLetter(tmpColumnNm);
-				}
-
-				if(jpaFlag){
-
-					if(createType =='jpa' || createType =='jpa2'){
-						var columnSize = item[VARSQLCont.tableColKey.SIZE];
-						if($.isFunction (tmpDbType.getLen)){
-							columnSize = tmpDbType.getLen(columnSize);
-						}
-
-						var lowJavaType = (tmpJavaType+'').toLowerCase();
-						var collenInfo = '';
-						if(createType=='jpa2'){
-							if(lowJavaType =='date' || lowJavaType =='timestamp'){
-
-							}else{
-								collenInfo= ', length='+columnSize;
-							}
-						}
-						codeStr.push(tabStr+'@Column(name ="'+orginColumnNm+'"'+collenInfo+')'+newLine);
-					}
-
-					if(createType =='jpares'){
-						//constructorStr.push(tabStr+tabStr+tmpColumnNm + ' = entity.get'+tmpMethodNm+'();'+newLine);
-					}else{
-						constructorStr.push(tabStr+tabStr+'this.'+tmpColumnNm + ' = ' +tmpColumnNm+';'+newLine);
-					}
-				}
-
-				if(createType =='json'){
-					codeStr.push(tabStr+'@JsonProperty("'+tmpColumnNm +'")'+newLine);
-				}
-
-				if(createType =='valid'){
-					if(item.IS_NULLABLE =='NO'){
-						codeStr.push(tabStr+'@NotNull '+newLine);
-					}
-					var columnSize = item[VARSQLCont.tableColKey.SIZE];
-					if($.isFunction (tmpDbType.getLen)){
-						columnSize = tmpDbType.getLen(columnSize);
-					}
-					codeStr.push(tabStr+'@Size(max='+columnSize+')'+newLine);
-				}
-
-				var colComment = item[VARSQLCont.tableColKey.COMMENT];
-				colComment = colComment !='' && colComment != null ?' //'+colComment :'';
-
-				codeStr.push(tabStr+'private '+tmpJavaType+' ' +tmpColumnNm +';'+colComment+newLine+newLine);
-
-				memberConstantStr.push(tabStr+'public final static String '+orginColumnNm+'="' +tmpColumnNm +'";'+colComment+newLine+newLine);
-
-				argumentStr.push((i==0?'':', ')+tmpJavaType+' ' +tmpColumnNm );
-
-				if(jpaFlag) continue;
-
-				methodStr.push(tabStr+'public '+tmpJavaType+' ' + 'get' +tmpMethodNm +'(){'+newLine);
-				methodStr.push(tabStr+tabStr+'return this.'+tmpColumnNm+';'+newLine);
-				methodStr.push(tabStr+'}'+newLine);
-
-				methodStr.push(tabStr+'public void ' + 'set' +tmpMethodNm +'('+tmpJavaType+' '+tmpColumnNm+'){'+newLine);
-				methodStr.push(tabStr+tabStr+'this.'+tmpColumnNm+'='+tmpColumnNm+';'+newLine);
-				methodStr.push(tabStr+'}'+newLine);
-			}
-
-			codeStr.push(methodStr.join('')+newLine);
-			if(jpaFlag){
-				if(createType !='jpares'){
-					codeStr.push(constructorStr.join('').replace('#args#',argumentStr.join(''))+newLine + tabStr +'}'+newLine);
-				}
-
-				if(createType =='jpa' || createType =='jpa2'){
-					codeStr.push(memberConstantStr.join(''));
-				}
-			}
-
-			codeStr.push('}');
-
-			return codeStr.join('');
-		}
-		var reval = '';
-		var creType = key.replace('java_','');
-
-		// java camel case
-		if(creType=='camel_case_naming'){
-			reval = javaCreate('default');
-		}else{
-			reval = javaCreate(creType);
-		}
-		_ui.text.copy(reval , 'java');
-	}
-}
-
 /**
  * getTableName
  * @param tblName {String}
@@ -5220,7 +5097,7 @@ function generateSQL(scriptInfo){
 
 			tmpval = queryParameter(param_yn, item, keyMode);
 
-			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
+			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS] ||'';
 			if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
 				keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 			}else{
@@ -5244,7 +5121,7 @@ function generateSQL(scriptInfo){
 
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
-			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
+			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS] ||'';
 			if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
 				tmpval = queryParameter(param_yn, item, keyMode);
 

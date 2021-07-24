@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT preferences (item*)>
+<!ATTLIST preferences key CDATA #REQUIRED>
+
+<!ELEMENT item (templateInfo*)>
+<!ATTLIST item name CDATA #REQUIRED>
+
+<!ELEMENT templateInfo (main, propItems*)>
+<!ATTLIST templateInfo 
+	name CDATA #REQUIRED
+	viewMode (editor|dialog) #REQUIRED
+>
+
+<!ELEMENT main (#PCDATA)>
+
+<!ELEMENT propItems (key,code, compileValue)>
+
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT compileValue (#PCDATA)>

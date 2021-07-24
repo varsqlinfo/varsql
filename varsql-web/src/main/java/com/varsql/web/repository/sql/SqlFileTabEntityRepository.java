@@ -38,10 +38,10 @@ public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRep
 	@Modifying
 	@Query(value = "delete from SqlFileTabEntity ste where ste.vconnid = :vconnid and ste.viewid = :viewid")
 	void deleteAllSqlFileTabInfo(@Param("vconnid") String vconnid, @Param("viewid") String viewid);
-	
+
 	@Modifying
-	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= :prevId where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.prevSqlId = :sqlId")
-	void updateSqlFilePrevID(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId, @Param("prevId") String prevId);
+	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= (select prevSqlId from SqlFileTabEntity as suba where suba.vconnid = :vconnid and suba.viewid = :viewid and suba.sqlId = :sqlId) where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.prevSqlId = :sqlId")
+	void updateSqlFilePrevID(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId);
 
 	@Transactional(readOnly = true , value=ResourceConfigConstants.APP_TRANSMANAGER)
 	public class SqlFileTabEntityCustomImpl extends QuerydslRepositorySupport implements SqlFileTabEntityCustom {

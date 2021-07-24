@@ -9,8 +9,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-import com.varsql.web.configuration.SessionListener;
-
 @SpringBootApplication
 @ServletComponentScan
 public class VarsqlApplication extends SpringBootServletInitializer {

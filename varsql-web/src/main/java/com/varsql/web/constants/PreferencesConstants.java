@@ -15,7 +15,9 @@ package com.varsql.web.constants;
  */
 public interface PreferencesConstants {
 	enum PREFKEY{
-		TABLE_EXPORT("tool.table.export");
+		MAIN_SETTING("main.database.setting")
+		,TABLE_EXPORT("tool.table.export")
+		,CONTEXTMENU_SERVICEOBJECT("main.contextmenu.serviceobject");
 		
 		String prefKey; 
 		

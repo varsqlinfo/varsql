@@ -21,15 +21,15 @@
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				
+
 				<div class="row">
 					<div class="col-xs-12">
-						
+
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-sm-6">
-						<label> 
+						<label>
 							<button type="button" class="btn btn-sm btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
 						</label>
 					</div>
@@ -49,7 +49,7 @@
 									</button>
 								</span>
 							</div>
-							
+
 						</div>
 					</div>
 				</div>
@@ -82,7 +82,7 @@
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td><input type="checkbox" :value="item.noteId" v-model="selectItem"></td>
 									<td><a href="javascript:;" @click="viewItem(item)"> {{item.noteTitle}} </a></td>
-									<td class="center">{{item.sendNm}}</td>
+									<td class="center">{{item.regUserInfo}}</td>
 									<td class="center">{{item.regDt}}</td>
 									<td class="center">{{item.viewDt}}</td>
 								</tr>
@@ -91,7 +91,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<table :class="(message_type=='send'?'view':'hidden')"
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example">
@@ -119,7 +119,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="goPage"></page-navigation>
 					</div>
 				</div>
@@ -144,7 +144,7 @@
 							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.noteCont}}</textarea>
 						</div>
 					</div>
-					
+
 					<div v-if="message_type=='send'">
 					 	<div><spring:message code="label.recv.user" text="받는사람"/></div>
 						<div class="form-group">
@@ -162,15 +162,15 @@
 							<button type="button" class="btn btn-sm btn-primary" @click="resendNote()"><spring:message code="reply" text="답장"/></button>
 						</div>
 						<textarea class="form-control text required" rows="5" v-model="detailItem.reNoteCont"></textarea>
-						
+
 						<div style="margin-top:10px;">
-							<table 
+							<table
 								class="table table-striped table-bordered table-hover dataTable no-footer"
 								id="dataTables-example" style="table-layout:fixed;">
 								<colgroup>
 									<col style="width:calc(100% - 140px);">
 									<col style="width:140px;">
-									
+
 								</colgroup>
 								<thead>
 									<tr role="row">
@@ -223,23 +223,23 @@ VarsqlAPP.vueServiceBean( {
 	}
 	,methods:{
 		deleteMsg : function(){
-			var _self = this; 
+			var _self = this;
 			var selectItem = _self.selectItem;
-			
+
 			if(VARSQL.isDataEmpty(selectItem)){
 				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
-				return ; 
+				return ;
 			}
-			
+
 			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
-				return ; 
+				return ;
 			}
-			
+
 			var param = {
 				messageType : _self.message_type
 				,selectItem : selectItem.join(',')
 			};
-			
+
 			this.$ajax({
 				data:param
 				,url : {type:VARSQL.uri.user, url:'/preferences/deleteMsg'}
@@ -249,14 +249,14 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,viewItem : function (item){
-			var _self =this; 
+			var _self =this;
 			item.reNoteCont ='';
 			this.detailItem = item;
 			this.replyList = [];
-			
+
 			this.$ajax({
 			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList'}
-			    ,data : VARSQL.util.copyObject(item) 
+			    ,data : VARSQL.util.copyObject(item)
 			    ,success:function (resData){
 			    	_self.replyList = resData.items;
 				}
@@ -266,39 +266,39 @@ VarsqlAPP.vueServiceBean( {
 			console.log($(sEle));
 		}
 		,resendNote  : function (){
-			var _this =this; 
-			
+			var _this =this;
+
 			var params = VARSQL.util.copyObject(this.detailItem);
 			params.recvId = 'resend';
-			
+
 			this.$ajax({
 			    url:{type:VARSQL.uri.user, url:'/resendNote'}
-			    ,data:params 
+			    ,data:params
 			    ,success:function (resData){
 			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
-			    	
+
 			    	_this.viewItem(_this.detailItem)
 				}
 			});
 		}
 		,replyViewItem : function (item){
-			this.reNoteItem = item; 
-			
+			this.reNoteItem = item;
+
 			Vue.set(item, '_visible',  !item._visible)
 		}
 		,search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			this.detailItem = {};
 			this.replyList = [];
-			
+
 			var param = {
 				pageNo : (no?no:1)
 				,messageType : _self.message_type
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.user, url:'/preferences/listMsg'}
 				,data : param

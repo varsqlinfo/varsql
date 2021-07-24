@@ -1,6 +1,7 @@
 package com.varsql.web.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -120,6 +121,25 @@ public final class ValidateUtils {
 	 */
 	public static boolean isNotBlank(String val) {
 		return StringUtils.isNotBlank(val); 
+	}
+	
+	/**
+	 * @method  : isMapValueBlank
+	 * @desc : map value blank check
+	 * @author   : ytkim
+	 * @date   : 2020. 5. 5. 
+	 * @param val
+	 * @return
+	 */
+	public static boolean isMapValueBlank(Map info , Object key) {
+		
+		if(!info.containsKey(key)) {
+			return true;
+		}
+		
+		Object val = info.get(key);
+		
+		return val ==null || "".equals(val) ? true :false; 
 	}
 	
 }

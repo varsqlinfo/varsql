@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.varsql.web.constants.VarsqlInfoConstants;
+import com.varsql.web.exception.VarsqlTagException;
 
 public class VarsqlInfo extends TagSupport {
 
@@ -29,7 +30,7 @@ public class VarsqlInfo extends TagSupport {
 				jw.write(VarsqlInfoConstants.APP_NAME);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new VarsqlTagException("tag error ",e); 
 		}
 
 		return SKIP_BODY;

@@ -95,18 +95,16 @@ public class DataExportUtil {
 	}
 	public static void jsonStringToXml(String jsonString, String rowName, List<GridColumnInfo> columnInfos,OutputStream output) throws IOException{
 
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-
 		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
 		JsonParser parser = null;
-		try {
-			XStream magicApi = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("-_", "_")));
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output, VarsqlConstants.CHAR_SET));) {
+			XStream magicApi = new XStream(new DomDriver(VarsqlConstants.CHAR_SET, new XmlFriendlyNameCoder("-_", "_")));
 			magicApi.alias(rowName, Map.class);
 			magicApi.registerConverter(new MapEntryConverter());
 
 			Map rowInfo =null;
 			JsonFactory factory = new JsonFactory();
-
+			
 			out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			out.newLine();
 			out.write("<items>");
@@ -115,19 +113,24 @@ public class DataExportUtil {
 	        parser.nextToken();                                     //start reading the file
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
 	        	rowInfo = new HashMap();
+	        	boolean addFlag= false; 
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-	        		String fieldName = parser.getCurrentName();
-	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
+	        		String key = getColumnKeyLabelInfo(parser.getCurrentName(), columnKeyLabel); 
+	        		if(key != null) {
+	        			addFlag= true; 
+	        			rowInfo.put(key, parser.getText());
+	        		}
 	        	}
-	        	out.write(magicApi.toXML(rowInfo));
-				out.newLine();
+	        	if(addFlag) {
+		        	out.write(magicApi.toXML(rowInfo));
+					out.newLine();
+	        	}
 	        }
 	        out.write("</items>");
 	        parser.close();
 	        out.close();
 		}finally {
 			if(parser != null)parser.close();
-			if(out != null)out.close();
 		}
 	}
 
@@ -163,9 +166,8 @@ public class DataExportUtil {
 	}
 
 	public static void toCSVWrite(List allInfo,char delimiter, List<GridColumnInfo> columnInfos,  OutputStream output) throws IOException{
-		CSVPrinter printer = new CSVPrinter(new OutputStreamWriter( output ,VarsqlConstants.CHAR_SET),csvFormat.withDelimiter(delimiter));
 
-		try {
+		try (CSVPrinter printer = new CSVPrinter(new OutputStreamWriter( output ,VarsqlConstants.CHAR_SET),csvFormat.withDelimiter(delimiter))){
 			int size =allInfo.size();
 			if(size > 0){
 				Map recordMap = (Map)allInfo.get(0);
@@ -176,9 +178,7 @@ public class DataExportUtil {
 				}
 			}
 			printer.close();
-		}finally{
-    		if(printer!=null)printer.close();
-    	}
+		}
 	}
 
 	/**
@@ -198,37 +198,39 @@ public class DataExportUtil {
 		jsonStringToCsv(jsonString ,BlankConstants.TAB_CHAR,columnInfos, output);
 	}
 	public static void jsonStringToCsv(String jsonString,char delimiter, List<GridColumnInfo> columnInfos,  OutputStream output) throws IOException{
-		CSVPrinter printer = new CSVPrinter(new OutputStreamWriter( output ,VarsqlConstants.CHAR_SET),csvFormat.withDelimiter(delimiter));
-
-		Map rowInfo =null;
-		JsonFactory factory = new JsonFactory();
-
-		boolean firstFlag = true;
-
-		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
-
 		JsonParser parser =null;
-    	try {
-    		parser = factory.createParser(jsonString);
+    	try (CSVPrinter printer = new CSVPrinter(new OutputStreamWriter( output ,VarsqlConstants.CHAR_SET),csvFormat.withDelimiter(delimiter));) {
+    		
+    		Map rowInfo =null;
+    		boolean firstFlag = true;
+    		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
+    		
+    		parser =  new JsonFactory().createParser(jsonString);
 	        parser.nextToken();                                     //start reading the file
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
 	        	rowInfo = new HashMap();
+	        	boolean addFlag= false; 
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-	        		String fieldName = parser.getCurrentName();
-	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
+	        		String key = getColumnKeyLabelInfo(parser.getCurrentName(), columnKeyLabel); 
+	        		if(key != null) {
+	        			addFlag= true; 
+	        			rowInfo.put(key, parser.getText());
+	        		}
 	        	}
+	        	
 	        	if(firstFlag) {
 	        		firstFlag = false;
 	        		printer.printRecord(rowInfo.keySet());
 	        	}
-
-	        	printer.printRecord(rowInfo.values());
+	        	
+	        	if(addFlag) {
+	        		printer.printRecord(rowInfo.values());
+	        	}
 	        }
 	        printer.close();
 	        parser.close();
     	}finally{
     		if(parser!=null)parser.close();
-    		if(printer!=null)printer.close();
     	}
 	}
 
@@ -300,22 +302,19 @@ public class DataExportUtil {
 	 * @throws IOException
 	 */
 	public static void jsonStringToInsertQuery(String jsonString, List<Boolean> columnInfoList,String tmpName, OutputStream output) throws IOException{
-
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-		StringBuffer insQuery = new StringBuffer("insert into "+tmpName+" ( ");
-
-		Map rowInfo =null;
-		JsonFactory factory = new JsonFactory();
-
-		boolean firstFlag = true;
-		int keyLen = -1;
-
-    	JsonParser parser = null;
-
-    	try {
+		JsonParser parser = null;
+    	try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output, VarsqlConstants.CHAR_SET));){
+    		StringBuffer insQuery = new StringBuffer("insert into "+tmpName+" ( ");
+    		JsonFactory factory = new JsonFactory();
+        	
     		parser = factory.createParser(jsonString);
-	        parser.nextToken();                                     //start reading the file
-	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        parser.nextToken();
+	        
+	        boolean firstFlag = true;
+			int keyLen = -1;
+	        Map rowInfo =null;
+	        String insertPrefix ="";
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {
 	        	rowInfo = new HashMap();
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
 	        		String fieldName = parser.getCurrentName();
@@ -334,13 +333,8 @@ public class DataExportUtil {
 	    			}
 
 	    			insQuery.append(" ) values ( ");
-	    			String insertPrefix = insQuery.toString();
-
-	    			Object [] valueArr = null;
-	    			Object val = null;
+	    			insertPrefix = insQuery.toString();
 	        	}
-
-	        	String insertPrefix = insQuery.toString();
 
 				Object [] valueArr = null;
 				Object val = null;
@@ -365,18 +359,17 @@ public class DataExportUtil {
 	        out.close();
     	}finally{
     		if(parser!=null)parser.close();
-    		if(out!=null)out.close();
     	}
 	}
 
 
 	public static void jsonStringToJson(String jsonString, List<GridColumnInfo> columnInfos, OutputStream os) throws IOException{
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (os));
-
-		Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
 
 		JsonParser parser = null;
-		try {
+		
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter (os, VarsqlConstants.CHAR_SET));) {
+			Map<String,String> columnKeyLabel = getKeyMap(columnInfos);
+			
 			Map rowInfo =null;
 			JsonFactory factory = new JsonFactory();
 			out.write("[");
@@ -385,20 +378,25 @@ public class DataExportUtil {
 	        boolean firstFlag = true;
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
 	        	rowInfo = new HashMap();
+	        	
+	        	boolean addFlag= false; 
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
-	        		String fieldName = parser.getCurrentName();
-	        		rowInfo.put(getColumnKeyLabelInfo(fieldName, columnKeyLabel), parser.getText());
+	        		String key = getColumnKeyLabelInfo(parser.getCurrentName(), columnKeyLabel); 
+	        		if(key != null) {
+	        			addFlag= true; 
+	        			rowInfo.put(key, parser.getText());
+	        		}
 	        	}
-	        	out.write((firstFlag ?"":",")+ VartechUtils.objectToJsonString(rowInfo));
-
-	        	if(firstFlag) firstFlag = false;
+	        	if(addFlag) {
+		        	out.write((firstFlag ?"":",")+ VartechUtils.objectToJsonString(rowInfo));
+		        	if(firstFlag) firstFlag = false;
+	        	}
 	        }
 	    	out.write("]");
 	        parser.close();
 	        out.close();
 		}finally{
     		if(parser!=null)parser.close();
-    		if(out!=null)out.close();
     	}
 	}
 
@@ -406,51 +404,48 @@ public class DataExportUtil {
 		int size =allInfo.size();
 
 		if(size > 0){
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-			StringBuffer insQuery = new StringBuffer("insert into "+tmpName+" ( ");
-
-			Map recordMap = (Map)allInfo.get(0);
-
-			Object[] keyArr = recordMap.keySet().toArray();
-			int keyLen = keyArr.length;
-			boolean firstFlag =true;
-			for (int i= 0; i <keyLen; i++) {
-				insQuery.append(firstFlag?"":",").append(keyArr[i]);
-				firstFlag = false;
-			}
-
-			insQuery.append(" ) values ( ");
-			String insertPrefix = insQuery.toString();
-
-			Object [] valueArr = null;
-			Object val = null;
-			for (int i = 0; i < size; i++) {
-				recordMap = (Map) allInfo.get(i);
-				valueArr = recordMap.values().toArray();
-				insQuery.setLength(0);
-				insQuery.append(insertPrefix);
-				firstFlag =true;
-				for(int j=0 ;j<keyLen; j++){
-					val = valueArr[j];
-					if(columnInfoList.get(j)){
-						insQuery.append(firstFlag?"":",").append("".equals(val)?0:val);
-					}else{
-						if(val==null) {
-							insQuery.append(firstFlag?"":",").append("null");
-						}else {
-							insQuery.append(firstFlag?"":",").append("'").append(escape(val)).append("'");
-						}
-
-					}
-					firstFlag =false;
+			try(BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output,  VarsqlConstants.CHAR_SET));){
+				StringBuffer insQuery = new StringBuffer("insert into "+tmpName+" ( ");
+	
+				Map recordMap = (Map)allInfo.get(0);
+	
+				Object[] keyArr = recordMap.keySet().toArray();
+				int keyLen = keyArr.length;
+				boolean firstFlag =true;
+				for (int i= 0; i <keyLen; i++) {
+					insQuery.append(firstFlag?"":",").append(keyArr[i]);
+					firstFlag = false;
 				}
-				insQuery.append(");");
-				out.write(insQuery.toString());
-				out.newLine();
+	
+				insQuery.append(" ) values ( ");
+				String insertPrefix = insQuery.toString();
+	
+				Object val = null;
+				for (int i = 0; i < size; i++) {
+					recordMap = (Map) allInfo.get(i);
+					insQuery.setLength(0);
+					insQuery.append(insertPrefix);
+					firstFlag =true;
+					for(int j=0 ;j<keyLen; j++){
+						val = recordMap.get(keyArr[j]);
+						if(columnInfoList.get(j)){
+							insQuery.append(firstFlag?"":",").append("".equals(val)?0:val);
+						}else{
+							if(val==null) {
+								insQuery.append(firstFlag?"":",").append("null");
+							}else {
+								insQuery.append(firstFlag?"":",").append("'").append(escape(val)).append("'");
+							}
+	
+						}
+						firstFlag =false;
+					}
+					insQuery.append(");");
+					out.write(insQuery.toString());
+					out.newLine();
+				}
+				out.close();
 			}
-
-			out.close();
-			// close the printer
 		}
 	}
 
@@ -467,13 +462,11 @@ public class DataExportUtil {
 	 * @throws IOException
 	 */
 	public static void toTextWrite(String downText ,OutputStream output) throws IOException{
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output));
-		try {
+		
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter (output, VarsqlConstants.CHAR_SET));) {
 			out.write(downText);
 			out.close();
-		}finally{
-    		if(out!=null)out.close();
-    	}
+		}
 	}
 
 	private static String escape(Object str) {

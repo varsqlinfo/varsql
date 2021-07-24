@@ -6,7 +6,12 @@ SELECT /*+FIRST_ROWS */
 	,ENAME	/* name */
 	-- , test
 FROM EMP
-WHERE EMPNO = 7655;
+WHERE EMPNO = 7655
+and bbb = #{bbb}
+and ccc = ${ccc}
 /* name
 test query 
  */
+ 
+ select * from dual
+ where aaa = #{pageid}

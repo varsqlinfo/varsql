@@ -20,6 +20,7 @@ import com.varsql.web.app.user.service.JoinServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.UserReqeustDTO;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.ResultConst;
 import com.vartech.common.crypto.EncryptDecryptException;
@@ -44,7 +45,7 @@ import com.vartech.common.crypto.EncryptDecryptException;
 @RequestMapping("/join")
 public class JoinController extends AbstractController {
 
-	private static final Logger logger = LoggerFactory.getLogger(JoinController.class);
+	private final Logger logger = LoggerFactory.getLogger(JoinController.class);
 
 	@Autowired
 	private JoinServiceImpl joinServiceImpl;
@@ -62,9 +63,7 @@ public class JoinController extends AbstractController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  saveVirtualPortal validation check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}
 
 		Long idCheck = joinServiceImpl.idCheck(joinForm.getUid()).getItem();
@@ -79,12 +78,12 @@ public class JoinController extends AbstractController {
 		return resultObject;
 	}
 
-	@RequestMapping(value = "/idCheck")
+	@RequestMapping(value = "/idCheck", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult idCheck(@RequestParam(value = "uid" , required = true)  String uid) {
 		return joinServiceImpl.idCheck(uid);
 	}
-	
-	@RequestMapping(value = "/emailCheck")
+
+	@RequestMapping(value = "/emailCheck", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult emailCheck(@RequestParam(value = "uemail" , required = true)  String uemail) {
 		return joinServiceImpl.emailCheck(uemail);
 	}

@@ -351,7 +351,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "sequenceScript", param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 

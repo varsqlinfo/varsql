@@ -39,7 +39,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 })
 public class VarsqlMainConfigurer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VarsqlMainConfigurer.class);
+	private final Logger LOG = LoggerFactory.getLogger(VarsqlMainConfigurer.class);
 
     @Autowired
     private Environment env;

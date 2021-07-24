@@ -8,8 +8,8 @@
 <entry key="complete">완료</entry>
 
 
-<entry key="title">제목</entry>
-<entry key="content">내용</entry>
+<entry key="title">Title</entry>
+<entry key="content">Content</entry>
 <entry key="reg_user">등록자</entry>
 <entry key="reg_dt">등록일</entry>
 <entry key="view_dt">확인일</entry>
@@ -19,17 +19,19 @@
 <entry key="end_day">종료일</entry>
 <entry key="std_time">시작시간</entry>
 <entry key="end_time">종료시간</entry>
-<entry key="file_name">파일명</entry>
-<entry key="sql_file_name">파일명</entry>
-<entry key="preferences">환경설정</entry>
-<entry key="object">오브젝트</entry>
-<entry key="export">내보내기</entry>
-<entry key="import">가져오기</entry>
-<entry key="copy">복사</entry>
-<entry key="reply">답장</entry>
-<entry key="desc">설명</entry>
-<entry key="all">전체</entry>
-<entry key="remarks">비고</entry>
+<entry key="file_name">File name</entry>
+<entry key="sql_file_name">Sql File name</entry>
+<entry key="preferences">Preferences</entry>
+<entry key="object">Object</entry>
+<entry key="export">Export</entry>
+<entry key="import">Import</entry>
+<entry key="copy">Copy</entry>
+<entry key="reply">Reply</entry>
+<entry key="desc">Desc</entry>
+<entry key="all">All</entry>
+<entry key="remarks">Remarks</entry>
+<entry key="apply">Apply</entry>
+<entry key="restore.default">Restore Defaults</entry>
 
 
 <entry key="regular.expression">정규식</entry>
@@ -125,7 +127,10 @@
 <entry key="label.wrap.search">끝에서 되돌리기</entry>
 <entry key="label.case.sensitive">대소문자</entry>
 
-<entry key="btn.close">닫기</entry>
+<entry key="btn.close">Close</entry>
+<entry key="btn.password.view">Password view</entry>
+<entry key="btn.pool.init">Pool init</entry>
+<entry key="btn.pool.close">Pool close</entry>
 
 <entry key="back.page">이전</entry>
 <entry key="main.page">메인</entry>
@@ -136,7 +141,8 @@
 <!-- button message -->
 <entry key="btn.search">Search</entry>
 <entry key="btn.compare">Compare</entry>
-<entry key="btn.save">Sae</entry>
+<entry key="btn.copy">Copy</entry>
+<entry key="btn.save">Save</entry>
 <entry key="btn.delete">Delete</entry>
 <entry key="btn.add">Add</entry>
 <entry key="btn.new">New</entry>
@@ -155,7 +161,7 @@
 <entry key="btn.logout">Logout</entry>
 
 <!-- toolbar button -->
-<entry key="btn.toolbar.execute">실행</entry>
+<entry key="btn.toolbar.execute">Execute</entry>
 <entry key="btn.toolbar.newfile">New file</entry>
 <entry key="btn.toolbar.save">Save</entry>
 <entry key="btn.toolbar.allsave">Save All</entry>

@@ -15,8 +15,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
 						<div>유효하지 않은 데이타 베이스 입니다.</div>
-						<div><a href="javascript:;" onclick="fnFresh();">새로고침</a></div>
-						<div>전체 페이지를 새로고침 하세요.</div>
+						<div>페이지를 <a href="javascript:;" onclick="fnFresh();">새로고침</a> 하세요.</div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
 					</div>
@@ -28,10 +27,6 @@ html, body{width:100%;height:100%;overflow:hidden;}
 </html>
 <script>
 function fnFresh(){
-	var locationObj =window; 
-	if(parent.location != location){
-		locationObj = parent; 
-	}
-	locationObj.location.href='${pageContext.request.contextPath}/user';
+	(top != window ? top :window).location.href='${pageContext.request.contextPath}/user';
 }
 </script>

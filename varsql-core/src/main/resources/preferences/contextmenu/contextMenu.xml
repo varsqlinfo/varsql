@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE preferences SYSTEM  "../../dtd/contextmenu.dtd">
+
+<preferences key="main.contextmenu.serviceobject">
+	<item name="mybatis">
+		<templateInfo name="insert" viewMode="editor">
+			<main>
+			<![CDATA[
+insert into {{table.name}} ({{columnName}} )
+values( {{columnValue}} );
+				]]>
+			</main>
+			<propItems>
+				<key>columnName</key>
+				<code><![CDATA[
+{{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>columnValue</key>
+				<code><![CDATA[
+{{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' name}}{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+		<templateInfo name="update" viewMode="editor">
+			<main>
+			<![CDATA[
+update {{table.name}}
+set
+{{{updateColumn}}}
+{{{condition}}};
+				]]>
+			</main>
+			<propItems>
+				<key>updateColumn</key>
+				<code><![CDATA[
+{{~#each (pkExcludeColumns columns)}}
+	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' name}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>condition</key>
+				<code><![CDATA[
+{{~#each (pkColumns columns)  ~}}
+	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' name}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+		<templateInfo name="delete" viewMode="editor">
+			<main>
+			<![CDATA[
+delete from {{table.name}}
+{{{condition}}};
+				]]>
+			</main>
+			<propItems>
+				<key>condition</key>
+				<code><![CDATA[
+{{~#each (pkColumns columns)  ~}}
+	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' name}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+		<templateInfo name="insertCamelcase" viewMode="editor">
+			<main>
+			<![CDATA[
+insert into {{table.name}} ({{columnName}} )
+values( {{columnValue}} );
+				]]>
+			</main>
+			<propItems>
+				<key>columnName</key>
+				<code><![CDATA[
+{{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>columnValue</key>
+				<code><![CDATA[
+{{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' (camelCase name)}}{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+		<templateInfo name="updateCamelcase" viewMode="editor">
+			<main>
+			<![CDATA[
+update {{table.name}}
+set
+{{{updateColumn}}}
+{{{condition}}};
+				]]>
+			</main>
+			<propItems>
+				<key>updateColumn</key>
+				<code><![CDATA[
+{{~#each (pkExcludeColumns columns)}}
+	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>condition</key>
+				<code><![CDATA[
+{{~#each (pkColumns columns)  ~}}
+	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+		<templateInfo name="deleteCamelcase" viewMode="editor">
+			<main>
+			<![CDATA[
+delete from {{table.name}}
+{{{condition}}};
+				]]>
+			</main>
+			<propItems>
+				<key>condition</key>
+				<code><![CDATA[
+{{~#each (pkColumns columns)  ~}}
+	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
+{{/each}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+	</item>
+
+	<!-- java start -->
+	<item name="java">
+		<templateInfo name="java_bean" viewMode="dialog">
+			<main>
+			<![CDATA[
+public class {{capitalize (camelCase table.name)}}{
+
+{{classProperty}}
+{{get_set}}
+}
+				]]>
+			</main>
+			<propItems>
+				<key>classProperty</key>
+				<code><![CDATA[
+{{#columns}}
+    private {{javaType typeName}} {{camelCase name}}; {{comment}}
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>get_set</key>
+				<code><![CDATA[
+{{#columns}}
+    public {{javaType typeName}} get{{capitalize (camelCase name)}}(){
+        return this.{{camelCase name}};
+    }
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+
+		<templateInfo name="java_jpa" viewMode="dialog">
+			<main>
+			<![CDATA[
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Setter
+@DynamicUpdate
+@NoArgsConstructor
+@Entity
+@Table(name = {{capitalize (camelCase table.name)}}Entity._TB_NAME)
+public class {{capitalize (camelCase table.name)}}Entity{
+	public final static String _TB_NAME="{{table.name}}";
+
+{{{classProperty}}}
+
+	@Builder
+	public {{table.name}} ({{columnName}}) {
+{{{builderVariable}}}
+	}
+
+{{{finalProperty}}}
+}
+				]]>
+			</main>
+			<propItems>
+				<key>classProperty</key>
+				<code><![CDATA[
+{{#columns}}
+	@Column(name ="{{name}}")
+	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>columnName</key>
+				<code><![CDATA[
+{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>builderVariable</key>
+				<code><![CDATA[
+{{~#columns}}
+		this.{{camelCase name}} = {{camelCase name}};
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>finalProperty</key>
+				<code><![CDATA[
+{{~#columns}}
+	public final static {{javaType typeName}} {{upperCase name}}="{{camelCase name}}";
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+
+		<templateInfo name="java_req_dto" viewMode="dialog">
+			<main>
+			<![CDATA[
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class {{capitalize (camelCase table.name)}}RequestDTO {
+
+{{classProperty}}
+
+	@Builder
+	public {{table.name}} ({{columnName}}) {
+{{{builderVariable}}}
+	}
+}
+				]]>
+			</main>
+			<propItems>
+				<key>classProperty</key>
+				<code><![CDATA[
+{{#columns}}
+	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>columnName</key>
+				<code><![CDATA[
+{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>builderVariable</key>
+				<code><![CDATA[
+{{~#columns}}
+		this.{{camelCase name}} = {{camelCase name}};
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+
+		<templateInfo name="java_res_dto" viewMode="dialog">
+			<main>
+			<![CDATA[
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class {{capitalize (camelCase table.name)}}ResponseDTO implements Serializable{
+{{classProperty}}
+
+}
+				]]>
+			</main>
+			<propItems>
+				<key>classProperty</key>
+				<code><![CDATA[
+{{#columns}}
+	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+{{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+			<propItems>
+				<key>columnName</key>
+				<code><![CDATA[
+{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+						]]></code>
+				<compileValue/>
+			</propItems>
+		</templateInfo>
+	</item>
+</preferences>

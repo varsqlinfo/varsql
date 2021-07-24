@@ -18,6 +18,9 @@ public class CubridDataType extends DataTypeImpl{
 	public CubridDataType() {
 		// TODO Auto-generated constructor stub
 		setDataTypeInfo("DATETIME", new  DataTypeInfo("TIMESTAMP", false , false, false, VarSqlDbDataType.DATE));
-		
+		setDataTypeInfo("TIMESTAMPLTZ", new  DataTypeInfo("TIMESTAMPLTZ", false , false, false, VarSqlDbDataType.DATE));
+		setDataTypeInfo("TIMESTAMPTZ", new  DataTypeInfo("TIMESTAMPTZ", false , false, false, VarSqlDbDataType.DATE));
+		setDataTypeInfo("DATETIMELTZ", new  DataTypeInfo("DATETIMELTZ", false , false, false, VarSqlDbDataType.DATE));
+		setDataTypeInfo("DATETIMETZ", new  DataTypeInfo("DATETIMETZ", false , false, false, VarSqlDbDataType.DATE));
 	}
 }

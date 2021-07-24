@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.vartech.common.utils.StringUtils;
+
 /**
  *
  * @FileName  : VarsqlAuthenticationLogoutSuccessHandler.java
@@ -22,12 +24,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VarsqlAuthenticationLogoutSuccessHandler implements LogoutSuccessHandler {
-	private static final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
 
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
-
+		
+		String viewPage = request.getParameter("viewPage"); 
+		
 		if (authentication != null && authentication.getDetails() != null) {
 			try {
 				request.getSession().invalidate();
@@ -35,8 +39,15 @@ public class VarsqlAuthenticationLogoutSuccessHandler implements LogoutSuccessHa
 				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
 			}
 		}
-
+		
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.sendRedirect(request.getContextPath());
+		
+		if(!StringUtils.isBlank(viewPage)) {
+			response.sendRedirect(request.getContextPath() + viewPage);
+		}else {
+			response.sendRedirect(request.getContextPath());
+		}
+
+		
 	}
 }

@@ -8,11 +8,11 @@ import lombok.Setter;
 
 
 /**
- * 
+ *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: NoteResponseDTO.java
-* @DESC		: 쪽지 정보. 
+* @DESC		: 쪽지 정보.
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -27,13 +27,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class NoteResponseDTO{
 	private String noteId;
-	
+
 	private String noteTitle;
-	
+
 	private String noteCont;
-	
+
 	private String parentNoteId;
-	
+
+	private String regUserInfo;
+
 	private String regDt;
 
 	private List<String> recvUsers;

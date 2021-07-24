@@ -23,7 +23,7 @@ import com.varsql.core.common.util.SecurityUtil;
  */
 @Component
 public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
-	private static final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
 
 	@Autowired
 	private AuthDAO authDao;
@@ -32,7 +32,7 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 
     	if (authentication != null && authentication.getDetails() != null) {
 			try {
-				authDao.addLog(SecurityUtil.loginUser() , "logout", CommUtil.getClientPcInfo(request));
+				authDao.addLog(SecurityUtil.loginInfo() , "logout", CommUtil.getClientPcInfo(request));
 			} catch (Exception e) {
 				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
 			}

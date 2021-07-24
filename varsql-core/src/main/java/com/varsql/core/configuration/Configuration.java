@@ -1,7 +1,9 @@
 package com.varsql.core.configuration;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -46,6 +48,7 @@ public class Configuration extends AbstractConfiguration{
 	private final String FILE_UPLOAD_PATH = "file.upload.path";
 	private final String FILE_UPLOAD_SIZE = "file.upload.size";
 	private final String FILE_UPLOAD_SIZEPERFILE = "file.upload.sizeperfile";
+	private final String FILE_UPLOAD_MAX_IN_MEMORY_SIZE = "file.upload.maxinmemorysize";
 
 	private PasswordType passwordType;
 
@@ -58,6 +61,8 @@ public class Configuration extends AbstractConfiguration{
 	private int fileUploadSize=0;
 
 	private int fileUploadSizePerFile=0;
+
+	private int fileUploadMaxInMemorySize=0;
 
 	private Configuration(){
 		initialize();
@@ -104,8 +109,12 @@ public class Configuration extends AbstractConfiguration{
 		if (configResource ==null ){
 			throw new ConfigurationException("Can't open configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONFIG_FILE ,configPropFile));
 		}
-
-		props.load(configResource.getInputStream());
+		
+		try(InputStream is = configResource.getInputStream()){
+			props.load(is);
+		}catch(IOException e) {
+			throw new ConfigurationException(e);
+		}
 
 		setConfigProperty();
 	}
@@ -113,10 +122,17 @@ public class Configuration extends AbstractConfiguration{
 	private void setConfigProperty() {
 		useConnUID  = Boolean.parseBoolean(props.getProperty(USE_CONNID_KEY, "true"));
 		passwordLen  = Integer.parseInt(props.getProperty(INIT_PASSWORD_SIZE, "8"));
-
+		
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
-		fileUploadSize  = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZE, "10485760"));
-		fileUploadSizePerFile = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "5242880"));
+		fileUploadSize  = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
+		fileUploadSizePerFile = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "31457280"));
+		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
+		
+		logger.debug("passwordLen : {}",passwordLen);
+		logger.debug("fileUploadPath : {}",fileUploadPath);
+		logger.debug("fileUploadMaxInMemorySize : {}",fileUploadMaxInMemorySize);
+		logger.debug("fileUploadSizePerFile : {}",fileUploadSizePerFile);
+		logger.debug("fileUploadSize : {}",fileUploadSize);
 
 		String initPasswordType = "";
 
@@ -259,6 +275,10 @@ public class Configuration extends AbstractConfiguration{
 
 	public int getFileUploadSizePerFile() {
 		return fileUploadSizePerFile;
+	}
+	
+	public int getFileUploadMaxInMemorySize() {
+		return fileUploadMaxInMemorySize;
 	}
 
 	public String getCharset() {

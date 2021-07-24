@@ -27,9 +27,12 @@
 <entry key="import">가져오기</entry>
 <entry key="copy">복사</entry>
 <entry key="reply">답장</entry>
+<entry key="send">보내기</entry>
 <entry key="desc">설명</entry>
 <entry key="all">전체</entry>
 <entry key="remarks">비고</entry>
+<entry key="apply">Apply</entry>
+<entry key="restore.default">Restore Defaults</entry>
 
 
 <entry key="regular.expression">정규식</entry>
@@ -70,6 +73,8 @@
 <entry key="target">타켓</entry>
 <entry key="result">결과</entry>
 <entry key="result.download">결과 다운르드</entry>
+<entry key="new.note">신규 쪽지</entry>
+<entry key="note.box">쪽지함</entry>
 
 <entry key="compare.result">비교 결과</entry>
 <entry key="compare.detail">비교 상세</entry>
@@ -120,12 +125,16 @@
 <entry key="label.recv.msg">받은메시지</entry>
 <entry key="label.send.msg">보낸메시지</entry>
 
+<entry key="label.send.user">보낸 사람</entry>
 <entry key="label.recv.user">받는사람</entry>
 
 <entry key="label.wrap.search">끝에서 되돌리기</entry>
 <entry key="label.case.sensitive">대소문자</entry>
 
 <entry key="btn.close">닫기</entry>
+<entry key="btn.password.view">비밀번호 보기</entry>
+<entry key="btn.pool.init">풀  초기화</entry>
+<entry key="btn.pool.close">풀 닫기</entry>
 
 <entry key="back.page">이전</entry>
 <entry key="main.page">메인</entry>
@@ -140,6 +149,7 @@
 <entry key="btn.search">조회</entry>
 <entry key="btn.compare">비교</entry>
 <entry key="btn.save">저장</entry>
+<entry key="btn.copy">복사</entry>
 <entry key="btn.delete">삭제</entry>
 <entry key="btn.add">추가</entry>
 <entry key="btn.new">신규</entry>

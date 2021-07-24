@@ -104,7 +104,6 @@ public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 		
 		StringBuffer output = new StringBuffer();
 		try{
-			
 			buffer = new char[1024];
 			while((byteRead=val.read(buffer,0,1024))!=-1){
 				output.append(buffer,0,byteRead);
@@ -112,8 +111,9 @@ public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 			val.close();
 			return output.toString(); 
 		}catch(Exception e){
-			if(val !=null) try{val.close();}catch(Exception e1){}
 			return "Clob" +e.getMessage();
+		}finally {
+			if(val !=null) try{val.close();}catch(Exception e1){}
 		}
 	}
 	

@@ -24,7 +24,7 @@ import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
  */
 @Service
 public class CommonServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 
 	@Autowired
 	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;

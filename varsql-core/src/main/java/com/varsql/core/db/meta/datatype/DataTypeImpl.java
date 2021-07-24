@@ -25,6 +25,7 @@ public abstract class DataTypeImpl implements DataType{
 		
 		put("5", new  DataTypeInfo("SMALLINT", true , false,false , VarSqlDbDataType.NUMBER));
 		put("SMALLINT", get("5"));
+		put("SHORT", get("5"));
 		
 		put("6", new  DataTypeInfo("FLOAT", true , true ,true , VarSqlDbDataType.NUMBER));
 		put("FLOAT", get("6"));

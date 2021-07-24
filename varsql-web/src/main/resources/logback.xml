@@ -214,12 +214,6 @@
 
     <logger name="org.apache.commons" level="info"/>
 
-
-	<!-- mybatis log intercepter
-	<logger name="vartech.dbcesu.sql" level="debug" additivity="false">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	 -->
    <if condition='"local".equals("${runtime}")'>
         <then>
 			<root level="debug">

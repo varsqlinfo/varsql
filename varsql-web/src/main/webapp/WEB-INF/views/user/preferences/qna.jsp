@@ -133,7 +133,7 @@ VarsqlAPP.vueServiceBean({
 
 					_this.$ajax({
 						url : {type:VARSQL.uri.user, url:'/preferences/insQna'}
-						,data : param
+						,data : saveItem
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){

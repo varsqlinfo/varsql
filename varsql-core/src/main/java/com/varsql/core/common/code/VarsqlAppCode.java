@@ -22,6 +22,9 @@ public enum VarsqlAppCode {
 	EC_SQL(10000)
 	,EC_SQL_CONNECTION(10001)// sql query error code 10000 번 부터 시작.
 	,EC_SQL_RESULT_CONVERT(10002) // sql result set 변환 에러.
+	
+	// java error 
+	,EC_BEAN_CONVERT(20000) // java entity 변환 에러.
 
 	// 공통 코드 50000 ~60000
 	,COMM_FILE_EMPTY(50000) // file upload empty

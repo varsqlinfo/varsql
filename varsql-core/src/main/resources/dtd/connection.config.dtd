@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT dataSource (type,driver,url,username,password,max_active,pool_option,connection_option,timebetweenevictionrunsmillis,test_while_idle)>
+<!ATTLIST dataSource name CDATA #REQUIRED>
+<!ELEMENT type (#PCDATA)>
+<!ELEMENT driver (#PCDATA)>
+<!ELEMENT url (#PCDATA)>
+<!ELEMENT username (#PCDATA)>
+<!ELEMENT password (#PCDATA)>
+<!ELEMENT max_active (#PCDATA)>
+<!ELEMENT pool_option (#PCDATA)>
+<!ELEMENT connection_option (#PCDATA)>
+<!ELEMENT timebetweenevictionrunsmillis (#PCDATA)>
+<!ELEMENT test_while_idle (#PCDATA)>

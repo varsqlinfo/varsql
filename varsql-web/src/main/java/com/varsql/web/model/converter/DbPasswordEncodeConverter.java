@@ -11,31 +11,24 @@ import com.vartech.common.crypto.EncryptDecryptException;
 
 @Converter
 public class DbPasswordEncodeConverter implements AttributeConverter<String, String> {
-	private static final Logger logger = LoggerFactory.getLogger(DbPasswordEncodeConverter.class);
-	
+	private final Logger logger = LoggerFactory.getLogger(DbPasswordEncodeConverter.class);
+
 	@Override
 	public String convertToDatabaseColumn(String attribute) {
-		if(attribute==null || "".equals(attribute)) return null; 
-		
+		if(attribute==null || "".equals(attribute)) return null;
+
 		try {
 			return DBPasswordCryptionFactory.getInstance().encrypt(attribute);
 		} catch (EncryptDecryptException e) {
 			logger.error("DbConnPwEncodeConverter : {} " , e.getMessage() , e);
 		}
-		return null; 
+		return null;
 	}
-	
+
 	@Override
 	public String convertToEntityAttribute(String s) {
-		
-		if(s==null || "".equals(s)) return null; 
-		
-		try {
-			return DBPasswordCryptionFactory.getInstance().decrypt(s);
-		} catch (EncryptDecryptException e) {
-			logger.error("DbConnPwEncodeConverter : {} " , e.getMessage() , e);
-		}
-		return s; 
+		if(s==null || "".equals(s)) return null;
+		return s;
 	}
-	
+
 }

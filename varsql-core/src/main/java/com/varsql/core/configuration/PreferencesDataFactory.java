@@ -1,23 +1,18 @@
 package com.varsql.core.configuration;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.varsql.core.common.constants.VarsqlConstants;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
+import com.varsql.core.configuration.beans.PreferencesAbstract;
+import com.varsql.core.configuration.beans.PreferencesContextMenu;
+import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
 
@@ -32,10 +27,38 @@ import com.vartech.common.utils.VartechUtils;
 public class PreferencesDataFactory{
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-	XPath xpath = XPathFactory.newInstance().newXPath();
-
 	private final String TEMPLATE_PACKAGE= "classpath*:preferences/*/*.xml";
 	private final String DEFAULT_KEY_NAME= "key";
+	
+	
+	private enum PREFERENCES_FILE {
+		CONTEXT_MENU("contextMenu.xml", PreferencesContextMenu.class);
+		
+		private String fileName;
+		private Class<?> beanClass;
+
+		PREFERENCES_FILE(String fileName, Class<?> class1) {
+			this.fileName = fileName;
+			this.beanClass = class1;
+		}
+
+		public String getFileName() {
+			return fileName;
+		}
+
+		public Class<?> getBeanClass() {
+			return beanClass;
+		}
+		
+		public static PREFERENCES_FILE get(String fileName) {
+			for (PREFERENCES_FILE info : values()) {
+				if(info.getFileName().equals(fileName)) {
+					return info; 
+				}
+			}
+			return null; 
+		}
+	}
 
 	private Map<String ,String> defaultPreferencesInfo = new HashMap<String,String>();
 
@@ -72,19 +95,39 @@ public class PreferencesDataFactory{
 		logger.debug("default preferences template file path : {} ", TEMPLATE_PACKAGE);
 
 		Resource[] resources = ResourceUtils.getPackageResources(TEMPLATE_PACKAGE);
-
+		
 		for (Resource resource: resources){
-
+			PREFERENCES_FILE prefInfo = PREFERENCES_FILE.get(resource.getFilename());
+			
 			String xml = ResourceUtils.getResourceString(resource);
-			JsonNode node = VartechUtils.xmlToJsonNode(xml);
-			if(node.get(DEFAULT_KEY_NAME) == null) {
-				logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
-				continue;
+			
+			String key;
+			
+			if(prefInfo != null) {
+				PreferencesAbstract xmlConfigObj = (PreferencesAbstract) VartechUtils.xmlToBean(xml, prefInfo.getBeanClass());
+				
+				key=(String) VartechReflectionUtils.getProperty(xmlConfigObj, DEFAULT_KEY_NAME);
+				
+				if(key == null) {
+					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
+					continue;
+				}
+				
+				defaultPreferencesInfo.put(key, VartechUtils.objectToJsonString(xmlConfigObj.getRootItem()));
+			}else {
+				
+				ObjectNode node = (ObjectNode)VartechUtils.xmlToJsonNode(xml);
+				if(node.get(DEFAULT_KEY_NAME) == null) {
+					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
+					continue;
+				}
+				
+				key =node.get(DEFAULT_KEY_NAME).asText();
+				
+				node.remove(DEFAULT_KEY_NAME);
+				
+				defaultPreferencesInfo.put(key, VartechUtils.objectToJsonString(node));
 			}
-
-			String key =node.get(DEFAULT_KEY_NAME).asText();
-
-			defaultPreferencesInfo.put(key, VartechUtils.objectToJsonString(node));
 		}
 	}
 

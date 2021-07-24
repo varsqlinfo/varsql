@@ -23,16 +23,16 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Service
 public class JoinServiceImpl{
-	private static final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
 
 	@Autowired
-	private UserMgmtRepository userMgmtRepository; 
+	private UserMgmtRepository userMgmtRepository;
 
 	/**
 	 * @method  : saveUser
 	 * @desc : 사용자 정보 등록.
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 27. 
+	 * @date   : 2020. 4. 27.
 	 * @param joinForm
 	 * @return
 	 * @throws EncryptDecryptException
@@ -40,32 +40,32 @@ public class JoinServiceImpl{
 	public boolean saveUser(UserReqeustDTO joinForm) throws EncryptDecryptException {
 		logger.debug("saveUser {} " , VartechUtils.reflectionToString(joinForm));
 		UserEntity entity = joinForm.toEntity();
-		
+
 		entity.setUserRole(AuthorityType.GUEST.name());
 		entity.setAcceptYn(false);
-		
-		entity = userMgmtRepository.save(entity);
 
-		return entity== null? false :true;
+		userMgmtRepository.save(entity);
+
+		return true;
 	}
 
 	/**
 	 * @method  : idCheck
 	 * @desc : id check
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 27. 
+	 * @date   : 2020. 4. 27.
 	 * @param uid
 	 * @return
 	 */
 	public ResponseResult idCheck(String uid) {
 		return VarsqlUtils.getResponseResultItemOne(userMgmtRepository.countByUid(uid));
 	}
-	
+
 	/**
 	 * @method  : emailCheck
 	 * @desc : email check
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 27. 
+	 * @date   : 2020. 4. 27.
 	 * @param uemail
 	 * @return
 	 */

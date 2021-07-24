@@ -19,7 +19,9 @@ class DDLTemplateFactoryTest {
 
 		param.put("ddlOption", new DDLCreateOption());
 
-		String tempateSource = DDLTemplateFactory.getInstance().ddlRender(DBType.ORACLE.getDbVenderName(), "sequenceScript", param);
+		String tempateSource = DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "sequenceScript", param);
+		
+		//System.out.println(tempateSource);
 
 		assertNotNull(tempateSource);
 	}

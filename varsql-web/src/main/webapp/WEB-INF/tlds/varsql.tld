@@ -35,4 +35,37 @@
 			<required>true</required>
 		</attribute>
 	</tag>
+	
+	<tag>
+		<name>userViewId</name>
+		<tag-class>com.varsql.web.tags.VarsqlUserViewId</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>userInfo</name>
+		<tag-class>com.varsql.web.tags.VarsqlUserInfo</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>property</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	<tag-file>
+		<name>editorResource</name>
+		<path>/WEB-INF/tags/editorResource.tag</path>
+	</tag-file>
 </taglib>

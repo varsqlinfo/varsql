@@ -23,7 +23,7 @@
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(screenConfigInfo)};
 	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid, schema:viewConnInfo.schema},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
-	opts.screenSetting = ${database_screen_setting};
+	opts.userSettingInfo = ${requestScope["database_screen_setting"]};
 	VARSQL.ui.create(opts);
 	
 	//varsqlMain.init();

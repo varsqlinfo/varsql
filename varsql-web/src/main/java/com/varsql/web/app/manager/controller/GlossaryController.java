@@ -10,16 +10,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.GlossaryServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.dto.user.GlossaryRequestDTO;
-import com.vartech.common.app.beans.ParamMap;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -43,8 +43,7 @@ import com.vartech.common.utils.HttpUtils;
 @RequestMapping("/manager/glossary")
 public class GlossaryController extends AbstractController {
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerFactory.getLogger(GlossaryController.class);
+	private final Logger logger = LoggerFactory.getLogger(GlossaryController.class);
 
 	@Autowired
 	private GlossaryServiceImpl glossaryServiceImpl;
@@ -60,7 +59,7 @@ public class GlossaryController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/list"})
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult list(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return glossaryServiceImpl.selectGlossaryList(searchParameter);
@@ -77,16 +76,14 @@ public class GlossaryController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/save"})
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult save(@Valid GlossaryRequestDTO glossaryInfo, BindingResult result,HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  GlossaryController save check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-			resultObject.setItemList(result.getAllErrors());
+			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}else{
 			resultObject = glossaryServiceImpl.saveGlossaryInfo(glossaryInfo);
 		}
@@ -105,11 +102,8 @@ public class GlossaryController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping({"/delete"})
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult delete(@RequestParam(value = "wordIdx" , required = true) String wordIdx) throws Exception {
 		return glossaryServiceImpl.deleteGlossaryInfo(wordIdx);
 	}
-
-
-
 }

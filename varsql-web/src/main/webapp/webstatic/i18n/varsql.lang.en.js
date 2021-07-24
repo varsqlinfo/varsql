@@ -44,7 +44,12 @@ VARSQL_LANG = {
 	,'varsql.0021' : '초기 설정으로 복구 하시겠습니까?'
 	,'varsql.0022' : '설정 정보가 잘못되었습니다\n초기 설정으로 복구 하시겠습니까?'
 	,'varsql.0023' : '비밀번호를 입력해 주세요.'
-
+	,'varsql.0024' : '저장 하시겠습니까?\n저장후 페이지 Reload 후에 반영됩니다.'
+	,'varsql.0025' : '설정 정보가 잘못되었습니다\n 설정 정보를 확인해주세요.'
+	,'varsql.0026' : '유효 하지 않은 설정입니다.'
+	,'varsql.0027' : '복사 되었습니다'
+	,'varsql.0028' : '내용을 입력해주세요.'
+		
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
 	,'varsql.m.0003' : ' 차단 하시겠습니까?'
@@ -77,10 +82,26 @@ VARSQL_LANG = {
 	,'btn.close' : 'Close'
 	,'btn.copy' : 'Copy'
 	,'btn.save' : 'Save'
-	,'success' : '성공'
-	,'fail' : '실패'
-	,'remove' : '삭제'
+	,'copy' : 'Copy'
+	,'success' : 'Success'
+	,'fail' : 'Fail'
+	,'remove' : 'Remove'
+	,'data' : 'Data'
+	,'dataview' : 'Data View'
+	,'count' : 'Data Count'
+	,'export' : 'Export'
+	,'data.export' : 'Export Data'
+		
+	,'step.prev' : 'Prev'
+	,'step.next' : 'Next'
+	,'step.complete' : 'Complete'
+		
+	,'file.add' : 'Add file..'	
+	,'file.send' : 'Upload'	
+	,'file.remove' : 'Remove File'	
 
+	,'menu.file.import' : '가져오기'
+	,'menu.file.export' : '내보내기'
 	,'menu.file.import_export' : '가져오기 & 내보내기...'
 
 	,'msg.add.manager.confirm' : '"{name}" 님에게  매니저 권한을 추가 하시겠습니까?'

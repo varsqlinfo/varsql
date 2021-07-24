@@ -1,30 +1,30 @@
 package com.varsql.core.db.mybatis;
 
-import java.beans.PropertyDescriptor;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.ibatis.cursor.Cursor;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.TypeHandler;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.SqlSessionUtils;
+import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
+import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
  *
@@ -37,13 +37,12 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 public final class SQLManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
-	final private String resource = "db/template/mybatis/mybatis.template";
+	
+	final private static String LOG_PREFIX = "com.core.varsql_query";
 
 	private Map<String, SqlSessionTemplate> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionTemplate>();
 	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
 
-	private String defaultConfigTemplate;
-	private PropertyDescriptor[] propertyDescs = PropertyUtils.getPropertyDescriptors(ConnectionInfo.class);
 	private static class MybatisConfigHolder {
 		private static final SQLManager instance = new SQLManager();// null
 	}
@@ -52,16 +51,7 @@ public final class SQLManager {
 		return MybatisConfigHolder.instance;
 	}
 
-	private SQLManager() {
-		try{
-			defaultConfigTemplate = IOUtils.toString( Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), VarsqlConstants.CHAR_SET);
-
-			logger.info("SQLManager defaultConfigTemplate {} ", defaultConfigTemplate);
-		}catch(Exception e){
-			logger.error("SQLManager defaultConfigTemplate ", e);
-			throw new VarsqlRuntimeException("MybatisSessionFactory IOException", e);
-		}
-	}
+	private SQLManager() {}
 
 	public SqlSessionTemplate sqlSessionTemplate(String sessionType) throws ConnectionFactoryException {
 		if (!sqlSessionMap.containsKey(sessionType)) {
@@ -84,107 +74,112 @@ public final class SQLManager {
 	}
 
 	public void setSQLMapper(ConnectionInfo connInfo , Object obj){
-		String xmlTemplate ="";
 		try{
-
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
 				logger.error("SQLManager setSQLMapper access denied object {}", obj );
 				throw new VarsqlRuntimeException("SQLManager setSQLMapper access denied object "+obj);
 			}
 
-			String sessionType = connInfo.getConnid();
-
-			PropertyDescriptor propertyDesc = null;
-			xmlTemplate =defaultConfigTemplate;
-			String propName;
-			Object propValObj ;
-			String propVal ;
-			for (int i = 0; i < propertyDescs.length; i++) {
-				propertyDesc = propertyDescs[i];
-				propName =propertyDesc.getName();
-				propValObj = PropertyUtils.getProperty(connInfo, propName);
-				propVal = (propValObj==null ?"" : propValObj.toString() );
-
-				if("password".equals(propName)) {
-					;
-				}else {
-					propVal = propVal.replaceAll("&amp;", "&").replaceAll("&", "&amp;");
-				}
-
-				xmlTemplate = xmlTemplate.replaceAll("#\\{"+propName+"\\}",  propVal);
-			}
-			String mapperPath = String.format("db/ext/%sMapper.xml",connInfo.getType(), connInfo.getType());
-			if(Thread.currentThread().getContextClassLoader().getResourceAsStream(mapperPath) != null){
-				xmlTemplate = xmlTemplate.replaceAll("#\\{mapperArea\\}", "<mapper resource=\""+mapperPath+"\"/>" );
-			}else{
-				xmlTemplate = xmlTemplate.replaceAll("#\\{mapperArea\\}", "");
-			}
-
-			Reader reader = new StringReader(xmlTemplate);
-			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, sessionType);
-
+			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo).getObject();
+			
 			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
 			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
-			logger.error("xml template :  {} ", xmlTemplate);
+			logger.error("connection info :  {} ", VartechReflectionUtils.reflectionToString(connInfo));
 			logger.error("SQLManager :{} ", e.getMessage() , e);
 			throw new VarsqlRuntimeException("getSqlSession IOException "+e.getMessage(), e);
 		}
 	}
+	
+	/**
+	 *
+	 * @Method Name  : sqlSessionFactory
+	 * @Method 설명 :get sql session factory 
+	 * @작성일   : 2020. 10. 20.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @param connInfo
+	 * @return
+	 */
+	private SqlSessionFactoryBean sqlSessionFactory(ConnectionInfo connInfo) throws Exception {
+		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+		sqlSessionFactory.setDataSource(dataSource(connInfo));
+		sqlSessionFactory.setTransactionFactory(new SpringManagedTransactionFactory());
 
-	public <T> T selectOne(String sessionType,String statement) {
-		return sqlSessionTemplate(sessionType).<T>selectOne(statement);
+		sqlSessionFactory.setConfiguration(getConfiguration());
+
+		sqlSessionFactory.setTypeAliases(new Class[] { 
+			com.varsql.core.db.valueobject.ResultTypeMap.class, 
+			com.varsql.core.db.valueobject.DatabaseParamInfo.class, 
+			com.varsql.core.db.valueobject.TableInfo.class, 
+			com.varsql.core.db.valueobject.ColumnInfo.class, 
+			com.varsql.core.db.valueobject.TriggerInfo.class, 
+			com.varsql.core.db.valueobject.SequenceInfo.class, 
+			com.varsql.core.db.valueobject.ObjectInfo.class, 
+			com.varsql.core.db.valueobject.ObjectColumnInfo.class, 
+		});
+		
+		sqlSessionFactory.setTypeHandlers(new TypeHandler[] { 
+			new LONGVARCHARHandler()
+		});
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+		sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
+		return sqlSessionFactory;
 	}
-
-	public <T> T selectOne(String sessionType, String statement, Object parameter) {
-		return sqlSessionTemplate(sessionType).<T>selectOne(statement, parameter);
+	
+	/**
+	 *
+	 * @Method Name  : dataSource
+	 * @Method 설명 : connection pool 설정
+	 * @작성일   : 2020. 10. 20.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @param connInfo
+	 * @return
+	 */
+	private DataSource dataSource(ConnectionInfo connInfo) {
+		BasicDataSource dataSource = new BasicDataSource();
+		
+		dataSource.setDriverClassName(connInfo.getDriver());
+		dataSource.setUrl(connInfo.getUrl());
+		dataSource.setUsername(connInfo.getUsername());
+		dataSource.setPassword(connInfo.getPassword());
+		
+		dataSource.setInitialSize(5);
+		dataSource.setMaxTotal(10);
+		dataSource.setMaxIdle(10);
+		dataSource.setMinIdle(0);
+		dataSource.setValidationQuery(connInfo.getValidation_query());
+		
+		dataSource.setTestOnBorrow(false);
+		dataSource.setTestOnReturn(false);
+		dataSource.setTestWhileIdle(true);
+		dataSource.setTimeBetweenEvictionRunsMillis(150000);
+		
+		dataSource.setNumTestsPerEvictionRun(5);
+		dataSource.setMinEvictableIdleTimeMillis(-1);
+		dataSource.setPoolPreparedStatements(true);
+		
+		return dataSource;
 	}
-
-	public <K, V> Map<K, V> selectMap(String sessionType,String statement, String mapKey) {
-		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, mapKey);
-	}
-
-	public <K, V> Map<K, V> selectMap(String sessionType,String statement, Object parameter, String mapKey) {
-		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, parameter, mapKey);
-	}
-
-	public <K, V> Map<K, V> selectMap(String sessionType,String statement, Object parameter, String mapKey, RowBounds rowBounds) {
-		return sqlSessionTemplate(sessionType).<K, V>selectMap(statement, parameter, mapKey, rowBounds);
-	}
-
-	public <T> Cursor<T> selectCursor(String sessionType,String statement) {
-		return sqlSessionTemplate(sessionType).selectCursor(statement);
-	}
-
-	public <T> Cursor<T> selectCursor(String sessionType,String statement, Object parameter) {
-		return sqlSessionTemplate(sessionType).selectCursor(statement, parameter);
-	}
-
-	public <T> Cursor<T> selectCursor(String sessionType,String statement, Object parameter, RowBounds rowBounds) {
-		return sqlSessionTemplate(sessionType).selectCursor(statement, parameter, rowBounds);
-	}
-
-	public <E> List<E> selectList(String sessionType,String statement) {
-		return sqlSessionTemplate(sessionType).<E>selectList(statement);
-	}
-
-	public <E> List<E> selectList(String sessionType,String statement, Object parameter) {
-		return sqlSessionTemplate(sessionType).<E>selectList(statement, parameter);
-	}
-
-	public <E> List<E> selectList(String sessionType,String statement, Object parameter, RowBounds rowBounds) {
-		return sqlSessionTemplate(sessionType).<E>selectList(statement, parameter, rowBounds);
-	}
-
-	public void select(String sessionType,String statement, ResultHandler handler) {
-		sqlSessionTemplate(sessionType).select(statement, handler);
-	}
-
-	public void select(String sessionType,String statement, Object parameter, ResultHandler handler) {
-		sqlSessionTemplate(sessionType).select(statement, parameter, handler);
-	}
-
-	public void select(String sessionType,String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
-		sqlSessionTemplate(sessionType).select(statement, parameter, rowBounds, handler);
+	
+	/**
+	 *
+	 * @Method Name  : getConfiguration
+	 * @Method 설명 : mybatis config 
+	 * @작성일   : 2020. 10. 20.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @return
+	 */
+	private Configuration getConfiguration() {
+		org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+		configuration.setCallSettersOnNulls(true);
+		configuration.setJdbcTypeForNull(JdbcType.NULL);
+		configuration.setCacheEnabled(true);
+		configuration.setLogPrefix(LOG_PREFIX);
+		
+		return configuration; 
 	}
 }

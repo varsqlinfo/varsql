@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
-import com.varsql.core.common.util.StringUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
@@ -23,6 +22,7 @@ import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.utils.StringUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ import com.vartech.common.app.beans.SearchParameter;
  */
 @Service
 public class ManagerMgmtServiceImpl  extends AbstractService{
-	private static final Logger logger = LoggerFactory.getLogger(ManagerMgmtServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(ManagerMgmtServiceImpl.class);
 
 	@Autowired
 	private UserMgmtRepository userMgmtRepository;
@@ -76,11 +76,11 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateManagerRole(String mode, String viewid) {
-		
+
 		logger.info("updateManagerRole  mode : {} , viewid : {} ",mode,viewid);
-		
+
 		UserEntity  userInfo = userMgmtRepository.findByViewid(viewid);
-		
+
 		userInfo.setUserRole("add".equals(mode)? AuthorityType.MANAGER.name() : AuthorityType.USER.name());
 
 		userInfo = userMgmtRepository.save(userInfo);
@@ -89,7 +89,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 			dbManagerRepository.deleteByViewid(viewid);
 		}
 
-		return VarsqlUtils.getResponseResultItemOne(userInfo != null ? 1 : 0);
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 
 	/**
@@ -128,14 +128,14 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateDbManager(String selectItem ,String vconnid, String mode) {
 		logger.info("updateManagerRole  mode :{}, vconnid :{} ,viewid : {} ",mode, vconnid, selectItem);
-		
-		String[] viewidArr = StringUtil.split(selectItem,",");
-		
+
+		String[] viewidArr = StringUtils.split(selectItem,",");
+
 		List<DBManagerEntity> addManagerList = new ArrayList<>();
 		for(String id: viewidArr){
 			addManagerList.add(DBManagerEntity.builder().vconnid(vconnid).viewid(id).build());
         }
-		
+
 		int result = 0;
 		if(addManagerList.size() > 0) {
 			if("del".equals(mode)){

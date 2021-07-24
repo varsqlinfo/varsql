@@ -124,22 +124,18 @@ response.setDateHeader ("Expires", -1);
 				url: {type:VARSQL.uri.user, url:'/preferences/passwordSave'},
 				data:params,
 				success: function(resData) {
-					if(resData.messageCode=='valid'){
-						var items = resData.items;
-						objLen = items.length;
-						if(objLen >0){
-							var item;
-							for(var i=0; i <objLen; i++){
-								item = items[i];
-								VARSQLUI.alert.open(item.field + "\n"+ item.defaultMessage)
-								return ;
-							}
-						}
+					if(!VARSQL.req.validationCheck(resData)){
+						return ; 
 					}
 
 					if(resData.resultCode == 50001){
 						VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0007'));
 						return ;
+					}else{
+						if(resData.resultCode != 200){
+							alert(resData.message);
+							return ;
+						}
 					}
 
 					VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0008'));

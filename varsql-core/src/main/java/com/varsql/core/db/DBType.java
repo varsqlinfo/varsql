@@ -1,7 +1,5 @@
 package com.varsql.core.db;
 
-import com.alibaba.druid.util.JdbcConstants;
-
 /**
  *
  * @FileName  : DBType.java
@@ -11,48 +9,52 @@ import com.alibaba.druid.util.JdbcConstants;
  * @변경이력 :
  */
 public enum DBType {
-	MYSQL("mysql" ,JdbcConstants.MYSQL)
-	,DB2("db2",JdbcConstants.DB2)
-	,ORACLE("oracle",JdbcConstants.ORACLE)
-	,MSSQL("mssql",JdbcConstants.SQL_SERVER)
-	,MARIADB("mariadb",JdbcConstants.MARIADB)
-	,DERBY("derby",JdbcConstants.DERBY)
-	,HIVE("hive",JdbcConstants.HIVE)
-	,HSQLDB("hsqldb",JdbcConstants.HSQL)
-	,POSTGRESQL("postgresql",JdbcConstants.POSTGRESQL)
-	,INGRES("ingres",JdbcConstants.MARIADB)
-	,H2("h2",JdbcConstants.H2)
-	,TIBERO("tibero",JdbcConstants.ORACLE)
-	,CUBRID("cubrid",JdbcConstants.H2)
-	,SYBASE("sybase",JdbcConstants.SYBASE)
-	,OTHER("other",JdbcConstants.H2);
+	MYSQL("mysql")
+	,DB2("db2")
+	,ORACLE("oracle")
+	,MSSQL("mssql")
+	,MARIADB("mariadb")
+	,DERBY("derby")
+	,HIVE("hive")
+	,HSQLDB("hsqldb")
+	,POSTGRESQL("postgresql")
+	,INGRES("ingres")
+	,H2("h2")
+	,TIBERO("tibero")
+	,CUBRID("cubrid")
+	,SYBASE("sybase")
+	,OTHER("other");
 
 	private String dbVenderName;
-	private String dbParser;
+	private com.alibaba.druid.DbType dbParserType;
 
-	private DBType(String db, String dbParserPrefix){
+	private DBType(String db){
 		this.dbVenderName =db;
-		this.dbParser =dbParserPrefix;
+		this.dbParserType = com.alibaba.druid.DbType.of(db);
+		
+		if(this.dbParserType ==  null) {
+			this.dbParserType = com.alibaba.druid.DbType.other;
+		}
 	}
 
 	public String getDbVenderName() {
 		return dbVenderName;
 	}
 
-	public String getDbParser() {
-		return dbParser;
+	public com.alibaba.druid.DbType getDbParser() {
+		return dbParserType;
 	}
 
-	public static String getDbParser(String db) {
+	public static com.alibaba.druid.DbType getDbParser(String db) {
 		if(db != null) {
 			db = db.toUpperCase();
 			for (DBType dbType : values()) {
 				if(db.equalsIgnoreCase(dbType.name())) {
-					return dbType.dbParser;
+					return dbType.dbParserType;
 				}
 			}
 		}
-		return DBType.OTHER.dbParser;
+		return DBType.OTHER.dbParserType;
 	}
 
 	public static DBType getDBType(String db) {
