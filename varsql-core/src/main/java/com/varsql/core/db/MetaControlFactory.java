@@ -34,9 +34,6 @@ public final class MetaControlFactory {
 			}
 		}
 	}
-	public static MetaControlBean getConnidToDbInstanceFactory(String connid){
-		return getDbInstanceFactory(SecurityUtil.userDBInfo(connid).getType());
-	}
 
 	public static MetaControlBean getDbInstanceFactory(DBType type){
 		return getDbInstanceFactory(type.name());

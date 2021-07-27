@@ -154,7 +154,7 @@ _$base.toast = {
 _$base.popup = {
 	open : function (url, opt){
 		opt = opt ||{};
-		var targetId = VARSQL.generateUUID().replace(/-/g,'')
+		var targetId = VARSQL.generateUUID()
 			, tmpParam = opt.param?opt.param:{}
 			, tmpMethod = opt.method ? opt.method : 'get'
 			, tmpIsNewYn = opt.isNewYn=='Y' ? 'Y' : 'N'
@@ -250,11 +250,16 @@ _$base.popup = {
 		}
 		tmpParam=VARSQL.util.getParameter(url , tmpParam);
 
+		var winObj;
 		if(tmpIsNewYn=='N'){
-			var winObj = window.open('', tmpName, tmpPopOption);
+			winObj = window.open('', tmpName, tmpPopOption);
 
 			if(winObj && winObj.VARSQL){
 				winObj.focus();
+				return winObj;
+			}
+
+			if(openUrl ==''){
 				return winObj;
 			}
 		}
@@ -266,8 +271,7 @@ _$base.popup = {
 
 			if(tmpParam.length > 0)	openUrl =openUrl+'?'+tmpParam.join('&');
 
-			return window.open(openUrl, tmpName,tmpPopOption);
-
+			return window.open(openUrl, tmpName, tmpPopOption);
 		}else{  // post method
 			var inputStr = [];
 			inputStr.push('<!doctype html><head>');
@@ -296,12 +300,14 @@ _$base.popup = {
 					try{tmpPopupObj.document.open();}catch(e){console.log(e)}
 					tmpPopupObj.document.write(inputStr.join(''));
 					tmpPopupObj.focus();
-					
+
 					try{tmpPopupObj.document.close();}catch(e){console.log(e)}
 				}catch(e1){
 					console.log(e1);
 				}
 			}
+
+			return tmpPopupObj;
 		}
 	}
 }

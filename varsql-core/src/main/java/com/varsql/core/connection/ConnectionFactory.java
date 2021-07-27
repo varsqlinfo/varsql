@@ -20,7 +20,7 @@ import com.varsql.core.connection.pool.PoolType;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.exception.ConnectionFactoryException;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.crypto.EncryptDecryptException;
 
 /**
@@ -58,7 +58,7 @@ public final class ConnectionFactory implements ConnectionContext{
 
 		if(connInfo != null){
 			if(connectionShutdownInfo.containsKey(connid)) {
-				throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE.code(), "");
+				throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection shutdown");
 			}
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}
@@ -201,7 +201,7 @@ public final class ConnectionFactory implements ConnectionContext{
 			logger.error("empty connection info" , e);
 			throw new ConnectionFactoryException("empty connection info : [" +connid+"]" , e);
 		}finally{
-			SqlUtils.close(conn , pstmt, rs);
+			JdbcUtils.close(conn , pstmt, rs);
 		}
 	}
 
@@ -219,7 +219,7 @@ public final class ConnectionFactory implements ConnectionContext{
 	 */
 	public synchronized void resetConnectionPool(String connid) throws SQLException, ConnectionFactoryException  {
 		if(connectionShutdownInfo.containsKey(connid)) connectionShutdownInfo.remove(connid);
-		
+
 		createConnectionInfo(connid);
 	}
 

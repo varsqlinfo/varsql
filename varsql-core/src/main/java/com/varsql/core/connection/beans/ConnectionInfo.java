@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
-import com.varsql.core.common.util.CommUtil;
+import com.varsql.core.common.util.CommUtils;
 
 
 public class ConnectionInfo implements Serializable {
@@ -132,7 +132,7 @@ public class ConnectionInfo implements Serializable {
 	public void setConnection_opt(String connection_opt) {
 		if(null == connection_opt || "".equals(connection_opt)) return ;
 
-		String [] tmpOpt = CommUtil.split(connection_opt, ";");
+		String [] tmpOpt = CommUtils.split(connection_opt, ";");
 
 		if(this.connection_opt ==null) this.connection_opt=new HashMap();
 
@@ -146,7 +146,7 @@ public class ConnectionInfo implements Serializable {
 				continue;
 			}
 
-			optVal = CommUtil.split(tmpKey, "=");
+			optVal = CommUtils.split(tmpKey, "=");
 
 			this.connection_opt.put(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ) );
 		}
@@ -159,7 +159,7 @@ public class ConnectionInfo implements Serializable {
 	public void setPool_opt(String pool_opt) {
 		if(null == pool_opt || "".equals(pool_opt)) return ;
 
-		String [] tmpOpt = CommUtil.split(pool_opt, ";");
+		String [] tmpOpt = CommUtils.split(pool_opt, ";");
 
 		if(this.pool_opt ==null) this.pool_opt=new HashMap();
 
@@ -173,7 +173,7 @@ public class ConnectionInfo implements Serializable {
 				continue;
 			}
 
-			optVal = CommUtil.split(tmpKey, "=");
+			optVal = CommUtils.split(tmpKey, "=");
 			this.pool_opt.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
 		}
 	}

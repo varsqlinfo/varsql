@@ -1,5 +1,6 @@
 package com.varsql.web.dto.sql;
 
+import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
 /**
@@ -17,7 +18,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 *-----------------------------------------------------------------------------
  */
 public class SqlGridDownloadInfo extends DatabaseParamInfo{
-	private String exportType;
+	private VarsqlFileType exportType;
 
 	private String headerInfo;
 
@@ -27,12 +28,12 @@ public class SqlGridDownloadInfo extends DatabaseParamInfo{
 		super();
 	}
 
-	public String getExportType() {
+	public VarsqlFileType getExportType() {
 		return exportType;
 	}
 
 	public void setExportType(String exportType) {
-		this.exportType = exportType;
+		this.exportType = VarsqlFileType.getFileType(exportType);
 	}
 
 	public String getHeaderInfo() {

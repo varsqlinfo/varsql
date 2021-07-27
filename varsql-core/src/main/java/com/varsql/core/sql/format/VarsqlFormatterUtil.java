@@ -1,20 +1,10 @@
 package com.varsql.core.sql.format;
 
-import java.util.List;
-
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.SQLUtils.FormatOption;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.parser.SQLParserFeature;
-import com.alibaba.druid.sql.parser.SQLParserUtils;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
-import com.alibaba.druid.sql.visitor.VisitorFeature;
 import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.github.vertical_blank.sqlformatter.core.FormatConfig;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
-import com.varsql.core.sql.util.SqlReplaceUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -26,11 +16,6 @@ import com.vartech.common.app.beans.ResponseResult;
  * @변경이력	:
  */
 public final class VarsqlFormatterUtil {
-	final private static SQLParserFeature[] DEFAULT_FEATURES = { SQLParserFeature.KeepComments, SQLParserFeature.SkipComments };
-	final private static FormatOption formatOpt = new FormatOption(VisitorFeature.OutputPrettyFormat,VisitorFeature.OutputSkipSelectListCacheString);
-	static{
-		formatOpt.setUppCase(false);
-	}
 
 	public enum FORMAT_TYPE {
 		VARSQL("VQRSQL"), DRUID("DRUID");
@@ -47,10 +32,6 @@ public final class VarsqlFormatterUtil {
 	}
 
 	private VarsqlFormatterUtil(){};
-
-	public static String format(String sql){
-		return SQLUtils.format(sql, DBType.OTHER.getDbParser());
-	}
 
 	public static String format(String sql, DBType dbType){
 		return format(sql , dbType , FORMAT_TYPE.DRUID);
@@ -87,17 +68,10 @@ public final class VarsqlFormatterUtil {
 			resultSql = new VarsqlFormatterImpl().execute(sql);
 			//resultSql = SqlFormatter.format(sql);
 		}else{
-			/*
-			resultSql = SqlFormatter.format(sql, FormatConfig.builder().indent(BlankConstants.TAB).build());
-			*/
 			
 			try{
-				SQLStatementParser parser = SQLParserUtils.createSQLStatementParser(sql, dbType.getDbParser(), DEFAULT_FEATURES);
 
-				parser.setKeepComments(true);
-				List<SQLStatement> statementList = parser.parseStatementList();
-
-				resultSql =SQLUtils.toSQLString(statementList, dbType.getDbParser(), null, formatOpt);
+				resultSql = com.varsql.core.sql.util.SQLParserUtils.getParserString(sql,dbType);
 			}catch(Exception e){
 				resultSql =new VarsqlFormatterImpl().execute(sql);
 				result.setMessage(e.getMessage());
@@ -105,7 +79,7 @@ public final class VarsqlFormatterUtil {
 		}
 
 		//resultSql = Native2Ascii.asciiToNative(resultSql);
-		result.setItemOne(resultSql);
+		result.setItemOne(resultSql + BlankConstants.NEW_LINE);
 
 		return result;
 	}

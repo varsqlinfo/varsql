@@ -6,5 +6,9 @@ var global_page_context_path ="${pageContextPath}";
 var $varsqlConfig ={
 	viewId : '<varsql:userViewId/>'
 	,logoutUrl :'${varsqlfn:logoutUrl(pageContext.request)}'
+	,file :{
+		maxUploadSize : ${fileUploadSize}
+		,sizePerFile : ${fileUploadSizePerFile}
+	}
 }
 </script>

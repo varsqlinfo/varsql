@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE var-sql SYSTEM  "sqlTemplate.dtd">
+
+<var-sql>
+	<!-- 테이블 생성-->
+	<tableCreate><![CDATA[
+
+	]]></tableCreate>
+
+	<!-- view 생성-->
+	<viewCreate><![CDATA[
+
+	]]></viewCreate>
+
+	<!-- function 생성-->
+	<functionCreate><![CDATA[
+
+	]]></functionCreate>
+
+	<!-- procedure 생성-->
+	<procedureCreate><![CDATA[
+
+	]]></procedureCreate>
+
+	<!-- trigger 생성-->
+	<triggerCreate><![CDATA[
+		/* DROP TRIGGER ; */
+		CREATE OR REPLACE
+	]]></triggerCreate>
+
+	<!-- index 생성-->
+	<indexCreate><![CDATA[
+
+	]]></indexCreate>
+
+	<!-- sequence 생성-->
+	<sequenceCreate><![CDATA[
+{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{/equals}}
+
+CREATE SEQUENCE [{{schema}}].[{{OBJECT_NAME}}]
+AS [int]
+START WITH 0
+INCREMENT BY {{INCREMENT_BY}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+CACHE
+	]]></sequenceCreate>
+
+	<!-- 컬럼 추가-->
+	<tableAlterAddColumn><![CDATA[
+		alter table {{TABLE_NAME}} add {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
+	]]></tableAlterAddColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterRenameColumn><![CDATA[
+		sp_rename '{{TABLE_NAME}}.[{{COLUMN_NAME}}]', '{{NEW_COLUMN_NAME}}'
+	]]></tableAlterRenameColumn>
+
+	<!-- 컬럼 수정 추가-->
+	<tableAlterModifyColumn><![CDATA[
+		alter table {{TABLE_NAME}} ALTER COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+	]]></tableAlterModifyColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterDropColumn><![CDATA[
+		alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+	]]></tableAlterDropColumn>
+
+	<!-- 테이블명 수정 추가-->
+	<renameTable><![CDATA[
+		sp_rename '{{TABLE_NAME}}', '{{NEW_TABLE_NAME}}'
+	]]></renameTable>
+	
+	
+	<!-- select query -->
+	<select>
+	</select>
+	
+	<!-- insert query -->
+	<insert>
+	</insert>
+	
+	<!-- update query -->
+	<update>
+	</update>
+	
+	<!-- delete query -->
+	<delete>
+	</delete>
+	
+	<!-- selectInsert query -->
+	<selectInsert>
+	
+	</selectInsert>
+	
+	<!-- insertUpdate query -->
+	<insertUpdate>
+	</insertUpdate>
+</var-sql>

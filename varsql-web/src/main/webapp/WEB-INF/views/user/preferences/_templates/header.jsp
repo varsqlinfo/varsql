@@ -3,7 +3,7 @@
 <!-- Brand and toggle get grouped for better mobile display -->
 
 <div id="logo" class="navbar-header col-xs-12 col-sm-2">
-	<a id="logo-title" href="<c:url value="./" />">
+	<a id="logo-title" href="<c:url value="/user/preferences" />">
 		<spring:message	code="label.user.preferences" />
 	</a>
 </div>

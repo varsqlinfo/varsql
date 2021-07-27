@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Item Detail View</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="description" content="varsql-ytechinfo">
+<meta name="author" content="varsql-ytechinfo">
+
+<link rel="shortcut icon" href="/vsql/webstatic/favicon.ico" type="image/png">
+<link rel="icon" href="/vsql/webstatic/favicon.ico" type="image/png">
+
+
+<!-- Bootstrap Core CSS -->
+<link href="/vsql/webstatic/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+<link href="/vsql/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="/vsql/webstatic/css/pub.all.min.css?version=1608343586841" rel="stylesheet" type="text/css">
+
+<!-- Custom CSS -->
+<link href="/vsql/webstatic/css/varsql.common.css?version=1608343586841" rel="stylesheet">
+
+<script src="/vsql/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
+
+<script src="/vsql/webstatic/i18n/varsql.lang.ko.js?version=3429"></script>
+
+<script src="/vsql/webstatic/js/jquery-3.3.1.min.js"></script>
+<script src="/vsql/webstatic/js/jquery-ui.min.js"></script>
+
+<script src="/vsql/webstatic/js/vue.min.js"></script>
+<script src="/vsql/webstatic/js/varsql.web.js?version=3429"></script>
+<script src="/vsql/webstatic/js/varsql.web.ui.js?version=3429"></script>
+<script src="/vsql/webstatic/js/varsql.db.conts.js?version=3429"></script>
+<script src="/vsql/webstatic/js/vue.varsql.js?version=3429"></script>
+
+<script src="/vsql/webstatic/js/pub.grid.js?version=3013"></script>
+
+</head>
+<body>
+	<div id="epViewArea" class="main-wrap">
+		<template v-if="viewMode===false">
+			<table class="wh100">
+				<tr>
+					<td class="text-center" style="text-align: center; font-size: 3em;">
+						정상적인 접근이 아닙니다.</br>
+						다시 시도 해주세요.
+					</td>
+				</tr>
+			</table>
+		</template>
+		<template v-else>
+		 	<h3 style="margin: 5px;">상세보기</h3>
+	 		<div id="itemList" style="height:130px;"></div>
+
+			<div class="text-center" style="padding: 7px;">
+				<button type="button" class="btn btn-sm btn-default" @click="itemView('p')">이전</button>
+				<button type="button" class="btn btn-sm btn-default" @click="itemView('n')">다음</button>
+			</div>
+			<div style="height:calc(100% - 210px);overflow: auto;">
+		 		<table class="item-detail-area">
+		 			<thead style="display:none;">
+		 				<tr>
+		 					<td class="item-col-label">
+		 					</td>
+		 					<td class="item-col-content">
+		 						<pre id="calcHeight" class="content-view"></pre>
+		 					</td>
+		 				</tr>
+		 			</thead>
+		 			<tbody>
+			 			<tr v-for="(colItem,index) in colInfos">
+			 				<td class="item-col-label">{{colItem.label}}</td>
+			 				<td class="item-col-content">
+			 					<template v-if="colItem.dbType=='CLOB'">
+			 						<pre class="content-view huge">{{viewItem[colItem.key]}}</pre>
+			 					</template>
+								<template v-else>
+									<pre class="content-view" :class="(viewItem[colItem.key+'_cls']||'')">{{viewItem[colItem.key]}}</pre>
+								</template>
+			 				</td>
+			 			</tr>
+			 		</tbody>
+		 		</table>
+		 	</div>
+		 </template>
+ 	</div>
+</body>
+</html>
+<style>
+.main-wrap{
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    padding: 5px;
+    margin: 0px;
+    height: 100%;
+    position: absolute;
+}
+
+.item-detail-area{
+	width:100%;
+	table-layout:fixed;
+}
+
+.item-col-label{
+	width: 150px;
+	vertical-align: top;
+	border: 1px solid #ddd;
+	padding : 5px 5px;
+	font-weight: bold;
+
+}
+
+.item-col-content{
+	width : calc(100% - 150px);
+	border: 1px solid #ddd;
+}
+
+.content-view{
+	width:100%;
+	padding: 3px 5px;
+	overflow:auto;
+	word-break:break-all;
+	margin: 0px 0px;
+	min-height: 25px;
+    height: 25px;
+    border: 0px solid;
+    background: transparent;
+    white-space: pre-wrap;
+    resize: vertical;
+}
+
+.content-view.huge2{
+	height: 50px;
+	overflow:auto;
+}
+.content-view.huge3{
+	height: 80px;
+	overflow:auto;
+}
+.content-view.huge4{
+	height: 110px;
+	overflow:auto;
+}
+
+.content-view.huge{
+	height: 150px;
+	overflow:auto;
+}
+
+
+</style>
+<script>
+
+(function() {
+
+//VARSQL.unload('security');
+
+var viewObj = VarsqlAPP.vueServiceBean( {
+	el: '#epViewArea'
+	,data: {
+		colInfos :[]
+		, itemList :[]
+		, viewItem:{}
+		, viewIdx : 0
+		, viewMode : true
+	}
+	,methods:{
+		setViewMode : function (mode){
+			this.viewMode = mode;
+		}
+		,itemView : function (mode){
+
+			var viewIdx =0;
+			if(mode=='p'){
+				viewIdx = --this.viewIdx;
+			}else{
+				viewIdx = ++this.viewIdx;
+			}
+
+			viewIdx = viewIdx < 0? 0: (viewIdx > this.itemList.length-1 ? this.itemList.length-1 : viewIdx );
+
+			this.viewIdx = viewIdx;
+			this.setItemDetail(this.itemList[viewIdx]);
+		}
+		,setItemDetail : function (item){
+
+			if(item['_$itemCheck'] !==true){
+				for(var i=0; i <this.colInfos.length;i++){
+					var colItem = this.colInfos[i];
+
+					if(colItem.number){
+						;
+					}else if(VARSQLCont.isDateType(colItem.type)){
+						;
+					}else{
+						var val = item[colItem.key];
+						if(val){
+
+							var line = val.split('\n').length;
+
+							if(line  > 1){
+								item[colItem.key+'_cls'] = 'huge'+(line > 4 ? '' : line);
+							}else{
+								if(val.length > 70){
+									item[colItem.key+'_cls'] = 'huge3';
+								}
+							}
+						}
+					}
+				}
+				item['_$itemCheck']  = true;
+			}
+
+			this.viewItem = item;
+		}
+		,setItem : function (pColInfos, pItemList){
+			
+			//var itemObjInfo = VARSQL.util.objectMerge({},{"colInfos": pColInfos , "itemList":pItemList});
+			
+			var colInfos = VARSQL.util.objectMerge([],pColInfos);
+			var itemList = VARSQL.util.objectMerge([],pItemList);;
+			
+			var contentViewEleArr = document.querySelectorAll('.content-view');
+			for(var i =0; i <contentViewEleArr.length; i++){
+				contentViewEleArr[i].style = '';
+			}
+
+			this.colInfos = colInfos;
+			this.itemList = itemList;
+
+			if(itemList.length > 0){
+				this.setItemDetail(itemList[0]);
+			}
+
+			var _this =this;
+
+			$.pubGrid('#itemList',{
+				setting : {
+					enabled : true
+					,click : false
+					,enableSearch : true
+					,enableColumnFix : true
+				}
+				,autoResize : true
+				,headerOptions:{
+				}
+				,asideOptions :{
+					lineNumber : {enabled : true}
+				}
+				,rowOptions :{
+					click : function (rowInfo){
+						_this.viewIdx = rowInfo.r;
+						_this.setItemDetail(rowInfo.item);
+					}
+				}
+				,tColItem : colInfos
+				,tbodyItem :itemList
+			});
+
+		}
+	}
+});
+
+window.viewItem = function(colInfos, itemList){
+	viewObj.setItem(colInfos, itemList);
+}
+
+var popid = VARSQL.util.getLocationParameter('popid');
+
+var openerCheckFlag = false;
+if(opener){
+	if(VARSQL.isFunction(opener[popid])){
+		opener[popid]();
+		openerCheckFlag = true;
+	}
+}
+
+viewObj.setViewMode(openerCheckFlag);
+
+
+}());
+
+
+</script>

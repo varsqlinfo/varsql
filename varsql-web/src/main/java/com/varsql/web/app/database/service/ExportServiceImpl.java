@@ -65,7 +65,7 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public void selectExportConfigInfo(PreferencesRequestDTO preferencesInfo, ModelMap model) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
 
 		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
@@ -89,7 +89,7 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public ResponseResult selectExportTableInfo(PreferencesRequestDTO preferencesInfo) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
 
 		ResponseResult result =new ResponseResult();
 
@@ -113,7 +113,7 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public ResponseResult selectExportDbObjectInfo(DatabaseParamInfo databaseParam) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParam.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParam.getDbType());
 
 		Map customParam = databaseParam.getCustom();
 
@@ -197,7 +197,7 @@ public class ExportServiceImpl{
 
 		Iterator<String> iter =exportInfo.keySet().iterator();
 
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(preferencesInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
 
 		StringBuilder allDDLScript = new StringBuilder();
 		DDLCreateOption ddlOption = new DDLCreateOption();

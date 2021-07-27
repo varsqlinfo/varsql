@@ -218,6 +218,14 @@ table > tbody > tr.error-row > td, table > tbody > tr.error-row > th {
   text-align: center;
 }
 
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
 .vertical-top {
   vertical-align: top;
 }
@@ -498,6 +506,7 @@ table > tbody > tr.error-row > td, table > tbody > tr.error-row > th {
   overflow-x: hidden;
   overflow-y: auto;
   border: 1px solid #d5d5d8;
+  padding: 5px;
 }
 
 .file-upload-area .file-upload-preview .file-upload-preview-msg {
@@ -513,6 +522,11 @@ table > tbody > tr.error-row > td, table > tbody > tr.error-row > th {
   overflow-y: auto;
   border: 1px solid #d5d5d8;
   height: 100px;
+  padding: 5px;
+}
+
+.file-upload-area .file-upload-list .file-upload-list-item {
+  padding-bottom: 3px;
 }
 
 .file-upload-area .file-row {
@@ -1659,6 +1673,18 @@ body div {
 
 .varsql-table tr:hover {
   background-color: #e6e5e5;
+}
+
+.varsql-popup-main {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  margin: 0px;
+  padding: 10px;
+  background-color: #fbfbfb;
+  color: #000000;
 }
 
 /*javascript plugin custom css start */

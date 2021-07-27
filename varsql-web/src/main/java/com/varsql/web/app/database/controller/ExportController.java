@@ -127,7 +127,7 @@ public class ExportController extends AbstractController  {
 	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
-		model.put("exportServiceMenu", MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid()).getServiceMenu());
+		model.put("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType()).getServiceMenu());
 
 		return getModelAndView("/exportMain/ddl/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}

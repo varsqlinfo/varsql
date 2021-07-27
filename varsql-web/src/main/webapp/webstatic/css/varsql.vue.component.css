@@ -9,6 +9,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   border: 1px solid #d5d5d8;
+  padding: 5px;
 }
 
 .file-upload-area .file-upload-preview .file-upload-preview-msg {
@@ -24,6 +25,11 @@
   overflow-y: auto;
   border: 1px solid #d5d5d8;
   height: 100px;
+  padding: 5px;
+}
+
+.file-upload-area .file-upload-list .file-upload-list-item {
+  padding-bottom: 3px;
 }
 
 .file-upload-area .file-row {

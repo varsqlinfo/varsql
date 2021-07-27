@@ -1,10 +1,12 @@
 package com.varsql.web.dto.file;
 
+import com.varsql.core.common.code.VarsqlFileType;
+
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: DownloadInfo.java
-* @DESC		: 
+* @DESC		:
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -14,19 +16,19 @@ package com.varsql.web.dto.file;
 *-----------------------------------------------------------------------------
  */
 public class DownloadInfo {
-	
-	private String exportType;
-	
+
+	private VarsqlFileType exportType;
+
 	private String fileName;
-	
+
 	private String content;
-	
-	public String getExportType() {
+
+	public VarsqlFileType getExportType() {
 		return exportType;
 	}
 
 	public void setExportType(String exportType) {
-		this.exportType = exportType;
+		this.exportType = VarsqlFileType.getFileType(exportType);
 	}
 
 	public String getFileName() {
@@ -44,5 +46,5 @@ public class DownloadInfo {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
 }

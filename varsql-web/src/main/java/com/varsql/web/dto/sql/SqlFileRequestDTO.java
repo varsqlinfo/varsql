@@ -1,7 +1,7 @@
 package com.varsql.web.dto.sql;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.constants.SqlDataConstants;
+import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
 
 import lombok.Getter;
@@ -41,8 +41,6 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 
 	// sql parameer
 	private String sqlParam;
-
-	private String exportType;
 
 	private String columnInfo;
 

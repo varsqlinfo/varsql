@@ -136,6 +136,12 @@ _$base.isFunction =isFunction;
  * object check
  */
 function isObject(obj){
+	if(isArray(obj)){
+		return false;
+	}else if(isFunction(obj)){
+		return false;
+	}
+
 	return typeof obj==='object';
 };
 _$base.isObject =isObject;
@@ -186,6 +192,19 @@ function isBlank(obj){
 };
 _$base.isBlank = isBlank;
 
+function isDate(obj) {
+	if (obj instanceof Date) return true;
+
+	if(isObject(obj)){
+		return typeof obj.toDateString === 'function'
+		    && typeof obj.getDate === 'function'
+		    && typeof obj.setDate === 'function';
+	}
+
+	return  false;
+}
+_$base.isDate = isDate;
+
 function parseJSON(resText){
 	return JSON.parse(resText);
 };
@@ -206,13 +225,13 @@ _$base.inArray =function(array,val){
  */
 _$base.getLength = function (val){
 	if(isObject(val)){
-		return Object.keys(val).length; 
+		return Object.keys(val).length;
 	}else if(isArray(val)){
-		return val.length; 
+		return val.length;
 	}else if(isString(val)){
-		return val.length; 
+		return val.length;
 	}else {
-		return val; 
+		return val;
 	}
 }
 
@@ -337,6 +356,14 @@ function fnReqCheck(data ,opts){
 		}else if(resultCode == 500){	// error
 			alert(data.message);
 			return false;
+		}else if(resultCode == 1000){	// error
+			if(data.message){
+				alert(data.message);
+			}else{
+				alert('app error');
+			}
+
+			return false;
 		}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
 			if(confirm(_$base.messageFormat('error.0003'))){
 				(top || window).location.href=VARSQL.contextPath;
@@ -345,12 +372,22 @@ function fnReqCheck(data ,opts){
 		}else if(resultCode >= 80000 && resultCode < 90000){ // connection error
 			alert(_$base.messageFormat('error.'+resultCode));
 			return false;
+		}else if(resultCode != 200){
+
+			if(data.messageCode){
+				alert('request check : '+data.messageCode);
+			}else{
+				alert('request check : '+data.message);
+			}
+
+
+			return false;
 		}
 	}
 
 	return true;
 }
-_$base.reqCheck = fnReqCheck; 
+_$base.reqCheck = fnReqCheck;
 
 /**
  * ajax 요청
@@ -417,9 +454,10 @@ _$base.req ={
 
 		ajaxOpt.success =  function (data, status, jqXHR) {
 			_this.isConnectError = false;
-			var resultCode = data.resultCode;
 
-			if(!fnReqCheck(data,option)) return ;
+			if(ajaxOpt.dataType == 'json'){
+				if(!fnReqCheck(data,option)) return ;
+			}
 
 			try{
 				option.success.call(this, data, status, jqXHR);
@@ -442,7 +480,7 @@ _$base.req ={
 	,validationCheck : function (resData){
 		if(resData.messageCode=='valid'){
 			var items = resData.items;
-			
+
 			if(isArray(items)){
 				var objLen = items.length;
 				if(objLen >0){
@@ -454,7 +492,7 @@ _$base.req ={
 				alert(resData.message);
 				return false;
 			}
-			
+
 		}
 		return true;
 	}
@@ -468,7 +506,7 @@ _$base.req ={
 		if(_$base.isUndefined(urlObj)){
 			urlObj = '/file/upload';
 		}
-		var param = opts.param; 
+		var param = opts.param;
 		if(!_$base.isUndefined(param)){
 			for(var key in param){
 				formData.set(key,param[key]);
@@ -597,14 +635,23 @@ $(window).on("beforeunload",function(){
 _$base.logout = function (callback){
 	if(_$base.isFunction(callback)){
 		_$base.req.ajax({
-			url :{type : 'ignore', url : $varsqlConfig.logoutUrl } 
+			url :{type : 'ignore', url : $varsqlConfig.logoutUrl }
 			,success: callback
 		})
-		return ; 
+		return ;
 	}
-	
+
 	locatiion.href=$varsqlConfig.logoutUrl;
-	
+}
+
+// file upload size
+_$base.getFileMaxUploadSize = function (){
+	return $varsqlConfig.file.maxUploadSize || 1000;
+}
+
+// file unit max size
+_$base.getFileSizePerFile= function (){
+	return $varsqlConfig.file.sizePerFile || 1000;
 }
 
 _$base.socket ={
@@ -614,15 +661,15 @@ _$base.socket ={
 	,subScripeActive :{}
 	//알림 수신
 	,addSubscribe : function (endpoint, opts){
-		
-		var subscribeId = '/sub/'+endpoint+'/'+opts.uid; 
-		
+
+		var subscribeId = '/sub/'+endpoint+'/'+opts.uid;
+
 		if(this.subScripeActive[subscribeId]===true){
-			return ; 
+			return ;
 		}
-		
-		this.subScripeActive[subscribeId] =true; 
-		
+
+		this.subScripeActive[subscribeId] =true;
+
 		this.stompClient.subscribe(subscribeId, function (data) {
     		if(_$base.isFunction(opts.callback)){
     			opts.callback.call(null, parseJSON( data.body));
@@ -632,7 +679,7 @@ _$base.socket ={
 	,connect : function(endpoint, opts){
 		var _this = this;
 		opts = opts ||{};
-		
+
 		if(_$base.isUndefined(endpoint))  return ;
 
 		if(_this.stompClient==null){
@@ -641,9 +688,9 @@ _$base.socket ={
 	}
 	, createConnection : function (endpoint, opts){
 		var _this = this;
-		
+
 		this.subScripeActive = {};
-		
+
 		var stompClient = Stomp.over(new SockJS(_$base.getContextPathUrl("/ws/"+ endpoint) , null, {transports : ['websocket'] }));
 		stompClient.heartbeat.outgoing = 20000;
 		stompClient.heartbeat.incoming = 20000;
@@ -651,16 +698,16 @@ _$base.socket ={
 		stompClient.debug = function (str) {
 	       //console.log('STOMP: ' + str);
 		}
-		
+
 		stompClient.connect({}, function (frame) {
 			_this.addSubscribe(endpoint, opts);
 		}, function(err){
 			console.log(err);
 	    });
-		
+
 		_this.stompClient = stompClient;
-		
-		return stompClient; 
+
+		return stompClient;
 	}
 	,
 	// 알림 연결 끊기
@@ -683,7 +730,7 @@ jQuery.fn.centerLoading = function(options) {
 		top :'0',
 		left :'0',
 		centerYn:'Y',
-		bgColor : '#ffffff',
+		bgColor : '#e8e8e8',
 		loadingImg : _$base.url('/webstatic/css/images/loading.gif'),
 		cursor:	'wait',
 		contentClear : false
@@ -699,15 +746,17 @@ jQuery.fn.centerLoading = function(options) {
 
 	if($(this).parent().attr('prevspan') =='Y')	config.contentClear = false;
 
-	var loadStr = '<div class="centerLoading" style="z-index:100;position:absolute;width:100%; height:100%;">'
+	var loadStr = '<div class="centerLoading" style="cursor:'+config.cursor+';top:0px;left:0px;z-index:100;position:absolute;width:100%; height:100%;">';
+
+	loadStr +='<div style="position:absolute;background: '+config.bgColor+';opacity: 0.5; width:100%; height:100%;z-index:1;"></div>';
 	if(config.content){
 		if(config.centerYn=='Y'){
-			loadStr +='<div style="margin: 0;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">'+ config.content+'</div>';
+			loadStr +='<div style="z-index:10;margin: 0;position: absolute; top: 40%;left: 50%;transform: translate(-50%, -50%);">'+ config.content+'</div>';
 		}else{
 			loadStr += config.content;
 		}
 	}else{
-		loadStr +='<div style="height:100%;background-repeat:no-repeat;cursor:'+config.cursor+';background-image:url('+config.loadingImg+');background-position:'+(config.centerYn=='Y'?'center center':'')+'"></div>';
+		loadStr +='<div style="z-index:10;position: absolute;top: 40%;left: 50%;transform: translate(-50%, -50%);"><img src="'+config.loadingImg+'"/></div>';
 	}
 	loadStr +='</div>';
 
@@ -815,7 +864,14 @@ _$base.check = {
  * @method _$base.unload
  * @description 페이지 빠져나가기
  */
+var $$initFlag = false;
 _$base.unload =function (mode){
+	if($$initFlag){
+		return ;
+	}
+	$$initFlag = true;
+
+
 	// F5, ctrl + F5, ctrl + r 새로고침 막기
 	$(document).keydown(function (e) {
 		var keychk = false;
@@ -833,22 +889,35 @@ _$base.unload =function (mode){
         	keychk = true;
         }
 
+		if(mode =='security'){
+			if (keyCode == 123) {
+	        	keychk = true;
+	        }
+		}
+
 	    if(keychk){
+
+			if(mode =='security'){
+				e.keyCode = 0;
+				e.returnValue =false;
+				e.preventDefault()
+	            e.stopPropagation()
+				return false;
+			}
+
 			if(!confirm(_$base.messageFormat('varsql.0001'))){
 				return false;
 			}else{
 				e.preventDefault()
                 e.stopPropagation()
-				
-				
-				
+
 				if(mode=='top'){
 					if(window.userMain) {
 						window.userMain.pageRefresh();
-						return false; 
+						return false;
 					}
 				}
-				
+
 				if(top != window){
 					if(top.userMain){
 						top.userMain.viewLoadMessage();
@@ -882,27 +951,27 @@ function _load(_url , type ,resourceName){
 
 function _loadProxy (resourceName){
 	var resourceObj = _$base.staticResource.get(resourceName);
-	
+
 	if(isUndefined(resourceObj)){
-		throw 'empty resource name : ['+ resourceName+']'; 
+		throw 'empty resource name : ['+ resourceName+']';
 	}
-	
+
 	if($('[resource-name="'+resourceName+'"]').length > 0){
 		throw 'duplicate resource load : ['+ resourceName+']';
 	}
-	
+
 	for(var key in resourceObj){
 		var items = resourceObj[key];
-		
+
 		for(var j =0; j< items.length;j++){
-			var resourcePath = items[j]; 
+			var resourcePath = items[j];
 			_load(resourcePath,key, resourceName);
 		}
 	}
 }
 _$base.loadResource = function (resources){
 	var _self = _$base;
-	
+
 	if(isArray(resources)){
 		var len = resources.length;
 		for(var i =0; i <len ; i++){
@@ -923,7 +992,7 @@ _$base.generateUUID = function() {
 		d = Math.floor(d/16);
 		return (c=='x' ? r : (r&0x7|0x8)).toString(16);
 	});
-	return uuid;
+	return uuid.replace(/-/g,'');
 };
 
 /**
@@ -989,6 +1058,86 @@ function getParameter(url, param){
 	}
 
 	return rtnval;
+}
+// location.href parameter;
+function getLocationParameter(key){
+
+	var paramSplit  = location.href.split('?');
+	var paramLen = paramSplit.length;
+
+	if(paramLen < 2) return param;
+
+	var parameters = paramSplit[1].split('&');
+
+	for(var i = 0 ; i < parameters.length ; i++){
+		var tmpPara = parameters[i].split('=');
+		if(tmpPara[0] == key){
+			return tmpPara[1];
+		}
+	}
+
+	return null;
+}
+
+// object deep copy
+function cloneDeep(dst, src) {
+	if(VARSQL.isObject(src)){
+		return cloneObjectDeep(dst, src);
+	}else if(VARSQL.isArray(src)){
+		return cloneArrayDeep(dst, src);
+	}else{
+		if (VARSQL.isDate(src)){
+			return new src.constructor(src);
+		}else{
+			return src;
+		}
+	}
+}
+
+function cloneObjectDeep(dst, src) {
+	if (typeof src === 'function') {
+		return src;
+	}
+
+	for (let key in src) {
+
+		if(!src.hasOwnProperty(key)) {continue;}
+
+		var val = src[key];
+
+		if (val=== undefined) {continue;}
+
+		if ( typeof val !== 'object' || val=== null) {
+			dst[key]  = val;
+		} else if (typeof dst[key] !== 'object' || dst[key] === null) {
+			dst[key] = cloneDeep(VARSQL.isArray(val) ? [] : {}, val);
+		} else {
+			cloneDeep(dst[key] , val);
+		}
+	}
+	return dst;
+}
+
+function cloneArrayDeep(dst, src) {
+	var isObj = VARSQL.isObject(dst);
+
+	for (var i = 0; i < src.length; i++) {
+		var val = src[i];
+		var newVal;
+
+		if(val == null){
+			newVal = val;
+		}else{
+			newVal= cloneDeep(VARSQL.isArray(val) ? [] : {}, val);
+		}
+
+		if(isObj){
+			dst[i] = newVal;
+		}else{
+			dst.push(newVal);
+		}
+	}
+	return dst;
 }
 
 /**
@@ -1106,29 +1255,16 @@ _$base.util = {
 	 * @description object merge
 	 */
 	,objectMerge : function () {
-		var objMergeRecursive = function (dst, src) {
-
-			for (var p in src) {
-				if (!src.hasOwnProperty(p)) {continue;}
-
-				var srcItem = src[p] ;
-				if (srcItem=== undefined) {continue;}
-
-				if ( typeof srcItem!== 'object' || srcItem=== null) {
-					dst[p] = srcItem;
-				} else if (typeof dst[p]!=='object' || dst[p] === null) {
-					dst[p] = objMergeRecursive(srcItem.constructor===Array ? [] : {}, srcItem);
-				} else {
-					objMergeRecursive(dst[p], srcItem);
-				}
-			}
-			return dst;
-		}
-
 		var reval = arguments[0];
 		if (typeof reval !== 'object' || reval === null) {	return reval;}
-		for (var i = 1, il = arguments.length; i < il; i++) {
-			objMergeRecursive(reval, arguments[i]);
+		var i = 1;
+		if(Object.keys(reval).length > 0){
+			i = 0;
+			reval = VARSQL.isArray(reval) ? [] :{};
+		}
+		var argLen = arguments.length;
+		for (; i < argLen; i++) {
+			cloneDeep(reval, arguments[i]);
 		}
 		return reval;
 	}
@@ -1182,6 +1318,7 @@ _$base.util = {
 	}
 	,paramToArray : paramToArray
 	,getParameter : getParameter
+	,getLocationParameter : getLocationParameter
 	,browserSize : function(){
 		return {
 			width : (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)

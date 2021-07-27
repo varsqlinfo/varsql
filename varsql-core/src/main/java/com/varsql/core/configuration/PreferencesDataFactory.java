@@ -10,8 +10,8 @@ import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
-import com.varsql.core.configuration.beans.PreferencesAbstract;
-import com.varsql.core.configuration.beans.PreferencesContextMenu;
+import com.varsql.core.configuration.beans.pref.PreferencesAbstract;
+import com.varsql.core.configuration.beans.pref.PreferencesContextMenu;
 import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 

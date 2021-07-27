@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.DBMetaImpl;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
+import com.varsql.core.db.meta.handler.DBMetaHandlerImpl;
 import com.varsql.core.db.report.table.TableReportImpl;
-import com.varsql.core.db.resultset.meta.handler.ResultSetMetaHandlerImpl;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
@@ -39,7 +39,7 @@ public class MetaControlBean {
 	private DataTypeImpl dataTypeImpl;
 	private TableReportImpl tableReportImpl;
 
-	private ResultSetMetaHandlerImpl resultSetMetaHandlerImpl;
+	private DBMetaHandlerImpl dbMetaHandlerImpl;
 
 	private String dbVenderName;
 
@@ -78,9 +78,9 @@ public class MetaControlBean {
 
 		// result set meata handler load
 		try {
-			this.resultSetMetaHandlerImpl=(ResultSetMetaHandlerImpl)getBeanObject(ResultSetMetaHandlerImpl.class, "ResultSetMetaHandler");
+			this.dbMetaHandlerImpl=(DBMetaHandlerImpl)getBeanObject(DBMetaHandlerImpl.class, "DBMetaHandler");
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory resultSetMetaHandlerImpl ",e);
+			logger.info("DbInstanceFactory dbMetaHandlerImpl ",e);
 		}
 
 		// tableReportImpl set meata handler load
@@ -116,7 +116,7 @@ public class MetaControlBean {
 		if(flag){
 			return Class.forName(cls).getDeclaredConstructor(MetaControlBean.class).newInstance(this);
 		}else{
-			return Class.forName(cls).newInstance();
+			return Class.forName(cls).getDeclaredConstructor().newInstance();
 		}
 	}
 
@@ -182,7 +182,11 @@ public class MetaControlBean {
 		String callMethodName =String.format("get%sMetadata", StringUtils.capitalize(metaType));
 
 		try{
-			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class ,objNm.getClass())){
+			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class, new String[0].getClass())){
+				if(objNm == null) {
+					objNm = new String[0];
+				}
+				
 				Object [] paramArr  = {paramInfo, objNm};
 				return (T)VartechReflectionUtils.invokeMethod(this.dbMetaImpl, callMethodName, paramArr);
 			}else{
@@ -247,8 +251,8 @@ public class MetaControlBean {
 		return this.dataTypeImpl;
 	}
 
-	public ResultSetMetaHandlerImpl getResultSetMetaHandlerImpl() {
-		return resultSetMetaHandlerImpl;
+	public DBMetaHandlerImpl getDBMetaHandlerImpl() {
+		return dbMetaHandlerImpl;
 	}
 
 	public TableReportImpl getTableReportImpl() {

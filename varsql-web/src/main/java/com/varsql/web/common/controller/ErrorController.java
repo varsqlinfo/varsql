@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.constants.RequestResultCode;
 
 
 
@@ -128,8 +130,8 @@ public class ErrorController extends AbstractController {
 	@RequestMapping(value = "/invalidDatabase", method ={RequestMethod.GET,RequestMethod.POST})
 	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ResponseResult result = new ResponseResult();
-		result.setStatus(500);
-		result.setResultCode(2000);
+		result.setStatus(RequestResultCode.ERROR.getCode());
+		result.setResultCode(VarsqlAppCode.INVALID_DATABASE);
 		result.setMessage("invalidDatabase");
 
 		return result;
@@ -151,7 +153,12 @@ public class ErrorController extends AbstractController {
 	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/invalidDatabase", VIEW_PAGE.COMMONPAGE);
 	}
-	
+
+	@RequestMapping(value = "/invalidToken", method ={RequestMethod.GET})
+	public ModelAndView invalidToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return getModelAndView("/error/invalidToken", VIEW_PAGE.COMMONPAGE);
+	}
+
 	/**
 	 *
 	 * @Method Name  : dataDownloadError

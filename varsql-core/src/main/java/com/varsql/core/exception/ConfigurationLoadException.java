@@ -1,6 +1,6 @@
 package com.varsql.core.exception;
 
-public class ConfigurationLoadException extends Exception {
+public class ConfigurationLoadException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	

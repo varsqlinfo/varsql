@@ -25,6 +25,5 @@ public class RememberMeUserService extends UserService {
 	@Override
 	public User loadUserByUsername(final String username) throws UsernameNotFoundException {
 		return authDao.loadUserByUsername(username,true);
-
 	}
 }

@@ -12,11 +12,25 @@ task generateCustomConfig {
 }
 
 eclipse { // 이클립스 project facets설정.
+
+	project.natures "org.springsource.ide.eclipse.gradle.core.nature"
+	
 	//프로젝트를 가져 오거나 동기화
 	synchronizationTasks generateCustomConfig
 
 	// 자동 빌드
 	autoBuildTasks generateCode
+	
+	wtp {
+    	component {
+            contextPath = '' // context path 지정
+        }
+        facet {
+        	facets = []
+            facet name: 'jst.web', version: '3.1'
+            facet name: 'jst.java', version: '1.8'
+        }
+    }
 
 	classpath {
         defaultOutputDir = file("target-notused")

@@ -1,5 +1,6 @@
 package com.varsql.web.configuration;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -20,7 +22,12 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.common.code.VarsqlSsoType;
 import com.varsql.core.configuration.VarsqlWebConfig;
+import com.varsql.core.sso.SimpleSsoHandler;
+import com.varsql.web.common.filter.VarsqlSsoFilter;
+import com.varsql.web.common.sso.SsoBeanFactory;
+import com.varsql.web.common.sso.SsoComponent;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.SecurityConstants;
 import com.varsql.web.security.RestAuthenticationEntryPoint;
@@ -50,11 +57,11 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-	
+
 
 	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-	
+
 	@Autowired
 	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
@@ -82,6 +89,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private RememberMeUserService rememberMeUserService;
 
+	@Autowired
+	private BeanFactory beanFactory;
+
 	@Override
     public void configure(WebSecurity web) throws Exception {
 
@@ -103,6 +113,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	private void configureHttpSecurity(HttpSecurity http) throws Exception {
 
+		// sso 처리.
+		if(VarsqlSsoType.ALWAYS.equals(VarsqlWebConfig.getInstance().getSsoConfig().getMode())) { // sso interceptor 등록.
+			http.addFilterBefore(new VarsqlSsoFilter(beanFactory.getBean(ResourceConfigConstants.APP_SSO_BEAN_FACTORY, SsoBeanFactory.class)
+					,beanFactory.getBean(ResourceConfigConstants.APP_SSO_COMPONENT, SsoComponent.class)), BasicAuthenticationFilter.class);
+		}
+
 		http.headers()
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
@@ -116,7 +132,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-			.sessionAuthenticationErrorUrl("/login")  // remmember me error 처리 페이지. 추가. 
+			.sessionAuthenticationErrorUrl("/login")  // remmember me error 처리 페이지. 추가.
 			//.maximumSessions(1)	// 중복 로그인 카운트
 			.sessionFixation().changeSessionId()	// session 공격시 session id 변경.
 		.and() // login
@@ -130,6 +146,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	        .permitAll()
 	    .and() // auth
 		    .authorizeRequests()
+		    .antMatchers("/sso/proc").permitAll()
      		.antMatchers("/admin/**").hasAuthority(AuthorityType.ADMIN.name())
      		.antMatchers("/manage/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name())
      		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name(),AuthorityType.USER.name())
@@ -154,7 +171,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.httpBasic()
             .authenticationEntryPoint(varsqlBasicAuthenticationEntryPoint);
 	}
-	
+
 	@Bean("varsqlRequestCache")
 	public RequestCache requestCache() {
 	   return new HttpSessionRequestCache();
@@ -180,7 +197,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Bean
     public VarsqlAccessDeniedHandler accessDeniedHandler() {
-    	return new VarsqlAccessDeniedHandler(VarsqlWebConfig.newIntance().getPage403());
+    	return new VarsqlAccessDeniedHandler(VarsqlWebConfig.getInstance().getPageConfig().getPage403());
     }
 
     @Override
@@ -199,4 +216,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                .tokenRepository(rememberMeTokenRepository)
                .userDetailsService(rememberMeUserService).and();
 	}
+
+    @Bean(ResourceConfigConstants.APP_SSO_SIMPLE_COMPONENT)
+    public SimpleSsoHandler simpleSsoComponent() {
+    	return new SimpleSsoHandler();
+    }
 }

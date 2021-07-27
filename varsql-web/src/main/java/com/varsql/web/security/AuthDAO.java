@@ -29,7 +29,7 @@ import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
@@ -82,8 +82,7 @@ public final class AuthDAO {
 	}
 
 	public User loadUserByUsername(String username, boolean remembermeFlag) {
-
-		return loadUserByUsername(username, null, true);
+		return loadUserByUsername(username, null, remembermeFlag);
 	}
 
 	public User loadUserByUsername(String username, String password, boolean remembermeFlag) {
@@ -233,7 +232,7 @@ public final class AuthDAO {
 		}catch(SQLException e) {
 			throw new VarsqlAppException("database load exception : "+e.getMessage(), e);
 		}finally{
-			SqlUtils.close(conn , pstmt, rs);
+			JdbcUtils.close(conn , pstmt, rs);
 		}
 
 	}

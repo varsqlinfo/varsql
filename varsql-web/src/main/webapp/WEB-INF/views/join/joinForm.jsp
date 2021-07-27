@@ -254,13 +254,10 @@ var joinForm = {
 
 		VARSQL.req.ajax({
 			url: {type:VARSQL.uri.join, url:'/save'},
-			cache: false,
-			type:"post",
 			data:params,
-			dataType: "json",
 			success: function(resData) {
 				if(!VARSQL.req.validationCheck(resData)){
-					return ; 
+					return ;
 				}else{
 					if(resData.code ==409){
 						alert('아이디  중복 입니다.');

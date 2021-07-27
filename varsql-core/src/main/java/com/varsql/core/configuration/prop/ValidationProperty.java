@@ -3,12 +3,17 @@ package com.varsql.core.configuration.prop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
+import com.varsql.core.common.util.ResourceUtils;
+import com.varsql.core.configuration.AbstractConfiguration;
 import com.varsql.core.configuration.Configuration;
+import com.varsql.core.configuration.Constants;
 import com.varsql.core.exception.ConfigurationException;
 
 
@@ -20,10 +25,10 @@ import com.varsql.core.exception.ConfigurationException;
  * @프로그램설명: query validation check 클래스.
  * @변경이력	:
  */
-public class ValidationProperty{
-	private Logger log = LoggerFactory.getLogger(ValidationProperty.class);
+public class ValidationProperty extends AbstractConfiguration{
+	private Logger logger = LoggerFactory.getLogger(ValidationProperty.class);
 
-	final String Config_File= "db/validation.properties";
+	final String CONFIG_FILE= "db/validation.properties";
 
 	private Properties props = new Properties();
 
@@ -35,7 +40,7 @@ public class ValidationProperty{
 		try{
 			initConfig();
 		}catch(Exception e){
-			log.error(this.getClass().getName(), e);
+			logger.error(this.getClass().getName(), e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -49,20 +54,26 @@ public class ValidationProperty{
 	 * @throws Exception
 	 */
 	private void initConfig() throws Exception {
+		
+		Resource configResource = null;
 
-		File propFile = new File(Configuration.getInstance().getInstallRoot(), Config_File);
+		File propFile = new File(getInstallRoot(), CONFIG_FILE);
+		
+		logger.info("Validation Property path: {}",propFile);
+		
+		if(propFile.exists()) {
+			configResource = ResourceUtils.getResource(propFile.getPath());
+		}else {
+			configResource = ResourceUtils.getResource(CONFIG_FILE);
+		}
 
-		log.info("Validation property file : {}",propFile);
-
-		if ( ! propFile.canRead() ){
-
-			log.info("Can't open Validation file path: {}", propFile);
-
+		if ( configResource == null ){
+			logger.info("Can't open Validation file path: {}", propFile);
 			throw new ConfigurationException( this.getClass().getName() + " - Can't open Validation file path: " + propFile);
 		}
 
-		try(FileInputStream jdf_fin = new FileInputStream(propFile)){
-			props.load(jdf_fin);
+		try(InputStream is  = configResource.getInputStream()){
+			props.load(is);
 		}catch(IOException e) {
 			throw new ConfigurationException(e);
 		}

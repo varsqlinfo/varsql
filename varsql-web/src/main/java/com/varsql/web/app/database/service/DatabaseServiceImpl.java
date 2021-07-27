@@ -7,6 +7,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBConnTabResponseDTO;
@@ -89,7 +93,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo) {
 		ResponseResult result = new ResponseResult();
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
 		result.setItemList(dbMetaEnum.getServiceMenu());
 		return result;
 	}
@@ -105,22 +109,30 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
+	@CacheEvict(cacheNames =CacheInfo.CACHE_KEY_TABLE_METADATA, key="#databaseParamInfo.vconnid")
+	public void dbObjectListCacheEvict(DatabaseParamInfo databaseParamInfo) {
+	}
+	
+	//, condition = "@"+ResourceConfigConstants.CACHE_CONDITION_COMPONENT+".dbObjectListCondition(#databaseParamInfo)"
+	@Cacheable(cacheNames =CacheInfo.CACHE_KEY_TABLE_METADATA, key="#databaseParamInfo.vconnid")
 	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
 
 		ResponseResult result = new ResponseResult();
 		String objectType = databaseParamInfo.getObjectType();
 
 		try{
-			//System.out.println("databaseParamInfo.getCustom() : "+ databaseParamInfo.getCustom());
+			String [] objectNames = databaseParamInfo.getObjectNames();
+			
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectType) && databaseParamInfo.isLazyLoad()){
 				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
-					result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+					result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), databaseParamInfo, objectNames));
 				} else {
 					result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 				}
 			}else{
-				result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+				result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), databaseParamInfo, objectNames));
 			}
 		}catch(Exception e){
 			logger.error("dbObjectList objectType : [{}]",objectType);
@@ -148,8 +160,8 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo) {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
-
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
+		
 		ResponseResult result = new ResponseResult();
 
 		try{
@@ -171,7 +183,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult createDDL(DatabaseParamInfo databaseParamInfo) {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
 
 		ResponseResult result = new ResponseResult();
 
@@ -194,7 +206,7 @@ public class DatabaseServiceImpl{
 	 * @return
 	 */
 	public ResponseResult dbInfo(DatabaseParamInfo databaseParamInfo) {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getConnidToDbInstanceFactory(databaseParamInfo.getConuid());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
 
 		ResponseResult result = new ResponseResult();
 

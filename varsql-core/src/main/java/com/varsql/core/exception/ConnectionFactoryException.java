@@ -1,5 +1,8 @@
 package com.varsql.core.exception;
 
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.vartech.common.constants.CodeEnumValue;
+
 /**
  *
  * @FileName  : ConnectionFactoryException.java
@@ -16,54 +19,48 @@ public class ConnectionFactoryException extends RuntimeException {
 	private String errorMessage;
 	private String messageCode;
 
-	/**
-	 *
-	 */
-	public ConnectionFactoryException() {
-		super();
-	}
-
-	public ConnectionFactoryException(Throwable cause) {
-        super(cause);
-    }
-
-	public ConnectionFactoryException(int errorCode,Exception exeception) {
-		this(errorCode,null, exeception);
-	}
-
-	public ConnectionFactoryException(int errorCode,String errorMessage) {
-		this(errorCode, null, errorMessage, new Exception(errorMessage));
-	}
-
-	public ConnectionFactoryException(int errorCode, String messageCode,Exception exeception) {
-		this(errorCode, messageCode , null, exeception);
-	}
-	public ConnectionFactoryException(int errorCode,String messageCode,	String errorMessage, Exception exeception) {
-		super(errorMessage, exeception);
-		this.errorCode=errorCode ;
-		this.messageCode=messageCode;
-		this.errorMessage = errorMessage;
-	}
+	@SuppressWarnings("unused")
+	private ConnectionFactoryException() {}
 
 	/**
 	 * @param s java.lang.String
 	 */
 	public ConnectionFactoryException(String s) {
-		super(s);
+		this(s, null);
 	}
 	/**
 	 * @param s java.lang.String
 	 */
-	public ConnectionFactoryException(String s , Exception exeception) {
-		super(s,exeception);
+	public ConnectionFactoryException(String s, Exception exeception) {
+		this(VarsqlAppCode.COMM_RUNTIME_ERROR, s, exeception );
+	}
+
+	public ConnectionFactoryException(CodeEnumValue errorCode, String errorMessage) {
+		this(errorCode, errorMessage, null);
+	}
+
+	public ConnectionFactoryException(CodeEnumValue errorCode, String errorMessage , Exception exeception) {
+		this(errorCode, exeception, errorMessage , null);
+	}
+
+	public ConnectionFactoryException(CodeEnumValue errorCode, Exception exeception, String errorMessage, String messageCode) {
+
+		super(String.format("error code : %s %s %s", errorCode+"", (messageCode==null?"": "message code : " +  messageCode) , (errorMessage==null?"": "message :" +  errorMessage)), exeception);
+		setErrorCode(errorCode);
+		this.messageCode=messageCode;
+		this.errorMessage = errorMessage;
 	}
 
 	public int getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(int errorCode) {
-		this.errorCode = errorCode;
+	public void setErrorCode(CodeEnumValue errorCode) {
+		if(errorCode != null) {
+			this.errorCode = errorCode.getCode();
+		}
+
+		this.errorCode = VarsqlAppCode.ERROR.getCode();
 	}
 
 	public String getMessageCode() {

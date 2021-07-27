@@ -218,6 +218,14 @@ table > tbody > tr.error-row > td, table > tbody > tr.error-row > th {
   text-align: center;
 }
 
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
 .vertical-top {
   vertical-align: top;
 }
@@ -487,7 +495,42 @@ table > tbody > tr.error-row > td, table > tbody > tr.error-row > th {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 
+.file-upload-area .file-upload-btn-area {
+  text-align: right;
+  margin: 5px 0px;
+}
+
+.file-upload-area .file-upload-preview {
+  position: relative;
+  height: 100px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid #d5d5d8;
+  padding: 5px;
+}
+
+.file-upload-area .file-upload-preview .file-upload-preview-msg {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 25px;
+  top: calc(50% - 25px);
+}
+
+.file-upload-area .file-upload-list {
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid #d5d5d8;
+  height: 100px;
+  padding: 5px;
+}
+
+.file-upload-area .file-upload-list .file-upload-list-item {
+  padding-bottom: 3px;
+}
+
 .file-upload-area .file-row {
+  position: relative;
   display: block;
   width: 100%;
   margin-bottom: 4px;

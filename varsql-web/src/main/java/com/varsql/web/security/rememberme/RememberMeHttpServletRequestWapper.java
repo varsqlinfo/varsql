@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.web.app.admin.controller.AdminController;
 import com.varsql.web.constants.SecurityConstants;
 import com.vartech.common.utils.StringUtils;
 
@@ -78,4 +77,6 @@ public class RememberMeHttpServletRequestWapper extends HttpServletRequestWrappe
 		}
 		return reval.toArray(new Cookie[0]); 
 	}
+	
+
 }

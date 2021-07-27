@@ -17,10 +17,10 @@ import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.RequestUtil;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.VartechUtils;
 
 @Component
@@ -45,7 +45,7 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-		if(RequestUtil.isAjaxRequest(request)){
+		if(VarsqlUtils.isAjaxRequest(request)){
 
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
@@ -54,12 +54,12 @@ public class VarsqlAccessDeniedHandler implements AccessDeniedHandler {
 
 			if(SecurityUtil.isAuthenticated()){
 				if (accessDeniedException instanceof CsrfException && !response.isCommitted()) {
-					result.setResultCode(ResultConst.CODE.PRECONDITION_FAILED.toInt());
+					result.setResultCode(RequestResultCode.PRECONDITION_FAILED);
 				}else{
-					result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+					result.setResultCode(RequestResultCode.FORBIDDEN);
 				}
 			}else{
-				result.setResultCode(ResultConst.CODE.LOGIN_INVALID.toInt());
+				result.setResultCode(RequestResultCode.LOGIN_INVALID);
 			}
 
 			try (Writer writer = response.getWriter()){

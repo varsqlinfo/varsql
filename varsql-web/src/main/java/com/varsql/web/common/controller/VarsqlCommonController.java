@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 
 /**
  *
@@ -60,7 +60,7 @@ public class VarsqlCommonController extends AbstractController {
 		ResponseResult result = new ResponseResult();
 		result.setStatus(500);
 		result.setMessage("invalidLogin");
-		result.setResultCode(ResultConst.CODE.LOGIN_INVALID.toInt());
+		result.setResultCode(RequestResultCode.LOGIN_INVALID);
 		return result;
 	}
 

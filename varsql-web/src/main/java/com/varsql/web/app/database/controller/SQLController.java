@@ -71,12 +71,6 @@ public class SQLController extends AbstractController  {
 	 * @작성일   : 2015. 6. 22.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param vconnid
-	 * @param dbtype
-	 * @param objectName
-	 * @param exportType
-	 * @param columnInfo
-	 * @param limit
 	 * @param req
 	 * @param response
 	 * @throws Exception

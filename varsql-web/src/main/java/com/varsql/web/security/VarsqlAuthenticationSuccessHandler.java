@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.CommUtil;
+import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
 import com.varsql.web.util.DatabaseUtils;
@@ -72,7 +72,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			return;
 		}
 
-		authDao.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtil.getClientPcInfo(request));
+		authDao.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
 			try {
@@ -87,6 +87,10 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			String reqUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "");
 			
 			logger.debug("remember me forward request uri : {}, query string :{}" , reqUrl , queryStr);
+			logger.debug("cookie values : {} " , HttpUtils.getAllCookieString(request));
+			logger.debug("request header : {} " , HttpUtils.getAllReqHeaderString(request));
+			logger.debug("response header : {} " , HttpUtils.getAllResHeaderString(response));
+			logger.debug("----------------------------------------------------------------------");
 			request.getRequestDispatcher(reqUrl).forward(new RememberMeHttpServletRequestWapper(request, response), response);
 			
 			/*

@@ -48,69 +48,68 @@
 	
 	<!-- table adn column info -->
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		select
-			atc.COLUMN_ID
-			,ATC.TABLE_NAME
-			,atc.COLUMN_NAME 
-			, atc.DATA_TYPE  
-			, atc.CHAR_LENGTH
-			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH,
-	                         'VARCHAR', atc.CHAR_LENGTH,
-	                         'VARCHAR2', atc.CHAR_LENGTH,
-	                         'NCHAR', atc.CHAR_LENGTH,
-	                         'NVARCHAR', atc.CHAR_LENGTH,
-	                         'NVARCHAR2', atc.CHAR_LENGTH,
-	                         atc.DATA_PRECISION) COLUMN_SIZE
-			, atc.DATA_SCALE as DECIMAL_DIGITS
-			, atc.NULLABLE  as IS_NULLABLE
-			, atc.DATA_DEFAULT as COLUMN_DEF
-			, nvl(ACC.COMMENTS,'')  AS "COMMENT" 
-			,(SELECT 
-				CASE WHEN MAX(P.CONSTRAINT_TYPE) != MIN(P.CONSTRAINT_TYPE) THEN 'MUL' 
+		select atc.COLUMN_ID, ATC.TABLE_NAME, atc.COLUMN_NAME, atc.DATA_TYPE, atc.CHAR_LENGTH
+			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH, 'VARCHAR', atc.CHAR_LENGTH, 'VARCHAR2', atc.CHAR_LENGTH, 'NCHAR', atc.CHAR_LENGTH, 'NVARCHAR', atc.CHAR_LENGTH, 'NVARCHAR2', atc.CHAR_LENGTH, atc.DATA_PRECISION) as COLUMN_SIZE
+			, atc.DATA_SCALE as DECIMAL_DIGITS, atc.NULLABLE as IS_NULLABLE, atc.DATA_DEFAULT as COLUMN_DEF
+			, nvl(ACC.COMMENTS, null) as "COMMENT"
+			, f.CONSTRAINTS
+	<choose>
+		<when test="baseSchemaFlag">
+		from USER_TAB_COLUMNS ATC 	left  join USER_COL_COMMENTS acc 
+		on atc.TABLE_NAME = acc.TABLE_NAME and	atc.COLUMN_NAME = acc.COLUMN_NAME 
+		</when>
+		<otherwise>
+		from ALL_TAB_COLUMNS atc 	left  join ALL_COL_COMMENTS acc on atc.TABLE_NAME = acc.TABLE_NAME 
+		and	atc.COLUMN_NAME = acc.COLUMN_NAME and	atc.OWNER = acc.OWNER 
+		</otherwise>
+	</choose>
+		left outer join (
+			SELECT 
+				 D.TABLE_NAME , D.COLUMN_NAME , CASE WHEN MAX(P.CONSTRAINT_TYPE) != MIN(P.CONSTRAINT_TYPE) THEN 'MUL' 
 					WHEN MAX(P.CONSTRAINT_TYPE) = 'P' THEN 'PK' 
 					WHEN MIN(P.CONSTRAINT_TYPE) = 'R' THEN 'FK' 
 					WHEN MIN(P.CONSTRAINT_TYPE) = 'U' THEN 'UNI' 
-					ELSE '' END
-			<choose>
-				<when test="baseSchemaFlag">
-					FROM USER_CONS_COLUMNS D JOIN USER_CONSTRAINTS P 
-					ON D.TABLE_NAME = P.TABLE_NAME 
-					AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
-					AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
-					where 1=1
-				</when>
-				<otherwise>
-					FROM ALL_CONS_COLUMNS D JOIN ALL_CONSTRAINTS P ON D.owner = P.owner 
-					and D.TABLE_NAME = P.TABLE_NAME 
-					AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
-					AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
-					where D.owner =  #{schema} 
-				</otherwise>
-			</choose>	
-				and D.TABLE_NAME =atc.TABLE_NAME AND D.COLUMN_NAME =atc.COLUMN_NAME 
-               ) AS CONSTRAINTS
-          <choose>
-		<when test="baseSchemaFlag">
-			from USER_TAB_COLUMNS ATC 	left  join USER_COL_COMMENTS acc 
-			on atc.TABLE_NAME = acc.TABLE_NAME 
-			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
-			where 1=1
-		</when>
-		<otherwise>
-			from ALL_TAB_COLUMNS atc 	left  join ALL_COL_COMMENTS acc 
-			on atc.TABLE_NAME = acc.TABLE_NAME 
-			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
-			and	atc.OWNER = acc.OWNER 
-			where	atc.OWNER = #{schema}
-		</otherwise>
-	</choose>	
+				ELSE '' END as CONSTRAINTS
+		<choose>
+			<when test="baseSchemaFlag">
+				FROM USER_CONS_COLUMNS D JOIN USER_CONSTRAINTS P 
+				ON D.TABLE_NAME = P.TABLE_NAME 
+				AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
+				AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+				where 1=1
+			</when>
+			<otherwise>
+				FROM ALL_CONS_COLUMNS D JOIN ALL_CONSTRAINTS P ON D.owner = P.owner 
+				and D.TABLE_NAME = P.TABLE_NAME 
+				AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
+				AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+				where D.owner =  #{schema} 
+			</otherwise>
+		</choose>
 			<if test="custom != null and custom.tableInfoList != null">
 				and 
 				<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
-					atc.TABLE_NAME in (${item})
+					d.TABLE_NAME in (${item})
 				</foreach>
-			</if>
-			order  by ATC.TABLE_NAME , ATC.COLUMN_ID
+			</if> 
+				group by  D.TABLE_NAME , D.COLUMN_NAME
+		) f on f.TABLE_NAME = atc.TABLE_NAME 
+		and	f.COLUMN_NAME = atc.COLUMN_NAME  
+<choose>
+	<when test="baseSchemaFlag">
+		where 1=1
+	</when>
+	<otherwise>
+		where	atc.OWNER = #{schema}
+	</otherwise>
+</choose>
+		<if test="custom != null and custom.tableInfoList != null">
+			and 
+			<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+				atc.TABLE_NAME in (${item})
+			</foreach>
+		</if>
+		order by ATC.TABLE_NAME, ATC.COLUMN_ID
 	</select>
 	
 	<!-- ================= table end ================= -->

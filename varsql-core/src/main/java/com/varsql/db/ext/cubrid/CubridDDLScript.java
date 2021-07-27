@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.mybatis.SQLManager;
+import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.SQLTemplateFactory;
+import com.varsql.core.sql.SQL;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 
@@ -200,7 +202,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			param.put("ddlOption", ddlOption);
 			param.put("ARGUMENTS",argsSb.toString());
 
-			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "functionScript", param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.CUBRID.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.FUNCTION), param));
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.CUBRID));
@@ -248,7 +250,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			param.put("ddlOption", ddlOption);
 			param.put("ARGUMENTS",argsSb.toString());
 
-			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "procedureScript", param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.CUBRID.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
@@ -348,7 +350,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.CUBRID.getDbVenderName(), "sequenceScript", param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.CUBRID.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			ddlInfo.setCreateScript(ddlStr.toString());

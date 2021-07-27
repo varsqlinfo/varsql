@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE var-sql SYSTEM  "sqlTemplate.dtd">
+
+<var-sql>
+	<!-- 테이블 생성-->
+	<tableCreate><![CDATA[
+/* DROP TABLE {{objectName}} CASCADE CONSTRAINT; */
+CREATE TABLE {{objectName}}(
+	{{scriptSource}}
+);
+
+{{commnetSource}}
+	]]></tableCreate>
+
+	<!-- view 생성-->
+	<viewCreate><![CDATA[
+/* DROP VIEW {{objectName}}; */
+CREATE view {{objectName}}
+{{scriptSource}}
+	]]></viewCreate>
+
+	<!-- function 생성-->
+	<functionCreate><![CDATA[
+/* DROP FUNCTION {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></functionCreate>
+
+	<!-- procedure 생성-->
+	<procedureCreate><![CDATA[
+/* DROP PROCEDURE {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></procedureCreate>
+
+	<!-- trigger 생성-->
+	<triggerCreate><![CDATA[
+/* DROP TRIGGER {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></triggerCreate>
+
+	<!-- index 생성-->
+	<indexCreate><![CDATA[
+/* DROP TRIGGER {{objectName}}; */
+CREATE OR REPLACE {{objectName}}
+{{scriptSource}}
+	]]></indexCreate>
+
+	<!-- sequence 생성-->
+	<sequenceCreate><![CDATA[
+CREATE SEQUENCE {{OBJECT_NAME}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+INCREMENT BY {{INCREMENT_BY}} START WITH 0
+CACHE {{CACHE}} NOORDER  NOCYCLE	]]></sequenceCreate>
+
+	<!-- 컬럼 추가-->
+	<tableAlterAddColumn><![CDATA[
+
+	]]></tableAlterAddColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterRenameColumn><![CDATA[
+
+	]]></tableAlterRenameColumn>
+
+	<!-- 컬럼 수정 추가-->
+	<tableAlterModifyColumn><![CDATA[
+
+	]]></tableAlterModifyColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterDropColumn><![CDATA[
+
+	]]></tableAlterDropColumn>
+
+	<!-- 테이블명 수정 추가-->
+	<renameTable><![CDATA[
+		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
+	]]></renameTable>
+	
+	<!-- select query -->
+	<select>
+	</select>
+	
+	<!-- insert query -->
+	<insert>
+	</insert>
+	
+	<!-- update query -->
+	<update>
+	</update>
+	
+	<!-- delete query -->
+	<delete>
+	</delete>
+	
+	<!-- selectInsert query -->
+	<selectInsert>
+	
+	</selectInsert>
+	
+	<!-- insertUpdate query -->
+	<insertUpdate>
+	</insertUpdate>
+</var-sql>

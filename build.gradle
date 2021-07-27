@@ -5,12 +5,13 @@
  * For more details take a look at the Java Libraries chapter in the Gradle
  * User Manual available at https://docs.gradle.org/6.0.1/userguide/java_library_plugin.html
  */
-
+ext.queryDslVersion = '4.3.1'
 buildscript {
 	ext {
         springBootVersion = '2.2.6.RELEASE'
         springDependencyVersion = '1.0.9.RELEASE'
         querydslPluginVersion = '1.0.10'
+        queryDslVersion = '4.3.1'
         sonarVersion = '3.0'
     }
 
@@ -25,8 +26,9 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "io.spring.gradle:dependency-management-plugin:${springDependencyVersion}"
-        classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}"
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarVersion}"
+        classpath("com.querydsl:querydsl-apt:${queryDslVersion}")
+        classpath("com.querydsl:querydsl-jpa:${queryDslVersion}")
     }
 }
 
@@ -57,11 +59,10 @@ sonarqube {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
+    apply plugin: 'eclipse-wtp'
     apply plugin: 'war'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'com.ewerk.gradle.plugins.querydsl'
 
     bootJar {
 	    enabled = false
@@ -85,7 +86,7 @@ subprojects {
 		,tiles : '3.0.7'
 		,tomcat : '8.5.49'
 		,jspApi : '2.3.3'
-		,slf4j : '1.7.29'
+		,slf4j : '1.7.30'
 		,tiles : '3.0.7'
 		,junit : '5.2.0'
 		,junitPlatform : '1.5.0'
@@ -126,18 +127,6 @@ subprojects {
 		*/
 
 
-		implementation(
-			[group: 'com.querydsl' , name: 'querydsl-apt']
-			,[group: 'com.querydsl' , name: 'querydsl-jpa']
-			,[group: 'com.querydsl' , name: 'querydsl-sql' ,version: def_version.querydslSql]
-			,[group: 'com.querydsl' , name: 'querydsl-sql-spring', version: def_version.querydslSql]
-		)
-
-		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
-		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
-
-
-		//junit
 		testImplementation(
 			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter-api' , version: def_version.junit ]
 			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
@@ -164,6 +153,7 @@ subprojects {
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-security']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-web' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket']
+			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-cache']
 			// ,[ group: 'org.springframework.security' , name: 'spring-security-config' , version: def_version.springSecurity ]
 			,[ group: 'org.springframework.security' , name: 'spring-security-messaging' , version: def_version.springSecurity ] // websocket message 추가. 
 			,[ group: 'org.springframework.security' , name: 'spring-security-taglibs' , version: def_version.springSecurity ]
@@ -194,11 +184,17 @@ subprojects {
 		)
 
 		implementation( // log
-			[ group: 'org.slf4j' , name: 'slf4j-api' , version: '1.7.26']
+			[ group: 'org.slf4j' , name: 'slf4j-api' , version: def_version.slf4j]
 			,[ group: 'ch.qos.logback' , name: 'logback-classic' , version: '1.2.3']
 			,[ group: 'org.codehaus.janino' , name: 'janino' , version: '3.0.12']
 		)
+		
+		// cache module
+		implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.8'
 
+		// guava
+		implementation group: 'com.google.guava', name: 'guava', version: '18.0'
+		
 		// xml to json
 		implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.2'
 
@@ -230,7 +226,7 @@ subprojects {
 		//implementation group: 'javax.servlet' , name: 'jstl' , version: '1.2'  //2020-07-26
 
     	// 내장 톰켓.
-    	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    	providedCompile 'org.apache.tomcat.embed:tomcat-embed-jasper'
 
     	providedCompile(
 			[ group: 'javax.servlet' , name: 'javax.servlet-api' , version: '4.0.0' ]
@@ -243,37 +239,6 @@ subprojects {
 		implementation(
 			[ group: 'com.h2database' , name: 'h2' , version: '1.4.199' ]
 		)
-	}
-
-	def querydslSrcDir = 'src/main/generated'
-
-	querydsl {
-	    library = "com.querydsl:querydsl-apt"
-	    jpa = true
-	    querydslSourcesDir = querydslSrcDir
-	}
-
-	configurations {
-	    querydsl.extendsFrom compileClasspath
-	}
-
-	compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
-	    options.annotationProcessorPath = configurations.querydsl
-	}
-
-	configurations {
-	    querydsl.extendsFrom compileClasspath
-	}
-
-	sourceSets {
-	    main {
-	        java {
-	            srcDirs = ['src/main/java', querydslSrcDir]
-	        }
-	    }
-	}
-	tasks.withType(JavaCompile) {
-	    options.annotationProcessorGeneratedSourcesDirectory = file(querydslSrcDir)
 	}
 
 	test {
@@ -305,7 +270,38 @@ project(':varsql-core') {
 }
 
 project(':varsql-web') {
+	apply plugin: 'io.spring.dependency-management'
+
     dependencies {
         compile project(':varsql-core')
+        
+        implementation(
+			[group: 'com.querydsl' , name: 'querydsl-core']
+			,[group: 'com.querydsl' , name: 'querydsl-apt']
+			,[group: 'com.querydsl' , name: 'querydsl-jpa']
+			,[group: 'com.querydsl' , name: 'querydsl-sql', version: project.property('queryDslVersion')]
+			,[group: 'com.querydsl' , name: 'querydsl-sql-spring', version: project.property('queryDslVersion')]
+		)
+		
+   		annotationProcessor(
+			"com.querydsl:querydsl-apt:"+project.property('queryDslVersion')+":jpa",
+			"org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final",
+			"javax.annotation:javax.annotation-api",
+			"org.projectlombok:lombok"
+		)
     }
+    
+    def generated = "src/main/generated"
+    
+    sourceSets {
+		main.java.srcDirs += [ generated ]
+	}
+	
+	tasks.withType(JavaCompile) {
+		options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+	}
+	
+	clean.doLast {
+		file(generated).deleteDir()
+	}
 }

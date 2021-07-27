@@ -11,6 +11,8 @@ import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 
+import com.vartech.common.utils.VartechUtils;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: AppUUIDGenerator.java
@@ -37,8 +39,7 @@ public class AppUUIDGenerator implements IdentifierGenerator, Configurable {
 	@Override
 	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 		try {
-			String uuid = java.util.UUID.randomUUID().toString().replaceAll("-", "");
-			return prefix + uuid;
+			return prefix + VartechUtils.generateUUID();
 		} catch (RuntimeException he) {
 			throw he;
 		}

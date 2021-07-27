@@ -116,7 +116,7 @@ public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 				throw new ConnectionFactoryException(e.getMessage() , e);
 			}
 
-			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE.code(),e.getMessage() , e);
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, e.getMessage(), e);
 		}
 	}
 

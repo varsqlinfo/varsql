@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import com.varsql.core.sql.beans.GridColumnInfo;
+
 /**
  * 
  * @FileName  : DDLScriptAbstract.java
@@ -31,42 +33,98 @@ public abstract class ResultSetHandlerImpl implements ResultSetHandler{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map getDataValue(Map dataMap, String keyName, String columnName, ResultSet rs, int colIdx, String varsqlType ,String columnTypeName) throws SQLException {
-		if("number".equals(varsqlType)){
-			dataMap.put(keyName,getNumber(rs, colIdx));
-		}else if("string".equals(varsqlType)){
-			dataMap.put(keyName,getString(rs, colIdx));
-		}else if( "clob".equals(varsqlType)){
-			dataMap.put(keyName , getClob(rs, colIdx));
-		}else if( "blob".equals(varsqlType)){
-			dataMap.put(keyName , getBlob(rs, colIdx));
-		}else if("timestamp".equals(varsqlType)){
-			dataMap.put(keyName, getTimeStamp(rs, colIdx));
-		}else if("date".equals(varsqlType)){
-			dataMap.put(keyName, getDate(rs, colIdx));
-		}else if("time".equals(varsqlType)){
-			dataMap.put(keyName,getTime(rs, colIdx));
-		}else if("sqlxml".equals(varsqlType)){
-			dataMap.put(keyName,getSQLXML(rs, colIdx));
-		}else if("binary".equals(varsqlType)){
-			/*
-			if("RAW".equals(columnTypeName)) {
-				dataMap.put(keyName,getRAW(rs, colIdx));
-			}else {
-				dataMap.put(keyName,getBinary(rs, colIdx));
-			}
-			*/
-			dataMap.put(keyName,"[Binary]"+columnTypeName);
-		}else if("nclob".equals(varsqlType)){
-			dataMap.put(keyName,getNCLOB(rs, colIdx));
-		}else if("raw".equals(varsqlType)){
-			dataMap.put(keyName,getNCLOB(rs, colIdx));
-		}else{
-			dataMap.put(keyName,getObject(rs, colIdx));
+	public Map getDataValue(Map rowMap, String keyName, String columnName, ResultSet rs, int colIdx, String varsqlType ,String columnTypeName) throws SQLException {
+		
+		switch (varsqlType) {
+			case "number":
+				rowMap.put(keyName, getNumber(rs, colIdx));
+				break;
+			case "string":
+				rowMap.put(keyName, getString(rs, colIdx));
+				break;
+			case "clob":
+				rowMap.put(keyName, getClob(rs, colIdx));
+				break;
+			case "blob":
+				rowMap.put(keyName, getBlob(rs, colIdx));
+				break;
+			case "timestamp":
+				rowMap.put(keyName, getTimeStamp(rs, colIdx));
+				break;
+			case "date":
+				rowMap.put(keyName, getDate(rs, colIdx));
+				break;
+			case "time":
+				rowMap.put(keyName, getTime(rs, colIdx));
+				break;
+			case "sqlxml":
+				rowMap.put(keyName, getSQLXML(rs, colIdx));
+				break;
+			case "binary":
+				rowMap.put(keyName, "[Binary]"+columnTypeName);
+				break;
+			case "nclob":
+				rowMap.put(keyName, getNCLOB(rs, colIdx));
+				break;
+			case "raw":
+				rowMap.put(keyName, "[raw]"+ columnTypeName);
+				break;
+			default:
+				rowMap.put(keyName, getObject(rs, colIdx));
+				break;
 		}
 		
-		return dataMap; 
+		return rowMap; 
 	}
+	
+	public Map getDataValue(ResultSet rs, Map rowMap, GridColumnInfo columnInfo) throws SQLException {
+		
+		String keyName = columnInfo.getKey();
+		String columnTypeName = columnInfo.getDbType();
+		int colIdx = columnInfo.getNo();
+		
+		switch (columnInfo.getType()) {
+			case "number":
+				rowMap.put(keyName, getNumber(rs, colIdx));
+				break;
+			case "string":
+				rowMap.put(keyName, getString(rs, colIdx));
+				break;
+			case "clob":
+				rowMap.put(keyName, getClob(rs, colIdx));
+				break;
+			case "blob":
+				rowMap.put(keyName, getBlob(rs, colIdx));
+				break;
+			case "timestamp":
+				rowMap.put(keyName, getTimeStamp(rs, colIdx));
+				break;
+			case "date":
+				rowMap.put(keyName, getDate(rs, colIdx));
+				break;
+			case "time":
+				rowMap.put(keyName, getTime(rs, colIdx));
+				break;
+			case "sqlxml":
+				rowMap.put(keyName, getSQLXML(rs, colIdx));
+				break;
+			case "binary":
+				rowMap.put(keyName, "[Binary]"+columnTypeName);
+				break;
+			case "nclob":
+				rowMap.put(keyName, getNCLOB(rs, colIdx));
+				break;
+			case "raw":
+				rowMap.put(keyName, "[raw]"+ columnTypeName);
+				break;
+			default:
+				rowMap.put(keyName, getObject(rs, colIdx));
+				break;
+		}
+		
+		return rowMap; 
+	};
+	
 
 	@Override
 	public Number getNumber(ResultSet rs, int columnIdx) throws SQLException {

@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-config>
-	<pagehelp>/common/helpPage</pagehelp> <!--help page 디폴트 호출 url-->
-	<page403>/error/error403</page403> <!--403 err 디폴트 호출 url-->
-	<page404>/error/error404</page404> <!--404 err 디폴트 호출 url-->
-	<page500>/error/error500</page500> <!--500 err 디폴트 호출 url-->
+	<!-- sso 설정.  -->
+	<sso>
+		<mode>never</mode> <!-- url, always, never-->
+		<token>ssoToken</token>
+		<componentName>simpleSsoComponent</componentName>
+	</sso>
+
+	<!-- page 관련 사항 설정.  -->
+	<page>
+		<help>/common/helpPage</help> <!--help page 디폴트 호출 url-->
+		<page403>/error/error403</page403> <!--403 err 디폴트 호출 url-->
+		<page404>/error/error404</page404> <!--404 err 디폴트 호출 url-->
+		<page500>/error/error405</page500> <!--500 err 디폴트 호출 url-->
+		<pageCsrf>/error/error405</pageCsrf> <!--pageCsrf err 디폴트 호출 url-->
+	</page>
+
 </web-config>

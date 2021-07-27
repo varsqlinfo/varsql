@@ -20,7 +20,6 @@ import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
 import com.vartech.common.utils.HttpUtils;
 
 
@@ -125,11 +124,13 @@ public class AdminDbMgmtController extends AbstractController{
 
 	@RequestMapping(value = "/dbConnectionClose", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionClose(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
+		logger.debug("dbConnectionClose : {}" , vconnid);
 		return adminServiceImpl.connectionClose(vconnid);
 	}
 
 	@RequestMapping(value = "/dbConnectionReset", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionReset(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
+		logger.debug("dbConnectionReset : {}" , vconnid);
 		return adminServiceImpl.dbConnectionReset(vconnid);
 	}
 	

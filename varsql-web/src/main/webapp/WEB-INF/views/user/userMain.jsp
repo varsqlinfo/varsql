@@ -192,7 +192,7 @@ var $userMain = {
 		params.mode = mode;
 
 		if(mode=='add'){
-			params.prevVconnid = (_self.tabObj.getLastItem().conuid ||'');
+			params.prevConuid = (_self.tabObj.getLastItem().conuid ||'');
 		}
 
 		VARSQL.req.ajax({
@@ -245,6 +245,9 @@ window.userMain = {
 	}
 	,viewLoadMessage : function (hideFlag){
 		$userMain.viewLoadMessage(hideFlag);
+	}
+	,isDbActive: function (conuid){
+		return $userMain.tabObj.isActive(conuid);
 	}
 }
 

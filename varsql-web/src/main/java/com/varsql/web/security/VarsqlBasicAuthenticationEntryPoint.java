@@ -20,7 +20,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -38,13 +38,13 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Component
 public class VarsqlBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(VarsqlBasicAuthenticationEntryPoint.class);
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
 			throws IOException {
-		
+
 		logger.warn("VarsqlBasicAuthenticationEntryPoint url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.warn("cookie values : {} " , HttpUtils.getAllCookieString(request));
 		logger.warn("request header : {} " , HttpUtils.getAllReqHeaderString(request));
@@ -52,13 +52,13 @@ public class VarsqlBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
 		logger.warn("varsqlBasicAuthenticationEntryPoint commence : {}", authEx.getMessage(), authEx);
 		response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
 		//response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-		
+
 		if(VarsqlUtils.isAjaxRequest(request)){
-			
+
 			ResponseResult result = new ResponseResult();
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
-			result.setResultCode(ResultConst.CODE.PRECONDITION_FAILED.toInt());
+			result.setResultCode(RequestResultCode.PRECONDITION_FAILED);
 
 			try (Writer writer= response.getWriter()){
 				writer.write(VartechUtils.objectToJsonString(result));
@@ -66,15 +66,15 @@ public class VarsqlBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
 				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
 			}
 		}else{
-			
+
 			try {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/error403");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/invalidToken");
 				dispatcher.forward(request, response);
 			} catch (ServletException | IOException e1) {
 				logger.error("commence Cause :" + e1.getMessage() ,e1);
 			}
 		}
-		
+
 		//response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
 	}
 

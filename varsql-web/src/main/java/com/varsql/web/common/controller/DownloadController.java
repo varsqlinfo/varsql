@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.DataExportUtil;
 import com.varsql.web.dto.file.DownloadInfo;
@@ -48,14 +49,15 @@ public class DownloadController extends AbstractController {
 			logger.debug("download info: {}" , VartechReflectionUtils.reflectionToString(downloadInfo));
 		}
 
-		String exportType = downloadInfo.getExportType();
+		VarsqlFileType exportType = downloadInfo.getExportType();
 
-		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim())?downloadInfo.getFileName() : "varsql-download."+ exportType;
+		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim()) ? downloadInfo.getFileName() : "varsql-download"+ exportType.getExtension();
 
 		downloadName = ValidateUtils.getValidFileName(downloadName);
 
 		try(OutputStream os = res.getOutputStream()) {
-			if("text".equals(exportType)){
+
+			if(VarsqlFileType.TEXT.equals(exportType)){
 				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
 				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
 			}

@@ -10,7 +10,7 @@
 	<div class="col-xs-12 fill">
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class="row">	
+				<div class="row">
 					<div class="col-sm-12">
 						<div class="pull-right margin-bottom5">
 							<button type="button" class="btn btn-default save-btn">
@@ -19,7 +19,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<div>
 					<form id="writeForm" name="writeForm" role="form" class="form-horizontal">
 						<div class="form-group">
@@ -54,7 +54,7 @@
 				            	<select class="form-control" id="lang" name="lang">
 				            		<option value=""><spring:message code="join.form.locale"/></option>
 				            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
-										<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>       
+										<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
 									</c:forEach>
 				            	</select>
 				            </div>
@@ -82,11 +82,11 @@
 		}
 		,initEvt : function (){
 			var _self = this;
-			
+
 			$('.save-btn').on('click',function (){
 				$('#writeForm').submit();
 			});
-			
+
 			$('#writeForm').bootstrapValidator({
 				message: 'This value is not valid',
 				feedbackIcons: {
@@ -100,7 +100,7 @@
 							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001') }
 							,stringLength: { min: 3, max: 100, message: VARSQL.messageFormat('varsql.form.0004',{range : '3~100'}) }
 						}
-				  	}	
+				  	}
 					,uemail : {
 						validators: {
 							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001')}
@@ -119,32 +119,29 @@
 			}).on('success.form.bv', function(e) {
 				// Prevent form submission
 				e.preventDefault();
-				
+
 				_self.saveInfo();
 			});
 		}
 		// 정보 저장.
 		,saveInfo : function (){
 			var _self = this;
-			
+
 			var params  =$('#writeForm').serializeJSON();
-			
+
 			VARSQL.req.ajax({
 				url: {type:VARSQL.uri.user, url:'/preferences/userInfoSave'},
-				cache: false,
-				type:"post",
 				data:params,
-				dataType: "json",
 				success: function(resData) {
 					if(!VARSQL.req.validationCheck(resData)){
-						return ; 
+						return ;
 					}else{
 						if(resData.resultCode != 200){
 							alert(resData.message);
 							return ;
 						}
 					}
-					
+
 					location.href= location.href;
 				}
 			});

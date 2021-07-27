@@ -30,17 +30,13 @@ import com.varsql.web.model.converter.DomainMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.PagingUtil;
 
 public final class VarsqlUtils {
 
 	private VarsqlUtils() {}
-
-	public static String generateUUID (){
-		return UUID.randomUUID().toString().replaceAll("-", "");
-	}
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
 		String headerInfo = request.getHeader("X-Requested-With");
@@ -234,37 +230,35 @@ public final class VarsqlUtils {
 	 * @return
 	 */
 	public static String mapToJsonObjectString(Map<String,String>  info) {
-			
+
 		StringBuffer returnVal = new StringBuffer();
 		boolean firstFlag = true;
 		returnVal.append("{");
-		
+
 		for( Map.Entry<String, String> item : info.entrySet() ){
 			String key = item.getKey();
 			String prefVal = item.getValue();
-			
+
 			returnVal.append(firstFlag?"" : ",").append("\"").append(key).append("\":").append(prefVal);
-			
-			firstFlag = false; 
+
+			firstFlag = false;
         }
 
 		returnVal.append("}");
-		
+
 		return returnVal.toString();
 	}
-	
+
 	public static ResponseResult getResponseResultValidItem(ResponseResult resultObject, BindingResult result) {
-		resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-		resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
-		
-		
+		resultObject.setResultCode(RequestResultCode.DATA_NOT_VALID);
+
 		List<FieldError> fieldErrors = result.getFieldErrors();
-		
+
 		String errorMessage = "";
 		if(fieldErrors.size() >0) {
 			FieldError errorInfo = fieldErrors.get(0);
 			errorMessage= String.format("field : %s\nmessage : %s\nvalue : %s", errorInfo.getField(), errorInfo.getDefaultMessage() , errorInfo.getRejectedValue());
-			
+
 			resultObject.setItemOne(errorInfo.getField());
 		}else {
 			List<ObjectError> allErrors = result.getAllErrors();
@@ -274,12 +268,11 @@ public final class VarsqlUtils {
 				errorMessage= String.format("code : %s, message : %s", errorInfo.getCode() , errorInfo.getDefaultMessage());
 			}else {
 				resultObject.setItemOne(result.getGlobalError().getCode());
-				errorMessage= String.format("code : %s, message : %s", result.getGlobalError().getCode() ,result.getGlobalError().getDefaultMessage()); 
+				errorMessage= String.format("code : %s, message : %s", result.getGlobalError().getCode() ,result.getGlobalError().getDefaultMessage());
 			}
 		}
-		
+
 		resultObject.setMessage(errorMessage);
-		return resultObject; 
-		
+		return resultObject;
 	}
 }

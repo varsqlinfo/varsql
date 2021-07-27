@@ -27,7 +27,7 @@ import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 
@@ -564,7 +564,7 @@ public abstract class DBMetaImpl implements DBMeta{
 			}
 			rs.close();
 		}finally{
-			SqlUtils.close(pstmt ,rs);
+			JdbcUtils.close(pstmt ,rs);
 		}
 		return reval;
 	}

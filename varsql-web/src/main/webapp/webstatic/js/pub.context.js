@@ -1,7 +1,7 @@
 /**
  * pubContextMenu: v0.0.1
  * ========================================================================
- * Copyright 2016-2019 ytkim
+ * Copyright 2016-2020 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -57,6 +57,7 @@ function Plugin(selector, options , uuid) {
 	this.options = $.extend({}, defaults, options);
 	this.contextData = {};
 	this.selectElement;
+	this.targetInfo;
 
 	if(pubContextElement ===false){
 		$('body').append('<div id="pub-context-area"></div>');
@@ -294,6 +295,20 @@ Plugin.prototype ={
      */
 	,getTheme : function (){
 		return this.options.theme;
+	}
+	/**
+     * @method setTargetInfo
+     * @description set context target item info
+     */
+	,setTargetInfo : function (targetInfo){
+		this.targetInfo = targetInfo;
+	}
+	/**
+     * @method setTargetInfo
+     * @description get context target item info
+     */
+	,getTargetInfo : function (){
+		return this.targetInfo;
 	}
 	/**
      * @method getCheckBoxId

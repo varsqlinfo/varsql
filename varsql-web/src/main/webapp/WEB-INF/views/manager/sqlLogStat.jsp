@@ -52,7 +52,7 @@
 							 </div>
 					    </div>
 					</div>
-			    	
+
 			    </div>
 			</div>
 			<!-- /.panel-heading -->
@@ -105,38 +105,38 @@ VarsqlAPP.vueServiceBean( {
 				,format: "yyyy-mm-dd"
 				,autoclose: true
 			}).on('changeDate', function(e){
-				var searchGbn = $('#searchGubun').val(); 
+				var searchGbn = $('#searchGubun').val();
 				if(searchGbn != ''){
 					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number(searchGbn));
 				}
-				
+
 		    });
-			
+
 			$('#edt').datepicker({
 				orientation: "top auto"
 				,format: "yyyy-mm-dd"
 				,autoclose: true
 			}).on('changeDate', function(e){
-				var searchGbn = $('#searchGubun').val(); 
+				var searchGbn = $('#searchGubun').val();
 				if(searchGbn != ''){
 					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
 				}
 		    });
-			
+
 			// 주별 등 change
 			$('#searchGubun').on('change',function (){
-				var searchGbn = $('#searchGubun').val(); 
+				var searchGbn = $('#searchGubun').val();
 				if(searchGbn != ''){
 					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number('-'+searchGbn));
 				}
 			});
 		}
 		,initChart : function (){
-			var _self = this; 
-			
-			// main chart; 
+			var _self = this;
+
+			// main chart;
 			VARSQL.pluginUI.chart.bar("#sqlDateChart", {
-				
+
 				axis : [{
 			        x : {
 			            type : "block",
@@ -165,7 +165,7 @@ VarsqlAPP.vueServiceBean( {
 			    }
 				,widget : [{
 			        type : "tooltip"
-			    }, 
+			    },
 				{
 			        type : "title",
 			        text : "COUNT",
@@ -174,13 +174,13 @@ VarsqlAPP.vueServiceBean( {
 			        dx : -120,
 			        dy : -10
 			    }
-				
+
 				]
 			});
-			
-			// 상세차트. 
+
+			// 상세차트.
 			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-				
+
 				axis : [{
 			        x : {
 			            type : "block",
@@ -211,33 +211,31 @@ VarsqlAPP.vueServiceBean( {
 				,widget : [
 					{ type : "title", text : "Query 구문별" },
 			        { type : "tooltip", orient: "center" },
-				
+
 				]
 			});
 		}
-		
+
 		,dbStatsInfo:function (sObj){
-			var _self = this; 
+			var _self = this;
 			sObj=$(sObj);
-			
+
 			this.$ajax({
-				type:'POST'
-				,data:{
+				data:{
 					vconnid: _self.vconnid
 					,s_date: $('#sdt').val()+' 00:00:00'
 					,e_date: $('#edt').val()+' 23:59:59'
 				}
 				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
-				,dataType:'JSON'
 				,success:function (response){
-					var items = response.items ||[]; 
-					
+					var items = response.items ||[];
+
 					VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 						axis : [{
 					        data :items
 					    }]
 					});
-					
+
 					if(items.length > 0){
 						_self.dateDetailStats(items[items.length-1].viewDt);
 					}else{
@@ -247,7 +245,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,dateDetailStats:function (sObj){
-			var _self = this; 
+			var _self = this;
 			if(sObj==''){
 				VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
 					axis : [{
@@ -255,9 +253,9 @@ VarsqlAPP.vueServiceBean( {
 				    }]
 				});
 				_self.sqlUserRank('');
-				return ; 
+				return ;
 			}
-			_self.detailDate = sObj; 
+			_self.detailDate = sObj;
 			this.$ajax({
 				data:{
 					vconnid: _self.vconnid
@@ -266,8 +264,8 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
 				,success:function (response){
-					var items = response.items ||[]; 
-					
+					var items = response.items ||[];
+
 					if(items.length > 0){
 						VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
 							axis : [{
@@ -278,23 +276,23 @@ VarsqlAPP.vueServiceBean( {
 					}else{
 						_self.sqlUserRank('');
 					}
-					
-					return ; 
+
+					return ;
 				}
 			});
 		}
 		,sqlUserRank : function (type){
-			
-			var _self =this; 
+
+			var _self =this;
 			if(type==''){
 				VARSQL.pluginUI.chart.bar("#sqlUserRankChart", {
 					axis : [{
 				        data :[]
 				    }]
 				});
-				return ; 
+				return ;
 			}
-			var date = _self.detailDate; 
+			var date = _self.detailDate;
 			this.$ajax({
 				data:{
 					vconnid: _self.vconnid
@@ -304,20 +302,20 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayUserRank'}
 				,success:function (response){
-					var names = {}; 
-					
+					var names = {};
+
 					var chartData = [];
-					
+
 					var items = response.items;
 					var countData = {};
 					$.each(items , function (idx , item){
-						var label = item.xCol; 
+						var label = item.xCol;
 						names[label] = label;
 						countData[label] =  item.yCol;
 					});
 					chartData.push(countData);
-					
-					// 상세차트. 
+
+					// 상세차트.
 					VARSQL.pluginUI.chart.pie("#sqlUserRankChart", {
 					    axis : {
 					        data : chartData
@@ -341,11 +339,11 @@ VarsqlAPP.vueServiceBean( {
 					        }
 					    ]
 					});
-					
+
 				}
 			});
 		}
-		
+
 	}
 });
 

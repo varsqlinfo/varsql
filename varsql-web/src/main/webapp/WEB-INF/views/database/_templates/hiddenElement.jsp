@@ -209,7 +209,7 @@
 							</li>
 							<li>
 								<label class="checkbox-container">INSERT Query
-								  <input type="radio" name="exportType" value="insert">
+								  <input type="radio" name="exportType" value="sql">
 								  <span class="radiomark"></span>
 								</label>
 							</li>

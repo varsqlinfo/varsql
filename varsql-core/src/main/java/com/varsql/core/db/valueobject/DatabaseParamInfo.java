@@ -37,6 +37,9 @@ public class DatabaseParamInfo{
 
 	// db object name
 	private String objectName;
+	
+	// db object names
+	private String[] objectNames;
 
 	// objet type
 	private String objectType;
@@ -46,6 +49,8 @@ public class DatabaseParamInfo{
 
 	// userid
 	private String viewid;
+	
+	private boolean refresh; 
 
 	private boolean basetableYn;
 
@@ -131,6 +136,14 @@ public class DatabaseParamInfo{
 	public void setObjectName(String objectName) {
 		this.objectName = objectName;
 	}
+	
+	public String[] getObjectNames() {
+		return objectNames;
+	}
+
+	public void setObjectNames(String objectNames) {
+		this.objectNames = objectNames.split(";");
+	}
 
 	public String getDbType() {
 		return dbType;
@@ -176,5 +189,13 @@ public class DatabaseParamInfo{
 
 	public void setSchemaViewYn(boolean schemaViewYn) {
 		this.schemaViewYn = schemaViewYn;
+	}
+
+	public boolean isRefresh() {
+		return refresh;
+	}
+
+	public void setRefresh(String refresh) {
+		this.refresh = Boolean.parseBoolean(refresh);
 	}
 }

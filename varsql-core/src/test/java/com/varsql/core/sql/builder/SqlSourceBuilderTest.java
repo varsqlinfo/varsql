@@ -11,6 +11,7 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import com.varsql.core.db.DBType;
+import com.varsql.core.sql.util.SQLParserUtils;
 import com.varsql.core.test.BaseTest;
 
 class SqlSourceBuilderTest extends BaseTest {
@@ -48,11 +49,11 @@ class SqlSourceBuilderTest extends BaseTest {
 			
 			HashMap param = new HashMap();
 			
-			List<SQLStatement> statements = SQLUtils.toStatementList(sql, dbType.getDbParser());
+			List<SQLStatement> statements = SQLUtils.toStatementList(sql, SQLParserUtils.getDbParser(dbType));
 			
 			for(SQLStatement statement : statements){
 				
-				System.out.println("main sysout " + SQLUtils.toSQLString(statement, dbType.getDbParser() , null));
+				System.out.println("main sysout " + SQLUtils.toSQLString(statement, SQLParserUtils.getDbParser(dbType) , null));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

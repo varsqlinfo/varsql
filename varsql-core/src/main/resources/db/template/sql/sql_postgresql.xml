@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE var-sql SYSTEM  "sqlTemplate.dtd">
+
+<var-sql>
+	<!-- 테이블 생성-->
+	<tableCreate><![CDATA[
+COMMENT ON TABLE 테이블이름 IS '주석내용';
+	]]></tableCreate>
+
+	<!-- view 생성-->
+	<viewCreate><![CDATA[
+/* DROP VIEW {{objectName}}; */
+CREATE view {{objectName}}
+{{scriptSource}}
+	]]></viewCreate>
+
+	<!-- function 생성-->
+	<functionCreate><![CDATA[
+CREATE FUNCTION {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
+AS LANGUAGE {{LANG}}
+NAME {{SOURCE}};
+	]]></functionCreate>
+
+	<!-- procedure 생성-->
+	<procedureCreate><![CDATA[
+CREATE PROCEDURE {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
+AS LANGUAGE {{LANG}}
+NAME {{SOURCE}};
+	]]></procedureCreate>
+
+	<!-- trigger 생성-->
+	<triggerCreate><![CDATA[
+/* DROP TRIGGER ; */
+CREATE OR REPLACE
+	]]></triggerCreate>
+
+	<!-- index 생성-->
+	<indexCreate><![CDATA[
+
+	]]></indexCreate>
+
+	<!-- sequence 생성-->
+	<sequenceCreate><![CDATA[
+{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{/equals}}
+CREATE SEQUENCE {{OBJECT_NAME}}
+INCREMENT {{INCREMENT_BY}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+START {{START_VALUE}}
+{{#equals YES CYCLE_OPTION}}CYCLE
+{{/equals}}
+	]]></sequenceCreate>
+
+	<!-- 컬럼 추가-->
+	<tableAlterAddColumn><![CDATA[
+alter table {{TABLE_NAME}} add ({{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}})
+	]]></tableAlterAddColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterRenameColumn><![CDATA[
+alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} to {{NEW_COLUMN_NAME}}
+	]]></tableAlterRenameColumn>
+
+	<!-- 컬럼 수정 추가-->
+	<tableAlterModifyColumn><![CDATA[
+alter table {{TABLE_NAME}} alter column {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}};
+	]]></tableAlterModifyColumn>
+
+	<!-- 컬럼명 수정 추가-->
+	<tableAlterDropColumn><![CDATA[
+alter table {{TABLE_NAME}} DROP {{COLUMN_NAME}}
+	]]></tableAlterDropColumn>
+
+	<!-- 테이블명 수정 추가-->
+	<renameTable><![CDATA[
+alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
+	]]></renameTable>
+	
+	<!-- select query -->
+	<select>
+	</select>
+	
+	<!-- insert query -->
+	<insert>
+	</insert>
+	
+	<!-- update query -->
+	<update>
+	</update>
+	
+	<!-- delete query -->
+	<delete>
+	</delete>
+	
+	<!-- selectInsert query -->
+	<selectInsert>
+	
+	</selectInsert>
+	
+	<!-- insertUpdate query -->
+	<insertUpdate>
+	</insertUpdate>
+</var-sql>

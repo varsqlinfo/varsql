@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.common.util.CommUtil;
+import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
 
 /**
@@ -32,7 +32,7 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 
     	if (authentication != null && authentication.getDetails() != null) {
 			try {
-				authDao.addLog(SecurityUtil.loginInfo() , "logout", CommUtil.getClientPcInfo(request));
+				authDao.addLog(SecurityUtil.loginInfo() , "logout", CommUtils.getClientPcInfo(request));
 			} catch (Exception e) {
 				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
 			}

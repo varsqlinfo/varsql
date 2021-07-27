@@ -18,7 +18,7 @@ import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 
 /**
 *-----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ public class DbDiffServiceImpl{
 		DBConnectionEntity vtConnRVO = dbConnectionEntityRepository.findByVconnid(vconnid);
 
 		if(vtConnRVO==null){
-			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setItemList(null);
 		}else{
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVtype());
@@ -86,7 +86,7 @@ public class DbDiffServiceImpl{
 		DBConnectionEntity vtConnRVO = dbConnectionEntityRepository.findByVconnid(vconnid);
 
 		if(vtConnRVO==null){
-			resultObject.setStatus(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setItemList(null);
 		}else{
 			DatabaseParamInfo dpi = getDatabaseParamInfo(vtConnRVO);

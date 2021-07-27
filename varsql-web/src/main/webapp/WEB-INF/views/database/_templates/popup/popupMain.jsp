@@ -7,7 +7,7 @@
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 </head>
-<body class="varsql-main">
+<body class="varsql-popup-main">
 	<tiles:insertAttribute name="body" />
 </body>
 

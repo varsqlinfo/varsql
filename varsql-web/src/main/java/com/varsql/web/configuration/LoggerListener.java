@@ -1,5 +1,7 @@
 package com.varsql.web.configuration;
 
+import com.vartech.common.utils.StringUtils;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -36,8 +38,14 @@ public class LoggerListener extends ContextAwareBase implements LoggerContextLis
         	context.putProperty("runtime", "local");
         	context.putProperty("LOG_DIR", "c:/zzz/logs/varsql");
         }else {
-        	context.putProperty("runtime", "prod");
-        	context.putProperty("LOG_DIR", System.getProperty("catalina.base")+"/logs/varsql");
+	        String logBase = System.getProperty("catalina.base"); 
+        	if(!StringUtils.isBlank(logBase)) {
+	        	context.putProperty("runtime", "prod");
+	        	context.putProperty("LOG_DIR", System.getProperty("catalina.base")+"/logs/varsql");
+        	}else {
+        		context.putProperty("runtime", "local");
+            	context.putProperty("LOG_DIR", "c:/zzz/logs/varsql");
+        	}
         }
 
         started = true;

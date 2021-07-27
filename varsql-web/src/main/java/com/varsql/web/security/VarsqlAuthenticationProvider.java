@@ -22,22 +22,29 @@ public class VarsqlAuthenticationProvider implements AuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
 		String username = authentication.getName();
 		String password = (String) authentication.getCredentials();
-		
+
 		Map<String, String> userInfo = new HashMap<String,String>();
-		
+
 		userInfo.put("username", username);
 		userInfo.put("password", password);
-		
-		User user = userService.loadUserByUsername(username , password);
-		
-		if (user == null) {
-			throw new BadCredentialsException("Username not match.");
+
+		User user;
+
+		if(authentication instanceof SsoAuthToken) {
+			user = userService.loadUserByUsername(username , password, true);
+		}else {
+			user = userService.loadUserByUsername(username , password);
 		}
-		
+
+		if (user == null) {
+			throw new BadCredentialsException("Username not match. : '"+ username+"'");
+		}
+
 		if(user.isBlockYn()){
-			throw new BlockingUserException("block user");
+			throw new BlockingUserException("block user : '"+ username+"'");
 		}
 
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());

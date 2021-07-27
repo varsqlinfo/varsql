@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.CommUtil;
+import com.varsql.core.common.util.CommUtils;
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 
@@ -45,9 +45,9 @@ public class CommonServiceImpl{
 
 			sqlExceptionLogEntityRepository.save(ExceptionLogEntity.builder()
 					.excpType(exceptionType)
-					.excpCont(CommUtil.getExceptionStr(e).substring(0 , 2000))
+					.excpCont(CommUtils.getExceptionStr(e).substring(0 , 2000))
 					.excpTitle(exceptionTitle.length() > 1500 ?exceptionTitle.substring(0,1500) :  exceptionTitle)
-					.serverId(CommUtil.getHostname()).build());
+					.serverId(CommUtils.getHostname()).build());
 		}catch(Throwable e1) {
 			logger.error("insertExceptionLog Cause : "+ e1.getMessage() ,e1);
 		}

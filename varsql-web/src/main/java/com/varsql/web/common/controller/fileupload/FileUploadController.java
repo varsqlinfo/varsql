@@ -1,8 +1,6 @@
 package com.varsql.web.common.controller.fileupload;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,17 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
-import com.varsql.web.dto.file.FileInfo;
-import com.varsql.web.util.VarsqlUtils;
+import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.FileUtils;
 
 
 
@@ -45,8 +40,6 @@ import com.vartech.common.utils.FileUtils;
 public class FileUploadController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
-
-	String fileUploadPath = Configuration.getInstance().getFileUploadPath();
 
 	@Autowired
 	private FileUploadService fileUploadService;
@@ -72,12 +65,12 @@ public class FileUploadController extends AbstractController {
 
 		ResponseResult result = new ResponseResult();
 
-		List<FileInfo> uploadFiles = fileUploadService.uploadFiles(div, paramFileContId , mtfRequest);
+		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, div, paramFileContId);
 
         if(uploadFiles.size() > 0) {
         	result.setItemList(uploadFiles);
     	}else {
-    		result.setResultCode(VarsqlAppCode.COMM_FILE_EMPTY.code());
+    		result.setResultCode(VarsqlAppCode.COMM_FILE_EMPTY);
     		result.setMessage("select file");
     	}
 

@@ -148,7 +148,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 			userMgmtRepository.save(userInfo);
 			resultObject.setItemOne(1);
 		}else{
-			resultObject.setResultCode(VarsqlAppCode.COMM_PASSWORD_NOT_VALID.code());
+			resultObject.setResultCode(VarsqlAppCode.COMM_PASSWORD_NOT_VALID);
 		}
 
 		return resultObject;

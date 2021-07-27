@@ -100,6 +100,7 @@ var _g_cache = {
 VARSQL.ui = VARSQL.ui||{};
 
 var _ui = {};
+var _$userMain= top != window ? top.userMain : {isDbActive:function (){return true; }}; // 부모 userMain;
 
 _ui.utils = {
 	copy : function( target, source ) {
@@ -143,6 +144,13 @@ _ui.pluginProxy = {
 			_g_cache.setSOMetaCache(objType,cacheItem.name, 'column', {items:cacheItem.colList});
 		}
 	}
+	,refreshObjectInfo : function (objInfo){
+		_ui.dbSchemaObject.getObjectTypeData({
+			contentid : objInfo.type
+			,objectName : objInfo.objectName
+			,objectIdx : objInfo.objectIdx
+		} ,true)
+	}
 }
 
 //컨텍스트 메뉴 sql 생성 부분 처리 .
@@ -170,13 +178,13 @@ VARSQL.ui.getTheme = function (){
 VARSQL.ui.create = function (_opts){
 
 	VARSQLCont.init(_opts.dbtype , _ui.base);
-	
+
 	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
-	
+
 	delete _opts.userSettingInfo['main.database.setting'];
-	
+
 	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
-	
+
 	_ui.initContextMenu();
 	_ui.headerMenu.init();
 	_ui.initEditorOpt();
@@ -382,14 +390,19 @@ _ui.headerMenu ={
 							break;
 						case 'import': // 가져오기 및 내보내기
 
-							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
+							var dimension = VARSQL.util.browserSize();
+							var popt = 'width=800px,height=500px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
-							_self.openMenuDialog(VARSQL.messageFormat('menu.file.import'),'fileImport',{type:VARSQL.uri.database, url:'/menu/fileImport'}, {'width':600,'height' : 400});
+							VARSQLUI.popup.open(VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid), {
+								name : _g_options.conuid
+								,viewOption : popt
+							});
+
 							break;
 						case 'export': // 가져오기 및 내보내기
-							
+
 							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
-							
+
 							_self.openMenuDialog(VARSQL.messageFormat('menu.file.export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
 							break;
 						case 'newwin': // 새창 보기.
@@ -619,15 +632,15 @@ _ui.headerMenu ={
 			,data: param
 			,dataType : 'text'
 			,success:function (resData){
-				var eleId = 'openMenuDialog_'+type; 
-				
+				var eleId = 'openMenuDialog_'+type;
+
 				$('#varsqlExtensionsElementArea').append('<div id="'+eleId+'"></div>');
 				eleId = '#'+eleId;
-				
+
 				var ele =$(eleId);
 				ele.html(resData);
 				ele.attr('title',title);
-				
+
 				var menuDialog =VARSQLUI.dialog.open(eleId, VARSQL.util.objectMerge({
 					width :  450
 					,height : 400
@@ -707,12 +720,17 @@ _ui.headerMenu ={
 // 환경 설정 관련
 _ui.preferences= {
 	save : function (prefInfo , callback){
+
+		if(!_$userMain.isDbActive(_g_options.param.conuid)){
+			return ;
+		}
+
 		if(prefInfo =='init'){
 			prefInfo = {} ;
 		}else{
 			prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
 		}
-		
+
 		VARSQLApi.preferences.save({
 			conuid : _g_options.param.conuid
 			,prefKey : 'main.database.setting'
@@ -1229,7 +1247,7 @@ _ui.dbSchemaObject ={
 		$(_self.options.objectTypeTabContentEleId).empty().html(strHtm.join(''));
 	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
-	,getObjectTypeData:function(selObj,refresh){
+	,getObjectTypeData : function(selObj,refresh){
 		var _self = this;
 		var $contentId = selObj.contentid;
 
@@ -1267,7 +1285,9 @@ _ui.dbSchemaObject ={
 			}
 		}
 
-		var param =_getParam({'objectType':$contentId});
+		var param =_getParam({'objectType':$contentId, 'objectNames' : selObj.objectName , 'objectIdx' : selObj.objectIdx});
+
+		param.refresh = refresh;
 
 		VARSQL.req.ajax({
 			loadSelector : _getSelector('schemaObject',_selectorType.PLUGIN)
@@ -1276,8 +1296,11 @@ _ui.dbSchemaObject ={
 			,success:function (resData){
 				_g_cache.setSOMetaInitFlag($contentId, true);
 				_g_cache.setCacheSchemaObject($contentId, resData); // object cache
-				callMethod.call(_self,resData);
-				_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
+				callMethod.call(_self, resData, param);
+
+				if(VARSQL.isBlank(selObj.objectName)){
+					_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
+				}
 			}
 		});
 
@@ -1333,6 +1356,7 @@ _ui.dbSchemaObject ={
 
 //table
 _ui.addDbServiceObject('table',{
+	objectGridObj : {},
 	_table : function (resData, reqParam){
 
 		var _self = this;
@@ -1363,8 +1387,13 @@ _ui.addDbServiceObject('table',{
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 
+			if(reqParam.refresh ==true  && !VARSQL.isBlank(reqParam.objectNames)){
+				_self.objectGridObj.updateRow(reqParam.objectIdx, itemArr[0], true);
+				return ;
+			}
+
 			if(resData.refreshFlag===false) return ;
-			
+
 			var contextItems = [
 				{header: "title" , "key": "contextTitle"}
 				,{divider:true}
@@ -1388,32 +1417,32 @@ _ui.addDbServiceObject('table',{
 					]
 				}
 			];
-			
+
 			var settingItems = _g_options.userSettingInfo['main.contextmenu.serviceobject'];
-			
+
 			settingItems = VARSQL.isArray(settingItems) ? settingItems : [];
-			
+
 			var userContextItems = [];
 			for(var i =0 ;i <settingItems.length;i++){
 				var userItem = settingItems[i];
-				
-				var pItemKey = 'uCustomItem_'+i; 
-				
+
+				var pItemKey = 'uCustomItem_'+i;
+
 				var addItem = {key : pItemKey	,name : userItem.name ,subMenu : []};
-				
+
 				var templateInfos = userItem.templateInfos;
-				
+
 				for(var j =0 ;j < templateInfos.length; j++){
-					var templateInfo = templateInfos[j]; 
-					templateInfo.key = pItemKey +'_'+ j; 
-					templateInfo.isTemplate =true; 
-					
+					var templateInfo = templateInfos[j];
+					templateInfo.key = pItemKey +'_'+ j;
+					templateInfo.isTemplate =true;
+
 					addItem.subMenu.push(templateInfo);
 				}
 				userContextItems.push(addItem);
 			}
 			contextItems = contextItems.concat(userContextItems);
-			
+
 			contextItems = contextItems.concat([
 				{divider:true}
 				,{key :'export', "name": VARSQL.messageFormat('export')
@@ -1421,8 +1450,10 @@ _ui.addDbServiceObject('table',{
 						{key : "export_data","name": VARSQL.messageFormat('data.export')}
 					]
 				}
+				,{divider:true}
+				,{key : "refresh" , "name": VARSQL.messageFormat('refresh')}
 			]);
-			
+
 			var tableObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				setting : {
 					enabled : true
@@ -1460,8 +1491,8 @@ _ui.addDbServiceObject('table',{
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							var item = tableObj.getRowItemToElement($(this));
-							tableObj.config.rowContext.changeHeader('contextTitle',0,item.name);
+							var itemInfo = tableObj.getRowItemToElement($(this));
+							tableObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						//editor 없을대 처리, 경고창으로 대체 함.
 						,disableItemKey : function (items){
@@ -1475,7 +1506,7 @@ _ui.addDbServiceObject('table',{
 						,callback: function(key,sObj) {
 							var sItem = this.gridItem;
 							var tmpName = sItem.name;
-							
+
 							if(key=='dataview_all'){
 								_ui.SQL._sqlData('select * from '+getTableName(tmpName),false);
 								return ;
@@ -1494,6 +1525,12 @@ _ui.addDbServiceObject('table',{
 								return ;
 							}
 
+							if(key == 'refresh'){
+								_ui.pluginProxy.refreshObjectInfo({type : $$objectType , objectName : tmpName, objectIdx : this.rowIdx});
+								return ;
+							}
+
+
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
 
 							var params ={
@@ -1509,18 +1546,18 @@ _ui.addDbServiceObject('table',{
 							}
 
 							if(sObj.isTemplate===true){
-								
+
 								var result =VARSQLTemplate.render.generateSource(sObj, {
 					                'table' : sItem
 					                ,'columns' : cacheData.items
 					            });
-								
+
 								if(result.isError){
 									VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0025'));
 					            	return ;
 					    		}
-					            
-								var resultCode = result.value; 
+
+								var resultCode = result.value;
 					            if(sObj.viewMode=='editor'){
 					            	_ui.SQL.addSqlEditContent(resultCode, false);
 					            }else{
@@ -1537,6 +1574,8 @@ _ui.addDbServiceObject('table',{
 					}
 				}
 			});
+
+			_self.objectGridObj = tableObj;
 		}catch(e){
 			VARSQL.log.info(e);
 		}
@@ -1606,8 +1645,8 @@ _ui.addDbServiceObject('view',{
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							var item = viewObj.getRowItemToElement($(this));
-							viewObj.config.rowContext.changeHeader('contextTitle',0,item.name);
+							var itemObj = viewObj.getRowItemToElement($(this));
+							viewObj.config.rowContext.changeHeader('contextTitle',0,itemObj.item.name);
 						}
 						,callback: function(key,sObj) {
 							var ele = this.element, sItem = this.gridItem;
@@ -4157,6 +4196,7 @@ _ui.SQL = {
 
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
+		    ,disableResultCheck : true
 		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
 		    ,data:params
 		    ,success:function (resData){
@@ -4220,17 +4260,17 @@ _ui.SQL = {
 			$('#exportConditionQuery').val('');
 			$.pubGrid('#data-export-column-list').setData(items);
 			$.pubGrid('#data-export-column-list').setCheckItems('all');
-			
+
 			return ;
 		}else{
 			$(_g_options.hiddenArea).append($('#dataExportTemplate').html());
 			modalEle = $('#data-export-modal');
 			$('#exportFileName').val(tmpName);
 			$('#exportObjectName').val(tmpName);
-			
+
 			var exportConditionArea = $('#exportConditionQueryArea');
 			$('#exportAdvancedBtn').on('click',function (e){
-				
+
 				if(exportConditionArea.hasClass('display-off')){
 					exportConditionArea.removeClass('display-off');
 				}else{
@@ -4587,9 +4627,11 @@ _ui.sqlDataArea =  {
 
 		if(_self.initDataGridContextFlag===false) { // grid context menu 처리.
 			_self.initDataGridContextFlag= true;
+			var dataSelectorEle =$(_self.options.dataGridSelector);
 			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector, {
 				items: [
 					{key : "copy" , "name": "복사"}
+					,{key : "detail" , "name": "상세보기"}
 					,{key : "download" , "name": "다운로드"
 						,subMenu : [
 							{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
@@ -4601,9 +4643,47 @@ _ui.sqlDataArea =  {
 						]
 					}
 				]
+				,beforeSelect :function (contextInfo){
+					var trEle = $(contextInfo.evt.target).closest('.pub-body-tr', dataSelectorEle);
+					if(trEle.length > 0){
+						gridContextObj.enableItem('detail',0);
+						var itemObj = $.pubGrid(_self.currnetDataGridSelector).getRowItemToElement(trEle);
+						gridContextObj.setTargetInfo(itemObj.item);
+					}else{
+						gridContextObj.disableItem('detail',0);
+					}
+
+				}
+				,disableItemKey : function (items){
+					return [];
+				}
 				,callback: function(key,sObj) {
 					if(key =='copy'){
 						$.pubGrid(_self.currnetDataGridSelector).copyData();
+						return ;
+					}
+
+					if(key =='detail'){
+						var popupId = 'pop_'+_g_options.param.conuid
+
+						var popupObj = VARSQLUI.popup.open('/vsql/webstatic/html/itemView.html?popid='+popupId, {
+							name : 'itemDetailView' +_g_options.param.conuid
+							,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
+						});
+
+						try{
+							if(VARSQL.isUndefined(popupObj.viewItem)){
+								window[popupId] = function (){
+									popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
+									//delete window[popupId];
+								}
+							}else{
+								popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
+							}
+
+
+						}catch(e){}
+
 						return ;
 					}
 

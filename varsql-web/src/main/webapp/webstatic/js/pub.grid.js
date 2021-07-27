@@ -1,7 +1,7 @@
 /**
  * pubGrid v0.0.1
  * ========================================================================
- * Copyright 2016-2019 ytkim
+ * Copyright 2016-2020 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -482,7 +482,9 @@ Plugin.prototype ={
 
 			if(_cb){
 				_this.options.rowOptions.contextMenu.callback = function(key,sObj) {
-					this.gridItem = _this.getRowItemToElement(this.element);
+					var rowInfo = _this.getRowItemToElement(this.element);
+					this.gridItem = rowInfo.item;
+					this.rowIdx = rowInfo.rowIdx;
 					_cb.call(this,key,sObj);
 				}
 			}
@@ -939,13 +941,20 @@ Plugin.prototype ={
 	 * @param rowItem {Object} - update item
 	 * @description 데이타 그리기
 	 */
-	,updateRow : function (idx ,rowItem){
+	,updateRow : function (idx ,rowItem, clickFlag){
 
 		var updItem = this.options.tbodyItem[idx];
 
 		if(updItem){
 			this.options.tbodyItem[idx] = objectMerge(this.options.tbodyItem[idx] , rowItem);
-			this.setData(this.options.tbodyItem,'reDraw');
+			this.setData(this.options.tbodyItem,'reDraw_update');
+
+			if(clickFlag===true){
+				var rowClickFn = this.options.rowOptions.click;
+				if(isFunction(rowClickFn)){
+					rowClickFn.call(null ,  {r : idx, item : rowItem});
+				}
+			}
 		}
 
 		return updItem;
@@ -1158,7 +1167,7 @@ Plugin.prototype ={
 		if(gridMode=='reDraw' || gridMode == 'addData'){
 			_this._setHeaderInitInfo();
 
-			if(subMode !='paste'){
+			if(subMode !='paste' && subMode != 'update'){
 				_this._setSelectionRangeInfo({}, true);
 			}
 
@@ -2770,7 +2779,7 @@ Plugin.prototype ={
 		if(this.gridElement.is(':visible') ===false){
 			return ;
 		}
-		
+
 		this.calcDimension('resize',opt);
 		return ;
 	}
@@ -3514,7 +3523,8 @@ Plugin.prototype ={
 				if(sEle.closest('.pubGrid-body-aside-cont').length > 0){
 					return true;
 				}
-				rowClickFn.call(null , _this.getCurrentClickInfo());
+				var clickInfo = _this.getCurrentClickInfo(); 
+				rowClickFn.call(null , {r : clickInfo.r, item : clickInfo.item });
 			}
 
 			return true;
@@ -4754,6 +4764,14 @@ Plugin.prototype ={
 		return _this.config.tColItem[idx].width;
 	}
 	/**
+	 * @method getHeaderItems
+	 * @param  get header items
+	 * @description header items
+	 */
+	,getHeaderItems : function (){
+		return this.config.tColItem;
+	}
+	/**
 	 * @method pageNav
 	 * @param  options {Object} 옵션
 	 * @description 페이징 하기.
@@ -4929,12 +4947,14 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method getRowItemToElement
-	 * @param  rowEle {Object} row elemnt
+	 * @param  rowEle {Object} row element
 	 * @description get row item
 	 */
 	,getRowItemToElement : function (rowEle){
-		var row_idx = rowEle.attr('rowinfo');
-		return this.getItems(this.config.scroll.viewIdx+intValue(row_idx));
+		var rowinfo = rowEle.attr('rowinfo');
+		var rowIdx = this.config.scroll.viewIdx+intValue(rowinfo);
+		return {rowIdx : rowIdx, item : this.getItems(rowIdx)};
+		;
 	}
 	/**
 	 * @method destroy

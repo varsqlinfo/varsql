@@ -29,6 +29,11 @@ public interface VarsqlConstants {
 	final String CHAR_SET = Configuration.getInstance().getCharset();
 	
 	
+	final String UPLOAD_PATH = Configuration.getInstance().getFileUploadPath();
+	
+	final String FILE_ID_DELIMITER = ",";
+	
+	
 	final String JSON_CONTENT_TYPE = "application/json;charset=" + CHAR_SET; 
 
 	// sql 관련 상수.

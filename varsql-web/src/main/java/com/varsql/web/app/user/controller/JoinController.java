@@ -22,7 +22,7 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
 
 
@@ -69,8 +69,7 @@ public class JoinController extends AbstractController {
 		Long idCheck = joinServiceImpl.idCheck(joinForm.getUid()).getItem();
 
 		if(idCheck > 0){
-			resultObject.setResultCode(ResultConst.CODE.DUPLICATES.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.CONFLICT.toString());
+			resultObject.setResultCode(RequestResultCode.DUPLICATES);
 		}
 
 		resultObject.setItemOne(joinServiceImpl.saveUser(joinForm));

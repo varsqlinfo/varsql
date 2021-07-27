@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.ConnectionException;
@@ -32,7 +33,7 @@ import com.varsql.web.exception.DatabaseInvalidException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -76,7 +77,7 @@ public class GlobalExceptionHandler{
 		logger.error("sqlExceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
-		result.setResultCode(ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(RequestResultCode.ERROR);
 		result.setMessage(ex.getMessage());
 
 		exceptionRequestHandle(ex, request, response ,result,"connError");
@@ -103,7 +104,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
 
 		ResponseResult result = new ResponseResult();
-		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(VarsqlAppCode.valueOf(ex.getErrorCode()));
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
@@ -130,7 +131,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 
 		ResponseResult result = new ResponseResult();
-		result.setResultCode(ex.getErrorCode() > 0 ? ex.getErrorCode() : ResultConst.CODE.ERROR.toInt());
+		result.setResultCode(VarsqlAppCode.valueOf(ex.getErrorCode()));
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
@@ -286,11 +287,11 @@ public class GlobalExceptionHandler{
         HttpStatus status = getStatus(request);
 
         ResponseResult result = new ResponseResult();
-        result.setResultCode(status.value());
+        result.setResultCode(RequestResultCode.valueOf(status.value()));
         result.setMessage(ex.getMessage());
         return result;
     }
-	
+
 	/**
 	 *
 	 * @Method Name  : noHandlerFoundExceptionHandler
@@ -331,7 +332,7 @@ public class GlobalExceptionHandler{
 
 		exceptionRequestHandle(ex,request, response ,new ResponseResult(), "error403");
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : dataDownloadExceptionHandler
@@ -356,7 +357,7 @@ public class GlobalExceptionHandler{
 		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
-			result.setResultCode(ResultConst.CODE.ERROR.toInt());
+			result.setResultCode(RequestResultCode.ERROR);
 
 			if(!SecurityUtil.isAdmin()) {
 				result.setMessage(result.getResultCode() + " :: " + ex.getClass());
@@ -368,7 +369,7 @@ public class GlobalExceptionHandler{
 				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
 			}
 		}else{
-			
+
 			request.setAttribute("errorMessage", ex.getMessage());
 			try {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);
@@ -378,7 +379,7 @@ public class GlobalExceptionHandler{
 			}
 		}
 	}
-	
+
 	 private HttpStatus getStatus(HttpServletRequest request) {
 	        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
 	        if (statusCode == null) {

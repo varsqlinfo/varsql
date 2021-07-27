@@ -14,7 +14,6 @@ import org.apache.ibatis.session.SqlSession;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
@@ -24,7 +23,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.SQLTemplateFactory;
+import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.util.JdbcUtils;
 
 /**
  *
@@ -398,7 +399,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStrBuf.append(DDLTemplateFactory.getInstance().ddlRender(DBType.OTHER.getDbVenderName(), "sequenceScript", param));
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBType.OTHER.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 
@@ -436,7 +437,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 			throw e;
 		}finally{
 			SQLManager.getInstance().closeSession(dbAlias, session);
-			SqlUtils.close(conn, null ,rs);
+			JdbcUtils.close(conn, null ,rs);
 		}
 		return keyColumn;
 	}

@@ -217,6 +217,18 @@ VARSQLCont.allDataType = function (){
 	return result;
 }
 
+VARSQLCont.isDateType = function (type){
+
+	if(type=='date'){
+		return true;
+	}else if(type=='time'){
+		return true;
+	}else if(type=='timestamp'){
+		return true;
+	}
+	return false;
+}
+
 VARSQLCont.init  = function (dbType, uiBase){
 	var _this =this;
 

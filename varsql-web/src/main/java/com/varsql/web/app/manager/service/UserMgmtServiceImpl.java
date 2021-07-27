@@ -35,7 +35,7 @@ import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.crypto.password.PasswordUtil;
 import com.vartech.common.utils.StringUtils;
@@ -206,7 +206,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 				dbBlockUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
 			}
 		}else {
-			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+			result.setResultCode(RequestResultCode.FORBIDDEN);
 		}
 
 		result.setItemOne(1);
@@ -258,7 +258,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 
 			result.setItemOne(1);
 		}else {
-			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+			result.setResultCode(RequestResultCode.FORBIDDEN);
 		}
 
 		return result;
@@ -287,7 +287,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 			dbGroupMappingUserEntityRepository.deleteByGroupIdAndViewid(groupId, viewid);
 			result.setItemOne(1);
 		}else {
-			result.setResultCode(ResultConst.CODE.FORBIDDEN.toInt());
+			result.setResultCode(RequestResultCode.FORBIDDEN);
 		}
 
 		return result;

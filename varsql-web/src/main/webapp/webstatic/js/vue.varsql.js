@@ -147,27 +147,40 @@ Vue.component('page-navigation', {
 
 // step button component add
 Vue.component('step-button', {
-	
+
 	template : '<div class="process-step-area"><div class="process-step-btn-area">'
-	+ '<button type="button" class="" :class="[cssClass, (step == 1 ? \'disabled\' :\'\') ]" @click="moveHandle(\'prev\')">{{buttons.prev}}</button>'
-	+ '<button type="button" :class="cssClass" v-show="(step != endStep)" @click="moveHandle(\'next\')">{{buttons.next}}</button>'
-	+ '<button type="button" :class="cssClass" v-show="(step == endStep)" @click="moveHandle(\'complete\')">{{buttons.complete}}</button>'
+	+ '<button type="button" class="" :class="[cssClass, (step == 1 ? \'disabled\' :\'\') ]" @click="moveHandle(\'prev\')">{{btnName.prev}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step != endStep)" @click="moveHandle(\'next\')">{{(btnName[step]||btnName.next)}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step == endStep)" @click="moveHandle(\'complete\')">{{btnName.complete}}</button>'
 	+ '</div></div>'
-	
+
 	//template: portalDefaultTemplate.stepTemplate
 	, props: {
 		step : {type: Number, default: 1 }
 		,endStep : Number
-		,buttons : {type: Object,	default: {
-			prev : VARSQL.messageFormat('step.prev')
-			,next : VARSQL.messageFormat('step.next')
-			,complete :VARSQL.messageFormat('step.complete')
-		}}
+		,buttons : {type: Object, default: {} }
 		,cssClass : {type: String,	default: 'btn-md' }
-		,moveStep : {type: String,	default: 'moveStep' } 
-		,complete :  {type: String,	default: 'complete' } 
+		,moveStep : {type: String,	default: 'moveStep' }
+		,complete : {type: String,	default: 'complete' }
 	}
-	
+	,data : function (){
+		return {
+			btnName : VARSQL.util.objectMerge({
+				prev : VARSQL.messageFormat('step.prev')
+				,next : VARSQL.messageFormat('step.next')
+				,complete :VARSQL.messageFormat('step.complete')
+			}, this.buttons)
+		};
+	}
+	,watch :{
+		buttons : function (newval){
+			this.btnName = VARSQL.util.objectMerge({
+				prev : VARSQL.messageFormat('step.prev')
+				,next : VARSQL.messageFormat('step.next')
+				,complete :VARSQL.messageFormat('step.complete')
+			}, this.buttons)
+		}
+	}
 	,methods: {
 		moveHandle : function (mode){
 			var step = -9999;
@@ -179,7 +192,7 @@ Vue.component('step-button', {
 					throw 'complete function empty  setting function name : [' + this.complete +']'
 				}
 				callback.call(this.$parent);
-				return ; 
+				return ;
 			}
 
 			if(mode == 'prev'){
@@ -193,31 +206,33 @@ Vue.component('step-button', {
 			}
 
 			if(step == -9999){
-				return ; 
+				return ;
 			}else{
 				if(step < 1){
-					step = 1; 	
+					step = 1;
 				}else if(step >= this.endStep){
 					step = this.endStep;
 				}
 			}
 
-			if(this.step == step) return ; 
+			if(this.step == step) return ;
 
-			this.move(step);
+			this.move(step, mode);
 		}
-		,move : function(step){
-			var callback = this.$parent[this.moveStep];
+		,move : function(step, mode){
+			if(mode != 'prev'){
+				var callback = this.$parent[this.moveStep];
 
-			if(typeof callback === 'undefined'){
-				throw 'moveStep function empty  setting function name : [' + this.moveStep +']'
+				if(typeof callback === 'undefined'){
+					throw 'moveStep function empty  setting function name : [' + this.moveStep +']'
+				}
+
+				var result = callback.call(this.$parent,step);
+				if(result===false){
+					return ;
+				};
 			}
-			
-			var result = callback.call(this.$parent,step); 
-			if(result===false){
-				return ; 
-			};
-			this.step = step; 
+			this.step = step;
 			this.$emit('update:step', step);
 		}
 	}
@@ -225,7 +240,7 @@ Vue.component('step-button', {
 
 // file upload component
 Vue.component('file-upload', {
-	
+
 	template :
 	'<div :id="id" class="file-upload-area">'
 	+' <div class="file-upload-btn-area">'
@@ -235,7 +250,7 @@ Vue.component('file-upload', {
 	+'	</button>'
 	+'  <button @click="uploadFile()" class="btn btn-success upload-file-button">'
 	+'		<i class="glyphicon glyphicon-plus"></i>'
-	+'		<span>{{buttons.send}}</span>'
+	+'		<span>{{buttons.upload}}</span>'
 	+'	</button>'
 	+'  <button @click="removeFile()" class="btn btn-success cancel-file-button">'
 	+'		<i class="glyphicon glyphicon-plus"></i>'
@@ -249,13 +264,18 @@ Vue.component('file-upload', {
 	+'  <div>업로드된 파일</div>'
 	+'  <div class="file-upload-list">'
 	+'   <template v-for="(item,index) in fileList">'
-	+'	  <div class="file-upload-file-item">'
-	+'		<span class="clickItem">{{item.orginFileName}}</span>'
+	+'	  <div class="file-upload-list-item">'
+	+'	   <span v-if="options.enableCheckbox">'
+	+'		<input type="checkbox" :id="item.fileId" v-model="item.isCheck"> <label :for="item.fileId">{{item.fileName}}</label>'
+	+'	   </span>'
+	+'	   <span v-else>'
+	+'		{{item.fileName}}'
+	+'	   </span>'
 	+'	  </div>'
 	+'   </template>'
 	+'  </div>'
 	+'</div>'
-	
+
 	//template: portalDefaultTemplate.stepTemplate
 	, props: {
 		id: {
@@ -286,13 +306,13 @@ Vue.component('file-upload', {
 			type: Object
 			, default :{
 				add : VARSQL.messageFormat('file.add')
-				,send : VARSQL.messageFormat('file.send')
+				,upload : VARSQL.messageFormat('file.upload')
 				,remove : VARSQL.messageFormat('file.remove')
 			}
 		}
 		,isViewUploadFile : {
 			type: Boolean
-			, default : true
+			, default : false
 		}
 	}
 	,data : function (){
@@ -324,7 +344,7 @@ Vue.component('file-upload', {
 	,watch :{
 		accept : function (newval){
 			this.dropzone.hiddenFileInput.setAttribute("accept", this.getAcceptExtensions(newval));
-			this.dropzone.options.acceptedFiles = this.getAcceptExtensions(newval); 
+			this.dropzone.options.acceptedFiles = this.getAcceptExtensions(newval);
 		}
 		,fileList : function (){
 			this.$emit('update:fileList', this.fileList);
@@ -333,38 +353,38 @@ Vue.component('file-upload', {
 	,mounted : function() {
 		var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
 		var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
-		
+
 		var headers = {};
 		headers[$$csrf_header] = $$csrf_token;
-		
-		var _this = this; 
-		
-		var dropzoneOpt = VARSQL.util.objectMerge({ 
+
+		var _this = this;
+
+		var dropzoneOpt = VARSQL.util.objectMerge({
 			url: "http://www.varsql.com", // upload url
 			thumbnailWidth: 50,
 			thumbnailHeight: 50,
 			parallelUploads: 20,
 			uploadMultiple : true,
-			maxFilesize: 10,
+			maxFilesize: VARSQL.getFileMaxUploadSize(),
 			autoQueue: false,
 			previewTemplate :  this.previewTemplate,
-			previewsContainer: "#"+this.id+"_previews", 
+			previewsContainer: "#"+this.id+"_previews",
 			headers : headers,
 			clickable: [".select-file-button" ,".file-upload-preview" ]// select file selector
-		}, this.options); 
-		
-		
+		}, this.options);
+
+
 		if(this.accept != ''){
-			dropzoneOpt.acceptedFiles = this.getAcceptExtensions(this.accept); 
+			dropzoneOpt.acceptedFiles = this.getAcceptExtensions(this.accept);
 		}
-		
+
 		var dropzone = new Dropzone(this.$el, dropzoneOpt);
 
 		dropzone.on("addedfile", function(file) {
-			_this.fileAddMsgViewFlag = false; 
+			_this.fileAddMsgViewFlag = false;
 			file.previewElement.querySelector('.file-name').title = file.name;
 		});
-		
+
 		dropzone.on("removedfile", function(file) {
 			if(dropzone.files.length < 1){
 				_this.fileAddMsgViewFlag = true;
@@ -372,33 +392,51 @@ Vue.component('file-upload', {
 				_this.fileAddMsgViewFlag = false;
 			}
 		});
-		
+
+		function addFileList(contextThis, items){
+			for(var i =0; i < items.length; i++){
+				var item = items[i];
+				item.isCheck = true;
+				contextThis.fileList.push(item);
+			}
+		}
+
 		if(dropzoneOpt.uploadMultiple ===true){
-			
+
 			dropzone.on('successmultiple', function(files, resp){
-				for(var i =0 ;i <files.length;i++){
-					this.removeFile(files[i]);
-				}
-				
+
 				if(VARSQL.reqCheck(resp)){
-					_this.fileList = _this.fileList.concat(resp.items);
-					_this.callback.successmultiple (files,resp);
+					for(var i =0 ;i <files.length;i++){
+						this.removeFile(files[i]);
+					}
+
+					addFileList(_this, resp.items);
+					_this.callback.successmultiple (files, resp);
+				}else{
+					for(var i =0 ;i <files.length;i++){
+						this.emit('error', files[i], resp.message);
+					}
+					return false;
 				}
 			});
-			
+
 			dropzone.on('completemultiple', function (file) {
 				//var resData = JSON.parse(file.xhr.responseText);
 				//_this.fileList = _this.fileList.concat(resData.items);
 	        });
 		}else{
 			dropzone.on('success', function(file, resp){
-				this.removeFile(file);
+
 				if(VARSQL.reqCheck(resp)){
-					_this.fileList = _this.fileList.concat(resp.items);
+					this.removeFile(file);
+					addFileList(_this, resp.items);
 					_this.callback.success (file,resp);
+				}else{
+					this.emit('error', file, resp.message);
+					return false;
 				}
 			});
-			
+
 			dropzone.on('complete', function (file) {
 				//var resData = JSON.parse(file.xhr.responseText);
 				//_this.fileList = _this.fileList.concat(resData.items);
@@ -409,19 +447,19 @@ Vue.component('file-upload', {
 	}
 	,methods: {
 		uploadFile : function (){
-			var _this = this; 
+			var _this = this;
 
 			this.dropzone.options.params = function (){
 				return _this.options.params;
 			};
-			
+
 			this.dropzone.enqueueFiles(this.dropzone.getFilesWithStatus(Dropzone.ADDED));
 		}
 		,removeFile : function (){
 			this.dropzone.removeAllFiles(true);
 		}
 		,getAcceptExtensions : function (exts){
-			 return '.'+ VARSQL.str.allTrim(exts).split(',').join(',.'); 
+			 return '.'+ VARSQL.str.allTrim(exts).split(',').join(',.');
 		}
 	}
 })
@@ -497,7 +535,7 @@ VarsqlAPP.vueServiceBean = function (opts){
 
 	if(!VARSQL.isUndefined(opts['mounted'])){
 		initOpt = {methods :{}};
-		initMethodName = 'fn'+VARSQL.generateUUID().replace(/-/g,'');
+		initMethodName = 'fn'+VARSQL.generateUUID();
 		initOpt.methods[initMethodName] = defaultOpt.mounted;
 	}
 

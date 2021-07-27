@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.validation.Valid;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,7 @@ import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
@@ -48,7 +46,7 @@ import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.VartechUtils;
 
@@ -78,7 +76,7 @@ public class AdminServiceImpl extends AbstractService{
 
 	@Autowired
 	private DBManagerEntityRepository dbManagerRepository;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -125,7 +123,7 @@ public class AdminServiceImpl extends AbstractService{
 	 * @변경이력  :
 	 * @param vtConnection
 	 * @return
-	 * @throws EncryptDecryptException 
+	 * @throws EncryptDecryptException
 	 */
 	public ResponseResult connectionCheck(DBConnectionRequestDTO vtConnection) throws EncryptDecryptException {
 
@@ -134,7 +132,7 @@ public class AdminServiceImpl extends AbstractService{
 		logger.debug("connection check object param :  {}" , VartechUtils.reflectionToString(vtConnection));
 
 		String username = vtConnection.getVid();
-		
+
 		String dbtype = vtConnection.getVtype();
 
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vtConnection.getVconnid())).orElseThrow(NullPointerException::new);
@@ -164,21 +162,21 @@ public class AdminServiceImpl extends AbstractService{
 		PreparedStatement pstmt = null;
 		Connection connChk = null;
 		try {
-			
+
 			String pwd = vtConnection.getVpw();
 			if(pwd ==null || "".equals(pwd)){
 				pwd = dbInfo.getVpw();
 			}
 
 			pwd = pwd==null ? "":pwd;
-			
+
 			pwd = DBPasswordCryptionFactory.getInstance().decrypt(pwd);
-			
+
 			Properties p =new Properties();
 
 			p.setProperty("user", username);
 			p.setProperty("password", pwd);
-			
+
 			Class.forName(dbDriverModel.getDbdriver());
 			connChk = DriverManager.getConnection(url, p);
 
@@ -200,7 +198,7 @@ public class AdminServiceImpl extends AbstractService{
 			failMessage = e.getMessage();
 			logger.error(this.getClass().getName() , e);
 		}finally{
-			SqlUtils.close(connChk , pstmt, null);
+			JdbcUtils.close(connChk , pstmt, null);
 		}
 
 		resultObject.setMessageCode(result);
@@ -345,9 +343,8 @@ public class AdminServiceImpl extends AbstractService{
 		ResponseResult resultObject = new ResponseResult();
 		try {
 			ConnectionFactory.getInstance().poolShutdown(vconnid);
-			resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
 		} catch (Exception e) {
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage(e.getMessage());
 		}
 
@@ -366,14 +363,13 @@ public class AdminServiceImpl extends AbstractService{
 		ResponseResult resultObject = new ResponseResult();
 		try {
 			ConnectionFactory.getInstance().resetConnectionPool(vconnid);
-			resultObject.setResultCode(ResultConst.CODE.SUCCESS.toInt());
 		} catch (Exception e) {
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage(e.getMessage());
 		}
 		return resultObject;
 	}
-	
+
 	/**
 	 * @method  : viewVtConntionPwInfo
 	 * @desc : view db password
@@ -385,11 +381,11 @@ public class AdminServiceImpl extends AbstractService{
 	public ResponseResult viewVtConntionPwInfo(String vconnid, String userPw)  {
 		ResponseResult resultObject = new ResponseResult();
 		if(!userService.passwordCheck(SecurityUtil.loginName(), userPw)) {
-			resultObject.setResultCode(ResultConst.CODE.ERROR.toInt());
+			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage("password not valid");
-			return resultObject; 
+			return resultObject;
 		}
-		
+
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
 		try {
 			resultObject.setItemOne(DBPasswordCryptionFactory.getInstance().decrypt(dbInfo.getVpw()));
@@ -398,7 +394,7 @@ public class AdminServiceImpl extends AbstractService{
 		}
 		return resultObject;
 	}
-	
+
 	/**
 	 * @method  : dbConnectionCopy
 	 * @desc : view connection info copy
@@ -409,14 +405,14 @@ public class AdminServiceImpl extends AbstractService{
 	 */
 	public ResponseResult dbConnectionCopy(String vconnid) {
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
-		
+
 		DBConnectionEntity copyEntity = VarsqlBeanUtils.copyEntity(dbInfo);
-		
+
 		copyEntity.setVconnid(null);
 		copyEntity.setVname(copyEntity.getVname()+"-copy");
-		
+
 		dbConnectionModelRepository.save(copyEntity);
-		
+
 		return VarsqlUtils.getResponseResultItemOne(copyEntity.getVconnid());
 	}
 

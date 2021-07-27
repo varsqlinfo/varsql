@@ -21,7 +21,7 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
 public final class SecurityUtil {
-	
+
 	private SecurityUtil(){};
 
 	/**
@@ -41,7 +41,7 @@ public final class SecurityUtil {
 
 	public static String loginRole(Authentication auth) {
 		if(auth == null ) return null;
-		
+
 		if(auth instanceof AnonymousAuthenticationToken) {
 			return User.ANONYMOUS_USERNAME;
 		}
@@ -91,16 +91,16 @@ public final class SecurityUtil {
 		if(auth==null){
 			return false;
 		}else if(auth instanceof AnonymousAuthenticationToken){
-			return false; 
+			return false;
 		}else {
 			return auth.getPrincipal() instanceof User;
 		}
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : isAnonymous
-	 * @Method 설명 : 익명 사용자 체크. 
+	 * @Method 설명 : 익명 사용자 체크.
 	 * @작성일   : 2020. 10. 29
 	 * @작성자   : ytkim
 	 * @변경이력  :
@@ -111,10 +111,10 @@ public final class SecurityUtil {
 		if(auth==null){
 			return true;
 		}else if(auth instanceof AnonymousAuthenticationToken){
-			return true; 
+			return true;
 		}
-		
-		return false; 
+
+		return false;
 	}
 
 	/**
@@ -210,7 +210,7 @@ public final class SecurityUtil {
 	}
 	public static String userViewId(Authentication auth) {
 		if(auth == null ) return null;
-		
+
 		if(auth instanceof AnonymousAuthenticationToken) {
 			return User.ANONYMOUS_USERNAME;
 		}
@@ -234,7 +234,7 @@ public final class SecurityUtil {
 	public static String loginName() {
 		return loginName(SecurityContextHolder.getContext().getAuthentication());
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : loginName
@@ -247,7 +247,7 @@ public final class SecurityUtil {
 	 */
 	public static String loginName(Authentication auth) {
 		if(auth == null ) return null;
-		
+
 		if(auth instanceof AnonymousAuthenticationToken) {
 			return User.ANONYMOUS_USERNAME;
 		}
@@ -290,9 +290,9 @@ public final class SecurityUtil {
 	}
 	public static User loginInfo(Authentication auth) {
 		if(auth ==null) {
-			return null; 
+			return null;
 		}
-		
+
 		if(auth instanceof AnonymousAuthenticationToken) {
 			return new User.AnonymousUser().build();
 		}
@@ -341,6 +341,10 @@ public final class SecurityUtil {
 
 	public static boolean isSchemaView(DatabaseParamInfo dataParamInfo) {
 		return dataParamInfo.isSchemaViewYn() || SecurityUtil.loginRolePriority() >= AuthorityType.MANAGER.getPriority();
+	}
+
+	public static Authentication getAuthentication () {
+		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
 }

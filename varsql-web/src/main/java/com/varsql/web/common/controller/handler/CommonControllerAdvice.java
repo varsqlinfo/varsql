@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.varsql.core.configuration.Configuration;
 import com.varsql.web.tags.VarsqlFn;
 
 /**
@@ -27,6 +28,9 @@ public class CommonControllerAdvice {
 
 	  String contextPath = request.getContextPath();
 
+      model.addAttribute("pageContextPath", contextPath);
+      model.addAttribute("fileUploadSize", Configuration.getInstance().getFileUploadSize());
+      model.addAttribute("fileUploadSizePerFile", Configuration.getInstance().getFileUploadSizePerFile());
       model.addAttribute("pageContextPath", contextPath);
       model.addAttribute("pubjs_ver", VarsqlFn.pubJsVersion());
       model.addAttribute("codemirror_ver", VarsqlFn.staticResourceVersion("codemirror"));

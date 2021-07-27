@@ -26,35 +26,13 @@ public enum DBType {
 	,OTHER("other");
 
 	private String dbVenderName;
-	private com.alibaba.druid.DbType dbParserType;
 
 	private DBType(String db){
 		this.dbVenderName =db;
-		this.dbParserType = com.alibaba.druid.DbType.of(db);
-		
-		if(this.dbParserType ==  null) {
-			this.dbParserType = com.alibaba.druid.DbType.other;
-		}
 	}
 
 	public String getDbVenderName() {
 		return dbVenderName;
-	}
-
-	public com.alibaba.druid.DbType getDbParser() {
-		return dbParserType;
-	}
-
-	public static com.alibaba.druid.DbType getDbParser(String db) {
-		if(db != null) {
-			db = db.toUpperCase();
-			for (DBType dbType : values()) {
-				if(db.equalsIgnoreCase(dbType.name())) {
-					return dbType.dbParserType;
-				}
-			}
-		}
-		return DBType.OTHER.dbParserType;
 	}
 
 	public static DBType getDBType(String db) {
@@ -68,7 +46,7 @@ public enum DBType {
 		}
 		return DBType.OTHER;
 	}
-	
+
 	public boolean equalsName(String type) {
 		type = type.toUpperCase();
 		for (DBType dbType : values()) {

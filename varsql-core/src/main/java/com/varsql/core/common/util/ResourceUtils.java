@@ -9,6 +9,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.configuration.Configuration;
 
 /**
  * -----------------------------------------------------------------------------
@@ -101,5 +102,27 @@ public final class ResourceUtils {
 
 	public static String getResourceString(Resource resource, String charset) throws IOException {
 		return IOUtils.toString(resource.getInputStream(), charset);
+	}
+	
+	/**
+	 * @method  : getInstallPathResource
+	 * @desc : resourcePath -> resource
+	 * @author   : ytkim
+	 * @date   : 2020. 9. 18.
+	 * @param resourcePath
+	 * @return
+	 * @throws IOException
+	 */
+	public static Resource getInstallPathResource(String resourcePath) throws IOException {
+		Resource configResource; 
+		
+		File file = new File(Configuration.getInstance().getInstallRoot(), resourcePath);
+		if(file.exists()) {
+			configResource = ResourceUtils.getResource(file.getPath());
+		}else {
+			configResource = ResourceUtils.getResource(resourcePath);
+		}
+		
+		return configResource; 
 	}
 }

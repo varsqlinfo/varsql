@@ -5,6 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +19,9 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
+import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
@@ -51,6 +56,10 @@ public class DatabaseController extends AbstractController {
 
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
+	
+	@Autowired
+	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
+	private CacheManager cacheManager;
 
 
 	@RequestMapping(value={"/","/main"}, method = RequestMethod.GET)
@@ -98,6 +107,13 @@ public class DatabaseController extends AbstractController {
 	 */
 	@RequestMapping(value = "/dbObjectList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+		
+		cacheManager.getCache(CacheInfo.CacheType.TABLE_METADATA.getCacheName());
+		
+		if(databaseParamInfo.isRefresh()) {
+			databaseServiceImpl.dbObjectListCacheEvict(databaseParamInfo);
+		}
+		
 		return databaseServiceImpl.dbObjectList(databaseParamInfo);
 	}
 

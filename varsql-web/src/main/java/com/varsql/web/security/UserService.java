@@ -31,6 +31,10 @@ public class UserService implements UserDetailsService {
 		return authDao.loadUserByUsername(username, password, false);
 	}
 	
+	public User loadUserByUsername(String username, String password, boolean ssoFlag) {
+		return authDao.loadUserByUsername(username, password, ssoFlag);
+	}
+	
 	public boolean passwordCheck(String username, String password) {
 		return authDao.passwordCheck(username, password);
 	}

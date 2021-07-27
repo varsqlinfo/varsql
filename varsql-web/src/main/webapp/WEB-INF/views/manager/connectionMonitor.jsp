@@ -163,14 +163,12 @@ var sqlLogStat ={
 		$('#vconnid').val(sObj.val());
 
 		VARSQL.req.ajax({
-			type:'POST'
-			,data:{
+			data:{
 				vconnid:$('#vconnid').val()
 				,s_date: $('#sdt').val()+' 00:00:00'
 				,e_date: $('#edt').val()+' 23:59:59'
 			}
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
-			,dataType:'JSON'
 			,success:function (response){
 				var items = response.items ||[];
 

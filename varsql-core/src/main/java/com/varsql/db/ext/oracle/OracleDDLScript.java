@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.DDLTemplateFactory;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
@@ -24,6 +23,8 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.SQLTemplateFactory;
+import com.varsql.core.sql.SQL;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.VartechUtils;
@@ -448,7 +449,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(DDLTemplateFactory.getInstance().ddlRender(DBType.ORACLE.getDbVenderName(), "sequenceScript", param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.ORACLE.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));

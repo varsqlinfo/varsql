@@ -1,7 +1,6 @@
 package com.varsql.core.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -58,9 +57,9 @@ public class Configuration extends AbstractConfiguration{
 
 	private String fileUploadPath="";
 
-	private int fileUploadSize=0;
+	private long fileUploadSize=0;
 
-	private int fileUploadSizePerFile=0;
+	private long fileUploadSizePerFile=0;
 
 	private int fileUploadMaxInMemorySize=0;
 
@@ -109,7 +108,7 @@ public class Configuration extends AbstractConfiguration{
 		if (configResource ==null ){
 			throw new ConfigurationException("Can't open configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONFIG_FILE ,configPropFile));
 		}
-		
+
 		try(InputStream is = configResource.getInputStream()){
 			props.load(is);
 		}catch(IOException e) {
@@ -122,12 +121,12 @@ public class Configuration extends AbstractConfiguration{
 	private void setConfigProperty() {
 		useConnUID  = Boolean.parseBoolean(props.getProperty(USE_CONNID_KEY, "true"));
 		passwordLen  = Integer.parseInt(props.getProperty(INIT_PASSWORD_SIZE, "8"));
-		
+
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
-		fileUploadSize  = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
-		fileUploadSizePerFile = Integer.parseInt(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "31457280"));
+		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
+		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));
 		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
-		
+
 		logger.debug("passwordLen : {}",passwordLen);
 		logger.debug("fileUploadPath : {}",fileUploadPath);
 		logger.debug("fileUploadMaxInMemorySize : {}",fileUploadMaxInMemorySize);
@@ -273,10 +272,10 @@ public class Configuration extends AbstractConfiguration{
 		return fileUploadSize;
 	}
 
-	public int getFileUploadSizePerFile() {
+	public long getFileUploadSizePerFile() {
 		return fileUploadSizePerFile;
 	}
-	
+
 	public int getFileUploadMaxInMemorySize() {
 		return fileUploadMaxInMemorySize;
 	}

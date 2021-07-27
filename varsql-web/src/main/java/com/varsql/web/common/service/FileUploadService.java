@@ -1,30 +1,29 @@
 package com.varsql.web.common.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.varsql.core.configuration.Configuration;
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.code.VarsqlFilePathCode;
+import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.controller.fileupload.FileUploadController;
-import com.varsql.web.dto.file.FileInfo;
-import com.varsql.web.exception.FileNotFoundException;
 import com.varsql.web.exception.FileUploadException;
-import com.varsql.web.util.VarsqlUtils;
+import com.varsql.web.model.entity.app.FileInfoEntity;
+import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
+import com.vartech.common.utils.VartechUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -44,59 +43,8 @@ public class FileUploadService {
 
 	private final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
-	// upload root path
-	private final String uploadRootPath = Configuration.getInstance().getFileUploadPath();
-
-	private final Path fileUploadPath = Paths.get(uploadRootPath).toAbsolutePath().normalize();;
-
-	/**
-	 *
-	 * @Method Name  : loadFileAsResource
-	 * @Method 설명 : 파일 resource
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-	public Resource loadFileAsResource(String fileName) throws MalformedURLException {
-		Path filePath = this.fileUploadPath.resolve(fileName).normalize();
-		Resource resource = new UrlResource(filePath.toUri());
-		if (resource.exists()) {
-			return resource;
-		} else {
-			throw new FileNotFoundException("File not found " + fileName);
-		}
-	}
-
-	/**
-	 *
-	 * @Method Name  : getUploadFile
-	 * @Method 설명 : upload file 얻기
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-	public File getUploadFile(FileInfo fileinfo) throws MalformedURLException {
-		Path filePath = this.fileUploadPath.resolve(fileinfo.getFilePath()).normalize();
-		return filePath.toFile();
-	}
-
-	/**
-	 *
-	 * @Method Name  : getRootPath
-	 * @Method 설명 : get root path 얻기
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-	public String getRootPath () {
-		return uploadRootPath;
-	}
+	@Autowired
+	private FileInfoEntityRepository fileInfoEntityRepository;
 
 	/**
 	 *
@@ -109,8 +57,8 @@ public class FileUploadService {
 	 * @return
 	 */
 
-	public FileInfo uploadFile(String div, String paramFileContId, MultipartHttpServletRequest mtfRequest) {
-		List<FileInfo> uploadFiles = uploadFiles(div, paramFileContId, mtfRequest);
+	public FileInfoEntity uploadFile(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId) {
+		List<FileInfoEntity> uploadFiles = uploadFiles(mtfRequest, div, paramFileContId);
 
 		if(uploadFiles.size() > 0) {
 			return uploadFiles.get(0);
@@ -129,17 +77,20 @@ public class FileUploadService {
 	 * @param url
 	 * @return
 	 */
-	public List<FileInfo> uploadFiles(String div, String paramFileContId, MultipartHttpServletRequest mtfRequest) {
+	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId) {
+		return uploadFiles(mtfRequest, div, paramFileContId, null);
+	}
 
-		final String fileContId =StringUtils.isBlank(paramFileContId) ? VarsqlUtils.generateUUID() :paramFileContId;
+	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId,	String vconnid) {
+		final String fileContId =StringUtils.isBlank(paramFileContId) ? VartechUtils.generateUUID() :paramFileContId;
 
 		Iterator<String> fileNameIter = mtfRequest.getFileNames();
 
-		List<FileInfo> uploadFiles = new ArrayList<FileInfo>();
+		List<FileInfoEntity> uploadFiles = new ArrayList<FileInfoEntity>();
 
 		// 파일 날짜별(yyyyMMdd) 로 생성 하기
         // 업무 구분 + 날짜별 디렉토리 위치
-        String filePath = FileUtils.getSaveDayPath(div);
+        String filePath = FileServiceUtils.getSaveRelativePath(VarsqlFilePathCode.getFileType(div).getDiv());
 
 		while(fileNameIter.hasNext()) {
     		String fileFieldName  = fileNameIter.next();
@@ -150,17 +101,24 @@ public class FileUploadService {
     			files.forEach(file ->{
     				if(!file.isEmpty()) {
     					try {
-    						FileInfo fileInfo = saveFile(div, file, filePath);
+    						FileInfoEntity fileInfo = saveFile(div, file, filePath);
     						fileInfo.setFileContId(fileContId);
         					fileInfo.setFileFieldName(fileFieldName);
+        					fileInfo.setVconnid(vconnid);
 							uploadFiles.add(fileInfo);
 						} catch (IllegalStateException | IOException e) {
 							logger.error("file upload exception : {}", e.getMessage(), e);
+							throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e, "file upload error");
 						}
     				}
     			});
     		}
     	}
+
+		if(uploadFiles.size() > 0 ) {
+			fileInfoEntityRepository.saveAll(uploadFiles);
+		}
+
 		return uploadFiles;
 	}
 
@@ -174,28 +132,33 @@ public class FileUploadService {
 	 * @param url
 	 * @return
 	 */
-	private FileInfo saveFile(String div, MultipartFile mfileInfo, String filePath) throws IllegalStateException, IOException {
-		// 파일 원본명
-		String fileName = FileUtils.normalize(mfileInfo.getOriginalFilename());
+	private FileInfoEntity saveFile(String div, MultipartFile mfileInfo, String filePath) throws IllegalStateException, IOException {
 		// 파일 존재 확인
 		if (mfileInfo.isEmpty()) {
-			throw new FileUploadException("File empty" + fileName);
+			throw new FileUploadException("File empty : " + mfileInfo.getOriginalFilename());
 		}
+
+		// 파일 원본명
+		String fileName = FileUtils.normalize(mfileInfo.getOriginalFilename());
 
 		// 파일 확장자 구하기
 		String extension = FileUtils.extension(fileName);
 
+		String fileId = VartechUtils.generateUUID();
+
 		// 파일명을 UUID 로 생성
-		String saveFileName = FileUtils.getSaveFileName(fileName, extension);
+		String saveFileName = String.format("%s.%s", fileId, extension);
 
 		filePath = FileUtils.pathConcat(filePath, saveFileName);
 
-		mfileInfo.transferTo(new File(FileUtils.pathConcat(getRootPath(),filePath)));
+		Path createFilePath = FileServiceUtils.getPath(filePath);
 
-		return FileInfo.builder()
+		mfileInfo.transferTo(createFilePath);
+
+		return FileInfoEntity.builder()
 				.fileDiv(div)
-				.fileName(saveFileName)
-				.orginFileName(fileName)
+				.fileId(fileId)
+				.fileName(fileName)
 				.fileSize(mfileInfo.getSize())
 				.fileExt(extension)
 				.filePath(filePath).build();

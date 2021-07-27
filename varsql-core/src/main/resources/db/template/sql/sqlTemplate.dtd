@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT var-sql (tableCreate,viewCreate,functionCreate,procedureCreate,triggerCreate,indexCreate,sequenceCreate
+	,tableAlterAddColumn,tableAlterRenameColumn,tableAlterModifyColumn,tableAlterDropColumn
+	,renameTable
+	,select ,insert ,update ,delete ,selectInsert ,insertUpdate)>
+<!ELEMENT tableCreate (#PCDATA)>
+<!ELEMENT viewCreate (#PCDATA)>
+<!ELEMENT functionCreate (#PCDATA)>
+<!ELEMENT procedureCreate (#PCDATA)>
+<!ELEMENT triggerCreate (#PCDATA)>
+<!ELEMENT indexCreate (#PCDATA)>
+<!ELEMENT sequenceCreate (#PCDATA)>
+
+<!ELEMENT tableAlterAddColumn (#PCDATA)>
+<!ELEMENT tableAlterRenameColumn (#PCDATA)>
+<!ELEMENT tableAlterModifyColumn (#PCDATA)>
+<!ELEMENT tableAlterDropColumn (#PCDATA)>
+
+<!ELEMENT renameTable (#PCDATA) >
+
+<!ELEMENT select (#PCDATA) >
+<!ELEMENT insert (#PCDATA) >
+<!ELEMENT update (#PCDATA) >
+<!ELEMENT delete (#PCDATA) >
+<!ELEMENT selectInsert (#PCDATA) >
+<!ELEMENT insertUpdate (#PCDATA) >

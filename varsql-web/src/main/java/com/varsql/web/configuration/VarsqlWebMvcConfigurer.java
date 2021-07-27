@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ import com.varsql.web.constants.ViewPageConstants;
 @ComponentScan(
 	basePackages = { "com.varsql.web"},
 	includeFilters = {
-		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = { Controller.class, Service.class,Repository.class }),
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = { Controller.class, Service.class, Repository.class, Component.class}),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "(service|controller|DAO|Repository)\\.\\.*")
 })
 @Import(value = {

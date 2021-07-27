@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.web.constants.SqlDataConstants;
+import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 public class DBConnTabRequestDTO extends DatabaseParamInfo{
 
-	private String prevVconnid;
+	private String prevConuid;
 
 	public DBConnTabRequestDTO(){
 		super();
@@ -38,7 +38,7 @@ public class DBConnTabRequestDTO extends DatabaseParamInfo{
 		return DBConnTabEntity.builder()
 			.vconnid(getVconnid())
 			.viewid(getViewid())
-			.prevVconnid(getVconnid(prevVconnid))
+			.prevVconnid(getVconnid(prevConuid))
 			.viewYn(true)
 			.build();
 	}

@@ -22,7 +22,7 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.constants.ResultConst;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 
 /**
@@ -84,8 +84,7 @@ public class GuestController extends AbstractController  {
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject.setResultCode(ResultConst.CODE.DATA_NOT_VALID.toInt());
-			resultObject.setMessageCode(ResultConst.ERROR_MESSAGE.VALID.toString());
+			resultObject.setResultCode(RequestResultCode.DATA_NOT_VALID);
 			resultObject.setItemList(result.getAllErrors());
 		}else{
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);

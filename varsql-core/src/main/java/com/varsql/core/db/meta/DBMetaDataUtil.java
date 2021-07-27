@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
-import com.varsql.core.db.resultset.meta.handler.ResultSetMetaHandlerImpl;
+import com.varsql.core.db.meta.handler.DBMetaHandlerImpl;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.StringUtils;
 
 
@@ -56,7 +56,7 @@ public final class DBMetaDataUtil {
 				reLst.add(tableInfo);
 			}
 		}finally{
-			SqlUtils.close(rs);
+			JdbcUtils.close(rs);
 		}
 
 		return reLst;
@@ -72,7 +72,7 @@ public final class DBMetaDataUtil {
 			DatabaseMetaData dbmd = conn.getMetaData();
 
 			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			ResultSetMetaHandlerImpl resultSetMetaHandlerImpl =dbInstanceFactory.getResultSetMetaHandlerImpl();
+			DBMetaHandlerImpl dbMetaHandlerImpl =dbInstanceFactory.getDBMetaHandlerImpl();
 
 			List<ColumnInfo> columnList = null;
 			String tableNm = "";
@@ -108,12 +108,12 @@ public final class DBMetaDataUtil {
 				tableNm = colRs.getString(MetaColumnConstants.TABLE_NAME);
 
 				if(tableInfoMap.containsKey(tableNm)) {
-					tableInfoMap.get(tableNm).getColList().add(resultSetMetaHandlerImpl.getColumnInfo(colRs, dataTypeImpl, pkMap.get(tableNm)));
+					tableInfoMap.get(tableNm).getColList().add(dbMetaHandlerImpl.getColumnInfo(colRs, dataTypeImpl, pkMap.get(tableNm)));
 				}
 			}
 			colRs.close();
 		}finally{
-			SqlUtils.close(colRs);
+			JdbcUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -137,7 +137,7 @@ public final class DBMetaDataUtil {
 				reLst.add(oi);
 			}
 		}finally{
-			SqlUtils.close(rs);
+			JdbcUtils.close(rs);
 		}
 		return reLst;
 	}
@@ -180,7 +180,7 @@ public final class DBMetaDataUtil {
 				colRs.close();
 			}
 		}finally{
-			SqlUtils.close(colRs);
+			JdbcUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -223,7 +223,7 @@ public final class DBMetaDataUtil {
 				colRs.close();
 			}
 		}finally{
-			SqlUtils.close(colRs);
+			JdbcUtils.close(colRs);
 		}
 		return reLst;
 	}
@@ -246,7 +246,7 @@ public final class DBMetaDataUtil {
 				reLst.add(oi);
 			}
 		}finally{
-			SqlUtils.close(rs);
+			JdbcUtils.close(rs);
 		}
 		return reLst;
 	}

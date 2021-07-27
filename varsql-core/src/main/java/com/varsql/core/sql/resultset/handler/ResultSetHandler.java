@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
+import com.varsql.core.sql.beans.GridColumnInfo;
+
 /**
  * 
  * @FileName  : ResultSetHandler.java
@@ -13,6 +15,7 @@ import java.util.Map;
  * @변경이력 :
  */
 public interface ResultSetHandler{
+	public Map getDataValue(ResultSet rs, Map rowMap, GridColumnInfo columnInfo) throws SQLException ;
 	public Map getDataValue(Map addMap, String keyName, String columnName, ResultSet rs, int columnIdx, String varType , String columnTypeName) throws SQLException ;
 	public Number getNumber(ResultSet rs , int columnIdx) throws SQLException ;
 	public Number getNumber(ResultSet rs , String columnName) throws SQLException ;

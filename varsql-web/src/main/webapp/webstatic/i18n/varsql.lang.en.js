@@ -49,6 +49,7 @@ VARSQL_LANG = {
 	,'varsql.0026' : '유효 하지 않은 설정입니다.'
 	,'varsql.0027' : '복사 되었습니다'
 	,'varsql.0028' : '내용을 입력해주세요.'
+	,'varsql.0029' : '파일 업로드후 처리 실행해주세요.'
 		
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
@@ -90,6 +91,7 @@ VARSQL_LANG = {
 	,'dataview' : 'Data View'
 	,'count' : 'Data Count'
 	,'export' : 'Export'
+	,'refresh' : 'Refresh'
 	,'data.export' : 'Export Data'
 		
 	,'step.prev' : 'Prev'
@@ -97,7 +99,7 @@ VARSQL_LANG = {
 	,'step.complete' : 'Complete'
 		
 	,'file.add' : 'Add file..'	
-	,'file.send' : 'Upload'	
+	,'file.upload' : 'Upload'
 	,'file.remove' : 'Remove File'	
 
 	,'menu.file.import' : '가져오기'

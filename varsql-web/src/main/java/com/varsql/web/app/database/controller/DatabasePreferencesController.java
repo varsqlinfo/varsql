@@ -45,7 +45,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	private PreferencesServiceImpl preferencesServiceImpl;
 
 	@RequestMapping(value={"/main"}, method = RequestMethod.GET)
-	public ModelAndView main(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView main(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/preferencesMain", VIEW_PAGE.DATABASE, model);
 	}
@@ -62,7 +62,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @throws Exception
 	 */
 	@RequestMapping(value="/generalSetting", method = RequestMethod.GET)
-	public ModelAndView generalSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView generalSetting(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/generalSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
@@ -79,7 +79,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @throws Exception
 	 */
 	@RequestMapping(value="/keySetting", method = RequestMethod.GET)
-	public ModelAndView keySetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView keySetting(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/keySetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
@@ -98,7 +98,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @throws Exception
 	 */
 	@RequestMapping(value="/sqlFormatSetting", method = RequestMethod.GET)
-	public ModelAndView sqlFormatSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView sqlFormatSetting(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/sqlFormatSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
@@ -115,7 +115,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @throws Exception
 	 */
 	@RequestMapping(value="/codeEditerSetting", method = RequestMethod.GET)
-	public ModelAndView codeEditerSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView codeEditerSetting(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/codeEditerSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
@@ -132,7 +132,7 @@ public class DatabasePreferencesController extends AbstractController  {
 	* @throws Exception
 	 */
 	@RequestMapping(value="/exportSetting", method = RequestMethod.GET)
-	public ModelAndView exportSetting(@RequestParam(value = "vconnid", required = true, defaultValue = "" )  String vconnid, ModelAndView mav) throws Exception {
+	public ModelAndView exportSetting(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/exportSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}

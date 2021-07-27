@@ -206,7 +206,7 @@
 	-->
     <logger name="org.hibernate.id.factory.internal" level="info"/>
 
-    <logger name="org.hibernate.type" level="debug"/>
+    <logger name="org.hibernate" level="info"/>
 	<logger name="org.hibernate.type.descriptor" level="error"/>
 	<logger name="org.hibernate.type.descriptor.sql" level="trace"/>
 	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error"/>

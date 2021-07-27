@@ -1,6 +1,11 @@
 package com.varsql.web.app.database.service;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,8 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,41 +28,58 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.code.VarsqlFilePathCode;
+import com.varsql.core.common.code.VarsqlFileType;
+import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.DataExportUtil;
+import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.data.writer.SQLWriter;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
+import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlCommandType;
 import com.varsql.core.sql.builder.VarsqlStatementType;
+import com.varsql.core.sql.executor.SelectExecutor;
+import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
+import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.mapping.ParameterMapping;
-import com.varsql.core.sql.util.SqlParamUtils;
-import com.varsql.core.sql.util.SqlUtils;
+import com.varsql.core.sql.util.JdbcUtils;
+import com.varsql.core.sql.util.SQLParamUtils;
+import com.varsql.core.sql.util.SQLResultSetUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.constants.SqlDataConstants;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.DataDownloadException;
-import com.varsql.web.exception.VarsqlResultConvertException;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
-import com.varsql.web.util.SqlResultUtils;
+import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.io.writer.AbstractWriter;
+import com.vartech.common.io.writer.CSVWriter;
+import com.vartech.common.io.writer.ExcelWriter;
+import com.vartech.common.io.writer.JSONWriter;
+import com.vartech.common.io.writer.XMLWriter;
 import com.vartech.common.utils.DateUtils;
+import com.vartech.common.utils.FileUtils;
+import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.StringUtils.EscapeType;
 import com.vartech.common.utils.VartechUtils;
@@ -87,19 +109,19 @@ public class SQLServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 6.
 	 * @변경이력  :
-	 * @param sqlParamInfo
+	 * @param sqlExecuteInfo
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult sqlFormat(SqlExecuteDTO sqlParamInfo) throws Exception {
+	public ResponseResult sqlFormat(SqlExecuteDTO sqlExecuteInfo) throws Exception {
 		ResponseResult result =new ResponseResult();
 
-		DBType dbType = DBType.getDBType(sqlParamInfo.getDbType());
+		DBType dbType = DBType.getDBType(sqlExecuteInfo.getDbType());
 
-		if("varsql".equals(sqlParamInfo.getCustom().get("formatType"))){
-			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(),dbType , VarsqlFormatterUtil.FORMAT_TYPE.VARSQL)+"\n");
+		if("varsql".equals(sqlExecuteInfo.getCustom().get("formatType"))){
+			result.setItemOne(VarsqlFormatterUtil.format(sqlExecuteInfo.getSql(),dbType , VarsqlFormatterUtil.FORMAT_TYPE.VARSQL));
 		}else{
-			result.setItemOne(VarsqlFormatterUtil.format(sqlParamInfo.getSql(),dbType )+"\n");
+			result.setItemOne(VarsqlFormatterUtil.format(sqlExecuteInfo.getSql(),dbType ));
 		}
 
 		return result;
@@ -118,13 +140,14 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
 
 		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlExecuteInfo.getConuid());
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(),sqlParamMap, DBType.getDBType(sqlExecuteInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBType.getDBType(sqlExecuteInfo.getDbType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
@@ -162,7 +185,7 @@ public class SQLServiceImpl{
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getVconnid());
 			conn.setAutoCommit(false);
-			
+
 			List<SqlStatisticsEntity> allSqlStatistics = new LinkedList<SqlStatisticsEntity>();
 			for (sqldx =0;sqldx <sqlSize; sqldx++) {
 				tmpSqlSource = sqlList.get(sqldx);
@@ -181,7 +204,7 @@ public class SQLServiceImpl{
 				sqlLogInfo.setStartTime(ssrv.getStarttime());
 				sqlLogInfo.setCommandType(tmpSqlSource.getCommandType());
 				sqlLogInfo.setEndTime(ssrv.getEndtime());
-				
+
 				allSqlStatistics.add(SqlStatisticsEntity.builder()
 					.vconnid(sqlLogInfo.getVconnid())
 					.viewid(sqlLogInfo.getViewid())
@@ -199,7 +222,7 @@ public class SQLServiceImpl{
 					break;
 				}
 			}
-			
+
 			sqlLogInsert(allSqlStatistics);
 
 			result.setItemList(reLst);
@@ -209,9 +232,13 @@ public class SQLServiceImpl{
 
 			errorMsg = e.getMessage();
 
-			if(e instanceof VarsqlResultConvertException){
-				result.setResultCode(VarsqlAppCode.EC_SQL_RESULT_CONVERT.code());
-				ssrv= ((VarsqlResultConvertException)e).getSsrv();
+			if(e instanceof ResultSetConvertException){
+				result.setResultCode(VarsqlAppCode.EC_SQL_RESULT_CONVERT);
+				ssrv= ((ResultSetConvertException)e).getSsrv();
+
+				if(ssrv != null) {
+					ssrv= new SqlSourceResultVO();
+				}
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 			}else {
 				boolean ssrvNullFlag = false;
@@ -225,13 +252,13 @@ public class SQLServiceImpl{
 				tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtils.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 
 				if(e instanceof ConnectionFactoryException) {
-					if(((ConnectionFactoryException)e).getErrorCode() ==VarsqlAppCode.EC_DB_POOL_CLOSE.code()) {
-						result.setResultCode(VarsqlAppCode.EC_DB_POOL_CLOSE.code());
+					if(((ConnectionFactoryException)e).getErrorCode() == VarsqlAppCode.EC_DB_POOL_CLOSE.getCode()) {
+						result.setResultCode(VarsqlAppCode.EC_DB_POOL_CLOSE);
 					}else {
-						result.setResultCode(VarsqlAppCode.EC_DB_POOL_ERROR.code());
+						result.setResultCode(VarsqlAppCode.EC_DB_POOL_ERROR);
 					}
 				}else {
-					result.setResultCode(VarsqlAppCode.EC_SQL.code());
+					result.setResultCode(VarsqlAppCode.EC_SQL);
 				}
 
 				result.setMessage(tmpMsg+StringUtils.escape(ssrv.getResultMessage(), EscapeType.html));
@@ -250,12 +277,12 @@ public class SQLServiceImpl{
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);
-				SqlUtils.close(conn);
+				JdbcUtils.close(conn);
 			}
 		}
 
 		long enddt = System.currentTimeMillis();
-		
+
 		saveSqlHistory(SqlHistoryEntity.builder()
 				.vconnid(sqlLogInfo.getVconnid())
 				.viewid(sqlLogInfo.getViewid())
@@ -266,14 +293,14 @@ public class SQLServiceImpl{
 				.usrIp(sqlLogInfo.getUsrIp())
 				.errorLog(errorMsg)
 				.build());
-		
+
 		return  result;
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : saveSqlHistory
-	 * @Method 설명 : sql history 저장. 
+	 * @Method 설명 : sql history 저장.
 	 * @작성일   : 2020. 11. 04.
 	 * @작성자   : ytkim
 	 * @변경이력  :
@@ -341,7 +368,7 @@ public class SQLServiceImpl{
 				stmt= callStatement;
 			}else{
 				PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
-				setSqlParameter(pstmt , maxRow, tmpSqlSource);
+				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
 				setMaxRow(pstmt, maxRow);
 				hasResults = pstmt.execute();
 
@@ -350,7 +377,7 @@ public class SQLServiceImpl{
 
 			if(hasResults) {
 				rs = stmt.getResultSet();
-				SqlResultUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow , gridKeyAlias);
+				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow , gridKeyAlias);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage(String.format("select count : %s ", ssrv.getResultCnt()));
 			}else{
@@ -373,32 +400,8 @@ public class SQLServiceImpl{
 	    	logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
 	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
-	    	SqlUtils.close(stmt, rs);
+	    	JdbcUtils.close(stmt, rs);
 	    }
-	}
-
-	private void setSqlParameter(PreparedStatement pstmt, int maxRow, SqlSource tmpSqlSource) throws SQLException {
-		List<ParameterMapping> paramList= tmpSqlSource.getParamList();
-
-		if(paramList != null){
-			Map orginParamMap = tmpSqlSource.getOrginSqlParam();
-
-			for(int i =1 ;i <= paramList.size() ;i++){
-				ParameterMapping param = paramList.get(i-1);
-				Object objVal;
-				if(param.isFunction()) {
-					objVal = SqlParamUtils.functionValue(param, orginParamMap);
-				}else {
-					objVal = orginParamMap.get(param.getProperty());
-				}
-
-				if(param.getJdbcType()==null) {
-					pstmt.setObject(i, objVal);
-				}else {
-					param.getJdbcType().setParameter(pstmt, i, objVal);
-				}
-			}
-		}
 	}
 
 	/**
@@ -408,7 +411,6 @@ public class SQLServiceImpl{
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param sqlParamInfo
 	 * @param tmpSqlSource
 	 * @param ssrv
 	 */
@@ -429,85 +431,111 @@ public class SQLServiceImpl{
 	 * 데이타 내보내기.
 	 * @param paramMap
 	 */
-	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlParamInfo, HttpServletResponse res) throws Exception {
+	@SuppressWarnings("rawtypes")
+	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletResponse res) throws Exception {
 
-		String exportType = sqlParamInfo.getExportType();
+		String tmpName = sqlExecuteInfo.getObjectName();
 
-		String tmpName = sqlParamInfo.getObjectName();
-
-		if(!sqlParamInfo.getBaseSchema().equals(sqlParamInfo.getSchema())) {
-			tmpName = sqlParamInfo.getSchema()+"."+tmpName;
+		if(!sqlExecuteInfo.getBaseSchema().equals(sqlExecuteInfo.getSchema())) {
+			tmpName = sqlExecuteInfo.getSchema()+"."+tmpName;
 		}
-		
+
 		StringBuilder reqQuerySb= new StringBuilder().append("select * from ").append(tmpName).append(" where 1=1 ");
-		
-		String conditionQuery = paramMap.getString("conditionQuery"); 
+
+		String conditionQuery = paramMap.getString("conditionQuery");
 		if(!StringUtils.isBlank(conditionQuery)) {
-			if(StringUtils.lTrim(conditionQuery).startsWith("where")) {
+			conditionQuery = StringUtils.lTrim(conditionQuery);
+			if(conditionQuery.startsWith("where")) {
 				conditionQuery = conditionQuery.replaceFirst("where", "");
 			}
-			
-			if(StringUtils.lTrim(conditionQuery).startsWith("and")) {
+
+			if(conditionQuery.startsWith("and")) {
 				conditionQuery = conditionQuery.replaceFirst("and", "");
 			}
-			
+
 			conditionQuery =  " and " +conditionQuery;
-			
+
 			reqQuerySb.append(conditionQuery);
 		}
 
-		String reqSql = reqQuerySb.toString();
-		
-		logger.debug("data export query : {}", reqSql);
-		
-		Connection conn = null;
-		SqlSourceResultVO result = null;
-		
-		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlParamInfo.getConuid());
-		SqlSource sqlSource = null; 
+		sqlExecuteInfo.setSqlParam("{}");
+		sqlExecuteInfo.setSql(reqQuerySb.toString());
+
+		String exportCharset = paramMap.getString("charset", VarsqlConstants.CHAR_SET);
+
+		OutputStream outstream = null;
+		AbstractWriter writer = null;
+
 		try {
-			
-			sqlSource = SqlSourceBuilder.getSqlSource(reqSql);
-			sqlSource.setResult(new SqlSourceResultVO());
-			
-			conn = ConnectionFactory.getInstance().getConnection(sqlParamInfo.getVconnid());
-			getRequestSqlData(sqlParamInfo,conn,sqlSource, dbinfo, false);
-			result = sqlSource.getResult();
-		} catch (SQLException e) {
-			logger.error(" dataExport ", e);
-			throw new DataDownloadException(e.getMessage());
-		}finally{
-			SqlUtils.close(conn);
-		}
 
-		if(result == null || sqlSource ==null) {
-			throw new DataDownloadException("sql data empty");
-		}
+			VarsqlFileType exportType = sqlExecuteInfo.getExportType();
 
-		String exportFileName = paramMap.getString("fileName", tmpName);
+			Path fileExportPath = FileServiceUtils.getSavePath(VarsqlFilePathCode.EXPORT_PATH.getDiv());
 
-		try (OutputStream os = res.getOutputStream()){
-			if("csv".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".csv",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toCSVWrite(result.getData(), result.getColumn(), os);
-			}else if("json".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".json",VarsqlConstants.CHAR_SET));
-				new ObjectMapper().writeValue(os, result.getData());
-			}else if("insert".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".sql",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toInsertQueryWrite(result.getData(), sqlSource.getResult().getNumberTypeFlag(), tmpName, os);
-			}else if("xml".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xml",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toXmlWrite(result.getData(), result.getColumn() , os);
-			}else if("excel".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(exportFileName + ".xlsx",VarsqlConstants.CHAR_SET));
-				DataExportUtil.toExcelWrite(result.getData(),result.getColumn() , os);
+			String downloadFilePath = FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(), VartechUtils.generateUUID()+ exportType.getExtension());
+			outstream = new FileOutputStream(downloadFilePath);
+
+			if(VarsqlFileType.CSV.equals(exportType)){
+				writer = new  CSVWriter(outstream, ',' , exportCharset);
+			}else if(VarsqlFileType.JSON.equals(exportType)){
+				writer = new JSONWriter(outstream, "row", exportCharset);
+			}else if(VarsqlFileType.XML.equals(exportType)){
+				writer = new XMLWriter(outstream, "row" , exportCharset);
+			}else if(VarsqlFileType.EXCEL.equals(exportType)){
+				writer = new ExcelWriter(outstream);
+			}else {
+				writer = new SQLWriter(outstream, DBType.getDBType(sqlExecuteInfo.getDbType()), tmpName, exportCharset);
 			}
 
-			if(os !=null) os.close();
+			logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, sqlExecuteInfo.getSql());
+
+			new SelectExecutor().execute(sqlExecuteInfo, new AbstractSQLExecutorHandler(writer) {
+				private boolean firstFlag = true;
+
+				@Override
+				public boolean handle(SQLHandlerParameter handleParam) {
+					if(firstFlag) {
+						if(VarsqlFileType.SQL.equals(exportType)) {
+							((SQLWriter)getWriter()).setColumnInfos(handleParam.getColumnInfoList());
+						}
+						firstFlag =false;
+					}
+
+					try {
+						getWriter().addRow(handleParam.getRowObject());
+					} catch (IOException e) {
+						logger.error(e.getMessage() , e);
+					}
+					return true;
+				}
+			});
+
+			writer.writeAndClose();
+
+			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", tmpName));
+
+			VarsqlUtils.setResponseDownAttr(res, exportFileName + exportType.getExtension());
+
+			try(FileInputStream fileInputStream  = new FileInputStream(new File(downloadFilePath));
+				OutputStream downloadStream = res.getOutputStream();)
+			{
+				byte[] buf = new byte[8192];
+
+				int read = 0;
+		        while ((read = fileInputStream.read(buf)) != -1){
+		        	downloadStream.write(buf, 0, read);
+		        }
+		        downloadStream.flush();
+
+		        downloadStream.close();
+		        fileInputStream.close();
+			}
+
 		}catch(Exception e) {
-			logger.error(" dataExport {}", e.getMessage());
-	    	logger.error(" dataExport ", e);
+			throw new DataDownloadException("sql data empty" , e);
+		}finally {
+			IOUtils.close(writer);
+			IOUtils.close(outstream);
 		}
 	}
 	/**
@@ -522,37 +550,67 @@ public class SQLServiceImpl{
 	 * @throws IOException
 	 */
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletResponse res) throws IOException {
-		String exportType = sqlGridDownloadInfo.getExportType();
+		VarsqlFileType exportType = sqlGridDownloadInfo.getExportType();
 
-		List<GridColumnInfo> columnInfo = Arrays.asList(VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getHeaderInfo(), GridColumnInfo[].class , true));
+		String exportCharset = VarsqlConstants.CHAR_SET;
+		String downloadName = "varsql-select-data";
 
-		//List<Map> downloadData = VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getGridData(), ArrayList.class);
+		AbstractWriter writer = null;
+		JsonParser parser =null;
 
-		logger.info("grid download : {} " , sqlGridDownloadInfo);
+		try (OutputStream outstream = res.getOutputStream()){
 
-
-		String downloadName = "grid-data-download";
-
-		try (OutputStream os = res.getOutputStream()){
-			String jsonString = sqlGridDownloadInfo.getGridData();
-			if("csv".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".csv",VarsqlConstants.CHAR_SET));
-				DataExportUtil.jsonStringToCsv(jsonString, columnInfo, os);
-			}else if("json".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".json",VarsqlConstants.CHAR_SET));
-				DataExportUtil.jsonStringToJson(jsonString, columnInfo, os);
-			}else if("xml".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xml",VarsqlConstants.CHAR_SET));
-				DataExportUtil.jsonStringToXml(jsonString, columnInfo , os);
-			}else if("excel".equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + ".xlsx",VarsqlConstants.CHAR_SET));
-				DataExportUtil.jsonStringToExcel(jsonString, columnInfo , os);
+			if(VarsqlFileType.CSV.equals(exportType)){
+				writer = new  CSVWriter(outstream, ',' , exportCharset);
+			}else if(VarsqlFileType.JSON.equals(exportType)){
+				writer = new JSONWriter(outstream, "row", exportCharset);
+			}else if(VarsqlFileType.XML.equals(exportType)){
+				writer = new XMLWriter(outstream, "row" , exportCharset);
+			}else if(VarsqlFileType.EXCEL.equals(exportType)){
+				writer = new ExcelWriter(outstream);
 			}
 
-			if(os !=null) os.close();
+			VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + exportType.getExtension(), VarsqlConstants.CHAR_SET));
+
+			List<GridColumnInfo> columnInfos = VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getHeaderInfo(), new TypeReference<LinkedList<GridColumnInfo>>() {} , true);
+			logger.debug("grid download : {} " , columnInfos);
+
+			Map<String,GridColumnInfo> gridColumnInfoMap = GridUtils.getKeyMap(columnInfos);
+
+			parser =  new JsonFactory().createParser(sqlGridDownloadInfo.getGridData());
+	        parser.nextToken();                          //start reading the file
+	        Map<String,Object> rowInfo;
+	        GridColumnInfo columnInfo;
+	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
+	        	rowInfo = new LinkedHashMap<>();
+	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
+
+	        		columnInfo = GridUtils.getGridInfoForKey(parser.getCurrentName(), gridColumnInfoMap);
+
+	        		if(columnInfo != null) {
+	        			parser.nextToken();
+
+	        			if(columnInfo.isNumber()) {
+	        				rowInfo.put(columnInfo.getLabel(), parser.getNumberValue());
+	        			}else{
+	        				rowInfo.put(columnInfo.getLabel(), parser.getText());
+	        			}
+
+	        		}
+	        	}
+	        	writer.addRow(rowInfo);
+	        }
+	        writer.writeAndClose();
+	        parser.close();
+
+			if(outstream !=null) outstream.close();
 		}catch(Exception e) {
 			logger.error(" param {} ", sqlGridDownloadInfo);
 			logger.error(" gridDownload {}", e.getMessage(), e);
+		}finally {
+			IOUtils.close(writer);
+			if(parser!=null)parser.close();
 		}
+
 	}
 }
