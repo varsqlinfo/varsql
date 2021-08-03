@@ -967,6 +967,13 @@ _ui.layout = {
 			}
 		});
 
+		// title click
+		varsqlLayout.on('tabCreated', function( tab ){
+			tab.titleElement.on('dblclick', function (e){
+				tab.contentItem.parent.toggleMaximise();
+			})
+		});
+
 		// item destroy
 		varsqlLayout.on('itemDestroyed', function( component ){
 			if(component.componentName =='pluginComponent'){
@@ -1276,16 +1283,16 @@ _ui.dbSchemaObject ={
 
 		var callMethod = _self.getCallMethod('_'+$contentId);
 
+		var param =_getParam({'objectType':$contentId, 'objectNames' : selObj.objectName , 'objectIdx' : selObj.objectIdx});
+
 		if(refresh !== true){
 			var cacheObj = _g_cache.getCacheSchemaObject($contentId);
 
 			if(!VARSQL.isUndefined(cacheObj)){
-				callMethod.call(_self,cacheObj);
+				callMethod.call(_self, cacheObj, param);
 				return ;
 			}
 		}
-
-		var param =_getParam({'objectType':$contentId, 'objectNames' : selObj.objectName , 'objectIdx' : selObj.objectIdx});
 
 		param.refresh = refresh;
 

@@ -40,7 +40,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 	private final Logger logger = LoggerFactory.getLogger(MssqlDDLScript.class);
 
 	public MssqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory);
+		super(dbInstanceFactory, DBType.MSSQL);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -167,7 +167,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -206,7 +206,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -248,7 +248,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 			}
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -291,7 +291,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -345,7 +345,7 @@ public class MssqlDDLScript extends DDLScriptImpl {
 			}
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -386,10 +386,10 @@ public class MssqlDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.MSSQL.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MSSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 

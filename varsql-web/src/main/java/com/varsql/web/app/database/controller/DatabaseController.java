@@ -1,13 +1,18 @@
 package com.varsql.web.app.database.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +21,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.cache.CacheInfo;
+import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VIEW_PAGE;
@@ -56,7 +63,7 @@ public class DatabaseController extends AbstractController {
 
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
-	
+
 	@Autowired
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
 	private CacheManager cacheManager;
@@ -70,7 +77,7 @@ public class DatabaseController extends AbstractController {
 		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());
 
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
-		
+
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
 
 		return getModelAndView("/main",VIEW_PAGE.DATABASE , model);
@@ -107,14 +114,44 @@ public class DatabaseController extends AbstractController {
 	 */
 	@RequestMapping(value = "/dbObjectList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
-		
-		cacheManager.getCache(CacheInfo.CacheType.TABLE_METADATA.getCacheName());
-		
+
 		if(databaseParamInfo.isRefresh()) {
-			databaseServiceImpl.dbObjectListCacheEvict(databaseParamInfo);
+			String cacheKey = CacheUtils.getObjectTypeKey(databaseParamInfo);
+			Cache tableMetaCache = cacheManager.getCache(CacheInfo.CacheType.OBJECT_TYPE_METADATA.getCacheName());
+			if(databaseParamInfo.getObjectNames() != null && databaseParamInfo.getObjectNames().length > 0) {
+
+				ValueWrapper value = tableMetaCache.get(cacheKey);
+
+				ResponseResult objValue = (ResponseResult)value.get();
+
+				ResponseResult result = databaseServiceImpl.dbObjectList(databaseParamInfo);
+
+				List<BaseObjectInfo> resultItems =result.getItems();
+
+				HashMap<String , BaseObjectInfo> newItemInfos = new HashMap<String,BaseObjectInfo>();
+				resultItems.stream().forEach(item ->{
+					newItemInfos.put(item.getName(), item);
+				});
+
+				List<BaseObjectInfo> cacheItems = objValue.getItems();
+				cacheItems = cacheItems.stream().map(item ->{
+					if(newItemInfos.containsKey(item.getName())) {
+						return newItemInfos.get(item.getName());
+					}
+					return item;
+				}).collect(Collectors.toList());
+
+				objValue.setItemList(cacheItems);;
+
+				tableMetaCache.put(cacheKey, objValue);
+
+				return result;
+			}else {
+				tableMetaCache.evict(cacheKey);
+			}
 		}
-		
-		return databaseServiceImpl.dbObjectList(databaseParamInfo);
+
+		return databaseServiceImpl.dbObjectList(databaseParamInfo) ;
 	}
 
 	/**

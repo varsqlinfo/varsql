@@ -68,7 +68,7 @@
 						<div class="pull-right">
 							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
 							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
-							
+
 							<template v-if="detailFlag===true">
 								<button type="button" class="btn btn-default" @click="copy()"><spring:message code="btn.copy"/></button>
 								<button type="button" class="btn btn-primary" @click="connectionCheck()"><spring:message code="btn.connnection.check"/></button>
@@ -176,7 +176,9 @@
 							<div class="col-sm-8">
 								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.vdriver">
 									<template href="javascript:;" class="list-group-item" v-for="(item,index) in driverList">
-										<option :value="item.driverId" :data-driver="item.dbdriver" selected="{{detailItem.vdriver==item.driverId?true:(detailItem.vdriver==''&& index==0?true:false)}}">{{item.driverDesc}}({{item.dbdriver}})</option>
+										<option :value="item.driverId" :data-driver="item.dbdriver" selected="{{detailItem.vdriver==item.driverId?true:(detailItem.vdriver==''&& index==0?true:false)}}">
+											{{item.driverDesc}}({{item.dbdriver}})
+										</option>
 					    			</template>
 								</select>
 							</div>
@@ -541,7 +543,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,copy : function (){
-			var _this = this; 
+			var _this = this;
 			var param = this.getParamVal();
 
 			this.$ajax({
@@ -552,7 +554,7 @@ VarsqlAPP.vueServiceBean( {
 					if(resData.resultCode ==200){
 						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0027'));
 						_this.search();
-						
+
 						_this.itemView({vconnid : resData.item});
 						return
 					}else{
@@ -607,8 +609,10 @@ VarsqlAPP.vueServiceBean( {
 		    			_this.driverList = [];
 		    			return ;
 		    		}
+					if(VARSQL.isBlank(_this.detailItem.vdriver)){
+						_this.detailItem.vdriver = resData.items[0].driverId
+					}
 
-		    		_this.detailItem.vdriver = resData.items[0].driverId
 		    		_this.driverList = result;
 
 		    		return ;

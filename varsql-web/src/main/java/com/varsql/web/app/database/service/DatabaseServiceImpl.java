@@ -22,6 +22,7 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.common.cache.CacheInfo;
+import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBConnTabResponseDTO;
@@ -109,14 +110,11 @@ public class DatabaseServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	@CacheEvict(cacheNames =CacheInfo.CACHE_KEY_TABLE_METADATA, key="#databaseParamInfo.vconnid")
-	public void dbObjectListCacheEvict(DatabaseParamInfo databaseParamInfo) {
-	}
-	
-	//, condition = "@"+ResourceConfigConstants.CACHE_CONDITION_COMPONENT+".dbObjectListCondition(#databaseParamInfo)"
-	@Cacheable(cacheNames =CacheInfo.CACHE_KEY_TABLE_METADATA, key="#databaseParamInfo.vconnid")
+	@Cacheable(cacheNames =CacheInfo.CACHE_KEY_OBJECTYPE_METADATA
+			, key="@"+CacheInfo.CACHE_KEY_OBJECTYPE_METADATA+".dbObjectTypeKey(#databaseParamInfo)"
+			, condition = "@"+CacheInfo.CACHE_KEY_OBJECTYPE_METADATA+".dbObjectListCondition(#databaseParamInfo)")
 	public ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo) {
-		
+
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
 
 		ResponseResult result = new ResponseResult();
@@ -124,7 +122,7 @@ public class DatabaseServiceImpl{
 
 		try{
 			String [] objectNames = databaseParamInfo.getObjectNames();
-			
+
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectType) && databaseParamInfo.isLazyLoad()){
 				if(databaseParamInfo.getCustom()!=null && "Y".equals(databaseParamInfo.getCustom().get("allMetadata"))){
 					result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), databaseParamInfo, objectNames));
@@ -161,7 +159,7 @@ public class DatabaseServiceImpl{
 	 */
 	public ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo) {
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType());
-		
+
 		ResponseResult result = new ResponseResult();
 
 		try{

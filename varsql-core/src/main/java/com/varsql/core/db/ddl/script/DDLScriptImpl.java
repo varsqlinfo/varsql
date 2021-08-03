@@ -38,8 +38,11 @@ import com.varsql.core.sql.util.JdbcUtils;
 public abstract class DDLScriptImpl extends DDLScriptAbstract{
 	protected MetaControlBean dbInstanceFactory;
 
-	protected DDLScriptImpl(MetaControlBean dbInstanceFactory ){
+	protected DBType dbType;
+
+	protected DDLScriptImpl(MetaControlBean dbInstanceFactory, DBType dbType){
 		this.dbInstanceFactory =  dbInstanceFactory;
+		this.dbType =  dbType;
 	}
 
 	/**
@@ -399,7 +402,7 @@ public abstract class DDLScriptImpl extends DDLScriptAbstract{
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBType.OTHER.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBType.OTHER, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 

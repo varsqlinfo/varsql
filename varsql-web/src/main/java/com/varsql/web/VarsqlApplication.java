@@ -33,6 +33,7 @@ public class VarsqlApplication extends SpringBootServletInitializer {
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(VarsqlApplication.class);
 	}
+	
 
 	public static void main(String[] args) {
 		SpringApplication.run(VarsqlApplication.class, args);

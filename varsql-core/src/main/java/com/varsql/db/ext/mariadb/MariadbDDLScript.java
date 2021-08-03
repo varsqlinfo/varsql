@@ -30,7 +30,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 	private final Logger logger = LoggerFactory.getLogger(MariadbDDLScript.class);
 
 	public MariadbDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory);
+		super(dbInstanceFactory, DBType.MARIADB);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			ParamMap source = client.selectOne("tableScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Table")).append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 
 			reval.add(ddlInfo);
 		}
@@ -90,7 +90,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create View")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -110,7 +110,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -143,7 +143,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Function")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 
 			reval.add(ddlInfo);
 		}
@@ -173,7 +173,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Procedure")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -218,7 +218,7 @@ public class MariadbDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Trigger")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MARIADB));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 

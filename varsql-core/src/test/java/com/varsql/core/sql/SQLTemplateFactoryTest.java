@@ -21,9 +21,9 @@ class SQLTemplateFactoryTest {
 
 		param.put("ddlOption", new DDLCreateOption());
 
-		String tempateSource = SQLTemplateFactory.getInstance().sqlRender(DBType.CUBRID.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param);
-		
-		
+		String tempateSource = SQLTemplateFactory.getInstance().sqlRender(DBType.CUBRID, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param);
+
+
 		System.out.println("11111111111");
 		System.out.println(tempateSource);
 		System.out.println("11111111111");

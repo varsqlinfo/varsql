@@ -85,7 +85,6 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 		if(!tblName.equals(beforeTableName)){
 
 			if(useTableIndex){
-
 				currentTableInfo = this.tableInfoList.get(this.tableIndexInfo.get(tblName));
 				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 				currentTableInfo.setRemarks(StringUtils.nullToString(currentTableInfo.getRemarks(), ""));

@@ -41,10 +41,8 @@
 			col.COLUMN_DEFAULT AS "COLUMN_DEF",
 			ind.INDEX_TYPE_NAME  as "CONSTRAINTS",
 			col.REMARKS as "COMMENT"
-		from information_schema.columns col left outer join information_schema.INDEXES  ind
-		on col.TABLE_SCHEMA = ind.TABLE_SCHEMA
-		and col.TABLE_NAME = ind.TABLE_NAME
-		and col.COLUMN_NAME = ind.COLUMN_NAME
+		from INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col on tbl.TABLE_NAME = col.TABLE_NAME and  tbl.TABLE_TYPE = 'TABLE'
+		left outer join information_schema.INDEXES  ind on col.TABLE_SCHEMA = ind.TABLE_SCHEMA 	and col.TABLE_NAME = ind.TABLE_NAME  and col.COLUMN_NAME = ind.COLUMN_NAME
 		where col.TABLE_SCHEMA =  #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			and
@@ -89,7 +87,8 @@
 			col.COLUMN_DEFAULT AS "COLUMN_DEF",
 			'' as "CONSTRAINTS",
 			col.REMARKS as "COMMENT"
-		from information_schema.columns col left outer join information_schema.constraints const
+		from INFORMATION_SCHEMA.VIEWS tbl inner join information_schema.columns col on tbl.TABLE_NAME = col.TABLE_NAME
+		left outer join information_schema.constraints const
 		on col.TABLE_SCHEMA = const.TABLE_SCHEMA and col.TABLE_NAME = const.TABLE_NAME
 		where col.TABLE_SCHEMA =  #{schema}
 		<choose>

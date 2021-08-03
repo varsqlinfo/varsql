@@ -41,7 +41,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 	private final Logger logger = LoggerFactory.getLogger(OracleDDLScript.class);
 
 	public OracleDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory);
+		super(dbInstanceFactory, DBType.ORACLE);
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -176,7 +176,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -259,7 +259,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -298,7 +298,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -358,7 +358,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -407,7 +407,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -449,10 +449,10 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBType.ORACLE.getDbVenderName(), SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.ORACLE));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 

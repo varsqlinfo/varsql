@@ -1,4 +1,4 @@
-package com.varsql.db.ext.postgresql;
+package com.varsql.db.ext.sybase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,17 +27,18 @@ import com.vartech.common.app.beans.ParamMap;
 
 /**
  *
- * @FileName  : PostgresqlDDLScript.java
- * @프로그램 설명 : Postgresql ddl
- * @Date      : 2019. 1. 20.
+ * @FileName  : SybaseDBMeta.java
+ * @프로그램 설명 : Sybase ddl
+ * @Date      : 2021. 2. 06.
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class PostgresqlDDLScript extends DDLScriptImpl {
-	private final Logger logger = LoggerFactory.getLogger(PostgresqlDDLScript.class);
+public class SybaseDDLScript extends DDLScriptImpl {
+	private final Logger logger = LoggerFactory.getLogger(SybaseDDLScript.class);
 
-	public PostgresqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBType.POSTGRESQL);
+
+	public SybaseDDLScript(MetaControlBean dbInstanceFactory){
+		super(dbInstanceFactory, DBType.SYBASE);
 	}
 
 	@Override

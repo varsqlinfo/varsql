@@ -29,8 +29,9 @@ import com.vartech.common.app.beans.ParamMap;
 public class MysqlDDLScript extends DDLScriptImpl {
 	private final Logger logger = LoggerFactory.getLogger(MysqlDDLScript.class);
 
+
 	public MysqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory);
+		super(dbInstanceFactory, DBType.MYSQL);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 			ParamMap source = client.selectOne("tableScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Table")).append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 
 			reval.add(ddlInfo);
 		}
@@ -90,7 +91,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create View")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -110,7 +111,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -143,7 +144,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Function")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 
 			reval.add(ddlInfo);
 		}
@@ -173,7 +174,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Procedure")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -218,7 +219,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(source.getString("Create Trigger")).append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),DBType.MYSQL));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
 			reval.add(ddlInfo);
 		}
 

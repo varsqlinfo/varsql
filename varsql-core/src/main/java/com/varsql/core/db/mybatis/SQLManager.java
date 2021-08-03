@@ -37,8 +37,8 @@ import com.vartech.common.utils.VartechReflectionUtils;
 public final class SQLManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
-	
-	final private static String LOG_PREFIX = "com.core.varsql_query";
+
+	final private static String LOG_PREFIX = "com.varsql.core.varsql_query";
 
 	private Map<String, SqlSessionTemplate> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionTemplate>();
 	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
@@ -81,7 +81,7 @@ public final class SQLManager {
 			}
 
 			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo).getObject();
-			
+
 			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
 			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
@@ -90,11 +90,11 @@ public final class SQLManager {
 			throw new VarsqlRuntimeException("getSqlSession IOException "+e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : sqlSessionFactory
-	 * @Method 설명 :get sql session factory 
+	 * @Method 설명 :get sql session factory
 	 * @작성일   : 2020. 10. 20.
 	 * @작성자   : ytkim
 	 * @변경이력  :
@@ -108,18 +108,18 @@ public final class SQLManager {
 
 		sqlSessionFactory.setConfiguration(getConfiguration());
 
-		sqlSessionFactory.setTypeAliases(new Class[] { 
-			com.varsql.core.db.valueobject.ResultTypeMap.class, 
-			com.varsql.core.db.valueobject.DatabaseParamInfo.class, 
-			com.varsql.core.db.valueobject.TableInfo.class, 
-			com.varsql.core.db.valueobject.ColumnInfo.class, 
-			com.varsql.core.db.valueobject.TriggerInfo.class, 
-			com.varsql.core.db.valueobject.SequenceInfo.class, 
-			com.varsql.core.db.valueobject.ObjectInfo.class, 
-			com.varsql.core.db.valueobject.ObjectColumnInfo.class, 
+		sqlSessionFactory.setTypeAliases(new Class[] {
+			com.varsql.core.db.valueobject.ResultTypeMap.class,
+			com.varsql.core.db.valueobject.DatabaseParamInfo.class,
+			com.varsql.core.db.valueobject.TableInfo.class,
+			com.varsql.core.db.valueobject.ColumnInfo.class,
+			com.varsql.core.db.valueobject.TriggerInfo.class,
+			com.varsql.core.db.valueobject.SequenceInfo.class,
+			com.varsql.core.db.valueobject.ObjectInfo.class,
+			com.varsql.core.db.valueobject.ObjectColumnInfo.class,
 		});
-		
-		sqlSessionFactory.setTypeHandlers(new TypeHandler[] { 
+
+		sqlSessionFactory.setTypeHandlers(new TypeHandler[] {
 			new LONGVARCHARHandler()
 		});
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -127,7 +127,7 @@ public final class SQLManager {
 		sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
 		return sqlSessionFactory;
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : dataSource
@@ -140,34 +140,34 @@ public final class SQLManager {
 	 */
 	private DataSource dataSource(ConnectionInfo connInfo) {
 		BasicDataSource dataSource = new BasicDataSource();
-		
+
 		dataSource.setDriverClassName(connInfo.getDriver());
 		dataSource.setUrl(connInfo.getUrl());
 		dataSource.setUsername(connInfo.getUsername());
 		dataSource.setPassword(connInfo.getPassword());
-		
+
 		dataSource.setInitialSize(5);
 		dataSource.setMaxTotal(10);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(0);
 		dataSource.setValidationQuery(connInfo.getValidation_query());
-		
+
 		dataSource.setTestOnBorrow(false);
 		dataSource.setTestOnReturn(false);
 		dataSource.setTestWhileIdle(true);
 		dataSource.setTimeBetweenEvictionRunsMillis(150000);
-		
+
 		dataSource.setNumTestsPerEvictionRun(5);
 		dataSource.setMinEvictableIdleTimeMillis(-1);
 		dataSource.setPoolPreparedStatements(true);
-		
+
 		return dataSource;
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : getConfiguration
-	 * @Method 설명 : mybatis config 
+	 * @Method 설명 : mybatis config
 	 * @작성일   : 2020. 10. 20.
 	 * @작성자   : ytkim
 	 * @변경이력  :
@@ -179,7 +179,7 @@ public final class SQLManager {
 		configuration.setJdbcTypeForNull(JdbcType.NULL);
 		configuration.setCacheEnabled(true);
 		configuration.setLogPrefix(LOG_PREFIX);
-		
-		return configuration; 
+
+		return configuration;
 	}
 }

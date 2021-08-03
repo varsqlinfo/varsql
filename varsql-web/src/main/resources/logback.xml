@@ -6,7 +6,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -25,7 +25,7 @@
 
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -44,7 +44,7 @@
 
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -212,7 +212,10 @@
 	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error"/>
     <logger name="org.hibernate.SQL" level="DEBUG"/>
 
+	<!-- apache log // start -->
+    <logger name="org.apache.tiles" level="info"/>
     <logger name="org.apache.commons" level="info"/>
+	<!-- apache log // end  -->
 
    <if condition='"local".equals("${runtime}")'>
         <then>

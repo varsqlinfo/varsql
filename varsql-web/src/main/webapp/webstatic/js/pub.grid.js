@@ -1,5 +1,5 @@
 /**
- * pubGrid v0.0.1
+ * pubGrid v1.0.1
  * ========================================================================
  * Copyright 2016-2020 ytkim
  * Licensed under MIT
@@ -93,10 +93,10 @@ var _initialized = false
 			,fixColumnPosition : -1	// fixed col position
 		}
 		,util : {
-			searchFilter : function (item, key,searchVal){
+			searchFilter : function (item, key,schRegExp){
 				var itemVal = (item[key]||'')+'';
 
-				if(itemVal.toLowerCase().indexOf(searchVal) > -1){
+				if(schRegExp.test(itemVal)){
 					return true;
 				}
 				return false;
@@ -1039,12 +1039,17 @@ Plugin.prototype ={
 			if(schField != '' && schVal !=''){
 				var schArr =[];
 
-				schVal =schVal.toLowerCase();
+				var schRegExp;
+				try{
+					schRegExp = new RegExp(schVal, 'i');	
+				}catch(e){
+					schRegExp = new RegExp(schVal.replace(/([.?*+^$[\]\\(){}])/g, "\\$1"),'i');
+				}
 
 				for(var i =0 , len  = orginData.length; i < len;i++){
 					var tmpItem =orginData[i];
 
-					if(settingOpt.util.searchFilter(tmpItem,schField,schVal)){
+					if(settingOpt.util.searchFilter(tmpItem, schField, schRegExp)){
 						schArr.push(tmpItem);
 					}
 				}

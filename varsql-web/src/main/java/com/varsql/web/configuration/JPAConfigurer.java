@@ -68,10 +68,6 @@ public class JPAConfigurer {
     @Autowired
     private Environment env;
 
-    public JPAConfigurer() {
-        super();
-    }
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();

@@ -8,6 +8,7 @@ import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.crypto.impl.AESEncryptDecrypt;
 import com.vartech.common.crypto.impl.AbstractCrypto;
 import com.vartech.common.crypto.impl.VartechSeed;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -60,10 +61,10 @@ public class DBPasswordCryptionFactory {
 	}
 
 	public String encrypt(String enc) throws EncryptDecryptException{
-		return abstractCrypto.encrypt(enc);
+		return StringUtils.isBlank(enc) ? enc : abstractCrypto.encrypt(enc);
 	}
 
 	public String decrypt(String enc) throws EncryptDecryptException{
-		return abstractCrypto.decrypt(enc);
+		return StringUtils.isBlank(enc) ? enc : abstractCrypto.decrypt(enc);
 	}
 }

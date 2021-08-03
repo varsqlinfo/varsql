@@ -17,6 +17,7 @@ import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
+import com.varsql.core.db.DBType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -101,7 +102,8 @@ public class SQLTemplateFactory {
 	 * @param param
 	 * @return
 	 */
-	public String sqlRender(String dbVender ,String templateId , Map param){
+	public String sqlRender(DBType dbType ,String templateId , Map param){
+		String dbVender= dbType.getDbVenderName();
 		Template template = getDDLTemplate( dbVender, templateId);
 
 		if(template ==null){

@@ -119,7 +119,7 @@ public abstract class DBMetaImpl implements DBMeta{
 
 		String dbAlias =  dataParamInfo.getVconnid();
 
-		logger.debug("getSchemas connid: {}",dbAlias);
+		logger.debug("getSchemas connid: {} , shcema : {}",dbAlias , dataParamInfo.getSchema());
 
 		Connection conn = null;
 		ResultSet rs = null;

@@ -19,11 +19,11 @@ import org.springframework.web.servlet.view.tiles3.TilesView;
 import com.varsql.web.constants.ViewPageConstants;
 
 /**
- * 
+ *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
 * @NAME		: VarsqlTilesView.java
-* @DESC		: tiles render 처리. 
+* @DESC		: tiles render 처리.
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -33,28 +33,28 @@ import com.varsql.web.constants.ViewPageConstants;
 *-----------------------------------------------------------------------------
  */
 public class VarsqlTilesView extends TilesView{
-	
+
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		
+
 		ApplicationContext tilesContext = ServletUtil.getApplicationContext(getServletContext());
 
-		BasicTilesContainer container = (BasicTilesContainer) TilesAccess.getContainer(tilesContext);
-		
-		
-		if (container == null) {
-            throw new ServletException("Tiles container is not initialized");
-        }
-		 
 		String url  = this.getUrl();
-		
+
 		if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX) || url.endsWith(ViewPageConstants.POPUP_SUFFIX)) {
+
+			BasicTilesContainer container = (BasicTilesContainer) TilesAccess.getContainer(tilesContext);
+
+			if (container == null) {
+	            throw new ServletException("Tiles container is not initialized");
+	        }
+
 			exposeModelAsRequestAttributes(model,request);
-			
+
 			Request tilesRequest = new ServletRequest(container.getApplicationContext(), request, response);
-			
-			Definition definition = null; 
+
+			Definition definition = null;
 			if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX)) {
 				definition = container.getDefinitionsFactory().getDefinition("common.dialog", tilesRequest);
 				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.DIALOG_SUFFIX)));
@@ -62,8 +62,8 @@ public class VarsqlTilesView extends TilesView{
 				definition = container.getDefinitionsFactory().getDefinition("common.popup", tilesRequest);
 				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.POPUP_SUFFIX)));
 			}
-			
-			container.render(definition, tilesRequest); 
+
+			container.render(definition, tilesRequest);
 		}else {
 			super.renderMergedOutputModel(model, request, response);
 		}
