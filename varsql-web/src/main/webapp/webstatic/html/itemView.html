@@ -13,148 +13,94 @@
 <link rel="icon" href="/vsql/webstatic/favicon.ico" type="image/png">
 
 
-<!-- Bootstrap Core CSS -->
-<link href="/vsql/webstatic/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css"  href="/vsql/webstatic/css/plugins/layout/default-theme.css"></link>
+<link rel="stylesheet" type="text/css"  href="/vsql/webstatic/css/plugins/layout/goldenlayout-base.css"></link>
+<link rel="stylesheet" type="text/css"  href="/vsql/webstatic/css/plugins/layout/goldenlayout-light-theme.css"></link>
 
-<!-- Custom Fonts -->
-<link href="/vsql/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link href="/vsql/webstatic/css/pub.all.min.css?version=1608343586841" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css"  href="/vsql/webstatic/css/pub.all.min.css"></link>
+<link rel="stylesheet" type="text/css"  href="/vsql/webstatic/css/varsql.db.sub.min.css"></link>
 
-<!-- Custom CSS -->
-<link href="/vsql/webstatic/css/varsql.common.css?version=1608343586841" rel="stylesheet">
-
-<script src="/vsql/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
-
-<script src="/vsql/webstatic/i18n/varsql.lang.ko.js?version=3429"></script>
 
 <script src="/vsql/webstatic/js/jquery-3.3.1.min.js"></script>
-<script src="/vsql/webstatic/js/jquery-ui.min.js"></script>
+
+<script src="/vsql/webstatic/js/varsql.web.js"></script>
+<script src="/vsql/webstatic/js/varsql.web.ui.js"></script>
+<script src="/vsql/webstatic/i18n/varsql.lang.js"></script>
+<script src="/vsql/webstatic/js/varsql.db.conts.js"></script>
+
+<script src="/vsql/webstatic/js/pub.grid.js"></script>
 
 <script src="/vsql/webstatic/js/vue.min.js"></script>
-<script src="/vsql/webstatic/js/varsql.web.js?version=3429"></script>
-<script src="/vsql/webstatic/js/varsql.web.ui.js?version=3429"></script>
-<script src="/vsql/webstatic/js/varsql.db.conts.js?version=3429"></script>
-<script src="/vsql/webstatic/js/vue.varsql.js?version=3429"></script>
+<script src="/vsql/webstatic/js/vue.varsql.js"></script>
 
-<script src="/vsql/webstatic/js/pub.grid.js?version=3013"></script>
+<script src="/vsql/webstatic/js/plugins/layout/goldenlayout.min.js"></script>
+
 
 </head>
-<body>
-	<div id="epViewArea" class="main-wrap">
+<body class="user-select-on">
+	<div id="epViewArea" class="item-detail-page">
 		<template v-if="viewMode===false">
 			<table class="wh100">
 				<tr>
 					<td class="text-center" style="text-align: center; font-size: 3em;">
-						정상적인 접근이 아닙니다.</br>
-						다시 시도 해주세요.
+						다시 시도 해주세요.</br>
+						정상적인 접근이 아닙니다.
 					</td>
 				</tr>
 			</table>
 		</template>
 		<template v-else>
-		 	<h3 style="margin: 5px;">상세보기</h3>
-	 		<div id="itemList" style="height:130px;"></div>
-
-			<div class="text-center" style="padding: 7px;">
-				<button type="button" class="btn btn-sm btn-default" @click="itemView('p')">이전</button>
-				<button type="button" class="btn btn-sm btn-default" @click="itemView('n')">다음</button>
+			<div class="header-area">
+				<h3>상세보기</h3>
+				<div class="view-btn">
+					<ul>
+						<li>
+							<a href="javascript:;" @click="setLayoutMode('top')" title="top-bottom(3:7)"><i class="layout-icon top"></i></a>
+						</li>
+						<li>
+							<a href="javascript:;" @click="setLayoutMode('left')" title="left-right(3:7)"><i class="layout-icon left"></i></a>
+						</li>
+						<li>
+							<a href="javascript:;" @click="setLayoutMode('right')"title="left-right(7:3)"><i class="layout-icon right"></i></a>
+						</li>
+					</ul>
+				</div>
 			</div>
-			<div style="height:calc(100% - 210px);overflow: auto;">
-		 		<table class="item-detail-area">
-		 			<thead style="display:none;">
-		 				<tr>
-		 					<td class="item-col-label">
-		 					</td>
-		 					<td class="item-col-content">
-		 						<pre id="calcHeight" class="content-view"></pre>
-		 					</td>
-		 				</tr>
-		 			</thead>
-		 			<tbody>
-			 			<tr v-for="(colItem,index) in colInfos">
-			 				<td class="item-col-label">{{colItem.label}}</td>
-			 				<td class="item-col-content">
-			 					<template v-if="colItem.dbType=='CLOB'">
-			 						<pre class="content-view huge">{{viewItem[colItem.key]}}</pre>
-			 					</template>
+			<div id="layoutArea" class="main-content"></div>
+		</template>
+
+		<div id="detailViewTemplate" style="display: none;">
+			<div class="wh100" style="overflow: auto;">
+				<table class="item-detail-area">
+					<thead style="display:none;">
+						<tr>
+							<td class="item-col-label">
+							</td>
+							<td class="item-col-content">
+								<pre id="calcHeight" class="content-view"></pre>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(colItem,index) in colInfos">
+							<td class="item-col-label">{{colItem.label}}</td>
+							<td class="item-col-content">
+								<template v-if="colItem.dbType=='CLOB'">
+									<pre class="content-view huge">{{viewItem[colItem.key]}}</pre>
+								</template>
 								<template v-else>
 									<pre class="content-view" :class="(viewItem[colItem.key+'_cls']||'')">{{viewItem[colItem.key]}}</pre>
 								</template>
-			 				</td>
-			 			</tr>
-			 		</tbody>
-		 		</table>
-		 	</div>
-		 </template>
- 	</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
-<style>
-.main-wrap{
-    top: 0px;
-    right: 0px;
-    left: 0px;
-    bottom: 0px;
-    width: 100%;
-    padding: 5px;
-    margin: 0px;
-    height: 100%;
-    position: absolute;
-}
 
-.item-detail-area{
-	width:100%;
-	table-layout:fixed;
-}
-
-.item-col-label{
-	width: 150px;
-	vertical-align: top;
-	border: 1px solid #ddd;
-	padding : 5px 5px;
-	font-weight: bold;
-
-}
-
-.item-col-content{
-	width : calc(100% - 150px);
-	border: 1px solid #ddd;
-}
-
-.content-view{
-	width:100%;
-	padding: 3px 5px;
-	overflow:auto;
-	word-break:break-all;
-	margin: 0px 0px;
-	min-height: 25px;
-    height: 25px;
-    border: 0px solid;
-    background: transparent;
-    white-space: pre-wrap;
-    resize: vertical;
-}
-
-.content-view.huge2{
-	height: 50px;
-	overflow:auto;
-}
-.content-view.huge3{
-	height: 80px;
-	overflow:auto;
-}
-.content-view.huge4{
-	height: 110px;
-	overflow:auto;
-}
-
-.content-view.huge{
-	height: 150px;
-	overflow:auto;
-}
-
-
-</style>
 <script>
 
 (function() {
@@ -167,30 +113,30 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 		colInfos :[]
 		, itemList :[]
 		, viewItem:{}
-		, viewIdx : 0
 		, viewMode : true
+	}
+	,updated: function () {
+		$('#detailItemArea').empty().html($('#detailViewTemplate').html());
 	}
 	,methods:{
 		setViewMode : function (mode){
 			this.viewMode = mode;
-		}
-		,itemView : function (mode){
-
-			var viewIdx =0;
-			if(mode=='p'){
-				viewIdx = --this.viewIdx;
-			}else{
-				viewIdx = ++this.viewIdx;
+			if(mode != false){
+				setLayout('top', false);
 			}
-
-			viewIdx = viewIdx < 0? 0: (viewIdx > this.itemList.length-1 ? this.itemList.length-1 : viewIdx );
-
-			this.viewIdx = viewIdx;
-			this.setItemDetail(this.itemList[viewIdx]);
+		}
+		,setLayoutMode : function (mode){
+			setLayout(mode, true)
 		}
 		,setItemDetail : function (item){
+			var firstFlag = false;
+			if(VARSQL.isUndefined(item)){
+				firstFlag = true;
+				item = this.itemList[0];
+			}
 
 			if(item['_$itemCheck'] !==true){
+
 				for(var i=0; i <this.colInfos.length;i++){
 					var colItem = this.colInfos[i];
 
@@ -218,14 +164,16 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			}
 
 			this.viewItem = item;
+
+			if(firstFlag){
+				$('#detailItemArea').html($('#detailViewTemplate').html());
+			}
 		}
 		,setItem : function (pColInfos, pItemList){
-			
-			//var itemObjInfo = VARSQL.util.objectMerge({},{"colInfos": pColInfos , "itemList":pItemList});
-			
+
 			var colInfos = VARSQL.util.objectMerge([],pColInfos);
 			var itemList = VARSQL.util.objectMerge([],pItemList);;
-			
+
 			var contentViewEleArr = document.querySelectorAll('.content-view');
 			for(var i =0; i <contentViewEleArr.length; i++){
 				contentViewEleArr[i].style = '';
@@ -234,14 +182,18 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			this.colInfos = colInfos;
 			this.itemList = itemList;
 
-			if(itemList.length > 0){
-				this.setItemDetail(itemList[0]);
+			if($('#itemList').length>0){
+				this.viewGrid();
+				this.setItemDetail();
 			}
+		}
+		,viewGrid : function (){
 
 			var _this =this;
 
 			$.pubGrid('#itemList',{
-				setting : {
+				selectionMode : 'multiple-row'
+				,setting : {
 					enabled : true
 					,click : false
 					,enableSearch : true
@@ -255,14 +207,17 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 				}
 				,rowOptions :{
 					click : function (rowInfo){
-						_this.viewIdx = rowInfo.r;
 						_this.setItemDetail(rowInfo.item);
 					}
 				}
-				,tColItem : colInfos
-				,tbodyItem :itemList
-			});
-
+				,bodyOptions : {
+					keyNavHandler : function(moveInfo){
+						_this.setItemDetail(moveInfo.item);
+					}
+				}
+				,tColItem : this.colInfos
+				,tbodyItem :this.itemList
+			})
 		}
 	}
 });
@@ -283,6 +238,151 @@ if(opener){
 
 viewObj.setViewMode(openerCheckFlag);
 
+var varsqlLayout;
+
+function setLayout(mode, changeFlag){
+	var config = {
+		settings: {
+			hasHeaders: false,
+			constrainDragToContainer: true,
+			reorderEnabled: false,
+			selectionEnabled: false,
+			popoutWholeStack: false,
+			blockedPopoutsThrowError: true,
+			closePopoutsOnUnload: true,
+			showPopoutIcon: false,
+			showMaximiseIcon: true,
+			showCloseIcon: false
+		},
+		dimensions: {
+			borderWidth: 10,
+			minItemHeight: 10,
+			minItemWidth: 10,
+			headerHeight: 20,
+			dragProxyWidth: 300,
+			dragProxyHeight: 200
+		},
+		labels: {
+			close: 'close',
+			maximise: 'maximise',
+			minimise: 'minimise'
+		},
+		content: []
+	};
+
+	if(mode =='top'){
+		config.content =[{
+			type: 'column',
+			content: [
+				{
+					type:'component',
+					componentName: 'Data',
+					height :30,
+					componentState: { text: 'Component 1' }
+				},
+				{
+					type:'component',
+					componentName: 'Detail',
+					height :70,
+					componentState: { text: 'Component 2' }
+				}
+			]
+		}];
+
+	}else{
+		var firstW = (mode=='left' ? 30 : 70)
+			,secondW = (mode=='left' ? 70 :30)
+			,firstName = (mode=='left' ? 'Data' :'Detail')
+			,secondName = (mode=='left' ? 'Detail' :'Data');
+
+		config.content =[{
+			type: 'row',
+			content: [
+				{
+					type:'component',
+					width: firstW,
+					componentName: firstName,
+					componentState: { text: 'Component 1' }
+				},
+				{
+					type:'component',
+					width: secondW,
+					componentName: secondName,
+					componentState: { text: 'Component 2' }
+				}
+			]
+		}];
+	}
+
+	if(changeFlag === false){
+		var saveState = localStorage.getItem('varsqlDetailLayout');
+
+		try{
+			if(!VARSQL.isBlank(saveState)){
+				var currConfig = JSON.parse( saveState);
+				config = !VARSQL.isBlank(currConfig) ? currConfig : config;
+			}
+		}catch(e){
+			console.log(e);
+		}
+	}
+
+	if(varsqlLayout){
+		varsqlLayout.destroy();
+		$('#layoutArea').empty()
+	}
+
+	varsqlLayout = new GoldenLayout( config, $('#layoutArea'));
+
+	varsqlLayout.registerComponent( 'Data', function( container, componentState ){
+		container.getElement().html('<div id="itemList" class="wh100" style=""></div>');
+		var initResize = true;
+		container.on('resize',function() {
+			if(initResize === true){
+				initResize = false;
+				return ;
+			}
+			$.pubGrid('#itemList').resizeDraw();
+
+		});
+	});
+
+	varsqlLayout.registerComponent( 'Detail', function( container, componentState ){
+		container.getElement().html('<div id="detailItemArea" class="wh100" style=""></div>');
+	});
+
+	varsqlLayout.init();
+
+	var windowResizeTimer;
+	$(window).resize(function() {
+		clearTimeout(windowResizeTimer);
+		windowResizeTimer = setTimeout(function() {
+			varsqlLayout.updateSize();
+		}, 20);
+	})
+
+	var layoutSaveTimer;
+	var firstFlag = true;
+
+	varsqlLayout.on( 'stateChanged', function(){
+		if(firstFlag){
+			viewObj.viewGrid();
+			viewObj.setItemDetail();
+
+			firstFlag = false;
+			return ;
+		}
+		clearTimeout(layoutSaveTimer);
+
+		layoutSaveTimer = setTimeout(function() {
+			localStorage.setItem('varsqlDetailLayout', JSON.stringify( varsqlLayout.toConfig()))
+		}, 300);
+	});
+
+	if(changeFlag){
+		localStorage.setItem('varsqlDetailLayout', JSON.stringify( varsqlLayout.toConfig()))
+	}
+}
 
 }());
 

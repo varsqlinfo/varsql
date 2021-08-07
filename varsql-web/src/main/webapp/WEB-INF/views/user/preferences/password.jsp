@@ -34,15 +34,15 @@ response.setDateHeader ("Expires", -1);
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label"><spring:message code="user.form.password.new" /></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.form.password.new" /></label>
 							<div class="col-lg-10">
 								 <input type="password" id="upw" name="upw" value="" class="form-control"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label"><spring:message code="user.form.password.confirm"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.form.password.confirm"/></label>
 
-				            <div class="col-sm-10">
+				            <div class="col-lg-10">
 				                <input type="password" id="confirmUpw" name="confirmUpw" value="" class="form-control"/>
 				            </div>
 						</div>
@@ -125,7 +125,7 @@ response.setDateHeader ("Expires", -1);
 				data:params,
 				success: function(resData) {
 					if(!VARSQL.req.validationCheck(resData)){
-						return ; 
+						return ;
 					}
 
 					if(resData.resultCode == 50001){

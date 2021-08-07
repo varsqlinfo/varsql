@@ -6,6 +6,9 @@
 	<a id="logo-title" href="<c:url value="/user/preferences" />">
 		<spring:message	code="label.user.preferences" />
 	</a>
+	<div class="pull-right">
+		<a href="#" class="show-sidebar"> <i class="fa fa-bars"></i></a>
+	</div>
 </div>
 <!-- Top Menu Items -->
 <div id="top-panel" class="col-xs-12 col-sm-10">

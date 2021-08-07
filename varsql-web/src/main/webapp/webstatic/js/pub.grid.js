@@ -131,6 +131,7 @@ var _initialized = false
 	}
 	,bodyOptions : {	// body option
 		cellDblClick : false	// body td click
+		,keyNavHandler : false // arrows key handler function 
 	}
 	,scroll :{	// 스크롤 옵션
 		isPreventDefault : true	// 이벤트 전파 여부.
@@ -476,6 +477,8 @@ Plugin.prototype ={
 		_this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
 
 		_this.config.rowHeight = _this.options.rowOptions.height;
+
+		_this.config.isKeyNavHandler = isFunction(_this.options.bodyOptions.keyNavHandler);
 
 		if(_this.options.rowOptions.contextMenu !== false && typeof _this.options.rowOptions.contextMenu == 'object'){
 			var _cb = _this.options.rowOptions.contextMenu.callback;
@@ -946,13 +949,14 @@ Plugin.prototype ={
 		var updItem = this.options.tbodyItem[idx];
 
 		if(updItem){
-			this.options.tbodyItem[idx] = objectMerge(this.options.tbodyItem[idx] , rowItem);
+			updItem= objectMerge(updItem , rowItem)
+			this.options.tbodyItem[idx] =updItem;
 			this.setData(this.options.tbodyItem,'reDraw_update');
 
 			if(clickFlag===true){
 				var rowClickFn = this.options.rowOptions.click;
 				if(isFunction(rowClickFn)){
-					rowClickFn.call(null ,  {r : idx, item : rowItem});
+					rowClickFn.call(null ,  {r : idx, item : updItem});
 				}
 			}
 		}
@@ -3773,7 +3777,9 @@ Plugin.prototype ={
 
 		var endIdx = startCell.startIdx
 			,endCol = startCell.startCol;
-
+		
+		var isKeyNavHandler = _this.config.isKeyNavHandler;
+		
 		switch(evtKey){
 			case 34 : // PageDown
 			case 13 : // enter
@@ -3791,11 +3797,11 @@ Plugin.prototype ={
 
 				moveRowIdx = moveRowIdx >= dataInfo.orginRowLen ? dataInfo.orginRowLen-1 : moveRowIdx;
 
-				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
-
-				if(insideScrollCheck(endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
+				if(_$util.insideScrollCheck(_this, evtKey, evt, endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
 					return ;
-				}else if((moveRowIdx -scrollInfo.viewIdx) >= scrollInfo.insideViewCount){
+				}
+				
+				if((moveRowIdx -scrollInfo.viewIdx) >= scrollInfo.insideViewCount){
 					_this.moveVerticalScroll({pos: 'D',speed :moveRow });
 				}
 
@@ -3816,11 +3822,11 @@ Plugin.prototype ={
 
 				moveRowIdx = moveRowIdx > 0 ? moveRowIdx : 0;
 
-				setRangeInfo(evtKey,evt ,moveRowIdx,endCol);
-
-				if(insideScrollCheck(endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
+				if(_$util.insideScrollCheck(_this, evtKey, evt, endIdx, endCol, scrollInfo, moveRowIdx, endCol)){ // 스크롤 밖에 있을때
 					return ;
-				}else if(moveRowIdx < scrollInfo.viewIdx){
+				}
+				
+				if(moveRowIdx < scrollInfo.viewIdx){
 					_this.moveVerticalScroll({pos:'U',speed :moveRow});
 				}
 
@@ -3840,11 +3846,11 @@ Plugin.prototype ={
 
 				moveColIdx = moveColIdx > 0 ? moveColIdx : 0;
 
-				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
-
-				if(insideScrollCheck(endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
+				if(_$util.insideScrollCheck(_this, evtKey, evt, endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
 					return ;
-				}else if(!_this._isFixedPostion(moveColIdx) && moveColIdx <= scrollInfo.startCol){
+				}
+				
+				if(!_this._isFixedPostion(moveColIdx) && moveColIdx <= scrollInfo.startCol){
 					_this.moveHorizontalScroll({pos:'L', colIdx :moveColIdx });
 				}
 
@@ -3863,11 +3869,11 @@ Plugin.prototype ={
 
 				var moveColIdx =(evtKey ==35 ? dataInfo.colLen-1 : endCol+1);
 
-				setRangeInfo(evtKey,evt ,endIdx,moveColIdx);
-
-				if(insideScrollCheck(endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
+				if(_$util.insideScrollCheck(_this, evtKey, evt, endIdx, endCol, scrollInfo, endIdx, moveColIdx)){ // 스크롤 밖에 있을때
 					return ;
-				}else if(moveColIdx >= scrollInfo.insideEndCol){
+				}
+				
+				if(moveColIdx >= scrollInfo.insideEndCol){
 					_this.moveHorizontalScroll({pos:'R' ,colIdx :moveColIdx});
 				}
 
@@ -3879,49 +3885,6 @@ Plugin.prototype ={
 			}
 		}
 
-		function setRangeInfo (evtKey, evt, endIdx, moveColIdx){
-
-			var startCol=moveColIdx, endCol=moveColIdx;
-
-			if(_this.options.selectionMode =='multiple-row' || _this.options.selectionMode =='row'){
-				startCol = 0;
-				endCol = _this.config.dataInfo.colLen-1;
-			}
-
-			var multipleFlag = _$util.isMultipleSelection(_this.options.selectionMode);
-
-			if(multipleFlag && (evtKey != 9 && evt.shiftKey)){
-				_this._setSelectionRangeInfo({
-					rangeInfo :  {endIdx : endIdx, endCol : endCol}
-					,startCell : {startIdx : endIdx, startCol : moveColIdx}
-				}, false,true);
-			}else{
-				_this._setSelectionRangeInfo({
-					rangeInfo :  {startIdx : endIdx,endIdx : endIdx, startCol:startCol,endCol :endCol}
-					,startCell : {startIdx : endIdx, startCol : moveColIdx}
-				},true, true);
-			}
-		}
-
-		// cursor scroll inside check
-		function insideScrollCheck(endIdx, endCol,scrollInfo, moveRowIdx, moveColIdx){
-			var reFlag = false;
-			if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
-				_this.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
-				reFlag = true;
-			}
-
-			if(!_this._isFixedPostion(moveColIdx)){
-				if(endCol < scrollInfo.startCol){ // 스크롤 밖에 있을때
-					_this.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
-					reFlag = true;
-				}else if(endCol > scrollInfo.endCol){
-					_this.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
-					reFlag = true;
-				}
-			}
-			return reFlag;
-		}
 	}
 	/**
 	 * @method _setMouseDownFlag
@@ -5138,6 +5101,64 @@ var _$util = {
 	*/
 	,setCheckBoxCheck : function (checkEle, item){
 		checkEle.innerHTML = '<input type="checkbox" class="pub-row-check" '+(item['_pubcheckbox']?'checked':'')+'/>';
+	}
+	/**
+	 * @method setRangeInfo
+	 * @description 
+	 */
+	,setRangeInfo : function(ctx, evtKey, evt, endIdx, moveColIdx){
+
+		var startCol=moveColIdx, endCol=moveColIdx;
+		
+		if(ctx.options.selectionMode =='multiple-row' || ctx.options.selectionMode =='row'){
+			startCol = 0;
+			endCol = ctx.config.dataInfo.colLen-1;
+		}
+
+		var multipleFlag = this.isMultipleSelection(ctx.options.selectionMode);
+
+		if(multipleFlag && (evtKey != 9 && evt.shiftKey)){
+			ctx._setSelectionRangeInfo({
+				rangeInfo :  {endIdx : endIdx, endCol : endCol}
+				,startCell : {startIdx : endIdx, startCol : moveColIdx}
+			}, false,true);
+		}else{
+			ctx._setSelectionRangeInfo({
+				rangeInfo :  {startIdx : endIdx,endIdx : endIdx, startCol:startCol,endCol :endCol}
+				,startCell : {startIdx : endIdx, startCol : moveColIdx}
+			},true, true);
+		}
+	}
+	/**
+	 * @method insideScrollCheck
+	 * @description  cursor scroll inside check
+	 */
+	,insideScrollCheck : function(ctx, evtKey, evt, endIdx, endCol, scrollInfo, moveRowIdx, moveColIdx){
+
+		if(ctx.config.isKeyNavHandler){
+			if(ctx.options.bodyOptions.keyNavHandler.call(evt,{key : evtKey, moveCol: moveColIdx, moveRow : moveRowIdx, item : ctx.getItems(moveRowIdx)})===false){
+				return false; 
+			}
+		}
+
+		this.setRangeInfo(ctx, evtKey, evt, moveRowIdx, moveColIdx);
+
+		var reFlag = false;
+		if(endIdx < scrollInfo.viewIdx || (endIdx > scrollInfo.viewIdx+scrollInfo.insideViewCount)){ // 스크롤 밖에 있을때
+			ctx.moveVerticalScroll({pos: 'M',rowIdx :moveRowIdx });
+			reFlag = true;
+		}
+
+		if(!ctx._isFixedPostion(moveColIdx)){
+			if(endCol < scrollInfo.startCol){ // 스크롤 밖에 있을때
+				ctx.moveHorizontalScroll({pos: 'L',colIdx :moveColIdx});
+				reFlag = true;
+			}else if(endCol > scrollInfo.endCol){
+				ctx.moveHorizontalScroll({pos: 'R',colIdx :moveColIdx});
+				reFlag = true;
+			}
+		}
+		return reFlag;
 	}
 }
 

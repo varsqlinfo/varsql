@@ -58,7 +58,7 @@ public class SsoController implements InitializingBean  {
 	private SsoComponent ssoComponent;
 
 	private SsoHandler ssoHandler;
-	
+
 	@RequestMapping(value="/proc" )
 	public ModelAndView proc(HttpServletRequest request,HttpServletResponse response, ModelAndView mav)  {
 		/*
@@ -88,7 +88,7 @@ public class SsoController implements InitializingBean  {
     public void afterPropertiesSet() throws ServletException {
     	this.ssoHandler = ssoBeanFactory.getSsoBean();
     }
-    
+
     public static class SsoUrlCondition implements Condition {
     	@Override
     	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {

@@ -2,6 +2,7 @@ package com.varsql.web.configuration;
 import java.sql.Connection;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Provider;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -68,6 +69,28 @@ public class JPAConfigurer {
     @Autowired
     private Environment env;
 
+    private DataSource mainDataSource;
+
+
+	@PostConstruct
+    public void initialize(){
+		ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
+
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName(ci.getDriver());
+		dataSource.setUrl(ci.getUrl());
+		dataSource.setUsername(ci.getUsername());
+		dataSource.setPassword(ci.getPassword());
+
+		logger.debug("=================datasourceconfig info====================");
+		logger.debug(" driver : {}", ci.getDriver());
+		logger.debug(" url : {}",ci.getUrl());
+		logger.debug(" username" ,ci.getUsername());
+		logger.debug("=================datasourceconfig info====================");
+
+		mainDataSource = dataSource;
+    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -83,22 +106,7 @@ public class JPAConfigurer {
 
     @Bean
     public DataSource dataSource() {
-
-    	ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
-
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(ci.getDriver());
-		dataSource.setUrl(ci.getUrl());
-		dataSource.setUsername(ci.getUsername());
-		dataSource.setPassword(ci.getPassword());
-
-		logger.debug("=================datasourceconfig info====================");
-		logger.debug(" driver : {}", ci.getDriver());
-		logger.debug(" url : {}",ci.getUrl());
-		logger.debug(" username" ,ci.getUsername());
-		logger.debug("=================datasourceconfig info====================");
-
-        return dataSource;
+        return mainDataSource;
     }
 
     @Bean(name = ResourceConfigConstants.APP_TRANSMANAGER)

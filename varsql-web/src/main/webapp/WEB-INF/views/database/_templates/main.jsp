@@ -13,7 +13,7 @@
 </div>
 <div id="varsqlBodyWrapper" class="varsql-body-wrapper"></div>
 
-	
+
 <%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>
 </body>
 
@@ -25,9 +25,9 @@ $(document).ready(function(){
 	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid, schema:viewConnInfo.schema},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.userSettingInfo = ${requestScope["database_screen_setting"]};
 	VARSQL.ui.create(opts);
-	
+
 	//varsqlMain.init();
-}); 
+});
 
 </script>
 
@@ -36,9 +36,9 @@ $(document).ready(function(){
 <script id="dbObjectComponentTemplate" type="text/varsql-template">
 <div id="pluginSchemaObject" class="varsql-plugin-wrapper">
 	<div class="db-schema">
-		<img src="/vsql/webstatic/imgs/Database.gif"/>
+		<a href="javascript:;" title="View Default DB" class="default_db_view_btn"><img src="/vsql/webstatic/imgs/Database.gif" style="position: relative;top: 3px;"/></a>
 		<input type="text" id="varsqlSschemaName" value="${screenConfigInfo.schema}" class="schema-name-text" disabled="">
-		
+
 		<div class="schema-view-btn pull-right varsql-widget-layer">
 			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">
 				<button type="button" class="varsql-btn-default db-schema-list-btn">
@@ -46,7 +46,7 @@ $(document).ready(function(){
 				</button>
 				<ul id="dbSchemaList" class="dropdown-scheam-list">
 					<c:forEach var="item" items="${screenConfigInfo.schemaList}" varStatus="status">
-						<li><a href="javascript:;" class="db-schema-item ${screenConfigInfo.schema == item ? 'active' :''}" obj_nm="${item}">${item}</a></li>
+						<li><a href="javascript:;" class="db-schema-item ${screenConfigInfo.schema == item ? 'active db-schema-default' :''}" obj_nm="${item}">${item}</a></li>
 					</c:forEach>
 				</ul>
 			</c:if>
@@ -55,14 +55,14 @@ $(document).ready(function(){
 	<!-- object tab area -->
 	<div id="pluginSchemaObjectTab" class="db-object-tab"></div>
 	<!-- object cont area -->
-	<div id="pluginSchemaObjectTabContent" class="db-object-tab-content"></div>			
+	<div id="pluginSchemaObjectTabContent" class="db-object-tab-content"></div>
 </div>
 </script>
 
 <%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
 <div id="pluginObjectMeta" class="varsql-plugin-wrapper">
-	<div id="pluginObjectMetaContent" class="wh100"></div>	
+	<div id="pluginObjectMetaContent" class="wh100"></div>
 </div>
 </script>
 
@@ -93,21 +93,21 @@ $(document).ready(function(){
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
-			<li>	
+			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.cut" /> Ctrl+X">
 					<i class="fa fa-scissors"></i>
 				</button>
 			</li>
-			<li>	
+			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.copy" /> Ctrl+C">
 					<i class="fa fa-copy"></i>
 				</button>
-			</li>	
-			<li>	
+			</li>
+			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.eraser" />">
 					<i class="fa fa-eraser"></i>
 				</button>
-			</li>	
+			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.undo" /> Ctrl+Z">
@@ -137,12 +137,12 @@ $(document).ready(function(){
 			</li>
 		</ul>
 	</div>
-	
+
 	<div class="sql-editor-file">
 		<div class="left-cont">
 			<span class="sql-limit-count">
 				<input type="hidden" id="conuid" name="conuid" value="${param.conuid}">
-				LIMIT 
+				LIMIT
 				<select id="limitRowCnt"  name="limitRowCnt">
 					<option value="100" selected>100</option>
 					<option value="500">500</option>
@@ -177,7 +177,7 @@ $(document).ready(function(){
 			<div class="sql-editor-item" data-editor-id="empty">
 	 			<p class="msg-text">
 					<a href="javascript:;" class="sql_new_file">
-						<button type="button" class=""><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" /> 
+						<button type="button" class=""><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" />
 					</a>
 					<br><spring:message code="msg.editor.info" />
 				</p>
@@ -207,7 +207,7 @@ $(document).ready(function(){
 			<li tab_gubun="msg"><a href="javascript:;"><span><spring:message code="btn.resultarea.tab.log"/></span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
 		</ul>
 	</div>
-	
+
 	<div id="dataGridAreaWrap" class="sql-result-tab-content">
 		<div id="dataGridArea" class="varsql-tab-content tab-on" tab_gubun="result">
 			<div class="sql-editor-result active" data-sql-result-id="empty">
@@ -215,7 +215,7 @@ $(document).ready(function(){
 				<div class="sql-editor-result-grid" data-grid-type="columnType"></div>
 			</div>
 		</div>
-		<div id="resultMsgAreaWrap"  class="varsql-tab-content user-select-on varsql-log-area" tab_gubun="msg"></div>		
+		<div id="resultMsgAreaWrap"  class="varsql-tab-content user-select-on varsql-log-area" tab_gubun="msg"></div>
 	</div>
 </div>
 </script>

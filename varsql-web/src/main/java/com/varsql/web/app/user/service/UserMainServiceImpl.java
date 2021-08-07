@@ -14,7 +14,6 @@ import com.varsql.web.app.websocket.service.WebSocketServiceImpl;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.constants.WebSocketConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.dto.websocket.MessageDTO;
@@ -40,7 +39,7 @@ public class UserMainServiceImpl extends AbstractService{
 
 	@Autowired
 	private NoteEntityRepository noteEntityRepository;
-	
+
 	@Autowired
 	private WebSocketServiceImpl webSocketServiceImpl;
 
@@ -106,7 +105,7 @@ public class UserMainServiceImpl extends AbstractService{
 		}
 
 		noteMappingUserEntityRepository.saveAll(recvList);
-		
+
 		webSocketServiceImpl.sendUserMessage(MessageDTO.builder()
 				.type(MessageType.NOTE).message("recv").build(), recvArr);
 
@@ -115,8 +114,8 @@ public class UserMainServiceImpl extends AbstractService{
 
 	/**
 	 *
-	 * @param messageType 
-	 * @param searchParameter 
+	 * @param messageType
+	 * @param searchParameter
 	 * @Method Name  : selectMessageInfo
 	 * @Method 설명 : 쪽지 목록.
 	 * @작성자   : ytkim

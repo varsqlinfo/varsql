@@ -831,20 +831,14 @@ _ui.layout = {
 		  }]
 		};
 
-		var savedState = _g_options.screenSetting.layoutConfig;
-
 		try{
-			savedState = JSON.parse( savedState );
-		}catch(e){
-			savedState = '';
-		}
+			if(!VARSQL.isBlank(_g_options.screenSetting.layoutConfig)){
+				var currConfig = JSON.parse(_g_options.screenSetting.layoutConfig);
+				config = !VARSQL.isBlank(currConfig) ? currConfig : config;
+			}
+		}catch(e){}
 
-		var varsqlLayout ={};
-		if( !VARSQL.isUndefined(savedState) && '' != savedState) {
-			varsqlLayout = new GoldenLayout( savedState ,$(_getSelector('layoutBody')) );
-		} else {
-			varsqlLayout = new GoldenLayout( config ,$(_getSelector('layoutBody')));
-		}
+		var varsqlLayout = new GoldenLayout( config ,$(_getSelector('layoutBody')));
 
 		varsqlLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
 		    container.getElement().html($(_getSelector('dbObjectComponent',_selectorType.TEMPLATE)).html());
@@ -857,7 +851,7 @@ _ui.layout = {
 					return ;
 				}
 
-				_ui.dbSchemaObject.resizeObjectArea({width : container.width-2,height : container.height});
+				_ui.dbSchemaObject.resizeObjectArea({width : container.width,height : container.height});
 
 			});
 		});
@@ -873,7 +867,7 @@ _ui.layout = {
 					return ;
 				}
 
-				_ui.dbObjectMetadata.resizeMetaArea({width : container.width-2,height : container.height});
+				_ui.dbObjectMetadata.resizeMetaArea({width : container.width,height : container.height});
 			})
 		});
 
@@ -903,9 +897,7 @@ _ui.layout = {
 					initResize = false;
 					return ;
 				}
-				_ui.sqlDataArea.resize({
-					width : container.width-2 , height : container.height
-				});
+				_ui.sqlDataArea.resize({width : container.width, height : container.height});
 			})
 		});
 
@@ -930,9 +922,7 @@ _ui.layout = {
 				    	return ;
 			    	}
 					try{
-						resizeFn.call(componentObj, {
-							width : container.width-2 , height : container.height
-						});
+						resizeFn.call(componentObj, {width : container.width, height : container.height});
 					}catch(e){};
 				}
 			})
@@ -1018,8 +1008,12 @@ _ui.layout = {
 			}
 		}
 
+		var windowResizeTimer;
 		$(window).resize(function() {
-			varsqlLayout.updateSize();
+			clearTimeout(windowResizeTimer);
+			windowResizeTimer = setTimeout(function() {
+				varsqlLayout.updateSize();
+			}, 20);
 		})
 
 		var layoutSaveTimer;
@@ -1177,6 +1171,11 @@ _ui.dbSchemaObject ={
 			}
 		})
 
+		// db default schema click
+		$(schemaObjEleId+' .default_db_view_btn').on('click', function (){
+			$(schemaObjEleId+' .db-schema-item.db-schema-default').trigger('click');
+		})
+
 		// 스키마 클릭.
 		$(schemaObjEleId+' .db-schema-item').on('click', function (){
 
@@ -1270,7 +1269,7 @@ _ui.dbSchemaObject ={
 			var serviceGridObj = $.pubGrid(schemaObjectEleId+'>#'+$contentId);
 
 			if(serviceGridObj){
-				serviceGridObj.resizeDraw({width:$(schemaObjectEleId).width() , height:$(schemaObjectEleId).height()});
+				serviceGridObj.resizeDraw();
 			}
 		}
 
@@ -1340,7 +1339,7 @@ _ui.dbSchemaObject ={
 
 		var gridObj = $.pubGrid(this.options.objectTypeTabContentEleId+'>#'+this.selectObjectMenu);
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 	// 데이타 내보내기
@@ -2474,7 +2473,7 @@ _ui.addODbServiceObjectMetadata('view', {
 		var gridObj = $.pubGrid(this.getTabContEleId('view',"column"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 });
@@ -2535,7 +2534,7 @@ _ui.addODbServiceObjectMetadata('procedure', {
 		var gridObj = $.pubGrid(this.getTabContEleId('procedure',"column"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 })
@@ -2644,7 +2643,7 @@ _ui.addODbServiceObjectMetadata('function', {
 		var gridObj = $.pubGrid(this.getTabContEleId('function',"column"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 })
@@ -2704,7 +2703,7 @@ _ui.addODbServiceObjectMetadata('index', {
 		var gridObj = $.pubGrid(this.getTabContEleId('index',"column"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 })
@@ -2762,7 +2761,7 @@ _ui.addODbServiceObjectMetadata('trigger', {
 		var gridObj = $.pubGrid(this.getTabContEleId('trigger',"column"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 })
@@ -2821,7 +2820,7 @@ _ui.addODbServiceObjectMetadata('sequence', {
 		var gridObj = $.pubGrid(this.getTabContEleId('sequence',"info"));
 
 		if(gridObj){
-			gridObj.resizeDraw(dimension);
+			gridObj.resizeDraw();
 		}
 	}
 })
@@ -4790,16 +4789,13 @@ _ui.sqlDataArea =  {
 			return ;
 		}
 
-		this.resizeDimension = VARSQL.util.objectMerge({}, dimension);;	// file tab 클릭시 resize 때문에 보관
-
-		dimension.height = dimension.height-27; // tab area height;1
 		try{
-			$.pubGrid(this.currnetDataGridSelector).resizeDraw(dimension);
+			$.pubGrid(this.currnetDataGridSelector).resizeDraw();
 		}catch(e){
 			//console.log(e)
 		}
 		try{
-			$.pubGrid(this.currnetDataGridColumnSelector).resizeDraw(dimension);
+			$.pubGrid(this.currnetDataGridColumnSelector).resizeDraw();
 		}catch(e){
 			//console.log(e)
 		}
@@ -4902,8 +4898,7 @@ _ui.registerPlugin({
 			return $('#glossaryComponentTemplate').html();
 		}
 		,resize : function (dimension){
-			dimension.height = dimension.height - $(this.selector+' .glossary-search-area-wrapper').height();
-			this.gridObj.resizeDraw(dimension);
+			this.gridObj.resizeDraw();
 		}
 		,destroy: function (){
 			this.gridObj.destroy()
@@ -5012,8 +5007,7 @@ _ui.registerPlugin({
 			return $('#historyPluginAreaTemplate').html();
 		}
 		,resize : function (dimension){
-			dimension.height = dimension.height - $(this.selector+' .history-search-area-wrapper').height();
-			this.gridObj.resizeDraw(dimension);
+			this.gridObj.resizeDraw();
 		}
 		,destroy: function (){
 		}

@@ -1065,7 +1065,7 @@ function getLocationParameter(key){
 	var paramSplit  = location.href.split('?');
 	var paramLen = paramSplit.length;
 
-	if(paramLen < 2) return param;
+	if(paramLen < 2) return null;
 
 	var parameters = paramSplit[1].split('&');
 

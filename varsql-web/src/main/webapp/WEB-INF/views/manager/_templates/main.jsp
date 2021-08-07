@@ -20,7 +20,7 @@
 				<div id="sidebar-left" class="col-xs-2 col-sm-2">
 					<tiles:insertAttribute name="left" />
 				</div>
-				
+
 				<!--Start Content-->
 				<div id="main-content" class="height100 col-xs-12 col-sm-10">
 					<tiles:insertAttribute name="body" />
@@ -33,7 +33,7 @@
 </html>
 <script>
 $(document).ready(function (){
-	
+
 	$('.show-sidebar').on('click', function (e) {
 		e.preventDefault();
 		$('div#main-wrap').toggleClass('sidebar-show');

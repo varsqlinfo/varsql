@@ -581,6 +581,7 @@ public class SQLServiceImpl{
 	        parser.nextToken();                          //start reading the file
 	        Map<String,Object> rowInfo;
 	        GridColumnInfo columnInfo;
+	        JsonToken valueToken;
 	        while (parser.nextToken() != JsonToken.END_ARRAY) {    //loop until "}"
 	        	rowInfo = new LinkedHashMap<>();
 	        	while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -590,12 +591,17 @@ public class SQLServiceImpl{
 	        		if(columnInfo != null) {
 	        			parser.nextToken();
 
-	        			if(columnInfo.isNumber()) {
-	        				rowInfo.put(columnInfo.getLabel(), parser.getNumberValue());
-	        			}else{
-	        				rowInfo.put(columnInfo.getLabel(), parser.getText());
-	        			}
+	        			valueToken = parser.currentToken();
 
+	        			if(valueToken==null) {
+	        				rowInfo.put(columnInfo.getLabel(), null);
+	        			}else {
+	        				if(columnInfo.isNumber() && valueToken.isNumeric()) {
+		        				rowInfo.put(columnInfo.getLabel(), parser.getNumberValue());
+		        			}else{
+		        				rowInfo.put(columnInfo.getLabel(), parser.getText());
+		        			}
+	        			}
 	        		}
 	        	}
 	        	writer.addRow(rowInfo);
