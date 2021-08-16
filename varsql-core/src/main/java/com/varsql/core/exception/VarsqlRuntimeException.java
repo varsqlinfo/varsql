@@ -18,7 +18,7 @@ public class VarsqlRuntimeException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private int errorCode;
+	private CodeEnumValue errorCode;
 	private String errorMessage;
 	private String messageCode;
 
@@ -53,16 +53,12 @@ public class VarsqlRuntimeException extends RuntimeException {
 		this.errorMessage = errorMessage;
 	}
 
-	public int getErrorCode() {
+	public CodeEnumValue getErrorCode() {
 		return errorCode;
 	}
 
 	public void setErrorCode(CodeEnumValue errorCode) {
-		if(errorCode != null) {
-			this.errorCode = errorCode.getCode();
-		}
-
-		this.errorCode = VarsqlAppCode.ERROR.getCode();
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.COMM_RUNTIME_ERROR;
 	}
 
 	public String getMessageCode() {

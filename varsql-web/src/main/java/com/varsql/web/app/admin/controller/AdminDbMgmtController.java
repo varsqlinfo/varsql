@@ -6,6 +6,8 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.admin.service.AdminServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -133,7 +136,7 @@ public class AdminDbMgmtController extends AbstractController{
 		logger.debug("dbConnectionReset : {}" , vconnid);
 		return adminServiceImpl.dbConnectionReset(vconnid);
 	}
-	
+
 	@RequestMapping(value = "/dbConnectionCopy", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionCopy(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
 		return adminServiceImpl.dbConnectionCopy(vconnid);
@@ -186,7 +189,7 @@ public class AdminDbMgmtController extends AbstractController{
 	public @ResponseBody ResponseResult dbDelete(@RequestParam(value = "vconnid" , required = true)  String vconnid) throws Exception {
 		return VarsqlUtils.getResponseResultItemOne(adminServiceImpl.deleteVtconnectionInfo(vconnid));
 	}
-	
+
 	@RequestMapping(value = "/dbPwView", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbPwView(@RequestParam(value = "vconnid", required = true)  String vconnid
 			,@RequestParam(value = "userPw", required = true)  String userPw) throws Exception {

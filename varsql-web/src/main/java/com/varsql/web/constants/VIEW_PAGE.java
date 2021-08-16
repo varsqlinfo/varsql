@@ -3,6 +3,7 @@ package com.varsql.web.constants;
 public enum VIEW_PAGE{
 	DATABASE ("/database")
 	, DATABASE_MENU ("/database/menu")
+	, DATABASE_EXTENSION ("/database/extension")
 	, DATABASE_PREFERENCES ("/database/preferences")
 	, DATABASE_TOOLS ("/database/tools")
 	, DATABASE_UTILS ("/database/utils")

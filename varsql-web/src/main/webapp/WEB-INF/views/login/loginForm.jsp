@@ -5,7 +5,7 @@
 <head>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <title><spring:message code="page.title.varsql"/></title>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
@@ -17,7 +17,7 @@
 
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.common.min.css" rel="stylesheet" type="text/css">
 <style>
 body {
   padding-top: 40px;

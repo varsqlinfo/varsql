@@ -21,7 +21,7 @@ public class ResultSetConvertException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private int errorCode;
+	private CodeEnumValue errorCode;
 	private SqlSourceResultVO  ssrv;
 
 	/**
@@ -41,16 +41,12 @@ public class ResultSetConvertException extends RuntimeException {
 		this.ssrv = ssrv;
 	}
 
-	public int getErrorCode() {
+	public CodeEnumValue getErrorCode() {
 		return errorCode;
 	}
 
 	public void setErrorCode(CodeEnumValue errorCode) {
-		if(errorCode != null) {
-			this.errorCode = errorCode.getCode();
-		}
-
-		this.errorCode = VarsqlAppCode.ERROR.getCode();
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.EC_SQL_RESULT_CONVERT;
 	}
 
 	public SqlSourceResultVO getSsrv() {

@@ -35,7 +35,7 @@
 			<required>true</required>
 		</attribute>
 	</tag>
-	
+
 	<tag>
 		<name>userViewId</name>
 		<tag-class>com.varsql.web.tags.VarsqlUserViewId</tag-class>
@@ -46,7 +46,18 @@
 			<type>java.lang.String</type>
 		</attribute>
 	</tag>
-	
+
+	<tag>
+		<name>conuid</name>
+		<tag-class>com.varsql.web.tags.DBConuidTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+
 	<tag>
 		<name>userInfo</name>
 		<tag-class>com.varsql.web.tags.VarsqlUserInfo</tag-class>
@@ -63,7 +74,7 @@
 			<type>java.lang.String</type>
 		</attribute>
 	</tag>
-	
+
 	<tag-file>
 		<name>editorResource</name>
 		<path>/WEB-INF/tags/editorResource.tag</path>

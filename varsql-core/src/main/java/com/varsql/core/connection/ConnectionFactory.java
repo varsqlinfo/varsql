@@ -57,8 +57,8 @@ public final class ConnectionFactory implements ConnectionContext{
 		ConnectionInfo connInfo  = getConnectionInfo(connid);
 
 		if(connInfo != null){
-			if(connectionShutdownInfo.containsKey(connid)) {
-				throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection shutdown");
+			if(isShutdown(connid)) {
+
 			}
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}
@@ -191,7 +191,7 @@ public final class ConnectionFactory implements ConnectionContext{
 			ConnectionFactory.getInstance().getPoolBean().createDataSource(connInfo);
 			connectionConfig.put(connid, connInfo);
 
-			SQLManager.getInstance().setSQLMapper(connInfo, this);
+			//SQLManager.getInstance().setSQLMapper(connInfo, this);
 
 			return connInfo;
 		}catch(EncryptDecryptException e) {
@@ -221,6 +221,7 @@ public final class ConnectionFactory implements ConnectionContext{
 		if(connectionShutdownInfo.containsKey(connid)) connectionShutdownInfo.remove(connid);
 
 		createConnectionInfo(connid);
+		resetMetaDataSource(connid);
 	}
 
 	/**
@@ -233,11 +234,22 @@ public final class ConnectionFactory implements ConnectionContext{
 	 * @throws ConnectionFactoryException
 	 */
 	public synchronized void poolShutdown(String connid) throws SQLException, ConnectionFactoryException  {
+
+		logger.error("db pool shutdown : {}" , connid);
+
 		if(connectionConfig.containsKey(connid)){
 			ConnectionFactory.getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
 		}
-
+		closeMataDataSource(connid);
 		connectionShutdownInfo.put(connid, true);
+	}
+
+	public synchronized void closeMataDataSource(String connid) throws SQLException, ConnectionFactoryException  {
+		SQLManager.getInstance().close(connid);
+	}
+
+	public synchronized void resetMetaDataSource(String connid) throws SQLException, ConnectionFactoryException  {
+		SQLManager.getInstance().reset(connid);
 	}
 
 	private static class FactoryHolder{
@@ -247,4 +259,12 @@ public final class ConnectionFactory implements ConnectionContext{
 	public static ConnectionFactory getInstance() {
 		return FactoryHolder.instance;
     }
+
+	@Override
+	public boolean isShutdown(String connid) throws ConnectionFactoryException {
+		if(connectionShutdownInfo.containsKey(connid)) {
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection shutdown");
+		}
+		return false;
+	}
 }

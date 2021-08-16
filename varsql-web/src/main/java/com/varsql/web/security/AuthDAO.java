@@ -160,7 +160,7 @@ public final class AuthDAO {
 			User user = SecurityUtil.loginInfo();
 			StringBuffer query = new StringBuffer();
 
-		  	String dbColumnQuery = "select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ";
+		  	String dbColumnQuery = "select VCONNID, VTYPE, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT, USE_COLUMN_LABEL from VTCONNECTION a where USE_YN ='Y' and DEL_YN = 'N' AND ";
 		  	query.append( dbColumnQuery);
 
 			AuthorityType tmpAuthority = user.getTopAuthority();
@@ -222,6 +222,7 @@ public final class AuthDAO {
 							, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
 							, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
 							, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
+							, rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL)
 						)
 					);
 				}

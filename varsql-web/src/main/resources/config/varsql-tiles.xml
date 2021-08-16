@@ -76,12 +76,17 @@
         <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}/{2}.jsp" />
     </definition>
 
+    <definition name="/database/extension/**" template="/WEB-INF/views/database/_templates/extensionMain.jsp" >
+        <put-attribute name="static-header" value="/WEB-INF/include/database-head.jsp" />
+        <put-attribute name="body" value="/WEB-INF/views/database/extensions/{1}.jsp" />
+    </definition>
+
     <definition name="/database/**" template="/WEB-INF/views/database/_templates/main.jsp" >
         <put-attribute name="static-header" value="/WEB-INF/include/database-head.jsp" />
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
-        <put-attribute name="left" value="/WEB-INF/views/database/dbcomm/dbLeftTemplate.jsp" />
-        <put-attribute name="rightContent" value="/WEB-INF/views/database/dbcomm/dbRightTemplate.jsp" />
     </definition>
+
+
 
     <!-- login -->
 	<definition name="/login/**" extends="no-template">

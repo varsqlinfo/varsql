@@ -15,7 +15,7 @@ public class ConnectionFactoryException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private int errorCode;
+	private CodeEnumValue errorCode;
 	private String errorMessage;
 	private String messageCode;
 
@@ -51,16 +51,12 @@ public class ConnectionFactoryException extends RuntimeException {
 		this.errorMessage = errorMessage;
 	}
 
-	public int getErrorCode() {
+	public CodeEnumValue getErrorCode() {
 		return errorCode;
 	}
 
 	public void setErrorCode(CodeEnumValue errorCode) {
-		if(errorCode != null) {
-			this.errorCode = errorCode.getCode();
-		}
-
-		this.errorCode = VarsqlAppCode.ERROR.getCode();
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.EC_DB_POOL_ERROR;
 	}
 
 	public String getMessageCode() {

@@ -61,7 +61,7 @@ public class SqlFileEntity extends AabstractAuditorModel{
 
 	@Column(name ="SQL_PARAM")
 	private String sqlParam;
-	
+
 	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "VCONNID" ,nullable = false, insertable =false , updatable =false)

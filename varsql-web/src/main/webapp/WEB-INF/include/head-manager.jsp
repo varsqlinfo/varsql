@@ -1,6 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 <link href="${pageContextPath}/webstatic/css/jquery-ui.min.css" rel="stylesheet">
@@ -15,7 +15,7 @@
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
 
 <!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/varsql.common.css?version=${css_ver}" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.common.min.css?version=${css_ver}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.manager.css?version=${css_ver}" rel="stylesheet">
 
 

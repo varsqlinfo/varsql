@@ -4,12 +4,33 @@
 <var-sql>
 	<!-- 테이블 생성-->
 	<tableCreate><![CDATA[
-/* DROP TABLE {{objectName}} CASCADE CONSTRAINT; */
-CREATE TABLE {{objectName}}(
-	{{scriptSource}}
-);
+{{~#if ddlOpt.addDropClause}}
+/*DROP TABLE {{objectName}}; */
+{{/if}}
 
-{{commnetSource}}
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+	{{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+)
+
+{{#ddlTableKey keyList objectName dbType}}
+  {{#xif type '==' 'PK'}}
+	{{#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+  {{#xif type '==' 'UQ'}}
+	{{#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+{{/ddlTableKey}}
+
+{{#commentsList}}
+{{#xif TYPE '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{COMMENT}}';{{/xif}}
+{{~#xif TYPE '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{NAME}} is '{{COMMENT}}';{{/xif}}
+{{/commentsList}}
 	]]></tableCreate>
 
 	<!-- view 생성-->
@@ -79,28 +100,28 @@ CACHE {{CACHE}} NOORDER  NOCYCLE	]]></sequenceCreate>
 	<renameTable><![CDATA[
 		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
 	]]></renameTable>
-	
+
 	<!-- select query -->
 	<select>
 	</select>
-	
+
 	<!-- insert query -->
 	<insert>
 	</insert>
-	
+
 	<!-- update query -->
 	<update>
 	</update>
-	
+
 	<!-- delete query -->
 	<delete>
 	</delete>
-	
+
 	<!-- selectInsert query -->
 	<selectInsert>
-	
+
 	</selectInsert>
-	
+
 	<!-- insertUpdate query -->
 	<insertUpdate>
 	</insertUpdate>

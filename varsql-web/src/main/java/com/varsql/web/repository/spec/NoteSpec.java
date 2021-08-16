@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import com.varsql.web.model.EntityFieldConstants;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;
+import com.varsql.web.model.entity.sql.SqlFileEntity;
 
 public class NoteSpec extends DefaultSpec {
 
@@ -37,6 +38,7 @@ public class NoteSpec extends DefaultSpec {
 
 	private static Specification<NoteEntity> sendMsgUser(String viewid, String keyword) {
 		return (root, query, cb) -> {
+			query.orderBy(cb.asc(root.get(NoteEntity.REG_DT)));
     		return cb.and(
     			cb.equal(root.get(EntityFieldConstants.REG_ID) , viewid)
     			,cb.like(root.get(NoteEntity.NOTE_TITLE), contains(keyword))
@@ -48,6 +50,8 @@ public class NoteSpec extends DefaultSpec {
     private static Specification<NoteEntity> recvUser(String viewid , boolean viewCheckFlag) {
     	return (root, query, cb) -> {
     		Join<NoteEntity, NoteMappingUserEntity> join = root.join(NoteEntity.JOIN_RECV_LIST);
+
+    		query.orderBy(cb.asc(root.get(NoteEntity.REG_DT)));
 
     		if(viewCheckFlag) {
     			return cb.and(

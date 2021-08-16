@@ -4,92 +4,135 @@
 <var-sql>
 	<!-- 테이블 생성-->
 	<tableCreate><![CDATA[
+{{~#if ddlOpt.addDropClause}}
+/*DROP TABLE {{objectName}}; */
+{{/if}}
 
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+	{{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+)
+
+{{#ddlTableKey keyList objectName dbType}}
+  {{#xif type '==' 'PK'}}
+	{{#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+  {{#xif type '==' 'UQ'}}
+	{{#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+{{/ddlTableKey}}
+
+{{#commentsList}}
+{{#xif TYPE '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{COMMENT}}';{{/xif}}
+{{~#xif TYPE '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{NAME}} is '{{COMMENT}}';{{/xif}}
+{{/commentsList}}
 	]]></tableCreate>
 
 	<!-- view 생성-->
 	<viewCreate><![CDATA[
+{{#if ddlOpt.addDropClause}}
+/*DROP VIEW {{objectName}}; */
+{{/if}}
 
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
 	]]></viewCreate>
 
 	<!-- function 생성-->
 	<functionCreate><![CDATA[
+{{#if ddlOpt.addDropClause}}
+/*DROP FUNCTION {{objectName}}; */
+{{/if}}
 
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
 	]]></functionCreate>
 
 	<!-- procedure 생성-->
 	<procedureCreate><![CDATA[
+{{#if ddlOpt.addDropClause}}
+/*DROP PROCEDURE {{objectName}}; */
+{{/if}}
 
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
 	]]></procedureCreate>
 
 	<!-- trigger 생성-->
 	<triggerCreate><![CDATA[
-		/* DROP TRIGGER ; */
-		CREATE OR REPLACE
+{{#if ddlOpt.addDropClause}}
+/*DROP TRIGGER {{objectName}}; */
+{{/if}}
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
 	]]></triggerCreate>
 
 	<!-- index 생성-->
 	<indexCreate><![CDATA[
+{{#if ddlOpt.addDropClause}}
+/*DROP INDEX {{objectName}}; */
+{{/if}}
 
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{INDEX_NAME}}
+on
+{{../schema}}.{{TABLE_NAME}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{COLUMN_NAME}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
 	]]></indexCreate>
 
 	<!-- sequence 생성-->
 	<sequenceCreate><![CDATA[
-{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
-{{/equals}}
-CREATE SEQUENCE "{{schema}}"."{{OBJECT_NAME}}"
-MINVALUE {{MIN_VALUE}}
-MAXVALUE {{MAX_VALUE}}
-INCREMENT BY {{INCREMENT_BY}} START WITH {{LAST_NUMBER}}
-CACHE {{CACHE_SIZE}} {{#equals 'Y' ORDER_FLAG}}ORDER{{else}}NOORDER{{/equals}} {{#equals 'Y' CYCLE_FLAG}}CYCLE{{else}}NOCYCLE{{/equals}};
+
 	]]></sequenceCreate>
 
 	<!-- 컬럼 추가-->
 	<tableAlterAddColumn><![CDATA[
-		alter table {{TABLE_NAME}} add ({{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}})
+		alter table {{TABLE_NAME}} add {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
 	]]></tableAlterAddColumn>
 
 	<!-- 컬럼명 수정 추가-->
 	<tableAlterRenameColumn><![CDATA[
-		alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} to {{NEW_COLUMN_NAME}}
+		sp_rename '{{TABLE_NAME}}.[{{COLUMN_NAME}}]', '{{NEW_COLUMN_NAME}}'
 	]]></tableAlterRenameColumn>
 
 	<!-- 컬럼 수정 추가-->
 	<tableAlterModifyColumn><![CDATA[
-		alter table {{TABLE_NAME}} MODIFY({{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}});
+		alter table {{TABLE_NAME}} modify  {{COLUMN_NAME}} {{DATA_TYPE}} {{#if ddlOption.isNotNull}} not null {{/if}} {{DEFAULT_VALUE}}
 	]]></tableAlterModifyColumn>
 
-	<!-- 컬럼명 수정 추가-->
+	<!-- 컬럼명 삭제 추가-->
 	<tableAlterDropColumn><![CDATA[
-		alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+		alter table {{TABLE_NAME}} DROP {{COLUMN_NAME}}
 	]]></tableAlterDropColumn>
 
 	<!-- 테이블명 수정 추가-->
 	<renameTable><![CDATA[
-		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
+		sp_rename '{{TABLE_NAME}}', '{{NEW_TABLE_NAME}}'
 	]]></renameTable>
-	
+
 	<!-- select query -->
 	<select>
 	</select>
-	
+
 	<!-- insert query -->
 	<insert>
 	</insert>
-	
+
 	<!-- update query -->
 	<update>
 	</update>
-	
+
 	<!-- delete query -->
 	<delete>
 	</delete>
-	
+
 	<!-- selectInsert query -->
 	<selectInsert>
-	
+
 	</selectInsert>
-	
+
 	<!-- insertUpdate query -->
 	<insertUpdate>
 	</insertUpdate>

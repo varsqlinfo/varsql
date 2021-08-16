@@ -64,8 +64,8 @@ public class SQLFileServiceImpl{
 
 				sqlFileTabEntity = sqlFileTabEntityRepository.save(sqlFileTabEntity);
 
-			}else if("delTab".equals(mode)){
-				deleteSqlFileTabInfo(sqlFileRequestDTO);
+			}else if(mode.startsWith("delTab")){
+				deleteSqlFileTabInfo(sqlFileRequestDTO, mode);
 			}else if("viewTab".equals(mode)){
 				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
 				sqlFileTabEntityRepository.updateSqlFileTabEnable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
@@ -140,6 +140,7 @@ public class SQLFileServiceImpl{
 	public ResponseResult selectSqlFileList(SqlFileRequestDTO sqlParamInfo) {
 
 		List<SqlFileResponseDTO> files = new ArrayList<>();
+
 		sqlFileEntityRepository.findAll(SqlFileSpec.findVconnSqlFileName(sqlParamInfo.getVconnid(), String.valueOf(sqlParamInfo.getCustom().get("searchVal")))).forEach(item ->{
 			files.add(SqlFileResponseDTO.builder()
 				.sqlId(item.getSqlId())
@@ -193,6 +194,10 @@ public class SQLFileServiceImpl{
 	}
 
 	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO) {
+		deleteSqlFileTabInfo(sqlFileRequestDTO, "delTab");
+	}
+
+	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO, String mode) {
 		try{
 			int tabLen = -1;
 			try{
@@ -201,15 +206,18 @@ public class SQLFileServiceImpl{
 				tabLen = -1;
 			}
 
-			if(tabLen ==0){
+			if("delTab-all".equals(mode) || tabLen ==0) {
 				sqlFileTabEntityRepository.deleteAllSqlFileTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
+			}else if("delTab-other".equals(mode)) {
+				sqlFileTabEntityRepository.updateSqlFilePrevID(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), null);
+				sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 			}else{
 				sqlFileTabEntityRepository.updateSqlFilePrevID(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 			}
+
 		}catch(Exception e){
 			logger.error("deleteSqlFileTabInfo" ,e);
 		}
-
 	}
 }

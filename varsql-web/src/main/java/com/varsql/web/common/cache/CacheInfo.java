@@ -6,8 +6,8 @@ public interface CacheInfo{
 
 	enum CacheType {
 
-		OBJECT_TYPE_METADATA(CACHE_KEY_OBJECTYPE_METADATA, 60 * 60, 10000) // 60 분
-		, OBJECT_TYPE_SCRIPT(CACHE_KEY_OBJECTYPE_SCRIPT, 60 * 60, 10000);	// 60 분
+		OBJECT_TYPE_METADATA(CACHE_KEY_OBJECTYPE_METADATA, 60 * 60 * 12, 10000) // 12시간
+		, OBJECT_TYPE_SCRIPT(CACHE_KEY_OBJECTYPE_SCRIPT, 60 * 60 * 12, 10000);	// 12시간
 
 		private String cacheName;
 		private int expiredAfterWrite;

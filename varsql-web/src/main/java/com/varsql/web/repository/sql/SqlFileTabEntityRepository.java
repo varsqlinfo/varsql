@@ -36,6 +36,10 @@ public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRep
 	void deleteTabInfo(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId);
 
 	@Modifying
+	@Query(value = "delete from SqlFileTabEntity ste where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.sqlId != :sqlId")
+	void deleteOtherFileTab(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId);
+
+	@Modifying
 	@Query(value = "delete from SqlFileTabEntity ste where ste.vconnid = :vconnid and ste.viewid = :viewid")
 	void deleteAllSqlFileTabInfo(@Param("vconnid") String vconnid, @Param("viewid") String viewid);
 

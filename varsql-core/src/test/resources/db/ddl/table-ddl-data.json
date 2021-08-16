@@ -1,0 +1,96 @@
+{
+	"schema": "dbo",
+	"dbType": "other",
+	"commentsList": [
+		{
+			"TYPE": "TBL",
+			"COMMENT": "asdf"
+		},
+		{
+			"TYPE": "COL",
+			"NAME": "col1",
+			"COMMENT": "col1-comment"
+		}
+	],
+	"objectName": "test_table",
+	"columnList": [
+		{
+			"TABLE_NAME": "test_table",
+			"COLUMN_DEF": null,
+			"COLUMN_NAME": "col1",
+			"ORDINAL_POSITION": 1,
+			"CONSTRAINTS": "PK",
+			"NULLABLE": "NO",
+			"CHAR_LENGTH": 4,
+			"DECIMAL_DIGITS": null,
+			"DATA_TYPE": "int",
+			"COLUMN_SIZE": 4,
+			"COMMENT": null
+		},
+		{
+			"TABLE_NAME": "test_table",
+			"COLUMN_DEF": "DEFAULT  'bbbb' ",
+			"COLUMN_NAME": "col2",
+			"ORDINAL_POSITION": 2,
+			"CONSTRAINTS": null,
+			"NULLABLE": "NO",
+			"CHAR_LENGTH": 25,
+			"DECIMAL_DIGITS": null,
+			"DATA_TYPE": "char",
+			"COLUMN_SIZE": 25,
+			"COMMENT": null
+		},
+		{
+			"TABLE_NAME": "test_table",
+			"COLUMN_DEF": null,
+			"COLUMN_NAME": "col3",
+			"ORDINAL_POSITION": 3,
+			"CONSTRAINTS": "UQ",
+			"NULLABLE": "YES",
+			"CHAR_LENGTH": 25,
+			"DECIMAL_DIGITS": null,
+			"DATA_TYPE": "varchar",
+			"COLUMN_SIZE": 25,
+			"COMMENT": null
+		},
+		{
+			"TABLE_NAME": "test_table",
+			"COLUMN_DEF": null,
+			"COLUMN_NAME": "col4",
+			"ORDINAL_POSITION": 4,
+			"CONSTRAINTS": null,
+			"NULLABLE": "YES",
+			"CHAR_LENGTH": 6,
+			"DECIMAL_DIGITS": 2,
+			"DATA_TYPE": "decimal",
+			"COLUMN_SIZE": 6,
+			"COMMENT": null
+		},
+		{
+			"TABLE_NAME": "test_table",
+			"COLUMN_DEF": null,
+			"COLUMN_NAME": "col5",
+			"ORDINAL_POSITION": 5,
+			"CONSTRAINTS": null,
+			"NULLABLE": "YES",
+			"CHAR_LENGTH": 8,
+			"DECIMAL_DIGITS": null,
+			"DATA_TYPE": "datetime",
+			"COLUMN_SIZE": 8,
+			"COMMENT": null
+		}
+	],
+	"keyList": [
+		{
+			"TABLE_NAME": "test_table",
+			"INDEX_TYPE": 1,
+			"COLUMN_NAME": "col1",
+			"CONSTRAINT_NAME": "test_table_20445312861",
+			"TYPE": "PK"
+		}
+	],
+	"ddlOpt": {
+		"addDropClause": true,
+		"addLastSemicolon": true
+	}
+}

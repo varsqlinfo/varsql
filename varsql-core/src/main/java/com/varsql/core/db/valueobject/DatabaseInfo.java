@@ -19,10 +19,11 @@ public class DatabaseInfo implements java.io.Serializable {
 	private boolean basetableYn;
 	private boolean lazyLoad;
 	private boolean schemaViewYn;
+	private boolean isUseColumnLabel;
 	private long version;
 	private int maxSelectCount;
 
-	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,long version, String schemaViewYn, int maxSelectCount){
+	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,long version, String schemaViewYn, int maxSelectCount, String useColumnLabel){
 		this.vconnid= vconnid;
 		this.connUUID= connUUID;
 		this.type= type.toUpperCase();
@@ -33,6 +34,7 @@ public class DatabaseInfo implements java.io.Serializable {
 		this.schemaViewYn= "Y".equals(schemaViewYn);
 		this.version= version;
 		this.maxSelectCount = maxSelectCount;
+		this.isUseColumnLabel = "Y".equals(useColumnLabel);
 	}
 
 	public String getVconnid() {
@@ -115,5 +117,7 @@ public class DatabaseInfo implements java.io.Serializable {
 		this.maxSelectCount = maxSelectCount;
 	}
 
-
+	public boolean isUseColumnLabel() {
+		return isUseColumnLabel;
+	}
 }

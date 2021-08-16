@@ -4,7 +4,7 @@
 <html>
 <head>
 <title><spring:message code="database.preferences" /></title>
-<%@ include file="/WEB-INF/include/head-preferences.jsp"%>
+<%@ include file="/WEB-INF/include/database-preferences.jsp"%>
 
 </head>
 

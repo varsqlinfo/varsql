@@ -40,4 +40,8 @@ public abstract class AbstractRegAuditorModel implements Serializable{
     @CreatedDate
     @Column(name="REG_DT", nullable = false, updatable = false)
     private LocalDateTime regDt;
+
+
+    public final static String REG_ID="regId";
+	public final static String REG_DT="regDt";
 }

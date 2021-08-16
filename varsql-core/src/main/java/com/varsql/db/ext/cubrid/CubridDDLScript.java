@@ -18,9 +18,9 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQLTemplateFactory;
 import com.varsql.core.sql.SQL;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
+import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
 
 /**

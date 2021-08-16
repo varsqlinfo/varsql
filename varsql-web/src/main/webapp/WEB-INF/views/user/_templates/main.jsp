@@ -5,16 +5,16 @@
 <html>
 <head>
 <title><spring:message code="user.home.title"/></title>
-<%@ include file="/WEB-INF/include/database-top-head.jsp"%>
+<%@ include file="/WEB-INF/include/head-user.jsp"%>
 </head>
-<body>
+<body class="user-main-body">
   	<div id="user-header">
 	    <tiles:insertAttribute name="header" />
 	</div>
   	<div id="user-page-wrapper">
 		<tiles:insertAttribute name="body" />
     </div>
-    
+
     <div class="user-main-footer">
     	<tiles:insertAttribute name="footer" />
     </div>

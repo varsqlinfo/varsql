@@ -167,9 +167,6 @@ public class OracleDBMeta extends DBMetaImpl{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-
-		logger.debug("DBMetaImplORACLE tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
-
 		TableInfoHandler tableInfoHandler;
 
 		if("viewMetadata".equals(queryId)){
@@ -181,7 +178,7 @@ public class OracleDBMeta extends DBMetaImpl{
 			}
 		}
 
-		sqlSession.select(queryId ,dataParamInfo,tableInfoHandler);
+		sqlSession.select(queryId, dataParamInfo, tableInfoHandler);
 
 		return tableInfoHandler.getTableInfoList();
 	}

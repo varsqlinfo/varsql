@@ -1,0 +1,29 @@
+[
+{
+  "INDEX_NAME" : "test_table_21085315141",
+  "INDEX_STATUS" : 2066,
+  "KEYCNT" : 2,
+  "MAXROWSPERPAGE" : 0,
+  "FILL_FACTOR" : 0,
+  "RES_PAGE_GAP" : 0,
+  "TABLE_NAME" : "test_table2",
+  "ORDINAL_POSITION" : 1,
+  "COLUMN_NAME" : "col1",
+  "TYPE" : "PK",
+  "ASC_OR_DESC" : "ASC",
+  "SEGMENT_NAME" : "default"
+},{
+  "INDEX_NAME" : "test_table_21085315141",
+  "INDEX_STATUS" : 2066,
+  "KEYCNT" : 2,
+  "MAXROWSPERPAGE" : 0,
+  "FILL_FACTOR" : 0,
+  "RES_PAGE_GAP" : 0,
+  "TABLE_NAME" : "test_table2",
+  "ORDINAL_POSITION" : 2,
+  "COLUMN_NAME" : "col2",
+  "TYPE" : "PK",
+  "ASC_OR_DESC" : "ASC",
+  "SEGMENT_NAME" : "default"
+}
+]

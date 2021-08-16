@@ -17,6 +17,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header"><spring:message code="admin.menu.database" /></h1>
+        <input type="password" autocomplete="new-password" style="display:none" >
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -25,7 +26,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
-					<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()">
+					<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" autocomplete="off">
 					<span class="input-group-btn">
 						<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 					</span>
@@ -152,15 +153,15 @@
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vid" /></label>
 							<div class="col-sm-8">
-								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="off" v-model="detailItem.vid">
+								<input class="form-control text required" id="vid" name="vid" value="" autocomplete="off" v-model="detailItem.vid" placeholder="id">
 							</div>
 						</div>
 
 						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
-								<input type="password" name="password_fake" value="" style="display:none;" />
-								<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="false" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
+								<input type="password" name="password_fake" value="" style="display:none;" autocomplete="new-password"/>
+								<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="new-password" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
 								<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 							    <div class="help-block" v-if="errors.has('password')">
 							      {{ errors.first('password') }}
@@ -211,6 +212,13 @@
 							<div class="col-sm-8">
 								<label><input type="radio" name="schemaviewyn" value="Y" v-model="detailItem.schemaViewYn" checked>Y</label>
 								<label><input type="radio" name="schemaviewyn" value="N" v-model="detailItem.schemaViewYn" >N</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.usecolumnlabel" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="useColumnLabel" value="Y" v-model="detailItem.useColumnLabel" checked>Y</label>
+								<label><input type="radio" name="useColumnLabel" value="N" v-model="detailItem.useColumnLabel" >N</label>
 							</div>
 						</div>
 					</div>
@@ -420,6 +428,7 @@ VarsqlAPP.vueServiceBean( {
 					,basetableYn: 'Y'
 					,lazyloadYn: 'N'
 					,schemaViewYn: 'N'
+					,useColumnLabel:'Y'
 				}
 			}else{
 				this.detailFlag = true;

@@ -6,19 +6,19 @@
 <mapper namespace="mssql.mata">
 	<!-- db 정보보기. -->
 	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
-		SELECT @@VERSION as INFO_VAL 
-	</select>	
+		SELECT @@VERSION as INFO_VAL
+	</select>
 
 	<!-- ================= table start ================= -->
 	<!--  tableList 목록 보기. -->
 	<select id="tableList" parameterType="databaseParamInfo" resultType="tableInfo">
 		SELECT
-			tbl.name  AS "NAME" 
+			tbl.name  AS "NAME"
 			, ISNULL(prop.value,'')  AS "REMARKS"
-	
+
 <choose>
 	<when test="baseSchemaFlag">
-		FROM sys.tables AS tbl	 inner join sys.schemas as sch 
+		FROM sys.tables AS tbl	 inner join sys.schemas as sch
 		on sch.schema_id = tbl.schema_id LEFT JOIN sys.extended_properties AS prop
         ON prop.major_id = tbl.object_id
         AND prop.minor_id = 0
@@ -39,23 +39,23 @@
 	</otherwise>
 </choose>
 		<if test="custom != null and custom.objectNameList != null">
-			and 
+			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 				tbl.name in (${item})
 			</foreach>
 		</if>
 		ORDER  BY tbl.name
 	</select>
-	
+
 	<!-- table adn column info -->
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
 		SELECT
 			object_name(so.id) as "TABLE_NAME",
 			sc.name as "COLUMN_NAME",
-			st.name as "DATA_TYPE" ,   
-			sc.length as "CHAR_LENGTH" ,   
-			sc.length as "COLUMN_SIZE" ,   
-			sc.xscale as "DECIMAL_DIGITS" ,   
+			st.name as "DATA_TYPE" ,
+			sc.length as "CHAR_LENGTH" ,
+			sc.length as "COLUMN_SIZE" ,
+			sc.xscale as "DECIMAL_DIGITS" ,
 			(CASE WHEN sc.isnullable = 0  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
 			sm.text AS "COLUMN_DEF" ,
 			case when sik.keyno > 0 and sfk.keyno > 0 then 'MUL'
@@ -66,36 +66,36 @@
 			INNER JOIN systypes st ON (sc.xusertype = st.xusertype)
 			LEFT JOIN syscomments sm ON (sm.id = sc.cdefault)
 			LEFT JOIN dbo.sysindexkeys sik ON (sc.id =sik.id and sc.colid = sik.colid and indid =1)
-			LEFT JOIN dbo.sysforeignkeys sfk ON so.id = sfk.fkeyid and sc.colid = sfk.fkey 
-			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id        
-			AND prop.minor_id = sc.colid      
+			LEFT JOIN dbo.sysforeignkeys sfk ON so.id = sfk.fkeyid and sc.colid = sfk.fkey
+			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id
+			AND prop.minor_id = sc.colid
 			AND prop.class = 1
-			AND prop.name = 'MS_Description'	
+			AND prop.name = 'MS_Description'
 		WHERE 1 = 1
 			and so.uid = SCHEMA_ID ( #{schema})
 			<if test="custom != null and custom.objectNameList != null">
-				and so.id in  (select id from sys.sysobjects where xtype = 'U' and 
+				and so.id in  (select id from sys.sysobjects where xtype = 'U' and
 				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-					name in (${item}) 
+					name in (${item})
 				</foreach>
 				)
 			</if>
 			ORDER BY so.id, sc.colid
 	</select>
-	
+
 	<!-- ================= table end ================= -->
-	
+
 	<!-- ================= view start ================= -->
-	
+
 	<!-- view 목록 보기 -->
 	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
 		SELECT
-			tbl.name  AS "NAME" 
+			tbl.name  AS "NAME"
 			, ISNULL(prop.value,'')  AS "REMARKS"
-	
+
 <choose>
 	<when test="baseSchemaFlag">
-		FROM sys.views AS tbl	 inner join sys.schemas as sch 
+		FROM sys.views AS tbl	 inner join sys.schemas as sch
 		on sch.schema_id = tbl.schema_id LEFT JOIN sys.extended_properties AS prop
         ON prop.major_id = tbl.object_id
         AND prop.minor_id = 0
@@ -116,46 +116,46 @@
 	</otherwise>
 </choose>
 		<if test="custom != null and custom.objectNameList != null">
-			and 
+			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 				tbl.name in (${item})
 			</foreach>
 		</if>
 		ORDER  BY tbl.name
 	</select>
-	
+
 	<!-- view and column info -->
 	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
 		SELECT
 			object_name(so.id) as "TABLE_NAME",
 			sc.name as "COLUMN_NAME",
-			st.name as "DATA_TYPE" ,   
-			sc.length as "CHAR_LENGTH" ,   
-			sc.length as "COLUMN_SIZE" ,   
-			sc.xscale as "DECIMAL_DIGITS" ,   
+			st.name as "DATA_TYPE" ,
+			sc.length as "CHAR_LENGTH" ,
+			sc.length as "COLUMN_SIZE" ,
+			sc.xscale as "DECIMAL_DIGITS" ,
 			prop.value as "COMMENT"
 		FROM sysobjects so INNER JOIN syscolumns sc ON (so.id = sc.id and so.type='V')
 			INNER JOIN systypes st ON (sc.xusertype = st.xusertype)
-			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id        
-			AND prop.minor_id = sc.colid      
+			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id
+			AND prop.minor_id = sc.colid
 			AND prop.class = 1
-			AND prop.name = 'MS_Description'	
+			AND prop.name = 'MS_Description'
 		WHERE 1 = 1
 			and so.uid = SCHEMA_ID ( #{schema})
 			<if test="custom != null and custom.objectNameList != null">
-				and 
+				and
 				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 					so.name in (${item})
 				</foreach>
 			</if>
 		ORDER BY so.id, sc.colid
 	</select>
-	
+
 	<!-- ================= view end ================= -->
-	
+
 	<!-- procedure list -->
 	<select id="procedureList" parameterType="databaseParamInfo" resultType="objectInfo">
-		select so.name  AS "NAME" 
+		select so.name  AS "NAME"
 			, ISNULL(prop.value,'')  AS "REMARKS"
 			, so.crdate as "CREATED"
 			, so.status as "STATUS"
@@ -170,7 +170,7 @@
 			and so.type='P'
 		ORDER  BY so.name
 	</select>
-	
+
 	<!-- object info  info map start  -->
 	<resultMap id="objectInfoMap" type="objectInfo">
 	    <id property="name" column="OBJECT_NAME" />
@@ -188,7 +188,7 @@
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
-	
+
 	<!-- procedure arguments list -->
 	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
 		SELECT
@@ -196,10 +196,10 @@
 			so.STATUS as "STATUS",
 			so.type as "OBJECT_TYPE",
 			sc.name as "ARGUMENT_NAME",
-			st.name as "DATA_TYPE" ,   
-			sc.length as "CHAR_LENGTH" ,   
-			sc.length as "COLUMN_SIZE" ,   
-			sc.xscale as "DECIMAL_DIGITS" ,   
+			st.name as "DATA_TYPE" ,
+			sc.length as "CHAR_LENGTH" ,
+			sc.length as "COLUMN_SIZE" ,
+			sc.xscale as "DECIMAL_DIGITS" ,
 			prop.value as "COMMENT",
 			isoutparam as "IN_OUT"
 		FROM sysobjects so INNER JOIN syscolumns sc ON (
@@ -217,24 +217,24 @@
 			</choose>
 		)
 			INNER JOIN systypes st ON (sc.xusertype = st.xusertype)
-			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id        
-			AND prop.minor_id = sc.colid      
+			LEFT JOIN sys.extended_properties AS prop ON prop.major_id = so.id
+			AND prop.minor_id = sc.colid
 			AND prop.class = 1
-			AND prop.name = 'MS_Description'	
+			AND prop.name = 'MS_Description'
 		WHERE 1 = 1
 			and so.uid = SCHEMA_ID ( #{schema})
 			<if test="custom != null and custom.objectNameList != null">
-				and 
+				and
 				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 					so.name in (${item})
 				</foreach>
 			</if>
 		ORDER BY so.id, sc.number desc, sc.colid
 	</select>
-	
+
 	<!-- function list -->
 	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
-		select so.name  AS "NAME" 
+		select so.name  AS "NAME"
 			,'FUNCTION' as "TYPE"
 			, ISNULL(prop.value,'')  AS "REMARKS"
 			, so.crdate as "CREATED"
@@ -249,46 +249,46 @@
 			where  u.name = #{schema}
 			and so.type='TF'
 		<if test="custom != null and custom.objectNameList != null">
-			and 
+			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 				so.name in (${item})
 			</foreach>
 		</if>
 		ORDER  BY so.name
 	</select>
-	
+
 	<!-- index list -->
 	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
 		select ind.name as "NAME"
 			,'' as "STATUS"
-		FROM 
-		     sys.indexes ind INNER JOIN sys.tables t 
-		ON ind.object_id = t.object_id 
+		FROM
+		     sys.indexes ind INNER JOIN sys.tables t
+		ON ind.object_id = t.object_id
 		where ind.type > 0
 		and ind.is_primary_key = 0
 	</select>
-	
+
 	<!-- index and column info -->
 	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		 SELECT 
+		 SELECT
 			t.name as  "TABLE_NAME"
-			, ind.name as "INDEX_NAME" 
+			, ind.name as "INDEX_NAME"
 			, ic.key_ordinal as "ORDINAL_POSITION"
 			, col.name as "COLUMN_NAME"
-			, (case when ind.is_primary_key=1 then 'PK' 
-			WHEN ind.is_unique=1 then 'UQ' 
+			, (case when ind.is_primary_key=1 then 'PK'
+			WHEN ind.is_unique=1 then 'UQ'
 			else '' end
 			) TYPE
 			,'' as "STATUS"
-			, (case when ic.is_descending_key = 0 then 'A' else 'D' end) ASC_OR_DESC 
-		FROM 
-		     sys.indexes ind 
-		INNER JOIN 
-		     sys.index_columns ic ON  ind.object_id = ic.object_id and ind.index_id = ic.index_id 
-		INNER JOIN 
-		     sys.columns col ON ic.object_id = col.object_id and ic.column_id = col.column_id 
-		INNER JOIN 
-		     sys.tables t ON ind.object_id = t.object_id 
+			, (case when ic.is_descending_key = 0 then 'A' else 'D' end) ASC_OR_DESC
+		FROM
+		     sys.indexes ind
+		INNER JOIN
+		     sys.index_columns ic ON  ind.object_id = ic.object_id and ind.index_id = ic.index_id
+		INNER JOIN
+		     sys.columns col ON ic.object_id = col.object_id and ic.column_id = col.column_id
+		INNER JOIN
+		     sys.tables t ON ind.object_id = t.object_id
 		where 1=1
 		and ind.is_primary_key = 0
 		<if test="custom != null and custom.objectNameList != null">
@@ -297,11 +297,11 @@
 				ind.name in (${item})
 			</foreach>
 		</if>
-		ORDER BY 
+		ORDER BY
 		     ind.name, t.name, ind.index_id, ic.index_column_id
 	</select>
-	
-	
+
+
 	<!-- trigger list -->
 	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
 		sELECT  OBJECT_NAME(parent_object_id) as "TABLE_NAME",
@@ -327,7 +327,7 @@
 		</if>
 		ORDER BY OBJECT_NAME(parent_object_id)
 	</select>
-	
+
 	<!-- trigger info map -->
 	<resultMap id="triggerInfoMap" type="triggerInfo">
 	    <result property="name" column="OBJECT_NAME" />
@@ -337,18 +337,18 @@
 	    <result property="created" column="CREATED"/>
 	    <result property="status" column="STATUS"/>
 	</resultMap>
-	
+
 	<!-- trigger metadata -->
 	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
 		select  OBJECT_NAME(parent_object_id) as "TABLE_NAME",
 		        name as "OBJECT_NAME" ,
 				create_date as "CREATED",
-				(CASE WHEN OBJECTPROPERTY(object_id, 'ExecIsUpdateTrigger')=1  then 'UPDATE' 
-				WHEN OBJECTPROPERTY(object_id, 'ExecIsDeleteTrigger')=1  then 'DELETE' 
-				WHEN OBJECTPROPERTY(object_id, 'ExecIsInsertTrigger')=1  then 'INSERT' 
-				WHEN OBJECTPROPERTY(object_id, 'ExecIsAfterTrigger')=1  then 'AFTER' 
-				WHEN OBJECTPROPERTY(object_id, 'ExecIsInsteadOfTrigger')=1  then 'INSTEADOF' 
-				ELSE '' END) as "EVENTTYPE", 
+				(CASE WHEN OBJECTPROPERTY(object_id, 'ExecIsUpdateTrigger')=1  then 'UPDATE'
+				WHEN OBJECTPROPERTY(object_id, 'ExecIsDeleteTrigger')=1  then 'DELETE'
+				WHEN OBJECTPROPERTY(object_id, 'ExecIsInsertTrigger')=1  then 'INSERT'
+				WHEN OBJECTPROPERTY(object_id, 'ExecIsAfterTrigger')=1  then 'AFTER'
+				WHEN OBJECTPROPERTY(object_id, 'ExecIsInsteadOfTrigger')=1  then 'INSTEADOF'
+				ELSE '' END) as "EVENTTYPE",
 		        CASE OBJECTPROPERTY(object_id, 'ExecIsTriggerDisabled')
 		          WHEN 1 THEN 'Disabled'
 		          ELSE 'Enabled'
@@ -364,7 +364,7 @@
 		</if>
 		ORDER BY OBJECT_NAME(parent_object_id)
 	</select>
-	
+
 	<!-- sequence info map -->
 	<resultMap id="sequenceInfoMap" type="sequenceInfo">
 	    <result property="name" column="OBJECT_NAME" />
@@ -380,7 +380,7 @@
 	    <result property="lastDdlTime" column="LAST_DDL_TIME"/>
 	    <result property="lastNumber" column="LAST_NUMBER"/>
 	</resultMap>
-	
+
 	<!-- sequence list -->
 	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
 		SELECT
@@ -396,9 +396,9 @@
 			</foreach>
 		</if>
 		where schema_id =  schema_id(#{schema})
-	</select> 
-	
-	<!-- 
+	</select>
+
+	<!--
 		시퀸스 목록 보기.
 	 -->
 	<select id="sequenceMetadata" parameterType="databaseParamInfo" resultMap="sequenceInfoMap">
@@ -416,9 +416,9 @@
 			</foreach>
 		</if>
 		where schema_id =  schema_id(#{schema})
-	</select>    
-	
-	<!-- 
+	</select>
+
+	<!--
 		시퀸스 script
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
@@ -439,23 +439,23 @@
 			</foreach>
 		</if>
 		and name = #{objectName}
-	</select>    
-	
-	<!-- 
+	</select>
+
+	<!--
 		Table DDL Script
 	 -->
 	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
-		select 
+		select
 			'[' + #{schema} + '.' + t.name + ']' as TABLE_NAME
 		    , c.name as COLUMN_NAME
 			, d.name as DATA_TYPE
 			, case when d.system_type_id in (106,108,62,165,173,231,167,175) then c.max_length else '' end as COLUMN_SIZE
 			, case when d.system_type_id in (106,108,62,165,173,231,167,175) then c.precision else '' end as DATA_PRECISION
-			, case when d.system_type_id in (106,108,62,165,173,231,167,175) then c.scale else '' end as DECIMAL_DIGITS		
-			, (case when c.is_nullable = 0 then 'NO' else 'YES' end) as NULLABLE 
+			, case when d.system_type_id in (106,108,62,165,173,231,167,175) then c.scale else '' end as DECIMAL_DIGITS
+			, (case when c.is_nullable = 0 then 'NO' else 'YES' end) as NULLABLE
 			, USER as OWNER
 			, convert(varchar, v.definition) as DATA_DEFAULT
-		from sys.tables t 
+		from sys.tables t
 		   inner join sys.columns c on t.object_id = c.object_id
 		   inner join sys.types d on c.system_type_id = d.system_type_id
 		   left join sys.default_constraints v on v.parent_object_id = t.object_id and c.column_id = v.parent_column_id
@@ -464,33 +464,33 @@
 		order by c.column_id
 	</select>
 
-	<!-- 
+	<!--
 		Table DDL Script => Primary key list
 	 -->
 	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
 		select p.name as CONSTRAINT_NAME
-			, tc.name as COLUMN_NAME 
+			, tc.name as COLUMN_NAME
 			, c.is_descending_key as DESCENDING
 			, p.type_desc as INDEX_TYPE
 		from sys.indexes p
 		  inner join sys.tables t on p.object_id = t.object_id
-		  inner join sys.index_columns c on t.object_id = c.object_id 
+		  inner join sys.index_columns c on t.object_id = c.object_id
 		  inner join sys.all_columns tc on tc.object_id = t.object_id and c.column_id = tc.column_id
 		  where 1=1
 		  and t.object_id = object_id(#{objectName})
 		order by c.key_ordinal
 	</select>
 
-	<!-- 
+	<!--
 		Table DDL Script => Table, Column Comment Script
 	 -->
 	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
 		SELECT
-			'exec sp_addextendedproperty ''MS_Description'', ''' 
-				+ convert(varchar, p.value) 
-				+ ''', ''schema'', '+schema_name(tbl.schema_id)+', ''table'', ''' 
-				+ convert(varchar, tbl.name) 
-				+ ''' ;'  as comment 
+			'exec sp_addextendedproperty ''MS_Description'', '''
+				+ convert(varchar, p.value)
+				+ ''', ''schema'', '+schema_name(tbl.schema_id)+', ''table'', '''
+				+ convert(varchar, tbl.name)
+				+ ''' ;'  as comment
 		FROM sys.tables AS tbl
 			INNER JOIN sys.extended_properties AS p
 			ON p.major_id = tbl.object_id
@@ -500,14 +500,14 @@
 	        AND tbl.object_id = object_id(#{objectName})
 	        AND p.value > ''
 		UNION ALL
-		SELECT  
-			'exec sp_addextendedproperty ''MS_Description'', ''' 
-				+ convert(varchar, p.value) 
-				+ ''', ''schema'', '+schema_name(a.uid)+', ''table'', ''' 
-				+ convert(varchar, a.name) 
-				+ ''', ''column'', ''' 
-				+ convert(varchar, b.name) 
-				+ ''' ;'  as comment 
+		SELECT
+			'exec sp_addextendedproperty ''MS_Description'', '''
+				+ convert(varchar, p.value)
+				+ ''', ''schema'', '+schema_name(a.uid)+', ''table'', '''
+				+ convert(varchar, a.name)
+				+ ''', ''column'', '''
+				+ convert(varchar, b.name)
+				+ ''' ;'  as comment
 		FROM sysobjects a INNER JOIN syscolumns b ON (a.id = b.id)
 			INNER JOIN systypes c ON (b.xusertype = c.xusertype)
 			LEFT OUTER JOIN dbo.sysindexkeys d ON (b.id =d.id and b.colid = d.colid and indid =1)
@@ -517,26 +517,26 @@
 			AND p.value > ''
 	</select>
 
-	<!-- 
-	 view script 생성  create 문	
+	<!--
+	 view script 생성  create 문
 	 -->
 	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
 		 sp_helptext #{objectName}
 	</select>
 
-	<!-- 
-		object function  , procedure 소스 
+	<!--
+		object function  , procedure 소스
 	 -->
 	<select id="objectScriptSource" resultType="string" parameterType="databaseParamInfo">
 		sp_helptext #{objectName}
 	</select>
 
-	<!-- 
-		create index  Script 
+	<!--
+		create index  Script
 	 -->
 	<select id="indexScriptSource" resultType="hashmap" parameterType="databaseParamInfo">
 		SELECT ' CREATE ' +
-		       CASE 
+		       CASE
 		            WHEN I.is_unique = 1 THEN ' UNIQUE '
 		            ELSE ''
 		       END +
@@ -546,32 +546,32 @@
 		       KeyColumns + ' )  ' +
 		       ISNULL(' INCLUDE (' + IncludedColumns + ' ) ', '') +
 		       ISNULL(' WHERE  ' + I.filter_definition, '') + ' WITH ( ' +
-		       CASE 
+		       CASE
 		            WHEN I.is_padded = 1 THEN ' PAD_INDEX = ON '
 		            ELSE ' PAD_INDEX = OFF '
 		       END + ',' +
 		       'FILLFACTOR = ' + CONVERT(
 		           CHAR(5),
-		           CASE 
+		           CASE
 		                WHEN I.fill_factor = 0 THEN 100
 		                ELSE I.fill_factor
 		           END
 		       ) + ',' +
 		       'SORT_IN_TEMPDB = OFF ' + ',' +
-		       CASE 
+		       CASE
 		            WHEN I.ignore_dup_key = 1 THEN ' IGNORE_DUP_KEY = ON '
 		            ELSE ' IGNORE_DUP_KEY = OFF '
 		       END + ',' +
-		       CASE 
+		       CASE
 		            WHEN ST.no_recompute = 0 THEN ' STATISTICS_NORECOMPUTE = OFF '
 		            ELSE ' STATISTICS_NORECOMPUTE = ON '
 		       END + ',' +
 		       ' ONLINE = OFF ' + ',' +
-		       CASE 
+		       CASE
 		            WHEN I.allow_row_locks = 1 THEN ' ALLOW_ROW_LOCKS = ON '
 		            ELSE ' ALLOW_ROW_LOCKS = OFF '
 		       END + ',' +
-		       CASE 
+		       CASE
 		            WHEN I.allow_page_locks = 1 THEN ' ALLOW_PAGE_LOCKS = ON '
 		            ELSE ' ALLOW_PAGE_LOCKS = OFF '
 		       END + ' ) ON [' +
@@ -589,18 +589,18 @@
 		                                  IC2.index_id,
 		                                  STUFF(
 		                                      (
-		                                          SELECT ' , ' + C.name + CASE 
-		                                                                       WHEN MAX(CONVERT(INT, IC1.is_descending_key)) 
-		                                                                            = 1 THEN 
+		                                          SELECT ' , ' + C.name + CASE
+		                                                                       WHEN MAX(CONVERT(INT, IC1.is_descending_key))
+		                                                                            = 1 THEN
 		                                                                            ' DESC '
-		                                                                       ELSE 
+		                                                                       ELSE
 		                                                                            ' ASC '
 		                                                                  END
 		                                          FROM   sys.index_columns IC1
 		                                                 JOIN sys.columns C
 		                                                      ON  C.object_id = IC1.object_id
 		                                                      AND C.column_id = IC1.column_id
-		                                                      AND IC1.is_included_column = 
+		                                                      AND IC1.is_included_column =
 		                                                          0
 		                                          WHERE  IC1.object_id = IC2.object_id
 		                                                 AND IC1.index_id = IC2.index_id
@@ -609,14 +609,14 @@
 		                                                 C.name,
 		                                                 index_id
 		                                          ORDER BY
-		                                                 MAX(IC1.key_ordinal) 
+		                                                 MAX(IC1.key_ordinal)
 		                                                 FOR XML PATH('')
 		                                      ),
 		                                      1,
 		                                      2,
 		                                      ''
 		                                  ) KeyColumns
-		                           FROM   sys.index_columns IC2 
+		                           FROM   sys.index_columns IC2
 		                           GROUP BY
 		                                  IC2.object_id,
 		                                  IC2.index_id
@@ -639,21 +639,21 @@
 		                                                 JOIN sys.columns C
 		                                                      ON  C.object_id = IC1.object_id
 		                                                      AND C.column_id = IC1.column_id
-		                                                      AND IC1.is_included_column = 
+		                                                      AND IC1.is_included_column =
 		                                                          1
 		                                          WHERE  IC1.object_id = IC2.object_id
 		                                                 AND IC1.index_id = IC2.index_id
 		                                          GROUP BY
 		                                                 IC1.object_id,
 		                                                 C.name,
-		                                                 index_id 
+		                                                 index_id
 		                                                 FOR XML PATH('')
 		                                      ),
 		                                      1,
 		                                      2,
 		                                      ''
 		                                  ) IncludedColumns
-		                           FROM   sys.index_columns IC2 
+		                           FROM   sys.index_columns IC2
 		                           GROUP BY
 		                                  IC2.object_id,
 		                                  IC2.index_id

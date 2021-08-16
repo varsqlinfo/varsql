@@ -20,10 +20,11 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQLTemplateFactory;
 import com.varsql.core.sql.SQL;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
+import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -57,58 +58,12 @@ public class SybaseDDLScript extends DDLScriptImpl {
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
 
-			List<ParamMap> srcList = client.selectList("tableScript", dataParamInfo);
+			Map param = getDefaultTableTemplateParam(ddlOption, dataParamInfo, client.selectList("tableScript", dataParamInfo), client.selectList("tableScriptPk", dataParamInfo), client.selectList("tableScriptComments",dataParamInfo));
 
-			ddlStr.append("CREATE TABLE " + name + "(\n");
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.TABLE), param));
 
-			String dataType = "";
-
-			dataParamInfo.setObjectName(name);
-
-			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			ParamMap source;
-			for (int i = 0; i < srcList.size(); i++) {
-				source = srcList.get(i);
-
-				ddlStr.append(BlankConstants.TAB);
-				if (i > 0){
-					ddlStr.append(",");
-				}
-				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
-
-				ddlStr.append(source.get(MetaColumnConstants.DATA_TYPE)).append(" ");
-
-				ddlStr.append(source.getString(MetaColumnConstants.COLUMN_DEF)).append(" ");
-
-				ddlStr.append(getNotNullValue(source.getString(MetaColumnConstants.NULLABLE)));
-
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			List srcPkList = client.selectList("tableScriptPk", dataParamInfo);
-			Map pkMap;
-			for (int i = 0; i < srcPkList.size(); i++) {
-				pkMap = (HashMap) srcPkList.get(i);
-				ddlStr.append(BlankConstants.TAB).append(",CONSTRAINT ")
-				.append(pkMap.get("CONSTRAINT_NAME")).append(" ").append(pkMap.get("CONSTRAINDDEF"));
-			}
-
-			ddlStr.append(");").append(BlankConstants.NEW_LINE_TWO);
-
-			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);
-			for (int i = 0; i < srcCommentList.size(); i++) {
-				ddlStr.append( srcCommentList.get(i)).append(BlankConstants.NEW_LINE);
-			}
-
-			if(srcCommentList.size() > 0){
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -123,6 +78,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
+		boolean addFlag;
 
 		for (String name : objNmArr) {
 
@@ -133,16 +89,13 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			dataParamInfo.setObjectName(name);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.VIEW), param));
 
-			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
-			ddlStr.append(source.getString("VIEW_SOURCE")).append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -166,16 +119,12 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			ddlStr = new StringBuilder();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("indexScript", dataParamInfo));
 
-			Map indexInfo = sqlSesseion.selectOne("indexScript", dataParamInfo);
-			ddlStr.append(indexInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.INDEX), param));
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -200,17 +149,13 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			dataParamInfo.setObjectName(name);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			Map scriptInfo = sqlSesseion.selectOne("functionScript", dataParamInfo);
-
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.FUNCTION), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -235,17 +180,13 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			dataParamInfo.setObjectName(name);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			Map scriptInfo = sqlSesseion.selectOne("procedureScript", dataParamInfo);
-
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -282,16 +223,13 @@ public class SybaseDDLScript extends DDLScriptImpl {
 			ddlStr = new StringBuilder();
 			dataParamInfo.setObjectName(name);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP Trigger " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			Map scriptInfo = sqlSesseion.selectOne("triggerScript", dataParamInfo);
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
 
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 
@@ -335,7 +273,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
 			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 

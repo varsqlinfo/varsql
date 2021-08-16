@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
+import com.varsql.web.model.converter.BooleanToYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
 
 import lombok.Builder;
@@ -124,6 +125,9 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 	@Column(name ="MAX_SELECT_COUNT")
 	private Long maxSelectCount;
 
+	@Column(name ="USE_COLUMN_LABEL")
+	private String useColumnLabel;
+
 	@NotAudited
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
@@ -135,7 +139,7 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount, String useColumnLabel) {
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;
@@ -162,9 +166,10 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 		this.vdatabasename = vdatabasename;
 		this.vport = vport;
 		this.maxSelectCount = maxSelectCount;
+		this.useColumnLabel = useColumnLabel;
 
 	}
-	
+
 	public static final String JOIN_MANAGER_LIST = "managerList";
 
 	public static final String JOIN_GROUPLIST = "dbGroupList";
@@ -220,4 +225,6 @@ public class DBConnectionEntity extends AabstractAuditorModel{
 	public final static String VPORT="vport";
 
 	public final static String MAX_SELECT_COUNT="maxSelectCount";
+
+	public final static String USE_COLUMN_LABEL ="useColumnLabel";
 }

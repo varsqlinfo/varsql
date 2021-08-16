@@ -1,5 +1,6 @@
 package com.varsql.core.db.mybatis;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +23,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
+import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.vartech.common.utils.VartechReflectionUtils;
@@ -53,24 +55,28 @@ public final class SQLManager {
 
 	private SQLManager() {}
 
-	public SqlSessionTemplate sqlSessionTemplate(String sessionType) throws ConnectionFactoryException {
-		if (!sqlSessionMap.containsKey(sessionType)) {
-			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
+	public SqlSessionTemplate sqlSessionTemplate(String connid) throws ConnectionFactoryException {
+		if(ConnectionFactory.getInstance().isShutdown(connid)) {
+			return null;
 		}
 
-		return sqlSessionMap.get(sessionType);
-	}
-
-	public SqlSession openSession(String sessionType) throws ConnectionFactoryException {
-		if (!sqlSessionFactoryMap.containsKey(sessionType)) {
-			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(sessionType), this);
+		if (!sqlSessionMap.containsKey(connid)) {
+			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
 		}
 
-		return SqlSessionUtils.getSqlSession(sqlSessionFactoryMap.get(sessionType));
+		return sqlSessionMap.get(connid);
 	}
 
-	public void closeSession(String sessionType, SqlSession session) throws ConnectionFactoryException {
-		SqlSessionUtils.closeSqlSession(session, sqlSessionFactoryMap.get(sessionType));
+	public SqlSession openSession(String connid) throws ConnectionFactoryException {
+		if (!sqlSessionFactoryMap.containsKey(connid)) {
+			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
+		}
+
+		return SqlSessionUtils.getSqlSession(sqlSessionFactoryMap.get(connid));
+	}
+
+	public void closeSession(String connid, SqlSession session) throws ConnectionFactoryException {
+		SqlSessionUtils.closeSqlSession(session, sqlSessionFactoryMap.get(connid));
 	}
 
 	public void setSQLMapper(ConnectionInfo connInfo , Object obj){
@@ -182,4 +188,26 @@ public final class SQLManager {
 
 		return configuration;
 	}
+
+	public synchronized void close(String connid) {
+		logger.info("meta sql mapper datasource close : {} " , connid);
+		if (sqlSessionFactoryMap.containsKey(connid)) {
+			try {
+				((BasicDataSource)sqlSessionFactoryMap.get(connid).getConfiguration().getEnvironment().getDataSource()).close();
+				sqlSessionFactoryMap.remove(connid);
+				sqlSessionMap.remove(connid);
+			} catch (SQLException e) {
+				throw new ConnectionException("mybatis datasource close exception : "+e.getMessage() , e);
+			}
+		}
+
+	}
+
+	public synchronized void reset(String connid) {
+		logger.info("meta sql mapper datasource reset : {}" , connid);
+		close(connid);
+		//setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
+
+	}
+
 }

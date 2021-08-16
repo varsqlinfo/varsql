@@ -17,7 +17,7 @@ import com.vartech.common.app.beans.SearchParameter;
 
 /**
  * -----------------------------------------------------------------------------
- * 
+ *
  * @fileName : QnASpec.java
  * @desc : q & a specication
  * @author : ytkim
@@ -25,7 +25,7 @@ import com.vartech.common.app.beans.SearchParameter;
  *         DATE AUTHOR DESCRIPTION
  *         -----------------------------------------------------------------------------
  *         2020. 4. 27. ytkim 최초작성
- * 
+ *
  *         -----------------------------------------------------------------------------
  */
 public class QnASpec extends DefaultSpec {
@@ -34,8 +34,10 @@ public class QnASpec extends DefaultSpec {
 
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			
+
 			predicates.add(delYn(root, cb));
+
+			query.orderBy(cb.desc(root.get(QnAEntity.REG_DT)));
 
 			switch (EntityValueConstants.SCH_CATG_ALLYN.valueOf(param.getCategory())) {
 			case Y:
@@ -49,31 +51,31 @@ public class QnASpec extends DefaultSpec {
 			}
 
 			titleOrQuestion(predicates, root ,cb , param);
-			
+
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
 	}
-	
+
 	public static Specification<QnAEntity> userQnaSearch(SearchParameter param) {
-		
+
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			
+
 			predicates.add(delYn( root ,cb));
-			
+
 			predicates.add(cb.equal(root.get(EntityFieldConstants.REG_ID), SecurityUtil.userViewId()));
-			
+
 			titleOrQuestion( predicates ,root ,cb , param);
-			
+
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
-	}	
+	}
 	/**
 	 * @method  : titleOrQuestion
 	 * @desc : title or question search
 	 * @author   : ytkim
-	 * @param predicates 
-	 * @date   : 2020. 4. 27. 
+	 * @param predicates
+	 * @date   : 2020. 4. 27.
 	 * @param root
 	 * @param cb
 	 * @param param
@@ -81,7 +83,7 @@ public class QnASpec extends DefaultSpec {
 	 */
 	private static void titleOrQuestion(List<Predicate> predicates, Root<?> root, CriteriaBuilder cb, SearchParameter param) {
 		String keyword = param.getKeyword();
-		
+
 		if(keyword != null && !"".equals(keyword)) {
 			predicates.add(cb.or(
 				cb.like(root.get(QnAEntity.TITLE), contains(keyword)),
@@ -89,12 +91,12 @@ public class QnASpec extends DefaultSpec {
 			));
 		}
 	}
-	
+
 	/**
 	 * @method  : delYn
 	 * @desc : delyn != 'N'
 	 * @author   : ytkim
-	 * @date   : 2020. 4. 27. 
+	 * @date   : 2020. 4. 27.
 	 * @param root
 	 * @param cb
 	 * @return

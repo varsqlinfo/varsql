@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import url("varsql.common.css");
+@import url("varsql.common.min.css");
 body {
   height: 100%;
   width: 100%;

@@ -12,6 +12,8 @@
 	    select'VERSION' as "NAME",   @@version as "VAL"
 	    union all
 	    select'LANG' as "NAME",   @@language as "val"
+	    union all
+	    select'MAXPAGESIZE' as "NAME",  convert(varchar, @@maxpagesize) as "val"
 	</select>
 
 	<select id="getUsers" parameterType="databaseParamInfo" resultType="string">
@@ -84,7 +86,7 @@
 			(
 				SELECT
 				    o.name as  "tname" , o.id as "tid", index_col(o.name, i.indid, c.colid, o.uid) as "cname",
-				    (case WHEN i.status > 2045  THEN 1
+				    (case WHEN i.status >= 2048  THEN 1
 				    when i.status =2 then 2
 				    else 9
 				    end) as  KEYCONST
@@ -164,7 +166,7 @@
 			(
 				SELECT
 				    o.name as  "tname" , o.id as "tid", index_col(o.name, i.indid, c.colid, o.uid) as "cname",
-				    (case WHEN i.status > 2045  THEN 1
+				    (case WHEN i.status >= 2048  THEN 1
 				    when i.status =2 then 2
 				    else 9
 				    end) as  KEYCONST
@@ -198,15 +200,19 @@
 	<!-- procedure list -->
 	<select id="procedureList" parameterType="databaseParamInfo" resultType="objectInfo">
 		select
-			su.name as "SCHEMA"
-			,so.name as "NAME"
-			,so.type as "TYPE"
-			,so.crdate as "CREATED"
-			,so.sysstat2  as  STATUS
-		from sysusers su inner join  sysobjects so on su.uid = so.uid
-		where so.type in('P','XP')
-		and	su.name= #{schema}
-		order  by su.name, so.name
+			*
+		from(
+			select
+				su.name as "SCHEMA_NAME"
+				,so.name as "NAME"
+				,so.type as "TYPE"
+				,so.crdate as "CREATED"
+				,so.sysstat2  as  STATUS
+			from sysusers su inner join  sysobjects so on su.uid = so.uid
+			where so.type in('P','XP')
+			and	su.name= #{schema}
+		) a
+		order by a.SCHEMA_NAME, a.NAME
 	</select>
 
 	<!-- object info  info map start  -->
@@ -229,51 +235,60 @@
 
 	<!-- procedure arguments list -->
 	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
-		SELECT
-			object_name(so.id) as "OBJECT_NAME",
-			so.sysstat2  as "STATUS",
-			so.type as "OBJECT_TYPE",
-			so.crdate as "CREATED",
-			so.sysstat2  as  STATUS ,
-			sc.name as "ARGUMENT_NAME",
-			st.name as "DATA_TYPE" ,
-			sc.length as "CHAR_LENGTH" ,
-			sc.length as "COLUMN_SIZE" ,
-			sc.scale as "DECIMAL_DIGITS",
-			sc.colid as "SEQUENCE",
-			'' as "COMMENT",
-			''  as "IN_OUT"
-		FROM sysobjects so INNER JOIN syscolumns sc ON (
-			so.id = sc.id and
-			<choose>
-				<when test='"procedure".equalsIgnoreCase(objectType)'>
-					 so.type in ('P','PR')
-				</when>
-				<when test='"function".equalsIgnoreCase(objectType)'>
-					so.type='F'
-				</when>
-				<otherwise>
-					so.type=#{objectType}
-				</otherwise>
-			</choose>
-		)INNER JOIN systypes st ON (sc.usertype = st.usertype)
-		where so.uid = USER_ID(#{schema})
-		ORDER BY so.name, sc.colid
+		select *
+		from (
+			SELECT
+				so.name as "OBJECT_NAME",
+				so.sysstat2  as "STATUS",
+				so.type as "OBJECT_TYPE",
+				so.crdate as "CREATED",
+				so.sysstat2  as  STATUS ,
+				sc.name as "ARGUMENT_NAME",
+				st.name as "DATA_TYPE" ,
+				sc.length as "CHAR_LENGTH" ,
+				sc.length as "COLUMN_SIZE" ,
+				sc.scale as "DECIMAL_DIGITS",
+				sc.colid as "SEQUENCE",
+				'' as "COMMENT",
+				(case WHEN sc.status2 = 1 THEN 'IN'
+			    when sc.status2 = 2 then 'OUT'
+			    else convert(varchar, sc.status2)
+			    end) as "IN_OUT"
+			FROM sysobjects so INNER JOIN syscolumns sc ON (
+				so.id = sc.id and
+				<choose>
+					<when test='"procedure".equalsIgnoreCase(objectType)'>
+						 so.type in ('P','PR')
+					</when>
+					<when test='"function".equalsIgnoreCase(objectType)'>
+						so.type in ('SF','F')
+					</when>
+					<otherwise>
+						so.type=#{objectType}
+					</otherwise>
+				</choose>
+			)INNER JOIN systypes st ON (sc.usertype = st.usertype)
+			where so.uid = USER_ID(#{schema})
+		) a
+		ORDER BY a.OBJECT_NAME, a.SEQUENCE
 	</select>
 
 
 	<!-- function list -->
 	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
-		select
-			su.name as "SCHEMA"
-			,so.name as "NAME"
-			,so.type as "TYPE"
-			,so.crdate as "CREATED"
-			,so.sysstat2  as  STATUS
-		from sysusers su inner join  sysobjects so on su.uid = so.uid
-		where so.type in('F')
-		and	su.name= #{schema}
-		order  by su.name, so.name
+		select *
+		from (
+			select
+				su.name as "SCHEMA_NAME"
+				,so.name as "NAME"
+				,so.type as "TYPE"
+				,so.crdate as "CREATED"
+				,so.sysstat2  as  STATUS
+			from sysusers su inner join  sysobjects so on su.uid = so.uid
+			where so.type in('SF','F')
+			and	su.name= #{schema}
+		) a
+		order  by a.SCHEMA_NAME, a.NAME
 	</select>
 
 
@@ -289,29 +304,38 @@
 		    INNER JOIN syscolumns c on c.id = o.id
 		WHERE o.type = 'U'
 		and o.uid = user_id(#{schema})
+		and (i.status &lt; 2048 or i.status &gt;= 32768 )
 		order by o.name , i.name
 	</select>
 
 	<!-- index and column info -->
 	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		SELECT
-			 i.name as "INDEX_NAME"
-		    , o.name as  "TABLE_NAME"
-		    ,c.colid as "ORDINAL_POSITION"
-		    , index_col(o.name, i.indid, c.colid, o.uid) as "COLUMN_NAME"
-		    , (case WHEN i.status > 2045  THEN 'PK'
-		    when i.status =2 then 'UQ'
-		    else ''
-		    end) as  "TYPE"
-		   ,index_colorder(o.name, i.indid, c.colid, o.uid) as  "ASC_OR_DESC"
-		FROM
-		    sysobjects o
-		    INNER JOIN sysindexes i on i.id = o.id
-		    INNER JOIN syscolumns c on c.id = o.id
-		WHERE o.type = 'U'
-		and o.uid = user_id (#{schema})
-		and index_col(o.name, i.indid, c.colid, o.uid) &lt;&gt; null
-		order by o.name ,i.name
+		select *
+		from (
+			SELECT
+				 i.name as "INDEX_NAME"
+				, i.status  as "INDEX_STATUS"
+				, i.keycnt as "KEYCNT"
+				, i.maxrowsperpage as "MAXROWSPERPAGE"
+				, i.fill_factor as "FILL_FACTOR"
+				, i.res_page_gap AS "RES_PAGE_GAP"
+				, o.name as  "TABLE_NAME"
+				, c.colid as "ORDINAL_POSITION"
+				, index_col(o.name, i.indid, c.colid, o.uid) as "COLUMN_NAME"
+				, case when i.status >= 2048 then 'PK' when i.status = 2 then 'UQ' when i.status = 0 then 'IDX'	else convert(varchar, i.status)	end as "TYPE"
+				, index_colorder(o.name, i.indid, c.colid, o.uid) as  "ASC_OR_DESC"
+				, s.name as  "SEGMENT_NAME"
+			FROM
+				sysobjects o
+				INNER JOIN sysindexes i on i.id = o.id
+				INNER JOIN syscolumns c on c.id = o.id
+				INNER join syssegments s on  i.segment = s.segment
+			WHERE o.type = 'U'
+			and o.uid = user_id (#{schema})
+			and (i.status &lt; 2048 or i.status &gt;= 32768 )
+			and index_col(o.name, i.indid, c.colid, o.uid) &lt;&gt; null
+		) a
+		order by a.TABLE_NAME ,a.INDEX_NAME , ORDINAL_POSITION
 	</select>
 
 	<!-- trigger list -->
@@ -336,316 +360,188 @@
 	    <result property="timing" column="TIMING"/>
 	    <result property="created" column="CREATED"/>
 	    <result property="status" column="STATUS"/>
+		<!-- custom field -->
+	    <collection property="customField" javaType="hashmap" resultMap="customFieldMap"></collection>
 	</resultMap>
+
+	<resultMap type="hashMap" id="customFieldMap">
+        <result property="DELETE_TABLE" column="DELETE_TABLE"></result>
+        <result property="INSERT_TABLE" column="INSERT_TABLE"></result>
+        <result property="UPDATE_TABLE" column="UPDATE_TABLE"></result>
+    </resultMap>
+
 
 	<!-- trigger metadata -->
 	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
-		select
-			su.name as "SCHEMA"
-			,so.name as "OBJECT_NAME"
-			,so.type as "TABLE_TYPE"
-			,'' as "TIMING"
-			,so.crdate as "CREATED"
-			,so.sysstat2  as  STATUS
-			,(CASE WHEN so.deltrig > 0 THEN 'DELETE'
-				when so.instrig > 0 then 'INSERT'
-				when so.updtrig > 0 then 'UPDATE'
-				when so.seltrig > 0 then 'SELECT'
-				ELSE '' END) AS EVENTTYPE
-			,(CASE WHEN so.deltrig > 0 THEN object_name(so.deltrig)
-				when so.instrig > 0 then object_name(so.instrig)
-				when so.updtrig > 0 then object_name(so.updtrig)
-				when so.seltrig > 0 then object_name(so.seltrig)
-				ELSE '' END) AS "TABLE_NAME"
-		from sysusers su inner join  sysobjects so on su.uid = so.uid
-		where so.type in('TR')
-		and	su.name= #{schema}
-		order  by su.name, so.name
+		select *
+		from (
+			select
+				su.name as "SCHEMA_NAME"
+				,so.name as "OBJECT_NAME"
+				,so.type as "TABLE_TYPE"
+				,'' as "TIMING"
+				,so.crdate as "CREATED"
+				,so.sysstat2  as  STATUS
+				,(CASE WHEN so.deltrig > 0 THEN object_name(so.deltrig)
+						when so.instrig > 0 then object_name(so.instrig)
+						when so.updtrig > 0 then object_name(so.updtrig)
+						when so.seltrig > 0 then object_name(so.seltrig)
+						ELSE '' END) AS "TABLE_NAME"
+				,object_name(so.deltrig) as "DELETE_TABLE"
+				,object_name(so.instrig) as "INSERT_TABLE"
+				,object_name(so.updtrig) as "UPDATE_TABLE"
+			from sysusers su inner join  sysobjects so on su.uid = so.uid
+			where so.type in('TR')
+			and	su.name= #{schema}
+		) a
+		order  by a.SCHEMA_NAME, a.OBJECT_NAME
 	</select>
 
 	<!--
 		Table DDL Script
 	 -->
 	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
-		SELECT atc.TABLE_NAME
-			, atc.COLUMN_NAME
-			, atc.DATA_TYPE
-			, atc.DATA_TYPE_MOD
-			, atc.DATA_TYPE_OWNER
-			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH,
-		                         'VARCHAR', atc.CHAR_LENGTH,
-		                         'VARCHAR2', atc.CHAR_LENGTH,
-		                         'NCHAR', atc.CHAR_LENGTH,
-		                         'NVARCHAR', atc.CHAR_LENGTH,
-		                         'NVARCHAR2', atc.CHAR_LENGTH,
-		                         atc.DATA_PRECISION) COLUMN_SIZE
-			, atc.DATA_SCALE as DECIMAL_DIGITS
-			, atc.NULLABLE
-			, atc.CHAR_USED
-			, USER OWNER
-			, atc.DATA_DEFAULT
-<choose>
-	<when test="baseSchemaFlag">
-		from USER_TAB_COLUMNS atc
-		where	1=1
-	</when>
-	<otherwise>
-		from ALL_TAB_COLUMNS atc
-		where	atc.OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND atc.TABLE_NAME = #{objectName}
-		ORDER BY atc.COLUMN_ID
+		select
+			 so.name AS TABLE_NAME
+			, sc.name AS COLUMN_NAME
+			, st.name AS DATA_TYPE
+			, sc.length AS CHAR_LENGTH
+			, sc.length AS COLUMN_SIZE
+			, sc.scale AS DECIMAL_DIGITS
+			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END NULLABLE
+			, scc.text AS "COLUMN_DEF"
+			, sc.colid AS  "ORDINAL_POSITION"
+			, scc2.text AS "COMMENT"
+		from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
+		inner join systypes st on st.usertype = sc.usertype
+		left outer join syscomments scc on scc.id = sc.cdefault
+		left outer join syscomments scc2 on scc2.id = sc.id
+		where  so.type = 'U'
+		and so.uid = user_id (#{schema})
+		and so.name = #{objectName}
+		order by so.name , sc.colid
 	</select>
 
 	<!--
 		Table DDL Script => Primary key list
 	 -->
 	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
-		SELECT acc.CONSTRAINT_NAME, acc.COLUMN_NAME
-<choose>
-	<when test="baseSchemaFlag">
-		FROM USER_CONS_COLUMNS acc , USER_CONSTRAINTS ac
-		where acc.TABLE_NAME = ac.TABLE_NAME
-		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME
-	</when>
-	<otherwise>
-		FROM ALL_CONS_COLUMNS acc , ALL_CONSTRAINTS ac
-		WHERE	acc.OWNER = ac.OWNER
-		AND acc.TABLE_NAME = ac.TABLE_NAME
-		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME
-		AND acc.OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND acc.TABLE_NAME = #{objectName}
-		AND ac.CONSTRAINT_TYPE in ('P')
-		ORDER BY acc.POSITION
+		select *
+		from (
+			SELECT
+			     o.name AS "TABLE_NAME", i.name as "CONSTRAINT_NAME",index_col(o.name, i.indid, c.colid, o.uid) AS "COLUMN_NAME",
+			    (case WHEN i.status >= 2048  THEN 'PK'
+			    when i.status =2 then 'UQ'
+			    else 'IDX'
+			    end) AS TYPE
+			    , i.indid as seq
+			FROM
+			    sysobjects o
+			    INNER JOIN sysindexes i on i.id = o.id
+			    INNER JOIN syscolumns c on c.id = o.id
+			WHERE o.type = 'U'
+			and o.uid = user_id (#{schema})
+			and o.name = #{objectName}
+			<![CDATA[
+			and i.indid > 0
+			and ((i.status > 2048 and i.status <= 32768) or i.status =2 )
+			and index_col(o.name, i.indid, c.colid, o.uid) <> null
+			]]>
+		) a
+		order by a.CONSTRAINT_NAME , a.seq
 	</select>
 
 	<!--
 		Table DDL Script => Table, Column Comment Script
 	 -->
 	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
-		SELECT    'COMMENT ON TABLE '
-		       || '${schema}'
-		       || '.'
-		       || C.TABLE_NAME
-		       || ' IS '''
-		       || C.COMMENTS
-		       || ''';'
-		          AS COMMENT_TEXT
-<choose>
-	<when test="baseSchemaFlag">
-		from USER_TAB_COMMENTS c
-		where 1=1
-	</when>
-	<otherwise>
-		FROM ALL_TAB_COMMENTS c
-		where c.OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND C.COMMENTS IS NOT NULL
-		AND C.TABLE_NAME = #{objectName}
-		UNION ALL
-		SELECT    'COMMENT ON COLUMN '
-		       || '${schema}'
-		       || '.'
-		       || C.TABLE_NAME
-		       || '.'
-		       || C.COLUMN_NAME
-		       || ' IS '''
-		       || C.COMMENTS
-		       || ''';'
-<choose>
-	<when test="baseSchemaFlag">
-		from USER_COL_COMMENTS c
-		where 1=1
-	</when>
-	<otherwise>
-		FROM ALL_COL_COMMENTS c
-		where c.OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND C.COMMENTS IS NOT NULL
-		AND C.TABLE_NAME = #{objectName}
-	</select>
-
-	<!--
-	 view script 생성  create 문
-	 -->
-	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
-		select COLUMN_NAME
-<choose>
-	<when test="baseSchemaFlag">
-		from USER_TAB_COLUMNS c
-		where 1=1
-	</when>
-	<otherwise>
-		FROM ALL_TAB_COLUMNS c
-		where OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND TABLE_NAME = #{objectName}
-		order by TABLE_NAME, COLUMN_ID
-	</select>
-
-	<!--
-		 view script source
-	 -->
-	<select id="viewScriptSource" resultType="string" parameterType="databaseParamInfo">
-		select TEXT as SOURCE_TEXT
-	<choose>
-		<when test="baseSchemaFlag">
-		from USER_VIEWS
-		WHERE 1=1
-		</when>
-		<otherwise>
-		from ALL_VIEWS
-		where OWNER = #{schema}
-		</otherwise>
-	</choose>
-		AND VIEW_NAME = #{objectName}
-		order by VIEW_NAME
+		select * from (
+		select
+				'TBL' as "TYPE"
+				,'' as "NAME"
+				,sc.text AS "COMMENT"
+			from sysusers su inner join  sysobjects so on su.uid = so.uid
+			left outer join syscomments sc on so.id = sc.id
+			where so.type = 'U'
+			and sc.text is not null
+			and	su.name= #{schema}
+			and so.name =  #{objectName}
+			UNION ALL
+			select
+				'COL' as "TYPE"
+				,sc.name as "NAME"
+				,scc2.text AS "COMMENT"
+			from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
+			left outer join syscomments scc2 on scc2.id = sc.id
+			where  so.type = 'U'
+			and so.uid = user_id (#{schema})
+			and so.name = #{objectName}
+			and scc2.text is not null
+		) a
 	</select>
 
 	<!--
 		object function  , procedure 소스
 	 -->
-	<select id="objectScriptSource" resultType="string" parameterType="databaseParamInfo">
-		SELECT
-	    	b.text AS source_text
-	  <choose>
-		<when test="baseSchemaFlag">
-		FROM user_objects a INNER JOIN user_source b
-		ON a.object_name = b.name
-		and a.OBJECT_TYPE = b.type
-		WHERE 1 = 1
-		</when>
-		<otherwise>
-		FROM ALL_OBJECTS a INNER JOIN ALL_SOURCE b
-		ON a.object_name = b.name
-		and a.OBJECT_TYPE = b.type
-		where a.OWNER = #{schema}
-		</otherwise>
-	</choose>
-		AND a.object_type =UPPER( #{objectType})
-		AND a.object_name =#{objectName}
-		ORDER BY b.line
-	</select>
-
-
-	<!--
-		get object type
-	-->
-	<select id="sourceObjectType" resultType="string" parameterType="databaseParamInfo">
-		SELECT object_type as TYPE
-<choose>
-	<when test="baseSchemaFlag">
-		FROM user_objects
-		WHERE 1 = 1
-	</when>
-	<otherwise>
-		FROM all_objects
-		WHERE OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND object_name = UPPER (#{objectName})
-	<![CDATA[
-		AND ROWNUM <= 1
-	 ]]>
+	<select id="objectScriptSource" parameterType="databaseParamInfo" resultType="hashmap">
+		select * from
+		(
+			select o.name as "OBJECT_NAME", c.text as "SOURCE_TEXT", c.colid as "IDX"
+			from syscomments c inner join sysobjects o on o.id=c.id
+			where o.uid = user_id (#{schema})
+			and
+			<choose>
+				<when test='"procedure".equalsIgnoreCase(objectType)'>
+					o.type in ('P','PR')
+				</when>
+				<when test='"function".equalsIgnoreCase(objectType)'>
+					o.type in ('SF','F')
+				</when>
+				<when test='"trigger".equalsIgnoreCase(objectType)'>
+					o.type in ('TR')
+				</when>
+				<when test='"view".equalsIgnoreCase(objectType)'>
+					o.type in ('V')
+				</when>
+				<otherwise>
+					o.type=#{objectType}
+				</otherwise>
+			</choose>
+			and o.name=#{objectName}
+		) a
+		order by a.IDX
 	</select>
 
 	<!--
 		create index  Script
 	 -->
-	<select id="indexScriptSource" resultType="hashmap" parameterType="databaseParamInfo">
-		SELECT
-			  aic.COLUMN_POSITION
-			, ai.INDEX_NAME
-			, ai.TABLE_NAME
-			, ai.INDEX_TYPE
-			, ai.TABLE_OWNER
-			, ai.UNIQUENESS
-			, ai.COMPRESSION
-			, ai.TABLESPACE_NAME
-			, ai.LOGGING
-			, ai.PCT_FREE
-			, ai.INI_TRANS
-			, ai.MAX_TRANS
-			, ai.INITIAL_EXTENT
-			, ai.MIN_EXTENTS
-			, ai.MAX_EXTENTS
-			, NVL(ai.PCT_INCREASE,0) AS PCT_INCREASE
-			, ai.BUFFER_POOL
-			, aic.DESCEND
-			, aic.COLUMN_NAME
-			, aie.COLUMN_EXPRESSION
-	<choose>
-		<when test="baseSchemaFlag">
-		FROM USER_INDEXES ai INNER JOIN USER_IND_COLUMNS aic
-		ON ai.INDEX_NAME     = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN USER_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		WHERE 1  = 1
-		</when>
-		<otherwise>
-		FROM ALL_INDEXES ai INNER JOIN ALL_IND_COLUMNS aic
-		ON ai.OWNER = aic.INDEX_OWNER
-		AND ai.INDEX_NAME = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN ALL_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_OWNER  = aic.INDEX_OWNER
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		where ai.OWNER = #{schema}
-		</otherwise>
-	</choose>
-		AND aic.INDEX_NAME      = UPPER( #{objectName})
-		ORDER BY aic.COLUMN_POSITION
-	</select>
-
-	<!--
-		프로시져의 아규먼트 목록을 리턴한다.
-	 -->
-	<select id="getProcedureInParamter" resultType="hashmap" parameterType="hashmap">
-		SELECT ua.position AS "order"
-			,ua.argument_name AS name
-			,DECODE (ua.data_type, 'REF CURSOR', 'SYS_REFCURSOR', ua.data_type) AS rdbtype
-			,ua.in_out AS type
-			,ua.data_length AS length
-			,ua.default_value as value
-		FROM user_arguments ua
-		WHERE 1=1
-		AND ua.object_name = UPPER (#{objectName})
-		AND ua.in_out in ('IN','IN/OUT')
-		AND ua.argument_name > ' '
-		and nvl(ua.package_name,'null') = case when #{package_name} is null then 'null' else UPPER (#{package_name}) end
-		ORDER BY ua.object_name, ua.overload, ua.sequence
-	</select>
-
-	<!--
-		프로시져의 아규먼트 목록을 리턴한다.
-	 -->
-	<select id="getProcedureOutParamter" resultType="hashmap" parameterType="hashmap">
-		SELECT ua.position AS "order"
-			,ua.argument_name AS name
-			,DECODE (ua.data_type, 'REF CURSOR', 'SYS_REFCURSOR', ua.data_type) AS rdbtype
-			,ua.in_out AS type
-			,ua.data_length AS length
-			,null as value
-		FROM user_arguments ua
-		WHERE 1=1
-		AND ua.object_name = UPPER (#{objectName})
-		AND ua.in_out in ('OUT', 'IN/OUT')
-		AND ua.argument_name > ' '
-		and nvl(ua.package_name,'null') = case when #{package_name} is null then 'null' else UPPER (#{package_name}) end
-		ORDER BY ua.object_name, ua.overload, ua.sequence
+	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
+		select *
+		from (
+			SELECT
+				 i.name as "INDEX_NAME"
+				, i.status  as "INDEX_STATUS"
+				, i.keycnt as "KEYCNT"
+				, i.maxrowsperpage as "MAXROWSPERPAGE"
+				, i.fill_factor as "FILL_FACTOR"
+				, i.res_page_gap AS "RES_PAGE_GAP"
+				, o.name as  "TABLE_NAME"
+				, c.colid as "ORDINAL_POSITION"
+				, index_col(o.name, i.indid, c.colid, o.uid) as "COLUMN_NAME"
+				, (case WHEN i.status >= 2048  THEN 'PK' when i.status =2 then 'UQ'	else convert(varchar, i.status) end) as  "TYPE"
+				, index_colorder(o.name, i.indid, c.colid, o.uid) as  "ASC_OR_DESC"
+				, s.name as  "SEGMENT_NAME"
+			FROM
+				sysobjects o
+				INNER JOIN sysindexes i on i.id = o.id
+				INNER JOIN syscolumns c on c.id = o.id
+				INNER join syssegments s on  i.segment = s.segment
+			WHERE o.type = 'U'
+			and o.uid = user_id (#{schema})
+			and i.name = #{objectName}
+			and index_col(o.name, i.indid, c.colid, o.uid) &lt;&gt; null
+		) a
+		order by a.TABLE_NAME ,a.INDEX_NAME , ORDINAL_POSITION
 	</select>
 
 </mapper>

@@ -1,7 +1,7 @@
 /**
- * pubContextMenu: v0.0.1
+ * pubContextMenu: v1.0.1
  * ========================================================================
- * Copyright 2016-2020 ytkim
+ * Copyright 2016-2021 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -285,9 +285,8 @@ Plugin.prototype ={
      * @description set theme
      */
 	,setTheme : function (themeName){
-		$('#'+this.contextId+'_wrap').removeClass('pub-theme-'+this.options.theme);
 		this.options.theme = themeName;
-		$('#'+this.contextId+'_wrap').addClass('pub-theme-'+themeName);
+		$('#'+this.contextId+'_wrap').attr('pub-theme', themeName);
 	}
 	/**
      * @method getTheme

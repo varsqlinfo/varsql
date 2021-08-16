@@ -1,5 +1,5 @@
 /**
-handlebars custom function 
+handlebars custom function
  */
 
 if (typeof window != "undefined") {
@@ -20,9 +20,9 @@ function isPk(constraintVal){
 	if(constraintVal =='PK' || constraintVal.indexOf('PRIMARY') > -1 ){
 		return true;
 	}
-	return false; 
-}	
-	
+	return false;
+}
+
 Handlebars.registerHelper("camelCase", function(text, options) {
     return VARSQL.util.convertCamel(text);
 });
@@ -68,7 +68,6 @@ Handlebars.registerHelper("pkColumns", function(items) {
 			reval.push(item);
 		}
 	}
-
 	return reval;
 });
 
@@ -87,7 +86,7 @@ Handlebars.registerHelper("pkExcludeColumns", function(items) {
 	return reval;
 });
 
-Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,options) {
+Handlebars.registerHelper('xif', function (v1,o1,v2,options) {
     var operators = {
          '==': function(a, b){ return a==b},
          '===': function(a, b){ return a===b},
@@ -100,34 +99,136 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,mainOperator,v3,o2,v4,option
          '&&': function(a, b){ return a&&b},
          '||': function(a, b){ return a||b},
       }
-    var a1 = operators[o1](v1,v2);
-    var a2 = operators[o2](v3,v4);
-    var isTrue = operators[mainOperator](a1, a2);
+    var isTrue = operators[o1](v1,v2);
     return isTrue ? options.fn(this) : options.inverse(this);
+});
+
+// index ddl gen keyword
+Handlebars.registerHelper('ddlIndexKeyword', function (mode , item) {
+	if('unique' == mode){
+		return "UQ" == item["TYPE"] ? "unique" : "";
+	}
+
+	if('ascDesc' == mode){
+		return "ASC" == item["ASC_OR_DESC"] ? "" : "desc";
+	}
+
+	return '';
+});
+
+Handlebars.registerHelper('ddlTableValue', function (mode, item, dbType) {
+	var dataType = item.DATA_TYPE || item.TYPE_AND_LENGTH;
+
+	dataType = dataType.replace(/\((.*?)\)/g,'');
+	var dataTypeInfo = VARSQLCont.dataType.getDataTypeInfo(dataType);
+
+	if('typeAndLength' == mode){
+		if(!VARSQL.isBlank(item.TYPE_AND_LENGTH)){
+			return item.TYPE_AND_LENGTH;
+		}
+		var columnSize = item.COLUMN_SIZE;
+
+		if(dataTypeInfo.isSize !== false && !VARSQL.isBlank(columnSize)){
+
+			var addStr =dataTypeInfo.name+"(" + columnSize;
+
+			if(dataTypeInfo.isNum){
+				var degitsLen = item.DECIMAL_DIGITS;
+				if (!VARSQL.isBlank(degitsLen) && parseInt(degitsLen,10)  > 0) {
+					addStr +="," + degitsLen;
+				}
+			}
+
+			addStr+=")";
+			return addStr;
+		}
+
+		return dataTypeInfo.name;
+	}
+
+	if('default' == mode){
+		var columnDef = item.COLUMN_DEF;
+		if (!VARSQL.isBlank(columnDef)) {
+
+			if(columnDef.startsWith('DEFAULT')){
+				return columnDef;
+			}else{
+				if (dataTypeInfo.isNum || dataTypeInfo.isDate || VARSQL.startsWith(columnDef,'\'')){
+					return "DEFAULT " +columnDef;
+				}
+
+				return "DEFAULT '"+columnDef+"'";
+			}
+		}
+		return "";
+	}
+
+	if('nullable' == mode){
+		var nullable = (item.NULLABLE||'').toUpperCase();
+		if ("NO" == nullable || "N" == nullable) {
+			return " NOT NULL ";
+		}
+		return "";
+	}
+
+	return '';
+});
+
+Handlebars.registerHelper('ddlTableKey', function (list, objectName, dbType, opts) {
+
+	if(list.length < 1){
+		return opts.inverse(this);
+	}
+	var reval = {};
+
+	//[{"TABLE_NAME":"test_table","INDEX_TYPE":1,"COLUMN_NAME":"col1","CONSTRAINT_NAME":"test_table_20445312861",TYPE:"PK"}]
+
+	for(var i =0; i< list.length; i++){
+		var item =list[i];
+		var keyType = item.TYPE;
+		if(reval[keyType]){
+			if(reval[keyType][item.CONSTRAINT_NAME]){
+				reval[keyType][item.CONSTRAINT_NAME].push(item);
+			}else{
+				reval[keyType][item.CONSTRAINT_NAME] = [item];
+			}
+		}else{
+			var addItem = {};
+			addItem[item.CONSTRAINT_NAME]=[item];
+			reval[keyType]=addItem;
+		}
+	}
+
+	var out= [];
+	for(var key in reval){
+		out.push(opts.fn({type :key, dbType: dbType, objectName : objectName, constList: reval[key]}));
+	}
+
+	return out.join('');
 });
 
 
 VARSQLTemplate.parse = function (template, errorHandler){
 	try{
-		return Handlebars.parse(template); 
+		return Handlebars.parse(template);
     }catch(e){
     	if(errorHandler){
     		errorHandler(e);
     	}
-    	return false; 
+    	return false;
     }
 }
 
 VARSQLTemplate.compile = function (template ,errorHandler){
 	try{
-		return Handlebars.compile(template); 
+		return Handlebars.compile(template);
     }catch(e){
     	if(errorHandler){
     		errorHandler(e);
     	}
-    	return false; 
+    	return false;
     }
-	
+
 }
 
 VARSQLTemplate.render ={
@@ -164,7 +265,7 @@ VARSQLTemplate.render ={
 	/**
 	 * @method generateSource
 	 * @description template object render
-		templateInfo =   
+		templateInfo =
 		main: "insert into {{table.name}} ({{columnName}} )↵values( {{columnValue}} );"
 		,name: "insert"
 		,propItems: [
@@ -174,25 +275,25 @@ VARSQLTemplate.render ={
 		]
 	 */
 	,generateSource : function (templateInfo, item, breakFlag){
-		
+
 		var reVal = {isError : false, value :'' , errorInfo :{}};
         try{
         	var template = VARSQLTemplate.compile(templateInfo.main);
-       
+
 	        var propItems = templateInfo.propItems;
-	        
+
 	        var allParam = VARSQL.util.objectMerge({},item);
-	        
+
 	        for(var i=0; i< propItems.length; i++){
 	            var propItem = propItems[i];
 	            try{
 	            	var propTemplate = Handlebars.compile(propItem.code);
-	            	allParam[propItem.key] =VARSQL.str.trim(propTemplate(allParam)); 
+	            	allParam[propItem.key] =VARSQL.str.trim(propTemplate(allParam));
 	            }catch(e){
 	            	if(breakFlag === false){
 	            		allParam[propItem.key] = e.message;
 	            	}else{
-		            	reVal.isError = true; 
+		            	reVal.isError = true;
 		            	reVal.errorInfo ={
 		            		mode : 'prop'
 		            		,msg : e.message
@@ -205,13 +306,13 @@ VARSQLTemplate.render ={
 	        reVal.value = VARSQL.str.trim(template(allParam));
 	        return reVal;
         }catch(e){
-        	reVal.isError = true; 
+        	reVal.isError = true;
         	reVal.errorInfo ={
         		mode : 'main'
     			,msg : e.message
         		,err : e
         	};
-        	return reVal; 
+        	return reVal;
         }
 	}
 }

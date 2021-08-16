@@ -1,5 +1,7 @@
 package com.varsql.web.exception;
 
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.vartech.common.constants.CodeEnumValue;
 
 /**
 *
@@ -12,16 +14,16 @@ package com.varsql.web.exception;
 public class VarsqlTagException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private int errorCode;
+
+	private CodeEnumValue errorCode;
 	private String errorMessage;
 	private String messageCode;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public VarsqlTagException() {
 		super();
@@ -38,28 +40,28 @@ public class VarsqlTagException extends RuntimeException {
 	public VarsqlTagException(String s , Exception exeception) {
 		super(s,exeception);
 	}
-	
-	
-	public VarsqlTagException(int errorCode,Exception exeception) {
+
+
+	public VarsqlTagException(CodeEnumValue errorCode,Exception exeception) {
 		this(errorCode,null, exeception);
 	}
-	
-	public VarsqlTagException(int errorCode, String messageCode ,Exception exeception) {
+
+	public VarsqlTagException(CodeEnumValue errorCode, String messageCode ,Exception exeception) {
 		this(errorCode, messageCode , null, exeception);
 	}
-	public VarsqlTagException(int errorCode,String messageCode,	String errorMessage, Exception exeception) {
+	public VarsqlTagException(CodeEnumValue errorCode,String messageCode,	String errorMessage, Exception exeception) {
 		super(errorMessage, exeception);
 		this.errorCode=errorCode ;
 		this.messageCode=messageCode;
 		this.errorMessage = errorMessage;
 	}
 
-	public int getErrorCode() {
+	public CodeEnumValue getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(int errorCode) {
-		this.errorCode = errorCode;
+	public void setErrorCode(CodeEnumValue errorCode) {
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.COMM_RUNTIME_ERROR;
 	}
 
 	public String getMessageCode() {

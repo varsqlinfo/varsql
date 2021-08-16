@@ -1,7 +1,7 @@
 package com.varsql.core.db.meta.column;
 
 /**
- * 
+ *
  * @FileName : Column.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 13.
@@ -15,6 +15,7 @@ public interface MetaColumnConstants {
 	String TABLE_SCHEM="TABLE_SCHEM";
 	String TABLE_NAME="TABLE_NAME";
 	String COLUMN_NAME="COLUMN_NAME";
+	String TYPE_AND_LENGTH="TYPE_AND_LENGTH";
 	String DATA_TYPE="DATA_TYPE";
 	String TYPE_NAME="TYPE_NAME";
 	String TYPE_NAME_SIZE="TYPE_NAME_SIZE";
@@ -36,9 +37,9 @@ public interface MetaColumnConstants {
 	String SOURCE_DATA_TYPE="SOURCE_DATA_TYPE";
 	String IS_AUTOINCREMENT="IS_AUTOINCREMENT";
 	String COMMENT="COMMENT";
-	String CONSTRAINTS="CONSTRAINTS";	
-	
-	
+	String CONSTRAINTS="CONSTRAINTS";
+
+
 	//procedure
 	String PROCEDURE_CAT="PROCEDURE_CAT";
 	String PROCEDURE_SCHEM="PROCEDURE_SCHEM";
@@ -51,25 +52,25 @@ public interface MetaColumnConstants {
 	String PROCEDURE_COL_NULLABLE="NULLABLE";
 	String PROCEDURE_COL_LENGTH="LENGTH";
 	String PROCEDURE_COL_TYPE="COLUMN_TYPE";
-	
+
 	//function
 	String FUNCTION_NAME="FUNCTION_NAME";
 	String FUNCTION_TYPE="FUNCTION_TYPE";
-	
-	
-	// index 
+
+
+	// index
 	String INDEX_TYPE="TYPE";
 	String ASC_OR_DESC="ASC_OR_DESC";
 	String INDEX_NAME="INDEX_NAME";
-	
+
 	String BUFFER_POOL="BUFFER_POOL";
-	
+
 	String TABLE_SPACE="TABLE_SPACE";
-	
+
 	String STATUS="STATUS";
-	
+
 	String CREATE_SOURCE="CREATE_SOURCE";
-	
-	
-	
+
+
+
 }

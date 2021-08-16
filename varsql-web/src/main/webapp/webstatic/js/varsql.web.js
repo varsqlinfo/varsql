@@ -48,6 +48,7 @@ if (typeof Object.assign != 'function') {
 
 var _$base = {
 	version:'0.1'
+	,logLevel :1
 	,author:'ytkim'
 	,contextPath: (typeof global_page_context_path === 'undefined' ? '/vsql' : global_page_context_path)
 	,uri:{
@@ -95,19 +96,6 @@ _$base.staticResource  ={
 		,'css' : [
 			'/webstatic/js/plugins/file/dropzone.css',
 		]
-	}
-};
-
-var _defaultOption = {
-	logLevel :1
-	,httpMethod :{
-		get:'get'
-		,post:'post'
-	}
-	,openType:{
-		'iframe':'iframe'
-		,'popup':'popup'
-		,'location':'location'
 	}
 };
 
@@ -188,7 +176,7 @@ _$base.isEmpty = isEmpty;
  * blank  check undefined  ||  null || ''
  */
 function isBlank(obj){
-	return  isEmpty( obj ) || (isString(obj)  && _$base.str.trim(obj) == '')  ;
+	return isEmpty( obj ) || (isString(obj) && _$base.str.trim(obj) == '')  ;
 };
 _$base.isBlank = isBlank;
 
@@ -234,6 +222,29 @@ _$base.getLength = function (val){
 		return val;
 	}
 }
+
+
+/**
+ * @method VARSQL.localStorage
+ * @param opt {string,object} object :{key, value, remove, clear}
+ * @description 글자 형식 처리.
+ */
+_$base.localStorage = function(opt){
+
+	if(isString(opt)){
+		return localStorage.getItem(opt);
+	}else{
+		var key = opt.key;
+		if(opt.clear===true){
+			return localStorage.clear();
+		}else if(opt.remove===true){
+			return localStorage.removeItem(key)
+		}else{
+			return localStorage.setItem(key, opt.value||'');
+		}
+	}
+}
+
 
 /**
  * message
@@ -290,22 +301,22 @@ _$base.messageFormat =function (fmt,msgParam){
 //웹 로그 쌓기
 _$base.log={
 	debug : function (msg){
-		if( _defaultOption.logLevel > 1 ) return ;
+		if( _$base.logLevel > 1 ) return ;
 		Array.prototype.unshift.call(arguments,"vsql debug : ");
 		this._consoleApply('debug',arguments);
 	}
 	,info : function (msg){
-		if( _defaultOption.logLevel > 2 ) return ;
+		if( _$base.logLevel > 2 ) return ;
 		Array.prototype.unshift.call(arguments, "vsql info : ");
 		this._consoleApply('info',arguments);
 	}
 	,warn : function (msg){
-		if( _defaultOption.logLevel > 3 ) return ;
+		if( _$base.logLevel > 3 ) return ;
 		Array.prototype.unshift.call(arguments, "vsql warn : ");
 		this._consoleApply('warn',arguments);
 	}
 	,error : function (msg){
-		if( _defaultOption.logLevel > 4 ) return ;
+		if( _$base.logLevel > 4 ) return ;
 		Array.prototype.unshift.call(arguments, "vsql error : ");
 		this._consoleApply('error',arguments);
 	}
@@ -1017,6 +1028,11 @@ _$base.endsWith = function(str ,searchString, position) {
     return lastIndex !== -1 && lastIndex === position;
 };
 
+// 글자 시작 부분 체크.
+_$base.startsWith = function(str ,search, pos) {
+	return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+};
+
 //array으로 변환
 function paramToArray(param){
 	var tmpArr = new Array();
@@ -1306,6 +1322,25 @@ _$base.util = {
 	    returnStr = returnStr.replace(/_/g, "");
 
 	    return returnStr;
+	}
+	,appendUrlParam : function (url, params){
+		if(!isObject(params)){
+			return url;
+		}
+		var paramArr=paramToArray(params);
+
+		if(paramArr.length > 0)	{
+			return openUrl+(url.indexOf('?')>-1 ? '&' : '?')+paramArr.join('&');
+		}
+		return url;
+	}
+	// post method check
+	,isMethodPost : function (method){
+		return (method+'').toLowerCase() =='post';
+	}
+	// get method check
+	,isMethodGet : function (method){
+		return (method+'').toLowerCase() =='get';
 	}
 
 	// camel 변환

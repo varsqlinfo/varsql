@@ -16,10 +16,7 @@ if (typeof window != "undefined") {
 (function(VARSQL, $) {
 'use strict';
 
-var _$base = {
-	_version:'0.1'
-	,author:'ytkim'
-};
+var _$base = {};
 
 var defaultPopupPosition = {
 	align : 'top'
@@ -36,8 +33,26 @@ var defaultPopupPosition = {
 	}
 }
 
-if(parent && parent.VARSQL && parent.VARSQL.ui){
-	$('html').addClass(parent.VARSQL.ui.getTheme());
+//theme class
+
+/**
+ * theme get set
+ */
+_$base.theme = function (uid, theme){
+	if(VARSQL.isUndefined(theme)){
+		return VARSQL.localStorage(uid +'theme');
+	}else{
+		VARSQL.localStorage({key : uid +'theme', value : theme});
+		_$base.refreshTheme();
+	}
+}
+
+_$base.refreshTheme = function (){
+	var theme = _$base.theme($varsqlConfig.conuid);
+	$('html').attr({
+		'varsql-theme':theme
+		,'pub-theme' : theme
+	});
 }
 
 /**
@@ -151,6 +166,89 @@ _$base.toast = {
 	}
 }
 
+_$base.frame = {
+	open : function (selector, url, opts){
+		var iframeEle =$(selector);
+
+		if(selector && iframeEle.length <1) throw TypeError('iframe selector empty : '+ selector);
+
+		if(url==''){
+			try{
+				iframeEle.attr('src','').on('load.varsql.evt', function() {
+					var tmpFrameObj = iframeEle.get(0).contentWindow;
+					try{tmpFrameObj.document.open();}catch(e){console.log(e)}
+					tmpFrameObj.document.write('<div><h2>Check iframe url : ['+url+']</h2></div>');
+					try{tmpFrameObj.document.close();}catch(e){console.log(e)}
+
+					iframeEle.off('load.varsql.evt');
+				});
+			}catch(e){console.log(e)}
+
+			return false;
+		}
+
+		opts = opts || {};
+
+		if(!VARSQL.isUndefined(opts.style)){
+			var styleArr = opts.style.split(';');
+
+			var styles = {};
+			for(var i = 0 ; i <styleArr.length; i ++){
+				var cssArr = styleArr[i].split(':');
+				if(cssArr.length > 1){
+					styles[cssArr[0]]=cssArr[1];
+				}
+			}
+
+			iframeEle.css(styles);
+		}
+
+		var tmpParam = opts.param ? opts.param : {};
+
+		if(VARSQL.util.isMethodPost(opts.method)){
+			iframeEle.attr('_view_url', url);
+
+			var frameName = iframeEle.attr('name');
+
+			if(VARSQL.isBlank(frameName)){
+				frameName = VARSQL.generateUUID();
+				iframeEle.attr('name', frameName);
+			}
+
+			var postForm = $('<form method="post"></form>');
+			postForm.attr("target", frameName);
+			postForm.attr("action", url);
+
+			for(var key in tmpParam){
+				postForm.append('<input type="hidden" name="'+key+'" >');
+				postForm.find('[name="'+key+'"]').val(((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal)));
+			}
+
+			if($("#iframehiddenFormArea").length < 1){
+				$("body").append('<div id="iframehiddenFormArea" style="display:none;"></div>');
+			}
+
+			$("#iframehiddenFormArea").empty.html(postForm);
+			postForm.submit();
+		}else{
+			url = VARSQL.util.appendUrlParam(url, tmpParam);
+
+			if(iframeEle.attr('data-current-url') == url){
+				try{
+					iframeEle.get(0).contentWindow.VARSQLUI.refreshTheme();
+				}catch(e){
+					console.log(e);
+				}
+			}else{
+				iframeEle.attr({
+					'data-current-url': url
+					,'src': url
+				});
+			}
+		}
+		return iframeEle;
+	}
+}
 _$base.popup = {
 	open : function (url, opt){
 		opt = opt ||{};
@@ -170,7 +268,7 @@ _$base.popup = {
 		if(tmpPopOption != ''){
 
 			var popupOptArr = tmpPopOption.split(',');
-			var tmpItem ,_t=0 , _l=0 ,_w=1050, _h=0, addFlag ,tmpOpt='',addScrollbarOpt = true, addStatusOpt=false, addResizeableOpt=true;
+			var tmpItem, _t=-1, _l=-1, _w=1050, _h=0, addFlag, tmpOpt='', addScrollbarOpt=true, addStatusOpt=false, addResizeableOpt=true;
 
 			for(var i = 0 ;i < popupOptArr.length; i++){
 				tmpItem = popupOptArr[i];
@@ -217,50 +315,40 @@ _$base.popup = {
 			_h =addStatusOpt?_h-23:_h;
 			var _viewPosition = {};
 
+			_viewPosition = popupPosition(_w, _h, tmpPosition.top, tmpPosition.left, tmpPosition.ieDualCenter);
+
 			if(tmpPosition.align=='top'){
-
-				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
-
-				var _top = 0 , _left = 0;
-
 				_viewPosition.top = typeof screen['availTop']!=='undefined' ?screen['availTop'] : (window.screenTop || screen.top);
-				if(_t!=0){
-					_viewPosition.top = (_viewPosition.top > 0? _viewPosition.top- _t : _viewPosition.top+_t);
-				}else{
-					_viewPosition.top = (_viewPosition.top > 0? _viewPosition.top- tmpTopMargin : _viewPosition.top+tmpTopMargin);
-				}
-
+				_viewPosition.top = (_viewPosition.top > 0? _viewPosition.top- tmpTopMargin : _viewPosition.top+tmpTopMargin);
 			}else if(tmpPosition.align=='left'){
-				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
 				_viewPosition.left =0;
 			}else if(tmpPosition.align=='right'){
-				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
 				_viewPosition.left = window.screen.availWidth-_w;
 			}else if(tmpPosition.align=='bottom'){
-				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
 				_viewPosition.top = window.screen.availHeight-_h;
-			}else{
-				_viewPosition = popupPosition(_w,_h, tmpPosition.top, tmpPosition.left, tmpName , tmpPosition.ieDualCenter);
 			}
 
-			_viewPosition.top = isNaN(tmpTopMargin)?_viewPosition.top:_viewPosition.top+tmpTopMargin;
-			_viewPosition.left = isNaN(tmpLeftMargin)?_viewPosition.left:_viewPosition.left+tmpLeftMargin
+			_viewPosition.top = _t != -1 ? _t : (isNaN(tmpTopMargin)?_viewPosition.top:_viewPosition.top+tmpTopMargin);
+			_viewPosition.left = _l != -1 ? _l : (isNaN(tmpLeftMargin)?_viewPosition.left:_viewPosition.left+tmpLeftMargin);
 
 			tmpPopOption = tmpOpt+', width=' + _w + 'px, height=' + _h + 'px, top=' + _viewPosition.top + 'px, left=' + _viewPosition.left+'px';
 		}
 		tmpParam=VARSQL.util.getParameter(url , tmpParam);
 
-		var winObj;
+		var winPopupObj;
 		if(tmpIsNewYn=='N'){
-			winObj = window.open('', tmpName, tmpPopOption);
+			winPopupObj = window.open('', tmpName, tmpPopOption);
 
-			if(winObj && winObj.VARSQL){
-				winObj.focus();
-				return winObj;
+			if(winPopupObj && winPopupObj.VARSQL){
+				winPopupObj.focus();
+
+				try{winPopupObj.VARSQLUI.refreshTheme();}catch(e){} // theme refresh
+
+				return winPopupObj;
 			}
 
 			if(openUrl ==''){
-				return winObj;
+				return winPopupObj;
 			}
 		}
 
@@ -287,32 +375,34 @@ _$base.popup = {
 			inputStr.push('</form>');
 			inputStr.push('<script async type="text/javascript">try{document.charset="utf-8";}catch(e){}document.'+targetId+'.submit();</'+'script>');
 
-			var tmpPopupObj=window.open('about:blank', tmpName, tmpPopOption);
+			winPopupObj=window.open('about:blank', tmpName, tmpPopOption);
 
 			try{
-				try{tmpPopupObj.document.open();}catch(e){console.log(e)}
-				tmpPopupObj.document.write(inputStr.join(''));
-				tmpPopupObj.focus();
-				try{tmpPopupObj.document.close();}catch(e){console.log(e)}
+				try{winPopupObj.document.open();}catch(e){console.log(e)}
+				winPopupObj.document.write(inputStr.join(''));
+				winPopupObj.focus();
+				try{winPopupObj.document.close();}catch(e){console.log(e)}
 			}catch(e){
-				tmpPopupObj=window.open('about:blank', tmpName+targetId, tmpPopOption);
+				winPopupObj=window.open('about:blank', tmpName+targetId, tmpPopOption);
 				try{
-					try{tmpPopupObj.document.open();}catch(e){console.log(e)}
-					tmpPopupObj.document.write(inputStr.join(''));
-					tmpPopupObj.focus();
+					try{winPopupObj.document.open();}catch(e){console.log(e)}
+					winPopupObj.document.write(inputStr.join(''));
+					winPopupObj.focus();
 
-					try{tmpPopupObj.document.close();}catch(e){console.log(e)}
+					try{winPopupObj.document.close();}catch(e){console.log(e)}
 				}catch(e1){
 					console.log(e1);
 				}
 			}
 
-			return tmpPopupObj;
+			try{winPopupObj.VARSQLUI.refreshTheme();}catch(e){} // theme refresh
+
+			return winPopupObj;
 		}
 	}
 }
 
-function popupPosition(_w,_h , tr , lr, tmpName ,ieDualCenter){
+function popupPosition(_w, _h, tr, lr, ieDualCenter){
 	_h=  parseInt(_h,10);
 	_w = parseInt(_w,10);
 	tr = parseInt(tr,10);
@@ -360,6 +450,10 @@ function popupPosition(_w,_h , tr , lr, tmpName ,ieDualCenter){
 		top : _top
 		,left :  _left
 	}
+}
+
+if(!VARSQL.isUndefined($varsqlConfig.conuid)){
+	_$base.refreshTheme();
 }
 
 window.VARSQLUI = _$base;

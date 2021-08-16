@@ -28,19 +28,19 @@ public class DBConnectionSpec extends DefaultSpec{
     public static Specification<DBConnectionEntity> getVnameOrVurl(String name) {
         return Specification.where(getDelYn()).and(getVnameOrUrl(name));
     }
-    
+
     // db 상세보기
     public static Specification<DBConnectionEntity> detailInfo(String vconnid) {
     	return Specification.where(getDelYn()).and(vconnid(vconnid));
     }
-    
+
     private static Specification<DBConnectionEntity> getDelYn() {
     	return (root, query, criteriaBuilder) -> {
     		Predicate predicate = criteriaBuilder.notEqual(root.get(DBConnectionEntity.DEL_YN), true);
     		return predicate;
     	};
     }
-	
+
 	private static Specification<DBConnectionEntity> getUseYn() {
 		return (root, query, criteriaBuilder) -> {
 			Predicate predicate = criteriaBuilder.equal(root.get(DBConnectionEntity.USE_YN), EntityValueConstants.YN.Y.name());
@@ -49,10 +49,12 @@ public class DBConnectionSpec extends DefaultSpec{
 	}
 
     private static Specification<DBConnectionEntity> getVnameOrUrl(String keyword) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.or(
-	    		criteriaBuilder.like(root.get(DBConnectionEntity.VNAME),contains(keyword))
-	    		,criteriaBuilder.like(root.get(DBConnectionEntity.VURL),contains(keyword))
+        return (root, query, cb) -> {
+        	query.orderBy(cb.desc(root.get(DBConnectionEntity.REG_DT)));
+
+            return cb.or(
+            	cb.like(root.get(DBConnectionEntity.VNAME),contains(keyword))
+            	,cb.like(root.get(DBConnectionEntity.VURL),contains(keyword))
 	    	);
         };
     }
@@ -63,12 +65,12 @@ public class DBConnectionSpec extends DefaultSpec{
     		return predicate;
     	};
     }
-    
+
     // 권한 있는 db connection 정보 보기.
     public static Specification<DBConnectionEntity> mgmtDbList(String viewid, String keyword) {
     	return Specification.where(managetAuthDbList(viewid)).and(getDelYn()).and(getUseYn()).and(getVnameOrUrl(keyword));
     }
-    
+
     // manager 권한을 가진 db
     private static Specification<DBConnectionEntity> managetAuthDbList(String viewid) {
     	return (root, query, cb) -> {
@@ -80,6 +82,6 @@ public class DBConnectionSpec extends DefaultSpec{
     		}
     	};
     }
-    
-    
+
+
 }

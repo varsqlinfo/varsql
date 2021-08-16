@@ -6,7 +6,7 @@
 <head>
 <title><spring:message code="page.title.varsql"/></title>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">

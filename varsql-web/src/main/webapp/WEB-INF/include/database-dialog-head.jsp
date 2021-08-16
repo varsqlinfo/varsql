@@ -1,19 +1,19 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/databaseInitVariable.jspf"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 <!-- Custom Fonts -->
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
+
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css?version=${prettify_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.tree.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.db.common.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 
@@ -32,11 +32,11 @@
 <script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?version=${pubjs_ver}"></script>
 
-<script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
+
+
 

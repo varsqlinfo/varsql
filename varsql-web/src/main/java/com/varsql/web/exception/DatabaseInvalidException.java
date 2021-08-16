@@ -1,5 +1,8 @@
 package com.varsql.web.exception;
 
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.vartech.common.constants.CodeEnumValue;
+
 /**
 *
 * @FileName  : DatabaseInvalidException.java
@@ -11,16 +14,16 @@ package com.varsql.web.exception;
 public class DatabaseInvalidException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private int errorCode;
+
+	private CodeEnumValue errorCode;
 	private String errorMessage;
 	private String messageCode;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public DatabaseInvalidException() {
 		super();
@@ -37,28 +40,28 @@ public class DatabaseInvalidException extends RuntimeException {
 	public DatabaseInvalidException(String s , Exception exeception) {
 		super(s,exeception);
 	}
-	
-	
-	public DatabaseInvalidException(int errorCode,Exception exeception) {
+
+
+	public DatabaseInvalidException(CodeEnumValue errorCode,Exception exeception) {
 		this(errorCode,null, exeception);
 	}
-	
-	public DatabaseInvalidException(int errorCode, String messageCode ,Exception exeception) {
+
+	public DatabaseInvalidException(CodeEnumValue errorCode, String messageCode ,Exception exeception) {
 		this(errorCode, messageCode , null, exeception);
 	}
-	public DatabaseInvalidException(int errorCode,String messageCode,	String errorMessage, Exception exeception) {
+	public DatabaseInvalidException(CodeEnumValue errorCode,String messageCode,	String errorMessage, Exception exeception) {
 		super(errorMessage, exeception);
 		this.errorCode=errorCode ;
 		this.messageCode=messageCode;
 		this.errorMessage = errorMessage;
 	}
 
-	public int getErrorCode() {
+	public CodeEnumValue getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(int errorCode) {
-		this.errorCode = errorCode;
+	public void setErrorCode(CodeEnumValue errorCode) {
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.INVALID_DATABASE;
 	}
 
 	public String getMessageCode() {

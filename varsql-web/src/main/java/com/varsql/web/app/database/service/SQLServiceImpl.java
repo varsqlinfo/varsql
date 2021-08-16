@@ -252,7 +252,7 @@ public class SQLServiceImpl{
 				tmpMsg = (tmpMsg  == null || "".equals(tmpMsg) ?"" :StringUtils.escape(parseInfo.getMessage(), EscapeType.html)+"<br/>");
 
 				if(e instanceof ConnectionFactoryException) {
-					if(((ConnectionFactoryException)e).getErrorCode() == VarsqlAppCode.EC_DB_POOL_CLOSE.getCode()) {
+					if(((ConnectionFactoryException)e).getErrorCode() == VarsqlAppCode.EC_DB_POOL_CLOSE) {
 						result.setResultCode(VarsqlAppCode.EC_DB_POOL_CLOSE);
 					}else {
 						result.setResultCode(VarsqlAppCode.EC_DB_POOL_ERROR);
@@ -269,7 +269,7 @@ public class SQLServiceImpl{
 			}
 
 			result.addCustoms("errorLine", sqldx);
-			result.setItemOne(tmpSqlSource);
+			result.setItemOne(tmpSqlSource==null?sqlList.get(0):tmpSqlSource);
 
 			if(VarsqlUtils.isRuntimelocal()) {
 				logger.error("sqlData : {} ", e.getMessage(), e);
@@ -377,7 +377,7 @@ public class SQLServiceImpl{
 
 			if(hasResults) {
 				rs = stmt.getResultSet();
-				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow , gridKeyAlias);
+				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, gridKeyAlias);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage(String.format("select count : %s ", ssrv.getResultCnt()));
 			}else{

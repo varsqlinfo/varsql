@@ -104,7 +104,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
 
 		ResponseResult result = new ResponseResult();
-		result.setResultCode(VarsqlAppCode.valueOf(ex.getErrorCode()));
+		result.setResultCode(ex.getErrorCode());
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler{
 		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 
 		ResponseResult result = new ResponseResult();
-		result.setResultCode(VarsqlAppCode.valueOf(ex.getErrorCode()));
+		result.setResultCode(ex.getErrorCode());
 		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 

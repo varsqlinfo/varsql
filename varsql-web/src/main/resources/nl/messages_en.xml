@@ -142,7 +142,8 @@
 <entry key="admin.form.db.maxactive">Max Active</entry>
 <entry key="admin.form.db.minidle">Min Idle</entry>
 <entry key="admin.form.db.timeout">Timeout</entry>
-<entry key="admin.form.db.exportcount">내보내기 카운트</entry>
+<entry key="admin.form.db.exportcount">Export Count</entry>
+<entry key="admin.form.db.usecolumnlabel">ResultSet ColumnLabel use</entry>
 
 <entry key="admin.userlist.search.head">사용자 검색</entry>
 <entry key="admin.managerlist.head">관리자 목록</entry>

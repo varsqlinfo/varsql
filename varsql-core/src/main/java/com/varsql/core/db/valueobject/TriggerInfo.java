@@ -3,10 +3,10 @@ package com.varsql.core.db.valueobject;
 import org.apache.ibatis.type.Alias;
 
 /**
- * 
+ *
  * @FileName  : TriggerInfo.java
  * @프로그램 설명 : trigger 정보를 담기위한 bean.
- * @Date      : 2017. 10. 31. 
+ * @Date      : 2017. 10. 31.
  * @작성자      : ytkim
  * @변경이력 :
  */
@@ -17,8 +17,8 @@ public class TriggerInfo extends BaseObjectInfo{
 	// 이벤트 타입
 	private String eventType;
 	// 타이밍
-	private String timing; 
-	// 상태
+	private String timing;
+	// 셍성일
 	private String created;
 	// 상태
 	private String status;
@@ -62,6 +62,6 @@ public class TriggerInfo extends BaseObjectInfo{
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 }
 

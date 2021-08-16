@@ -67,7 +67,7 @@
 <varsql:editorResource editorHeight="100%"/>
 
 <script>
-VARSQLCont.init('other' , {});
+VARSQLCont.init('${dbtype}' , {});
 
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
@@ -85,14 +85,20 @@ VarsqlAPP.vueServiceBean( {
 		,glossaryGridObj : {}
 		,tableGridObj : {}
 		,tableDDLEditor:{}
+		,ddlTemplate :''
+		,dbType : '${dbtype}'
 	}
 	,methods:{
 		init : function(){
 			var _this =this;
-			
+
 			_this.initGlossary();
 			_this.initExcelTableInfo();
-			
+
+			VARSQLApi.sqlTemplate.load({dbType : this.dbType, conuid :'${conuid}', 'templateType' : 'TABLE'}, function(resData){
+				_this.ddlTemplate = resData.item;
+			});
+
 			this.tableDDLEditor = CodeMirror.fromTextArea(document.getElementById('tableDDLInfo'), {
 				mode: 'text/x-sql'
 			})
@@ -102,27 +108,17 @@ VarsqlAPP.vueServiceBean( {
 
 			function addColumnItem (sItem, colName){
 				var typeAndLength ='';
-				var wordType = sItem.wordType;
-				if(wordType){
-					var typeInfo = VARSQLCont.dataType.getDataTypeInfo(wordType);
-					var typeAndLength = wordType;
-		        	if(typeInfo.isDate){
-
-		        	}else{
-						if(sItem.wordLength){
-							typeAndLength = typeAndLength + '('+sItem.wordLength+')';
-						}
-		        	}
-				}
+				var wordType = sItem.wordType ||'VARCHAR';
 
 				colName = colName.split(' ').join('_');
 
 	        	_this.tableGridObj.addRow({
-	        		name : colName
-	        		,typeAndLength : typeAndLength
-	        		,nullable : ''
-	        		,defaultVal : ''
-	        		,comment : sItem['word']
+	        		COLUMN_NAME : colName
+	        		,DATA_TYPE : wordType
+	        		,COLUMN_SIZE : (sItem.wordLength ||'')
+	        		,NULLABLE : ''
+	        		,COLUMN_DEF : ''
+	        		,COMMENT : sItem.word
 	        	});
 				return ;
 			}
@@ -229,27 +225,32 @@ VarsqlAPP.vueServiceBean( {
 					}
 		        }
 		        ,editable: true
-		        , setting: {
-		            enabled: true,
-		            enableSearch: true
-		        }
 		        , tColItem: [
-		        	{label: '컬럼명', key: 'name', width: 80}
-		        	, {label: '데이터타입', key: 'typeAndLength'}
-		        	, {label: 'Nullable', key: 'nullable'}
-		        	, {label: '기본값', key: 'defaultVal', width: 45}
-		        	, {label: '설명', key: 'comment', width: 45}
+		        	{label: '컬럼명', key: 'COLUMN_NAME', width: 80}
+		        	, {label: '데이터타입', key: 'DATA_TYPE', width: 80, editor :{
+		        		type : 'select'
+		        		,itemKey : {code : 'name', label : 'name'}
+			        	,items : VARSQLCont.allDataType()
+					}}
+		        	, {label: '길이', key: 'COLUMN_SIZE'}
+		        	, {label: 'Nullable', key: 'NULLABLE',editor :{
+		        		type : 'select'
+		        		,items :[{CODE : 'Y' , LABEL :'Y'}, {CODE : 'N' , LABEL :'N'}]
+		        	}}
+		        	, {label: '기본값', key: 'COLUMN_DEF', width: 45}
+		        	, {label: '설명', key: 'COMMENT', width: 45}
 		        ]
 		        , tbodyItem: tbodyItems
 		    });
 		}
 		,addRow : function(){
 			this.tableGridObj.addRow({
-        		name : ''
-        		,typeAndLength : ''
-        		,nullable : ''
-        		,defaultVal : ''
-        		,comment : ''
+        		COLUMN_NAME : ''
+        		,DATA_TYPE : 'VARCHAR'
+        		,COLUMN_SIZE : ''
+        		,NULLABLE : ''
+        		,COLUMN_DEF : ''
+        		,COMMENT : ''
         	});
 		}
 		,removeRow : function(){
@@ -258,43 +259,40 @@ VarsqlAPP.vueServiceBean( {
 		,convertDDL : function(){
 			var tableInfoObj = this.tableGridObj;
 	        var items = tableInfoObj.options.tbodyItem;
-	        var ddlStr = [];
-	        var keyCols = [];
-	        var firstFlag = true;
 	        var tableName = $.trim(this.tableName);
-	        ddlStr.push('CREATE TABLE ' + tableName + ' (\n');
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var itemName = item.name || '';
+
+	        var columnList = [];
+	        var commentList = [];
+	        var keyList = [];
+	        for(var i =0; i<items.length; i++){
+	        	var item = items[i];
+
+	        	var itemName = item.COLUMN_NAME || '';
 
 	            if (itemName == '') continue;
 
+	            columnList.push(item);
+
 	            if (item._pubcheckbox === true) { // primary key check
-	                keyCols.push(itemName)
+	            	keyList.push({"COLUMN_NAME":itemName, "CONSTRAINT_NAME": "pk_"+tableName, TYPE:"PK"})
 	            }
 
-	            //console.log(item);
-	            var typeAndLength = item.typeAndLength || '';
-	            var defVal = item.defaultVal || '';
-	            ddlStr.push('\t' + (firstFlag ? "" : ", ") + itemName);
-	            ddlStr.push(' ' + typeAndLength);
-
-	            if (defVal && typeAndLength.toUpperCase().indexOf('CHAR') > -1) {
-	                defVal = "'" + defVal + "'";
-	            }
-
-	            ddlStr.push(defVal ? (' DEFAULT ' + defVal) : '');
-	            ddlStr.push(item.nullable == 'N' ? ' NOT NULL ' : '');
-	            ddlStr.push('\n');
-
-	            firstFlag = false;
+	        	if(!VARSQL.isBlank(item.COMMENT)){
+	        		commentList.push({TYPE: 'COL', NAME: item.COLUMN_NAME, COMMENT: item.COMMENT});
+				}
 	        }
-	        if (keyCols.length > 0) {
-	            ddlStr.push('\t, CONSTRAINT ' + tableName + '_pk' + ' PRIMARY KEY (' + keyCols.join(',') + ')');
-	        }
-	        ddlStr.push('\n);');
-	        
-	        this.tableDDLEditor.setValue(ddlStr.join(''))
+
+			var param = {
+				"dbType" : this.dbType
+				,"objectName" : tableName
+				,"keyList":keyList
+				,"columnList": columnList
+				,"commentsList": commentList
+				,"ddlOpt":{"addDropClause":true,"addLastSemicolon":true}
+			};
+
+			var obj = Handlebars.compile(this.ddlTemplate);
+	        this.tableDDLEditor.setValue(obj(param))
 		}
 	}
 });

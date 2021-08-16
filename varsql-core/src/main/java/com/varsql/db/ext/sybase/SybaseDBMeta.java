@@ -36,7 +36,7 @@ public class SybaseDBMeta extends DBMetaImpl{
 
 	public SybaseDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.PROCEDURE, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
@@ -55,7 +55,6 @@ public class SybaseDBMeta extends DBMetaImpl{
 
 	@Override
 	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception {
-		logger.debug("MssqlDBMeta getTableMetadata {}  tableArr :: {}",dataParamInfo, tableNmArr);
 		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNmArr);
 	}
 
@@ -96,9 +95,6 @@ public class SybaseDBMeta extends DBMetaImpl{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-
-		logger.debug("SybaseDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
-
 		TableInfoHandler tableInfoHandler;
 
 		if("viewMetadata".equals(queryId)){
@@ -122,7 +118,6 @@ public class SybaseDBMeta extends DBMetaImpl{
 
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
-
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 

@@ -118,6 +118,10 @@ public class DBConnectionRequestDTO{
 	@Size(max=1000)
 	private String vquery;
 
+	@NotEmpty
+	@Size(max=1)
+	private String useColumnLabel;
+
 	public DBConnectionEntity toEntity() {
 		return DBConnectionEntity.builder()
 				.vconnid(vconnid)
@@ -142,6 +146,7 @@ public class DBConnectionRequestDTO{
 				.timeout(ConvertUtils.longValueOf(timeout))
 				.exportcount(ConvertUtils.longValueOf(exportcount))
 				.maxSelectCount(ConvertUtils.longValueOf(maxSelectCount))
+				.useColumnLabel(useColumnLabel)
 				.vquery(vquery).build();
 	}
 }

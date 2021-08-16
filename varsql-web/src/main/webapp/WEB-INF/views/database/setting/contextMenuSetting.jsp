@@ -115,7 +115,7 @@
 <script>
 (function (){
 	var allContextInfo =  ${settingInfo};
-	
+
 	var defaultTableColumnInfo = {
         'table' : {"name":"test_table"  ,"remarks":"test table"}
         ,'columns' : [
@@ -201,25 +201,25 @@
 	    	}
 	    	// 정보 저장 및 적용.
 	    	,contextSave :function (){
-	    		
-	    		var contextItems = this.contextItems; 
-	    		
+
+	    		var contextItems = this.contextItems;
+
 	    		for(var i =0; i < contextItems.length;i++){
 	    			var item =contextItems[i];
-	    			var templateInfos = item.templateInfos; 
+	    			var templateInfos = item.templateInfos;
 	    			for(var j =0; j < templateInfos.length;j++){
 	    				var templateInfo = templateInfos[j];
-	    				
+
 	    				var result =VARSQLTemplate.render.generateSource(templateInfo, defaultTableColumnInfo);
-	    				
+
 	    				if(result.isError){
 	    	    			VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0026'));
 	    	    			this.viewItem(templateInfo, 'child');
-	    	    			return ; 
+	    	    			return ;
 	    	    		}
 	    			}
 	    		}
-	    		
+
 	    		if(!confirm(VARSQL.messageFormat('varsql.0024'))){
 	    			return ;
 	    		}
@@ -312,14 +312,14 @@
 
 				items.splice(index,1);
 	    	}
-	    	//  generate source 
+	    	//  generate source
 	        , generate : function(){
-	        	
+
 	        	var result =VARSQLTemplate.render.generateSource(this.templateInfo, defaultTableColumnInfo, false);
-				
+
 				if(result.isError){
 	    			VARSQLUI.toast.open(result.errorInfo.msg);
-	    			return ; 
+	    			return ;
 	    		}else{
 	    			this.resultCode =result.value;
 	    		}
@@ -327,7 +327,7 @@
 	    	// property template code render
 	        , compilePropCode : function (item){
 	            var propItem = item || this.codeDetailInfo;
-	            var _this =this; 
+	            var _this =this;
 
             	if(propItem.code){
                     propItem.compileValue = VARSQLTemplate.render.text(propItem.code, defaultTableColumnInfo, function (e){
@@ -347,12 +347,12 @@
 	        }
 	        , setProperty: function(){
 	            var source = this.templateInfo.main;
-	            var _this =this; 
+	            var _this =this;
             	var	parser = VARSQLTemplate.parse(source ,function (e){
 					_this.errorHandler('main',e);
 				});
-            	if(parser ===false) return false; 
-            	
+            	if(parser ===false) return false;
+
             	this.generate();
 
 	            var len = parser.body.length;

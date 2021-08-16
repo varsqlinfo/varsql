@@ -1,6 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/databaseInitVariable.jspf"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
 
 <%-- Custom Fonts --%>

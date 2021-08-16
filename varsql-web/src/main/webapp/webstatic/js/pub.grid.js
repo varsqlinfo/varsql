@@ -1,7 +1,7 @@
 /**
  * pubGrid v1.0.1
  * ========================================================================
- * Copyright 2016-2020 ytkim
+ * Copyright 2016-2021 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -16,6 +16,7 @@ ap  : add parameter
 */
 var _initialized = false
 ,_$doc = $(document)
+,pubGridLayoutElement = false
 ,_datastore = {}
 ,_defaults = {
 	blankSpaceWidth : 1		// 오른쪽 끝 공백 값
@@ -70,6 +71,7 @@ var _initialized = false
 		,contextMenu : false // header contextmenu event
 		,helpBtn:{			//	header help btn 설정
 			enabled : false	// header help btn 활성 여부.
+			,title : ''
 			,click :  function (clickInfo){}	// click event
 			,dblclick : function (clickInfo){} // double click event
 		}
@@ -193,6 +195,12 @@ var _initialized = false
 	,tbodyItem : []  // body item
 	,tbodyGroup : [] // body group
 	,tfootItem : []  // foot item
+	,navigation :{
+		usePaging : false
+		,status : false
+		,height : 35
+		,callback : function (no){}
+	}
 	,page : false	// paging info
 	,message : {
 		empty : 'no data'
@@ -210,24 +218,7 @@ var _initialized = false
 		'sortup' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"></polygon></g></svg>'
 		,'sortdown' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"></polygon></g></svg>'
 	}
-}
-,agt = navigator.userAgent.toLowerCase()
-,_broswer = ((function (){
-	if (agt.indexOf("msie") != -1) return 'msie';
-	if (agt.indexOf("chrome") != -1) return 'chrome';
-	if (agt.indexOf("firefox") != -1) return 'firefox';
-	if (agt.indexOf("safari") != -1) return 'safari';
-	if (agt.indexOf("opera") != -1) return 'opera';
-	if (agt.indexOf("mozilla/5.0") != -1) return 'mozilla';
-	if (agt.indexOf("staroffice") != -1) return 'starOffice';
-	if (agt.indexOf("webtv") != -1) return 'WebTV';
-	if (agt.indexOf("beonex") != -1) return 'beonex';
-	if (agt.indexOf("chimera") != -1) return 'chimera';
-	if (agt.indexOf("netpositive") != -1) return 'netPositive';
-	if (agt.indexOf("phoenix") != -1) return 'phoenix';
-	if (agt.indexOf("skipstone") != -1) return 'skipStone';
-	if (agt.indexOf("netscape") != -1) return 'netscape';
-})());
+};
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -300,6 +291,12 @@ var formatter= {
 	}
 }
 
+function evtPos(e){
+	var oe = e.originalEvent.touches
+		,evt = oe && oe[0] ? oe[0] : e;
+
+	return {x : evt.pageX, y : evt.pageY};
+}
 
 function getHashCode (str){
 	var hash = 0;
@@ -336,6 +333,12 @@ function copyStringToClipboard (prefix , copyText) {
 
 function Plugin(element, options) {
 	this._initialize(element, options);
+
+	if(pubGridLayoutElement ===false){
+		$('body').append('<div id="pub-grid-layout-area"></div>');
+		pubGridLayoutElement = $('#pub-grid-layout-area');
+	}
+
 	return this;
 }
 
@@ -343,26 +346,26 @@ function $pubSelector(selector){
 	return document.querySelector(selector);
 }
 
-function objectMerge() {
-	var objMergeRecursive = function (dst, src) {
+function objMergeRecursive(dst, src) {
 
-		for (var p in src) {
-			if (!src.hasOwnProperty(p)) {continue;}
+	for (var p in src) {
+		if (!src.hasOwnProperty(p)) {continue;}
 
-			var srcItem = src[p] ;
-			if (srcItem=== undefined) {continue;}
+		var srcItem = src[p] ;
+		if (srcItem=== undefined) {continue;}
 
-			if ( typeof srcItem!== 'object' || srcItem=== null) {
-				dst[p] = srcItem;
-			} else if (typeof dst[p]!=='object' || dst[p] === null) {
-				dst[p] = objMergeRecursive(srcItem.constructor===Array ? [] : {}, srcItem);
-			} else {
-				objMergeRecursive(dst[p], srcItem);
-			}
+		if ( typeof srcItem!== 'object' || srcItem=== null) {
+			dst[p] = srcItem;
+		} else if (typeof dst[p]!=='object' || dst[p] === null) {
+			dst[p] = objMergeRecursive(srcItem.constructor===Array ? [] : {}, srcItem);
+		} else {
+			objMergeRecursive(dst[p], srcItem);
 		}
-		return dst;
 	}
+	return dst;
+}
 
+function objectMerge() {
 	var reval = arguments[0];
 	if (typeof reval !== 'object' || reval === null) {	return reval;}
 	for (var i = 1, il = arguments.length; i < il; i++) {
@@ -418,7 +421,7 @@ Plugin.prototype ={
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
-		_this._setSelectionRangeInfo({},true);
+		_$util.setSelectionRangeInfo(_this, {}, true);
 
 		_this.setOptions(options, true);
 
@@ -437,7 +440,7 @@ Plugin.prototype ={
 	}
 	// 스크롤 데이터 초기화
 	,_initScrollData : function (){
-		this.config.scroll = {containerLeft :0, before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0,hTrackWidth:0};
+		this.config.scroll = {containerLeft :0, before:{},top :0 , left:0, startCol:0, endCol : 0, viewIdx : 0, vBarPosition :0 , hBarPosition :0 , maxViewCount:0, viewCount : 0, vTrackHeight:0, hTrackWidth:0, verticalScrollTimer: -1, horizontalScrollTimer: -1, mouseDown: false};
 	}
 	/**
 	 * @method _setGridContainerWidth
@@ -976,7 +979,7 @@ Plugin.prototype ={
 
 		if(beforeSelectionClearFlag ===true){
 			_$util.clearActiveColumn(this.element);
-			this._setSelectionRangeInfo({}, true);
+			_$util.setSelectionRangeInfo(this, {}, true);
 		}
 
 		if(idxs.length < 1){
@@ -987,7 +990,7 @@ Plugin.prototype ={
 			var rowIdx = idxs[i];
 			var rangeKey = 'row'+rowIdx;
 
-			this._setSelectionRangeInfo({
+			_$util.setSelectionRangeInfo(this, {
 				rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startCol : 0,  endCol :this.config.dataInfo.colLen-1}
 				,isSelect : true
 				,curr : 'add'
@@ -1013,7 +1016,7 @@ Plugin.prototype ={
 			var rowIdx = idxs[i];
 			var rangeKey = 'row'+rowIdx;
 
-			this._setSelectionRangeInfo({
+			_$util.setSelectionRangeInfo(this, {
 				rangeInfo : {_key : rangeKey, startIdx : rowIdx, endIdx : rowIdx, startCol : 0,  endCol :this.config.dataInfo.colLen-1}
 				,isSelect : false
 				,curr : 'remove'
@@ -1088,11 +1091,9 @@ Plugin.prototype ={
 	 */
 	,setData :function (pdata, mode, addOpt){
 		var _this = this
-			,opt = _this.options
-			,tci = _this.config.tColItem;
+			,opt = _this.options;
 		var data = pdata;
-		var pageInfo = opt.page;
-
+		
 		mode = mode||'reDraw';
 
 		var modeInfo = mode.split('_');
@@ -1103,13 +1104,6 @@ Plugin.prototype ={
 
 		if(!$.isArray(pdata)){
 			data = pdata.items;
-			pageInfo = pdata.page;
-		}
-
-		var resizeFlag = false;
-		if((_this.options.tbodyItem.length == 0 && data.length > 0)
-			||_this.options.tbodyItem.length > 0 && data.length == 0){
-			resizeFlag = true;
 		}
 
 		if(data){
@@ -1177,7 +1171,7 @@ Plugin.prototype ={
 			_this._setHeaderInitInfo();
 
 			if(subMode !='paste' && subMode != 'update'){
-				_this._setSelectionRangeInfo({}, true);
+				_$util.setSelectionRangeInfo(_this, {}, true);
 			}
 
 			_this.calcDimension(gridMode);
@@ -1207,14 +1201,10 @@ Plugin.prototype ={
 		}else{
 			_this.drawGrid(mode,true);
 		}
-
-		_this.setPage(pageInfo);
-
-		if(_this.config.searchOn===true){
-			_this.gridElement.find('.pubGrid-setting').addClass('search-on');
-		}else{
-			_this.gridElement.find('.pubGrid-setting').removeClass('search-on');
-		}
+		
+		if(_this.options.navigation.usePaging === true) {
+			_this.setPage(mode=='init' ? opt.page : (pdata.page ||{}));
+		} 
 	}
 	/**
 	 * @method setScrollSpeed
@@ -1240,14 +1230,59 @@ Plugin.prototype ={
 	,setPage : function (pageInfo){
 		var _this =this;
 
-		if(pageInfo === false){
-			$('#'+_this.prefix+'pubGrid-footer-wrapper').hide();
-			return ;
+		if(_this.options.navigation.usePaging !== true) {
+			throw 'usePaging not enabled';
+		} 
+
+		var pagingInfo = _this.getPageInfo(pageInfo.totalCount , pageInfo.currPage, pageInfo.countPerPage, pageInfo.unitPage);
+
+		_this.config.pageNo = pageInfo.currPage;
+
+		var currP = pagingInfo.currPage;
+		if (currP == "0") currP = 1;
+		var preP_is = pagingInfo.prePage_is;
+		var nextP_is = pagingInfo.nextPage_is;
+		var currS = pagingInfo.currStartPage;
+		var currE = pagingInfo.currEndPage;
+		if (currE == "0") currE = 1;
+		var nextO = 1 * currP + 1;
+		var preO = currP - 1;
+		var strHTML = [];
+		strHTML.push('<ul>');
+		if (new Boolean(preP_is) == true) {
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
+		} else {
+			if (currP <= 1) {
+				strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
+			} else {
+				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
+			}
+		}
+		var no = 0;
+		for (no = currS * 1; no <= currE * 1; no++) {
+			if (no == currP) {
+				strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
+			} else {
+				strHTML.push(' <li class="page-num" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
+			}
 		}
 
-		if(typeof pageInfo ==='object'){
-			_this.pageNav(pageInfo);
+		if (new Boolean(nextP_is) == true) {
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
+		} else {
+			if (currP == currE) {
+				strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
+			} else {
+				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
+			}
 		}
+		strHTML.push('</ul>');
+
+		var pageNaviEle = $('#'+_this.prefix+'_page');
+		pageNaviEle.addClass('page-'+(pageInfo.position || 'center'));
+		pageNaviEle.empty().html(strHTML.join(''));
+
+		return this;
 	}
 	,initStyle : function (){
 
@@ -1370,16 +1405,17 @@ Plugin.prototype ={
 			+'			  <div class="pubGrid-hscroll-bar"></div>'
 			+' 			  <div class="pubGrid-hscroll-right pubGrid-hscroll-btn" data-pubgrid-btn="R"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 0,100 90,50" fill="#737171"/></g></svg></div>'
 			+'			</div>'
+			+'			<div class="pubGrid-hscroll-edge" style="right:'+(_this.options.scroll.vertical.width-1)+'px;"></div>'
 			+' 		</div>'
 			+' 		<div id="'+_this.prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
 			+' 	</div>'
 			+' </div>'
 			+' <div style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"><textarea id="'+_this.prefix+'_pubGridPasteArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함.
 			+' <textarea id="'+_this.prefix+'_pubGridCopyArea"></textarea></div>' // copy 하기위한 textarea 꼭 위치해야함.
-			+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation"><div class="pubGrid-page-navigation"></div><div id="'+_this.prefix+'_status" class="pubgGrid-count-info"></div>'
+			+' <div id="'+_this.prefix+'_navigation" class="pubGrid-navigation" style="height:'+(_this.options.navigation.height) +'px">'
+			+'	 <div class="pubGrid-paging"><div class="pubGrid-paging-box"><div id="'+_this.prefix+'_page"></div></div></div><div class="pubgGrid-message-info"><div id="'+_this.prefix+'_status"></div></div>'
 			+' </div>'
 			+' </div>';
-
 	}
 	,getTbodyAsideHtml : function (mode){
 		var _this =this;
@@ -1489,66 +1525,9 @@ Plugin.prototype ={
 			this.getTbodyAsideHtml(mode);
 		}
 
-		function bodyHtm (_this , mode , type){
-			var clickFlag = false
-				,tci = _this.config.tColItem
-				,colLen = tci.length
-				,thiItem;
-
-			var strHtm = [];
-
-			var contTypeClass = type=='left'?'.pubGrid-body-left-cont':'.pubGrid-body-cont';
-			//console.log(mode, _this.config.scroll.maxViewCount);
-			var tmpeElementBody =  _this.element.body.find(contTypeClass);
-
-			var startCol =0, endCol = tci.length;
-
-			if(type=='left'){
-				endCol = _this.options.colFixedIndex;
-			}else if(type=='cont'){
-				startCol = _this.options.colFixedIndex;
-			}
-
-			for(var i =0 ; i < _this.config.scroll.maxViewCount; i++){
-
-				if(mode != 'init' && tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
-					if(i >= _this.config.scroll.viewCount){
-						tmpeElementBody.find('[rowinfo="'+i+'"]').hide();
-					}else{
-						tmpeElementBody.find('[rowinfo="'+i+'"]').show();
-					}
-				}else{
-					strHtm.push('<tr class="pub-body-tr '+((i%2==0)?'tr0':'tr1')+'" rowinfo="'+i+'">');
-
-					for(var j=startCol ;j < endCol; j++){
-						thiItem = tci[j];
-						clickFlag = thiItem.colClick;
-
-						strHtm.push('<td scope="col" class="pub-body-td" data-grid-position="'+i+','+j+'"><div class="pub-content pub-content-ellipsis ' +thiItem['_alignClass']+' '+ (clickFlag?'pub-body-td-click':'') +'"></div></td>');
-					}
-					strHtm.push('</tr>');
-				}
-			}
-
-			if(mode=='init'){
-				var bodyHtm = '';
-				bodyHtm +=_this._getColGroup(_this.prefix+'colbody', type);
-				bodyHtm += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
-
-				tmpeElementBody.empty().html(bodyHtm);
-
-			}else{
-				strHtm = strHtm.join('');
-				if(strHtm != ''){
-					tmpeElementBody.append(strHtm);
-				}
-				return true;
-			}
-		}
-
 		if(mode=='init' || this.config.dataInfo.rowLen > 0){
-			bodyHtm (this,mode,'left');
-			return bodyHtm (this,mode, 'cont');
+			_$template.bodyHtm (this, mode, 'left');
+			return _$template.bodyHtm (this, mode, 'cont');
 		}
 
 		return false;
@@ -1640,7 +1619,7 @@ Plugin.prototype ={
 					if(ghItem.view){
 						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+ghItem.resizeIdx+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
 						if(_this.options.headerOptions.helpBtn.enabled === true){
-							strHtm.push('  <div class="pub-header-help-wrapper"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
+							strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
 						}
 						strHtm.push('  <div class="label-wrapper">');
 						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered">'+ghItem.label+'</div></div>');
@@ -1749,6 +1728,7 @@ Plugin.prototype ={
 				_this.element.status = $('#'+_this.prefix+'_status');
 				_this.element.vScrollBar = $('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar');
 				_this.element.hScrollBar = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar');
+				_this.element.hScrollEdge = $('#'+_this.prefix+'_hscroll .pubGrid-hscroll-edge');
 				_this.element.resizeHelper = $('#'+_this.prefix+'_resizeHelper');	// resize helper
 
 				// query selector
@@ -1778,11 +1758,16 @@ Plugin.prototype ={
 				_this.getTbodyHtml('init');
 				_this.setTheme(_this.options.theme);
 				_this._initFooterEvent();
+
+				if(_this.config.searchOn===true){
+					_this.gridElement.find('.pubGrid-setting').addClass('search-on');
+				}else{
+					_this.gridElement.find('.pubGrid-setting').removeClass('search-on');
+				}
 			}else{
 				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
 				_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
 
-				_this._headerResize(headerOpt.resize.enabled);
 				_this.getTbodyHtml('init_colfixed');
 
 				_this.calcDimension('colfixed');
@@ -1953,7 +1938,7 @@ Plugin.prototype ={
 			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
 		}
 
-		if(this.options.page !== false && this.options.page.status === true){
+		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
 			_this._statusMessage(viewCount);
 		}
 	}
@@ -1966,7 +1951,7 @@ Plugin.prototype ={
 
 		this.config.navi.height = 0;
 
-		if(this.options.page !== false){
+		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
 			this.element.navi.show();
 			this.config.navi.height = this.element.navi.outerHeight();
 		}
@@ -2168,7 +2153,13 @@ Plugin.prototype ={
 			var gridContTotW = cfg.gridWidth.total;
 
 			cfg.scroll.hUse = true;
-			$('#'+_this.prefix+'_hscroll').css('padding-right',(vScrollFlag?_this.options.scroll.vertical.width:0));
+			if(vScrollFlag){
+				$('#'+_this.prefix+'_hscroll').css('padding-right',_this.options.scroll.vertical.width);
+				_this.element.hScrollEdge.show();
+			}else{
+				$('#'+_this.prefix+'_hscroll').css('padding-right',0);
+				_this.element.hScrollEdge.hide();
+			}
 			$('#'+_this.prefix+'_hscroll').show();
 
 			var hscrollW = $('#'+_this.prefix+'_hscroll').find('.pubGrid-hscroll-bar-area').width();
@@ -2267,8 +2258,8 @@ Plugin.prototype ={
 		var _this = this
 			,_conf = _this.config;
 
-		_this.element.body.off('mousewheel DOMMouseScroll');
-		_this.element.body.on('mousewheel DOMMouseScroll', function(e) {
+		_this.element.container.off('mousewheel DOMMouseScroll');
+		_this.element.container.on('mousewheel DOMMouseScroll', function(e) {
 			var oe = e.originalEvent;
 			var delta = 0;
 
@@ -2302,84 +2293,20 @@ Plugin.prototype ={
 			}
 		});
 
-		var scrollTimer , mouseDown = false
-			,vBgDelay = _this.options.scroll.vertical.bgDelay
-			,hBgDelay = _this.options.scroll.horizontal.bgDelay;
-
 		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-bg').off('mousedown touchstart mouseup touchend mouseleave');
 		$('#'+_this.prefix+'_vscroll .pubGrid-vscroll-bar-bg').on('mousedown touchstart',function(e) {
-			mouseDown = true;
-			var evtY = e.offsetY;
-			var upFlag =evtY> _this.config.scroll.top ? false :true;
-			var loopcount =5;
-
-			function scrollMove(pEvtY, pTop, vThumbHeight, oneRowMove){
-				clearTimeout(scrollTimer);
-
-				pTop= pTop+((upFlag?-1:1) * (oneRowMove *loopcount));
-
-				if(upFlag){
-					if( pEvtY >= pTop ){
-						mouseDown = false
-						pTop = pEvtY;
-					}
-				}else{
-					if(pEvtY <= (pTop +vThumbHeight)){
-						mouseDown = false
-						pTop = pEvtY-vThumbHeight;
-					}
-				}
-
-				_this.moveVerticalScroll({pos :pTop});
-
-				if(mouseDown){
-					scrollTimer = setTimeout(function() {
-						scrollMove(pEvtY, pTop, vThumbHeight, oneRowMove*_this.options.scroll.horizontal.speed);
-					}, vBgDelay);
-				}
-			}scrollMove(evtY, _this.config.scroll.top, _this.config.scroll.vThumbHeight, _this.config.scroll.oneRowMove *_this.options.scroll.horizontal.speed);
-
+			_$scroll.verticalMove(_this, e.offsetY, _this.config.scroll.top, _this.config.scroll.vThumbHeight, _this.config.scroll.oneRowMove *_this.options.scroll.horizontal.speed);
 		}).on('mouseup touchend mouseleave',function(e) {
-			mouseDown = false;
-			clearTimeout(scrollTimer);
+			_this.config.scroll.mouseDown = false;
+			clearTimeout(_this.config.scroll.verticalScrollTimer);
 		});
 
 		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-bg').off('mousedown touchstart mouseup touchend mouseleave');
 		$('#'+_this.prefix+'_hscroll .pubGrid-hscroll-bar-bg').on('mousedown touchstart',function(e) {
-			mouseDown = true;
-			var evtX = e.offsetX;
-			var leftFlag =evtX > _this.config.scroll.left ? false :true;
-			var loopcount =10;
-
-			function scrollMove(pEvtX, pLeft, hThumbWidth, oneColMove){
-				clearTimeout(scrollTimer);
-
-				pLeft = pLeft+((leftFlag?-1:1) * (oneColMove*loopcount));
-
-				if(leftFlag){
-					if( pEvtX >= pLeft ){
-						mouseDown = false
-						pLeft = pEvtX;
-					}
-				}else{
-					if(pEvtX <= (pLeft +hThumbWidth)){
-						mouseDown = false
-						pLeft = pEvtX-hThumbWidth;
-					}
-				}
-
-				_this.moveHorizontalScroll({pos : pLeft});
-
-				if(mouseDown){
-					scrollTimer = setTimeout(function() {
-						scrollMove(pEvtX, pLeft, hThumbWidth, oneColMove);
-					}, hBgDelay);
-				}
-			}scrollMove(evtX,_this.config.scroll.left , _this.config.scroll.hThumbWidth, _this.config.scroll.oneColMove);
-
+			_$scroll.horizontalMove(_this, e.offsetX, _this.config.scroll.left, _this.config.scroll.hThumbWidth, _this.config.scroll.oneColMove);
 		}).on('mouseup touchend mouseleave',function(e) {
-			mouseDown = false;
-			clearTimeout(scrollTimer);
+			_this.config.scroll.mouseDown = false;
+			clearTimeout(_this.config.scroll.horizontalScrollTimer);
 		});
 
 		var scrollbarDragTimeer;
@@ -2390,16 +2317,15 @@ Plugin.prototype ={
 		_this.element.hScrollBar.on('touchstart.pubhscroll mousedown.pubhscroll',function (e){
 			e.stopPropagation();
 
-			var oe = e.originalEvent.touches;
 			var ele = $(this);
 			var data = {};
 
 			data.left = _this.config.scroll.left
-			data.pageX = oe ? oe[0].pageX : e.pageX;
+			data.pageX = evtPos(e).x;
 
 			ele.addClass('active');
 
-			$(document).on('touchmove.pubhscroll mousemove.pubhscroll', function (e){
+			$(document).on('touchmove.pubhscroll mousemove.pubhscroll', function (e1){
 
 				if(startTime==''){
 					startTime = new Date().getTime();
@@ -2411,13 +2337,13 @@ Plugin.prototype ={
 
 				scrollbarDragTimeer = setTimeout(function() {
 					startTime='';
-					_this.horizontalScroll(data, e, 'move');
+					_this.horizontalScroll(data, e1, 'move');
 				}, hDragDelay);
-			}).on('touchend.pubhscroll mouseup.pubhscroll mouseleave.pubhscroll', function (e){
+			}).on('touchend.pubhscroll mouseup.pubhscroll mouseleave.pubhscroll', function (e1){
 				ele.removeClass('active');
 				clearTimeout(scrollbarDragTimeer);
 				startTime='';
-				_this.horizontalScroll(data,e, 'end');
+				_this.horizontalScroll(data, e1, 'end');
 			});
 
 			return true;
@@ -2431,15 +2357,15 @@ Plugin.prototype ={
 		_this.element.vScrollBar.off('touchstart.pubvscroll mousedown.pubvscroll');
 		_this.element.vScrollBar.on('touchstart.pubvscroll mousedown.pubvscroll',function (e){
 			e.stopPropagation();
-			var oe = e.originalEvent.touches;
+			
 			var ele = $(this);
 			var data = {};
 			data.top= _this.config.scroll.top;
-			data.pageY = oe ? oe[0].pageY : e.pageY;
+			data.pageY = evtPos(e).y;
 
 			ele.addClass('active');
 
-			$(document).on('touchmove.pubvscroll mousemove.pubvscroll', function (e){
+			$(document).on('touchmove.pubvscroll mousemove.pubvscroll', function (e1){
 				if(startTime==''){
 					startTime = new Date().getTime();
 				}
@@ -2450,17 +2376,17 @@ Plugin.prototype ={
 
 				scrollbarDragTimeer = setTimeout(function() {
 					startTime='';
-					_this.verticalScroll( data,e , 'move');
+					_this.verticalScroll( data, e1, 'move');
 
 					if(tooltipFlag){
 						tooltipEle.text(_this.config.scroll.viewIdx+1);
 						tooltipEle.show();
 					}
 				}, vDragDelay);
-			}).on('touchend.pubvscroll mouseup.pubvscroll mouseleave.pubvscroll', function (e){
+			}).on('touchend.pubvscroll mouseup.pubvscroll mouseleave.pubvscroll', function (e1){
 				ele.removeClass('active');
 				clearTimeout(scrollbarDragTimeer);
-				_this.verticalScroll(data, e , 'end');
+				_this.verticalScroll(data, e1, 'end');
 				startTime='';
 
 				if(tooltipFlag){
@@ -2504,11 +2430,8 @@ Plugin.prototype ={
 	/**
 	* 세로 스크롤 드래그 이동
 	*/
-	,verticalScroll : function (data,e, type){
-		var oe = e.originalEvent.touches
-		,oy = oe ? oe[0].pageY : e.pageY;
-
-		oy = data.top+(oy - data.pageY);
+	,verticalScroll : function (data, e, type){
+		var oy = data.top+(evtPos(e).y - data.pageY);
 
 		this.moveVerticalScroll({pos :oy});
 		if(type=='end'){
@@ -2613,10 +2536,8 @@ Plugin.prototype ={
 	/**
 	* 가로 스크롤 드래그 이동
 	*/
-	,horizontalScroll : function (data ,e, type){
-		var oe = e.originalEvent.touches
-		,ox = oe ? oe[0].pageX : e.pageX;
-		ox = data.left+(ox - data.pageX);
+	,horizontalScroll : function (data, e, type){
+		var ox = data.left+(evtPos(e).x - data.pageX);
 
 		this.moveHorizontalScroll({pos : ox});
 
@@ -2781,11 +2702,18 @@ Plugin.prototype ={
 		}))
 	}
 	/**
+	 * @method isVisible
+	 * @description display visible
+	 */
+	,isVisible : function (){
+		return this.gridElement.is(':visible');
+	}
+	/**
 	 * @method resizeDraw
 	 * @description resize 하기
 	 */
 	,resizeDraw :function (opt){
-		if(this.gridElement.is(':visible') ===false){
+		if(this.isVisible()===false){
 			return ;
 		}
 
@@ -2963,7 +2891,7 @@ Plugin.prototype ={
 
 				var rangeKey = 'col'+col_idx;
 
-				_this._setSelectionRangeInfo({
+				_$util.setSelectionRangeInfo(_this, {
 					rangeInfo : {_key : rangeKey, startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startCol : col_idx,  endCol :col_idx}
 					,isSelect : true
 					,curr : curr
@@ -2998,6 +2926,7 @@ Plugin.prototype ={
 						}
 					}
 				}
+				e.stopPropagation();
 			});
 		}
 
@@ -3076,7 +3005,7 @@ Plugin.prototype ={
 	,_initFooterEvent : function (){
 		var _this = this;
 
-		var pageCallback = _this.options.page.callback;
+		var pageCallback = _this.options.navigation.callback;
 		_this.element.navi.on('click', '.page-num',function() {
 			var sEle = $(this);
 			var pageno =sEle.attr('pageno');
@@ -3137,7 +3066,7 @@ Plugin.prototype ={
 			});
 		}else{
 
-			settingWrapper.find('.pubGrid-setting').on('click', function (e){
+			settingWrapper.find('.pubGrid-setting').on('click.pubgrid.setting', function (e){
 				if(settingWrapper.hasClass('open')){
 					settingWrapper.removeClass('open');
 				}else{
@@ -3234,53 +3163,6 @@ Plugin.prototype ={
 		}
 	}
 	/**
-	 * @method getSelectionCellInfo
-	 * @description 선택된 cell 영역 구하기.
-	 */
-	,getSelectionCellInfo :function(curr, allDataFlag){
-		var selectionInfo = this.config.selection.range;
-
-		var  startIdx = selectionInfo.startIdx
-			,endIdx = selectionInfo.endIdx
-			,startCol = selectionInfo.startCol
-			,endCol = selectionInfo.endCol
-			,startRow = -1
-			,endRow = -1;
-
-		if(startIdx > endIdx){
-			var tmp = endIdx;
-			endIdx = startIdx;
-			startIdx = tmp;
-		}
-
-		if(startCol > endCol){
-			var tmp = endCol;
-			endCol = startCol;
-			startCol = tmp;
-		}
-
-		if(this.config.scroll.viewIdx >= startIdx){
-			startRow = 0;
-		}else{
-			startRow = startIdx-this.config.scroll.viewIdx;
-		}
-
-		if(this.config.scroll.viewIdx+this.config.scroll.maxViewCount <= endIdx){
-			endRow = this.config.scroll.viewCount-1;
-		}else{
-			endRow = endIdx-this.config.scroll.viewIdx;
-		}
-
-		return {
-			startIdx : startIdx
-			,endIdx : endIdx
-			,startRow : startRow
-			,endRow : endRow
-			,startCol : startCol
-			,endCol : endCol
-		}
-	}
-	/**
 	 * @method _initBodyEvent
 	 * @description 바디 이벤트 초기화.
 	 */
@@ -3357,7 +3239,7 @@ Plugin.prototype ={
 						,rowItem : rowItem
 					};
 
-					_$util.getEditForm(selRow,colItem ,rowItem);
+					_$template.getEditForm(selRow, colItem, rowItem);
 					return ;
 				}
 
@@ -3383,7 +3265,7 @@ Plugin.prototype ={
 			_this._setEditAreaData();
 		});
 
-		_this._setSelectionRangeInfo({isMouseDown : false});
+		_$util.setSelectionRangeInfo(_this, {isMouseDown : false});
 
 		var bodyDragTimer;
 		var bodyDragDelay = 150;
@@ -3410,11 +3292,7 @@ Plugin.prototype ={
 			if(e.which ===3){
 				return true;
 			}
-
-			var oe = e.originalEvent.touches;
-			var startPageX = oe ? oe[0].pageX : e.pageX;
-			var startPageY = oe ? oe[0].pageY : e.pageY;
-
+			
 			var position  = _this.element.body.offset();
 
 			var _l  = position.left
@@ -3426,9 +3304,10 @@ Plugin.prototype ={
 				// mouse darg scroll
 				$(document).on('touchmove.pubgrid.body.drag mousemove.pubgrid.body.drag', function (e1){
 
-					var oe1 = e1.originalEvent.touches;
-					var movePageX = oe1 ? oe1[0].pageX : e1.pageX;
-					var movePageY = oe1 ? oe1[0].pageY : e1.pageY;
+					var evtInfo1 = evtPos(e1);
+
+					var movePageX = evtInfo1.x
+						, movePageY = evtInfo1.y;
 
 					_this.config.mouseScrollDirectionX =false;
 					if(movePageX < _l){
@@ -3487,14 +3366,14 @@ Plugin.prototype ={
 					rangeInfo.srartCol = selectRangeInfo.startCol;
 				}
 
-				_this._setSelectionRangeInfo({
+				_$util.setSelectionRangeInfo(_this, {
 					rangeInfo : rangeInfo
 					,isMouseDown : true
 				},false , true);
 
 			}else if(multipleFlag && e.ctrlKey){ // ctrl key
 
-				_this._setSelectionRangeInfo({
+				_$util.setSelectionRangeInfo(_this, {
 					rangeInfo : {startIdx : selIdx, endIdx : selIdx, startCol : selectRangeInfo.startCol, endCol: selectRangeInfo.endCol}
 					,isSelect : true
 					,curr : (_this.config.selection.isSelect?'add':'')
@@ -3503,7 +3382,7 @@ Plugin.prototype ={
 				}, false, true);
 
 			}else{
-				_this._setSelectionRangeInfo({
+				_$util.setSelectionRangeInfo(_this, {
 					rangeInfo : {startIdx : selIdx, endIdx : selIdx, startCol : selectRangeInfo.startCol, endCol: selectRangeInfo.endCol}
 					,isSelect : true
 					,allSelect : false
@@ -3553,7 +3432,7 @@ Plugin.prototype ={
 
 			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode ,colIdx , _this.config.dataInfo);
 
-			_this._setSelectionRangeInfo({
+			_$util.setSelectionRangeInfo(_this, {
 				rangeInfo : {
 					endIdx : _this.config.scroll.viewIdx+intValue(selRow)
 					,endCol : selectRangeInfo.endCol
@@ -3564,7 +3443,7 @@ Plugin.prototype ={
 
 		_this.element.pubGrid.on('mouseup.'+_this.prefix,function (e) {
 			//_this.element.body.removeClass('pubGrid-noselect');
-			_this._setSelectionRangeInfo({isMouseDown : false});
+			_$util.setSelectionRangeInfo(_this, {isMouseDown : false});
 		}).on('mousedown.'+_this.prefix,function (e){ // focus in
 			_this.config.focus = true;
 		}).on('blur.'+_this.prefix,function (e){ //blur focus out
@@ -3654,7 +3533,7 @@ Plugin.prototype ={
 						}
 					}
 
-					_this._setSelectionRangeInfo({
+					_$util.setSelectionRangeInfo(_this, {
 						rangeInfo :  {startIdx : startCellInfo.startIdx,endIdx : startCellInfo.startIdx+iLen-1, startCol:startCellInfo.startCol,endCol :maxCol}
 						,startCell : startCellInfo
 					},true, false);
@@ -3675,8 +3554,10 @@ Plugin.prototype ={
 
 			if(!_this.config.focus) return ;
 
+			var evtTargetEle = $(e.target); 
+			
 			// 설정 영역 keydown 처리
-			if($(e.target).closest('.pubGrid-setting-area').length > 0) return true;
+			if(evtTargetEle.closest('.pubGrid-setting-area').length > 0) return true;
 
 			var evtKey = window.event ? e.keyCode : e.which;
 
@@ -3715,6 +3596,12 @@ Plugin.prototype ={
 					return false;
 				}else if(evtKey==86){ // ctrl + v
 					_this.element.pasteArea.focus();
+					return true;
+				}else if(evtKey==70){
+					e.preventDefault();
+					e.stopPropagation();
+					// to do ctrl+f 
+					//console.log('aaa');
 					return true;
 				}
 			}
@@ -3903,98 +3790,6 @@ Plugin.prototype ={
 		return ;
 	}
 	/**
-	 * @method _setSelectionRangeInfo
-	 * @param  initFlag {boolean} init flag
-	 * @param  tdSelectFlag {boolean} select flag
-	 * @description 선택 영역 정보 셋팅.
-	 */
-	,_setSelectionRangeInfo : function(selectionInfo, initFlag, tdSelectFlag){
-		var _this =this;
-		var cfgSelect = this.config.selection;
-
-		if(initFlag !==true  && _this._isAllSelect()){
-			return ;
-		}
-
-		var	rangeInfo = selectionInfo.rangeInfo;
-
-		function setSelectionInfo (cfgSelect, attrInfo){
-
-			for(var key in attrInfo){
-				if(key =='rangeInfo'){
-					;
-				}else if(key =='curr'){
-					if(attrInfo[key]=='add'){
-						cfgSelect.curr+=1;
-						cfgSelect.range = rangeInfo;
-						var rangeKey = rangeInfo._key ?  rangeInfo._key : cfgSelect.curr;
-
-						if(_this.isRangeKey(rangeKey)){
-							rangeInfo.mode = 'remove';
-							delete cfgSelect.allRange[rangeKey];
-						}else{
-							cfgSelect.allRange[rangeKey] = rangeInfo;
-						}
-					}else if(attrInfo[key]=='remove'){
-						cfgSelect.curr+=1;
-						cfgSelect.range = rangeInfo;
-						var rangeKey = rangeInfo._key ?  rangeInfo._key : cfgSelect.curr;
-						rangeInfo.mode = 'remove';
-						delete cfgSelect.allRange[rangeKey];
-					}
-				}else{
-					cfgSelect[key] = attrInfo[key];
-				}
-			}
-
-			return cfgSelect;
-		}
-
-		if(initFlag === true){
-
-			var initOpt = {
-				curr :0
-				,range : {startIdx : -1,endIdx : -1, startCol : -1, endCol : -1}
-				,allRange:  {}
-				,isSelect : false
-				,isMouseDown:false
-				,unSelectPosition:{}
-				,allSelect : false
-				,minIdx : -1 ,maxIdx : -1
-				,minCol : -1 ,maxCol : -1
-				,startCell:{startIdx : -1, startCol : -1}
-			};
-			setSelectionInfo(initOpt, selectionInfo);
-			cfgSelect = this.config.selection = initOpt;
-			cfgSelect.allRange[initOpt.curr] =cfgSelect.range;
-		}else{
-			setSelectionInfo(cfgSelect, selectionInfo);
-		}
-
-		var currInfo = cfgSelect.range;
-
-		for(var key in rangeInfo){
-			currInfo[key] = rangeInfo[key];
-		}
-
-		cfgSelect.minIdx = ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
-		cfgSelect.maxIdx = Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
-
-		cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
-		cfgSelect.maxCol = Math.max(cfgSelect.maxCol ,currInfo.endCol , currInfo.startCol);
-
-		if(isUndefined(rangeInfo)) return ;
-
-		currInfo.minIdx = Math.min(currInfo.startIdx, currInfo.endIdx)
-		currInfo.maxIdx = Math.max(currInfo.endIdx ,currInfo.startIdx);
-		currInfo.minCol = Math.min( currInfo.endCol , currInfo.startCol);
-		currInfo.maxCol = Math.max( currInfo.endCol , currInfo.startCol);
-
-		if(tdSelectFlag){
-			_this._setCellSelect(initFlag);
-		}
-	}
-	/**
 	 * @method _isAllSelect
 	 * @description cell select
 	 */
@@ -4009,7 +3804,7 @@ Plugin.prototype ={
 		var _this =this;
 
 		var tmpCurr = _this.config.selection.curr;
-		var colInfo = _this.getSelectionCellInfo(tmpCurr, false);
+		var colInfo = _$util.getSelectionRangeInfo(this);
 		var startCellInfo = _this.config.selection.startCell; // start cell
 
 		var sIdx = colInfo.startIdx
@@ -4113,32 +3908,17 @@ Plugin.prototype ={
 		}
 	}
 	/**
-	 * @method isRangeKey
-	 * @description header , col 선택 여부 확인
-	 */
-	,isRangeKey : function (key){
-		return this.config.selection.allRange[key] ?true :false;
-	}
-	/**
 	 * @method isSelectPosition
 	 * @description cell 선택 여부
 	 */
 	,isSelectPosition: function (row , col, currFlag){
-
-		function isSelRange(range,row,col){
-			if(col =='row'){
-				return range.minIdx <=row && row <= range.maxIdx;
-			}else{
-				return range.minIdx <=row && row <= range.maxIdx && range.minCol <=col && col <= range.maxCol;
-			}
-		}
 
 		if(hasProperty(this.config.selection.unSelectPosition, row+','+col)){
 			return false;
 		}else{
 
 			if(currFlag){
-				return isSelRange(this.config.selection.range, row , col);
+				return _$util.isSelRange(this.config.selection.range, row , col);
 			}else {
 
 				var allRange = this.config.selection.allRange;
@@ -4146,7 +3926,7 @@ Plugin.prototype ={
 				for(var key in allRange){
 					var tmpRange = allRange[key];
 
-					if(isSelRange(tmpRange, row , col)){
+					if(_$util.isSelRange(tmpRange, row , col)){
 						return true;
 					}
 				}
@@ -4267,21 +4047,21 @@ Plugin.prototype ={
 
 		dataType = dataType||'text';
 
-		var sCol,eCol,sIdx,eIdx , chkFn;
+		var sCol,eCol,sIdx,eIdx;
 
 		var allSelectFlag = _this._isAllSelect();
 
 		if(allSelectFlag){
-			sCol= 0;
-			eCol= _this.config.tColItem.length-1;
-			sIdx= 0;
+			sCol = 0;
+			eCol = _this.config.tColItem.length-1;
+			sIdx = 0;
 			eIdx = _this.config.dataInfo.lastRowIdx;
 		}else{
 			var colInfo = _this.config.selection;
-			sCol= colInfo.minCol;
-			eCol =  colInfo.maxCol;
-			sIdx= colInfo.minIdx;
-			eIdx =  colInfo.maxIdx;
+			sCol = colInfo.minCol;
+			eCol = colInfo.maxCol;
+			sIdx = colInfo.minIdx;
+			eIdx = colInfo.maxIdx;
 		}
 
 		if(sIdx < 0 || eIdx < 0)
@@ -4308,13 +4088,13 @@ Plugin.prototype ={
 
 				var tmpKey = colItem.key;
 
-				if((allSelectFlag && !_this.isAllSelectUnSelectPosition( i,j)) || _this.isSelectPosition(i,j)) {
+				if((allSelectFlag && !_this.isAllSelectUnSelectPosition(i, j)) || _this.isSelectPosition(i, j)) {
 					addRowFlag = true;
 
 					if(colItem.render=='html'){
 						tmpVal = item[tmpKey];
 					}else{
-						tmpVal = _this.valueFormatter( i, colItem,item);
+						tmpVal = _this.valueFormatter(i, colItem, item);
 					}
 
 					if(dataType=='json'){
@@ -4351,6 +4131,62 @@ Plugin.prototype ={
 		}else{
 			return returnVal.join('\n');
 		}
+	}
+	/**
+	 * @method getSelectionColumnInfo
+	 * @description selection column info
+	 */
+	,getSelectionColInfos : function(){
+
+		var sCol,eCol,sIdx,eIdx;
+
+		var allSelectFlag = this._isAllSelect();
+
+		if(allSelectFlag){
+			sCol = 0;
+			eCol = this.config.tColItem.length-1;
+			sIdx = 0;
+			eIdx = 1;
+		}else{
+			var colInfo = this.config.selection;
+			sCol = colInfo.minCol;
+			eCol = colInfo.maxCol;
+			sIdx = colInfo.minIdx;
+			eIdx = colInfo.maxIdx;
+		}
+
+		if(sIdx < 0 || eIdx < 0)
+			return [];
+
+		var tColItem = this.config.tColItem;
+
+		var keyInfo ={};
+		
+		for(var i=sIdx; i<=eIdx; i++){
+			for(var j=sCol; j<=eCol; j++){
+				var colItem = tColItem[j];
+
+				if(colItem.visible===false) continue;
+
+				if((allSelectFlag && !this.isAllSelectUnSelectPosition(i, j)) || this.isSelectPosition(i, j)) {
+					if(!hasProperty(keyInfo ,j)){
+						keyInfo[j] = colItem;
+					}
+				}
+			}
+		}
+	
+		var sortKeyArr = Object.keys(keyInfo).sort(function(a, b) {
+			return (parseInt(a, 10) > parseInt(b, 10)? 1 : 0);
+		});
+
+		var sortResult = [];
+		
+		for (var i=0; i < sortKeyArr.length; i++) {
+			sortResult.push(keyInfo[sortKeyArr[i]]);
+		}
+	
+		return sortResult; 
 
 	}
 	/**
@@ -4367,7 +4203,7 @@ Plugin.prototype ={
 	,getSelectionItem : function (itemKeys) {
 		var _this = this;
 
-		var sCol,eCol,sIdx,eIdx , chkFn;
+		var sIdx, eIdx;
 
 		var allSelectFlag = _this._isAllSelect();
 
@@ -4468,35 +4304,20 @@ Plugin.prototype ={
 
 		_this.config.sort.current = _key;
 
-		function getItemVal(itemObj){
-			return itemObj[_key];
-		}
+		var reversed = (sortType=='asc') ? 1 : -1;
 
-		if(sortType=='asc'){  // 오름차순
+		if(sortType=='asc' || sortType=='desc'){  // 오름차순
 
 			tbi.sort(function (a,b){
-				var v1 = getItemVal(a)
-					,v2 = getItemVal(b);
+				var v1 = a[_key]
+					,v2 = b[_key];
 
 				if(v1 == v2) return 0;
 
 				if(val != ''){
-					return (v1==val?-1:(v2==val)?1:0);
+					return (v1==val ? reversed * -1 : (v2==val ? reversed : 0));
 				}else{
-					return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
-				}
-			});
-		}else if(sortType=='desc'){
-			tbi.sort(function (a,b){ // 내림차순
-				var v1 = getItemVal(a)
-					,v2 = getItemVal(b);
-
-				if(v1 == v2) return 0;
-
-				if(val != ''){
-					return (v1==val?1:(v2==val)?-1:0);
-				}else{
-					return v1 > v2 ? -1 : v1 < v2 ? 1 : 0;
+					return (v1 < v2 ? reversed * -1 : (v1 > v2 ? reversed : 0));
 				}
 			});
 		}else{
@@ -4515,39 +4336,16 @@ Plugin.prototype ={
 		var _this = this
 			,resizeEle = _this.element.header.find('.pub-header-resizer');
 
-		function colResize(_this , sEle){
-			_this.drag = {};
-
-			_this.drag.ele = sEle;
-
-			_this.drag.resizeIdx = parseInt(_this.drag.ele.attr('data-resize-idx'),10);
-			_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
-			_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
-
-			// get absolute left position
-			var posLeft = _this.config.gridWidth.aside;
-			for(var i = 0;i < _this.drag.resizeIdx; i++ ){
-				posLeft+=$('#'+_this.prefix+'colHeader'+i).width();
-			}
-			_this.drag.positionLeft = posLeft;
-
-			_this.drag.totColW = _this.drag.colHeader.width();
-
-			_this.drag.colW = _this.config.tColItem[_this.drag.resizeIdx].width;
-			if(_this.drag.isLeftContent){
-				_this.drag.gridW = _this.config.gridWidth.left - _this.drag.colW;
-			}else{
-				_this.drag.positionLeft -= _this.config.scroll.containerLeft;
-				_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
-			}
-			_this.drag.gridBodyW = _this.config.container.width - _this.drag.colW;
+		if(_this.config.currentHeaderResizeFlag == flag){
 			return ;
 		}
+
+		_this.config.currentHeaderResizeFlag = flag; 
 
 		if(flag===true){
 
 			resizeEle.on('dblclick', function (e){
-				colResize(_this, $(this));
+				_$util.colResize(_this, $(this));
 
 				var selColItem = _this.config.tColItem[_this.drag.resizeIdx];
 
@@ -4581,13 +4379,13 @@ Plugin.prototype ={
 
 			resizeEle.css('cursor',_this.options.headerOptions.resize.cursor);
 			resizeEle.on('touchstart.pubresizer mousedown.pubresizer',function (e){
-				var oe = e.originalEvent.touches;
+				
 				var moveStart = false;
-				colResize(_this, $(this));
+				_$util.colResize(_this, $(this));
 
 				_this.element.resizeHelper.show().css('left', (_this.drag.positionLeft+_this.drag.totColW)+'px');
 
-				var startX = oe ? oe[0].pageX : e.pageX;
+				var startX = evtPos(e).x;
 				_this.drag.pageX = startX;
 				_this.drag.ele.addClass('pubGrid-move-header')
 
@@ -4597,8 +4395,7 @@ Plugin.prototype ={
 
 				_$doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e1){
 					if(!moveStart){
-						var oe1 = e1.originalEvent.touches;
-						var moveX = oe1 ? oe1[0].pageX : e1.pageX;
+						var moveX = evtPos(e).x;
 						if( moveX > startX+10 || moveX < startX-10){
 							_this.element.container.addClass('pubGrid-resize-mode');
 							moveStart =true;
@@ -4616,6 +4413,7 @@ Plugin.prototype ={
 			})
 		}else{
 			resizeEle.css('cursor','auto');
+			resizeEle.off('dblclick');
 			resizeEle.off('touchstart.pubresizer mousedown.pubresizer');
 		}
 	}
@@ -4654,19 +4452,16 @@ Plugin.prototype ={
 	 * @param  mode {String} 그리드 모드
 	 * @description reisze 드래그 end
 	 */
-	,_setHeaderResize : function (e,_this , mode, resizeW){
+	,_setHeaderResize : function (e, _this, mode, resizeW){
 
 		if (!_this.drag) return false;
 
 		var drag = _this.drag;
 
-		var w = resizeW, ox;
+		var w = resizeW, ox = 0;
 
 		if(isUndefined(resizeW)){
-			var oe = e.originalEvent.touches;
-
-			ox = oe ? oe[0].pageX : e.pageX;
-
+			ox = evtPos(e).x;
 			w = resizeW ||(drag.colW + (ox - drag.pageX));
 		}
 
@@ -4744,58 +4539,8 @@ Plugin.prototype ={
 	 * @param  options {Object} 옵션
 	 * @description 페이징 하기.
 	 */
-	,pageNav : function(options) {
-		var _this =this;
-
-		var pagingInfo = _this.getPageInfo(options.totalCount , options.currPage , options.countPerPage, options.unitPage);
-
-		_this.config.pageNo = options.currPage;
-
-		var currP = pagingInfo.currPage;
-		if (currP == "0") currP = 1;
-		var preP_is = pagingInfo.prePage_is;
-		var nextP_is = pagingInfo.nextPage_is;
-		var currS = pagingInfo.currStartPage;
-		var currE = pagingInfo.currEndPage;
-		if (currE == "0") currE = 1;
-		var nextO = 1 * currP + 1;
-		var preO = currP - 1;
-		var strHTML = [];
-		strHTML.push('<ul>');
-		if (new Boolean(preP_is) == true) {
-			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
-		} else {
-			if (currP <= 1) {
-				strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
-			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
-			}
-		}
-		var no = 0;
-		for (no = currS * 1; no <= currE * 1; no++) {
-			if (no == currP) {
-				strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
-			} else {
-				strHTML.push(' <li class="page-num" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
-			}
-		}
-
-		if (new Boolean(nextP_is) == true) {
-			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
-		} else {
-			if (currP == currE) {
-				strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
-			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
-			}
-		}
-		strHTML.push('</ul>');
-
-		var pageNaviEle = _this.element.navi.find('.pubGrid-page-navigation');
-		pageNaviEle.addClass('page-'+(options.position || 'center'));
-		pageNaviEle.empty().html(strHTML.join(''));
-
-		return this;
+	,pageNav : function(pageInfo) {
+		
 	}
 	,getPageNo : function (){
 		return this.config.pageNo;
@@ -4822,15 +4567,8 @@ Plugin.prototype ={
 			}
 		}
 
-		function getMaxNum( allPage, list_num) {
-			if (allPage % list_num == 0) {
-				return allPage / list_num;
-			}
-			return allPage / list_num + 1;
-		}
-
-		var totalPage = getMaxNum(totalCount, countPerPage);
-
+		var totalPage = (totalCount % countPerPage == 0) ? (totalCount/countPerPage) : (totalCount/countPerPage + 1)
+		
 		if (totalPage < currPage)
 			currPage = totalPage;
 		var currEndCount;
@@ -4892,9 +4630,8 @@ Plugin.prototype ={
 	 * @description set theme
 	 */
 	,setTheme : function (themeName){
-		this.gridElement.removeClass('pub-theme-'+this.options.theme);
 		this.options.theme = themeName;
-		this.gridElement.addClass('pub-theme-'+themeName);
+		this.gridElement.attr('pub-theme', themeName);
 	}
 	/**
 	 * @method getRowCheckValue
@@ -4952,6 +4689,172 @@ Plugin.prototype ={
 		return _datastore;
 	}
 };
+
+// scroll 
+var _$scroll = {
+	verticalMove : function(ctx, pEvtY, pTop, vThumbHeight, oneRowMove){
+		ctx.config.scroll.mouseDown = true;
+
+		clearTimeout(ctx.config.scroll.verticalScrollTimer);
+
+		var upFlag =pEvtY> ctx.config.scroll.top ? false :true;
+		var loopcount =5;
+
+		pTop= pTop+((upFlag?-1:1) * (oneRowMove *loopcount));
+
+		if(upFlag){
+			if( pEvtY >= pTop ){
+				ctx.config.scroll.mouseDown = false
+				pTop = pEvtY;
+			}
+		}else{
+			if(pEvtY <= (pTop +vThumbHeight)){
+				ctx.config.scroll.mouseDown = false
+				pTop = pEvtY-vThumbHeight;
+			}
+		}
+
+		ctx.moveVerticalScroll({pos :pTop});
+
+		if(ctx.config.scroll.mouseDown){
+			ctx.config.scroll.verticalScrollTimer = setTimeout(function() {
+				_$scroll.verticalMove(ctx, pEvtY, pTop, vThumbHeight, oneRowMove*ctx.options.scroll.horizontal.speed);
+			}, ctx.options.scroll.vertical.bgDelay);
+		}
+	}
+	,horizontalMove : function (ctx, pEvtX, pLeft, hThumbWidth, oneColMove){
+		ctx.config.scroll.mouseDown = true;
+
+		clearTimeout(ctx.config.scroll.horizontalScrollTimer);
+
+		var leftFlag =pEvtX > ctx.config.scroll.left ? false :true;
+		var loopcount =10;
+
+		pLeft = pLeft+((leftFlag?-1:1) * (oneColMove*loopcount));
+
+		if(leftFlag){
+			if( pEvtX >= pLeft ){
+				ctx.config.scroll.mouseDown = false
+				pLeft = pEvtX;
+			}
+		}else{
+			if(pEvtX <= (pLeft +hThumbWidth)){
+				ctx.config.scroll.mouseDown = false
+				pLeft = pEvtX-hThumbWidth;
+			}
+		}
+
+		ctx.moveHorizontalScroll({pos : pLeft});
+
+		if(ctx.config.scroll.mouseDown){
+			ctx.config.scroll.horizontalScrollTimer = setTimeout(function() {
+				_$scroll.horizontalMove(ctx, pEvtX, pLeft, hThumbWidth, oneColMove);
+			}, ctx.options.scroll.horizontal.bgDelay);
+		}
+	}
+}
+
+var _$template = {
+	/**
+	 * @method bodyHtm
+	 * @description body template
+	 */
+	bodyHtm : function(_this, mode, type){
+		
+		var clickFlag = false
+			,tci = _this.config.tColItem
+			,thiItem;
+
+		var strHtm = [];
+
+		var contTypeClass = type=='left'?'.pubGrid-body-left-cont':'.pubGrid-body-cont';
+		//console.log(mode, _this.config.scroll.maxViewCount);
+		var tmpeElementBody=_this.element.body.find(contTypeClass);
+
+		var startCol=0, endCol=tci.length;
+
+		if(type=='left'){
+			endCol = _this.options.colFixedIndex;
+		}else if(type=='cont'){
+			startCol = _this.options.colFixedIndex;
+		}
+
+		for(var i =0 ; i < _this.config.scroll.maxViewCount; i++){
+
+			if(mode != 'init' && tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
+				if(i >= _this.config.scroll.viewCount){
+					tmpeElementBody.find('[rowinfo="'+i+'"]').hide();
+				}else{
+					tmpeElementBody.find('[rowinfo="'+i+'"]').show();
+				}
+			}else{
+				strHtm.push('<tr class="pub-body-tr '+((i%2==0)?'tr0':'tr1')+'" rowinfo="'+i+'">');
+
+				for(var j=startCol ;j < endCol; j++){
+					thiItem = tci[j];
+					clickFlag = thiItem.colClick;
+
+					strHtm.push('<td scope="col" class="pub-body-td" data-grid-position="'+i+','+j+'"><div class="pub-content pub-content-ellipsis ' +thiItem['_alignClass']+' '+ (clickFlag?'pub-body-td-click':'') +'"></div></td>');
+				}
+				strHtm.push('</tr>');
+			}
+		}
+
+		if(mode=='init'){
+			var bodyHtm = '';
+			bodyHtm +=_this._getColGroup(_this.prefix+'colbody', type);
+			bodyHtm += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
+
+			tmpeElementBody.empty().html(bodyHtm);
+
+		}else{
+			strHtm = strHtm.join('');
+			if(strHtm != ''){
+				tmpeElementBody.append(strHtm);
+			}
+			return true;
+		}
+	}
+	/**
+	 * @method getEditForm
+	 * @description get edit form
+	 */
+	 ,getEditForm : function (selEl, colItem, rowItem){
+
+		var reForm =[];
+
+		var editor = colItem.editor||{};
+		
+		reForm.push( '<div class="pubGrid-edit-area pubGrid-edit-type-'+editor.type+'">');
+		if(editor.type =='select'){
+			reForm.push( '<select class="pubGrid-edit-field">');
+			var items = editor.items||[];
+			var itemKey = objectMerge({code : 'CODE', label : 'LABEL'}, editor.itemKey) ;
+			var codeKey = itemKey.code;
+			var labelKey = itemKey.label;
+			
+			for(var i =0, len = items.length;i < len; i++){
+				var item = items[i];
+				reForm.push( '<option value="'+item[codeKey]+'">'+item[labelKey]+'</option>');
+			}
+			reForm.push( '</select>');
+		}else if(editor.type =='textarea'){
+			reForm.push( '<textarea class="pubGrid-edit-field"></textarea>');
+		}else if(editor.type =='number'){
+			reForm.push( '<input type="number" class="pubGrid-edit-field">');
+		}else{
+			reForm.push( '<input type="text" class="pubGrid-edit-field">');
+		}
+		reForm.push( '</div>');
+
+		selEl.append(reForm.join(''));
+
+		var editEl = selEl.find('.pubGrid-edit-field');
+
+		editEl.val(rowItem[colItem.key]);
+		editEl.focus();
+	}
+}
 
 var _$util = {
 	/**
@@ -5012,39 +4915,15 @@ var _$util = {
 		return false;
 	}
 	/**
-	 * @method getEditForm
-	 * @description get edit form
+	 * @method isSelRange
+	 * @description 선택된 cell check
 	 */
-	,getEditForm : function (selEl, colItem, rowItem){
-
-		var reForm =[];
-
-		var editor = colItem.editor||{};
-
-		reForm.push( '<div class="pubGrid-edit-area pubGrid-edit-type-'+editor.type+'">');
-		if(editor.type =='select'){
-			reForm.push( '<select class="pubGrid-edit-field">');
-			var items = editor.items||[];
-			for(var i =0, len = items.length;i < len; i++){
-				var item = items[i];
-				reForm.push( '<option value="'+item.CODE+'">'+item.LABEL+'</option>');
-			}
-			reForm.push( '</select>');
-		}else if(editor.type =='textarea'){
-			reForm.push( '<textarea class="pubGrid-edit-field"></textarea>');
-		}else if(editor.type =='number'){
-			reForm.push( '<input type="number" class="pubGrid-edit-field">');
+	,isSelRange: function (range,row,col){
+		if(col =='row'){
+			return range.minIdx <=row && row <= range.maxIdx;
 		}else{
-			reForm.push( '<input type="text" class="pubGrid-edit-field">');
+			return range.minIdx <=row && row <= range.maxIdx && range.minCol <=col && col <= range.maxCol;
 		}
-		reForm.push( '</div>');
-
-		selEl.append(reForm.join(''));
-
-		var editEl = selEl.find('.pubGrid-edit-field');
-
-		editEl.val(rowItem[colItem.key]);
-		editEl.focus();
 	}
 	/**
 	 * @method clearActiveColumn
@@ -5118,15 +4997,164 @@ var _$util = {
 		var multipleFlag = this.isMultipleSelection(ctx.options.selectionMode);
 
 		if(multipleFlag && (evtKey != 9 && evt.shiftKey)){
-			ctx._setSelectionRangeInfo({
+			this.setSelectionRangeInfo(ctx, {
 				rangeInfo :  {endIdx : endIdx, endCol : endCol}
 				,startCell : {startIdx : endIdx, startCol : moveColIdx}
 			}, false,true);
 		}else{
-			ctx._setSelectionRangeInfo({
+			this.setSelectionRangeInfo(ctx, {
 				rangeInfo :  {startIdx : endIdx,endIdx : endIdx, startCol:startCol,endCol :endCol}
 				,startCell : {startIdx : endIdx, startCol : moveColIdx}
 			},true, true);
+		}
+	}
+	/**
+	 * @method isRangeKey
+	 * @description header , col 선택 여부 확인
+	 */
+	 ,isRangeKey : function (ctx, key){
+		return ctx.config.selection.allRange[key] ?true :false;
+	}
+	/**
+	 * @method setSelectionInfo
+	 * @description set selection info 
+	 */
+	,setSelectionInfo : function (ctx, cfgSelect, attrInfo, rangeInfo){
+
+		for(var key in attrInfo){
+			if(key =='rangeInfo'){
+				;
+			}else if(key =='curr'){
+				if(attrInfo[key]=='add'){
+					cfgSelect.curr+=1;
+					cfgSelect.range = rangeInfo;
+					var rangeKey = rangeInfo._key ?  rangeInfo._key : cfgSelect.curr;
+
+					if(this.isRangeKey(ctx, rangeKey)){
+						rangeInfo.mode = 'remove';
+						delete cfgSelect.allRange[rangeKey];
+					}else{
+						cfgSelect.allRange[rangeKey] = rangeInfo;
+					}
+				}else if(attrInfo[key]=='remove'){
+					cfgSelect.curr+=1;
+					cfgSelect.range = rangeInfo;
+					var rangeKey = rangeInfo._key ?  rangeInfo._key : cfgSelect.curr;
+					rangeInfo.mode = 'remove';
+					delete cfgSelect.allRange[rangeKey];
+				}
+			}else{
+				cfgSelect[key] = attrInfo[key];
+			}
+		}
+
+		return cfgSelect;
+	}
+	/**
+	 * @method setSelectionRangeInfo
+	 * @param  initFlag {boolean} init flag
+	 * @param  tdSelectFlag {boolean} select flag
+	 * @description 선택 영역 정보 셋팅.
+	 */
+	 ,setSelectionRangeInfo : function(ctx, selectionInfo, initFlag, tdSelectFlag){
+		var _this =this;
+		var cfgSelect = ctx.config.selection;
+
+		if(initFlag !==true  && ctx._isAllSelect()){
+			return ;
+		}
+
+		var	rangeInfo = selectionInfo.rangeInfo;
+
+		if(initFlag === true){
+
+			var initOpt = {
+				curr :0
+				,range : {startIdx : -1,endIdx : -1, startCol : -1, endCol : -1}
+				,allRange:  {}
+				,isSelect : false
+				,isMouseDown:false
+				,unSelectPosition:{}
+				,allSelect : false
+				,minIdx : -1 ,maxIdx : -1
+				,minCol : -1 ,maxCol : -1
+				,startCell:{startIdx : -1, startCol : -1}
+			};
+			_this.setSelectionInfo(ctx, initOpt, selectionInfo, rangeInfo);
+			cfgSelect = ctx.config.selection = initOpt;
+			cfgSelect.allRange[initOpt.curr] =cfgSelect.range;
+		}else{
+			_this.setSelectionInfo(ctx, cfgSelect, selectionInfo, rangeInfo);
+		}
+
+		var currInfo = cfgSelect.range;
+
+		for(var key in rangeInfo){
+			currInfo[key] = rangeInfo[key];
+		}
+
+		cfgSelect.minIdx = ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
+		cfgSelect.maxIdx = Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
+
+		cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
+		cfgSelect.maxCol = Math.max(cfgSelect.maxCol ,currInfo.endCol , currInfo.startCol);
+
+		if(isUndefined(rangeInfo)) return ;
+
+		currInfo.minIdx = Math.min(currInfo.startIdx, currInfo.endIdx)
+		currInfo.maxIdx = Math.max(currInfo.endIdx, currInfo.startIdx);
+		currInfo.minCol = Math.min(currInfo.endCol, currInfo.startCol);
+		currInfo.maxCol = Math.max(currInfo.endCol, currInfo.startCol);
+
+		if(tdSelectFlag){
+			ctx._setCellSelect(initFlag);
+		}
+	}
+	/**
+	 * @method getSelectionRangeInfo
+	 * @description 선택된 cell 영역 구하기.
+	 */
+	 ,getSelectionRangeInfo :function(ctx){
+		var selectionInfo = ctx.config.selection.range;
+
+		var  startIdx = selectionInfo.startIdx
+			,endIdx = selectionInfo.endIdx
+			,startCol = selectionInfo.startCol
+			,endCol = selectionInfo.endCol
+			,startRow = -1
+			,endRow = -1;
+
+		if(startIdx > endIdx){
+			var tmp = endIdx;
+			endIdx = startIdx;
+			startIdx = tmp;
+		}
+
+		if(startCol > endCol){
+			var tmp = endCol;
+			endCol = startCol;
+			startCol = tmp;
+		}
+
+		if(ctx.config.scroll.viewIdx >= startIdx){
+			startRow = 0;
+		}else{
+			startRow = startIdx-ctx.config.scroll.viewIdx;
+		}
+
+		if(ctx.config.scroll.viewIdx+ctx.config.scroll.maxViewCount <= endIdx){
+			endRow = ctx.config.scroll.viewCount-1;
+		}else{
+			endRow = endIdx-ctx.config.scroll.viewIdx;
+		}
+
+		return {
+			startIdx : startIdx
+			,endIdx : endIdx
+			,startRow : startRow
+			,endRow : endRow
+			,startCol : startCol
+			,endCol : endCol
 		}
 	}
 	/**
@@ -5159,6 +5187,34 @@ var _$util = {
 			}
 		}
 		return reFlag;
+	}
+	,colResize : function (_this , sEle){
+		_this.drag = {};
+	
+		_this.drag.ele = sEle;
+	
+		_this.drag.resizeIdx = parseInt(_this.drag.ele.attr('data-resize-idx'),10);
+		_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
+		_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
+	
+		// get absolute left position
+		var posLeft = _this.config.gridWidth.aside;
+		for(var i = 0;i < _this.drag.resizeIdx; i++ ){
+			posLeft+=$('#'+_this.prefix+'colHeader'+i).width();
+		}
+		_this.drag.positionLeft = posLeft;
+	
+		_this.drag.totColW = _this.drag.colHeader.width();
+	
+		_this.drag.colW = _this.config.tColItem[_this.drag.resizeIdx].width;
+		if(_this.drag.isLeftContent){
+			_this.drag.gridW = _this.config.gridWidth.left - _this.drag.colW;
+		}else{
+			_this.drag.positionLeft -= _this.config.scroll.containerLeft;
+			_this.drag.gridW = _this.config.gridWidth.main - _this.drag.colW;
+		}
+		_this.drag.gridBodyW = _this.config.container.width - _this.drag.colW;
+		return ;
 	}
 }
 

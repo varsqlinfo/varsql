@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.DBMetaImpl;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
@@ -15,6 +16,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
 import com.varsql.core.sql.resultset.handler.ResultSetHandlerImpl;
@@ -181,12 +183,14 @@ public class MetaControlBean {
 
 		String callMethodName =String.format("get%sMetadata", StringUtils.capitalize(metaType));
 
+		boolean hasMethod = VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class, new String[0].getClass());
+
 		try{
-			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class, new String[0].getClass())){
+			if(hasMethod){
 				if(objNm == null) {
 					objNm = new String[0];
 				}
-				
+
 				Object [] paramArr  = {paramInfo, objNm};
 				return (T)VartechReflectionUtils.invokeMethod(this.dbMetaImpl, callMethodName, paramArr);
 			}else{
@@ -195,6 +199,9 @@ public class MetaControlBean {
 		}catch(Exception e){
 			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtils.join(objNm));
 			logger.error("getDBMeta callMethodName " , e);
+			if(hasMethod) {
+				throw new DBMetadataException(VarsqlAppCode.DB_META_ERROR , e);
+			}
 		}
 		return null;
 	}

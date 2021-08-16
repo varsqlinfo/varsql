@@ -35,12 +35,17 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	// java error
 	,EC_BEAN_CONVERT(20000) // java entity 변환 에러.
 
+	// meta , ddl error
+	,DB_META_ERROR(30000)
+	,DB_META_DDL_ERROR(30001)
+
 	// 공통 코드 50000 ~60000
 	,COMM_FILE_EMPTY(50000) // file upload empty
 	,COMM_PASSWORD_NOT_VALID(50001) // 유효 하지 않은 비밀번호
 	,COMM_FILE_UPLOAD_ERROR(50002) // file upload error
+	,COMM_FILE_DOWNLOAD_ERROR(50003) // file download error
 
-	,COMM_RUNTIME_ERROR(50005) // file upload error
+	,COMM_RUNTIME_ERROR(50005) // runtime error
 
 
 	//db error 80000 ~90000

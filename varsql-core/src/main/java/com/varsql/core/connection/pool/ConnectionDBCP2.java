@@ -122,7 +122,9 @@ public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 
 	public void poolShutdown(String nm) throws ConnectionFactoryException {
 		try{
+			logger.info("poolShutdown start : {}", nm);
 			driver.closePool(nm);
+			logger.info("poolName stop");
 		}catch(Exception e){
 			logger.error("poolName : {}", nm , e);
 		}

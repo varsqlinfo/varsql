@@ -156,7 +156,7 @@ public class {{capitalize (camelCase table.name)}}{
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-    private {{javaType typeName}} {{camelCase name}}; {{comment}}
+    private {{javaType typeName}} {{camelCase name}}; //{{comment}}
 {{/columns}}
 						]]></code>
 				<compileValue/>
@@ -215,7 +215,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 				<code><![CDATA[
 {{#columns}}
 	@Column(name ="{{name}}")
-	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
 
 {{/columns}}
 						]]></code>
@@ -275,7 +275,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
 {{/columns}}
 						]]></code>
 				<compileValue/>
@@ -320,7 +320,7 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; {{comment}}
+	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
 {{/columns}}
 						]]></code>
 				<compileValue/>

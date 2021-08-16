@@ -29,9 +29,17 @@ var _constants = {
 	,queryParameterPrefix:'#{'
 	,queryParameterSuffix:'}'
 };
-
+/**
+ * :{name : 'TIMESTAMP'	-- dataType 여부.
+ * ,isNum : false	-- 숫자 여부
+ * , isDate : true	-- date
+ * , val : 'current_timestamp'	-- generate insert, update default value
+ * , javaType:'String'	-- java type
+ * , isSize: false -> ddl create size check
+ * }
+ */
 var _dto = {
-	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'char'}
+	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'char', isSize: true}
 	,'-6':{name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
 	,'5':{name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
 	,'4':{name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
@@ -44,9 +52,9 @@ var _dto = {
 	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'char'}
 	,'12':{name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
 	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'String'}
-	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'String'}
-	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'String'}
+	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'String', isSize: false}
+	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'String', isSize: false}
+	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'String', isSize: false}
 	,'-2':{name : 'BINARY',isNum : false ,val : '', javaType:'String'}
 	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'String'}
 	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'String'}
@@ -55,23 +63,27 @@ var _dto = {
 		return parseInt(len /2,10);
 	}}
 	//,'1111':{name : 'OTHER',isNum : false ,val : '', javaType:'Object'}
-	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object'}
-	,'2001':{name : 'DISTINCT',isNum : false ,val : '', javaType:'Object'}
+	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'2001':{name : 'DISTINCT',isNum : false ,val : '', javaType:'Object', isSize: false}
 	,'2002':{name : 'STRUCT',isNum : false ,val : '', javaType:'Object'}
 	,'2003':{name : 'ARRAY',isNum : false ,val : '', javaType:'Object'}
 	,'2004':{name : 'BLOB',isNum : false ,val : '', javaType:'Object'}
 	,'2005':{name : 'CLOB',isNum : false ,val : '', javaType:'String'}
 	,'2006':{name : 'REF',isNum : false ,val : '', javaType:'Object'}
-	,'70':{name : 'DATALINK',isNum : false ,val : '', javaType:'Object'}
-	,'16':{name : 'BOOLEAN',isNum : false ,val : '', javaType:'boolean'}
-	,'-8':{name : 'ROWID',isNum : false ,val : '', javaType:'Object'}
+	,'70':{name : 'DATALINK',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'16':{name : 'BOOLEAN',isNum : false ,val : '', javaType:'boolean', isSize: false}
+	,'-8':{name : 'ROWID',isNum : false ,val : '', javaType:'Object', isSize: false}
 	,'-15':{name : 'NCHAR',isNum : false ,val : '', javaType:'String'}
 	,'-9':{name : 'NVARCHAR',isNum : false ,val : '', javaType:'String'}
 	,'-16':{name : 'LONGNVARCHAR',isNum : false ,val : '', javaType:'String'}
 	,'2011':{name : 'NCLOB',isNum : false ,val : '', javaType:'String'}
-	,'2009':{name : 'SQLXML',isNum : false ,val : '', javaType:'String'}
-	,'9999':{name : 'OTHER',isNum : false ,val : '', javaType:'Object'}
+	,'2009':{name : 'SQLXML',isNum : false ,val : '', javaType:'String', isSize: false}
+	,'9999':{name : 'OTHER',isNum : false ,val : '', javaType:'Object', isSize: false}
+
 };
+
+_dto['INT'] = VARSQL.util.objectMerge({},_dto['4'],{name:'INT'});
+_dto['DATETIME'] =VARSQL.util.objectMerge({},_dto['91'],{name:'DATETIME'});
 
 var DEFAULT_HINTS = [
 	'BIT'
@@ -190,6 +202,8 @@ function setNameKeyMapping (pdto){
 var dataType = {};
 
 dataType.getDataTypeInfo = function (dataType){
+	dataType= (dataType+'').toUpperCase();
+
 	var tmpDataType= _dto[dataType];
 
 	if(typeof  tmpDataType !=='undefined'){
@@ -205,7 +219,7 @@ VARSQLCont.allDataType = function (){
 	for(var key in _dto){
 		var item = _dto[key];
 
-		if(!dupChk[item.name]){
+		if(!dupChk[item.name] && item.name != 'NULL'){
 			result.push({
 				type : item.name
 				,name : item.name

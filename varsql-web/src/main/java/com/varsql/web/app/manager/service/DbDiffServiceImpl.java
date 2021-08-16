@@ -127,6 +127,7 @@ public class DbDiffServiceImpl{
 				, ConvertUtils.longValueOf(vtConnRVO.getVdbversion())
 				, vtConnRVO.getSchemaViewYn()
 				, ConvertUtils.intValue(vtConnRVO.getMaxSelectCount())
+				, vtConnRVO.getUseColumnLabel()
 			)
 		);
 

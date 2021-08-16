@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<%@ include file="/WEB-INF/include/initvariable.jspf"%>
+<%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
@@ -27,7 +27,7 @@
 
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<link href="${pageContextPath}/webstatic/css/varsql.common.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.common.min.css" rel="stylesheet" type="text/css">
 
 </head>
 <body>

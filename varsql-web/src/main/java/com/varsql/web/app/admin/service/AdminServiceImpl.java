@@ -18,6 +18,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.sql.util.JdbcUtils;
+import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
@@ -79,6 +82,10 @@ public class AdminServiceImpl extends AbstractService{
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
+	private CacheManager cacheManager;
 
 	/**
 	 *
@@ -244,20 +251,41 @@ public class AdminServiceImpl extends AbstractService{
 		DBConnectionEntity reqEntity = vtConnection.toEntity();
 
 		DBConnectionEntity saveEntity= null;
+		DBConnectionEntity currentEntity= null;
+
+		boolean updateFlag = false;
 		if(reqEntity.getVconnid() != null) {
-			saveEntity= dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
-			if(saveEntity!= null) {
+			currentEntity= dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
+
+			if(currentEntity != null) {
+				saveEntity = new DBConnectionEntity();
+				BeanUtils.copyProperties(currentEntity, saveEntity);
+				updateFlag = true;
 				copyNonNullProperties(reqEntity, saveEntity, "vpw");
 			}
 		}
 
-		if(saveEntity==null) {
+		if(!updateFlag) {
 			saveEntity= reqEntity;
 		}
 
 		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(saveEntity));
 
 		dbConnectionModelRepository.save(saveEntity);
+
+		if(updateFlag) {
+			if(!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
+				CacheUtils.removeObjectCache(cacheManager, currentEntity);
+			}else if(!reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())) {
+				CacheUtils.removeObjectCache(cacheManager, currentEntity);
+			}else {
+				if("Y".equals(reqEntity.getUrlDirectYn()) && !reqEntity.getVurl().equals(currentEntity.getVurl())) {
+					CacheUtils.removeObjectCache(cacheManager, currentEntity);
+				}else if(!reqEntity.getVserverip().equals(currentEntity.getVserverip()) || reqEntity.getVport() != currentEntity.getVport()){
+					CacheUtils.removeObjectCache(cacheManager, currentEntity);
+				}
+			}
+		}
 
 		resultObject.setItemOne(1);
 
@@ -310,6 +338,14 @@ public class AdminServiceImpl extends AbstractService{
 		dbGroupMappingDbEntityRepository.deleteByVconnid(vconnid);
 		dbManagerRepository.deleteByVconnid(vconnid);
 
+		try {
+			ConnectionFactory.getInstance().poolShutdown(vconnid);
+		} catch (Exception e) {
+			logger.error("deleteVtconnectionInfo vconnid :  {}" , vconnid, e);
+		}finally {
+			CacheUtils.removeObjectCache(cacheManager, vconnid);
+		}
+
 		return true;
 	}
 
@@ -346,6 +382,8 @@ public class AdminServiceImpl extends AbstractService{
 		} catch (Exception e) {
 			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage(e.getMessage());
+		}finally {
+			CacheUtils.removeObjectCache(cacheManager, vconnid);
 		}
 
 		return resultObject;
@@ -366,6 +404,8 @@ public class AdminServiceImpl extends AbstractService{
 		} catch (Exception e) {
 			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage(e.getMessage());
+		}finally {
+			CacheUtils.removeObjectCache(cacheManager, vconnid);
 		}
 		return resultObject;
 	}

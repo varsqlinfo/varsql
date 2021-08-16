@@ -172,16 +172,16 @@
     |  \-[SELECT] Node: 'select'
     |     \-[IDENT] Node: 'generatedAlias0'
     hibernate 로그   -->
-    <logger name="org.hibernate.hql.internal.ast" level="info"/>
+    <logger name="org.hibernate.hql.internal.ast" level="info" additivity="false"/>
 
     <!-- hibernate 설정 정보. -->
-    <logger name="org.hibernate.cfg" level="info"/>
+    <logger name="org.hibernate.cfg" level="info" additivity="false"/>
 
     <!--
         o.h.p.w.spi.MetamodelGraphWalker - Visiting attribute path : acceptYn
         model member 변수 보기.
 	-->
-    <logger name="org.hibernate.persister" level="info"/>
+    <logger name="org.hibernate.persister" level="info" additivity="false"/>
 
     <!--
     	DEBUG org.hibernate.loader.Loader - Result row: EntityKey[com.varsql.web.model.DBTypeModel#008]
@@ -189,7 +189,7 @@
 
 		result log
      -->
-    <logger name="org.hibernate.loader" level="info"/>
+    <logger name="org.hibernate.loader" level="info" additivity="false"/>
 
     <!--
 	    DEBUG o.h.engine.internal.TwoPhaseLoad - Resolving attributes for [com.varsql.web.model.DBTypeModel#001]
@@ -197,25 +197,27 @@
 
 		sql result log
      -->
-    <logger name="org.hibernate.engine.internal" level="info"/>
+    <logger name="org.hibernate.engine.internal" level="info" additivity="false"/>
 
     <!--
         DEBUG o.h.i.f.i.DefaultIdentifierGeneratorFactory - Registering IdentifierGenerator strategy [uuid2] -> [org.hibernate.id.UUIDGenerator]
 
 		id IDGenerator view
 	-->
-    <logger name="org.hibernate.id.factory.internal" level="info"/>
+    <logger name="org.hibernate.id.factory.internal" level="info" additivity="false"/>
 
     <logger name="org.hibernate" level="info"/>
 	<logger name="org.hibernate.type.descriptor" level="error"/>
-	<logger name="org.hibernate.type.descriptor.sql" level="trace"/>
-	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error"/>
+	<logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false"/>
+	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error" additivity="false"/>
     <logger name="org.hibernate.SQL" level="DEBUG"/>
 
 	<!-- apache log // start -->
-    <logger name="org.apache.tiles" level="info"/>
-    <logger name="org.apache.commons" level="info"/>
+    <logger name="org.apache.tiles" level="info" additivity="false"/>
+    <logger name="org.apache.commons" level="info" additivity="false"/>
 	<!-- apache log // end  -->
+
+    <logger name="com.varsql.web.configuration" level="info" additivity="false"/>
 
    <if condition='"local".equals("${runtime}")'>
         <then>

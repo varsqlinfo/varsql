@@ -9,6 +9,11 @@
 <meta name="description" content="varsql-ytechinfo">
 <meta name="author" content="varsql-ytechinfo">
 
+<script>
+var $varsqlConfig ={
+	conuid :VARSQL.util.getLocationParameter('conuid')
+}
+</script>
 <link rel="shortcut icon" href="/vsql/webstatic/favicon.ico" type="image/png">
 <link rel="icon" href="/vsql/webstatic/favicon.ico" type="image/png">
 
@@ -70,8 +75,8 @@
 		</template>
 
 		<div id="detailViewTemplate" style="display: none;">
-			<div class="wh100" style="overflow: auto;">
-				<table class="item-detail-area">
+			<div class="item-detail-area" style="overflow: auto;">
+				<table>
 					<thead style="display:none;">
 						<tr>
 							<td class="item-col-label">
@@ -190,6 +195,11 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 		,viewGrid : function (){
 
 			var _this =this;
+			var colInfos = _this.colInfos;
+			for(var i =0 ;i < colInfos.length;i++){
+				var item = colInfos[i];
+				delete item['width'];
+			}
 
 			$.pubGrid('#itemList',{
 				selectionMode : 'multiple-row'
@@ -315,7 +325,7 @@ function setLayout(mode, changeFlag){
 	}
 
 	if(changeFlag === false){
-		var saveState = localStorage.getItem('varsqlDetailLayout');
+		var saveState = VARSQL.localStorage('varsqlDetailLayout');
 
 		try{
 			if(!VARSQL.isBlank(saveState)){
@@ -351,6 +361,29 @@ function setLayout(mode, changeFlag){
 		container.getElement().html('<div id="detailItemArea" class="wh100" style=""></div>');
 	});
 
+	varsqlLayout.on('initialised', function( contentItem ){
+		var firstFlag = true;
+		var layoutSaveTimer;
+
+		var layoutSaveTimer;
+		var firstFlag = true;
+
+		varsqlLayout.on( 'stateChanged', function(){
+			if(firstFlag){
+				viewObj.viewGrid();
+				viewObj.setItemDetail();
+
+				firstFlag = false;
+				return ;
+			}
+			clearTimeout(layoutSaveTimer);
+
+			layoutSaveTimer = setTimeout(function() {
+				VARSQL.localStorage({key : 'varsqlDetailLayout', value : JSON.stringify(varsqlLayout.toConfig()) })
+			}, 300);
+		});
+    });
+
 	varsqlLayout.init();
 
 	var windowResizeTimer;
@@ -361,23 +394,7 @@ function setLayout(mode, changeFlag){
 		}, 20);
 	})
 
-	var layoutSaveTimer;
-	var firstFlag = true;
 
-	varsqlLayout.on( 'stateChanged', function(){
-		if(firstFlag){
-			viewObj.viewGrid();
-			viewObj.setItemDetail();
-
-			firstFlag = false;
-			return ;
-		}
-		clearTimeout(layoutSaveTimer);
-
-		layoutSaveTimer = setTimeout(function() {
-			localStorage.setItem('varsqlDetailLayout', JSON.stringify( varsqlLayout.toConfig()))
-		}, 300);
-	});
 
 	if(changeFlag){
 		localStorage.setItem('varsqlDetailLayout', JSON.stringify( varsqlLayout.toConfig()))

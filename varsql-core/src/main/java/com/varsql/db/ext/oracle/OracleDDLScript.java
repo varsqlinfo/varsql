@@ -23,9 +23,9 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQLTemplateFactory;
 import com.varsql.core.sql.SQL;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
+import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.VartechUtils;
 
@@ -92,7 +92,7 @@ public class OracleDDLScript extends DDLScriptImpl {
 
 				ddlStr.append(getDefaultValue(source.getString("DATA_DEFAULT"), dataTypeInfo , true));
 
-				ddlStr.append(getNotNullValue(source.getString("NULLABLE")));
+				ddlStr.append(getNotNullValue(source.getString(MetaColumnConstants.NULLABLE)));
 
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}

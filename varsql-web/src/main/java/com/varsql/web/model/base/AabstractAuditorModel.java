@@ -28,9 +28,9 @@ import lombok.Setter;
 @Getter
 @MappedSuperclass
 public abstract class AabstractAuditorModel extends AbstractRegAuditorModel{
-	
+
 	private static final long serialVersionUID = 7893362241769774670L;
-	
+
 	@JsonIgnore
     @LastModifiedBy
     @Column(name="UPD_ID")
@@ -40,5 +40,10 @@ public abstract class AabstractAuditorModel extends AbstractRegAuditorModel{
     @LastModifiedDate
     @Column(name="UPD_DT")
     private LocalDateTime updDt;
+
+
+	public final static String UPD_ID="updId";
+
+	public final static String UPD_DT="updDt";
 
 }

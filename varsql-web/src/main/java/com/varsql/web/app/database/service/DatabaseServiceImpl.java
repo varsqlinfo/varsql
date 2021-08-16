@@ -7,8 +7,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +19,8 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.exception.DBMetadataException;
 import com.varsql.web.common.cache.CacheInfo;
-import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBConnTabResponseDTO;
@@ -135,12 +133,18 @@ public class DatabaseServiceImpl{
 		}catch(Exception e){
 			logger.error("dbObjectList objectType : [{}]",objectType);
 			logger.error("dbObjectList ", e);
-			try{
-				result.setItemList(MetaControlFactory.getDbInstanceFactory(DBType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
-			}catch(Exception subE){
-				logger.error("dbObjectList serverName : [{}]",objectType);
-				logger.error("dbObjectList ", subE);
-				throw subE;
+
+			if(e instanceof DBMetadataException) {
+				result.setResultCode(((DBMetadataException)e).getErrorCode());
+				result.setMessage(e.getMessage());
+			}else {
+				try{
+					result.setItemList(MetaControlFactory.getDbInstanceFactory(DBType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+				}catch(Exception subE){
+					logger.error("dbObjectList serverName : [{}]",objectType);
+					logger.error("dbObjectList ", subE);
+					throw subE;
+				}
 			}
 		}
 

@@ -8,11 +8,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.db.DBType;
+import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.ResponseResult;
 
 /**
 *-----------------------------------------------------------------------------
@@ -48,11 +56,26 @@ public class DatabaseUtilsController extends AbstractController  {
 	 */
 	@RequestMapping(value="/genExcelToDDL", method = RequestMethod.GET)
 	public ModelAndView genExcelToDDL(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
-
-		ModelMap model = mav.getModelMap();
-
-		logger.debug("export specMain : {} ", preferencesInfo);
-
-		return getModelAndView("/genExcelToDDL", VIEW_PAGE.DATABASE_UTILS, model);
+		return getModelAndView("/genExcelToDDL", VIEW_PAGE.DATABASE_UTILS, mav.getModelMap());
 	}
+
+	/**
+	 * @method  : sqlTemplate
+	 * @desc : get sql template
+	 * @author   : ytkim
+	 * @date   : 2021. 3. 6.
+	 * @param dbType
+	 * @param templateType
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/sqlTemplate", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult sqlTemplate(@RequestParam(value = "dbType", required = true) String dbType
+			, @RequestParam(value = "templateType", required = true) String templateType
+			, HttpServletRequest req) throws Exception {
+
+		return VarsqlUtils.getResponseResultItemOne(SQLTemplateFactory.getInstance().getTemplate(DBType.getDBType(dbType), SQL.CREATE.getTemplateId(ObjectType.getDBObjectType(templateType))));
+	}
+
 }

@@ -25,8 +25,7 @@ var _g_options={
 };
 
 // cache
-var _g_cache_store={}
-	,_g_all_schema_object={}
+var _g_all_schema_object={}
 	,_g_cache_obj_meta_store ={};
 var _g_cache = {
 	initSOMetaCacheObject : function (){
@@ -96,18 +95,157 @@ var _g_cache = {
 		}
 	}
 }
+var ALL_COMPONENT_INFO = {
+	dbObject : {
+		type : 'dbObjectComponent'
+		,selector :'#pluginSchemaObject'
+		,template : '#dbObjectComponentTemplate'
+		,init : function (componentState){
+			_ui.dbSchemaObject.init();
+		}
+		,resize : function (componentState, opt){
+			_ui.dbSchemaObject.resizeObjectArea(opt);
+		}
+	}
+	,dbMetadata : {
+		type : 'dbMetadataComponent'
+		,selector :'#pluginSchemaObject'
+		,template : '#dbMetadataComponentTemplate'
+		,init : function (componentState){
+			_ui.dbObjectMetadata.init();
+		}
+		,resize : function (componentState, opt){
+			_ui.dbObjectMetadata.resizeMetaArea(opt);
+		}
+	}
+	,sqlEditor :{
+		type : 'sqlEditorComponent'
+		,selector :'#pluginSchemaObject'
+		,template : '#sqlEditorComponentTemplate'
+		,init : function (componentState){
+			_ui.SQL.init();
+		}
+		,resize : function (componentState, opt){
+			_ui.SQL.resize(opt);
+		}
+	}
+	,sqlData : {
+		type : 'sqlDataComponent'
+		,selector :'#pluginSchemaObject'
+		,template : '#sqlDataComponentTemplate'
+		,init : function (componentState){
+			_ui.sqlDataArea.init();
+		}
+		,resize : function (componentState, opt){
+			_ui.sqlDataArea.resize(opt);
+		}
+	}
+	,plugin : {
+		type : 'pluginComponent'
+		,template : 'function'
+		,init : function (componentState){
+			_ui.pluginComponent.init(componentState);
+		}
+		,resize : function (componentState, opt){
+			var componentObj = _ui.component[componentState.key];
+
+			var resizeFn = componentObj.resize;
+			if(VARSQL.isFunction(resizeFn)){
+				resizeFn.call(componentObj, opt);
+			}
+		}
+	}
+}
+
+function registerFn(componentInfo){
+
+	if(_$utils.isEqComponentName('pluginComponent', componentInfo)){
+		return function( container, componentState ){
+
+			var componentObj = _ui.component[componentState.key];
+			container.getElement().html(componentObj.template());
+
+			var initResize = true;
+			container.on('resize',function() {
+				if(initResize === true){
+					initResize = false;
+					return ;
+				}
+				var resizeFn = componentObj.resize;
+				if(VARSQL.isFunction(resizeFn)){
+
+					var componentInfo = container._config.componentState;
+
+					if(componentInfo.initFlag !== true){
+				    	return ;
+			    	}
+					try{
+						resizeFn.call(componentObj, componentState, {width : container.width, height : container.height});
+					}catch(e){};
+				}
+			})
+		}
+	}
+
+	return function( container, componentState ){
+	    container.getElement().html($(componentInfo.template).html());
+	    container.$isVarComponentRemove = true;
+
+		var initResize = true;
+		container.on('resize',function() {
+			if(initResize === true){
+				initResize = false;
+				return ;
+			}
+
+			componentInfo.resize(componentState, {width : container.width,height : container.height});
+		});
+	};
+}
+
 
 VARSQL.ui = VARSQL.ui||{};
+VARSQL.ui.create = function (_opts){
 
-var _ui = {};
+	VARSQLCont.init(_opts.dbtype , _ui.base);
+
+	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
+
+	delete _opts.userSettingInfo['main.database.setting'];
+
+	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
+
+	_ui.initContextMenu();
+	_ui.headerMenu.init();
+	_ui.initEditorOpt();
+
+	_ui.layout.init(_opts);
+	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
+}
+
+var _ui = {
+	base :{
+		mimetype: ''	// editor mime type
+		,sqlHints: {}	// sql hints
+	}
+	,extension: {}		// db object 추가 extension
+	,component: {} 	//추가 component
+};
+
 var _$userMain= top != window ? top.userMain : {isDbActive:function (){return true; }}; // 부모 userMain;
 
-_ui.utils = {
+var _$utils = {
 	copy : function( target, source ) {
 		for( var key in source ) {
 			target[ key ] = source[ key ];
 		}
 		return target;
+	}
+	,isEqComponentName : function (componentName, componentInfo){
+		return componentName == componentInfo.type;
+	}
+	,getComponentName : function (componentInfo){
+		return componentInfo.type;
 	}
 }
 
@@ -133,10 +271,19 @@ _ui.pluginProxy = {
 			var colList = [];
 
 			for(var key in cacheItem){
-				colList.push({
-					name : convertUnderscoreCase(key)
-					,val : cacheItem[key]
-				});
+				var val = cacheItem[key];
+				if(key=='customField'){
+					for(var key2 in val)
+					colList.push({
+						name : key2
+						,val : val[key2]
+					});
+				}else{
+					colList.push({
+						name : convertUnderscoreCase(key)
+						,val : val
+					});
+				}
 			}
 
 			_g_cache.setSOMetaCache(objType,cacheItem.name, 'info', {items:colList});
@@ -155,54 +302,17 @@ _ui.pluginProxy = {
 
 //컨텍스트 메뉴 sql 생성 부분 처리 .
 _ui.addDbServiceObject = function (objectKey, objectInfo){
-	_ui.utils.copy(_ui.dbSchemaObject,objectInfo);
+	_$utils.copy(_ui.dbSchemaObject,objectInfo);
 }
 
 _ui.addODbServiceObjectMetadata = function (objectKey, objectInfo){
-	_ui.utils.copy(_ui.dbObjectMetadata,objectInfo);
-}
-
-_ui.base ={
-	mimetype : ''	// editor mime type
-	,sqlHints :{}	// sql hints
-};
-
-_ui.extension ={
-
-}
-
-VARSQL.ui.getTheme = function (){
-	return getThemeClass(_g_options.screenSetting.mainTheme);
-}
-
-VARSQL.ui.create = function (_opts){
-
-	VARSQLCont.init(_opts.dbtype , _ui.base);
-
-	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
-
-	delete _opts.userSettingInfo['main.database.setting'];
-
-	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
-
-	_ui.initContextMenu();
-	_ui.headerMenu.init();
-	_ui.initEditorOpt();
-
-	_ui.layout.init(_opts);
-	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
+	_$utils.copy(_ui.dbObjectMetadata,objectInfo);
 }
 
 _ui.initEditorOpt = function (){
 	CodeMirror.keyMap.default["Shift-Tab"] = "indentLess";
 	CodeMirror.keyMap.default["Tab"] = "indentMore";
 }
-
-var _selectorType ={
-	ELEMENT :'element'
-	,TEMPLATE :'template'
-	,PLUGIN :'plugin'
-};
 
 var _selectorSuffix ={
 	TAB :'tab'
@@ -211,16 +321,7 @@ var _selectorSuffix ={
 };
 
 var _selector = {
-	element :{
-		'layoutBody' : '#varsqlBodyWrapper'
-	}
-	,template :{
-		'dbObjectComponent' : '#dbObjectComponentTemplate'
-		,'dbMetadataComponent' : '#dbMetadataComponentTemplate'
-		,'sqlEditorComponent' : '#sqlEditorComponentTemplate'
-		,'sqlDataComponent' : '#sqlDataComponentTemplate'
-	}
-	,plugin :{
+	plugin :{
 		'schemaObject' : '#pluginSchemaObject'
 		,'objectMeta' : '#pluginObjectMeta'
 		,'sqlEditor' : '#pluginSqlEditor'
@@ -235,9 +336,8 @@ var _selector = {
 	}
 }
 
-function _getSelector(key,type, suffixKey){
-	type = type|| 'element';
-	return _selector[type][key] + (suffixKey ? (_selector['subffix'][suffixKey]||suffixKey):'' );
+function _getSelector(key, suffixKey){
+	return _selector['plugin'][key] + (suffixKey ? (_selector['subffix'][suffixKey]||suffixKey):'' );
 }
 
 // background click check
@@ -305,10 +405,6 @@ _ui.initContextMenu  = function (){
 		}
 		return true;
 	});
-}
-
-_ui.initEvt = function(){
-
 }
 
 //header 메뉴 처리.
@@ -662,6 +758,16 @@ _ui.headerMenu ={
 			}
 		});
 	}
+	// 데이타 내보내기.
+	,exportInfo :function (type){
+		var _self = this;
+
+		if(type=='spec'){
+			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
+		}else if(type=='ddl'){
+			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
+		}
+	}
 	//header 메뉴 환경설정처리.
 	,openPreferences : function (title , loadUrl){
 		var _self = this;
@@ -682,35 +788,17 @@ _ui.headerMenu ={
 			});
 		}
 
-		var iframeEle =$($('#preferencesTemplate').find('iframe'));
-
-		if(iframeEle.attr('src') != loadUrl){
-			iframeEle.attr('src', loadUrl);
-		}else{
-			// theme setting
-			_self.setThemeInfo(_g_options.screenSetting.mainTheme, true, iframeEle.get(0).contentWindow.$('html'));
-		}
+		VARSQLUI.frame.open('#preferencesTemplate iframe', loadUrl)
 
 		_self.preferencesDialog.dialog("open").parent().find('.ui-dialog-title').html(title);
 	}
-	// 데이타 내보내기.
-	,exportInfo :function (type){
-		var _self = this;
-
-		if(type=='spec'){
-			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
-		}else if(type=='ddl'){
-			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
-		}
-	}
 	// 테마 설정.
-	,setThemeInfo : function (themeName, initFlag, ele){
-		var addTheme = getThemeClass(themeName);
-		ele = ele ||$('html');
+	,setThemeInfo : function (themeName, initFlag){
 
-		ele.removeAttr('class').addClass(addTheme);
+		VARSQLUI.theme(_g_options.param.conuid, themeName);
 
 		if(initFlag !== true){
+			_g_options.screenSetting.mainTheme = themeName;
 			_ui.preferences.save({mainTheme : themeName});
 		}
 	}
@@ -838,106 +926,23 @@ _ui.layout = {
 			}
 		}catch(e){}
 
-		var varsqlLayout = new GoldenLayout( config ,$(_getSelector('layoutBody')));
+		var varsqlLayout = new GoldenLayout(config, $('#varsqlBodyWrapper'));
 
-		varsqlLayout.registerComponent( 'dbObjectComponent', function( container, componentState ){
-		    container.getElement().html($(_getSelector('dbObjectComponent',_selectorType.TEMPLATE)).html());
-		    container.$isVarComponentRemove = true;
+		for(var key in ALL_COMPONENT_INFO){
+			var componentInfo =ALL_COMPONENT_INFO[key];
+			var componentName = _$utils.getComponentName(componentInfo);
 
-			var initResize = true;
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false;
-					return ;
-				}
+			varsqlLayout.registerComponent(componentName, registerFn(componentInfo));
+		}
 
-				_ui.dbSchemaObject.resizeObjectArea({width : container.width,height : container.height});
-
-			});
-		});
-
-		varsqlLayout.registerComponent( 'dbMetadataComponent', function( container, componentState ){
-		    container.getElement().html($(_getSelector('dbMetadataComponent',_selectorType.TEMPLATE)).html());
-		    container.$isVarComponentRemove = true;
-
-			var initResize = true;
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false;
-					return ;
-				}
-
-				_ui.dbObjectMetadata.resizeMetaArea({width : container.width,height : container.height});
-			})
-		});
-
-		varsqlLayout.registerComponent( 'sqlEditorComponent', function( container, componentState ){
-		    container.getElement().html($(_getSelector('sqlEditorComponent',_selectorType.TEMPLATE)).html());
-		    container.$isVarComponentRemove = true;
-
-		    var initResize = true;
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false;
-					return ;
-				}
-
-				_ui.SQL.resize({width : container.width-2,height : container.height});
-			});
-		});
-
-		varsqlLayout.registerComponent( 'sqlDataComponent', function( container, componentState ){
-
-			container.getElement().html($(_getSelector('sqlDataComponent',_selectorType.TEMPLATE)).html());
-			container.$isVarComponentRemove = true;
-
-		    var initResize = true;
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false;
-					return ;
-				}
-				_ui.sqlDataArea.resize({width : container.width, height : container.height});
-			})
-		});
-
-		// plugin component reg
-		varsqlLayout.registerComponent('pluginComponent', function( container, componentState ){
-
-			var componentObj = _ui.component[componentState.key];
-			container.getElement().html(componentObj.template());
-
-			var initResize = true;
-			container.on('resize',function() {
-				if(initResize === true){
-					initResize = false;
-					return ;
-				}
-				var resizeFn = componentObj.resize;
-				if(VARSQL.isFunction(resizeFn)){
-
-					var componentInfo = container._config.componentState;
-
-					if(componentInfo.initFlag !== true){
-				    	return ;
-			    	}
-					try{
-						resizeFn.call(componentObj, {width : container.width, height : container.height});
-					}catch(e){};
-				}
-			})
-		});
-
-		var initActiveComponentTab = {};
 		// component create
-		varsqlLayout.on( 'componentCreated', function( component ){
+		varsqlLayout.on('componentCreated', function( component ){
 
 			if(component.container.$isVarComponentRemove ===true){
 				component.container.tab.closeElement.remove();
 			}
 
 			var componentInfo = component.config.componentState;
-			componentInfo.isComponentInit = true;
 
 			var componentName = component.componentName;
 
@@ -947,13 +952,7 @@ _ui.layout = {
 			}
 
 			if(component.tab.isActive){
-				componentInfo.initFlag = true;
-
-				if(!initActiveComponentTab[componentName]){
-					initActiveComponentTab[componentName] = [];
-				}
-
-				initActiveComponentTab[componentName].push(componentInfo)
+				_self.initComponent(componentName, componentInfo);
 			}
 		});
 
@@ -966,8 +965,11 @@ _ui.layout = {
 
 		// item destroy
 		varsqlLayout.on('itemDestroyed', function( component ){
-			if(component.componentName =='pluginComponent'){
+			if(_$utils.isEqComponentName(component.componentName, ALL_COMPONENT_INFO.plugin)){
 				var componentInfo = component.config.componentState;
+
+				if(componentInfo.initFlag !==true) return ;
+
 				var componentObj = _ui.component[componentInfo.key];
 				var destroyFn = componentObj.destroy;
 
@@ -977,36 +979,47 @@ _ui.layout = {
 			}
 		});
 
-		varsqlLayout.on( 'stackCreated', function( stack ){
+		varsqlLayout.on('stackCreated', function( stack ){
 
 			var items = stack.contentItems;
 
 			for(var i =0 ;i < items.length; i++){
-				var item = items[i];
-				item.config.componentState.initFlag = false;
-				item.config.componentState.isComponentInit = false;
+				items[i].config.componentState.initFlag = false;
 			}
-
-		    stack.on( 'activeContentItemChanged', function( contentItem ){
-
-		    	var componentName = contentItem.componentName;
-		    	var componentInfo = contentItem.config.componentState;
-
-		    	if(componentInfo.initFlag !== true && componentInfo.isComponentInit ===true){
-			    	_self.initComponent(componentName, componentInfo);
-		    	}
-		    });
 		});
 
+		// layout chage event
+		varsqlLayout.on('activeContentItemChanged', function( contentItem ){
+
+	    	var componentName = contentItem.componentName;
+	    	var componentInfo = contentItem.config.componentState;
+
+	    	if(componentInfo.initFlag !== true && contentItem.isInitialised ===true){
+		    	_self.initComponent(componentName, componentInfo);
+	    	}
+	    });
+
+		// layout ready
+		varsqlLayout.on('initialised', function( contentItem ){
+			var firstFlag = true;
+			var layoutSaveTimer;
+
+			varsqlLayout.on('stateChanged', function(){
+
+				if(firstFlag){
+					firstFlag = false;
+					return;
+				}
+
+				clearTimeout(layoutSaveTimer);
+
+				layoutSaveTimer = setTimeout(function() {
+					_ui.preferences.save({layoutConfig : JSON.stringify( varsqlLayout.toConfig())});
+				}, 300);
+			});
+	    });
+
 		varsqlLayout.init();
-
-		for(var componentName in initActiveComponentTab){
-			var componentInfoArr = initActiveComponentTab[componentName];
-
-			for(var i =0 ;i <componentInfoArr.length; i++){
-				_self.initComponent(componentName, componentInfoArr[i]);
-			}
-		}
 
 		var windowResizeTimer;
 		$(window).resize(function() {
@@ -1016,41 +1029,14 @@ _ui.layout = {
 			}, 20);
 		})
 
-		var layoutSaveTimer;
-
-		var firstFlag = true;
-
-		var idx = 0;
-		varsqlLayout.on( 'stateChanged', function(){
-
-			if(firstFlag){
-				firstFlag = false;
-				return ;
-			}
-			clearTimeout(layoutSaveTimer);
-
-			layoutSaveTimer = setTimeout(function() {
-				_ui.preferences.save({layoutConfig : JSON.stringify( varsqlLayout.toConfig())});
-			}, 300);
-		});
-
 		_self.mainObj = varsqlLayout;
 	}
 	,initComponent : function (componentName, componentInfo){
-		var _self = this;
-
 		componentInfo.initFlag = true;
-		if(componentName =='pluginComponent'){
-			_self.initPluginComponent(componentInfo);
-		}else if(componentName =='sqlEditorComponent'){
-			_ui.SQL.init();
-		}else if(componentName =='dbObjectComponent'){
-			_ui.dbSchemaObject.init();
-		}else if(componentName =='sqlDataComponent'){
-			_ui.sqlDataArea.init();
-		}else if(componentName =='dbMetadataComponent'){
-			_ui.dbObjectMetadata.init();
-		}
+
+		var componentKey = componentName.replace(new RegExp('Component$'), '');
+
+		ALL_COMPONENT_INFO[componentKey].init(componentInfo);
 	}
 	// tab active
 	,setActiveTab : function (tabKey){
@@ -1078,7 +1064,8 @@ _ui.layout = {
 			return ;
 		}
 
-		var pluginItem = varsqlLayout.root._$getItemsByProperty('componentName','pluginComponent');
+		var pluginComponentName = _$utils.getComponentName(ALL_COMPONENT_INFO.plugin);
+		var pluginItem = varsqlLayout.root._$getItemsByProperty('componentName', pluginComponentName);
 
 		var pluginLen = pluginItem.length;
 
@@ -1089,7 +1076,7 @@ _ui.layout = {
 				title: addItemInfo.nm
 			    ,type: 'component'
 			    ,id : addItemInfo.key
-			    ,componentName: 'pluginComponent'
+			    ,componentName: pluginComponentName
 			    ,componentState: addItemInfo
 			})
 		}else{
@@ -1097,7 +1084,7 @@ _ui.layout = {
 				title: addItemInfo.nm
 			    ,type: 'component'
 			    ,id : addItemInfo.key
-			    ,componentName: 'pluginComponent'
+			    ,componentName: pluginComponentName
 			    ,componentState: addItemInfo
 			})
 		}
@@ -1106,10 +1093,19 @@ _ui.layout = {
 			varsqlLayout.root.getItemsById(addItemInfo.key)[0].container.setSize(250);
 		}
 
-		this.initPluginComponent(addItemInfo);
+		this.initComponent(pluginComponentName, addItemInfo);
 	}
+}
+
+// plugin add
+_ui.registerPlugin = function ( regItem){
+	_$utils.copy(_ui.component,regItem);
+}
+
+// plugin
+_ui.pluginComponent ={
 	// plugin component 초기화
-	,initPluginComponent : function (itemInfo){
+	init :  function (itemInfo){
 		itemInfo.initFlag = true;
 		var componentObj = _ui.component[itemInfo.key];
 		var initFn = componentObj.init;
@@ -1120,22 +1116,13 @@ _ui.layout = {
 	}
 }
 
-
-//추가 component
-_ui.component = {};
-
-// plugin add
-_ui.registerPlugin = function ( regItem){
-	_ui.utils.copy(_ui.component,regItem);
-}
-
 // db schema object 처리.
 _ui.dbSchemaObject ={
 	initObjectMenu : false
 	,selectObjectMenu : ''
 	,options :{
-		objectTypeTabEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB)
-		,objectTypeTabContentEleId : _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB_CONT)
+		objectTypeTabEleId : _getSelector('schemaObject', _selectorSuffix.TAB)
+		,objectTypeTabContentEleId : _getSelector('schemaObject', _selectorSuffix.TAB_CONT)
 	}
 	,init :function (){
 		var _self = this;
@@ -1159,7 +1146,7 @@ _ui.dbSchemaObject ={
 	,initEvt : function (){
 		var _self = this;
 
-		var schemaObjEleId = _getSelector('schemaObject',_selectorType.PLUGIN);
+		var schemaObjEleId = _getSelector('schemaObject');
 
 		$(schemaObjEleId+' .db-schema-list-btn').on('click', function (){
 			var viewArea = $(this).closest('.schema-view-btn');
@@ -1257,7 +1244,7 @@ _ui.dbSchemaObject ={
 		var _self = this;
 		var $contentId = selObj.contentid;
 
-		var schemaObjectEleId = _getSelector('schemaObject',_selectorType.PLUGIN, _selectorSuffix.TAB_CONT);
+		var schemaObjectEleId = _getSelector('schemaObject', _selectorSuffix.TAB_CONT);
 
 		var activeObj = $(schemaObjectEleId+'>#'+$contentId);
 
@@ -1285,6 +1272,7 @@ _ui.dbSchemaObject ={
 		var param =_getParam({'objectType':$contentId, 'objectNames' : selObj.objectName , 'objectIdx' : selObj.objectIdx});
 
 		if(refresh !== true){
+
 			var cacheObj = _g_cache.getCacheSchemaObject($contentId);
 
 			if(!VARSQL.isUndefined(cacheObj)){
@@ -1293,10 +1281,12 @@ _ui.dbSchemaObject ={
 			}
 		}
 
+		_g_cache.removeSOMetaCache($contentId, selObj.objectName);
+
 		param.refresh = refresh;
 
 		VARSQL.req.ajax({
-			loadSelector : _getSelector('schemaObject',_selectorType.PLUGIN)
+			loadSelector : _getSelector('schemaObject')
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList'}
 			,data : param
 			,success:function (resData){
@@ -1465,7 +1455,6 @@ _ui.addDbServiceObject('table',{
 					enabled : true
 					,click : false
 					,enableSearch : true
-					,enableSpeed : true
 					,callback : function (data){
 						_ui.preferences.save({tablesConfig : data.item});
 						_g_options.screenSetting.tablesConfig = data.item;
@@ -1476,8 +1465,8 @@ _ui.addDbServiceObject('table',{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
-					{key :'name', label:'Table', width:200, sort:true}
-					,{key :'remarks', label:'설명', sort:true}
+					{key :'name', label:'Table', width:200}
+					,{key :'remarks', label:'설명'}
 				]
 				,tbodyItem :itemArr
 				,bodyOptions :{
@@ -1486,6 +1475,14 @@ _ui.addDbServiceObject('table',{
 
 						if(selKey == 'name' ){
 							_ui.SQL._sqlData('select * from '+ getTableName(rowItem.item[selKey]),false);
+						}
+					}
+					,keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
 						}
 					}
 				}
@@ -1535,7 +1532,6 @@ _ui.addDbServiceObject('table',{
 								_ui.pluginProxy.refreshObjectInfo({type : $$objectType , objectName : tmpName, objectIdx : this.rowIdx});
 								return ;
 							}
-
 
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
 
@@ -1626,8 +1622,8 @@ _ui.addDbServiceObject('view',{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
-					{key :'name', label:'View', width:200, sort:true}
-					,{key :'remarks', label:'설명', sort:true}
+					{key :'name', label:'View', width:200}
+					,{key :'remarks', label:'설명'}
 				]
 				,tbodyItem :itemArr
 				,setting : {
@@ -1640,6 +1636,14 @@ _ui.addDbServiceObject('view',{
 
 						if(selKey == 'name' ){
 							_ui.SQL._sqlData('select * from '+getTableName(rowItem.item[selKey]),false);
+						}
+					}
+					,keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
 						}
 					}
 				}
@@ -1710,7 +1714,7 @@ _ui.addDbServiceObject('procedure',{
 					lineNumber : {enabled : true	,width : 30, align: 'right'}
 				}
 				,tColItem : [
-					{key :'name', label:'Procedure',width:200, sort:true}
+					{key :'name', label:'Procedure',width:200}
 					,{key :'status', label:'상태'}
 					,{key :'remarks', label:'설명'}
 				]
@@ -1718,6 +1722,16 @@ _ui.addDbServiceObject('procedure',{
 				,setting : {
 					enabled : true
 					,enableSearch : true
+				}
+				,bodyOptions :{
+					keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+						}
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
@@ -1768,7 +1782,7 @@ _ui.addDbServiceObject('function',{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : [
-					{key :'name', label:'Function',width:200, sort:true}
+					{key :'name', label:'Function',width:200}
 					,{key :'status', label:'상태'}
 					,{key :'remarks', label:'설명'}
 				]
@@ -1776,6 +1790,16 @@ _ui.addDbServiceObject('function',{
 				,setting : {
 					enabled : true
 					,enableSearch : true
+				}
+				,bodyOptions :{
+					keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+						}
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
@@ -1826,17 +1850,27 @@ _ui.addDbServiceObject('index',{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : [
-					{key :'name', label:'Index',width:200, sort:true}
-					,{key :'tblName', label:'테이블명', sort:true}
-					,{key :'type', label:'타입',sort:true}
-					,{key :'tableSpace', label:'Tablespace',sort:true}
-					,{key :'bufferPool', label:'버퍼풀',sort:true}
-					,{key :'status', label:'상태' ,sort:true}
+					{key :'name', label:'Index',width:200}
+					,{key :'tblName', label:'테이블명'}
+					,{key :'type', label:'타입'}
+					,{key :'tableSpace', label:'Tablespace'}
+					,{key :'bufferPool', label:'버퍼풀'}
+					,{key :'status', label:'상태'}
 				]
 				,tbodyItem :itemArr
 				,setting : {
 					enabled : true
 					,enableSearch : true
+				}
+				,bodyOptions :{
+					keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+						}
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
@@ -1884,11 +1918,11 @@ _ui.addDbServiceObject('trigger',{
 
 			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
 				asideOptions :{
-					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+					lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : [
-					{key :'name', label:'Trigger',width:200, sort:true}
-					,{key :'tblName', label:'테이블명'}
+					{key :'name', label:'Trigger', width:120}
+					,{key :'tblName', label:'테이블명', width:100}
 					,{key :'eventType', label:'타입'}
 					,{key :'timing', label:'timing'}
 					,{key :'status', label:'상태'}
@@ -1898,6 +1932,16 @@ _ui.addDbServiceObject('trigger',{
 				,setting : {
 					enabled : true
 					,enableSearch : true
+				}
+				,bodyOptions :{
+					keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+						}
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
@@ -1948,7 +1992,7 @@ _ui.addDbServiceObject('sequence',{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : [
-					{key :'name', label:'Sequence',width:200, sort:true}
+					{key :'name', label:'Sequence',width:200}
 					,{key :'status', label:'상태'}
 					,{key :'created', label:'생성일자'}
 					,{key :'lastDdlTime', label:'최종수정일'}
@@ -1957,6 +2001,16 @@ _ui.addDbServiceObject('sequence',{
 				,setting : {
 					enabled : true
 					,enableSearch : true
+				}
+				,bodyOptions :{
+					keyNavHandler : function(moveInfo){
+
+						if(moveInfo.key == 13){
+							return false;
+						}else{
+							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+						}
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
@@ -2002,7 +2056,7 @@ _ui.dbObjectMetadata= {
 	,metadataTabInfo:{}
 	,activeTabInfo : {}
 	,selector : {
-		contEleId : _getSelector('objectMeta',_selectorType.PLUGIN, _selectorSuffix.CONT)
+		contEleId : _getSelector('objectMeta', _selectorSuffix.CONT)
 	}
 	// 왼쪽 메뉴 생성 .
 	,init : function (options){
@@ -2020,7 +2074,7 @@ _ui.dbObjectMetadata= {
 			var copyTxt = sEle.closest('.pretty-view-area').find('textarea').val();
 
 			if('copy'==mode){
-				copyStringToClipboard('ddlcopy' ,copyTxt);
+				copyStringToClipboard(copyTxt, 'ddlcopy');
 			}else{
 				_ui.SQL.addSqlEditContent(copyTxt , false);
 			}
@@ -2264,7 +2318,7 @@ _ui.dbObjectMetadata= {
 			metaStrHtm.push('</div>	');
 		}
 
-		$(_getSelector('objectMeta',_selectorType.PLUGIN, _selectorSuffix.CONT)).empty().html(metaStrHtm.join(''));
+		$(_getSelector('objectMeta', _selectorSuffix.CONT)).empty().html(metaStrHtm.join(''));
 	}
 	// meta 영역 resize
 	,resizeMetaArea : function (dimension){
@@ -2830,12 +2884,13 @@ _ui.addODbServiceObjectMetadata('sequence', {
  */
 _ui.SQL = {
 	currentSqlEditorInfo : null
+	,sqlEditorBuffer : {}
+	,sqlMainEditor:{}
 	,sqlFileTabObj : null	// sql file tab list
 	,sqlFileNameDialogEle : null // sql file name dialog
 	,allTabSqlEditorObj : {}	 // sql editor  object
-	,sqlEditorSelector : '#sql_editor_area'
+	,sqlEditorSelector : '#varsql_main_editor'
 	,sqlParameterSelector : '#sql_parameter_area'
-	,sqlEditorEle : null
 	,noteDialog : null
 	,findTextDialog : null
 	,currentSqlData :''
@@ -2927,24 +2982,20 @@ _ui.SQL = {
 	,redo :function (){
 		this.getSqlEditorObj().redo();
 	}
-
 	// editor tab & editor element 삭제.
 	,deleteEditorInfo : function (item){
 		this.sqlFileTabObj.removeItem(item);
-
-		if(this.allTabSqlEditorObj[item.sqlId]){
-			if(this.allTabSqlEditorObj[item.sqlId].editor){
-				this.allTabSqlEditorObj[item.sqlId].editor.toTextArea();
-			}
-
-			$('.sql-editor-item[data-editor-id="'+item.sqlId+'"]').remove();
-			$('.sql-parameter-area[data-parameter-id="'+item.sqlId+'"]').remove();
-
-			delete this.allTabSqlEditorObj[item.sqlId];
+		var sqlId = item.sqlId
+		if(this.allTabSqlEditorObj[sqlId]){
+			$('.sql-parameter-area[data-parameter-id="'+sqlId+'"]').remove();
+			delete this.allTabSqlEditorObj[sqlId];
+			delete this.sqlEditorBuffer[sqlId];
 		}
 		_ui.sqlDataArea.removeDataGridEle(item);
 		if(this.sqlFileTabObj.getItemLength() < 1){
 			this.currentSqlEditorInfo= null;
+
+			$('[data-editor-id="empty"]').addClass('active'); // 빈파일 화면 오픈.
 			this.setSqlEditorBtnDisable();
 		}
 	}
@@ -2965,6 +3016,30 @@ _ui.SQL = {
 			,width:'auto'
 			,itemMaxWidth: 100
 			,dropItemWidth : '100px'
+			,contextMenu :  {
+				callback: function(key,sObj) {
+					var item = sObj.tabItem;
+
+					var param = {sqlId : item.sqlId};
+					if(key =='close'){
+						_self.deleteEditorInfo(item);
+						param.len = _self.sqlFileTabObj.getItemLength();
+						_self.saveSqlFile(param ,'delTab');
+						return ;
+					}else if(key =='close_other'){
+						_self.sqlFileTabObj.removeItem('other', item.sqlId);
+						_self.saveSqlFile(param ,'delTab-other');
+					}else if(key =='close_all'){
+						_self.sqlFileTabObj.removeItem('all');
+						_self.saveSqlFile(param ,'delTab-all');
+					}
+				},
+				items: [
+					{key : "close" , "name": "Close"}
+					,{key : "close_other" , "name": "Close Others"}
+					,{key : "close_all" , "name": "Close All"}
+				]
+			}
 			,titleIcon :{
 				right :{
 					html : '<i class="fa fa-remove"></i>'
@@ -3027,7 +3102,61 @@ _ui.SQL = {
 	,_initEditor : function (){
 		var _self = this;
 
-		_self.sqlEditorEle = $(_self.sqlEditorSelector);
+		var editor= CodeMirror(document.getElementById('varsql_main_editor'), {
+			mode: _ui.base.mimetype,
+			indentWithTabs: true,
+			smartIndent: true,
+			autoCloseBrackets: true,
+			indentUnit : 4,
+			lineNumbers: true,
+			height:'auto',
+			lineWrapping: false,
+			matchBrackets : true,
+			autofocus: true,
+			extraKeys: {
+				"Ctrl-Space": "autocomplete"
+				,"Ctrl-F": function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-F" : function (){
+					// 검색 재정의
+				}
+				,"Shift-Ctrl-R" : function (){
+					// 검색 재정의
+				}
+				,"F11": function(cm) {
+					_self.sqlData();
+		        }
+			},
+			hintOptions: {tables:{}}
+		});
+
+		// 자동 저장 처리.
+		var changeTimer;
+		function autoSave(editerInfo){
+			changeTimer = setTimeout(function() {
+				editerInfo.item._isChange = false;
+				_self.saveSqlFile();
+			},_g_options.autoSave.delay );
+		}
+
+		editor.on("change", function (cm , changeObj){
+
+			var currentEditorInfo = _self.currentSqlEditorInfo;
+
+			if(currentEditorInfo.item._isChange ===false){
+				currentEditorInfo.item._isChange = true;
+				var activeItem = _self.sqlFileTabObj.getActive();
+				_self.sqlFileTabObj.updateTitle(activeItem.item.sqlId ,'*' + activeItem.item.sqlTitle);
+			}
+
+			if(_g_options.autoSave.enabled !== false){
+				clearTimeout(changeTimer);
+				autoSave(currentEditorInfo);
+			}
+		})
+
+		_self.sqlMainEditor = editor;
 	}
 	,resize : function (dimension){
 		if(dimension){
@@ -3085,7 +3214,7 @@ _ui.SQL = {
 		}
 
 		// editor context menu
-		$.pubContextMenu(_self.sqlEditorSelector +' .sql-editor-item:not([data-editor-id="empty"])', {
+		$.pubContextMenu(_self.sqlEditorSelector, {
 			items:[
 				{key : "run" , "name": "실행" , hotkey :'Ctrl+Enter'}
 				,{divider:true}
@@ -3167,7 +3296,7 @@ _ui.SQL = {
 	    	}
 		});
 
-		_self.sqlEditorEle.on('keydown',function (e) {
+		$(_self.sqlEditorSelector).on('keydown',function (e) {
 			var evt =window.event || e;
 
 			if(evt.ctrlKey){
@@ -3418,7 +3547,7 @@ _ui.SQL = {
 	}
 	// editor selection text copy
 	,selectionTextCopy: function (){
-		copyStringToClipboard('varsqleditor',this.getSql());
+		copyStringToClipboard(this.getSql(), 'varsqleditor');
 	}
 	,findTextOpen : function(){
 		var _self = this;
@@ -3516,17 +3645,12 @@ _ui.SQL = {
 		var isNext;
 
 		if(replaceAllFlag ===true){
-			findPos = {line: 0, ch: 0};
 			var replaceCount =0;
 
-			isNext = cursor.find(isReverseFlag);
-
-			while(isNext){
+			while(cursor.findNext()){
 				replaceCount++;
 				_self.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
 				_self.getSqlEditorObj().replaceSelection(replaceTxt);
-
-				isNext = cursor.find(isReverseFlag)
 			}
 
 			if(!isNext){
@@ -3556,7 +3680,7 @@ _ui.SQL = {
 		}
 	}
 	// editor 에 텍스트 추가.
-	,addTextToEditorArea : function(addText , addCriteria){
+	,addTextToEditorArea : function(addText, addCriteria){
 		var _self = this;
 		var sqlEditorObj =_self.getSqlEditorObj();
 		if(sqlEditorObj ==false){
@@ -3577,8 +3701,6 @@ _ui.SQL = {
 
 				var addTextFormat = addColumnPrefix(chkQuery);
 				//addText = addColumnPrefix(chkQuery)+addText+' ';
-
-
 				addText = (addTextFormat=='{key}' ? '' : ' ')+ VARSQL.messageFormat(addTextFormat ,{key:addText,val:''});
 			}
 		}
@@ -3679,8 +3801,7 @@ _ui.SQL = {
 		}
 
 		VARSQL.req.ajax({
-		    loadSelector : (mode=='query' ? '#sql_editor_wrapper' :'')
-		    ,url:{type:VARSQL.uri.sql, url:'/file/saveSql'}
+		    url:{type:VARSQL.uri.sql, url:'/file/saveSql'}
 		    ,data:params
 		    ,success:function (res){
 		    	var item = res.item;
@@ -3730,8 +3851,7 @@ _ui.SQL = {
 			var params =VARSQL.util.objectMerge ({},_g_options.param,queryCont);
 
 			VARSQL.req.ajax({
-				loadSelector : '#sql_editor_wrapper'
-			    ,url:{type:VARSQL.uri.sql, url:'/file/saveAllSql'}
+				url:{type:VARSQL.uri.sql, url:'/file/saveAllSql'}
 			    ,data : params
 			    ,success:function (resData){
 
@@ -3791,8 +3911,7 @@ _ui.SQL = {
 						};
 
 						VARSQL.req.ajax({
-						    loadSelector : '#sql_editor_wrapper'
-						    ,url:{type:VARSQL.uri.user, url:'/sendNote'}
+						    url:{type:VARSQL.uri.user, url:'/sendNote'}
 						    ,data:params
 						    ,success:function (resData){
 						    	_self.noteDialog.dialog( "close" );
@@ -3856,8 +3975,7 @@ _ui.SQL = {
 		});
 
 		VARSQL.req.ajax({
-		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/file/sqlList'}
+		    url:{type:VARSQL.uri.sql, url:'/file/sqlList'}
 		    ,data:params
 		    ,success:function (res){
 		    	var items = res.items;
@@ -3916,8 +4034,7 @@ _ui.SQL = {
 
 		    			params['sqlId'] = sqlId;
 		    			VARSQL.req.ajax({
-		    				loadSelector : '#sql_editor_wrapper'
-		    			    ,url:{type:VARSQL.uri.sql, url:'/file/delSqlSaveInfo'}
+		    				url:{type:VARSQL.uri.sql, url:'/file/delSqlSaveInfo'}
 		    			    ,data:params
 		    			    ,success:function (res){
 		    			    	itemArea.remove();
@@ -3936,24 +4053,31 @@ _ui.SQL = {
 		var sqlId = sItem.sqlId;
 
 		sItem = (_self.allTabSqlEditorObj[sqlId] ? _self.allTabSqlEditorObj[sqlId].item : sItem);
-		var editorEle = $('.sql-editor-item[data-editor-id="'+sqlId+'"]');
 
-		if(editorEle.length  < 1){
-			$(_self.sqlEditorSelector).append('<div class="sql-editor-item" data-editor-id="'+sqlId+'"><textarea id="ta_'+sqlId+'" name="ta_'+sqlId+'" class="sql-editor-text"></textarea></div>');
-			editorEle = $('.sql-editor-item[data-editor-id="'+sqlId+'"]');
+		if(VARSQL.isBlank(_self.sqlEditorBuffer[sqlId])){
+			_self.sqlEditorBuffer[sqlId] = CodeMirror.Doc(VARSQL.isBlank(sItem.sqlCont)?"":sItem.sqlCont, _ui.base.mimetype);
 
 			$(_self.sqlParameterSelector).append('<div class="sql-parameter-area" data-parameter-id="'+sqlId+'"></div>');
 			_ui.sqlDataArea.addDataGridEle(sItem);
+		}else{
+			if(this.currentSqlEditorInfo.sqlId ==sqlId){
+				return ;
+			}
 		}
 
-		if(editorEle.hasClass('active')){
-			return ;
+		var buf = _self.sqlEditorBuffer[sqlId];
+
+		if (buf.getEditor()) buf = buf.linkedDoc({sharedHist: true});
+		var old = _self.sqlMainEditor.swapDoc(buf);
+		var linked = old.iterLinkedDocs(function(doc) {linked = doc;});
+		if (linked) {
+		    // Make sure the document in buffers is the one the other view is looking at
+		    for (var name in buffers) if (buffers[name] == old) buffers[name] = linked;
+		    old.unlinkDoc(linked);
 		}
+		_self.sqlMainEditor.focus();
 
 		$('#sqlFileId').val(sqlId);
-		// editor active
-		$('.sql-editor-item.active').removeClass('active');
-		editorEle.addClass('active');
 
 		// parameter active
 		$('.sql-parameter-area.active').removeClass('active');
@@ -3986,14 +4110,14 @@ _ui.SQL = {
 		_self.sqlFileTabObj.setActive(sItem);
 		_ui.sqlDataArea.setGridSelector(sItem);
 
-		if(editorEle.attr('data-load-yn')=='Y'){
+		if(buf.VARSQL_DATA_LOAD_FLAG===true){
 			_self.setSelectSqlEditorInfo(sItem);
 			return ;
 		}
 
-		editorEle.attr('data-load-yn','Y');
+		if($('[data-editor-id="empty"]').hasClass('active')) $('[data-editor-id="empty"]').removeClass('active');
 
-		$('#ta_'+sqlId).val(sItem.sqlCont);
+		buf.VARSQL_DATA_LOAD_FLAG = true;
 
 		// tab item setting
 		try{
@@ -4002,67 +4126,7 @@ _ui.SQL = {
 			_self.addParamTemplate('init_data',{'':''});
 		}
 
-		var tableHint = {};
-
-		var editor= CodeMirror.fromTextArea(document.getElementById('ta_'+sqlId), {
-			mode: _ui.base.mimetype,
-			indentWithTabs: true,
-			smartIndent: true,
-			autoCloseBrackets: true,
-			indentUnit : 4,
-			lineNumbers: true,
-			height:'auto',
-			lineWrapping: false,
-			matchBrackets : true,
-			autofocus: true,
-			extraKeys: {
-				"Ctrl-Space": "autocomplete"
-				,"Ctrl-F": function (){
-					// 검색 재정의
-				}
-				,"Shift-Ctrl-F" : function (){
-					// 검색 재정의
-				}
-				,"Shift-Ctrl-R" : function (){
-					// 검색 재정의
-				}
-				,"F11": function(cm) {
-					_self.sqlData();
-		        }
-			},
-			hintOptions: {tables:tableHint}
-		});
-
-		editor.VARSQL ={
-			sqlId : sqlId
-		};
-
-		// 자동 저장 처리.
-		var changeTimer;
-		function autoSave(editerInfo){
-			changeTimer = setTimeout(function() {
-				editerInfo.item._isChange = false;
-				_self.saveSqlFile();
-			},_g_options.autoSave.delay );
-		}
-
-		editor.on("change", function (cm , changeObj){
-
-			var currentEditorInfo = _self.currentSqlEditorInfo;
-
-			if(currentEditorInfo.item._isChange ===false){
-				currentEditorInfo.item._isChange = true;
-				var activeItem = _self.sqlFileTabObj.getActive();
-				_self.sqlFileTabObj.updateTitle(activeItem.item.sqlId ,'*' + activeItem.item.sqlTitle);
-			}
-
-			if(_g_options.autoSave.enabled !== false){
-				clearTimeout(changeTimer);
-				autoSave(currentEditorInfo);
-			}
-		})
-
-		_self.allTabSqlEditorObj[sqlId].editor = editor;
+		_self.allTabSqlEditorObj[sqlId].editor = buf.getEditor();
 		_self.setSelectSqlEditorInfo(sItem);
 	}
 	// set editor
@@ -4544,21 +4608,28 @@ _ui.sqlDataArea =  {
 				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
 			}
 		}else{
-			var errQuery = resultData.item.query;
 			msgViewFlag =true;
 			var errorMessage;
-			var msgItemResult = resultData.item.result;
-			if(resultCode ==10002){
-				_self._currnetQueryReusltData =msgItemResult;
-				errorMessage = msgItemResult.resultMessage;
-				// todo click 시 변경되게 수정할것.
-				$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
-				_self.setGridData(_self._currnetQueryReusltData);
-				_self.viewResultColumnType();
-			}else{
-				errorMessage = resultData.message;
-			}
+			var errQuery = '';
+			var resItem = resultData.item || {};
+			var msgItemResult = resItem.result || {};
+			var errQuery = resItem.query;
 
+			if(resultCode ==80000 || resultCode ==80001){
+				errorMessage = resultData.message;
+			}else{
+
+				if(resultCode ==10002){
+					_self._currnetQueryReusltData =msgItemResult;
+					errorMessage = msgItemResult.resultMessage;
+					// todo click 시 변경되게 수정할것.
+					$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
+					_self.setGridData(_self._currnetQueryReusltData);
+					_self.viewResultColumnType();
+				}else{
+					errorMessage = resultData.message;
+				}
+			}
 			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 
@@ -4606,9 +4677,10 @@ _ui.sqlDataArea =  {
 			,headerOptions:{
 				helpBtn:{
 					enabled : true
+					,title : '컬럼명 editor에 넣기'
 					,click :  function (clickInfo){
 						var item = clickInfo.item;
-						_ui.SQL.addTextToEditorArea(item.label ,{type:'column' , dataType : item.type});
+						_ui.SQL.addTextToEditorArea(item.label+' ',{type:'column' , dataType : item.type});
 					}
 				}
 			}
@@ -4627,6 +4699,10 @@ _ui.sqlDataArea =  {
 					return false;
 				}
 			}
+			,navigation : {
+				status :true
+				,height :20
+			}
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});
@@ -4637,6 +4713,10 @@ _ui.sqlDataArea =  {
 			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector, {
 				items: [
 					{key : "copy" , "name": "복사"}
+					,{divider : true}
+					,{key : "select_column_editor" , "name": "컬럼명 넣기"}
+					,{key : "select_column_copy" , "name": "컬럼명 복사"}
+					,{divider : true}
 					,{key : "detail" , "name": "상세보기"}
 					,{key : "download" , "name": "다운로드"
 						,subMenu : [
@@ -4669,11 +4749,31 @@ _ui.sqlDataArea =  {
 						return ;
 					}
 
+					if(key =='select_column_editor' || key =='select_column_copy'){
+						var colInfos= $.pubGrid(_self.currnetDataGridSelector).getSelectionColInfos();
+
+						if(colInfos.length >0){
+							var colLabel  = [];
+							for(var i=0; i<colInfos.length; i++){
+								var colInfo = colInfos[i];
+								colLabel.push(colInfo.label);
+							}
+							var colLabelTxt = colLabel.join(', ');
+
+							if(key =='select_column_copy'){
+								copyStringToClipboard(colLabelTxt);
+							}else{
+								_ui.SQL.addTextToEditorArea(' '+colLabelTxt);
+							}
+						}
+						return ;
+					}
+
 					if(key =='detail'){
 						var popupId = 'pop_'+_g_options.param.conuid
 
-						var popupObj = VARSQLUI.popup.open('/vsql/webstatic/html/itemView.html?popid='+popupId, {
-							name : 'itemDetailView' +_g_options.param.conuid
+						var popupObj = VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/extension/detailView?conuid='+_g_options.param.conuid), {
+							name : 'detailView' +_g_options.param.conuid
 							,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
 						});
 
@@ -4681,15 +4781,11 @@ _ui.sqlDataArea =  {
 							if(VARSQL.isUndefined(popupObj.viewItem)){
 								window[popupId] = function (){
 									popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
-									//delete window[popupId];
 								}
 							}else{
 								popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
 							}
-
-
 						}catch(e){}
-
 						return ;
 					}
 
@@ -5051,8 +5147,6 @@ _ui.text={
 	,copy :function (copyString, copyType){
 		var _this = this;
 
-		var strHtm = [];
-
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
 			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
@@ -5066,7 +5160,7 @@ _ui.text={
 				,buttons: {
 					'Copy':function (){
 						_this.modalEle.dialog( "close" );
-						copyStringToClipboard('programCodeCopy' ,$('#data-orgin-area').val());
+						copyStringToClipboard($('#data-orgin-area').val(), 'programCodeCopy');
 					}
 					,'Cancel': function() {
 						_this.modalEle.dialog( "close" );
@@ -5283,7 +5377,7 @@ function toUpperCase(str){
 	return (str || '').toUpperCase()
 }
 
-function copyStringToClipboard (prefix , copyText) {
+function copyStringToClipboard (copyText, prefix) {
 
 	var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
 
@@ -5293,7 +5387,9 @@ function copyStringToClipboard (prefix , copyText) {
 		return ;
 	}
 
-	var _id = prefix+'copyTextId';
+	prefix = prefix||'varsqlMain';
+
+	var _id = prefix+'CopyTextId';
 	var copyArea = document.getElementById(_id);
 	if(!copyArea){
 		var fakeElem = document.createElement('textarea');
@@ -5309,7 +5405,7 @@ function copyStringToClipboard (prefix , copyText) {
 	copyArea.value = copyText;
 	copyArea.select();
 
-	function handler (event){
+	function handler (){
 		document.removeEventListener('copy', handler);
 		copyArea = null;
 	}
@@ -5335,10 +5431,6 @@ function milli2str(milliTime, format) {
     return format.replace(/(y+)/g, function(v) {
         return inDate.getFullYear().toString().slice(-v.length)
     });
-}
-
-function capitalizeFirstLetter(str) {
-    return toUpperCase(str.charAt(0)) + str.slice(1);
 }
 
 // 컬럼 에디터 넣을때 붙여질 문자.
@@ -5427,11 +5519,6 @@ function addColumnPrefix(chkVal){
 	}
 
 	return (reval ==''?'{key}':reval);
-}
-
-// theme class
-function getThemeClass(themeName){
-	return 'varsql-theme-'+themeName +' ' +'pub-theme-'+themeName
 }
 
 }(jQuery, window, document,VARSQL));

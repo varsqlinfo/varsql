@@ -103,7 +103,7 @@ public final class ResourceUtils {
 	public static String getResourceString(Resource resource, String charset) throws IOException {
 		return IOUtils.toString(resource.getInputStream(), charset);
 	}
-	
+
 	/**
 	 * @method  : getInstallPathResource
 	 * @desc : resourcePath -> resource
@@ -114,15 +114,15 @@ public final class ResourceUtils {
 	 * @throws IOException
 	 */
 	public static Resource getInstallPathResource(String resourcePath) throws IOException {
-		Resource configResource; 
-		
+		Resource configResource;
+
 		File file = new File(Configuration.getInstance().getInstallRoot(), resourcePath);
 		if(file.exists()) {
 			configResource = ResourceUtils.getResource(file.getPath());
 		}else {
 			configResource = ResourceUtils.getResource(resourcePath);
 		}
-		
-		return configResource; 
+
+		return configResource;
 	}
 }

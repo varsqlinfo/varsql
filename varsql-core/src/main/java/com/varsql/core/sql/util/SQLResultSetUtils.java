@@ -18,6 +18,7 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
@@ -54,10 +55,10 @@ public final class SQLResultSetUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlStatementInfo sqlExecuteInfo, int maxRow) throws SQLException{
-		return resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, true);
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlStatementInfo sqlExecuteInfo, DatabaseInfo dbInfo, int maxRow) throws SQLException{
+		return resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, true);
 	}
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlStatementInfo sqlExecuteInfo, int maxRow, boolean gridKeyAlias) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlStatementInfo sqlExecuteInfo, DatabaseInfo dbInfo, int maxRow, boolean gridKeyAlias) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -87,10 +88,11 @@ public final class SQLResultSetUtils {
 		String columnTypeName = "";
 		GridColumnInfo columnInfo=null;
 		int columnWidth = count > 10 ? 70 : 0;
+		boolean useColumnLabel = dbInfo.isUseColumnLabel();
 
 		for (int i = 0; i < count; i++) {
 			idx = i+1;
-			columnName= rsmd.getColumnName(idx);
+			columnName= useColumnLabel ? rsmd.getColumnLabel(idx) : rsmd.getColumnName(idx);
 			if(columnChkFlag  && !viewColumnCheck.contains(columnName.toUpperCase())) {
 				continue ;
 			}
