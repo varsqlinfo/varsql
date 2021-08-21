@@ -136,6 +136,11 @@ $(document).ready(function(){
 				</button>
 			</li>
 		</ul>
+		<div class="float-right">
+			<button id="sql_parameter_toggle_btn" data-sql-editor-menu="y" class="sql-edit-btn sql-parameter-btn disable">
+				<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
+			</button>
+		</div>
 	</div>
 
 	<div class="sql-editor-file">
@@ -151,16 +156,10 @@ $(document).ready(function(){
 					<option value="10000">10000</option>
 				</select>
 			</span>
-			<button type="button" id="sql_filelist_view_btn" class="varsql-btn-default sql-filelist-view-btn"><i class="fa fa-bars" style="margin-right:3px;"></i>파일</button></button>
+			<button type="button" id="sql_filelist_view_btn" class="varsql-btn-default sql-filelist-view-btn"><i class="fa fa-bars" style="margin-right:3px;"></i>File</button></button>
 		</div>
 
 		<div id="varsqlSqlFileTab" class="sqlfile-tab"></div>
-
-	 	<div class="float-right">
-			<button id="sql_parameter_toggle_btn" data-sql-editor-menu="y" class="sql-edit-btn sql-parameter-btn disable">
-				<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
-			</button>
-		</div>
 	</div>
 
 	<div id="sql_editor_wrapper" class="sql-editor">

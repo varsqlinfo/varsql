@@ -339,18 +339,18 @@ _$base.log={
 	}
 };
 
-var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
-var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
-var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
-
-
+var pageReloadCheckFlag = false;
 function fnReqCheck(data ,opts){
+
+	if(pageReloadCheckFlag) return ;
+
 	opts = opts ||{};
 	var resultCode = data.resultCode;
 
 	if(opts.disableResultCheck !== true){
 		if(resultCode== 401){ // 로그아웃
 			if(confirm(_$base.messageFormat('error.0001'))){
+				pageReloadCheckFlag = true;
 				(top || window).location.href=VARSQL.contextPath;
 			}
 			return false;
@@ -361,6 +361,7 @@ function fnReqCheck(data ,opts){
 			return false;
 		}else if(resultCode == 412){ // 유효하지않은 요청입니다.
 			if(confirm(_$base.messageFormat('error.0002'))){
+				pageReloadCheckFlag = true;
 				(top || window).location.href=(top || window).location.href;
 			}
 			return false;
@@ -377,6 +378,7 @@ function fnReqCheck(data ,opts){
 			return false;
 		}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
 			if(confirm(_$base.messageFormat('error.0003'))){
+				pageReloadCheckFlag = true;
 				(top || window).location.href=VARSQL.contextPath;
 			}
 			return false;
@@ -390,8 +392,6 @@ function fnReqCheck(data ,opts){
 			}else{
 				alert('request check : '+data.message);
 			}
-
-
 			return false;
 		}
 	}
@@ -399,6 +399,10 @@ function fnReqCheck(data ,opts){
 	return true;
 }
 _$base.reqCheck = fnReqCheck;
+
+var $$csrf_token = $("meta[name='_csrf']").attr("content") ||'';
+var $$csrf_header = $("meta[name='_csrf_header']").attr("content") ||'';
+var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
 
 /**
  * ajax 요청
@@ -695,6 +699,15 @@ _$base.socket ={
 
 		if(_this.stompClient==null){
 			_this.createConnection(endpoint, opts);
+		}else{
+			if(_this.stompClient.connected !== true){
+				var connectTimer = setInterval(function() {
+					if(_this.stompClient.connected === true){
+						clearInterval(connectTimer);
+						_this.addSubscribe(endpoint, opts);
+					}
+				}, 1000);
+			}
 		}
 	}
 	, createConnection : function (endpoint, opts){
@@ -888,6 +901,15 @@ _$base.unload =function (mode){
 		var keychk = false;
 
 		var keyCode = e.which;
+
+		if(e.ctrlKey){
+			if(keyCode==84){ // ctrl+t
+				return false;
+			}
+			if(keyCode==72){ // ctrl+h
+				return false;
+			}
+		}
 
 		if (keyCode === 122) {
 			return false;

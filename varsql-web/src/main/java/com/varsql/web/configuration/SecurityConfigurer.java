@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -58,6 +59,7 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
+	final private String CSRF_TOKEN_NAME = "varsql_ct";
 
 	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -124,7 +126,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.disable()
 		.and()
 			.csrf()
-			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+			.csrfTokenRepository(getCookieCsrfTokenRepository())
 			.ignoringAntMatchers("/login/**","/logout","/webstatic/**","/error/**","/favicon.ico")
 			.requireCsrfProtectionMatcher(new CsrfRequestMatcher())
 		.and()
@@ -170,6 +172,18 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		.and()
 			.httpBasic()
             .authenticationEntryPoint(varsqlBasicAuthenticationEntryPoint);
+	}
+
+	private CsrfTokenRepository getCookieCsrfTokenRepository() {
+		CookieCsrfTokenRepository csrf = new CookieCsrfTokenRepository();
+
+		csrf.setCookieHttpOnly(true);
+		csrf.setCookieName(CSRF_TOKEN_NAME);
+		csrf.setHeaderName(CSRF_TOKEN_NAME);
+		csrf.setHeaderName(CSRF_TOKEN_NAME);
+		csrf.setParameterName(CSRF_TOKEN_NAME);
+
+		return csrf;
 	}
 
 	@Bean("varsqlRequestCache")

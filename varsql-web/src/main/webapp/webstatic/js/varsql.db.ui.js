@@ -965,10 +965,10 @@ _ui.layout = {
 
 		// item destroy
 		varsqlLayout.on('itemDestroyed', function( component ){
-			if(_$utils.isEqComponentName(component.componentName, ALL_COMPONENT_INFO.plugin)){
+			if(component.type=='component' && _$utils.isEqComponentName(component.componentName, ALL_COMPONENT_INFO.plugin)){
 				var componentInfo = component.config.componentState;
 
-				if(componentInfo.initFlag !==true) return ;
+				if(componentInfo.initFlag !== true) return ;
 
 				var componentObj = _ui.component[componentInfo.key];
 				var destroyFn = componentObj.destroy;
@@ -1001,15 +1001,17 @@ _ui.layout = {
 
 		// layout ready
 		varsqlLayout.on('initialised', function( contentItem ){
-			var firstFlag = true;
 			var layoutSaveTimer;
+			var  firstFlag = true;
 
-			varsqlLayout.on('stateChanged', function(){
+			varsqlLayout.on('stateChanged', function(a1){
 
 				if(firstFlag){
 					firstFlag = false;
 					return;
 				}
+
+				if(!a1 || varsqlLayout._maximisedItem) return ;
 
 				clearTimeout(layoutSaveTimer);
 
@@ -1049,6 +1051,7 @@ _ui.layout = {
 
 			if(!contentItem.tab.isActive){
 				contentItem.tab.header.parent.setActiveContentItem(contentItem);
+				contentItem.setSize();
 			}
 			return true;
 		}
@@ -1194,7 +1197,7 @@ _ui.dbSchemaObject ={
 
 		_self.createTemplate();
 
-		var objectTypeTab = $.pubTab(_self.options.objectTypeTabEleId ,{
+		$.pubTab(_self.options.objectTypeTabEleId ,{
 			items : _g_options.serviceObject
 			,dropItemHeight : $(_self.options.objectTypeTabContentEleId).height() -10
 			,titleIcon :{
@@ -1210,8 +1213,6 @@ _ui.dbSchemaObject ={
 				}
 			}
 			,click : function (item){
-				var sObj = $(this);
-
 				_self.selectObjectMenu = item.contentid;
 				_self.getObjectTypeData(item);
 			}
@@ -4997,7 +4998,7 @@ _ui.registerPlugin({
 			this.gridObj.resizeDraw();
 		}
 		,destroy: function (){
-			this.gridObj.destroy()
+			this.gridObj.destroy();
 		}
 	}
 })

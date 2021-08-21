@@ -13,16 +13,22 @@ if (typeof window != "undefined") {
 }
 
 var  portalDefaultTemplate = {
-	'pageNavTemplate' : '<div class="text-center"><ul class="pagination">'
+	'pageNavTemplate' : '<div class="text-center" v-if="pageInfo.totalCount > 0"><ul class="pagination">'
 		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage - 1)">«</a>'
+		+'	<a @click="goPage(1)">«</a>'
+		+'</li>'
+		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
+		+'	<a @click="goPage(pageInfo.currPage - 1)">‹</a>'
 		+'</li>'
 		+'<li v-for="no in range(pageInfo.currStartPage , pageInfo.currEndPage)" :class="no ==pageInfo.currPage?\'active\':\'\'">'
 		+'	<a v-if="no ==pageInfo.currPage">{{no}}</a>'
 		+'	<a v-if="no != pageInfo.currPage" @click="goPage(no)">{{no}}</a>'
 		+'</li>'
 		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
-		+'	<a @click="goPage(pageInfo.currPage + 1)">»</a>'
+		+'	<a @click="goPage(pageInfo.currPage + 1)">›</a>'
+		+'</li>'
+		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
+		+'	<a @click="goPage(pageInfo.totalPage)">»</a>'
 		+'</li>'
 		+'</ul></div>'
 

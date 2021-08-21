@@ -115,20 +115,20 @@ var $userMain = {
 	}
 	,viewDb : function (item , refreshFlag){
 		var sconid = item.conuid;
-		
+
 		if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length > 0) {
 			alert('loading...');
 			return ;
 		}
-		
+
 		if(refreshFlag){
 			if(!confirm('새로고침 하시겠습니까?')){
 				return ;
 			}
-			
+
 			this.viewLoadMessage();
 		}
-		
+
 		$('.iframe_'+sconid).attr('src', this.getDbClientUrl(sconid));
 	}
 	// add tab
@@ -258,7 +258,7 @@ window.userMain = {
 
 <script id="iframeLoadTemplate" type="text/varsql">
 <div id="wrapper_{{conuid}}" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">
-	<iframe class="iframe_{{conuid}}" src="{{url}}" style="width:100%;height:100%;" frameborder="0"></iframe>
+	<iframe class="iframe_{{conuid}}" src="{{url}}" style="width:100%;height:calc(100% - 2px);" frameborder="0"></iframe>
 
 	<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
 		<tbody>

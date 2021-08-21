@@ -167,7 +167,6 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 					,enableSearch : true
 					,enableColumnFix : true
 				}
-				,autoResize : true
 				,headerOptions:{
 				}
 				,asideOptions :{

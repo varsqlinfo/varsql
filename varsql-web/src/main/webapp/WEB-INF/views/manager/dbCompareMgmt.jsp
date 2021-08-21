@@ -218,15 +218,28 @@
 			</div>
 		</div>
 	</div>
-
-<script id="downloadTemplate" type="text/varsql-template">
-	<span><spring:message code="source" text="대상"/> : {{currentObject.sourceSchema}}</span>
-	<span><spring:message code="target" text="타켓"/> :  {{currentObject.targetSchema}}</span>
-</script>
-
 </div>
 <!-- /.row -->
 
+
+<script id="downloadTemplate" type="text/varsql-template">
+<!DOCTYPE html>
+<html>
+<head>
+<title>db compare result</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+</head>
+<body>
+	<span><spring:message code="source" text="대상"/> : {{sourceSchema}}</span>
+	<span><spring:message code="target" text="타켓"/> :  {{targetSchema}}</span>
+
+	{{{compareResult}}}
+</body>
+</html>
+</script>
 
 <varsql:editorResource editorHeight="100%" diffMode="true"/>
 <script src="${pageContextPath}/webstatic/js/plugins/fuse/fuse.min.js"></script>
@@ -1482,13 +1495,15 @@ VarsqlAPP.vueServiceBean( {
 			if(this.isCompleteCompare !== true){
 				return ;
 			}
-			var headerHtml = $('#downloadTemplate').wrapAll('<div></div>').html();
-
 
 			var params ={
 				exportType :'text'
 				,fileName : 'dbCompareResult.html'
-				,content : headerHtml+'<pre>' + $('#compareResultArea').html() +'</pre>'
+				,content : VARSQLTemplate.render.html($('#downloadTemplate').html(), {
+					sourceSchema : this.currentObject.sourceSchema
+					,targetSchema : this.currentObject.targetSchema
+					, compareResult : $('#compareResultArea').html()
+				})
 			};
 
 			VARSQL.req.download({

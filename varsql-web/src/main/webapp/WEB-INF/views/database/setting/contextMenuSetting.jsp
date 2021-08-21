@@ -58,7 +58,7 @@
 		</div>
 
 		<div class="col-xs-12 padding0" style="height:calc(100% - 175px);min-height:300px;padding-bottom: 5px;">
-			<div id="subCodeDisabled" class="wh100-abs" style="z-index: 10;position: absolute;background: #efefef;opacity: 0.7;"></div>
+			<div id="subCodeDisabled" class="wh100-abs overlay-bg" style="z-index: 10;position: absolute;"></div>
 			<div class="col-xs-12" style="height: 220px;">
 				<div class="col-xs-7 padding0 h100">
 					<div class="sub-cont-title">Template</div>

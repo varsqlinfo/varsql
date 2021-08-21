@@ -22,6 +22,11 @@
 <entry key="header.menu.edit.redo">Redo</entry>
 <entry key="header.menu.edit.compare">Query compare</entry>
 
+<!-- 검색 메뉴 -->
+<entry key="header.menu.search">Search</entry>
+<entry key="header.menu.search.find">Find</entry>
+
+
 <entry key="header.menu.tool">Tool</entry>
 <entry key="header.menu.tool.import">Import</entry>
 <entry key="header.menu.tool.export">Export</entry>
@@ -31,9 +36,11 @@
 <entry key="header.menu.tool.setting">Preferences</entry>
 <entry key="header.menu.tool.initlayout">Init Layout</entry>
 
+<!-- 도움말 메뉴 -->
 <entry key="header.menu.help">Help</entry>
 <entry key="header.menu.help.help">Help</entry>
-<entry key="header.menu.help.info">About Eclipse</entry>
+<entry key="header.menu.help.dbinfo">DB Infomation</entry>
+<entry key="header.menu.help.info">About Varsql</entry>
 
 <entry key="screen">Screen</entry>
 <entry key="screen.user">User</entry>
@@ -41,48 +48,51 @@
 <entry key="screen.admin">Admin</entry>
 
 <!-- admin menu -->
-<entry key="admin.menu.database">Database 관리</entry>
-<entry key="admin.menu.databaseoptmgmt">Database 옵션 관리</entry>
-<entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
-<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
+<entry key="admin.menu.database">Database</entry>
+<entry key="admin.menu.databaseoptmgmt">Database Options</entry>
+<entry key="admin.menu.managermgmt">Manager Auth Authority</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager]]></entry>
 <entry key="admin.menu.report">Report</entry>
-<entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
+<entry key="admin.menu.dbmenumgmt">Menu  Management</entry>
 
 
 <!-- manage menu -->
-<entry key="manage.menu.usermgmt">사용자 관리</entry>
+<entry key="manage.menu.usermgmt">User Management</entry>
 <entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
-<entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
-<entry key="manage.menu.logmgmt">로그 통계</entry>
-<entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
-<entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
+<entry key="manage.menu.dbnuser"><![CDATA[DB & User]]></entry>
+<entry key="manage.menu.logmgmt">Log Statistics</entry>
+<entry key="manage.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manage.menu.userlogmgmt">User Log Statistics</entry>
 
 <!-- user menu -->
-<entry key="user.edit.general">프로필 수정</entry>
-<entry key="user.edit.pasword">비밀번호 변경</entry>
-<entry key="user.edit.message">메시지 관리</entry>
+<entry key="user.edit.general">Modify Profile</entry>
+<entry key="user.edit.pasword">Password Change</entry>
+<entry key="user.edit.message">Message Management</entry>
 
 
 
 
-<entry key="login.form.id">id</entry>
-<entry key="login.form.pw">password</entry>
+<entry key="login.form.id">Id</entry>
+<entry key="login.form.pw">Password</entry>
 
 <!-- guest  -->
-<entry key="guest.title">환영합니다.</entry>
-<entry key="guest.message"><![CDATA[님 아직 권한이 처리 되지 않았습니다<br/> 관리자에게 문의하시기 바랍니다.]]></entry>
-<entry key="btn.contact">문의</entry>
-<entry key="btn.login.screen">로그인 화면</entry>
-<entry key="guest.form.title">제목</entry>
-<entry key="guest.form.question">문의사항</entry>
-<entry key="guest.form.answer">답변</entry>
+<entry key="guest.title">Welcome Varsql.</entry>
+<entry key="guest.message"><![CDATA[Sir, your authority has not been processed yet.Please contact your <br/> administrator.]]></entry>
+<entry key="btn.contact">Question</entry>
+<entry key="btn.login.screen">Login</entry>
+<entry key="guest.form.title">Title</entry>
+<entry key="guest.form.question">Questions</entry>
+<entry key="guest.form.answer">Answer</entry>
 
 <!-- join form -->
-<entry key="join.form.title">회원가입</entry>
+<entry key="join.form.title">Sign up</entry>
 <entry key="join.form.uid">Id</entry>
 <entry key="join.form.email">email</entry>
 <entry key="join.form.name">Name</entry>
 <entry key="join.form.dept">Dept</entry>
+<entry key="join.form.desc">Description</entry>
+<entry key="join.form.locale">Language</entry>
+
 
 <entry key="join.form.password">Password</entry>
 <entry key="join.form.password.confirm">Password confirm</entry>
@@ -90,9 +100,9 @@
 <entry key="btn.main">Main</entry>
 
 <!-- user form  -->
-<entry key="user.form.password.current">현재 비밀번호</entry>
-<entry key="user.form.password.new">신규 비밀번호</entry>
-<entry key="user.form.password.confirm">확인 비밀번호</entry>
+<entry key="user.form.password.current">Current Password</entry>
+<entry key="user.form.password.new">New Password</entry>
+<entry key="user.form.password.confirm">Re Password</entry>
 
 <entry key="msg.email.empty">이메일을 입력하세요</entry>
 <entry key="msg.title.empty">제목을 입력하세요</entry>
@@ -106,7 +116,7 @@
 <entry key="msg.save.success">저장 되었습니다</entry>
 <entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
-<entry key="msg.nodata">데이타가 없습니다.</entry>
+<entry key="msg.nodata">No Data.</entry>
 <entry key="msg.success">성공</entry>
 <entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
 <entry key="msg.data.select">데이터를 선택하시오.</entry>
@@ -173,13 +183,13 @@
 <entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
 
 <entry key="user.edit.msgtitle">Title</entry>
-<entry key="user.edit.send_id">sender</entry>
-<entry key="user.edit.recv_id">recv</entry>
+<entry key="user.edit.send_id">Sender</entry>
+<entry key="user.edit.recv_id">Recv</entry>
 <entry key="user.edit.msgcont">Content</entry>
-<entry key="detail.view">detail</entry>
-<entry key="reg_dt">REG_DT</entry>
-<entry key="view_dt">VIEW_DT</entry>
-<entry key="upd_dt">MOD_DT</entry>
+<entry key="detail.view">Detail</entry>
+<entry key="reg_dt">Registration Date</entry>
+<entry key="view_dt">View Date</entry>
+<entry key="upd_dt">Modified Date</entry>
 
 
 </properties>

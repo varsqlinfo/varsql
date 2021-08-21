@@ -10,7 +10,7 @@
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.tree.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>

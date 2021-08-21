@@ -5,20 +5,20 @@
 <comment>label</comment>
 
 
-<entry key="complete">완료</entry>
+<entry key="complete">Complete</entry>
 
 
 <entry key="title">Title</entry>
 <entry key="content">Content</entry>
-<entry key="reg_user">등록자</entry>
-<entry key="reg_dt">등록일</entry>
-<entry key="view_dt">확인일</entry>
-<entry key="upd_dt">수정일</entry>
-<entry key="upd_user">수정자</entry>
-<entry key="std_day">시작일</entry>
-<entry key="end_day">종료일</entry>
-<entry key="std_time">시작시간</entry>
-<entry key="end_time">종료시간</entry>
+<entry key="reg_user">Writer</entry>
+<entry key="reg_dt">Registration date</entry>
+<entry key="view_dt">View Date</entry>
+<entry key="upd_dt">Modified Date</entry>
+<entry key="upd_user">Modifier</entry>
+<entry key="std_day">Start Date</entry>
+<entry key="end_day">End Date</entry>
+<entry key="std_time">Start Time</entry>
+<entry key="end_time">End Time</entry>
 <entry key="file_name">File name</entry>
 <entry key="sql_file_name">Sql File name</entry>
 <entry key="preferences">Preferences</entry>
@@ -34,61 +34,61 @@
 <entry key="restore.default">Restore Defaults</entry>
 
 
-<entry key="regular.expression">정규식</entry>
-<entry key="replace">바꾸기</entry>
-<entry key="find.word">찾을 말</entry>
-<entry key="replace.word">바꿀 말</entry>
-<entry key="all.replace">모두 바꾸기</entry>
-<entry key="find">찾기</entry>
-<entry key="close">닫기</entry>
-<entry key="data.export">데이터  내보내기</entry>
-<entry key="data.import">데이터 가져오기</entry>
+<entry key="regular.expression">Regular Expression</entry>
+<entry key="replace">Replace</entry>
+<entry key="find.word">Find</entry>
+<entry key="replace.word">Replace With</entry>
+<entry key="all.replace">Replace All</entry>
+<entry key="find">Find</entry>
+<entry key="close">Close</entry>
+<entry key="data.export">Data Export</entry>
+<entry key="data.import">Data Import</entry>
 
-<entry key="block">차단</entry>
+<entry key="block">Block</entry>
 
-<entry key="release">해제</entry>
-<entry key="options">옵션</entry>
+<entry key="release">Release</entry>
+<entry key="options">Options</entry>
 
-<entry key="direction">방향</entry>
-<entry key="up">위</entry>
-<entry key="down">아래</entry>
+<entry key="direction">Direction</entry>
+<entry key="up">Up</entry>
+<entry key="down">Down</entry>
 
 
-<entry key="information">정보 </entry>
-<entry key="basic.information">기본정보 </entry>
-<entry key="single">단일 </entry>
-<entry key="multiple">다중 </entry>
-<entry key="addflag">추가여부 </entry>
-<entry key="delflag">삭제여부 </entry>
-<entry key="column">컬럼 </entry>
-<entry key="column_name">컬럼명 </entry>
+<entry key="information">Info </entry>
+<entry key="basic.information">Basic Information </entry>
+<entry key="single">Single</entry>
+<entry key="multiple">Multiple</entry>
+<entry key="addflag">Additional</entry>
+<entry key="delflag">Delete </entry>
+<entry key="column">Column </entry>
+<entry key="column_name">Column name </entry>
 <entry key="id">ID</entry>
 <entry key="ip">IP</entry>
-<entry key="size">크기</entry>
-<entry key="loading">로딩중 입니다.</entry>
-<entry key="upload">업로드</entry>
-<entry key="select">선택</entry>
-<entry key="source">대상</entry>
-<entry key="target">타켓</entry>
-<entry key="result">결과</entry>
-<entry key="result.download">결과 다운르드</entry>
+<entry key="size">Size</entry>
+<entry key="loading">Loading.</entry>
+<entry key="upload">Upload</entry>
+<entry key="select">select</entry>
+<entry key="source">Source</entry>
+<entry key="target">Target</entry>
+<entry key="result">Result</entry>
+<entry key="result.download">Download</entry>
 
-<entry key="compare.result">비교 결과</entry>
-<entry key="compare.detail">비교 상세</entry>
+<entry key="compare.result">Comparison Results</entry>
+<entry key="compare.detail">Comparison Details</entry>
 
 <entry key="label.db">db</entry>
 <entry key="label.database">Database</entry>
-<entry key="label.remove">제거</entry>
-<entry key="label.user">사용자</entry>
-<entry key="label.username">사용자명</entry>
+<entry key="label.remove">Remove</entry>
+<entry key="label.user">User</entry>
+<entry key="label.username">User Name</entry>
 <entry key="label.orgnm">조직</entry>
-<entry key="label.deptnm">부서</entry>
-<entry key="label.manager">매니저</entry>
-<entry key="label.block">차단</entry>
-<entry key="label.release">해제</entry>
-<entry key="label.id">아이디</entry>
-<entry key="label.pw">패스워드</entry>
-<entry key="label.login">로그인</entry>
+<entry key="label.deptnm">Department</entry>
+<entry key="label.manager">Manager</entry>
+<entry key="label.block">Blcok</entry>
+<entry key="label.release">Release</entry>
+<entry key="label.id">Id</entry>
+<entry key="label.pw">Password</entry>
+<entry key="label.login">Login</entry>
 
 <entry key="label.dbgroup">DB Group</entry>
 <entry key="label.dbgroup">DB Group</entry>
@@ -102,38 +102,38 @@
 <entry key="label.category">Category</entry>
 <entry key="label.file.import_export">가져오기 및 내보내기...</entry>
 
-<entry key="label.user.preferences">환경설정</entry>
+<entry key="label.user.preferences">Preferences</entry>
 
 
-<entry key="label.table">테이블</entry>
-<entry key="label.view">뷰</entry>
-<entry key="label.schema">스키마</entry>
+<entry key="label.table">Table</entry>
+<entry key="label.view">View</entry>
+<entry key="label.schema">Scheam</entry>
 <entry key="label.function">Function</entry>
 <entry key="label.procedure">프로시저</entry>
 
-<entry key="label.back">뒤로</entry>
-<entry key="label.complete">완료</entry>
-<entry key="label.prev">이전</entry>
-<entry key="label.next">다음</entry>
-<entry key="label.add">추가</entry>
-<entry key="label.delete">삭제</entry>
-<entry key="label.cancel">취소</entry>
+<entry key="label.back">Back</entry>
+<entry key="label.complete">Complete</entry>
+<entry key="label.prev">Prev</entry>
+<entry key="label.next">Next</entry>
+<entry key="label.add">Add</entry>
+<entry key="label.delete">Delete</entry>
+<entry key="label.cancel">Cancle</entry>
 
-<entry key="label.recv.msg">받은메시지</entry>
-<entry key="label.send.msg">보낸메시지</entry>
+<entry key="label.recv.msg">Received</entry>
+<entry key="label.send.msg">Send</entry>
 
-<entry key="label.recv.user">받는사람</entry>
+<entry key="label.recv.user">Recipient</entry>
 
-<entry key="label.wrap.search">끝에서 되돌리기</entry>
-<entry key="label.case.sensitive">대소문자</entry>
+<entry key="label.wrap.search">Wrap search</entry>
+<entry key="label.case.sensitive">Case Sensitive</entry>
 
 <entry key="btn.close">Close</entry>
 <entry key="btn.password.view">Password view</entry>
 <entry key="btn.pool.init">Pool init</entry>
 <entry key="btn.pool.close">Pool close</entry>
 
-<entry key="back.page">이전</entry>
-<entry key="main.page">메인</entry>
+<entry key="back.page">Prev</entry>
+<entry key="main.page">Main</entry>
 
 <entry key="ko.lang">한국어</entry>
 <entry key="en.lang">English</entry>
@@ -172,24 +172,24 @@
 
 <entry key="btn.toolbar.undo">Undo</entry>
 <entry key="btn.toolbar.redo">Redo</entry>
-<entry key="btn.toolbar.linewrapper">자동 줄 바꿈</entry>
-<entry key="btn.toolbar.format">쿼리 정리 </entry>
-<entry key="btn.toolbar.send">메시지보내기 </entry>
-<entry key="btn.toolbar.parameter">변수 </entry>
+<entry key="btn.toolbar.linewrapper">Wrap Auto Line</entry>
+<entry key="btn.toolbar.format">Format </entry>
+<entry key="btn.toolbar.send">Send Message </entry>
+<entry key="btn.toolbar.parameter">Parameters </entry>
 
 <!-- tool msg -->
-<entry key="msg.sendmsg.title">메시지 보내기 </entry>
-<entry key="msg.sendmsg.recv.txt.holder">받는 사용자 </entry>
+<entry key="msg.sendmsg.title">end Message</entry>
+<entry key="msg.sendmsg.recv.txt.holder">To </entry>
 
 <!-- sql result button -->
-<entry key="btn.resultarea.tab.grid">결과</entry>
-<entry key="btn.resultarea.tab.column">컬럼</entry>
-<entry key="btn.resultarea.tab.log">로그</entry>
+<entry key="btn.resultarea.tab.grid">Result</entry>
+<entry key="btn.resultarea.tab.column">Column</entry>
+<entry key="btn.resultarea.tab.log">Log</entry>
 
 <!-- 용어 사전 button -->
-<entry key="btn.glossary.search">조회</entry>
-<entry key="btn.glossary.convert">변경</entry>
-<entry key="btn.glossary.remove">지우기</entry>
+<entry key="btn.glossary.search">Search</entry>
+<entry key="btn.glossary.convert">Conversion</entry>
+<entry key="btn.glossary.remove">Remove</entry>
 
 
 </properties>

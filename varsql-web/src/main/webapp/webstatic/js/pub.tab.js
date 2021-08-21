@@ -1,5 +1,5 @@
 /**
- * pubTab v1.0.1
+ * pubTab v1.0.2
  * ========================================================================
  * Copyright 2016-2021 ytkim
  * Licensed under MIT
@@ -48,6 +48,7 @@ var pluginName = "pubTab"
 
 	}
 	,removeItem : false	// remove callback 옵션
+	,blinkClass : 'blinkcss'
 	,itemKey :{							// item key mapping
 		title :'name'
 		,id :'_tabid'
@@ -80,8 +81,8 @@ function objectMerge() {
 }
 
 function Plugin(element, options) {
-	this.selector = (typeof element=='object') ? element.selector : element;
-	this.prefix =pluginName+new Date().getTime();
+	this.selector = element;
+	this.prefix = pluginName + new Date().getTime();
 	this.tabElement = $(element);
 
 	if(options.width != 'auto'){
@@ -90,8 +91,7 @@ function Plugin(element, options) {
 
 	options.width= isNaN(options.width) ?  this.tabElement.width() : options.width;
 	this.options = objectMerge({}, defaults, options);
-
-
+	
 	this.init();
 
 	return this;
@@ -169,11 +169,11 @@ Plugin.prototype ={
 
 			if(opts.contextMenu !== false && typeof opts.contextMenu == 'object'){
 				var _cb = opts.contextMenu.callback;
-	
+
 				if(_cb){
 					opts.contextMenu.callback = function(key,sObj) {
-						var tabEle = this.element.closest('[data-tab-id]'); 
-						var tabId = tabEle.attr('data-tab-id');  
+						var tabEle = this.element.closest('[data-tab-id]');
+						var tabId = tabEle.attr('data-tab-id');
 						sObj = {
 							tabId : tabId
 							,tabItem : _this.getItem(tabId)
@@ -269,13 +269,13 @@ Plugin.prototype ={
 
 		customInfo = customInfo || {};
 		var clickEle = $(this.tabElement.find('.pubTab-item').get(idx));
-		
+
 		var opts = this.options;
-		var tabItem = opts.items[idx]; 
-		
-		
+		var tabItem = opts.items[idx];
+
+
 		if(opts.enableClickEventChange ===true && this.isActive(tabItem)){ // 변경 되었을때만 event 처리.
-			return ; 
+			return ;
 		}
 
 		this.setActive(tabItem);
@@ -317,12 +317,48 @@ Plugin.prototype ={
 		return tabEle.length > 0 ? true : false;
 	}
 	/**
+	 * @method setTabBlink
+	 * @param item {Object or String} -tab item or tab id
+	 * @description set tab blink
+	 */
+	,setTabBlink : function (item){
+		var tabEle;
+		if(typeof item ==='object'){
+			tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+		}else{
+			tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item+'"]');
+		}
+
+		if(tabEle.length > 0 && !tabEle.hasClass(this.options.blinkClass)){
+			tabEle.find('.pubTab-item-cont').addClass(this.options.blinkClass);
+		}
+	}
+	/**
+	 * @method removeTabBlink
+	 * @param item {Object or String} -tab item or tab id
+	 * @description remove tab blink
+	 */
+	,removeTabBlink : function (item){
+		var tabEle;
+		if(typeof item ==='object'){
+			tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
+		}else{
+			tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item+'"]');
+		}
+
+		if(tabEle.length > 0){
+			tabEle.find('.pubTab-item-cont').removeClass(this.options.blinkClass);
+		}
+	}
+	/**
 	 * @method setActive
 	 * @description set active item
 	 */
 	,setActive: function (item){
 		var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 
+		this.removeTabBlink(item);
+		
 		if(tabEle.hasClass('active')){
 			return ;
 		}
@@ -472,7 +508,7 @@ Plugin.prototype ={
 		if(tabEle.length > 0){
 
 			var titEle = tabEle.find('.pubTab-item-title');
-			
+
 			tabEle.attr('title', tit);
 			titEle.empty().html(tit);
 
@@ -590,7 +626,7 @@ Plugin.prototype ={
 			if($.isFunction(this.options.removeItem)){
 				this.options.removeItem.call(null,'all');
 			}
-			return ; 
+			return ;
 		}
 
 		if(item =='other'){
@@ -606,7 +642,7 @@ Plugin.prototype ={
 			if($.isFunction(this.options.removeItem)){
 				this.options.removeItem.call(null,'other');
 			}
-			return ; 
+			return ;
 		}
 
 		if(typeof item ==='object'){
@@ -768,16 +804,14 @@ Plugin.prototype ={
 		strHtm.push('		</div> ');
 		strHtm.push('		<div class="pubTab-move-area" style="z-index:'+_opts.moveZIndex+';">');
 
-		strHtm.push('		<span class="pubTab-drop-open-btn">');
-		strHtm.push('			<div class="pubTab-move-dim"></div>');
-		strHtm.push('			<i class="pubTab-more-button"></i>');
+		strHtm.push('		  <div class="pubTab-drop-open-btn pubTab-more-button">');
 		if(_opts.overItemViewMode =='drop'){
 			strHtm.push('		<div id="'+_this.prefix+'DropItem" style="width:'+_opts.dropItemWidth+'" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
 		}
 
-		strHtm.push('</span>');
+		strHtm.push('		  </div>');
 		strHtm.push('		</div>');
-		strHtm.push('	</div>'); 
+		strHtm.push('	</div>');
 		strHtm.push('</div>');
 
 		_this.tabElement.empty().html(strHtm.join(''));
@@ -831,7 +865,11 @@ Plugin.prototype ={
 		return this.options.theme;
 	}
 	,destroy:function (){
-
+		this.tabElement.find('*').off();
+		$._removeData(this.tabElement)
+		delete _datastore[this.selector];
+		$(this.selector).empty();
+		//this = {};
 	}
 };
 
