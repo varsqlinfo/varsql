@@ -12,6 +12,8 @@ varsql websqltool sqltool
 - lombok : 1.18.10
 
 [wiki](https://github.com/varsqlinfo/varsql/wiki/)
+
 [설치방법](https://github.com/varsqlinfo/varsql/wiki#%EC%8B%A4%ED%96%89%EB%B0%A9%EB%B2%95)
+
 [문제 해결 방법]https://github.com/varsqlinfo/varsql/wiki/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95
 
