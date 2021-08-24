@@ -269,6 +269,10 @@ public class AdminServiceImpl extends AbstractService{
 			saveEntity= reqEntity;
 		}
 
+		if(vtConnection.isPasswordChange()) {
+			saveEntity.setVpw(vtConnection.getVpw());
+		}
+
 		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(saveEntity));
 
 		dbConnectionModelRepository.save(saveEntity);

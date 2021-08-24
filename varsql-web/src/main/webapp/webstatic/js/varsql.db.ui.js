@@ -490,7 +490,7 @@ _ui.headerMenu ={
 							var popt = 'width=800px,height=500px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 							VARSQLUI.popup.open(VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid), {
-								name : _g_options.conuid
+								name : _g_options.conuid+'_import_win'
 								,viewOption : popt
 							});
 
@@ -506,7 +506,7 @@ _ui.headerMenu ={
 							var popt = 'width='+(dimension.width)+',height='+(dimension.height)+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 							VARSQLUI.popup.open(location.href, {
-								name : _g_options.conuid
+								name : _g_options.conuid+'_new_win'
 								,viewOption : popt
 							});
 
@@ -2891,10 +2891,11 @@ _ui.SQL = {
 	,sqlFileNameDialogEle : null // sql file name dialog
 	,allTabSqlEditorObj : {}	 // sql editor  object
 	,sqlEditorSelector : '#varsql_main_editor'
-	,sqlParameterSelector : '#sql_parameter_area'
+	,sqlParameterEle : null
 	,noteDialog : null
 	,findTextDialog : null
 	,currentSqlData :''
+	,findTextEle : null
 	,options :{
 		selector:'#sqlExecuteArea'
 		,limitCnt:'#limitRowCnt'
@@ -2984,19 +2985,40 @@ _ui.SQL = {
 		this.getSqlEditorObj().redo();
 	}
 	// editor tab & editor element 삭제.
-	,deleteEditorInfo : function (item){
-		this.sqlFileTabObj.removeItem(item);
-		var sqlId = item.sqlId
-		if(this.allTabSqlEditorObj[sqlId]){
-			$('.sql-parameter-area[data-parameter-id="'+sqlId+'"]').remove();
-			delete this.allTabSqlEditorObj[sqlId];
-			delete this.sqlEditorBuffer[sqlId];
+	,deleteEditorInfo : function (mode, item){
+		if(mode == 'all' || mode == 'other'){
+
+			if(mode == 'all'){
+				this.sqlFileTabObj.removeItem('all');
+				item = {};
+			}else{
+				this.sqlFileTabObj.removeItem('other', item.sqlId);
+			}
+
+			for(var key in this.allTabSqlEditorObj){
+				if(key != item.sqlId){
+					var removeIem = this.allTabSqlEditorObj[key].item;
+
+					delete this.allTabSqlEditorObj[key];
+					delete this.sqlEditorBuffer[key];
+					_ui.sqlDataArea.removeDataGridEle(removeIem);
+				}
+			};
+		}else{
+			this.sqlFileTabObj.removeItem(item);
+			var sqlId = item.sqlId
+			if(this.allTabSqlEditorObj[sqlId]){
+				delete this.allTabSqlEditorObj[sqlId];
+				delete this.sqlEditorBuffer[sqlId];
+			}
+			_ui.sqlDataArea.removeDataGridEle(item);
 		}
-		_ui.sqlDataArea.removeDataGridEle(item);
+
 		if(this.sqlFileTabObj.getItemLength() < 1){
 			this.currentSqlEditorInfo= null;
-
 			$('[data-editor-id="empty"]').addClass('active'); // 빈파일 화면 오픈.
+			this.addParamTemplate('init', {});
+			this.sqlParameterEle.attr('data-paramter-id','');
 			this.setSqlEditorBtnDisable();
 		}
 	}
@@ -3023,15 +3045,15 @@ _ui.SQL = {
 
 					var param = {sqlId : item.sqlId};
 					if(key =='close'){
-						_self.deleteEditorInfo(item);
+						_self.deleteEditorInfo('del', item);
 						param.len = _self.sqlFileTabObj.getItemLength();
 						_self.saveSqlFile(param ,'delTab');
 						return ;
 					}else if(key =='close_other'){
-						_self.sqlFileTabObj.removeItem('other', item.sqlId);
+						_self.deleteEditorInfo('other', item);
 						_self.saveSqlFile(param ,'delTab-other');
 					}else if(key =='close_all'){
-						_self.sqlFileTabObj.removeItem('all');
+						_self.deleteEditorInfo('all');
 						_self.saveSqlFile(param ,'delTab-all');
 					}
 				},
@@ -3061,15 +3083,15 @@ _ui.SQL = {
 								,buttons: {
 									"Save and close":function (){
 										param.sqlCont = editorObj.editor.getValue();
-										_self.deleteEditorInfo(item);
 										param.len =_self.sqlFileTabObj.getItemLength();
 										_self.saveSqlFile(param ,'query_del');
+										_self.deleteEditorInfo('del', item);
 										dialogObj.dialog( "close" );
 									}
 									,"Close":function (){
-										_self.deleteEditorInfo(item);
 										param.len =_self.sqlFileTabObj.getItemLength();
 										_self.saveSqlFile(param ,'delTab');
+										_self.deleteEditorInfo('del', item);
 										dialogObj.dialog( "close" );
 									}
 									,"Cancel": function() {
@@ -3081,7 +3103,7 @@ _ui.SQL = {
 								}
 							})
 						}else{
-							_self.deleteEditorInfo(item);
+							_self.deleteEditorInfo('del', item);
 							param.len =_self.sqlFileTabObj.getItemLength();
 							_self.saveSqlFile(param ,'delTab');
 						}
@@ -3089,10 +3111,7 @@ _ui.SQL = {
 				}
 			}
 			,click : function (item){
-				var sqlId =item.sqlId;
-
 				_self.loadEditor(item);
-
 			}
 			,itemKey :{							// item key mapping
 				title :'sqlTitle'
@@ -3103,6 +3122,7 @@ _ui.SQL = {
 	,_initEditor : function (){
 		var _self = this;
 
+		_self.sqlParameterEle = $('#sql_parameter_area');
 		var editor= CodeMirror(document.getElementById('varsql_main_editor'), {
 			mode: _ui.base.mimetype,
 			indentWithTabs: true,
@@ -3553,8 +3573,9 @@ _ui.SQL = {
 	,findTextOpen : function(){
 		var _self = this;
 		if(_self.findTextDialog==null){
-			_self.findTextDialog = $('#editorFindTextDialog').dialog({
-				height: 285
+			_self.findTextEle = $('#editorFindTextDialog');
+			_self.findTextDialog = _self.findTextEle.dialog({
+				height: 315
 				,width: 280
 				,resizable: false
 				,modal: false
@@ -3563,40 +3584,41 @@ _ui.SQL = {
 				}
 			});
 
-			$('#editorFindText').on('keydown',function(e) {
+			_self.findTextEle.find('[name="editorFindText"]').on('keydown',function(e) {
 				if (e.keyCode == '13') {
-					$('.find_text_btn').trigger('click');
+					_self.findTextEle.find('.find_text[data-mode="find"]').trigger('click.find.text');
 				}
 			});
 
-			$('.find_text_btn').on('click',function (){
-				var findText = $('#editorFindText').val();
-				var replaceText = $('#editorReplaceText').val();
-				_self.searchFindText(findText, replaceText,false);
-			});
-			$('.find_replace_btn').on('click',function (){
-				var findText = $('#editorFindText').val();
-				var replaceText = $('#editorReplaceText').val();
+			_self.findTextEle.find('.find_text').on('click.find.text', function (e){
+				var sEle = $(this);
+				var mode = sEle.attr('data-mode');
+				var findText = _self.findTextEle.find('[name="editorFindText"]').val();
+				var replaceText = _self.findTextEle.find('[name="editorReplaceText"]').val()
 
-				_self.searchFindText(findText, replaceText ,true);
-			});
-			$('.find_all_replace_btn').on('click',function (){
-				var findText = $('#editorFindText').val();
-				var replaceText = $('#editorReplaceText').val();
-
-				_self.searchFindText(findText, replaceText ,false, true);
-			});
-			$('.find_close_btn').on('click',function (){
-				_self.findTextDialog.dialog( "close" );
-			});
+				if(mode=='find'){
+					_self.searchFindText(findText, replaceText, false);
+				}else if(mode=='replace'){
+					_self.searchFindText(findText, replaceText, true);
+				}else if(mode=='allreplace'){
+					_self.searchFindText(findText, replaceText, false, true);
+				}else{
+					_self.findTextDialog.dialog( "close" );
+				}
+			})
 		}
 
-		$('#editorFindText').val(_self.getSql());
+		var findSqlText = _self.getSql();
+		if(!VARSQL.isBlank(findSqlText)){
+			_self.findTextEle.find('[name="editorFindText"]').val(findSqlText);
+		}
 
 		_self.findTextDialog.dialog("open");
+		_self.findTextEle.find('[name="editorFindText"]').focus();
+		_self.findTextEle.find('.find-result').empty();
 	}
 	// 검색.
-	,searchFindText : function (orginTxt ,replaceTxt, replaceFlag, replaceAllFlag,wrapSearch){
+	,searchFindText : function (orginTxt ,replaceTxt, replaceFlag, replaceAllFlag, wrapSearch){
 		var _self = this;
 
 		var directionValue = $("input:radio[name=find-text-direction]:checked").val();
@@ -3639,43 +3661,39 @@ _ui.SQL = {
 			}
 		}
 
-		var cursor =_self.getSqlEditorObj().getSearchCursor(schTxt, findPos , {
+		var cursor =_self.getSqlEditorObj().getSearchCursor(schTxt, (replaceAllFlag ? findPos :( wrapSearch ? wrapSearchPos : findPos)) , {
 			caseFold : !findOpt.caseSearch
 		})
-
-		var isNext;
 
 		if(replaceAllFlag ===true){
 			var replaceCount =0;
 
-			while(cursor.findNext()){
+			while (cursor.findNext()){
 				replaceCount++;
-				_self.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
-				_self.getSqlEditorObj().replaceSelection(replaceTxt);
+			    cursor.replace(replaceTxt)
 			}
 
-			if(!isNext){
-				VARSQLUI.alert.open({key:'varsql.0011' , count: replaceCount});
-			}
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0011', { count: replaceCount}))
 
 			return ;
 		}
 
-		isNext = cursor.find(isReverseFlag);
+		var isNext = cursor.find(isReverseFlag);
 
 		if(wrapSearch===true && isNext===false){
-			VARSQLUI.alert.open({key:'varsql.0012' , findText: orginTxt});
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0012', { findText: orginTxt}));
 			return ;
 		}
 
 		if(isNext){
-			_self.getSqlEditorObj().setSelection(cursor.from(), cursor.to());
+			var cursorFrom = cursor.from();
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
+			_self.getSqlEditorObj().setSelection(cursorFrom, cursor.to());
 		}else{
 			if(findOpt.wrapSearch===true){
-				_self.getSqlEditorObj().setCursor(wrapSearchPos);
-				_self.searchFindText(orginTxt,replaceTxt,replaceFlag, replaceAllFlag, true);
+				_self.searchFindText(orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
 			}else{
-				VARSQLUI.alert.open({key:'varsql.0012' , findText: orginTxt});
+				_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0012', { findText: orginTxt}));
 				return ;
 			}
 		}
@@ -3720,48 +3738,42 @@ _ui.SQL = {
 			sqlEditorObj.setCursor({line: currEditorCursor.line, ch: currEditorCursor.ch +addText.length})
 		}
 	}
-	// 파라미터 html template
-	,getParamTemplate : function (valFlag){
-		return '<div class="sql-param-row">'
-			+'	<span class="key"><input type="text" class="sql-param-key" value="'+(valFlag?'{{key}}':'')+'" /></span>'
-			+'	<span class="val"><input type="text" class="sql-param-value" value="'+(valFlag?'{{val}}':'')+'"/></span>'
-			+'	<span class="remove"><button type="button" class="sql-param-del-btn"><i class="fa fa-minus"></i></button></span>'
-			+'</div>';
-	}
 	// sql 파라미터 셋팅.
 	,addParamTemplate : function (mode, data){
 		var _self =this;
-		var currentParamEle = $('.sql-parameter-area.active');
 
-		if('data' == mode || 'init_data' == mode){
-			var paramHtm = [];
+		var rowTemplate = '<div class="sql-param-row">'
+		+'	<span class="key"><input type="text" class="sql-param-key" name="sql-param-key" value="" /></span>'
+		+'	<span class="val"><input type="text" class="sql-param-value" name="sql-param-value" value=""/></span>'
+		+'	<span class="remove"><button type="button" class="sql-param-del-btn"><i class="fa fa-minus"></i></button></span>'
+		+'</div>';
 
-			var dataLen = Object.keys(data||{}).length;
-			if(dataLen < 1) data = {'' :''};
+		var currentParamEle = _self.sqlParameterEle;
 
-			var template = VARSQLTemplate.compile(_self.getParamTemplate(true));
+		if('init' == mode){
+			currentParamEle.empty();
+		}
 
-			for(var key in data){
-				paramHtm.push(template({key: key , val : data[key]}));
-			}
+		var dataLen = Object.keys(data||{}).length;
+		if(dataLen < 1) data = {'' :''};
 
-			if('init_data' ==mode){
-				currentParamEle.empty().html(paramHtm.join(''));
-			}else{
-				currentParamEle.append(paramHtm.join(''));
-			}
-		}else{
-			var paramHtm=_self.getParamTemplate();
+		var focusFlag = ('data' == mode);
+		for(var key in data){
+			var rowEle = $(rowTemplate);
 
-			if(mode =='init'){
-				currentParamEle.empty().html(paramHtm);
-			}else{
-				currentParamEle.append(paramHtm);
+			rowEle.find('[name="sql-param-key"]').val(key);
+			rowEle.find('[name="sql-param-value"]').val(data[key]);
+
+			currentParamEle.append(rowEle);
+
+			if(focusFlag){
+				focusFlag =false;
+				rowEle.find('[name="sql-param-value"]').focus();
 			}
 		}
 	}
 	// save sql
-	,saveSqlFile : function (item , mode){
+	,saveSqlFile : function (item, mode){
 		var _self = this;
 
 		var params;
@@ -3771,18 +3783,20 @@ _ui.SQL = {
 			if(_self.getSqlEditorObj() ===false){
 				return ;
 			}
+			_self.setSqlParamemter(_self.currentSqlEditorInfo.sqlId);
 
 			params =VARSQL.util.objectMerge ({},_g_options.param,{
 				'sqlCont' :_self.getSqlEditorObj().getValue()
-				,'sqlId' : $('#sqlFileId').val()
-				,'sqlParam' : JSON.stringify(_self.getSqlParam())
+				,'sqlId' : _self.currentSqlEditorInfo.sqlId
+				,'sqlParam' : JSON.stringify(_self.getSqlParamemter())
+				,'editorCursor' : JSON.stringify(_self.getSqlEditorObj().getCursor())
 				,'mode' : mode
 			});
 		}else if(mode =='query_del'){
 			params =VARSQL.util.objectMerge ({},_g_options.param,{
 				'sqlCont' : item.sqlCont
 				,'sqlId' : item.sqlId
-				,'sqlParam' : JSON.stringify(_self.getSqlParam(item.sqlId))
+				,'sqlParam' : JSON.stringify(_self.getSqlParamemter(item.sqlId))
 				,'mode' : mode
 			});
 		}else{
@@ -3842,7 +3856,8 @@ _ui.SQL = {
 			if(editorObj.item._isChange===true){
 				sqlIdArr.push(key);
 				queryCont[key] = editorObj.editor.getValue();
-				queryCont[key+'_param'] = JSON.stringify(_self.getSqlParam(key));
+				queryCont[key+'_param'] = JSON.stringify(_self.getSqlParamemter(key));
+				queryCont[key+'_cursor'] =JSON.stringify(editorObj.editor.getCursor());
 			}
 		}
 
@@ -4039,7 +4054,7 @@ _ui.SQL = {
 		    			    ,data:params
 		    			    ,success:function (res){
 		    			    	itemArea.remove();
-		    			    	_self.deleteEditorInfo(sItem);
+		    			    	_self.deleteEditorInfo('del', sItem);
 		    			    	_self.sqlFileList();
 		    			    }
 		    			});
@@ -4057,9 +4072,7 @@ _ui.SQL = {
 
 		if(VARSQL.isBlank(_self.sqlEditorBuffer[sqlId])){
 			_self.sqlEditorBuffer[sqlId] = CodeMirror.Doc(VARSQL.isBlank(sItem.sqlCont)?"":sItem.sqlCont, _ui.base.mimetype);
-
-			$(_self.sqlParameterSelector).append('<div class="sql-parameter-area" data-parameter-id="'+sqlId+'"></div>');
-			_ui.sqlDataArea.addDataGridEle(sItem);
+			_ui.sqlDataArea.addDataGridEle(sItem)
 		}else{
 			if(this.currentSqlEditorInfo.sqlId ==sqlId){
 				return ;
@@ -4078,11 +4091,15 @@ _ui.SQL = {
 		}
 		_self.sqlMainEditor.focus();
 
-		$('#sqlFileId').val(sqlId);
-
-		// parameter active
-		$('.sql-parameter-area.active').removeClass('active');
-		$('.sql-parameter-area[data-parameter-id="'+sqlId+'"]').addClass('active');
+		if(buf.VARSQL_SQL_LOAD_FLAG !== true){
+			try{
+				if(!VARSQL.isUndefined(sItem.editorCursor)){
+					_self.sqlMainEditor.setCursor(VARSQL.util.objectMerge({line:0,ch:0}, VARSQL.parseJSON(sItem.editorCursor)));
+				}
+			}catch(e){
+				VARSQL.log.info(e);
+			}
+		}
 
 		var isTabItem =_self.sqlFileTabObj.isItem(sqlId);
 
@@ -4111,21 +4128,33 @@ _ui.SQL = {
 		_self.sqlFileTabObj.setActive(sItem);
 		_ui.sqlDataArea.setGridSelector(sItem);
 
-		if(buf.VARSQL_DATA_LOAD_FLAG===true){
+		// set sql parameter start
+		var beforeSqlId = _self.sqlParameterEle.attr('data-paramter-id');
+		if(!VARSQL.isBlank(beforeSqlId) && VARSQL.hasProperty(_self.allTabSqlEditorObj, beforeSqlId)){
+			_self.allTabSqlEditorObj[beforeSqlId].parameter = _self.getSqlParamemter();
+		}
+
+		if(_self.allTabSqlEditorObj[sqlId].parameter === false){
+			var sqlParam = {'':''};
+			try{
+				sqlParam = VARSQL.parseJSON(sItem.sqlParam);
+			}catch(e){}
+
+			_self.allTabSqlEditorObj[sqlId].parameter = sqlParam;
+		}
+
+		_self.sqlParameterEle.attr('data-paramter-id',sqlId);
+		_self.addParamTemplate('init', _self.allTabSqlEditorObj[sqlId].parameter);
+		// set sql parameter end
+
+		if(buf.VARSQL_SQL_LOAD_FLAG===true){
 			_self.setSelectSqlEditorInfo(sItem);
 			return ;
 		}
 
 		if($('[data-editor-id="empty"]').hasClass('active')) $('[data-editor-id="empty"]').removeClass('active');
 
-		buf.VARSQL_DATA_LOAD_FLAG = true;
-
-		// tab item setting
-		try{
-			_self.addParamTemplate('init_data',$.parseJSON(sItem.sqlParam));
-		}catch(e){
-			_self.addParamTemplate('init_data',{'':''});
-		}
+		buf.VARSQL_SQL_LOAD_FLAG = true;
 
 		_self.allTabSqlEditorObj[sqlId].editor = buf.getEditor();
 		_self.setSelectSqlEditorInfo(sItem);
@@ -4145,13 +4174,13 @@ _ui.SQL = {
 	// tab 정보 추가.
 	,addTabSqlEditorInfo : function(item){
 		if(VARSQL.isUndefined(this.allTabSqlEditorObj[item.sqlId])){
-			this.allTabSqlEditorObj[item.sqlId] = {item : item , editor : false};
+			this.allTabSqlEditorObj[item.sqlId] = {item : item , editor : false, parameter : false};
 		}
 	}
 	//텍스트 박스 object
 	,getSqlEditorObj:function(){
 
-		if(this.currentSqlEditorInfo  && this.currentSqlEditorInfo.editor){
+		if(this.currentSqlEditorInfo && this.currentSqlEditorInfo.editor){
 			return this.currentSqlEditorInfo.editor;
 		}else{
 			return false;
@@ -4163,25 +4192,28 @@ _ui.SQL = {
 
 		return textObj.getSelection();
 	}
+	// sql parameter editer
+	,setSqlParamemter: function (sqlId){
+		this.allTabSqlEditorObj[sqlId].parameter = this.getSqlParamemter();
+	}
 	// sql 실행시 셋팅 파라미터 구하기.
-	,getSqlParam : function (sqlId){
-		var sqlParam ={};
+	,getSqlParamemter: function (sqlId){
+		if(VARSQL.isUndefined(sqlId)){
+			var sqlParam ={};
+			this.sqlParameterEle.find('.sql-param-row').each(function(i, item){
+				var sEle =$(this);
+				var k = VARSQL.str.trim(sEle.find('[name="sql-param-key"]').val())
+					,v= sEle.find('[name="sql-param-value"]').val();
 
-		var sqlParaSelector = '.sql-parameter-area.active';
+				if(k != '' || VARSQL.str.trim(v) != '' ){
+					sqlParam[(k==''?i:k)] = v;
+				}
+			})
 
-		if(!VARSQL.isUndefined(sqlId)){
-			sqlParaSelector = '.sql-parameter-area[data-parameter-id="'+sqlId+'"]'
+			return sqlParam;
+		}else{
+			return this.allTabSqlEditorObj[sqlId].parameter ||{};
 		}
-
-		$(sqlParaSelector+' .sql-param-row').each(function(i ,item){
-			var k = $(this).find('.sql-param-key').val()
-				,v=$(this).find('.sql-param-value').val();
-
-			if(VARSQL.str.trim(k) != ''){
-				sqlParam[k] = v;
-			}
-		})
-		return sqlParam;
 	}
 	// sql 실행시 파라미터 체크.
 	,sqlParamCheck : function (sqlVal, sqlParam){
@@ -4193,15 +4225,15 @@ _ui.SQL = {
 			for(var i =0 ;i < matchArr.length;i++){
 		    	var tmpKey = matchArr[i].replace(/[$|#|{|}]/gi,'');
 
-		    	if(typeof sqlParam[tmpKey]==='undefined'){
+		    	if(!VARSQL.hasProperty(sqlParam, tmpKey)){
 		    		addParam[tmpKey] = '';
 		    		flag = false;
 		    	}
 			}
 
 			if(flag == false){
-				_self.addParamTemplate('data',addParam);
 				$('#sql_parameter_wrapper').addClass('on');
+				_self.addParamTemplate('data', addParam);
 
 				var loopCnt = 0;
 				var loopInter = setInterval(function (){
@@ -4253,7 +4285,7 @@ _ui.SQL = {
 		var sqlParam = {};
 
 		if(paramFlag===true){
-			sqlParam = _self.getSqlParam();
+			sqlParam = _self.getSqlParamemter();
 			if(!_self.sqlParamCheck(sqlVal, sqlParam)){
 				return '';
 			}
@@ -4306,8 +4338,6 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	var formatSql = res.item;
 		    	formatSql = VARSQL.str.trim(formatSql)
-
-		    	var linecnt = VARSQL.matchCount(formatSql,VARSQLCont.constants.newline)+1;
 	    		tmpEditor.replaceSelection(formatSql);
 	    		tmpEditor.setSelection(startSelection, _self.getSqlEditorObj().getCursor(true));
 			}

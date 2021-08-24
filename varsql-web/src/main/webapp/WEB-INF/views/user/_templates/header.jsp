@@ -3,7 +3,7 @@
 
 <div id="userTopArea" class="display-off">
 	<div class="user-connection-list-area">
-		<label @click="getConnectionInfo()" class="main-logo-area">
+		<label @click="getConnectionInfo()" class="main-logo-area" title="<spring:message code="refresh.connnection.info"/>">
 		    <img src="${pageContextPath}/webstatic/vt/vt32.png" class="user-main-logo">
 		    <span>Connect : </span>
 		</label>
@@ -117,16 +117,16 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 	}
 	,watch : {
 		alarmFlag : function (){
-			var _this  = this; 
+			var _this  = this;
 			if(this.alarmFlag == true){
-				this.alarmMsgAeraCls = 'ani-fade-in'; 
+				this.alarmMsgAeraCls = 'ani-fade-in';
 				clearTimeout(this.alarmTimer);
 				this.alarmTimer = setTimeout(function() {
 					if(_this.alarmMsgAeraCls != ''){
 						_this.alarmMsgAeraCls = 'ani-fade-out';
 					}
 				}, 3000);
-				
+
 			}else{
 				_this.alarmMsgAeraCls = '';
 			}
@@ -138,7 +138,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 		}
 		,messageLoad : function(initFlag) {
 			var _this = this;
-			
+
 			_this.alarmMsgAeraCls = '';
 			this.tabInfo = 'new';
 			_this.allNoteIds = [];
@@ -179,7 +179,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 		,tabView : function (tabInfo){
 
 			if(this.tabInfo == tabInfo) return ;
-			
+
 			this.setDetailItem();
 
 			this.tabInfo = tabInfo;
@@ -277,29 +277,29 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 					}
 				});
 			}
-			
+
 			this.setDetailItem();
-			
+
 			_this.noteDialog.dialog("option", "title", "Note");
 			_this.noteDialog.dialog("open");
 		}
 		,resendNote  : function (){
 			var _this =this;
-			
+
 			if(VARSQL.isBlank(this.detailItem.noteId)){
 				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0006'));
-				return ; 
+				return ;
 			}else if(VARSQL.isBlank(this.detailItem.reNoteCont)){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0028'));	
-				return ; 
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0028'));
+				return ;
 			}
-			
+
 			if(!confirm(VARSQL.messageFormat('varsql.0014'))){
-				return ; 
+				return ;
 			}
 
 			var params = VARSQL.util.copyObject(this.detailItem);
-			
+
 			params.recvId = 'resend';
 
 			this.$ajax({

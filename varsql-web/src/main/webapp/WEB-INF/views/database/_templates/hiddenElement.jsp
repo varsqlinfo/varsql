@@ -80,11 +80,11 @@
 		<ul class="find-text">
 			<li>
 				<label class="find-text-label"><spring:message code="find.word" /></label>
-				<span class="find-text-input-area"><input type="text" id="editorFindText" name="editorFindText"></span>
+				<span class="find-text-input-area"><input type="text" name="editorFindText"></span>
 			</li>
 			<li>
 				<label class="find-text-label"><spring:message code="replace.word" /></label>
-				<span class="find-text-input-area"><input type="text" id="editorReplaceText" name="editorReplaceText"></span>
+				<span class="find-text-input-area"><input type="text" name="editorReplaceText"></span>
 			</li>
 		</ul>
 		<div class="rows">
@@ -129,12 +129,13 @@
 		</div>
 		<div class="rows">
 			<ul class="find-text-button">
-				<li><button type="button" class="find_text_btn"><spring:message code="find" /></button></li>
-				<li><button type="button" class="find_replace_btn"><spring:message code="replace" /></button></li>
-				<li><button type="button" class="find_all_replace_btn"><spring:message code="all.replace" /></button></li>
-				<li><button type="button" class="find_close_btn"><spring:message code="close" /></button></li>
+				<li><button type="button" class="find_text" data-mode="find"><spring:message code="find" /></button></li>
+				<li><button type="button" class="find_text" data-mode="replace"><spring:message code="replace" /></button></li>
+				<li><button type="button" class="find_text" data-mode="allreplace"><spring:message code="all.replace" /></button></li>
+				<li><button type="button" class="find_text" data-mode="close"><spring:message code="close" /></button></li>
 			</ul>
 		</div>
+		<div class="find-result"></div>
 	</div>
 </div>
 

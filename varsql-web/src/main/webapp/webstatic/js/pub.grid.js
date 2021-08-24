@@ -292,10 +292,25 @@ var formatter= {
 }
 
 function evtPos(e){
-	var oe = e.originalEvent.touches
-		,evt = oe && oe[0] ? oe[0] : e;
+	var oe = e.originalEvent
+	var evt; 
+	if(oe){
+		if(oe.changedTouches){
+			evt =oe.changedTouches[0];
+		}else{
+			if( oe.touches){
+				evt = oet[0] 
+			}
+		}
+	}
 
+	evt = evt || e; 
+	
 	return {x : evt.pageX, y : evt.pageY};
+}
+
+function isInputField(tagName){
+	return tagName.search(/(input|select|textarea)/i) > -1;
 }
 
 function getHashCode (str){
@@ -631,7 +646,7 @@ Plugin.prototype ={
 			thg.push(tci);
 		}
 
-		var tmpThgIdx=0,tmpColIdx=0,tmpThgItem , currentColSpanIdx=0  , beforeColSpanIdx=0 ;
+		var tmpThgIdx=0, tmpColIdx=0, currentColSpanIdx=0, beforeColSpanIdx=0;
 		var sortHeaderInfo = {};
 		for(var i=0,j=0 ;i <thg.length; i++ ){
 			thgItem = thg[i];
@@ -795,7 +810,6 @@ Plugin.prototype ={
 		}
 
 		var _this = this
-			,_containerWidth ,_w
 			,opt = _this.options
 			,_gw = _this.config.container.width
 			,tci = _this.config.tColItem
@@ -1062,6 +1076,8 @@ Plugin.prototype ={
 						schArr.push(tmpItem);
 					}
 				}
+
+				console.log('test')
 
 				this.config.searchOn = true;
 			}else{
@@ -1718,8 +1734,7 @@ Plugin.prototype ={
 				_this.gridElement.empty().html(templateHtm);
 
 				_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
-				_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
-
+				
 				_this.element.container = $('#'+_this.prefix+'_container');
 				_this.element.left = $('#'+_this.prefix+'_left');
 				_this.element.header= $('#'+_this.prefix+'_headerContainer');
@@ -1761,11 +1776,7 @@ Plugin.prototype ={
 				_this.setTheme(_this.options.theme);
 				_this._initFooterEvent();
 
-				if(_this.config.searchOn===true){
-					_this.gridElement.find('.pubGrid-setting').addClass('search-on');
-				}else{
-					_this.gridElement.find('.pubGrid-setting').removeClass('search-on');
-				}
+				_this.setSearchOn();
 			}else{
 				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
 				_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
@@ -1942,6 +1953,17 @@ Plugin.prototype ={
 
 		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
 			_this._statusMessage(viewCount);
+		}
+	}
+	/**
+	 * @method setSearchOn
+	 * @description 검색 데이터가 있을때 세팅
+	 */
+	,setSearchOn : function (){
+		if(this.config.searchOn===true){
+			this.gridElement.find('.pubGrid-setting').addClass('search-on');
+		}else{
+			this.gridElement.find('.pubGrid-setting').removeClass('search-on');
 		}
 	}
 	/**
@@ -3135,6 +3157,7 @@ Plugin.prototype ={
 					settingOpt.configVal.search = settingVal.search;
 
 					_this._setSearchData('search');
+					_this.setSearchOn();
 				}
 
 				if(isFunction(settingOpt.callback)){
@@ -3583,10 +3606,12 @@ Plugin.prototype ={
 
 			if(!_this.config.focus) return ;
 
-			var evtTargetEle = $(e.target);
+			if(isInputField(e.target.tagName)){
+				return true; 
+			}
 
 			// 설정 영역 keydown 처리
-			if(evtTargetEle.closest('.pubGrid-setting-area').length > 0) return true;
+			if($(e.target).closest('.pubGrid-setting-area').length > 0) return true;
 
 			var evtKey = window.event ? e.keyCode : e.which;
 
@@ -3635,7 +3660,7 @@ Plugin.prototype ={
 				}
 			}
 
-			if( (32 < evtKey && evtKey <41) || evtKey == 13 || evtKey == 9){
+			if( (32 < evtKey && evtKey < 41) || evtKey == 13 || evtKey == 9){
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -3693,8 +3718,6 @@ Plugin.prototype ={
 
 		var endIdx = startCell.startIdx
 			,endCol = startCell.startCol;
-
-		var isKeyNavHandler = _this.config.isKeyNavHandler;
 
 		switch(evtKey){
 			case 34 : // PageDown
@@ -4431,8 +4454,7 @@ Plugin.prototype ={
 
 			// resize시 select안되게 처리 . cursor처리
 			_$doc.attr("onselectstart", "return false");
-			_this.element.hidden.append("<style type='text/css'>*{cursor:" + _this.options.headerOptions.resize.cursor + "!important}</style>");
-
+			
 			_$doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e1){
 				if(!moveStart){
 					var moveX = evtPos(e1).x;
@@ -4473,7 +4495,7 @@ Plugin.prototype ={
 	,onGripDragEnd : function(e,_this) {
 
 		_$doc.removeAttr("onselectstart");_$doc.off('touchend.colheaderresize mouseup.colheaderresize').off('touchmove.colheaderresize mousemove.colheaderresize mouseleave.colheaderresize');
-		_this.element.hidden.empty();
+		
 
 		_this._setHeaderResize(e,_this, 'end');
 

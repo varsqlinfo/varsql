@@ -24,8 +24,8 @@ import com.vartech.common.sort.TreeDataSort;
 public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRepository<SqlFileTabEntity, String>, JpaSpecificationExecutor<SqlFileTabEntity> ,SqlFileTabEntityCustom  {
 
 	@Modifying
-	@Query(value = "update SqlFileTabEntity as ste set ste.viewYn= 'N' where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.viewYn= 'Y'")
-	void updateSqlFileTabDisable(@Param("vconnid") String vconnid,@Param("viewid") String viewid);
+	@Query(value = "update SqlFileTabEntity as ste set ste.viewYn= 'N' where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.viewYn= 'Y' and ste.sqlId != :sqlId")
+	void updateSqlFileTabDisable(@Param("vconnid") String vconnid,@Param("viewid") String viewid, @Param("sqlId") String sqlId);
 
 	@Modifying
 	@Query(value = "update SqlFileTabEntity as ste set ste.viewYn= 'Y' where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.sqlId = :sqlId")
@@ -44,8 +44,10 @@ public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRep
 	void deleteAllSqlFileTabInfo(@Param("vconnid") String vconnid, @Param("viewid") String viewid);
 
 	@Modifying
-	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= (select prevSqlId from SqlFileTabEntity as suba where suba.vconnid = :vconnid and suba.viewid = :viewid and suba.sqlId = :sqlId) where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.prevSqlId = :sqlId")
-	void updateSqlFilePrevID(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId);
+	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= :prevSqlId where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.prevSqlId = :sqlId")
+	void updateSqlFilePrevID(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId, @Param("prevSqlId") String prevSqlId);
+
+	public SqlFileTabEntity findByVconnidAndViewidAndSqlId(String vconnid, String viewid, String sqlId);
 
 	@Transactional(readOnly = true , value=ResourceConfigConstants.APP_TRANSMANAGER)
 	public class SqlFileTabEntityCustomImpl extends QuerydslRepositorySupport implements SqlFileTabEntityCustom {
@@ -60,15 +62,15 @@ public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRep
 			final QSqlFileEntity sqlFileEntity = QSqlFileEntity.sqlFileEntity;
 
 			//String sqlId, String prevSqlId, String viewYn, String sqlTitle, String sqlCont, String sqlParam
-			TreeDataSort tds = new TreeDataSort("sqlId", "prevSqlId");
+			TreeDataSort tds = new TreeDataSort(SqlFileTabEntity.SQL_ID, SqlFileTabEntity.PREV_SQL_ID);
 
 			from(sqlFileTabEntity).innerJoin(sqlFileEntity).on(sqlFileTabEntity.sqlId.eq(sqlFileEntity.sqlId))
-				.select(Projections.constructor(SqlFileTabResponseDTO.class, sqlFileTabEntity.sqlId, sqlFileTabEntity.prevSqlId, sqlFileTabEntity.viewYn, sqlFileEntity.sqlTitle, sqlFileEntity.sqlCont, sqlFileEntity.sqlParam))
-				.where(sqlFileTabEntity.vconnid.eq(vconid).and(sqlFileTabEntity.viewid.eq(viewid)))
-				.orderBy(sqlFileTabEntity.prevSqlId.asc())
-				.fetch().forEach(item -> {
-					tds.sortTreeData(item);
-				});
+			.select(Projections.constructor(SqlFileTabResponseDTO.class, sqlFileTabEntity.sqlId, sqlFileTabEntity.prevSqlId, sqlFileTabEntity.viewYn, sqlFileEntity.sqlTitle, sqlFileEntity.sqlCont, sqlFileEntity.sqlParam, sqlFileEntity.editorCursor))
+			.where(sqlFileTabEntity.vconnid.eq(vconid).and(sqlFileTabEntity.viewid.eq(viewid)))
+			.orderBy(sqlFileTabEntity.prevSqlId.asc(), sqlFileTabEntity.regDt.asc())
+			.fetch().forEach(item -> {
+				tds.sortTreeData(item);
+			});
 
 			return (List<SqlFileTabResponseDTO>)tds.getSortList();
 		}

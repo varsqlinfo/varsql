@@ -61,7 +61,7 @@ public class JoinController extends AbstractController {
 		if(result.hasErrors()){
 
 			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  saveVirtualPortal validation check {}",errorVal.toString());
+				logger.warn("###  insertUserInfo validation check {}",errorVal.toString());
 			}
 			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
 		}

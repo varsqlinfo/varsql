@@ -63,8 +63,8 @@
 
 <entry key="screen">화면</entry>
 <entry key="screen.user">사용자</entry>
-<entry key="screen.manager">매니저</entry>
-<entry key="screen.admin">관리자</entry>
+<entry key="screen.manager">App 관리</entry>
+<entry key="screen.admin">Varsql 관리 콘솔</entry>
 
 <!-- admin menu -->
 <entry key="admin.menu.database">Database 관리</entry>
@@ -284,5 +284,8 @@
 <entry key="msg.connect.db.select"><![CDATA[접속할 db <img src="{0}/webstatic/imgs/Database.gif"> 선택하시오.]]></entry>
 
 <entry key="error.message404">등록되지 않은 페이지 입니다.</entry>
+
+<entry key="refresh.connnection.info">커넥션 정보 새로고침</entry>
+
 
 </properties>

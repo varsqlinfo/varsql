@@ -50,7 +50,9 @@ VARSQL_LANG = {
 	,'varsql.0027' : '복사 되었습니다'
 	,'varsql.0028' : '내용을 입력해주세요.'
 	,'varsql.0029' : '파일 업로드후 처리 실행해주세요.'
-			
+	,'varsql.0030' : 'find line:{line}, ch:{ch}'
+
+
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
 	,'varsql.m.0003' : ' 차단 하시겠습니까?'
@@ -63,6 +65,7 @@ VARSQL_LANG = {
 	,'varsql.a.0001' : '모두 닫으시겠습니까?'
 	,'varsql.a.0002' : '성공\n다시 연결을 하실경우 풀 초기화를 해주세요.'
 	,'varsql.a.0003' : '모두 초기화 하시겠습니까?'
+	,'varsql.a.0004' : '비밀번호를 변경하시겠습니까?'
 
 	,'varsql.form.0001' : '필수 입력사항입니다'
 	,'varsql.form.0002' : '최소 {len}글자 이상 이여야 합니다'
@@ -93,16 +96,17 @@ VARSQL_LANG = {
 	,'export' : '내보내기'
 	,'refresh' : '새로고침'
 	,'data.export' : '데이터 내보내기'
-		
+
 	,'step.prev' : '이전'
 	,'step.next' : '다음'
 	,'step.complete' : '완료'
-		
-	,'file.add' : '파일 선택'	
-	,'file.upload' : '업로드'	
-	,'file.remove' : '모두삭제'	
-		
-		
+	,'step.close' : '닫기'
+
+	,'file.add' : '파일 선택'
+	,'file.upload' : '업로드'
+	,'file.remove' : '모두삭제'
+
+
 	,'menu.file.import' : '가져오기'
 	,'menu.file.export' : '내보내기'
 	,'menu.file.import_export' : '가져오기 & 내보내기...'

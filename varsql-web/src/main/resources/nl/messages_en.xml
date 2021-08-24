@@ -4,16 +4,24 @@
 
 <comment>varsql</comment>
 <entry key="page.title.varsql">Varsql</entry>
+<entry key="varsql.info">Varsql</entry>
 <entry key="user.home.title">- VarSQL -</entry>
 <entry key="manager.home.title">-- Manager --</entry>
 <entry key="admin.home.title">--- Admin ---</entry>
-<entry key="user.preferences.title">환경설정</entry>
-<entry key="msg.please.sign.in">VARSQL 로그인</entry>
+<entry key="user.preferences.title">Preferences</entry>
+<entry key="msg.please.sign.in">VARSQL Login</entry>
 
 
 <entry key="header.menu.file">File</entry>
 <entry key="header.menu.file.new">New</entry>
 <entry key="header.menu.file.save">Save</entry>
+<entry key="header.menu.file.allsave">Save As...</entry>
+
+<entry key="header.menu.file.import">Import...</entry>
+<entry key="header.menu.file.export">Export...</entry>
+<entry key="header.menu.file.import_export"><![CDATA[Import & Export...]]></entry>
+<entry key="header.menu.file.newwin">New Window</entry>
+
 <entry key="header.menu.file.close">Close</entry>
 
 <entry key="header.menu.edit">Edit</entry>
@@ -36,6 +44,19 @@
 <entry key="header.menu.tool.setting">Preferences</entry>
 <entry key="header.menu.tool.initlayout">Init Layout</entry>
 
+<entry key="header.menu.tool.show.plugin">Show Component</entry>
+<entry key="header.menu.tool.show.glossary">Glossary</entry>
+<entry key="header.menu.tool.show.history">History</entry>
+
+
+<entry key="header.menu.tool.theme">Color Theme</entry>
+<entry key="header.menu.tool.theme.light">light</entry>
+<entry key="header.menu.tool.theme.dark">dark</entry>
+
+
+<entry key="header.menu.tool.utils">Utils</entry>
+<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[Excel -> DDL]]></entry>
+
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">Help</entry>
 <entry key="header.menu.help.help">Help</entry>
@@ -44,8 +65,8 @@
 
 <entry key="screen">Screen</entry>
 <entry key="screen.user">User</entry>
-<entry key="screen.manager">Manager</entry>
-<entry key="screen.admin">Admin</entry>
+<entry key="screen.manager">App Management</entry>
+<entry key="screen.admin">Varsql Console</entry>
 
 <!-- admin menu -->
 <entry key="admin.menu.database">Database</entry>
@@ -104,24 +125,24 @@
 <entry key="user.form.password.new">New Password</entry>
 <entry key="user.form.password.confirm">Re Password</entry>
 
-<entry key="msg.email.empty">이메일을 입력하세요</entry>
-<entry key="msg.title.empty">제목을 입력하세요</entry>
-<entry key="msg.contactus.empty">문의사항을 입력하세요</entry>
-<entry key="msg.name.empty">이름을 입력하세요</entry>
-<entry key="msg.password.empty">패스워드를 입력하세요</entry>
-<entry key="msg.password.differrent">패스워드가 같지 않습니다</entry>
-<entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
-<entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
-<entry key="msg.save.confirm">저장 하시겠습니까?</entry>
-<entry key="msg.save.success">저장 되었습니다</entry>
-<entry key="msg.save.fail">저장을 실패 하였습니다</entry>
-<entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
+<entry key="msg.email.empty">Please enter an your email</entry>
+<entry key="msg.title.empty">Please enter a title</entry>
+<entry key="msg.contactus.empty">Please enter your inquiry</entry>
+<entry key="msg.name.empty">Please enter a name</entry>
+<entry key="msg.password.empty">Please enter a password</entry>
+<entry key="msg.password.differrent">The password is not the same.</entry>
+<entry key="msg.password.length.check">Password must be at least 6 digits long</entry>
+<entry key="msg.login.fail">wrong ID or password.</entry>
+<entry key="msg.save.confirm">Save it?</entry>
+<entry key="msg.save.success">Saved</entry>
+<entry key="msg.save.fail">Save failed</entry>
+<entry key="msg.delete.confirm">Delete it?</entry>
 <entry key="msg.nodata">No Data.</entry>
-<entry key="msg.success">성공</entry>
-<entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
-<entry key="msg.data.select">데이터를 선택하시오.</entry>
-<entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
-<entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
+<entry key="msg.success">Success</entry>
+<entry key="msg.search.placeholder">Search...</entry>
+<entry key="msg.data.select">Select the data.</entry>
+<entry key="msg.accept.msg">Do you want to accept the selected user?</entry>
+<entry key="msg.denial.msg">Are you sure you want to reject the selected user?</entry>
 <entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
 <entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
 <entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
@@ -191,5 +212,6 @@
 <entry key="view_dt">View Date</entry>
 <entry key="upd_dt">Modified Date</entry>
 
+<entry key="refresh.connnection.info">Refresh connection info</entry>
 
 </properties>

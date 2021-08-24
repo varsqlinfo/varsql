@@ -25,7 +25,7 @@ $(document).ready(function(){
 	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid, schema:viewConnInfo.schema},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.userSettingInfo = ${requestScope["database_screen_setting"]};
 	VARSQL.ui.create(opts);
-
+	VARSQL.undrop();
 	//varsqlMain.init();
 });
 
@@ -165,7 +165,6 @@ $(document).ready(function(){
 	<div id="sql_editor_wrapper" class="sql-editor">
 		<div class="varsql-file-save-list">
 			<div style="padding:5px;">
-				<input type="hidden" id="sqlFileId">
 				<input type="text" id="sqlFileSearchTxt">
 			</div>
 			<div class="scroll-area">

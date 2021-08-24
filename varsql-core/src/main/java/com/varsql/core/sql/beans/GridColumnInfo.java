@@ -100,6 +100,8 @@ public class GridColumnInfo {
 				.append("no : ").append(no)
 				.append(", label : ").append(label)
 				.append(" key : ").append(key)
+				.append(" dbType : ").append(dbType)
+				.append(" type : ").append(type)
 				.toString();
 	}
 }

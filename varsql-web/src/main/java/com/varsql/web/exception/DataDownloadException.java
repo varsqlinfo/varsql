@@ -37,19 +37,19 @@ public class DataDownloadException extends RuntimeException {
 	/**
 	 * @param s java.lang.String
 	 */
-	public DataDownloadException(String s , Exception exeception) {
+	public DataDownloadException(String s, Exception exeception) {
 		super(s,exeception);
 	}
 
 
-	public DataDownloadException(CodeEnumValue errorCode,Exception exeception) {
+	public DataDownloadException(CodeEnumValue errorCode, Exception exeception) {
 		this(errorCode,null, exeception);
 	}
 
-	public DataDownloadException(CodeEnumValue errorCode, String messageCode ,Exception exeception) {
+	public DataDownloadException(CodeEnumValue errorCode, String messageCode, Exception exeception) {
 		this(errorCode, messageCode , null, exeception);
 	}
-	public DataDownloadException(CodeEnumValue errorCode,String messageCode,	String errorMessage, Exception exeception) {
+	public DataDownloadException(CodeEnumValue errorCode, String messageCode, String errorMessage, Exception exeception) {
 		super(errorMessage, exeception);
 		this.errorCode=errorCode ;
 		this.messageCode=messageCode;

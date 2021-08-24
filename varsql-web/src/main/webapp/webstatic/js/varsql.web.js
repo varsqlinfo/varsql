@@ -140,8 +140,18 @@ _$base.isObject =isObject;
 function isString(val) {
    return typeof val === 'string' || ((!!val && typeof val === 'object') && Object.prototype.toString.call(val) === '[object String]');
 }
-
 _$base.isString = isString;
+
+
+/**
+ * property check
+ */
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasProperty(obj, key){
+	return hasOwnProperty.call(obj, key);
+}
+
+_$base.hasProperty = hasProperty;
 
 /**
  * array check
@@ -963,7 +973,16 @@ _$base.unload =function (mode){
 }
 
 
-
+/**
+ * drop 무효화
+ */
+_$base.undrop =function (){
+	$(document).on("dragover",function (e) {
+		return false;
+	}).on("drop",function (e) {
+		return false;
+	})
+}
 /**
  * js, css 동적 로드
  */

@@ -62,19 +62,23 @@ public class SqlFileEntity extends AabstractAuditorModel{
 	@Column(name ="SQL_PARAM")
 	private String sqlParam;
 
+	@Column(name ="EDITOR_CURSOR")
+	private String editorCursor;
+
 	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "VCONNID" ,nullable = false, insertable =false , updatable =false)
 	private DBConnectionEntity connInfo;
 
 	@Builder
-	public SqlFileEntity(String sqlId, String vconnid, String viewid, String sqlTitle, String sqlCont, String sqlParam) {
+	public SqlFileEntity(String sqlId, String vconnid, String viewid, String sqlTitle, String sqlCont, String sqlParam, String editorCursor) {
 		this.sqlId = sqlId;
 		this.vconnid = vconnid;
 		this.viewid = viewid;
 		this.sqlTitle = sqlTitle;
 		this.sqlCont = sqlCont;
 		this.sqlParam = sqlParam;
+		this.editorCursor = editorCursor;
 	}
 	public final static String SQL_ID="sqlId";
 
@@ -87,4 +91,6 @@ public class SqlFileEntity extends AabstractAuditorModel{
 	public final static String SQL_CONT="sqlCont";
 
 	public final static String SQL_PARAM="sqlParam";
+
+	public final static String EDITOR_CURSOR="editorCursor";
 }

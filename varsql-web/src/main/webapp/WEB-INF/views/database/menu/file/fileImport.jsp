@@ -12,25 +12,32 @@
 					<ul class="process-type-select">
 						<li>
 							<label class="checkbox-container">SQL
-							  <input type="radio" v-model="importType" value="1" checked="checked">
+							  <input type="radio" v-model="importType" value="sql" checked="checked">
 							  <span class="radiomark"></span>
 							</label>
 							<div class="checkbox-container-desc"> SQL 파일을 실행해서 입력합니다</div>
 						</li>
 						<li>
-							<label class="checkbox-container">XML,JSON
-							  <input type="radio" v-model="importType" value="2">
+							<label class="checkbox-container">XML
+							  <input type="radio" v-model="importType" value="xml">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"> XML , JSON 파일을 이용하여 데이터를  입력합니다</div>
+							<div class="checkbox-container-desc"> XML 파일을 이용하여 데이터를  입력합니다</div>
 						</li>
 						<li>
-							<label class="checkbox-container">CSV,XLS
-							  <input type="radio" v-model="importType" value="3">
+							<label class="checkbox-container">JSON
+							  <input type="radio" v-model="importType" value="json">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"> XML , JSON 파일을 이용하여 데이터를  입력합니다</div>
+							<div class="checkbox-container-desc"> JSON 파일을 이용하여 데이터를  입력합니다</div>
 						</li>
+						<!--  li>
+							<label class="checkbox-container">CSV
+							  <input type="radio" v-model="importType" value="csv">
+							  <span class="radiomark"></span>
+							</label>
+							<div class="checkbox-container-desc"> CSV 파일을 이용하여 데이터를  입력합니다</div>
+						</li-->
 					</ul>
 				</div>
 			</div>
@@ -50,7 +57,7 @@
 					<div class="row import-file-area">
 						<div class="col-xs-6 import-file-list">
 							<template v-for="(item,index) in fileList">
-								<ul class="import-file-item">
+								<ul class="import-file-item" v-if="item.fileExt==importType">
 									<li class="text-ellipsis float-left" style="width:calc(100% - 148px);" :title="item.fileName">
 										<input type="checkbox"	:id="item.fileId" v-model="item.isCheck"> <label :for="item.fileId">{{item.fileName}}</label>
 									</li>
@@ -58,14 +65,14 @@
 										{{item.displaySize}}
 									</li>
 									<li class="float-left text-right" style="width:70px;">
-										<button class="btn btn-default" @click="fileImport(item)">Import</button>
+										<button class="btn btn-default" @click="fileItemImport(item)">Import</button>
 									</li>
 								</ul>
 							</template>
 						</div>
 						<div class="col-xs-6 import-file-result">
 							<template v-for="(item,index) in importResult">
-								<div class="file-import-result-msg">
+								<div class="file-import-result-msg user-select-on">
 									<div :class="(item.resultCode == 200 ? 'success' :'error')">
 										<span> {{item.fileName}}</span> <span>count : {{item.resultCount}}</span>
 									</div>
@@ -80,20 +87,7 @@
 
 		<div class="process-step" :class="step==3?'active':''">
 			<div class="col-xs-12">
-				Import Result
-				<template v-if="importType=='1'">
-					<template v-for="(item,index) in importResult">
-						<div class="list-group-item row">
-							<span>{{item.resultCode == 200 ? 'success' :'fail'}}</span> <span> {{item.fileName}}</span> <span>count : {{item.resultCount}}</span>
-		    			</div>
-		    			<div v-if="item.resultCode > 200" class="error">{{item.message}}</div>
-	    			</template>
-	    			<div class="text-center" v-if="importResult.length === 0"><spring:message code="msg.nodata"/></div>
-				</template>
-				<template v-else-if="importType=='2'">
-					222
-				</template>
-				<template v-else-if="importType=='3'">
+				<template v-else-if="importType=='csv'">
 					2333
 				</template>
 			</div>
@@ -133,8 +127,14 @@ VarsqlAPP.vueServiceBean({
 	el: '#<varsql:namespace/>'
 	,data: {
 		step : 1
-		,importType : '1'
-		,fileExtensions : 'sql'
+		,importType : 'sql'
+		,fileExtensions : ''
+		,importExtInfo :{
+			sql : {ext : 'sql', endStep : 2}
+			,xml : {ext : 'xml', endStep : 2}
+			,json : {ext : 'json', endStep : 2}
+			,csv : {ext : 'csv', endStep : 3}
+		}
 		,endStep : 2
 		,conuid : '${conuid}'
 		,fileUploadOpt :{
@@ -152,6 +152,8 @@ VarsqlAPP.vueServiceBean({
 		,importResult :[]
 	}
 	,mounted : function (){
+		this.setFileTypeInfo(this.importType);
+
 		this.fileUploadOpt.params['conuid'] =this.conuid;
 		this.callback = {
 			success : function (file, resp){
@@ -164,34 +166,30 @@ VarsqlAPP.vueServiceBean({
 	}
 	,watch :{
 		importType : function (newVal){
-			if(newVal=='1'){
-				this.fileExtensions ='sql';
-
-				this.buttons={
-					2:'Import'
-				};
-			}else if(newVal=='2'){
-				this.fileExtensions ='xml,json';
-
-				this.buttons = {
-					2:'Import'
-				};
-			}else if(newVal=='3'){
-				this.fileExtensions ='csv,xls';
-			}
-			this.fileUploadOpt.params['fileExtensions'] =this.fileExtensions;
+			this.setFileTypeInfo(newVal);
 		}
 	}
 	,methods:{
 		// menu 선택
 		moveStep : function (step){
+			/*
 			var _self = this;
 
 			if(this.step == 2){
-				this.sqlFileImport();
+				this.fileImport();
 			}
+			*/
 		}
-		,sqlFileImport : function (mode, selectFile){
+		// file type 정보 셋팅.
+		,setFileTypeInfo : function (fileType){
+			var extInfo = this.importExtInfo[fileType];
+			this.fileExtensions = extInfo.ext;
+			this.endStep = extInfo.endStep;
+			this.buttons = VARSQL.util.objectMerge(this.buttons, extInfo.buttons);
+
+			this.fileUploadOpt.params['fileExtensions'] =this.fileExtensions;
+		}
+		,fileImport : function (mode, selectFile){
 
 			var importFileIds=[];
 			if(mode=='all'){
@@ -232,11 +230,11 @@ VarsqlAPP.vueServiceBean({
 		}
 		// 선택된 파일 import
 		,selectImport : function (){
-			this.sqlFileImport('all');
+			this.fileImport('all');
 		}
 		// file 단위 import
-		,fileImport : function (item){
-			this.sqlFileImport('file', item);
+		,fileItemImport : function (item){
+			this.fileImport('file', item);
 		}
 		,complete : function (){
 			window.close();

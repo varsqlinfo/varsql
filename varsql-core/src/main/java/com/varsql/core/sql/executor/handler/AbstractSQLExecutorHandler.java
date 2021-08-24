@@ -17,6 +17,8 @@ import com.vartech.common.io.writer.AbstractWriter;
 public abstract class AbstractSQLExecutorHandler implements SQLExecutorHandler{
 	long totalCount = 0;
 
+	long failCount = 0;
+
 	private AbstractWriter writer;
 
 	public AbstractSQLExecutorHandler() {
@@ -42,6 +44,15 @@ public abstract class AbstractSQLExecutorHandler implements SQLExecutorHandler{
 	public void setWriter(AbstractWriter writer) {
 		this.writer = writer;
 	}
+
+	public long getFailCount() {
+		return failCount;
+	}
+
+	public void addFailCount() {
+		++this.failCount;
+	}
+
 
 
 }

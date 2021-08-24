@@ -52,13 +52,13 @@ public class SQLFileServiceImpl{
 
 		if("newfile".equals(mode)){
 
-			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
+			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 
 			sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
 		}else{
 
 			if("addTab".equals(mode)){
-				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
+				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				SqlFileTabEntity sqlFileTabEntity= SqlFileTabEntity.builder().vconnid(sqlFileRequestDTO.getVconnid()).viewid(sqlFileRequestDTO.getViewid()).sqlId(sqlFileRequestDTO.getSqlId())
 					.prevSqlId(sqlFileRequestDTO.getPrevSqlId()).viewYn(true).build();
 
@@ -67,7 +67,7 @@ public class SQLFileServiceImpl{
 			}else if(mode.startsWith("delTab")){
 				deleteSqlFileTabInfo(sqlFileRequestDTO, mode);
 			}else if("viewTab".equals(mode)){
-				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
+				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				sqlFileTabEntityRepository.updateSqlFileTabEnable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 			}else{
 
@@ -76,6 +76,7 @@ public class SQLFileServiceImpl{
 					if(sqlFileRequestDTO.getSqlCont() !=null) sqlFileInfo.setSqlCont(sqlFileRequestDTO.getSqlCont());
 					if(sqlFileRequestDTO.getSqlParam() !=null) sqlFileInfo.setSqlParam(sqlFileRequestDTO.getSqlParam());
 					if(sqlFileRequestDTO.getSqlTitle() !=null) sqlFileInfo.setSqlTitle(sqlFileRequestDTO.getSqlTitle());
+					if(sqlFileRequestDTO.getEditorCursor() !=null) sqlFileInfo.setEditorCursor(sqlFileRequestDTO.getEditorCursor());
 
 					sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
 				}
@@ -123,6 +124,7 @@ public class SQLFileServiceImpl{
 			sfe.setSqlId(sqlId);
 			sfe.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
 			sfe.setSqlCont(String.valueOf(customParam.get(sqlId)));
+			sfe.setEditorCursor(String.valueOf(customParam.get(sqlId+"_cursor")));
 
 			sqlFileInfos.add(sfe);
 		}
@@ -208,16 +210,22 @@ public class SQLFileServiceImpl{
 
 			if("delTab-all".equals(mode) || tabLen ==0) {
 				sqlFileTabEntityRepository.deleteAllSqlFileTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
-			}else if("delTab-other".equals(mode)) {
-				sqlFileTabEntityRepository.updateSqlFilePrevID(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), null);
-				sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
-			}else{
-				sqlFileTabEntityRepository.updateSqlFilePrevID(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
-				sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+			}else {
+				SqlFileTabEntity sfte = sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+
+				if("delTab-other".equals(mode)) {
+					sfte.setPrevSqlId(null);
+					sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				}else {
+					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				}
+
+				sqlFileTabEntityRepository.updateSqlFilePrevID(sfte.getVconnid(), sfte.getViewid(), sfte.getSqlId(), sfte.getPrevSqlId());
 			}
 
 		}catch(Exception e){
 			logger.error("deleteSqlFileTabInfo" ,e);
+			throw e;
 		}
 	}
 }

@@ -16,12 +16,16 @@ public final class JdbcUtils {
 		close(null, stmt, null);
 	}
 
+	public static void close(Statement stmt, ResultSet rs) {
+		close(null, stmt, rs);
+	}
+
 	public static void close(Connection con) {
 		close(con, null, null);
 	}
 
-	public static void close(Statement stmt, ResultSet rs) {
-		close(null, stmt, rs);
+	public static void close(Connection con, Statement stmt) {
+		close(con, stmt, null);
 	}
 
 	public static void close(Connection con, Statement stmt, ResultSet rs) {

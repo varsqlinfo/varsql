@@ -30,7 +30,7 @@ class BaseExecutorTest extends BaseTest {
 
 			sqi.setConuid(connInfo.getConnid(), TEST_CON_UID, di);
 
-			SQLExecutor baseExecutor = new UpdateExecutor();
+			SQLExecutor baseExecutor = new SqlUpdateExecutor();
 
 			sqi.setSqlParam("{}");
 

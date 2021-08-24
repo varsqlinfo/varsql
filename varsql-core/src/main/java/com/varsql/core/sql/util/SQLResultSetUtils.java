@@ -229,14 +229,19 @@ public final class SQLResultSetUtils {
 			ResultSetHandler resultsetHandler = MetaControlFactory.getDbInstanceFactory(DBType.getDBType(sqlExecuteInfo.getDbType())).getResultsetHandler();
 			Map row = null;
 			while (rs.next()) {
-				baseExecutorHandler.addTotalCount();
 				row = new LinkedHashMap(count);
 				for (int colIdx = 0; colIdx < count; colIdx++) {
 					if(columnNameArr[colIdx] != null) {
 						row = resultsetHandler.getDataValue(rs, row, columnInfoList.get(colIdx));
 					}
 				}
-				baseExecutorHandler.handle(SQLHandlerParameter.builder().rowObject(row).columnInfoList(columnInfoList).build());
+				boolean addFlag = baseExecutorHandler.handle(SQLHandlerParameter.builder().rowObject(row).columnInfoList(columnInfoList).build());
+
+				if(addFlag) {
+					baseExecutorHandler.addTotalCount();
+				}else {
+					baseExecutorHandler.addFailCount();
+				}
 			}
 		}catch(SQLException e) {
 			throw new ResultSetConvertException(VarsqlAppCode.EC_SQL_RESULT_CONVERT, e);

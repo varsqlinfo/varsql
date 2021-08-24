@@ -115,17 +115,8 @@ public class SQLWriter extends AbstractWriter{
 		writer.write(valueSb.toString());
 		writer.write(");");
 		writer.newLine();
-	}
 
-	@Override
-	public void write() throws IOException {
-		writer.flush();
-		writer.close();
-	}
-
-	@Override
-	public void close() throws IOException {
-		writer.close();
+		addRowIdx();
 	}
 
 	public List<GridColumnInfo> getColumnInfos() {
@@ -136,5 +127,14 @@ public class SQLWriter extends AbstractWriter{
 		this.columnInfos = columnInfos;
 	}
 
+	@Override
+	public void write() throws IOException {
+		writer.flush();
+	}
+
+	@Override
+	public void close() throws IOException {
+		writer.close();
+	}
 
 }

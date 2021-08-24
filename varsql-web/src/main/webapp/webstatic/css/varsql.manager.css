@@ -8,7 +8,7 @@
 
 html,body{
 	height:100%;
-	
+
 }
 body {
     background-color: #f1f1f1;
@@ -340,12 +340,12 @@ a.show-sidebar:hover {
   #main-wrap{
   	padding-top :100px;
   }
-  
+
   .top-setting-menu {
     right: 0;
   	left: auto;
   }
-  
+
   #main {
     margin-top: 100px;
   }
@@ -549,7 +549,7 @@ ul.alert-dropdown {
 	-khtml-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	overflow-x:hidden;	
+	overflow-x:hidden;
 	overflow-y:auto;
     border: 1px solid #cccccc;
 }
@@ -580,7 +580,7 @@ ul.alert-dropdown {
     filter: Alpha(Opacity=.3);
 }
 
-/* table Header 고정 tbody scroll ====================================== */	
+/* table Header 고정 tbody scroll ====================================== */
 .tbl-header-fixed-container {
 	width: 100%;
 	position: relative;
@@ -588,7 +588,7 @@ ul.alert-dropdown {
 	background: #ffffff;
 }
 
-.tbl-header-fixed-header-bg { 
+.tbl-header-fixed-header-bg {
 	border-top: 1px solid #d6d8d0;
 	border-bottom: 1px solid #d6d8d0;
 	text-align: center;
@@ -652,4 +652,13 @@ table.tbl-header-fixed tbody tr:last-child td {
 
 table.tbl-header-fixed tbody tr:nth-child(even) {
 	background: #f6f6f6;
+}
+
+.form-horizontal .form-group {
+    margin-right: -5px;
+    margin-left: -5px;
+}
+
+.form-group {
+    margin-bottom: 10px;
 }

@@ -36,6 +36,8 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 	// sql content
 	private String sqlCont;
 
+	private String editorCursor;
+
 	// limit count
 	private int limit;
 
@@ -60,6 +62,7 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 			.sqlParam(sqlParam)
 			.vconnid(getVconnid())
 			.viewid(getViewid())
+			.editorCursor(editorCursor)
 			.build();
 	}
 }

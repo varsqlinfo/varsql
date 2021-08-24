@@ -14,20 +14,20 @@ if (typeof window != "undefined") {
 
 var  portalDefaultTemplate = {
 	'pageNavTemplate' : '<div class="text-center" v-if="pageInfo.totalCount > 0"><ul class="pagination">'
-		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
+		+'<li :title="(pageInfo.preP_is !== true && pageInfo.currPage <=1)?\'\':1" :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
 		+'	<a @click="goPage(1)">«</a>'
 		+'</li>'
-		+'<li :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
+		+'<li :title="(pageInfo.preP_is !== true && pageInfo.currPage <=1)?\'\':\'Prev\'" :class="((pageInfo.preP_is !== true && pageInfo.currPage <=1)? \'disabled\' :\'\')">'
 		+'	<a @click="goPage(pageInfo.currPage - 1)">‹</a>'
 		+'</li>'
 		+'<li v-for="no in range(pageInfo.currStartPage , pageInfo.currEndPage)" :class="no ==pageInfo.currPage?\'active\':\'\'">'
 		+'	<a v-if="no ==pageInfo.currPage">{{no}}</a>'
 		+'	<a v-if="no != pageInfo.currPage" @click="goPage(no)">{{no}}</a>'
 		+'</li>'
-		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
+		+'<li :title="(pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'\':\'Next\'" :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
 		+'	<a @click="goPage(pageInfo.currPage + 1)">›</a>'
 		+'</li>'
-		+'<li :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
+		+'<li :title="(pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'\':pageInfo.totalPage" :class="((pageInfo.nextPage_is !== true && pageInfo.currPage ==pageInfo.currEndPage)?\'disabled\':\'\')">'
 		+'	<a @click="goPage(pageInfo.totalPage)">»</a>'
 		+'</li>'
 		+'</ul></div>'
@@ -79,7 +79,6 @@ Vue.component('list-cont', {
 		columnKey : Object
 	}
 	,data:function(){
-		var sortOrders = {};
 
 		var keyInfo = Vue.util.extend({
 			'TITLE' : 'TITLE'
@@ -175,16 +174,13 @@ Vue.component('step-button', {
 				prev : VARSQL.messageFormat('step.prev')
 				,next : VARSQL.messageFormat('step.next')
 				,complete :VARSQL.messageFormat('step.complete')
+				,close :VARSQL.messageFormat('step.close')
 			}, this.buttons)
 		};
 	}
 	,watch :{
 		buttons : function (newval){
-			this.btnName = VARSQL.util.objectMerge({
-				prev : VARSQL.messageFormat('step.prev')
-				,next : VARSQL.messageFormat('step.next')
-				,complete :VARSQL.messageFormat('step.complete')
-			}, this.buttons)
+			this.btnName = VARSQL.util.objectMerge(this.btnName, this.buttons)
 		}
 	}
 	,methods: {
@@ -200,6 +196,8 @@ Vue.component('step-button', {
 				callback.call(this.$parent);
 				return ;
 			}
+
+			console.log(this.step, mode)
 
 			if(mode == 'prev'){
 				if(this.step > 1){
@@ -349,6 +347,7 @@ Vue.component('file-upload', {
 	}
 	,watch :{
 		accept : function (newval){
+			this.dropzone.removeAllFiles(true);
 			this.dropzone.hiddenFileInput.setAttribute("accept", this.getAcceptExtensions(newval));
 			this.dropzone.options.acceptedFiles = this.getAcceptExtensions(newval);
 		}

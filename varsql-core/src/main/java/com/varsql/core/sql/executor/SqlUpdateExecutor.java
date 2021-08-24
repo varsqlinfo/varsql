@@ -1,10 +1,8 @@
 package com.varsql.core.sql.executor;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,20 +14,17 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
-import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
 import com.varsql.core.sql.util.JdbcUtils;
-import com.varsql.core.sql.util.SQLParamUtils;
-import com.varsql.core.sql.util.SQLResultSetUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.VartechUtils;
 
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: SelectExecutor.java
+* @fileName		: BaseExecutor.java
 * @desc		: base sql executor
 * @author	: ytkim
 *-----------------------------------------------------------------------------
@@ -39,19 +34,13 @@ import com.vartech.common.utils.VartechUtils;
 
 *-----------------------------------------------------------------------------
  */
-public class SelectExecutor implements SQLExecutor{
+public class SqlUpdateExecutor extends UpdateExecutor{
 
-	private final Logger logger = LoggerFactory.getLogger(SelectExecutor.class);
-
-	private int BATCH_COUNT = 1000;
-
-	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
-		return execute(statementInfo, null);
-	}
+	private final Logger logger = LoggerFactory.getLogger(SqlUpdateExecutor.class);
 
 	@Override
 	public SQLExecuteResult execute(SqlStatementInfo statementInfo, AbstractSQLExecutorHandler resultHandler) throws SQLException {
+
 		SQLExecuteResult result = new SQLExecuteResult();
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
@@ -62,57 +51,61 @@ public class SelectExecutor implements SQLExecutor{
 
 		result.setStartTime(System.currentTimeMillis());
 
-		SqlSource tmpSqlSource =sqlList.get(0);
-
-		if(resultHandler==null) {
-			resultHandler = getDefaultSelectHandler();
-		}
-
+		SqlSource tmpSqlSource =null;
+		int sqlIdx =0, sqlSize = sqlList.size();
+		int addCount = 0;
 		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		Statement statement = null;
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getVconnid());
+			conn.setAutoCommit(false);
 
-			logger.debug("execute query: {} ", tmpSqlSource.getQuery());
+			statement = conn.createStatement();
 
-			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
-			pstmt.setMaxRows(statementInfo.getLimit());
+			boolean handleFlag = (resultHandler != null);
+			for (sqlIdx =0; sqlIdx <sqlSize; sqlIdx++){
 
-			SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
+				tmpSqlSource = sqlList.get(sqlIdx);
+				if(handleFlag){
+					resultHandler.addTotalCount();
+					if(!resultHandler.handle(SQLHandlerParameter.builder().sql(tmpSqlSource.getQuery()).parameter(sqlParamMap).build())) {
+						continue ;
+					}
+				};
 
-			rs = pstmt.executeQuery();
+				statement.addBatch(tmpSqlSource.getQuery());
+				addCount++;
 
-			SQLResultSetUtils.resultSetHandler(rs, statementInfo, resultHandler);
+				if(addCount % getBatchCount()==0) {
+					statement.executeBatch();
+					statement.clearBatch();
+				}
+			}
+
+			if(addCount % getBatchCount() != 0) {
+				statement.executeBatch();
+				statement.clearBatch();
+			}
+
+			conn.commit();
 		} catch (Throwable e ) {
+			if(conn != null) conn.rollback();
 			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
-			result.setMessage(" error message :  "+  e.getMessage());
+			result.setMessage("errorLine : "+sqlIdx +", error message :  "+  e.getMessage());
 
-			logger.error("select : {} ", e.getMessage(), e);
+			logger.error("update : {} ", e.getMessage(), e);
 		}finally{
-			JdbcUtils.close(conn, pstmt, rs);
+			if(conn !=null){
+				conn.setAutoCommit(true);
+				JdbcUtils.close(conn, statement);
+			}
 		}
 		result.setTotalCount(resultHandler.getTotalCount());
 		result.setEndTime(System.currentTimeMillis());
-		result.setResult(resultHandler.getResult());
+		result.setResult(addCount);
 
 		return result;
 	}
 
-	private AbstractSQLExecutorHandler getDefaultSelectHandler() {
-		return new AbstractSQLExecutorHandler() {
-			List selectList = new ArrayList();
 
-			@Override
-			public Object getResult() {
-				return selectList;
-			}
-
-			@Override
-			public boolean handle(SQLHandlerParameter handleParam) {
-				selectList.add(handleParam.getRowObject());
-				return true;
-			}
-		};
-	}
 }

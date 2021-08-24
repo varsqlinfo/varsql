@@ -160,15 +160,20 @@
 						<div class="form-group" :class="errors.has('password') || errors.has('password_confirmation') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vpw" /></label>
 							<div class="col-sm-8">
-								<input type="password" name="password_fake" value="" style="display:none;" autocomplete="new-password"/>
-								<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="new-password" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
-								<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
-							    <div class="help-block" v-if="errors.has('password')">
-							      {{ errors.first('password') }}
-							    </div>
-							    <div class="help-block" v-if="errors.has('password_confirmation')">
-							      {{ errors.first('password_confirmation') }}
-							    </div>
+								<template v-if="detailFlag===true">
+									<input type="checkbox" v-model="detailItem.passwordChange" />
+								</template>
+								<template v-if="detailFlag===false || (detailFlag===true && detailItem.passwordChange===true)">
+									<input type="password" name="password_fake" value="" style="display:none;" autocomplete="new-password"/>
+									<input v-model="detailItem.vpw" v-validate="'confirmed:password_confirmation'" name="password" type="password" autocomplete="new-password" class="form-control" placeholder="Password" ref="password" data-vv-as="password_confirmation"  style="margin-bottom:5px;">
+									<input v-model="detailItem.CONFIRM_PW" v-validate="" name="password_confirmation" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
+								    <div class="help-block" v-if="errors.has('password')">
+								      {{ errors.first('password') }}
+								    </div>
+								    <div class="help-block" v-if="errors.has('password_confirmation')">
+								      {{ errors.first('password_confirmation') }}
+								    </div>
+							    </template>
 							</div>
 						</div>
 
@@ -274,7 +279,7 @@
 		<div>
 			<div>Login password : <input v-model="userPw" type="password" @keyup.enter="passwordView()" class="form-control text"> </div>
 			<div style="padding: 5px 0px;" class="pull-right"><button type="button" @click="passwordView()" class="db btn btn-default">Password view</button> </div>
-			<div style="clear:both;">password : <input v-model="dbPw" type="text" class="form-control text" disabled="disabled" style="width: calc(100% - 64px);display: inline-block;"></div>
+			<div style="clear:both;">Password : <input v-model="dbPw" type="text" class="form-control text" disabled="disabled" style="width: calc(100% - 70px);display: inline-block;"></div>
 		</div>
 	</div>
 </div>
@@ -303,7 +308,7 @@ VarsqlAPP.vueServiceBean( {
 			this.setDetailItem();
 
 			$('#passwordViewTemplate').dialog({
-				height: 200
+				height: 210
 				,width: 400
 				,modal: true
 				,autoOpen :false
@@ -432,6 +437,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			}else{
 				this.detailFlag = true;
+				item.passwordChange = false;
 				this.detailItem = item;
 			}
 
@@ -442,6 +448,10 @@ VarsqlAPP.vueServiceBean( {
 			this.$validator.validateAll().then(function (result){
 				if(result){
 					var param = _this.getParamVal();
+
+					if(param.passwordChange==true && !confirm(VARSQL.messageFormat('varsql.a.0004'))){
+						return ;
+					}
 
 					_this.$ajax({
 						url : {type:VARSQL.uri.admin, url:'/main/dbSave'}

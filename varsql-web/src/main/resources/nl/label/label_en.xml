@@ -178,7 +178,7 @@
 <entry key="btn.toolbar.parameter">Parameters </entry>
 
 <!-- tool msg -->
-<entry key="msg.sendmsg.title">end Message</entry>
+<entry key="msg.sendmsg.title">Send Message</entry>
 <entry key="msg.sendmsg.recv.txt.holder">To </entry>
 
 <!-- sql result button -->

@@ -122,6 +122,12 @@ public class DBConnectionRequestDTO{
 	@Size(max=1)
 	private String useColumnLabel;
 
+	private boolean passwordChange;
+
+	public void setPasswordChange(String passwordChange) {
+		this.passwordChange = Boolean.parseBoolean(passwordChange);
+	}
+
 	public DBConnectionEntity toEntity() {
 		return DBConnectionEntity.builder()
 				.vconnid(vconnid)

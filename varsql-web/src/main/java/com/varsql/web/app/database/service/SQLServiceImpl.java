@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,12 +44,14 @@ import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ResultSetConvertException;
+import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlCommandType;
 import com.varsql.core.sql.builder.VarsqlStatementType;
+import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
@@ -63,6 +64,7 @@ import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.DataDownloadException;
+import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
@@ -76,6 +78,7 @@ import com.vartech.common.io.writer.AbstractWriter;
 import com.vartech.common.io.writer.CSVWriter;
 import com.vartech.common.io.writer.ExcelWriter;
 import com.vartech.common.io.writer.JSONWriter;
+import com.vartech.common.io.writer.WriteMetadataInfo;
 import com.vartech.common.io.writer.XMLWriter;
 import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.FileUtils;
@@ -434,13 +437,13 @@ public class SQLServiceImpl{
 	@SuppressWarnings("rawtypes")
 	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletResponse res) throws Exception {
 
-		String tmpName = sqlExecuteInfo.getObjectName();
+		String objectName = sqlExecuteInfo.getObjectName();
 
 		if(!sqlExecuteInfo.getBaseSchema().equals(sqlExecuteInfo.getSchema())) {
-			tmpName = sqlExecuteInfo.getSchema()+"."+tmpName;
+			objectName = sqlExecuteInfo.getSchema()+"."+objectName;
 		}
 
-		StringBuilder reqQuerySb= new StringBuilder().append("select * from ").append(tmpName).append(" where 1=1 ");
+		StringBuilder reqQuerySb= new StringBuilder().append("select * from ").append(objectName).append(" where 1=1 ");
 
 		String conditionQuery = paramMap.getString("conditionQuery");
 		if(!StringUtils.isBlank(conditionQuery)) {
@@ -484,17 +487,40 @@ public class SQLServiceImpl{
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
 				writer = new ExcelWriter(outstream);
 			}else {
-				writer = new SQLWriter(outstream, DBType.getDBType(sqlExecuteInfo.getDbType()), tmpName, exportCharset);
+				writer = new SQLWriter(outstream, DBType.getDBType(sqlExecuteInfo.getDbType()), objectName, exportCharset);
 			}
 
 			logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, sqlExecuteInfo.getSql());
 
-			new SelectExecutor().execute(sqlExecuteInfo, new AbstractSQLExecutorHandler(writer) {
+			final String tableName =objectName;
+
+			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new AbstractSQLExecutorHandler(writer) {
 				private boolean firstFlag = true;
 
 				@Override
 				public boolean handle(SQLHandlerParameter handleParam) {
 					if(firstFlag) {
+
+						WriteMetadataInfo whi = new WriteMetadataInfo("exportInfo");
+
+						List<ExportColumnInfo> columns = new LinkedList<ExportColumnInfo>();
+
+						handleParam.getColumnInfoList().forEach(item->{
+							ExportColumnInfo gci = new ExportColumnInfo();
+
+							gci.setName(item.getLabel());
+							gci.setType(item.getDbType());
+							gci.setNumber(item.isNumber());
+							gci.setLob(item.isLob());
+
+							columns.add(gci);
+						});
+
+						whi.addMetedata("tableName", tableName);
+						whi.addMetedata("columns", columns);
+
+						getWriter().setMetadata(whi);
+
 						if(VarsqlFileType.SQL.equals(exportType)) {
 							((SQLWriter)getWriter()).setColumnInfos(handleParam.getColumnInfoList());
 						}
@@ -505,6 +531,7 @@ public class SQLServiceImpl{
 						getWriter().addRow(handleParam.getRowObject());
 					} catch (IOException e) {
 						logger.error(e.getMessage() , e);
+						return false;
 					}
 					return true;
 				}
@@ -512,7 +539,11 @@ public class SQLServiceImpl{
 
 			writer.writeAndClose();
 
-			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", tmpName));
+			if(ser.getResultCode() != null) {
+				throw new DataDownloadException(ser.getResultCode(), ser.getMessage(), new VarsqlAppException(ser.getMessage()));
+			}
+
+			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", objectName));
 
 			VarsqlUtils.setResponseDownAttr(res, exportFileName + exportType.getExtension());
 

@@ -21,7 +21,7 @@ import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 */
 public interface SQLExecutor {
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException ;
+	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException;
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, AbstractSQLExecutorHandler resultHandler) throws SQLException ;
+	public SQLExecuteResult execute(SqlStatementInfo statementInfo, AbstractSQLExecutorHandler resultHandler) throws SQLException;
 }
