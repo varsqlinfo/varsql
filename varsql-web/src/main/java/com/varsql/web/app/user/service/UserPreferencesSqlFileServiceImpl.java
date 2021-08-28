@@ -15,6 +15,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.sql.SqlFileResponseDTO;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
+import com.varsql.web.model.mapper.sql.SqlFileMapper;
 import com.varsql.web.repository.spec.SqlFileSpec;
 import com.varsql.web.repository.sql.SqlFileEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
@@ -67,7 +68,7 @@ public class UserPreferencesSqlFileServiceImpl extends AbstractService{
 		}
 
 		return VarsqlUtils.getResponseResult(result.getContent().stream().map(item ->{
-			SqlFileResponseDTO resultItem = domainMapper.convertToDomain(item, SqlFileResponseDTO.class);
+			SqlFileResponseDTO resultItem = SqlFileMapper.INSTANCE.toDto(item);
 			resultItem.setVname(item.getConnInfo().getVname());
 			return resultItem;
 		}).collect(Collectors.toList()), result.getTotalElements(), searchParameter);

@@ -197,8 +197,6 @@ Vue.component('step-button', {
 				return ;
 			}
 
-			console.log(this.step, mode)
-
 			if(mode == 'prev'){
 				if(this.step > 1){
 					step = this.step-1;
@@ -247,7 +245,7 @@ Vue.component('file-upload', {
 
 	template :
 	'<div :id="id" class="file-upload-area">'
-	+' <div class="file-upload-btn-area">'
+	+' <div v-if="useButton" class="file-upload-btn-area">'
 	+'  <button class="btn btn-success select-file-button">'
 	+'		<i class="glyphicon glyphicon-plus"></i>'
 	+'		<span>{{buttons.add}}</span>'
@@ -317,6 +315,10 @@ Vue.component('file-upload', {
 		,isViewUploadFile : {
 			type: Boolean
 			, default : false
+		}
+		,useButton : {
+			type: Boolean
+			, default : true
 		}
 	}
 	,data : function (){
@@ -464,7 +466,11 @@ Vue.component('file-upload', {
 			this.dropzone.removeAllFiles(true);
 		}
 		,getAcceptExtensions : function (exts){
-			 return '.'+ VARSQL.str.allTrim(exts).split(',').join(',.');
+			if(VARSQL.isBlank(exts)){
+				return '';
+			}
+
+			return '.'+ VARSQL.str.allTrim(exts).split(',').join(',.');
 		}
 	}
 })

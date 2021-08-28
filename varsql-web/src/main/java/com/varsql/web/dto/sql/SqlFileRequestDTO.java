@@ -28,6 +28,9 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 	// sql id
 	private String sqlId;
 
+	// move before prev id
+	private String firstSqlId;
+
 	private String prevSqlId;
 
 	// sql title

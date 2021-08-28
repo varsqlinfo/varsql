@@ -12,9 +12,9 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-6">
-						<select id="dbinfolist" class="form-control input-sm">
+						<select id="dbinfolist" class="form-control ">
 							<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
 								<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 							</c:forEach>
@@ -22,14 +22,14 @@
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
-							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -86,7 +86,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -111,14 +111,14 @@
 								<textarea id="epLogSqlArea" rows="10" class="form-control input-init-type"></textarea>
 							</div>
 						</div>
-						
+
 						<div class="col-lg-12">
 							<div style="padding-top:10px;">ERROR LOG</div>
 							<div style="height:200px;">
 								<textarea id="epSqlErrorArea" style="width:100%;height:100%;">{{detailItem.errorLog}}</textarea>
 							</div>
 						</div>
-						
+
 					</div>
 				</form>
 			</div>
@@ -171,23 +171,23 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 상세
 		,itemView : function (item){
-			
+
 			this.detailItem = item;
-			
+
 			this.fileViewEditor.setValue(item.logSql||'');
 			this.fileViewEditor.setHistory({done:[],undone:[]});
 		}
 		// 검색
 		,search : function(no){
 			var _self = this;
-			
+
 			var param = {
 				pageNo: (no?no:1)
 				,countPerPage : _self.list_count
 				,'searchVal':_self.searchVal
 				,vconnid : $('#dbinfolist').val()
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/stats/logList'}
 				,data : param

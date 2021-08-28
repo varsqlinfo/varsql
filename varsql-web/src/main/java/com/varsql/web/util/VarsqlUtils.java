@@ -11,22 +11,21 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import com.ctc.wstx.shaded.msv_core.verifier.ErrorInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.model.converter.DomainMapper;
+import com.varsql.web.model.mapper.base.GenericMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -165,11 +164,11 @@ public final class VarsqlUtils {
 	 * @param searchInfo
 	 * @return
 	 */
-	public static org.springframework.data.domain.PageRequest convertSearchInfoToPage(SearchParameter searchInfo) {
+	public static Pageable convertSearchInfoToPage(SearchParameter searchInfo) {
 		return convertSearchInfoToPage(searchInfo, "regDt");
 	}
 
-	public static org.springframework.data.domain.PageRequest convertSearchInfoToPage(SearchParameter searchInfo, String ... sort) {
+	public static Pageable convertSearchInfoToPage(SearchParameter searchInfo, String ... sort) {
 		return org.springframework.data.domain.PageRequest.of(searchInfo.getPageNo() -1, searchInfo.getCountPerPage(), searchInfo.isSortAscFlag() ? Sort.Direction.ASC : Sort.Direction.DESC, sort);
 	}
 
@@ -177,19 +176,6 @@ public final class VarsqlUtils {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.getContent());
 		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
-		return responseResult;
-	}
-
-	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter, DomainMapper domainMapper, Class<?> mapperClass) {
-		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.getContent().stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));
-		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
-		return responseResult;
-	}
-
-	public static ResponseResult getResponseResult(List <?> result, DomainMapper domainMapper, Class<?> mapperClass) {
-		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.stream().map(item -> domainMapper.convertToDomain(item, mapperClass)).collect(Collectors.toList()));
 		return responseResult;
 	}
 
@@ -274,5 +260,18 @@ public final class VarsqlUtils {
 
 		resultObject.setMessage(errorMessage);
 		return resultObject;
+	}
+
+	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter, GenericMapper instance) {
+
+		ResponseResult responseResult = new ResponseResult();
+		responseResult.setItemList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
+		return responseResult;
+	}
+
+	public static ResponseResult getResponseResult(List<?> result, GenericMapper instance) {
+		ResponseResult responseResult = new ResponseResult();
+		responseResult.setItemList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
+		return responseResult;
 	}
 }

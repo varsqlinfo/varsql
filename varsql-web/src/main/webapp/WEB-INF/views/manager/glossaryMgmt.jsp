@@ -12,18 +12,18 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-6"></div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
-							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -214,7 +214,7 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,success: function(resData) {
 					if(!VARSQL.req.validationCheck(resData)){
-						return ; 
+						return ;
 					}else{
 						if(resData.resultCode != 200){
 							alert(resData.message);

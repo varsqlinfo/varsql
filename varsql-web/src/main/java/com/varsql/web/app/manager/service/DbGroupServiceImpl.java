@@ -18,6 +18,8 @@ import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
+import com.varsql.web.model.mapper.db.DBConnectionMapper;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
@@ -121,7 +123,7 @@ public class DbGroupServiceImpl extends AbstractService{
 		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId));
 
 		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
-			return domainMapper.convertToDomain(item.getConnInfo(), DBConnectionResponseDTO.class);
+			return DBConnectionMapper.INSTANCE.toDto(item.getConnInfo());
 		}).collect(Collectors.toList()));
 	}
 
@@ -172,7 +174,7 @@ public class DbGroupServiceImpl extends AbstractService{
 		List<DBGroupMappingUserEntity> result = dbGroupMappingUserEntityRepository.findAll(DBGroupMappingUserSpec.dbGroupUserList(groupId));
 
 		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
-			return domainMapper.convertToDomain(item.getUserInfo(), UserResponseDTO.class);
+			return UserMapper.INSTANCE.toDto(item.getUserInfo());
 		}).collect(Collectors.toList()));
 
 	}

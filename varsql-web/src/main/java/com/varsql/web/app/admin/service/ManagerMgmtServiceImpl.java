@@ -15,6 +15,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.spec.DBManagerSpec;
 import com.varsql.web.repository.spec.UserSpec;
@@ -62,7 +63,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, UserResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, searchParameter, UserMapper.INSTANCE);
 	}
 
 	/**
@@ -107,9 +108,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 
 		List<UserResponseDTO> result =new ArrayList<>();
 		dbModelInfo.stream().forEach(item->{
-			UserResponseDTO urd = domainMapper.convertToDomain(item.getUser(), UserResponseDTO.class);
-
-			result.add(urd);
+			result.add(UserMapper.INSTANCE.toDto(item.getUser()));
 		});
 
 		return VarsqlUtils.getResponseResultItemList(result);

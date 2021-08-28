@@ -1,5 +1,7 @@
 package com.varsql.web.dto.db;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -21,7 +23,7 @@ public class DBConnectionResponseDTO{
 
 	private String vtype;
 
-	private String regDt;
+	private LocalDateTime regDt;
 
 	private String regId;
 

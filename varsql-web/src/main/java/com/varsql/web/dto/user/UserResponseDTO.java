@@ -1,6 +1,7 @@
 package com.varsql.web.dto.user;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,6 @@ public class UserResponseDTO implements Serializable{
 
 	private String regId;
 
-	private String regDt;
+	private LocalDateTime regDt;
 
 }

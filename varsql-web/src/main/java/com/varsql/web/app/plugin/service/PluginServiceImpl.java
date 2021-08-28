@@ -1,9 +1,7 @@
 package com.varsql.web.app.plugin.service;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.sql.SqlHistoryResponseDTO;
 import com.varsql.web.model.entity.app.GlossaryEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
+import com.varsql.web.model.mapper.sql.SqlHistoryMapper;
 import com.varsql.web.repository.spec.GlossarySpec;
 import com.varsql.web.repository.spec.SqlHistorySpec;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
@@ -80,7 +79,7 @@ public class PluginServiceImpl extends AbstractService{
 
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setItemList(result.getContent().stream().map(item ->{
-			SqlHistoryResponseDTO sqlUserHistoryInfo = domainMapper.convertToDomain(item, SqlHistoryResponseDTO.class);
+			SqlHistoryResponseDTO sqlUserHistoryInfo = SqlHistoryMapper.INSTANCE.toDto(item);
 			sqlUserHistoryInfo.setErrorLog(null);
 			sqlUserHistoryInfo.setUsrIp(null);
 			return sqlUserHistoryInfo;

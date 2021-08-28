@@ -12,6 +12,8 @@ import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.model.mapper.db.DBConnectionMapper;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
 import com.varsql.web.repository.spec.UserSpec;
@@ -23,7 +25,7 @@ import com.vartech.common.app.beans.SearchParameter;
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: ManagerCommonServiceImpl.java
-* @desc		: 매니저 공통 처리. 
+* @desc		: 매니저 공통 처리.
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -34,27 +36,27 @@ import com.vartech.common.app.beans.SearchParameter;
  */
 @Service
 public class ManagerCommonServiceImpl extends AbstractService{
-	
+
 	@Autowired
 	private UserMgmtRepository userMgmtRepository;
-	
+
 	@Autowired
 	private DBConnectionEntityRepository dbConnectionModelRepository;
-	
-	
+
+
 	public List<DBConnectionResponseDTO> selectdbList() {
 		return dbConnectionModelRepository.findAll(
 			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , "")
-		).stream().map(item -> domainMapper.convertToDomain(item, DBConnectionResponseDTO.class)).collect(Collectors.toList());
+		).stream().map(item -> DBConnectionMapper.INSTANCE.toDto(item)).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * @method  : selectdbList
 	 * @desc : db 목록.
 	 * @author   : ytkim
 	 * @date   : 2018. 1. 23
 	 * @param searchParameter
-	 * @param allFlag 
+	 * @param allFlag
 	 * @return
 	 */
 	public ResponseResult selectdbList(SearchParameter searchParameter) {
@@ -63,15 +65,15 @@ public class ManagerCommonServiceImpl extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, DBConnectionResponseDTO.class);
-		
+		return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
+
 	}
-	
+
 	/**
 	 * @method  : selectUserList
 	 * @desc : 사용자 목록
 	 * @author   : ytkim
-	 * @date   : 2019. 8. 16. 
+	 * @date   : 2019. 8. 16.
 	 * @param searchParameter
 	 * @return
 	 */
@@ -81,6 +83,6 @@ public class ManagerCommonServiceImpl extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, UserResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, searchParameter, UserMapper.INSTANCE);
 	}
 }

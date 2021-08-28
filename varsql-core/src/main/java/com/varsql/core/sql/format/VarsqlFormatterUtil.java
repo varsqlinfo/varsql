@@ -1,7 +1,5 @@
 package com.varsql.core.sql.format;
 
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
-import com.github.vertical_blank.sqlformatter.core.FormatConfig;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
@@ -68,7 +66,7 @@ public final class VarsqlFormatterUtil {
 			resultSql = new VarsqlFormatterImpl().execute(sql);
 			//resultSql = SqlFormatter.format(sql);
 		}else{
-			
+
 			try{
 
 				resultSql = com.varsql.core.sql.util.SQLParserUtils.getParserString(sql,dbType);
@@ -83,7 +81,7 @@ public final class VarsqlFormatterUtil {
 
 		return result;
 	}
-	
+
 	public static String ddlFormat(String sql, DBType dbType){
 		switch (dbType) {
 			case TIBERO:
@@ -91,8 +89,8 @@ public final class VarsqlFormatterUtil {
 				return sql;
 
 			default:
-				return SqlFormatter.format(sql, FormatConfig.builder().indent(BlankConstants.TAB).build());
+				return sql;
 		}
-		
+
 	}
 }

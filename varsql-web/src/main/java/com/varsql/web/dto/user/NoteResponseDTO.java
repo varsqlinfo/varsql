@@ -1,5 +1,6 @@
 package com.varsql.web.dto.user;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class NoteResponseDTO{
 
 	private String regUserInfo;
 
-	private String regDt;
+	private LocalDateTime regDt;
 
 	private List<String> recvUsers;
 

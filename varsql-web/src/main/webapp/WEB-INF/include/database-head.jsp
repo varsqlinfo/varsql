@@ -41,18 +41,19 @@
 <script src="${pageContextPath}/webstatic/js/varsql.db.vender.plugin.js?version=${pubjs_ver}"></script>
 
 <%-- sql editor --%>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/codemirror.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/sql.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/show-hint.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/var-sql-hint.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/search.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/search/searchcursor.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/matchbrackets.js?version=${codemirror_ver}"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/sqlEditor/closebrackets.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/codemirror.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/sql.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/show-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/var-sql-hint.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/search/search.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/search/searchcursor.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/matchbrackets.js?version=${codemirror_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sql/editor/closebrackets.js?version=${codemirror_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/prettify.js?version=${prettify_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
 
+<script src="${pageContextPath}/webstatic/js/plugins/sql/formatter/sql-formatter.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>

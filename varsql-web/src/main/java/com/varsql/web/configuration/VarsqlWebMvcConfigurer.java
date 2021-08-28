@@ -2,7 +2,6 @@ package com.varsql.web.configuration;
 
 import javax.annotation.PostConstruct;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -73,11 +72,6 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         resolver.setOrder(2);
         //resolver.setViewClass(JstlView.class);
         registry.viewResolver(resolver);
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
     }
 
     /**

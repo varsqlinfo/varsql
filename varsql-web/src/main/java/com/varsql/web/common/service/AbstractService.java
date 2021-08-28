@@ -1,8 +1,6 @@
 package com.varsql.web.common.service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.web.model.converter.DomainMapper;
 
 /**
  *
@@ -20,7 +18,5 @@ import com.varsql.web.model.converter.DomainMapper;
  */
 @Service
 public class AbstractService{
-	@Autowired
-	protected DomainMapper domainMapper;
 
 }

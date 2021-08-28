@@ -1,5 +1,7 @@
 package com.varsql.web.dto.sql;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Lob;
 
 import lombok.Builder;
@@ -25,11 +27,11 @@ public class SqlFileResponseDTO{
 	private String sqlCont;
 
 	private String sqlParam;
-	
-	private String regDt;
+
+	private LocalDateTime regDt;
 
 	@Builder
-	public SqlFileResponseDTO(String sqlId, String sqlTitle, String sqlCont, String sqlParam, String regDt) {
+	public SqlFileResponseDTO(String sqlId, String sqlTitle, String sqlCont, String sqlParam, LocalDateTime regDt) {
 		this.sqlId = sqlId;
 		this.sqlTitle = sqlTitle;
 		this.sqlCont = sqlCont;

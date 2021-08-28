@@ -27,7 +27,7 @@
 
 					</div>
 				</div>
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-6">
 						<label>
 							<button type="button" class="btn btn-sm btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
@@ -35,14 +35,14 @@
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
-							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal"	class="form-control">
+								<input type="text" v-model="searchVal"	class=" form-control">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>

@@ -32,6 +32,7 @@ import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.model.mapper.app.NoteMapper;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.repository.user.NoteEntityRepository;
@@ -177,7 +178,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 		List<NoteResponseDTO> noteList = new ArrayList<>();
 		result.getContent().forEach(item ->{
 
-			NoteResponseDTO noteResDto = domainMapper.convertToDomain(item, NoteResponseDTO.class);
+			NoteResponseDTO noteResDto = NoteMapper.INSTANCE.toDto(item);
 
 			noteResDto.setRegUserInfo(item.getRegInfo().getUname()+"("+item.getRegInfo().getUid()+")");
 

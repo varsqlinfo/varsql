@@ -383,7 +383,7 @@ _ui.initContextMenu  = function (){
         });
     }
 
-	$(document).on('keydown',function (e) {
+	$(document).on('keydown.main.screen',function (e) {
 		var evt =window.event || e;
 		if(evt.ctrlKey){
 			var returnFlag = true;
@@ -392,10 +392,10 @@ _ui.initContextMenu  = function (){
 					$('.sql_save_btn').trigger('click');
 					returnFlag = false;
 					break;
-				case 70: // 80 is f
+				case 70: // 70 is f
 					returnFlag = false;
 					break;
-				case 80: // 70 is f
+				case 80: // 80 is p
 					returnFlag = false;
 					break;
 				default:
@@ -3039,6 +3039,12 @@ _ui.SQL = {
 			,width:'auto'
 			,itemMaxWidth: 100
 			,dropItemWidth : '100px'
+			,drag: {
+				enabled :true
+				,dragDrop : function (moveItem){
+					_self.saveSqlFile(moveItem, 'moveTab');
+				}
+			}
 			,contextMenu :  {
 				callback: function(key,sObj) {
 					var item = sObj.tabItem;
@@ -3176,6 +3182,18 @@ _ui.SQL = {
 				autoSave(currentEditorInfo);
 			}
 		})
+
+		/*
+		editor.on('inputRead', function(cm, event) {
+			 console.log(event.text);
+	        var text = event.text[0]; // pasted string
+	        var new_text = text; // any operations here
+	        cm.refresh();
+	        // my first idea was
+	        // note: for multiline strings may need more complex calculations
+	        cm.replaceRange(new_text, event.from, {line: event.from.line, ch: event.from.ch + text.length});
+		});
+		*/
 
 		_self.sqlMainEditor = editor;
 	}
@@ -3778,30 +3796,33 @@ _ui.SQL = {
 
 		var params;
 		mode = mode || 'query';
-
+		var saveInfo;
 		if(mode=='query'){
 			if(_self.getSqlEditorObj() ===false){
 				return ;
 			}
 			_self.setSqlParamemter(_self.currentSqlEditorInfo.sqlId);
 
-			params =VARSQL.util.objectMerge ({},_g_options.param,{
+			saveInfo = {
 				'sqlCont' :_self.getSqlEditorObj().getValue()
 				,'sqlId' : _self.currentSqlEditorInfo.sqlId
 				,'sqlParam' : JSON.stringify(_self.getSqlParamemter())
 				,'editorCursor' : JSON.stringify(_self.getSqlEditorObj().getCursor())
-				,'mode' : mode
-			});
+			};
 		}else if(mode =='query_del'){
-			params =VARSQL.util.objectMerge ({},_g_options.param,{
+			saveInfo = {
 				'sqlCont' : item.sqlCont
 				,'sqlId' : item.sqlId
 				,'sqlParam' : JSON.stringify(_self.getSqlParamemter(item.sqlId))
-				,'mode' : mode
-			});
+			};
+		}else if(mode =='moveTab'){
+			saveInfo = {
+				'sqlId' : item.moveItem.sqlId
+				,'firstSqlId' : _self.sqlFileTabObj.getFirstItem().sqlId
+				,'prevSqlId' : (item.afterPrevItem||{}).sqlId
+			};
 		}else{
-			params = VARSQL.util.objectMerge ({},_g_options.param,item);
-			params.mode = mode;
+			saveInfo = VARSQL.util.objectMerge ({}, item);
 
 			if (mode=='title'){
 				if(_self.sqlFileTabObj.isItem(item.sqlId)){
@@ -3811,9 +3832,12 @@ _ui.SQL = {
 					}, enabled:false});
 				};
 			}else if('newfile' == mode){
-				params.prevSqlId = (_self.sqlFileTabObj.getLastItem().sqlId ||'');
+				saveInfo.prevSqlId = (_self.sqlFileTabObj.getLastItem().sqlId ||'');
 			}
 		}
+
+		params =VARSQL.util.objectMerge ({}, _g_options.param, saveInfo);
+		params.mode = mode;
 
 		VARSQL.req.ajax({
 		    url:{type:VARSQL.uri.sql, url:'/file/saveSql'}
@@ -4315,16 +4339,35 @@ _ui.SQL = {
 		sqlVal=VARSQL.str.trim(sqlVal);
 
 		var startSelection;
+		var allFormatFlag = false;
 
 		if('' == sqlVal){
+			allFormatFlag = true;
 			startSelection = {line:0,ch:0};
 			sqlVal  = tmpEditor.getValue();
 		}else{
 			startSelection = _self.getSelectionPosition();
 		}
 
-		if(''== sqlVal) return ;
+		// script 모듈로 처리.
+		try{
+			var formatSql =sqlFormatter.format(sqlVal, {
+	            language: formatType,
+	            linesBetweenQueries : 2
+			});
 
+			if(allFormatFlag){
+	    		tmpEditor.setValue(formatSql);
+	    	}else{
+	    		tmpEditor.replaceSelection(formatSql);
+	    		tmpEditor.setSelection(startSelection, _self.getSqlEditorObj().getCursor(true));
+	    	}
+			return ;
+		}catch(e){
+			console.log(e);
+		}
+
+		// 쿼리로 처리.
 		var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 			'sql' :sqlVal
 		});
@@ -4338,8 +4381,13 @@ _ui.SQL = {
 		    ,success:function (res){
 		    	var formatSql = res.item;
 		    	formatSql = VARSQL.str.trim(formatSql)
-	    		tmpEditor.replaceSelection(formatSql);
-	    		tmpEditor.setSelection(startSelection, _self.getSqlEditorObj().getCursor(true));
+
+		    	if(allFormatFlag){
+		    		tmpEditor.setValue(formatSql);
+		    	}else{
+		    		tmpEditor.replaceSelection(formatSql);
+		    		tmpEditor.setSelection(startSelection, _self.getSqlEditorObj().getCursor(true));
+		    	}
 			}
 		});
 	}
@@ -4700,9 +4748,7 @@ _ui.sqlDataArea =  {
 		$.pubGrid(_self.currnetDataGridSelector,{
 			setting : {
 				enabled : true
-				,click : false
-				,enableSearch : true
-				,enableColumnFix : true
+				,mode :'full'
 			}
 			,autoResize : false
 			,headerOptions:{

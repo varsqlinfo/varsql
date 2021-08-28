@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +36,12 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
+import com.varsql.web.model.mapper.db.DBConnectionMapper;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
@@ -104,7 +108,7 @@ public class AdminServiceImpl extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, DBConnectionResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
 	}
 
 	/**

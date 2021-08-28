@@ -19,6 +19,7 @@ import com.varsql.web.repository.sql.SqlFileEntityRepository;
 import com.varsql.web.repository.sql.SqlFileTabEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -55,6 +56,23 @@ public class SQLFileServiceImpl{
 			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 
 			sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
+		}else if("moveTab".equals(mode)){
+
+			SqlFileTabEntity moveFileTabInfo= sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+
+			// 이동전 앞에 sqlid 파일 업데이트.
+			sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId(), moveFileTabInfo.getPrevSqlId());
+
+			if(StringUtils.isBlank(sqlFileRequestDTO.getPrevSqlId())) {
+				sqlFileTabEntityRepository.updatePrevIdBySqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getFirstSqlId(), sqlFileRequestDTO.getSqlId());
+			}else {
+				// 이동 할 위치 이전  sqlid 업데이트
+				sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getPrevSqlId(), sqlFileRequestDTO.getSqlId());
+			}
+
+			moveFileTabInfo.setViewYn(true);
+			moveFileTabInfo.setPrevSqlId(sqlFileRequestDTO.getPrevSqlId());
+			sqlFileTabEntityRepository.save(moveFileTabInfo);
 		}else{
 
 			if("addTab".equals(mode)){
@@ -220,7 +238,7 @@ public class SQLFileServiceImpl{
 					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				}
 
-				sqlFileTabEntityRepository.updateSqlFilePrevID(sfte.getVconnid(), sfte.getViewid(), sfte.getSqlId(), sfte.getPrevSqlId());
+				sqlFileTabEntityRepository.updatePrevIdByPrevId(sfte.getVconnid(), sfte.getViewid(), sfte.getSqlId(), sfte.getPrevSqlId());
 			}
 
 		}catch(Exception e){

@@ -45,7 +45,11 @@ public interface SqlFileTabEntityRepository extends DefaultJpaRepository, JpaRep
 
 	@Modifying
 	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= :prevSqlId where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.prevSqlId = :sqlId")
-	void updateSqlFilePrevID(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId, @Param("prevSqlId") String prevSqlId);
+	void updatePrevIdByPrevId(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId, @Param("prevSqlId") String prevSqlId);
+
+	@Modifying
+	@Query(value = "update SqlFileTabEntity as ste set ste.prevSqlId= :prevSqlId where ste.vconnid = :vconnid and ste.viewid = :viewid and ste.sqlId = :sqlId")
+	void updatePrevIdBySqlId(@Param("vconnid") String vconnid, @Param("viewid") String viewid, @Param("sqlId") String sqlId, @Param("prevSqlId") String prevSqlId);
 
 	public SqlFileTabEntity findByVconnidAndViewidAndSqlId(String vconnid, String viewid, String sqlId);
 

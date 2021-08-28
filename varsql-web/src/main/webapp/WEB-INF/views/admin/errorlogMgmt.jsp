@@ -12,10 +12,10 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="pull-right" style="width:350px;padding-bottom:10px;">
+				<div class="pull-right search-area" style="width:350px;">
 					<div class="dataTables_filter">
 						<label style="float:left; margin-right: 5px;">
-							<select v-model="list_count" @change="search()" class="form-control input-sm">
+							<select v-model="list_count" @change="search()" class="form-control ">
 								<option	value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
@@ -23,7 +23,7 @@
 							</select>
 						</label>
 						<label style="float:left; margin-right: 5px;">
-							<select v-model="searchCatg" class="form-control input-sm">
+							<select v-model="searchCatg" class="form-control ">
 								<option	value="title"><spring:message code="admin.errorlog.title" /></option>
 								<option value="type"><spring:message code="admin.errorlog.type" /></option>
 								<option value="cont"><spring:message code="admin.errorlog.cont" /></option>
@@ -31,9 +31,9 @@
 							</select>
 						</label>
 						<div class="input-group floatright">
-							<input type="text" v-model="searchVal" class="form-control input-sm" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
 							<span class="input-group-btn">
-								<button class="btn btn-sm btn-default" @click="search()" type="button">
+								<button class="btn btn-default" @click="search()" type="button">
 									<span class="glyphicon glyphicon-search"></span>
 								</button>
 							</span>

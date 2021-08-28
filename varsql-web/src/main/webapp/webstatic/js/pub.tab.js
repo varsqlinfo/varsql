@@ -57,6 +57,13 @@ var pluginName = "pubTab"
 	}
 	,afterUpdate : function (){		// after update item callback
 	}
+	,drag : {
+		enabled : false
+		,dragStart : function (dragItem){} // drag start
+		,dragEnter : function (dragItem){} // drag enter
+		,dragDrop : function (dragItem){} // drag enter
+		,dragEnd : function (dragItem){} // drag enter
+	}
 };
 
 
@@ -226,7 +233,7 @@ Plugin.prototype ={
 
 		if(opts.overItemViewMode =='drop'){
 
-			_this.tabElement.on('click.pubtab.drop.btn','.pubTab-drop-open-btn', function (e){
+			_this.tabElement.on('click.pubtab.drop.btn','.pubTab-more-button', function (e){
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -253,6 +260,96 @@ Plugin.prototype ={
 				$(_this.tabElement.find('.pubTab-item').get(tabIdx)).find('.pubTab-item-cont').trigger('click');
 			})
 		}
+
+		if(this.options.drag.enabled===true){
+			this.dragMove();
+		}
+	}
+	,dragMove : function (){
+		var _this = this; 
+
+		_this.drag = {};
+
+		var dragElement;
+
+		var startX;
+		var dragItemIdx; 
+
+		var dragFncs = this.options.drag; 
+
+		this.tabElement.on('dragstart.pubtab.dragitem', '.pubTab-item', function (e){
+			_this.element.tabContainerElement.addClass('drag-on');
+
+			dragItemIdx = $(this).index();
+
+			var dragItem = _this.options.items[dragItemIdx]; 
+
+			if(_this.isActive(dragItem) ===false){
+				_this.itemClick(dragItem);
+			}
+
+			startX = e.originalEvent.pageX;
+			dragElement = $(this);
+			
+			e.originalEvent.dataTransfer.effectAllowed = 'copyMove';
+
+			if(dragFncs['dragStart'].call($(this), dragItem) ===false){
+				return false; 
+			}
+
+		}).on('drag.pubtab.dragitem', '.pubTab-item', function (e){
+			//e.preventDefault();
+		}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
+			var enterEle = $(this); 
+			dragFncs['dragEnter'].call(enterEle, _this.options.items[enterEle.index()])
+			$(this).addClass('drag-over');
+
+			return false; // mouse  cursor 이상 현상 제거 하기 위해서 처리함. 
+			
+		}).on('dragleave.pubtab.dragitem', '.pubTab-item', function (e){
+			$(this).removeClass('drag-over');
+		}).on('dragend.pubtab.dragitem',  function (e){
+			_this.element.tabContainerElement.removeClass('drag-on');
+			dragFncs['dragEnd'].call($(this));
+		}).on('drop.pubtab.dragitem', '.pubTab-item', function (e){
+			
+			var dropEle = $(this); 
+			dropEle.removeClass('drag-over');
+			var dropIdx = dropEle.index();
+
+			if(dragItemIdx == dropIdx) return ; 
+
+			var endX = e.originalEvent.pageX; 
+			var prevItem;
+			if(startX <= endX){
+				prevItem = _this.options.items[dropIdx]; 
+				dropEle.after(dragElement);
+			}else{
+				prevItem = _this.options.items[dropIdx-1]; 
+				dropEle.before(dragElement);
+			}
+
+			var dragItem = _this.options.items.splice(dragItemIdx, 1)[0];
+			if(dragFncs['dragDrop'].call(dropEle, {beforePrevItem : _this.options.items[dragItemIdx-1], moveItem :dragItem, afterPrevItem :prevItem}) ===false){
+				return false; 
+			}
+				
+			_this.options.items.splice(dropIdx, 0, dragItem);
+
+			var moveInfo ={nextTabId : '', moveTabId :dragItem._tabid, prevTabId:''};
+			if(_this.options.items.length > dropIdx+1){
+				moveInfo.nextTabId = _this.options.items[dropIdx+1]._tabid;
+			}
+
+			if(0 < dropIdx){
+				moveInfo.prevTabId = _this.options.items[dropIdx-1]._tabid;
+			}
+		})
+
+		this.tabElement.on('dragover.pubtab.dragitem', function (e){
+			e.preventDefault();
+		})
+		
 	}
 	,_setHistory : function (tabid){
 		var idx = this.config.tabHistory.indexOf(tabid);
@@ -272,7 +369,6 @@ Plugin.prototype ={
 
 		var opts = this.options;
 		var tabItem = opts.items[idx];
-
 
 		if(opts.enableClickEventChange ===true && this.isActive(tabItem)){ // 변경 되었을때만 event 처리.
 			return ;
@@ -760,7 +856,7 @@ Plugin.prototype ={
 			itemHtm += cfgIcon.right.html;
 		}
 
-		return '<li class="pubTab-item" data-tab-id="'+item._tabid+'" title="'+title+'"> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
+		return '<li class="pubTab-item" draggable="'+(_opts.drag.enabled ? true:false)+'" data-tab-id="'+item._tabid+'" title="'+title+'"><div class="pubTab-item-overlay" style=""></div> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
 	}
 	//drop item template
 	,_getDropItemHtml : function (item){
@@ -794,7 +890,7 @@ Plugin.prototype ={
 		}
 
 		var strHtm = [];
-		strHtm.push('<div class="pubTab-wrapper">');
+		strHtm.push('<div class="pubTab-wrapper" role="presentation">');
 		strHtm.push('	<div id="'+_this.prefix+'pubTab" class="pubTab">');
 		strHtm.push('		<div id="'+_this.prefix+'pubTab-scroll" class="pubTab-scroll">');
 		strHtm.push('			<ul id="'+_this.prefix+'pubTab-container" class="pubTab-container" style="height:'+_opts.height+'">');
@@ -804,7 +900,7 @@ Plugin.prototype ={
 		strHtm.push('		</div> ');
 		strHtm.push('		<div class="pubTab-move-area" style="z-index:'+_opts.moveZIndex+';">');
 
-		strHtm.push('		  <div class="pubTab-drop-open-btn pubTab-more-button">');
+		strHtm.push('		  <div class="pubTab-more-button">');
 		if(_opts.overItemViewMode =='drop'){
 			strHtm.push('		<div id="'+_this.prefix+'DropItem" style="width:'+_opts.dropItemWidth+'" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
 		}

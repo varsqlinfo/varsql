@@ -74,11 +74,9 @@
 					</span>
 				</div>
 			</div>
-
-			<div class="panel-body" id="compareArea">
-				<div class="row" style="position: relative;padding: 0px 5px 0px 5px;">
-					<div id="resizeHelper" class="resizable-helper"></div>
-					<aside id="resizable" class="ui-widget-content">
+			<div class="panel-body">
+				<div id="compareArea" class="row" style="height:730px;;position: relative;padding: 0px 5px 0px 5px;">
+					<div style="width:45%;">
 						<div class="panel panel-default" style="height:295px;padding-bottom:10px;margin-bottom:10px;">
 							<div class="panel-body" style="padding: 0px;">
 								<div class="input-group floatright" style="margin:3px;">
@@ -101,13 +99,16 @@
 											<label for="scrollSync" style="margin-bottom:0px;">Scroll sync</label>
 											<input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y">
 										</span>
+										<span>
+											<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-success" style="padding:2px 3px;">select compare</button>
+										</span>
 									</div>
 								</div>
 								<div class="col-xs-6">
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
-												<spring:message code="source" text="대상"/> <span class="object-count"> [{{resultInfo.sourceCount}}]</span>
+												<spring:message code="source" text="대상"/> <span class="object-count"> [{{resultInfo.sourceSchCnt}}/{{resultInfo.sourceCount}}]</span>
 											</span>
 										</div>
 										<div id="sourceObjectMeta" class="row source-object-meta"></div>
@@ -117,10 +118,7 @@
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
-												<spring:message code="target" text="타켓"/> <span class="object-count"> [{{resultInfo.targetCount}}]</span>
-											</span>
-											<span class="pull-right">
-												<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-success" style="padding:2px 3px;">select compare</button>
+												<spring:message code="target" text="타켓"/> <span class="object-count"> [{{resultInfo.targetSchCnt}}/{{resultInfo.targetCount}}]</span>
 											</span>
 										</div>
 										<div id="targetObjectMeta" class="row source-target-meta"></div>
@@ -133,12 +131,12 @@
 								<span><spring:message code="compare.result" text="비교결과"/></span>
 								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
-							<div id="compareResultArea" class="panel-body" style="height:360px;overflow:auto;padding:0px;">
+							<div id="compareResultArea" class="panel-body" style="height:380px;overflow:auto;padding:0px;border:1px solid #ddd;">
 <style>
 .result-table{
 }
 </style>
-<div :class="isCompleteCompare===true?'view':'hidden'">----------::결과::---------
+<div>----------::결과::---------
 	<table style="width:100%;border:1px solid #000000;border-collapse: collapse;">
 		<colgroup>
 			<col style="width:100px;">
@@ -167,14 +165,15 @@
 		</tr>
 	</table>
 </div>
-<pre>
+<pre style="margin: 0px;margin-top:6px;">
 	<div v-html="resultReport" :title="compareResult"></div>
 </pre>
 							</div>
 						</div>
-					</aside>
-					<section id="content">
-						<div class="panel panel-default" style="border:none;padding-left: 0px; height: 100%;padding-bottom: 10px; margin-bottom: 10px;">
+					</div>
+					<div class="main-spliter" data-prev-min-size="20" data-next-min-size="20"></div>
+					<div style="width:55%">
+						<div class="panel panel-default" style="height: 100%;padding-bottom: 10px; margin-bottom: 10px;">
 							<spring:message code="compare.detail" text="비교상세"/> : <span style="font-weight: bold;padding-left:5px;">{{compareSourceItem.name}}&lt;-&gt;{{compareTargetItem.name}}</span>
 							<div class="panel-body" style="padding: 5px 5px 0px 5px;" :data-compare-mode="currentObjectType != 'table'?'text':''">
 								<div data-compare-area="grid">
@@ -213,7 +212,7 @@
 								</div>
 							</div>
 						</div>
-					</section>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -265,27 +264,6 @@
 
 [data-compare-mode="text"] [data-compare-area="text"]{
 	display:block;
-}
-
-aside#resizable, section#content{
-	box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-     border: 1px solid #ddd;
-}
-
-aside#resizable { width: 40%; height: 720px; padding: 0.5em; float:left;}
-aside#resizable h3 { text-align: center; margin: 0; }
-
-section#content{width: calc(100% - 40% - 7px);height:720px; margin-left: 5px; vertical-align: top; float:left;}
-section#content:after{content:"";display:block;clear:both;}
-
-/* jquery UI override */
-.ui-resizable-e:hover, .ui-resizable-e:active{background-color:#aaaaab; cursor:col-resize;}
-.resizable-helper { z-index: 1000; width: 1px; height: 100%; position: absolute; top: 0px; left: 610.016px; border: 3px dotted rgb(58, 80, 232); display: none;}
-
-.ui-widget-content a {
-    color: #428bca;
 }
 
 .source-object-meta, .source-target-meta{
@@ -350,7 +328,9 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,resultInfo:{
 			sourceCount :0
+			,sourceSchCnt : 0
 			,targetCount :0
+			,targetSchCnt : 0
 		}
 		,sameInfo : {cnt: 0 , htm :[]}
 		,differentInfo : {cnt: 0 , htm :[]}
@@ -387,7 +367,6 @@ VarsqlAPP.vueServiceBean( {
 	,methods:{
 		init : function(){
 			var _self = this;
-
 
 			VARSQLCont.init('other' , {});
 
@@ -429,64 +408,29 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 
-			var helperEle = $('#resizeHelper');
-
-			var minW = 10, maxW = 90;
-			var compareWidth;
-			$( "#resizable" ).resizable({
-	            handles: "e",
-	            helper :'aa',
-	            containment : '#compareArea',
-	            start : function ( e, ui){
-	            	ui.helper.remove();
-	            	compareWidth = $('#compareArea').width();
-					helperEle.show()
-					helperEle.css('left', ui.size.width+'px');
+			$.pubSplitter('.main-spliter',{
+				mode : 'simple'			// wrapper
+				,orientation: 'vertical'
+				,handleSize : 10
+				,initAutoSize : true
+				,border : false
+				,useButton : true		// 한번에 이동 버튼 사용유무
+				,minSize: 50				// default pixel
+				,percent: {vertical : true, horizontal : true} //size percent 사용여부
+				,useHelper : true		// 위치 조정시 helper 사용여부.
+				,stop:function (){
+					$(window).resize();
 				}
-	            ,resize: function( e, ui){
-
-	            	if(compareWidth < ui.size.width ){
-	            		helperEle.css('left', compareWidth+'px');
-	            	}else{
-	            		helperEle.css('left', ui.size.width +'px');
-	            	}
-	            }
-	            ,stop : function (e, ui){
-	            	helperEle.hide()
-					var currentWidth = ui.size.width;
-					var totWidth = compareWidth;
-					var currWidthPercent = currentWidth /totWidth*100;
-
-					if(minW > currWidthPercent){
-						currWidthPercent = minW;
-					}else if(maxW <currWidthPercent){
-						currWidthPercent = maxW;
-					}
-
-					$('#resizable').css({
-						left : '0px'
-						,"width" : currWidthPercent+'%'
-						,'height' :'100%'
-					});
-	                $("#content").css("width",  (100-(currWidthPercent+2)) +"%");
-
-	                if($.pubGrid('#sourceObjectMeta')) $.pubGrid('#sourceObjectMeta').resizeDraw();
-	                if($.pubGrid('#targetObjectMeta')) $.pubGrid('#targetObjectMeta').resizeDraw();
-	                if($.pubGrid('#sourceColumn')) $.pubGrid('#sourceColumn').resizeDraw();
-	                if($.pubGrid('#targetColumn')) $.pubGrid('#targetColumn').resizeDraw();
-
-				}
-	        });
+			});
 		}
 		,objectCompare : function (initFlag){
 			var compareFn = this[this.diffItem.objectType+'Compare'];
 
 			if(initFlag){
-				this.resultInfo.sourceCount = 0;
-				this.resultInfo.targetCount = 0;
-
 				this.resultInfo.sourceCount = this.sourceItems.length;
 				this.resultInfo.targetCount = this.targetItems.length;
+				this.resultInfo.sourceSchCnt = this.sourceItems.length;
+				this.resultInfo.targetSchCnt = this.targetItems.length;
 
 				var options = {
 					  shouldSort: true,
@@ -539,6 +483,11 @@ VarsqlAPP.vueServiceBean( {
 				sList = this.sourceSearchObj.search(schVal);
 				tList = this.targetSearchObj.search(schVal);
 			}
+			this.sourceCount = sList.length;
+			this.targetCount = tList.length;
+
+			this.resultInfo.sourceSchCnt = sList.length;
+			this.resultInfo.targetSchCnt = tList.length;
 
 			$.pubGrid('#sourceObjectMeta').setData(sList,'reDraw');
 			$.pubGrid('#targetObjectMeta').setData(tList,'reDraw');
@@ -861,11 +810,11 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,asideOptions :{
-						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+						lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 					}
 					,tColItem : [
-						{key :'name', label:'Table', width:200, sort:true}
-						,{key :'remarks', label:'설명', sort:true}
+						{key :'name', label:'Table', width:60}
+						,{key :'remarks', label:'설명', width:40 }
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -874,7 +823,8 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isStopPropagation :true
+						,vertical : {
 							onUpdate : function (item){
 								if(_self.isScrollSync()){
 									$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
@@ -910,11 +860,11 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,asideOptions :{
-						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+						lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 					}
 					,tColItem : [
-						{key :'name', label:'Table', width:200, sort:true}
-						,{key :'remarks', label:'설명', sort:true}
+						{key :'name', label:'Table', width:60}
+						,{key :'remarks', label:'설명', width:40 }
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -923,7 +873,8 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isStopPropagation :true
+						,vertical : {
 							onUpdate : function (item){
 								if(_self.isScrollSync()){
 									$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);
@@ -1084,7 +1035,7 @@ VarsqlAPP.vueServiceBean( {
 			}else{
 
 				$.pubGrid('#sourceColumn', {
-					asideOptions :{lineNumber : {enable : true	,width : 30}}
+					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
 						{ label: '컬럼명', key: 'name',width:80 , render : 'html',formatter : errorFormatter},
 						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
@@ -1107,7 +1058,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						isPreventDefault : false
+						isStopPropagation :true
 						,vertical : {
 							onUpdate : function (item){
 								$.pubGrid('#targetColumn').moveVScrollPosition(item.scrollTop,'',false);
@@ -1145,7 +1096,7 @@ VarsqlAPP.vueServiceBean( {
 			}else{
 
 				$.pubGrid('#targetColumn', {
-					asideOptions :{lineNumber : {enable : true	,width : 30}}
+					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
 						{ label: '컬럼명', key: 'name',width:80, render : 'html',formatter : errorFormatter},
 						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
@@ -1168,7 +1119,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						isPreventDefault :false
+						isStopPropagation :true
 						,vertical : {
 							onUpdate : function (item){
 								$.pubGrid('#sourceColumn').moveVScrollPosition(item.scrollTop,'',false);
@@ -1209,11 +1160,11 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,asideOptions :{
-						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+						lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 					}
 					,tColItem : [
-						{key :'name', label:'Object Name', width:200, sort:true}
-						,{key :'remarks', label:'Desc', sort:true}
+						{key :'name', label:'Object Name', width:60}
+						,{key :'remarks', label:'Desc', width:40 }
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -1222,7 +1173,8 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isStopPropagation :true
+						,vertical : {
 							onUpdate : function (item){
 								if(_self.isScrollSync()){
 									$.pubGrid('#targetObjectMeta').moveVScrollPosition(item.scrollTop,'',false);
@@ -1258,11 +1210,11 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,asideOptions :{
-						lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+						lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 					}
 					,tColItem : [
-						{key :'name', label:'Object Name', width:200, sort:true}
-						,{key :'remarks', label:'Desc', sort:true}
+						{key :'name', label:'Object Name', width:60}
+						,{key :'remarks', label:'Desc', width:40}
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -1271,7 +1223,8 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,scroll :{
-						vertical : {
+						isStopPropagation :true
+						,vertical : {
 							onUpdate : function (item){
 								if(_self.isScrollSync()){
 									$.pubGrid('#sourceObjectMeta').moveVScrollPosition(item.scrollTop, '',false);

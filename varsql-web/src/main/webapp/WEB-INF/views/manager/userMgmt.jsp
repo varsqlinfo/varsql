@@ -12,7 +12,7 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-6">
 						<label>
 							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
@@ -23,14 +23,14 @@
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
-							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup="search()">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup="search()">
 								 <span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -45,27 +45,32 @@
 						class="dataTables_wrapper form-inline" role="grid">
 						<table
 							class="table table-striped table-bordered table-hover dataTable no-footer"
-							id="dataTables-example">
+							id="dataTables-example" style="table-layout: fixed;">
+							<colgroup>
+								<col style="width: 30px;">
+								<col>
+								<col style="width: 140px;">
+								<col style="width: 70px;">
+								<col style="width: 120px;">
+							</colgroup>
 							<thead>
 								<tr role="row">
-									<th  style="width: 10px;"><div
+									<th><div
 											class="text-center">
 											<input type="checkbox" :checked="selectAllCheck" @click="selectAll()">
 										</div>
 									</th>
-									<th style="width: 195px;">
+									<th class="text-center">
 										<spring:message	code="manage.userlist.name" />
+										(<spring:message	code="manage.userlist.id" />)
 									</th>
-									<th style="width: 150px;">
-										<spring:message	code="manage.userlist.id" />
-									</th>
-									<th style="width: 179px;">
+									<th class="text-center">
 										<spring:message	code="manage.userlist.date" />
 									</th>
-									<th style="width: 50px;">
+									<th class="text-center">
 										<spring:message	code="manage.userlist.access" />
 									</th>
-									<th style="width: 150px;">
+									<th class="text-center">
 										<spring:message	code="manage.userlist.init.password" />
 									</th>
 								</tr>
@@ -73,9 +78,8 @@
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
 									<td><input type="checkbox" :value="item.viewid" v-model="selectItem"></td>
-									<td><a href="javascript:;" @click="detailView(item)">{{item.uname}}</a></td>
-									<td>{{item.uid}}</td>
-									<td class="center">{{item.regDt}}</td>
+									<td><a href="javascript:;" class="text-ellipsis" @click="detailView(item)" :title="item.uname+'('+item.uid+')'">{{item.uname}}({{item.uid}})</a></td>
+									<td class="center" :title="item.regDt">{{VARSQL.util.dateFormat(item.regDt,'yyyy-mm-dd HH:mm:ss')}}</td>
 									<td class="center">{{item.acceptYn?'Y':'N'}}</td>
 									<td class="center">
 										<button class="btn btn-xs btn-default" @click="initPassword(item)" >초기화</button>

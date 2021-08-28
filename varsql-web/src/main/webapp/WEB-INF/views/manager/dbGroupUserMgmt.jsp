@@ -12,17 +12,18 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
-					<div class="col-sm-12">
+				<div class="row search-area">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-8">
 						<div class="dataTables_filter">
-							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control input-sm"><option
+							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class="form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -55,7 +56,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 					</div>
 				</div>
@@ -68,12 +69,12 @@
 	<div class="col-xs-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<spring:message code="manage.dbgroup.usermapping" /> 
+				<spring:message code="manage.dbgroup.usermapping" />
 				<template v-if="detailItem.groupName">
 					[[<b>{{detailItem.groupName}}</b>]]
 				</template>
 			</div>
-			
+
 			<div class="panel-body">
 				<div class="col-sm-5">
 					<ul id="source" class="form-control" style="width:100%;height:400px;">
@@ -122,9 +123,9 @@ VarsqlAPP.vueServiceBean( {
 	,methods:{
 		init : function (){
 			var _self = this;
-			
+
 			this.initDbMappingInfo();
-			
+
 			$('.item-move').on('click',function (){
 				var moveItem = [];
 				var mode = $(this).attr('mode');
@@ -134,7 +135,7 @@ VarsqlAPP.vueServiceBean( {
 					moveItem = _self.selectObj.targetMove();
 				}
 			});
-			
+
 			_self.selectObj= $.pubMultiselect('#source', {
 				targetSelector : '#target'
 				,addItemClass:'text_selected'
@@ -161,7 +162,7 @@ VarsqlAPP.vueServiceBean( {
 						return  _self.addDbGroupMappingInfo('del', moveItem);
 					}
 				}
-			}); 
+			});
 		}
 		// 상세
 		,itemView : function (item){
@@ -172,13 +173,13 @@ VarsqlAPP.vueServiceBean( {
 		// 검색
 		,search : function(no){
 			var _self = this;
-			
+
 			var param = {
 				pageNo: (no?no:1)
 				,countPerPage : _self.list_count
 				,'searchVal':_self.searchVal
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/dbGroup/list'}
 				,data : param
@@ -193,7 +194,7 @@ VarsqlAPP.vueServiceBean( {
 			var param = {
 				'searchVal':''
 			};
-			
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/comm/userList'}
 				,data : param
@@ -205,13 +206,13 @@ VarsqlAPP.vueServiceBean( {
 		// db mapping info
 		,dbMappingInfo: function (){
 			var _self = this;
-			
-			if(this.isViewMode ===false) return ; 
-			
+
+			if(this.isViewMode ===false) return ;
+
 			var param = {
 				groupId : this.detailItem.groupId
 			};
-			
+
 			VARSQL.req.ajax({
 				data:param
 				,loadSelector: '#main-content'
@@ -222,23 +223,23 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		// 맵핑 정보 추가. 
+		// 맵핑 정보 추가.
 		,addDbGroupMappingInfo : function (mode, moveItem){
 			var _self = this;
-			
+
 			if(!_self.detailItem.groupId){
 				alert(VARSQL.messageFormat('varsql.0003'));
 				return false;
 			}
-			
-			if(this.isViewMode ===false) return ; 
+
+			if(this.isViewMode ===false) return ;
 
 			var param ={
 				selectItem : moveItem.join(',')
 				,groupId : this.detailItem.groupId
 				, mode : mode
 			};
-			
+
 			VARSQL.req.ajax({
 				data:param
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupUser'}

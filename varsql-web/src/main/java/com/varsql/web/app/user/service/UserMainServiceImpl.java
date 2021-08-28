@@ -20,6 +20,7 @@ import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.UserSpec;
 import com.varsql.web.repository.user.NoteEntityRepository;
@@ -61,7 +62,7 @@ public class UserMainServiceImpl extends AbstractService{
 			UserSpec.findUser(searchParameter.getKeyword())
 		);
 
-		return VarsqlUtils.getResponseResult(result, domainMapper, UserResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, UserMapper.INSTANCE);
 	}
 
 	/**

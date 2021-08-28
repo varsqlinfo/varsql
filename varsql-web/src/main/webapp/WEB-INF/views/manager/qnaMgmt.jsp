@@ -13,30 +13,30 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-6">
 						<label> <select v-model="list_count"
-							aria-controls="dataTables-example" class="form-control input-sm"><option
+							aria-controls="dataTables-example" class="form-control "><option
 									value="10">10</option>
 								<option value="25">25</option>
 								<option value="50">50</option>
 								<option value="100">100</option></select>
-						</label> 
-						<label class="radio-inline">답변여부</label> 
-						<label class="radio-inline"> 
+						</label>
+						<label class="radio-inline">답변여부</label>
+						<label class="radio-inline">
 							<input type="radio"	name="answerYn" v-model="answerYn" value="ALL" checked>ALL
-						</label> 
-						<label class="radio-inline"> 
+						</label>
+						<label class="radio-inline">
 							<input type="radio"	name="answerYn" v-model="answerYn" value="Y">Y
-						</label> 
-						<label class="radio-inline"> 
+						</label>
+						<label class="radio-inline">
 							<input type="radio" name="answerYn" v-model="answerYn" value="N">N
 						</label>
 					</div>
 					<div class="col-sm-6">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
-							
+
 								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="msg.search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
@@ -48,15 +48,15 @@
 				<div class="row">
 					<div class="col-sm-12">
 						<template v-for="(item,index) in gridData">
-							
+
 		    				<div v-if="index != 0"><hr class="dotline"></div>
-		    			
+
 							<strong class="primary-font">{{ item.title}}</strong>
 							<div class="btn-group pull-right">
 							</div>
 							<div><a>{{item.regInfo.viewName}}</a>&nbsp;{{item.regDt}}</div>
 							<div><pre>{{ item.question}}</pre></div>
-							
+
 							<div class="form-group">
 								<label>Answer ({{item.answerDt}})</label>
 								<textarea v-model="item.answer" class="form-control answerTextArea" rows="3"></textarea>
@@ -96,15 +96,15 @@ VarsqlAPP.vueServiceBean({
 	}
 	,methods:{
 		search : function(no){
-			var _self = this; 
-			
+			var _self = this;
+
 			var param = {
 				pageNo: (no?no:1)
 				,rows: _self.list_count
 				,'searchVal' : _self.searchVal
 				,search_category : _self.answerYn
 			};
-			
+
 			this.$ajax({
 				url :{type:VARSQL.uri.manager, url:'/qnaMgmtList'}
 				,data : param
@@ -122,23 +122,23 @@ VarsqlAPP.vueServiceBean({
 				,question : "update"
 				,answer : item.answer
 			};
-			
+
 			_this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/updQna'}
-				,data : param 
+				,data : param
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode != 200){
 							alert(resData.message);
-							return ; 
+							return ;
 						}
-						
+
 						if(resData.item > 0){
 							VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
-							return ; 
+							return ;
 						}else{
 							VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
-							return ; 
+							return ;
 						}
 					}
 				}

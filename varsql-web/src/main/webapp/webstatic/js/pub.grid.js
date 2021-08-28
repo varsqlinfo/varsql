@@ -15,6 +15,7 @@ af :  add function
 ap  : add parameter
 */
 var _initialized = false
+,_$win = $(window)
 ,_$doc = $(document)
 ,pubGridLayoutElement = false
 ,_datastore = {}
@@ -25,11 +26,11 @@ var _initialized = false
 	,widthFixed : false  // 넓이 고정 여부.
 	,useDefaultFormatter: true // 기본 포멧터 사용여부
 	,editable :false	// 편집 모드 활성화
-	,selectionMode : 'multiple-cell'	// row , cell , multiple-row , multiple-cell	// 선택 방법.
+	,selectionMode : 'multiple-cell'	//cell 선택 모드 row, cell, multiple-row, multiple-cell
 	,showTooltip : false			// tooltip flag
-	,theme : 'light'
-	,height: 'auto'
-	,width: 'auto'
+	,theme : 'light'			// 테마 값
+	,height: 'auto'				// 높이 값
+	,width: 'auto'				// 넓이값
 	,itemMaxCount : -1	// add시 item max로 유지할 카운트
 	,colOptions : {	// 컬럼 옵션
 		minWidth : 50  // 컬럼 최소 넓이
@@ -42,21 +43,21 @@ var _initialized = false
 		,addStyle : false	// 추가할 style method
 		,dblClick : false	// row dblclick event
 		,dblClickCheck : false	// double click row checkbox checked true 여부.
-		,pasteBefore :false
-		,pasteAfter :false
+		,pasteBefore :false		// 붙여 넣기 전 호출 메소드
+		,pasteAfter :false		// 붙여 넣기 후 호출 메소드
 	}
 	,formatter :{
-		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix 앞에 붙일 문구 , suffix : 마지막에 뭍일것 , fixed : 소수점
-		,number : {prefix :'', suffix :'' , fixed : 0}
+		money :{prefix :'$', suffix :'원' , fixed : 0}	// money 설정 prefix : 앞에 붙일 문구 , suffix : 마지막에 붙일 문구 , fixed : 소수점
+		,number : {prefix :'', suffix :'' , fixed : 0}	// number 값 설정
 	}
 	,autoResize : {	//리사이즈 설정
 		enabled:true	// 리사이즈시 그리드 리사이즈 여부.
-		,responsive : true
-		,threshold :150
+		,responsive : true	// 반응형 여부
+		,threshold :150		// resize 반응 시간 
 	}
 	,headerOptions : {
 		view : true	// header 보기 여부
-		,height: 25
+		,height: 25	// header 높이
 		,sort : true	// 초기에 정렬할 값
 		,redraw : true	// 초기에 옵션 들어오면 새로 그릴지 여부.
 		,resize:{	// resize 설정
@@ -66,20 +67,19 @@ var _initialized = false
 		}
 		,isColSelectAll : true	// 전체 선택 여부.
 		,scrollEnabled : true	// 마우스 휠로 가로 스크롤 이동할지 여부.
-		,oneCharWidth: 7
-		,viewAllLabel : true
+		,oneCharWidth: 7		// char 의 넓이값
+		,viewAllLabel : true	
 		,contextMenu : false // header contextmenu event
 		,helpBtn:{			//	header help btn 설정
 			enabled : false	// header help btn 활성 여부.
-			,title : ''
+			,title : ''		// tooltip
 			,click :  function (clickInfo){}	// click event
 			,dblclick : function (clickInfo){} // double click event
 		}
 	}
 	,setting : {					// 그리드 설정
-		enabled : false				// 활성여부
-		,enableSpeed : false		// 스크롤 스피트 사용여부
-		,enableSearch : true		// 검색 활성 여부
+		mode :'simple'				// simple (search , fixed) , full(column config , filter) , full-center(screen center)
+		,enabled : false			// 활성여부
 		,enableColumnFix : false	// 고정 컬럼 활성여부
 		,click : false				// 직접 처리 할경우. function 으로 처리.
 		,speedMaxVal :10			// 스크롤 스피드
@@ -95,7 +95,7 @@ var _initialized = false
 			,fixColumnPosition : -1	// fixed col position
 		}
 		,util : {
-			searchFilter : function (item, key,schRegExp){
+			searchFilter : function (item, key, schRegExp){ // 검색 필터
 				var itemVal = (item[key]||'')+'';
 
 				if(schRegExp.test(itemVal)){
@@ -107,28 +107,28 @@ var _initialized = false
 	}
 	,asideOptions :{	// aside 옵션
 		lineNumber : {	// 번호
-			enabled :false
-			,key : 'lineNumber'
-			,charWidth : 9
-			,name : ''
-			,width : 40
+			enabled :false	// 활성화 여부
+			,key : 'lineNumber'	// key
+			,charWidth : 9		// char width
+			,name : ''			//  컬럼명
+			,width : 40			// 넓이
 			,styleCss : ''	//css
-			,isSelectRow:true
+			,isSelectRow:true	// 선택 여부
 		}
 		,rowSelector :{	// 체크 박스
-			enabled :false
-			,key : 'checkbox'
-			,name : 'V'
-			,width : 25
+			enabled :false		// 활성화 여부
+			,key : 'checkbox'	// key
+			,name : 'V'			// name
+			,width : 25			// 넓이값
 			,click : function (rowInfo){ // click event , return false 일경우 체크 안함.
 
 			}
 		}
 		,modifyInfo :{	// 수정 여부
-			enabled :false
-			,key : 'modify'
-			,name : 'modify'
-			,width : 10
+			enabled :false	// 활성화 여부
+			,key : 'modify'	// key
+			,name : 'modify'	// name
+			,width : 10		// 넓이값
 		}
 	}
 	,bodyOptions : {	// body option
@@ -136,7 +136,7 @@ var _initialized = false
 		,keyNavHandler : false // arrows key handler function
 	}
 	,scroll :{	// 스크롤 옵션
-		isPreventDefault : true	// 이벤트 전파 여부.
+		isStopPropagation : false	// 이벤트 전파 여부.
 		,vertical : {
 			width : 14			// 세로 스크롤
 			,bgDelay : 100		// 스크롤 빈공간 mousedown delay
@@ -159,35 +159,33 @@ var _initialized = false
 		}
 	}
 	/*
-	tColItem  object info
-	{
-	  "key": "b"	// key
-	  ,"label": "비"	// label
-	  ,"width": 100		// width
-	  ,"sort": true		// sort flag
-	  ,"align": "center"	// align
-	  ,"type": "money"		// value type
-	  ,"render": "html"		// render mode (html or text default text)
-	  ,formatter : function (obj){	// 보여질 값을 처리.
-			return obj.item.STATE;
-	  }
-	  ,defaultValue : ''	// add item default value
-	  ,colClick :function (idx,item){ console.log(idx, item)}		// cell click event
-	  ,styleClass : function (idx, item){return 'pub-bg-private';}	// cell add class
-	  ,tooltip : {
-		 show : true	// 툴팁 보일지 여부.
-		 ,formatter : function (obj){	// 툴팁 내용
-			return obj.val;
-		 }
-	  }
-	  ,editor : {
-		type : "text", "text, select, textarea, number, custom"
-		editorBtn : false,		// 버튼 보일지 여부.
-		editorBtnOver : false, // 오버시 버튼 보이기
-		items : [],
-		validator : function (){}
-	  }
-
+	, tColItem  : {
+		"key": ""	// key
+		,"label": ""	// label
+		,"width": 100		// width
+		,"sort": true		// sort flag
+		,"align": ""	// align
+		,"type": ""		// value type
+		,"render": ""		// render mode (html or text default text)
+		,formatter : function (obj){	// 보여질 값을 처리.
+				return obj.item.STATE;
+		}
+		,defaultValue : ''	// add item default value
+		,colClick :function (idx,item){ console.log(idx, item)}		// cell click event
+		,styleClass : function (idx, item){return 'pub-bg-private';}	// cell add class
+		,tooltip : {
+			show : true	// 툴팁 보일지 여부.
+			,formatter : function (obj){	// 툴팁 내용
+				return obj.val;
+			}
+		}
+		,editor : {
+			type : "text", 			//"text, select, textarea, number, custom"
+			editorBtn : false,		// 버튼 보일지 여부.
+			editorBtnOver : false, // 오버시 버튼 보이기
+			items : [],
+			validator : function (){}
+		}
 	}
 	*/
 	,tColItem : [] //head item
@@ -196,10 +194,10 @@ var _initialized = false
 	,tbodyGroup : [] // body group
 	,tfootItem : []  // foot item
 	,navigation :{
-		usePaging : false
+		usePaging : false	// 페이지 사용여부
 		,status : false
-		,height : 35
-		,callback : function (no){}
+		,height : 35		// 높이 값
+		,callback : function (no){}	// 페이지 콜백
 	}
 	,page : false	// paging info
 	,message : {
@@ -218,6 +216,7 @@ var _initialized = false
 		'sortup' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"></polygon></g></svg>'
 		,'sortdown' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"></polygon></g></svg>'
 	}
+	,operators : {} // setting condition operator
 };
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -235,6 +234,17 @@ function isFunction(obj){
 
 function intValue(val){
 	return parseInt(val , 10);
+}
+
+function arrayCopy(orginArray){
+	return $.isArray(orginArray) ? orginArray.slice():null;
+}
+
+function replaceLogic(logicCode, param){
+	return logicCode.replace(/{{(.+?)}}/gi, function (word){
+		var key = word.replace(/[\{\}]/g,'');
+		return  param[key];
+	});
 }
 
 function getCharLength(s , charW){
@@ -347,12 +357,12 @@ function copyStringToClipboard (prefix , copyText) {
 }
 
 function Plugin(element, options) {
-	this._initialize(element, options);
-
 	if(pubGridLayoutElement ===false){
-		$('body').append('<div id="pub-grid-layout-area"></div>');
-		pubGridLayoutElement = $('#pub-grid-layout-area');
+		$('body').append('<div class="body-pubGrid-hidden-area"></div>');
+		pubGridLayoutElement = $('.body-pubGrid-hidden-area');
 	}
+
+	this._initialize(element, options);
 
 	return this;
 }
@@ -421,7 +431,7 @@ Plugin.prototype ={
 			, select : {}
 			, template: {}
 			, orginData: []
-			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0}
+			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0, orginTColItem:[], orginTColIdxKeyMap : {}}
 			, rowOpt :{}
 			, sort : {current :''}
 			, selection :{
@@ -435,6 +445,13 @@ Plugin.prototype ={
 			, allCheck :false
 			, currentHeaderResizeFlag : true
 			, initHeaderResizer :false
+			, settingConfig :{
+				viewInitFlag :true
+				,changeInfos: {}	// change info
+				,filterTemplate: {}	// filter html template
+				,currentClickItem: {}	// current click item
+				,filterInfo : false // filter info {checkFn, check condition}
+			}
 		};
 		_this.eleCache = {};
 		_this._initScrollData();
@@ -496,6 +513,12 @@ Plugin.prototype ={
 		_this.options =objectMerge({}, _defaults, options)
 		_this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
 
+		_this.config.dataInfo.orginTColItem = arrayCopy(_this.options.tColItem);
+
+		_this.config.dataInfo.orginTColItem.forEach(function (item, idx){
+			_this.config.dataInfo.orginTColIdxKeyMap[item.key] = item; 
+		})
+		
 		_this.config.rowHeight = _this.options.rowOptions.height;
 
 		_this.config.isKeyNavHandler = isFunction(_this.options.bodyOptions.keyNavHandler);
@@ -642,8 +665,12 @@ Plugin.prototype ={
 
 		tci = gridTci;
 
-		if(thg.length < 1){
+		var optThg = opt.theadGroup;
+		var thg = [];
+		if(optThg.length < 1){
 			thg.push(tci);
+		}else{
+			thg = arrayCopy(optThg);
 		}
 
 		var tmpThgIdx=0, tmpColIdx=0, currentColSpanIdx=0, beforeColSpanIdx=0;
@@ -751,7 +778,7 @@ Plugin.prototype ={
 
 		var viewAllLabel = calcFlag===false ? false : (opt.headerOptions.viewAllLabel ===true ?true :false);
 
-		var strHtm = [], leftWidth=0, mainWidth=0 , viewColCount= 0;
+		var leftWidth=0, mainWidth=0 , viewColCount= 0;
 		for(var j=0; j<tci.length; j++){
 			var tciItem = tci[j];
 			tciItem.maxWidth = -1;	// max width
@@ -783,8 +810,6 @@ Plugin.prototype ={
 			}else{
 				mainWidth +=tciItem.width;
 			}
-
-			strHtm.push('<option value="'+tciItem.key+'">'+tciItem.label+'</option>');
 		}
 		cfg.gridWidth.left = leftWidth;
 		cfg.gridWidth.main = mainWidth;
@@ -796,7 +821,6 @@ Plugin.prototype ={
 			return ;
 		}
 
-		cfg.template['searchField'] = strHtm.join('');
 		_this._calcElementWidth();
 	}
 	/**
@@ -894,7 +918,7 @@ Plugin.prototype ={
 		return strHtm.join('');
 	}
 	/**
-	 * @method addData
+	 * @method addRow
 	 * @param data {Object , Array} - 데이타
 	 * @param opt {Object} - add option { index : index ,'first','last' ,focus : 스크롤 이동 여부 (true or false) }
 	 * @description 데이타 add
@@ -1043,53 +1067,61 @@ Plugin.prototype ={
 	 * @method _setSearchData
 	 * @description 검색 정보 셋팅
 	 */
-	,_setSearchData: function (mode){
+	,_setSearchData: function (mode, drawFlag){
 		var settingOpt = this.options.setting;
 
 		if(mode != 'search'){
 			this.config.orginData = this.options.tbodyItem;
 		}
 
-		if(settingOpt.enabled ===true  && settingOpt.enableSearch ===true){
+		if(settingOpt.enabled ===true){
 			var schArr = [];
 			var orginData = this.config.orginData;
+			var filterInfo = this.config.settingConfig.filterInfo; 
 
 			var schField = settingOpt.configVal.search.field ||''
 				,schVal = settingOpt.configVal.search.val ||'';
+						
+			schVal = _$util.trim(schVal); 
 
-			schVal = _$util.trim(schVal);
-
-			if(schField != '' && schVal !=''){
+			if((schField != '' && schVal !='') || filterInfo !== false){
 				var schArr =[];
+			
+				var chkFn =settingOpt.util.searchFilter;
 
-				var schRegExp;
-				try{
-					schRegExp = new RegExp(schVal, 'i');
-				}catch(e){
-					schRegExp = new RegExp(schVal.replace(/([.?*+^$[\]\\(){}])/g, "\\$1"),'i');
-				}
+				var schRegExp = true; 
+				if(schVal != ''){
+					if(schField == '$all'){
+						chkFn = new Function('item','searchField','chkRegExp', _$util.genAllColumnSearch(this));		
+					}
+					schRegExp = _$util.getSearchRegExp(schVal);
+				}			
 
-				for(var i =0 , len  = orginData.length; i < len;i++){
-					var tmpItem =orginData[i];
+				for(var i = 0, len = orginData.length; i < len; i++){
+					var tmpItem =orginData[i]; 
 
-					if(settingOpt.util.searchFilter(tmpItem, schField, schRegExp)){
-						schArr.push(tmpItem);
+					if(schRegExp ===true || chkFn(tmpItem, schField, schRegExp)){
+						if(filterInfo === false){
+							schArr.push(tmpItem);
+						}else{
+							if(filterInfo.fn(tmpItem, filterInfo.chkOpts)){
+								schArr.push(tmpItem);
+							}
+						}
 					}
 				}
 
-				console.log('test')
-
-				this.config.searchOn = true;
+				this.config.searchOn = true; 
 			}else{
-				this.config.searchOn = false;
+				this.config.searchOn = false; 
 				schArr = this.config.orginData;
 			}
 
-			if(mode =='search'){
+			if(mode =='search' && drawFlag !==false){ 
 				var currSortKey = this.config.sort.current;
 
 				// 검색 시 정렬 필드 체크 해서 검색 결과 정렬하기
-				if(currSortKey !=''){
+				if(currSortKey !=''){ 
 					this.options.tbodyItem = schArr;
 					schArr = this._getSortList(currSortKey,this.config.sort[currSortKey].sortType);
 				}
@@ -1223,6 +1255,11 @@ Plugin.prototype ={
 		if(_this.options.navigation.usePaging === true) {
 			_this.setPage(mode=='init' ? opt.page : (pdata.page ||{}));
 		}
+		if(_this.config.searchOn===true){
+			_this.gridElement.find('.pubGrid-setting-btn').addClass('search-on');
+		}else{
+			_this.gridElement.find('.pubGrid-setting-btn').removeClass('search-on');
+		}
 	}
 	/**
 	 * @method setScrollSpeed
@@ -1305,7 +1342,6 @@ Plugin.prototype ={
 	,initStyle : function (){
 
 		var _this = this
-			,opt = _this.options
 			,tci = _this.config.tColItem
 			,thiItem;
 
@@ -1344,7 +1380,7 @@ Plugin.prototype ={
 
 		return '<div class="pubGrid-wrapper"><div id="'+_this.prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
 			+' 	<div id="'+_this.prefix+'_container" class="pubGrid-container '+(_this.options.colFixedIndex >0 ? 'pubGrid-col-fixed':'')+'" style="overflow:hidden;">'
-			+'    <div class="pubGrid-setting-wrapper pubGrid-layer" data-pubgrid-layer="'+_this.prefix+'"><div class="pubGrid-setting"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
+			+'    <div class="pubGrid-setting-btn"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
 			+'<g><path id="'+_this.prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
 			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
 			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
@@ -1370,12 +1406,7 @@ Plugin.prototype ={
 			+'		l-3.572,3.571c-1.148,1.148-1.476,2.794-0.854,4.294c0.621,1.5,2.016,2.432,3.64,2.432h5.052C51.65,23,52,23.35,52,23.78V30.22z"/>'
 			+'	<path d="M27,18c-4.963,0-9,4.037-9,9s4.037,9,9,9s9-4.037,9-9S31.963,18,27,18z M27,34c-3.859,0-7-3.141-7-7s3.141-7,7-7'
 			+'		s7,3.141,7,7S30.859,34,27,34z"/></g>'
-			+'</svg></div>'
-			+'		<div class="pubGrid-setting-area">'
-			+'			<div class="pubGrid-search-area"><select name="pubgrid_srh_filed"><option>field</option></select><input type="text" name="pubgrid_srh_val" class="pubGrid-search-field"><button type="button" class="pubgrid-btn" data-setting-mode="search">'+this.options.i18n['search.button']+'</button></div>'
-			+'			<div class="pubGrid-colfixed-area"><span>'+this.options.i18n['setting.column.fixed.label']+'</span><select name="pubgrid_col_fixed"></select></div>'
-			+'			<div class="pubGrid-speed-area"><span>'+this.options.i18n['setting.speed.label']+'</span><select name="pubgrid_scr_speed"><option value="1">1</option></select></div>'
-			+'		</div>'
+			+'</svg>'
 			+'		</div>'
 			+' 		<div class="pubGrid-header-container-warpper">'
 			+' 		  <div id="'+_this.prefix+'_headerContainer" class="pubGrid-header-container">'
@@ -1640,7 +1671,7 @@ Plugin.prototype ={
 							strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
 						}
 						strHtm.push('  <div class="label-wrapper">');
-						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered">'+ghItem.label+'</div></div>');
+						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered" draggable="true">'+ghItem.label+'</div></div>');
 						if(ghItem.isSort ===true){
 							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');
 						}
@@ -1668,14 +1699,14 @@ Plugin.prototype ={
 	 * @param  idx {Number} header column index
 	 * @description 고정 컬럼
 	 */
-	,setColFixedIndex : function (idx){
+	,setColFixedIndex : function (idx, headRedrawFlag){
 		if(this.options.colFixedIndex > 0  && idx < 1){
 			this.element.container.removeClass('pubGrid-col-fixed');
 		}else if(this.options.colFixedIndex < 1  && idx > 0){
 			this.element.container.addClass('pubGrid-col-fixed')
 		}
 		this.options.colFixedIndex = idx;
-		this._setThead(false);
+		this._setThead(headRedrawFlag===true?true :false);
 		this.setData(this.options.tbodyItem, 'init_colfixed')
 	}
 	/**
@@ -1734,6 +1765,7 @@ Plugin.prototype ={
 				_this.gridElement.empty().html(templateHtm);
 
 				_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
+				_this.element.hidden = $('#'+_this.prefix +'_hiddenArea');
 				
 				_this.element.container = $('#'+_this.prefix+'_container');
 				_this.element.left = $('#'+_this.prefix+'_left');
@@ -1775,8 +1807,6 @@ Plugin.prototype ={
 				_this.getTbodyHtml('init');
 				_this.setTheme(_this.options.theme);
 				_this._initFooterEvent();
-
-				_this.setSearchOn();
 			}else{
 				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
 				_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
@@ -1946,24 +1976,15 @@ Plugin.prototype ={
 		}
 
 		if(itemIdx > this.config.dataInfo.orginRowLen){
-			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').hide();
+			for(var i =itemIdx-1; i < _this.config.scroll.maxViewCount; i++){
+				_this.element.container.find('[rowinfo="'+i+'"]').hide();
+			}
 		}else{
 			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
 		}
 
 		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
 			_this._statusMessage(viewCount);
-		}
-	}
-	/**
-	 * @method setSearchOn
-	 * @description 검색 데이터가 있을때 세팅
-	 */
-	,setSearchOn : function (){
-		if(this.config.searchOn===true){
-			this.gridElement.find('.pubGrid-setting').addClass('search-on');
-		}else{
-			this.gridElement.find('.pubGrid-setting').removeClass('search-on');
 		}
 	}
 	/**
@@ -2297,20 +2318,24 @@ Plugin.prototype ={
 			if(_this.config.scroll.vUse){
 				_this.moveVerticalScroll({pos :(delta > 0? 'U' :'D') , speed : _this.options.scroll.vertical.speed});
 
-				if(_this.options.scroll.isPreventDefault === true){
+				if(_this.options.scroll.isStopPropagation === true){
 					e.preventDefault();
+					e.stopPropagation();
 				}else if(_this.config.scroll.top != 0 && _this.config.scroll.top != _this.config.scroll.vTrackHeight){
 					e.preventDefault();
+					e.stopPropagation();
 				}
 			}else{
 				if(_this.config.scroll.hUse){
 					_this.moveHorizontalScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
 
-					if(_this.options.scroll.isPreventDefault===true){
+					if(_this.options.scroll.isStopPropagation===true){
 						e.preventDefault();
+						e.stopPropagation();
 					}else{
 						if(_this.config.scroll.left != 0 && _this.config.scroll.left != _this.config.scroll.hTrackWidth){
 							e.preventDefault();
+							e.stopPropagation();
 						}
 					}
 				}
@@ -2940,17 +2965,19 @@ Plugin.prototype ={
 
 				//delta > 0--up
 				if(_this.config.scroll.hUse){
+					var currLeftVal = _this.config.scroll.left; 
 					_this.moveHorizontalScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
 
-					if(_this.options.scroll.isPreventDefault===true){
+					if(_this.options.scroll.isStopPropagation===true){
 						e.preventDefault();
+						e.stopPropagation();
 					}else{
-						if(_this.config.scroll.left != 0 && _this.config.scroll.left != _this.config.scroll.hTrackWidth){
+						if(currLeftVal != 0 && currLeftVal != _this.config.scroll.hTrackWidth){
 							e.preventDefault();
+							e.stopPropagation();
 						}
 					}
 				}
-				e.stopPropagation();
 			});
 		}
 
@@ -3023,8 +3050,41 @@ Plugin.prototype ={
 			_this.config.headerContext = $.pubContextMenu('#'+_this.prefix+'_headerContainer .pubGrid-header-th',headerOpt.contextMenu);
 		}
 		if(_this.options.setting.enabled ===true){
-			_this.setGridSettingInfo();
+			_$setting.init(_this, true);
 		}
+
+		// drag event start
+		_this.element.header.on('dragstart.pubGrid.dragitem', '.pub-header-cont', function (e){
+			
+			var selEle = $(this)
+				,col_idx = selEle.attr('col_idx');
+			
+			var dt = e.originalEvent.dataTransfer;
+			dt.effectAllowed = 'copyMove';
+			dt.setData('text/plain',_this.config.tColItem[col_idx].label);
+			
+		
+		}).on('drag.pubGrid.dragitem', '.label-wrapper', function (e){
+			//e.preventDefault();
+			//console.log('111');
+			
+			
+			//console.log('111111111');
+		}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
+			
+			return false; // mouse  cursor 이상 현상 제거 하기 위해서 처리함. 
+			
+		}).on('dragend.pubtab.dragitem',  function (e){
+			
+			
+		}).on('drop.pubGrid.dragitem', '.label-wrapper', function (e){
+			
+		})
+
+		
+		_this.element.header.on('dragover.pubGrid.dragitem', function (e){
+			e.preventDefault();
+		})
 	}
 	,_initFooterEvent : function (){
 		var _this = this;
@@ -3049,143 +3109,7 @@ Plugin.prototype ={
 	 */
 	,toggleSettingArea : function (){
 		this.options.setting.enabled = !this.options.setting.enabled;
-		this.setGridSettingInfo(!this.options.setting.enabled);
-	}
-	/**
-	 * @method setGridSettingInfo
-	 * @description grid setting info
-	 */
-	,setGridSettingInfo : function (btnDisableFlag,layerEnableFlag ){
-		var _this = this
-			,headerOpt = _this.options.headerOptions
-			,settingOpt = _this.options.setting;
-
-		var settingWrapper = _this.element.container.find('.pubGrid-setting-wrapper');
-
-		if(layerEnableFlag===true){
-			settingWrapper.addClass('open');
-		}else{
-			settingWrapper.removeClass('open');
-		}
-
-		if(btnDisableFlag == 'enable'){
-		}else{
-			if(btnDisableFlag ===true){
-				settingWrapper.hide();
-			}else{
-				settingWrapper.show();
-			}
-		}
-
-		if(_this.config.initSettingFlag ===true){
-			return ;
-		}
-
-		// 한번만 초기화 하기 위해서 처리.
-		_this.config.initSettingFlag = true;
-		// grid setting btn
-		if(isFunction(settingOpt.click)){
-			settingBtn.on('click', function (e){
-				settingOpt.click.call(null,{evt :e , item :{}});
-			});
-		}else{
-
-			settingWrapper.find('.pubGrid-setting').on('click.pubgrid.setting', function (e){
-				if(settingWrapper.hasClass('open')){
-					settingWrapper.removeClass('open');
-				}else{
-					settingWrapper.addClass('open');
-				}
-			});
-
-			if(settingOpt.enableSearch ===true){
-				settingWrapper.find('[name="pubgrid_srh_filed"]').empty().html(_this.config.template['searchField']);
-				settingWrapper.find('.pubGrid-search-area').show();
-			}
-
-			if(settingOpt.enableColumnFix ===true){
-				settingWrapper.find('[name="pubgrid_col_fixed"]').empty().html('<option value="0">사용안함</option>'+_this.config.template['searchField']);
-				settingWrapper.find('.pubGrid-colfixed-area').show();
-			}
-
-			var settingVal = {};
-
-			if(settingOpt.enableSpeed ===true){
-				settingWrapper.find('.pubGrid-speed-area').show();
-
-				var strHtm = [];
-				strHtm.push('<option value="-1">auto</option>');
-				for(var i =1 ;i <=settingOpt.speedMaxVal;i++){
-					strHtm.push('<option value="'+i+'">'+i+'</option>');
-				}
-
-				settingWrapper.find('[name="pubgrid_scr_speed"]').empty().html(strHtm.join(''));
-			}
-
-
-			var schFieldEle = settingWrapper.find('[name="pubgrid_srh_filed"]')
-				,schSelEle = settingWrapper.find('[name="pubgrid_srh_val"]');
-
-			if(settingOpt.configVal.search.field!=''){
-				schFieldEle.val(settingOpt.configVal.search.field);
-			}
-			schSelEle.val(settingOpt.configVal.search.val);
-
-			// 검색
-			schSelEle.on('keydown.pubGrid.search',function(e) {
-				if (e.keyCode == '13') {
-					settingWrapper.find('[data-setting-mode="search"]').trigger('click');
-					return false;
-				}
-			});
-
-			//버튼 클릭.
-			settingWrapper.on('click','[data-setting-mode]',function (e){
-				var sEle = $(this)
-					,btnMode = sEle.data('setting-mode');
-
-				if('search' == btnMode){
-
-					var schField = schFieldEle.val()
-						,schVal = schSelEle.val();
-
-					settingVal.search = {
-						field : schField
-						,val : schVal
-					}
-
-					settingOpt.configVal.search = settingVal.search;
-
-					_this._setSearchData('search');
-					_this.setSearchOn();
-				}
-
-				if(isFunction(settingOpt.callback)){
-					settingOpt.callback.call(null,{evt :e , item : settingVal})
-				}
-			})
-
-			// 스크롤 스피드 셋팅
-			settingWrapper.find('[name="pubgrid_scr_speed"]').on('change.scroll.speed', function (e){
-				settingVal.speed = _this.setScrollSpeed($(this).val());
-
-				settingWrapper.removeClass('open');
-
-				if(isFunction(settingOpt.callback)){
-					settingOpt.callback.call(null,{evt :e , item : settingVal})
-				}
-			})
-
-			// 컬럼 고정.
-			settingWrapper.find('[name="pubgrid_col_fixed"]').on('change.colfixed.setting', function (e){
-				var sEle = $(this);
-				var sIndex = sEle.prop('selectedIndex');
-
-				_this.setColFixedIndex(sIndex);
-
-				settingWrapper.removeClass('open');
-			})
-		}
+		_$setting.init(this, this.options.setting.enabled);
 	}
 	/**
 	 * @method _initBodyEvent
@@ -3602,7 +3526,7 @@ Plugin.prototype ={
 		var copyMode = _this.options.copyMode;
 		var selectionMode = _this.options.selectionMode;
 		// window keydown 처리.  tabindex 처리 확인 해볼것.
-		$(window).on("keydown." + _this.prefix, function (e) {
+		$(document).on("keydown." + _this.prefix, function (e) {
 
 			if(!_this.config.focus) return ;
 
@@ -3651,11 +3575,11 @@ Plugin.prototype ={
 				}else if(evtKey==86){ // ctrl + v
 					_this.element.pasteArea.focus();
 					return true;
-				}else if(evtKey==70){
+				}else if(evtKey==70){ // ctrl+f
 					e.preventDefault();
 					e.stopPropagation();
-					// to do ctrl+f
-					//console.log('aaa');
+					
+					_$setting.settingBtnToggle(_this);
 					return true;
 				}
 			}
@@ -4351,7 +4275,7 @@ Plugin.prototype ={
 		}
 
 		if(_this.config.sort.current != _key){
-			_this.config.sort.orginData = tbi.slice(0);
+			_this.config.sort.orginData = arrayCopy(tbi);
 		}
 
 		_this.config.sort.current = _key;
@@ -4733,6 +4657,8 @@ Plugin.prototype ={
 			}
 		}catch(e){};
 
+		$('#'+this.prefix+'_pubGridSettingArea').off().empty();
+
 		this.element.body.off('mousedown.pubgrid.col mouseover.pubgrid.col');
 		$(document).off('mouseup.'+this.prefix).off('mousedown.'+this.prefix);
 		$(window).off(this.prefix+"pubgridResize").off("keydown." + this.prefix);
@@ -4937,12 +4863,50 @@ var _$util = {
 
 		return reArr;
 	}
+	// new add
+	,genAllColumnSearch : function (gridCtx){
+		var tcolItems = gridCtx.options.tColItem; 
+
+		var logicStr =[]
+
+		var searchLogic = defaultCondition['searchIndex'].code; 
+		
+		for(var i=0; i<tcolItems.length; i++){
+			var tcolItem = tcolItems[i];
+			logicStr.push(i != 0 ? defaultLogicalOp.getCode('or') : '');
+			logicStr.push(replaceLogic(searchLogic , {key : tcolItem.key}));
+		}
+		
+		return this.genSearchLogic(logicStr.join(''));
+	}
+	// new add
+	,genSearchLogic : function (checkLogicStr){
+		return 'if(#logic#){return true;} return false;'.replace('#logic#', checkLogicStr);
+	}
+	// new add
+	/**
+	 * @method getSearchRegExp
+	 * @param schVal {String} - search text.
+	 * @description get search RegExp
+	 */	
+	,getSearchRegExp : function(schVal, regType) { 
+		if(regType == 'all'){
+			schVal = schVal.replace(/([.?*+^$[\]\\()|{}-])/g, "\\$1");	
+		}else{
+			schVal = schVal.replace(/([.?*+^$[\]\\(){}-])/g, "\\$1");	
+		}
+		
+		return new RegExp('('+schVal + ')','i');
+	}
 	/**
 	 * @method trim
 	 * @description trim
-	 */
-	,trim : function(str) {
-		return str.replace(/^\s+|\s+$/g,"");
+	 */	
+	,trim : function(str) { 
+		return str.replace(/^\s+|\s+$/g,""); 
+	}
+	,numval : function (str){
+		return str.replace(/[^0-9|.]/g,''); 
 	}
 	/**
 	 * @method setSelectCell
@@ -5296,6 +5260,964 @@ $(document).on('mousedown.pubgrid.background', function (e){
 		}
 	}
 })
+
+
+// background click check 
+$(document).on('mousedown.pubgrid.background', function (e){
+	if(e.which !==2){
+		var targetEle = $(e.target); 
+		var pubGridLayterEle = targetEle.closest('.pubGrid-layer'); 
+		if(pubGridLayterEle.length < 1 ){
+			$('.pubGrid-layer.open').removeClass('open');
+		}else{
+			var layerid = pubGridLayterEle.data('pubgrid-layer');
+
+			$('.pubGrid-layer.open').not('[data-pubgrid-layer="'+layerid+'"]').each(function (){
+				$(this).removeClass('open'); 
+			})
+		}
+	}
+})
+
+var defaultCondition ={
+	'==': {nm: '같다', code: 'item["{{key}}"] == chkOpts[{{idx}}].chkVal'}
+	,'!=' :{nm: '같지않다', code: 'item["{{key}}"] != chkOpts[{{idx}}].chkVal'}	
+	,'index': {nm: '포함한다', isRegExp: true, code: 'chkOpts[{{idx}}].chkRegExp.test(item["{{key}}"])'}
+	,'notIndex' : {nm: '포함하지 않는다', isRegExp: true, code : '!chkOpts[{{idx}}].chkRegExp.test(item["{{key}}"])'}
+	,'startsWith':{nm: '시작한다', code: 'item["{{key}}"].startsWith(chkOpts[{{idx}}].chkVal)'}
+	,'endsWith':{nm: '끝난다', code: 'item["{{key}}"].endsWith(chkOpts[{{idx}}].chkVal)'}
+	,'>': {nm: '크다', code: 'item["{{key}}"] > chkOpts[{{idx}}].chkVal'}
+	,'>=': {nm: '크거나같다', code: 'item["{{key}}"] >= chkOpts[{{idx}}].chkVal'}
+	,'<': {nm: '작다', code: 'item["{{key}}"] < chkOpts[{{idx}}].chkVal'}
+	,'<=': {nm: '작거나같다', code: 'item["{{key}}"] <= chkOpts[{{idx}}].chkVal'}
+	,'searchIndex': {nm: '포함한다', isRegExp: true, code: 'chkRegExp.test(item["{{key}}"])'}
+};
+
+var defaultLogicalOp ={
+	'and': {nm:'AND',code : ' && '}
+	,'or': {nm:'OR',code : ' || '}
+	,getCode : function (key){
+		return this[key].code;
+	}
+};
+
+var gridOperators = {
+	'string' : [
+		defaultCondition['index']
+		,defaultCondition['notIndex']
+		,defaultCondition['==']
+		,defaultCondition['!=']
+		,defaultCondition['startsWith']
+		,defaultCondition['endsWith']
+	]
+	,'number' : [
+		defaultCondition['==']
+		,defaultCondition['!=']
+		,defaultCondition['>']
+		,defaultCondition['>=']
+		,defaultCondition['<']
+		,defaultCondition['<=']
+	]
+};
+
+
+var _$setting = {
+	filterCheckboxIdx : 0
+	/**
+	 * @method init
+	 * @description grid setting info
+	 */
+	,init : function (gridCtx, btnEnabledFlag){
+		var _this = this; 
+		var settingOpt = gridCtx.options.setting;
+		
+		if($('#'+gridCtx.prefix+'_pubGridSettingArea').length < 1){
+			var template = '<div id="'+gridCtx.prefix+'_pubGridSettingArea" data-pubgrid-layer="'+gridCtx.prefix+'" class="pubGrid-preferences-wrapper pubGrid-noselect pubGrid-layer '+(settingOpt.mode =='full-center' ? 'full-center' : '')+'"></div>';
+			
+			pubGridLayoutElement.append(template);
+		}
+
+		var strHtm = [];
+		if(settingOpt.mode =='full-center'){
+			strHtm.push('<div class="full-setting-overlay"></div>');
+		}
+		
+		strHtm.push(_this.templateHtml(gridCtx, settingOpt));
+
+		$('#'+gridCtx.prefix+'_pubGridSettingArea').html(strHtm.join(''));
+		
+		var settingBtn = gridCtx.element.container.find('.pubGrid-setting-btn'); 
+		
+		if(btnEnabledFlag ===true){
+			settingBtn.show();
+		}else{
+			settingBtn.hide();
+		}
+	
+		if(gridCtx.config.initSettingFlag ===true){
+			return ; 
+		}
+
+		// 한번만 초기화 하기 위해서 처리.
+		gridCtx.config.initSettingFlag = true; 
+	
+		this.initEvent(gridCtx, settingOpt);
+	
+		// grid setting btn	
+		var settingAreaEle = $('#'+gridCtx.prefix+'_pubGridSettingArea')
+			,isCustomSetting = isFunction(settingOpt.click); 
+	
+		settingBtn.on('mousedown.pubgrid.setting', function (e){
+			if(isCustomSetting){
+				settingOpt.click.call(null,{evt :e , item :{}});
+				return ; 
+			}
+			
+			if(!isUndefined(e.which) && e.which !== 1){
+				return ; 
+			}
+
+			e.preventDefault();
+			e.stopPropagation();
+			
+			if(settingAreaEle.hasClass('open')){
+				settingAreaEle.removeClass('open');
+			}else{
+				settingAreaEle.addClass('open');
+
+				gridCtx.config.settingConfig.currentTColItems = arrayCopy(gridCtx.config.tColItem); // cancel 시 적용 하기 위해서 복사
+					
+				if(gridCtx.config.settingConfig.viewInitFlag===true){
+					_this.setViewColTemplate(gridCtx);
+					gridCtx.config.settingConfig.changeInfos = {};
+					gridCtx.config.settingConfig.currentClickItem = {};
+					gridCtx.config.settingConfig.viewInitFlag = false; 
+				}
+
+				// current click item setting
+				if(hasProperty(gridCtx.config.settingConfig.currentClickItem,'key')){
+					settingAreaEle.find('.tcol-view-list [data-key="'+gridCtx.config.settingConfig.currentClickItem.key+'"] .view-col-item').trigger('click.viewitem');
+				}
+				
+				if(settingOpt.mode != 'full-center'){
+					var evtPosVal = evtPos(e);					
+					
+					var height = settingAreaEle.find('.pubGrid-setting-panel').height()
+						,evtX = evtPosVal.x
+						,evtY = evtPosVal.y;
+						
+					if(isUndefined(evtX)){  // ctrl + f 로 오픈시
+						var offsetVal = settingBtn.offset();
+						evtX = offsetVal.left + settingBtn.width();
+						evtY = offsetVal.top;
+					}
+					
+					if(settingAreaEle.hasClass("pub-grid-setting-move")){
+						var wScrollTop = _$win.scrollTop()
+							,wScrollLeft = _$win.scrollLeft();
+						
+						var pos = settingAreaEle.position();
+
+						//console.log(wScrollTop, wScrollLeft, pos)
+
+						if(wScrollTop > pos.top){
+							settingAreaEle.css({top : wScrollTop});
+						}
+
+						if(wScrollLeft > pos.left){
+							settingAreaEle.css({left : wScrollLeft});
+						}
+
+						return ;
+					}
+			
+					var bottom = _$win.scrollTop() + _$win.height();
+				
+					var offTop = evtY;
+				
+					offTop = ((offTop+height > bottom )? (bottom- (height)) : offTop);
+					offTop = offTop < 3 ? 3 : offTop;
+											
+					settingAreaEle.css({top : offTop, left : evtX+10});
+				}
+			}
+			
+			return false;
+		});
+
+		
+		settingAreaEle.find('.pubGrid-setting-header').on('mousedown touchstart',function(e) {
+
+			var tagName = e.target.tagName;
+			if(tagName.search(/(input|textarea|select|button)/gi) > -1){
+				return true;
+			}
+
+			var pos = settingAreaEle.position();
+
+			var evtPosVal = evtPos(e);
+		
+			var panelEle = settingAreaEle.find('.pubGrid-setting-panel'); 
+
+			var startLeft = pos.left
+				, startTop = pos.top
+				, startX = evtPosVal.x
+				, startY = evtPosVal.y
+				, height = panelEle.outerHeight()
+				, width = panelEle.outerWidth();
+			
+			$(document).on('touchmove.pubsettingheader mousemove.pubsettingheader', function (e1){
+				var wScrollTop = _$win.scrollTop()
+					,wScrollLeft = _$win.scrollLeft()
+				var bottom = wScrollTop + _$win.height()
+					,right = wScrollLeft + _$win.width();
+
+				var evtPosVal = evtPos(e1);
+				var moveX = evtPosVal.x
+					, moveY= evtPosVal.y;
+
+				var moveLeft = startLeft - (startX -moveX)
+					,moveTop = startTop - (startY -moveY);
+
+				moveTop = ((moveTop+height > bottom )? (bottom- (height)) : moveTop);
+				moveTop = moveTop < wScrollTop ? wScrollTop : moveTop;
+
+				moveLeft = (moveLeft + width > right)? (right-width) : moveLeft;
+				moveLeft = moveLeft < 0 ? 0 : moveLeft;
+				
+				settingAreaEle.css({top : moveTop, left : moveLeft});
+			}).on('touchend.pubsettingheader mouseup.pubsettingheader mouseleave.pubsettingheader', function (e1){
+				settingAreaEle.addClass("pub-grid-setting-move");
+				$(document).off('touctouchmove.pubsettingheader mousemove.pubsettingheader').off('touchend.pubsettingheader mouseup.pubsettingheader mouseleave.pubsettingheader');
+			});
+		})
+		
+		// 컬럼 고정. 
+		settingAreaEle.find('[name="pubgrid_col_fixed"]').on('change.colfixed.setting', function (e){
+			var sEle = $(this);
+			var sIndex = sEle.prop('selectedIndex');
+	
+			gridCtx.setColFixedIndex(sIndex);
+	
+			settingAreaEle.removeClass('open');
+		})
+	}
+	// setting 버튼 토글. 
+	,settingBtnToggle : function (gridCtx){
+		gridCtx.element.container.find('.pubGrid-setting-btn').trigger('mousedown.pubgrid.setting');
+	}
+	,initEvent : function (gridCtx, settingOpt){
+		var _this = this; 
+		var settingAreaEle = $('#'+gridCtx.prefix+'_pubGridSettingArea');
+		var orginTColIdxKeyMap = gridCtx.config.dataInfo.orginTColIdxKeyMap;
+
+		// data search 
+		var dataSearchFieldEle = settingAreaEle.find('[name="dataSearchField"]')
+			,dataSearchEle = settingAreaEle.find('[name="dataSearch"]')
+			,dataSearchBtn = settingAreaEle.find('.data-search-btn');
+
+		if(settingOpt.configVal.search.field != ''){
+			dataSearchFieldEle.val(settingOpt.configVal.search.field);
+		}
+
+		dataSearchEle.val(settingOpt.configVal.search.val);	
+
+		dataSearchBtn.on('click.data.search',  function (e){
+			gridCtx.options.setting.configVal.search = {
+				field : settingOpt.mode=='simple' ? dataSearchFieldEle.val(): '$all'
+				,val : dataSearchEle.val()
+			};
+
+			gridCtx._setSearchData('search');		
+			
+			if(isFunction(settingOpt.callback)){
+				settingOpt.callback.call(null,{evt :e , item : {search : settingOpt.configVal.search}})
+			}
+		});
+
+		dataSearchEle.on('keydown.data.search',  function (e){
+			if (e.keyCode == 13) {
+				dataSearchBtn.trigger('click.data.search');
+				return false; 
+			}
+		});
+	
+		// all column click
+		settingAreaEle.on('click.add.colItem', '.add-col-item', function (e){
+			var sEle = $(this);
+	
+			var chkIdx= sEle.attr('data-chk-idx');
+	
+			var isChecked = sEle.hasClass('on'); 
+	
+			if(chkIdx == 'all'){
+				if(isChecked){
+					_this.setViewColTemplate(gridCtx, []);
+					$('.add-col-item').removeClass('on');
+				}else{
+					_this.setViewColTemplate(gridCtx, gridCtx.config.dataInfo.orginTColItem);
+					$('.add-col-item').addClass('on');
+				}
+			}else{
+				var clickItem = gridCtx.config.dataInfo.orginTColItem[parseInt(chkIdx,10)]; 
+	
+				var chkEle = settingAreaEle.find('.tcol-view-list [data-key="'+clickItem.key+'"]');
+	
+				if(sEle.hasClass('on')){
+					chkEle.remove();
+					sEle.removeClass('on');
+				}else{
+					if(chkEle.length < 1){
+						_this.addViewColTemplate(gridCtx, clickItem);
+					}
+					sEle.addClass('on');
+				}
+			}
+		})
+	
+		// select column click
+		settingAreaEle.on('click.remove.colItem', '.remove-btn', function (e){
+			var parentEle = $(this).closest('[data-key]');
+			var dataKey =parentEle.attr('data-key'); 
+
+			delete gridCtx.config.settingConfig.changeInfos[dataKey];
+
+			settingAreaEle.find('.add-col-item[data-key="'+dataKey+'"]').removeClass('on');
+			parentEle.remove();
+		});
+		
+		// setting btn
+		settingAreaEle.on('click.setting.btn','.pubGrid-btn[data-mode]', function (e){
+			var sEle = $(this);
+			var mode = sEle.attr('data-mode');
+	
+			if(mode=='apply' || mode=='a&c'){	// apply , a&c = apply and close
+				var viewColumnKey = [];
+				var fixedColIdx= -1;
+				settingAreaEle.find('.tcol-view-list>li').each(function (idx){
+					var ele = $(this);
+					viewColumnKey.push(ele.attr('data-key'));
+
+					if(ele.find('.column-fix-icon.on').length > 0){
+						fixedColIdx = idx;
+					}
+				});
+
+				if(viewColumnKey.length  < 1){
+					settingAreaEle.find('.setting-message').show();
+					return ; 
+				}else{
+					settingAreaEle.find('.setting-message').hide();
+				}
+
+				_this.setFilterChangeInfo(gridCtx, settingAreaEle, gridCtx.config.settingConfig.currentClickItem);
+				
+				var newViewCols = [];
+				var headRedraw = gridCtx.options.tColItem.length == viewColumnKey.length ? false : true;
+				var changeWidthInfo={};
+				viewColumnKey.forEach(function (itemKey, idx){
+					if(!headRedraw && itemKey != gridCtx.options.tColItem[idx].key){
+						headRedraw = true; 
+					}
+					var item =orginTColIdxKeyMap[itemKey]; 
+					var changeInfo = gridCtx.config.settingConfig.changeInfos[itemKey];
+					
+					if(!isUndefined(changeInfo)){
+						changeInfo.width = isNaN(changeInfo.width)? item.width : Number(changeInfo.width);
+						if(changeInfo.width != item.width){
+							changeWidthInfo[idx] = changeInfo.width;
+						}
+						item.filterInfos=[];
+						item = objectMerge(item, changeInfo);
+					}
+
+					newViewCols.push(item);
+				});
+
+				gridCtx.options.tColItem =newViewCols;
+
+				_this.getFilterCheckLogic(gridCtx, newViewCols);
+
+				fixedColIdx = fixedColIdx+1;
+
+				if(headRedraw || gridCtx.options.colFixedIndex != fixedColIdx){
+					gridCtx._setSearchData('search', false); // search
+					gridCtx.setColFixedIndex(fixedColIdx, true);
+				}else{
+					for(var key in changeWidthInfo){	// 변경된 width 적용.
+						gridCtx.setColumnWidth(key, changeWidthInfo[key], null, false);
+					}
+					gridCtx._setSearchData('search'); // search
+				}
+
+				gridCtx.config.settingConfig.currentTColItems = arrayCopy(gridCtx.config.tColItem);
+				
+				if(mode =='apply')	return ; 
+								
+			}else if(mode=='default'){
+				gridCtx.config.dataInfo.orginTColItem.forEach(function (item){
+					item.filterInfos = [];
+				});
+				gridCtx.config.settingConfig.viewInitFlag = true; 
+				gridCtx.config.settingConfig.filterInfo = false; 
+				_this.viewFilterIcon(settingAreaEle, '$all', false);
+				
+				_this.setViewColumnInfo(gridCtx, settingAreaEle, {}, {filterInfos:[]});
+
+				gridCtx.options.tColItem = gridCtx.config.dataInfo.orginTColItem;
+				gridCtx._setSearchData('search', false); 
+				gridCtx.setColFixedIndex(0, true);
+				return ; 
+			}else{	 // cancel
+				var changeInfos = gridCtx.config.settingConfig.changeInfos;
+				for(var key in changeInfos){
+					var item = changeInfos[key];
+
+					if(item.filterInfos.length > 0 && !hasProperty(orginTColIdxKeyMap[key],'filterInfos')){
+						_this.viewFilterIcon(settingAreaEle, key, false);
+					}
+				}
+				
+				gridCtx.config.settingConfig.changeInfos = {};
+				gridCtx.config.settingConfig.currentClickItem = {};
+				gridCtx.config.tColItem = gridCtx.config.settingConfig.currentTColItems;
+				_this.setViewColTemplate(gridCtx);
+				_this.setViewColumnInfo(gridCtx, settingAreaEle, {}, {filterInfos:[]});
+			}
+	
+			settingAreaEle.removeClass('open');
+		})
+
+		// view item click
+		var shiftStartIdx = -1;
+		settingAreaEle.on('click.viewitem','.view-col-item', function (e){
+			var sEle = $(this);
+			var dataKeyEle = sEle.closest('[data-key]');
+			var dataKey = sEle.closest('[data-key]').attr('data-key');
+			var selectItem = orginTColIdxKeyMap[dataKey];
+
+			var beforeClickItem = gridCtx.config.settingConfig.currentClickItem;
+			
+			shiftStartIdx = e.shiftKey ? shiftStartIdx : -1;
+			
+			if(e.ctrlKey){
+				if(sEle.hasClass('on')){
+					sEle.removeClass('on');
+				}else{
+					sEle.addClass('on');
+				}
+			}else if(e.shiftKey){
+				var beforeIdx = settingAreaEle.find('.tcol-view-list [data-key="'+beforeClickItem.key+'"]').index();
+
+				if(beforeIdx != -1){
+					shiftStartIdx = shiftStartIdx ==-1 ? beforeIdx : shiftStartIdx;
+					var currentIdx = dataKeyEle.index();
+					var allViewEle = dataKeyEle.closest('.tcol-view-list').children();
+
+					var maxIdx = Math.max(currentIdx, beforeIdx, shiftStartIdx)
+						,minIdx = Math.min(currentIdx, beforeIdx, shiftStartIdx);
+					
+					var downFlag = shiftStartIdx < currentIdx;
+
+					for(var i = minIdx; i <= maxIdx; i++){
+						var item = $(allViewEle[i]); 
+						if(item.is(':visible')){
+
+							if((downFlag && shiftStartIdx <= i && i <= currentIdx)  // down
+								|| (!downFlag && currentIdx <= i && i <= shiftStartIdx) // up
+							){
+								item.find('.view-col-item').addClass('on')
+							}else{
+								item.find('.view-col-item').removeClass('on')	
+							}	
+						}
+					}
+				}else{
+					shiftStartIdx = -1;
+					sEle.addClass('on');
+				}
+			}else{
+				settingAreaEle.find('.view-col-item.on').removeClass('on');
+				sEle.addClass('on');
+			}
+				
+			if(beforeClickItem.key){
+				_this.setFilterChangeInfo(gridCtx, settingAreaEle, beforeClickItem);
+			}
+
+			var changeInfo = _this.getViewItemChangeInfo(gridCtx, dataKey, selectItem);
+			gridCtx.config.settingConfig.changeInfos[dataKey] = changeInfo;
+
+			_this.setViewColumnInfo(gridCtx, settingAreaEle, selectItem, changeInfo);
+		})
+		
+		// add filter item
+		settingAreaEle.on('click.addop.item', '.add-op-btn', function (e){
+			var detailViewCol = gridCtx.config.settingConfig.currentClickItem; 
+
+			if(hasProperty(detailViewCol,'key')){
+				var viewType = _this.getOpType(gridCtx, detailViewCol.type);
+							
+				settingAreaEle.find('.filter-item-list').append(_this.getReplaceCheckId(gridCtx.config.settingConfig.filterTemplate[viewType]));
+				settingAreaEle.find('.filter-area').scrollTop(function (){
+					return this.scrollHeight;
+				});
+			}
+		})
+
+		// remove filter item 
+		settingAreaEle.on('click.filter.remove','.filter-check-status ',function (e){
+			var sEle = $(this);
+			var filterItemEle = sEle.closest('li');
+			var dataKey = filterItemEle.attr('data-key');
+
+			var selectItem = orginTColIdxKeyMap[dataKey];
+			var changeInfo = _this.getViewItemChangeInfo(gridCtx, dataKey, selectItem);
+			changeInfo.filterInfos = [];  // filter 정보 초기화
+			gridCtx.config.settingConfig.changeInfos[dataKey] = changeInfo;
+
+			if(gridCtx.config.settingConfig.currentClickItem.key == dataKey){
+				_this.setViewColumnInfo(gridCtx, settingAreaEle, selectItem, changeInfo);
+			}
+			
+			sEle.removeClass('on');
+		})
+
+		// remove filter row item 
+		settingAreaEle.on('click.filterrow.remove','.filter-row-remove',function (e){
+			var sEle = $(this);
+			var filterItemEle = sEle.closest('li');
+			filterItemEle.remove();		
+		})
+
+		// 숫자 필드 숫자만 들어가게 처리. 
+		settingAreaEle.on('keypress.number.field','input[type="number"]',function (e){
+			var sEle = $(this);
+			var maxlen = parseInt(sEle.attr('maxlength'),10);
+			var keyCode = e.keyCode; 
+
+			if((48 <= keyCode && keyCode <=57)  && sEle.val().length < maxlen){
+				return true; 
+			}else{
+				return false; 
+			}
+		})
+
+		// 숫자 컬럼 처리.
+		settingAreaEle.on('input.number.field','[data-type="number"]',function (e){
+			var sEle = $(this);
+			var numVal = sEle.val();
+
+			if(isNaN(numVal)){
+				sEle.val(_$util.numval(numVal));
+			}
+		})
+
+		// 전체 컬럼 검색
+		settingAreaEle.find('[name="allTcolSearch"]').on('input.allcol.field', function (e){
+			var schRegExp = _$util.getSearchRegExp($(this).val());
+			
+			gridCtx.config.dataInfo.orginTColItem.forEach(function (item){
+				var liEle =settingAreaEle.find('.add-col-item[data-key="'+item.key+'"]').closest('li'); 
+
+				if(schRegExp.test(item.label)){
+					liEle.show();
+				}else{
+					liEle.hide();
+				}
+			});
+		})
+
+		// 선택 컬럼 검색
+		settingAreaEle.find('[name="viewTcolSearch"]').on('input.viewcol.field', function (e){
+			var schRegExp = _$util.getSearchRegExp($(this).val());
+			
+			settingAreaEle.find('.tcol-view-list [data-key]').each(function (item, idx){
+				var sEle = $(this);
+				var dataKey = sEle.attr('data-key');
+
+				var item = gridCtx.config.dataInfo.orginTColIdxKeyMap[dataKey];
+
+				if(schRegExp.test(item.label)){
+					sEle.show();
+				}else{
+					sEle.hide();
+				}
+			})
+		})
+
+		var tColViewListEle = settingAreaEle.find('.view-item-panel .item-list'); 
+		// 선택 컬럼 검색
+		tColViewListEle.on('click.viewcol.fixicon', '.column-fix-icon', function (e){
+			var sEle = $(this);
+			if(sEle.hasClass('on')){
+				sEle.removeClass('on');
+			}else{
+				tColViewListEle.find('.column-fix-icon.on').removeClass('on');
+				sEle.addClass('on');
+			}
+		})
+	
+		// column up down btn
+		settingAreaEle.find('.arrow-btn [data-arrow]').on('click', function (e){
+			var sEle =$(this); 
+			
+			var upFlag = sEle.attr('data-arrow')=='up';
+			var selectEles = settingAreaEle.find('.view-col-item.on'); 
+
+			if(selectEles.length < 1) return ; 
+
+			if(upFlag){
+				selectEles.each(function (item, idx){
+					var itemEle = $(this).closest('li');
+					var prevEle = itemEle.prevAll(':visible').first();
+					var prevIdx= prevEle.index()
+						,curridx = itemEle.index();
+
+					if(prevIdx == -1 && curridx != 0){
+						itemEle.closest('.tcol-view-list').prepend(itemEle);
+					}else{
+						if(prevEle.length > 0){
+							var prevOnFlag = prevEle.find('.view-col-item.on').length > 0;
+
+							if(prevOnFlag){
+								if(prevIdx+1 != curridx){
+									prevEle.after(itemEle);
+								}
+							}else{
+								prevEle.before(itemEle);
+							}
+						}
+					}
+				})
+
+				var firstEle= $(selectEles[0]);
+
+				if(firstEle.position().top < 0){
+					tColViewListEle.scrollTop(tColViewListEle.scrollTop() + firstEle.position().top)
+				}
+			}else{
+				var firstEle=false;
+				for(var i =selectEles.length-1; i>=0; i--){
+					var itemEle = $(selectEles[i]).closest('li');
+
+					if(firstEle===false){
+						firstEle = itemEle; 
+					}
+
+					var nextEle = itemEle.nextAll(':visible').first();
+
+					if(nextEle.length > 0){
+						if(nextEle.find('.view-col-item.on').length < 1){
+							nextEle.after(itemEle);
+						}
+					}
+				}
+
+				var scrollTopVal = (firstEle.outerHeight() + firstEle.position().top + tColViewListEle.scrollTop()) - tColViewListEle.height(); 
+
+				if(scrollTopVal > 0){
+					tColViewListEle.scrollTop(scrollTopVal);
+				}
+			}			
+		})
+	}
+	,getViewItemChangeInfo : function(gridCtx, dataKey, selectItem) {
+		
+		var changeInfo = gridCtx.config.settingConfig.changeInfos[dataKey]; 
+		if(isUndefined(changeInfo)){
+			changeInfo ={
+				filterInfos : selectItem.filterInfos ||[]
+				, width : selectItem.width
+			}
+		}else{
+			changeInfo.width = selectItem.width;
+		}
+
+		return changeInfo; 
+	}
+	// filter check logic
+	,getFilterCheckLogic : function (gridCtx, tColItemArr){
+		var allChkVal = [];
+		var _this = this; 		
+
+		var filterChkFlag = false; 
+		var chkLogicStr = [];
+		
+		tColItemArr.forEach(function (item, tColIdx){
+			var filterInfos = item.filterInfos;
+			
+			if($.isArray(filterInfos) && filterInfos.length > 0){
+				var viewType = _this.getOpType(gridCtx, item.type);
+				var opArr = gridCtx.config.settingConfig.operators[viewType];
+
+				if(filterChkFlag) chkLogicStr.push(defaultLogicalOp.getCode('and'));
+
+				chkLogicStr.push('(');
+				filterInfos.forEach(function (filterItem, idx){
+					var opItem = opArr[filterItem.op];
+
+					allChkVal.push({
+						chkVal : filterItem.text
+						,chkRegExp : opItem.isRegExp?_$util.getSearchRegExp(filterItem.text, 'all') : false
+					});
+
+					if(idx > 0){
+						chkLogicStr.push(( filterItem.logicOp ? defaultLogicalOp.getCode('and') : defaultLogicalOp.getCode('or')));
+					}
+					
+					chkLogicStr.push(replaceLogic(opItem.code , {
+						key : item.key
+						,idx : allChkVal.length -1
+					}));
+				});
+				chkLogicStr.push(')');
+
+				filterChkFlag = true; 
+			}
+		})
+
+		if(filterChkFlag){
+			var logicStr = _$util.genSearchLogic(chkLogicStr.join(''));
+
+			gridCtx.config.settingConfig.filterInfo = {
+				fn : new Function('item','chkOpts', logicStr)
+				,chkOpts : allChkVal
+			};
+		}else{
+			gridCtx.config.settingConfig.filterInfo = false; 
+		}
+	}
+	,viewFilterIcon : function (settingAreaEle, key, visible){
+		var filterIconSelector = (key=='$all'?'':'[data-key="'+key+'"]') +' .filter-check-status';
+		
+		if(visible===true){
+			settingAreaEle.find(filterIconSelector).addClass('on');
+		}else{
+			settingAreaEle.find(filterIconSelector).removeClass('on');
+		}
+	}
+	// get operator type
+	,getOpType : function (gridCtx, type){
+		type = (type||'').toLowerCase();
+		return hasProperty(gridCtx.config.settingConfig.operators, type) ? type : 'string';
+	}
+	// defail info 
+	,setViewColumnInfo : function (gridCtx, settingAreaEle, selectItem, changeInfo){
+		var _this =this; 
+
+		if(changeInfo.filterInfos){
+			var viewType = hasProperty(gridCtx.config.settingConfig.operators, selectItem.type) ?selectItem.type : 'string';
+			var filterRowHtml = gridCtx.config.settingConfig.filterTemplate[viewType]; 
+
+			var filterItemListEle = settingAreaEle.find('.filter-item-list'); 
+			filterItemListEle.empty();
+			if(changeInfo.filterInfos.length > 0){
+				
+				changeInfo.filterInfos.forEach(function (item, idx){
+					var filterRowEle =$(_this.getReplaceCheckId(filterRowHtml)); 
+					
+					filterRowEle.find('[name="filter-op-logical"]').attr('checked',item.logicOp);
+					filterRowEle.find('[name="filter-op"]').val(item.op);
+					filterRowEle.find('[name="filter-text"]').val(item.text);
+					
+					filterItemListEle.append(filterRowEle);
+				})	
+			}else{
+				filterItemListEle.append(_this.getReplaceCheckId(filterRowHtml));
+			}
+		}
+		
+		gridCtx.config.settingConfig.currentClickItem = selectItem;
+		gridCtx.config.settingConfig.detailViewCol = changeInfo; 
+		settingAreaEle.find('.select-item-name').val(selectItem.label);
+		settingAreaEle.find('[name="setting-width-field"]').val(changeInfo.width);
+	}
+	,getReplaceCheckId : function (replaceStr){
+		return replaceStr.replace(/#checkboxid#/g, 'fc_'+ (++this.filterCheckboxIdx));
+	}
+	// filter change Info
+	,setFilterChangeInfo : function (gridCtx, settingAreaEle, changeInfo){
+		if(hasProperty(changeInfo,'key')){
+			
+			var beforeChangeInfo = gridCtx.config.settingConfig.changeInfos[changeInfo.key]; 
+
+			if(!isUndefined(beforeChangeInfo)){
+				var widthVal = parseInt(settingAreaEle.find('[name="setting-width-field"]').val(),10);
+
+				if(!isNaN(widthVal) && widthVal > 0){
+					beforeChangeInfo.width = widthVal;
+				}
+
+				beforeChangeInfo.filterInfos = [];
+				
+				settingAreaEle.find('.filter-item-list').find('li').each(function (){
+					var sEle = $(this);
+					var filterText = sEle.find('[name="filter-text"]').val(); 
+					if(_$util.trim(filterText)){
+						
+						beforeChangeInfo.filterInfos.push({
+							op : sEle.find('[name="filter-op"]').val()
+							,text : filterText
+							,logicOp : sEle.find('[name="filter-op-logical"]').is(':checked')
+						});
+					}
+				})
+
+				if(beforeChangeInfo.filterInfos.length > 0){
+					this.viewFilterIcon(settingAreaEle, changeInfo.key, true);
+				}else{
+					this.viewFilterIcon(settingAreaEle, changeInfo.key, false);
+				}
+			}
+		}
+	}
+	// set view column template
+	,setViewColTemplate : function (gridCtx, tColItems){
+		var _this = this; 
+		if(isUndefined(tColItems)){
+			tColItems= gridCtx.config.tColItem;
+		}
+
+		var settingAreaEle = $('#'+gridCtx.prefix+'_pubGridSettingArea');
+		var strHtm = [];
+		tColItems.forEach(function (item){
+			settingAreaEle.find('.add-col-item[data-key="'+item.key+'"]').addClass('on');
+			strHtm.push(_this.viewColTemplateHtml(item));
+		})
+
+		settingAreaEle.find('.tcol-view-list').empty().html(strHtm.join(''));
+	}
+	,addViewColTemplate : function (gridCtx, addItems){
+		var _this = this; 
+		var tColItems = []
+		if($.isArray(addItems)){
+			tColItems = addItems; 
+		}else{
+			tColItems.push(addItems);
+		}
+
+		var strHtm = [];
+		tColItems.forEach(function (item){
+			strHtm.push(_this.viewColTemplateHtml(item));
+		})
+		
+		$('#'+gridCtx.prefix+'_pubGridSettingArea .tcol-view-list').append(strHtm.join(''));
+	}
+	,viewColTemplateHtml : function (item){
+		return '<li data-key="'+item.key+'"><span class="remove-btn"></span>'
+			+'<span class="view-col-item">'+item.label+'</span>'
+			+'<span class="filter-check-status"></span><span class="column-fix-icon" title="Column fixed"></span></li>';
+	}
+	,initFilterItemTemplateHtml: function (gridCtx){
+
+		var operators = gridCtx.config.settingConfig.operators;
+
+		for(var key in operators){
+			var  condHtm =[];
+			condHtm.push('<li>');
+			condHtm.push('<span class="filter-op-logical"><input type="checkbox" name="filter-op-logical" id="#checkboxid#"><label for="#checkboxid#"></label></span>');
+			condHtm.push('<select name="filter-op" class="filter-op">');
+			operators[key].forEach(function(item, idx){
+				condHtm.push('<option value="'+idx+'">'+item.nm+'</option>');	
+			});
+			
+			condHtm.push('</select>');
+			condHtm.push('<input type="text" name="filter-text" class="filter-text" autocomplete="off" data-type="'+key+'">');
+			condHtm.push('<button type="button" class="filter-row-remove">-</button>');
+			condHtm.push('</li>');	
+
+			gridCtx.config.settingConfig.filterTemplate[key] = condHtm.join('');
+		}
+		
+	}
+	,templateHtml : function (gridCtx, settingOpt){
+		var strHtm = [];
+
+		strHtm.push('<div class="pubGrid-setting-panel '+settingOpt.mode+'">');
+		
+		if(settingOpt.mode =='simple'){
+			var optHtm = [];
+
+			gridCtx.config.tColItem.forEach(function (item){
+				optHtm.push('<option value="'+item.key+'">'+item.label+'</option>');
+			})
+			var optHtmStr = optHtm.join('');
+
+			strHtm.push('<div class="pubGrid-setting-simple-body">');
+			strHtm.push(' <div class="pubGrid-search-area">');
+			strHtm.push('  <select name="dataSearchField"><option value="$all">All</option>'+optHtmStr+'</select>');
+			strHtm.push('  <input type="text" name="dataSearch" class="pubGrid-search-field">');
+			strHtm.push('  <button type="button" class="pubgrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
+			strHtm.push(' </div>');
+			
+			if(settingOpt.enableColumnFix ===true){
+				strHtm.push(' <div class="pubGrid-colfixed-area"><span>'+gridCtx.options.i18n['setting.column.fixed.label']+'</span>');
+				strHtm.push('  <select name="pubgrid_col_fixed"><option value="0">사용안함</option>'+optHtmStr+'</select>');
+				strHtm.push(' </div>');
+			}
+						
+			strHtm.push('</div>');
+		}else{
+
+			gridCtx.config.settingConfig.operators = objectMerge(gridOperators, gridCtx.options.operators);
+			this.initFilterItemTemplateHtml(gridCtx);
+
+			strHtm.push('	<div class="pubGrid-setting-header">All Search : <input class="input-sch" type="text" name="dataSearch" />');
+			strHtm.push('	<button type="button" class="data-search-btn">Search</button></div>');
+			strHtm.push('	<div class="pubGrid-setting-body">');
+			strHtm.push('		<div class="tcol all-item-panel">');
+			strHtm.push('			<div class="label">All Column</div>');
+			strHtm.push('			<span class="add-col-item" data-chk-idx="all"></span>');
+			strHtm.push('			<input class="input-sch" type="text" name="allTcolSearch" />');
+			strHtm.push('			<div class="item-list">');
+			strHtm.push('				<ul class="tcol-all-list"> ');
+
+			var allColItems = gridCtx.config.dataInfo.orginTColItem;
+			allColItems.forEach(function (item, idx){
+				strHtm.push('<li><span class="add-col-item" data-chk-idx="'+idx+'" data-key="'+item.key+'">'+item.label+'</span></li>');
+			})
+			
+			strHtm.push('				</ul>');
+			strHtm.push('			</div>');
+			strHtm.push('		</div>');
+			strHtm.push('		<div class="tcol view-item-panel">');
+			strHtm.push('			<div class="label">Select Column</div>');
+			strHtm.push('			<input class="input-sch" type="text" name="viewTcolSearch"> ');
+			strHtm.push('			<span class="arrow-btn"><a href="javascript:;" data-arrow="up"></a><a href="javascript:;" data-arrow="down"></a></span>');
+			strHtm.push('			<div class="item-list">');
+			strHtm.push('				<ul class="tcol-view-list"> ');	
+			strHtm.push('				</ul>');
+			strHtm.push('			</div>');
+			strHtm.push('		</div>');
+			strHtm.push('		<div class="tcol setting-panel">');
+			strHtm.push('			<div>name : <input type="text" class="select-item-name" readonly disabled> width : <input type="number" max="99999" min="0" maxlength="5" name="setting-width-field" class="setting-width-field"/>px</div>');
+			strHtm.push('			<div>filter :</div>');
+			strHtm.push('			<div  class="filter-area">');
+			strHtm.push('			  <ul class="filter-item-list"></ul>');
+			strHtm.push('			  <button type="button" class="add-op-btn">+</button>');
+			strHtm.push('			</div>');
+			strHtm.push('			<div class="btn-area">');
+			strHtm.push('			  <button type="button" class="pubGrid-btn" data-mode="default">Restore Defaults</button>');
+			strHtm.push('			  <button type="button" class="pubGrid-btn" data-mode="apply">Apply</button>');
+			strHtm.push('		  	</div> ');
+			strHtm.push('		</div>');
+			strHtm.push('	</div>');
+			strHtm.push('	<div class="pubGrid-setting-footer">');
+			strHtm.push('		<div class="btn-area">');
+			strHtm.push('			<button type="button" class="pubGrid-btn" data-mode="a&c">Apply & close</button>');
+			strHtm.push('			<button type="button" class="pubGrid-btn" data-mode="cancel">Cancel</button>');
+			strHtm.push('			<span class="setting-message">Select Column</span>');
+			strHtm.push('		</div>	');
+			strHtm.push('	</div>');
+		}
+
+		strHtm.push('</div>');
+
+		return strHtm.join('');
+	}
+}
+
 
 $.pubGrid = function (selector,options, args) {
 	var _cacheObject = _datastore[selector];

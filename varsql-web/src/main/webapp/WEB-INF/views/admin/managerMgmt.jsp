@@ -13,7 +13,7 @@
 			<div class="panel-heading"><spring:message code="admin.userlist.search.head" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
@@ -61,7 +61,7 @@
 			<div class="panel-heading"><spring:message code="admin.managerlist.head" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-12" style="padding-bottom: 5px;">
 						<div class="dataTables_filter">
 							<div class="input-group floatright">

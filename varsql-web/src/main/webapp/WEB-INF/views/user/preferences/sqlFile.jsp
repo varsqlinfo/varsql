@@ -12,7 +12,7 @@
 		<div class="panel panel-default">
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="row">
+				<div class="row search-area">
 					<div class="col-sm-4">
 						<label>
 							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="btn.delete" /></button>
@@ -21,7 +21,7 @@
 					<div class="col-sm-8">
 						<div class="dataTables_filter">
 							<label style="float:left; margin-right: 5px;">
-								<select v-model="vconnid" class="form-control input-sm">
+								<select v-model="vconnid" class="form-control ">
 									<option value="ALL"><spring:message code="all"/></option>
 									<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
 										<option value="${tmpInfo.vconnid}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
@@ -29,7 +29,7 @@
 								</select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()">
+								<input type="text" value="" v-model="searchVal" class=" form-control" @keydown.enter="search()">
 								<span class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>

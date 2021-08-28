@@ -22,6 +22,7 @@ import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.db.DBBlockUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
+import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBBlockUserEntityRepository;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
@@ -100,7 +101,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, domainMapper, UserResponseDTO.class);
+		return VarsqlUtils.getResponseResult(result, searchParameter, UserMapper.INSTANCE);
 	}
 
 	/**
@@ -163,7 +164,9 @@ public class UserMgmtServiceImpl extends AbstractService{
 	public ResponseResult userDetail(String viewid) {
 		ResponseResult result = new ResponseResult();
 
-		result.setItemOne(domainMapper.convertToDomain(userMgmtRepository.findByViewid(viewid), UserResponseDTO.class));
+
+
+		result.setItemOne(UserMapper.INSTANCE.toDto(userMgmtRepository.findByViewid(viewid)));
 		result.setItemList(userDBConnectionEntityRepository.userConnInfo(viewid));
 		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
 		result.addCustoms("dbGroup",dbGroupEntityRepository.findAll(DBGroupSpec.userGroupList(viewid)));

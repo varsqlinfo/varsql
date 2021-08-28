@@ -10,6 +10,9 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.varsql.core.common.constants.VarsqlConstants;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,6 +41,7 @@ public abstract class AbstractRegAuditorModel implements Serializable{
     private String regId;
 
     @CreatedDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = VarsqlConstants.DATE_TIME_FORMAT)
     @Column(name="REG_DT", nullable = false, updatable = false)
     private LocalDateTime regDt;
 
