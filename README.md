@@ -15,6 +15,8 @@ varsql websqltool sqltool
 - [wiki](https://github.com/varsqlinfo/varsql/wiki/)
 
 - [설치방법](https://github.com/varsqlinfo/varsql/wiki/Varsql-%EC%8B%A4%ED%96%89)
+- 
+- [기능](https://github.com/varsqlinfo/varsql/wiki/%EA%B8%B0%EB%8A%A5)
 
 - [문제 해결 방법](https://github.com/varsqlinfo/varsql/wiki/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95)
 
