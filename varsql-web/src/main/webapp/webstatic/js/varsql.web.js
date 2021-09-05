@@ -355,45 +355,48 @@ function fnReqCheck(data ,opts){
 	if(pageReloadCheckFlag) return ;
 
 	opts = opts ||{};
+
 	var resultCode = data.resultCode;
 
-	if(opts.disableResultCheck !== true){
-		if(resultCode== 401){ // 로그아웃
-			if(confirm(_$base.messageFormat('error.0001'))){
-				pageReloadCheckFlag = true;
-				(top || window).location.href=VARSQL.contextPath;
-			}
-			return false;
-		}else if(resultCode == 403){	// error
+	if(resultCode== 401){ // 로그아웃
+		if(confirm(_$base.messageFormat('error.0001'))){
+			pageReloadCheckFlag = true;
+			(top || window).location.href=VARSQL.contextPath;
+		}
+		return false;
+	}else if(resultCode == 403){	// error
 
-			var msg = data.message || _$base.messageFormat('error.403');
-			alert(msg);
-			return false;
-		}else if(resultCode == 412){ // 유효하지않은 요청입니다.
-			if(confirm(_$base.messageFormat('error.0002'))){
-				pageReloadCheckFlag = true;
-				(top || window).location.href=(top || window).location.href;
-			}
-			return false;
-		}else if(resultCode == 500){	// error
+		var msg = data.message || _$base.messageFormat('error.403');
+		alert(msg);
+		return false;
+	}else if(resultCode == 412){ // 유효하지않은 요청입니다.
+		if(confirm(_$base.messageFormat('error.0002'))){
+			pageReloadCheckFlag = true;
+			(top || window).location.href=(top || window).location.href;
+		}
+		return false;
+	}else if(resultCode == 1000){	// error
+		if(data.message){
 			alert(data.message);
-			return false;
-		}else if(resultCode == 1000){	// error
-			if(data.message){
-				alert(data.message);
-			}else{
-				alert('app error');
-			}
+		}else{
+			alert('app error');
+		}
 
-			return false;
-		}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
-			if(confirm(_$base.messageFormat('error.0003'))){
-				pageReloadCheckFlag = true;
-				(top || window).location.href=VARSQL.contextPath;
-			}
-			return false;
-		}else if(resultCode >= 80000 && resultCode < 90000){ // connection error
-			alert(_$base.messageFormat('error.'+resultCode));
+		return false;
+	}else if(resultCode == 2000){ // 유효하지않은 데이터 베이스
+		if(confirm(_$base.messageFormat('error.0003'))){
+			pageReloadCheckFlag = true;
+			(top || window).location.href=VARSQL.contextPath;
+		}
+		return false;
+	}else if(resultCode >= 80000 && resultCode < 90000){ // connection error
+		alert(_$base.messageFormat('error.'+resultCode));
+		return false;
+	}
+
+	if(opts.disableResultCheck !== true){
+		if(resultCode == 500){	// error
+			alert(data.message);
 			return false;
 		}else if(resultCode != 200){
 

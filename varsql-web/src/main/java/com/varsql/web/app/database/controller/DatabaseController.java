@@ -23,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.exception.BlockingUserException;
+import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.cache.CacheInfo;
@@ -33,6 +35,8 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.dto.user.UserPermissionInfoDTO;
+import com.varsql.web.exception.DatabaseBlockingException;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
@@ -73,10 +77,35 @@ public class DatabaseController extends AbstractController {
 	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
-		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
-		model.addAttribute("vname", SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName());
+		String vname = SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName();
+		if(!SecurityUtil.isAdmin()) {
+			List<UserPermissionInfoDTO> permissionList	=databaseServiceImpl.findUserPermission();
+
+			if(permissionList != null) {
+				UserPermissionInfoDTO dto = permissionList.get(0);
+
+				if(!dto.isAcceptYn()) { // 접근 수락 되지 않은 사용자 체크
+					logger.warn("## Access denied user : {}", SecurityUtil.loginName());
+					throw new VarsqlAccessDeniedException("access denied");
+				}else if(dto.isBlockYn()) { // 차단된 사용자 체크
+					logger.warn("## block user : {}", SecurityUtil.loginName());
+					throw new BlockingUserException("block user");
+				}
+
+				// db 차단 체크
+				permissionList.stream().filter(item->{
+					if(preferencesInfo.getVconnid().equals(item.getVconnid())) {
+						logger.warn("## database blocking user : {}, db : {}", SecurityUtil.loginName(), vname);
+						throw new DatabaseBlockingException("database blocking");
+					}
+					return false;
+				}).findAny().orElse(null);
+			}
+		}
 
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
+		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
+		model.addAttribute("vname", vname);
 
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
 

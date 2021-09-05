@@ -23,40 +23,169 @@ function isPk(constraintVal){
 	return false;
 }
 
+/**
+ * @namespace SampleData
+  @example
+{
+  "table": {
+    "name": "test_table",
+    "remarks": "test table"
+  },
+  "columns": [
+    {
+      "no": 0,
+      "name": "test_id",
+      "dataType": "STRING",
+      "typeName": "VARCHAR",
+      "typeAndLength": "VARCHAR(32)",
+      "length": 32,
+      "nullable": "N",
+      "comment": "",
+      "constraints": "PK",
+      "autoincrement": null,
+      "defaultVal": ""
+    },
+    {
+      "no": 0,
+      "name": "link_id",
+      "dataType": "STRING",
+      "typeName": "VARCHAR",
+      "typeAndLength": "VARCHAR(32)",
+      "length": 32,
+      "nullable": "N",
+      "comment": "",
+      "constraints": "PK",
+      "autoincrement": null,
+      "defaultVal": ""
+    },
+    {
+      "no": 0,
+      "name": "open_type",
+      "dataType": "CHAR",
+      "typeName": "CHAR",
+      "typeAndLength": "CHAR(1)",
+      "length": 1,
+      "nullable": "Y",
+      "comment": "",
+      "constraints": "",
+      "autoincrement": null,
+      "defaultVal": ""
+    },
+    {
+      "no": 0,
+      "name": "open_option",
+      "dataType": "STRING",
+      "typeName": "VARCHAR",
+      "typeAndLength": "VARCHAR(1000)",
+      "length": 1000,
+      "nullable": "Y",
+      "comment": "",
+      "constraints": "",
+      "autoincrement": null,
+      "defaultVal": ""
+    }
+  ]
+}
+ */
+
+
+/**
+ * 문자를 casemel case 변환 TEXT_WORD -> textWord
+ * @namespace MyNamespace
+ * @method camelCase
+ * @param {String} text
+ * @param {options} options
+ * @returns {String}
+ * @example
+ */
 Handlebars.registerHelper("camelCase", function(text, options) {
     return VARSQL.util.convertCamel(text);
 });
 
+/**
+ * 문자를 upper case 변환 text_word -> TEXT_WORD
+ * @method upperCase
+ * @param {String} text
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("upperCase", function(text, options) {
     return VARSQL.util.toUpperCase(text);
 });
 
+/**
+ * 문자를 lower case 변환 TEXT_WORD -> text_word
+ * @method lowerCase
+ * @param {String} text
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("lowerCase", function(text, options) {
     return VARSQL.util.capitalize(text);
 });
 
+/**
+* 첫번째 문자를 대문자로 변환 TEXT_WORD -> Text_word
+ * @method capitalize
+ * @param {String} text
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("capitalize", function(text, options) {
     return  VARSQL.util.capitalize(text);;
 });
 
+/**
+ * Database 컬럼 타입을 Java Type으로 변환
+ * @method javaType
+ * @param {String} dbType
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("javaType", function(dbType, options) {
 	var tmpDbType = VARSQLCont.dataType.getDataTypeInfo(dbType)
 	return tmpDbType.javaType;
 });
 
+/**
+ * 문자를 추가
+ * @method addChar
+ * @param {String} dbType
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("addChar", function(idx, firstStr, otherStr, options) {
 	return idx < 1 ? firstStr : otherStr;
 });
 
+/**
+ * 문자를 앞뒤에 추가
+ * @method addPreSuffix
+ * @param {String} dbType
+ * @param {options} options
+ * @returns {String}
+ */
 Handlebars.registerHelper("addPreSuffix", function(prefix, suffix , text) {
 	return prefix + text + suffix;
 });
 
+/**
+ * 컬럼 pk 여부
+ * @method isPk
+ * @param {Object} item
+ * @returns {Boolean}
+ */
 Handlebars.registerHelper("isPk", function(item) {
 	var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS];
 	return isPk(constraintVal) ;
 });
 
+/**
+ * pk 컬럼 구하기
+ * @method pkColumns
+ * @param {Object} items
+ * @returns {Array}
+ */
 Handlebars.registerHelper("pkColumns", function(items) {
 	var reval = [];
 
@@ -71,6 +200,12 @@ Handlebars.registerHelper("pkColumns", function(items) {
 	return reval;
 });
 
+/**
+ * pk 컬럼을 제외한 컬럼 구하기
+ * @method pkExcludeColumns
+ * @param {Object} items
+ * @returns {Array}
+ */
 Handlebars.registerHelper("pkExcludeColumns", function(items) {
 	var reval = [];
 
@@ -86,6 +221,15 @@ Handlebars.registerHelper("pkExcludeColumns", function(items) {
 	return reval;
 });
 
+/**
+ * 로직 처리
+ * @method xif
+ * @param {Object} v1  첫번째 인수
+ * @param {Object} o1  operation
+ * @param {Object} v2  두번째 인수
+ * @param {Object} options
+ * @returns {Boolean}
+ */
 Handlebars.registerHelper('xif', function (v1,o1,v2,options) {
     var operators = {
          '==': function(a, b){ return a==b},
@@ -103,7 +247,13 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,options) {
     return isTrue ? options.fn(this) : options.inverse(this);
 });
 
-// index ddl gen keyword
+/**
+ * ddl 문 생성시 키워드
+ * @method ddlIndexKeyword
+ * @param {String} mode 첫번째 인수
+ * @param {Object} item operation
+ * @returns {String}
+ */
 Handlebars.registerHelper('ddlIndexKeyword', function (mode , item) {
 	if('unique' == mode){
 		return "UQ" == item["TYPE"] ? "unique" : "";
@@ -116,6 +266,14 @@ Handlebars.registerHelper('ddlIndexKeyword', function (mode , item) {
 	return '';
 });
 
+/**
+ * ddl 생성시 체크 문자
+ * @function ddlTableValue
+ * @param {String} mode 첫번째 인수
+ * @param {Object} item operation
+ * @param {String} dbType operation
+ * @returns {String}
+ */
 Handlebars.registerHelper('ddlTableValue', function (mode, item, dbType) {
 	var dataType = item.DATA_TYPE || item.TYPE_AND_LENGTH;
 
@@ -174,6 +332,15 @@ Handlebars.registerHelper('ddlTableValue', function (mode, item, dbType) {
 	return '';
 });
 
+/**
+ * ddl 테이블 키
+ * @method ddlTableKey
+ * @param {Array} list 첫번째 인수
+ * @param {String} objectName operation
+ * @param {String} dbType operation
+ * @param {Object} opts operation
+ * @returns {String}
+ */
 Handlebars.registerHelper('ddlTableKey', function (list, objectName, dbType, opts) {
 
 	if(list.length < 1){

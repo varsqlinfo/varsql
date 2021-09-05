@@ -39,26 +39,26 @@ var _constants = {
  * }
  */
 var _dto = {
-	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'char', isSize: true}
+	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'Boolean', isSize: true}
 	,'-6':{name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
 	,'5':{name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
 	,'4':{name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
 	,'-5':{name : 'BIGINT',isNum : true ,val : 0, javaType:'long'}
 	,'6':{name : 'FLOAT',isNum : true ,val : 0.0, javaType:'float'}
-	,'7':{name : 'REAL',isNum : true ,val : 0, javaType:'Integer'}
+	,'7':{name : 'REAL',isNum : true ,val : 0, javaType:'float'}
 	,'8':{name : 'DOUBLE',isNum : true ,val : 0, javaType:'double'}
-	,'2':{name : 'NUMERIC',isNum : true ,val : 0, javaType:'int'}
-	,'3':{name : 'DECIMAL',isNum : true ,val : 0, javaType:'int'}
-	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'char'}
+	,'2':{name : 'NUMERIC',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'3':{name : 'DECIMAL',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'String'}
 	,'12':{name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
 	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'String', isSize: false}
-	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'String', isSize: false}
-	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'String', isSize: false}
+	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'Date', isSize: false}
+	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'Time', isSize: false}
+	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'Timestamp', isSize: false}
 	,'-2':{name : 'BINARY',isNum : false ,val : '', javaType:'String'}
-	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'String'}
-	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'String'}
-	,'0':{name : 'NULL',isNum : false ,val : '', javaType:'String'}
+	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'byte[]'}
+	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'byte[]'}
+	,'0':{name : 'NULL',isNum : false ,val : '', javaType:'Object'}
 	,'1111':{name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String' , getLen : function (len){
 		return parseInt(len /2,10);
 	}}
@@ -127,12 +127,15 @@ var COMPARE_COL_KEY = ['name','typeAndLength','constraints','defaultVal','nullab
 var DEFINE_INFO = {
 	MARIADB : {
 		type :'text/x-mariadb'
+		,formatType : 'mariadb '
 	}
 	,MSSQL : {
 		type :'text/x-mssql'
+		,formatType : 'tsql'
 	}
 	,MYSQL : {
 		type :'text/x-mssql'
+		,formatType : 'mysql'
 	}
 	,ORACLE : {
 		type : 'text/x-plsql'
@@ -147,6 +150,7 @@ var DEFINE_INFO = {
 
 			return pdto;
 		}
+		,formatType : 'plsql'
 	}
 	,TIBERO :{
 		type : 'text/x-plsql'
@@ -161,12 +165,23 @@ var DEFINE_INFO = {
 
 			return pdto;
 		}
+		,formatType : 'plsql'
 	}
 	,H2 : {
 		type : 'text/x-mariadb'
+		,formatType : 'sql'
+	}
+	,POSTGRESQL :{
+		type :'text/x-mssql'
+		,formatType : 'postgresql'
+	}
+	,DB2  :{
+		type :'text/x-mssql'
+		,formatType : 'DB2'
 	}
 	,'DEFAULT' : {
 		type :  'text/x-sql',hint : [] ,dataType:{}
+		,formatType : 'sql'
 	}
 }
 var defaultInfo = DEFINE_INFO['DEFAULT'];
@@ -229,6 +244,11 @@ VARSQLCont.allDataType = function (){
 	}
 
 	return result;
+}
+
+// js formatter format type
+VARSQLCont.formatType = function (dbType){
+	return (DEFINE_INFO[dbType] || defaultInfo).formatType;
 }
 
 VARSQLCont.isDateType = function (type){

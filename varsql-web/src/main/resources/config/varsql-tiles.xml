@@ -86,6 +86,9 @@
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
     </definition>
 
+    <definition name="/help/**" template="/WEB-INF/views/help/_templates/main.jsp" >
+        <put-attribute name="body" value="/WEB-INF/views/help/{1}.jsp" />
+    </definition>
 
 
     <!-- login -->

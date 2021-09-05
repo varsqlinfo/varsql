@@ -1,7 +1,6 @@
 package com.varsql.core.configuration.prop;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -12,8 +11,6 @@ import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.AbstractConfiguration;
-import com.varsql.core.configuration.Configuration;
-import com.varsql.core.configuration.Constants;
 import com.varsql.core.exception.ConfigurationException;
 
 
@@ -54,13 +51,13 @@ public class ValidationProperty extends AbstractConfiguration{
 	 * @throws Exception
 	 */
 	private void initConfig() throws Exception {
-		
+
 		Resource configResource = null;
 
 		File propFile = new File(getInstallRoot(), CONFIG_FILE);
-		
+
 		logger.info("Validation Property path: {}",propFile);
-		
+
 		if(propFile.exists()) {
 			configResource = ResourceUtils.getResource(propFile.getPath());
 		}else {

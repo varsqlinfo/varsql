@@ -54,6 +54,8 @@
 <entry key="up">위</entry>
 <entry key="down">아래</entry>
 
+<entry key="more">더보기</entry>
+
 
 <entry key="information">정보 </entry>
 <entry key="basic.information">기본정보 </entry>
@@ -131,6 +133,12 @@
 <entry key="label.wrap.search">끝에서 되돌리기</entry>
 <entry key="label.case.sensitive">대소문자</entry>
 
+<entry key="label.contextmenu.name">컨텍스트명</entry>
+<entry key="label.view.mode">보기방식</entry>
+<entry key="label.view.mode.editor">에디터</entry>
+<entry key="label.view.mode.dialog">다이얼로그</entry>
+
+
 <entry key="btn.close">닫기</entry>
 <entry key="btn.password.view">비밀번호 보기</entry>
 <entry key="btn.pool.init">풀  초기화</entry>
@@ -141,6 +149,8 @@
 
 <entry key="ko.lang">한국어</entry>
 <entry key="en.lang">English</entry>
+
+<entry key="main.screen">메인 페이지</entry>
 
 
 

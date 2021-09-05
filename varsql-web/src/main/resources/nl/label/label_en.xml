@@ -53,6 +53,8 @@
 <entry key="up">Up</entry>
 <entry key="down">Down</entry>
 
+<entry key="more">More</entry>
+
 
 <entry key="information">Info </entry>
 <entry key="basic.information">Basic Information </entry>
@@ -127,6 +129,11 @@
 <entry key="label.wrap.search">Wrap search</entry>
 <entry key="label.case.sensitive">Case Sensitive</entry>
 
+<entry key="label.contextmenu.name">Contextmenu Name</entry>
+<entry key="label.view.mode">View Mode</entry>
+<entry key="label.view.mode.editor">Editor</entry>
+<entry key="label.view.mode.dialog">Dialog</entry>
+
 <entry key="btn.close">Close</entry>
 <entry key="btn.password.view">Password view</entry>
 <entry key="btn.pool.init">Pool init</entry>
@@ -137,6 +144,8 @@
 
 <entry key="ko.lang">한국어</entry>
 <entry key="en.lang">English</entry>
+
+<entry key="main.screen">Main Page</entry>
 
 <!-- button message -->
 <entry key="btn.search">Search</entry>

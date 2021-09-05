@@ -1972,17 +1972,16 @@ Plugin.prototype ={
 				tdEle = null;
 				addEle = null;
 			}
+						
 			itemIdx++;
-		}
 
-		if(itemIdx > this.config.dataInfo.orginRowLen){
-			for(var i =itemIdx-1; i < _this.config.scroll.maxViewCount; i++){
+			if(itemIdx > this.config.dataInfo.orginRowLen){
 				_this.element.container.find('[rowinfo="'+i+'"]').hide();
+			}else{
+				_this.element.container.find('[rowinfo="'+i+'"]').show();
 			}
-		}else{
-			_this.element.container.find('[rowinfo="'+(viewCount-1)+'"]').show();
 		}
-
+		
 		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
 			_this._statusMessage(viewCount);
 		}

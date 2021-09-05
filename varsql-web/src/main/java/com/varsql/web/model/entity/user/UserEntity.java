@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AabstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToYnConverter;
 import com.varsql.web.model.converter.PasswordEncodeConverter;
+import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
@@ -94,6 +96,11 @@ public class UserEntity extends AabstractAuditorModel{
 	@JsonManagedReference
 	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> dbList;
+
+	@NotAudited
+	@JsonManagedReference
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userEntity")
+	private Set<DBBlockingUserEntity> dbBlockingUserEntity;
 
 	@Builder
 	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail, String userRole, String description, boolean acceptYn, boolean blockYn) {

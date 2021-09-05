@@ -9,7 +9,7 @@ import com.varsql.web.model.entity.user.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 	UserEntity findByUemail(String uemail);
 	UserEntity findByUid(String uname);
-	
+
 	long countByUid(String uid);
 	long countByUemail(String email);
 }

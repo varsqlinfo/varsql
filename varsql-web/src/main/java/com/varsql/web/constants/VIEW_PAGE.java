@@ -10,6 +10,7 @@ public enum VIEW_PAGE{
 	, LOGIN("/login")
 	, JOIN("/join")
 	, GUEST("/guest")
+	, HELP("/help")
 	, COMMONPAGE("/commonPage")
 	, USER("/user")
 	, USER_PREFERENCES("/user/preferences")

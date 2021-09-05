@@ -99,7 +99,7 @@ public class ErrorController extends AbstractController {
 
 	/**
 	 *
-	 * @Method Name  : blockUser
+	 * @Method Name  : blockingUser
 	 * @Method 설명 : 차단된 사용자
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 11. 1.
@@ -109,9 +109,26 @@ public class ErrorController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/blockUser", method ={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView blockUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/blockUser", VIEW_PAGE.COMMONPAGE);
+	@RequestMapping(value = "/blockingUser", method ={RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView blockingUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return getModelAndView("/error/blockingUser", VIEW_PAGE.COMMONPAGE);
+	}
+
+	/**
+	 *
+	 * @Method Name  : blockingDatabase
+	 * @Method 설명 : 차단된 db
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 1.
+	 * @변경이력  :
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/blockingDatabase", method ={RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView blockingDatabase(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return getModelAndView("/error/blockingDatabase", VIEW_PAGE.COMMONPAGE);
 	}
 
 	/**

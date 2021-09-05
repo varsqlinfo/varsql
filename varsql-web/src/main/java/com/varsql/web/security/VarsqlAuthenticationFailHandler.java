@@ -18,7 +18,7 @@ public class VarsqlAuthenticationFailHandler implements AuthenticationFailureHan
             throws IOException, ServletException {
     	
     	if(ex instanceof BlockingUserException){
-    		req.getRequestDispatcher("/error/blockUser").forward(req, res);
+    		req.getRequestDispatcher("/error/blockingUser").forward(req, res);
     	}else{
     		req.getRequestDispatcher("/login?mode=fail").forward(req, res);
     	}

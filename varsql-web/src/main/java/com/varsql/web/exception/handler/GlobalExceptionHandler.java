@@ -24,11 +24,14 @@ import org.springframework.web.util.NestedServletException;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.exception.BlockingUserException;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
+import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.CommonServiceImpl;
 import com.varsql.web.exception.DataDownloadException;
+import com.varsql.web.exception.DatabaseBlockingException;
 import com.varsql.web.exception.DatabaseInvalidException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.VarsqlUtils;
@@ -202,8 +205,67 @@ public class GlobalExceptionHandler{
 		logger.error("databaseInvalidExceptionHandler :{} ", ex.getMessage() , ex);
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(ex, request, response ,result,"invalidDatabasePage");
+		exceptionRequestHandle(ex, request, response ,result,"invalidDatabase");
 	}
+
+	/**
+	 * @method  : varsqlAccessDeniedExceptionHandler
+	 * @desc : 접근 체한
+	 * @author   : ytkim
+	 * @date   : 2021. 8. 19.
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=VarsqlAccessDeniedException.class)
+	public void varsqlAccessDeniedExceptionHandler(VarsqlAccessDeniedException ex,HttpServletRequest request ,  HttpServletResponse response){
+
+		logger.error("varsqlAccessDeniedExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("varsqlAccessDeniedExceptionHandler :{} ", ex.getMessage() , ex);
+
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(ex, request, response ,result,"error403");
+	}
+
+	/**
+	 * @method  : databaseBlockingExceptionHandler
+	 * @desc : database  차된
+	 * @author   : ytkim
+	 * @date   : 2021. 8. 19.
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=DatabaseBlockingException.class)
+	public void databaseBlockingExceptionHandler(DatabaseBlockingException ex, HttpServletRequest request ,  HttpServletResponse response){
+
+		logger.error("databaseBlockingExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("databaseBlockingExceptionHandler :{} ", ex.getMessage() , ex);
+
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(ex, request, response ,result,"blockingDatabase");
+	}
+
+	/**
+	 * @method  : blockingUserExceptionHandler
+	 * @desc : 차단된 사용자
+	 * @author   : ytkim
+	 * @date   : 2021. 8. 19.
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=BlockingUserException.class)
+	public void blockingUserExceptionHandler(BlockingUserException ex,HttpServletRequest request ,  HttpServletResponse response){
+
+		logger.error("blockingUserExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("blockingUserExceptionHandler :{} ", ex.getMessage() , ex);
+
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(ex, request, response ,result,"blockingUser");
+	}
+
+
 
 	/**
 	 *

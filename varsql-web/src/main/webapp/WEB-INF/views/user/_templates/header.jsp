@@ -62,7 +62,7 @@
 					  <li :class="tabInfo =='new' ?'active' :''"><a href="javascript:;" @click="tabView('new')"><spring:message code="new.note" text="신규 쪽지"/></a></li>
 					  <li :class="tabInfo =='old' ?'active' :''"><a href="javascript:;" @click="tabView('old')"><spring:message code="note.box" text="쪽지함"/></a></li>
 					</ul>
-					<div class="pull-right"><a href="javascript:;" @click="moreNote()"><i class="fa fa-plus"></i>더보기</a></div>
+					<div class="pull-right"><a href="javascript:;" @click="moreNote()"><i class="fa fa-plus"></i><spring:message code="more" text="더보기"/></a></div>
 		    	</div>
 		    	<div style="clear:both;"></div>
 		    	<div class="note-list">
@@ -340,7 +340,7 @@ VARSQL.socket.connect('user', {
 		if(msgType== 'NOTE'){
 			userTopObj.alarmFlag =true;
 		}else if(msgType == 'USER_BLOCK'){
-			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockUser");
+			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
 		}else if(msgType == 'USER_DB_BLOCK'){
 			userMain.blockTab(data.item);
 			userTopObj.getConnectionInfo(false);

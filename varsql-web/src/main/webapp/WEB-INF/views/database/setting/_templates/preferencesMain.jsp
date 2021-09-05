@@ -20,7 +20,9 @@
 		</div>
 		<div class="preferences-body padding0 col-xs-9">
 			<div class="preferences-body-header">
-				<div id="preferencesDesc">{{detailItem.desc}}</div>
+				{{detailItem.desc}}
+
+				<button type="button" @click="viewHelpPage()" class="pull-right">도움말</button>
 			</div>
 			<div class="preferences-body-cont">
 				<template v-if="!VARSQL.isUndefined(detailItem.url) && detailItem.url !=''">
@@ -55,7 +57,17 @@ VarsqlAPP.vueServiceBean({
 			treeItem.push({id:'5',pid:'top',name:'래포트',url:'<c:url value="/database/preferences/sqlFormatSetting?conuid=${param.conuid}" />'});
 			treeItem.push({id:'5-1',pid:'5',name:'내보내기 설정',url:'<c:url value="/database/preferences/exportSetting?conuid=${param.conuid}" />'});
 			*/
-			treeItem.push({id:'6',pid:'top',name:'코드 생성설정',desc :'DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성' ,url:'<c:url value="/database/preferences/contextMenuSetting?conuid=${param.conuid}" />'});
+			treeItem.push({
+				id:'6'
+				, pid:'top'
+				, name:'코드 생성설정'
+				, desc :'DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성'
+				, url:'<c:url value="/database/preferences/contextMenuSetting?conuid=${param.conuid}" />'
+				, help:{
+					name : '도울말'
+					,helpUrl : '/database/preferences/help'
+				}
+			});
 
 			$.pubTree("#preferences_area", {
 				source : treeItem
@@ -65,6 +77,11 @@ VarsqlAPP.vueServiceBean({
 					_this.detailItem = sObj.item;
 				}
 			}); // 트리 객체 네임  div명
+		}
+		,viewHelpPage : function(){
+			if(this.detailItem.help && this.detailItem.help.helpUrl){
+				VARSQLUI.popup.open(VARSQL.getContextPathUrl('/webstatic/html/help/contextmenu/index.html'));
+			}
 		}
 	}
 });

@@ -774,7 +774,7 @@ _ui.headerMenu ={
 
 		if(_self.preferencesDialog ==''){
 			_self.preferencesDialog = $('#preferencesTemplate').dialog({
-				height: 450
+				height: 460
 				,width: 700
 				,modal: true
 				,buttons: {
@@ -814,15 +814,15 @@ _ui.preferences= {
 		}
 
 		if(prefInfo =='init'){
-			prefInfo = {} ;
+			_g_options.screenSetting = {} ;
 		}else{
-			prefInfo = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
+			_g_options.screenSetting = VARSQL.util.objectMerge(_g_options.screenSetting, prefInfo);
 		}
 
 		VARSQLApi.preferences.save({
 			conuid : _g_options.param.conuid
 			,prefKey : 'main.database.setting'
-			,prefVal : JSON.stringify(prefInfo)
+			,prefVal : JSON.stringify(_g_options.screenSetting)
 		}, callback);
 	}
 }
@@ -2251,6 +2251,11 @@ _ui.dbObjectMetadata= {
 			,success:function (resData){
 
 				var item = resData.item||{};
+
+				console.log(item.createScript);
+
+				item.createScript = getFormatSql(item.createScript, _g_options.dbtype, 'ddl');
+
 				_g_cache.setSOMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
 
 				if(VARSQL.isFunction(callbackFn)){
@@ -4351,10 +4356,7 @@ _ui.SQL = {
 
 		// script 모듈로 처리.
 		try{
-			var formatSql =sqlFormatter.format(sqlVal, {
-	            language: formatType,
-	            linesBetweenQueries : 2
-			});
+			var formatSql = getFormatSql(sqlVal, _g_options.dbtype, 'sql');
 
 			if(allFormatFlag){
 	    		tmpEditor.setValue(formatSql);
@@ -5279,6 +5281,23 @@ function getTableName(tblName){
 	return tblName;
 }
 
+function getFormatSql(sql, dbtype, sqlType){
+	try{
+		return sqlFormatter.format(sql, {
+	        language: VARSQLCont.formatType(dbtype),
+	        linesBetweenQueries : 2
+		});
+	}catch(e){
+		if(sqlType == 'sql'){
+			throw e;
+		}
+
+		console.log(e);
+
+		return sql;
+	}
+}
+
 /**
  * sql gen
  * @param scriptInfo
@@ -5410,17 +5429,6 @@ function queryParameter(flag, columnInfo , colNameCase){
 			return defaultVal==""?"'"+toLowerCase(colName)+"'" :defaultVal;
 		}
 	}
-}
-
-function randomString(strLen) {
-	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-	var randomstring = '';
-	for (var i=0; i<strLen; i++) {
-	var rnum = Math.floor(Math.random() * chars.length);
-	randomstring += chars.substring(rnum,rnum+1);
-	}
-
-	return randomstring;
 }
 
 // camel 변환

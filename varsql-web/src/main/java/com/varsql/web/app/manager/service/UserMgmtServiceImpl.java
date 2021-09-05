@@ -20,10 +20,10 @@ import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.dto.websocket.MessageDTO;
-import com.varsql.web.model.entity.db.DBBlockUserEntity;
+import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.user.UserMapper;
-import com.varsql.web.repository.db.DBBlockUserEntityRepository;
+import com.varsql.web.repository.db.DBBlockingUserEntityRepository;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
@@ -66,7 +66,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	private DBManagerEntityRepository dbManagerEntityRepository;
 
 	@Autowired
-	private DBBlockUserEntityRepository dbBlockUserEntityRepository;
+	private DBBlockingUserEntityRepository dbBlockingUserEntityRepository;
 
 	@Autowired
 	private DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
@@ -164,11 +164,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	public ResponseResult userDetail(String viewid) {
 		ResponseResult result = new ResponseResult();
 
-
-
 		result.setItemOne(UserMapper.INSTANCE.toDto(userMgmtRepository.findByViewid(viewid)));
 		result.setItemList(userDBConnectionEntityRepository.userConnInfo(viewid));
-		result.addCustoms("isAdmin",SecurityUtil.isAdmin());
 		result.addCustoms("dbGroup",dbGroupEntityRepository.findAll(DBGroupSpec.userGroupList(viewid)));
 
 		return result;
@@ -194,7 +191,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 			chkFlag =true;
 		}else{
 
-			long cnt = dbManagerEntityRepository.count(DBManagerSpec.findVconnidManagerCheck(vconnid, viewid));
+			long cnt = dbManagerEntityRepository.count(DBManagerSpec.findVconnidManagerCheck(vconnid, SecurityUtil.userViewId()));
 			if(cnt > 0){
 				chkFlag =true;
 			}
@@ -202,11 +199,11 @@ public class UserMgmtServiceImpl extends AbstractService{
 
 		if(chkFlag){
 			if("block".equals(param.getString("mode"))) {
-				dbBlockUserEntityRepository.save(DBBlockUserEntity.builder().viewid(viewid).vconnid(vconnid).build());
+				dbBlockingUserEntityRepository.save(DBBlockingUserEntity.builder().viewid(viewid).vconnid(vconnid).build());
 
 				webSocketServiceImpl.sendUserMessage(MessageDTO.builder().type(MessageType.USER_DB_BLOCK).message("block").build().addItem("vconuid", UUIDUtil.vconnidUUID(viewid, vconnid)), viewid);
 			}else {
-				dbBlockUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
+				dbBlockingUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
 			}
 		}else {
 			result.setResultCode(RequestResultCode.FORBIDDEN);
@@ -234,7 +231,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(SecurityUtil.isAdmin()){
 			chkFlag =true;
 		}else if(SecurityUtil.isManager()){
-			long cnt = userMgmtRepository.count(UserSpec.managerCheck(viewid));
+			long cnt = userMgmtRepository.count(UserSpec.managerCheck(SecurityUtil.userViewId()));
 			if(cnt > 0){
 				chkFlag =true;
 			}

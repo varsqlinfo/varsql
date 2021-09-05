@@ -68,6 +68,11 @@ var $userMain = {
 					,click : function (item, idx){
 						var tmpid = item.conuid;
 
+						if(item.blockDb==true){
+							_self.tabObj.removeItem(item);
+							return ;
+						}
+
 						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ;
 
 						_self.tabObj.removeItem(item);
@@ -79,7 +84,6 @@ var $userMain = {
 
 						if(_self.tabObj.getItemLength() < 1){
 							$(_self._userConnectionInfo).val('');
-							$('#connectionMsg').show();
 						}
 					}
 				}
@@ -175,7 +179,6 @@ var $userMain = {
 
 		_self.dbShowHide(sconid);
 
-		$('#connectionMsg').hide();
 	}
 	// db page show hide
 	,dbShowHide : function (sconid){
@@ -212,13 +215,22 @@ var $userMain = {
 	}
 	,blockTab : function (tabInfo){
 		var sconid = tabInfo.vconuid;
+
+		this.tabObj.updateItem({item:{"conuid": sconid, blockDb: true}});
 		$('#wrapper_'+sconid).empty().html(this.userDbBlockTemplate);
 	}
 	,viewLoadMessage : function (hideFlag){
 		if(hideFlag ===true){
 			$('#varsql_page_load_msg_wrapper').hide();
 		}else{
-			$('#varsql_page_load_msg_wrapper').show();
+			var selItem = this.tabObj.getSelectItem();
+			if(selItem.blockDb === true){
+				$('#wrapper_'+selItem.conuid).remove();
+				alert('관리자에 의해서 차단된 db 입니다.');
+				$userMain.activeClose();
+			}else{
+				$('#varsql_page_load_msg_wrapper').show();
+			}
 		}
 	}
 }
@@ -277,7 +289,7 @@ window.userMain = {
 
 <div class="user-main-body wh100">
 	<div class="wh100" id="user_connection_info_iframe">
-		<table id="connectionMsg" class="wh100-absolute" style="z-index:200;top:0px;">
+		<table class="wh100-absolute" style="z-index:98;top:0px;">
 			<tbody>
 				<tr>
 					<td style="text-align: center; font-size: 3em;">

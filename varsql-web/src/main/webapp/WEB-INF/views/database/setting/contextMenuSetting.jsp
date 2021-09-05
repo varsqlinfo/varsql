@@ -39,18 +39,22 @@
 				</div>
 				<div class="col-xs-12 padding0">
 					<div class="field-group">
-						<label class="col-xs-2 control-label">컨텍스트명</label>
+						<label class="col-xs-2 control-label"><spring:message code="label.contextmenu.name" text="컨텍스트명"/></label>
 						<div class="col-xs-10">
 							<input v-model="deteilItem.name" class="form-control text required input-sm">
 						</div>
 					</div>
 					<div class="field-group" v-show="viewItemType=='child'">
-						<label class="col-xs-2 control-label">보기 방식</label>
+						<label class="col-xs-2 control-label"><spring:message code="label.view.mode" text="보기 방식"/></label>
 						<div class="col-xs-10">
-							<select v-model="deteilItem.viewMode" class="form-control text required input-sm">
-								<option value="editor">Editor</option>
-								<option value="dialog">Dialog</option>
-							</select>
+							<label class="checkbox-container display-inline"><spring:message code="label.view.mode.editor" text="에디터보기"/>
+							  <input type="radio" v-model="deteilItem.viewMode" value="editor" checked="checked">
+							  <span class="radiomark"></span>
+							</label>
+							<label class="checkbox-container display-inline"><spring:message code="label.view.mode.dialog" text="다이얼로그"/>
+							  <input type="radio" v-model="deteilItem.viewMode" value="dialog" checked="checked">
+							  <span class="radiomark"></span>
+							</label>
 						</div>
 					</div>
 				</div>

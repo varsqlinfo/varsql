@@ -5,17 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.sql.SQLQueryFactory;
 import com.varsql.web.dto.user.UserConnectionResponseDTO;
-import com.varsql.web.model.entity.db.DBBlockUserEntity;
+import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.db.QDBBlockUserEntity;
+import com.varsql.web.model.entity.db.QDBBlockingUserEntity;
 import com.varsql.web.model.entity.db.QDBConnectionEntity;
 import com.varsql.web.model.entity.db.QDBGroupEntity;
 import com.varsql.web.model.entity.db.QDBGroupMappingDbEntity;
@@ -27,12 +25,7 @@ import com.varsql.web.repository.DefaultJpaRepository;
 public interface UserDBConnectionEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnectionEntity, String>, JpaSpecificationExecutor<DBConnectionEntity> ,UserDBConnectionEntityCustom {
 	public DBConnectionEntity findByVconnid(String vconnid);
 
-
-
 	public class UserDBConnectionEntityCustomImpl extends QuerydslRepositorySupport implements UserDBConnectionEntityCustom {
-
-		@Autowired
-	    private SQLQueryFactory queryFactory;
 
 		public UserDBConnectionEntityCustomImpl() {
 			super(DBConnectionEntity.class);
@@ -45,7 +38,7 @@ public interface UserDBConnectionEntityRepository extends DefaultJpaRepository, 
 			final QDBGroupEntity dbGroup = QDBGroupEntity.dBGroupEntity;
 			final QDBGroupMappingUserEntity groupNUser = QDBGroupMappingUserEntity.dBGroupMappingUserEntity;
 
-			final QDBBlockUserEntity dbBlockUser = QDBBlockUserEntity.dBBlockUserEntity;
+			final QDBBlockingUserEntity dbBlockingUser = QDBBlockingUserEntity.dBBlockingUserEntity;
 
 			final QDBManagerEntity manager = QDBManagerEntity.dBManagerEntity;
 
@@ -69,12 +62,12 @@ public interface UserDBConnectionEntityRepository extends DefaultJpaRepository, 
 			from(conn).innerJoin(groupNDb).on(conn.vconnid.eq(groupNDb.vconnid))
 			.innerJoin(dbGroup).on(groupNDb.groupId.eq(dbGroup.groupId))
 			.innerJoin(groupNUser).on(groupNDb.groupId.eq(groupNUser.groupId))
-			.leftJoin(dbBlockUser).on(conn.vconnid.eq(dbBlockUser.vconnid).and(groupNUser.viewid.eq(dbBlockUser.viewid)))
-			.select(conn, dbBlockUser)
+			.leftJoin(dbBlockingUser).on(conn.vconnid.eq(dbBlockingUser.vconnid).and(groupNUser.viewid.eq(dbBlockingUser.viewid)))
+			.select(conn, dbBlockingUser)
 			.where(conn.useYn.eq("Y").and(groupNUser.viewid.eq(viewid)))
 			.orderBy(conn.vname.asc()).fetch().forEach(item->{
 				DBConnectionEntity connInfo= item.get(0, DBConnectionEntity.class);
-				DBBlockUserEntity block= item.get(1, DBBlockUserEntity.class);
+				DBBlockingUserEntity block= item.get(1, DBBlockingUserEntity.class);
 				String connid = connInfo.getVconnid();
 				if(!dupChk.contains(connid)) {
 					dupChk.add(connid);
@@ -89,6 +82,7 @@ public interface UserDBConnectionEntityRepository extends DefaultJpaRepository, 
 			});
 
 			return reval;
+
 		}
 	}
 }

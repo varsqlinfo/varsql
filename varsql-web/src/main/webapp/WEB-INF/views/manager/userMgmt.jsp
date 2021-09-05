@@ -379,7 +379,6 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					_self.clickItem =resData.item;
 					_self.clickItemDbList =resData.items || [];
-					_self.clickItemCustom =resData.customs|| [];
 					_self.dbGroup =resData.customs.dbGroup;
 
 					//_self.detailDialog.dialog("open");

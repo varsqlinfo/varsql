@@ -24,10 +24,12 @@ import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBConnTabResponseDTO;
+import com.varsql.web.dto.user.UserPermissionInfoDTO;
 import com.varsql.web.model.entity.db.DBConnHistEntity;
 import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
 import com.varsql.web.repository.db.DBConnTabEntityRepository;
+import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.sort.TreeDataSort;
@@ -49,6 +51,9 @@ public class DatabaseServiceImpl{
 
 	@Autowired
 	private DBConnTabEntityRepository dbConnTabEntityRepository;
+
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 
 	/**
 	 *
@@ -324,5 +329,9 @@ public class DatabaseServiceImpl{
 		List sortList = tds.getSortList();
 
 		return sortList ==null? new ArrayList() :sortList;
+	}
+
+	public List<UserPermissionInfoDTO> findUserPermission() {
+		return userInfoRepository.findPermissionInfo(SecurityUtil.userViewId());
 	}
 }

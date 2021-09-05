@@ -232,13 +232,17 @@ public class SQLFileServiceImpl{
 				SqlFileTabEntity sfte = sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 
 				if("delTab-other".equals(mode)) {
-					sfte.setPrevSqlId(null);
+					if(sfte != null) {
+						sfte.setPrevSqlId(null);
+					}
 					sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				}else {
 					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
 				}
 
-				sqlFileTabEntityRepository.updatePrevIdByPrevId(sfte.getVconnid(), sfte.getViewid(), sfte.getSqlId(), sfte.getPrevSqlId());
+				if(sfte != null) {
+					sqlFileTabEntityRepository.updatePrevIdByPrevId(sfte.getVconnid(), sfte.getViewid(), sfte.getSqlId(), sfte.getPrevSqlId());
+				}
 			}
 
 		}catch(Exception e){
