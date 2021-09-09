@@ -80,6 +80,7 @@
 
 <entry key="compare.result">비교 결과</entry>
 <entry key="compare.detail">비교 상세</entry>
+<entry key="compare.info">비교 정보</entry>
 
 <entry key="label.db">db</entry>
 <entry key="label.database">Database</entry>
@@ -206,6 +207,12 @@
 <entry key="btn.glossary.search">조회</entry>
 <entry key="btn.glossary.convert">변경</entry>
 <entry key="btn.glossary.remove">지우기</entry>
+
+<!-- compare page -->
+<entry key="same.count">동일한 수</entry>
+<entry key="different.count">다른 수</entry>
+<entry key="empty.count">없는 수</entry>
+
 
 
 </properties>

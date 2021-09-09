@@ -76,6 +76,14 @@ var _initialized = false
 			,click :  function (clickInfo){}	// click event
 			,dblclick : function (clickInfo){} // double click event
 		}
+		,drag :{
+			enabled : false			// 활성화여부
+			,dropSelector : ''		// drop selector
+			,dropCallback : function (colItem){ // drop 전에 이벤트
+				return true; 
+			}
+			
+		}
 	}
 	,setting : {					// 그리드 설정
 		mode :'simple'				// simple (search , fixed) , full(column config , filter) , full-center(screen center)
@@ -588,7 +596,7 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method addStyleTag
-	 * @param options {Object} - 데이타 .
+	 * @param options {Object} - 데이터 .
 	 * @description  add style tab
 	 */
 	,addStyleTag : function (){
@@ -873,7 +881,7 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method _setTfoot
-	 * @description foot 데이타 셋팅
+	 * @description foot 데이터 셋팅
 	 */
 	,_setTfoot : function(){
 		var _this = this;
@@ -919,9 +927,9 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method addRow
-	 * @param data {Object , Array} - 데이타
+	 * @param data {Object , Array} - 데이터
 	 * @param opt {Object} - add option { index : index ,'first','last' ,focus : 스크롤 이동 여부 (true or false) }
-	 * @description 데이타 add
+	 * @description 데이터 add
 	 */
 	,addRow : function (pData, opt){
 		if(!$.isArray(pData)){
@@ -932,7 +940,7 @@ Plugin.prototype ={
 	/**
 	 * @method removeRow
 	 * @param idx {Integer,String} //number index ,'first' , 'last','checked'  - remove row item
-	 * @description 데이타 그리기
+	 * @description 데이터 그리기
 	 */
 	,removeRow : function (idxs){
 		var removeRowInfo=[];
@@ -985,7 +993,7 @@ Plugin.prototype ={
 	 * @method updateRow
 	 * @param idx {Integer} - update position index
 	 * @param rowItem {Object} - update item
-	 * @description 데이타 그리기
+	 * @description 데이터 그리기
 	 */
 	,updateRow : function (idx ,rowItem, clickFlag){
 
@@ -1134,10 +1142,10 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method setData
-	 * @param data {Array} - 데이타
+	 * @param data {Array} - 데이터
 	 * @param gridMode {String} - 그리드 모드
 	 * @param addOpt {Object} - add opt
-	 * @description 데이타 그리기
+	 * @description 데이터 그리기
 	 */
 	,setData :function (pdata, mode, addOpt){
 		var _this = this
@@ -1190,7 +1198,7 @@ Plugin.prototype ={
 		}
 
 		if(gridMode =='init'){
-			// sort 값이 있으면 초기 데이타 정렬
+			// sort 값이 있으면 초기 데이터 정렬
 			if(typeof opt.headerOptions.sort ==='object'){
 				var _key = opt.headerOptions.sort.key
 					,_sortType = opt.headerOptions.sort.type=='desc'?'desc':'asc';
@@ -1585,7 +1593,7 @@ Plugin.prototype ={
 	 * @method valueFormatter
 	 * @param  thiItem {Object} header col info
 	 * @param  item {Object} row 값
-	 * @description foot 데이타 셋팅
+	 * @description foot 데이터 셋팅
 	 */
 	,valueFormatter : function (_idx ,thiItem, rowItem, addEle){
 
@@ -1654,6 +1662,8 @@ Plugin.prototype ={
 			headerInfo =  cfg.headerLeftInfo;
 		}
 
+		var headerDragEnabled = headerOpt.drag.enabled;
+
 		strHtm.push(_this._getColGroup(_this.prefix+'colHeader' , type));
 
 		strHtm.push('<thead>');
@@ -1671,7 +1681,7 @@ Plugin.prototype ={
 							strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
 						}
 						strHtm.push('  <div class="label-wrapper">');
-						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered" draggable="true">'+ghItem.label+'</div></div>');
+						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered" '+(headerDragEnabled?' draggable="true" ':'')+'>'+ghItem.label+'</div></div>');
 						if(ghItem.isSort ===true){
 							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');
 						}
@@ -1740,7 +1750,7 @@ Plugin.prototype ={
 	/**
 	 * @method drawGrid
 	 * @param  type {String} 그리드 타입.
-	 * @description foot 데이타 셋팅
+	 * @description foot 데이터 셋팅
 	 */
 	,drawGrid : function (pMode, unconditionallyFlag){
 		var _this = this
@@ -1871,6 +1881,8 @@ Plugin.prototype ={
 			viewCount = _this.config.scroll.viewCount;
 		}
 
+		viewCount = drawMode =='init' ?  _this.config.scroll.bodyViewCount : viewCount
+
 		// remove edit area
 		if(_this.config.isCellEdit ===true){
 			_this._setEditAreaData();
@@ -1890,87 +1902,89 @@ Plugin.prototype ={
 		var colFixedIndex = this.options.colFixedIndex;
 
 		for(var i =0 ; i < viewCount; i++){
-			tbiItem = tbi[itemIdx] ||{};
+			tbiItem = tbi[itemIdx];
 
-			if(_this.config.rowOpt.isAddStyle){
-				$pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont [rowinfo="'+i+'"]').setAttribute('style', (fnAddStyle.call(null,tbiItem)||''));
-			}
-
-			var overRowFlag = (itemIdx >= this.config.dataInfo.orginRowLen);
-			var addEle ,tdEle;
-
-			for(var j =0 ; j < asideItem.length ;j++){
-				var tmpItem = asideItem[j];
-				var rowCol = i+','+tmpItem.key;
-
-				addEle =$pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-aside-cont').querySelector('[data-aside-position="'+rowCol+'"]>.aside-content');
-
-				if(tmpItem.key == 'lineNumber'){
-					addEle.textContent = (itemIdx+1);
-				}else if(tmpItem.key == 'checkbox'){
-					_$util.setCheckBoxCheck(addEle , tbiItem);
-				}else if(tmpItem.key == 'modify'){
-					addEle.textContent = 'V';
+			if(tbiItem){
+				if(_this.config.rowOpt.isAddStyle){
+					$pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-cont [rowinfo="'+i+'"]').setAttribute('style', (fnAddStyle.call(null,tbiItem)||''));
 				}
-			};
 
-			if(drawMode != 'hscroll'){
-				for(var j=0; j < colFixedIndex ; j++){
-					tdEle =_this.element.leftContent.querySelector('[data-grid-position="'+(i+','+j)+'"]');
-					addEle =tdEle.querySelector('.pub-content');
+				var overRowFlag = (itemIdx >= this.config.dataInfo.orginRowLen);
+				var addEle ,tdEle;
 
-					colItem = tci[j];
-					_this._setCellStyle(tdEle, i ,colItem , tbiItem)
+				for(var j =0 ; j < asideItem.length ;j++){
+					var tmpItem = asideItem[j];
+					var rowCol = i+','+tmpItem.key;
 
-					if(overRowFlag){
-						addEle.textContent='';
-					}else{
-						var val = this.valueFormatter( i, colItem, tbiItem, addEle);
-						_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
+					addEle =$pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-aside-cont').querySelector('[data-aside-position="'+rowCol+'"]>.aside-content');
 
-						if(tooltipFlag){
-							if(colItem.afTooltipFormatter){
-								val = colItem.afTooltipFormatter({item : tbiItem ,r: i ,c: j , keyItem : colItem});
+					if(tmpItem.key == 'lineNumber'){
+						addEle.textContent = (itemIdx+1);
+					}else if(tmpItem.key == 'checkbox'){
+						_$util.setCheckBoxCheck(addEle , tbiItem);
+					}else if(tmpItem.key == 'modify'){
+						addEle.textContent = 'V';
+					}
+				};
+
+				if(drawMode != 'hscroll'){
+					for(var j=0; j < colFixedIndex ; j++){
+						tdEle =_this.element.leftContent.querySelector('[data-grid-position="'+(i+','+j)+'"]');
+						addEle =tdEle.querySelector('.pub-content');
+
+						colItem = tci[j];
+						_this._setCellStyle(tdEle, i ,colItem , tbiItem)
+
+						if(overRowFlag){
+							addEle.textContent='';
+						}else{
+							var val = this.valueFormatter( i, colItem, tbiItem, addEle);
+							_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
+
+							if(tooltipFlag){
+								if(colItem.afTooltipFormatter){
+									val = colItem.afTooltipFormatter({item : tbiItem ,r: i ,c: j , keyItem : colItem});
+								}
+								tdEle.title = val;
 							}
-							tdEle.title = val;
+						}
+
+						tdEle = null;
+						addEle = null;
+					}
+				}
+
+				for(var j=startCol ;j <= endCol; j++){
+					//var addEle = _this.element.tdEle[rowCol] = $pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-tbody').querySelector('[data-grid-position="'+rowCol+'"]>.pub-content')
+
+					tdEle =_this.element.bodyContent.querySelector('[data-grid-position="'+(i+','+j)+'"]');
+
+					if(tdEle){
+						addEle =tdEle.querySelector('.pub-content');
+
+						colItem = tci[j];
+
+						_this._setCellStyle(tdEle, i ,colItem , tbiItem)
+
+						if(overRowFlag){
+							addEle.textContent='';
+						}else{
+							var val = this.valueFormatter( i, colItem, tbiItem, addEle);
+							_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
+
+							if(tooltipFlag){
+
+								if(colItem.afTooltipFormatter){
+									val = colItem.afTooltipFormatter({item : tbiItem ,r: i ,c: j , keyItem : colItem});
+								}
+								tdEle.title = val;
+
+							}
 						}
 					}
-
 					tdEle = null;
 					addEle = null;
 				}
-			}
-
-			for(var j=startCol ;j <= endCol; j++){
-				//var addEle = _this.element.tdEle[rowCol] = $pubSelector('#'+_this.prefix+'_bodyContainer .pubGrid-body-tbody').querySelector('[data-grid-position="'+rowCol+'"]>.pub-content')
-
-				tdEle =_this.element.bodyContent.querySelector('[data-grid-position="'+(i+','+j)+'"]');
-
-				if(tdEle){
-					addEle =tdEle.querySelector('.pub-content');
-
-					colItem = tci[j];
-
-					_this._setCellStyle(tdEle, i ,colItem , tbiItem)
-
-					if(overRowFlag){
-						addEle.textContent='';
-					}else{
-						var val = this.valueFormatter( i, colItem, tbiItem, addEle);
-						_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
-
-						if(tooltipFlag){
-
-							if(colItem.afTooltipFormatter){
-								val = colItem.afTooltipFormatter({item : tbiItem ,r: i ,c: j , keyItem : colItem});
-							}
-							tdEle.title = val;
-
-						}
-					}
-				}
-				tdEle = null;
-				addEle = null;
 			}
 						
 			itemIdx++;
@@ -2726,7 +2740,7 @@ Plugin.prototype ={
 			}
 		}
 		this.config.scroll.containerLeft = containerLeft;
-		this.config.scroll.before.startCol = this.config.scroll.startCol; // 이전데이타
+		this.config.scroll.before.startCol = this.config.scroll.startCol; // 이전데이터
 		this.config.scroll.before.endCol = this.config.scroll.endCol;
 
 		this.config.scroll.startCol = ( startCol > 0? startCol:0 );
@@ -3052,38 +3066,58 @@ Plugin.prototype ={
 			_$setting.init(_this, true);
 		}
 
-		// drag event start
-		_this.element.header.on('dragstart.pubGrid.dragitem', '.pub-header-cont', function (e){
-			
-			var selEle = $(this)
-				,col_idx = selEle.attr('col_idx');
-			
-			var dt = e.originalEvent.dataTransfer;
-			dt.effectAllowed = 'copyMove';
-			dt.setData('text/plain',_this.config.tColItem[col_idx].label);
-			
-		
-		}).on('drag.pubGrid.dragitem', '.label-wrapper', function (e){
-			//e.preventDefault();
-			//console.log('111');
-			
-			
-			//console.log('111111111');
-		}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
-			
-			return false; // mouse  cursor 이상 현상 제거 하기 위해서 처리함. 
-			
-		}).on('dragend.pubtab.dragitem',  function (e){
-			
-			
-		}).on('drop.pubGrid.dragitem', '.label-wrapper', function (e){
-			
-		})
+		if(headerOpt.drag.enabled === true){
+				// drag event start
+			_this.element.header.on('dragstart.pubGrid.dragitem', '.pub-header-cont', function (e){
+				
+				var selEle = $(this)
+					,col_idx = selEle.attr('col_idx');
+				
+				var dt = e.originalEvent.dataTransfer;
+				dt.effectAllowed = 'copyMove';
+				dt.setData('text/plain',_this.config.tColItem[col_idx].label);
+							
+			}).on('drag.pubGrid.dragitem', '.label-wrapper', function (e){
+				//e.preventDefault();
+				//console.log('111');
+								
+				//console.log('111111111');
+			}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
+				
+				return false; // mouse  cursor 이상 현상 제거 하기 위해서 처리함. 
+				
+			}).on('dragend.pubtab.dragitem',  function (e){
+				//var dt = e.originalEvent.dataTransfer;
+				e.originalEvent.dataTransfer.clearData()
+				
+			}).on('drop.pubGrid.dragitem', '.label-wrapper', function (e){
+				//var dt = e.originalEvent.dataTransfer;
+				// column move 
+				// console.log('drop',dt)
+			}).on('dragover.pubGrid.dragitem', function (e){
+				e.preventDefault();
+			})
+			var dropCallback = headerOpt.drag.dropCallback; 
 
+			$(document).off('drop.'+_this.prefix);
+			$(document).on('drop.'+_this.prefix, headerOpt.dropSelector, function (e){
+
+				if(!_this.config.focus){
+					return true;
+				}
+				var dt = e.originalEvent.dataTransfer;
+				var data = dt.getData('text/plain');
+
+				var reval = dropCallback(e, data); 
+				
+				if(reval === false){
+					return false; 
+				}
+				
+			})
+
+		}
 		
-		_this.element.header.on('dragover.pubGrid.dragitem', function (e){
-			e.preventDefault();
-		})
 	}
 	,_initFooterEvent : function (){
 		var _this = this;
@@ -3405,7 +3439,7 @@ Plugin.prototype ={
 				,selRow = intValue(selCol[0])
 				,colIdx = intValue(selCol[1]);
 
-			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode ,colIdx , _this.config.dataInfo);
+			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode, colIdx, _this.config.dataInfo);
 
 			_$util.setSelectionRangeInfo(_this, {
 				rangeInfo : {
@@ -3426,6 +3460,7 @@ Plugin.prototype ={
 		})
 
 		// focus out
+		$(document).off('mousedown.'+_this.prefix);
 		$(document).on('mousedown.'+_this.prefix, 'html', function (e) {
 			if(!_this.config.focus){
 				return true;
@@ -3525,6 +3560,7 @@ Plugin.prototype ={
 		var copyMode = _this.options.copyMode;
 		var selectionMode = _this.options.selectionMode;
 		// window keydown 처리.  tabindex 처리 확인 해볼것.
+		$(document).off('keydown.'+_this.prefix);
 		$(document).on("keydown." + _this.prefix, function (e) {
 
 			if(!_this.config.focus) return ;
@@ -3919,7 +3955,7 @@ Plugin.prototype ={
 	}
 	/**
 	 * @method copyData
-	 * @description 데이타 복사.
+	 * @description 데이터 복사.
 	 */
 	,copyData : function (){
 		var copyData = this.selectionData();
@@ -4763,12 +4799,12 @@ var _$template = {
 		}
 
 		for(var i =0 ; i < _this.config.scroll.maxViewCount; i++){
-
-			if(mode != 'init' && tmpeElementBody.find('[rowinfo="'+i+'"]').length > 0){
+			var trEle = tmpeElementBody.find('[rowinfo="'+i+'"]'); 
+			if(mode != 'init' && trEle.length > 0){
 				if(i >= _this.config.scroll.viewCount){
-					tmpeElementBody.find('[rowinfo="'+i+'"]').hide();
+					trEle.hide();
 				}else{
-					tmpeElementBody.find('[rowinfo="'+i+'"]').show();
+					trEle.show();
 				}
 			}else{
 				strHtm.push('<tr class="pub-body-tr '+((i%2==0)?'tr0':'tr1')+'" rowinfo="'+i+'">');
@@ -5115,10 +5151,17 @@ var _$util = {
 		}
 
 		cfgSelect.minIdx = ( cfgSelect.minIdx ==-1 ? Math.min(currInfo.startIdx, currInfo.endIdx) : Math.min(cfgSelect.minIdx, currInfo.startIdx, currInfo.endIdx) );
-		cfgSelect.maxIdx = Math.max(cfgSelect.maxIdx ,currInfo.endIdx , currInfo.startIdx);
+		cfgSelect.maxIdx = Math.max(cfgSelect.maxIdx, currInfo.endIdx, currInfo.startIdx);
+		cfgSelect.minIdx = cfgSelect.minIdx < -1 ? 0 : cfgSelect.minIdx;
+		cfgSelect.maxIdx = cfgSelect.maxIdx >= ctx.config.dataInfo.lastRowIdx ? ctx.config.dataInfo.lastRowIdx : cfgSelect.maxIdx;
 
-		cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min( currInfo.endCol , currInfo.startCol): Math.min(cfgSelect.minCol ,currInfo.endCol , currInfo.startCol) );
-		cfgSelect.maxCol = Math.max(cfgSelect.maxCol ,currInfo.endCol , currInfo.startCol);
+		if(initFlag !==true){
+			cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min(currInfo.endCol, currInfo.startCol): Math.min(cfgSelect.minCol, currInfo.endCol, currInfo.startCol) );
+			cfgSelect.maxCol = Math.max(cfgSelect.maxCol, currInfo.endCol, currInfo.startCol);
+
+			cfgSelect.minCol = cfgSelect.minCol < -1 ? 0 : cfgSelect.minCol;
+			cfgSelect.maxCol = cfgSelect.maxCol >= ctx.config.tColItem.length ? ctx.config.tColItem.length-1 : cfgSelect.maxCol;
+		}
 
 		if(isUndefined(rangeInfo)) return ;
 
@@ -5126,6 +5169,14 @@ var _$util = {
 		currInfo.maxIdx = Math.max(currInfo.endIdx, currInfo.startIdx);
 		currInfo.minCol = Math.min(currInfo.endCol, currInfo.startCol);
 		currInfo.maxCol = Math.max(currInfo.endCol, currInfo.startCol);
+
+		if(initFlag !==true){
+			currInfo.minCol = currInfo.minCol < -1 ? 0 : currInfo.minCol;
+			currInfo.maxCol = currInfo.maxCol >= ctx.config.tColItem.length ? ctx.config.tColItem.length-1 : currInfo.maxCol;
+
+			currInfo.minIdx = currInfo.minIdx < -1 ? 0 : currInfo.minIdx;
+			currInfo.maxIdx = currInfo.maxIdx >= ctx.config.dataInfo.lastRowIdx ? ctx.config.dataInfo.lastRowIdx : currInfo.maxIdx;
+		}
 
 		if(tdSelectFlag){
 			ctx._setCellSelect(initFlag);
@@ -5610,6 +5661,8 @@ var _$setting = {
 				}
 
 				_this.setFilterChangeInfo(gridCtx, settingAreaEle, gridCtx.config.settingConfig.currentClickItem);
+
+				console.log(gridCtx.config.settingConfig.changeInfos)
 				
 				var newViewCols = [];
 				var headRedraw = gridCtx.options.tColItem.length == viewColumnKey.length ? false : true;
@@ -5659,11 +5712,18 @@ var _$setting = {
 				});
 				gridCtx.config.settingConfig.viewInitFlag = true; 
 				gridCtx.config.settingConfig.filterInfo = false; 
+				gridCtx.config.settingConfig.changeInfos = {};
 				_this.viewFilterIcon(settingAreaEle, '$all', false);
 				
 				_this.setViewColumnInfo(gridCtx, settingAreaEle, {}, {filterInfos:[]});
-
 				gridCtx.options.tColItem = gridCtx.config.dataInfo.orginTColItem;
+
+				dataSearchEle.val('');
+				gridCtx.options.setting.configVal.search = {
+					field : ''
+					,val : ''
+				};
+				
 				gridCtx._setSearchData('search', false); 
 				gridCtx.setColFixedIndex(0, true);
 				return ; 
@@ -6031,6 +6091,11 @@ var _$setting = {
 		gridCtx.config.settingConfig.detailViewCol = changeInfo; 
 		settingAreaEle.find('.select-item-name').val(selectItem.label);
 		settingAreaEle.find('[name="setting-width-field"]').val(changeInfo.width);
+
+		console.log(selectItem.key);
+		if(isUndefined(selectItem.key)){
+			settingAreaEle.find('.view-col-item.on').removeClass('on');
+		}
 	}
 	,getReplaceCheckId : function (replaceStr){
 		return replaceStr.replace(/#checkboxid#/g, 'fc_'+ (++this.filterCheckboxIdx));

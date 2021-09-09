@@ -96,7 +96,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	/**
 	 *
 	 * @Method Name  : selectDatabaseManager
-	 * @Method 설명 : 데이타 베이스 매니저
+	 * @Method 설명 : 데이터 베이스 매니저
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 23.
 	 * @변경이력  :

@@ -58,7 +58,7 @@ Vue.config.devtools = true;
 Vue.prototype.$ajax = VARSQL.req.ajax;
 
 VarsqlAPP.message ={
-	empty : '데이타가 없습니다.'
+	empty : '데이터가 없습니다.'
 }
 
 // list component add

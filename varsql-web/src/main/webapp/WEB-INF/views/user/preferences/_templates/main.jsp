@@ -8,7 +8,7 @@
 	<%@ include file="/WEB-INF/include/head-manager.jsp"%>
 </head>
 <body>
-	<div id="wrapper" class="height100">
+	<div id="wrapper" class="h100">
 		<!-- Navigation -->
 		<c:if test="${headerview ne 'N'}">
 			<nav class="manager-top-wrap navbar-inverse navbar-fixed-top" role="navigation">
@@ -16,14 +16,14 @@
 			</nav>
 		</c:if>
 		<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-		<div id="main-wrap" class="container-fluid height100">
-			<div class="row height100">
+		<div id="main-wrap" class="container-fluid h100">
+			<div class="row h100">
 				<div id="sidebar-left" class="col-xs-2 col-sm-2">
 					<tiles:insertAttribute name="left" />
 				</div>
 
 				<!--Start Content-->
-				<div id="main-content" class="height100 col-xs-12 col-sm-10">
+				<div id="main-content" class="h100 col-xs-12 col-sm-10">
 					<tiles:insertAttribute name="body" />
 				</div>
 				<!--End Content-->

@@ -163,7 +163,6 @@ public final class ConnectionFactory implements ConnectionContext{
 			connInfo.setMin_idle(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_MIN_IDLE), 3));
 			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_TIMEOUT), 18000));
 			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_EXPORTCOUNT), 1000));
-			connInfo.setExportCount(NumberUtils.toInt(rs.getString(VarsqlKeyConstants.CONN_EXPORTCOUNT), 1000));
 
 			String conn_query = rs.getString(VarsqlKeyConstants.CONN_QUERY);
 			String dbvalidation_query = rs.getString(VarsqlKeyConstants.VALIDATION_QUERY);

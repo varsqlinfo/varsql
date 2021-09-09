@@ -4,7 +4,7 @@
 <div id="varsqlVueArea" class="context-menu-config display-off">
 	<div class="wh100-abs">
 		<div class="col-xs-12"  style="height:140px;">
-			<div class="col-xs-5 wh100 border" style="overflow:auto;" >
+			<div id="contentTreeMenu" class="col-xs-5 wh100 border" style="overflow:auto;" >
 				<ul>
 					<li v-for="(item,index) in contextItems">
 						<a :class="deteilItem == item?'active':''">
@@ -306,7 +306,12 @@
 	    	// 신규  item 정보 저장
 	    	,save : function (){
 				this.contextItems.push(this.deteilItem);
+
 				this.newItem();
+  
+				this.$nextTick(function() {
+					$('#contentTreeMenu').scrollTop($('#contentTreeMenu').prop('scrollHeight'));
+			    });
 	    	}
 	    	// item 삭제.
 	    	,removeItem : function (items,index,item){

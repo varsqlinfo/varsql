@@ -55,7 +55,7 @@
 
 
 <entry key="header.menu.tool.utils">Utils</entry>
-<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[Excel -> DDL]]></entry>
+<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[DDL Generate]]></entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">Help</entry>
@@ -194,7 +194,7 @@
 <entry key="manage.userlist.dept">소속</entry>
 <entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
 <entry key="manage.answeryn">답변여부</entry>
-<entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
+<entry key="manage.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">General</entry>

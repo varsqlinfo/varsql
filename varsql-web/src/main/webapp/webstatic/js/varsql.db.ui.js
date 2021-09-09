@@ -46,7 +46,7 @@ var _g_cache = {
 	,setSOMetaInitFlag : function (objectType){
 		_g_cache_obj_meta_store[objectType].initFlag=true;
 	}
-	// 메타 데이타 케쉬된값 꺼내기
+	// 메타 데이터 케쉬된값 꺼내기
 	,getSOMetaCache:function (objectType, objecName, tabKey){
 		tabKey =tabKey||'column';
 
@@ -74,7 +74,7 @@ var _g_cache = {
 		return (_g_all_schema_object[_g_options.param.schema] ||{})[objectType];
 
 	}
-	// 메타 데이타 셋팅하기.
+	// 메타 데이터 셋팅하기.
 	,setSOMetaCache:function (objectType, objecName, tabKey, data){
 		if(VARSQL.isUndefined(_g_cache_obj_meta_store[objectType][objecName])){
 			var objData = {};
@@ -758,7 +758,7 @@ _ui.headerMenu ={
 			}
 		});
 	}
-	// 데이타 내보내기.
+	// 데이터 내보내기.
 	,exportInfo :function (type){
 		var _self = this;
 
@@ -1333,7 +1333,7 @@ _ui.dbSchemaObject ={
 			gridObj.resizeDraw();
 		}
 	}
-	// 데이타 내보내기
+	// 데이터 내보내기
 	,_dataExport : function (exportObj){
 		_ui.SQL.exportDataDownload(exportObj);
 	}
@@ -2252,8 +2252,6 @@ _ui.dbObjectMetadata= {
 
 				var item = resData.item||{};
 
-				console.log(item.createScript);
-
 				item.createScript = getFormatSql(item.createScript, _g_options.dbtype, 'ddl');
 
 				_g_cache.setSOMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
@@ -2348,7 +2346,7 @@ _ui.addODbServiceObjectMetadata('table', {
 
 		var items = colData.items;
 
-		if(reloadFlag===true){ // 데이타 세로 로드시 cache에 추가.
+		if(reloadFlag===true){ // 데이터 세로 로드시 cache에 추가.
 			var colArr = [];
 			$.each(items , function (i , item){
 				colArr.push(item.name);
@@ -2372,7 +2370,7 @@ _ui.addODbServiceObjectMetadata('table', {
 			}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
-				{ label: '데이타타입', key: 'typeAndLength' },
+				{ label: '데이터타입', key: 'typeAndLength' },
 				{ label: 'Key', key: 'constraints', align:'center', width:45},
 				{ label: '기본값', key: 'defaultVal',width:45},
 				{ label: '널여부', key: 'nullable',width:45},
@@ -2448,7 +2446,7 @@ _ui.addODbServiceObjectMetadata('table', {
 
 //view 정보 보기.
 _ui.addODbServiceObjectMetadata('view', {
-	// view 메타 데이타 보기.
+	// view 메타 데이터 보기.
 	_viewColumn :function (colData ,callParam, eleName, reloadFlag){
 		var _self = this;
 		var $objType = 'view';
@@ -2457,7 +2455,7 @@ _ui.addODbServiceObjectMetadata('view', {
 
 		var items = colData.items;
 
-		if(reloadFlag===true){ // 데이타 세로 로드시 cache에 추가.
+		if(reloadFlag===true){ // 데이터 세로 로드시 cache에 추가.
 			var colArr = [];
 			$.each(items , function (i , item){
 				colArr.push(item.name);
@@ -2481,7 +2479,7 @@ _ui.addODbServiceObjectMetadata('view', {
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '컬럼명', key: 'name',width:80 },
-				{ label: '데이타타입', key: 'typeName' },
+				{ label: '데이터타입', key: 'typeName' },
 				{ label: '널여부', key: 'nullable',width:45},
 				{ label: 'Key', key: 'constraints',width:45},
 				{ label: '설명', key: 'comment',width:45}
@@ -2566,7 +2564,7 @@ _ui.addODbServiceObjectMetadata('procedure', {
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
-				{ label: '데이타타입', key: 'dataType' },
+				{ label: '데이터타입', key: 'dataType' },
 				{ label: 'IN, OUT', key: 'columnType',width:45},
 				{ label: '설명', key: 'comment',width:45},
 			]
@@ -2627,7 +2625,7 @@ _ui.addODbServiceObjectMetadata('function', {
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
 				{ label: '파라미터명', key: 'name',width:80 },
-				{ label: '데이타타입', key: 'dataType' },
+				{ label: '데이터타입', key: 'dataType' },
 				{ label: 'IN, OUT', key: 'columnType',width:45},
 				{ label: '설명', key: 'comment',width:45},
 			]
@@ -2886,7 +2884,7 @@ _ui.addODbServiceObjectMetadata('sequence', {
 })
 
 /**
- * sql 데이타 그리드
+ * sql 데이터 그리드
  */
 _ui.SQL = {
 	currentSqlEditorInfo : null
@@ -3722,7 +3720,7 @@ _ui.SQL = {
 		}
 	}
 	// editor 에 텍스트 추가.
-	,addTextToEditorArea : function(addText, addCriteria){
+	,addTextToEditorArea : function(addText, addOpts){
 		var _self = this;
 		var sqlEditorObj =_self.getSqlEditorObj();
 		if(sqlEditorObj ==false){
@@ -3731,19 +3729,17 @@ _ui.SQL = {
 
 		var currEditorCursor = sqlEditorObj.getCursor(true);
 
-		if(!VARSQL.isUndefined(addCriteria)){
-			if(addCriteria.type=='column'){
+		if(!VARSQL.isUndefined(addOpts)){
+			if(addOpts.type=='column'){
 
 				var startCursor = {line:0 , ch:0};
 
 				startCursor.line = currEditorCursor.line-10;
 				startCursor.line = startCursor.line > 0 ?startCursor.line : 0;
 
-				var chkQuery = sqlEditorObj.getRange(startCursor,currEditorCursor);
+				var chkQuery = sqlEditorObj.getRange(startCursor, currEditorCursor);
 
-				var addTextFormat = addColumnPrefix(chkQuery);
-				//addText = addColumnPrefix(chkQuery)+addText+' ';
-				addText = (addTextFormat=='{key}' ? '' : ' ')+ VARSQL.messageFormat(addTextFormat ,{key:addText,val:''});
+				addText = addColumnPrefix(chkQuery, addOpts);
 			}
 		}
 
@@ -4282,7 +4278,7 @@ _ui.SQL = {
 
 		return true;
 	}
-	// sql 데이타 보기
+	// sql 데이터 보기
 	,sqlData :function (evt){
 		var _self = this;
 		var sqlVal = _self.getSql();
@@ -4302,7 +4298,7 @@ _ui.SQL = {
 
 		return endFlag===true ? (isChange ? std :end ): (isChange ? end :std);
 	}
-	// sql 데이타 보기
+	// sql 데이터 보기
 	,_sqlData :function (sqlVal, paramFlag){
 		var _self = this;
 
@@ -4661,7 +4657,7 @@ _ui.sqlDataArea =  {
     		var resultLen = resData.length;
 
     		if(resultLen < 1 ){
-    			resData.data = [{result:"데이타가 없습니다."}];
+    			resData.data = [{result:"데이터가 없습니다."}];
     			resData.column =[{label:'result',key:'result', align:'center'}];
     		}
 
@@ -4753,18 +4749,13 @@ _ui.sqlDataArea =  {
 				,mode :'full'
 			}
 			,autoResize : false
-			,headerOptions:{
-				helpBtn:{
-					enabled : true
-					,title : '컬럼명 editor에 넣기'
-					,click :  function (clickInfo){
-						var item = clickInfo.item;
-						_ui.SQL.addTextToEditorArea(item.label+' ',{type:'column' , dataType : item.type});
-					}
-				}
-			}
 			,asideOptions :{
 				lineNumber : {enabled : true}
+			}
+			,headerOptions:{
+				drag:{
+					enabled : true
+				}
 			}
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
@@ -4793,8 +4784,13 @@ _ui.sqlDataArea =  {
 				items: [
 					{key : "copy" , "name": "복사"}
 					,{divider : true}
-					,{key : "select_column_editor" , "name": "컬럼명 넣기"}
-					,{key : "select_column_copy" , "name": "컬럼명 복사"}
+					,{key : "select_col" , "name": "컬럼명"
+						,subMenu : [
+							{ key : "select_col_copy","name": "컬럼명 복사"}
+							,{ key : "select_col_editor","name": "컬럼명 넣기"}
+							,{ key : "select_col_val_editor","name": "컬럼명 & 값 넣기"}
+						]
+					}
 					,{divider : true}
 					,{key : "detail" , "name": "상세보기"}
 					,{key : "download" , "name": "다운로드"
@@ -4828,22 +4824,28 @@ _ui.sqlDataArea =  {
 						return ;
 					}
 
-					if(key =='select_column_editor' || key =='select_column_copy'){
+					if(key =='select_col_editor' || key =='select_col_copy'){
 						var colInfos= $.pubGrid(_self.currnetDataGridSelector).getSelectionColInfos();
 
 						if(colInfos.length >0){
-							var colLabel  = [];
-							for(var i=0; i<colInfos.length; i++){
-								var colInfo = colInfos[i];
-								colLabel.push(colInfo.label);
-							}
-							var colLabelTxt = colLabel.join(', ');
-
-							if(key =='select_column_copy'){
-								copyStringToClipboard(colLabelTxt);
+							if(key =='select_col_copy'){
+								var colLabel  = [];
+								for(var i=0; i<colInfos.length; i++){
+									colLabel.push(colInfos[i].label);
+								}
+								copyStringToClipboard(colLabel.join('\t'));
 							}else{
-								_ui.SQL.addTextToEditorArea(' '+colLabelTxt);
+								_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfos});
 							}
+						}
+						return ;
+					}
+
+					if(key == 'select_col_val_editor'){
+						var colInfo= $.pubGrid(_self.currnetDataGridSelector).selectionData('json');
+
+						if(colInfo.header.length >0){
+							_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfo.header, data : colInfo.data});
 						}
 						return ;
 					}
@@ -4927,7 +4929,7 @@ _ui.sqlDataArea =  {
 			,tbodyItem :columnTypeArr
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
-					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key], {type:'column'});
+					_ui.SQL.addTextToEditorArea('', {type:'column', header : rowItem.item});
 				}
 			}
 			,rowOptions :{
@@ -5519,7 +5521,7 @@ function milli2str(milliTime, format) {
 }
 
 // 컬럼 에디터 넣을때 붙여질 문자.
-function addColumnPrefix(chkVal){
+function addColumnPrefix(chkVal, addColumnInfos){
 	chkVal = chkVal.replace(/^\s*|\s*$/g, '');
 	var reval = '{key}';
 
@@ -5556,45 +5558,37 @@ function addColumnPrefix(chkVal){
 
 	var chkStr = ' ' +chkVal.toLowerCase()+' ';
 
-	var chkReg = [',',' select ',' set ',' from ',' where ',' and ',' or '];
+	var chkReg = [' select ',' set ',' from ',' where ',' and ',' or '];
 
 	var regular = /(\s(select|from|where|and|or|on|order|by|group|update|delete|truncate|drop|create)\s)/g;
 
-	var prefixMap = {
-		',' :', {key}'
-		,'from' : ' where {key}={val}'
-		,'and' : ' and {key}={val}'
-		,'or' : ' or {key}={val}'
-		,'where' : ' and {key}={val}'
-		,'select' :' , {key}'
-	};
-
-
-	var dotCheckReg = /(\.)$/; // 마지막 문자 체크.
-
+	var addParamFirst = false;
+	var prefixStr = '';
 	for(var i =0 , len = chkReg.length;i <len;i++){
 		var chkItem = chkReg[i];
 		var lastIdx = chkStr.lastIndexOf(chkItem);
 
 		if(lastIdx > -1){
+			prefixStr = chkItem.replace(/\s/g,'');
+
 			chkStr = chkStr.substring(lastIdx+ chkItem.length);
 
-			if(dotCheckReg.test(chkStr.replace(/\s/g,''))) {
-				reval = '';
+			if(chkStr.replace(/\s/g,'') =='') {
+				addParamFirst = true;
 				break;
 			}
 
 			if(chkStr.match(regular) ==null){
 				if(chkItem ==','){
 					if(chkStr.indexOf('=') > -1){
-						reval = ', {key}={val}'
+						prefixStr = 'set';
 						break;
 					}
 				}
 
 				if(chkStr.replace(/\s/g,'') !=''){
 					if(chkStr.indexOf(';') < 0){
-						reval = prefixMap[chkItem.replace(/\s/g,'')];
+						prefixStr =chkItem.replace(/\s/g,'');
 					}
 				}
 
@@ -5603,7 +5597,109 @@ function addColumnPrefix(chkVal){
 		}
 	}
 
-	return (reval ==''?'{key}':reval);
+	prefixStr = prefixStr == '' ? ','  : prefixStr;
+
+	var prefixMap = {
+		',' :{
+			separator : ', '
+			,format : '{col}'
+		}
+		,'from' : {
+			start :' where '
+			,separator : 'and '
+			,format : '{col}={val}'
+			,inFormat : '{col} in ({val})'
+			,onlyFirst : true
+			,addValueFlag :true
+			,inFlag : true
+		}
+		,'and' : {
+			separator : 'and '
+			,format : '{col}={val}'
+			,inFormat : '{col} in ({val})'
+			,addValueFlag :true
+			,inFlag : true
+		}
+		,'or' : {
+			separator : 'or '
+			,format : '{col}={val}'
+			,inFormat : '{col} in ({val})'
+			,addValueFlag :true
+			,inFlag : true
+		}
+		,'where' : {
+			separator : 'and '
+			,format : '{col}={val}'
+			,inFormat : '{col} in ({val})'
+			,addValueFlag :true
+			,inFlag : true
+		}
+		,'select' :{
+			separator : ', '
+			,format : '{col}'
+		}
+		,'set' :{
+			separator : ', '
+			,format : '{col}={val}'
+			,addValueFlag :true
+		}
+	};
+
+	var headerArr = VARSQL.isArray(addColumnInfos.header) ?addColumnInfos.header : [addColumnInfos.header];
+	var dataArr = VARSQL.isArray(addColumnInfos.data) ? addColumnInfos.data : (VARSQL.isUndefined(addColumnInfos.data) ? [] : [addColumnInfos.data]);
+	var revalStr = [];
+	var prefixInfo = prefixMap[prefixStr] || prefixMap['select'];
+
+	for(var i =0; i < headerArr.length; i++){
+		var headerItem = headerArr[i];
+
+		var formatStr ='';
+		if(i == 0 && (prefixInfo.onlyFirst===true || addParamFirst===true)){
+			formatStr = prefixInfo.start||'';
+		}else{
+			formatStr = prefixInfo.separator;
+		}
+
+		var addVal = null;
+		if(prefixInfo.addValueFlag && headerItem.lob === false){
+			var addValue = [];
+			for (var j = 0; j < dataArr.length; j++) {
+				var dataItem = dataArr[j];
+				var val = dataItem[headerItem.key];
+				if(val){
+					if(headerItem.number){
+						addValue.push(val);
+					}else {
+						addValue.push('\''+val +'\'');
+					}
+				}
+			}
+			if(addValue.length > 1 && prefixInfo.inFormat){
+				addVal = addValue.join(',');
+				formatStr += prefixInfo.inFormat;
+			}else{
+				addVal = addValue[0];
+				formatStr += prefixInfo.format;
+			}
+		}else {
+			formatStr += prefixInfo.format;
+		}
+
+		if(VARSQL.isBlank(addVal)){
+			if(headerItem.number){
+				addVal = -1;
+			}else {
+				addVal = '\'\'';
+			}
+		}
+
+		revalStr.push(VARSQL.messageFormat(formatStr,{
+			col : (headerItem.column||headerItem.label)
+			,val : addVal
+		}));
+	}
+
+	return revalStr.join('\n');
 }
 
 }(jQuery, window, document,VARSQL));

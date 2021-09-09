@@ -3,7 +3,7 @@
 
 <ul class="nav left-menu">
 	<li>
-        <a href="/vsql/user" style="text-align:center;">
+        <a href="<c:url value="/user/" />" style="text-align:center;">
         	<i class="fa fa-home"></i><spring:message code="database.screen" text="메인화면 가기"/>
         </a>
     </li>

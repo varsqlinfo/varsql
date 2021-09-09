@@ -12,10 +12,8 @@
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?version=${css_ver}" rel="stylesheet">
 
-<!-- Custom CSS -->
-<link href="${pageContextPath}/webstatic/css/varsql.common.min.css?version=${css_ver}" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/css/varsql.manager.css?version=${css_ver}" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 

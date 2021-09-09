@@ -22,7 +22,7 @@ VARSQLApi.preferences = {
 	 * @method save
 	 * @param prefInfo {Object} - {conuid : String ,prefKey : String ,  prefVal : String}  설정 정보.
 	 * @param callback {Object} - callback method
-	 * @description 데이타 add
+	 * @description 데이터 add
 	 */
 	save : function (prefInfo , callback){
 		VARSQL.req.ajax({
@@ -45,7 +45,7 @@ VARSQLApi.sqlTemplate = {
 	 * @method save
 	 * @param prefInfo {Object} - {conuid : String ,prefKey : String ,  prefVal : String}  설정 정보.
 	 * @param callback {Object} - callback method
-	 * @description 데이타 add
+	 * @description 데이터 add
 	 */
 	load : function (prefInfo , callback){
 		VARSQL.req.ajax({

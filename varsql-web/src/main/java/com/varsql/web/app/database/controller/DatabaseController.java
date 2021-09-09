@@ -186,7 +186,7 @@ public class DatabaseController extends AbstractController {
 	/**
 	 *
 	 * @Method Name  : dbObjectMetadataList
-	 * @Method 설명 : service menu 클릭했을때 그 메뉴에 대한 메타 데이타 가져오기.
+	 * @Method 설명 : service menu 클릭했을때 그 메뉴에 대한 메타 데이터 가져오기.
 	 * @작성일   : 2015. 4. 13.
 	 * @작성자   : ytkim
 	 * @변경이력  :

@@ -14,7 +14,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<div>유효하지 않은 데이타 베이스 입니다.</div>
+						<div>유효하지 않은 데이터 베이스 입니다.</div>
 						<div>페이지를 <a href="javascript:;" onclick="fnFresh();">새로고침</a> 하세요.</div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>

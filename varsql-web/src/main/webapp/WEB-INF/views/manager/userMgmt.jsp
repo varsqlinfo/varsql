@@ -389,14 +389,16 @@ VarsqlAPP.vueServiceBean( {
 		,initPassword :function(sItem){
 			var _self = this;
 
+			if(!confirm(VARSQL.messageFormat('varsql.m.0009', {userName : sItem.uname}))){
+				return ;
+			}
+
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/user/initPassword'}
 				,data : sItem
 				,success: function(resData) {
 
-					_self.$set(sItem, "initpw", resData.item)
-
-					alert(VARSQL.messageFormat('varsql.m.0001'));
+					_self.$set(sItem, "initpw", resData.item);
 
 					setTimeout(function (){
 						sItem.initpw ='';

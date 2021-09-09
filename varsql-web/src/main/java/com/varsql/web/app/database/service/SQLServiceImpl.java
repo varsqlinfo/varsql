@@ -134,7 +134,7 @@ public class SQLServiceImpl{
 	/**
 	 *
 	 * @Method Name  : sqlData
-	 * @Method 설명 : 쿼리 데이타 보기.
+	 * @Method 설명 : 쿼리 데이터 보기.
 	 * @작성자   : ytkim
 	 * @작성일   : 2015. 4. 9.
 	 * @변경이력  :
@@ -339,7 +339,7 @@ public class SQLServiceImpl{
 	 *
 	 * @param sqlExecuteInfo
 	 * @Method Name  : getResultData
-	 * @Method 설명 : 데이타 얻기
+	 * @Method 설명 : 데이터 얻기
 	 * @작성일   : 2015. 4. 9.
 	 * @작성자   : ytkim
 	 * @변경이력  :
@@ -431,7 +431,7 @@ public class SQLServiceImpl{
 	}
 
 	/**
-	 * 데이타 내보내기.
+	 * 데이터 내보내기.
 	 * @param paramMap
 	 */
 	@SuppressWarnings("rawtypes")

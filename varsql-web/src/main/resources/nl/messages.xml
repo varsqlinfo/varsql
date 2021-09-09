@@ -40,7 +40,7 @@
 <entry key="header.menu.tool.export">내보내기</entry>
 <entry key="header.menu.tool.export.specification">테이블 명세서</entry>
 <entry key="header.menu.tool.export.ddl">DDL</entry>
-<entry key="header.menu.tool.export.data">데이타</entry>
+<entry key="header.menu.tool.export.data">데이터</entry>
 <entry key="header.menu.tool.setting">설정</entry>
 <entry key="header.menu.tool.show.plugin">컴포넌트보기</entry>
 <entry key="header.menu.tool.show.glossary">용어집</entry>
@@ -53,7 +53,7 @@
 <entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
 
 <entry key="header.menu.tool.utils">유틸리티</entry>
-<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[Excel -> DDL]]></entry>
+<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[DDL 생성하기]]></entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">도움말</entry>
@@ -148,7 +148,7 @@
 <entry key="msg.save.success">저장 되었습니다</entry>
 <entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
-<entry key="msg.nodata">데이타가 없습니다.</entry>
+<entry key="msg.nodata">데이터가 없습니다.</entry>
 <entry key="msg.success">성공</entry>
 <entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
 <entry key="msg.data.select">데이터를 선택하시오.</entry>
@@ -228,7 +228,7 @@
 <entry key="manage.userlist.dept">소속</entry>
 <entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
 <entry key="manage.answeryn">답변여부</entry>
-<entry key="manage.dbnuser.dbuseuser">데이타 베이스 사용자 관리</entry>
+<entry key="manage.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
 
 
 <entry key="manage.glossary.word">용어</entry>

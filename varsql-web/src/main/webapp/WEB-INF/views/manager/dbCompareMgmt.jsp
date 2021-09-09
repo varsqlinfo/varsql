@@ -136,28 +136,29 @@
 .result-table{
 }
 </style>
-<div>----------::결과::---------
+<div>
+	<h4 class="text-center">---------- <spring:message code="compare.result" text="비교결과"/> ---------</h4>
 	<table style="width:100%;border:1px solid #000000;border-collapse: collapse;">
 		<colgroup>
 			<col style="width:100px;">
 			<col style="width:*;">
 		</colgroup>
 		<tr>
-			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">동일한 수</td>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;"><spring:message code="same.count" text="동일한 수"/></td>
 			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
 				<a href="javascript:;" class="result-count">{{sameInfo.cnt}}</a>
 				<div class="result-detail" :class="sameInfo.cnt > 0 ?'':'hidden'"><pre>{{sameInfo.htm}}</pre></div>
 			</td>
 		</tr>
 		<tr>
-			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">다른 수</td>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;"><spring:message code="different.count" text="다른 수"/></td>
 			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
 				<a href="javascript:;" class="result-count">{{differentInfo.cnt}}</a>
 				<div class="result-detail" :class="differentInfo.cnt > 0 ?'':'hidden'"><pre v-html="differentInfo.htm"></pre></div>
 			</td>
 		</tr>
 		<tr>
-			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">없는 수</td>
+			<td style="vertical-align:top;padding:3px 10px;border:1px solid #000000;"><spring:message code="empty.count" text="없는 수"/></td>
 			<td class="result-wrapper" style="vertical-align:top;padding:3px 10px;border:1px solid #000000;">
 				<a href="javascript:;" class="result-count">{{emptyInfo.cnt}}</a>
 				<div class="result-detail" :class="emptyInfo.cnt > 0 ?'':'hidden'"><pre>{{emptyInfo.htm}}</pre></div>
@@ -165,23 +166,21 @@
 		</tr>
 	</table>
 </div>
-<pre style="margin: 0px;margin-top:6px;">
-	<div v-html="resultReport" :title="compareResult"></div>
-</pre>
+<pre style="margin: 0px;margin-top:6px;"><div v-html="resultReport" :title="compareResult"></div></pre>
 							</div>
 						</div>
 					</div>
 					<div class="main-spliter" data-prev-min-size="20" data-next-min-size="20"></div>
 					<div style="width:55%">
 						<div class="panel panel-default" style="height: 100%;padding-bottom: 10px; margin-bottom: 10px;">
-							<spring:message code="compare.detail" text="비교상세"/> : <span style="font-weight: bold;padding-left:5px;">{{compareSourceItem.name}}&lt;-&gt;{{compareTargetItem.name}}</span>
+							<spring:message code="compare.info" text="비교 정보"/> : <span style="font-weight: bold;padding-left:5px;">{{compareSourceItem.name}}&lt;-&gt;{{compareTargetItem.name}}</span>
 							<div class="panel-body" style="padding: 5px 5px 0px 5px;" :data-compare-mode="currentObjectType != 'table'?'text':''">
 								<div data-compare-area="grid">
 									<div class="col-xs-6">
 										<div style="margin:3px;">
 											<div class="row">
 												<span class="text-ellipsis">
-													<spring:message code="column" text="desc"/>
+													<spring:message code="source" text="대상"/>
 													<span :class="compareSourceItem.remarks != compareTargetItem.remarks ?'error':''">
 														{{compareSourceItem.remarks}}
 													</span>
@@ -195,7 +194,7 @@
 										<div style="margin:3px;">
 											<div class="row">
 												<span class="text-ellipsis">
-													<spring:message code="column" text="desc"/>
+													<spring:message code="target" text="타켓"/>
 													<span :class="compareSourceItem.remarks != compareTargetItem.remarks ?'error':''">
 														{{compareTargetItem.remarks}}
 													</span>
@@ -498,17 +497,17 @@ VarsqlAPP.vueServiceBean( {
 
 			var diffItem = _self.diffItem;
 			if(diffItem.source ==''){
-				VARSQLUI.toast.open('대상을 선택하세요.');
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0010'));
 				return ;
 			}
 			if(diffItem.target ==''){
-				VARSQLUI.toast.open('타켓을 선택하세요.');
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0011'));
 				return ;
 			}
 
 			var objectType = diffItem.objectType;
 			if(objectType ==''){
-				VARSQLUI.toast.open('objectType을 선택하세요.');
+				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0012'));
 				return ;
 			}
 
@@ -621,8 +620,6 @@ VarsqlAPP.vueServiceBean( {
 				}
 			}
 
-			console.log(resData);
-
 			return resData;
 		}
 		//상세 비교
@@ -679,14 +676,15 @@ VarsqlAPP.vueServiceBean( {
 				compareLog = [];
 				compareFlag = false;
 				if(targetCompareNameMap.hasOwnProperty(key)){
-					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a>테이블 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
+					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a> ');
+					compareLog.push(VARSQL.messageFormat('varsql.m.0015')+'<div class="column-compare-log" data-tbl-name="'+key+'">');
 
 					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 
 					if(sourceItem.remarks != targetItem.remarks){
 						compareFlag = true;
-						compareLog.push('테이블의 설명이 같지 않습니다. 대상 : ['+sourceNameMap[key].remarks + '] 타켓 : ['+targetCompareNameMap[key].remarks +'] \n');
+						compareLog.push(VARSQL.messageFormat('varsql.m.0013',{sourceRemark : sourceNameMap[key].remarks, targetRemark : targetCompareNameMap[key].remarks })+'\n');
 					}
 
 					sourceColList = sourceItem.colList;
@@ -697,8 +695,9 @@ VarsqlAPP.vueServiceBean( {
 
 					if(sourceColLen != targetColLen){
 						compareFlag = true;
-						compareLog.push('컬럼 카운트  대상 : '+sourceColLen+ ' 타켓 : '+targetColLen+' \n');
+						compareLog.push(VARSQL.messageFormat('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen[key].remarks })+'\n');
 					}
+
 
 					var maxColLen = Math.max(sourceColLen,targetColLen);
 
@@ -722,6 +721,7 @@ VarsqlAPP.vueServiceBean( {
 
 					objectColNameMap[key] = colNameMap; // table columun name 저장.
 
+					compareLog.push('# '+VARSQL.messageFormat('varsql.m.0025')+' #\n');
 					for(var sourceColKey in sourceColMap){
 						sourceColItem = sourceColMap[sourceColKey];
 						targetColItem = targetColMap[sourceColKey];
@@ -732,28 +732,34 @@ VarsqlAPP.vueServiceBean( {
 							if(targetColItem){
 								var firstFlag = true;
 								var addFlag = false;
+								var compareItemInfo;
 								var colItemKey;
 								for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
-									colItemKey = compareColKey[colKeyIdx];
+									compareItemInfo = compareColKey[colKeyIdx];
+									colItemKey = compareItemInfo.key;
 									if($.trim(sourceColItem[colItemKey]) != $.trim(targetColItem[colItemKey])){
 										addFlag = true;
 										compareFlag = true;
-										compareLog.push((firstFlag===true ? '  컬럼 : '+sourceColKey+' \t ' : '')+colItemKey +' 대상 : ['+sourceColItem[colItemKey]+ '] 타켓 : ['+targetColItem[colItemKey]+'], ');
-
+										if(firstFlag){
+											compareLog.push('Column : '+sourceColKey+' \t ');
+										}
+										compareLog.push(VARSQL.messageFormat('varsql.m.0016',{columnLabel : compareItemInfo.label, sourceValue : sourceColItem[colItemKey], targetValue: targetColItem[colItemKey] }) + (firstFlag ? '' : ','));
 										firstFlag = false;
+
 									}
 								}
 								if(addFlag) compareLog.push('\n');
 							}else{
 								compareFlag = true;
-								compareLog.push('타켓 테이블에 ['+sourceColKey+ '] 컬럼이 존재 하지 않습니다.\n');
+								compareLog.push(VARSQL.messageFormat('varsql.m.0017',{sourceKey : sourceColKey})+'\n');
 							}
 						}
 					}
 
+					compareLog.push('# '+VARSQL.messageFormat('varsql.m.0026')+' #\n');
 					for(var targetColKey in targetColMap){
 						compareFlag = true;
-						compareLog.push('대상 테이블에 ['+targetColKey+ '] 컬럼이 존재 하지 않습니다.\n');
+						compareLog.push(VARSQL.messageFormat('varsql.m.0024',{targetKey : targetColKey})+'\n');
 					}
 
 					compareLog.push('</div>');
@@ -769,7 +775,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">타켓에 <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> 테이블이 존재 하지 않습니다 </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.messageFormat('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -778,7 +784,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">대상에 [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] 테이블이 존재 하지 않습니다.</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.messageFormat('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');
@@ -795,13 +801,7 @@ VarsqlAPP.vueServiceBean( {
 				var itemArr = resData.items;
 				this.sourceItems = itemArr;
 				$.pubGrid('#sourceObjectMeta',{
-					setting : {
-						enable : true
-						,click : false
-						,enableSearch : true
-						,enableSpeed : true
-					}
-					,selectionMode :'row'
+					selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -845,13 +845,7 @@ VarsqlAPP.vueServiceBean( {
 				this.targetItems = itemArr;
 
 				$.pubGrid('#targetObjectMeta',{
-					setting : {
-						enable : true
-						,click : false
-						,enableSearch : true
-						,enableSpeed : true
-					}
-					,selectionMode :'row'
+					selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -979,7 +973,7 @@ VarsqlAPP.vueServiceBean( {
 
 						var equlasFlag = true;
 						for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
-							var colKey = compareColKey[colKeyIdx];
+							var colKey = compareColKey[colKeyIdx].key;
 
 							sourceCol[colKey+'_ne'] =false;
 							if(targetCol[colKey+'_ne']) targetCol[colKey+'_ne'] =false;
@@ -1038,7 +1032,7 @@ VarsqlAPP.vueServiceBean( {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
 						{ label: '컬럼명', key: 'name',width:80 , render : 'html',formatter : errorFormatter},
-						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
+						{ label: '데이터타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
 						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
 						{ label: '기본값', key: 'defaultVal',width:45 , render : 'html',formatter : errorFormatter},
 						{ label: '널여부', key: 'nullable',width:45 , render : 'html',formatter : errorFormatter},
@@ -1072,7 +1066,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : '테이블이 존재 하지 않습니다.'
+						empty : VARSQL.messageFormat('varsql.m.0019')
 					}
 				});
 			}
@@ -1099,7 +1093,7 @@ VarsqlAPP.vueServiceBean( {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
 						{ label: '컬럼명', key: 'name',width:80, render : 'html',formatter : errorFormatter},
-						{ label: '데이타타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
+						{ label: '데이터타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
 						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
 						{ label: '기본값', key: 'defaultVal',width:45, render : 'html',formatter : errorFormatter},
 						{ label: '널여부', key: 'nullable',width:45, render : 'html',formatter : errorFormatter},
@@ -1133,7 +1127,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : '테이블이 존재 하지 않습니다.'
+						empty : VARSQL.messageFormat('varsql.m.0019')
 					}
 				});
 			}
@@ -1145,13 +1139,7 @@ VarsqlAPP.vueServiceBean( {
 				var itemArr = resData.items;
 				this.sourceItems = itemArr;
 				$.pubGrid('#sourceObjectMeta',{
-					setting : {
-						enable : true
-						,click : false
-						,enableSearch : true
-						,enableSpeed : true
-					}
-					,selectionMode :'row'
+					selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -1195,13 +1183,7 @@ VarsqlAPP.vueServiceBean( {
 				this.targetItems = itemArr;
 
 				$.pubGrid('#targetObjectMeta',{
-					setting : {
-						enable : true
-						,click : false
-						,enableSearch : true
-						,enableSpeed : true
-					}
-					,selectionMode :'row'
+					selectionMode :'row'
 					,headerOptions:{
 						resize:{
 							update :  function (item){
@@ -1291,9 +1273,9 @@ VarsqlAPP.vueServiceBean( {
 							compareFlag = true;
 
 							if(itemKey =='createScript'){
-								compareLog.push('['+itemKey+'] 같지 않습니다.\n');
+								compareLog.push(VARSQL.messageFormat('varsql.m.0021', {key: itemKey})+'\n');
 							}else{
-								compareLog.push('['+itemKey+'] 같지 않습니다. 대상 : '+sourceItem[itemKey] + ' 타켓 : '+targetItem[itemKey] +'\n');
+								compareLog.push(VARSQL.messageFormat('varsql.m.0022', {key: itemKey, sourceValue : sourceItem[itemKey], targetValue : targetItem[itemKey]})+'\n');
 							}
 						}
 					}
@@ -1311,7 +1293,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">타켓에 <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> 존재 하지 않습니다 </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.messageFormat('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+' </span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -1320,7 +1302,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">대상에 [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] 존재 하지 않습니다.</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.messageFormat('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');

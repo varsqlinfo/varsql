@@ -1,18 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
-<style>
-.view-area{
-	display:none;
-}
-
-.view-area.on{
-	display:block;
-}
-.list-group-item a{
-	color : #000;
-}
-
-</style>
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">

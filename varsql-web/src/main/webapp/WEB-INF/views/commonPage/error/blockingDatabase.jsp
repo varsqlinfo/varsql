@@ -14,7 +14,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<div>차단된 데이타 베이스 입니다.</div>
+						<div>차단된 데이터 베이스 입니다.</div>
 						<div>관리자에게 문의하세요.</div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>

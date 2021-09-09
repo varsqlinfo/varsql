@@ -122,7 +122,14 @@ var TABLE_COL_KEYS ={
 }
 
 // db 비교 키 값.
-var COMPARE_COL_KEY = ['name','typeAndLength','constraints','defaultVal','nullable','comment'];
+var COMPARE_COL_KEY = [
+	{ label: '컬럼명', key: 'name'},
+	{ label: '데이터타입', key: 'typeAndLength'},
+	{ label: 'Key', key: 'constraints'},
+	{ label: '기본값', key: 'defaultVal'},
+	{ label: '널여부', key: 'nullable'},
+	{ label: '설명', key: 'comment'}
+];
 
 var DEFINE_INFO = {
 	MARIADB : {
