@@ -163,6 +163,7 @@ var _initialized = false
 			,btnDelay : 100		// 방향키 버튼 속도.
 			,dragDelay : 7		// 스크롤 bar drag delay
 			,speed : 1			// 스크롤 스피드
+			,enableWheel : true 	//  wheel 로 스크롤 이동. 
 
 		}
 	}
@@ -2245,8 +2246,6 @@ Plugin.prototype ={
 
 		var drawFlag =false;
 
-
-
 		if(type !='init' && ( beforeViewCount != cfg.scroll.viewCount )){
 			drawFlag = _this.getTbodyHtml();
 		}
@@ -2339,7 +2338,7 @@ Plugin.prototype ={
 					e.stopPropagation();
 				}
 			}else{
-				if(_this.config.scroll.hUse){
+				if(_this.config.scroll.hUse && _this.options.scroll.horizontal.enableWheel===true){
 					_this.moveHorizontalScroll({pos :(delta > 0?'L':'R') , speed : _this.options.scroll.horizontal.speed});
 
 					if(_this.options.scroll.isStopPropagation===true){
@@ -4402,7 +4401,7 @@ Plugin.prototype ={
 
 		_this.element.header.on('touchstart.pubresizer mousedown.pubresizer', '.pub-header-resizer', function (e){
 			if(cfg.currentHeaderResizeFlag ===false) return false; 
-			var moveStart = false;
+			
 			_$util.colResize(_this, $(this));
 
 			_this.element.resizeHelper.show().css('left', (_this.drag.positionLeft+_this.drag.totColW)+'px');
@@ -4413,7 +4412,8 @@ Plugin.prototype ={
 
 			// resize시 select안되게 처리 . cursor처리
 			_$doc.attr("onselectstart", "return false");
-			
+
+			var moveStart = false;
 			_$doc.on('touchmove.colheaderresize mousemove.colheaderresize', function (e1){
 				if(!moveStart){
 					var moveX = evtPos(e1).x;
@@ -4430,7 +4430,7 @@ Plugin.prototype ={
 				_this.element.resizeHelper.hide();
 			});
 
-			return true;
+			return false;
 		})
 	
 	}
@@ -4575,28 +4575,33 @@ Plugin.prototype ={
 		countPerPage = countPerPage || 10;
 		unitPage = unitPage || 10;
 
-		if (totalCount == 0) {
-			countPerPage = unitCount;
-		} else if (totalCount < countPerPage) {
-			countPerPage = totalCount / unitCount * unitCount;
-			if (totalCount % unitCount > 0) {
-				countPerPage += unitCount;
+		if (totalCount < 1) {
+			return {
+				'currPage' :0 ,'unitPage' : 0
+				,'totalCount' : 0 ,'totalPage' : 0
 			}
+		} 
+		
+		if (totalCount < countPerPage) {
+			countPerPage = totalCount;
 		}
+		
+		var totalPage = (totalCount % countPerPage == 0) ? (totalCount/countPerPage) : (Math.floor(totalCount/countPerPage) + 1)
 
-		var totalPage = (totalCount % countPerPage == 0) ? (totalCount/countPerPage) : (totalCount/countPerPage + 1)
-
-		if (totalPage < currPage)
+		if (totalPage < currPage){
 			currPage = totalPage;
-		var currEndCount;
+		}
+		
+		var currEndCount = countPerPage;
+		
 		if (currPage != 1) {
 			currEndCount = currPage * countPerPage;
-		} else {
-			currEndCount = countPerPage;
 		}
 
-		if (currEndCount > totalCount)
+		if (currEndCount > totalCount){
 			currEndCount = totalCount;
+		}
+		
 		var currStartPage;
 		var currEndPage;
 
@@ -4604,11 +4609,15 @@ Plugin.prototype ={
 			currEndPage = totalPage;
 			currStartPage = 1;
 		} else {
-			if(currPage < (unitPage /2)){
-				currEndPage = (currPage - 1) / unitPage * unitPage + unitPage;
+			var halfUnitPage = Math.floor(unitPage /2); 
+			if(currPage < halfUnitPage){
+				currEndPage = unitPage;
+				currStartPage = 1; 
+			}else if(currPage+halfUnitPage < totalPage){
+				currEndPage = currPage + halfUnitPage;
 				currStartPage = currEndPage - unitPage + 1;
 			}else{
-				currEndPage = (currPage + unitPage /2);
+				currEndPage = (currPage + halfUnitPage);
 
 				if(currEndPage > totalPage){
 					currEndPage =totalPage;
@@ -6092,7 +6101,6 @@ var _$setting = {
 		settingAreaEle.find('.select-item-name').val(selectItem.label);
 		settingAreaEle.find('[name="setting-width-field"]').val(changeInfo.width);
 
-		console.log(selectItem.key);
 		if(isUndefined(selectItem.key)){
 			settingAreaEle.find('.view-col-item.on').removeClass('on');
 		}

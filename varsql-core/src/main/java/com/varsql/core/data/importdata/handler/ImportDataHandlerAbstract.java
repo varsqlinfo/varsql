@@ -1,7 +1,5 @@
 package com.varsql.core.data.importdata.handler;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.List;
 
 import com.varsql.core.sql.beans.ExportColumnInfo;
@@ -13,7 +11,6 @@ public abstract class ImportDataHandlerAbstract implements ImportDataHandler{
 	private List<ExportColumnInfo> columns;
 
 	private String sql;
-	private Connection conn;
 
 	public ImportDataHandlerAbstract() {}
 
@@ -57,7 +54,7 @@ public abstract class ImportDataHandlerAbstract implements ImportDataHandler{
 			}
 		}
 
-		querySb.append(") values ( ").append(paramSb.toString()).append(") ;") ;
+		querySb.append(") values ( ").append(paramSb.toString()).append(") ") ;
 
 		this.sql = querySb.toString();
 	}
