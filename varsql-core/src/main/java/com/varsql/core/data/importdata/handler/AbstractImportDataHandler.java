@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.varsql.core.sql.beans.ExportColumnInfo;
 
-public abstract class ImportDataHandlerAbstract implements ImportDataHandler{
+public abstract class AbstractImportDataHandler implements ImportDataHandler{
 
 	private String tableName;
 
@@ -12,13 +12,13 @@ public abstract class ImportDataHandlerAbstract implements ImportDataHandler{
 
 	private String sql;
 
-	public ImportDataHandlerAbstract() {}
+	public AbstractImportDataHandler() {}
 
-	public ImportDataHandlerAbstract(String sql) {
+	public AbstractImportDataHandler(String sql) {
 		this.sql = sql;
 	}
 
-	public ImportDataHandlerAbstract(String tableName, List<ExportColumnInfo> columns) {
+	public AbstractImportDataHandler(String tableName, List<ExportColumnInfo> columns) {
 		setTableName(tableName);
 		setColumns(columns);
 	}

@@ -14,154 +14,132 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.code.VarsqlFilePathCode;
+import com.varsql.core.exception.FileUploadException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.controller.fileupload.FileUploadController;
-import com.varsql.web.exception.FileUploadException;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
+import com.vartech.common.exception.VartechRuntimeException;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
-/**
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: FileUploadService.java
-* @DESC		: file upload service
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-*2018. 7. 24. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
- */
 @Service
 public class FileUploadService {
-
 	private final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
 	@Autowired
 	private FileInfoEntityRepository fileInfoEntityRepository;
 
-	/**
-	 *
-	 * @Method Name  : uploadFile
-	 * @Method 설명 : 파일 저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-
-	public FileInfoEntity uploadFile(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId) {
-		List<FileInfoEntity> uploadFiles = uploadFiles(mtfRequest, div, paramFileContId);
-
-		if(uploadFiles.size() > 0) {
+	public FileInfoEntity uploadFile(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String paramFileContId) {
+		List<FileInfoEntity> uploadFiles = uploadFiles(mtfRequest, fileType, paramFileContId);
+		if (uploadFiles.size() > 0)
 			return uploadFiles.get(0);
-		}else {
-			return null;
-		}
+		return null;
 	}
 
-	/**
-	 *
-	 * @Method Name  : uploadFiles
-	 * @Method 설명 : 멀티 파일 저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId) {
-		return uploadFiles(mtfRequest, div, paramFileContId, null);
+	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String paramFileContId) {
+		return uploadFiles(mtfRequest, fileType, paramFileContId, null);
 	}
 
-	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, String div, String paramFileContId,	String vconnid) {
-		final String fileContId =StringUtils.isBlank(paramFileContId) ? VartechUtils.generateUUID() :paramFileContId;
-
+	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String contentId,
+			String vconnid) {
+		String fileContId = StringUtils.isBlank(contentId) ? VartechUtils.generateUUID() : contentId;
 		Iterator<String> fileNameIter = mtfRequest.getFileNames();
+		List<FileInfoEntity> uploadFiles = new ArrayList<>();
 
-		List<FileInfoEntity> uploadFiles = new ArrayList<FileInfoEntity>();
-
-		// 파일 날짜별(yyyyMMdd) 로 생성 하기
-        // 업무 구분 + 날짜별 디렉토리 위치
-        String filePath = FileServiceUtils.getSaveRelativePath(VarsqlFilePathCode.getFileType(div).getDiv());
-
-		while(fileNameIter.hasNext()) {
-    		String fileFieldName  = fileNameIter.next();
-
-    		List<MultipartFile> files = mtfRequest.getFiles(fileFieldName);
-
-    		if(files.size() > 0) {
-    			files.forEach(file ->{
-    				if(!file.isEmpty()) {
-    					try {
-    						FileInfoEntity fileInfo = saveFile(div, file, filePath);
-    						fileInfo.setFileContId(fileContId);
-        					fileInfo.setFileFieldName(fileFieldName);
-        					fileInfo.setVconnid(vconnid);
+		while (fileNameIter.hasNext()) {
+			String fileFieldName = fileNameIter.next();
+			List<MultipartFile> files = mtfRequest.getFiles(fileFieldName);
+			if (files.size() > 0)
+				files.forEach(file -> {
+					if (!file.isEmpty())
+						try {
+							FileInfoEntity fileInfo = saveFile(fileType, file, contentId);
+							fileInfo.setFileContId(fileContId);
+							fileInfo.setFileFieldName(fileFieldName);
+							fileInfo.setContGroupId(vconnid);
 							uploadFiles.add(fileInfo);
 						} catch (IllegalStateException | IOException e) {
-							logger.error("file upload exception : {}", e.getMessage(), e);
-							throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e, "file upload error");
+							this.logger.error("file upload exception : {}", e.getMessage(), e);
+							throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e,
+									"file upload error");
 						}
-    				}
-    			});
-    		}
-    	}
-
-		if(uploadFiles.size() > 0 ) {
-			fileInfoEntityRepository.saveAll(uploadFiles);
+				});
 		}
 
+		if (uploadFiles.size() > 0)
+			this.fileInfoEntityRepository.saveAll(uploadFiles);
 		return uploadFiles;
 	}
 
-	/**
-	 *
-	 * @Method Name  : saveFile
-	 * @Method 설명 : 파일 저장.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 10. 31.
-	 * @변경이력  :
-	 * @param url
-	 * @return
-	 */
-	private FileInfoEntity saveFile(String div, MultipartFile mfileInfo, String filePath) throws IllegalStateException, IOException {
+	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String cotentId)
+			throws IllegalStateException, IOException {
+		return saveFile(fileType, mfileInfo, cotentId, true);
+	}
+
+	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String cotentId, boolean addExtensionSuffix)
+			throws IllegalStateException, IOException {
+
 		// 파일 존재 확인
 		if (mfileInfo.isEmpty()) {
 			throw new FileUploadException("File empty : " + mfileInfo.getOriginalFilename());
 		}
 
+		String filePath = FileServiceUtils.getSaveRelativePath(fileType, cotentId);
+
 		// 파일 원본명
 		String fileName = FileUtils.normalize(mfileInfo.getOriginalFilename());
-
 		// 파일 확장자 구하기
 		String extension = FileUtils.extension(fileName);
 
 		String fileId = VartechUtils.generateUUID();
 
-		// 파일명을 UUID 로 생성
-		String saveFileName = String.format("%s.%s", fileId, extension);
-
-		filePath = FileUtils.pathConcat(filePath, saveFileName);
+		if(fileType.isOrginFileName()) {
+			filePath = FileUtils.pathConcat(filePath, fileName);
+		}else {
+			if(addExtensionSuffix) {
+				filePath = FileUtils.pathConcat(filePath, String.format("%s.%s",  fileId, extension));
+			}else {
+				filePath = FileUtils.pathConcat(filePath, fileId);
+			}
+		}
 
 		Path createFilePath = FileServiceUtils.getPath(filePath);
-
 		mfileInfo.transferTo(createFilePath);
-
 		return FileInfoEntity.builder()
-				.fileDiv(div)
+				.fileDiv(fileType.getDiv())
 				.fileId(fileId)
 				.fileName(fileName)
 				.fileSize(mfileInfo.getSize())
 				.fileExt(extension)
 				.filePath(filePath).build();
+	}
 
+	public List<FileInfoEntity> uploadFiles(UploadFileType fileType, List<MultipartFile> files, String fileContId, String contGroupId, String fieldName, boolean addExtensionSuffix, boolean fileInfoSaveFlag) {
+
+		List<FileInfoEntity> fileInfos = new ArrayList<FileInfoEntity>();
+		files.forEach(file ->{
+			if(!file.isEmpty()) {
+				try {
+					FileInfoEntity fileInfo = saveFile(fileType, file, fileContId, addExtensionSuffix);
+					fileInfo.setFileContId(fileContId);
+					fileInfo.setFileFieldName(fieldName);
+					fileInfo.setContGroupId(contGroupId);
+					fileInfos.add(fileInfo);
+				} catch (IllegalStateException | IOException e) {
+					logger.error("file upload exception : {}", e.getMessage(), e);
+					throw new VartechRuntimeException("file upload error",  e);
+				}
+			}
+		});
+
+		if(fileInfoSaveFlag) {
+			fileInfoEntityRepository.saveAll(fileInfos);
+		}
+
+		return fileInfos;
 	}
 }

@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.id.UserDBPreferencesID;
 
 import lombok.Builder;
@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 @IdClass(UserDBPreferencesID.class)
 @Table(name = UserDBPreferencesEntity._TB_NAME)
-public class UserDBPreferencesEntity extends AabstractAuditorModel{
+public class UserDBPreferencesEntity extends AbstractAuditorModel{
 	
 	public final static String _TB_NAME= "VTPREFERENCES";
 	

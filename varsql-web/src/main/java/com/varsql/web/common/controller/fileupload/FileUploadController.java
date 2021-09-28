@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.configuration.Configuration;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -65,7 +65,7 @@ public class FileUploadController extends AbstractController {
 
 		ResponseResult result = new ResponseResult();
 
-		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, div, paramFileContId);
+		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, UploadFileType.getDivType(div), paramFileContId);
 
         if(uploadFiles.size() > 0) {
         	result.setItemList(uploadFiles);

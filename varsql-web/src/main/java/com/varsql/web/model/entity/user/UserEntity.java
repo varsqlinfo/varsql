@@ -20,7 +20,7 @@ import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToYnConverter;
 import com.varsql.web.model.converter.PasswordEncodeConverter;
 import com.varsql.web.model.entity.db.DBBlockingUserEntity;
@@ -38,7 +38,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = UserEntity._TB_NAME)
-public class UserEntity extends AabstractAuditorModel{
+public class UserEntity extends AbstractAuditorModel{
 	private static final long serialVersionUID = 1L;
 
 	public final static String _TB_NAME="VTUSER";

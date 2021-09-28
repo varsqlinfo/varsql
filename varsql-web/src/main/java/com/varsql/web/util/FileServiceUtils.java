@@ -1,19 +1,36 @@
 package com.varsql.web.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.web.exception.FileNotFoundException;
+import com.varsql.core.common.util.CommUtils;
+import com.varsql.core.exception.FileNotFoundException;
+import com.varsql.web.constants.SavePathType;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.exception.VarsqlAppException;
-import com.varsql.web.model.entity.app.FileInfoEntity;
+import com.varsql.web.model.entity.FileBaseEntity;
 import com.vartech.common.utils.FileUtils;
 
 /**
@@ -47,7 +64,7 @@ public final class FileServiceUtils {
 
 	/**
 	 *
-	 * @Method Name  : getUploadFile
+	 * @Method Name  : getFileInfoToFile
 	 * @Method 설명 : upload file 얻기
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 10. 31.
@@ -55,9 +72,12 @@ public final class FileServiceUtils {
 	 * @param url
 	 * @return
 	 */
-	public static File getUploadFile(FileInfoEntity fileinfo){
-		Path filePath = getUploadRootPath().resolve(fileinfo.getFilePath()).normalize();
-		return filePath.toFile();
+	public static File getFileInfoToFile(FileBaseEntity fileinfo) {
+		return getUploadRootPath().resolve(fileinfo.getFilePath()).normalize().toFile();
+	}
+
+	public static URL getFileInfoToURL(FileBaseEntity fileinfo) throws MalformedURLException {
+		return getUploadRootPath().resolve(fileinfo.getFilePath()).normalize().toUri().toURL();
 	}
 
 	/**
@@ -69,13 +89,50 @@ public final class FileServiceUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Path getSavePath(String div) throws IOException {
-		Path fileExportPath = getUploadRootPath().resolve(FileUtils.getSaveDayPath(div));
+	public static Path getSavePath(UploadFileType fileType) {
+		return getSavePath(fileType, null);
+	}
 
-		if (Files.notExists(fileExportPath)) {
-			Files.createDirectories(fileExportPath);
+	public static Path getSavePath(UploadFileType fileType, String contId) {
+		return getUploadRootPath().resolve(getSaveFilePathStr(fileType, contId, true));
+	}
+
+	public static String getSaveRelativePath(UploadFileType fileType) {
+		return getSaveRelativePath(fileType, null);
+	}
+	public static String getSaveRelativePath(UploadFileType fileType, String contId) {
+		return getSaveFilePathStr(fileType, contId, true);
+	}
+
+	private static String getSaveFilePathStr(UploadFileType fileType, String contId, boolean createFlag) {
+		String savePath = "";
+		if(SavePathType.DATE_YY_MM_DD.equals((fileType.getSavePathType()))) {
+			savePath =  FileUtils.getSaveDayPath(fileType.getDiv());
+		}else if(SavePathType.DATE_YY.equals((fileType.getSavePathType()))) {
+			savePath = FileUtils.getSaveYearPath(fileType.getDiv());
+		}else if(SavePathType.CONT_ID.equals((fileType.getSavePathType()))) {
+			savePath = FileUtils.pathConcat(fileType.getDiv(), contId);
+		}else if(SavePathType.BLANK.equals((fileType.getSavePathType()))) {
+			savePath = fileType.getDiv();
+		}else {
+			savePath = FileUtils.getSaveMonthPath(fileType.getDiv());
 		}
-		return fileExportPath;
+
+		if(createFlag) {
+			createDirPath(getUploadRootPath().resolve(savePath));
+		}
+
+		return savePath;
+	}
+
+	private static void createDirPath(Path path) {
+		if (Files.notExists(path)) {
+			try {
+				Files.createDirectories(path);
+			} catch (IOException e) {
+				throw new VarsqlAppException("Files.createDirectories exception  : "+ path.toAbsolutePath().toString(), e);
+			}
+		}
 	}
 
 	/**
@@ -132,5 +189,107 @@ public final class FileServiceUtils {
 	 */
 	public static Path getPath(String filePath) {
 		return getUploadRootPath().resolve(filePath).normalize();
+	}
+
+	/**
+	 *
+	 * @Method Name  : byteCalculation
+	 * @Method 설명 : size 계산
+	 * @작성자   : ytkim
+	 * @작성일   : 2021. 7. 2.
+	 * @변경이력  :
+	 * @param size
+	 * @return
+	 */
+	public static String byteCalculation(long size) {
+		String retFormat = "0";
+
+		String[] s = { "bytes", "KB", "MB", "GB", "TB", "PB" };
+
+		if (size > 0) {
+			int idx = (int) Math.floor(Math.log(size) / Math.log(1024));
+			DecimalFormat df = new DecimalFormat("#,###.##");
+			double ret = ((size / Math.pow(1024, Math.floor(idx))));
+			retFormat = df.format(ret) + " " + s[idx];
+		} else {
+			retFormat += " " + s[0];
+		}
+
+		return retFormat;
+	}
+
+	public static void fileDownload(HttpServletRequest req, HttpServletResponse res, String downFileName, FileBaseEntity ... fileBaseEntity) throws IOException {
+		res.setContentType("application/download; "+VarsqlConstants.CHAR_SET);
+		res.setHeader("Content-Type", "application/octet-stream;");
+		res.setHeader("Content-Transfer-Encoding", "binary");
+		res.setHeader("Content-Disposition", "attachment;fileName="+getDownloadFileName(req, downFileName)+ ";");
+
+		int bufferSize = 2048;
+		int fileLen = fileBaseEntity.length;
+
+		if(fileLen > 1) {
+			try(ZipOutputStream zos = new ZipOutputStream(res.getOutputStream(), Charset.forName(VarsqlConstants.CHAR_SET));){
+				for(int idx=0; idx < fileLen; idx++){
+					FileBaseEntity fileInfo = fileBaseEntity[idx];
+
+					File file = getFileInfoToFile(fileInfo);
+
+					if (file.isFile()) {
+
+						String orginName = fileInfo.getFileName();
+
+						try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))){
+							ZipEntry zentry = new ZipEntry(orginName);
+					        zos.putNextEntry(zentry);
+
+					        byte[] buffer = new byte[bufferSize];
+					        int cnt = 0;
+					        while ((cnt = bis.read(buffer, 0, bufferSize)) != -1) {
+					            zos.write(buffer, 0, cnt);
+					        }
+					        zos.closeEntry();
+						};
+					}
+				}
+				if(zos != null) zos.close();
+			}
+		}else {
+			File file = getFileInfoToFile(fileBaseEntity[0]);
+
+			byte b[] = new byte[bufferSize];
+
+			if (file.isFile()) {
+				try(BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file));
+					BufferedOutputStream outs = new BufferedOutputStream(res.getOutputStream());){
+					int read = 0;
+					while ((read = fin.read(b)) != -1){
+						outs.write(b,0,read);
+					}
+
+					if(fin != null) fin.close();
+					if(outs != null) outs.close();
+				}
+			}
+		}
+	}
+
+	public static String getDownloadFileName(HttpServletRequest req, String downFileName) throws UnsupportedEncodingException {
+		ClientPcInfo clientInfo = CommUtils.getClientPcInfo(req);
+
+		if (CommUtils.isIE(clientInfo)) {
+			downFileName = URLEncoder.encode(downFileName, "UTF-8").replaceAll("\\+", "%20");
+		}else if(CommUtils.isFirefox(clientInfo)){
+			downFileName = "\""+new String(downFileName.getBytes("UTF-8"), "ISO-8859-1")+"\"";
+		}else if(CommUtils.isChrome(clientInfo)){
+			downFileName = URLEncoder.encode(downFileName, "UTF-8").replaceAll("\\+", "%20");
+		}else if(CommUtils.isSafari(clientInfo)){
+			downFileName = "\""+new String(downFileName.getBytes("UTF-8"), "ISO-8859-1")+"\"";
+		}else if(CommUtils.isOpera(clientInfo)){
+			downFileName = "\""+new String(downFileName.getBytes("UTF-8"), "ISO-8859-1")+"\"";
+		}else {
+			downFileName = URLEncoder.encode(downFileName, "UTF-8").replaceAll("\\+", "%20");
+		}
+
+		return downFileName;
 	}
 }

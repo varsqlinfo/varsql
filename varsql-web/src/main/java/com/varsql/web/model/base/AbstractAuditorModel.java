@@ -27,7 +27,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @MappedSuperclass
-public abstract class AabstractAuditorModel extends AbstractRegAuditorModel{
+public abstract class AbstractAuditorModel extends AbstractRegAuditorModel{
 
 	private static final long serialVersionUID = 7893362241769774670L;
 

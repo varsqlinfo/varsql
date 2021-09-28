@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
@@ -168,8 +169,12 @@ public final class VarsqlUtils {
 		return convertSearchInfoToPage(searchInfo, "regDt");
 	}
 
+	public static Pageable convertSearchInfoToPage(SearchParameter searchInfo, Sort sort) {
+		return PageRequest.of(searchInfo.getPageNo() -1, searchInfo.getCountPerPage(), sort);
+	}
+
 	public static Pageable convertSearchInfoToPage(SearchParameter searchInfo, String ... sort) {
-		return org.springframework.data.domain.PageRequest.of(searchInfo.getPageNo() -1, searchInfo.getCountPerPage(), searchInfo.isSortAscFlag() ? Sort.Direction.ASC : Sort.Direction.DESC, sort);
+		return PageRequest.of(searchInfo.getPageNo() -1, searchInfo.getCountPerPage(), searchInfo.isSortAscFlag() ? Sort.Direction.ASC : Sort.Direction.DESC, sort);
 	}
 
 	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter) {

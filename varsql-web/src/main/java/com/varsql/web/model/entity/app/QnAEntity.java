@@ -18,7 +18,7 @@ import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
@@ -34,7 +34,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Entity
 @Table(name = QnAEntity._TB_NAME)
-public class QnAEntity extends AabstractAuditorModel{
+public class QnAEntity extends AbstractAuditorModel{
 	private static final long serialVersionUID = 1L;
 
 	public final static String _TB_NAME="VTQNA";

@@ -32,7 +32,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.code.VarsqlFilePathCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
@@ -60,6 +59,7 @@ import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
@@ -473,7 +473,7 @@ public class SQLServiceImpl{
 
 			VarsqlFileType exportType = sqlExecuteInfo.getExportType();
 
-			Path fileExportPath = FileServiceUtils.getSavePath(VarsqlFilePathCode.EXPORT_PATH.getDiv());
+			Path fileExportPath = FileServiceUtils.getSavePath(UploadFileType.EXPORT);
 
 			String downloadFilePath = FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(), VartechUtils.generateUUID()+ exportType.getExtension());
 			outstream = new FileOutputStream(downloadFilePath);

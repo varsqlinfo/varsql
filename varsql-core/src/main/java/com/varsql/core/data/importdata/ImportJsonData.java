@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.varsql.core.data.importdata.handler.ImportDataHandlerAbstract;
+import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 
 public class ImportJsonData extends ImportDataAbstract{
@@ -26,7 +26,7 @@ public class ImportJsonData extends ImportDataAbstract{
 	}
 
 	@Override
-	public void startImport(ImportDataHandlerAbstract importDataHandler) {
+	public void startImport(AbstractImportDataHandler importDataHandler) {
 		File importFile = getImportFilePath();
 		logger.debug("import file : {}" , importFile.getAbsolutePath());
 
@@ -75,7 +75,7 @@ public class ImportJsonData extends ImportDataAbstract{
 		}
 	}
 
-	private void getMetaInfo(JsonParser parser, ImportDataHandlerAbstract importDataHandler) throws IOException {
+	private void getMetaInfo(JsonParser parser, AbstractImportDataHandler importDataHandler) throws IOException {
 		String fieldName = null;
 		parser.nextToken();
 

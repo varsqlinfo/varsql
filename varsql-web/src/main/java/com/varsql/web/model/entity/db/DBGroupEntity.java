@@ -18,7 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.entity.user.RegInfoEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
@@ -34,7 +34,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Entity
 @Table(name = DBGroupEntity._TB_NAME)
-public class DBGroupEntity extends AabstractAuditorModel{
+public class DBGroupEntity extends AbstractAuditorModel{
 
 	public final static String _TB_NAME="VTDATABASE_GROUP";
 

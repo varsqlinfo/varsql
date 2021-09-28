@@ -142,6 +142,7 @@ public final class CommUtils {
 	 * @param request
 	 * @return
 	 */
+
 	public static ClientPcInfo getClientPcInfo(HttpServletRequest request) {
 		String userAgent = "Unknown";
 	    String osType = "Unknown";
@@ -149,84 +150,77 @@ public final class CommUtils {
 	    String deviceType = "pc";
 
         userAgent = request.getHeader("User-Agent");
-        
-        String userAgentLower = userAgent.toLowerCase();
-        
-        if (userAgentLower.indexOf("windows") > -1) {
-        	if (userAgentLower.indexOf("windows nt 10.0") > -1) {
-        		osType = "win-10";
-        	} else if (userAgentLower.indexOf("windows nt 6.1") > -1) {
-				osType = "win-7";
-			} else if (userAgentLower.indexOf("windows nt 6.2") > -1 || userAgentLower.indexOf("windows nt 6.3") > -1) {
-				osType = "win-8";
-			} else if (userAgentLower.indexOf("windows nt 6.0") > -1) {
-				osType = "win-vista";
-			} else if (userAgentLower.indexOf("windows nt 5.1") > -1) {
-				osType = "win-xp";
-			} else if (userAgentLower.indexOf("windows nt 5.0") > -1) {
-				osType = "win-2000";
-			} else if (userAgentLower.indexOf("windows nt 4.0") > -1) {
-				osType = "win-nt";
-			} else {
-				osType = "windows";
-			}
-		}else if(userAgentLower.indexOf("mac os") > -1) {
-			osType = "Mac";
 
-            if(userAgentLower.indexOf("iPhone") >= 0) {
+        if (userAgent.indexOf("Windows NT") >= 0) {
+            osType = "Windows";
+        } else if (userAgent.indexOf("Mac OS") >= 0) {
+            osType = "Mac";
+
+            if(userAgent.indexOf("iPhone") >= 0) {
                 deviceType = "iPhone";
-            } else if(userAgentLower.indexOf("iPad") >= 0) {
+            } else if(userAgent.indexOf("iPad") >= 0) {
                 deviceType = "iPad";
             }
-		}else if (userAgentLower.indexOf("X11") >= 0) {
-            osType = "Unix";
-        } else if (userAgentLower.indexOf("android") > -1) {
-			osType = "Android";
-			deviceType = "Android";
-		}else if (userAgentLower.indexOf("linux") > -1) {
-			osType = "Linux";
-		}else {
-			osType = "other os";
-		}
 
-        if(userAgentLower.indexOf("trident") > -1 || userAgentLower.indexOf("msie") > -1) { //IE
-        	
-        	if(userAgentLower.indexOf("edge") > -1) {
-    			browser = "edge";
-    		}else {
-    			if(userAgentLower.indexOf("trident/7") > -1) {
-        			browser = "ie11";
-        		}else if(userAgentLower.indexOf("trident/6") > -1) {
-        			browser = "ie10";
-        		}else {
-        			browser = "ie9";
-        		}
-    		}
-        }else if(userAgentLower.indexOf("edge") > -1) {
-        	browser = "edge";
-    	}else if(userAgentLower.indexOf("whale") > -1){ // whale
-    		browser = "whale";
-    	}else if(userAgentLower.indexOf("opera") > -1 || userAgentLower.indexOf("opr") > -1){ //opera
-    		browser = "opera";
-    	}else if(userAgentLower.indexOf("firefox") > -1){ //firefox
-    		browser = "firefox";
-    	}else if(userAgentLower.indexOf("safari") > -1 && userAgentLower.indexOf("chrome") == -1 ){ //safari
-    		browser = "safari";
-    	}else if(userAgentLower.indexOf("chrome") > -1){ //chrome
-    		browser = "chrome";
-    	}else {
-    		browser = "UnKnown, More-Info: " + userAgentLower;
-    	}
-        
+        } else if (userAgent.indexOf("X11") >= 0) {
+            osType = "Unix";
+        } else if (userAgent.indexOf("android") >= 0) {
+            osType = "Android";
+            deviceType = "Android";
+        }
+
+        String userAgentLower = userAgent.toLowerCase();
+
+        if (userAgentLower.contains("msie") || userAgentLower.contains("rv")) {
+        	browser= "msie";
+        } else if (userAgentLower.contains("safari") && userAgentLower.contains("version")) {
+        	browser= "Safari";
+        } else if (userAgentLower.contains("opr") || userAgentLower.contains("opera")) {
+        	browser= "opera";
+        } else if(userAgentLower.contains("edge")){
+            browser = "edge";
+        } else if (userAgentLower.contains("chrome")) {
+        	browser= "chrome";
+        } else if ((userAgentLower.indexOf("mozilla/7.0") > -1) || (userAgentLower.indexOf("netscape6") != -1) || (userAgentLower.indexOf(
+                "mozilla/4.7") != -1) || (userAgentLower.indexOf("mozilla/4.78") != -1) || (userAgentLower.indexOf(
+                "mozilla/4.08") != -1) || (userAgentLower.indexOf("mozilla/3") != -1)) {
+            browser = "Netscape";
+        } else if (userAgentLower.contains("firefox")) {
+        	browser= "firefox";
+        } else{
+            browser = "UnKnown, More-Info: " + userAgentLower;
+        }
+
         ClientPcInfo cpi = new ClientPcInfo();
 
         cpi.setUserAgent(userAgent);
         cpi.setOsType(osType);
         cpi.setDeviceType(deviceType);
-        cpi.setBrowser(browser);
+        cpi.setBrowser(browser.toLowerCase());
         cpi.setIp(getClientIp(request));
-        return cpi;
+		return cpi;
 	}
+
+	public static boolean isIE(ClientPcInfo clientPcInfo) {
+		return "msie".equalsIgnoreCase(clientPcInfo.getBrowser());
+	}
+
+	public static boolean isChrome(ClientPcInfo clientPcInfo) {
+		return "chrome".equalsIgnoreCase(clientPcInfo.getBrowser());
+	}
+
+	public static boolean isFirefox(ClientPcInfo clientPcInfo) {
+		return "firefox".equalsIgnoreCase(clientPcInfo.getBrowser());
+	}
+
+	public static boolean isSafari(ClientPcInfo clientPcInfo) {
+		return "safari".equalsIgnoreCase(clientPcInfo.getBrowser());
+	}
+
+	public static boolean isOpera(ClientPcInfo clientPcInfo) {
+		return "opera".equalsIgnoreCase(clientPcInfo.getBrowser());
+	}
+
 	/**
 	 *
 	 * @Method Name  : getClientIp
@@ -254,7 +248,7 @@ public final class CommUtils {
 
 		return req.getRemoteAddr();
 	}
-	
+
 	/**
 	 *
 	 * @Method Name  : getFileIds

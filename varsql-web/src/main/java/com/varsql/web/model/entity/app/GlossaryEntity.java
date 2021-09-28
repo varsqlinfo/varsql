@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +22,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Entity
 @Table(name = GlossaryEntity._TB_NAME)
-public class GlossaryEntity extends AabstractAuditorModel{
+public class GlossaryEntity extends AbstractAuditorModel{
 
 	private static final long serialVersionUID = 1L;
 

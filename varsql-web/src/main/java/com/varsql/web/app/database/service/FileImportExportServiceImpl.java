@@ -18,7 +18,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.data.importdata.ImportJsonData;
 import com.varsql.core.data.importdata.ImportXmlData;
-import com.varsql.core.data.importdata.handler.ImportDataHandlerAbstract;
+import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;
@@ -119,7 +119,7 @@ public class FileImportExportServiceImpl{
 		ssi.setConuid(conuid);
 		ssi.setSqlParam("{}");
 
-		String insertQuery = FileUtils.readFileToString(FileServiceUtils.getUploadFile(fileInfo));
+		String insertQuery = FileUtils.readFileToString(FileServiceUtils.getFileInfoToFile(fileInfo));
 		ssi.setSql(insertQuery);
 
 		SQLExecuteResult ser =new SqlUpdateExecutor().execute(ssi, new AbstractSQLExecutorHandler() {
@@ -145,7 +145,7 @@ public class FileImportExportServiceImpl{
 	private SQLExecuteResult csvImport(FileInfoEntity fileInfo, String conuid) throws IOException {
 
 
-		try(LineIterator it = org.apache.commons.io.FileUtils.lineIterator(FileServiceUtils.getUploadFile(fileInfo), VarsqlConstants.CHAR_SET);) {
+		try(LineIterator it = org.apache.commons.io.FileUtils.lineIterator(FileServiceUtils.getFileInfoToFile(fileInfo), VarsqlConstants.CHAR_SET);) {
 		    while (it.hasNext()) {
 		        String line = it.nextLine();
 		        //line

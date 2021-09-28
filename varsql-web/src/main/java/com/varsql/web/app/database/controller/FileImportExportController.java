@@ -20,6 +20,7 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.database.service.FileImportExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
@@ -76,7 +77,7 @@ public class FileImportExportController extends AbstractController {
 
 		String vconnid= SecurityUtil.getVconnid(conuid);
 
-		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, div, paramFileContId, vconnid);
+		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, UploadFileType.getDivType(div), paramFileContId, vconnid);
 
         if(uploadFiles.size() > 0) {
         	result.setItemList(uploadFiles);

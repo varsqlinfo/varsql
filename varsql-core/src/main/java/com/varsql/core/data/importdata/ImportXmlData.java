@@ -15,7 +15,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.data.importdata.handler.ImportDataHandlerAbstract;
+import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.executor.SqlUpdateExecutor;
 
@@ -29,7 +29,7 @@ public class ImportXmlData extends ImportDataAbstract{
 	}
 
 	@Override
-	public void startImport(ImportDataHandlerAbstract importDataHandler) {
+	public void startImport(AbstractImportDataHandler importDataHandler) {
 
 		File importFile = getImportFilePath();
 		logger.debug("import file : {}" , importFile.getAbsolutePath());
@@ -76,7 +76,7 @@ public class ImportXmlData extends ImportDataAbstract{
 		}
 	}
 
-	private void getRowData(XMLStreamReader xmlreader, ImportDataHandlerAbstract importDataHandler) throws XMLStreamException, SQLException {
+	private void getRowData(XMLStreamReader xmlreader, AbstractImportDataHandler importDataHandler) throws XMLStreamException, SQLException {
 		Map rowInfo = null;
 		boolean rowStartFlag = false;
 		while (xmlreader.hasNext()) {
@@ -113,7 +113,7 @@ public class ImportXmlData extends ImportDataAbstract{
 		}
 	}
 
-	private static void getExportInfo(XMLStreamReader xmlreader, ImportDataHandlerAbstract importDataHandler) throws XMLStreamException {
+	private static void getExportInfo(XMLStreamReader xmlreader, AbstractImportDataHandler importDataHandler) throws XMLStreamException {
 
 		List<ExportColumnInfo> columns = new ArrayList<ExportColumnInfo>();
 		ExportColumnInfo eci = null;

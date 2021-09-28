@@ -15,7 +15,9 @@ public enum VIEW_PAGE{
 	, USER("/user")
 	, USER_PREFERENCES("/user/preferences")
 	, MANAGER("/manager")
-	, ADMIN("/admin");
+	, ADMIN("/admin")
+
+	,BOARD("/board");
 
 	private String urlPrefix;
 

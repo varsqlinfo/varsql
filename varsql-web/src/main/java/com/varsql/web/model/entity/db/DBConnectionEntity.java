@@ -19,7 +19,7 @@ import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.converter.BooleanToYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
@@ -37,7 +37,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Audited
 @Table(name = DBConnectionEntity._TB_NAME)
-public class DBConnectionEntity extends AabstractAuditorModel{
+public class DBConnectionEntity extends AbstractAuditorModel{
 
 	public final static String _TB_NAME="VTCONNECTION";
 

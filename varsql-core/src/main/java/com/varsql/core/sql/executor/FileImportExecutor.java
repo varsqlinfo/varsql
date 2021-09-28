@@ -16,7 +16,7 @@ import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.data.importdata.ImportData;
 import com.varsql.core.data.importdata.ImportJsonData;
 import com.varsql.core.data.importdata.ImportXmlData;
-import com.varsql.core.data.importdata.handler.ImportDataHandlerAbstract;
+import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.util.JdbcUtils;
@@ -61,7 +61,7 @@ public class FileImportExecutor extends UpdateExecutor{
 				ijd = new ImportXmlData(importFile);
 			}
 
-			ijd.startImport(new ImportDataHandlerAbstract() {
+			ijd.startImport(new AbstractImportDataHandler() {
 
 				boolean firstFlag = true;
 				ExportColumnInfo [] columnArr =null;

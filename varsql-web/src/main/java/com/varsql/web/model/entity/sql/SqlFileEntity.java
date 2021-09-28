@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.varsql.web.model.base.AabstractAuditorModel;
+import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.id.generator.AppUUIDGenerator;
 
@@ -31,7 +31,7 @@ import lombok.Setter;
 @Entity
 @DynamicUpdate
 @Table(name = SqlFileEntity._TB_NAME)
-public class SqlFileEntity extends AabstractAuditorModel{
+public class SqlFileEntity extends AbstractAuditorModel{
 	public final static String _TB_NAME="VTSQL_SQLFILE";
 
 	@Id
