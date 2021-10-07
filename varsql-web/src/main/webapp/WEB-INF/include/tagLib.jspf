@@ -7,3 +7,4 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="varsqlfn" uri="http://varsql.vartech.com/varsqlfn"%>
 <%@ taglib prefix="varsql" uri="http://varsql.vartech.com/varsql"%>
+<%@ taglib prefix="varsql-app" uri="http://varsql.vartech.com/varsql-app"%>

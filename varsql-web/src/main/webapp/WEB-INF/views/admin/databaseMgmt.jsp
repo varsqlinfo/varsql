@@ -87,23 +87,33 @@
 								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
 							</div>
 						</div>
+
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vtype" /></label>
+							<label class="col-sm-4 control-label">JDBC Provider</label>
 							<div class="col-sm-8">
-								<select class="form-control text required" v-model="detailItem.vtype" @change="dbDriverLoad(detailItem.vtype)">
-									<c:forEach items="${dbtype}" var="tmpInfo" varStatus="status">
-										<option value="${tmpInfo.urlprefix}" i18n="${tmpInfo.langkey}">${tmpInfo.name}</option>
-									</c:forEach>
-								</select>
+								<div v-if="jdbcProviderList.length > 0">
+									<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.vdriver" @change="changeProvider($event)">
+										<option value="" disabled="disabled">선택</option>
+										<option v-for="(item,index) in jdbcProviderList" :value="item.driverProviderId" :data-driver="item.driverProviderId" selected="{{detailItem.vdriver==item.driverProviderId?true:(detailItem.vdriver==''&& index==0?true:false)}}">
+											{{item.dbType}}({{item.providerName}})
+										</option>
+									</select>
+									<div><a href="<c:url value="/admin/driverMgmt"/>">JDBC Provider 설정 바로가기</a></div>
+								</div>
+								<div v-else>
+									<a href="<c:url value="/admin/driverMgmt"/>">먼저 JDBC Provider를 설정해주세요.</a>
+								</div>
 							</div>
 						</div>
-						<div class="form-group">
+
+						<div class="form-group" v-show="selectJdbcProvider.directYn != 'Y'">
 							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
 								<input type="checkbox" v-model="detailItem.urlDirectYn" true-value="Y" false-value="N" /><spring:message code="admin.form.db.urldirectmsg" />
 							</div>
 						</div>
-						<div v-if="detailItem.urlDirectYn != 'Y'">
+
+						<div v-if="detailItem.urlDirectYn != 'Y' && selectJdbcProvider.directYn != 'Y'">
 							<div class="form-group" :class="errors.has('SERVERIP') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.serverip" /></label>
 								<div class="col-sm-8">
@@ -125,9 +135,11 @@
 								<div class="col-sm-8">
 									<input type="text" v-model="detailItem.vurl" v-validate="'required'" name="URL" class="form-control" />
 									<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
+									<div>ex : <span class="">{{jdbcUrlFormat[selectJdbcProvider.driverId]}}</span> </div>
 								</div>
 							</div>
 						</div>
+
 
 						<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.databasename" /></label>
@@ -161,19 +173,6 @@
 								      {{ errors.first('password_confirmation') }}
 								    </div>
 							    </template>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vdriver" /></label>
-							<div class="col-sm-8">
-								<select class="form-control text required" id="vdriver" name="vdriver" v-model="detailItem.vdriver">
-									<template href="javascript:;" class="list-group-item" v-for="(item,index) in driverList">
-										<option :value="item.driverId" :data-driver="item.dbdriver" selected="{{detailItem.vdriver==item.driverId?true:(detailItem.vdriver==''&& index==0?true:false)}}">
-											{{item.driverDesc}}({{item.dbdriver}})
-										</option>
-					    			</template>
-								</select>
 							</div>
 						</div>
 
@@ -247,12 +246,6 @@
 								<input class="form-control text required" type="number" v-model="detailItem.maxSelectCount">
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vquery" /></label>
-							<div class="col-sm-8">
-								<input class="form-control text required" type="text" v-model="detailItem.vquery">
-							</div>
-						</div>
 					</div>
 				</form>
 			</div>
@@ -285,10 +278,12 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem :{}
 		,viewMode : 'view'
-		,driverList : []
+		,jdbcProviderList : []
 		,dbPwViewItem :{}
 		,userPw : ''
 		,dbPw : ''
+		,selectJdbcProvider : {}
+		,jdbcUrlFormat : ${jdbcUrlFormat}
 	}
 	,methods:{
 		init : function(){
@@ -303,6 +298,8 @@ VarsqlAPP.vueServiceBean( {
 					$( this ).dialog( "close" );
 				}
 			});
+
+			this.getJdbcProvider();
 		}
 		,search : function(no){
 			var _this = this;
@@ -314,7 +311,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dblist'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dblist'}
 				,data : param
 				,success: function(resData) {
 					_this.gridData = resData.items;
@@ -324,6 +321,25 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,itemViewMode : function (mode){
 			this.viewArea(mode);
+		}
+		,changeProvider : function (evt){
+			this.setProviderInfo(evt.target.value)
+		}
+		,setProviderInfo : function (selectVal){
+			for(var i =0 ;i < this.jdbcProviderList.length; i++){
+				var item = this.jdbcProviderList[i];
+
+				if(item.driverProviderId == selectVal){
+					this.selectJdbcProvider = item;
+					return ;
+				}
+			}
+
+			this.selectJdbcProvider = {};
+
+			if(this.selectJdbcProvider.directYn == 'Y'){
+				this.detailItem.urlDirectYn ='Y';
+			}
 		}
 		// 상세보기
 		,itemView : function(item){
@@ -340,16 +356,11 @@ VarsqlAPP.vueServiceBean( {
 			_this.errors.clear();
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbDetail'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbDetail'}
 				,data : param
 				,loadSelector : '.detail_area_wrapper'
 				,success: function(resData) {
 					var item  =resData.item;
-
-					if(item.vtype != _this.detailItem.vtype){
-						_this.dbDriverLoad(item.vtype);
-					}
-
 					_this.setDetailItem(item);
 				}
 			})
@@ -376,7 +387,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			_this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbPwView'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbPwView'}
 				,data : param
 				,success:function (resData){
 					if(resData.resultCode != 200){
@@ -387,9 +398,6 @@ VarsqlAPP.vueServiceBean( {
 					}
 				}
 			});
-		}
-		,setUrlDirectInfo : function (){
-			this.detailItem.urlDirectYn = (this.detailItem.urlDirectYn=='N'?'Y':'N');
 		}
 		,setDetailItem : function (item){
 
@@ -405,7 +413,7 @@ VarsqlAPP.vueServiceBean( {
 					,timeout: 18000
 					,vdbschema: ""
 					,vdatabasename: ""
-					,vport: ""
+					,vport: 0
 					,vdriver: ""
 					,useYn: "Y"
 					,urlDirectYn:'N'
@@ -413,8 +421,6 @@ VarsqlAPP.vueServiceBean( {
 					,vname: ""
 					,vpoolopt: ""
 					,vpw: ""
-					,vquery: ""
-					,vtype: ""
 					,vserverip: ""
 					,vurl: ""
 					,basetableYn: 'Y'
@@ -427,6 +433,8 @@ VarsqlAPP.vueServiceBean( {
 				item.passwordChange = false;
 				this.detailItem = item;
 			}
+
+			this.setProviderInfo(this.detailItem .vdriver);
 
 		}
 		,save : function (mode){
@@ -441,7 +449,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 
 					_this.$ajax({
-						url : {type:VARSQL.uri.admin, url:'/main/dbSave'}
+						url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbSave'}
 						,data : param
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
@@ -492,7 +500,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbDelete'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbDelete'}
 				,data: {
 					vconnid : _this.detailItem.vconnid
 				}
@@ -510,12 +518,12 @@ VarsqlAPP.vueServiceBean( {
 			var param = this.getParamVal();
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCheck'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionCheck'}
 				,loadSelector : 'body'
 				,data:param
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
-						if(resData.messageCode =='success'){
+						if(resData.resultCode == 200){
 							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
 							return
 						}else{
@@ -531,7 +539,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionClose'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionClose'}
 				,loadSelector : 'body'
 				,data : {
 					vconnid : item.vconnid
@@ -553,7 +561,7 @@ VarsqlAPP.vueServiceBean( {
 			var param = this.getParamVal();
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionCopy'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionCopy'}
 				,loadSelector : 'body'
 				,data:param
 				,success:function (resData){
@@ -575,7 +583,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbConnectionReset'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionReset'}
 				,loadSelector : 'body'
 				,data : {
 					vconnid : item.vconnid
@@ -593,18 +601,14 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// db driver list
-		,dbDriverLoad : function (val){
+		,getJdbcProvider : function (val){
 			var _this = this;
 			var param = {
 				dbtype :val
 			};
 
-			if(VARSQL.isUndefined(_this.detailItem.vconnid) || _this.detailItem.vconnid==''){
-				_this.detailItem.vdriver = '';
-			}
-
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dbDriver'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/jdbcProviderList'}
 				,data : param
 				,success:function (resData){
 
@@ -612,14 +616,11 @@ VarsqlAPP.vueServiceBean( {
 		    		var resultLen = result.length;
 
 		    		if(resultLen==0){
-		    			_this.driverList = [];
+		    			_this.jdbcProviderList = [];
 		    			return ;
 		    		}
-					if(VARSQL.isBlank(_this.detailItem.vdriver)){
-						_this.detailItem.vdriver = resData.items[0].driverId
-					}
 
-		    		_this.driverList = result;
+		    		_this.jdbcProviderList = result;
 
 		    		return ;
 				}

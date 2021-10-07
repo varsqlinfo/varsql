@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 
-public class ImportJsonData extends ImportDataAbstract{
+public class ImportJsonData extends AbstractImportData{
 
 	private final Logger logger = LoggerFactory.getLogger(ImportJsonData.class);
 

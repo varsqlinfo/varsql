@@ -1,15 +1,18 @@
 package com.varsql.web.app.admin.service;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.Driver;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -22,52 +25,61 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.util.ClassLoaderUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
-import com.varsql.web.dto.db.DBConnectionResponseDTO;
-import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
+import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
+import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
 import com.varsql.web.model.mapper.db.DBConnectionMapper;
-import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverEntityRepository;
+import com.varsql.web.repository.db.DBTypeDriverProviderRepository;
 import com.varsql.web.repository.db.DBTypeEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
+import com.varsql.web.repository.spec.DBTypeDriverProviderSpec;
+import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.security.UserService;
+import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
  *
- * @FileName  : AdminServiceImpl.java
+ * @FileName  : AdminDbMgmtServiceImpl.java
  * @Date      : 2014. 8. 18.
  * @작성자      : ytkim
  * @변경이력 :
  * @프로그램 설명 :
  */
 @Service
-public class AdminServiceImpl extends AbstractService{
-	private final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
+public class AdminDbMgmtServiceImpl extends AbstractService{
+	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtServiceImpl.class);
 
 	@Autowired
 	private DBTypeEntityRepository dbTypeModelRepository;
@@ -90,6 +102,12 @@ public class AdminServiceImpl extends AbstractService{
 	@Autowired
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
 	private CacheManager cacheManager;
+
+	@Autowired
+	private FileInfoEntityRepository fileInfoEntityRepository;
+
+	@Autowired
+	private DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
 
 	/**
 	 *
@@ -140,81 +158,85 @@ public class AdminServiceImpl extends AbstractService{
 
 		ResponseResult resultObject = new ResponseResult();
 
-		logger.debug("connection check object param :  {}" , VartechUtils.reflectionToString(vtConnection));
+		this.dbConnectionModelRepository.findByConnInfo(vtConnection.getVconnid());
+
+		logger.debug("connection check object param :  {}", VartechUtils.reflectionToString(vtConnection));
 
 		String username = vtConnection.getVid();
 
-		String dbtype = vtConnection.getVtype();
+		DBConnectionEntity dbInfo = this.dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vtConnection.getVconnid())).orElseThrow(NullPointerException::new);
 
-		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vtConnection.getVconnid())).orElseThrow(NullPointerException::new);
-
-		DBTypeDriverEntity dbDriverModel = dbTypeDriverModelRepository.findByDriverId(vtConnection.getVdriver());
+		DBTypeDriverProviderEntity driverProviderEntity = dbInfo.getDbTypeDriverProvider();
 
 		String url = vtConnection.getVurl();
 
-		if(!"Y".equals(vtConnection.getUrlDirectYn())){
-			url = VarsqlJdbcUtil.getJdbcUrl(dbDriverModel.getUrlFormat(), vtConnection.getVserverip() , vtConnection.getVport() , vtConnection.getVdatabasename());
-		}
-
-		logger.debug("connection check url :  {}" , url);
-
-		String conn_query = dbInfo.getVquery();
-		String dbvalidation_query = dbDriverModel.getValidationQuery();
-
-		conn_query = conn_query ==null?"":conn_query;
-		dbvalidation_query = dbvalidation_query ==null?"":dbvalidation_query;
-
-		String validation_query = !"".equals(conn_query.trim()) ? conn_query:
-			( !"".equals(dbvalidation_query.trim()) ?  dbvalidation_query : ValidationProperty.getInstance().validationQuery(dbtype));
-
-		String result = "";
-		String failMessage = "";
-
-		PreparedStatement pstmt = null;
-		Connection connChk = null;
-		try {
-
-			String pwd = vtConnection.getVpw();
-			if(pwd ==null || "".equals(pwd)){
-				pwd = dbInfo.getVpw();
+		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(driverProviderEntity.getDbType());
+		if(!"Y".equals(driverProviderEntity.getDirectYn())){
+			DBTypeDriverEntity dbDriverModel = this.dbTypeDriverModelRepository.findByDriverId(driverProviderEntity.getDriverId());
+			if (!"Y".equals(vtConnection.getUrlDirectYn())) {
+				url = VarsqlJdbcUtil.getJdbcUrl(dbDriverModel.getUrlFormat(), JdbcURLFormatParam.builder()
+						.serverIp(vtConnection.getVserverip())
+						.port(vtConnection.getVport())
+						.databaseName( vtConnection.getVdatabasename())
+						.build());
 			}
 
-			pwd = pwd==null ? "":pwd;
+			defaultDriverValidationQuery = StringUtils.isBlank(dbDriverModel.getValidationQuery()) ? defaultDriverValidationQuery : dbDriverModel.getValidationQuery();
+		}
 
+		logger.debug("connection check url :  {}", url);
+
+		String  validation_query = driverProviderEntity.getValidationQuery();
+
+		validation_query = StringUtils.isBlank(validation_query) ? defaultDriverValidationQuery : validation_query;
+
+		String failMessage = "";
+		PreparedStatement pstmt = null;
+		Connection connChk = null;
+
+		VarsqlAppCode resultCode = VarsqlAppCode.SUCCESS;
+		try {
+			String pwd = vtConnection.getVpw();
+			if (pwd == null || "".equals(pwd))
+				pwd = dbInfo.getVpw();
+			pwd = (pwd == null) ? "" : pwd;
 			pwd = DBPasswordCryptionFactory.getInstance().decrypt(pwd);
-
-			Properties p =new Properties();
-
+			Properties p = new Properties();
 			p.setProperty("user", username);
 			p.setProperty("password", pwd);
 
-			Class.forName(dbDriverModel.getDbdriver());
-			connChk = DriverManager.getConnection(url, p);
+			List<FileInfoEntity> driverJarFiles= fileInfoEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId());
 
-			pstmt=connChk.prepareStatement(validation_query);
+			List<URL> jarUrlList = new ArrayList<>();
+			for(FileInfoEntity fie : driverJarFiles) {
+				jarUrlList.add(FileServiceUtils.getFileInfoToURL(fie));
+			}
+
+		    Driver dbDriver = ClassLoaderUtils.getJdbcDriver(driverProviderEntity.getDriverClass(), jarUrlList.toArray(new URL[0]));
+
+		    connChk = dbDriver.connect(url, p);
+		    pstmt = connChk.prepareStatement(validation_query);
+
 			pstmt.executeQuery();
-
-			result="success";
 			connChk.close();
-		}catch(EncryptDecryptException e) {
-			result="fail";
+		} catch (EncryptDecryptException e) {
+			resultCode = VarsqlAppCode.ERROR;
 			failMessage = "password decrypt error : " + e.getMessage();
-			logger.error(this.getClass().getName() , e);
+			logger.error(getClass().getName(), (Throwable) e);
 		} catch (ClassNotFoundException e) {
-			result="fail";
+			resultCode = VarsqlAppCode.ERROR;
 			failMessage = e.getMessage();
-			logger.error(this.getClass().getName() , e);
-		} catch (SQLException e) {
-			result="fail";
+			logger.error("url :{}", url);
+			logger.error(getClass().getName(), e);
+		}catch (Exception e) {
+			resultCode = VarsqlAppCode.ERROR;
 			failMessage = e.getMessage();
-			logger.error(this.getClass().getName() , e);
-		}finally{
-			JdbcUtils.close(connChk , pstmt, null);
+			logger.error(getClass().getName(), e);
+		}finally {
+			JdbcUtils.close(connChk, pstmt, null);
 		}
-
-		resultObject.setMessageCode(result);
+		resultObject.setResultCode(resultCode);
 		resultObject.setMessage(failMessage);
-
 		return resultObject;
 	}
 
@@ -235,68 +257,53 @@ public class AdminServiceImpl extends AbstractService{
 	public ResponseResult saveVtconnectionInfo(DBConnectionRequestDTO vtConnection) throws BeansException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
 		ResponseResult resultObject = new ResponseResult();
-
 		vtConnection.setUserId(SecurityUtil.userViewId());
 
-		DBTypeDriverEntity dbDriverModel = dbTypeDriverModelRepository.findByDriverId(vtConnection.getVdriver());
+		DBTypeDriverProviderEntity driverProviderEntity = dbTypeDriverProviderRepository.findByDriverProviderId(vtConnection.getVdriver());
+
+		DBTypeDriverEntity dbDriverModel = this.dbTypeDriverModelRepository.findByDriverId(driverProviderEntity.getDriverId());
 
 		String schemeType = dbDriverModel.getSchemaType();
-
-		if("user".equals(schemeType)) {
+		if ("user".equals(schemeType)) {
 			vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
-		}else if("orginUser".equals(schemeType)) {
+		} else if ("orginUser".equals(schemeType)) {
 			vtConnection.setVdbschema(vtConnection.getVid());
-		}else if("db".equals(schemeType)){
+		} else if ("db".equals(schemeType)) {
 			vtConnection.setVdbschema(vtConnection.getVdatabasename());
-		}else {
+		} else {
 			vtConnection.setVdbschema(schemeType);
 		}
-
 		DBConnectionEntity reqEntity = vtConnection.toEntity();
-
-		DBConnectionEntity saveEntity= null;
-		DBConnectionEntity currentEntity= null;
-
+		DBConnectionEntity saveEntity = null;
+		DBConnectionEntity currentEntity = null;
 		boolean updateFlag = false;
-		if(reqEntity.getVconnid() != null) {
-			currentEntity= dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
-
-			if(currentEntity != null) {
+		if (reqEntity.getVconnid() != null) {
+			currentEntity = this.dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
+			if (currentEntity != null) {
 				saveEntity = new DBConnectionEntity();
 				BeanUtils.copyProperties(currentEntity, saveEntity);
 				updateFlag = true;
-				copyNonNullProperties(reqEntity, saveEntity, "vpw");
+				copyNonNullProperties(reqEntity, saveEntity, new String[] { "vpw" });
 			}
 		}
-
-		if(!updateFlag) {
-			saveEntity= reqEntity;
-		}
-
-		if(vtConnection.isPasswordChange()) {
+		if (!updateFlag)
+			saveEntity = reqEntity;
+		if (vtConnection.isPasswordChange())
 			saveEntity.setVpw(vtConnection.getVpw());
-		}
-
-		logger.debug("saveVtconnectionInfo object param :  {}" , VartechUtils.reflectionToString(saveEntity));
-
-		dbConnectionModelRepository.save(saveEntity);
-
-		if(updateFlag) {
-			if(!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
-				CacheUtils.removeObjectCache(cacheManager, currentEntity);
-			}else if(!reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())) {
-				CacheUtils.removeObjectCache(cacheManager, currentEntity);
-			}else {
-				if("Y".equals(reqEntity.getUrlDirectYn()) && !reqEntity.getVurl().equals(currentEntity.getVurl())) {
-					CacheUtils.removeObjectCache(cacheManager, currentEntity);
-				}else if(!reqEntity.getVserverip().equals(currentEntity.getVserverip()) || reqEntity.getVport() != currentEntity.getVport()){
-					CacheUtils.removeObjectCache(cacheManager, currentEntity);
-				}
+		logger.debug("saveVtconnectionInfo object param :  {}", VartechUtils.reflectionToString(saveEntity));
+		this.dbConnectionModelRepository.save(saveEntity);
+		if (updateFlag)
+			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
+				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
+			} else if (!reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())) {
+				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
+			} else if ("Y".equals(reqEntity.getUrlDirectYn()) && !reqEntity.getVurl().equals(currentEntity.getVurl())) {
+				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
+			} else if (!reqEntity.getVserverip().equals(currentEntity.getVserverip())
+					|| reqEntity.getVport() != currentEntity.getVport()) {
+				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
 			}
-		}
-
-		resultObject.setItemOne(1);
-
+		resultObject.setItemOne(Integer.valueOf(1));
 		return resultObject;
 	}
 
@@ -359,6 +366,16 @@ public class AdminServiceImpl extends AbstractService{
 
 	public List<DBTypeEntity> selectAllDbType() {
 		return dbTypeModelRepository.findAll();
+	}
+
+	public Map<String,String> dbTypeUrlFormat() {
+
+		Map<String,String> urlFormat = new HashMap<String,String>();
+		this.dbTypeDriverModelRepository.findAll().forEach(item->{
+			urlFormat.put(item.getDriverId(), VarsqlJdbcUtil.getSampleJdbcUrl(item.getUrlFormat()) );
+		});;
+
+		return urlFormat;
 	}
 
 	/**
@@ -462,6 +479,24 @@ public class AdminServiceImpl extends AbstractService{
 		dbConnectionModelRepository.save(copyEntity);
 
 		return VarsqlUtils.getResponseResultItemOne(copyEntity.getVconnid());
+	}
+
+	public ResponseResult jdbcProviderList(SearchParameter searchParameter) {
+		Sort sort =Sort.by(Sort.Direction.ASC, DBTypeDriverProviderEntity.DB_TYPE).and(Sort.by(Sort.Direction.ASC, DBTypeDriverProviderEntity.PROVIDER_NAME));
+
+		List<DBTypeDriverProviderEntity> result = dbTypeDriverProviderRepository.findAll(DBTypeDriverProviderSpec.searchField(searchParameter), sort);
+
+		List<DBTypeDriverProviderResponseDTO> list= result.stream().map(item ->{
+			DBTypeDriverProviderResponseDTO dto = new DBTypeDriverProviderResponseDTO();
+			dto.setDbType(item.getDbType());
+			dto.setProviderName(item.getProviderName());
+			dto.setDriverProviderId(item.getDriverProviderId());
+			dto.setDriverId(item.getDriverId());
+			dto.setDirectYn(item.getDirectYn());
+			return dto;
+		}).collect(Collectors.toList());
+
+		return VarsqlUtils.getResponseResultItemList(list);
 	}
 
 }

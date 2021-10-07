@@ -15,4 +15,8 @@
     <li <c:if test="${fn:endsWith(originalURL,'/errorlogMgmt')}">class="active"</c:if>>
         <a href="<c:url value="./errorlogMgmt" />"><i class="fa fa-server"></i><spring:message code="admin.menu.errorlog" /></a>
     </li>
+    <li <c:if test="${fn:endsWith(originalURL,'/driverMgmt')}">class="active"</c:if>>
+        <a href="<c:url value="./driverMgmt" />"><i class="fa fa-ticket"></i><spring:message code="admin.menu.drivermgmt" text="JDBC Driver °ü¸®"/></a>
+    </li>
+    
 </ul>

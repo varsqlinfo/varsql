@@ -31,7 +31,7 @@ values( {{columnValue}} );
 			<![CDATA[
 update {{table.name}}
 set
-{{{updateColumn}}}
+	{{{updateColumn}}}
 {{{condition}}};
 				]]>
 			</main>
@@ -98,7 +98,7 @@ values( {{columnValue}} );
 			<![CDATA[
 update {{table.name}}
 set
-{{{updateColumn}}}
+	{{{updateColumn}}}
 {{{condition}}};
 				]]>
 			</main>
@@ -147,8 +147,9 @@ delete from {{table.name}}
 			<![CDATA[
 public class {{capitalize (camelCase table.name)}}{
 
-{{classProperty}}
-{{get_set}}
+	{{classProperty}}
+
+	{{get_set}}
 }
 				]]>
 			</main>
@@ -156,7 +157,7 @@ public class {{capitalize (camelCase table.name)}}{
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-    private {{javaType typeName}} {{camelCase name}}; //{{comment}}
+	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 				<compileValue/>
@@ -165,9 +166,9 @@ public class {{capitalize (camelCase table.name)}}{
 				<key>get_set</key>
 				<code><![CDATA[
 {{#columns}}
-    public {{javaType typeName}} get{{capitalize (camelCase name)}}(){
-        return this.{{camelCase name}};
-    }
+	public {{javaType typeName}} get{{capitalize (camelCase name)}}(){
+		return this.{{camelCase name}};
+	}
 {{/columns}}
 						]]></code>
 				<compileValue/>
@@ -197,16 +198,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = {{capitalize (camelCase table.name)}}Entity._TB_NAME)
 public class {{capitalize (camelCase table.name)}}Entity{
+
 	public final static String _TB_NAME="{{table.name}}";
 
-{{{classProperty}}}
+	{{{classProperty}}}
 
 	@Builder
 	public {{table.name}} ({{columnName}}) {
-{{{builderVariable}}}
+	{{{builderVariable}}}
 	}
 
-{{{finalProperty}}}
+	{{{finalProperty}}}
 }
 				]]>
 			</main>
@@ -215,7 +217,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 				<code><![CDATA[
 {{#columns}}
 	@Column(name ="{{name}}")
-	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
+	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 
 {{/columns}}
 						]]></code>
@@ -262,11 +264,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class {{capitalize (camelCase table.name)}}RequestDTO {
 
-{{classProperty}}
+	{{classProperty}}
 
 	@Builder
 	public {{table.name}} ({{columnName}}) {
-{{{builderVariable}}}
+		{{{builderVariable}}}
 	}
 }
 				]]>
@@ -275,7 +277,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
+	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 				<compileValue/>
@@ -311,7 +313,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class {{capitalize (camelCase table.name)}}ResponseDTO implements Serializable{
-{{classProperty}}
+
+	{{classProperty}}
 
 }
 				]]>
@@ -320,7 +323,7 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; //{{comment}}
+	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 				<compileValue/>

@@ -17,7 +17,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * @프로그램설명: pool 셋팅
  * @변경이력	:
  */
-public class ConnectionHIKARI extends ConnectionPoolAbstract{
+public class ConnectionHIKARI extends AbstractConnectionPool{
 
 	private final Logger log = LoggerFactory.getLogger(ConnectionHIKARI.class);
 

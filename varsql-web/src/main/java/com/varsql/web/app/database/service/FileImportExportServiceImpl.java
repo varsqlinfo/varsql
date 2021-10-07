@@ -85,7 +85,7 @@ public class FileImportExportServiceImpl{
 				if(ser.getResultCode() != null) {
 					fileImportResult.setResultCode(ser.getResultCode());
 				}
-				fileImportResult.setResultCount(ser.getResult());
+				fileImportResult.setResultCount(ser.getExecuteCount());
 				fileImportResult.setMessage(ser.getMessage());
 
 			} catch (IOException | SQLException e) {

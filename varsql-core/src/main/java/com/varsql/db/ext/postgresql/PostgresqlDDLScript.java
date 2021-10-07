@@ -139,9 +139,9 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
 			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
-			ddlStr.append(source.getString("VIEW_SOURCE")).append(ddlOption.isAddLastSemicolon()?";":"");
+			ddlStr.append(source.getString("VIEW_SOURCE"));
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -172,9 +172,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			Map indexInfo = sqlSesseion.selectOne("indexScript", dataParamInfo);
 			ddlStr.append(indexInfo.get(MetaColumnConstants.CREATE_SOURCE));
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -207,9 +205,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -242,9 +238,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -288,9 +282,8 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			Map scriptInfo = sqlSesseion.selectOne("triggerScript", dataParamInfo);
 
 			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -333,8 +326,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 

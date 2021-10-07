@@ -1,15 +1,17 @@
 package com.varsql.core.sql.mapping;
 
 
+import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.StringRegularUtils;
-import com.varsql.core.sql.type.JdbcType;
+import com.varsql.core.sql.type.SQLDataType;
 
 public class ParameterMapping {
 	private String property;
-	private JdbcType jdbcType;
+	private SQLDataType dataType;
 	private boolean isFunction;
 	private String functionName;
 	private String[] functionParam;
+	private ParameterMode mode;
 
 	private ParameterMapping() {
 	}
@@ -18,8 +20,8 @@ public class ParameterMapping {
 		return property;
 	}
 
-	public JdbcType getJdbcType() {
-		return jdbcType;
+	public SQLDataType getDataType() {
+		return dataType;
 	}
 
 	public boolean isFunction() {
@@ -34,22 +36,28 @@ public class ParameterMapping {
 		return functionParam;
 	}
 
+	public ParameterMode getMode() {
+		return mode;
+	}
+
 	public static class Builder {
 		private ParameterMapping parameterMapping;
+		private DBType dbType;
 
 		@SuppressWarnings("unused")
 		private Builder() {
 		};
 
-		public Builder(String property) {
+		public Builder(DBType dbType, String property) {
 			this.parameterMapping = new ParameterMapping();
+			this.dbType = dbType;
 
 			parseProperty(property);
 		}
 
 		private void parseProperty(String property) {
 			property = StringRegularUtils.allTrim(property);
-			int fnStartIdx = property.indexOf("fn:");
+			int fnStartIdx = property.indexOf("fn=");
 
 			if (fnStartIdx > -1) {
 				int closeIdx = property.indexOf(')', fnStartIdx);
@@ -63,32 +71,33 @@ public class ParameterMapping {
 				}
 
 				if (!"".equals(fnVal)) {
-					getFunctionVal(property, fnVal.replace("fn:", ""), fnVal.split(":")[1]);
+					getFunctionVal(property, fnVal.replace("fn=", ""), fnVal.split(":")[1]);
 					property = property.replace(fnVal, "");
 				}
 			}
 
 			if (!"".equals(property)) {
 
-				int startIdx = property.indexOf(',');
-				if (startIdx > -1) {
-					String[] propertyArr = property.split(",");
-					int len = propertyArr.length;
-					for (int i = 0; i < len; i++) {
-						String propKeyVal = propertyArr[i];
-						if (propKeyVal.indexOf(':') > -1) {
-							String[] propKeyValArr = propKeyVal.split(":");
-							String propVal = propKeyValArr[1];
-							if (propKeyVal.startsWith("jdbcType:")) {
-								this.parameterMapping.jdbcType = JdbcType.valueOf(propVal);
-							}
-						} else {
-							this.parameterMapping.property = propKeyVal;
+				String[] propertyArr = property.split(",");
+
+
+				int len = propertyArr.length;
+				for (int i = 0; i < len; i++) {
+					String propertyVal = propertyArr[i];
+					String[] propSplitArr = propertyVal.split("=");
+					String key = propSplitArr[0];
+					if (propSplitArr.length > 1) {
+						String val = propSplitArr[1];
+						if ("dataType".equalsIgnoreCase(key)) {
+							this.parameterMapping.dataType = SQLDataType.getSQLDataType(this.dbType, val);
+						}else if ("mode".equalsIgnoreCase(key)) {
+							this.parameterMapping.mode = ParameterMode.getParameterMode(val);
 						}
+					}else {
+						this.parameterMapping.property = propSplitArr[0];
 					}
-				} else {
-					this.parameterMapping.property = property;
 				}
+
 			}
 		}
 
@@ -122,7 +131,8 @@ public class ParameterMapping {
 		StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
 
 		sb.append(" property='").append(this.property).append('\'');
-		sb.append(", jdbcType='").append(this.jdbcType).append('\'');
+		sb.append(", mode='").append(this.mode).append('\'');
+		sb.append(", dataType='").append(this.dataType).append('\'');
 		sb.append(", isFunction='").append(isFunction).append('\'');
 		sb.append(", functionName='").append(this.functionName).append('\'');
 		sb.append(", functionParam='").append(this.functionParam).append('\'');

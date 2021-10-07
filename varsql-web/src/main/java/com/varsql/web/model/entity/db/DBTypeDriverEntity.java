@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = DBTypeDriverEntity._TB_NAME)
 public class DBTypeDriverEntity {
-	
-	public final static String _TB_NAME="VTDBTYPE_DRIVER";
+
+	public final static String _TB_NAME="VTDBTYPE_DRIVER_TYPE";
 
 	@Id
 	@Column(name ="DRIVER_ID")

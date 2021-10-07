@@ -34,6 +34,9 @@ public enum VarsqlAppCode implements CodeEnumValue {
 
 	// java error
 	,EC_BEAN_CONVERT(20000) // java entity 변환 에러.
+	,EC_FACTORY_CONNECTION_INFO(20001) // connection info dao not generate
+
+	, DRIVER_NOT_FOUND(20002)	// driver not found
 
 	// meta , ddl error
 	,DB_META_ERROR(30000)

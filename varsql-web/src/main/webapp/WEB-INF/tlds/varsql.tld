@@ -75,6 +75,23 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>url</name>
+		<tag-class>com.varsql.web.tags.VarsqlUrlTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+
 	<tag-file>
 		<name>editorResource</name>
 		<path>/WEB-INF/tags/editorResource.tag</path>

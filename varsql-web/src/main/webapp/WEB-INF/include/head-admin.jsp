@@ -12,8 +12,8 @@
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?version=${css_ver}" rel="stylesheet">
 
+<link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?version=${css_ver}" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 

@@ -1,5 +1,7 @@
 package com.varsql.core.db.mybatis;
 
+import java.io.IOException;
+import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.varsql.core.common.util.ClassLoaderUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
@@ -143,8 +146,12 @@ public final class SQLManager {
 	 * @변경이력  :
 	 * @param connInfo
 	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	private DataSource dataSource(ConnectionInfo connInfo) {
+	private DataSource dataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
 		BasicDataSource dataSource = new BasicDataSource();
 
 		dataSource.setDriverClassName(connInfo.getDriver());
@@ -166,6 +173,15 @@ public final class SQLManager {
 		dataSource.setNumTestsPerEvictionRun(5);
 		dataSource.setMinEvictableIdleTimeMillis(-1);
 		dataSource.setPoolPreparedStatements(true);
+
+		Driver dbDriver =ClassLoaderUtils.getJdbcDriver(connInfo.getDriver(), connInfo.getJdbcDriverList());
+	    if(dbDriver != null) {
+	    	logger.info("jdbc driver load success");
+	    	dataSource.setDriver(dbDriver);
+	    }else {
+	    	logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverList());
+	    	throw new  ConnectionException("jdbc driver load fail : "+ connInfo.getJdbcDriverList());
+	    }
 
 		return dataSource;
 	}

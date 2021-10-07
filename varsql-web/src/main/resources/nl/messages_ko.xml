@@ -183,12 +183,10 @@
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.useyn">사용여부</entry>
 <entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>
-<entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
 <entry key="admin.form.db.lazyloadyn">Async 로드</entry>
 <entry key="admin.form.db.basetableyn">Base 테이블 사용여부</entry>
-<entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
@@ -282,4 +280,25 @@
 
 <entry key="refresh.connnection.info">커넥션 정보 새로고침</entry>
 
+<entry key="admin.menu.drivermgmt">JDBC 제공자 관리</entry>
+<entry key="admin.drivermgmt.db_type">DB 타입</entry>
+<entry key="admin.drivermgmt.provider_name">이름</entry>
+<entry key="admin.drivermgmt.driver_class">Driver Class</entry>
+<entry key="admin.drivermgmt.driver">Jdbc Driver</entry>
+<entry key="admin.drivermgmt.path_type">경로 타입</entry>
+<entry key="admin.drivermgmt.validation_query">Validation Query</entry>
+<entry key="admin.drivermgmt.driver_desc">설명</entry>
+<entry key="admin.drivermgmt.driver_path">경로</entry>
+<entry key="admin.drivermgmt.driver_path.desc">경로가 다수일 경우 세미콜론(";")으로 분리하세요</entry>
+<entry key="admin.drivermgmt.file.desc">최대 5대까지 첨부 가능합니다.</entry>
+<entry key="admin.drivermgmt.file">파일</entry>
+<entry key="admin.drivermgmt.file_path1"></entry>
+<entry key="admin.drivermgmt.file_path2"></entry>
+<entry key="admin.drivermgmt.file_path3"></entry>
+<entry key="admin.drivermgmt.file_path4"></entry>
+<entry key="admin.drivermgmt.file_path5"></entry>
+
+<entry key="btn.validation.check">유효성 체크</entry>
+<entry key="btn.driverclass.check">Driver 체크</entry>
+<entry key="label.direct.input">직접 입력</entry>
 </properties>

@@ -171,9 +171,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 				ddlStr.append(source).append(BlankConstants.NEW_LINE);
 			}
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -254,9 +252,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 
 			}
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -293,9 +289,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 				ddlStr.append( srcList.get(i));
 			}
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -353,9 +347,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 				}
 			}
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -402,9 +394,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 				ddlStr.append( scrList.get(i));
 			}
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -448,8 +438,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 
 			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
 
-			ddlStr.append(ddlOption.isAddLastSemicolon()?";":"");
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
 

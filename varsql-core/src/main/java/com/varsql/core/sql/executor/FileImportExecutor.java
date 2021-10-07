@@ -1,6 +1,7 @@
 package com.varsql.core.sql.executor;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -44,6 +45,21 @@ public class FileImportExecutor extends UpdateExecutor{
 
 		SQLExecuteResult result = new SQLExecuteResult();
 
+		File importFile;
+		try {
+			importFile = ResourceUtils.getResource(String.valueOf(statementInfo.getCustom().get(IMPORT_FILE_PARAM_NAME))).getFile();
+
+			if(!importFile.exists() || importFile.length() == 0 ) {
+				result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
+				result.setMessage(" import file size zero ");
+				return result;
+			}
+		} catch (IOException e1) {
+			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
+			result.setMessage(" error message :  "+  e1.getMessage());
+			return result;
+		}
+
 		result.setStartTime(System.currentTimeMillis());
 
 		Connection conn = ConnectionFactory.getInstance().getConnection(statementInfo.getVconnid());
@@ -51,8 +67,6 @@ public class FileImportExecutor extends UpdateExecutor{
 		try {
 
 			conn.setAutoCommit(false);
-
-			File importFile = ResourceUtils.getResource(String.valueOf(statementInfo.getCustom().get(IMPORT_FILE_PARAM_NAME))).getFile();
 
 			ImportData ijd = null;
 			if(VarsqlFileType.JSON.equals(statementInfo.getExportType())) {
@@ -114,6 +128,7 @@ public class FileImportExecutor extends UpdateExecutor{
 		}
 		result.setTotalCount(handlerVariable.getCount() );
 		result.setEndTime(System.currentTimeMillis());
+		result.setExecuteCount(handlerVariable.getCount());
 		result.setResult(handlerVariable.getCount());
 
 

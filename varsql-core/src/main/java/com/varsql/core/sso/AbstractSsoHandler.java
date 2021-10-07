@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
 *
-* @FileName  : SsoHandlerAbstract.java
+* @FileName  : AbstractSsoHandler.java
 * @프로그램 설명 : sso handler 추상화 클래스
 * @Date      : 2019. 11. 26.
 * @작성자      : ytkim
 * @변경이력 :
 */
-public abstract class SsoHandlerAbstract implements SsoHandler {
+public abstract class AbstractSsoHandler implements SsoHandler {
 
 	@Override
 	public boolean beforeSsoHandler(HttpServletRequest request, HttpServletResponse response) {

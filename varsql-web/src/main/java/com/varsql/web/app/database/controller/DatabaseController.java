@@ -147,9 +147,10 @@ public class DatabaseController extends AbstractController {
 		if(databaseParamInfo.isRefresh()) {
 			String cacheKey = CacheUtils.getObjectTypeKey(databaseParamInfo);
 			Cache tableMetaCache = cacheManager.getCache(CacheInfo.CacheType.OBJECT_TYPE_METADATA.getCacheName());
-			if(databaseParamInfo.getObjectNames() != null && databaseParamInfo.getObjectNames().length > 0) {
 
-				ValueWrapper value = tableMetaCache.get(cacheKey);
+			ValueWrapper value = tableMetaCache.get(cacheKey);
+
+			if(value !=null && databaseParamInfo.getObjectNames() != null && databaseParamInfo.getObjectNames().length > 0) {
 
 				ResponseResult objValue = (ResponseResult)value.get();
 
@@ -174,7 +175,7 @@ public class DatabaseController extends AbstractController {
 
 				tableMetaCache.put(cacheKey, objValue);
 
-				return result;
+				return objValue;
 			}else {
 				tableMetaCache.evict(cacheKey);
 			}

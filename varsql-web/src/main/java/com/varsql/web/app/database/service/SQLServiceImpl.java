@@ -55,6 +55,9 @@ import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
+import com.varsql.core.sql.mapping.ParameterMapping;
+import com.varsql.core.sql.mapping.ParameterMode;
+import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
@@ -366,9 +369,65 @@ public class SQLServiceImpl{
 				hasResults = stmt.execute(tmpSqlSource.getQuery());
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 				CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
-				//setMaxRow(callStatement, maxRow);
-				hasResults = callStatement.execute();
-				stmt= callStatement;
+
+		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
+		        setMaxRow(callStatement, maxRow);
+		        hasResults = callStatement.execute();
+
+		        int cursorObjIdx = -1;
+
+		        List<GridColumnInfo> columnInfoList = new ArrayList<>();
+
+		        boolean isOutResult = false;
+		        Map resultInfo = new HashMap();
+
+		        if(tmpSqlSource.getParamList() != null) {
+		        	int idx = 1;
+			        for(ParameterMapping param : tmpSqlSource.getParamList()) {
+
+			        	if(param.getMode() == ParameterMode.OUT || param.getMode() == ParameterMode.INOUT) {
+			        		isOutResult = true;
+			        		SQLDataType dataType = param.getDataType();
+
+			        		if(SQLDataType.CURSOR.equals(dataType) || SQLDataType.ORACLE_CURSOR.equals(dataType)) {
+			        			cursorObjIdx= idx;
+			        			hasResults = true;
+			        		}else {
+			        			String key = param.getProperty();
+			        			key = StringUtils.isBlank(key) ? idx+"" : key;
+
+			        			GridColumnInfo columnInfo = new GridColumnInfo();
+
+			        			columnInfo.setKey(key);
+			        			columnInfo.setLabel(key);
+			        			columnInfo.setDbType(dataType != null ? dataType.name() : SQLDataType.OTHER.name() );
+			        			columnInfoList.add(columnInfo);
+
+			        			resultInfo.put(key, callStatement.getObject(idx));
+			        		}
+			        	}
+			        	idx++;
+			        }
+		        }
+
+		        if(isOutResult && !hasResults) {
+
+		            ArrayList<Map<Object, Object>> rows = new ArrayList();
+		            rows.add(resultInfo);
+
+		            ssrv.setColumn(columnInfoList);
+		            ssrv.setResultCnt(1);
+		        	ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
+		        	ssrv.setData(rows);
+		        	return ;
+		        }else if(hasResults) {
+		        	rs = (ResultSet)callStatement.getObject(cursorObjIdx);
+		        	SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, gridKeyAlias);
+		            ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
+		            ssrv.setResultMessage(String.format("select count : %s ", new Object[] { Long.valueOf(ssrv.getResultCnt()) }));
+		            return ;
+		        }
+		        stmt = callStatement;
 			}else{
 				PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);

@@ -244,7 +244,7 @@ Vue.component('step-button', {
 Vue.component('file-upload', {
 
 	template :
-	'<div :id="id" class="file-upload-area">'
+	'<div :id="id" class="file-upload-area padding-border-none">'
 	+' <div v-if="useButton" class="file-upload-btn-area">'
 	+'  <button class="btn btn-success select-file-button">'
 	+'		<i class="glyphicon glyphicon-plus"></i>'
@@ -411,6 +411,9 @@ Vue.component('file-upload', {
 		if(dropzoneOpt.uploadMultiple ===true){
 
 			dropzone.on('successmultiple', function(files, resp){
+				if(resp.resultCode==50000){
+
+				}
 
 				if(VARSQL.reqCheck(resp)){
 					for(var i =0 ;i <files.length;i++){
@@ -420,9 +423,16 @@ Vue.component('file-upload', {
 					addFileList(_this, resp.items);
 					_this.callback.successmultiple (files, resp);
 				}else{
-					for(var i =0 ;i <files.length;i++){
-						this.emit('error', files[i], resp.message);
+					if(resp.resultCode==50000){
+						for(var i =0 ;i <files.length;i++){
+							this.removeFile(files[i]);
+						}
+					}else{
+						for(var i =0 ;i <files.length;i++){
+							this.emit('error', files[i], resp.message);
+						}
 					}
+
 					return false;
 				}
 			});

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
  * @변경이력 :
  */
 @JacksonXmlRootElement(localName = "preferences-item")
-public class PreferencesContextMenu extends PreferencesAbstract {
+public class PreferencesContextMenu extends AbstractPreferences {
 	@JacksonXmlProperty(localName = "item")
     @JacksonXmlElementWrapper(useWrapping = false)
 	private Item[] items;

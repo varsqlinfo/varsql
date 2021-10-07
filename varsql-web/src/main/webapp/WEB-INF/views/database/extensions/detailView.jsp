@@ -35,7 +35,7 @@
 
 		<div id="detailViewTemplate" style="display: none;">
 			<div class="item-detail-area" style="overflow: auto;">
-				<table>
+				<table class="w100">
 					<thead style="display:none;">
 						<tr>
 							<td class="item-col-label">

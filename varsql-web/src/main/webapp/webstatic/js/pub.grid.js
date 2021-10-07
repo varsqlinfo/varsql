@@ -1232,8 +1232,9 @@ Plugin.prototype ={
 			if(subMode !='paste' && subMode != 'update'){
 				_$util.setSelectionRangeInfo(_this, {}, true);
 			}
-
-			_this.calcDimension(gridMode);
+			if(subMode != 'update'){
+				_this.calcDimension(gridMode);
+			}
 		}
 
 		if(gridMode == 'addData' || subMode =='paste'){
@@ -1257,6 +1258,8 @@ Plugin.prototype ={
 			}else if(addOpt.focus===true){
 				_this.moveVerticalScroll({rowIdx : rowIdx});
 			}
+		}else if(subMode =='update'){
+			this.drawGrid('vscroll');
 		}else{
 			_this.drawGrid(mode,true);
 		}
@@ -5671,8 +5674,6 @@ var _$setting = {
 
 				_this.setFilterChangeInfo(gridCtx, settingAreaEle, gridCtx.config.settingConfig.currentClickItem);
 
-				console.log(gridCtx.config.settingConfig.changeInfos)
-				
 				var newViewCols = [];
 				var headRedraw = gridCtx.options.tColItem.length == viewColumnKey.length ? false : true;
 				var changeWidthInfo={};

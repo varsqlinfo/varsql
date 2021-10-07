@@ -136,7 +136,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.admin, url:'/main/dblist'}
+				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dblist'}
 				,data : param
 				,success: function(resData) {
 					_self.searchData = resData.items;

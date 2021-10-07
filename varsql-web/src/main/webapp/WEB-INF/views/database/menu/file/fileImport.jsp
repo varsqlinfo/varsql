@@ -74,7 +74,7 @@
 							<template v-for="(item,index) in importResult">
 								<div class="file-import-result-msg user-select-on">
 									<div :class="(item.resultCode == 200 ? 'success' :'error')">
-										<span> {{item.fileName}}</span> <span>count : {{item.resultCount}}</span>
+										<span> {{item.fileName}}</span> <span v-if="item.resultCode == 200">count : {{item.resultCount}}</span>
 									</div>
 					    			<div v-if="item.resultCode > 200" class="error">{{item.message}}</div>
 				    			</div>

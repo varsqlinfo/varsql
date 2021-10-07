@@ -14,14 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.exception.FileUploadException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.controller.fileupload.FileUploadController;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
-import com.vartech.common.exception.VartechRuntimeException;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -44,8 +42,8 @@ public class FileUploadService {
 		return uploadFiles(mtfRequest, fileType, paramFileContId, null);
 	}
 
-	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String contentId,
-			String vconnid) {
+	public List<FileInfoEntity> uploadFiles(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String contentId,	String contGroupId) {
+
 		String fileContId = StringUtils.isBlank(contentId) ? VartechUtils.generateUUID() : contentId;
 		Iterator<String> fileNameIter = mtfRequest.getFileNames();
 		List<FileInfoEntity> uploadFiles = new ArrayList<>();
@@ -53,40 +51,43 @@ public class FileUploadService {
 		while (fileNameIter.hasNext()) {
 			String fileFieldName = fileNameIter.next();
 			List<MultipartFile> files = mtfRequest.getFiles(fileFieldName);
-			if (files.size() > 0)
-				files.forEach(file -> {
-					if (!file.isEmpty())
-						try {
-							FileInfoEntity fileInfo = saveFile(fileType, file, contentId);
-							fileInfo.setFileContId(fileContId);
-							fileInfo.setFileFieldName(fileFieldName);
-							fileInfo.setContGroupId(vconnid);
-							uploadFiles.add(fileInfo);
-						} catch (IllegalStateException | IOException e) {
-							this.logger.error("file upload exception : {}", e.getMessage(), e);
-							throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e,
-									"file upload error");
-						}
-				});
+			if (files.size() > 0) {
+				uploadFiles.addAll(uploadFiles(fileType, files, fileContId, contGroupId, fileFieldName, false, true));
+			}
 		}
 
-		if (uploadFiles.size() > 0)
-			this.fileInfoEntityRepository.saveAll(uploadFiles);
+		if (uploadFiles.size() > 0)	this.fileInfoEntityRepository.saveAll(uploadFiles);
+
 		return uploadFiles;
 	}
 
-	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String cotentId)
-			throws IllegalStateException, IOException {
-		return saveFile(fileType, mfileInfo, cotentId, true);
+	public List<FileInfoEntity> uploadFiles(UploadFileType fileType, List<MultipartFile> files, String fileContId, String contGroupId, String fieldName, boolean addExtensionSuffix, boolean fileInfoSaveFlag) {
+
+		List<FileInfoEntity> fileInfos = new ArrayList<FileInfoEntity>();
+		files.forEach(file ->{
+			if(!(file.getSize() <= 0 && "blob".equals(file.getOriginalFilename()))) {
+				try {
+					FileInfoEntity fileInfo = saveFile(fileType, file, fileContId, addExtensionSuffix);
+					fileInfo.setFileContId(fileContId);
+					fileInfo.setFileFieldName(fieldName);
+					fileInfo.setContGroupId(contGroupId);
+					fileInfos.add(fileInfo);
+				} catch (IllegalStateException | IOException e) {
+					logger.error("file upload exception : {}", e.getMessage(), e);
+					throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e, "file upload error");
+				}
+			}
+		});
+
+		if(fileInfoSaveFlag) {
+			fileInfoEntityRepository.saveAll(fileInfos);
+		}
+
+		return fileInfos;
 	}
 
 	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String cotentId, boolean addExtensionSuffix)
 			throws IllegalStateException, IOException {
-
-		// 파일 존재 확인
-		if (mfileInfo.isEmpty()) {
-			throw new FileUploadException("File empty : " + mfileInfo.getOriginalFilename());
-		}
 
 		String filePath = FileServiceUtils.getSaveRelativePath(fileType, cotentId);
 
@@ -116,30 +117,5 @@ public class FileUploadService {
 				.fileSize(mfileInfo.getSize())
 				.fileExt(extension)
 				.filePath(filePath).build();
-	}
-
-	public List<FileInfoEntity> uploadFiles(UploadFileType fileType, List<MultipartFile> files, String fileContId, String contGroupId, String fieldName, boolean addExtensionSuffix, boolean fileInfoSaveFlag) {
-
-		List<FileInfoEntity> fileInfos = new ArrayList<FileInfoEntity>();
-		files.forEach(file ->{
-			if(!file.isEmpty()) {
-				try {
-					FileInfoEntity fileInfo = saveFile(fileType, file, fileContId, addExtensionSuffix);
-					fileInfo.setFileContId(fileContId);
-					fileInfo.setFileFieldName(fieldName);
-					fileInfo.setContGroupId(contGroupId);
-					fileInfos.add(fileInfo);
-				} catch (IllegalStateException | IOException e) {
-					logger.error("file upload exception : {}", e.getMessage(), e);
-					throw new VartechRuntimeException("file upload error",  e);
-				}
-			}
-		});
-
-		if(fileInfoSaveFlag) {
-			fileInfoEntityRepository.saveAll(fileInfos);
-		}
-
-		return fileInfos;
 	}
 }

@@ -91,6 +91,11 @@
     </definition>
 
 
+	<definition name="/board/*" template="/WEB-INF/views/app/board/_templates/mainTemplate.jsp">
+        <put-attribute name="body"	value="/WEB-INF/views/app/board/{1}.jsp" />
+    </definition>
+
+
     <!-- login -->
 	<definition name="/login/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/login/{1}.jsp" />

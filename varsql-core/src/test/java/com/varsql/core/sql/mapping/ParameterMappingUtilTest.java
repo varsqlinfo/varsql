@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.varsql.core.db.DBType;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.test.BaseTest;
 
@@ -18,17 +19,17 @@ class ParameterMappingUtilTest extends BaseTest{
 	void testSQLPARAM() {
 		ParameterMappingUtil pmu = new ParameterMappingUtil();
 		String cont = getResourceContent("/query/sqlParam.txt");
-		
+
 		Map<String,String> data = new HashMap<>();
 		data.put("item1", "asdf");
 		data.put("page_id", "test");
-		ConvertResult convertResult = pmu.sqlParameter(cont,data, "?" );
-		
+		ConvertResult convertResult = pmu.sqlParameter(DBType.OTHER, cont,data, "?" );
+
 		List<ParameterMapping> sqlList = (List<ParameterMapping>) convertResult.getParameterInfo();
 		System.out.println(sqlList);
 		System.out.println(convertResult.getCont());
 		assertTrue(" sql parameter size not equal \n"+sqlList, sqlList.size() == 3);
-		
+
 		assertEquals(sqlList.get(0).getProperty(), "schema");
 	}
 }

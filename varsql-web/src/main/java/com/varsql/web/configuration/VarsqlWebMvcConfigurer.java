@@ -27,7 +27,9 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.VarsqlSpringBeanUtils;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
+import com.varsql.web.common.interceptor.DatabaseBoardAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
 import com.varsql.web.constants.ViewPageConstants;
 
@@ -122,6 +124,9 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     @Override
 	public void addInterceptors(InterceptorRegistry registry) {
 	    registry.addInterceptor(databaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
+
+	    registry.addInterceptor(databaseBoardAuthInterceptor()).addPathPatterns(new String[] { "/board/**" });
+
 	    registry.addInterceptor(languageInterceptor()).addPathPatterns("/**");
 	}
 
@@ -136,6 +141,11 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     public DatabaseAuthInterceptor databaseAuthInterceptor() {
         return new DatabaseAuthInterceptor();
     }
+
+    @Bean
+	public DatabaseBoardAuthInterceptor databaseBoardAuthInterceptor() {
+		return new DatabaseBoardAuthInterceptor();
+	}
 
     /**
      * @method  : languageInterceptor
@@ -155,6 +165,11 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         final SessionLocaleResolver localeResolver = new SessionLocaleResolver();
         return localeResolver;
     }
+
+    @Bean
+	public VarsqlSpringBeanUtils varsqlSpringBeanUtils() {
+		return new VarsqlSpringBeanUtils();
+	}
 
     @Bean
     public MultipartResolver multipartResolver() {

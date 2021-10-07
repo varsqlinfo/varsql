@@ -24,11 +24,10 @@ class DBConnectionModelRepositoryTest extends BaseJpaTestCase{
 		DBConnectionEntity modelData = dbConnectionModelRepository.save(DBConnectionEntity.builder()
 				.vname("testdb")
 				.vserverip("123.123.123.1")
-				.vport(ConvertUtils.longValueOf("12312"))
+				.vport(12312)
 				.vdatabasename("varsql")
 				.vurl("jdbc:h2:file:E://varsql")
 				.vdriver("004")
-				.vtype("h2")
 				.vid("varsql")
 				.vpw("")
 				.urlDirectYn("Y")
@@ -38,12 +37,11 @@ class DBConnectionModelRepositoryTest extends BaseJpaTestCase{
 				.basetableYn("N")
 				.schemaViewYn("N")
 				.lazyloadYn("Y")
-				.maxActive(ConvertUtils.longValueOf(50))
-				.minIdle(ConvertUtils.longValueOf(10))
-				.timeout(ConvertUtils.longValueOf(3000))
-				.exportcount(ConvertUtils.longValueOf(3000))
-				.maxSelectCount(ConvertUtils.longValueOf(10000))
-				.vquery("select 1").build());
+				.maxActive(50)
+				.minIdle(10)
+				.timeout(3000)
+				.exportcount(3000)
+				.maxSelectCount(10000).build());
 
 		DBConnectionEntity modelData2= dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(modelData.getVconnid())).get();
 

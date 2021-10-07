@@ -159,14 +159,12 @@
 <entry key="database.tools">도구</entry>
 
 <entry key="admin.form.header">Database info</entry>
-<entry key="admin.form.db.vname">연결명</entry>
+<entry key="admin.form.db.vname">Name</entry>
 <entry key="admin.form.db.vurl">Url</entry>
 <entry key="admin.form.db.databasename">schema name</entry>
 <entry key="admin.form.db.vdriver">Driver</entry>
-<entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
-<entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 

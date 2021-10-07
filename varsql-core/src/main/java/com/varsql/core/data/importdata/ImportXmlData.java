@@ -19,7 +19,7 @@ import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.executor.SqlUpdateExecutor;
 
-public class ImportXmlData extends ImportDataAbstract{
+public class ImportXmlData extends AbstractImportData{
 
 	private final Logger logger = LoggerFactory.getLogger(ImportXmlData.class);
 

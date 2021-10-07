@@ -9,7 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,8 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
-import com.varsql.web.model.converter.BooleanToYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
+import com.varsql.web.model.entity.user.RegInfoEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -59,12 +61,6 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	@Column(name ="VDRIVER")
 	private String vdriver;
 
-	@Column(name ="VTYPE")
-	private String vtype;
-
-	@Column(name ="VQUERY")
-	private String vquery;
-
 	@Column(name ="VID")
 	private String vid;
 
@@ -74,16 +70,16 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	private String vpw;
 
 	@Column(name ="MAX_ACTIVE")
-	private Long maxActive;
+	private int maxActive;
 
 	@Column(name ="MIN_IDLE")
-	private Long minIdle;
+	private int minIdle;
 
 	@Column(name ="TIMEOUT")
-	private Long timeout;
+	private int timeout;
 
 	@Column(name ="EXPORTCOUNT")
-	private Long exportcount;
+	private long exportcount;
 
 	@Column(name ="VCONNOPT")
 	private String vconnopt;
@@ -120,13 +116,19 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	private String vdatabasename;
 
 	@Column(name ="VPORT")
-	private Long vport;
+	private int vport;
 
 	@Column(name ="MAX_SELECT_COUNT")
-	private Long maxSelectCount;
+	private long maxSelectCount;
 
 	@Column(name ="USE_COLUMN_LABEL")
 	private String useColumnLabel;
+
+	@NotAudited
+	@JsonIgnore
+	@OneToOne
+	@JoinColumn(name = "VDRIVER", referencedColumnName = "DRIVER_PROVIDER_ID", nullable = false, insertable =false , updatable =false)
+	private DBTypeDriverProviderEntity dbTypeDriverProvider;
 
 	@NotAudited
 	@JsonManagedReference
@@ -139,14 +141,12 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vtype, String vquery, String vid, String vpw, Long maxActive, Long minIdle, Long timeout, Long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, Long vport, Long maxSelectCount, String useColumnLabel) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel) {
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;
 		this.vurl = vurl;
 		this.vdriver = vdriver;
-		this.vtype = vtype;
-		this.vquery = vquery;
 		this.vid = vid;
 		this.vpw = vpw;
 		this.maxActive = maxActive;
@@ -183,10 +183,6 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	public final static String VURL="vurl";
 
 	public final static String VDRIVER="vdriver";
-
-	public final static String VTYPE="vtype";
-
-	public final static String VQUERY="vquery";
 
 	public final static String VID="vid";
 

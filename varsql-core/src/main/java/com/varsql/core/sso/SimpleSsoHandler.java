@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 * @작성자      : ytkim
 * @변경이력 :
 */
-public class SimpleSsoHandler extends SsoHandlerAbstract{
+public class SimpleSsoHandler extends AbstractSsoHandler{
 	private final static Logger logger = LoggerFactory.getLogger(SimpleSsoHandler.class);
 
 	final String SSO_TOKEN = "ssoToken";

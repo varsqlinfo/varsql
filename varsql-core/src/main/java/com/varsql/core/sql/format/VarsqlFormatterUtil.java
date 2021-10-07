@@ -2,8 +2,10 @@ package com.varsql.core.sql.format;
 
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
+import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -92,5 +94,19 @@ public final class VarsqlFormatterUtil {
 				return sql;
 		}
 
+	}
+
+	public static String addLastSemicolon(StringBuilder ddlStr, DDLCreateOption ddlOption) {
+		String ddl = ddlStr.toString();
+
+		ddl = StringUtils.rTrim(ddl);
+
+		if(!ddl.endsWith(";")) {
+			if(ddlOption.isAddLastSemicolon()) {
+				return ddl+";";
+			}
+		}
+
+		return ddl;
 	}
 }

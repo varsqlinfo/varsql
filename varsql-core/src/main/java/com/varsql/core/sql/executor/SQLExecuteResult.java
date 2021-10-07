@@ -27,6 +27,7 @@ public class SQLExecuteResult {
 	private String message;
 	private VarsqlAppCode resultCode;
 	private long totalCount;
+	private long executeCount;
 	private Object result;
 
 	@SuppressWarnings("unchecked")

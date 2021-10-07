@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.web.app.admin.service.AdminServiceImpl;
+import com.varsql.web.app.admin.service.AdminDbMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
@@ -41,14 +41,14 @@ import com.vartech.common.utils.HttpUtils;
 *-----------------------------------------------------------------------------
  */
 @Controller
-@RequestMapping("/admin/main")
+@RequestMapping("/admin/databaseMgmt")
 public class AdminDbMgmtController extends AbstractController{
 
 	/** The Constant logger. */
 	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);
 
 	@Autowired
-	private AdminServiceImpl adminServiceImpl;
+	private AdminDbMgmtServiceImpl adminServiceImpl;
 
 	/**
 	 *
@@ -143,22 +143,13 @@ public class AdminDbMgmtController extends AbstractController{
 	}
 
 	/**
-	 *
-	 * @Method Name  : dbSave
-	 * @작성일   : 2014. 8. 18.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @Method 설명 : 정보 저장
-	 * @param vconnid
-	 * @param vname
-	 * @param vurl
-	 * @param vdriver
-	 * @param vtype
-	 * @param vid
-	 * @param vpw
-	 * @param vconnopt
-	 * @param vpoolopt
-	 * @param vquery
+	 * @method  : dbSave
+	 * @desc :
+	 * @author   : ytkim
+	 * @date   : 2014. 8. 18.
+	 * @param vtConnection
+	 * @param result
+	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
@@ -194,5 +185,12 @@ public class AdminDbMgmtController extends AbstractController{
 	public @ResponseBody ResponseResult dbPwView(@RequestParam(value = "vconnid", required = true)  String vconnid
 			,@RequestParam(value = "userPw", required = true)  String userPw) throws Exception {
 		return adminServiceImpl.viewVtConntionPwInfo(vconnid, userPw);
+	}
+
+	@PostMapping({ "/jdbcProviderList" })
+	@ResponseBody
+	public ResponseResult jdbcProviderList(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+		return this.adminServiceImpl.jdbcProviderList(searchParameter);
 	}
 }

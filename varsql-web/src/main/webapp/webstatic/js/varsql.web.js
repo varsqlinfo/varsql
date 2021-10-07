@@ -67,6 +67,19 @@ var _$base = {
 	method :'post'
 	,cache: false
 	,dataType: "json"
+}
+,speicalChar = {
+	'|' : '[|]'
+	,'+' : '[+]'
+	,'$' : '[$]'
+	,'*' : '[*]'
+	,'(' : '\\('
+	,')' : '\\)'
+	,'{' : '\\{'
+	,'}' : '\\}'
+	,'[' : '\\['
+	,']' : '\\]'
+	,'\\' : '\\\\\\\\'
 };
 
 _$base.staticResource  ={
@@ -94,7 +107,7 @@ _$base.staticResource  ={
 			'/webstatic/js/plugins/file/dropzone.js',
 		]
 		,'css' : [
-			'/webstatic/js/plugins/file/dropzone.css',
+			'/webstatic/js/plugins/file/dropzone.css'
 		]
 	}
 };
@@ -394,18 +407,21 @@ function fnReqCheck(data ,opts){
 		return false;
 	}
 
+	var statusCode = data.status;
 	if(opts.disableResultCheck !== true){
-		if(resultCode == 500){	// error
-			alert(data.message);
-			return false;
-		}else if(resultCode != 200){
+		if(statusCode != 200){
+			if(resultCode == 500){	// error
+				alert(data.message);
+				return false;
+			}else if(resultCode != 200){
 
-			if(data.messageCode){
-				alert('request check : '+data.messageCode);
-			}else{
-				alert('request check : '+data.message);
+				if(data.messageCode){
+					alert('request check : '+data.messageCode);
+				}else{
+					alert('request check : '+data.message);
+				}
+				return false;
 			}
-			return false;
 		}
 	}
 
@@ -466,9 +482,12 @@ _$base.req ={
 				if(_this.isConnectError===true){
 					return ;
 				}
+
 				$(loadSelector).centerLoadingClose();
 				alert(_$base.messageFormat('error.0004'));
 				_this.isConnectError = true;
+
+				_$base.log.error(xhr);
 
 				setTimeout(function() {
 					_this.isConnectError =false;
@@ -523,6 +542,13 @@ _$base.req ={
 
 		}
 		return true;
+	}
+	,getCsrf : function (){
+		var csrfVal = {};
+		csrfVal[$$csrf_header] = $$csrf_token;
+		csrfVal[$$csrf_param] = $$csrf_token;
+
+		return csrfVal;
 	}
 	,uploadFile : function (formSelector , opts){
 		var _this =this;
@@ -948,6 +974,11 @@ _$base.unload =function (mode){
 				e.returnValue =false;
 				e.preventDefault()
 	            e.stopPropagation()
+				return false;
+			}
+
+			if(mode =='refresh'){
+				location.reload();
 				return false;
 			}
 
@@ -1403,6 +1434,73 @@ _$base.util = {
 			width : (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 			,height : (window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight)
 		}
+	}
+	,replaceParamUrl : function (url , param){
+		var _this = this;
+		if(!url) return '';
+
+		var queryStr = [];
+
+		var urlArr = url.split('?');
+		if(urlArr.length > 1){
+			queryStr.push(urlArr[0]+'?');
+			url = urlArr.splice(1).join('?');
+		}
+		var parameters = url.split('&');
+
+		var sParam, sParamArr;
+		for(var i = 0 ; i < parameters.length ; i++){
+			sParam = parameters[i];
+
+			if(i!=0) queryStr.push('&');
+
+			queryStr.push(_this.replaceParam(sParam,param));
+		}
+		return queryStr.join('');
+	}
+	/**
+	 * @method VARSQL.util.replageParam
+	 * @param str replace string
+	 * @param replaceParam 변경함 파라미터
+	 * @description get all attirbute
+	 */
+	,replaceParam : function (str , replaceParam){
+		var matchObj = str.match(/#.*?#/g);
+
+		if(matchObj != null){
+			var _paramVal = str,tmpKey={},matchKey,orginKey, paramObjFlag = (typeof replaceParam==='object');
+
+			for(var j=0 , matchLen =matchObj.length;j <matchLen; j++){
+				orginKey = matchObj[j];
+				var matchKey = orginKey;
+
+				var keyMatch = matchKey.match(/[*+$|^(){}\[\]]/gi);
+
+				if(keyMatch != null){
+					var tmpReplaceKey = {}
+					for(var z=0, matchKeyLen =keyMatch.length ;z <matchKeyLen; z++){
+						var specCh = keyMatch[z];
+
+						if(!tmpReplaceKey[specCh]){
+							matchKey = matchKey.replace(new RegExp(speicalChar[specCh],'g'), speicalChar[specCh]);
+							tmpReplaceKey[specCh] = specCh;
+						}
+					}
+				}
+
+				if(paramObjFlag){
+					if(!tmpKey[orginKey]){
+						_paramVal =_paramVal.replace(new RegExp(matchKey,'g'), (replaceParam[orginKey.replace(/#/g,'')]||'') );
+						tmpKey[orginKey] = orginKey;
+					}
+				}else{
+					_paramVal =_paramVal.replace(new RegExp(matchKey,'g'), replaceParam );
+				}
+			}
+			return _paramVal;
+		}
+
+		return str;
 	}
 }
 

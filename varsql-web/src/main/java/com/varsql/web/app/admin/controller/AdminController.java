@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.web.app.admin.service.AdminServiceImpl;
+import com.varsql.web.app.admin.service.AdminDbMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.utils.HttpUtils;
+import com.vartech.common.utils.VartechUtils;
 
 
 
@@ -40,7 +41,7 @@ public class AdminController extends AbstractController{
 	private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
 	@Autowired
-	private AdminServiceImpl adminServiceImpl;
+	private AdminDbMgmtServiceImpl adminServiceImpl;
 
 	/**
 	 * @method  : mainpage
@@ -58,7 +59,7 @@ public class AdminController extends AbstractController{
 		logger.debug("admin mainpage");
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "databaseMgmt");
-		model.addAttribute("dbtype", adminServiceImpl.selectAllDbType());
+		model.addAttribute("jdbcUrlFormat", VartechUtils.objectToJsonString(this.adminServiceImpl.dbTypeUrlFormat()));
 		return getModelAndView("/databaseMgmt", VIEW_PAGE.ADMIN, model);
 	}
 
@@ -114,5 +115,14 @@ public class AdminController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "errorlogMgmt");
 		return getModelAndView("/errorlogMgmt", VIEW_PAGE.ADMIN, model);
+	}
+
+	@RequestMapping(value = { "/driverMgmt" }, method = { RequestMethod.GET })
+	public ModelAndView driverMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav)
+			throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "driverMgmt");
+		model.addAttribute("dbtype", this.adminServiceImpl.selectAllDbType());
+		return getModelAndView("/driverMgmt", VIEW_PAGE.ADMIN, model);
 	}
 }

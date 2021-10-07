@@ -35,7 +35,7 @@ import com.varsql.core.sql.util.JdbcUtils;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public abstract class DDLScriptImpl extends DDLScriptAbstract{
+public abstract class DDLScriptImpl extends AbstractDDLScript{
 	protected MetaControlBean dbInstanceFactory;
 
 	protected DBType dbType;

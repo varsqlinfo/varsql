@@ -14,19 +14,19 @@ import javax.validation.Payload;
 @Target( { ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidUrlDirectYn {
- 
+
     String message() default "Invalid field";
-    
+
     String url() default "Invalid url";
-    
+
     String serverip() default "Invalid server ip";
-    
+
     String databaseName() default "Invalid database name";
-    
-    String port() default "Invalid port";
- 
+
+    int port() default 0;
+
     Class<?>[] groups() default {};
- 
+
     Class<? extends Payload>[] payload() default {};
- 
+
 }

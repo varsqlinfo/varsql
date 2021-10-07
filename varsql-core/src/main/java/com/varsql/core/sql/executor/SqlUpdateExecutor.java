@@ -102,6 +102,7 @@ public class SqlUpdateExecutor extends UpdateExecutor{
 		}
 		result.setTotalCount(resultHandler.getTotalCount());
 		result.setEndTime(System.currentTimeMillis());
+		result.setExecuteCount(addCount);
 		result.setResult(addCount);
 
 		return result;

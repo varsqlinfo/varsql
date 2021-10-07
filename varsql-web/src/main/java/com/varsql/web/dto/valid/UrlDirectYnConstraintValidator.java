@@ -9,7 +9,7 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
 
     @Override
     public void initialize(final ValidUrlDirectYn arg0) {
-    	
+
     }
 
     @Override
@@ -32,15 +32,11 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     			return false;
     		}
 
-    		String port = vtConnection.getVport();
-    		if(port !=null && !"".equals(port.trim())) {
-    			int portVal = Integer.parseInt(port);
-
-    			if(portVal < 1) {
-    				context.disableDefaultConstraintViolation();
-        			context.buildConstraintViolationWithTemplate( "port not valid" ).addConstraintViolation();
-        			return false;
-    			}
+    		int portVal = vtConnection.getVport();
+    		if(!(portVal == 0 || portVal == -1) && portVal < 1) {
+				context.disableDefaultConstraintViolation();
+    			context.buildConstraintViolationWithTemplate( "port not valid" ).addConstraintViolation();
+    			return false;
     		}
     	}
 

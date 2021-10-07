@@ -26,7 +26,7 @@ public class FileImportResult {
 
 	private String message;
 
-	private int resultCount;
+	private long resultCount;
 
 	private VarsqlAppCode resultCode = VarsqlAppCode.SUCCESS;
 

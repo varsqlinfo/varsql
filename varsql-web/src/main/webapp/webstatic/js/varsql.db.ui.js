@@ -31,26 +31,33 @@ var _g_cache = {
 	initSOMetaCacheObject : function (){
 		var serviceObject = _g_options.serviceObject;
 
-		for(var i =0; i<serviceObject.length; i++){
+		for(var i =0; i < serviceObject.length; i++){
 			var serviceObj = serviceObject[i];
 			var contentid =serviceObj.contentid;
 
-			_g_cache_obj_meta_store[contentid] = {initFlag:false}; // 초기화 여부
+			_g_cache_obj_meta_store[this.getObjectTypeKey(contentid)] = {initFlag:false}; // 초기화 여부
 		}
+	}
+	,getObjectTypeKey : function (objectType){
+		return _g_options.param.schema +'.'+ objectType;
 	}
 	// object cache check
 	,isSOMetaInitCache : function (objectType){
-		return (_g_cache_obj_meta_store[objectType]||{}).initFlag===false ? false :true;
+		var objectCacheKey = this.getObjectTypeKey(objectType);
+
+		return (_g_cache_obj_meta_store[objectCacheKey]||{}).initFlag===true ? true :false;
 	}
 	//set  object initflag
 	,setSOMetaInitFlag : function (objectType){
-		_g_cache_obj_meta_store[objectType].initFlag=true;
+		_g_cache_obj_meta_store[this.getObjectTypeKey(objectType)].initFlag=true;
 	}
 	// 메타 데이터 케쉬된값 꺼내기
 	,getSOMetaCache:function (objectType, objecName, tabKey){
 		tabKey =tabKey||'column';
 
-		var cacheObj = _g_cache_obj_meta_store[objectType][objecName];
+		var objectCacheKey = this.getObjectTypeKey(objectType);
+
+		var cacheObj = _g_cache_obj_meta_store[objectCacheKey][objecName];
 
 		if(VARSQL.isUndefined(cacheObj)){
 			return null;
@@ -76,20 +83,25 @@ var _g_cache = {
 	}
 	// 메타 데이터 셋팅하기.
 	,setSOMetaCache:function (objectType, objecName, tabKey, data){
-		if(VARSQL.isUndefined(_g_cache_obj_meta_store[objectType][objecName])){
+		var objectCacheKey = this.getObjectTypeKey(objectType);
+
+		if(VARSQL.isUndefined(_g_cache_obj_meta_store[objectCacheKey][objecName])){
 			var objData = {};
 			objData[tabKey] = data;
-			_g_cache_obj_meta_store[objectType][objecName] =objData;
+			_g_cache_obj_meta_store[objectCacheKey][objecName] =objData;
 		}else{
-			_g_cache_obj_meta_store[objectType][objecName][tabKey]= data;
+			_g_cache_obj_meta_store[objectCacheKey][objecName][tabKey]= data;
 		}
 	}
 	// remove service object meta cache
 	,removeSOMetaCache:function (objectType, objecName){
+
+		var objectCacheKey = this.getObjectTypeKey(objectType);
+
 		if(typeof objectType !='undefined' && typeof objecName != 'undefined'){
-			delete _g_cache_obj_meta_store[objectType][objecName];
+			delete _g_cache_obj_meta_store[objectCacheKey][objecName];
 		} else if (typeof objectType !='undefined'){
-			_g_cache_obj_meta_store[objectType] ={};
+			_g_cache_obj_meta_store[objectCacheKey] ={};
 		} else {
 			this.initSOMetaCacheObject();
 		}
@@ -221,6 +233,10 @@ VARSQL.ui.create = function (_opts){
 
 	_ui.layout.init(_opts);
 	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
+}
+
+VARSQL.ui.layoutResize  = function (){
+	_ui.layout.layoutResize();
 }
 
 var _ui = {
@@ -838,7 +854,37 @@ _ui.layout = {
 		_self.setLayout();
 	}
 	,initEvt : function (){
-
+		var _self = this;
+		var splitterInitFlag = false;
+		$.pubSplitter('.main-spliter',{
+			orientation: 'vertical'
+			,handleSize : 10
+			,border :true
+			,useButton : true		// 한번에 이동 버튼 사용유무
+			,percent: {vertical:true}
+			,button : {					// button option
+				enabled : true			// enabled 활성화 여부 default true
+				,toggle : true			// button min , max button 토글로 하나 보일지 두개 보일지 여부.
+				,click : function (mode){	// click callback
+					if(mode=='prev' && splitterInitFlag === false){
+						initFlag = true;
+						$('#mainArticleFrame').attr('src', _g_options.boardUrl);
+					}
+				}
+			}
+			,start :function (){
+				if(splitterInitFlag === false){
+					splitterInitFlag = true;
+					$('#mainArticleFrame').attr('src', _g_options.boardUrl);
+				}
+			}
+			,stop:function (){
+				_self.layoutResize();
+			}
+		});
+	}
+	,layoutResize : function (){
+		this.mainObj.updateSize();
 	}
 	,setLayout: function (){
 		var _self = this;
@@ -1264,6 +1310,7 @@ _ui.dbSchemaObject ={
 		_self.getObjectMetadata({'objectType':$contentId, 'visible' :true});
 
 		var objectInitFlag = _g_cache.isSOMetaInitCache($contentId);
+
 		if(refresh !== true && objectInitFlag){
 			return ;
 		}
@@ -1364,9 +1411,16 @@ _ui.addDbServiceObject('table',{
 			var len = itemArr.length;
 
 			var tableHint = {};
+
+			var refreshTableName = reqParam.objectNames;
+			var tableInfo = {};
 			$.each(itemArr , function (_idx, _item){
 				var tblName =_item.name;
 				var colList = _item.colList;
+
+				if(refreshTableName== tblName){
+					tableInfo = _item;
+				}
 
 				var colArr = [];
 				$.each(colList , function (j , colItem){
@@ -1385,7 +1439,7 @@ _ui.addDbServiceObject('table',{
 			VARSQLHints.setTableInfo(tableHint);
 
 			if(reqParam.refresh ==true  && !VARSQL.isBlank(reqParam.objectNames)){
-				_self.objectGridObj.updateRow(reqParam.objectIdx, itemArr[0], true);
+				_self.objectGridObj.updateRow(reqParam.objectIdx, tableInfo, true);
 				return ;
 			}
 
@@ -1491,7 +1545,7 @@ _ui.addDbServiceObject('table',{
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name}, true);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -2252,7 +2306,9 @@ _ui.dbObjectMetadata= {
 
 				var item = resData.item||{};
 
-				item.createScript = getFormatSql(item.createScript, _g_options.dbtype, 'ddl');
+				if(sObj.objectType == 'table'){
+					item.createScript = getFormatSql(item.createScript, _g_options.dbtype, 'ddl');
+				}
 
 				_g_cache.setSOMetaCache(param.objectType, param.objectName, 'ddl', item.createScript);
 
@@ -4961,11 +5017,6 @@ _ui.sqlDataArea =  {
 		return _self.resultMsgAreaObj;
 	}
 	,resize : function (dimension){
-
-		if(!dimension.width){
-			return ;
-		}
-
 		try{
 			$.pubGrid(this.currnetDataGridSelector).resizeDraw();
 		}catch(e){

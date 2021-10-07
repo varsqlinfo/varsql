@@ -53,7 +53,7 @@ public final class ResourceUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Resource getResource(String resourcePath) throws IOException {
+	public static Resource getResource(String resourcePath)  {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
 
 		Resource reval;

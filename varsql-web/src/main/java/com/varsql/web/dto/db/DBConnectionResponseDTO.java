@@ -21,8 +21,6 @@ public class DBConnectionResponseDTO{
 
 	private String vdriver;
 
-	private String vtype;
-
 	private LocalDateTime regDt;
 
 	private String regId;

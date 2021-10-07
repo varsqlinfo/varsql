@@ -2,11 +2,13 @@ package com.varsql.core.connection.beans;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
+import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.util.CommUtils;
 
 
@@ -35,6 +37,8 @@ public class ConnectionInfo implements Serializable {
 	private Map connection_opt;
 	private Map pool_opt;
 	private DataSource datasource;
+
+	private List<FileInfo> jdbcDriverList;
 
 	public String getConnid() {
 		return connid;
@@ -169,12 +173,10 @@ public class ConnectionInfo implements Serializable {
 
 			tmpKey=tmpOpt[i];
 
-			if("".equals(tmpKey.trim())){
-				continue;
+			if(!"".equals(tmpKey.trim())){
+				optVal = CommUtils.split(tmpKey, "=");
+				this.pool_opt.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
 			}
-
-			optVal = CommUtils.split(tmpKey, "=");
-			this.pool_opt.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
 		}
 	}
 
@@ -252,5 +254,13 @@ public class ConnectionInfo implements Serializable {
 
 	public void setExportCount(int exportCount) {
 		this.exportCount = exportCount;
+	}
+
+	public List<FileInfo> getJdbcDriverList() {
+		return jdbcDriverList;
+	}
+
+	public void setJdbcDriverList(List<FileInfo> jdbcDriverList) {
+		this.jdbcDriverList = jdbcDriverList;
 	}
 }

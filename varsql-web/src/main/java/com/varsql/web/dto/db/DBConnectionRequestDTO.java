@@ -42,8 +42,8 @@ public class DBConnectionRequestDTO{
 	@Size(max=45)
 	private String vserverip;
 
-	@Size(max=6)
-	private String vport;
+	@Range(min=-1, max=65535)
+	private int vport;
 
 	@Size(max=250)
 	private String vdatabasename;
@@ -54,10 +54,6 @@ public class DBConnectionRequestDTO{
 	@NotEmpty
 	@Size(max=100)
 	private String vdriver;
-
-	@NotEmpty
-	@Size(max=100)
-	private String vtype;
 
 	@Size(max=100)
 	private String vid;
@@ -97,26 +93,23 @@ public class DBConnectionRequestDTO{
 
 	@NotNull
 	@Range(min=-1, max=1000)
-	private Integer maxActive;
+	private int maxActive;
 
 	@NotNull
 	@Range(min=-1, max=1000)
-	private Integer minIdle;
+	private int minIdle;
 
 	@NotNull
 	@Range(min=-1, max=1000000)
-	private Integer timeout;
+	private int timeout;
 
 	@NotNull
 	@Range(min=-1, max=100000000)
-	private Integer exportcount;
+	private long exportcount;
 
 	@NotNull
 	@Range(min=-1, max=100000000)
-	private Integer maxSelectCount;
-
-	@Size(max=1000)
-	private String vquery;
+	private long maxSelectCount;
 
 	@NotEmpty
 	@Size(max=1)
@@ -133,11 +126,10 @@ public class DBConnectionRequestDTO{
 				.vconnid(vconnid)
 				.vname(vname)
 				.vserverip(vserverip)
-				.vport(ConvertUtils.longValueOf(vport))
+				.vport(vport)
 				.vdatabasename(vdatabasename)
 				.vurl(vurl)
 				.vdriver(vdriver)
-				.vtype(vtype)
 				.vid(vid)
 				.vpw(vpw)
 				.urlDirectYn(urlDirectYn)
@@ -147,12 +139,12 @@ public class DBConnectionRequestDTO{
 				.basetableYn(basetableYn)
 				.schemaViewYn(schemaViewYn)
 				.lazyloadYn(lazyloadYn)
-				.maxActive(ConvertUtils.longValueOf(maxActive))
-				.minIdle(ConvertUtils.longValueOf(minIdle))
-				.timeout(ConvertUtils.longValueOf(timeout))
-				.exportcount(ConvertUtils.longValueOf(exportcount))
-				.maxSelectCount(ConvertUtils.longValueOf(maxSelectCount))
+				.maxActive(maxActive)
+				.minIdle(minIdle)
+				.timeout(timeout)
+				.exportcount(exportcount)
+				.maxSelectCount(maxSelectCount)
 				.useColumnLabel(useColumnLabel)
-				.vquery(vquery).build();
+				.build();
 	}
 }

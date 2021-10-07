@@ -34,7 +34,7 @@ import lombok.Setter;
 @Table(name = NoteEntity._TB_NAME)
 public class NoteEntity extends AbstractRegAuditorModel{
 	public final static String _TB_NAME="VTNOTE";
-	
+
 	@Id
 	@GenericGenerator(name = "noteIdGenerator"
 		, strategy = "com.varsql.web.model.id.generator.AppUUIDGenerator"
@@ -55,18 +55,18 @@ public class NoteEntity extends AbstractRegAuditorModel{
 
 	@Column(name ="NOTE_CONT")
 	private String noteCont;
-	
+
 	@Column(name ="DEL_YN")
 	@Convert(converter=BooleanToDelYnConverter.class)
 	private boolean delYn;
-	
+
 	@OneToOne
 	@JoinColumn(name = "REG_ID" ,nullable = false, insertable =false , updatable =false)
 	private RegInfoEntity regInfo;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy="noteInfo")
-	private Set<NoteMappingUserEntity> recvList; 
+	private Set<NoteMappingUserEntity> recvList;
 
 	@Builder
 	public NoteEntity(String noteId, String parentNoteId, String noteTitle, String noteCont, boolean delYn) {
@@ -76,9 +76,9 @@ public class NoteEntity extends AbstractRegAuditorModel{
 		this.noteCont = noteCont;
 		this.delYn = delYn;
 	}
-	
+
 	public static final String JOIN_RECV_LIST = "recvList";
-	
+
 	public final static String NOTE_ID="noteId";
 
 	public final static String PARENT_NOTE_ID="parentNoteId";

@@ -8,6 +8,6 @@ package com.varsql.core.connection.pool;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public abstract class ConnectionPoolAbstract implements ConnectionPoolInterface{
+public abstract class AbstractConnectionPool implements ConnectionPoolInterface{
 	
 }

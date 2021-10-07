@@ -1,6 +1,7 @@
 package com.varsql.core.connection.pool;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.DriverConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
@@ -19,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.util.ClassLoaderUtils;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 
@@ -30,7 +33,7 @@ import com.varsql.core.exception.ConnectionFactoryException;
  * @프로그램설명: pool 셋팅
  * @변경이력	:
  */
-public class ConnectionDBCP2 extends ConnectionPoolAbstract{
+public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 	private static final String POOL_DRIVER = "org.apache.commons.dbcp2.PoolingDriver";
 
@@ -64,11 +67,19 @@ public class ConnectionDBCP2 extends ConnectionPoolAbstract{
 			String poolName = connInfo.getConnid();
 			Properties properties = setConnectionOption(connInfo);
 
-			ConnectionFactory connFactory = new DriverManagerConnectionFactory(connInfo.getUrl(),properties);
+
+			Driver dbDriver =ClassLoaderUtils.getJdbcDriver(connInfo.getDriver(), connInfo.getJdbcDriverList());
+
+			ConnectionFactory connectionFactory;
+			if(dbDriver==null) {
+				connectionFactory = new DriverManagerConnectionFactory(connInfo.getUrl(), properties);
+			}else {
+				connectionFactory = new DriverConnectionFactory(dbDriver, connInfo.getUrl(), properties);
+			}
 
 			 //DBCP가 커넥션 풀에 커넥션을 보관할때 사용하는 PoolableConnectionFactory 생성
 	        //실제로 내부적으로 커넥션을 담고있고 커넥션을 관리하는데 기능을 제공한다. ex)커넥션을 close하면 종료하지 않고 커넥션 풀에 반환
-	        PoolableConnectionFactory poolableConnFactory = new PoolableConnectionFactory(connFactory, null);
+	        PoolableConnectionFactory poolableConnFactory = new PoolableConnectionFactory(connectionFactory, null);
 
 	        poolableConnFactory.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 	        //커넥션이 유효한지 확인할때 사용하는 쿼리를 설정한다.

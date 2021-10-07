@@ -24,42 +24,41 @@ import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMappingUtil;
 
 public final class SQLParserUtils {
-	
+
 	final private static SQLParserFeature[] DEFAULT_FEATURES = { SQLParserFeature.KeepComments, SQLParserFeature.SkipComments };
 	final private static FormatOption formatOpt = new FormatOption(VisitorFeature.OutputPrettyFormat,VisitorFeature.OutputSkipSelectListCacheString);
 	static{
 		formatOpt.setUppCase(false);
 	}
-	
-	
+
 	private static String removeClassNameRegular = "^SQL|Statement$|^DB2|^Oracle|^Mysql|^Hive|^Odps|^Phoenix|^PG|^SQLServer|^H2|^Mariadb|^Tibero";
 
 	private static ParameterMappingUtil parameterMappingUtil = new ParameterMappingUtil();
-	
-	
+
+
 	private SQLParserUtils() {}
 
 	public static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , DBType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
-		
-		com.alibaba.druid.DbType parser = getDbParser(dbType); 
+
+		com.alibaba.druid.DbType parser = getDbParser(dbType);
 
 		List<SQLStatement> statements = SQLUtils.toStatementList(sql, parser);
 
 		if(statements.size() ==1) {
-			queries.add(getSqlSourceBean(statements.get(0), sql, param));
+			queries.add(getSqlSourceBean(statements.get(0), sql, param, dbType));
 		}else {
 			String tmpQuery = "";
 			for(SQLStatement statement : statements){
 				tmpQuery = SQLUtils.toSQLString(statement, parser, null);
-				queries.add(getSqlSourceBean(statement, tmpQuery, param));
+				queries.add(getSqlSourceBean(statement, tmpQuery, param, dbType));
 			}
 		}
 
 		return queries;
 	}
 
-	private static SqlSource getSqlSourceBean(SQLStatement statement,String tmpQuery, Map<String, String> param) {
+	private static SqlSource getSqlSourceBean(SQLStatement statement,String tmpQuery, Map<String, String> param, DBType dbType) {
 
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setOrginSqlParam(param);
@@ -88,13 +87,40 @@ public final class SQLParserUtils {
 		}
 
 		if(param != null){
-			SqlStatement sqlstate = getSqlStatement(tmpQuery, param, false);
+			SqlStatement sqlstate = getSqlStatement(tmpQuery, param, false, dbType);
 			sqlSource.setQuery(sqlstate.sql);
 			sqlSource.setParamList(sqlstate.parameter);
 		}else{
 			sqlSource.setQuery(tmpQuery);
 		}
 		return sqlSource;
+	}
+
+	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote, DBType dbType) {
+
+		ConvertResult convertResult = parameterMappingUtil.sqlParameter(dbType, sql, variables);
+
+		if(convertResult.getParameterInfo().size() > 0) {
+			return new SqlStatement(convertResult.getCont(), (List<ParameterMapping>)convertResult.getParameterInfo());
+		}else {
+			return new SqlStatement(convertResult.getCont(), null);
+		}
+	}
+
+	public static com.alibaba.druid.DbType getDbParser(DBType dbType) {
+		com.alibaba.druid.DbType val = com.alibaba.druid.DbType.of(dbType.getDbVenderName());
+		return val==null ? com.alibaba.druid.DbType.other :val;
+	}
+
+	public static String getParserString(String sql ,DBType dbType) {
+
+		SQLStatementParser parser = com.alibaba.druid.sql.parser.SQLParserUtils.createSQLStatementParser(sql, getDbParser(dbType), DEFAULT_FEATURES);
+
+		parser.setKeepComments(true);
+		List<SQLStatement> statementList = parser.parseStatementList();
+
+		return SQLUtils.toSQLString(statementList, getDbParser(dbType), null, formatOpt);
+
 	}
 
 	/**
@@ -109,13 +135,17 @@ public final class SQLParserUtils {
 	 * @return
 	 */
 	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param) {
+		return getDefaultSqlSource(query, param, DBType.OTHER);
+	}
+
+	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param, DBType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setCommandType("OTHER");
 		sqlSource.setOrginSqlParam(param);
 
 		if(param != null){
-			SqlStatement sqlstate = getSqlStatement(query, param, false);
+			SqlStatement sqlstate = getSqlStatement(query, param, false, dbType);
 			sqlSource.setQuery(sqlstate.sql);
 			sqlSource.setParamList(sqlstate.parameter);
 		}else{
@@ -124,33 +154,6 @@ public final class SQLParserUtils {
 		queries.add(sqlSource);
 
 		return queries;
-	}
-
-	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote) {
-
-		ConvertResult convertResult = parameterMappingUtil.sqlParameter(sql, variables);
-
-		if(convertResult.getParameterInfo().size() > 0) {
-			return new SqlStatement(convertResult.getCont(), (List<ParameterMapping>)convertResult.getParameterInfo());
-		}else {
-			return new SqlStatement(convertResult.getCont(), null);
-		}
-	}
-	
-	public static com.alibaba.druid.DbType getDbParser(DBType dbType) {
-		com.alibaba.druid.DbType val = com.alibaba.druid.DbType.of(dbType.getDbVenderName()); 
-		return val==null ? com.alibaba.druid.DbType.other :val;
-	}
-	
-	public static String getParserString(String sql ,DBType dbType) {
-		
-		SQLStatementParser parser = com.alibaba.druid.sql.parser.SQLParserUtils.createSQLStatementParser(sql, getDbParser(dbType), DEFAULT_FEATURES);
-
-		parser.setKeepComments(true);
-		List<SQLStatement> statementList = parser.parseStatementList();
-
-		return SQLUtils.toSQLString(statementList, getDbParser(dbType), null, formatOpt);
-		
 	}
 }
 

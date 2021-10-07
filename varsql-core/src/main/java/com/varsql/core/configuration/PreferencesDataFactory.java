@@ -10,7 +10,7 @@ import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
-import com.varsql.core.configuration.beans.pref.PreferencesAbstract;
+import com.varsql.core.configuration.beans.pref.AbstractPreferences;
 import com.varsql.core.configuration.beans.pref.PreferencesContextMenu;
 import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -104,7 +104,7 @@ public class PreferencesDataFactory{
 			String key;
 			
 			if(prefInfo != null) {
-				PreferencesAbstract xmlConfigObj = (PreferencesAbstract) VartechUtils.xmlToBean(xml, prefInfo.getBeanClass());
+				AbstractPreferences xmlConfigObj = (AbstractPreferences) VartechUtils.xmlToBean(xml, prefInfo.getBeanClass());
 				
 				key=(String) VartechReflectionUtils.getProperty(xmlConfigObj, DEFAULT_KEY_NAME);
 				

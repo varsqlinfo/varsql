@@ -7,23 +7,30 @@
 <%@ include file="/WEB-INF/include/database-head.jsp"%>
 
 </head>
+<c:set var="screenConfigInfo" value="${screen_config_info}"/>
+
 <body class="varsql-main">
 <div class="varsql-menu-wrapper">
 	<tiles:insertAttribute name="header" />
 </div>
-<div id="varsqlBodyWrapper" class="varsql-body-wrapper"></div>
+<div class="varsql-body-wrapper">
+	<div id="varsqlBodyWrapper" class="wh100" ></div>
+	<div class="main-spliter" data-prev-min-size="60" data-next-min-size="0"></div>
+	<div class="side-container">
+		<iframe id="mainArticleFrame" src="" style="width: 100%;height: 100%;border: 0px solid transparent;"></iframe>
+	</div>
+</div>
 
 
 <%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>
 </body>
-
-<c:set var="screenConfigInfo" value="${screen_config_info}"/>
 <script>
 
 $(document).ready(function(){
 	var viewConnInfo = ${varsqlfn:objectToJson(screenConfigInfo)};
 	var opts = VARSQL.util.objectMerge({param:{conuid:viewConnInfo.conuid, schema:viewConnInfo.schema},selector:'#dbSchemaList',dbtype:viewConnInfo.type}, viewConnInfo);
 	opts.userSettingInfo = ${requestScope["database_screen_setting"]};
+	opts.boardUrl = '<varsql-app:boardUrl boardCode="${screenConfigInfo.conuid}"/>';
 	VARSQL.ui.create(opts);
 	VARSQL.undrop();
 	//varsqlMain.init();

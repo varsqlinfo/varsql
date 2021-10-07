@@ -41,7 +41,7 @@ public class SqlSourceBuilder {
 	}
 
 	public static List<SqlSource> parse(String query, Map<String,String> param) {
-		return SQLParserUtils.getSqlSourceList(query, param, DBType.OTHER);
+		return parse(query, param, DBType.OTHER);
 	}
 
 	public static List<SqlSource> parse(String query, Map<String,String> param, DBType dbType) {
@@ -50,14 +50,18 @@ public class SqlSourceBuilder {
 		}catch(Exception e){
 			log.error("parse ",e);
 
-			return SQLParserUtils.getDefaultSqlSource(query, param);
+			try {
+				return SQLParserUtils.getSqlSourceList(query, param, DBType.OTHER);
+			}catch(Exception e1) {
+				return SQLParserUtils.getDefaultSqlSource(query, param, dbType);
+			}
 		}
 	}
 
 	public static ResponseResult parseResponseResult(String query, Map<String,String> param, DBType dbType) {
 		ResponseResult result = new ResponseResult();
 		try{
-			result.setItemList(SQLParserUtils.getSqlSourceList(query, param, dbType));
+			result.setItemList(parse(query, param, dbType));
 		}catch(Exception e){
 			log.error("parse ",e);
 			result.setMessage(e.getMessage());

@@ -15,7 +15,9 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.db.DBTypeDriverProviderRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
@@ -40,6 +42,7 @@ public class DbDiffServiceImpl{
 
 	@Autowired
 	private DBConnectionEntityRepository  dbConnectionEntityRepository;
+
 	/**
 	 *
 	 * @Method Name  : objectTypeList
@@ -60,7 +63,8 @@ public class DbDiffServiceImpl{
 			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setItemList(null);
 		}else{
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVtype());
+
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getDbTypeDriverProvider().getDbType());
 			resultObject.setItemList(dbMetaEnum.getServiceMenu());
 			resultObject.addCustoms("schemaInfo",dbMetaEnum.getSchemas(  getDatabaseParamInfo(vtConnRVO)));
 		}
@@ -93,7 +97,7 @@ public class DbDiffServiceImpl{
 			dpi.setSchema(schema);
 			dpi.setObjectType(objectType);
 
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getVtype());
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getDbTypeDriverProvider().getDbType());
 			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){
 				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
@@ -119,7 +123,7 @@ public class DbDiffServiceImpl{
 		DatabaseParamInfo dpi = new DatabaseParamInfo();
 		dpi.setConuid(null, SecurityUtil.loginInfo().getViewid(), new DatabaseInfo(vtConnRVO.getVconnid()
 				, null
-				, vtConnRVO.getVtype()
+				, vtConnRVO.getDbTypeDriverProvider().getDbType()
 				, vtConnRVO.getVname()
 				, vtConnRVO.getVdbschema()
 				, vtConnRVO.getBasetableYn()

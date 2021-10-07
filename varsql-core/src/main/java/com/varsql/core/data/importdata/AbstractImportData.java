@@ -2,11 +2,11 @@ package com.varsql.core.data.importdata;
 
 import java.io.File;
 
-public abstract class ImportDataAbstract implements ImportData{
+public abstract class AbstractImportData implements ImportData{
 
 	private File importFilePath;
 
-	protected ImportDataAbstract(File importFilePath) {
+	protected AbstractImportData(File importFilePath) {
 		this.importFilePath = importFilePath;
 	}
 

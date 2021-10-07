@@ -54,6 +54,7 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/sql/formatter/sql-formatter.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.splitter.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.context.js?version=${pubjs_ver}"></script>
