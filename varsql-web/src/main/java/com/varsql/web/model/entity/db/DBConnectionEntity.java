@@ -126,11 +126,12 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@NotAudited
 	@JsonIgnore
-	@OneToOne
+	@OneToOne(optional = true, cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "VDRIVER", referencedColumnName = "DRIVER_PROVIDER_ID", nullable = false, insertable =false , updatable =false)
 	private DBTypeDriverProviderEntity dbTypeDriverProvider;
 
 	@NotAudited
+	@JsonIgnore
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> managerList;

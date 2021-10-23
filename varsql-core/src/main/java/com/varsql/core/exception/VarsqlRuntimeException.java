@@ -13,43 +13,26 @@ import com.vartech.common.constants.CodeEnumValue;
  */
 public class VarsqlRuntimeException extends RuntimeException {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private CodeEnumValue errorCode;
 	private String errorMessage;
-	private String messageCode;
 
-	@SuppressWarnings("unused")
-	private VarsqlRuntimeException() {}
-
-	/**
-	 * @param s java.lang.String
-	 */
-	public VarsqlRuntimeException(String s) {
-		this(s, null);
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public VarsqlRuntimeException(String s, Exception exeception) {
-		this(VarsqlAppCode.COMM_RUNTIME_ERROR, exeception, s);
+	public VarsqlRuntimeException(CodeEnumValue errorCode) {
+		this(errorCode, "");
 	}
 
-	public VarsqlRuntimeException(CodeEnumValue errorCode,Exception exeception) {
-		this(errorCode, exeception, null);
+	public VarsqlRuntimeException(CodeEnumValue errorCode, String errorMessage) {
+		this(errorCode, errorMessage, null);
 	}
 
-	public VarsqlRuntimeException(CodeEnumValue errorCode, Exception exeception, String errorMessage) {
-		this(errorCode, exeception, errorMessage , null);
+	public VarsqlRuntimeException(CodeEnumValue errorCode, Exception exeception) {
+		this(errorCode, exeception.getMessage(), exeception);
 	}
-	public VarsqlRuntimeException(CodeEnumValue errorCode, Exception exeception, String errorMessage, String messageCode) {
 
-		super(String.format("error code : %s %s %s", errorCode+"", (messageCode==null?"": "message code : " +  messageCode) , (errorMessage==null?"": "message :" +  errorMessage)), exeception);
+	public VarsqlRuntimeException(CodeEnumValue errorCode, String errorMessage, Exception exeception) {
+		super(String.format("error code : %s %s", errorCode+"",  (errorMessage==null?"": "message :" +  errorMessage)), exeception);
 		setErrorCode(errorCode);
-		this.messageCode=messageCode;
 		this.errorMessage = errorMessage;
 	}
 
@@ -59,14 +42,6 @@ public class VarsqlRuntimeException extends RuntimeException {
 
 	public void setErrorCode(CodeEnumValue errorCode) {
 		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.COMM_RUNTIME_ERROR;
-	}
-
-	public String getMessageCode() {
-		return messageCode;
-	}
-
-	public void setMessageCode(String messageCode) {
-		this.messageCode = messageCode;
 	}
 
 	public String getErrorMessage() {

@@ -1,4 +1,5 @@
 package com.varsql.web.app.manager.service;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -52,8 +53,9 @@ public class DbDiffServiceImpl{
 	 * @변경이력  :
 	 * @param vconnid
 	 * @return
+	 * @throws SQLException
 	 */
-	public ResponseResult objectTypeList(String vconnid) {
+	public ResponseResult objectTypeList(String vconnid) throws SQLException {
 
 		ResponseResult resultObject = new ResponseResult();
 

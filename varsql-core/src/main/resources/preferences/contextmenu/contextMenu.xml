@@ -16,14 +16,14 @@ values( {{columnValue}} );
 				<code><![CDATA[
 {{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>columnValue</key>
 				<code><![CDATA[
 {{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' name}}{{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 		<templateInfo name="update" viewMode="editor">
@@ -42,7 +42,7 @@ set
 	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' name}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>condition</key>
@@ -51,7 +51,7 @@ set
 	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' name}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 		<templateInfo name="delete" viewMode="editor">
@@ -68,7 +68,7 @@ delete from {{table.name}}
 	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' name}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 		<templateInfo name="insertCamelcase" viewMode="editor">
@@ -83,14 +83,14 @@ values( {{columnValue}} );
 				<code><![CDATA[
 {{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>columnValue</key>
 				<code><![CDATA[
 {{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' (camelCase name)}}{{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 		<templateInfo name="updateCamelcase" viewMode="editor">
@@ -109,7 +109,7 @@ set
 	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>condition</key>
@@ -118,7 +118,7 @@ set
 	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 		<templateInfo name="deleteCamelcase" viewMode="editor">
@@ -135,7 +135,7 @@ delete from {{table.name}}
 	{{addChar @index 'where' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
 {{/each}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 	</item>
@@ -160,7 +160,7 @@ public class {{capitalize (camelCase table.name)}}{
 	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>get_set</key>
@@ -171,7 +171,7 @@ public class {{capitalize (camelCase table.name)}}{
 	}
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 
@@ -204,7 +204,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 	{{{classProperty}}}
 
 	@Builder
-	public {{table.name}} ({{columnName}}) {
+	public {{capitalize (camelCase table.name)}}Entity ({{columnName}}) {
 	{{{builderVariable}}}
 	}
 
@@ -221,14 +221,14 @@ public class {{capitalize (camelCase table.name)}}Entity{
 
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
 {{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>builderVariable</key>
@@ -237,7 +237,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 		this.{{camelCase name}} = {{camelCase name}};
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>finalProperty</key>
@@ -246,7 +246,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 	public final static {{javaType typeName}} {{upperCase name}}="{{camelCase name}}";
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 
@@ -267,7 +267,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 	{{classProperty}}
 
 	@Builder
-	public {{table.name}} ({{columnName}}) {
+	public {{capitalize (camelCase table.name)}}RequestDTO ({{columnName}}) {
 		{{{builderVariable}}}
 	}
 }
@@ -280,14 +280,14 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
 {{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>builderVariable</key>
@@ -296,7 +296,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 		this.{{camelCase name}} = {{camelCase name}};
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 		</templateInfo>
 
@@ -326,14 +326,13 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
-				<compileValue/>
+
 			</propItems>
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
 {{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
 						]]></code>
-				<compileValue/>
 			</propItems>
 		</templateInfo>
 	</item>

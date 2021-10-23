@@ -72,6 +72,7 @@ import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
+import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
@@ -214,8 +215,8 @@ public class SQLServiceImpl{
 				allSqlStatistics.add(SqlStatisticsEntity.builder()
 					.vconnid(sqlLogInfo.getVconnid())
 					.viewid(sqlLogInfo.getViewid())
-					.startTime(VarsqlUtils.getLocalDateTime(sqlLogInfo.getStartTime()))
-					.endTime(VarsqlUtils.getLocalDateTime(sqlLogInfo.getEndTime()))
+					.startTime(ConvertUtils.longToLocalDateTime(sqlLogInfo.getStartTime()))
+					.endTime(ConvertUtils.longToLocalDateTime(sqlLogInfo.getEndTime()))
 					.delayTime(sqlLogInfo.getDelayTime())
 					.sMm(sqlLogInfo.getSMm())
 					.sDd(sqlLogInfo.getSDd())
@@ -261,7 +262,7 @@ public class SQLServiceImpl{
 					if(((ConnectionFactoryException)e).getErrorCode() == VarsqlAppCode.EC_DB_POOL_CLOSE) {
 						result.setResultCode(VarsqlAppCode.EC_DB_POOL_CLOSE);
 					}else {
-						result.setResultCode(VarsqlAppCode.EC_DB_POOL_ERROR);
+						result.setResultCode(VarsqlAppCode.EC_DB_POOL);
 					}
 				}else {
 					result.setResultCode(VarsqlAppCode.EC_SQL);
@@ -292,8 +293,8 @@ public class SQLServiceImpl{
 		saveSqlHistory(SqlHistoryEntity.builder()
 				.vconnid(sqlLogInfo.getVconnid())
 				.viewid(sqlLogInfo.getViewid())
-				.startTime(VarsqlUtils.getTimestamp(stddt))
-				.endTime(VarsqlUtils.getTimestamp(enddt))
+				.startTime(ConvertUtils.longToTimestamp(stddt))
+				.endTime(ConvertUtils.longToTimestamp(enddt))
 				.delayTime((int) ((enddt- stddt)/1000))
 				.logSql(sqlExecuteInfo.getSql())
 				.usrIp(sqlLogInfo.getUsrIp())
@@ -422,9 +423,16 @@ public class SQLServiceImpl{
 		        	return ;
 		        }else if(hasResults) {
 		        	rs = (ResultSet)callStatement.getObject(cursorObjIdx);
-		        	SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, gridKeyAlias);
-		            ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
-		            ssrv.setResultMessage(String.format("select count : %s ", new Object[] { Long.valueOf(ssrv.getResultCnt()) }));
+
+		        	if(rs != null) {
+			        	SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, gridKeyAlias);
+			            ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
+			            ssrv.setResultMessage(String.format("select count : %s ", new Object[] { Long.valueOf(ssrv.getResultCnt()) }));
+		        	}else {
+		        		ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
+			            ssrv.setResultMessage("Cursor is null");
+		        	}
+
 		            return ;
 		        }
 		        stmt = callStatement;
@@ -622,7 +630,7 @@ public class SQLServiceImpl{
 			}
 
 		}catch(Exception e) {
-			throw new DataDownloadException("sql data empty" , e);
+			throw e;
 		}finally {
 			IOUtils.close(writer);
 			IOUtils.close(outstream);

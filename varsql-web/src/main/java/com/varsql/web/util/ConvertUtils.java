@@ -1,9 +1,12 @@
 package com.varsql.web.util;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -82,6 +85,18 @@ public final class ConvertUtils {
 
 	public static String dateToStringDateTime(LocalDateTime date) {
 		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
+	}
+
+	public static Timestamp longToTimestamp(long time){
+		return new Timestamp(time);
+	}
+
+	public static LocalDateTime longToLocalDateTime(long time){
+		return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static LocalDate longToLocalDate(long time){
+		return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	public static String toUpperCase(String str) {

@@ -13,14 +13,14 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row search-area">
-					<div class="col-sm-6">
+					<div class="col-xs-4">
 						<select id="dbinfolist" class="form-control ">
 							<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
 								<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 							</c:forEach>
 						</select>
 					</div>
-					<div class="col-sm-6">
+					<div class="col-xs-8">
 						<div class="dataTables_filter">
 							<label style="float:left; margin-right: 5px;"><select v-model="list_count" @change="search()" class="form-control "><option
 									value="10">10</option>

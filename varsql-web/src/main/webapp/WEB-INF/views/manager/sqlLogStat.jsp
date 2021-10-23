@@ -14,38 +14,36 @@
 			<div class="panel-heading">
 				<div class="row" style="margin-bottom: -10px;">
 					<div class="form-horizontal">
-						<div class="control-group">
-							 <div class="controls">
-							 	<div class="col-xs-2">
-									<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control ">
-										<option value=""><spring:message code="select" /></option>
-										<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
-											<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
-										</c:forEach>
-									</select>
-								</div>
-								<div class="col-xs-10 form-group">
-								 	<div class="input-group input-daterange">
-							            <span class="input-group-addon" style="padding:0px 6px 0px 0px;background:auto;border:0px;">
-							            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
-							            	<select id="searchGubun" name="searchGubun" class="form-control" style="width:110px;">
-												<option value="">날짜구분</option>
-												<option value="7">주</option>
-												<option value="30">월</option>
-												<option value="90">분기</option>
-												<option value="365">년</option>
-											</select>
-							            </span>
-							            <input name="sdt" id="sdt" type="text" value="${startDate}"  class=" form-control">
-							            <span class="input-group-addon">~</span>
-										<input name="edt" id="edt" type="text" value="${currentDate}"  class=" form-control">
+						<div class="control-group row" style="margin-bottom: 8px;">
+						 	<div class="col-xs-2">
+								<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control ">
+									<option value="">DB <spring:message code="select" /></option>
+									<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
+										<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="col-xs-10">
+							 	<div class="input-group input-daterange">
+						            <span class="input-group-addon" style="padding:0px 6px 0px 0px;background:auto;border:0px;">
+						            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
+						            	<select id="searchGubun" name="searchGubun" class="form-control" style="width:110px;">
+											<option value="">날짜구분</option>
+											<option value="7">주</option>
+											<option value="30">월</option>
+											<option value="90">분기</option>
+											<option value="365">년</option>
+										</select>
+						            </span>
+						            <input name="sdt" id="sdt" type="text" value="${startDate}"  class=" form-control">
+						            <span class="input-group-addon">~</span>
+									<input name="edt" id="edt" type="text" value="${currentDate}"  class=" form-control">
 
-										<span class="input-group-addon" style="padding: 0px 0px 0px 5px; border: 0px solid transparent;">
-											<button type="button" @click="dbStatsInfo()" class="btn btn-sm  btn-outline btn-primary">조회</button>
-										</span>
-					          		</div>
-								</div>
-							 </div>
+									<span class="input-group-addon" style="padding: 0px 0px 0px 5px; border: 0px solid transparent;">
+										<button type="button" @click="dbStatsInfo()" class="btn btn-sm  btn-outline btn-primary">조회</button>
+									</span>
+				          		</div>
+							</div>
 					    </div>
 					</div>
 

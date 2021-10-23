@@ -34,10 +34,10 @@
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/vue/vee-validate.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js?v=${varsqlfn:staticResourceVersion('')}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?v=${varsqlfn:staticResourceVersion('')}"></script>
 
 
 

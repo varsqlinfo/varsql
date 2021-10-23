@@ -1,6 +1,7 @@
 package com.varsql.core.db;
 
 import java.lang.reflect.Constructor;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
 import com.varsql.core.sql.resultset.handler.ResultSetHandler;
@@ -145,8 +147,9 @@ public class MetaControlBean {
 	 * @변경이력  :
 	 * @param dataParamInfo
 	 * @return
+	 * @throws Exception
 	 */
-	public List getDBInfo(DatabaseParamInfo dataParamInfo) {
+	public List getDBInfo(DatabaseParamInfo dataParamInfo) throws Exception {
 		return this.dbMetaImpl.getVersion(dataParamInfo);
 	}
 
@@ -159,8 +162,9 @@ public class MetaControlBean {
 	 * @변경이력  :
 	 * @param dataParamInfo
 	 * @return
+	 * @throws SQLException
 	 */
-	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) {
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
 		return this.dbMetaImpl.getSchemas(dataParamInfo);
 	}
 

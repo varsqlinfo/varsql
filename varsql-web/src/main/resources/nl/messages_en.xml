@@ -66,7 +66,7 @@
 <entry key="screen">Screen</entry>
 <entry key="screen.user">User</entry>
 <entry key="screen.manager">App Management</entry>
-<entry key="screen.admin">Varsql Console</entry>
+<entry key="screen.admin">Administration Console</entry>
 
 <!-- admin menu -->
 <entry key="admin.menu.database">Database</entry>

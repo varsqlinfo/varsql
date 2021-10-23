@@ -23,9 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.model.mapper.base.GenericMapper;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -86,20 +88,8 @@ public final class VarsqlUtils {
 		}
 	}
 
-	public static Timestamp getTimestamp(long time){
-		return new Timestamp(time);
-	}
-
-	public static LocalDateTime getLocalDateTime(long time){
-		return Instant.ofEpochMilli(time)
-				  .atZone(ZoneId.systemDefault())
-				  .toLocalDateTime();
-	}
-
-	public static LocalDate getLocalDate(long time){
-		return Instant.ofEpochMilli(time)
-				.atZone(ZoneId.systemDefault())
-				.toLocalDate();
+	public static String getVonnid (HttpServletRequest req) {
+		return (String)req.getAttribute(VarsqlParamConstants.VCONNID);
 	}
 
 	public static String getClientIp(HttpServletRequest request) {

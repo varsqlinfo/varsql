@@ -91,7 +91,7 @@ public class BoardService{
 		}else {
 			boardEntity = boardEntityRepository.findByArticleId(boardRequestDTO.getArticleId());
 
-			if(!SecurityUtil.isAdmin() && !boardEntity.getRegId().equals(SecurityUtil.userViewId()) ) {
+			if(!isModify(boardEntity)) {
 				throw new BoardPermissionException("no permission");
 			}
 
@@ -144,7 +144,7 @@ public class BoardService{
 
 		BoardEntity board = boardEntityRepository.findByArticleId(articleId);
 
-		if(board == null || (!SecurityUtil.isAdmin() && !board.getRegId().equals(SecurityUtil.userViewId()))) {
+		if(board == null || !isModify(board)) {
 			throw new PermissionDeniedException("no permission");
 		}
 
@@ -171,10 +171,13 @@ public class BoardService{
 		BoardEntity boardEntity = boardEntityRepository.findByArticleId(articleId);
 
 		if(boardEntity == null) {
-			throw new BoardNotFoundException("not found : "+ articleId);
+			throw new BoardNotFoundException("article id not found : "+ articleId);
 		}
 
-		return BoardResponseDTO.toDto(boardEntity, true);
+		BoardResponseDTO  dto = BoardResponseDTO.toDto(boardEntity, true);
+		dto.setModifyAuth(isModify(boardEntity));
+
+		return dto;
 	}
 
 	/**
@@ -219,7 +222,7 @@ public class BoardService{
 		}else {
 			boardCommentEntity = boardCommentEntityRepository.findByArticleIdAndCommentId(articleId, boardCommentRequestDTO.getCommentId());
 
-			if(!SecurityUtil.isAdmin() && !boardCommentEntity.getRegId().equals(SecurityUtil.userViewId())){
+			if( !isCommentModify(boardCommentEntity)){
 				throw new BoardPermissionException("no permission");
 			}
 
@@ -298,7 +301,7 @@ public class BoardService{
 
 		BoardCommentEntity boardCommentEntity = boardCommentEntityRepository.findByArticleIdAndCommentId(articleId, commentId);
 
-		if(boardCommentEntity == null || (!SecurityUtil.isAdmin() && !boardCommentEntity.getRegId().equals(SecurityUtil.userViewId()))) {
+		if(boardCommentEntity == null || !isCommentModify(boardCommentEntity)) {
 			throw new PermissionDeniedException("no permission");
 		}
 
@@ -331,6 +334,14 @@ public class BoardService{
 	 */
 	public List<BoardFileEntity> findFileList(long articleId, long fileId) {
 		return boardFileEntityRepository.findAllByArticleAndFileId(BoardEntity.builder().articleId(articleId).build(), fileId);
+	}
+
+	private boolean isModify(BoardEntity boardEntity) {
+		return SecurityUtil.isAdmin() || SecurityUtil.isManager() || boardEntity.getRegId().equals(SecurityUtil.userViewId());
+	}
+
+	private boolean isCommentModify(BoardCommentEntity boardCommentEntity) {
+		return SecurityUtil.isAdmin() || SecurityUtil.isManager() || boardCommentEntity.getRegId().equals(SecurityUtil.userViewId());
 	}
 
 }

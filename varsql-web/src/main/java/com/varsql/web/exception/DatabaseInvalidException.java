@@ -1,7 +1,7 @@
 package com.varsql.web.exception;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.vartech.common.constants.CodeEnumValue;
+import com.varsql.core.exception.VarsqlRuntimeException;
 
 /**
 *
@@ -11,72 +11,12 @@ import com.vartech.common.constants.CodeEnumValue;
 * @변경이력 :
 * @프로그램 설명 : database invalid exception
 */
-public class DatabaseInvalidException extends RuntimeException {
+public class DatabaseInvalidException  extends VarsqlRuntimeException {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
-	private CodeEnumValue errorCode;
-	private String errorMessage;
-	private String messageCode;
-
-	/**
-	 *
-	 */
-	public DatabaseInvalidException() {
-		super();
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public DatabaseInvalidException(String s) {
-		super(s);
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public DatabaseInvalidException(String s , Exception exeception) {
-		super(s,exeception);
+	public DatabaseInvalidException(String errorMessage) {
+		super(VarsqlAppCode.INVALID_DATABASE, errorMessage);
 	}
 
-
-	public DatabaseInvalidException(CodeEnumValue errorCode,Exception exeception) {
-		this(errorCode,null, exeception);
-	}
-
-	public DatabaseInvalidException(CodeEnumValue errorCode, String messageCode ,Exception exeception) {
-		this(errorCode, messageCode , null, exeception);
-	}
-	public DatabaseInvalidException(CodeEnumValue errorCode,String messageCode,	String errorMessage, Exception exeception) {
-		super(errorMessage, exeception);
-		this.errorCode=errorCode ;
-		this.messageCode=messageCode;
-		this.errorMessage = errorMessage;
-	}
-
-	public CodeEnumValue getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(CodeEnumValue errorCode) {
-		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.INVALID_DATABASE;
-	}
-
-	public String getMessageCode() {
-		return messageCode;
-	}
-
-	public void setMessageCode(String messageCode) {
-		this.messageCode = messageCode;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
 }

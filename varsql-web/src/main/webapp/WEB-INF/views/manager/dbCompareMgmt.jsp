@@ -423,49 +423,55 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		,objectCompare : function (initFlag){
-			var compareFn = this[this.diffItem.objectType+'Compare'];
 
-			if(initFlag){
-				this.resultInfo.sourceCount = this.sourceItems.length;
-				this.resultInfo.targetCount = this.targetItems.length;
-				this.resultInfo.sourceSchCnt = this.sourceItems.length;
-				this.resultInfo.targetSchCnt = this.targetItems.length;
+			try{
+				var compareFn = this[this.diffItem.objectType+'Compare'];
 
-				var options = {
-					  shouldSort: true,
-					  threshold: 0.1,
-					  location: 0,
-					  distance: 100,
-					  maxPatternLength: 32,
-					  minMatchCharLength: 1,
-					  keys: [
-					    "name",
-					    "remarks",
-						"_lower_name",
-					]
-				};
+				if(initFlag){
+					this.resultInfo.sourceCount = this.sourceItems.length;
+					this.resultInfo.targetCount = this.targetItems.length;
+					this.resultInfo.sourceSchCnt = this.sourceItems.length;
+					this.resultInfo.targetSchCnt = this.targetItems.length;
 
-				this.sourceSearchObj = new Fuse(this.sourceItems, options);
-				this.targetSearchObj = new Fuse(this.targetItems, options);
+					var options = {
+						  shouldSort: true,
+						  threshold: 0.1,
+						  location: 0,
+						  distance: 100,
+						  maxPatternLength: 32,
+						  minMatchCharLength: 1,
+						  keys: [
+						    "name",
+						    "remarks",
+							"_lower_name",
+						]
+					};
+
+					this.sourceSearchObj = new Fuse(this.sourceItems, options);
+					this.targetSearchObj = new Fuse(this.targetItems, options);
+				}
+
+				this.resultReport = '';
+				this.sameInfo ={cnt: 0 , htm :[]};
+				this.differentInfo ={cnt: 0 , htm :[]};
+				this.emptyInfo ={cnt: 0 , htm :[]};
+
+				var resultVal = '';
+				if(compareFn){
+					resultVal =compareFn.call(this);
+				}else{
+					resultVal = this.otherCompare.call(this);
+				}
+
+				this.sameInfo.htm = this.sameInfo.htm.join('\n');
+				this.differentInfo.htm =this.differentInfo.htm.join('\n');
+				this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
+
+				this.resultReport = resultVal;
+			}catch(e){
+				console.log(e);
+				alert(e.message);
 			}
-
-			this.resultReport = '';
-			this.sameInfo ={cnt: 0 , htm :[]};
-			this.differentInfo ={cnt: 0 , htm :[]};
-			this.emptyInfo ={cnt: 0 , htm :[]};
-
-			var resultVal = '';
-			if(compareFn){
-				resultVal =compareFn.call(this);
-			}else{
-				resultVal = this.otherCompare.call(this);
-			}
-
-			this.sameInfo.htm = this.sameInfo.htm.join('\n');
-			this.differentInfo.htm =this.differentInfo.htm.join('\n');
-			this.emptyInfo.htm=this.emptyInfo.htm.join('\n');
-
-			this.resultReport = resultVal;
 		}
 		// object search
 		,searchObject : function (){
@@ -695,9 +701,8 @@ VarsqlAPP.vueServiceBean( {
 
 					if(sourceColLen != targetColLen){
 						compareFlag = true;
-						compareLog.push(VARSQL.messageFormat('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen[key].remarks })+'\n');
+						compareLog.push(VARSQL.messageFormat('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
 					}
-
 
 					var maxColLen = Math.max(sourceColLen,targetColLen);
 
@@ -1366,6 +1371,10 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,sourceChange : function (val){
 			var _self = this;
+
+			if(val==''){
+				return ;
+			}
 
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectType'}

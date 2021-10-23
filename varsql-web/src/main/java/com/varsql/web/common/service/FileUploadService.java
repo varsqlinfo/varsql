@@ -74,7 +74,7 @@ public class FileUploadService {
 					fileInfos.add(fileInfo);
 				} catch (IllegalStateException | IOException e) {
 					logger.error("file upload exception : {}", e.getMessage(), e);
-					throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, e, "file upload error");
+					throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, "file upload error", e);
 				}
 			}
 		});

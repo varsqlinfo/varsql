@@ -1,7 +1,6 @@
 package com.varsql.core.exception;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.vartech.common.constants.CodeEnumValue;
 
 /**
  *
@@ -11,67 +10,27 @@ import com.vartech.common.constants.CodeEnumValue;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class ConnectionFactoryException extends RuntimeException {
+public class ConnectionFactoryException extends VarsqlRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private CodeEnumValue errorCode;
-	private String errorMessage;
-	private String messageCode;
-
-	@SuppressWarnings("unused")
-	private ConnectionFactoryException() {}
-
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConnectionFactoryException(String s) {
-		this(s, null);
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConnectionFactoryException(String s, Exception exeception) {
-		this(VarsqlAppCode.COMM_RUNTIME_ERROR, s, exeception );
+	public ConnectionFactoryException(String errorMessage) {
+		super(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR, errorMessage);
 	}
 
-	public ConnectionFactoryException(CodeEnumValue errorCode, String errorMessage) {
-		this(errorCode, errorMessage, null);
+	public ConnectionFactoryException(Exception e) {
+		super(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR, e.getMessage(), e);
 	}
 
-	public ConnectionFactoryException(CodeEnumValue errorCode, String errorMessage , Exception exeception) {
-		this(errorCode, exeception, errorMessage , null);
+	public ConnectionFactoryException(String errorMessage, Exception e) {
+		super(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR, errorMessage, e);
 	}
 
-	public ConnectionFactoryException(CodeEnumValue errorCode, Exception exeception, String errorMessage, String messageCode) {
-
-		super(String.format("error code : %s %s %s", errorCode+"", (messageCode==null?"": "message code : " +  messageCode) , (errorMessage==null?"": "message :" +  errorMessage)), exeception);
-		setErrorCode(errorCode);
-		this.messageCode=messageCode;
-		this.errorMessage = errorMessage;
+	public ConnectionFactoryException(VarsqlAppCode errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 	}
 
-	public CodeEnumValue getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(CodeEnumValue errorCode) {
-		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.EC_DB_POOL_ERROR;
-	}
-
-	public String getMessageCode() {
-		return messageCode;
-	}
-
-	public void setMessageCode(String messageCode) {
-		this.messageCode = messageCode;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+	public ConnectionFactoryException(VarsqlAppCode errorCode, String errorMessage, Exception e) {
+		super(errorCode, errorMessage, e);
 	}
 }

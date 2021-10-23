@@ -25,28 +25,30 @@ import lombok.ToString;
 @NoArgsConstructor
 public class BoardResponseDTO {
 
-	private String boardCode; 
+	private String boardCode;
 	private long articleId;
-	
-	private String title; 
-	private String contents; 
-	private long commentCnt; 
-	private String authorName; 
-	private char noticeYn; 
-	
+
+	private String title;
+	private String contents;
+	private long commentCnt;
+	private String authorName;
+	private char noticeYn;
+
+	private boolean modifyAuth;
+
 	@JsonFormat(shape = Shape.STRING ,pattern=VarsqlConstants.DATE_TIME_FORMAT)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime regDt;
-	
-	private List<BoardFileResponseDTO> fileList; 
-	
+
+	private List<BoardFileResponseDTO> fileList;
+
 	public static BoardResponseDTO toDto(BoardEntity board) {
 		return toDto(board, false);
 	}
 	public static BoardResponseDTO toDto(BoardEntity board, boolean fileConvertFlag) {
 		BoardResponseDTO brd = new BoardResponseDTO();
-		
+
 		brd.setBoardCode(board.getBoardCode());
 		brd.setArticleId(board.getArticleId());
 		brd.setTitle(board.getTitle());
@@ -55,7 +57,7 @@ public class BoardResponseDTO {
 		brd.setAuthorName(board.getAuthorName());
 		brd.setNoticeYn(board.getNoticeYn());
 		brd.setRegDt(board.getRegDt());
-		
+
 		if(fileConvertFlag) {
 			brd.setFileList(board.getFileList().stream().map(item->{
 				return BoardFileResponseDTO.toDto(item);
@@ -63,8 +65,8 @@ public class BoardResponseDTO {
 		}else {
 			brd.setFileList(new ArrayList());
 		}
-		
-		
+
+
 		return brd;
 	}
 }

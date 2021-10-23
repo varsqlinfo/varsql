@@ -9,8 +9,10 @@
 	<div></div>
 	<div class="pull-right">
 		<a href="<varsql-app:boardUrl />" class="btn btn-default">목록</a>
-		<a @click="modifyInfo()"  class="btn btn-primary">수정</a>
-		<a href="javascript:;" @click="deleteItem()" class="btn btn-warning">삭제</a>
+		<template v-if="articleInfo.modifyAuth">
+			<a @click="modifyInfo()"  class="btn btn-primary">수정</a>
+			<a href="javascript:;" @click="deleteItem()" class="btn btn-warning">삭제</a>
+		</template>
 	</div>
 	<div style="clear:both;padding-top: 15px;"></div>
 	<div class="article-area">
@@ -32,9 +34,8 @@
 		</div>
 
 
-		<div class="content">
-			<div style="width:100%" v-html="articleInfo.contents"></div>
-		</div>
+		<pre style="width:100%;border:0px solid;" v-html="articleInfo.contents">
+		</pre>
 	</div>
 
 	<strong class="comment-label">댓글</strong>

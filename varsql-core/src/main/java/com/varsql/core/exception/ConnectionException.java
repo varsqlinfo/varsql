@@ -1,28 +1,21 @@
 package com.varsql.core.exception;
 
-public class ConnectionException extends RuntimeException {
-	
-	private static final long serialVersionUID = 1L;
-	
-	
-	public ConnectionException() {
-		super();
-	}
-	
-	public ConnectionException(Throwable cause) {
-        super(cause);
-    }
+import com.varsql.core.common.code.VarsqlAppCode;
 
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConnectionException(String s) {
-		super(s);
+public class ConnectionException extends VarsqlRuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
+
+	public ConnectionException(String errorMessage) {
+		super(VarsqlAppCode.EC_DB_CONNECTION, errorMessage);
 	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConnectionException(String s , Throwable exeception) {
-		super(s,exeception);
+
+	public ConnectionException(Exception e) {
+		super(VarsqlAppCode.EC_DB_CONNECTION, e.getMessage(), e);
+	}
+
+	public ConnectionException(String errorMessage, Exception e) {
+		super(VarsqlAppCode.EC_DB_CONNECTION, e.getMessage(), e);
 	}
 }

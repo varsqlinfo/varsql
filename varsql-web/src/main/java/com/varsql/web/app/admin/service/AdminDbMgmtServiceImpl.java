@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.model.entity.db.DBTypeEntity;
+import com.varsql.web.model.mapper.db.DBConnectionDetailMapper;
 import com.varsql.web.model.mapper.db.DBConnectionMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
@@ -140,7 +142,14 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectDetailObject(String vconnid) {
-		return VarsqlUtils.getResponseResultItemOne(dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)));
+		DBConnectionEntity entity= dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).get();
+
+		if( entity == null) {
+			return VarsqlUtils.getResponseResultItemOne(null);
+		}else {
+			return VarsqlUtils.getResponseResultItemOne(DBConnectionDetailMapper.INSTANCE.toDto(entity));
+		}
+
 	}
 
 	/**

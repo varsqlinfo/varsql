@@ -150,12 +150,20 @@ Handlebars.registerHelper("javaType", function(dbType, options) {
 /**
  * 문자를 추가
  * @method addChar
- * @param {String} dbType
- * @param {options} options
+ * @param {Boolean, Number} condition value
+ * @param {String} true value
+ * @param {String} false value
+ * @param {options}
  * @returns {String}
  */
-Handlebars.registerHelper("addChar", function(idx, firstStr, otherStr, options) {
-	return idx < 1 ? firstStr : otherStr;
+Handlebars.registerHelper("addChar", function(condVal, firstStr, otherStr, options) {
+	if(condVal === true){
+		return firstStr;
+	}else if(condVal === false){
+		return otherStr;
+	}else{
+		return condVal < 1 ? firstStr : otherStr;
+	}
 });
 
 /**
@@ -418,9 +426,9 @@ VARSQLTemplate.render ={
 	 * @method text
 	 * @description text template render
 	 */
-	,text : function (template , item , errorHandler){
+	,text : function (template, item, errorHandler){
 		try{
-			var template = Handlebars.compile(template);
+			var template = Handlebars.compile(template, {noEscape :true});
 	        return template(item);
         }catch(e){
         	if(errorHandler){

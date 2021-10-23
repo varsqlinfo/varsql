@@ -64,7 +64,7 @@
 <entry key="screen">화면</entry>
 <entry key="screen.user">사용자</entry>
 <entry key="screen.manager">App 관리</entry>
-<entry key="screen.admin">Varsql 관리 콘솔</entry>
+<entry key="screen.admin">관리 콘솔</entry>
 
 <!-- admin menu -->
 <entry key="admin.menu.database">Database 관리</entry>

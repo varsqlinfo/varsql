@@ -19,7 +19,7 @@ import com.vartech.common.utils.VartechUtils;
 
 class SQLTemplateFactorySybaseTest extends BaseTest{
 
-	//@Test
+	@Test
 	void testIndexRender() {
 		Map param =  new HashMap();
 		//param.put("ddlOption", new DDLCreateOption());
@@ -41,6 +41,7 @@ class SQLTemplateFactorySybaseTest extends BaseTest{
 
 
 		System.out.println("-----index ddl start------");
+		System.out.println(SQLTemplateFactory.getInstance().getTemplate(DBType.SYBASE, SQL.CREATE.getTemplateId(ObjectType.INDEX)));
 		System.out.println(tempateSource);
 		System.out.println("-----index ddl end------");
 
@@ -49,7 +50,7 @@ class SQLTemplateFactorySybaseTest extends BaseTest{
 
 
 
-	@Test
+	//@Test
 	void testTemplate() {
 		String tempateSource = SQLTemplateFactory.getInstance().getTemplate(DBType.SYBASE, SQL.CREATE.getTemplateId(ObjectType.TABLE));
 

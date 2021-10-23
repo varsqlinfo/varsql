@@ -1,6 +1,7 @@
 package com.varsql.core.db.mybatis;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.ClassLoaderUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
@@ -29,6 +31,7 @@ import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
+import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -86,17 +89,21 @@ public final class SQLManager {
 		try{
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
 				logger.error("SQLManager setSQLMapper access denied object {}", obj );
-				throw new VarsqlRuntimeException("SQLManager setSQLMapper access denied object "+obj);
+				throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_POOL,"SQLManager setSQLMapper access denied object "+obj);
 			}
 
 			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo).getObject();
+
+			try(Connection connChk = sqlSessionFactory.openSession().getConnection();){
+				JdbcUtils.close(connChk);
+			}
 
 			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
 			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
 			logger.error("connection info :  {} ", VartechReflectionUtils.reflectionToString(connInfo));
 			logger.error("SQLManager :{} ", e.getMessage() , e);
-			throw new VarsqlRuntimeException("getSqlSession IOException "+e.getMessage(), e);
+			throw new ConnectionException("getSqlSession IOException "+e.getMessage(), e);
 		}
 	}
 

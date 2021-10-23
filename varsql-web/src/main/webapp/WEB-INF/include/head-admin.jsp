@@ -13,7 +13,7 @@
 
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
-<link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?version=${css_ver}" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 

@@ -1,27 +1,16 @@
 package com.varsql.core.exception;
 
-public class ConfigurationException extends Exception {
+import com.varsql.core.common.code.VarsqlAppCode;
+
+public class ConfigurationException extends VarsqlException {
 
 	private static final long serialVersionUID = 1L;
-	
-	public ConfigurationException() {
-		super();
-	}
-	
-	public ConfigurationException(Throwable cause) {
-        super(cause);
-    }
 
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConfigurationException(String s) {
-		super(s);
+	public ConfigurationException(String errorMessage) {
+		super(VarsqlAppCode.EC_CONFIGURATION, errorMessage);
 	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public ConfigurationException(String s , Exception exeception) {
-		super(s,exeception);
+
+	public ConfigurationException(Exception e) {
+		super(VarsqlAppCode.EC_CONFIGURATION, e.getMessage(), e);
 	}
 }

@@ -192,4 +192,19 @@ public class ErrorController extends AbstractController {
 	public ModelAndView dataDownloadError(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/dataDownloadError", VIEW_PAGE.COMMONPAGE);
 	}
+
+	/**
+	 * @method  : boardError
+	 * @desc : board exception
+	 * @author   : ytkim
+	 * @date   : 2021. 10. 23.
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/boardError", method ={RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView boardError(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return getModelAndView("/error/boardError", VIEW_PAGE.COMMONPAGE);
+	}
 }

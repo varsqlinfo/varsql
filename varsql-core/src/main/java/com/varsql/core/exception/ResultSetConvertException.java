@@ -14,39 +14,35 @@ import com.vartech.common.constants.CodeEnumValue;
 * @변경이력 :
 * @프로그램 설명 : varsql result convert exception
 */
-public class ResultSetConvertException extends RuntimeException {
+public class ResultSetConvertException extends VarsqlRuntimeException {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private CodeEnumValue errorCode;
 	private SqlSourceResultVO  ssrv;
 
-	/**
-	 *
-	 */
-	public ResultSetConvertException() {
-		super();
+
+	public ResultSetConvertException(String errorMessage) {
+		super(VarsqlAppCode.EC_SQL_RESULT_CONVERT, errorMessage);
 	}
 
-	public ResultSetConvertException(CodeEnumValue errorCode, SQLException exeception) {
-		this(errorCode, exeception , null);
+	public ResultSetConvertException(Exception e) {
+		super(VarsqlAppCode.EC_SQL_RESULT_CONVERT, e.getMessage(), e);
 	}
 
-	public ResultSetConvertException(CodeEnumValue errorCode, SQLException exeception , SqlSourceResultVO ssrv) {
-		super(exeception);
-		setErrorCode(errorCode);
+	public ResultSetConvertException(String errorMessage, Exception e) {
+		super(VarsqlAppCode.EC_SQL_RESULT_CONVERT, e.getMessage(), e);
+	}
+
+	public ResultSetConvertException(CodeEnumValue errorCode, Exception exeception) {
+		super(errorCode, exeception);
+	}
+
+	public ResultSetConvertException(CodeEnumValue errorCode, Exception exeception , SqlSourceResultVO ssrv) {
+		super(errorCode, exeception);
 		this.ssrv = ssrv;
-	}
-
-	public CodeEnumValue getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(CodeEnumValue errorCode) {
-		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.EC_SQL_RESULT_CONVERT;
 	}
 
 	public SqlSourceResultVO getSsrv() {

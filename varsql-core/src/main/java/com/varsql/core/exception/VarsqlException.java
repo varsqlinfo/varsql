@@ -20,36 +20,25 @@ public class VarsqlException extends Exception {
 
 	private CodeEnumValue errorCode;
 	private String errorMessage;
-	private String messageCode;
 
-	@SuppressWarnings("unused")
-	private VarsqlException() {}
+	public VarsqlException(CodeEnumValue errorCode) {
+		this(errorCode, "");
+	}
 
 	/**
 	 * @param s java.lang.String
 	 */
-	public VarsqlException(String s) {
-		this(s, null);
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public VarsqlException(String s, Exception exeception) {
-		this(VarsqlAppCode.COMM_RUNTIME_ERROR, exeception, s);
+	public VarsqlException(CodeEnumValue errorCode, String errorMessage) {
+		this(errorCode, errorMessage, null);
 	}
 
-	public VarsqlException(CodeEnumValue errorCode,Exception exeception) {
-		this(errorCode, exeception, null);
+	public VarsqlException(CodeEnumValue errorCode, Exception exeception) {
+		this(errorCode, exeception.getMessage(), exeception);
 	}
 
-	public VarsqlException(CodeEnumValue errorCode, Exception exeception, String errorMessage) {
-		this(errorCode, exeception, errorMessage , null);
-	}
-	public VarsqlException(CodeEnumValue errorCode, Exception exeception, String errorMessage, String messageCode) {
-
-		super(String.format("error code : %s %s %s", errorCode+"", (messageCode==null?"": "message code : " +  messageCode) , (errorMessage==null?"": "message :" +  errorMessage)), exeception);
+	public VarsqlException(CodeEnumValue errorCode, String errorMessage, Exception exeception) {
+		super(String.format("error code : %s %s", errorCode+"",  (errorMessage==null?"": "message :" +  errorMessage)), exeception);
 		setErrorCode(errorCode);
-		this.messageCode=messageCode;
 		this.errorMessage = errorMessage;
 	}
 
@@ -58,15 +47,7 @@ public class VarsqlException extends Exception {
 	}
 
 	public void setErrorCode(CodeEnumValue errorCode) {
-		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.ERROR;
-	}
-
-	public String getMessageCode() {
-		return messageCode;
-	}
-
-	public void setMessageCode(String messageCode) {
-		this.messageCode = messageCode;
+		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.COMM_RUNTIME_ERROR;
 	}
 
 	public String getErrorMessage() {

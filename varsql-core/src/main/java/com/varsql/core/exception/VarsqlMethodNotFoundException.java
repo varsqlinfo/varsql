@@ -1,33 +1,21 @@
 package com.varsql.core.exception;
- 
+
+import com.varsql.core.common.code.VarsqlAppCode;
+
 /**
- * 
- * @FileName  : VarsqlException.java
+ *
+ * @FileName  : VarsqlMethodNotFoundException.java
  * @프로그램 설명 :
- * @Date      : 2018. 4. 3. 
+ * @Date      : 2018. 4. 3.
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class VarsqlMethodNotFoundException extends Exception {
+public class VarsqlMethodNotFoundException extends VarsqlException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * 
-	 */
-	public VarsqlMethodNotFoundException() {
-		super();
-	}
-	
-	/**
-	 * @param s java.lang.String
-	 */
-	public VarsqlMethodNotFoundException(String s) {
-		super(s);
+
+	public VarsqlMethodNotFoundException(String errorMessage) {
+		super(VarsqlAppCode.EC_METHOD_NOT_FOUND, errorMessage);
 	}
 
-	
 }

@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
-import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.BlockingUserException;
@@ -30,14 +29,18 @@ import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.CommonServiceImpl;
+import com.varsql.web.exception.BoardNotFoundException;
+import com.varsql.web.exception.BoardPermissionException;
 import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.exception.DatabaseBlockingException;
 import com.varsql.web.exception.DatabaseInvalidException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.constants.CodeEnumValue;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
+import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -74,10 +77,9 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=SQLException.class)
-	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request ,  HttpServletResponse response){
+	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request, HttpServletResponse response){
 
-		logger.error("sqlExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("sqlExceptionHandler :{} ", ex.getMessage() , ex);
+		commonServiceImpl.insertExceptionLog("sqlExceptionHandler",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(RequestResultCode.ERROR);
@@ -99,16 +101,12 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
-	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request , HttpServletResponse response){
-
-		logger.error("varsqlAppExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("varsqlAppExceptionHandler :{} ", ex.getMessage() , ex);
+	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request, HttpServletResponse response){
 
 		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode());
-		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
 		exceptionRequestHandle(ex, request, response ,result);
@@ -126,16 +124,12 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=VarsqlRuntimeException.class)
-	public void varsqlRuntimeExceptionHandler(VarsqlRuntimeException ex, HttpServletRequest request , HttpServletResponse response){
-
-		logger.error("VarsqlRuntimeException url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("VarsqlRuntimeException :{} ", ex.getMessage() , ex);
+	public void varsqlRuntimeExceptionHandler(VarsqlRuntimeException ex, HttpServletRequest request, HttpServletResponse response){
 
 		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode());
-		result.setMessageCode(ex.getMessageCode());
 		result.setMessage(ex.getMessage());
 
 		exceptionRequestHandle(ex, request, response ,result);
@@ -153,10 +147,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=ConnectionException.class)
-	public void connectionExceptionHandler(ConnectionException ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("connectionExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("connectionExceptionHandler :{} ", ex.getMessage() , ex);
+	public void connectionExceptionHandler(ConnectionException ex, HttpServletRequest request, HttpServletResponse response){
 
 		commonServiceImpl.insertExceptionLog("connectionException",ex);
 
@@ -176,10 +167,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=ConnectionFactoryException.class)
-	public void connectionFactoryExceptionHandler(ConnectionFactoryException ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("connectionFactoryExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("connectionFactoryExceptionHandler :{} ", ex.getMessage() , ex);
+	public void connectionFactoryExceptionHandler(ConnectionFactoryException ex, HttpServletRequest request, HttpServletResponse response){
 
 		commonServiceImpl.insertExceptionLog("connectionFactoryException",ex);
 
@@ -199,10 +187,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=DatabaseInvalidException.class)
-	public void databaseInvalidExceptionHandler(DatabaseInvalidException ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("databaseInvalidExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("databaseInvalidExceptionHandler :{} ", ex.getMessage() , ex);
+	public void databaseInvalidExceptionHandler(DatabaseInvalidException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"invalidDatabase");
@@ -218,10 +203,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=VarsqlAccessDeniedException.class)
-	public void varsqlAccessDeniedExceptionHandler(VarsqlAccessDeniedException ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("varsqlAccessDeniedExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("varsqlAccessDeniedExceptionHandler :{} ", ex.getMessage() , ex);
+	public void varsqlAccessDeniedExceptionHandler(VarsqlAccessDeniedException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"error403");
@@ -237,10 +219,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=DatabaseBlockingException.class)
-	public void databaseBlockingExceptionHandler(DatabaseBlockingException ex, HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("databaseBlockingExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("databaseBlockingExceptionHandler :{} ", ex.getMessage() , ex);
+	public void databaseBlockingExceptionHandler(DatabaseBlockingException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"blockingDatabase");
@@ -256,10 +235,7 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value=BlockingUserException.class)
-	public void blockingUserExceptionHandler(BlockingUserException ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("blockingUserExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("blockingUserExceptionHandler :{} ", ex.getMessage() , ex);
+	public void blockingUserExceptionHandler(BlockingUserException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"blockingUser");
@@ -279,10 +255,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=RuntimeException.class)
-	public void runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request , HttpServletResponse response){
-
-		logger.error("runtimeExceptionHandle url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("runtimeExceptionHandle :{} ", ex.getMessage() , ex);
+	public void runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
@@ -302,20 +275,17 @@ public class GlobalExceptionHandler{
 	 * @param response
 	 */
 	@ExceptionHandler(value= {ClassNotFoundException.class, NoClassDefFoundError.class})
-	public void classExceptionHandler(Exception ex, HttpServletRequest request , HttpServletResponse response){
+	public void classExceptionHandler(ClassNotFoundException ex, HttpServletRequest request, HttpServletResponse response){
 
-		logger.error("classExceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("classExceptionHandler : {} ", ex.getMessage() ,ex);
+		commonServiceImpl.insertExceptionLog("classExceptionHandler",ex);
+
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 		exceptionRequestHandle(ex, request, response ,result);
 	}
 
 	@ExceptionHandler(value=Exception.class)
-	public void exceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
-
-		logger.error("exceptionHandler url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("exceptionHandler :{} ", ex.getMessage() , ex);
+	public void exceptionHandler(Exception ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
 
@@ -366,10 +336,7 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(NoHandlerFoundException.class)
-    public void noHandlerFoundExceptionHandler(NoHandlerFoundException ex,HttpServletRequest request ,  HttpServletResponse response) {
-
-		logger.error("handle404 url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("handle404 :{} ", ex.getMessage() , ex);
+    public void noHandlerFoundExceptionHandler(NoHandlerFoundException ex,HttpServletRequest request, HttpServletResponse response) {
 
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
@@ -388,11 +355,11 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=MissingServletRequestParameterException.class)
-	public void missingServletRequestParameterExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
+	public void missingServletRequestParameterExceptionHandler(Exception ex,HttpServletRequest request, HttpServletResponse response){
 
 		logger.error("missingServletRequestParameterExceptionHandler:{}",ex.getMessage() , ex);
 
-		exceptionRequestHandle(ex,request, response ,new ResponseResult(), "error403");
+		exceptionRequestHandle(ex, request, response, new ResponseResult(), "error403");
 	}
 
 	/**
@@ -407,19 +374,61 @@ public class GlobalExceptionHandler{
 	 * @return
 	 */
 	@ExceptionHandler(value=DataDownloadException.class)
-	public void dataDownloadExceptionHandler(Exception ex,HttpServletRequest request ,  HttpServletResponse response){
-		exceptionRequestHandle(ex,request ,response , new ResponseResult()  , "dataDownloadError");
+	public void dataDownloadExceptionHandler(DataDownloadException ex, HttpServletRequest request, HttpServletResponse response){
+		exceptionRequestHandle(ex, request, response, new ResponseResult(), "dataDownloadError");
 	}
 
-	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result) {
-		exceptionRequestHandle(ex,request ,response , result  , "error500");
+	/**
+	 * @method  : boardNotFoundException
+	 * @desc :
+	 * @author   : ytkim
+	 * @date   : 2021. 10. 23.
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=BoardNotFoundException.class)
+	public void boardNotFoundException(BoardNotFoundException ex, HttpServletRequest request, HttpServletResponse response){
+		exceptionRequestHandle(ex, request, response, new ResponseResult(), "boardError");
 	}
 
-	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response ,ResponseResult result, String pageName) {
+	@ExceptionHandler(value=BoardPermissionException.class)
+	public void boardPermissionException(BoardPermissionException ex, HttpServletRequest request, HttpServletResponse response){
+		exceptionRequestHandle(ex, request, response, new ResponseResult(), "boardError");
+	}
+
+	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response, ResponseResult result) {
+		exceptionRequestHandle(ex, request, response, result, "error500");
+	}
+
+	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response, ResponseResult result, String pageName) {
+
+		logger.error("exceptionRequestHandle url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("exceptionRequestHandle :{} ", ex.getMessage() , ex);
+
+		CodeEnumValue errorCode = RequestResultCode.ERROR;
+
+		if(result.getResultCode() == null) {
+			if(VartechReflectionUtils.hasMethod(ex.getClass(), "getErrorCode")) {
+				Object obj =VartechReflectionUtils.getProperty(ex, "getErrorCode");
+
+				if(obj == null) {
+					errorCode = (CodeEnumValue)obj;
+				}
+			}
+		}else {
+			errorCode =result.getResultCode();
+		}
+
 		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
-			result.setResultCode(RequestResultCode.ERROR);
+
+			if(errorCode == null) {
+				result.setResultCode(RequestResultCode.ERROR);
+			}else {
+				result.setResultCode(errorCode);
+			}
 
 			if(!SecurityUtil.isAdmin()) {
 				result.setMessage(result.getResultCode() + " :: " + ex.getClass());

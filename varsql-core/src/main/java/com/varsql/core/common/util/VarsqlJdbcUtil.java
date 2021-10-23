@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.stringtemplate.v4.ST;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.exception.VarsqlRuntimeException;
 
@@ -54,7 +55,7 @@ public class VarsqlJdbcUtil {
 
 			}
 		} catch (Exception e) {
-			throw new VarsqlRuntimeException(e.getMessage(), e);
+			throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_CONNECTION, e.getMessage(), e);
 		}
 
 		return tempate;

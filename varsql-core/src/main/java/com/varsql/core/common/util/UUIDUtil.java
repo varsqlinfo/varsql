@@ -38,7 +38,7 @@ public final class UUIDUtil {
 			byte[] bytes = source.getBytes(VarsqlConstants.CHAR_SET);
 			return UUID.nameUUIDFromBytes(bytes).toString().replaceAll("-", "");
 		}catch(UnsupportedEncodingException e) {
-			throw new VarsqlRuntimeException(VarsqlAppCode.ERROR, e, " UUIDUtil error : "+ e.getMessage());
+			throw new VarsqlRuntimeException(VarsqlAppCode.ERROR, " UUIDUtil error : "+ e.getMessage(), e);
 		}
 	}
 
@@ -59,7 +59,7 @@ public final class UUIDUtil {
 		try {
 			return UUID.nameUUIDFromBytes((viewid+vconnid).getBytes(VarsqlConstants.CHAR_SET)).toString().replaceAll("-", "");
 		}catch(UnsupportedEncodingException e) {
-			throw new VarsqlRuntimeException(VarsqlAppCode.ERROR ,e, " UUIDUtil vconnidUUID error : "+ e.getMessage());
+			throw new VarsqlRuntimeException(VarsqlAppCode.ERROR, " UUIDUtil vconnidUUID error : "+ e.getMessage(), e);
 		}
 	}
 }

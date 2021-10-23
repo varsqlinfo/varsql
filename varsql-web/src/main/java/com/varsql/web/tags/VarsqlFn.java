@@ -53,7 +53,11 @@ public final class VarsqlFn{
 		}else if("prettify".equals(type)) {
 			return WebStaticResourceVersion.PRETTIFY;
 		}else {
-			return randomVal(10000)+"";
+			if(VarsqlUtils.isRuntimelocal()) {
+				return randomVal(10000)+"";
+			}else {
+				return WebStaticResourceVersion.STATIC_RESOURCE;
+			}
 		}
 	}
 

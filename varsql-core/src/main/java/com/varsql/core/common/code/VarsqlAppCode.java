@@ -33,27 +33,69 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	,EC_SQL_EXECUTOR(10003) // sql result set 변환 에러.
 
 	// java error
-	,EC_BEAN_CONVERT(20000) // java entity 변환 에러.
-	,EC_FACTORY_CONNECTION_INFO(20001) // connection info dao not generate
+	// java entity 변환 에러.
+	,EC_BEAN_CONVERT(20000)
 
-	, DRIVER_NOT_FOUND(20002)	// driver not found
+	// connection info dao not generate
+	,EC_FACTORY_CONNECTION_ERROR(20001)
+	// connection info dao not generate
+	,EC_FACTORY_CONNECTION_INFO(20002)
+
+	// driver not found
+	,EC_DRIVER_NOT_FOUND(20002)
+
+	// varsql configuration
+	,EC_CONFIGURATION(20003)
+
+	// template configuration error
+	,EC_TEMPLATE_CONFIGURATION(20004)
+
+	// method not found error
+	,EC_METHOD_NOT_FOUND(20005)
+
+	// permission
+	,EC_PERMISSION(20006)
+
+	// board error
+	// board not found error
+	,EC_BOARD_NOT_FOUND(21000)
+
+	// board INVALID error
+	,EC_BOARD_INVALID(21001)
+
+	//board permission error
+	,EC_BOARD_PERMISSION(21002)
+
+
 
 	// meta , ddl error
 	,DB_META_ERROR(30000)
 	,DB_META_DDL_ERROR(30001)
+	,DB_BLOCKING_ERROR(30002)
 
 	// 공통 코드 50000 ~60000
-	,COMM_FILE_EMPTY(50000) // file upload empty
-	,COMM_PASSWORD_NOT_VALID(50001) // 유효 하지 않은 비밀번호
-	,COMM_FILE_UPLOAD_ERROR(50002) // file upload error
-	,COMM_FILE_DOWNLOAD_ERROR(50003) // file download error
+	// file upload empty
+	,COMM_FILE_EMPTY(50000)
+	// 유효 하지 않은 비밀번호
+	,COMM_PASSWORD_NOT_VALID(50001)
 
-	,COMM_RUNTIME_ERROR(50005) // runtime error
+	// file upload error
+	,COMM_FILE_UPLOAD_ERROR(50002)
+
+	// file download error
+	,COMM_FILE_DOWNLOAD_ERROR(50003)
+
+	// runtime error
+	,COMM_RUNTIME_ERROR(50005)
 
 
 	//db error 80000 ~90000
-	,EC_DB_POOL_ERROR(80000) // db pool error
-	,EC_DB_POOL_CLOSE(80001);
+	// db pool error
+	,EC_DB_POOL(80000)
+	// db pool close error
+	,EC_DB_POOL_CLOSE(80001)
+	// db connection error;
+	,EC_DB_CONNECTION(80002);
 
 	private int code = -1;
 	private String message;

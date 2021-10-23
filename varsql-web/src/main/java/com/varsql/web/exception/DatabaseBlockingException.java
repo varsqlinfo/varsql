@@ -1,82 +1,22 @@
 package com.varsql.web.exception;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.vartech.common.constants.CodeEnumValue;
+import com.varsql.core.exception.VarsqlRuntimeException;
 
 /**
 *
-* @FileName  : DatabaseInvalidException.java
+* @FileName  : DatabaseBlockingException.java
 * @Date      : 2020. 11. 12.
 * @작성자      : ytkim
 * @변경이력 :
-* @프로그램 설명 : database invalid exception
+* @프로그램 설명 : database blocking exception
 */
-public class DatabaseBlockingException extends RuntimeException {
+public class DatabaseBlockingException extends VarsqlRuntimeException {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
-	private CodeEnumValue errorCode;
-	private String errorMessage;
-	private String messageCode;
-
-	/**
-	 *
-	 */
-	public DatabaseBlockingException() {
-		super();
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public DatabaseBlockingException(String s) {
-		super(s);
-	}
-	/**
-	 * @param s java.lang.String
-	 */
-	public DatabaseBlockingException(String s , Exception exeception) {
-		super(s,exeception);
+	public DatabaseBlockingException(String errorMessage) {
+		super(VarsqlAppCode.DB_BLOCKING_ERROR, errorMessage);
 	}
 
-
-	public DatabaseBlockingException(CodeEnumValue errorCode,Exception exeception) {
-		this(errorCode,null, exeception);
-	}
-
-	public DatabaseBlockingException(CodeEnumValue errorCode, String messageCode ,Exception exeception) {
-		this(errorCode, messageCode , null, exeception);
-	}
-	public DatabaseBlockingException(CodeEnumValue errorCode,String messageCode,	String errorMessage, Exception exeception) {
-		super(errorMessage, exeception);
-		this.errorCode=errorCode ;
-		this.messageCode=messageCode;
-		this.errorMessage = errorMessage;
-	}
-
-	public CodeEnumValue getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(CodeEnumValue errorCode) {
-		this.errorCode = errorCode != null? errorCode : VarsqlAppCode.INVALID_DATABASE;
-	}
-
-	public String getMessageCode() {
-		return messageCode;
-	}
-
-	public void setMessageCode(String messageCode) {
-		this.messageCode = messageCode;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
 }

@@ -1,4 +1,5 @@
 package com.varsql.web.app.database.service;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,9 +65,10 @@ public class DatabaseServiceImpl{
 	 * @변경이력  :
 	 * @param databaseParamInfo
 	 * @return
+	 * @throws SQLException
 	 * @throws Exception
 	 */
-	public Map schemas(DatabaseParamInfo databaseParamInfo){
+	public Map schemas(DatabaseParamInfo databaseParamInfo) throws SQLException{
 		Map json = new HashMap();
 		String connid =databaseParamInfo.getConuid();
 

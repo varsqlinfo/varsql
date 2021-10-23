@@ -48,11 +48,21 @@ public enum TemplateHelpers implements Helper<Object> {
 	,addChar {
 		@Override
 		public String apply(final Object context, final Options options) {
-			int idx = (int)context;
+
+
 			String firstStr = options.param(0,"");
 			String otherStr = options.param(1,"");
 
-			return idx < 1 ? firstStr: otherStr;
+			if(context instanceof Boolean) {
+				if(((Boolean) context).booleanValue()  == true) {
+					return firstStr;
+				}else {
+					return otherStr;
+				}
+			}else {
+				int idx = (int)context;
+				return idx < 1 ? firstStr: otherStr;
+			}
 		}
 	}
 

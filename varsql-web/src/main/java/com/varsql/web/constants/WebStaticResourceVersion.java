@@ -5,4 +5,6 @@ public interface WebStaticResourceVersion {
 	final String PRETTIFY ="20180725";
 	final String PUB_JS =System.currentTimeMillis()+"";
 	final String VARSQL_CSS =System.currentTimeMillis()+"";
+
+	final String STATIC_RESOURCE = System.currentTimeMillis()+"";
 }

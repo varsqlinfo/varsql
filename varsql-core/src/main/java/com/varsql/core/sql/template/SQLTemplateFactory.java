@@ -15,6 +15,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.db.DBType;
@@ -121,7 +122,7 @@ public class SQLTemplateFactory {
 		Template template = getDDLTemplate( dbVender, templateId);
 
 		if(template ==null){
-			throw new VarsqlRuntimeException(new StringBuilder().append("sqlRender template ").append("dbVender : [").append(dbVender).append("] templateId : [").append(templateId).append("] template : [").append(template).append("]").toString());
+			throw new VarsqlRuntimeException(VarsqlAppCode.EC_TEMPLATE_CONFIGURATION ,new StringBuilder().append("sqlRender template ").append("dbVender : [").append(dbVender).append("] templateId : [").append(templateId).append("] template : [").append(template).append("]").toString());
 		}
 
 		try {

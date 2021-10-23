@@ -79,7 +79,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	}
 
 	@Override
-	public List getVersion(DatabaseParamInfo dataParamInfo)  {
+	public List getVersion(DatabaseParamInfo dataParamInfo) throws Exception  {
 
 		List<Map> result = new ArrayList();
 
@@ -91,9 +91,6 @@ public abstract class DBMetaImpl implements DBMeta{
 			result.add( Collections.singletonMap("VERSIONINFO", meta.getDatabaseProductVersion()));
 			result.add( Collections.singletonMap("DRIVERINFO", meta.getDriverMajorVersion()));
 
-		}catch(SQLException e){
-			logger.error("getVersion {} ",e.getMessage());
-			logger.error("getVersion ",e);
 		}finally{
 			sessionClose(dataParamInfo.getVconnid(), session);
 		}
@@ -111,10 +108,11 @@ public abstract class DBMetaImpl implements DBMeta{
 	 * @변경이력  :
 	 * @param dbAlias
 	 * @return
+	 * @throws SQLException
 	 * @throws Exception
 	 */
 	@Override
-	public List<String> getSchemas(DatabaseParamInfo dataParamInfo){
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException{
 		List<String> reLst = new ArrayList<String>();
 
 		String dbAlias =  dataParamInfo.getVconnid();
@@ -150,9 +148,6 @@ public abstract class DBMetaImpl implements DBMeta{
 			}else{
 				reLst.add(uSchema);
 			}
-		} catch (SQLException e) {
-			logger.error("getSchemas {} ",e.getMessage());
-			logger.error("getSchemas",e);
 		}finally{
 			sessionClose(dataParamInfo.getVconnid(), session);
 		}
@@ -237,6 +232,8 @@ public abstract class DBMetaImpl implements DBMeta{
 
 		try {
 			Connection conn = session.getConnection();
+			
+			
 
 			return dBMetaDataUtil.tableInfo(dataParamInfo,conn, "VIEW");
 		}finally {

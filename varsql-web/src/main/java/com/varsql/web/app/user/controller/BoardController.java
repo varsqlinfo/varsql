@@ -24,12 +24,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.exception.PermissionDeniedException;
 import com.varsql.web.app.user.service.BoardService;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.board.BoardCommentRequestDTO;
 import com.varsql.web.dto.board.BoardRequestDTO;
+import com.varsql.web.dto.board.BoardResponseDTO;
 import com.varsql.web.model.entity.FileBaseEntity;
 import com.varsql.web.model.entity.board.BoardFileEntity;
 import com.varsql.web.util.FileServiceUtils;
@@ -75,7 +77,10 @@ public class BoardController extends AbstractController {
 	@PostMapping("/{"+VarsqlParamConstants.BOARD_CODE+"}/list")
 	public @ResponseBody ResponseResult list(@PathVariable(required = true, name=VarsqlParamConstants.BOARD_CODE) String boardCode
 			, HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return boardService.list( boardCode, HttpUtils.getSearchParameter(req));
+
+		boardCode= VarsqlUtils.getVonnid(req);
+
+		return boardService.list(boardCode, HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -105,7 +110,9 @@ public class BoardController extends AbstractController {
 	@RequestMapping(value = "{"+VarsqlParamConstants.BOARD_CODE+"}/save", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult save(@PathVariable(required = true, name=VarsqlParamConstants.BOARD_CODE) String boardCode
 			, @Valid BoardRequestDTO boardRequestDTO
-			, BindingResult result) throws Exception {
+			, BindingResult result, HttpServletRequest req) throws Exception {
+
+		boardCode= VarsqlUtils.getVonnid(req);
 
 		ResponseResult resultObject = new ResponseResult();
 
@@ -140,6 +147,8 @@ public class BoardController extends AbstractController {
 			, @RequestParam(value = "articleId" , required = true) long articleId
 			, HttpServletRequest req, ModelAndView mav) throws Exception {
 
+		boardCode= VarsqlUtils.getVonnid(req);
+
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
 		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(boardService.viewBoardInfo(boardCode, articleId)));
@@ -152,7 +161,7 @@ public class BoardController extends AbstractController {
 			, @RequestParam(value = "articleId" , required = true)  long articleId
 			, HttpServletRequest req
 			, HttpServletResponse res) throws Exception {
-		return boardService.deleteBoardInfo(boardCode, articleId);
+		return boardService.deleteBoardInfo(VarsqlUtils.getVonnid(req), articleId);
 	}
 
 	@RequestMapping(value = "/{"+VarsqlParamConstants.BOARD_CODE+"}/modify", method = RequestMethod.GET)
@@ -160,9 +169,17 @@ public class BoardController extends AbstractController {
 			, @RequestParam(value = "articleId" , required = true)  long articleId
 			, HttpServletRequest req
 			, ModelAndView mav) throws Exception {
+		boardCode= VarsqlUtils.getVonnid(req);
+
+		BoardResponseDTO dto = boardService.viewBoardInfo(boardCode, articleId);
+
+		if(!dto.isModifyAuth()) {
+			throw new PermissionDeniedException("no permission");
+		}
+
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
-		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(boardService.viewBoardInfo(boardCode, articleId)));
+		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(dto));
 
 		return getModelAndView("/boardWrite", VIEW_PAGE.BOARD, model);
 	}
@@ -172,6 +189,9 @@ public class BoardController extends AbstractController {
 			, @RequestParam(value = "articleId" , required = true)  long articleId
 			, @Valid BoardCommentRequestDTO boardCommentRequestDTO
 			, BindingResult result, HttpServletRequest req, HttpServletResponse res) throws Exception {
+
+		boardCode= VarsqlUtils.getVonnid(req);
+
 		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 
@@ -190,6 +210,7 @@ public class BoardController extends AbstractController {
 	public @ResponseBody ResponseResult commentList(@PathVariable(required = true, name=VarsqlParamConstants.BOARD_CODE) String boardCode
 			,@RequestParam(value = "articleId" , required = true)  long articleId
 			, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boardCode= VarsqlUtils.getVonnid(req);
 
 		return boardService.commentList(boardCode, articleId, HttpUtils.getSearchParameter(req));
 	}
@@ -197,7 +218,9 @@ public class BoardController extends AbstractController {
 	@DeleteMapping(value = "/{"+VarsqlParamConstants.BOARD_CODE+"}/commentDelete")
 	public @ResponseBody ResponseResult commentDelete(@PathVariable(required = true, name=VarsqlParamConstants.BOARD_CODE) String boardCode
 			, @RequestParam(value = "articleId" , required = true)  long articleId
-			,  @RequestParam(value = "commentId" , required = true) long commentId) throws Exception {
+			,  @RequestParam(value = "commentId" , required = true) long commentId, HttpServletRequest req) throws Exception {
+
+		boardCode= VarsqlUtils.getVonnid(req);
 		return boardService.commentDelete(articleId, commentId);
 	}
 

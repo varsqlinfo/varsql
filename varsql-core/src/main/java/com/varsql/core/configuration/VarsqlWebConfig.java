@@ -45,7 +45,7 @@ public class VarsqlWebConfig{
 			initConfig();
 		}catch(Exception e){
 			logger.error(this.getClass().getName(), e);
-			throw new ConfigurationLoadException(e.getMessage(), e);
+			throw new ConfigurationLoadException(e);
 		}
 	}
 
