@@ -68,7 +68,7 @@ public class DBConnectionSpec extends DefaultSpec{
 
     // 권한 있는 db connection 정보 보기.
     public static Specification<DBConnectionEntity> mgmtDbList(String viewid, String keyword) {
-    	return Specification.where(managetAuthDbList(viewid)).and(getDelYn()).and(getUseYn()).and(getVnameOrUrl(keyword));
+    	return Specification.where(managetAuthDbList(viewid)).and(getDelYn()).and(getUseYn()).and(getVname(keyword));
     }
 
     // manager 권한을 가진 db
@@ -82,6 +82,14 @@ public class DBConnectionSpec extends DefaultSpec{
     		}
     	};
     }
+
+	public static Specification<DBConnectionEntity> getVname(String keyword) {
+		return (root, query, cb) -> {
+        	query.orderBy(cb.desc(root.get(DBConnectionEntity.REG_DT)));
+
+            return cb.like(root.get(DBConnectionEntity.VNAME),contains(keyword));
+        };
+	}
 
 
 }

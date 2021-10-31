@@ -3929,17 +3929,40 @@ _ui.SQL = {
 		var _self =this;
 		var allEditorObj = this.allTabSqlEditorObj;
 
+		var currentSqlId = (this.currentSqlEditorInfo ||{}).sqlId;
+
 		var queryCont = {};
 		var sqlIdArr = [];
+
+		var saveItemCount =0;
+
 		for(var key in allEditorObj){
 			var editorObj =allEditorObj[key];
 
 			if(editorObj.item._isChange===true){
 				sqlIdArr.push(key);
-				queryCont[key] = editorObj.editor.getValue();
+
+				var buf = _self.sqlEditorBuffer[key];
+				var contValue = '';
+
+				if(buf.getEditor()){
+					contValue = buf.getEditor().getValue();
+				}else{
+					_self.sqlMainEditor.swapDoc(buf);
+					contValue = _self.sqlMainEditor.getValue();
+				}
+
+				queryCont[key] = contValue;
 				queryCont[key+'_param'] = JSON.stringify(_self.getSqlParamemter(key));
 				queryCont[key+'_cursor'] =JSON.stringify(editorObj.editor.getCursor());
+
+				saveItemCount++;
 			}
+		}
+
+		if(saveItemCount > 1){
+			_self.sqlMainEditor.swapDoc(_self.sqlEditorBuffer[currentSqlId]);
+			_self.sqlMainEditor.focus();
 		}
 
 		if(sqlIdArr.length > 0){
@@ -4809,7 +4832,15 @@ _ui.sqlDataArea =  {
 				lineNumber : {enabled : true}
 			}
 			,headerOptions:{
-				drag:{
+				helpBtn:{
+					enabled : true
+					,title : '컬럼명 editor에 넣기'
+					,click :  function (clickInfo){
+						var item = clickInfo.item;
+						_ui.SQL.addTextToEditorArea('',{type:'column' , header : item});
+					}
+				}
+				,drag:{
 					enabled : true
 				}
 			}
@@ -5609,12 +5640,13 @@ function addColumnPrefix(chkVal, addColumnInfos){
 
 	var chkStr = ' ' +chkVal.toLowerCase()+' ';
 
-	var chkReg = [' select ',' set ',' from ',' where ',' and ',' or '];
+	var chkReg = [' select ',' set ',' from ',' where ',' and ',' or ',' insert ',' values '];
 
-	var regular = /(\s(select|from|where|and|or|on|order|by|group|update|delete|truncate|drop|create)\s)/g;
+	var regular = /(\s(select|from|where|and|or|on|order|by|group|insert|into|values|update|delete|truncate|drop|create)\s)/g;
 
 	var addParamFirst = false;
 	var prefixStr = '';
+
 	for(var i =0 , len = chkReg.length;i <len;i++){
 		var chkItem = chkReg[i];
 		var lastIdx = chkStr.lastIndexOf(chkItem);
@@ -5689,6 +5721,18 @@ function addColumnPrefix(chkVal, addColumnInfos){
 			separator : ', '
 			,format : '{col}'
 		}
+		,'insert' :{
+			separator : ', '
+				,format : '{col}'
+		}
+		,'into' :{
+			separator : ', '
+				,format : '{col}'
+		}
+		,'values' :{
+			separator : ', '
+				,format : '{col}'
+		}
 		,'set' :{
 			separator : ', '
 			,format : '{col}={val}'
@@ -5701,6 +5745,12 @@ function addColumnPrefix(chkVal, addColumnInfos){
 	var revalStr = [];
 	var prefixInfo = prefixMap[prefixStr] || prefixMap['select'];
 
+	chkVal = VARSQL.str.trim(chkVal);
+
+	var lastSemiFlag = chkVal.length == (chkVal.lastIndexOf(',')+1);
+
+	var addLastSemicolon = false;
+
 	for(var i =0; i < headerArr.length; i++){
 		var headerItem = headerArr[i];
 
@@ -5709,6 +5759,11 @@ function addColumnPrefix(chkVal, addColumnInfos){
 			formatStr = prefixInfo.start||'';
 		}else{
 			formatStr = prefixInfo.separator;
+		}
+
+		if(i == 0 && lastSemiFlag && VARSQL.str.trim(formatStr) == ','){
+			formatStr = ' ';
+			addLastSemicolon = true;
 		}
 
 		var addVal = null;
@@ -5750,7 +5805,7 @@ function addColumnPrefix(chkVal, addColumnInfos){
 		}));
 	}
 
-	return revalStr.join('\n');
+	return revalStr.join('\n') + (addLastSemicolon ? ',':'');
 }
 
 }(jQuery, window, document,VARSQL));

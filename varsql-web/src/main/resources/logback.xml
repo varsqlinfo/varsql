@@ -49,8 +49,37 @@
 		</layout>
 	</appender>
 
+	<appender name="sqlErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/sqlError.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/old/sqlError.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30mb</maxFileSize> <!-- kb , mb , gb 로 설정 가능. -->
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory> <!-- 30일 이 자난 로그는 순서 대로 삭제.  -->
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
 	<logger name="appErrorLog" level="info" additivity="false" >
 		<appender-ref ref="appErrorLog" />
+
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+
+	<logger name="sqlErrorLog" level="info" additivity="false" >
+		<appender-ref ref="sqlErrorLog" />
 
 		<if condition='"local".equals("${runtime}")'>
 	        <then>

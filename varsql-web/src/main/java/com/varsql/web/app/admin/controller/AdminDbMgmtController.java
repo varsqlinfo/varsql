@@ -70,6 +70,13 @@ public class AdminDbMgmtController extends AbstractController{
 		return adminServiceImpl.selectDblist(searchParameter);
 	}
 
+	@RequestMapping(value = "/dbNameSearch", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbNameSearch(HttpServletRequest req) throws Exception {
+		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
+
+		return adminServiceImpl.selectDbNameSearch(searchParameter);
+	}
+
 	/**
 	 *
 	 * @Method Name  : dbDriver

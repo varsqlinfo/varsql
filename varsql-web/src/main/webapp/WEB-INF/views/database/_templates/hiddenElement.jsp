@@ -160,7 +160,7 @@
 		<button type="button" class="btn btn-sm btn-default ddl-copy" data-ddl-copy-mode="copy"><spring:message code="copy" /></button>
 	</div>
 	<div  class="wh100-absolute meta-ddl-view">
-		<pre class="user-select-on prettyprint lang-sql" contenteditable="false"></pre>
+		<pre class="user-select-on prettyprint lang-sql" contenteditable="true"></pre>
 		<textarea style="display:none;"></textarea>
 	</div>
 </div>

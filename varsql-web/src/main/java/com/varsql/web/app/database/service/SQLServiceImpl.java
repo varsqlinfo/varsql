@@ -278,9 +278,8 @@ public class SQLServiceImpl{
 			result.addCustoms("errorLine", sqldx);
 			result.setItemOne(tmpSqlSource==null?sqlList.get(0):tmpSqlSource);
 
-			if(VarsqlUtils.isRuntimelocal()) {
-				logger.error("sqlData : {} ", e.getMessage(), e);
-			}
+			LoggerFactory.getLogger("sqlErrorLog").error("sqlData errorLine : {}", sqldx,e);
+
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);

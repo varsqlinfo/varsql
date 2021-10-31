@@ -131,6 +131,15 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
 	}
 
+	public ResponseResult selectDbNameSearch(SearchParameter searchParameter) {
+		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
+				DBConnectionSpec.getVname(searchParameter.getKeyword())
+				, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+			);
+
+			return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
+	}
+
 	/**
 	 *
 	 * @Method Name  : selectDetailObject
@@ -507,5 +516,4 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 		return VarsqlUtils.getResponseResultItemList(list);
 	}
-
 }
