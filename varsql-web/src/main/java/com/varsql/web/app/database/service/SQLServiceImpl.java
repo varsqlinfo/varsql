@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -61,7 +60,7 @@ import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
-import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.common.service.CommonServiceImpl;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
@@ -70,8 +69,6 @@ import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
-import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
-import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.ValidateUtils;
@@ -104,10 +101,8 @@ public class SQLServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 
 	@Autowired
-	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
+	private CommonServiceImpl commonServiceImpl;
 
-	@Autowired
-	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
 
 	/**
 	 *
@@ -230,7 +225,7 @@ public class SQLServiceImpl{
 				}
 			}
 
-			sqlLogInsert(allSqlStatistics);
+			commonServiceImpl.sqlLogInsert(allSqlStatistics);
 
 			result.setItemList(reLst);
 			conn.commit();
@@ -289,7 +284,7 @@ public class SQLServiceImpl{
 
 		long enddt = System.currentTimeMillis();
 
-		saveSqlHistory(SqlHistoryEntity.builder()
+		commonServiceImpl.saveSqlHistory(SqlHistoryEntity.builder()
 				.vconnid(sqlLogInfo.getVconnid())
 				.viewid(sqlLogInfo.getViewid())
 				.startTime(ConvertUtils.longToTimestamp(stddt))
@@ -301,26 +296,6 @@ public class SQLServiceImpl{
 				.build());
 
 		return  result;
-	}
-
-	/**
-	 *
-	 * @Method Name  : saveSqlHistory
-	 * @Method 설명 : sql history 저장.
-	 * @작성일   : 2020. 11. 04.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param stmt
-	 * @param maxRow
-	 * @throws SQLException
-	 */
-	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
-	private void saveSqlHistory(SqlHistoryEntity sqlHistoryEntity) {
-		try {
-			sqlHistoryEntityRepository.save(sqlHistoryEntity);
-		}catch(Throwable e) {
-			logger.error(" sqlData sqlHistoryEntity : ", e);
-		}
 	}
 
 	/**
@@ -470,29 +445,6 @@ public class SQLServiceImpl{
 	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
 	    	JdbcUtils.close(stmt, rs);
-	    }
-	}
-
-	/**
-	 *
-	 * @Method Name  : sqlLogInsert
-	 * @Method 설명 : 사용자 sql 로그 저장
-	 * @작성일   : 2015. 5. 6.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param tmpSqlSource
-	 * @param ssrv
-	 */
-	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
-	private void sqlLogInsert(List<SqlStatisticsEntity> allSqlStatistics) {
-		try{
-			if(allSqlStatistics.size() == 1) {
-				sqlStatisticsEntityRepository.save(allSqlStatistics.get(0));
-			}else if(allSqlStatistics.size() > 1) {
-				sqlStatisticsEntityRepository.saveAll(allSqlStatistics);
-			}
-	    }catch(Exception e){
-	    	logger.error(" sqlLogInsert {}", e.getMessage() , e);
 	    }
 	}
 

@@ -1,6 +1,6 @@
 package com.varsql.web.dto.db;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.varsql.web.model.entity.db.DBGroupEntity;
@@ -25,7 +25,7 @@ import lombok.Setter;
 public class DBGroupRequestDTO{
 	private String groupId;
 
-	@NotNull
+	@NotEmpty
 	@Size(max=255)
 	private String groupName;
 

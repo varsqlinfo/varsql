@@ -1,12 +1,21 @@
 package com.varsql.web.common.service;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.CommUtils;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
+import com.varsql.web.model.entity.sql.SqlHistoryEntity;
+import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
+import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
+import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 
 /**
  *
@@ -28,6 +37,12 @@ public class CommonServiceImpl{
 
 	@Autowired
 	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
+
+	@Autowired
+	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
+
+	@Autowired
+	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
 
 	/**
 	 *
@@ -53,4 +68,46 @@ public class CommonServiceImpl{
 		}
 	}
 
+	/**
+	 *
+	 * @Method Name  : saveSqlHistory
+	 * @Method 설명 : sql history 저장.
+	 * @작성일   : 2020. 11. 04.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @param stmt
+	 * @param maxRow
+	 * @throws SQLException
+	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
+	public void saveSqlHistory(SqlHistoryEntity sqlHistoryEntity) {
+		try {
+			sqlHistoryEntityRepository.save(sqlHistoryEntity);
+		}catch(Throwable e) {
+			logger.error(" sqlData sqlHistoryEntity : ", e);
+		}
+	}
+
+	/**
+	 *
+	 * @Method Name  : sqlLogInsert
+	 * @Method 설명 : 사용자 sql 로그 저장
+	 * @작성일   : 2015. 5. 6.
+	 * @작성자   : ytkim
+	 * @변경이력  :
+	 * @param tmpSqlSource
+	 * @param ssrv
+	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
+	public void sqlLogInsert(List<SqlStatisticsEntity> allSqlStatistics) {
+		try{
+			if(allSqlStatistics.size() == 1) {
+				sqlStatisticsEntityRepository.save(allSqlStatistics.get(0));
+			}else if(allSqlStatistics.size() > 1) {
+				sqlStatisticsEntityRepository.saveAll(allSqlStatistics);
+			}
+	    }catch(Exception e){
+	    	logger.error(" sqlLogInsert {}", e.getMessage() , e);
+	    }
+	}
 }
