@@ -51,14 +51,14 @@ public class DownloadController extends AbstractController {
 
 		VarsqlFileType exportType = downloadInfo.getExportType();
 
-		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim()) ? downloadInfo.getFileName() : "varsql-download"+ exportType.getExtension();
+		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim()) ? downloadInfo.getFileName() : "varsql-download" ;
 
-		downloadName = ValidateUtils.getValidFileName(downloadName);
+		downloadName = ValidateUtils.getValidFileName(exportType.concatExtension(downloadName));
 
 		try(OutputStream os = res.getOutputStream()) {
 
 			if(VarsqlFileType.TEXT.equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
+				VarsqlUtils.setResponseDownAttr(res, req, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
 				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
 			}
 			if(os !=null) os.close();

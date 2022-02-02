@@ -70,6 +70,7 @@
 						<textarea id="mainTemplate" class="wh100"></textarea>
 					</div>
 				</div>
+				<div class="splitter" data-orientation="vertical"></div>
 				<div class="col-xs-5 h100">
 					<div class="sub-cont-title" style="padding-top: 3px;"><button @click="generate()">Check source</button></div>
 					<textarea id="resultCode" class="wh100" style="height:calc(100% - 30px);">{{resultCode}}</textarea>
@@ -95,6 +96,7 @@
 						<div class="col-xs-8 h100">
 							<textarea id="subCodeTemplate" class="wh100"></textarea>
 						</div>
+						<div class="splitter" data-orientation="vertical"></div>
 						<div class="col-xs-4 h100">
 							<pre class="wh100">{{codeDetailInfo.compileValue}}</pre>
 						</div>
@@ -168,6 +170,11 @@
 	    ,methods:{
 
 	        init : function(){
+	        	
+	        	$.pubSplitter('.splitter',{
+					handleSize : 5
+				});
+	        	
 	        	VARSQLCont.init('other' , {});
 	        	this.initEditor();
 	        	this.newItem();

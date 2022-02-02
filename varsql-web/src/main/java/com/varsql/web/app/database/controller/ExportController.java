@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,9 +19,11 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
@@ -68,7 +72,7 @@ public class ExportController extends AbstractController  {
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
 
-		return getModelAndView("/exportMain/spec/specMain", VIEW_PAGE.DATABASE_TOOLS, model);
+		return getModelAndView("/export/specMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}
 
 	/**
@@ -107,7 +111,7 @@ public class ExportController extends AbstractController  {
 	 */
 	@RequestMapping(value="/spec/tableExport", method = RequestMethod.POST)
 	public void tableExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
-		exportServiceImpl.tableSpecExport(preferencesInfo, res);
+		exportServiceImpl.tableSpecExport(preferencesInfo, req, res);
 	}
 
 	/**
@@ -129,7 +133,7 @@ public class ExportController extends AbstractController  {
 
 		model.put("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType()).getServiceMenu());
 
-		return getModelAndView("/exportMain/ddl/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
+		return getModelAndView("/export/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}
 
 	/**
@@ -166,8 +170,72 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/ddl/export", method = RequestMethod.POST)
-	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletResponse res) throws Exception {
-		exportServiceImpl.ddlExport(preferencesInfo, res);
+	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		exportServiceImpl.ddlExport(preferencesInfo, req, res);
+	}
+	
+	/**
+	 * @method  : tableDataExport
+	 * @desc : table data export
+	 * @author   : ytkim
+	 * @date   : 2022. 1. 8. 
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = { "/tableDataExport" }, method = { RequestMethod.GET })
+	public ModelAndView tableDataExport(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req)
+			throws Exception {
+		ModelMap model = mav.getModelMap();
+
+		logger.debug("table data export : {} ", preferencesInfo);
+
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
+		exportServiceImpl.selectExportConfigInfo(preferencesInfo, model);
+
+		return getModelAndView("/export/tableDataExport", VIEW_PAGE.DATABASE_TOOLS, model);
+	}
+	  
+	@PostMapping(value = { "/downloadTableData" })
+	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,
+			HttpServletResponse response) throws Exception {
+
+		this.logger.debug("downloadTableData data export : {} ", preferencesInfo);
+
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
+
+		exportServiceImpl.downloadTableData(preferencesInfo, req, response);
+	}
+
+	@PostMapping(value = { "/downloadTableData2" })
+	@ResponseBody
+	public ResponseResult downloadTableData2(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,
+			HttpServletResponse response) throws Exception {
+
+		this.logger.debug("downloadTableData data export : {} ", preferencesInfo);
+
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
+
+		return exportServiceImpl.downloadTableData2(preferencesInfo, req, response);
+	}
+
+	@PostMapping(value = { "/progressInfo" })
+	@ResponseBody
+	public ResponseResult progress(@RequestParam(value = "requid", required = true) String requestUid,
+			@RequestParam(value = "type", required = true) String type, HttpServletRequest req,
+			HttpServletResponse response) throws Exception {
+
+		String sessAttrKey = HttpSessionConstants.progressKey(requestUid);
+		Object obj = req.getSession(true).getAttribute(sessAttrKey);
+
+		if (obj == "complete") {
+			req.getSession(true).removeAttribute(sessAttrKey);
+		}
+
+		return VarsqlUtils.getResponseResultItemOne(obj);
+
 	}
 
 }

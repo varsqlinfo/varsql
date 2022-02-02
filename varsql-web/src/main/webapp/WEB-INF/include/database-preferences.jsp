@@ -9,7 +9,6 @@
 
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
-<link href="${pageContextPath}/webstatic/css/pub.multiselect.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 
@@ -24,7 +23,8 @@
 <script src="${pageContextPath}/webstatic/js/varsql.db.conts.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.db.api.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tree.js"></script>
-<script src="${pageContextPath}/webstatic/js/pub.multiselect.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.multiselect2.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.splitter.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
@@ -34,5 +34,6 @@
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js"></script>
 
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.defaults.js?version=${pubjs_ver}"></script>
 
 

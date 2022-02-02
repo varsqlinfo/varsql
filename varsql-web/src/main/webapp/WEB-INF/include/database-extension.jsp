@@ -39,5 +39,7 @@
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?v=${varsqlfn:staticResourceVersion('')}"></script>
 
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.defaults.js?version=${pubjs_ver}"></script>
+
 
 

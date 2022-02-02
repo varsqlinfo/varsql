@@ -67,13 +67,19 @@
     <definition name="/database/utils/**" template="/WEB-INF/views/database/utils/_templates/generateMain.jsp">
         <put-attribute name="body" value="/WEB-INF/views/database/utils/{1}.jsp" />
     </definition>
+    
+     <!-- util main layout -->
+	<definition name="tool-main-def" template="/WEB-INF/views/database/tools/_templates/toolMain.jsp">
+	</definition>
+    
+    <!-- export TODO modify  -->
+    <definition name="/database/tools/export/*" extends="tool-main-def">
+        <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}.jsp" />
+    </definition>
 
-    <!-- export main -->
-    <definition name="/database/tools/exportMain/*/*" template="/WEB-INF/views/database/tools/export/{1}/{2}.jsp"></definition>
-
-    <!-- export 하위 페이지. -->
-    <definition name="/database/tools/export/*/*" template="/WEB-INF/views/database/tools/export/_templates/toolsEditMain.jsp">
-        <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}/{2}.jsp" />
+    <!-- export main TODO modify -->
+    <definition name="/database/tools/export/*/*" extends="tool-main-def">
+    	<put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}/{2}.jsp" />
     </definition>
 
     <definition name="/database/extension/**" template="/WEB-INF/views/database/_templates/extensionMain.jsp" >

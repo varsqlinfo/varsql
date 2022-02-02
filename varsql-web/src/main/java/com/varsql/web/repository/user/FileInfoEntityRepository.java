@@ -5,6 +5,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
-public interface FileInfoEntityRepository extends DefaultJpaRepository, JpaRepository<FileInfoEntity, String> {
+public interface FileInfoEntityRepository extends DefaultJpaRepository, JpaRepository<FileInfoEntity, String>, JpaSpecificationExecutor<FileInfoEntity> {
 	@Transactional
 	@Modifying
 	@Query("delete from FileInfoEntity a where a.fileId in :ids")

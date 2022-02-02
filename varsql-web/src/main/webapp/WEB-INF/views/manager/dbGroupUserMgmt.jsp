@@ -76,26 +76,8 @@
 			</div>
 
 			<div class="panel-body">
-				<div class="col-sm-5">
-					<ul id="source" class="form-control" style="width:100%;height:400px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
-				</div>
-				<div class="col-sm-2" style="text-align:center;padding:10px;height:400px;">
-					<div style="margin: 0 auto;">
-						<a href="javascript:;" class="btn_m mb05 item-move" mode="add">
-							<spring:message code="label.add" text="add"/><span class="fa fa-caret-right"></span>
-						</a>
-						<br/>
-						<a href="javascript:;" class="btn_m mb05 item-move" mode="del">
-							<span class="fa fa-caret-left"></span><spring:message code="label.delete" text="del" />
-						</a>
-					</div>
-				</div>
-				<div class="col-sm-5">
-					<ul id="target"  class="form-control" style="width:100%;height:400px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
+				<div class="col-sm-12">
+					<div id="source" style="width:100%;height:400px;"></div>
 				</div>
 			</div>
 		</div>
@@ -137,19 +119,14 @@ VarsqlAPP.vueServiceBean( {
 			});
 
 			_self.selectObj= $.pubMultiselect('#source', {
-				targetSelector : '#target'
-				,addItemClass:'text_selected'
-				,useMultiSelect : true
-				,useDragMove : false
-				,useDragSort : false
-				,sourceItem : {
-					optVal : 'viewid'
-					,optTxt : 'uname'
+				source : {
+					idKey : 'viewid'
+					,nameKey : 'uname'
 					,items : []
 				}
-				,targetItem : {
-					optVal : 'viewid'
-					,optTxt : 'uname'
+				,target : {
+					idKey : 'viewid'
+					,nameKey : 'uname'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){
@@ -199,7 +176,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/comm/userList'}
 				,data : param
 				,success: function(resData) {
-					_self.selectObj.setItem('source', resData.items);
+					_self.selectObj.setSourceItem( resData.items);
 				}
 			})
 		}
@@ -219,7 +196,7 @@ VarsqlAPP.vueServiceBean( {
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMappingList'}
 				,success:function (resData){
 					var result = resData.items;
-		    		_self.selectObj.setItem('target', result);
+		    		_self.selectObj.setTargetItem(result);
 				}
 			});
 		}

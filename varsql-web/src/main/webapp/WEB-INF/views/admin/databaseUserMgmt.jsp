@@ -43,18 +43,7 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body manage-user-detail">
 				<div class="col-sm-12">
-					<ul id="source" class="form-control" style="width:100%;height:200px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
-				</div>
-				<div class="col-sm-12" style="text-align:center;padding:10px;">
-					<a href="javascript:;" class="btn_m mb05 item-move" mode="down"><span class="glyphicon glyphicon-chevron-down"></span><spring:message code="label.add"/></a>
-					<a href="javascript:;" class="btn_m mb05 item-move" mode="up"><span class="glyphicon glyphicon-chevron-up"></span><spring:message code="label.delete"/></a>
-				</div>
-				<div class="col-sm-12">
-					<ul id="target"  class="form-control" style="width:100%;height:200px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
+					<div id="source" style="width:100%;height:430px;"></div>
 				</div>
 			</div>
 			<!-- /.panel-body -->
@@ -83,35 +72,21 @@ VarsqlAPP.vueServiceBean( {
 		}
 		, initPubMultiselect : function (){
 			var _self = this;
-
-			$('.item-move').on('click',function (){
-				var moveItem = [];
-				var mode = $(this).attr('mode');
-				if(mode =='up'){
-					moveItem = _self.selectObj.targetMove()
-				}else{
-					moveItem = _self.selectObj.sourceMove();
-				}
-			});
-
+			
 			this.selectObj= $.pubMultiselect('#source', {
-				targetSelector : '#target'
-				,addItemClass:'text_selected'
-				,useMultiSelect : true
-				,useDragMove : false
-				,useDragSort : false
+				orientation : 'y'
 				,duplicateCheck : true
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
-				,sourceItem : {
-					optVal : 'viewid'
-					,optTxt : 'uname'
+				,source : {
+					idKey : 'viewid'
+					,nameKey : 'uname'
 					,items : []
 				}
-				,targetItem : {
-					optVal : 'viewid'
-					,optTxt : 'uname'
+				,target : {
+					idKey : 'viewid'
+					,nameKey : 'uname'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){
@@ -158,7 +133,10 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,success: function(resData) {
 					_self.managerGridData = resData.items;
-					_self.selectObj.setItem('source', _self.getItemFormatter(resData.items));
+					
+		    		if( _self.managerGridData.length > 0){
+		    			_self.selectObj.setSourceItem(_self.getItemFormatter(resData.items));
+		    		}
 				}
 			})
 		}
@@ -177,9 +155,7 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector: '.manage-user-detail'
 				,data : param
 				,success: function(resData) {
-					var result = resData.items;
-		    		var resultLen = result.length;
-		    		_self.selectObj.setItem('target', _self.getItemFormatter(result));
+		    		_self.selectObj.setTargetItem(_self.getItemFormatter(resData.items));
 				}
 			})
 		}

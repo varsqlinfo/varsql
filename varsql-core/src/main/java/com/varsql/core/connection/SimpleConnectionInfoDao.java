@@ -16,6 +16,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.exception.ConnectionFactoryException;
@@ -25,7 +26,7 @@ import com.vartech.common.crypto.EncryptDecryptException;
 @ConnectionInfoConfig(beanType = BeanType.JAVA)
 public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 
-	private final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+	private final Logger logger = LoggerFactory.getLogger(SimpleConnectionInfoDao.class);
 
 	@Override
 	public ConnectionInfo getConnectionInfo(String connid) {
@@ -56,7 +57,6 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 			connInfo.setConnid(rs.getString("VCONNID"));
 			connInfo.setAliasName(rs.getString("VNAME"));
 			connInfo.setType(rs.getString("VTYPE").toLowerCase());
-			connInfo.setDriver(rs.getString("DRIVER_CLASS"));
 			String urlDirectYn = rs.getString("URL_DIRECT_YN");
 			if ("Y".equals(urlDirectYn)) {
 				connInfo.setUrl(rs.getString("VURL"));
@@ -117,7 +117,9 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 				jarFileList.add(fi);
 			}
 			
-			connInfo.setJdbcDriverList(jarFileList);
+			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(rs.getString("DRIVER_PROVIDER_ID"), rs.getString("DRIVER_CLASS"));
+			jdbcDriverInfo.setDriverFiles(jarFileList);
+			connInfo.setJdbcDriverInfo(jdbcDriverInfo);
 			
 			return connInfo;
 		} catch (EncryptDecryptException e) {

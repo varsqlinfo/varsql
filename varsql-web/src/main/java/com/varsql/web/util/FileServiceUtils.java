@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -24,8 +27,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import com.varsql.core.common.beans.ClientPcInfo;
+import com.varsql.core.common.beans.FileInfo;
+import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.CommUtils;
+import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.web.constants.SavePathType;
 import com.varsql.web.constants.UploadFileType;
@@ -291,5 +297,52 @@ public final class FileServiceUtils {
 		}
 
 		return downFileName;
+	}
+	
+	/**
+	 * @method  : fileInfos
+	 * @desc : file info 구하기
+	 * @author   : ytkim
+	 * @date   : 2022. 1. 15. 
+	 * @param FilePaths
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<FileInfo> getFileInfos(String[] FilePaths) throws IOException{
+		List<FileInfo> driverJarFiles = new ArrayList<>();
+		
+		for (String path : FilePaths) {
+			Resource resource= ResourceUtils.getResource(path);
+			
+			if (resource != null) {
+				FileInfo fi = new FileInfo();
+				fi.setName(resource.getFile().getName());
+				fi.setPath(resource.getFile().getAbsolutePath());
+				fi.setExt(FileUtils.extension(resource.getFile().getName()));
+				driverJarFiles.add(fi);
+			} else {
+				throw new FileNotFoundException("file path not found : "+path);
+			}
+		}
+		return driverJarFiles; 
+	}
+	
+	/**
+	 * @method  : fileInfos
+	 * @desc : file base 정보로 file info 구하기.
+	 * @author   : ytkim
+	 * @date   : 2022. 1. 15. 
+	 * @param fileBaseList
+	 * @return
+	 */
+	public static List<FileInfo> getFileInfos(List<? extends FileBaseEntity> fileBaseList){
+		 return fileBaseList.stream().map(fie->{
+				FileInfo fi = new FileInfo();
+				fi.setName(fie.getFileName());
+				fi.setPath(Paths.get(VarsqlConstants.UPLOAD_PATH, new String[0]).toAbsolutePath().resolve(fie.getFilePath()).normalize().toAbsolutePath().toString());
+				fi.setExt(fie.getFileExt());
+
+				return fi;
+		}).collect(Collectors.toList());
 	}
 }

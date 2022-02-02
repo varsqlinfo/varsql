@@ -51,6 +51,7 @@ VARSQL_LANG = {
 	,'varsql.0028' : '내용을 입력해주세요.'
 	,'varsql.0029' : '파일 업로드후 처리 실행해주세요.'
 	,'varsql.0030' : 'find line:{line}, ch:{ch}'
+	,'varsql.0031' : 'Allow Extension : {accept}'
 
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
@@ -114,6 +115,22 @@ VARSQL_LANG = {
 	,'export' : 'Export'
 	,'refresh' : 'Refresh'
 	,'data.export' : 'Export Data'
+	
+	,'up' : 'up'
+	,'down' : 'down'
+	,'add' : 'add'
+	,'remove' : 'remove'
+	,'all.add' : 'All add'
+	,'all.remove' : 'All remove'
+	,'search' : 'Search'
+	,'search.input' : 'Search word'
+	,'search.message' : '{searchType} Search'
+	,'empty.data' : 'No Data'
+	,'user' : 'User'
+	
+	,'sender' : 'Sender'
+	,'recipient' : 'Recipient'
+	,'complete' : 'Complete'
 
 	,'step.prev' : 'Prev'
 	,'step.next' : 'Next'

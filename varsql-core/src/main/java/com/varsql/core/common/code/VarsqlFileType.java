@@ -20,7 +20,8 @@ public enum VarsqlFileType {
 	,JSON(-1)
 	,XML(-1)
 	,TEXT(-1)
-	,EXCEL(1048576 ,"xlsx");
+	,EXCEL(1048576 ,"xlsx")
+	,ZIP(-1);
 
 	private long limitCount;
 	private String extension;
@@ -36,15 +37,19 @@ public enum VarsqlFileType {
 			extension = this.name();
 		}
 
-		this.extension = "."+extension.toLowerCase();
+		this.extension =extension.toLowerCase();
 	}
 
 	public long getLimitCount() {
 		return limitCount;
 	}
-
+	
 	public String getExtension() {
-		return extension;
+		return this.extension;
+	}
+
+	public String concatExtension(String fileName) {
+		return fileName+"."+this.extension;
 	}
 
 	public static VarsqlFileType getFileType(String ext) {

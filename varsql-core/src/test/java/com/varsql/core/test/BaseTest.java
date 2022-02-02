@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 
@@ -31,7 +32,7 @@ public class BaseTest {
 		connInfo.setAliasName(TEST_CON_UID);
 
 		connInfo.setType(DBType.H2.name());
-		connInfo.setDriver("org.h2.Driver");
+		connInfo.setJdbcDriverInfo(new JDBCDriverInfo("testid", "org.h2.Driver"));
 		connInfo.setUrl("jdbc:h2:file:C:/zzz/resources/varsql");
 		connInfo.setUsername("sa");
 		connInfo.setPassword("sa");

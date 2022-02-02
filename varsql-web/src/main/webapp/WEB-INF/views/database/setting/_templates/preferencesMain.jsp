@@ -18,6 +18,7 @@
 				<div id="preferences_area"></div>
 			</div>
 		</div>
+		<div class="splitter" data-orientation="vertical" data-prev-min-size="10" data-next-min-size="60"></div>
 		<div class="preferences-body padding0 col-xs-9">
 			<div class="preferences-body-header">
 				{{detailItem.desc}}
@@ -46,6 +47,15 @@ VarsqlAPP.vueServiceBean({
 	,methods:{
 		init : function (){
 			var _this =this;
+			
+			$.pubSplitter('.splitter',{
+				handleSize : 8
+				,button : {
+					enabled : true
+					,toggle : true
+				}
+			});
+			
 			var treeItem = [];
 			treeItem.push({id:'top'	,pid:''	,name:'preferences-top'});
 			/*

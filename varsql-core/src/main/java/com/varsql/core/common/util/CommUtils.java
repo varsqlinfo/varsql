@@ -9,14 +9,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 
 public final class CommUtils {
-	private static final Logger logger = LoggerFactory.getLogger(CommUtils.class);
 
 	final static String HOSTNAME;
 	static {

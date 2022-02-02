@@ -8,7 +8,6 @@
 
 </head>
 <c:set var="screenConfigInfo" value="${screen_config_info}"/>
-
 <body class="varsql-main">
 <div class="varsql-menu-wrapper">
 	<tiles:insertAttribute name="header" />
@@ -16,14 +15,14 @@
 <div class="varsql-body-wrapper">
 	<div id="varsqlBodyWrapper" class="wh100" ></div>
 	<div class="main-spliter" data-prev-min-size="60" data-next-min-size="0"></div>
-	<div class="side-container">
+	<div class="side-container wh100" style="width: 0px;">
 		<iframe id="mainArticleFrame" src="" style="width: 100%;height: 100%;border: 0px solid transparent;"></iframe>
 	</div>
 </div>
 
-
 <%@ include file="/WEB-INF/views/database/_templates/hiddenElement.jsp"%>
 </body>
+
 <script>
 
 $(document).ready(function(){
@@ -33,6 +32,7 @@ $(document).ready(function(){
 	opts.boardUrl = '<varsql-app:boardUrl boardCode="${screenConfigInfo.conuid}"/>';
 	VARSQL.ui.create(opts);
 	VARSQL.undrop();
+	
 	//varsqlMain.init();
 });
 
@@ -131,6 +131,11 @@ $(document).ready(function(){
 					<i class="fa fa-dedent" aria-hidden="true" ></i>
 				</button>
 			</li>
+			<li>
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_convertext_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.convertext" />">
+					<i class="fa fa-retweet" aria-hidden="true" ></i>
+				</button>
+			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.format" /> Ctrl+Shift+F">
@@ -210,7 +215,7 @@ $(document).ready(function(){
 		<ul id="data_grid_result_tab" class="sql-result-tab">
 			<li tab_gubun="result" class="on"><a href="javascript:;"><spring:message code="btn.resultarea.tab.grid"/></a></li>
 			<li tab_gubun="columnType"><a href="javascript:;"><spring:message code="btn.resultarea.tab.column"/></a></li>
-			<li tab_gubun="msg"><a href="javascript:;"><span><spring:message code="btn.resultarea.tab.log"/></span><span class="fa fa-file-o log_clear_btn" style="padding-left:5px;"></span></a></li>
+			<li tab_gubun="msg"><a href="javascript:;"><span><spring:message code="btn.resultarea.tab.log"/></span><span class="fa fa-file-o log_clear_btn" title="clear" style="padding-left:5px;"></span></a></li>
 		</ul>
 	</div>
 

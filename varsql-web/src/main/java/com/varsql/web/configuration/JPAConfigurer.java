@@ -77,13 +77,13 @@ public class JPAConfigurer {
 		ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
 
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(ci.getDriver());
+		dataSource.setDriverClassName(ci.getJdbcDriverInfo().getDriverClass());
 		dataSource.setUrl(ci.getUrl());
 		dataSource.setUsername(ci.getUsername());
 		dataSource.setPassword(ci.getPassword());
 
 		logger.debug("=================datasourceconfig info====================");
-		logger.debug(" driver : {}", ci.getDriver());
+		logger.debug(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());
 		logger.debug(" url : {}",ci.getUrl());
 		logger.debug(" username" ,ci.getUsername());
 		logger.debug("=================datasourceconfig info====================");

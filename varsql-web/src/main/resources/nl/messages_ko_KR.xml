@@ -16,6 +16,8 @@
 <entry key="header.menu.file.new">새 파일</entry>
 <entry key="header.menu.file.save">저장</entry>
 <entry key="header.menu.file.allsave">모두 저장</entry>
+<entry key="header.menu.file.import">가져오기...</entry>
+<entry key="header.menu.file.export">내보내기...</entry>
 <entry key="header.menu.file.import_export">가져오기 및 내보내기...</entry>
 <entry key="header.menu.file.newwin">새창보기</entry>
 <entry key="header.menu.file.close">닫기</entry>
@@ -51,7 +53,7 @@
 <entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
 
 <entry key="header.menu.tool.utils">유틸리티</entry>
-<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[DDL 생성하기]]></entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[Table 생성]]></entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">도움말</entry>
@@ -159,6 +161,7 @@
 <entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">스키마를 선택하세요.</entry>
+<entry key="msg.note.arrived">메모가 도착했습니다.</entry>
 
 
 <entry key="msg.select.value">선택된 값</entry>
@@ -183,10 +186,12 @@
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.useyn">사용여부</entry>
 <entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>
+<entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
 <entry key="admin.form.db.lazyloadyn">Async 로드</entry>
 <entry key="admin.form.db.basetableyn">Base 테이블 사용여부</entry>
+<entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
@@ -195,6 +200,7 @@
 <entry key="admin.form.db.minidle">Min Idle</entry>
 <entry key="admin.form.db.timeout">Timeout</entry>
 <entry key="admin.form.db.exportcount">내보내기 카운트</entry>
+<entry key="admin.form.db.usecolumnlabel">ResultSet 칼럼라벨 사용 여부</entry>
 
 <entry key="admin.userlist.search.head">사용자 목록</entry>
 <entry key="admin.managerlist.head">매니저 목록</entry>
@@ -229,6 +235,8 @@
 <entry key="manage.glossary.word_en">영문명</entry>
 <entry key="manage.glossary.word_abbr">약어명</entry>
 <entry key="manage.glossary.desc">설명</entry>
+<entry key="manage.glossary.word_type">데이터 타입</entry>
+<entry key="manage.glossary.word_length">길이</entry>
 
 <entry key="manage.dbgroup.nm">그룹명</entry>
 <entry key="manage.dbgroup.mapping">DB 그룹맵핑</entry>

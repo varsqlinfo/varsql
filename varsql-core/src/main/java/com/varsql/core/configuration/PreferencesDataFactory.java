@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.beans.pref.AbstractPreferences;
 import com.varsql.core.configuration.beans.pref.PreferencesContextMenu;
+import com.varsql.core.configuration.beans.pref.PreferencesConvertText;
 import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -32,7 +33,8 @@ public class PreferencesDataFactory{
 	
 	
 	private enum PREFERENCES_FILE {
-		CONTEXT_MENU("contextMenu.xml", PreferencesContextMenu.class);
+		CONTEXT_MENU("contextMenu.xml", PreferencesContextMenu.class)
+		,CONVERT_TEXT("convertText.xml", PreferencesConvertText.class);
 		
 		private String fileName;
 		private Class<?> beanClass;

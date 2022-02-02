@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT preferences (propItems*)>
+
+<!ATTLIST preferences key CDATA #REQUIRED>
+
+<!ELEMENT propItems (key, name, code)>
+
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT code (#PCDATA)>

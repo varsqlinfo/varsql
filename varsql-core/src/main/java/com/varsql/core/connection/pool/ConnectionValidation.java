@@ -49,10 +49,10 @@ public class ConnectionValidation {
 				if(pathUrl==null){
 					ResourceBundle rb = ResourceBundle.getBundle(prop_name);
 
-				    Iterator iter = rb.keySet().iterator();
+				    Iterator<String> iter = rb.keySet().iterator();
 				    String tmpKey = "";
 				    while (iter.hasNext()) {
-				      tmpKey = (String)iter.next();
+				      tmpKey = iter.next();
 				      props.put(tmpKey, rb.getString(tmpKey));
 				    }
 				    return ;

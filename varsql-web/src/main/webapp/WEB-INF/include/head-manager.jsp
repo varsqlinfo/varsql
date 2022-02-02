@@ -28,7 +28,7 @@
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/pub.multiselect.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/pub.multiselect2.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.splitter.js?version=${pubjs_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
@@ -45,3 +45,5 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
+
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.defaults.js?version=${pubjs_ver}"></script>

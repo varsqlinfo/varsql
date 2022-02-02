@@ -1,8 +1,6 @@
 package com.varsql.web.app.admin.service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,24 +8,23 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.PathType;
-import com.varsql.core.common.util.ClassLoaderUtils;
-import com.varsql.core.common.util.ResourceUtils;
+import com.varsql.core.common.util.JdbcDriverLoader;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.common.service.FileUploadService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.db.DBTypeDriverProviderRequestDTO;
 import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
-import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.repository.db.DBTypeDriverEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverProviderRepository;
@@ -194,32 +191,23 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 	    StringBuffer errorMsg = new StringBuffer();
 	    
 		try {
-			List<URL> resources = new ArrayList<>();			
+			List<FileInfo> driverJarFiles;
+			
 			if(PathType.PATH.equals(PathType.getPathType(dto.getPathType()))){
-				String[] pathArr = dto.getPathType().split(";");
-				
-				for (String pathStr : pathArr) {
-					Resource resource= ResourceUtils.getResource(pathStr);
-					
-					if(resource != null) {
-						resources.add(resource.getURL());
-					}else {
-						errorMsg.append(pathStr).append(";");
-					}
-				}
+				driverJarFiles = FileServiceUtils.getFileInfos(dto.getDriverPath().split(";"));
 			}else {
-				List<FileInfoEntity> driverJarFiles= fileInfoEntityRepository.findByFileContId(entity.getDriverProviderId());
-				
-				for(FileInfoEntity fie : driverJarFiles) {
-					try {
-						resources.add(FileServiceUtils.getFileInfoToURL(fie));
-					}catch (Exception e) {
-						errorMsg.append(fie.getFilePath()).append(";");
-					}
-				}
+				driverJarFiles = FileServiceUtils.getFileInfos(this.fileInfoEntityRepository.findByFileContId(entity.getDriverProviderId()));
 			}
 			
-			ClassLoaderUtils.getJdbcDriver(dto.getDriverClass(), resources.toArray(new URL[0]));
+			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriverProviderId(), dto.getDriverClass());
+			jdbcDriverInfo.setDriverFiles(driverJarFiles);
+
+			if (JdbcDriverLoader.checkDriver(jdbcDriverInfo) != null) {
+				resultObject.setResultCode(VarsqlAppCode.SUCCESS);
+			} else {
+				resultObject.setMessage("driver null");
+				resultObject.setResultCode(VarsqlAppCode.ERROR);
+			}
 			
 			resultObject.setResultCode(VarsqlAppCode.SUCCESS);
 		} catch (ClassNotFoundException e) {

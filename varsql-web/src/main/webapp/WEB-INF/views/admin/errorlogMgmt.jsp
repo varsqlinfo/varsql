@@ -25,8 +25,8 @@
 						<label style="float:left; margin-right: 5px;">
 							<select v-model="searchCatg" class="form-control ">
 								<option	value="title"><spring:message code="admin.errorlog.title" /></option>
-								<option value="type"><spring:message code="admin.errorlog.type" /></option>
 								<option value="cont"><spring:message code="admin.errorlog.cont" /></option>
+								<option value="type"><spring:message code="admin.errorlog.type" /></option>
 								<option	value="server"><spring:message code="admin.errorlog.server" /></option>
 							</select>
 						</label>
@@ -47,25 +47,25 @@
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
-								<col style="width:70px;">
-								<col style="width:80px;">
 								<col style="width:*;">
-								<col style="width:130px;">
+								<col style="width:80px;">
+								<col style="width:160px;">
+								<col style="width:85px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
+									<th class="text-center"><spring:message	code="admin.errorlog.title" /></th>
 									<th class="text-center"><spring:message	code="admin.errorlog.server" /></th>
 									<th class="text-center"><spring:message	code="admin.errorlog.type" /></th>
-									<th class="text-center"><spring:message	code="admin.errorlog.title" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
 
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')" @click="itemView(item)">
+									<td :title="item.excpTitle"><div class="text-ellipsis ellipsis0">{{item.excpTitle}}</div></td>
 									<td :title="item.serverId"><div class="text-ellipsis ellipsis0">{{item.serverId}}</div></td>
 									<td :title="item.excpType"><div class="text-ellipsis ellipsis0">{{item.excpType}}</div></td>
-									<td :title="item.excpTitle"><div class="text-ellipsis ellipsis0">{{item.excpTitle}}</div></td>
 									<td>{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">

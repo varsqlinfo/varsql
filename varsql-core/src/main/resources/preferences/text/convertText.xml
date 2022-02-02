@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE preferences SYSTEM  "../../dtd/convert.text.dtd">
+
+<preferences key="main.converttext.sqleditor">
+	<propItems>
+		<key>single</key>
+		<name>(')Single</name>
+		<code><![CDATA[
+{{#each datas}}
+{{addChar @first '' ',' }} '{{text}}' 
+{{/each }}
+		]]></code>
+	</propItems>
+	
+	<propItems>
+		<key>double</key>
+		<name>(")Double</name>
+		<code><![CDATA[
+{{#each datas}}
+{{addChar @first '' ','}} "{{text}}"
+{{/each }}
+		]]></code>
+	</propItems>
+	
+	<propItems>
+		<key>javascript</key>
+		<name>Javascript</name>
+		<code><![CDATA[
+var strArr = [];
+{{#each datas}}
+strArr.push(' {{text}} ');
+{{/each }}
+		]]></code>
+	</propItems>
+	
+	<propItems>
+		<key>java</key>
+		<name>Java</name>
+		<code><![CDATA[
+StringBuffer sb = new StringBuffer();
+{{#each datas}}
+sb.append(" {{text}} ");
+{{/each }}
+		]]></code>
+	</propItems>
+	
+	<propItems>
+		<key>direct</key>
+		<name>Direct</name>
+		<code><![CDATA[
+{{#each datas}}
+{{addChar @first '' ','}} '{{text}}'
+{{/each }}
+		]]></code>
+	</propItems>
+	
+</preferences>

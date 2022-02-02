@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
+import com.vartech.common.utils.StringUtils;
 
 public class ImportJsonData extends AbstractImportData{
 
@@ -52,15 +53,15 @@ public class ImportJsonData extends AbstractImportData{
 
 	        				valueToken = parser.currentToken();
 
-	        				if(valueToken==null) {
-    	        				rowInfo.put(fieldName, null);
-    	        			}else {
-    	        				if(valueToken.isNumeric()) {
-    		        				rowInfo.put(fieldName, parser.getNumberValue());
-    		        			}else{
-    		        				rowInfo.put(fieldName, parser.getText());
-    		        			}
-    	        			}
+							if (valueToken == JsonToken.VALUE_NULL || valueToken == null) {
+								rowInfo.put(fieldName, null);
+							} else if (valueToken.isNumeric()) {
+								rowInfo.put(fieldName, parser.getNumberValue());
+							} else if (valueToken.isBoolean()) {
+								rowInfo.put(fieldName, parser.getBooleanValue());
+							} else {
+								rowInfo.put(fieldName, parser.getText());
+							}
     					}
 
 	        			importDataHandler.handler(rowInfo);
@@ -97,13 +98,25 @@ public class ImportJsonData extends AbstractImportData{
 						fieldName = parser.getCurrentName();
 
 						parser.nextValue();
+						
+						String attrVal = parser.getText(); 
 
-        				if("name".equals(fieldName)) {
-        					gci.setName(parser.getText());
-        				}else if("type".equals(fieldName)) {
-        					gci.setType(parser.getText());
-        				}
+						if ("name".equals(fieldName)) {
+							gci.setName(attrVal);
+						} else if ("type".equals(fieldName)) {
+							gci.setType(attrVal);
+						} else if ("number".equals(fieldName)) {
+							gci.setNumber(Boolean.parseBoolean(attrVal));
+						} else if ("lob".equals(fieldName)) {
+							gci.setLob(Boolean.parseBoolean(attrVal));
+						} else if ("alias".equals(fieldName)) {
+							gci.setAlias(attrVal);
+						}
 					}
+					
+					if(StringUtils.isBlank(gci.getAlias())) {
+			        	gci.setAlias(gci.getName());
+			        }
 
 					columns.add(gci);
 	        	}

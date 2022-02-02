@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -13,8 +12,8 @@ import org.springframework.core.io.Resource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionContext;
-import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.ConfigurationException;
 import com.vartech.common.crypto.password.PasswordType;
 import com.vartech.common.utils.VartechUtils;
@@ -207,8 +206,8 @@ public class Configuration extends AbstractConfiguration{
 			vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
 			vConInfo.setAliasName(jsonInfo.get("name").asText(""));
 			vConInfo.setType(jsonInfo.get("name").asText("local"));
-			vConInfo.setDriver(jsonInfo.get("driver").asText("org.h2.Driver"));
-			vConInfo.setUrl(jsonInfo.get("url").asText("org.h2.Driver").replace("#resourePath#", getInstallRoot()));
+			
+			vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
 			vConInfo.setUsername(jsonInfo.get("username").asText(""));
 			vConInfo.setPassword(jsonInfo.get("password").asText(""));
 			vConInfo.setMax_active(jsonInfo.get("max_active").asInt(10));
@@ -216,6 +215,9 @@ public class Configuration extends AbstractConfiguration{
 			vConInfo.setConnection_opt(jsonInfo.get("connection_option").asText(""));
 			vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
 			vConInfo.setTest_while_idle(jsonInfo.get("test_while_idle").asText());
+			
+			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo("base", jsonInfo.get("driver").asText("org.h2.Driver"));  
+		    this.vConInfo.setJdbcDriverInfo(jdbcDriverInfo);
 
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);

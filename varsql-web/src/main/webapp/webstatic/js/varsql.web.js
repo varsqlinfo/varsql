@@ -361,7 +361,7 @@ _$base.log={
 		}
 	}
 };
-
+var _currentAjaxUid;
 var pageReloadCheckFlag = false;
 function fnReqCheck(data ,opts){
 
@@ -436,8 +436,10 @@ var $$csrf_param = $("meta[name='_csrf_parameter']").attr("content") ||'';
 /**
  * ajax 요청
  */
+ var ALL_REQ_STATUS = {};
 _$base.req ={
 	isConnectError : false
+
 	,ajax:function (option){
 		var _this =this;
 		var urlObj = option.url;
@@ -457,15 +459,31 @@ _$base.req ={
 		if(option.dataType == 'jsonp'){
 			option.timeout = option.timeout || 10000;
 		}
-		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option);
+		
+		var ajaxUid = _$base.generateUUID();
+		
+		ALL_REQ_STATUS[ajaxUid] = true;
+		
+		_currentAjaxUid = ajaxUid; 
+		
+		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option, (option.ignoreUid !==true ? {data: {_requid_ : ajaxUid}} : {}) );
+		
+		var cancelFlag = false; 
 
 		ajaxOpt.beforeSend = function (xhr){
 			xhr.setRequestHeader($$csrf_header, $$csrf_token);
 			xhr.setRequestHeader('WWW-Authenticate', 'Basic realm=varsql');
 
 			if($(loadSelector).length > 0){
+				
 				$(loadSelector).centerLoading({
 					contentClear:false
+					,enableLoadSelectorBtn : option.enableLoadSelectorBtn
+					,callback : function (){
+						cancelFlag =true; 
+						//xhr.abort();
+						databaseReqCancel(ajaxUid);
+					} 
 				});
 			}
 
@@ -475,6 +493,10 @@ _$base.req ={
 		}
 
 		ajaxOpt.error = function (xhr){
+			if(cancelFlag){
+				return ;
+			}
+			
 			if (xhr.readyState == 4) {
 				// xhr.status , xhr.statusText check
 			}else if (xhr.readyState == 0) { // connection refused , access denied
@@ -515,10 +537,12 @@ _$base.req ={
 		}
 
 		$.ajax(ajaxOpt).done(function (xhr){
+			delete ALL_REQ_STATUS[ajaxUid];
 			if(loadSelector){
 				$(loadSelector).centerLoadingClose();
 			}
 		}).fail(function (xhr){
+			delete ALL_REQ_STATUS[ajaxUid];
 			if(loadSelector) {
 				$(loadSelector).centerLoadingClose();
 			}
@@ -681,10 +705,36 @@ _$base.req ={
 	}
 };
 
+function databaseReqCancel(reqUid){
+	reqUid =  reqUid|| _currentAjaxUid;
+	
+	if(!_$base.isBlank(reqUid)){
+		_$base.req.ajax({
+			url : {type:VARSQL.uri.database, url:'/reqCancel'}
+			,ignoreUid : true
+			,data:{
+				_requid_ : reqUid
+				,conuid : ($varsqlConfig||{}).conuid
+			}
+			,success:function (resData){
+			}
+		})
+	}
+}
 
 $(window).on("beforeunload",function(){
 	_$base.socket.close();
+	
+	var reqKeys= []; 
+	for(var key in ALL_REQ_STATUS){
+		reqKeys.push(key);
+	};
+	if(reqKeys.length > 0){
+		databaseReqCancel(reqKeys.join(','));
+	}
 })
+
+
 
 _$base.logout = function (callback){
 	if(_$base.isFunction(callback)){
@@ -796,12 +846,14 @@ jQuery.fn.centerLoading = function(options) {
 		bgColor : '#e8e8e8',
 		loadingImg : _$base.url('/webstatic/css/images/loading.gif'),
 		cursor:	'wait',
-		contentClear : false
+		contentClear : false,
+		enableLoadSelectorBtn :false,
+		callback : false
 	}
 
 	var id,w,h;
 
-	var config = $.extend({},this.config, options);
+	var config = $.extend({}, this.config, options);
 	id = this.attr('id');
 
 	w = config.width==0?this.width():config.width;
@@ -814,24 +866,41 @@ jQuery.fn.centerLoading = function(options) {
 	loadStr +='<div style="position:absolute;background: '+config.bgColor+';opacity: 0.5; width:100%; height:100%;z-index:1;"></div>';
 	if(config.content){
 		if(config.centerYn=='Y'){
-			loadStr +='<div style="z-index:10;margin: 0;position: absolute; top: 40%;left: 50%;transform: translate(-50%, -50%);">'+ config.content+'</div>';
+			loadStr +='<div style="z-index:10; text-align:center; margin: 0; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);">'+ config.content+'</div>';
 		}else{
 			loadStr += config.content;
 		}
 	}else{
-		loadStr +='<div style="z-index:10;position: absolute;top: 40%;left: 50%;transform: translate(-50%, -50%);"><img src="'+config.loadingImg+'"/></div>';
+		loadStr +=' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="'+config.loadingImg+'"/> ';
+		
+		if(config.enableLoadSelectorBtn===true){
+			loadStr +='<div style="height: 35px;line-height: 35px;"><a href="javascript:;" class="center-loading-btn _loadSelectorCancelBtn">Cancel</a></div>';
+		}
+		
+		loadStr +='</div>';
 	}
 	loadStr +='</div>';
-
+	
 	if(!config.contentClear){
 		this.prepend(loadStr);
 	}else{
-		this.html(loadStr);
+		this.empty().html(loadStr);
+	}
+	
+	if(config.enableLoadSelectorBtn===true){
+		var centerLoadingEle = $(this); 
+		this.find('._loadSelectorCancelBtn').on('click', function (e){
+			if(_$base.isFunction(config.callback)){
+				config.callback();
+			}else{
+				centerLoadingEle.find('.centerLoading').remove();
+			}
+		})
 	}
 
 	var cssPosition = this.css('position');
 
-	if (cssPosition != 'relative' &&  cssPosition != 'absolute') {
+	if (cssPosition != 'fixed' && cssPosition != 'relative' &&  cssPosition != 'absolute') {
 		this.css('position','relative');
 		var heightVal = this.css('height') ||'';
 		heightVal = heightVal.replace('px','');
@@ -948,6 +1017,18 @@ _$base.unload =function (mode){
 			if(keyCode==72){ // ctrl+h
 				return false;
 			}
+			if(keyCode==82){ // ctrl+r
+				return false;
+			}
+		}
+		
+		if(e.altKey){
+			if(keyCode==37){ // alt+left
+				return false;
+			}
+			if(keyCode==39){ // alt+right
+				return false;
+			}
 		}
 
 		if (keyCode === 122) {
@@ -978,6 +1059,7 @@ _$base.unload =function (mode){
 			}
 
 			if(mode =='refresh'){
+				databaseReqCancel();
 				location.reload();
 				return false;
 			}
@@ -990,6 +1072,7 @@ _$base.unload =function (mode){
 
 				if(mode=='top'){
 					if(window.userMain) {
+						databaseReqCancel();
 						window.userMain.pageRefresh();
 						return false;
 					}
@@ -1000,6 +1083,7 @@ _$base.unload =function (mode){
 						top.userMain.viewLoadMessage();
 					}
 				}
+				databaseReqCancel();
 				location.reload();
 	        }
 	    }

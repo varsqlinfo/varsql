@@ -1,10 +1,12 @@
 package com.varsql.web.app.database.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -25,8 +28,10 @@ import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.BlockingUserException;
 import com.varsql.core.exception.VarsqlAccessDeniedException;
+import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
+import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.controller.AbstractController;
@@ -71,6 +76,9 @@ public class DatabaseController extends AbstractController {
 	@Autowired
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
 	private CacheManager cacheManager;
+	
+	@Autowired
+	private SQLServiceImpl sQLServiceImpl;
 
 
 	@RequestMapping(value={"/","/main"}, method = RequestMethod.GET)
@@ -244,5 +252,19 @@ public class DatabaseController extends AbstractController {
 	public @ResponseBody ResponseResult connTabInfo(DBConnTabRequestDTO dbConnTabRequestDTO, HttpServletRequest req) throws Exception {
 		dbConnTabRequestDTO.setCustom(HttpUtils.getServletRequestParam(req));
 		return databaseServiceImpl.connTabInfo(dbConnTabRequestDTO);
+	}
+	
+	@RequestMapping(value =  "/reqCancel", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseResult connectionCancel(@RequestParam(value = "_requid_", required = true) String requestUid,
+			@RequestParam(value = "conuid", required = true) String conuid, HttpServletRequest req) throws Exception {
+				
+		String [] reqUid = requestUid.split(",");
+		
+		for (int i = 0; i < reqUid.length; i++) {
+			SqlExecuteManager.getInstance().cancelStatementInfo(reqUid[i]);
+		}
+		
+		return VarsqlUtils.getResponseResultItemOne("");
 	}
 }

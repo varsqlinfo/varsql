@@ -48,7 +48,7 @@ def def_build= [
 	dir : 'target'
 ]
 
-ext.varsqlVersion = '1.1.14'
+ext.varsqlVersion = '1.1.15'
 
 //소스 분석.
 apply plugin: 'org.sonarqube'
@@ -166,7 +166,7 @@ subprojects {
 		)
 
 		implementation( // apache.commons
-			[ group: 'org.apache.commons' , name: 'commons-dbcp2' , version: '2.2.0']
+			[ group: 'org.apache.commons' , name: 'commons-dbcp2' , version: '2.9.0']
 			,[ group: 'org.apache.commons' , name: 'commons-collections4' , version: '4.4']
 			,[ group: 'org.apache.commons' , name: 'commons-lang3' , version: '3.9']
 			,[ group: 'org.apache.commons' , name: 'commons-csv' , version: '1.7']
@@ -187,7 +187,7 @@ subprojects {
 
 		implementation( // log
 			[ group: 'org.slf4j' , name: 'slf4j-api' , version: def_version.slf4j]
-			,[ group: 'ch.qos.logback' , name: 'logback-classic' , version: '1.2.3']
+			,[ group: 'ch.qos.logback' , name: 'logback-classic' , version: '1.2.9']
 			,[ group: 'org.codehaus.janino' , name: 'janino' , version: '3.0.12']
 		)
 
@@ -274,7 +274,7 @@ project(':varsql-web') {
 	apply plugin: 'io.spring.dependency-management'
 
     dependencies {
-        compile project(':varsql-core')
+        implementation project(':varsql-core')
 
         implementation(
 			[group: 'org.mapstruct', name: 'mapstruct', version: project.property('mapstructVersion')]

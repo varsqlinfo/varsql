@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.util.ClassLoaderUtils;
+import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
@@ -161,7 +161,6 @@ public final class SQLManager {
 	private DataSource dataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
 		BasicDataSource dataSource = new BasicDataSource();
 
-		dataSource.setDriverClassName(connInfo.getDriver());
 		dataSource.setUrl(connInfo.getUrl());
 		dataSource.setUsername(connInfo.getUsername());
 		dataSource.setPassword(connInfo.getPassword());
@@ -181,14 +180,14 @@ public final class SQLManager {
 		dataSource.setMinEvictableIdleTimeMillis(-1);
 		dataSource.setPoolPreparedStatements(true);
 
-		Driver dbDriver =ClassLoaderUtils.getJdbcDriver(connInfo.getDriver(), connInfo.getJdbcDriverList());
-	    if(dbDriver != null) {
-	    	logger.info("jdbc driver load success");
-	    	dataSource.setDriver(dbDriver);
-	    }else {
-	    	logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverList());
-	    	throw new  ConnectionException("jdbc driver load fail : "+ connInfo.getJdbcDriverList());
-	    }
+		Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
+	    if (dbDriver != null) {
+	      logger.info("jdbc driver load success");
+	      dataSource.setDriver(dbDriver);
+	    } else {
+	      logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
+	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
+	    } 
 
 		return dataSource;
 	}

@@ -20,6 +20,7 @@ import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
 /**
@@ -166,4 +167,15 @@ public class DatabasePreferencesController extends AbstractController  {
 		return preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 	}
 
+	
+	@RequestMapping(value = { "/convertTextSetting" }, method = { RequestMethod.GET })
+	@ResponseBody
+	public ResponseResult convertTextSetting(PreferencesRequestDTO preferencesInfo) throws Exception {
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.CONVERT_TEXT.key());
+		String prefVal = this.preferencesServiceImpl.selectPreferencesInfo(preferencesInfo);
+
+		return VarsqlUtils.getResponseResultItemOne((prefVal == null)
+				? PreferencesDataFactory.getInstance().getDefaultValue(PreferencesConstants.PREFKEY.CONVERT_TEXT.key())
+				: prefVal);
+	}
 }

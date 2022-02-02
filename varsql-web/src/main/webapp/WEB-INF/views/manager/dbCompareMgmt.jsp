@@ -132,10 +132,6 @@
 								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
 							</div>
 							<div id="compareResultArea" class="panel-body" style="height:380px;overflow:auto;padding:0px;border:1px solid #ddd;">
-<style>
-.result-table{
-}
-</style>
 <div>
 	<h4 class="text-center">---------- <spring:message code="compare.result" text="비교결과"/> ---------</h4>
 	<table style="width:100%;border:1px solid #000000;border-collapse: collapse;">
@@ -166,7 +162,7 @@
 		</tr>
 	</table>
 </div>
-<pre style="margin: 0px;margin-top:6px;"><div v-html="resultReport" :title="compareResult"></div></pre>
+<pre style="margin: 0px;margin-top:6px;white-space: pre-wrap;"><div v-html="resultReport" :title="compareResult"></div></pre>
 							</div>
 						</div>
 					</div>
@@ -219,12 +215,11 @@
 </div>
 <!-- /.row -->
 
-
 <script id="downloadTemplate" type="text/varsql-template">
 <!DOCTYPE html>
 <html>
 <head>
-<title>db compare result</title>
+<title>{{sourceSchema}} Compare result</title>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -408,15 +403,11 @@ VarsqlAPP.vueServiceBean( {
 			})
 
 			$.pubSplitter('.main-spliter',{
-				mode : 'simple'			// wrapper
-				,orientation: 'vertical'
-				,handleSize : 10
-				,initAutoSize : true
+				handleSize : 8
 				,border : false
-				,useButton : true		// 한번에 이동 버튼 사용유무
-				,minSize: 50				// default pixel
-				,percent: {vertical : true, horizontal : true} //size percent 사용여부
-				,useHelper : true		// 위치 조정시 helper 사용여부.
+				,button : {
+					enabled : true
+				}
 				,stop:function (){
 					$(window).resize();
 				}
@@ -1442,7 +1433,7 @@ VarsqlAPP.vueServiceBean( {
 
 			var params ={
 				exportType :'text'
-				,fileName : 'dbCompareResult.html'
+				,fileName :this.currentObject.sourceSchema +'-DB Compare Result.html'
 				,content : VARSQLTemplate.render.html($('#downloadTemplate').html(), {
 					sourceSchema : this.currentObject.sourceSchema
 					,targetSchema : this.currentObject.targetSchema

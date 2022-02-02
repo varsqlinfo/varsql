@@ -150,10 +150,9 @@ Handlebars.registerHelper("javaType", function(dbType, options) {
 /**
  * 문자를 추가
  * @method addChar
- * @param {Boolean, Number} condition value
- * @param {String} true value
- * @param {String} false value
- * @param {options}
+ * @param {Boolean, Number} booleanVal 	// condition
+ * @param {String} firstStr	// true string
+ * @param {String} otherStr	// false string
  * @returns {String}
  */
 Handlebars.registerHelper("addChar", function(condVal, firstStr, otherStr, options) {
@@ -411,10 +410,13 @@ VARSQLTemplate.render ={
 	 * @method html
 	 * @description html template render
 	 */
-	html : function (template , item , errorHandler){
+	html : function (template, item, errorHandler){
 		try{
 			var template = Handlebars.compile(template);
-	        return template(item);
+	        var _ns = item['$namespace$'] || ''; 
+
+			delete item['$namespace$'];
+			return template(item , {data : {'namespace' : _ns} });
         }catch(e){
         	if(errorHandler){
         		errorHandler(e);
@@ -428,8 +430,11 @@ VARSQLTemplate.render ={
 	 */
 	,text : function (template, item, errorHandler){
 		try{
-			var template = Handlebars.compile(template, {noEscape :true});
-	        return template(item);
+			var template = Handlebars.compile(template, {noEscape:true});
+			var _ns = item['$namespace$'] || ''; 
+
+			delete item['$namespace$'];
+			return template(item , {data : {'namespace' : _ns} });
         }catch(e){
         	if(errorHandler){
         		errorHandler(e);
@@ -441,7 +446,7 @@ VARSQLTemplate.render ={
 	 * @method generateSource
 	 * @description template object render
 		templateInfo =
-		main: "insert into {{table.name}} ({{columnName}} )↵values( {{columnValue}} );"
+		main: "insert into {{table.name}} ({{columnName}} )?values( {{columnValue}} );"
 		,name: "insert"
 		,propItems: [
 			code: "{{~#columns~}}	{{addChar @index ','}}{{name}} {{/columns}}"

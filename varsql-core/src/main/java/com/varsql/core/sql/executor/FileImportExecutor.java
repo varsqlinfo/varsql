@@ -20,6 +20,7 @@ import com.varsql.core.data.importdata.ImportXmlData;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
+import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 
 /**
@@ -92,7 +93,10 @@ public class FileImportExecutor extends UpdateExecutor{
 
 					for (int i = 0; i < columnArr.length; i++) {
 						ExportColumnInfo eci = columnArr[i];
-						statement.setObject(i+1, rowInfo.get(eci.getName()));
+						
+						//SQLDataType.getCode(eci.getType()).setParameter(this.statement,i + 1, rowInfo.get(eci.getAlias()));
+						
+						statement.setObject(i+1, rowInfo.get(eci.getAlias()));
 					}
 
 					statement.addBatch();

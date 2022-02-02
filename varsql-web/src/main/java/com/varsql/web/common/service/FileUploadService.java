@@ -86,10 +86,10 @@ public class FileUploadService {
 		return fileInfos;
 	}
 
-	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String cotentId, boolean addExtensionSuffix)
+	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String contentId, boolean addExtensionSuffix)
 			throws IllegalStateException, IOException {
 
-		String filePath = FileServiceUtils.getSaveRelativePath(fileType, cotentId);
+		String filePath = FileServiceUtils.getSaveRelativePath(fileType, contentId);
 
 		// 파일 원본명
 		String fileName = FileUtils.normalize(mfileInfo.getOriginalFilename());

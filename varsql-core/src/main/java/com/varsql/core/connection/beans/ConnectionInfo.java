@@ -2,13 +2,11 @@ package com.varsql.core.connection.beans;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
-import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.util.CommUtils;
 
 
@@ -19,7 +17,6 @@ public class ConnectionInfo implements Serializable {
 	private String connid;
 	private String aliasName;
 	private String type;
-	private String driver;
 	private String url;
 	private String username;
 
@@ -38,7 +35,7 @@ public class ConnectionInfo implements Serializable {
 	private Map pool_opt;
 	private DataSource datasource;
 
-	private List<FileInfo> jdbcDriverList;
+	private JDBCDriverInfo jdbcDriverInfo;
 
 	public String getConnid() {
 		return connid;
@@ -62,14 +59,6 @@ public class ConnectionInfo implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getDriver() {
-		return driver;
-	}
-
-	public void setDriver(String driver) {
-		this.driver = driver;
 	}
 
 	public String getUrl() {
@@ -203,6 +192,14 @@ public class ConnectionInfo implements Serializable {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+	
+	public JDBCDriverInfo getJdbcDriverInfo() {
+		return jdbcDriverInfo;
+	}
+
+	public void setJdbcDriverInfo(JDBCDriverInfo jdbcDriverInfo) {
+		this.jdbcDriverInfo = jdbcDriverInfo;
+	}
 
 
 	@Override
@@ -215,7 +212,6 @@ public class ConnectionInfo implements Serializable {
 	    result.append(" connid: ").append(connid).append(NEW_LINE);
 	    result.append(" aliasName: ").append(aliasName).append(NEW_LINE);
 	    result.append(" type: " ).append( type ).append( NEW_LINE);
-	    result.append(" driver: " ).append( driver ).append( NEW_LINE);
 	    result.append(" url: " ).append( url ).append( NEW_LINE);
 	    result.append(" username: " ).append( username ).append( NEW_LINE);
 	    result.append(" password: " ).append( password ).append( NEW_LINE);
@@ -254,13 +250,5 @@ public class ConnectionInfo implements Serializable {
 
 	public void setExportCount(int exportCount) {
 		this.exportCount = exportCount;
-	}
-
-	public List<FileInfo> getJdbcDriverList() {
-		return jdbcDriverList;
-	}
-
-	public void setJdbcDriverList(List<FileInfo> jdbcDriverList) {
-		this.jdbcDriverList = jdbcDriverList;
 	}
 }

@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +42,7 @@ public class DatabaseUtilsController extends AbstractController  {
 
 	/**
 	 *
-	 * @Method Name  : genExcelToDDL
+	 * @Method Name  : genTable
 	 * @Method 설명 : excel -> ddl 변환
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 8. 24.
@@ -54,9 +53,9 @@ public class DatabaseUtilsController extends AbstractController  {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/genExcelToDDL", method = RequestMethod.GET)
-	public ModelAndView genExcelToDDL(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
-		return getModelAndView("/genExcelToDDL", VIEW_PAGE.DATABASE_UTILS, mav.getModelMap());
+	@RequestMapping(value="/genTable", method = RequestMethod.GET)
+	public ModelAndView genTable(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		return getModelAndView("/genTable", VIEW_PAGE.DATABASE_UTILS, mav.getModelMap());
 	}
 
 	/**

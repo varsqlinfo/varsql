@@ -32,4 +32,20 @@
         	<spring:message code="user.prefernces.menu.sqlfile" />
         </a>
     </li>
+    
+    <li class="dropdown<c:if test="${selectMenu eq 'fileList'}"> active</c:if>">
+		<a href="#" data-toggle="collapse" data-target="#dbgroup-sub-menu">
+			<i class="fa fa-object-group"></i>
+			<span class="hidden-xs"><spring:message code="user.prefernces.menu.file" text="File"/></span>
+			<i class="fa fa-fw fa-caret-down"></i>
+		</a>
+		<ul id="dbgroup-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'fileList'}"> in</c:if>">
+			<li>
+                <a href="<c:url value="/user/preferences/fileImportList?header=${headerview}" />"><spring:message code="user.prefernces.menu.fileimportlist" /></a>
+            </li>
+            <li>
+				<a href="<c:url value="/user/preferences/fileExportList?header=${headerview}" />"><spring:message code="user.prefernces.menu.fileexportlist" /></a>
+			</li>
+		</ul>
+	</li>
 </ul>

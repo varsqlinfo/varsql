@@ -585,11 +585,24 @@ FileComponent.prototype = {
 		dropzone.on("addedfile", function(file) {
 			var addFlag = true;
 
+			var fileName = file.name;
+			
+			if(file.status == Dropzone.ADDED && !VARSQL.isBlank(_this.accept)){
+				
+				var lastIdx = fileName.lastIndexOf('.');
+				var ext = lastIdx > -1 ? fileName.substring(lastIdx+1) : fileName;
+				
+				if(VARSQL.inArray(_this.accept.split(','), ext) < 0){
+					this.removeFile(file);
+					return '';
+				}
+			}
+
 			if(opt.duplicateIgnore === true){
 				var len = this.files.length;
 				if(file.status=='added' && len > 0){
 					for(var i =0; i<len-1; i++){
-						if(this.files[i].name === file.name){
+						if(this.files[i].name === fileName){
 							this.removeFile(file);
 							addFlag = false;
 							if(isDuplCallback){
@@ -602,7 +615,7 @@ FileComponent.prototype = {
 
 			if(addFlag){
 				opt.callback.addFile(file);
-				file.previewElement.querySelector('.file-name').title = file.name;
+				file.previewElement.querySelector('.file-name').title = fileName;
 			}
 		});
 

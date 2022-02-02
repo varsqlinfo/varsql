@@ -162,8 +162,12 @@ public final class SQLResultSetUtils {
 
 		return ssrv;
 	}
+	
+	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, AbstractSQLExecutorHandler baseExecutorHandler) throws SQLException {
+		resultSetHandler(rs, sqlExecuteInfo, baseExecutorHandler, false);
+	}
 
-	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, AbstractSQLExecutorHandler baseExecutorHandler) throws SQLException{
+	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, AbstractSQLExecutorHandler baseExecutorHandler, boolean gridKeyAlias) throws SQLException{
 		if (rs == null) {
 			return ;
 		}
@@ -172,6 +176,7 @@ public final class SQLResultSetUtils {
 
 		int count = rsmd.getColumnCount();
 		String [] columnNameArr = new String[count];
+		String[] columnGridKeyArr = GridUtils.getAliasKeyArr(count);
 
 		int columnType=-1;
 		String columnTypeName = "";
@@ -213,10 +218,16 @@ public final class SQLResultSetUtils {
 
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(columnType, columnInfo);
+			
+			if (gridKeyAlias) {
+				columnInfo.setKey(columnGridKeyArr[i]);
+			} else {
+				columnInfo.setKey(columnName);
+				columnGridKeyArr[i] = columnName;
+			}
 
 			columnInfo.setNo(idx);
 			columnInfo.setLabel(columnName);
-			columnInfo.setKey(columnName);
 			columnInfo.setDbType(columnTypeName);
 			columnInfo.setWidth(columnWidth);
 

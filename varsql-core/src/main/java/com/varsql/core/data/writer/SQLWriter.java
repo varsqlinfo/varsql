@@ -4,19 +4,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.csv.CSVFormat;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.util.SQLUtils;
-import com.vartech.common.constants.VartechConstants;
-import com.vartech.common.exception.VartechIORuntimeException;
 import com.vartech.common.io.writer.AbstractWriter;
 
 /**
@@ -93,7 +88,7 @@ public class SQLWriter extends AbstractWriter{
 
 		for (int i = 0; i < columnInfos.size(); i++) {
 			GridColumnInfo columnInfo = columnInfos.get(i);
-			Object colVal = rowValue.get(columnInfo.getLabel());
+			Object colVal = rowValue.get(columnInfo.getKey());
 
 			valueSb.append(i==0? "" : ", ");
 

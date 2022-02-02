@@ -17,6 +17,27 @@ if (typeof window != "undefined") {
 	}
 }
 
+VARSQLApi.sql = {
+	/**
+	 * @method execute
+	 * @param params {Object} - {sql : String}  
+	 * @param callback {Object} - callback method
+	 * @description 데이터 add
+	 */
+	execute : function (params , callback){
+		params.conuid = $varsqlConfig.conuid;
+		
+		VARSQL.req.ajax({
+		    loadSelector : 'body'
+		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
+		    ,data:params
+		    ,success:function (resData){
+		    	callback(resData)
+			}
+		});
+	}
+}
+
 VARSQLApi.preferences = {
 	/**
 	 * @method save
@@ -61,7 +82,5 @@ VARSQLApi.sqlTemplate = {
 		});
 	}
 }
-
-
 
 }(VARSQL));

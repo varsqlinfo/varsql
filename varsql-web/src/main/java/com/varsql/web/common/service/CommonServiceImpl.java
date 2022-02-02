@@ -54,6 +54,7 @@ public class CommonServiceImpl{
 	 * @param exceptionType
 	 * @param e
 	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
 	public void insertExceptionLog(String exceptionType, Throwable e) {
 		try{
 			String exceptionTitle = e.getMessage();

@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
@@ -16,9 +15,6 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.CommUtils;
-import com.varsql.core.data.importdata.ImportJsonData;
-import com.varsql.core.data.importdata.ImportXmlData;
-import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;

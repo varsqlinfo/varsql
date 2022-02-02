@@ -12,7 +12,7 @@
 "use strict";
 var pluginName = "pubTab"
 ,_datastore = {}
-,defaults = {
+,_defaults = {
 	width:'auto'			//tab width
 	,itemMaxWidth : -1		// tab max width
 	,activeFirstItem : true	//로드시 첫번째 item 활성화 여부
@@ -24,9 +24,6 @@ var pluginName = "pubTab"
 	,dropItemHeight :'auto'		//drop item height
 	,dropItemWidth :'auto'		//drop item width
 	,moveZIndex : 9				// move 영역 z- index
-	,filter: function ($obj) {
-		// Modify $obj, Do not return
-	}
 	,titleIcon :{
 		left :{
 			overview : true		// mouseover icon view  여부
@@ -50,15 +47,15 @@ var pluginName = "pubTab"
 	,removeItem : false	// remove callback 옵션
 	,blinkClass : 'blinkcss'
 	,itemKey :{							// item key mapping
-		title :'name'
-		,id :'_tabid'
+		title :'name'				// tab item name
+		,id :'_tabid'				// tab item id
 	}
 	,beforeUpdate : function (){	// before update item callback
 	}
 	,afterUpdate : function (){		// after update item callback
 	}
-	,drag : {
-		enabled : false
+	,drag : {	// drag  이동
+		enabled : false	// 활성 여부
 		,dragStart : function (dragItem){} // drag start
 		,dragEnter : function (dragItem){} // drag enter
 		,dragDrop : function (dragItem){} // drag enter
@@ -97,7 +94,7 @@ function Plugin(element, options) {
 	}
 
 	options.width= isNaN(options.width) ?  this.tabElement.width() : options.width;
-	this.options = objectMerge({}, defaults, options);
+	this.options = objectMerge({}, _defaults, options);
 	
 	this.init();
 
@@ -785,6 +782,12 @@ Plugin.prototype ={
 
 		return reval;
 	}
+	/**
+	* tab view history
+	*/
+	,getHistory : function (){
+		return this.config.tabHistory;
+	}
 	,refresh : function (){
 		var _this = this;
 		var eleW = _this.tabElement.width();
@@ -1005,5 +1008,9 @@ $[ pluginName ] = function (selector,options) {
 
 	return _cacheObject;
 };
+
+$[ pluginName ].setDefaults = function (defaultValue){
+	_defaults = objectMerge(_defaults, defaultValue);
+}
 
 })(jQuery, window, document);

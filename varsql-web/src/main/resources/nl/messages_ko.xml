@@ -51,7 +51,7 @@
 <entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
 
 <entry key="header.menu.tool.utils">유틸리티</entry>
-<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[DDL 생성하기]]></entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[Table 생성]]></entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">도움말</entry>
@@ -159,7 +159,7 @@
 <entry key="msg.confirm.block.y">차단하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">차단을 해제 하시겠습니까?</entry>
 <entry key="msg.confirm.block.n">스키마를 선택하세요.</entry>
-
+<entry key="msg.note.arrived">메모가 도착했습니다.</entry>
 
 <entry key="msg.select.value">선택된 값</entry>
 <entry key="msg.warning.select">선택하시오</entry>
@@ -183,10 +183,12 @@
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.useyn">사용여부</entry>
 <entry key="admin.form.db.schemaviewyn">스키마 전체 보기</entry>
+<entry key="admin.form.db.vtype">Type</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
 <entry key="admin.form.db.lazyloadyn">Async 로드</entry>
 <entry key="admin.form.db.basetableyn">Base 테이블 사용여부</entry>
+<entry key="admin.form.db.vquery">Validation Query</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
@@ -230,6 +232,8 @@
 <entry key="manage.glossary.word_en">영문명</entry>
 <entry key="manage.glossary.word_abbr">약어명</entry>
 <entry key="manage.glossary.desc">설명</entry>
+<entry key="manage.glossary.word_type">데이터 타입</entry>
+<entry key="manage.glossary.word_length">길이</entry>
 
 <entry key="manage.dbgroup.nm">그룹명</entry>
 <entry key="manage.dbgroup.mapping">DB 그룹맵핑</entry>

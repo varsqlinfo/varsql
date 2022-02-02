@@ -22,7 +22,6 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.pool.ConnectionPoolInterface;
 import com.varsql.core.connection.pool.PoolType;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 
 /**

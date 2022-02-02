@@ -4,11 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.client.HttpServerErrorException;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
@@ -60,9 +55,19 @@ public final class VarsqlUtils {
 	 * @param res
 	 * @param fileName
 	 */
-	public static void setResponseDownAttr(HttpServletResponse res, String fileName){
+	
+	public static void setResponseDownAttr(HttpServletResponse res, String fileName) throws UnsupportedEncodingException {
+		setResponseDownAttr(res, null, fileName);
+	}
+
+	public static void setResponseDownAttr(HttpServletResponse res, HttpServletRequest req, String fileName)  throws UnsupportedEncodingException {
 		res.setContentType("application/octet-stream");
-		res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";",fileName));
+
+		if (req != null) {
+			res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", FileServiceUtils.getDownloadFileName(req, fileName)));
+		} else {
+			res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", fileName));
+		}
 		res.setCharacterEncoding(VarsqlConstants.CHAR_SET);
 		res.setHeader("Content-Transfer-Encoding", "binary;");
 		res.setHeader("Pragma", "no-cache;");

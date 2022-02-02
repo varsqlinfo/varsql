@@ -42,6 +42,7 @@ import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ResultSetConvertException;
+import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
@@ -102,8 +103,7 @@ public class SQLServiceImpl{
 
 	@Autowired
 	private CommonServiceImpl commonServiceImpl;
-
-
+	
 	/**
 	 *
 	 * @Method Name  : sqlFormat
@@ -186,6 +186,11 @@ public class SQLServiceImpl{
 		String errorMsg = "";
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getVconnid());
+			
+			if(!StringUtils.isBlank(sqlExecuteInfo.get_requid_())) {
+				SqlExecuteManager.getInstance().setStatementInfo(sqlExecuteInfo.get_requid_(), null);
+	    	}
+			
 			conn.setAutoCommit(false);
 
 			List<SqlStatisticsEntity> allSqlStatistics = new LinkedList<SqlStatisticsEntity>();
@@ -230,7 +235,8 @@ public class SQLServiceImpl{
 			result.setItemList(reLst);
 			conn.commit();
 		} catch (Throwable e ) {
-			if(conn != null) conn.rollback();
+			
+			if (conn != null && !conn.isClosed()) conn.rollback(); 
 
 			errorMsg = e.getMessage();
 
@@ -276,10 +282,14 @@ public class SQLServiceImpl{
 			LoggerFactory.getLogger("sqlErrorLog").error("sqlData errorLine : {}", sqldx,e);
 
 		}finally{
-			if(conn !=null){
+			if (conn != null && !conn.isClosed()) {
 				conn.setAutoCommit(true);
 				JdbcUtils.close(conn);
 			}
+		}
+		
+		if(!StringUtils.isBlank(sqlExecuteInfo.get_requid_())) {
+			SqlExecuteManager.getInstance().removeStatementInfo(sqlExecuteInfo.get_requid_());
 		}
 
 		long enddt = System.currentTimeMillis();
@@ -336,15 +346,22 @@ public class SQLServiceImpl{
 
 		int maxRow = sqlExecuteInfo.getLimit();
 
+		String requid = sqlExecuteInfo.get_requid_();
+		
 	    try{
 	    	boolean hasResults;
 			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
 				stmt  = conn.createStatement();
+				
+				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
+				
 				setMaxRow(stmt, maxRow);
 				hasResults = stmt.execute(tmpSqlSource.getQuery());
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 				CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
 
+				SqlExecuteManager.getInstance().setStatementInfo(requid, callStatement);
+				
 		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
 		        setMaxRow(callStatement, maxRow);
 		        hasResults = callStatement.execute();
@@ -412,13 +429,16 @@ public class SQLServiceImpl{
 		        stmt = callStatement;
 			}else{
 				PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
-				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
+				
+				SqlExecuteManager.getInstance().setStatementInfo(requid, pstmt);
+				
+ 				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
 				setMaxRow(pstmt, maxRow);
 				hasResults = pstmt.execute();
 
 				stmt= pstmt;
 			}
-
+			
 			if(hasResults) {
 				rs = stmt.getResultSet();
 				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, dbInfo, maxRow, gridKeyAlias);
@@ -441,7 +461,7 @@ public class SQLServiceImpl{
 	    	ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 	    	ssrv.setResultType(SqlDataConstants.RESULT_TYPE.FAIL.val());
 	    	ssrv.setResultMessage(String.format("error code :%s ;\nsql state : %s ;\nmessage : %s",e.getErrorCode() ,e.getSQLState() , e.getMessage()));
-	    	logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
+	    	//logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
 	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
 	    	JdbcUtils.close(stmt, rs);
@@ -451,9 +471,10 @@ public class SQLServiceImpl{
 	/**
 	 * 데이터 내보내기.
 	 * @param paramMap
+	 * @param req 
 	 */
 	@SuppressWarnings("rawtypes")
-	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletResponse res) throws Exception {
+	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		String objectName = sqlExecuteInfo.getObjectName();
 
@@ -493,7 +514,7 @@ public class SQLServiceImpl{
 
 			Path fileExportPath = FileServiceUtils.getSavePath(UploadFileType.EXPORT);
 
-			String downloadFilePath = FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(), VartechUtils.generateUUID()+ exportType.getExtension());
+			String downloadFilePath = FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(), exportType.concatExtension(VartechUtils.generateUUID()));
 			outstream = new FileOutputStream(downloadFilePath);
 
 			if(VarsqlFileType.CSV.equals(exportType)){
@@ -525,8 +546,9 @@ public class SQLServiceImpl{
 
 						handleParam.getColumnInfoList().forEach(item->{
 							ExportColumnInfo gci = new ExportColumnInfo();
-
+							
 							gci.setName(item.getLabel());
+							gci.setAlias(item.getKey());
 							gci.setType(item.getDbType());
 							gci.setNumber(item.isNumber());
 							gci.setLob(item.isLob());
@@ -563,7 +585,7 @@ public class SQLServiceImpl{
 
 			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", objectName));
 
-			VarsqlUtils.setResponseDownAttr(res, exportFileName + exportType.getExtension());
+			VarsqlUtils.setResponseDownAttr(res, req, exportType.concatExtension(exportFileName));
 
 			try(FileInputStream fileInputStream  = new FileInputStream(new File(downloadFilePath));
 				OutputStream downloadStream = res.getOutputStream();)
@@ -595,10 +617,11 @@ public class SQLServiceImpl{
 	 * @작성일   : 2019. 8. 9.
 	 * @변경이력  :
 	 * @param sqlGridDownloadInfo
+	 * @param req 
 	 * @param res
 	 * @throws IOException
 	 */
-	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletResponse res) throws IOException {
+	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletRequest req, HttpServletResponse res) throws IOException {
 		VarsqlFileType exportType = sqlGridDownloadInfo.getExportType();
 
 		String exportCharset = VarsqlConstants.CHAR_SET;
@@ -619,7 +642,7 @@ public class SQLServiceImpl{
 				writer = new ExcelWriter(outstream);
 			}
 
-			VarsqlUtils.setResponseDownAttr(res, java.net.URLEncoder.encode(downloadName + exportType.getExtension(), VarsqlConstants.CHAR_SET));
+			VarsqlUtils.setResponseDownAttr(res, req, exportType.concatExtension(downloadName));
 
 			List<GridColumnInfo> columnInfos = VartechUtils.jsonStringToObject(sqlGridDownloadInfo.getHeaderInfo(), new TypeReference<LinkedList<GridColumnInfo>>() {} , true);
 			logger.debug("grid download : {} " , columnInfos);

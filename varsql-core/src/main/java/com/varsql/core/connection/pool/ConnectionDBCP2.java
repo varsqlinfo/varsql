@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.util.ClassLoaderUtils;
+import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 
@@ -68,7 +68,7 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 			Properties properties = setConnectionOption(connInfo);
 
 
-			Driver dbDriver =ClassLoaderUtils.getJdbcDriver(connInfo.getDriver(), connInfo.getJdbcDriverList());
+			Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
 
 			ConnectionFactory connectionFactory;
 			if(dbDriver==null) {

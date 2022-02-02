@@ -1,7 +1,7 @@
 /**
- * pubAutocomplete : v0.0.1
+ * pubAutocomplete : v1.0.2
  * ========================================================================
- * Copyright 2016 ytkim
+ * Copyright 2016~2021 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub
@@ -13,40 +13,40 @@
 		,initialized = false
 		,_datastore = {}
 		,pubElement= false
-        ,defaults = {
+        ,_defaults = {
 			_currMode : 'default'
-			,viewAreaSelector : false
+			,viewAreaSelector : false	// 결과가 보여질 element
 			,useFilter : true	// 필터 사용여부.
-			,minLength: 1
-			,autoClose : true
+			,minLength: 1		// 최소 사이즈
+			,autoClose : true	// 자동 닫힘 여부
 			,itemkey : 'title'	// string , function
-			,height : 200
-			,selectCls : 'selected'
-			,emptyMessage : 'no data'
-			,searchDelay : -1
-			,items :[]
-			,charZeroConfig : false
-			,filter : function (itemVal , searchVal) {
+			,height : 200		// 높이 값
+			,selectCls : 'selected'	// select css class name
+			,emptyMessage : 'no data'	// 데이터 없을때 값
+			,searchDelay : -1		// 검색 delay
+			,items :[]				// items
+			,charZeroConfig : false	// 글자 없을때 설정
+			,filter : function (itemVal , searchVal) {	// 검색 데이터 처리 필터
 				searchVal = searchVal.toLowerCase();
 				return ~(itemVal).toLowerCase().indexOf(searchVal);
 			}
-			,source: function (request, response){
+			,source: function (request, response){	// data 호출
 				response(this.items);
 			}
-			,select : function (event,item){
+			,select : function (event,item){	// select
 				console.log('onSelect : ' + item);
 			}
-			,focus : function (e){
+			,focus : function (e){	// foucs 시 이벤트
 
 			}
-			,renderItem : function (matchData,item){
+			,renderItem : function (matchData,item){ // 표시 할 데이터 처리
 				return matchData;
 			}
-			,hilightTemplate : '<b>$1</b>'
-			,autocompleteTemplate : function (baseHtml){
+			,hilightTemplate : '<b>$1</b>' // 하이라이트 처리
+			,autocompleteTemplate : function (baseHtml){ // 자동 완성 템플릿
 				return baseHtml;
 			}
-			,initTemplateElementEvent : function (){
+			,initTemplateElementEvent : function (){ // template event 처리
 
 			}
 		};
@@ -56,7 +56,7 @@
 		this.selectorElement = $(this.selector);
 		this.autocompleteEle = false;
 		this.autocompleteEleId = pluginName+'-'+new Date().getTime();
-        this.options = $.extend({}, defaults, options);
+        this.options = $.extend({}, _defaults, options);
 		this.size = {eleH: 0,itemH : 0, itemAllH : 0};
 		this.currentSearchVal='';
 		this.config={
@@ -406,7 +406,7 @@
 		 * @description 기본 옵션 업데이트.
 		 */
 		,updatedefaults:function (opts){
-			defaults = $.extend({}, defaults, opts);
+			_defaults = $.extend({}, _defaults, opts);
 		}
 		/**
 		 * @method gridItems
@@ -444,8 +444,6 @@
 				,emptyFlag = true;
 
 			var strHtm = [];
-
-
 
 			if(len > 0){
 				var renderFn = _this._getOptionValue('renderItem')
@@ -578,6 +576,10 @@
 		}
 
 		return _cacheObject;
-    };
+	};
+	
+	$[ pluginName ].setDefaults = function (defaultValue){
+		_defaults = objectMerge(_defaults, defaultValue);
+	}
 
 })(jQuery, window, document);

@@ -1,16 +1,13 @@
 package com.varsql.web.app.admin.service;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,12 +27,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.util.ClassLoaderUtils;
+import com.varsql.core.common.constants.PathType;
+import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.sql.util.JdbcUtils;
@@ -44,7 +44,6 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
-import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
@@ -223,14 +222,18 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			p.setProperty("user", username);
 			p.setProperty("password", pwd);
 
-			List<FileInfoEntity> driverJarFiles= fileInfoEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId());
+			List<FileInfo> driverJarFiles;
 
-			List<URL> jarUrlList = new ArrayList<>();
-			for(FileInfoEntity fie : driverJarFiles) {
-				jarUrlList.add(FileServiceUtils.getFileInfoToURL(fie));
+			if(PathType.PATH.equals(PathType.getPathType(driverProviderEntity.getPathType()))){
+				driverJarFiles = FileServiceUtils.getFileInfos(driverProviderEntity.getDriverPath().split(";"));
+			}else {
+				driverJarFiles = FileServiceUtils.getFileInfos(this.fileInfoEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId()));
 			}
-
-		    Driver dbDriver = ClassLoaderUtils.getJdbcDriver(driverProviderEntity.getDriverClass(), jarUrlList.toArray(new URL[0]));
+			
+			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dbInfo.getDbTypeDriverProvider().getDriverProviderId(), dbInfo.getDbTypeDriverProvider().getDriverClass());
+		    jdbcDriverInfo.setDriverFiles(driverJarFiles);
+		    
+		    Driver dbDriver = JdbcDriverLoader.checkDriver(jdbcDriverInfo);
 
 		    connChk = dbDriver.connect(url, p);
 		    pstmt = connChk.prepareStatement(validation_query);

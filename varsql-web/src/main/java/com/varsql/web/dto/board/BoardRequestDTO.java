@@ -20,19 +20,20 @@ import lombok.ToString;
 @NoArgsConstructor
 public class BoardRequestDTO {
 
-	private String boardCode; 
+	private String boardCode;
 	private long articleId;
-	
+
 	@NotEmpty
 	@Size(max=250)
-	private String title; 
-	private String contents; 
-	private long commentCnt; 
-	private String authorName; 
-	private char noticeYn; 
-	 
-	private String removeFileIds; 
-	
+	private String title;
+
+	private String contents;
+	private long commentCnt;
+	private String authorName;
+	private char noticeYn;
+
+	private String removeFileIds;
+
 	private List<MultipartFile> file;
 
 	public BoardEntity toEntity() {

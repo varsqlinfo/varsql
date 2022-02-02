@@ -53,7 +53,7 @@
 <entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
 
 <entry key="header.menu.tool.utils">유틸리티</entry>
-<entry key="header.menu.tool.utils.genexceltoddl"><![CDATA[DDL 생성하기]]></entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[Table 생성]]></entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">도움말</entry>
@@ -95,6 +95,12 @@
 <entry key="user.prefernces.menu.message">메시지 관리</entry>
 <entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
 <entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
+
+<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
+<entry key="user.prefernces.menu.file">FILE</entry>
+<entry key="user.prefernces.menu.fileimportlist">Import List</entry>
+<entry key="user.prefernces.menu.fileexportlist">Export List</entry>
+
 
 <entry key="login.form.id">아이디</entry>
 <entry key="login.form.pw">패스워드</entry>

@@ -190,6 +190,7 @@
 <entry key="btn.toolbar.undo">Undo</entry>
 <entry key="btn.toolbar.redo">Redo</entry>
 <entry key="btn.toolbar.linewrapper">Wrap Auto Line</entry>
+<entry key="btn.toolbar.convertext">Text Convert</entry>
 <entry key="btn.toolbar.format">Format </entry>
 <entry key="btn.toolbar.send">Send Message </entry>
 <entry key="btn.toolbar.parameter">Parameters </entry>

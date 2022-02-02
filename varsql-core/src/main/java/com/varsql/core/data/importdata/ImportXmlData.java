@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.sql.beans.ExportColumnInfo;
-import com.varsql.core.sql.executor.SqlUpdateExecutor;
+import com.vartech.common.utils.StringUtils;
 
 public class ImportXmlData extends AbstractImportData{
 
@@ -145,9 +145,12 @@ public class ImportXmlData extends AbstractImportData{
 									eci.setNumber(Boolean.parseBoolean(attrVal));
 								}else if("lob".equals(attrName)) {
 									eci.setLob(Boolean.parseBoolean(attrVal));
-								}
+								}else if ("alias".equals(attrName)) { 
+					                  eci.setAlias(attrVal);
+					              }
 							}
 						}
+						
 					}
 					break;
 				// 닫기 태그
@@ -155,6 +158,9 @@ public class ImportXmlData extends AbstractImportData{
 						String localName = xmlreader.getLocalName();
 
 						if("item".equals(localName)) {
+							if(StringUtils.isBlank(eci.getAlias())) {
+				            	eci.setAlias(eci.getName());
+				            }
 							columns.add(eci);
 						}
 

@@ -54,6 +54,7 @@
 <script src="${pageContextPath}/webstatic/js/plugins/prettify/lang-sql.js?version=${prettify_ver}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/sql/formatter/sql-formatter.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/pub.multiselect2.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.splitter.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.grid.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
@@ -62,6 +63,8 @@
 
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
+
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.defaults.js?version=${pubjs_ver}"></script>
 
 <script>
 VARSQL.unload();

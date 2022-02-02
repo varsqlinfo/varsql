@@ -53,7 +53,7 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
-									<td :title="item.groupName"><a href="javascript:;" @click="itemView(item)"> {{item.groupName}}</a></td>
+									<td :title="item.groupName"><a href="javascript:;" @click="itemView(item)"> {{item.groupName||'no group name'}}</a></td>
 									<td :title="item.regId"><div class="text-ellipsis">{{item.regInfo.viewName}}</div></td>
 									<td>{{item.regDt}}</td>
 								</tr>
@@ -76,23 +76,26 @@
 			<div class="panel-heading"><spring:message code="manage.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<input type="hidden" v-model="detailItem.wordIdx">
-				<form id="addForm" name="addForm" class="form-horizontal" >
-					<div class="form-group">
-						<div class="col-sm-12">
-							<div class="pull-right">
-								<button type="button" class="btn btn-default" :class="(isViewMode?'':'hide')" @click="fieldClear()"><spring:message code="btn.add"/></button>
-								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
-								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')" @click="deleteInfo()"><spring:message code="btn.delete"/></button>
-							</div>
+				<div class="form-group">
+					<div class="col-sm-12">
+						<div class="pull-right">
+							<button type="button" class="btn btn-default" :class="(isViewMode?'':'hide')" @click="fieldClear()"><spring:message code="btn.add"/></button>
+							<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
+							<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')" @click="deleteInfo()"><spring:message code="btn.delete"/></button>
 						</div>
 					</div>
-					<div class="form-group">
+				</div>
+				
+				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
+					<input type="hidden" v-model="detailItem.wordIdx">
+					<div class="form-group" :class="errors.has('GROUPNAME') ? 'has-error' :''">
 						<label class="col-sm-4 control-label"><spring:message code="manage.dbgroup.nm" /></label>
 						<div class="col-sm-8">
-							<input class="form-control text required" v-model="detailItem.groupName">
+							<input type="text" v-model="detailItem.groupName" v-validate="'required'" name="GROUPNAME" class="form-control" />
+							<div v-if="errors.has('GROUPNAME')" class="help-block">{{ errors.first('GROUPNAME') }}</div>
 						</div>
 					</div>
+					
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><spring:message code="desc" /></label>
 						<div class="col-sm-8">
@@ -108,27 +111,10 @@
 			<div class="panel-heading"><spring:message code="manage.dbgroup.mapping" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<div class="col-sm-5">
-					<ul id="source" class="form-control" style="width:100%;height:200px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
+				<div class="col-sm-12">
+					<div id="source" style="width:100%;height:200px;"></div>
 				</div>
-				<div class="col-sm-2" style="text-align:center;padding:10px;height:200px;">
-					<div style="margin: 0 auto;">
-						<a href="javascript:;" class="btn_m mb05 item-move" mode="add">
-							<spring:message code="label.add" text="add"/><span class="fa fa-caret-right"></span>
-						</a>
-						<br/>
-						<a href="javascript:;" class="btn_m mb05 item-move" mode="del">
-							<span class="fa fa-caret-left"></span><spring:message code="label.delete" text="del" />
-						</a>
-					</div>
-				</div>
-				<div class="col-sm-5">
-					<ul id="target"  class="form-control" style="width:100%;height:200px;">
-					  <li><spring:message code="msg.nodata" /></li>
-					</ul>
-				</div>
+				
 			</div>
 			<!-- /.panel-body -->
 		</div>
@@ -140,6 +126,7 @@
 
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
+	,validateCheck : true
 	,data: {
 		list_count :10
 		,searchVal : ''
@@ -158,34 +145,19 @@ VarsqlAPP.vueServiceBean( {
 
 			this.initDbMappingInfo();
 
-			$('.item-move').on('click',function (){
-				var moveItem = [];
-				var mode = $(this).attr('mode');
-				if(mode =='add'){
-					moveItem = _self.selectObj.sourceMove();
-				}else{
-					moveItem = _self.selectObj.targetMove();
-				}
-			});
-
 			_self.selectObj= $.pubMultiselect('#source', {
-				targetSelector : '#target'
-				,addItemClass:'text_selected'
-				,useMultiSelect : true
-				,useDragMove : false
-				,useDragSort : false
-				,duplicateCheck : true
+				duplicateCheck : true
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
-				,sourceItem : {
-					optVal : 'vconnid'
-					,optTxt : 'vname'
+				,source : {
+					idKey : 'vconnid'
+					,nameKey : 'vname'
 					,items : []
 				}
-				,targetItem : {
-					optVal : 'vconnid'
-					,optTxt : 'vname'
+				,target : {
+					idKey : 'vconnid'
+					,nameKey : 'vname'
 					,items : []
 				}
 				,compleateSourceMove : function (moveItem){
@@ -202,6 +174,7 @@ VarsqlAPP.vueServiceBean( {
 		}
 		// 추가.
 		,fieldClear : function (){
+			this.$validator.reset()
 			this.isViewMode = false;
 			this.detailItem = {
 				groupId:''
@@ -209,7 +182,6 @@ VarsqlAPP.vueServiceBean( {
 				, groupDesc :''
 			};
 		}
-
 		// 상세
 		,itemView : function (item){
 			this.isViewMode = true;
@@ -238,27 +210,31 @@ VarsqlAPP.vueServiceBean( {
 		// 저장
 		,saveInfo : function (){
 			var _self = this;
+			
+			this.$validator.validateAll().then(function (result){
+				if(result){
+					var param = _self.detailItem;
 
-			var param = this.detailItem;
+					_self.$ajax({
+						url : {type:VARSQL.uri.manager, url:'/dbGroup/save'}
+						,data : param
+						,success: function(resData) {
+							if(resData.resultCode != 200){
+								if(!VARSQL.req.validationCheck(resData)){
+									return ;
+								}else{
+									var message = resData.messageCode;
+									alert(resData.messageCode +'\n'+ resData.message);
+									return ;
+								}
+							}
 
-			_self.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/dbGroup/save'}
-				,data : param
-				,success: function(resData) {
-					if(resData.resultCode != 200){
-						if(!VARSQL.req.validationCheck(resData)){
-							return ;
-						}else{
-							var message = resData.messageCode;
-							alert(resData.messageCode +'\n'+ resData.message);
-							return ;
+							_self.fieldClear();
+							_self.search();
 						}
-					}
-
-					_self.fieldClear();
-					_self.search();
+					})
 				}
-			})
+			});
 		}
 		// 삭제.
 		,deleteInfo : function(){
@@ -291,7 +267,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
 				,data : param
 				,success: function(resData) {
-					_self.selectObj.setItem('source', resData.items);
+					_self.selectObj.setSourceItem(resData.items);
 				}
 			})
 		}
@@ -310,8 +286,7 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector: '#main-content'
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupMappingList'}
 				,success:function (resData){
-					var result = resData.items;
-		    		_self.selectObj.setItem('target', result);
+		    		_self.selectObj.setTargetItem(resData.items);
 				}
 			});
 		}

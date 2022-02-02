@@ -41,78 +41,66 @@
 			V – view
 			XP – extended stored procedure
 		-->
-		select
-		        su.name as "SCHEMA"
-		        ,so.name as "NAME"
-		        ,text as "REMARKS"
-		        ,so.type as "TABLE_TYPE"
-		from sysusers su inner join  sysobjects so on su.uid = so.uid
-		left outer join syscomments sc on so.id = sc.id
-		where so.type = 'U'
-		and	su.name= #{schema}
+		select 
+			'${schema}' as "SCHEMA" 
+			, trim(so.table_name) as "NAME"
+			,so.remarks as "REMARKS" 
+		from sys.systable so 
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'BASE'
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				so.name in (${item})
+				so.table_name  in (${item})
 			</foreach>
 		</if>
-		order  by su.name, so.name
+		order by so.table_name
 	</select>
 
 	<!-- table adn column info -->
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		select
-		     so.name as "TABLE_NAME"
-		    , sc.name as "COLUMN_NAME"
-		    , st.name as "DATA_TYPE"
-		    , sc.length as "CHAR_LENGTH"
+		select trim(so.table_name) as "TABLE_NAME"
+			, trim(sc.cname) as  "COLUMN_NAME"
+			, trim(sc.coltype) as "DATA_TYPE"
+			, sc.length as "CHAR_LENGTH"
 			, sc.length as "COLUMN_SIZE"
-		    , sc.scale as "DECIMAL_DIGITS"
-			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END IS_NULLABLE
-		    , scc.text AS "COLUMN_DEF"
-			, sc.colid as  "ORDINAL_POSITION"
-		    , scc2.text as "COMMENT"
-		   , sk.KEYCONST as "CONSTRAINTS"
-		from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
-		inner join systypes st on st.usertype = sc.usertype
-		left outer join syscomments scc on scc.id = sc.cdefault
-		left outer join syscomments scc2 on scc2.id = sc.id
-		left outer join (
-			select tid , cname ,  (case WHEN min(KEYCONST) =1  THEN 'PK'
-				    when min(KEYCONST) =2 then 'UQ'
-				    else ''
-				    end) as  KEYCONST
-			from
-			(
-				SELECT
-				    o.name as  "tname" , o.id as "tid", index_col(o.name, i.indid, c.colid, o.uid) as "cname",
-				    (case WHEN i.status >= 2048  THEN 1
-				    when i.status =2 then 2
-				    else 9
-				    end) as  KEYCONST
-				FROM
-				    sysobjects o
-				    INNER JOIN sysindexes i on i.id = o.id
-				    INNER JOIN syscolumns c on c.id = o.id
-				WHERE o.type = 'U'
-				and o.uid = user_id (#{schema})
-				<![CDATA[
-				and i.indid > 0
-				and i.status & 2 = 2
-				and index_col(o.name, i.indid, c.colid, o.uid) <> null
-				]]>
-			) a
-			group by tid , cname
-		) sk on (sk.tid = so.id and sc.name = sk.cname)
-		where  so.type = 'U'
-		and so.uid = user_id (#{schema})
+			, sc.syslength as "DECIMAL_DIGITS"
+			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END IS_NULLABLE
+			, sc.default_value AS "COLUMN_DEF"
+			, sc.colno as  "ORDINAL_POSITION"
+			, sc.remarks as "COMMENT"
+			, sk.KEYCONST as "CONSTRAINTS"
+		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
+			left outer join (
+				select t.table_name, c.column_name,  (case WHEN min(ix.index_category) =1  THEN 'PK'
+							when min(ix.index_category) =2 then 'FK'
+							else ''	end) as  KEYCONST
+				from sysidx ix, systable t, sysidxcol ixc , syscolumn c
+				where ix.table_id = t.table_id 
+				and ixc.table_id = t.table_id 
+				and ixc.index_id = ix.index_id 
+				and ixc.table_id = c.table_id
+				and ixc.column_id = c.column_id 
+				and t.creator = user_id (#{schema})
+				<if test="custom != null and custom.objectNameList != null">
+					and
+					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+						t.table_name in (${item})
+					</foreach>
+				</if>
+				and ix.index_category =1
+				group by t.table_name, c.column_name
+			) sk on (so.table_name = sk.table_name and sc.cname = sk.column_name)
+		where so.creator = user_id (#{schema})
+		and sc.creator = #{schema}
+		and so.table_type = 'BASE'
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				so.name in (${item})
+				so.table_name in (${item})
 			</foreach>
 		</if>
-		order by so.name , sc.colid
+		order by so.table_name , sc.colno
 	</select>
 
 	<!-- ================= table end ================= -->
@@ -121,78 +109,66 @@
 
 	<!-- view 목록 보기 -->
 	<select id="viewList" parameterType="databaseParamInfo" resultType="tableInfo">
-		select
-		        su.name as "SCHEMA"
-		        ,so.name as "NAME"
-		        ,text as "REMARKS"
-		        ,so.type as "TABLE_TYPE"
-		from sysusers su inner join  sysobjects so on su.uid = so.uid
-		left outer join syscomments sc on so.id = sc.id
-		where  so.type = 'V'
-		and	su.name= #{schema}
+		select 
+			'${schema}' as "SCHEMA" 
+			, trim(so.table_name) as "NAME"
+			,so.remarks as "REMARKS" 
+		from sys.systable so 
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'VIEW'
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				so.name in (${item})
+				so.table_name  in (${item})
 			</foreach>
 		</if>
-		order  by su.name, so.name
+		order by so.table_name
 	</select>
 
 	<!-- view and column info -->
 	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		select
-		     so.name as "TABLE_NAME"
-		    , sc.name as "COLUMN_NAME"
-		    , st.name as "DATA_TYPE"
-		    , sc.length as "CHAR_LENGTH"
+		select trim(so.table_name) as "TABLE_NAME"
+			, trim(sc.cname) as  "COLUMN_NAME"
+			, trim(sc.coltype) as "DATA_TYPE"
+			, sc.length as "CHAR_LENGTH"
 			, sc.length as "COLUMN_SIZE"
-		    , sc.scale as "DECIMAL_DIGITS"
-			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END IS_NULLABLE
-		    , scc.text AS "COLUMN_DEF"
-			, sc.colid as  "ORDINAL_POSITION"
-		    , scc2.text as "COMMENT"
-		   , sk.KEYCONST as "CONSTRAINTS"
-		from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
-		inner join systypes st on st.usertype = sc.usertype
-		left outer join syscomments scc on scc.id = sc.cdefault
-		left outer join syscomments scc2 on (scc2.id = sc.id and scc2.texttype = 1)
-		left outer join (
-			select tid , cname ,  (case WHEN min(KEYCONST) =1  THEN 'PK'
-				    when min(KEYCONST) =2 then 'UQ'
-				    else ''
-				    end) as  KEYCONST
-			from
-			(
-				SELECT
-				    o.name as  "tname" , o.id as "tid", index_col(o.name, i.indid, c.colid, o.uid) as "cname",
-				    (case WHEN i.status >= 2048  THEN 1
-				    when i.status =2 then 2
-				    else 9
-				    end) as  KEYCONST
-				FROM
-				    sysobjects o
-				    INNER JOIN sysindexes i on i.id = o.id
-				    INNER JOIN syscolumns c on c.id = o.id
-				WHERE o.type = 'U'
-				and o.uid = user_id (#{schema})
-				<![CDATA[
-				and i.indid > 0
-				and i.status & 2 = 2
-				and index_col(o.name, i.indid, c.colid, o.uid) <> null
-				]]>
-			) a
-			group by tid , cname
-		) sk on (sk.tid = so.id and sc.name = sk.cname)
-		where so.type = 'V'
-		and so.uid = user_id (#{schema})
+			, sc.syslength as "DECIMAL_DIGITS"
+			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END IS_NULLABLE
+			, sc.default_value AS "COLUMN_DEF"
+			, sc.colno as  "ORDINAL_POSITION"
+			, sc.remarks as "COMMENT"
+			, sk.KEYCONST as "CONSTRAINTS"
+		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
+			left outer join (
+				select t.table_name, c.column_name,  (case WHEN min(ix.index_category) =1  THEN 'PK'
+							when min(ix.index_category) =2 then 'FK'
+							else ''	end) as  KEYCONST
+				from sysidx ix, systable t, sysidxcol ixc , syscolumn c
+				where ix.table_id = t.table_id 
+				and ixc.table_id = t.table_id 
+				and ixc.index_id = ix.index_id 
+				and ixc.table_id = c.table_id
+				and ixc.column_id = c.column_id 
+				and t.creator = user_id (#{schema})
+				<if test="custom != null and custom.objectNameList != null">
+					and
+					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+						t.table_name in (${item})
+					</foreach>
+				</if>
+				and ix.index_category =1
+				group by t.table_name, c.column_name
+			) sk on (so.table_name = sk.table_name and sc.cname = sk.column_name)
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'VIEW'
+		and sc.creator = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				so.name in (${item})
+				so.table_name in (${item})
 			</foreach>
 		</if>
-		order by so.name , sc.colid
+		order by so.table_name , sc.colno
 	</select>
 
 	<!-- ================= view end ================= -->
@@ -242,7 +218,6 @@
 				so.sysstat2  as "STATUS",
 				so.type as "OBJECT_TYPE",
 				so.crdate as "CREATED",
-				so.sysstat2  as  STATUS ,
 				sc.name as "ARGUMENT_NAME",
 				st.name as "DATA_TYPE" ,
 				sc.length as "CHAR_LENGTH" ,
@@ -250,11 +225,11 @@
 				sc.scale as "DECIMAL_DIGITS",
 				sc.colid as "SEQUENCE",
 				'' as "COMMENT",
-				(case WHEN sc.status2 = 1 THEN 'IN'
-			    when sc.status2 = 2 then 'OUT'
-			    else convert(varchar, sc.status2)
+				(case WHEN sc.status = 1 THEN 'IN'
+			    when sc.status = 2 then 'OUT'
+			    else convert(varchar, sc.status)
 			    end) as "IN_OUT"
-			FROM sysobjects so INNER JOIN syscolumns sc ON (
+			FROM sysobjects so INNER JOIN dbo.syscolumns sc ON (
 				so.id = sc.id and
 				<choose>
 					<when test='"procedure".equalsIgnoreCase(objectType)'>
@@ -294,48 +269,41 @@
 
 	<!-- index list -->
 	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
-		SELECT
-		   i.name as "NAME"
-		   , i.status as "STATUS"
-		   ,i.crdate  as "CREATED"
-		FROM
-		    sysobjects o
-		    INNER JOIN sysindexes i on i.id = o.id
-		    INNER JOIN syscolumns c on c.id = o.id
-		WHERE o.type = 'U'
-		and o.uid = user_id(#{schema})
-		and (i.status &lt; 2048 or i.status &gt;= 32768 )
-		order by o.name , i.name
+		select 
+			trim(index_name) as "NAME"
+			, '' as "STATUS"
+			, '' as "CREATED"
+		from sysidx ix, systable t
+		where ix.table_id = t.table_id 
+		and t.creator = user_id (#{schema})
+		and ix.index_category not in (1,2)
+		order by t.table_name
 	</select>
 
 	<!-- index and column info -->
 	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		select *
-		from (
-			SELECT
-				 i.name as "INDEX_NAME"
-				, i.status  as "INDEX_STATUS"
-				, i.keycnt as "KEYCNT"
-				, i.maxrowsperpage as "MAXROWSPERPAGE"
-				, i.fill_factor as "FILL_FACTOR"
-				, i.res_page_gap AS "RES_PAGE_GAP"
-				, o.name as  "TABLE_NAME"
-				, c.colid as "ORDINAL_POSITION"
-				, index_col(o.name, i.indid, c.colid, o.uid) as "COLUMN_NAME"
-				, case when i.status >= 2048 then 'PK' when i.status = 2 then 'UQ' when i.status = 0 then 'IDX'	else convert(varchar, i.status)	end as "TYPE"
-				, index_colorder(o.name, i.indid, c.colid, o.uid) as  "ASC_OR_DESC"
-				, s.name as  "SEGMENT_NAME"
-			FROM
-				sysobjects o
-				INNER JOIN sysindexes i on i.id = o.id
-				INNER JOIN syscolumns c on c.id = o.id
-				INNER join syssegments s on  i.segment = s.segment
-			WHERE o.type = 'U'
-			and o.uid = user_id (#{schema})
-			and (i.status &lt; 2048 or i.status &gt;= 32768 )
-			and index_col(o.name, i.indid, c.colid, o.uid) &lt;&gt; null
-		) a
-		order by a.TABLE_NAME ,a.INDEX_NAME , ORDINAL_POSITION
+		select 
+			trim(t.table_name) as  "TABLE_NAME"
+			, trim(c.column_name) as "COLUMN_NAME"
+			, ixc.sequence as "ORDINAL_POSITION"
+			, trim(index_name) as "INDEX_NAME"
+			, (case WHEN ix.index_category =1  THEN 'PK'
+				when ix.index_category =2 then 'FK'
+				when ix.index_category =3 then 'IDX'
+				else convert(varchar, ix.index_category) 
+				end) as  KEYCONST
+			, (case WHEN ixc."order" ='A'  THEN 'ASC'
+				else 'DESC' 
+				end) as   "ASC_OR_DESC"
+		from sysidx ix, systable t, sysidxcol ixc , syscolumn c
+		where ix.table_id = t.table_id 
+		and ixc.table_id = t.table_id 
+		and ixc.index_id = ix.index_id 
+		and ixc.table_id = c.table_id
+		and ixc.column_id = c.column_id 
+		and t.creator = user_id (#{schema})
+		and ix.index_category not in (1,2)
+		order by t.table_name , index_name, ixc.sequence
 	</select>
 
 	<!-- trigger list -->
@@ -401,83 +369,70 @@
 		Table DDL Script
 	 -->
 	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
-		select
-			 so.name AS TABLE_NAME
-			, sc.name AS COLUMN_NAME
-			, st.name AS DATA_TYPE
-			, sc.length AS CHAR_LENGTH
-			, sc.length AS COLUMN_SIZE
-			, sc.scale AS DECIMAL_DIGITS
-			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END NULLABLE
-			, scc.text AS "COLUMN_DEF"
-			, sc.colid AS  "ORDINAL_POSITION"
-			, scc2.text AS "COMMENT"
-		from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
-		inner join systypes st on st.usertype = sc.usertype
-		left outer join syscomments scc on scc.id = sc.cdefault
-		left outer join syscomments scc2 on scc2.id = sc.id
-		where  so.type = 'U'
-		and so.uid = user_id (#{schema})
-		and so.name = #{objectName}
-		order by so.name , sc.colid
+		select trim(so.table_name) as "TABLE_NAME"
+			,trim(sc.cname) as  "COLUMN_NAME"
+			, trim(sc.coltype) as "DATA_TYPE"
+			, sc.length as "CHAR_LENGTH"
+			, sc.length as "COLUMN_SIZE"
+			, sc.syslength as "DECIMAL_DIGITS"
+			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END NULLABLE
+			, sc.default_value AS "COLUMN_DEF"
+			, sc.colno as  "ORDINAL_POSITION"
+			, sc.remarks as "COMMENT"
+		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'BASE'
+		and so.table_name = #{objectName}
+		order by so.table_name , sc.colno
 	</select>
 
 	<!--
 		Table DDL Script => Primary key list
 	 -->
 	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
-		select *
-		from (
-			SELECT
-			     o.name AS "TABLE_NAME", i.name as "CONSTRAINT_NAME",index_col(o.name, i.indid, c.colid, o.uid) AS "COLUMN_NAME",
-			    (case WHEN i.status >= 2048  THEN 'PK'
-			    when i.status =2 then 'UQ'
-			    else 'IDX'
-			    end) AS TYPE
-			    , i.indid as seq
-			FROM
-			    sysobjects o
-			    INNER JOIN sysindexes i on i.id = o.id
-			    INNER JOIN syscolumns c on c.id = o.id
-			WHERE o.type = 'U'
-			and o.uid = user_id (#{schema})
-			and o.name = #{objectName}
-			<![CDATA[
-			and i.indid > 0
-			and ((i.status > 2048 and i.status <= 32768) or i.status =2 )
-			and index_col(o.name, i.indid, c.colid, o.uid) <> null
-			]]>
-		) a
-		order by a.CONSTRAINT_NAME , a.seq
+		select trim(t.table_name) AS "TABLE_NAME"
+			, trim(index_name) as "CONSTRAINT_NAME"
+			, trim(c.column_name) AS "COLUMN_NAME" 
+			, (case WHEN ix.index_category =1  THEN 'PK'
+				when ix.index_category =2 then 'FK'
+				when ix.index_category =3 then 'IDX'
+				else convert(varchar, ix.index_category) 
+				end) as  TYPE
+		from sysidx ix, systable t, sysidxcol ixc , syscolumn c
+		where ix.table_id = t.table_id 
+		and ixc.table_id = t.table_id 
+		and ixc.index_id = ix.index_id 
+		and ixc.table_id = c.table_id
+		and ixc.column_id = c.column_id 
+		and t.creator = user_id (#{schema})
+		and t.table_name = #{objectName}
+		and ix.index_category = 1
+		order by t.table_name , index_name, ixc.sequence
 	</select>
 
 	<!--
 		Table DDL Script => Table, Column Comment Script
 	 -->
-	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
-		select * from (
-		select
-				'TBL' as "TYPE"
-				,'' as "NAME"
-				,sc.text AS "COMMENT"
-			from sysusers su inner join  sysobjects so on su.uid = so.uid
-			left outer join syscomments sc on so.id = sc.id
-			where so.type = 'U'
-			and sc.text is not null
-			and	su.name= #{schema}
-			and so.name =  #{objectName}
-			UNION ALL
-			select
-				'COL' as "TYPE"
-				,sc.name as "NAME"
-				,scc2.text AS "COMMENT"
-			from sysobjects so  INNER JOIN syscolumns sc ON	sc.id = so.id
-			left outer join syscomments scc2 on scc2.id = sc.id
-			where  so.type = 'U'
-			and so.uid = user_id (#{schema})
-			and so.name = #{objectName}
-			and scc2.text is not null
-		) a
+	<select id="tableScriptComments" resultType="hashmap" parameterType="databaseParamInfo">
+		select 
+			'TBL' as "TYPE"
+			,trim(so.table_name) as "NAME"
+			,so.remarks AS "COMMENT"
+		from sys.systable so 
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'BASE'
+		and so.remarks is not null
+		and so.table_name =  #{objectName}
+		union all 
+		select 
+			'COL' as "TYPE"
+			,trim(sc.cname) as "NAME"
+			,sc.remarks AS "COMMENT"
+		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
+		where so.creator = user_id (#{schema})
+		and so.table_type = 'BASE'
+		and so.remarks is not null
+		and so.table_name =  #{objectName}
 	</select>
 
 	<!--
@@ -516,32 +471,23 @@
 		create index  Script
 	 -->
 	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
-		select *
-		from (
-			SELECT
-				 i.name as "INDEX_NAME"
-				, i.status  as "INDEX_STATUS"
-				, i.keycnt as "KEYCNT"
-				, i.maxrowsperpage as "MAXROWSPERPAGE"
-				, i.fill_factor as "FILL_FACTOR"
-				, i.res_page_gap AS "RES_PAGE_GAP"
-				, o.name as  "TABLE_NAME"
-				, c.colid as "ORDINAL_POSITION"
-				, index_col(o.name, i.indid, c.colid, o.uid) as "COLUMN_NAME"
-				, (case WHEN i.status >= 2048  THEN 'PK' when i.status =2 then 'UQ'	else convert(varchar, i.status) end) as  "TYPE"
-				, index_colorder(o.name, i.indid, c.colid, o.uid) as  "ASC_OR_DESC"
-				, s.name as  "SEGMENT_NAME"
-			FROM
-				sysobjects o
-				INNER JOIN sysindexes i on i.id = o.id
-				INNER JOIN syscolumns c on c.id = o.id
-				INNER join syssegments s on  i.segment = s.segment
-			WHERE o.type = 'U'
-			and o.uid = user_id (#{schema})
-			and i.name = #{objectName}
-			and index_col(o.name, i.indid, c.colid, o.uid) &lt;&gt; null
-		) a
-		order by a.TABLE_NAME ,a.INDEX_NAME , ORDINAL_POSITION
+		select trim(t.table_name) AS "TABLE_NAME"
+			, trim(index_name) as "INDEX_NAME"
+			, trim(c.column_name) AS "COLUMN_NAME" 
+			, (case WHEN ix.index_category =1  THEN 'PK'
+				when ix.index_category =2 then 'FK'
+				when ix.index_category =3 then 'IDX'
+				else convert(varchar, ix.index_category) 
+				end) as  TYPE
+		from sysidx ix, systable t, sysidxcol ixc , syscolumn c
+		where ix.table_id = t.table_id 
+		and ixc.table_id = t.table_id 
+		and ixc.index_id = ix.index_id 
+		and ixc.table_id = c.table_id
+		and ixc.column_id = c.column_id 
+		and t.creator = user_id (#{schema})
+		and ix.index_name = #{objectName}
+		order by t.table_name , index_name, ixc.sequence
 	</select>
 
 </mapper>

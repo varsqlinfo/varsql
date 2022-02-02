@@ -83,7 +83,7 @@ public class SelectExecutor implements SQLExecutor{
 
 			rs = pstmt.executeQuery();
 
-			SQLResultSetUtils.resultSetHandler(rs, statementInfo, resultHandler);
+			SQLResultSetUtils.resultSetHandler(rs, statementInfo, resultHandler, true);
 		} catch (Throwable e ) {
 			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
 			result.setMessage(" error message :  "+  e.getMessage());

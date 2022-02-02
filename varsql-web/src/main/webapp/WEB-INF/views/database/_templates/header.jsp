@@ -106,6 +106,9 @@
 					<li class="varsql-menu-item" data-menu-item="tool_export_ddl">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.export.ddl" /></span></a>
 					</li>
+					<li class="varsql-menu-item" data-menu-item="tool_export_tableData">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
+					</li>
 				</ul>
 			</li>
 
@@ -121,9 +124,6 @@
 					<li class="varsql-menu-item" data-menu-item="tool_show_history">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.show.history" /></span></a>
 					</li>
-					<!-- li class="varsql-menu-item" data-menu-item="tool_export_data">
-						<a><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.export.data" /></span></a>
-					</li -->
 				</ul>
 			</li>
 			<li class="divider"></li>
@@ -152,8 +152,8 @@
 					<span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils" /></span>
 				</a>
 				<ul class="varsql-sub-menu">
-					<li class="varsql-menu-item" data-menu-item="tool_utils_genexceltoddl">
-						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.genexceltoddl" /></span></a>
+					<li class="varsql-menu-item" data-menu-item="tool_utils_gentable">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.gentable" /></span></a>
 					</li>
 				</ul>
 			</li>

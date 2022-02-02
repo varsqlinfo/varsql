@@ -17,7 +17,9 @@ public interface PreferencesConstants {
 	enum PREFKEY{
 		MAIN_SETTING("main.database.setting")
 		,TABLE_EXPORT("tool.table.export")
-		,CONTEXTMENU_SERVICEOBJECT("main.contextmenu.serviceobject");
+		,CONVERT_TEXT("main.converttext.sqleditor")
+		,CONTEXTMENU_SERVICEOBJECT("main.contextmenu.serviceobject")
+		,TABLE_DATA_EXPORT("tool.table_data.export");
 		
 		String prefKey; 
 		

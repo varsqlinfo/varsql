@@ -240,6 +240,28 @@ Vue.component('step-button', {
 	}
 })
 
+// step button component add
+Vue.component('step-navigation', {
+	template : '<ul>'
+		+'    <li v-for="(item , idx) in items" :class="step==idx+1?\'active\':\'\'" @click="moveStep(idx)">'
+		+'        <a href="javascript:;">{{item}}</a>'
+		+'    </li>'
+		+'</ul>'
+	, props: {
+		step : {type: Number, default: 0 }
+		,items : {type: Array, default: [] }
+	}
+	,data : function (){
+		return {};
+	}
+	,methods: {
+		moveStep : function (step){
+			step += 1;
+			this.$emit('callback', step);
+		}
+	}
+})
+
 // file upload component
 Vue.component('file-upload', {
 
@@ -260,7 +282,7 @@ Vue.component('file-upload', {
 	+'	</button>'
 	+' </div>'
 	+'<div :id="id+\'_previews\'" class="file-upload-preview">'
-	+'	<div v-if="fileAddMsgViewFlag" class="file-upload-preview-msg">Drop files here or click to upload.</div>'
+	+'	<div v-if="fileAddMsgViewFlag" class="file-upload-preview-msg">Drop files here</div>'
 	+'</div>'
 	+'<div v-if="isViewUploadFile">'
 	+'  <div>업로드된 파일</div>'
@@ -377,19 +399,34 @@ Vue.component('file-upload', {
 			previewTemplate :  this.previewTemplate,
 			previewsContainer: "#"+this.id+"_previews",
 			headers : headers,
-			clickable: [".select-file-button" ,".file-upload-preview" ]// select file selector
+			clickable: [".select-file-button"]// select file selector
 		}, this.options);
 
 
 		if(this.accept != ''){
 			dropzoneOpt.acceptedFiles = this.getAcceptExtensions(this.accept);
 		}
-
+		
 		var dropzone = new Dropzone(this.$el, dropzoneOpt);
 
 		dropzone.on("addedfile", function(file) {
+			var fileName = file.name;
+			
+			if(file.status == Dropzone.ADDED && !VARSQL.isBlank(_this.accept)){
+				
+				var lastIdx = fileName.lastIndexOf('.');
+				var ext = lastIdx > -1 ? fileName.substring(lastIdx+1) : fileName;
+				
+				if(VARSQL.inArray(_this.accept.split(','), ext) < 0){
+					this.removeFile(file);
+					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0031',{accept : _this.accept}));
+					return '';
+				}
+			}
+			
 			_this.fileAddMsgViewFlag = false;
-			file.previewElement.querySelector('.file-name').title = file.name;
+			
+			file.previewElement.querySelector('.file-name').title = fileName;
 		});
 
 		dropzone.on("removedfile", function(file) {

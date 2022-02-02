@@ -19,32 +19,41 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DBTypeDriverProviderRequestDTO {
 
-	private String driverProviderId; 
-	
+	private String driverProviderId;
+
 	@Size(max = 3)
-	private String driverId; 
-	
+	private String driverId;
+
 	@NotEmpty
-	private String providerName; 
-	
+	@Size(max = 255)
+	private String providerName;
+
 	@NotEmpty
-	private String dbType; 
-	
+	@Size(max = 50)
+	private String dbType;
+
 	@Size(max = 1)
-	private String directYn; 
-	
+	private String directYn;
+
 	@NotEmpty
-	private String driverClass; 
-	
+	@Size(max = 100)
+	private String driverClass;
+
 	@NotEmpty
+	@Size(max = 4)
 	private String pathType;
-	
-	private String validationQuery; 
-	private String driverDesc; 
-	private String driverPath; 
+
+	@Size(max = 255)
+	private String validationQuery;
+
+	@Size(max = 255)
+	private String driverDesc;
+
+	@Size(max = 2000)
+	private String driverPath;
 
 	private String removeFileIds;
-	
+
 	private List<MultipartFile> file;
 
 	@Builder
@@ -59,11 +68,11 @@ public class DBTypeDriverProviderRequestDTO {
 		this.validationQuery = validationQuery;
 		this.driverDesc = driverDesc;
 		this.driverPath = driverPath;
-	
+
 	}
 
 	public DBTypeDriverProviderEntity toEntity() {
-		
+
 		return DBTypeDriverProviderEntity.builder()
 			.driverProviderId(driverProviderId)
 			.driverId(driverId)

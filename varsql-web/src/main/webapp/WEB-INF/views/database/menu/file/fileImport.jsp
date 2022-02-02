@@ -123,6 +123,7 @@
 </style>
 <script>
 VARSQL.loadResource(['fileupload']);
+VARSQL.undrop();
 VarsqlAPP.vueServiceBean({
 	el: '#<varsql:namespace/>'
 	,data: {

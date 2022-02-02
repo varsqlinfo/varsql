@@ -366,5 +366,27 @@ public class UserPreferencesController extends AbstractController{
 
 		return getModelAndView("/sqlFile", VIEW_PAGE.USER_PREFERENCES, model);
 	}
+	
+	@RequestMapping(value = { "/fileImportList" }, method = { RequestMethod.GET })
+	public ModelAndView fileImportList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav)
+			throws Exception {
+		ModelMap model = mav.getModelMap();
+		setModelDefaultValue(req, model);
+		model.addAttribute("selectMenu", "fileList");
+		DatabaseUtils.reloadUserDatabaseInfo();
+		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+		return getModelAndView("/fileImportList", VIEW_PAGE.USER_PREFERENCES, model);
+	}
+
+	@RequestMapping(value = { "/fileExportList" }, method = { RequestMethod.GET })
+	public ModelAndView fileExportList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav)
+			throws Exception {
+		ModelMap model = mav.getModelMap();
+		setModelDefaultValue(req, model);
+		model.addAttribute("selectMenu", "fileList");
+		DatabaseUtils.reloadUserDatabaseInfo();
+		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+		return getModelAndView("/fileExportList", VIEW_PAGE.USER_PREFERENCES, model);
+	}
 
 }

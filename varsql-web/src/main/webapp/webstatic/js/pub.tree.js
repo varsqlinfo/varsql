@@ -1,7 +1,7 @@
 /*
  * pubTree v0.0.1
  * ========================================================================
- * Copyright 2016 ytkim
+ * Copyright 2016-2021 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  * url : https://github.com/ytechinfo/pub

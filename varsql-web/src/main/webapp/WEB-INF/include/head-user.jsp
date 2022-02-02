@@ -32,3 +32,4 @@
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
 
+<script src="${pageContextPath}/webstatic/js/varsql.plugin.defaults.js?version=${pubjs_ver}"></script>

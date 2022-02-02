@@ -1,9 +1,6 @@
 package com.varsql.core.sql.beans;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -22,6 +19,10 @@ public class ExportColumnInfo {
 	@XmlAttribute
 	@JacksonXmlProperty(isAttribute = true)
 	private String name;
+	
+	@XmlAttribute
+	@JacksonXmlProperty(isAttribute = true)
+	private String alias;
 
 	// column type
 	@XmlAttribute
@@ -69,12 +70,21 @@ public class ExportColumnInfo {
 	public void setLob(boolean lob) {
 		this.lob = lob;
 	}
+	
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
 	@Override
 	public String toString() {
 
 		return new StringBuffer()
 				.append("name : ").append(name)
+				.append(" alias : ").append(alias)
 				.append(" type : ").append(type)
 				.append(" number : ").append(number)
 				.toString();

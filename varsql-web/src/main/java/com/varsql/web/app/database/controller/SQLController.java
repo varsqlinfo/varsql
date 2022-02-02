@@ -46,6 +46,9 @@ public class SQLController extends AbstractController  {
 	@RequestMapping(value = "/sqlData", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 		logger.debug("sqlData , :{}" , sqlExecuteInfo);
+		
+		sqlExecuteInfo.set_requid_(req.getParameter("_requid_"));
+		
 		return sQLServiceImpl.sqlData(sqlExecuteInfo, req);
 	}
 
@@ -77,7 +80,7 @@ public class SQLController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/dataExport", method = RequestMethod.POST)
 	public void dataExport(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sQLServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, response);
+		sQLServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, req, response);
 	}
 
 	/**
@@ -94,7 +97,7 @@ public class SQLController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/gridDownload", method = RequestMethod.POST)
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sQLServiceImpl.gridDownload(sqlGridDownloadInfo, response);
+		sQLServiceImpl.gridDownload(sqlGridDownloadInfo, req, response);
 	}
 
 }

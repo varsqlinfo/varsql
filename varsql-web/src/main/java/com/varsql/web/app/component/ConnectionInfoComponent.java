@@ -1,6 +1,6 @@
 package com.varsql.web.app.component;
 
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,28 +10,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.beans.FileInfo;
-import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.BeanType;
-import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.ConnectionInfoConfig;
 import com.varsql.core.connection.ConnectionInfoDao;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
-import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
-import com.vartech.common.utils.VartechReflectionUtils;
 
 @Component("connectionInfoDao")
 @ConnectionInfoConfig(beanType = BeanType.SPRING, beanName = "connectionInfoDao", primary = true)
 public class ConnectionInfoComponent implements ConnectionInfoDao {
 
-	private final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+	private final Logger logger = LoggerFactory.getLogger(ConnectionInfoComponent.class);
 
 	private DBConnectionEntityRepository dbConnectionEntityRepository;
 
@@ -51,11 +50,9 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		ConnectionInfoDTO dto = dbConnectionEntityRepository.findByConnInfo(connid);
 
-
 		connInfo.setConnid(dto.getConnection().getVconnid());
 		connInfo.setAliasName(dto.getConnection().getVname());
 		connInfo.setType(dto.getProvider().getDbType().toLowerCase());
-		connInfo.setDriver(dto.getProvider().getDriverClass());
 		connInfo.setUsername(dto.getConnection().getVid());
 
 		String pw = dto.getConnection().getVpw();
@@ -93,24 +90,24 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		connInfo.setValidation_query(validation_query);
 
-		System.out.println(VartechReflectionUtils.reflectionToString(dto.getConnection()));
-		System.out.println(VartechReflectionUtils.reflectionToString(dto.getProvider()));
-		System.out.println(VartechReflectionUtils.reflectionToString(dto.getDriver()));
 
-		List<FileInfoEntity> driverJarFiles= fileInfoEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId());
-
-		List<FileInfo> jarFileList = new ArrayList<>();
-		for(FileInfoEntity fie : driverJarFiles) {
-			FileInfo fi = new FileInfo();
-
-			fi.setName(fie.getFileName());
-			fi.setPath(Paths.get(VarsqlConstants.UPLOAD_PATH).toAbsolutePath().resolve(fie.getFilePath()).normalize().toAbsolutePath().toString());
-			fi.setExt(fie.getFileExt());
-
-			jarFileList.add(fi);
+		List<FileInfo> driverFileInfos;
+		
+		if(PathType.PATH.equals(PathType.getPathType(dto.getProvider().getPathType()))){
+			try {
+				driverFileInfos = FileServiceUtils.getFileInfos(dto.getProvider().getDriverPath().split(";"));
+			} catch (IOException e) {
+				logger.error("driver load fail : "+ dto.getProvider().getDriverPath());
+				driverFileInfos = null; 
+			}
+		}else {
+			driverFileInfos = FileServiceUtils.getFileInfos(fileInfoEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
 		}
 
-		connInfo.setJdbcDriverList(jarFileList);
+		JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriver().getDriverId() , dto.getDriver().getDbdriver());
+	    jdbcDriverInfo.setDriverFiles(driverFileInfos);
+	    
+	    connInfo.setJdbcDriverInfo(jdbcDriverInfo);
 
 		return connInfo;
 	}

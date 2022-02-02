@@ -10,16 +10,8 @@
 	<div>
 		<div class="col-xs-6">
 			<div class="panel">
-				<div class="panel-heading">
-					<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" autocomplete="false" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
-					<div id="recv_autocomplete_area" class=""></div>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<div class="list-group note-recv-id-cont" id="recvIdArr">
-					</div>
-				</div>
-				<!-- /.panel-body -->
+				<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" autocomplete="false" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
+				<div id="recvIdArr"></div>
 			</div>
 			<!-- /.panel -->
 		</div>
@@ -148,6 +140,39 @@
 		<div class="sqlfile-name-input-area">
 			<input type="hidden" id="editorSqlFileId" name="editorSqlFileId">
 			<input type="text" id="editorSqlFileNameText" class="form-control input-sm" placeholder="new file name">
+		</div>
+	</div>
+</div>
+
+<div id="queryConvertDialog" class="query-convert-dialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="Text Convert">
+	<div class="query-convert-header col-xs-12"> 
+		Template
+		<select id="queryConvertType">
+			
+		</select>
+		Split Char
+		<select id="queryConvertSplitChar">
+			<option value="newline" selected>New Line(\n)</option>
+			<option value="tab">Tab(\t)</option>
+			<option value="comma">Comma(,)</option>
+			<option value="space">Space(\s)</option>
+		</select>
+		<button class="query_convert_text_btn">변환</button>
+	</div>
+	<div class="query-convert-body">
+		<div class="col-xs-6 padding5 h100">
+			<div>Data : </div>
+			<textarea class="wh100" id="convertSqlText" style="height: calc(100% - 15px);"></textarea>
+		</div>
+		<div class="col-xs-6 padding5 h100" >
+			<div class="h50">
+				<div>Template: </div>
+				<textarea  id="convertSqlTemplate" style="height: calc(100% - 15px);"></textarea>
+			</div>
+			<div class="h50">
+				<div>Reuslt: </div>
+				<textarea  id="convertSqlResult"  style="height: calc(100% - 15px);"></textarea>
+			</div>
 		</div>
 	</div>
 </div>

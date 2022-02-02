@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,10 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.Authority;
+import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
-import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
@@ -173,21 +171,6 @@ public final class SecurityUtil {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 *
-	 * @Method Name  : setUserInfo
-	 * @Method 설명 : user role Info
-	 * @작성일   : 2018. 1. 22.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param userInfo
-	 */
-	public static void setUserInfo(Map userInfo){
-		userInfo.put(VarsqlKeyConstants.PARAM_UID,userViewId());
-		userInfo.put(VarsqlKeyConstants.PARAM_ROLE,getUserRoleInfo());
-
 	}
 
 	/**

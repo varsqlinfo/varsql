@@ -16,7 +16,6 @@ import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.exception.BoardInvalidException;
 import com.vartech.common.utils.StringUtils;
 
-//TODO 0831
 public class DatabaseBoardAuthInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
 			throws ServletException, IOException {

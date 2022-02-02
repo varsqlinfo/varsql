@@ -8,7 +8,7 @@
 
 </head>
 
-<BODY class="setting-body">
+<BODY class="menu-tools">
 	<tiles:insertAttribute name="body" />
 	<iframe style="display:none;width:0px;height:0px;" id="downloadForm" name="downloadForm"></iframe>
 </BODY>

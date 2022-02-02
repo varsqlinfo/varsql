@@ -167,10 +167,16 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 					,enableSearch : true
 					,enableColumnFix : true
 				}
-				,headerOptions:{
-				}
 				,asideOptions :{
 					lineNumber : {enabled : true}
+				}
+				,valueFilter : function (colInfo, objValue){
+					var val = objValue[colInfo.key];
+					if(colInfo.dbType =='CLOB' && !VARSQL.isBlank(val)){
+						return val.substring(0, 2000);
+					}else{
+						return val;
+					}
 				}
 				,rowOptions :{
 					click : function (rowInfo){
