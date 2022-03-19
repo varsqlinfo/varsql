@@ -47,12 +47,19 @@ public class DBManagerEntity extends AbstractRegAuditorModel{
 	private DBConnectionEntity dbConnInfo;
 
 	@Builder
-	public DBManagerEntity(String vconnid, String viewid) {
+	public DBManagerEntity(String vconnid, String viewid, UserEntity user, DBConnectionEntity dbConnInfo) {
 		this.vconnid = vconnid;
 		this.viewid = viewid;
+		this.user = user;
+		this.dbConnInfo = dbConnInfo;
 
 	}
+	public final static String JOIN_USERINFO="user";
+	
 	public final static String VCONNID="vconnid";
 
 	public final static String VIEWID="viewid";
+	
+	// 정렬 정보
+	public final static String SORT_USERINFO = JOIN_USERINFO+"."+ UserEntity.UNAME ;
 }

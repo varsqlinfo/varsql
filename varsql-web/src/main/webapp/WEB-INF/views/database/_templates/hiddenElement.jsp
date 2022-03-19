@@ -57,7 +57,7 @@
 
 <%--db 정보 --%>
 <div id="aboutDbInfoDialog" style="display:none;margin:0px;padding:0px;" title="DB Info">
-	<div class="user-select-on" style="width:100%; padding-left:40px; height:100%; overflow:auto;">
+	<div class="user-select-on" style="width:100%; padding:15px; height:100%; overflow:auto;">
 		<div style="padding-top :10px;">
 			<div style="font-weight: bold;font-size: 14pt;">DB info</div>
 			<div style="padding-top:10px;" id="epHeaderDialogDbInfo"></div>
@@ -209,6 +209,12 @@
 					<td>
 						<input class="" type="text" id="exportFileName" name="exportFileName" value="">
 						<input type="hidden" id="exportObjectName" name="exportObjectName" value="">
+					</td>
+				</tr>
+				<tr>
+					<td><label class="control-label">Charset</label></td>
+					<td>
+						<input class="" type="text" id="exportCharset" name="exportCharset" value="utf-8">
 					</td>
 				</tr>
 				<tr>

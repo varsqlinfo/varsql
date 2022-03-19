@@ -1,6 +1,9 @@
 package com.varsql.web.app.admin.service;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
@@ -19,25 +23,29 @@ import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
+import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.AbstractService;
-import com.varsql.web.common.service.FileUploadService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.db.DBTypeDriverProviderRequestDTO;
 import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
+import com.varsql.web.model.entity.db.DBTypeDriverEntity;
+import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.repository.db.DBTypeDriverEntityRepository;
+import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverProviderRepository;
 import com.varsql.web.repository.db.DBTypeEntityRepository;
 import com.varsql.web.repository.spec.DBTypeDriverProviderSpec;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
+import com.vartech.common.utils.VartechUtils;
 
 @Service
 public class DriverProvierMgmtServiceImpl extends AbstractService {
@@ -49,17 +57,14 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 	
 	private DBTypeDriverEntityRepository dbTypeDriverModelRepository;
 	
-	private FileUploadService fileUploadService;
-	
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 	
 	public DriverProvierMgmtServiceImpl(DBTypeEntityRepository dbTypeEntityRepository, DBTypeDriverProviderRepository dbTypeDriverProviderRepository
-			, DBTypeDriverEntityRepository dbTypeDriverModelRepository, FileUploadService fileUploadService, FileInfoEntityRepository fileInfoEntityRepository) {
+			, DBTypeDriverEntityRepository dbTypeDriverModelRepository, DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository) {
 		this.dbTypeEntityRepository = dbTypeEntityRepository; 
 		this.dbTypeDriverProviderRepository = dbTypeDriverProviderRepository; 
 		this.dbTypeDriverModelRepository = dbTypeDriverModelRepository; 
-		this.fileUploadService = fileUploadService; 
-		this.fileInfoEntityRepository = fileInfoEntityRepository; 
+		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository; 
 	}
 
 	public ResponseResult list(SearchParameter searchParameter) {
@@ -118,6 +123,7 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 			}
 			
 			entity.setProviderName(dto.getProviderName());
+			entity.setDriverId(dto.getDriverId());
 			entity.setDbType(dto.getDbType());
 			entity.setDriverClass(dto.getDriverClass());
 			entity.setDriverDesc(dto.getDriverDesc());
@@ -130,7 +136,7 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 			String fileIds = dto.getRemoveFileIds();
 			
 			if(!StringUtils.isBlank(fileIds)) {
-				fileInfoEntityRepository.deleteByIdInQuery(Arrays.asList(fileIds.split(",")).stream().map(item->{
+				dbTypeDriverFileEntityRepository.deleteByIdInQuery(Arrays.asList(fileIds.split(",")).stream().map(item->{
 					return item;
 				}).collect(Collectors.toList()));
 			}
@@ -139,11 +145,57 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 		entity = dbTypeDriverProviderRepository.save(entity);
 		
 		if(dto.getFile() !=null && dto.getFile().size() > 0) {
-			fileUploadService.uploadFiles( UploadFileType.JDBC_DIRVER, dto.getFile(), entity.getDriverProviderId(), UploadFileType.JDBC_DIRVER.getDiv(), "file", true, true);
+			uploadDriverFiles(dto.getFile(), entity.getDriverProviderId());
 		}
 		
 		return VarsqlUtils.getResponseResultItemOne(1);
 		
+	}
+	
+	private List<DBTypeDriverFileEntity> uploadDriverFiles( List<MultipartFile> files, String fileContId) {
+		
+		final UploadFileType fileType = UploadFileType.JDBC_DIRVER;
+		List<DBTypeDriverFileEntity> fileInfos = new ArrayList<DBTypeDriverFileEntity>();
+		files.forEach(file ->{
+			if(!(file.getSize() <= 0 && "blob".equals(file.getOriginalFilename()))) {
+				try {
+					
+					String filePath = FileServiceUtils.getSaveRelativePath(fileType, fileContId);
+					
+					// 파일 원본명
+					String fileName = FileUtils.normalize(file.getOriginalFilename());
+					// 파일 확장자 구하기
+					String extension = FileUtils.extension(fileName);
+					
+					String fileId = VartechUtils.generateUUID();
+					
+					if(fileType.isOrginFileName()) {
+						filePath = FileUtils.pathConcat(filePath, fileName);
+					}else {
+						filePath = FileUtils.pathConcat(filePath, String.format("%s.%s",  fileId, extension));
+					}
+					
+					Path createFilePath = FileServiceUtils.getPath(filePath);
+					file.transferTo(createFilePath);
+					
+					fileInfos.add(DBTypeDriverFileEntity.builder()
+							.fileDiv(fileType.getDiv())
+							.fileId(fileId)
+							.fileName(fileName)
+							.fileSize(file.getSize())
+							.fileExt(extension)
+							.fileContId(fileContId)
+							.filePath(filePath).build());
+				} catch (IllegalStateException | IOException e) {
+					logger.error("file upload exception : {}", e.getMessage(), e);
+					throw new VarsqlRuntimeException(VarsqlAppCode.COMM_FILE_UPLOAD_ERROR, "file upload error", e);
+				}
+			}
+		});
+		
+		dbTypeDriverFileEntityRepository.saveAll(fileInfos);
+		
+		return fileInfos;
 	}
 
 	@Transactional(value = "transactionManager", rollbackFor = { Exception.class })
@@ -172,7 +224,9 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 	}
 
 	public ResponseResult driverList(String dbtype) {
-		 return VarsqlUtils.getResponseResultItemList(this.dbTypeDriverModelRepository.findByDbtype(dbtype));
+		Sort sort =Sort.by(Sort.Direction.DESC, DBTypeDriverEntity.DRIVER_ID);
+		
+		return VarsqlUtils.getResponseResultItemList(this.dbTypeDriverModelRepository.findByDbtype(dbtype, sort));
 	}
 	
 	public ResponseResult driverCheck(DBTypeDriverProviderRequestDTO dto) throws EncryptDecryptException {
@@ -196,7 +250,7 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 			if(PathType.PATH.equals(PathType.getPathType(dto.getPathType()))){
 				driverJarFiles = FileServiceUtils.getFileInfos(dto.getDriverPath().split(";"));
 			}else {
-				driverJarFiles = FileServiceUtils.getFileInfos(this.fileInfoEntityRepository.findByFileContId(entity.getDriverProviderId()));
+				driverJarFiles = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(entity.getDriverProviderId()));
 			}
 			
 			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriverProviderId(), dto.getDriverClass());

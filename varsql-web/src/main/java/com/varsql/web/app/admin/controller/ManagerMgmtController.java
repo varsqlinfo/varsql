@@ -94,8 +94,8 @@ public class ManagerMgmtController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/addDbManager", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult addDbManager(@RequestParam(value = "selectItem", required = true)  String selectItem
+	@RequestMapping(value="/dbManagerMapping", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbManagerMapping(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "vconnid", required = true) String vconnid
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			) throws Exception {
@@ -105,6 +105,6 @@ public class ManagerMgmtController extends AbstractController{
 
 	@RequestMapping(value="/dbManagerList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbManagerList(@RequestParam(value = "vconnid", required = true) String vconnid) throws Exception {
-		return managerMgmtServiceImpl.searchDatabaseManager(vconnid);
+		return managerMgmtServiceImpl.findDatabaseManager(vconnid);
 	}
 }

@@ -19,15 +19,6 @@ import com.vartech.common.utils.StringUtils;
 
 public enum TemplateHelpers implements Helper<Object> {
 
-	/**
-	 * Capitalizes the first character of the value. For example:
-	 *
-	 * <pre>
-	 * {{capitalizeFirst value}}
-	 * </pre>
-	 *
-	 * If value is "handlebars.java", the output will be "Handlebars.java".
-	 */
 	ddlIndexKeyword {
 		@Override
 		public String apply(final Object context, final Options options) {

@@ -3,7 +3,6 @@ package com.varsql.web.security;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,8 +16,11 @@ import com.varsql.core.exception.BlockingUserException;
 @Component
 public class VarsqlAuthenticationProvider implements AuthenticationProvider {
 
-	@Autowired
 	private UserService userService;
+	
+	public VarsqlAuthenticationProvider(UserService userService) {
+		this.userService = userService;
+	}
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {

@@ -20,7 +20,6 @@ import com.varsql.core.data.importdata.ImportXmlData;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
-import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 
 /**

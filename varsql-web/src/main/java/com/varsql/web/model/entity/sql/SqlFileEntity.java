@@ -1,5 +1,6 @@
 package com.varsql.web.model.entity.sql;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -55,6 +56,7 @@ public class SqlFileEntity extends AbstractAuditorModel{
 	@Column(name ="SQL_TITLE")
 	private String sqlTitle;
 
+	@Basic(fetch=FetchType.LAZY)
 	@Column(name ="SQL_CONT" ,columnDefinition="CLOB")
 	@Lob
 	private String sqlCont;

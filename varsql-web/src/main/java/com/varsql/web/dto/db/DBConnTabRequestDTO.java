@@ -1,13 +1,7 @@
 package com.varsql.web.dto.db;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.web.model.entity.db.DBConnTabEntity;
-import com.varsql.web.model.entity.db.DBGroupEntity;
-import com.varsql.web.model.entity.sql.SqlFileEntity;
 
 import lombok.Getter;
 import lombok.Setter;

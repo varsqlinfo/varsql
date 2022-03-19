@@ -108,35 +108,30 @@ VarsqlAPP.vueServiceBean( {
 
 			this.initDbMappingInfo();
 
-			$('.item-move').on('click',function (){
-				var moveItem = [];
-				var mode = $(this).attr('mode');
-				if(mode =='add'){
-					moveItem = _self.selectObj.sourceMove();
-				}else{
-					moveItem = _self.selectObj.targetMove();
-				}
-			});
-
 			_self.selectObj= $.pubMultiselect('#source', {
-				source : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
-					,items : []
+				valueKey : 'viewid'	
+				,labelKey : 'uname'
+				,render: function (info){	// 아이템 추가될 템플릿.
+					var item = info.item; 
+					return (item.uname+'('+item.uid+')')
 				}
-				,target : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
-					,items : []
-				}
-				,compleateSourceMove : function (moveItem){
-					if($.isArray(moveItem)){
-						return _self.addDbGroupMappingInfo('add', moveItem);
+				,source : {
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.dbGroupUserMappingInfo('add', moveItem);
+						}
+						
+						return false; 
 					}
 				}
-				,compleateTargetMove : function (moveItem){
-					if($.isArray(moveItem)){
-						return  _self.addDbGroupMappingInfo('del', moveItem);
+				,target : {
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.dbGroupUserMappingInfo('del', moveItem);
+						}
+						return false; 
 					}
 				}
 			});
@@ -201,7 +196,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// 맵핑 정보 추가.
-		,addDbGroupMappingInfo : function (mode, moveItem){
+		,dbGroupUserMappingInfo : function (mode, moveItem){
 			var _self = this;
 
 			if(!_self.detailItem.groupId){
@@ -219,9 +214,10 @@ VarsqlAPP.vueServiceBean( {
 
 			VARSQL.req.ajax({
 				data:param
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupUser'}
-				,success:function (response){
-					_self.dbMappingInfo();
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMapping'}
+				,success:function (res){
+					console.log(res);
+					_self.selectObj.setTargetItem(res.items)
 				}
 			});
 		}

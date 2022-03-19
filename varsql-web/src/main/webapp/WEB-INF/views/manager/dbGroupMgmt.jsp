@@ -150,24 +150,24 @@ VarsqlAPP.vueServiceBean( {
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
+				,valueKey : 'vconnid'	
+				,labelKey : 'vname'
 				,source : {
-					idKey : 'vconnid'
-					,nameKey : 'vname'
-					,items : []
-				}
-				,target : {
-					idKey : 'vconnid'
-					,nameKey : 'vname'
-					,items : []
-				}
-				,compleateSourceMove : function (moveItem){
-					if($.isArray(moveItem)){
-						_self.addDbGroupMappingInfo('add', moveItem);
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.groupDbMapping('add', moveItem);
+						}
+						return false; 
 					}
 				}
-				,compleateTargetMove : function (moveItem){
-					if($.isArray(moveItem)){
-						_self.addDbGroupMappingInfo('del', moveItem);
+				,target : {
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.groupDbMapping('del', moveItem);
+						}
+						return false; 
 					}
 				}
 			});
@@ -291,7 +291,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// 맵핑 정보 추가.
-		,addDbGroupMappingInfo : function (mode, moveItem){
+		,groupDbMapping : function (mode, moveItem){
 			var _self = this;
 
 			if(this.isViewMode ===false) return ;
@@ -304,9 +304,9 @@ VarsqlAPP.vueServiceBean( {
 
 			VARSQL.req.ajax({
 				data:param
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/addDbGroupMappingInfo'}
-				,success:function (response){
-					_self.dbMappingInfo();
+				,url : {type:VARSQL.uri.manager, url:'/dbGroup/groupDbMapping'}
+				,success:function (res){
+					_self.selectObj.setTargetItem(res.items)
 				}
 			});
 		}

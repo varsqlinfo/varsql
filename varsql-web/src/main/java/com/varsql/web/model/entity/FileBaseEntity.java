@@ -27,14 +27,10 @@ public class FileBaseEntity extends AbstractRegAuditorModel{
 	@Column(name ="FILE_SIZE")
 	private long fileSize;
 	
-	@Column(name ="FILE_FIELD_NAME")
-	private String fileFieldName; 
-
 	public final static String FILE_NAME="fileName";
 	public final static String FILE_PATH="filePath";
 	public final static String FILE_EXT="fileExt";
 	public final static String FILE_SIZE="fileSize";
-	public final static String FILE_FIELD_NAME="fileFieldName";
 	
 	public String getDisplaySize() {
 		return FileUtils.displaySize(fileSize);

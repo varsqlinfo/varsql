@@ -23,7 +23,7 @@ import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
@@ -436,7 +436,7 @@ public class TiberoDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);

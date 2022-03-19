@@ -1,7 +1,6 @@
 package com.varsql.web.app.component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -21,7 +20,7 @@ import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
@@ -34,11 +33,11 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 	private DBConnectionEntityRepository dbConnectionEntityRepository;
 
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 
-	public ConnectionInfoComponent(DBConnectionEntityRepository dbConnectionEntityRepository, FileInfoEntityRepository fileInfoEntityRepository) {
+	public ConnectionInfoComponent(DBConnectionEntityRepository dbConnectionEntityRepository, DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository) {
 		this.dbConnectionEntityRepository = dbConnectionEntityRepository;
-		this.fileInfoEntityRepository = fileInfoEntityRepository;
+		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository;
 	}
 
 	@Override
@@ -62,12 +61,13 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 			connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(pw));
 		}
 
-		connInfo.setPool_opt(dto.getConnection().getVpoolopt());
-		connInfo.setConnection_opt(dto.getConnection().getVconnopt());
-		connInfo.setMax_active(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10));
-		connInfo.setMin_idle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 3));
+		connInfo.setPoolOptions(dto.getConnection().getVpoolopt());
+		connInfo.setConnectionOptions(dto.getConnection().getVconnopt());
+		connInfo.setMaxActive(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10));
+		connInfo.setMinIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 3));
 		connInfo.setConnectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
 		connInfo.setExportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
+		connInfo.setTestWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
 
 		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(connInfo.getType());
 
@@ -88,7 +88,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		validation_query = StringUtils.isBlank(validation_query) ? defaultDriverValidationQuery : validation_query;
 
-		connInfo.setValidation_query(validation_query);
+		connInfo.setValidationQuery(validation_query);
 
 
 		List<FileInfo> driverFileInfos;
@@ -101,7 +101,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 				driverFileInfos = null; 
 			}
 		}else {
-			driverFileInfos = FileServiceUtils.getFileInfos(fileInfoEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
+			driverFileInfos = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
 		}
 
 		JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriver().getDriverId() , dto.getDriver().getDbdriver());

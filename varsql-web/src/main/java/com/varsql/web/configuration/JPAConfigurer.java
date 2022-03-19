@@ -1,9 +1,7 @@
 package com.varsql.web.configuration;
-import java.sql.Connection;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Provider;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -13,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -71,7 +70,6 @@ public class JPAConfigurer {
 
     private DataSource mainDataSource;
 
-
 	@PostConstruct
     public void initialize(){
 		ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
@@ -108,7 +106,8 @@ public class JPAConfigurer {
     public DataSource dataSource() {
         return mainDataSource;
     }
-
+    
+    @Primary
     @Bean(name = ResourceConfigConstants.APP_TRANSMANAGER)
     public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -188,7 +187,6 @@ public class JPAConfigurer {
 
     @Bean
     public SQLQueryFactory queryFactory() {
-        Provider<Connection> provider = new SpringConnectionProvider(dataSource());
-        return new SQLQueryFactory(querydslConfiguration(), provider);
+        return new SQLQueryFactory(querydslConfiguration(), new SpringConnectionProvider(dataSource()));
     }
 }

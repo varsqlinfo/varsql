@@ -8,18 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.util.HSSFColor;
-
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
+import com.vartech.common.excel.ExcelCellStyle;
 import com.vartech.common.excel.ExcelHeaderVO;
 import com.vartech.common.excel.ExcelReport;
 import com.vartech.common.excel.ExcelReportVO;
+import com.vartech.common.report.ExcelConstants;
 
 /**
  * 
@@ -49,15 +48,21 @@ public abstract class TableReportImpl implements TableReport{
 			}
 		});
 		
+		// 테이블 요약 정보 추가 여부. 
 		if(addTableDefinitionFlag){
 			List<ExcelReportVO> tableLabelInfo = new ArrayList<ExcelReportVO>();
 			
 			for(VarsqlReportConfig.TABLE tableInfo:VarsqlReportConfig.TABLE.values()){
-				tableLabelInfo.add(new ExcelReportVO(tableInfo.getKey(), tableInfo.getLabel(), tableInfo.getWidth()));
+				tableLabelInfo.add(
+					ExcelReportVO.builder().key(tableInfo.getKey()).name(tableInfo.getLabel()).width(tableInfo.getWidth())
+					.cellStyle(ExcelCellStyle.builder().align(ExcelConstants.ALIGN.CENTER).build())
+					.headerCellStyle(ExcelCellStyle.builder().align(ExcelConstants.ALIGN.CENTER).bgColor(ExcelConstants.DEFAULT_LABEL_BG_COLOR).bold(true).build())
+					.build()
+				);
 			}
 			
 			ExcelReportVO [] labelInfoArr =  tableLabelInfo.toArray(new ExcelReportVO[tableLabelInfo.size()]);
-			report = new ExcelReport("Table Info",labelInfoArr);
+			report = new ExcelReport("Table Info", labelInfoArr);
 			
 			Map<String,String> tableInfoMap = new HashMap<String,String>();
 			
@@ -79,7 +84,7 @@ public abstract class TableReportImpl implements TableReport{
 		
 		List<ExcelReportVO> columnList = new ArrayList<ExcelReportVO>();
 		
-		for(Map colInfo:columnInfoList){
+		for(Map colInfo : columnInfoList){
 			String colName  = String.valueOf(colInfo.get(VarsqlReportConfig.MapperKey.code.getKey()));
 			
 			VarsqlReportConfig.TABLE_COLUMN tableInfo = VarsqlReportConfig.TABLE_COLUMN.valueOf(colName.toUpperCase());
@@ -96,7 +101,11 @@ public abstract class TableReportImpl implements TableReport{
 				}catch(NumberFormatException e){e.getMessage();}
 			}
 			
-			columnList.add(new ExcelReportVO(tableInfo.getKey(), title, width, tableInfo.getAlign()));
+			//columnList.add(new ExcelReportVO(tableInfo.getKey(), title, width, tableInfo.getAlign()));
+			columnList.add(ExcelReportVO.builder().key(tableInfo.getKey()).name(title).width(width)
+					.cellStyle(ExcelCellStyle.builder().align(tableInfo.getAlign()).build())
+					.headerCellStyle(ExcelCellStyle.builder().align(ExcelConstants.ALIGN.CENTER).bgColor(ExcelConstants.DEFAULT_LABEL_BG_COLOR).bold(true).build())
+					.build());
 		}
 		
 		report.setColumnArr(columnList.toArray(new ExcelReportVO[columnList.size()]));
@@ -145,16 +154,18 @@ public abstract class TableReportImpl implements TableReport{
 	protected List<List<ExcelHeaderVO>> getHeaderInfoList() {
 		List<List<ExcelHeaderVO>> haderInfoList = new ArrayList<List<ExcelHeaderVO>>();
 		
-		haderInfoList.add(new ExcelHeaderVO.Builder()
-			.addHeaderVO("Database", 0, 1).addHeaderVO("{databaseName}", 2,2 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
-			.addHeaderVO("Table Name", 3, 4).addHeaderVO("{tableName}", 5, 6, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
+		ExcelCellStyle cellStyle = ExcelCellStyle.builder().bgColor(ExcelConstants.DEFAULT_LABEL_BG_COLOR).bold(true).build(); 
 		
-		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Table Space", 0, 1).addHeaderVO("{tableSpace}", 2,2 , HSSFColor.HSSFColorPredefined.WHITE.getIndex())
-				.addHeaderVO("Entity", 3, 4).addHeaderVO("{entity}",5, 6, HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
-		
-		haderInfoList.add(new ExcelHeaderVO.Builder()
-				.addHeaderVO("Desc", 0, 1).addHeaderVO("{comment}", 2, 6 , HSSFColor.HSSFColorPredefined.WHITE.getIndex()).build());
+		haderInfoList.add(ExcelHeaderVO.builder()
+				.addHeaderVO("Database", 0, 1, cellStyle).addHeaderVO("{databaseName}", 2,2)
+				.addHeaderVO("Table Name", 3, 4, cellStyle).addHeaderVO("{tableName}", 5, 6).build());
+			
+			haderInfoList.add(ExcelHeaderVO.builder()
+					.addHeaderVO("Table Space", 0, 1, cellStyle).addHeaderVO("{tableSpace}", 2,2)
+					.addHeaderVO("Entity", 3, 4, cellStyle).addHeaderVO("{entity}",5, 6).build());
+			
+			haderInfoList.add(ExcelHeaderVO.builder()
+					.addHeaderVO("Desc", 0, 1, cellStyle).addHeaderVO("{comment}", 2, 6).build());
 		
 		return haderInfoList;
 	}

@@ -4,12 +4,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
-import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.db.DBConnectionMapper;
@@ -62,11 +62,9 @@ public class ManagerCommonServiceImpl extends AbstractService{
 	public ResponseResult selectdbList(SearchParameter searchParameter) {
 		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
 			DBConnectionSpec.mgmtDbList(SecurityUtil.userViewId() , searchParameter.getKeyword())
-			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter, Sort.by(DBConnectionEntity.VNAME))
 		);
-
 		return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
-
 	}
 
 	/**
@@ -80,7 +78,7 @@ public class ManagerCommonServiceImpl extends AbstractService{
 	public ResponseResult selectUserList(SearchParameter searchParameter) {
 		Page<UserEntity> result = userMgmtRepository.findAll(
 			UserSpec.likeUnameOrUid(SecurityUtil.isAdmin(), searchParameter.getKeyword())
-			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter, Sort.by(UserEntity.UNAME))
 		);
 
 		return VarsqlUtils.getResponseResult(result, searchParameter, UserMapper.INSTANCE);

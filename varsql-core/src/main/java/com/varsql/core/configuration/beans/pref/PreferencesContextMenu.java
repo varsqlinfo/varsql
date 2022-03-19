@@ -66,7 +66,7 @@ class TemplateInfo {
 
 	@JacksonXmlProperty(localName = "propItems")
     @JacksonXmlElementWrapper(useWrapping = false)
-	private PropItem [] propItems;
+	private PropItem [] propItems = new PropItem[0];
 
 	public String getName() {
 		return name;

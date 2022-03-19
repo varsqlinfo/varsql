@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.User;
+import com.varsql.web.constants.ResourceConfigConstants;
 
 
 /**
@@ -15,7 +16,7 @@ import com.varsql.core.auth.User;
  * @Program desc :
  * @Hisotry :
  */
-@Service
+@Service(ResourceConfigConstants.USER_DETAIL_SERVICE)
 public class UserService implements UserDetailsService {
 
 	@Autowired
@@ -24,7 +25,6 @@ public class UserService implements UserDetailsService {
 	@Override
 	public User loadUserByUsername(final String username) throws UsernameNotFoundException {
 		return authDao.loadUserByUsername(username);
-
 	}
 
 	public User loadUserByUsername(String username, String password) {

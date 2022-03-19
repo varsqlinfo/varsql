@@ -240,8 +240,6 @@ VarsqlAPP.vueServiceBean({
 					,optTxt : 'name'
 					,items : []
 					,click: function (e, sItem){
-						console.log(sItem);
-						
 						_self.detailItem = sItem;
 					}
 				}

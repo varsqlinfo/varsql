@@ -53,18 +53,18 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
 	}
 	@Override
+	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNames) throws Exception {
+		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNames);
+	}
+	
+	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
 	}
 
 	@Override
-	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception {
-		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNmArr);
-	}
-
-	@Override
-	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception	{
-		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,tableNmArr);
+	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... viewNames) throws Exception	{
+		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,viewNames);
 	}
 
 	@Override
@@ -72,8 +72,8 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
-		setObjectNameList(dataParamInfo , objNames);
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames) throws Exception {
+		setObjectNameList(dataParamInfo, functionNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionMeta" ,dataParamInfo);
 	}
 
@@ -83,13 +83,13 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
 	}
 	@Override
-	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
+	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
 
 		IndexInfoHandler handler = new IndexInfoHandler(dbInstanceFactory.getDataTypeImpl());
 
-		setObjectNameList(dataParamInfo , indexName);
+		setObjectNameList(dataParamInfo, indexNames);
 
-		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
+		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata", dataParamInfo, handler);
 
 		return handler.getIndexInfoList();
 	}
@@ -100,13 +100,14 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
+	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerNames) throws Exception {
+		setObjectNameList(dataParamInfo, triggerNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
 	}
 
-	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
+	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... names){
 
-		setObjectNameList(dataParamInfo , tableNmArr);
+		setObjectNameList(dataParamInfo , names);
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
@@ -136,8 +137,8 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceArr) throws Exception {
-		setObjectNameList(dataParamInfo , sequenceArr);
+	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceNames) throws Exception {
+		setObjectNameList(dataParamInfo, sequenceNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
 	}
 
@@ -146,8 +147,8 @@ public class PostgresqlDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
-		setObjectNameList(dataParamInfo , objNames);
+	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... procedureNames) throws Exception {
+		setObjectNameList(dataParamInfo, procedureNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureMeta" ,dataParamInfo);
 	}
 }

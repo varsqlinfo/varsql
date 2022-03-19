@@ -21,6 +21,7 @@ import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SqlUpdateExecutor;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.dto.file.FileImportResult;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.user.FileInfoEntityRepository;
@@ -56,9 +57,12 @@ public class FileImportExportServiceImpl{
 	 * @작성일   : 2020. 11. 22.
 	 * @변경이력  :
 	 */
-	public ResponseResult importFile(String conuid, String importType, String fileIds) {
+	public ResponseResult importFile(FileImportInfo fii) {
+			
+		String conuid  = fii.getConuid();
+		String importType = fii.getImportType();
 
-		List<FileInfoEntity> importFileList = fileInfoEntityRepository.findAllById(Arrays.asList(CommUtils.getFileIds(fileIds)));
+		List<FileInfoEntity> importFileList = fileInfoEntityRepository.findAllById(Arrays.asList(CommUtils.getFileIds(fii.getFileIds())));
 
 		ResponseResult result = new ResponseResult();
 		List<FileImportResult> resultInfo = new ArrayList<>();
@@ -171,5 +175,6 @@ public class FileImportExportServiceImpl{
 		SQLExecuteResult ser =new FileImportExecutor().execute(ssi);
 		return ser;
 	}
+
 
 }

@@ -85,7 +85,7 @@ public class FileUploadService {
 
 		return fileInfos;
 	}
-
+	
 	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String contentId, boolean addExtensionSuffix)
 			throws IllegalStateException, IOException {
 

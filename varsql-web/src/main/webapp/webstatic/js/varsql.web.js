@@ -61,6 +61,7 @@ var _$base = {
 		,'sql':'/sql'
 		,'plugin':'/plugin'
 		,'ignore' :''
+		,'progress' :'/progress'
 	}
 }
 ,_defaultAjaxOption ={
@@ -462,8 +463,6 @@ _$base.req ={
 		
 		var ajaxUid = _$base.generateUUID();
 		
-		ALL_REQ_STATUS[ajaxUid] = true;
-		
 		_currentAjaxUid = ajaxUid; 
 		
 		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option, (option.ignoreUid !==true ? {data: {_requid_ : ajaxUid}} : {}) );
@@ -475,6 +474,10 @@ _$base.req ={
 			xhr.setRequestHeader('WWW-Authenticate', 'Basic realm=varsql');
 
 			if($(loadSelector).length > 0){
+				
+				if(option.enableLoadSelectorBtn){
+					ALL_REQ_STATUS[ajaxUid] = true;
+				}
 				
 				$(loadSelector).centerLoading({
 					contentClear:false
@@ -729,11 +732,11 @@ $(window).on("beforeunload",function(){
 	for(var key in ALL_REQ_STATUS){
 		reqKeys.push(key);
 	};
+	
 	if(reqKeys.length > 0){
 		databaseReqCancel(reqKeys.join(','));
 	}
 })
-
 
 
 _$base.logout = function (callback){

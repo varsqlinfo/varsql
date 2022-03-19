@@ -33,7 +33,6 @@ public class TokenInfo {
 	private EndDelimiterFunction endDelimiterFunction;
 	private boolean multipleEndDelimiter;
 
-	@SuppressWarnings("unused")
 	private TokenInfo() {
 	}
 

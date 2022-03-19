@@ -7,8 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -16,7 +16,7 @@ import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.exception.BoardInvalidException;
 import com.vartech.common.utils.StringUtils;
 
-public class DatabaseBoardAuthInterceptor extends HandlerInterceptorAdapter {
+public class DatabaseBoardAuthInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
 			throws ServletException, IOException {
 		Map pathVariables = (Map) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);

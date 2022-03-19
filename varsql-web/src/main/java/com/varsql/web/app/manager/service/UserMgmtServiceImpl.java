@@ -18,7 +18,6 @@ import com.varsql.web.app.websocket.service.WebSocketServiceImpl;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;

@@ -4,7 +4,8 @@ import com.vartech.common.utils.StringUtils;
 
 public enum VarsqlURLInfo {
 	FILE_DOWNLOAD("fileDownload" ,"/file/download?contId=#contId#&fileId=#fileId#")
-	,DATA_DOWNLOAD("fileDownload" ,"/file/download?contId=#contId#&fileId=#fileId#");
+	,DATA_DOWNLOAD("fileDownload" ,"/file/download?contId=#contId#&fileId=#fileId#")
+	,DRIVER_FILE_DOWNLOAD("driverFileDownload" ,"/file/driverFileDownload?contId=#contId#&fileId=#fileId#");
 
 	private String type;
 	private String url;

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.configuration.PreferencesDataFactory;
 import com.varsql.web.constants.PreferencesConstants;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.model.entity.user.UserDBPreferencesEntity;
 import com.varsql.web.repository.spec.UserDBPreferencesSpec;

@@ -15,7 +15,6 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
-import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;

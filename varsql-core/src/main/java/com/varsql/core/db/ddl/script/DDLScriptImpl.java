@@ -23,7 +23,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.varsql.core.sql.util.JdbcUtils;
 
@@ -402,7 +402,7 @@ public abstract class DDLScriptImpl extends AbstractDDLScript{
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBType.OTHER, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBType.OTHER, SQLTemplateCode.SEQUENCE.create, param));
 
 			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 

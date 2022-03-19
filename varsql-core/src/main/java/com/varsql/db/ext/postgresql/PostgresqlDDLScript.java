@@ -16,11 +16,10 @@ import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
@@ -63,8 +62,6 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 			List<ParamMap> srcList = client.selectList("tableScript", dataParamInfo);
 
 			ddlStr.append("CREATE TABLE " + name + "(\n");
-
-			String dataType = "";
 
 			dataParamInfo.setObjectName(name);
 
@@ -267,7 +264,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
@@ -324,7 +321,7 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);

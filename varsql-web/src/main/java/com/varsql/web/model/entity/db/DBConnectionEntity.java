@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
-import com.varsql.web.model.entity.user.RegInfoEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -105,6 +104,9 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@Column(name ="LAZYLOAD_YN")
 	private String lazyloadYn;
+	
+	@Column(name ="TEST_WHILE_IDLE")
+	private String testWhileIdle;
 
 	@Column(name ="URL_DIRECT_YN")
 	private String urlDirectYn;
@@ -142,7 +144,7 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel, String testWhileIdle) {
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;
@@ -168,6 +170,7 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 		this.vport = vport;
 		this.maxSelectCount = maxSelectCount;
 		this.useColumnLabel = useColumnLabel;
+		this.testWhileIdle = testWhileIdle;
 
 	}
 
@@ -224,4 +227,6 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	public final static String MAX_SELECT_COUNT="maxSelectCount";
 
 	public final static String USE_COLUMN_LABEL ="useColumnLabel";
+	
+	public final static String TEST_WHILE_IDLE ="testWhileIdle";
 }

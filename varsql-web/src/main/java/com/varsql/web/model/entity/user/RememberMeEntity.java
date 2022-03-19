@@ -1,6 +1,5 @@
 package com.varsql.web.model.entity.user;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;

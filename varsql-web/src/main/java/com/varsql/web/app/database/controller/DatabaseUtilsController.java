@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.db.DBType;
-import com.varsql.core.db.servicemenu.ObjectType;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
@@ -73,8 +72,8 @@ public class DatabaseUtilsController extends AbstractController  {
 	public @ResponseBody ResponseResult sqlTemplate(@RequestParam(value = "dbType", required = true) String dbType
 			, @RequestParam(value = "templateType", required = true) String templateType
 			, HttpServletRequest req) throws Exception {
-
-		return VarsqlUtils.getResponseResultItemOne(SQLTemplateFactory.getInstance().getTemplate(DBType.getDBType(dbType), SQL.CREATE.getTemplateId(ObjectType.getDBObjectType(templateType))));
+		
+		return VarsqlUtils.getResponseResultItemOne(SQLTemplateFactory.getInstance().getTemplate(DBType.getDBType(dbType), SQLTemplateCode.TABLE.create));
 	}
 
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -83,18 +84,22 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 	        poolableConnFactory.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 	        //커넥션이 유효한지 확인할때 사용하는 쿼리를 설정한다.
-	        poolableConnFactory.setValidationQuery(connInfo.getValidation_query());
+	        poolableConnFactory.setValidationQuery(connInfo.getValidationQuery());
 
 	      //커넥션 풀의 설정 정보를 생성한다.
 	        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 	        //유휴 커넥션 검사 주기
-	        poolConfig.setTimeBetweenEvictionRunsMillis(1000L * 60L * 1L);
+	        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMillis(1000L * 60L * 1L));
 	        //풀에 있는 커넥션이 유효한지 검사 유무 설정
-	        poolConfig.setTestWhileIdle(true);
+	        
+	        if(connInfo.isTestWhileIdle()){
+	        	poolConfig.setTestWhileIdle(true);
+	        }
+	        
 	        //커넥션 최소갯수 설정
-	        poolConfig.setMinIdle(connInfo.getMin_idle());
+	        poolConfig.setMinIdle(connInfo.getMinIdle());
 	        //커넥션 최대 갯수 설정
-	        poolConfig.setMaxTotal(connInfo.getMax_active());
+	        poolConfig.setMaxTotal(connInfo.getMaxActive());
 
 	        //커넥션 풀 생성. 인자로는 위에서 생성한  PoolabeConnectionFactory와 GenericObjectPoolConfig를 사용한다.
 	        GenericObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<PoolableConnection>(poolableConnFactory, poolConfig);
@@ -163,7 +168,7 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 		p.setProperty("user", ci.getUsername());
 		p.setProperty("password", ci.getPassword());
 
-		Map customInfo =  ci.getConnection_opt();
+		Map customInfo =  ci.getConnectionOptions();
 
 		if(customInfo != null){
 			Iterator iter = customInfo.keySet().iterator();
@@ -176,30 +181,4 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 		return p;
 	}
-
-	private boolean getBoleanVal(String test_while_idle, boolean flag) {
-		try{
-			return Boolean.parseBoolean(test_while_idle);
-		}catch(Exception e){
-			return flag;
-		}
-	}
-
-	private int getIntVal(String val, int i) {
-		try{
-			return Integer.parseInt(val);
-		}catch(Exception e){
-			return i;
-		}
-	}
-
-	private int getIntVal(Object obj, int i) {
-		try{
-			String val = String.valueOf(obj);
-			return Integer.parseInt(val);
-		}catch(Exception e){
-			return i;
-		}
-	}
-
 }

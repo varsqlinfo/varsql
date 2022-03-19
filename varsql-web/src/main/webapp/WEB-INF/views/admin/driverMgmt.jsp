@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="admin.menu.drivermgmt" text="JDBC Driver 관리"/></h1>
+        <h1 class="page-header"><spring:message code="admin.menu.jdbcprovidermgmt" text="JDBC Driver 관리"/></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -237,13 +237,16 @@ VarsqlAPP.vueServiceBean( {
 					break; 
 				}
 			}
-			if(VARSQL.isBlank(this.detailItem.driverClass)){
-				this.detailItem.driverClass = item.dbdriver;
+			try{
+				aaa
+			}catch(e){
+				console.log(e)
 			}
+			console.log(selVal, this.detailItem, selItem)
 			
-			if(VARSQL.isBlank(this.detailItem.validationQuery)){
-				this.detailItem.validationQuery = item.validationQuery;
-			}
+			this.detailItem.driverClass = selItem.dbdriver;
+			this.detailItem.validationQuery = selItem.validationQuery;
+			
 		}
 		// 상세보기
 		,itemView : function(item){
@@ -264,13 +267,14 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,loadSelector : '.detail_area_wrapper'
 				,success: function(resData) {
-					var item  =resData.item;
-
-					if(item.dbType != _this.detailItem.dbType){
-						_this.loadDriverList(item.dbType);
+					var resItem  = resData.item;
+					
+					if(resItem.dbType != _this.detailItem.dbType){
+						_this.setDetailItem(resItem);
+						_this.loadDriverList(resItem.dbType, 'detail');
+					}else{
+						_this.setDetailItem(resItem);
 					}
-
-					_this.setDetailItem(item);
 				}
 			})
 		}
@@ -305,12 +309,9 @@ VarsqlAPP.vueServiceBean( {
 				this.detailItem = item;
 			}
 			
-			var _this = this; 
-			
 			if(item !='init' && this.detailItem.pathType=='file'){
-				_this.setFileInfo();
+				this.setFileInfo();
 			}
-			
 		}
 		,setFileInfo : function (){
 			
@@ -353,7 +354,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 						,download : function (file){
 							VARSQL.req.download({
-								url : VARSQL.util.replaceParamUrl('<varsql:url type="fileDownload" />', file)
+								url : VARSQL.util.replaceParamUrl('<varsql:url type="driverFileDownload" />', file)
 							});
 						}
 					}
@@ -430,7 +431,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// db driver list
-		,loadDriverList : function (val){
+		,loadDriverList : function (val, mode){
 			var _this = this;
 			var param = {
 				dbtype :val
@@ -450,7 +451,10 @@ VarsqlAPP.vueServiceBean( {
 		    		}
 		    		
 		    		_this.driverList = result;
-					_this.detailItem.driverId = resData.items[0].driverId;
+		    		
+		    		if(mode != 'detail'){
+						_this.detailItem.driverId = resData.items[0].driverId;
+		    		}
 					_this.changeDriverInfo();
 
 		    		return ;

@@ -11,7 +11,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,11 +18,9 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
-import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
@@ -220,22 +217,4 @@ public class ExportController extends AbstractController  {
 
 		return exportServiceImpl.downloadTableData2(preferencesInfo, req, response);
 	}
-
-	@PostMapping(value = { "/progressInfo" })
-	@ResponseBody
-	public ResponseResult progress(@RequestParam(value = "requid", required = true) String requestUid,
-			@RequestParam(value = "type", required = true) String type, HttpServletRequest req,
-			HttpServletResponse response) throws Exception {
-
-		String sessAttrKey = HttpSessionConstants.progressKey(requestUid);
-		Object obj = req.getSession(true).getAttribute(sessAttrKey);
-
-		if (obj == "complete") {
-			req.getSession(true).removeAttribute(sessAttrKey);
-		}
-
-		return VarsqlUtils.getResponseResultItemOne(obj);
-
-	}
-
 }

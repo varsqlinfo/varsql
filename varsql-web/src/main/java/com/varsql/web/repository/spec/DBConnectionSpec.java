@@ -1,7 +1,9 @@
 package com.varsql.web.repository.spec;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -35,9 +37,8 @@ public class DBConnectionSpec extends DefaultSpec{
     }
 
     private static Specification<DBConnectionEntity> getDelYn() {
-    	return (root, query, criteriaBuilder) -> {
-    		Predicate predicate = criteriaBuilder.notEqual(root.get(DBConnectionEntity.DEL_YN), true);
-    		return predicate;
+    	return (root, query, cb) -> {
+    		return notEqualsDeleteY(root, cb);
     	};
     }
 
@@ -87,9 +88,13 @@ public class DBConnectionSpec extends DefaultSpec{
 		return (root, query, cb) -> {
         	query.orderBy(cb.desc(root.get(DBConnectionEntity.REG_DT)));
 
-            return cb.like(root.get(DBConnectionEntity.VNAME),contains(keyword));
+            return cb.and( notEqualsDeleteY(root, cb)
+        			, cb.like(root.get(DBConnectionEntity.VNAME),contains(keyword)) );
         };
 	}
 
+	private static Predicate notEqualsDeleteY(Root<DBConnectionEntity> root, CriteriaBuilder cb) {
+		return cb.notEqual(root.get(DBConnectionEntity.DEL_YN), true); 
+	}
 
 }

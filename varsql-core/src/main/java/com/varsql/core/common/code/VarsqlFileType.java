@@ -20,6 +20,7 @@ public enum VarsqlFileType {
 	,JSON(-1)
 	,XML(-1)
 	,TEXT(-1)
+	,HTML(-1)
 	,EXCEL(1048576 ,"xlsx")
 	,ZIP(-1);
 

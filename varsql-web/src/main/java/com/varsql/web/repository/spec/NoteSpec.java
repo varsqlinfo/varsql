@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 import com.varsql.web.model.EntityFieldConstants;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;
-import com.varsql.web.model.entity.sql.SqlFileEntity;
 
 public class NoteSpec extends DefaultSpec {
 

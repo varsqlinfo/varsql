@@ -103,6 +103,7 @@ VarsqlAPP.vueServiceBean( {
 		,tableDDLEditor:{}
 		,ddlTemplate :''
 		,dbType : '${dbtype}'
+		,schema : '${schema}'
 		,resultMessage : ''
 		,ddlDialog : ''
 		,addColumnIdx: 1
@@ -158,7 +159,7 @@ VarsqlAPP.vueServiceBean( {
 	        	_this.tableGridObj.addRow({
 	        		COLUMN_NAME : colName
 	        		,DATA_TYPE : wordType
-	        		,COLUMN_SIZE : (sItem.wordLength ||'')
+	        		,COLUMN_SIZE : (sItem.wordLength ||255)
 	        		,NULLABLE : ''
 	        		,COLUMN_DEF : ''
 	        		,COMMENT : sItem.word
@@ -250,7 +251,8 @@ VarsqlAPP.vueServiceBean( {
 		            }
 		        }
 		        ,rowOptions :{
-		        	contextMenu :{
+		        	height : 30
+		        	,contextMenu :{
 						callback: function(key,sObj) {
 							var sItem = this.gridItem;
 
@@ -273,9 +275,12 @@ VarsqlAPP.vueServiceBean( {
 			        	,items : VARSQLCont.allDataType()
 					}}
 		        	, {label: '길이', key: 'COLUMN_SIZE'}
-		        	, {label: 'Nullable', key: 'NULLABLE',editor :{
+		        	, {label: 'Nullable', key: 'NULLABLE', renderer :{
 		        		type : 'select'
-		        		,items :[{CODE : 'Y' , LABEL :'Y'}, {CODE : 'N' , LABEL :'N'}]
+		        		,list : [
+							'Y'
+							,'N'
+						]
 		        	}}
 		        	, {label: '기본값', key: 'COLUMN_DEF', width: 45}
 		        	, {label: '설명', key: 'COMMENT', width: 45}
@@ -287,7 +292,7 @@ VarsqlAPP.vueServiceBean( {
 			this.tableGridObj.addRow({
         		COLUMN_NAME : 'COLUMN_'+(this.addColumnIdx++)
         		,DATA_TYPE : 'VARCHAR'
-        		,COLUMN_SIZE : ''
+        		,COLUMN_SIZE : 255
         		,NULLABLE : ''
         		,COLUMN_DEF : ''
         		,COMMENT : ''
@@ -324,6 +329,7 @@ VarsqlAPP.vueServiceBean( {
 
 			var param = {
 				"dbType" : this.dbType
+				,"schema" : this.schema
 				,"objectName" : tableName
 				,"keyList":keyList
 				,"columnList": columnList

@@ -1,7 +1,5 @@
 package com.varsql.core.exception;
 
-import java.sql.SQLException;
-
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.vartech.common.constants.CodeEnumValue;

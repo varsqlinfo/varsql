@@ -210,11 +210,11 @@ public class Configuration extends AbstractConfiguration{
 			vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
 			vConInfo.setUsername(jsonInfo.get("username").asText(""));
 			vConInfo.setPassword(jsonInfo.get("password").asText(""));
-			vConInfo.setMax_active(jsonInfo.get("max_active").asInt(10));
-			vConInfo.setPool_opt(jsonInfo.get("pool_option").asText(""));
-			vConInfo.setConnection_opt(jsonInfo.get("connection_option").asText(""));
+			vConInfo.setMaxActive(jsonInfo.get("max_active").asInt(10));
+			vConInfo.setPoolOptions(jsonInfo.get("pool_option").asText(""));
+			vConInfo.setConnectionOptions(jsonInfo.get("connection_option").asText(""));
 			vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
-			vConInfo.setTest_while_idle(jsonInfo.get("test_while_idle").asText());
+			vConInfo.setTestWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()));
 			
 			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo("base", jsonInfo.get("driver").asText("org.h2.Driver"));  
 		    this.vConInfo.setJdbcDriverInfo(jdbcDriverInfo);

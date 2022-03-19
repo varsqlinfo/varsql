@@ -1,8 +1,8 @@
 package com.varsql.core.sql.template;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,6 +20,8 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.db.DBType;
 import com.varsql.core.exception.VarsqlRuntimeException;
+import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.SQLTemplateEnum;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -40,6 +42,7 @@ public class SQLTemplateFactory {
 	private final String SQL_TEMPLATE_PREFIX = "sql_";
 
 	private final String TEMPLATE_PACKAGE= String.format("classpath:db/template/sql/%s*.xml", SQL_TEMPLATE_PREFIX);
+	//private final String TEMPLATE_PACKAGE= String.format("classpath:db/template/sql/sql_other.xml", SQL_TEMPLATE_PREFIX);
 	private final String DEFAULT_FILE= "other";
 
 	private Map<String, HashMap<String,Template>> sqlTemplateInfo = new HashMap<String, HashMap<String,Template>>();
@@ -70,6 +73,10 @@ public class SQLTemplateFactory {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(SQLTemplateFactory.getInstance().getTemplate(DBType.OTHER, SQLTemplateCode.TABLE.create));
+	}
 
 	private void initConfig() throws IOException {
 
@@ -86,20 +93,34 @@ public class SQLTemplateFactory {
 			String xml = ResourceUtils.getResourceString(resource);
 			JsonNode rootNode = VartechUtils.xmlToJsonNode(xml, VarsqlConstants.CHAR_SET);
 
-			Iterator<String> elements= rootNode.fieldNames();
-
 			HashMap<String, Template> templateInfo = new HashMap<String, Template>();
 			HashMap<String, String> templateTextInfo = new HashMap<String, String>();
-
-			while(elements.hasNext()){
-				String node =elements.next();
-				String value = StringUtils.trim(rootNode.get(node).asText());
-
-				templateInfo.put(node, handlebars.compileInline(value));
-
-				templateTextInfo.put(node, value);
+			
+			
+			for(Class<?> cls :  SQLTemplateCode.class.getDeclaredClasses()) {
+				
+				String eleName = cls.getSimpleName().toLowerCase(); 
+				
+				JsonNode eleNode = rootNode.get(eleName);
+				
+				if(eleNode == null) continue; 
+				
+				for(Field field :  cls.getDeclaredFields()) {
+					if(field.isEnumConstant()) {
+						
+						JsonNode childNode = eleNode.get(field.getName());
+						
+						if(childNode == null) continue; 
+						
+						String addNodeId = eleName+StringUtils.capitalize(field.getName()); 
+						String value = StringUtils.trim(childNode.asText());
+						
+						templateInfo.put(addNodeId, handlebars.compileInline(value));
+						templateTextInfo.put(addNodeId, value);
+					}
+				}
 			}
-
+			
 			sqlTemplateInfo.put(dbVender, templateInfo);
 			sqlTemplateTextInfo.put(dbVender, templateTextInfo);
 		}
@@ -117,8 +138,10 @@ public class SQLTemplateFactory {
 	 * @param param
 	 * @return
 	 */
-	public String sqlRender(DBType dbType ,String templateId , Map param){
+	public String sqlRender(DBType dbType, SQLTemplateEnum code, Map param){
 		String dbVender= dbType.getDbVenderName();
+		
+		String templateId = code.getTemplateId(); 
 		Template template = getDDLTemplate( dbVender, templateId);
 
 		if(template ==null){
@@ -134,7 +157,9 @@ public class SQLTemplateFactory {
 		return "";
 	}
 
-	public String getTemplate(DBType dbType, String templateId) {
+	public String getTemplate(DBType dbType, SQLTemplateEnum code) {
+		String templateId = code.getTemplateId(); 
+		
 		if(sqlTemplateTextInfo.containsKey(dbType.getDbVenderName())){
 			return sqlTemplateTextInfo.get(dbType.getDbVenderName()).get(templateId);
 		}

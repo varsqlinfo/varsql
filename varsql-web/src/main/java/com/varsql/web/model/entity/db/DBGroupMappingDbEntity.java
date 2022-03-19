@@ -15,9 +15,11 @@ import com.varsql.web.model.id.DBGroupIdNVconnIdID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @SuppressWarnings("serial")
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @IdClass(DBGroupIdNVconnIdID.class)
@@ -33,19 +35,21 @@ public class DBGroupMappingDbEntity extends AbstractRegAuditorModel{
 	
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "GROUP_ID" ,updatable = false, insertable = false)
+	@JoinColumn(name = "GROUP_ID", updatable = false, insertable = false)
 	private DBGroupEntity groupDbEntity;
 	
 	// 그룹 커넥션 정보를 얻기 위한 것
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
-	@JoinColumn(name = "VCONNID", nullable = false , insertable =false , updatable =false)
+	@JoinColumn(name = "VCONNID", nullable = false, insertable =false, updatable =false)
 	private DBConnectionEntity connInfo;
 
 	@Builder
-	public DBGroupMappingDbEntity(String groupId, String vconnid) {
+	public DBGroupMappingDbEntity(String groupId, String vconnid, DBGroupEntity groupDbEntity, DBConnectionEntity connInfo) {
 		this.groupId = groupId;
 		this.vconnid = vconnid;
+		this.groupDbEntity = groupDbEntity;
+		this.connInfo = connInfo;
 	}
 	
 	public final static String JOIN_CONNINFO="connInfo";
@@ -53,5 +57,7 @@ public class DBGroupMappingDbEntity extends AbstractRegAuditorModel{
 	public final static String GROUP_ID="groupId";
 
 	public final static String VCONNID="vconnid";
+	
+	public final static String SORT_VNAME = JOIN_CONNINFO +'.'+ DBConnectionEntity.VNAME;
 	
 }

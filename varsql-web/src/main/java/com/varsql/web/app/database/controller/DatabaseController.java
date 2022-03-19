@@ -1,12 +1,10 @@
 package com.varsql.web.app.database.controller;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +29,6 @@ import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
-import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.controller.AbstractController;
@@ -77,10 +74,6 @@ public class DatabaseController extends AbstractController {
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
 	private CacheManager cacheManager;
 	
-	@Autowired
-	private SQLServiceImpl sQLServiceImpl;
-
-
 	@RequestMapping(value={"/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();

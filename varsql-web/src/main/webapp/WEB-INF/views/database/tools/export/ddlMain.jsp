@@ -260,15 +260,13 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectDbObjectInfo= $.pubMultiselect('#source', {
 				duplicateCheck : true
+				,valueKey : 'name'	
+				,labelKey : 'name'
 				,source : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,items : paramSourceItem
+					items : paramSourceItem
 				}
 				,target : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,items : targetInfo
+					items : targetInfo
 				}
 				,footer : {
 					enable : true

@@ -1,7 +1,6 @@
 package com.varsql.web.configuration;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -10,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -55,44 +53,42 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
 
 *-----------------------------------------------------------------------------
  */
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	final private String CSRF_TOKEN_NAME = "varsql_ct";
 
-	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-	@Autowired
 	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
-	@Autowired
-	private VarsqlAuthenticationProvider varsqlAuthenticationProvider;
-
-	@Autowired
+	private VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler;
+	
 	private VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler;
 
-	@Autowired
-	private VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler;
-
-	@Autowired
 	private VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler;
 
-	@Autowired
 	private VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private RememberMeTokenRepository rememberMeTokenRepository;
-
-	@Autowired
-	private RememberMeUserService rememberMeUserService;
-
-	@Autowired
+	
 	private BeanFactory beanFactory;
+	
+	public SecurityConfigurer(RestAuthenticationEntryPoint restAuthenticationEntryPoint
+			,VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint
+			,VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler
+			,VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler
+			,VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler
+			,VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler
+			,BeanFactory beanFactory) {
+		
+		this.restAuthenticationEntryPoint = restAuthenticationEntryPoint; 
+		this.varsqlBasicAuthenticationEntryPoint = varsqlBasicAuthenticationEntryPoint; 
+		this.varsqlAuthenticationFailHandler = varsqlAuthenticationFailHandler; 
+		this.varsqlAuthenticationLogoutHandler = varsqlAuthenticationLogoutHandler; 
+		this.varsqlAuthenticationSuccessHandler = varsqlAuthenticationSuccessHandler; 
+		this.varsqlAuthenticationLogoutSuccessHandler = varsqlAuthenticationLogoutSuccessHandler; 
+		this.beanFactory = beanFactory; 
+	}
 
 	@Override
     public void configure(WebSecurity web) throws Exception {
@@ -154,7 +150,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
      		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name(),AuthorityType.USER.name())
      		.antMatchers("/guest/**").hasAuthority(AuthorityType.GUEST.name())
      		.antMatchers("/login","/join/**").anonymous()
-     		.antMatchers("/login_check","/index.jsp").permitAll()
+     		.antMatchers("/login_check","/index.jsp","/progress/**").permitAll()
      		.antMatchers("/**").authenticated()
      		.anyRequest().authenticated()
      	.and()
@@ -200,13 +196,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     public PasswordEncoder varsqlPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-    @Override
-    protected UserDetailsService userDetailsService() {
-    	if(userService==null) {
-    		userService = new UserService();
-    	}
-    	return userService;
+	
+	@Bean
+    public UserService userService() {
+    	return new UserService();
     }
 
     @Bean
@@ -216,7 +209,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    	 auth.authenticationProvider(varsqlAuthenticationProvider);
+    	 auth.authenticationProvider(new VarsqlAuthenticationProvider(userService()));
     }
 
     private void configureRememberMe(HttpSecurity http) throws Exception {
@@ -227,12 +220,22 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                .tokenValiditySeconds(60 * 60 * 24 * 7)
                .authenticationSuccessHandler(varsqlAuthenticationSuccessHandler)
                .alwaysRemember(false)
-               .tokenRepository(rememberMeTokenRepository)
-               .userDetailsService(rememberMeUserService).and();
+               .tokenRepository(rememberMeTokenRepository())
+               .userDetailsService(rememberMeUserService()).and();
 	}
 
     @Bean(ResourceConfigConstants.APP_SSO_SIMPLE_COMPONENT)
     public SimpleSsoHandler simpleSsoComponent() {
     	return new SimpleSsoHandler();
+    }
+    
+    @Bean(ResourceConfigConstants.REMEMBERME_USER_DETAIL_SERVICE)
+    public RememberMeUserService rememberMeUserService() {
+    	return new RememberMeUserService();
+    }
+    
+    @Bean
+    public RememberMeTokenRepository rememberMeTokenRepository() {
+    	return new RememberMeTokenRepository();
     }
 }

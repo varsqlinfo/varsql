@@ -1432,8 +1432,8 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			var params ={
-				exportType :'text'
-				,fileName :this.currentObject.sourceSchema +'-DB Compare Result.html'
+				exportType :'html'
+				,fileName :this.currentObject.sourceSchema +'-DB Compare Result'
 				,content : VARSQLTemplate.render.html($('#downloadTemplate').html(), {
 					sourceSchema : this.currentObject.sourceSchema
 					,targetSchema : this.currentObject.targetSchema

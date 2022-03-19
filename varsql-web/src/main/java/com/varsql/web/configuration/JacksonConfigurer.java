@@ -45,6 +45,8 @@ public class JacksonConfigurer implements Jackson2ObjectMapperBuilderCustomizer 
 	}
 
 	public class CustomOffsetDateTimeSerializer extends OffsetDateTimeSerializer {
+		private static final long serialVersionUID = 1L;
+
 		public CustomOffsetDateTimeSerializer(DateTimeFormatter formatter) {
 			super(OffsetDateTimeSerializer.INSTANCE, false, formatter);
 		}

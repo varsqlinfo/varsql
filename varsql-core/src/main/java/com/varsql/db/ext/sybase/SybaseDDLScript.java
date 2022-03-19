@@ -1,7 +1,6 @@
 package com.varsql.db.ext.sybase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,22 +8,16 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
-import com.vartech.common.app.beans.ParamMap;
-import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -61,7 +54,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTableTemplateParam(ddlOption, dataParamInfo, client.selectList("tableScript", dataParamInfo), client.selectList("tableScriptPk", dataParamInfo), client.selectList("tableScriptComments",dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.TABLE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.TABLE.create, param));
 
 			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
@@ -78,7 +71,6 @@ public class SybaseDDLScript extends DDLScriptImpl {
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		boolean addFlag;
 
 		for (String name : objNmArr) {
 
@@ -91,7 +83,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.VIEW), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.VIEW.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -119,7 +111,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("indexScript", dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.INDEX), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -148,7 +140,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.FUNCTION), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.FUNCTION.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -177,7 +169,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.PROCEDURE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -208,7 +200,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
@@ -218,7 +210,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("objectScriptSource", dataParamInfo));
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.TRIGGER.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -261,7 +253,7 @@ public class SybaseDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);

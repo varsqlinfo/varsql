@@ -47,37 +47,54 @@ var pluginName = "pubMultiselect"
 	,useDragSort : false // target drag 해서 정렬할지 여부.
 	,addPosition : 'last'	// 추가 되는 방향키로 추가시 어디를 추가할지. ex(source, last)
 	,duplicateCheck : true	// 중복 추가 여부.
-	,pageInfo :{	// 다중으로 관리할경우 처리.
-		max : 1		// max page 값
-		,currPage : 1	// 현재 값
-		,pageNumKey : 'pageNo'	// page number key 
-		,emptyMessage : '더블클릭해서 추가하세요'	// item 없을때 메시지
-	}
 	,itemSelector :'.pub-select-item'	// select item selector
-	,addItemCheckStyle :'text-selected'	// add item class
+	,enableAddItemCheck : true			// 추가된 아이템 표시 여부.
 	,selectStyleClass : 'selected'	// select item class
-	,items :[]					// item
+	,items :[]			// item
+	,valueKey : 'code' 	// value key
+	,labelKey : 'name' //  label key
+	,render: function (item){	// 아이템 추가될 템플릿.
+		return item.text
+	}
 	,source : {	// source item
-		idKey : 'CODE_ID' 	// opt id key
-		,nameKey : 'CODE_NM' // opt value key
-		,searchAttrName : '_name'	// search item name attribute
-		,searchAttrKey : '' // search item key attribute
+		label : ''	// headerlabel
+		,labelAlign : 'center'
 		,emptyMessage:''	// message
 		,items: []			// item
 		,click : false	// 클릭시 이벤트
-		,render: function (item){	// 아이템 추가될 템플릿.
-			return '<span>'+item.text+'</span>'
+		,search :{
+			enable : false
+			,enableKeyPress : false 	// keypress event 활성화 여부
+			,callback : function (searchWord, evtType){ // enter ,search button click callback 
+				//console.log(searchWord)		
+			}
 		}
+		,beforeMove : false	// 이동전  이벤트
+		,afterMove : false	//  이동후  이벤트
+		,completeMove : false	// 이동 완료  이벤트
 	}
 	,target : {
-		idKey : 'CODE_ID' // opt id key
-		,nameKey : 'CODE_NM' // opt value key
+		label : ''	// header label
+		,labelAlign : 'center'
 		,items: []			// item
 		,emptyMessage:'' 	// message
 		,click : false	// 클릭시 이벤트
 		,dblclick : false
-		,render: function (item){	// 아이템 추가될 템플릿.
-			return '<span>'+item.text+'</span>'
+		,search :{
+			enable : false
+			,enableKeyPress : false 	// keypress event 활성화 여부
+			,callback : function (searchWord, evtType){ // enter ,search button click callback 
+				//console.log(searchWord)		
+			}
+		}
+		,beforeMove : false	// 이동전  이벤트
+		,afterMove : false	//  이동후  이벤트
+		,completeMove : false	// 이동 완료  이벤트
+		,paging :{	// 다중으로 관리할경우 처리.
+			unitPage : 1		// max page 값
+			,currPage : 1	// 현재 값
+			,pageNumKey : 'pageNo'	// page number key 
+			,enableMultiple : true 	// 페이징 처리를 item 내부의 pageNo 값으로 처리.
 		}
 	}
 	,message : { // 방향키 있을때 메시지
@@ -85,20 +102,11 @@ var pluginName = "pubMultiselect"
 		,delEmpty : false
 		,duplicate :false
 	}
-	,beforeMove : false		// 이동전 이벤트
-	,beforeItemMove : false	 // 이동전 이벤트
-	,afterSourceMove : false	// source 이동후 이벤트
-	,compleateSourceMove : false	// source 이동 완료 이벤트
-	,beforeTargetMove : false	// target 이동전  이벤트
-	,afterTargetMove : false	// target 이동후  이벤트
-	,compleateTargetMove : false	// target 이동 완료  이벤트
 	,footer : {
 		enable : false
 	}
 	,i18 : {
 		helpMessage : '* 목록을 마우스로 드래그앤 드롭하거나 더블클릭 하세요.'
-		,sourceLabel : 'Source'
-		,targetLabel : 'Target'
 		,upLabel : 'Up'
 		,downLabel : 'Down'
 		,add : 'Add'
@@ -139,21 +147,46 @@ function getHashCode (str){
 	return ''+hash+'98';
 }
 
+function objectValues (obj){
+	if(obj){
+		if (Object.values){
+			return Object.values(obj);
+		} else{
+			return Object.keys(obj).map(function(key) {
+				return obj[key];
+			})
+		}
+	};
+
+	return [];
+}
+
+
+
 function Plugin(selector, options) {
 
 	this.selector = selector;
 	this.prefix = 'pubMultiselect'+getHashCode(selector);
 
+	if( options.source.paging !== false){
+		options.source.paging = objectMerge({unitPage : 10, currPage : 1}, options.source.paging);
+	}
+
+	if( options.target.paging !== false){
+		options.target.paging = objectMerge({unitPage : 10, currPage : 1}, options.target.paging);
+	}
+
 	this.options = objectMerge({}, _defaults, options);
 
 	this.config ={
-		currPage : this.options.pageInfo.currPage
-		, pageNumInfo:{}
+		currPage : this.options.target.paging.currPage
 		, itemKey :{
 			sourceIdx :{}
 		}
 		, focus : false
 		, focusType : ''
+		, addCheckStyle : (this.options.enableAddItemCheck ===true ? 'text-selected' :'')
+		, itemList : {'1':{}}
 	};
 
 	this.element = {
@@ -172,8 +205,6 @@ Plugin.prototype ={
 	 */
 	init :function(){
 		var _this = this;
-
-		_this.addItemList ={'1':{}};
 
 		_this.render();
 
@@ -215,6 +246,64 @@ Plugin.prototype ={
 				_this.move(mode);
 			}
 		});
+
+		// 검색
+		this.element.container.on('click.search', '.search-button', function (e){
+			var sEle = $(this);
+			var labelWrapperEle = sEle.closest('[data-mode]'); 
+			var mode = labelWrapperEle.attr('data-mode');
+
+			if(mode=='source'){
+				_this.options.source.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
+			}else{
+				_this.options.target.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
+			}
+		});
+
+		// Page navigation click event
+		this.element.container.on('click.pagigng.num', '.pub-multiselect-paging .page-num', function (e){
+			var sEle = $(this);
+			var pageno = sEle.attr('pageno');
+			var modeArea = sEle.closest('[data-mode]'); 
+			var mode = modeArea.attr('data-mode');
+
+			var param = {no : pageno, searchword : modeArea.find('.input-text').val()||'' ,evt :e};
+
+			if(mode=='source'){
+				_this.options.source.paging.callback.call(sEle, param);
+			}else{
+				if(_this.options.target.paging.enableMultiple === true){
+					_this.config.currPage = pageno;
+					_this.options.target.paging.currPage = pageno; 
+					_this.setTargetItem(objectValues(_this.config.itemList[pageno])||[]);
+				}else{
+					_this.options.target.paging.callback.call(sEle, param);
+				}				
+			}
+		});
+
+		// search box keyup event
+		this.element.container.on('keyup.search', '.input-text', function (e){
+			var sEle = $(this);
+			var labelWrapperEle = sEle.closest('[data-mode]'); 
+			var mode = labelWrapperEle.attr('data-mode');
+
+			var inputText = sEle.val(); 
+
+			if(mode=='source'){
+				if(_this.options.source.search.enableKeyPress === true){
+					_this.options.source.search.callback.call(sEle, inputText, e);
+				}else if(e.keyCode === 13){
+					_this.options.source.search.callback.call(sEle, inputText, e);
+				}
+			}else{
+				if(_this.options.target.search.enableKeyPress === true){
+					_this.options.target.search.callback.call(sEle, inputText, e);
+				}else if(e.keyCode === 13){
+					_this.options.target.search.callback.call(sEle, inputText, e);
+				}
+			}
+		});
 		
 		$(document).off('keydown.'+_this.prefix);
 		$(document).on("keydown." + _this.prefix, function (e) {
@@ -243,38 +332,7 @@ Plugin.prototype ={
 			}
 		});
 
-		if(opts.pageInfo.max > 1){
-			
-			$('#'+_this.prefix+' .pub-multiselect-page-num').on('click',function (e){
-				var currEle = $(this);
-
-				var beforeEle = $('#'+_this.prefix+' .pub-multiselect-page-num.selected');
-
-				if(beforeEle.length > 0){
-					_this.config.pageNumInfo[beforeEle.attr('data-page')] =[];
-					_this.config.pageNumInfo[beforeEle.attr('data-page')].push(_this.element.target.clone().html());
-
-					if(currEle.hasClass('selected')){
-						return false;
-					}
-				}
-
-				beforeEle.removeClass('selected');
-				currEle.addClass('selected');
-
-				var currPageNo = currEle.attr('data-page');
-
-				_this.config.currPage = currPageNo;
-
-				if(opts.pageInfo.emptyMessage !== false && _this.config.pageNumInfo[currPageNo].length < 1){
-					_this.element.target.empty().html(_this.getEmptyMessage());
-				}else{
-					_this.element.target.empty().html(_this.config.pageNumInfo[currPageNo].join(''));
-				}
-			})
-
-			$('#'+_this.prefix+' .pub-multiselect-page-num[data-page="'+_this.config.currPage+'"]').addClass('selected');
-		}
+		
 	}
 	/**
 	 * @method _initItem
@@ -289,116 +347,118 @@ Plugin.prototype ={
 	/**
 	 * @method setSourceItem
 	 * @param items {Array} items array
-	 * @description item 그리기.
-	 */
-	,setSourceItem : function (items){
-		var _this = this
-			,_opts = _this.options
-			,sourceOpt = _opts.source
-			,strHtm = []
-			,tmpItem;
-
-		var len = items.length
-			,valKey = sourceOpt.idKey;
-
-		var pageMaxVal = _opts.pageInfo.max;
-
-		if(len > 0){
-			for(var i=0 ;i < len; i++){
-				tmpItem = items[i];
-				var tmpSelctOptVal = tmpItem[valKey];
-				var selectFlag = false;
-				for(var j = 1 ;j <=pageMaxVal; j++){
-					if(typeof _this.addItemList[j][tmpSelctOptVal] !=='undefined') {
-						selectFlag = true;
-						continue;
-					}
-				}
-
-				strHtm.push(_this.getItemHtml('source', tmpSelctOptVal, tmpItem, selectFlag));
-				_this.config.itemKey.sourceIdx[tmpSelctOptVal] = tmpItem;
-			}
-		}else{
-			strHtm.push(_this.getEmptyMessage(sourceOpt.emptyMessage));
-		}
-		_this.element.source.empty().html(strHtm.join(''));
-	}
-	/**
-	 * @method setSourceItem
 	 * @param items {Array} items array
 	 * @description item 그리기.
 	 */
-	,setTargetItem : function (items){
+	,setSourceItem : function (items, pagingInfo){
+		var _this = this
+			sourceOpt = _this.options.source
+						
+		var len = items.length;
+		
+		if(len > 0){
+			var strHtm = [];
+			var valKey = _this.options.valueKey;
+			var pageMaxVal = _this.options.target.paging.unitPage;
+			for(var i=0 ;i < len; i++){
+				var tmpItem = items[i];
+				var itemValue = tmpItem[valKey];
+				var itemCheckFlag = false;
+				for(var j = 1 ;j <=pageMaxVal; j++){
+					if(_this.config.itemList[j] && typeof _this.config.itemList[j][itemValue] !=='undefined') {
+						itemCheckFlag = true;
+						break; 
+					}
+				}
+
+				strHtm.push(_this.getItemHtml('source', itemValue, tmpItem, itemCheckFlag));
+				_this.config.itemKey.sourceIdx[itemValue] = tmpItem;
+			}
+
+			_this.element.source.empty().html(strHtm.join(''));
+		}else{
+			_this.element.source.empty().html(_this.getEmptyMessage(sourceOpt.emptyMessage));
+		}
+		
+		_$pagingUtil.setPaging(_this, 'source',pagingInfo || sourceOpt.paging);
+		
+	}
+	/**
+	 * @method setTargetItem
+	 * @param items {Array} items array
+	 * @description item 그리기.
+	 */
+	,setTargetItem : function (items, pagingInfo){
 		var _this = this
 			,_opts = _this.options
 			,tmpItem;
 
 		var targetOpt= _opts.target;
 
-		var len = items.length
-			,valKey = targetOpt.idKey;
-
-		var pageNumKey = _opts.pageInfo.pageNumKey;
-		var maxPageNo = _opts.pageInfo.max; 
 		var currPageNo = _this.config.currPage; 
 
-		_this.addItemList[currPageNo] ={};
-		_this.config.pageNumInfo[currPageNo] = [];
+		var len = items.length;
+		
+		this.config.itemList[currPageNo] ={};
 
 		if(len > 0){
+			var valKey = _opts.valueKey;
+			var pageNumKey = targetOpt.paging.pageNumKey;
+			var maxPageNo = targetOpt.paging.unitPage; 
+			
+
+			var strHtm = [];
 			for(var i=0 ;i < len; i++){
 				tmpItem = items[i];
 
-				var tmpSelctOptVal = tmpItem[valKey];
+				var itemValue = tmpItem[valKey];
 				var pageNo = tmpItem[pageNumKey] || currPageNo; 
 
 				if(pageNo > maxPageNo){
 					continue; 
 				}
 
-				if(typeof _this.config.pageNumInfo[pageNo] ==='undefined'){
-					_this.config.pageNumInfo[pageNo] = [];
+				if(typeof _this.config.itemList[pageNo] ==='undefined'){
+					_this.config.itemList[pageNo] = {}
 				}
 
-				if(typeof _this.addItemList[pageNo] === 'undefined'){
-					throw 'pageInfo undefined '+ pageNumKey+' :'+pageNo;
+				if(typeof _this.config.itemList[pageNo][itemValue] !=='undefined'){
+					continue; 
 				}
 
 				tmpItem['_CU'] = 'U';
-				_this.addItemList[pageNo][tmpSelctOptVal] = tmpItem;
+				
+				_this.config.itemList[pageNo][itemValue] = tmpItem;
 
-				_this.config.pageNumInfo[pageNo].push(_this.getItemHtml('target', tmpSelctOptVal, tmpItem))
-
-				_this.addSourceItemSelecClass(_opts, tmpSelctOptVal);
+				if(currPageNo == pageNo){
+					strHtm.push(_this.getItemHtml('target', itemValue, tmpItem));
+				}
+				
+				this.element.source.find(_opts.itemSelector+'[data-val="'+itemValue +'"]').addClass(_this.config.addCheckStyle+ ' target-check');
 			}
 
-			_this.sourceItemSelectCheck(_opts);
+			this.element.source.find(_opts.itemSelector).each(function (){
+				var sEle = $(this);
+				if(!sEle.hasClass('target-check')){
+					sEle.removeClass(_this.config.addCheckStyle);
+				}
+	
+				sEle.removeClass('target-check');
+			})
 
-			if(_this.config.pageNumInfo[currPageNo].length > 0){
-				_this.element.target.empty().html(_this.config.pageNumInfo[currPageNo].join(''));
+			if(strHtm.length > 0){
+				_this.element.target.empty().html(strHtm.join(''));
 			}else{
 				_this.element.target.empty().html(_this.getEmptyMessage(targetOpt.emptyMessage));
 			}
 		}else{
 			_this.element.target.empty().html(_this.getEmptyMessage(targetOpt.emptyMessage));
-			_this.element.source.find(_opts.itemSelector).removeClass(_opts.addItemCheckStyle);
+			_this.element.source.find(_opts.itemSelector).removeClass(_this.config.addCheckStyle);
 		}
-	}
-	// sources select item add class
-	,addSourceItemSelecClass : function (_opts, tmpSelctOptVal ){
-		this.element.source.find(_opts.itemSelector+'[data-val="'+tmpSelctOptVal +'"]').addClass(_opts.addItemCheckStyle+ ' target-check');
-	}
-	// source 체크 된 item unselect
-	,sourceItemSelectCheck: function (_opts){
-		this.element.source.find(_opts.itemSelector).each(function (){
-			var sEle = $(this);
-			if(!sEle.hasClass('target-check')){
-				sEle.removeClass(_opts.addItemCheckStyle);
-			}
 
-			sEle.removeClass('target-check');
-		})
+		_$pagingUtil.setPaging(_this, 'target', pagingInfo || targetOpt.paging);
 	}
+	
 	,_setFocus : function (selectType){
 		this.config.focus = true;
 		this.config.focusType = selectType;
@@ -477,12 +537,10 @@ Plugin.prototype ={
 		_this.element.target.on('dblclick.pub-multiselect', opts.itemSelector, function (e){
 			if($.isFunction(_this.options.target.dblclick)){
 
-				if(_this.options.target.dblclick.call($(this),e, _this.addItemList[_this.config.currPage][_this.getItemVal($(this))]) ===false){
+				if(_this.options.target.dblclick.call($(this),e, _this.config.itemList[_this.config.currPage][_this.getItemVal($(this))]) ===false){
 					return false;
 				};
 			}
-			_this.element.target.find(opts.itemSelector).removeClass(opts.addItemCheckStyle);
-			$(this).addClass(opts.addItemCheckStyle);
 			_this.targetMove();
 		})
 
@@ -582,7 +640,7 @@ Plugin.prototype ={
 
 		if(onlyClickFlag){
 			if($.isFunction(selectItem.click)){
-				selectItem.click.call(sEle , e, _this.addItemList[_this.config.currPage][_this.getItemVal(sEle)]);
+				selectItem.click.call(sEle , e, _this.config.itemList[_this.config.currPage][_this.getItemVal(sEle)]);
 			}
 			evtElement.find(opts.itemSelector+'.'+ opts.selectStyleClass).removeClass(opts.selectStyleClass);
 			sEle.addClass(opts.selectStyleClass);
@@ -624,34 +682,22 @@ Plugin.prototype ={
 
 		if(itemKey){
 			if(typeof pageNum ==='undefined'){
-				return _this.addItemList[_this.config.currPage][itemKey];
+				return _this.config.itemList[_this.config.currPage][itemKey];
 			}else{
-				return _this.addItemList[pageNum][itemKey];
+				return _this.config.itemList[pageNum][itemKey];
 			}
 		}else{
 			var reInfo =[];
 
-			var currEle = $('#'+_this.prefix+' .pub-multiselect-page-num.selected');
-			_this.config.pageNumInfo[currEle.attr('data-page')||_this.config.currPage] =[];
-			_this.config.pageNumInfo[currEle.attr('data-page')||_this.config.currPage].push(_this.element.target.clone().html());
+			for(var no in _this.config.itemList){
 
-			var pageNumHtm = _this.config.pageNumInfo;
+				var pageItems=_this.config.itemList[no];
 
-			for(var pageHtmKey in pageNumHtm){
-
-				var tmpHtmInfo = pageNumHtm[pageHtmKey].join('');
-
-				var tmpHtmInfoEle = $(tmpHtmInfo);
-
-				if(tmpHtmInfoEle.hasClass("empty-message")) continue;
-
-				tmpHtmInfoEle.each(function (i ,item){
-
-					var tmpPageNo = $(item).attr('data-pageno');
-					var addItem = _this.addItemList[tmpPageNo][$(item).attr('data-val')];
-					addItem['_pageNum'] = tmpPageNo;
+				for(var key in pageItems){
+					var addItem = pageItems[key]
+					addItem['_pageNum']  = no; 
 					reInfo.push(addItem);
-				})
+				}
 			}
 			return reInfo;
 		}
@@ -672,10 +718,10 @@ Plugin.prototype ={
 	 * @description 등록된 아이템 상태 업데이트.
 	 */
 	,addItemStausUpdate : function (itemKey){
-		var tmpItem = this.addItemList[this.config.currPage][itemKey];
+		var tmpItem = this.config.itemList[this.config.currPage][itemKey];
 		if(typeof tmpItem !=='undefined'){
 			tmpItem['_CU'] = 'CU';
-			this.getElement(itemKey).replaceWith(this.getItemHtml('target',itemKey,tmpItem));
+			this.getElement(itemKey).replaceWith(this.getItemHtml('target', itemKey, tmpItem));
 		}
 	}
 	/**
@@ -736,12 +782,6 @@ Plugin.prototype ={
 		var returnFlag = opt.returnFlag;
 		var selectVal = opt.items || _this.getSelectElement(_this.element.source);
 
-		if($.isFunction(opts.beforeMove)){
-			if(opts.beforeMove('source') === false){
-				return ;
-			};
-		}
-
 		if(selectVal.length > 0){
 			var tmpVal = '',tmpObj;
 			var	strHtm = [];
@@ -760,16 +800,16 @@ Plugin.prototype ={
 				tmpObj = $(item);
 				tmpVal=_this.getItemVal(tmpObj);
 
-				var addChkFlag = typeof _this.addItemList[_this.config.currPage][tmpVal] ==='undefined';
+				var addChkFlag = typeof _this.config.itemList[_this.config.currPage][tmpVal] ==='undefined';
 				if(dupChkFlag && addChkFlag){
 					dupChkFlag = false;
 				}
 
 				if(!addChkFlag) continue;
 
-				if($.isFunction(opts.beforeItemMove)){
-					if(opts.beforeItemMove(tmpObj) === false){
-						return false;
+				if($.isFunction(opts.source.beforeMove)){
+					if(opts.source.beforeMove(tmpObj) === false){
+						continue;
 					};
 				}
 
@@ -797,12 +837,12 @@ Plugin.prototype ={
 
 				addItemMap[tmpVal] =_addItem;
 
-				strHtm.push(_this.getItemHtml('target',tmpVal ,selectItem ));
+				strHtm.push(_this.getItemHtml('target', tmpVal ,selectItem));
 
 				addElements.push(tmpObj);
 
-				if($.isFunction(opts.afterSourceMove)){
-					opts.afterSourceMove(tmpObj);
+				if($.isFunction(opts.source.afterMove)){
+					opts.source.afterMove(tmpObj);
 				}
 			}
 
@@ -820,18 +860,18 @@ Plugin.prototype ={
 				return false;
 			}
 
-			if($.isFunction(opts.compleateSourceMove)){
-				if(opts.compleateSourceMove(addItemKey)===false) return false;
+			if($.isFunction(opts.source.completeMove)){
+				if(opts.source.completeMove(addItemKey)===false) return false;
 			}
 
 			_this.element.target.find('.empty-message').remove();
 
 			for(var i =0; i <addElements.length; i++){
-				addElements[i].addClass(opts.addItemCheckStyle);
+				addElements[i].addClass(_this.config.addCheckStyle);
 			}
 
 			for(var key in addItemMap){
-				_this.addItemList[_this.config.currPage][key] =addItemMap[key];
+				_this.config.itemList[_this.config.currPage][key] =addItemMap[key];
 			}
 
 			if(returnFlag===true){
@@ -862,6 +902,7 @@ Plugin.prototype ={
 	 */
 	,targetMove : function (opt){
 		var _this = this;
+		 var opts = _this.options;
 
 		opt = opt||{};
 
@@ -869,15 +910,11 @@ Plugin.prototype ={
 
 		var selectVal = _this.getSelectElement(_this.element.target);
 
-		if($.isFunction(_this.options.beforeMove)){
-			if(_this.options.beforeMove('target') === false){
-				return ;
-			};
-		}
-
 		if(selectVal.length >0){
 			var removeItem;
 			var deleteItemKey = [];
+
+			var removeItems = [];
 
 			for(var i =0; i <selectVal.length; i++){
 				var item = selectVal[i];
@@ -885,15 +922,17 @@ Plugin.prototype ={
 				var tmpKey = $(item).attr('data-val');
 				removeItem = _this.config.itemKey.sourceIdx[tmpKey];
 
-				if($.isFunction(_this.options.beforeTargetMove)){
-					if(_this.options.beforeTargetMove($(item))===false) return false;
+				if($.isFunction(opts.target.beforeMove)){
+					if(opts.target.beforeMove($(item))===false) {
+						continue;
+					};
 				}
 
 				var removeFlag = false;
 
-				for(var tmpPageNo in _this.addItemList){
+				for(var tmpPageNo in _this.config.itemList){
 					if(_this.config.currPage != tmpPageNo){
-						if(typeof _this.addItemList[tmpPageNo][tmpKey] !=='undefined'){
+						if(typeof _this.config.itemList[tmpPageNo][tmpKey] !=='undefined'){
 							removeFlag = true ;
 							break;
 						}
@@ -901,30 +940,37 @@ Plugin.prototype ={
 				}
 				if(removeItem){
 					if(removeFlag !== true){
-						_this.element.source.find(_this.options.itemSelector+'[data-val="'+tmpKey+'"]').removeClass(_this.options.addItemCheckStyle);
+						_this.element.source.find(opts.itemSelector+'[data-val="'+tmpKey+'"]').removeClass(_this.config.addCheckStyle);
 					}
 				}
-				$(item).remove();
-
+				
+				removeItems.push($(item))
 				deleteItemKey.push(tmpKey);
 
-				delete _this.addItemList[_this.config.currPage][tmpKey];
-
-				if($.isFunction(_this.options.afterTargetMove)){
-					_this.options.afterTargetMove(removeItem);
+				if($.isFunction(opts.target.afterMove)){
+					opts.target.afterMove(removeItem);
 				}
 			}
 
-			if(Object.keys(_this.addItemList[_this.config.currPage]).length < 1){
-				_this.element.target.empty().html(_this.getEmptyMessage(_this.options.target.emptyMessage));
+			var returnRemoveFlag = true; 
+			if($.isFunction(opts.target.completeMove)){
+				returnRemoveFlag = opts.target.completeMove(deleteItemKey);
+			}
+			
+			if(returnRemoveFlag !== false){
+				for(var i =0; i <removeItems.length; i++){
+					removeItems[i].remove();
+					delete this.config.itemList[this.config.currPage][deleteItemKey[i]];
+				}
+
+				if(Object.keys(_this.config.itemList[_this.config.currPage]).length < 1){
+					_this.element.target.empty().html(_this.getEmptyMessage(opts.target.emptyMessage));
+				}
 			}
 
-			if($.isFunction(_this.options.compleateTargetMove)){
-				_this.options.compleateTargetMove(deleteItemKey);
-			}
 		}else{
-			if(_this.options.message.delEmpty !== false){
-				alert(_this.options.message.delEmpty);
+			if(opts.message.delEmpty !== false){
+				alert(opts.message.delEmpty);
 			}
 			return ;
 		}
@@ -939,6 +985,25 @@ Plugin.prototype ={
 		}
 
 		this.element.container.empty('').html(strHtm.join(''));
+
+		var sourceContainerEl = this.element.container.find('[data-mode="source"]');
+
+		var labelH = 0;
+		if(sourceContainerEl.find('.pub-multiselect-label').length > 0){
+			labelH = sourceContainerEl.find('.pub-multiselect-label').outerHeight();
+			labelH = labelH < 36 ? 36 : 0;
+		}
+		sourceContainerEl.find('.pub-multiselect-area').css('height' , 'calc(100% - '+labelH+'px)');
+
+		var targetContainerEl = this.element.container.find('[data-mode="target"]');
+
+		labelH = 0; 
+		if(targetContainerEl.find('.pub-multiselect-label').length > 0){
+			labelH = targetContainerEl.find('.pub-multiselect-label').outerHeight();
+			labelH = labelH < 36 ? 36 : 0;
+		}
+		targetContainerEl.find('.pub-multiselect-area').css('height' , 'calc(100% - '+labelH+'px)');
+
 		
 		this.element.source = this.element.container.find('[data-type="source"]');
 		this.element.target = this.element.container.find('[data-type="target"]');
@@ -953,27 +1018,27 @@ Plugin.prototype ={
 			,moveBtnSize = isNaN(opts.body.moveBtnSize) ? _defaults.body.moveBtnSize :opts.body.moveBtnSize;
 		
 		var enableMoveBtn = opts.body.enableMoveBtn === false ? false :true
-			,enablePage =  opts.pageInfo.max > 1 ? true :false;
 			
 		var bodyHeight = height -(opts.footer.enable ? 30 : 0);		
-		bodyHeight = bodyHeight - (enablePage ? 22 : 0);
 		bodyHeight = bodyHeight - (enableMoveBtn ? moveBtnSize : 0);
 		
 		var labelHalfHeight =(opts.header.enableSourceLabel ===false) ? 36/2 : 0;
-		strHtm.push('<div id="'+this.prefix+'" style="width:'+width+';height:'+height+'px;" class="pub-multiselect">');
+		strHtm.push('<div id="'+this.prefix+'" style="width:'+width+';" class="pub-multiselect">');
 		strHtm.push('	<div class="pub-multiselect-body vertical '+(opts.body.enableItemEvtBtn ?'show-row-item-btn' : '' )+'">'); // body start
 
 		if(opts.mode !='single'){
-			
-			
-			strHtm.push('  <div style="height:'+(bodyHeight/2 - labelHalfHeight)+'px;">');
+			strHtm.push('  <div style="height:'+(bodyHeight/2 - labelHalfHeight)+'px;" data-mode="source">');
 			
 			if(opts.header.enableSourceLabel===true){
-				strHtm.push('	<div class="pub-multiselect-label">'+this.options.i18.sourceLabel+'</div>');
+				strHtm.push(this.getLabelHtml('source'));
 			}
 
 			strHtm.push('	<div class="pub-multiselect-area '+(opts.header.enableSourceLabel?'':'header-hide')+'"><ul class="pub-multiselect-items" data-type="source"></ul></div>');
 			strHtm.push(' </div>');
+			
+			if(opts.target.paging !== false){
+				strHtm.push(' <div id="'+this.prefix+'source_paging" class="pub-multiselect-paging"></div>');
+			}
 			
 			if(enableMoveBtn){
 				strHtm.push('<div class="pub-multiselect-move-btn" style="height:'+moveBtnSize+'px;line-height:'+moveBtnSize+'px;">');
@@ -983,24 +1048,19 @@ Plugin.prototype ={
 			}	
 		}
 		
-		strHtm.push(' <div style="height:'+(bodyHeight/2+labelHalfHeight)+'px;">');
+		strHtm.push(' <div style="height:'+(bodyHeight/2+labelHalfHeight)+'px;" data-mode="target">');
 
 		if(opts.header.enableTargetLabel===true){
-			strHtm.push('  <div class="pub-multiselect-label">'+this.options.i18.targetLabel+'</div>');
+			strHtm.push(this.getLabelHtml('target'));
 		}
 		
 		strHtm.push('  <div class="pub-multiselect-area '+(opts.header.enableTargetLabel?'':'header-hide')+'"><ul class="pub-multiselect-items" data-type="target"></ul></div>');
 		strHtm.push(' </div>');
 
 		// 페이지 정보
-		if(enablePage){
-			strHtm.push('				   <div class="pub-multiselect-paging">');
-			for(var i = 1 ;i <=opts.pageInfo.max; i++){
-				this.config.pageNumInfo[i+''] =[];
-				this.addItemList[i+''] ={};
-				strHtm.push('<a href="javascript:;" class="pub-multiselect-page-num" data-page="'+i+'" title="'+i+'"><span class="page-no-text">'+i+'</span></a>');
-			}
-			strHtm.push('					</div>');
+
+		if(opts.target.paging !== false){
+			strHtm.push('					<div id="'+this.prefix+'target_paging" class="pub-multiselect-paging"></div>');
 		}
 
 		strHtm.push('	</div>'); // body end
@@ -1025,73 +1085,75 @@ Plugin.prototype ={
 		var width = isNaN(opts.width) ? '100%' : opts.width+'px'
 			,height = (isNaN(opts.height) ? this.element.container.height() : opts.height)
 			
-		var bodyHeight = height -(opts.footer.enable ? 30 : 0) - (enablePage ? 22 : 0) - 2; // border 2 
+		var bodyHeight = height -(opts.footer.enable ? 30 : 0) - 2; // border 2 
 							
-		var enableMoveBtn = opts.body.enableMoveBtn === false ? false :true
-			,enablePage =  opts.pageInfo.max > 1 ? true :false;
+		var enableMoveBtn = opts.body.enableMoveBtn === false ? false :true;
 
-		strHtm.push('<div id="'+this.prefix+'" style="width:'+width+';height:'+height+'px;" class="pub-multiselect">');
+		strHtm.push('<div id="'+this.prefix+'" style="width:'+width+';" class="pub-multiselect">');
 		strHtm.push('	<div class="pub-multiselect-body horizontal '+(opts.body.enableItemEvtBtn ?'show-row-item-btn' : '' )+'">');
 		strHtm.push('		<table>');
 		strHtm.push('		<colgroup>');
 		if(opts.mode =='single'){
 			strHtm.push('<col style="width:100%">');
 		}else{
+			var moveBtnSize = 10;
 			if(enableMoveBtn){
-				var moveBtnSize = isNaN(opts.body.moveBtnSize) ? _defaults.body.moveBtnSize :opts.body.moveBtnSize;
-				strHtm.push('<col style="width:calc(50% - '+(moveBtnSize/2)+'px)">');
-				strHtm.push('<col style="width:'+moveBtnSize+'px">');
-				strHtm.push('<col style="width:calc(50% - '+(moveBtnSize/2)+'px)">');	
-			}else{
-				strHtm.push('<col style="width:50%">');
-				strHtm.push('<col style="width:50%">');
+				moveBtnSize = isNaN(opts.body.moveBtnSize) ? _defaults.body.moveBtnSize :opts.body.moveBtnSize;
 			}
+
+			strHtm.push('<col style="width:calc(50% - '+(moveBtnSize/2)+'px)">');
+			strHtm.push('<col style="width:'+moveBtnSize+'px">');
+			strHtm.push('<col style="width:calc(50% - '+(moveBtnSize/2)+'px)">');	
 		}
 
 		strHtm.push('		</colgroup>');					
 		strHtm.push('			<tbody>');
 		strHtm.push('				<tr>');
 		if(opts.mode !='single'){
-			strHtm.push('					<td>');
-			strHtm.push('					  <div style="height:'+bodyHeight+'px;">');
+			strHtm.push('					<td');
+			strHtm.push('					 <div data-mode="source">');
+			strHtm.push('					   <div style="height:'+bodyHeight+'px;">');
 			
 			if(opts.header.enableSourceLabel===true){
-				strHtm.push('						<div class="pub-multiselect-label">'+this.options.i18.sourceLabel+'</div>');
+				strHtm.push(this.getLabelHtml('source'));
 			}
 
-			strHtm.push('						<div class="pub-multiselect-area '+(opts.header.enableSourceLabel?'':'header-hide')+'"><ul class="pub-multiselect-items" data-type="source"></ul></div>');
-			strHtm.push('					  </div>');
+			strHtm.push('						 <div class="pub-multiselect-area"><ul class="pub-multiselect-items" data-type="source"></ul></div>');
+
+			strHtm.push('					   </div>');
+
+			if(opts.target.paging !== false){
+				strHtm.push('					<div id="'+this.prefix+'source_paging" class="pub-multiselect-paging"></div>');
+			}
+			strHtm.push('					 </div>');
 			strHtm.push('					</td>');
 
+			strHtm.push('					<td class="pub-multiselect-move-btn">');
+
 			if(enableMoveBtn){
-				strHtm.push('					<td class="pub-multiselect-move-btn">');
 				strHtm.push('						<button type="button" style="margin-bottom:5px;" class="pub-multiselect-btn" data-mode="add" title="'+this.options.i18.add+'"></button><br/>');
 				strHtm.push('						<button type="button" class="pub-multiselect-btn" data-mode="del" title="'+this.options.i18.remove+'"></button>');
-				strHtm.push('					</td>');
 			}
+			
+			strHtm.push('					</td>');
 		}
 		
-		strHtm.push('					<td>');
+		strHtm.push('					<td');
+		strHtm.push('					 <div data-mode="target">');
 		strHtm.push('					  <div style="height:'+bodyHeight+'px;">');
 
 		if(opts.header.enableTargetLabel===true){
-			strHtm.push('						<div class="pub-multiselect-label">'+this.options.i18.targetLabel+'</div>');
+			strHtm.push(this.getLabelHtml('target'));
 		}
 		
-		strHtm.push('						<div class="pub-multiselect-area '+(opts.header.enableTargetLabel?'':'header-hide')+'"><ul class="pub-multiselect-items" data-type="target"></ul></div>');
+		strHtm.push('						<div class="pub-multiselect-area"><ul class="pub-multiselect-items" data-type="target"></ul></div>');
 		strHtm.push('					  </div>');
 
-		// 페이지 정보
-		if(enablePage){
-			strHtm.push('				   <div class="pub-multiselect-paging">');
-			for(var i = 1 ;i <=opts.pageInfo.max; i++){
-				this.config.pageNumInfo[i+''] =[];
-				this.addItemList[i+''] ={};
-				strHtm.push('<a href="javascript:;" class="pub-multiselect-page-num" data-page="'+i+'" title="'+i+'"><span class="page-no-text">'+i+'</span></a>');
-			}
-			strHtm.push('					</div>');
+		if(opts.target.paging !== false){
+			strHtm.push('					<div id="'+this.prefix+'target_paging" class="pub-multiselect-paging"></div>');
 		}
 
+		strHtm.push('					 </div>');
 		strHtm.push('					</td>');
 		strHtm.push('				</tr>');
 		strHtm.push('			</tbody>');
@@ -1103,7 +1165,7 @@ Plugin.prototype ={
 			strHtm.push('	<div class="pubMultiselect-footer">');
 			strHtm.push('		<button type="button" class="pub-multiselect-btn" data-mode="up" style="margin-right:5px;">'+this.options.i18.upLabel+'</button>');
 			strHtm.push('		<button type="button" class="pub-multiselect-btn" data-mode="down">'+this.options.i18.downLabel+'</button>');
-			strHtm.push('	</div>');	
+			strHtm.push('	</div>');
 		}
 		
 		strHtm.push('</div>');
@@ -1115,7 +1177,33 @@ Plugin.prototype ={
 	 * @description empty item message
 	 */
 	,getEmptyMessage : function (msg){
-		return '<li class="empty-message">'+(msg||this.options.pageInfo.emptyMessage)+'</li>';
+		return '<li class="empty-message">'+msg+'</li>';
+	}
+
+	,getLabelHtml : function (mode){
+		
+		var labelOpt = this.options.source;
+		if(mode =='target'){
+			labelOpt = this.options.target;
+		}
+
+		var strHtm =[];
+		strHtm.push('<div class="pub-multiselect-label al-'+labelOpt.labelAlign+'">');
+
+		if(labelOpt.search && labelOpt.search.enable === true){
+			if(labelOpt.label != ''){
+				strHtm.push('<span class="label-text">'+labelOpt.label+'</span>');
+			}
+
+			strHtm.push('<input type="text" class="input-text">');
+			strHtm.push('<span class="search-button"><button type="button">Search</button></span>');
+		}else{
+			strHtm.push('<span class="label-text" style="width:100%;display:block;">'+labelOpt.label+'</span>');
+		}
+
+		strHtm.push('</div>');
+
+		return strHtm.join('');
 	}
 	/**
 	 * @method getItemHtml
@@ -1124,92 +1212,208 @@ Plugin.prototype ={
 	 * @param tmpItem {Object} select item
 	 * @description 선택된 html 얻기.
 	 */
-	,getItemHtml: function (type  , seletVal , tmpItem, selectFlag){
+	,getItemHtml: function (type, seletVal, tmpItem, selectFlag){
 		var _this = this
 			, _opts = _this.options
-			, sourceItem = _opts.source
-			, txtKey = sourceItem.nameKey
-			, searchAttrName = sourceItem.searchAttrName
-			, searchAttrKey = sourceItem.searchAttrKey == '' ? txtKey : sourceItem.searchAttrKey
-			, renderTemplate = '';
+			,labelKey = _opts.labelKey;
 
-		var nameVal = tmpItem[searchAttrKey]+''; 
+		var templateItem = type=='source'? _opts.source : _opts.target; 
+
+		var renderTemplate = '';
+		if($.isFunction(_opts.render)){
+			renderTemplate = _opts.render.call(templateItem,{text : tmpItem[labelKey] , item : tmpItem}, 'source');
+		}else{
+			renderTemplate = tmpItem[labelKey];
+		}
+		renderTemplate = '<span>'+renderTemplate + '</span>';
+		
+		var itemText = $(renderTemplate).text();
 
 		if(type=='source'){
-			var styleClass ='';
-			if(_this.addItemList[_this.config.currPage][seletVal]){
-				styleClass += ' '+_opts.addItemCheckStyle;
-			}
+			
+			var styleClass = '';
 
-			if($.isFunction(sourceItem.render)){
-				renderTemplate = sourceItem.render.call(sourceItem,{text : tmpItem[txtKey] , item : tmpItem});
-			}else{
-				renderTemplate = tmpItem[txtKey];
+			if(selectFlag === true || _this.config.itemList[_this.config.currPage][seletVal]){
+				styleClass += ' '+_this.config.addCheckStyle;
 			}
 
 			if(_opts.body.enableItemEvtBtn){
 				renderTemplate += '<button type="button" class="pub-multiselect-btn" data-mode="item-add">'+this.options.i18.add+'</button>';
 			}
 
-			return '<li data-val="'+seletVal+'" '+searchAttrName+'="'+escape(nameVal)+'" class="pub-select-item '+(selectFlag==true?_opts.addItemCheckStyle+' ' :'')+styleClass+'" title="'+nameVal.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
+			return '<li data-val="'+seletVal+'" class="pub-select-item '+styleClass+'" title="'+itemText.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
 		}else{
-
-			if($.isFunction(_opts.target.render)){
-				renderTemplate += _opts.target.render.call(sourceItem,{text : tmpItem[txtKey] , item : tmpItem});
-			}else{
-				renderTemplate += tmpItem[txtKey];
-			}
-
+			
 			if(_opts.body.enableItemEvtBtn){
 				renderTemplate += '<button type="button" class="pub-multiselect-btn" data-mode="item-del">'+this.options.i18.remove+'</button>';
 			}
 			
-			return '<li data-pageno="'+(tmpItem[_opts.pageInfo.pageNumKey]||_this.config.currPage)+'" data-val="'+seletVal+'" '+searchAttrName+'="'+escape(nameVal)+'" class="pub-select-item" title="'+nameVal.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
-		}
-	}
-	/**
-	 * @method lSearch
-	 * @param type {String} 검색할 문자열
-	 * @description 왼쪽 아이템 조회.
-	 */
-	,lSearch : function (val){
-		var _this = this
-			,_opts = _this.options;
-
-		var tmpVal = val;
-		
-		var len = _opts.source.items.length
-			,valKey = _opts.source.idKey
-			,txtKey = _opts.source.nameKey
-			,searchAttrKey = (_opts.source.searchAttrKey == '' ? txtKey : _opts.source.searchAttrKey)
-			,tmpItem;
-			
-		if( len> 0){
-			_this.element.source.find(_opts.itemSelector).removeClass(_opts.selectStyleClass);
-			for(var i=0 ;i < len; i++){
-				tmpItem = _opts.source.items[i];
-
-				if(tmpVal=='' || tmpItem[searchAttrKey].indexOf(tmpVal) > -1){
-					$('#'+_this.prefix+' [data-type="source"]>[data-val='+tmpItem[valKey]+']').show();
-				}else{
-					$('#'+_this.prefix+' [data-type="source"]>[data-val='+tmpItem[valKey]+']').hide();
-				}
-			}
-			//_this.element.source.empty().html(strHtm.join(''));
+			return '<li data-pageno="'+(tmpItem[_opts.target.paging.pageNumKey]||_this.config.currPage)+'" data-val="'+seletVal+'" class="pub-select-item" title="'+itemText.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
 		}
 	}
 	,destroy:function (){
-		//$(document).off('contextmenu.pubcontext', this.element).off('click', '.context-event');
+		$(document).off('keydown.'+this.prefix).off('mousedown.'+this.prefix);
 	}
-	/**
-	 * @method getHilightTemplateData:
-	 * @param re {RegExp} hilight 할 정규식
-	 * @param item {Object} item
-	 * @param hilightTemplate {String} hilight template
-	 * @description hilight template 정보 얻기.
-	 */
-
 };
+
+var _$pagingUtil = {
+	setPaging : function (_ctx, type,_paging){
+			
+		_paging = _paging||{};
+
+		var pagingInfo = this.getPagingInfo(_paging.totalCount||0, _paging.currPage, _paging.countPerPage, _paging.unitPage);
+
+		if(pagingInfo.totalCount <1) {
+			$('#'+_ctx.prefix+type+'_paging').empty();
+			return ; 
+		}
+	
+		_ctx.config.pageNo = pagingInfo.currPage;
+		_ctx.config.pagingInfo = pagingInfo;
+	
+		var currP = pagingInfo.currPage;
+		if (currP == "0") currP = 1;
+		var preP_is = pagingInfo.prePage_is;
+		var currS = pagingInfo.currStartPage;
+		var currE = pagingInfo.currEndPage;
+		if (currE == "0") currE = 1;
+		var nextO = 1 * currP + 1;
+		var preO = currP - 1;
+		var strHTML = [];
+		strHTML.push('<ul>');
+		
+		if (currP <= 1) {
+			strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
+		} else {
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
+		}
+		
+		if(preP_is && (currE - pagingInfo.unitPage >= 0)){
+			strHTML.push(' <li class="page-num" pageno="1"><a href="javascript:" >1...</a></li>');
+		}
+		
+		var no = 0;
+		for (no = currS * 1; no <= currE * 1; no++) {
+			if (no == currP) {
+				strHTML.push(' <li class="active"><a href="javascript:">'+ no + '</a></li>');
+			} else {
+				strHTML.push(' <li class="page-num" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
+			}
+		}
+	
+		if(currS + pagingInfo.unitPage < pagingInfo.totalPage){
+			strHTML.push(' <li class="page-num" pageno="'+pagingInfo.totalPage+'"><a href="javascript:" >...'+pagingInfo.totalPage+'</a></li>');
+		}
+			
+		if (currP == currE) {
+			strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
+		} else {
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
+		}
+		
+		strHTML.push('</ul>');
+	
+		var pageNaviEle = $('#'+_ctx.prefix+type+'_paging');
+		pageNaviEle.empty().html(strHTML.join(''));
+	
+		return this;
+	}
+
+	/**
+	 * @method getPagingInfo
+	 * @param  totalCount {int} 총카운트
+	 * @param  currPage {int} 현재 페이지
+	 * @param  countPerPage {int} 한페이지에 나올 row수
+	 * @param  unitPage {int} 한페이지에 나올 페이번호 갯수
+	 * @description 페이징 하기.
+	 */
+	 ,getPagingInfo : function (totalCount, currPage, countPerPage, unitPage) {
+		countPerPage = countPerPage || 10;
+		unitPage = unitPage || 10;
+
+		if (totalCount < 1) {
+			return {
+				'currPage' :0 ,'unitPage' : 0
+				,'totalCount' : 0 ,'totalPage' : 0
+			}
+		} 
+		
+		if (totalCount < countPerPage) {
+			countPerPage = totalCount;
+		}
+		
+		var totalPage = (totalCount % countPerPage == 0) ? (totalCount/countPerPage) : (Math.floor(totalCount/countPerPage) + 1)
+
+		if (totalPage < currPage){
+			currPage = totalPage;
+		}
+		
+		var currEndCount = countPerPage;
+		
+		if (currPage != 1) {
+			currEndCount = currPage * countPerPage;
+		}
+
+		if (currEndCount > totalCount){
+			currEndCount = totalCount;
+		}
+		
+		var currStartPage;
+		var currEndPage;
+
+		if (totalPage <= unitPage) {
+			currEndPage = totalPage;
+			currStartPage = 1;
+		} else {
+			var halfUnitPage = unitPage;
+
+			if(currPage == unitPage || (currPage > unitPage && (totalPage - (currPage-1) >= unitPage)) ){
+				halfUnitPage = Math.floor(unitPage /2); 
+			}
+
+			if(currPage <= halfUnitPage){
+				currEndPage = unitPage;
+				currStartPage = 1; 
+			}else if(currPage+halfUnitPage < totalPage){
+				currEndPage = currPage + halfUnitPage;
+				currStartPage = currEndPage - unitPage + 1;
+			}else{
+				currEndPage = (currPage + halfUnitPage);
+
+				if(currEndPage > totalPage){
+					currEndPage =totalPage;
+				}
+				currStartPage = currEndPage - unitPage + 1;
+			}
+		}
+
+		if (currEndPage > totalPage)
+			currEndPage = totalPage;
+
+		var prePage=0;
+		var prePage_is=false;
+		if (currStartPage != 1) {
+			prePage_is = true;
+			prePage = currStartPage - 1;
+		}
+
+		var nextPage=0;
+		var nextPage_is =false;
+		if (currEndPage != totalPage) {
+			nextPage_is = true;
+			nextPage = currEndPage + 1;
+		}
+
+		return  {
+			'currPage' :currPage ,'unitPage' : unitPage
+			,'prePage' : prePage ,'prePage_is' : prePage_is
+			,'nextPage' : nextPage,'nextPage_is' : nextPage_is
+			,'currStartPage' : currStartPage ,'currEndPage' : currEndPage
+			,'countPerPage' : countPerPage, 'totalCount' : totalCount ,'totalPage' : totalPage
+		};
+	}
+	
+}
 
 $[ pluginName ] = function (selector,options) {
 

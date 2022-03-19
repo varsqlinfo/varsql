@@ -26,13 +26,13 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
 
 	@Autowired
-	private AuthDAO authDao;
+	private SecurityLogDAO securityLogDAO;
 
     public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
 
     	if (authentication != null && authentication.getDetails() != null) {
 			try {
-				authDao.addLog(SecurityUtil.loginInfo() , "logout", CommUtils.getClientPcInfo(request));
+				securityLogDAO.addLog(SecurityUtil.loginInfo() , "logout", CommUtils.getClientPcInfo(request));
 			} catch (Exception e) {
 				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
 			}

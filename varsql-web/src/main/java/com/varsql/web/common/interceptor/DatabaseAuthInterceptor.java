@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -24,7 +24,7 @@ import com.vartech.common.utils.StringUtils;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
+public class DatabaseAuthInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
@@ -65,6 +65,7 @@ public class DatabaseAuthInterceptor extends HandlerInterceptorAdapter {
 		req.setAttribute(VarsqlParamConstants.CONN_UUID, conuid);
 		req.setAttribute(VarsqlParamConstants.DB_TYPE, dataBaseInfo.get(conuid).getType());
 		req.setAttribute(VarsqlParamConstants.VCONNID, dataBaseInfo.get(conuid).getVconnid());
+		req.setAttribute(VarsqlParamConstants.DB_SCHEMA, dataBaseInfo.get(conuid).getSchema());
 		return true;
 	}
 }

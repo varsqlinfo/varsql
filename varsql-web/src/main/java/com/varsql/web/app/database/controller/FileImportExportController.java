@@ -3,8 +3,6 @@ package com.varsql.web.app.database.controller;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import com.varsql.web.app.database.service.FileImportExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
 import com.varsql.web.constants.UploadFileType;
+import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
@@ -90,22 +89,18 @@ public class FileImportExportController extends AbstractController {
 	}
 
 	@RequestMapping(value="/import", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult fileImport(
-			@RequestParam(name="importType",required = true) String importType
-			, @RequestParam(name="fileIds", required = true) String fileIds
-			, @RequestParam(name="conuid", required = true) String conuid
-			, HttpServletRequest request
-			) throws IOException {
-		logger.debug("file fileImport! importType : {}, conuid : {} , fileIds : {}" , importType , conuid, fileIds);
+	public @ResponseBody ResponseResult fileImport(FileImportInfo fii) throws IOException {
+		
+		logger.debug(" import file info: {}" , fii);
 
-		if(StringUtils.isBlank(fileIds)) {
+		if(StringUtils.isBlank(fii.getFileIds())) {
 			ResponseResult result = new ResponseResult();
 			result.setResultCode(VarsqlAppCode.COMM_FILE_EMPTY);
 			result.setMessage("select file");
 			return result;
 		}
 
-		return fileImportExportServiceImpl.importFile(conuid, importType, fileIds);
+		return fileImportExportServiceImpl.importFile(fii);
 
 	}
 

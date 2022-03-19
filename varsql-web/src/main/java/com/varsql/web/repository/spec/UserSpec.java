@@ -7,7 +7,6 @@ import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.auth.AuthorityType;
-import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 
 /**

@@ -56,8 +56,8 @@ public final class ConnectionFactory implements ConnectionContext{
 			ConnectionInfo baseConInfo = new ConnectionInfo();
 			try {
 				BeanUtils.copyProperties(baseConInfo, Configuration.getInstance().getVarsqlDB());
-				baseConInfo.setMax_active(2);
-				baseConInfo.setMin_idle(1);
+				baseConInfo.setMaxActive(10);
+				baseConInfo.setMinIdle(2);
 				createPool(baseConInfo);
 			} catch (IllegalAccessException |InvocationTargetException e) {
 				logger.error("vsql connection pool error : {} ", e.getMessage(), e);

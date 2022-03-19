@@ -1,6 +1,5 @@
 package com.varsql.db.ext.sybase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -19,7 +18,6 @@ import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.vartech.common.utils.VartechUtils;
 
 
 /**
@@ -54,8 +52,8 @@ public class SybaseDBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception {
-		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNmArr);
+	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNames) throws Exception {
+		return tableAndColumnsInfo(dataParamInfo,"tableMetadata", tableNames);
 	}
 
 	@Override
@@ -63,35 +61,13 @@ public class SybaseDBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
 	}
 	@Override
-	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception	{
-		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,tableNmArr);
+	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... viewNames) throws Exception	{
+		return tableAndColumnsInfo(dataParamInfo,"viewMetadata", viewNames);
 	}
 
-	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
+	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... names){
 
-		if(tableNmArr!=null  && tableNmArr.length > 0){
-			StringBuilder sb =new StringBuilder();
-
-			List<String> tableInfoList = new ArrayList<String>();
-
-			boolean  addFlag = false;
-			for (int i = 0; i < tableNmArr.length; i++) {
-				sb.append(addFlag ? ",":"" ).append("'").append(tableNmArr[i]).append("'");
-
-				addFlag = true;
-				if(i!=0 && (i+1)%1000==0){
-					tableInfoList.add(sb.toString());
-					sb =new StringBuilder();
-					addFlag = false;
-				}
-			}
-
-			if(sb.length() > 0){
-				tableInfoList.add(sb.toString());
-			}
-
-			dataParamInfo.addCustom("objectNameList", tableInfoList);
-		}
+		setObjectNameList(dataParamInfo, names);
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
@@ -117,54 +93,31 @@ public class SybaseDBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
+	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... procedureNames) throws Exception {
+		setObjectNameList(dataParamInfo, procedureNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
-
 
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
-		dataParamInfo.addCustom("objectNameList", objNames);
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames) throws Exception {
+		setObjectNameList(dataParamInfo, functionNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
-
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
 	}
 	@Override
-	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
+	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
 
 		IndexInfoHandler handler = new IndexInfoHandler(dbInstanceFactory.getDataTypeImpl());
 
-		if(indexName!=null && indexName.length > 0){
-			StringBuilder sb =new StringBuilder();
-
-			List<String> indexNameList = new ArrayList<String>();
-
-			boolean  addFlag = false;
-			for (int i = 0; i < indexName.length; i++) {
-				sb.append(addFlag ? ",":"" ).append("'").append(indexName[i]).append("'");
-
-				addFlag = true;
-				if(i!=0 && (i+1)%1000==0){
-					indexNameList.add(sb.toString());
-					sb =new StringBuilder();
-					addFlag = false;
-				}
-			}
-
-			if(sb.length() > 0){
-				indexNameList.add(sb.toString());
-			}
-
-			dataParamInfo.addCustom("objectNameList", indexNameList);
-		}
+		setObjectNameList(dataParamInfo, indexNames);
 
 		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
 
@@ -179,7 +132,8 @@ public class SybaseDBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
+	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerNames) throws Exception {
+		setObjectNameList(dataParamInfo, triggerNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
 	}
 }

@@ -152,32 +152,31 @@ VarsqlAPP.vueServiceBean({
 					{ label: 'Size', key: 'fileSize', align:'right', width:45},
 					{ label: 'Compress Size', key: 'compressFileSize', align:'right', width:45},
 					{ label: 'UPD DT', key: 'updDt',width:50},
-					{ label: '보기', key: 'viewCont',width:50, align:'center', render : 'html'
-						, formatter: function (){
-							return '<a href="javascript:;">보기</a>'
-						}
-						,colClick : function (idx, cellInfo){
-							_this.$ajax({
-								url : {type:VARSQL.uri.user, url:'/preferences/file/zipDetail'}
-								,loadSelector : '#main-content'
-								,data : {
-									fileId : _this.detailItem.fileId
-									,fileName : cellInfo.item.fileName
-								}
-								,success:function (resData){
-									_this.fileViewEditor.setValue(resData.item||'');
-									_this.fileViewEditor.setHistory({done:[],undone:[]});
-								}
-							});
-						}
+					{ label: '보기', key: 'viewCont',width:85, align:'center' 
+						,"renderer": { 
+							type : "button" 
+							,label : '내용보기'
+							,click : function (info){
+								_this.$ajax({
+									url : {type:VARSQL.uri.user, url:'/preferences/file/zipDetail'}
+									,loadSelector : '#main-content'
+									,data : {
+										fileId : _this.detailItem.fileId
+										,fileName : info.rowItem.fileName
+									}
+									,success:function (resData){
+										_this.fileViewEditor.setValue(resData.item||'');
+										_this.fileViewEditor.setHistory({done:[],undone:[]});
+									}
+								});
+							}
+						}	
 					}
 				]
-				,tbodyItem :[]
-				,bodyOptions : {
-					cellDblClick : function (cellInfo){
-						
-					}
+				,rowOptions :{
+					height : 30
 				}
+				,tbodyItem :[]
 			});
 			
 			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('sqlFileViewer'), {

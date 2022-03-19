@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.varsql.web.model.entity.app.FileInfoEntity;
+import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
+import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.app.beans.ParamMap;
@@ -27,9 +29,11 @@ public class FileDownloadController {
 	private final static Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 	
 	private FileInfoEntityRepository fileInfoEntityRepository;
+	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 	
-	public FileDownloadController(FileInfoEntityRepository fileInfoEntityRepository) {
+	public FileDownloadController(FileInfoEntityRepository fileInfoEntityRepository, DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository) {
 		this.fileInfoEntityRepository = fileInfoEntityRepository; 
+		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository; 
 	}
 
 	// 첨부파일 다운로드
@@ -73,5 +77,48 @@ public class FileDownloadController {
 			downFileName = downFileName + ".zip";
 		}
 		FileServiceUtils.fileDownload(req, res, downFileName, fileList.toArray(new FileInfoEntity[0]));
+	}
+	
+	@RequestMapping(value = "/driverFileDownload")
+	public void driverFileDownload(@RequestParam(value = "contId") String contId,
+			@RequestParam(value = "fileId") String fileId, HttpServletRequest req,
+			HttpServletResponse res) throws Exception {
+		logger.debug("fileDownload");
+		
+		List<DBTypeDriverFileEntity> fileList = new ArrayList<>();
+		
+		if(!StringUtils.isBlank(fileId)) {
+			
+			DBTypeDriverFileEntity fie= dbTypeDriverFileEntityRepository.findByFileId(fileId);
+			if(fie != null) {
+				fileList.add(fie);
+			}
+			
+		}else if(!StringUtils.isBlank(contId)) {
+			fileList = dbTypeDriverFileEntityRepository.findByFileContId(fileId);
+		}
+		
+		if (fileList.size() < 1) {
+			res.setContentType("text/html");
+			res.setStatus(HttpStatus.OK.value());
+			try (PrintWriter out = res.getWriter()) {
+				out.write("<script>alert('file not found')</script>");
+			}
+			return;
+		}
+		
+		ParamMap param =HttpUtils.getServletRequestParam(req);
+		
+		String downFileName = "";
+		int fileSize = fileList.size();
+		if (fileSize == 1) {
+			downFileName = fileList.get(0).getFileName();
+		} else {
+			downFileName = param.getString("downFileName", "downloadFile");
+			downFileName = java.net.URLDecoder.decode(downFileName, "UTF-8");
+			downFileName = downFileName + ".zip";
+		}
+		
+		FileServiceUtils.fileDownload(req, res, downFileName, fileList.toArray(new DBTypeDriverFileEntity[0]));
 	}
 }

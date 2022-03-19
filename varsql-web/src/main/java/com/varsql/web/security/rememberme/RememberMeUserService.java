@@ -2,7 +2,6 @@ package com.varsql.web.security.rememberme;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.User;
 import com.varsql.web.security.AuthDAO;
@@ -16,7 +15,6 @@ import com.varsql.web.security.UserService;
  * @Program desc :
  * @Hisotry :
  */
-@Service("rememberMeUserService")
 public class RememberMeUserService extends UserService {
 
 	@Autowired

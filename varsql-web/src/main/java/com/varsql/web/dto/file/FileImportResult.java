@@ -1,7 +1,6 @@
 package com.varsql.web.dto.file;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.vartech.common.constants.RequestResultCode;
 
 import lombok.Getter;
 import lombok.Setter;

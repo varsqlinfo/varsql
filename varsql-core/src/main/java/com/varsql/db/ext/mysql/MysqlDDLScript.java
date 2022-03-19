@@ -106,7 +106,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
@@ -128,7 +128,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
@@ -163,7 +163,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
@@ -205,7 +205,7 @@ public class MysqlDDLScript extends DDLScriptImpl {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		StringBuilder ddlStr;
-		boolean addFlag;
+		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();

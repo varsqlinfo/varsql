@@ -33,8 +33,8 @@ public class ConnectionHIKARI extends AbstractConnectionPool{
 			config.setJdbcUrl( connInfo.getUrl() );
 	        config.setUsername( connInfo.getUsername() );
 	        config.setPassword(connInfo.getPassword() );
-	        config.setMaximumPoolSize(connInfo.getMax_active());
-	        config.setConnectionTestQuery(connInfo.getValidation_query());
+	        config.setMaximumPoolSize(connInfo.getMaxActive());
+	        config.setConnectionTestQuery(connInfo.getValidationQuery());
 	        config.setConnectionTimeout(connInfo.getConnectionTimeOut() *1000);
 
 	        /*

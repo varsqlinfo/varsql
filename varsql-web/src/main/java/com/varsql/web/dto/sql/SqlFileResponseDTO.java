@@ -2,8 +2,6 @@ package com.varsql.web.dto.sql;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Lob;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,18 +21,14 @@ public class SqlFileResponseDTO{
 
 	private String sqlTitle;
 
-	@Lob
-	private String sqlCont;
-
 	private String sqlParam;
 
 	private LocalDateTime regDt;
 
 	@Builder
-	public SqlFileResponseDTO(String sqlId, String sqlTitle, String sqlCont, String sqlParam, LocalDateTime regDt) {
+	public SqlFileResponseDTO(String sqlId, String sqlTitle, String sqlParam, LocalDateTime regDt) {
 		this.sqlId = sqlId;
 		this.sqlTitle = sqlTitle;
-		this.sqlCont = sqlCont;
 		this.sqlParam = sqlParam;
 		this.regDt = regDt;
 	}

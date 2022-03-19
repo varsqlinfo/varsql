@@ -33,17 +33,37 @@
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
 			-- col.DATA_TYPE as "DATA_TYPE" ,
-			col.TYPE_NAME as "DATA_TYPE" ,
-			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH" ,
-			col.NUMERIC_PRECISION as "COLUMN_SIZE" ,
-			col.NUMERIC_SCALE as "DECIMAL_DIGITS" ,
-			(CASE WHEN col.IS_NULLABLE = 'NO'  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
+			col.TYPE_NAME as "DATA_TYPE",
+			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH",
+			col.NUMERIC_PRECISION as "COLUMN_SIZE",
+			col.NUMERIC_SCALE as "DECIMAL_DIGITS",
+			(
+				CASE
+				WHEN col.IS_NULLABLE = 'NO' then 'N'
+				ELSE 'Y'
+				END
+			) as "IS_NULLABLE",
 			col.COLUMN_DEFAULT AS "COLUMN_DEF",
-			ind.INDEX_TYPE_NAME  as "CONSTRAINTS",
+				ind.CONSTRAINTS,
 			col.REMARKS as "COMMENT"
-		from INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col on tbl.TABLE_NAME = col.TABLE_NAME and  tbl.TABLE_TYPE = 'TABLE'
-		left outer join information_schema.INDEXES  ind on col.TABLE_SCHEMA = ind.TABLE_SCHEMA 	and col.TABLE_NAME = ind.TABLE_NAME  and col.COLUMN_NAME = ind.COLUMN_NAME
-		where col.TABLE_SCHEMA =  #{schema}
+		from
+			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
+			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE = 'TABLE'
+			left outer join (
+				select TABLE_NAME , COLUMN_NAME, case when MAX(PRIMARY_KEY) = TRUE then 'PK'
+					WHEN MAX(INDEX_TYPE_NAME) = 'UNIQUE INDEX' then 'UQ'
+					else null end as "CONSTRAINTS"
+				from  information_schema.INDEXES 
+				where TABLE_SCHEMA = #{schema}
+				<if test="custom != null and custom.objectNameList != null">
+					and
+					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+						table_name in (${item})
+					</foreach>
+				</if>
+				group by  TABLE_NAME , COLUMN_NAME
+			) ind on col.TABLE_NAME = ind.TABLE_NAME and col.COLUMN_NAME = ind.COLUMN_NAME
+		where col.TABLE_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -79,18 +99,23 @@
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
 			-- col.DATA_TYPE as "DATA_TYPE" ,
-			col.TYPE_NAME as "DATA_TYPE" ,
-			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH" ,
-			col.NUMERIC_PRECISION as "COLUMN_SIZE" ,
-			col.NUMERIC_SCALE as "DECIMAL_DIGITS" ,
-			(CASE WHEN col.IS_NULLABLE = 'NO'  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
+			col.TYPE_NAME as "DATA_TYPE",
+			col.CHARACTER_OCTET_LENGTH as "CHAR_LENGTH",
+			col.NUMERIC_PRECISION as "COLUMN_SIZE",
+			col.NUMERIC_SCALE as "DECIMAL_DIGITS",
+			(
+				CASE
+				WHEN col.IS_NULLABLE = 'NO' then 'N'
+				ELSE 'Y'
+				END
+			) as "IS_NULLABLE",
 			col.COLUMN_DEFAULT AS "COLUMN_DEF",
-			'' as "CONSTRAINTS",
+			''	as CONSTRAINTS,
 			col.REMARKS as "COMMENT"
-		from INFORMATION_SCHEMA.VIEWS tbl inner join information_schema.columns col on tbl.TABLE_NAME = col.TABLE_NAME
-		left outer join information_schema.constraints const
-		on col.TABLE_SCHEMA = const.TABLE_SCHEMA and col.TABLE_NAME = const.TABLE_NAME
-		where col.TABLE_SCHEMA =  #{schema}
+		from
+			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
+			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE = 'VIEW'
+		where col.TABLE_SCHEMA = #{schema}
 		<choose>
 			<when test="custom != null and custom.objectNameList != null">
 				and
@@ -99,7 +124,7 @@
 				</foreach>
 			</when>
 			<otherwise>
-				and col.TABLE_NAME in (select TABLE_NAME  from information_schema.views)
+				and col.TABLE_NAME in (select TABLE_NAME  from information_schema.views where TABLE_SCHEMA = #{schema})
 			</otherwise>
 		</choose>
 		order by col.TABLE_NAME , col.ORDINAL_POSITION
@@ -158,6 +183,7 @@
 			,'' as "STATUS"
 		from information_schema.INDEXES  ind
 		WHERE ind.TABLE_SCHEMA = #{schema}
+		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
 		group by ind.index_NAME
 		order by ind.TABLE_NAME, ind.index_NAME
 	</select>
@@ -174,6 +200,7 @@
 			'' as "STATUS"
 		from information_schema.INDEXES  ind
 		WHERE ind.TABLE_SCHEMA = #{schema}
+		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				ind.INDEX_NAME in (${item})

@@ -1,72 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE var-sql SYSTEM  "sqlTemplate.dtd">
+<!DOCTYPE templateConfig SYSTEM  "sqlTemplate.dtd">
 
-<var-sql>
+<templateConfig>
 	<!-- 테이블 생성-->
-	<tableCreate><![CDATA[
+	<table>
+		<create>
+		<![CDATA[
 {{~#if ddlOpt.addDropClause}}
 /*DROP TABLE {{objectName}}; */
 {{/if}}
 
 CREATE TABLE {{objectName}}(
 {{#columnList}}
-	{{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
 {{/columnList}}
 )
 
 {{#ddlTableKey keyList objectName dbType}}
-  {{#xif type '==' 'PK'}}
-	{{#each constList}}
+    {{#xif type '==' 'PK'}}
+    {{#each constList}}
 ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
-  {{#xif type '==' 'UQ'}}
-	{{#each constList}}
+    {{/each}}
+    {{/xif}}
+    {{#xif type '==' 'UQ'}}
+    {{#each constList}}
 CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
+    {{/each}}
+    {{/xif}}
 {{/ddlTableKey}}
 
 {{#commentsList}}
 {{#xif TYPE '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{COMMENT}}';{{/xif}}
 {{~#xif TYPE '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{NAME}} is '{{COMMENT}}';{{/xif}}
 {{/commentsList}}
-	]]></tableCreate>
+		]]>
+		</create>
 
-	<!-- view 생성-->
-	<viewCreate><![CDATA[
-/* DROP VIEW {{objectName}}; */
-CREATE view {{objectName}}
-{{scriptSource}}
-	]]></viewCreate>
-
-	<!-- function 생성-->
-	<functionCreate><![CDATA[
-CREATE FUNCTION {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
-AS LANGUAGE {{LANG}}
-NAME {{SOURCE}};
-	]]></functionCreate>
-
-	<!-- procedure 생성-->
-	<procedureCreate><![CDATA[
-CREATE PROCEDURE {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
-AS LANGUAGE {{LANG}}
-NAME {{SOURCE}};
-	]]></procedureCreate>
-
-	<!-- trigger 생성-->
-	<triggerCreate><![CDATA[
-/* DROP TRIGGER ; */
-CREATE OR REPLACE
-	]]></triggerCreate>
-
-	<!-- index 생성-->
-	<indexCreate><![CDATA[
-
-	]]></indexCreate>
+        <!-- table comment 추가-->
+        <addComment>
+COMMENT ON TABLE {{TABLE_NAME}}  IS '{{COMMENT}}'
+        </addComment>    
+		
+		<!-- 테이블명 수정 추가-->
+		<rename>
+rename table  {{TABLE_NAME}} as  {{NEW_TABLE_NAME}}
+		</rename>
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
+		</columnAdd>
+		
+		<!-- 컬럼명 수정 추가-->
+		<columnRename>
+alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} as {{NEW_COLUMN_NAME}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 추가-->
+		<columnModify>
+alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{COMMENT}}';
+		</columnAddComment>
+	
+		
+	</table>
 
 	<!-- sequence 생성-->
-	<sequenceCreate><![CDATA[
+	<sequence>
+		<create>
 {{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
 {{/equals}}
 CREATE SEQUENCE {{OBJECT_NAME}}
@@ -76,55 +86,7 @@ MAXVALUE {{MAX_VALUE}}
 START {{START_VALUE}}
 {{#equals YES CYCLE_OPTION}}CYCLE
 {{/equals}}
-	]]></sequenceCreate>
-
-	<!-- 컬럼 추가-->
-	<tableAlterAddColumn><![CDATA[
-alter table {{TABLE_NAME}} add ({{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}})
-	]]></tableAlterAddColumn>
-
-	<!-- 컬럼명 수정 추가-->
-	<tableAlterRenameColumn><![CDATA[
-alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} to {{NEW_COLUMN_NAME}}
-	]]></tableAlterRenameColumn>
-
-	<!-- 컬럼 수정 추가-->
-	<tableAlterModifyColumn><![CDATA[
-alter table {{TABLE_NAME}} alter column {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}};
-	]]></tableAlterModifyColumn>
-
-	<!-- 컬럼명 수정 추가-->
-	<tableAlterDropColumn><![CDATA[
-alter table {{TABLE_NAME}} DROP {{COLUMN_NAME}}
-	]]></tableAlterDropColumn>
-
-	<!-- 테이블명 수정 추가-->
-	<renameTable><![CDATA[
-alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
-	]]></renameTable>
-
-	<!-- select query -->
-	<select>
-	</select>
-
-	<!-- insert query -->
-	<insert>
-	</insert>
-
-	<!-- update query -->
-	<update>
-	</update>
-
-	<!-- delete query -->
-	<delete>
-	</delete>
-
-	<!-- selectInsert query -->
-	<selectInsert>
-
-	</selectInsert>
-
-	<!-- insertUpdate query -->
-	<insertUpdate>
-	</insertUpdate>
-</var-sql>
+		</create>
+	</sequence>
+	
+</templateConfig>

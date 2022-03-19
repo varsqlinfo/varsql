@@ -15,14 +15,21 @@
 			<div style="padding-top: 15px;" class="clearboth">
 				<label class="col-xs-3 control-label">File Name</label>
 				<div class="col-xs-9 padding0">
-					<input type="text" class="form-control text required input-sm" v-model="exportName" value="1000">
+					<input type="text" class="form-control text required input-sm" v-model="exportInfo.fileName">
 				</div>
 			</div>
 			
 			<div style="padding-top: 15px;" class="clearboth">
 				<label class="col-xs-3 control-label">Limit Count</label>
 				<div class="col-xs-9 padding0">
-					<input type="number" class="form-control text required input-sm" v-model="exportCount" value="1000">
+					<input type="number" class="form-control text required input-sm" v-model="exportInfo.limit">
+				</div>
+			</div>
+			
+			<div style="padding-top: 15px;" class="clearboth">
+				<label class="col-xs-3 control-label">Charset</label>
+				<div class="col-xs-9 padding0">
+					<input type="text" class="form-control text required input-sm" v-model="exportInfo.charset">
 				</div>
 			</div>
 			
@@ -100,7 +107,7 @@
 						</template>
 					</div>
 					
-					<button type="button" class="btn-md varsql-btn-info pull-right" style="margin-top:10px;" @click="exportInfo();">내보내기</button>
+					<button type="button" class="btn-md varsql-btn-info pull-right" style="margin-top:10px;" @click="exportData();">내보내기</button>
 				</template>
 				<template v-else>
 					<div style="margin-top: 15px;border: 1px solid #ddd;padding: 10px;height: 200px;width: 100%;">
@@ -121,13 +128,16 @@ VarsqlAPP.vueServiceBean({
 	el: '#<varsql:namespace/>'
 	,data: {
 		exportType : 'sql'
-		,exportName : 'table-data-export'
+		,exportInfo : {
+			fileName : 'table-data-export'
+			,limit : 1000
+			,charset : 'utf-8'
+		}
 		, step : 1
 		, endStep : 3
 		, downloadStatus : 'start'
 		, selectSchema : ''
 		, selectTableObj : {}
-		, exportCount : 1000
 		, userSetting : VARSQL.util.objectMerge({schema:'${schemaInfo}', tables:[]},${userSettingInfo})
 		, detailItem :{}
 		, navItems :['내보내기 설정','<spring:message code="msg.export.spec.step2" />', VARSQL.messageFormat('complete')]
@@ -169,30 +179,28 @@ VarsqlAPP.vueServiceBean({
 				});
 			})
 		}
-		,exportInfo : function (){
+		,exportData : function (){
 			var _self = this;
 
 			var info = $("#firstConfigForm").serializeJSON();
 			
 			this.getExportItems();
-
-			var prefVal = {
+			
+			var prefVal = VARSQL.util.objectMerge({
 				requid : VARSQL.generateUUID()
-				,fileName : _self.exportName
 				,conuid : '${param.conuid}'
 				,schema : _self.selectSchema
-				,limit: _self.exportCount
 				,exportType : _self.exportType
 				,items : _self.exportItems
-			};
+			}, _self.exportInfo);
 		
 			var beforeCurrIdx = 0;	
 			function processBar(){
 				VARSQL.req.ajax({
-					url : {type:VARSQL.uri.database, url:'/tools/export/progressInfo'}
+					url : {type:VARSQL.uri.progress, url:'/info'}
 					,data: {
 						requid : prefVal.requid
-						,type : 'progress'
+						,type : 'dataExport'
 					}
 					,success:function (resData){
 						var item = resData.item; 
@@ -220,7 +228,7 @@ VarsqlAPP.vueServiceBean({
 							
 							setTimeout(function() {
 								processBar();
-							}, 500);
+							}, 700);
 						}
 					}
 				});
@@ -258,7 +266,7 @@ VarsqlAPP.vueServiceBean({
 		,setUserConfigInfo : function (){
 			var _self = this;
 			
-			_self.exportName = _self.userSetting.exportName || _self.exportName;
+			_self.exportInfo.fileName = _self.userSetting.exportName || _self.exportInfo.fileName;
 
 			_self.setTableSelect();
 			_self.getTableList();
@@ -315,19 +323,15 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
+				,valueKey : 'name'	
+				,labelKey : 'name'
 				,source : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
+					emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
 					,items : paramSourceItem
 				}
 				,target : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,items : []
+					items : []
 					,click: function (e, sItem){
-						console.log(sItem);
-						
 						_self.detailItem = sItem;
 					}
 				}

@@ -244,16 +244,14 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
+				,valueKey : 'name'	
+				,labelKey : 'name'
 				,source : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
+					emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
 					,items : paramSourceItem
 				}
 				,target : {
-					idKey : 'name'
-					,nameKey : 'name'
-					,items : []
+					items : []
 				}
 				,footer : {
 					enable : true
@@ -271,15 +269,13 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectColumnObj= $.pubMultiselect('#columnSource', {
 				duplicateCheck : true
+				,valueKey : 'code'	
+				,labelKey : 'code'
 				,source : {
-					idKey : 'code'
-					,nameKey : 'code'
-					,items : paramSourceItem
+					items : paramSourceItem
 				}
 				,target : {
-					idKey : 'code'
-					,nameKey : 'code'
-					,items : userSettingColumn
+					items : userSettingColumn
 					,click: function (e, sItem){
 						sItem.width = (sItem.width ||sItem.custom.width);
 						_self.detailItem = sItem;

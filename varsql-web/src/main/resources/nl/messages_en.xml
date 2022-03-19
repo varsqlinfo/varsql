@@ -75,7 +75,7 @@
 <entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">Menu  Management</entry>
-
+<entry key="admin.menu.jdbcprovidermgmt">JDBC Provider</entry>
 
 <!-- manage menu -->
 <entry key="manage.menu.usermgmt">User Management</entry>
@@ -169,6 +169,8 @@
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 
 <entry key="admin.form.db.maxactive">Max Active</entry>
+<entry key="admin.form.db.test_while_idle">Test While Idle</entry>
+
 <entry key="admin.form.db.minidle">Min Idle</entry>
 <entry key="admin.form.db.timeout">Timeout</entry>
 <entry key="admin.form.db.exportcount">Export Count</entry>

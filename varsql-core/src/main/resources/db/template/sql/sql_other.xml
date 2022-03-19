@@ -1,128 +1,215 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE var-sql SYSTEM  "sqlTemplate.dtd">
+<!DOCTYPE templateConfig SYSTEM  "sqlTemplate.dtd">
 
-<var-sql>
+<templateConfig>
 	<!-- 테이블 생성-->
-	<tableCreate><![CDATA[
+	<table>
+		<create>
+		<![CDATA[
 {{~#if ddlOpt.addDropClause}}
 /*DROP TABLE {{objectName}}; */
 {{/if}}
 
 CREATE TABLE {{objectName}}(
 {{#columnList}}
-	{{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
 {{/columnList}}
 )
 
 {{#ddlTableKey keyList objectName dbType}}
-  {{#xif type '==' 'PK'}}
-	{{#each constList}}
+    {{#xif type '==' 'PK'}}
+    {{#each constList}}
 ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
-  {{#xif type '==' 'UQ'}}
-	{{#each constList}}
+    {{/each}}
+    {{/xif}}
+    {{#xif type '==' 'UQ'}}
+    {{#each constList}}
 CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
+    {{/each}}
+    {{/xif}}
 {{/ddlTableKey}}
 
 {{#commentsList}}
 {{#xif TYPE '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{COMMENT}}';{{/xif}}
 {{~#xif TYPE '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{NAME}} is '{{COMMENT}}';{{/xif}}
 {{/commentsList}}
-	]]></tableCreate>
+		]]>
+		</create>
+		
+		<!-- 테이블명 수정 추가-->
+		<rename>
+ALTER TABLE {{TABLE_NAME}} RENAME {{NEW_TABLE_NAME}}
+		</rename>
 
-	<!-- view 생성-->
-	<viewCreate><![CDATA[
-/* DROP VIEW {{objectName}}; */
-CREATE view {{objectName}}
-{{scriptSource}}
-	]]></viewCreate>
+        <!-- table comment 추가-->
+        <addComment>
+ALTER TABLE {{TABLE_NAME}} COMMENT = '{{COMMENT}}';
+        </addComment>
+        
+        <select>
+SELECT * FROM {{TABLE_NAME}};
+        </select>
+		
+		<insert>
+INSERT INTO  {{TABLE_NAME}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}}
+) 
+values (
+{{#columnList}}
+    {{addChar @index "" ","}} ''
+{{/columnList}}
+);
+		</insert>
+		
+		<update>
+UPDATE  {{TABLE_NAME}}
+SET 
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} =''
+{{/columnList}}
+		</update>
+        
+		<delete>
+DELETE FROM {{TABLE_NAME}};
+		</delete>
+		
+		<selectInsert>
+INSERT INTO {{TABLE_NAME}}
+SELECT * from {{TABLE_NAME}}
+		</selectInsert>
+		
+		<createSelect>
+CREATE TABLE {{NEW_TABLE_NAME}} AS 
+SELECT {{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}} FROM {{TABLE_NAME}};
+		</createSelect>
+		
+		<merge>
+MERGE INTO {{TABLE_NAME}} AS a
+USING (SELECT 1 AS dual) AS b
+   ON (a.deptno = 50)
+ WHEN MATCHED THEN
+   UPDATE SET 
+   		{{#columnList}}
+		    {{addChar @index "" ","}} a.{{COLUMN_NAME}} =''
+		{{/columnList}}
+ WHEN NOT MATCHED THEN
+   INSERT(
+	   	{{#columnList}}
+		    {{addChar @index "" ","}} {{COLUMN_NAME}}
+		{{/columnList}}
+	) VALUES(
+		{{#columnList}}
+		    {{addChar @index "" ","}} ''
+		{{/columnList}}
+	)
+		</merge>
+		
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{DATA_TYPE}} {{DEFAULT_VALUE}}
+		</columnAdd>
+		
+		<!-- 컬럼명 수정 추가-->
+		<columnRename>
+ALTER TABLE {{TABLE_NAME}} RENAME COLUMN {{COLUMN_NAME}} TO {{NEW_COLUMN_NAME}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 추가-->
+		<columnModify>
+alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+ALTER TABLE {{TABLE_NAME}} MODIFY {{COLUMN_NAME}} {{DATA_TYPE}} COMMENT '{{COMMENT}}';
+		</columnAddComment>
+	
+		
+	</table>
 
-	<!-- function 생성-->
-	<functionCreate><![CDATA[
-/* DROP FUNCTION {{objectName}}; */
-CREATE OR REPLACE {{objectName}}
-{{scriptSource}}
-	]]></functionCreate>
+    <!-- view 생성-->
+    <view>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP VIEW {{objectName}}; */
+{{/if}}
 
-	<!-- procedure 생성-->
-	<procedureCreate><![CDATA[
-/* DROP PROCEDURE {{objectName}}; */
-CREATE OR REPLACE {{objectName}}
-{{scriptSource}}
-	]]></procedureCreate>
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </view>
 
-	<!-- trigger 생성-->
-	<triggerCreate><![CDATA[
-/* DROP TRIGGER {{objectName}}; */
-CREATE OR REPLACE {{objectName}}
-{{scriptSource}}
-	]]></triggerCreate>
+    <!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP FUNCTION {{objectName}}; */
+{{/if}}
+
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </function>
+
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP PROCEDURE {{objectName}}; */
+{{/if}}
+
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </procedure>
+
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP TRIGGER {{objectName}}; */
+{{/if}}
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </trigger>
+
 
 	<!-- index 생성-->
-	<indexCreate><![CDATA[
-/* DROP TRIGGER {{objectName}}; */
-CREATE OR REPLACE {{objectName}}
-{{scriptSource}}
-	]]></indexCreate>
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}
+/*DROP INDEX {{objectName}}; */
+{{/if}}
 
-	<!-- sequence 생성-->
-	<sequenceCreate><![CDATA[
-CREATE SEQUENCE {{OBJECT_NAME}}
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{INDEX_NAME}}
+on
+{{../schema}}.{{TABLE_NAME}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{COLUMN_NAME}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+		</create>
+	</index>
+
+    <!-- sequence 생성-->
+	<sequence>
+		<create>
+{{#equals true ddlOption.addDropClause}}/* DROP SERIAL {{OBJECT_NAME}}; */
+{{/equals}}
+
+CREATE SERIAL {{OBJECT_NAME}}
+START WITH 1
+INCREMENT BY {{INCREMENT_BY}}
 MINVALUE {{MIN_VALUE}}
 MAXVALUE {{MAX_VALUE}}
-INCREMENT BY {{INCREMENT_BY}} START WITH 0
-CACHE {{CACHE}} NOORDER  NOCYCLE	]]></sequenceCreate>
-
-	<!-- 컬럼 추가-->
-	<tableAlterAddColumn><![CDATA[
-
-	]]></tableAlterAddColumn>
-
-	<!-- 컬럼명 수정 추가-->
-	<tableAlterRenameColumn><![CDATA[
-
-	]]></tableAlterRenameColumn>
-
-	<!-- 컬럼 수정 추가-->
-	<tableAlterModifyColumn><![CDATA[
-
-	]]></tableAlterModifyColumn>
-
-	<!-- 컬럼명 수정 추가-->
-	<tableAlterDropColumn><![CDATA[
-
-	]]></tableAlterDropColumn>
-
-	<!-- 테이블명 수정 추가-->
-	<renameTable><![CDATA[
-		alter table {{TABLE_NAME}} rename to {{NEW_TABLE_NAME}};
-	]]></renameTable>
-
-	<!-- select query -->
-	<select>
-	</select>
-
-	<!-- insert query -->
-	<insert>
-	</insert>
-
-	<!-- update query -->
-	<update>
-	</update>
-
-	<!-- delete query -->
-	<delete>
-	</delete>
-
-	<!-- selectInsert query -->
-	<selectInsert>
-
-	</selectInsert>
-
-	<!-- insertUpdate query -->
-	<insertUpdate>
-	</insertUpdate>
-</var-sql>
+		</create>
+	</sequence>
+	
+	
+</templateConfig>

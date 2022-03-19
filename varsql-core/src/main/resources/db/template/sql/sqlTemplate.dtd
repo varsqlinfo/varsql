@@ -1,27 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!ELEMENT var-sql (tableCreate,viewCreate,functionCreate,procedureCreate,triggerCreate,indexCreate,sequenceCreate
-	,tableAlterAddColumn,tableAlterRenameColumn,tableAlterModifyColumn,tableAlterDropColumn
-	,renameTable
-	,select ,insert ,update ,delete ,selectInsert ,insertUpdate)>
-<!ELEMENT tableCreate (#PCDATA)>
-<!ELEMENT viewCreate (#PCDATA)>
-<!ELEMENT functionCreate (#PCDATA)>
-<!ELEMENT procedureCreate (#PCDATA)>
-<!ELEMENT triggerCreate (#PCDATA)>
-<!ELEMENT indexCreate (#PCDATA)>
-<!ELEMENT sequenceCreate (#PCDATA)>
+<!ELEMENT templateConfig (table | view | function | procedure | trigger | index | sequence)*>
 
-<!ELEMENT tableAlterAddColumn (#PCDATA)>
-<!ELEMENT tableAlterRenameColumn (#PCDATA)>
-<!ELEMENT tableAlterModifyColumn (#PCDATA)>
-<!ELEMENT tableAlterDropColumn (#PCDATA)>
+<!-- ddl create template -->
+<!ELEMENT table (create| rename| addComment| modifyComment| dropComment| select| insert | update | delete | selectInsert | merge| createSelect
 
-<!ELEMENT renameTable (#PCDATA) >
+	|columnAdd |columnRename |columnModify |columnDrop |columnAddComment |columnModifyComment |columnDropComment
+)+>
 
+<!ELEMENT view (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT function (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT procedure (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT trigger (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT index (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT sequence (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT create (#PCDATA)>
+
+<!ELEMENT rename (#PCDATA)>
+<!ELEMENT addComment (#PCDATA)>
+<!ELEMENT modifyComment (#PCDATA)>
+<!ELEMENT dropComment (#PCDATA)>
+
+<!-- column start -->
+<!ELEMENT columnAdd (#PCDATA)>
+<!ELEMENT columnRename (#PCDATA)>
+<!ELEMENT columnModify (#PCDATA)>
+<!ELEMENT columnDrop (#PCDATA)>
+
+
+<!ELEMENT columnAddComment (#PCDATA)>
+<!ELEMENT columnModifyComment (#PCDATA)>
+<!ELEMENT columnDropComment (#PCDATA)>
+<!-- // column end -->
+
+<!-- dml sql example start -->
 <!ELEMENT select (#PCDATA) >
 <!ELEMENT insert (#PCDATA) >
 <!ELEMENT update (#PCDATA) >
 <!ELEMENT delete (#PCDATA) >
 <!ELEMENT selectInsert (#PCDATA) >
-<!ELEMENT insertUpdate (#PCDATA) >
+<!ELEMENT merge (#PCDATA) >
+<!ELEMENT createSelect (#PCDATA)>
+<!-- // dml sql example end -->
+

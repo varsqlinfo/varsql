@@ -21,22 +21,17 @@ import org.springframework.stereotype.Service;
 import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
-import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.constants.VarsqlKeyConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.UUIDUtil;
-import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.model.entity.user.UserLogHistEntity;
-import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.security.repository.UserRepository;
-import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.VartechUtils;
 
@@ -55,12 +50,13 @@ public final class AuthDAO {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private UserLogHistRepository userLogHistRepository;
-
+	private PasswordEncoder passwordEncoder;
+	
 	@Autowired
 	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
-	private PasswordEncoder passwordEncoder;
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	/**
 	 *
@@ -210,21 +206,25 @@ public final class AuthDAO {
 
 					uuid = UUIDUtil.vconnidUUID(viewid, vconnid);
 
-					vconnidNconuid.put(vconnid, uuid);
+					try {
 
-					userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
-							, uuid
-							, rs.getString("DB_TYPE")
-							, rs.getString(VarsqlKeyConstants.CONN_NAME)
-							, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
-							, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
-							, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
-							, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
-							, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
-							, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
-							, rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL)
-						)
-					);
+						userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
+								, uuid
+								, rs.getString("DB_TYPE")
+								, rs.getString(VarsqlKeyConstants.CONN_NAME)
+								, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
+								, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
+								, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
+								, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
+								, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
+								, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
+								, rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL)
+							)
+						);
+						vconnidNconuid.put(vconnid, uuid);
+					}catch(Exception e) {
+						logger.error("DatabaseInfo not valid : "+ vconnid);					
+					}
 				}
 
 				user.setDatabaseInfo(userDatabaseInfo);
@@ -234,31 +234,6 @@ public final class AuthDAO {
 			throw new VarsqlAppException("database load exception : "+e.getMessage(), e);
 		}finally{
 			JdbcUtils.close(conn , pstmt, rs);
-		}
-
-	}
-
-	/**
-	 *
-	 * @Method Name  : addLog
-	 * @Method 설명 : add 로그인 & 로그아웃 로그.
-	 * @작성일   : 2019. 9. 20.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @throws Exception
-	 */
-	public void addLog(User user, String type, ClientPcInfo cpi) {
-		try {
-			userLogHistRepository.save(UserLogHistEntity.builder()
-					.viewid(user.getViewid())
-					.histType(type)
-					.usrIp(cpi.getIp())
-					.browser(cpi.getBrowser())
-					.deviceType(cpi.getDeviceType())
-					.histTime(DefaultValueUtils.currentTimestamp())
-					.platform(cpi.getOsType()).build());
-		} catch (Exception e) {
-			logger.error(this.getClass().getName() +" addLog ", e);
 		}
 
 	}

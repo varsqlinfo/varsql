@@ -175,7 +175,15 @@ var _initialized = false
 		,"sort": true		// sort flag
 		,"align": ""	// align
 		,"type": ""		// value type
-		,"render": ""		// render mode (html or text default text)
+		,"renderer ": { // render mode (html or text default text)
+			type : "text" // button, image, checkbox, radio, select, link, html 
+			,item : {
+				key : ""
+			}
+			,click : function (){}
+			,template : function (){}
+			,validator : function (){}
+		}		
 		,formatter : function (obj){	// 보여질 값을 처리.
 				return obj.item.STATE;
 		}
@@ -188,13 +196,7 @@ var _initialized = false
 				return obj.val;
 			}
 		}
-		,editor : {
-			type : "text", 			//"text, select, textarea, number, custom"
-			editorBtn : false,		// 버튼 보일지 여부.
-			editorBtnOver : false, // 오버시 버튼 보이기
-			items : [],
-			validator : function (){}
-		}
+		
 	}
 	*/
 	,tColItem : [] //head item
@@ -205,15 +207,14 @@ var _initialized = false
 	,navigation :{
 		usePaging : false	// 페이지 사용여부
 		,status : false
-		,height : 35		// 높이 값
+		,statusFormatter : '{{currStart}} - {{currEnd}} of {{total}}'
+		,height : 32		// 높이 값
+		,position : 'center'	// 위치 값
 		,callback : function (no){}	// 페이지 콜백
 	}
 	,page : false	// paging info
 	,message : {
 		empty : 'no data'
-		,pageStatus : function (status){
-			return status.currStart +' - ' + status.currEnd+' of '+ status.total;
-		}
 	}
 	,i18n :{
 		'setting.label' : '설정'
@@ -261,7 +262,7 @@ function createArray(m,n,initial){
 	return reval; 
 }
 
-function replaceLogic(logicCode, param){
+function replaceMesasgeFormat(logicCode, param){
 	return logicCode.replace(/{{(.+?)}}/gi, function (word){
 		var key = word.replace(/[\{\}]/g,'');
 		return  param[key];
@@ -445,7 +446,6 @@ Plugin.prototype ={
 		_this.selector = selector;
 
 		_this.prefix = 'pub'+getHashCode(_this.selector);
-
 		
 		_this.gridElement = $(selector);
 
@@ -465,6 +465,7 @@ Plugin.prototype ={
 			, dataInfo : {colLen : 0, allColLen : 0, rowLen : 0, lastRowIdx : 0, orginTColItem:[], orginTColIdxKeyMap : {}}
 			, rowOpt :{}
 			, sort : {current :''}
+			, pagingInfo : false
 			, selection :{
 				startCell :{}
 			}
@@ -484,11 +485,14 @@ Plugin.prototype ={
 				,filterInfo : false // filter info {checkFn, check condition}
 			}
 		};
+
+		
 		_this.eleCache = {};
 		_this._initScrollData();
 		_$util.setSelectionRangeInfo(_this, {}, true);
 
 		_this.setOptions(options, true);
+
 
 		_this.drag ={};
 		_this.addStyleTag();
@@ -543,7 +547,8 @@ Plugin.prototype ={
 		options.setting.configVal = objectMerge({},_defaults.setting.configVal ,options.setting.configVal);
 
 		_this.options =objectMerge({}, _defaults, options)
-		_this.options.tbodyItem = options.tbodyItem ? options.tbodyItem : _this.options.tbodyItem;
+		
+		_this.options.tbodyItem = $.isArray(options.tbodyItem) ? options.tbodyItem : (_this.options.tbodyItem ||[]);
 
 		_this.config.isValueFilter = isFunction(_this.options.valueFilter);
 
@@ -635,6 +640,7 @@ Plugin.prototype ={
 
 		if(!isNaN(rowOptHeight)){
 			cssStr.push('#'+_this.prefix+'_pubGrid .pub-body-td, #'+_this.prefix+'_pubGrid .pub-body-aside-td{height:'+rowOptHeight+'px;}');
+			cssStr.push('#'+_this.prefix+'_pubGrid .pub-body-td>.pub-content, #'+_this.prefix+'_pubGrid .pub-body-aside-td > .aside-content{height:'+(rowOptHeight-1)+'px; line-height:'+(rowOptHeight-1)+'px;}');
 		}
 
 		var headerHeight = _this.options.headerOptions.height;
@@ -819,6 +825,8 @@ Plugin.prototype ={
 			tciItem.maxWidth = -1;	// max width
 
 			if(tciItem.visible===false) continue;
+
+			tciItem.renderer = tciItem.renderer || {type : 'text'};
 
 			if(!isUndefined(tciItem.tooltip) && isFunction(tciItem.tooltip.formatter)){
 				tciItem.afTooltipFormatter = tciItem.tooltip.formatter;
@@ -1291,8 +1299,11 @@ Plugin.prototype ={
 		}
 
 		if(_this.options.navigation.usePaging === true) {
-			_this.setPage(mode=='init' ? opt.page : (pdata.page ||{}));
+			_this.setPaging(mode=='init' ? opt.paging : (pdata.paging ||{}));
 		}
+
+		_this._setStatusMessage();
+
 		if(_this.config.searchOn===true){
 			_this.gridElement.find('.pubGrid-setting-btn').addClass('search-on');
 		}else{
@@ -1320,37 +1331,47 @@ Plugin.prototype ={
 			tci[i].maxWidth = -1;
 		}
 	}
-	,setPage : function (pageInfo){
+	,setPaging : function (pagingInfo){
 		var _this =this;
+
+		pagingInfo = pagingInfo||{};
 
 		if(_this.options.navigation.usePaging !== true) {
 			throw 'usePaging not enabled';
 		}
 
-		var pagingInfo = _this.getPageInfo(pageInfo.totalCount , pageInfo.currPage, pageInfo.countPerPage, pageInfo.unitPage);
+		var pagingInfo = _this.getPagingInfo( pagingInfo.totalCount||0, pagingInfo.currPage, pagingInfo.countPerPage, pagingInfo.unitPage);
 
-		_this.config.pageNo = pageInfo.currPage;
+		if(pagingInfo.totalCount < 1) {
+			$('#'+_this.prefix+'_page').empty();
+			return ; 
+		}
+
+		_this.config.pageNo = pagingInfo.currPage;
+		_this.config.pagingInfo = pagingInfo;
 
 		var currP = pagingInfo.currPage;
 		if (currP == "0") currP = 1;
 		var preP_is = pagingInfo.prePage_is;
-		var nextP_is = pagingInfo.nextPage_is;
 		var currS = pagingInfo.currStartPage;
 		var currE = pagingInfo.currEndPage;
 		if (currE == "0") currE = 1;
 		var nextO = 1 * currP + 1;
 		var preO = currP - 1;
 		var strHTML = [];
+
 		strHTML.push('<ul>');
-		if (new Boolean(preP_is) == true) {
-			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
+
+		if (currP <= 1) {
+			strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
 		} else {
-			if (currP <= 1) {
-				strHTML.push(' <li class="disabled page-icon"><a href="javascript:">&laquo;</a></li>');
-			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
-			}
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+preO+'">&laquo;</a></li>');
 		}
+		
+		if(preP_is && (currE - pagingInfo.unitPage >= 0)){
+			strHTML.push(' <li class="page-num" pageno="1"><a href="javascript:" >1...</a></li>');
+		}
+		
 		var no = 0;
 		for (no = currS * 1; no <= currE * 1; no++) {
 			if (no == currP) {
@@ -1359,20 +1380,21 @@ Plugin.prototype ={
 				strHTML.push(' <li class="page-num" pageno="'+no+'"><a href="javascript:" >'+ no + '</a></li>');
 			}
 		}
-
-		if (new Boolean(nextP_is) == true) {
-			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
-		} else {
-			if (currP == currE) {
-				strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
-			} else {
-				strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
-			}
+	
+		if(currS + pagingInfo.unitPage < pagingInfo.totalPage){
+			strHTML.push(' <li class="page-num" pageno="'+pagingInfo.totalPage+'"><a href="javascript:" >...'+pagingInfo.totalPage+'</a></li>');
 		}
+			
+		if (currP == currE) {
+			strHTML.push(' <li class="disabled"><a href="javascript:">&raquo;</a></li>');
+		} else {
+			strHTML.push(' <li><a href="javascript:" class="page-num page-icon" pageno="'+nextO+'">&raquo;</a></li>');
+		}
+				
 		strHTML.push('</ul>');
 
 		var pageNaviEle = $('#'+_this.prefix+'_page');
-		pageNaviEle.addClass('page-'+(pageInfo.position || 'center'));
+		pageNaviEle.addClass('page-'+_this.options.navigation.position);
 		pageNaviEle.empty().html(strHTML.join(''));
 
 		return this;
@@ -1629,42 +1651,26 @@ Plugin.prototype ={
 		return false;
 	}
 	/**
-	 * @method valueFormatter
+	 * @method getRenderValue
 	 * @param  thiItem {Object} header col info
 	 * @param  item {Object} row 값
 	 * @description foot 데이터 셋팅
 	 */
-	,valueFormatter : function (thiItem, rowItem, mode, addEle){
+	,getRenderValue : function (thiItem, rowItem, mode, addEle){
 
-		var type = thiItem.type || 'string';
+		var rendererType = thiItem.renderer.type; 
+
+		if(mode == 'data' && rendererType != 'text'){
+			return rowItem[thiItem.key];
+		}
 		
-		var itemVal;
-		if(this.config.isValueFilter && mode =='view'){
-			itemVal = this.options.valueFilter(thiItem, rowItem);
-		}else{
-			itemVal = rowItem[thiItem.key];
-		}
-
-		var tmpFormatter={};
-		if(type == 'money' || type == 'number'){
-			tmpFormatter = this.options.formatter[type];
-		}
-
-		if(isFunction(thiItem.formatter)){
-			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, formatInfo : tmpFormatter});
-		}else{
-			if(this.options.useDefaultFormatter===true){
-				if(type == 'money'){
-					itemVal = formatter[type](itemVal, tmpFormatter.fixed, tmpFormatter.prefix, tmpFormatter.suffix);
-				}else if(type == 'number'){
-					itemVal = formatter[type](itemVal, tmpFormatter.fixed, tmpFormatter.prefix, tmpFormatter.suffix);
-				}
-			}
-		}
+		var itemVal = (_$renderer[ rendererType ] || _$renderer.text)(this, thiItem, thiItem.renderer, rowItem, mode);
 
 		if(addEle){
-			if(thiItem.render=='html'){
-				addEle.innerHTML = itemVal||'';
+			itemVal = itemVal||'';
+			if(rendererType !='text'){
+				addEle.innerHTML = itemVal;
+				itemVal = '';
 			}else{
 				addEle.textContent = itemVal;
 			}
@@ -1679,7 +1685,7 @@ Plugin.prototype ={
 	 * @param  rowItem {Object} item
 	 * @description tbody 추가 , 삭제 .
 	 */
-	,_setCellStyle : function (cellEle, _idx,thiItem,rowItem){
+	,_setCellStyle : function (cellEle, _idx, thiItem, rowItem){
 		// style 처리
 		var addClass;
 		if(isFunction(thiItem.styleClass)){
@@ -1988,12 +1994,12 @@ Plugin.prototype ={
 						addEle =tdEle.querySelector('.pub-content');
 
 						colItem = tci[j];
-						_this._setCellStyle(tdEle, i ,colItem , tbiItem)
+						_this._setCellStyle(tdEle, i, colItem, tbiItem)
 
 						if(overRowFlag){
 							addEle.textContent='';
 						}else{
-							var val = this.valueFormatter(colItem, tbiItem, 'view', addEle);
+							var val = this.getRenderValue(colItem, tbiItem, 'view', addEle);
 							_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
 
 							if(tooltipFlag){
@@ -2024,7 +2030,7 @@ Plugin.prototype ={
 						if(overRowFlag){
 							addEle.textContent='';
 						}else{
-							var val = this.valueFormatter(colItem, tbiItem, 'view', addEle);
+							var val = this.getRenderValue(colItem, tbiItem, 'view', addEle);
 							_$util.setSelectCell(_this, startCellInfo, itemIdx, j, addEle);
 
 							if(tooltipFlag){
@@ -2049,10 +2055,6 @@ Plugin.prototype ={
 			}else{
 				_this.element.container.find('[rowinfo="'+i+'"]').show();
 			}
-		}
-		
-		if(this.options.navigation.usePaging === true || this.options.navigation.status === true){
-			_this._statusMessage(viewCount);
 		}
 	}
 	/**
@@ -2160,7 +2162,7 @@ Plugin.prototype ={
 
 		_this._setGridContainerWidth(opt.width, type);
 
-		var  bodyH = mainHeight - cfg.header.height - cfg.footer.height
+		var  bodyH = mainHeight - cfg.header.height - cfg.footer.height -2  // -2 body border 2px
 			, itemTotHeight = (cfg.dataInfo.rowLen-1) * cfg.rowHeight
 			, vScrollFlag = (itemTotHeight > bodyH)
 			, bodyW = (cfg.container.width-(vScrollFlag?this.options.scroll.vertical.width:0))
@@ -2801,17 +2803,38 @@ Plugin.prototype ={
 
 		return containerLeft;
 	}
-	,_statusMessage : function (viewCnt){
-		var startVal = this.config.scroll.viewIdx +1
-			,endVal = startVal+ this.config.scroll.insideViewCount;
+	,_setStatusMessage : function (){
 
-		endVal = endVal >= this.config.dataInfo.orginRowLen? this.config.dataInfo.orginRowLen: endVal;
+		if(this.options.navigation.status !== true){
+			return ; 
+		}
 
-		this.element.status.empty().html(this.options.message.pageStatus({
-			currStart :startVal
-			,currEnd : endVal
-			,total : this.config.dataInfo.orginRowLen
-		}))
+		var totCnt = 0; 
+		var startVal = 0;
+		var endVal = 0;
+		if(this.options.navigation.usePaging === true) {
+			if(this.config.pagingInfo !== false){
+				var pagingInfo =this.config.pagingInfo; 
+				totCnt = pagingInfo.totalCount;
+				var first =pagingInfo.currPage-1; 
+				startVal = first * pagingInfo.countPerPage +1 ;
+				endVal = (first+1) * pagingInfo.countPerPage;
+			}
+		}else{
+			totCnt = this.config.dataInfo.orginRowLen;
+			startVal = this.config.scroll.viewIdx +1;
+			endVal = startVal+ this.config.scroll.insideViewCount;
+		}
+
+		if(totCnt > 0){
+			this.element.status.empty().html(replaceMesasgeFormat(this.options.navigation.statusFormatter||'', {
+				currStart :startVal
+				,currEnd : endVal >= totCnt? totCnt: endVal
+				,total : totCnt
+			}))
+		}else{
+			this.element.status.empty().html('');
+		}
 	}
 	/**
 	 * @method isVisible
@@ -2851,41 +2874,28 @@ Plugin.prototype ={
 
 		if(_this.options.autoResize ===false || _this.options.autoResize.enabled === false) return false;
 
-		var _evt = $.event,
-			_special,
-			resizeTimeout,
-			eventName =  _this.prefix+"pubgridResize";
+		var eventName =  'resize.' + _this.prefix;
+		var threshold = _this.options.autoResize.threshold;
 
-		_special = _evt.special[eventName] = {
-			setup: function() {
-				$( this ).on( "resize.pubGrid", _special.handler );
-			},
-			teardown: function() {
-				$( this ).off( "resize.pubGrid", _special.handler );
-			},
-			handler: function( event, execAsap ) {
-				// Save the context
-				var context = this,
-					args = arguments,
-					dispatch = function() {
-						// set correct event type
-						event.type = eventName;
-						_evt.dispatch.apply( context, args );
-					};
-
-				if ( resizeTimeout ) {
-					clearTimeout( resizeTimeout );
-				}
-
-				execAsap ?
-					dispatch() :
-					resizeTimeout = setTimeout( dispatch, _special.threshold );
-			},
-			threshold: _this.options.autoResize.threshold
-		};
+		var beforeResizeTime = -1;
+		
 		$(window).off(eventName);
 		$(window).on(eventName, function( event ) {
-			_this.resizeDraw();
+			
+			if(threshold < 1){
+				_this.resizeDraw();
+				return ; 
+			}
+
+			if(beforeResizeTime !=-1 && (beforeResizeTime + threshold > new Date().getTime())){
+				return ; 
+			}
+
+			setTimeout(function (){
+				_this.resizeDraw();
+			}, threshold);
+
+			beforeResizeTime = new Date().getTime();
 		});
 	}
 	/**
@@ -3251,27 +3261,25 @@ Plugin.prototype ={
 
 			_this.element.body.on('dblclick.pubgrid.td','.pub-body-td',function (e){
 				var selRow = $(this)
-					,tdInfo=selRow.data('grid-position')
-					,rowColArr  = tdInfo.split(',');
+					
+				var cellInfo = _$util.getCellInfo(_this, selRow);
 
-				var rowIdx = _this.config.scroll.viewIdx+intValue(rowColArr[0])
-					,colIdx = intValue(rowColArr[1]);
-
-				var rowItem = _this.options.tbodyItem[rowIdx]
-					,colItem = _this.config.tColItem[colIdx];
+				var rowItem = cellInfo.rowItem;
+				var colInfo = cellInfo.colInfo;
+				var rowIdx = cellInfo.rowIdx;
 
 				if(editable ===true){
-					if(colItem.editor===false) return ;
+					if(colInfo.editor===false) return ;
 
 					_this.config.isCellEdit = true;
 
 					_this.config.editRowInfo = {
 						idx : rowIdx
-						,colItem : colItem
+						,colItem : colInfo
 						,rowItem : rowItem
 					};
 
-					_$template.getEditForm(selRow, colItem, rowItem);
+					_$renderer.editCell(selRow, colInfo, rowItem);
 					return ;
 				}
 
@@ -3283,7 +3291,7 @@ Plugin.prototype ={
 					_$util.setCheckBoxCheck(addEle , rowItem);
 				}
 
-				fnDblClick.call(selRow ,{item : rowItem ,r: rowIdx ,c:colIdx , keyItem : colItem} );
+				fnDblClick.call(selRow ,{item : rowItem, r : rowIdx, c : cellInfo.colIdx, keyItem : colInfo} );
 			});
 		}
 
@@ -3345,6 +3353,19 @@ Plugin.prototype ={
 		var rowClickFn = _this.options.rowOptions.click;
 		var rowClickFlag = isFunction(rowClickFn);
 
+		_this.element.body.on('mousedown.pubgrid.renderele','.pub-render-element',function (e){
+			//e.preventDefault();
+			var renderEle = $(this);
+
+			e.stopPropagation();
+			
+			var cellInfo = _$util.getCellInfo(_this, renderEle.closest('[data-grid-position]'));
+
+			if(isFunction(cellInfo.colInfo.renderer.click)){
+				cellInfo.colInfo.renderer.click.call(null, cellInfo);
+			}
+		});
+
 		// body  selection 처리.
 		_this.element.body.on('mousedown.pubgrid.col','.pub-body-td',function (e){
 
@@ -3391,11 +3412,11 @@ Plugin.prototype ={
 				});
 			}
 
-			var sEle = $(this)
-				,gridTdPos = sEle.attr('data-grid-position')
-				,selCol = gridTdPos.split(',')
-				,selRow = intValue(selCol[0])
-				,colIdx = intValue(selCol[1]);
+			var sEle = $(this);
+
+			var cellInfo = _$util.getCellInfo(_this, sEle);
+			var selRow = cellInfo.rowIdx;
+			var colIdx = cellInfo.colIdx;
 
 			var selIdx = _this.config.scroll.viewIdx+intValue(selRow);
 
@@ -3484,16 +3505,13 @@ Plugin.prototype ={
 				return ;
 			}
 
-			var sEle = $(this)
-				,selCol = sEle.attr('data-grid-position').split(',')
-				,selRow = intValue(selCol[0])
-				,colIdx = intValue(selCol[1]);
+			var cellInfo = _$util.getCellInfo(_this, $(this));
 
-			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode, colIdx, _this.config.dataInfo);
+			var selectRangeInfo = _$util.getSelectionModeColInfo( selectionMode, cellInfo.colIdx, _this.config.dataInfo);
 
 			_$util.setSelectionRangeInfo(_this, {
 				rangeInfo : {
-					endIdx : _this.config.scroll.viewIdx+intValue(selRow)
+					endIdx : cellInfo.rowIdx
 					,endCol : selectRangeInfo.endCol
 				}
 			},false , true);
@@ -3706,7 +3724,7 @@ Plugin.prototype ={
 			var addEle =tdEle.querySelector('.pub-content');
 
 			this._setCellStyle(tdEle, rowIdx ,colItem, rowItem);
-			this.valueFormatter(colItem, rowItem, 'view', addEle);
+			this.getRenderValue(colItem, rowItem, 'view', addEle);
 
 			this.config.isCellEdit = false;
 			this.config.editRowInfo = {};
@@ -3913,11 +3931,8 @@ Plugin.prototype ={
 			_this.element.body.find('.pub-body-td[data-select-idx="'+tmpCurr+'"].col-active').each(function (){
 
 				var sEle = $(this);
-
-				var gridTdPos = sEle.attr('data-grid-position')
-					,selCol = gridTdPos.split(',');
-
-				if(_this.isSelectPosition(currViewIdx+intValue(selCol[0]) , intValue(selCol[1]))){
+				var posInfo = _$util.getGridPosition(sEle);
+				if(_this.isSelectPosition(currViewIdx+posInfo.r , posInfo.c)){
 
 				}else{
 					sEle.removeClass('col-active');
@@ -4065,11 +4080,7 @@ Plugin.prototype ={
 					var tmpVal = '';
 
 					if(isFormatValue){
-						if(colItem.render=='html'){
-							tmpVal = item[tmpKey];
-						}else{
-							tmpVal = _this.valueFormatter(colItem, item, 'data');
-						}
+						tmpVal = _this.getRenderValue(colItem, item, 'data');
 					}else{
 						tmpVal = item[tmpKey];
 					}
@@ -4151,12 +4162,8 @@ Plugin.prototype ={
 				if((allSelectFlag && !_this.isAllSelectUnSelectPosition(i, j)) || _this.isSelectPosition(i, j)) {
 					addRowFlag = true;
 
-					if(colItem.render=='html'){
-						tmpVal = item[tmpKey];
-					}else{
-						tmpVal = _this.valueFormatter(colItem, item, 'data');
-					}
-
+					tmpVal = _this.getRenderValue(colItem, item, 'data');
+					
 					if(dataType=='json'){
 						keyInfo[j] = colItem;
 						rowItem[tmpKey] = tmpVal;
@@ -4441,7 +4448,7 @@ Plugin.prototype ={
 
 				for(var i =0, len = cfg.dataInfo.orginRowLen ;i <len;i++){
 					
-					tmpVal = _this.valueFormatter(selColItem, tbodyItem[i], 'view');
+					tmpVal = _this.getRenderValue(selColItem, tbodyItem[i], 'view');
 
 					if(tmpVal == null || isUndefined(tmpVal)) continue; 
 											
@@ -4622,27 +4629,18 @@ Plugin.prototype ={
 	,getHeaderItems : function (){
 		return this.config.tColItem;
 	}
-	/**
-	 * @method pageNav
-	 * @param  options {Object} 옵션
-	 * @description 페이징 하기.
-	 */
-	,pageNav : function(pageInfo) {
-
-	}
 	,getPageNo : function (){
 		return this.config.pageNo;
 	}
 	/**
-	 * @method getPageInfo
+	 * @method getPagingInfo
 	 * @param  totalCount {int} 총카운트
 	 * @param  currPage {int} 현재 페이지
 	 * @param  countPerPage {int} 한페이지에 나올 row수
 	 * @param  unitPage {int} 한페이지에 나올 페이번호 갯수
 	 * @description 페이징 하기.
 	 */
-	,getPageInfo : function (totalCount, currPage, countPerPage, unitPage) {
-		var unitCount = 100;
+	,getPagingInfo : function (totalCount, currPage, countPerPage, unitPage) {
 		countPerPage = countPerPage || 10;
 		unitPage = unitPage || 10;
 
@@ -4680,8 +4678,13 @@ Plugin.prototype ={
 			currEndPage = totalPage;
 			currStartPage = 1;
 		} else {
-			var halfUnitPage = Math.floor(unitPage /2); 
-			if(currPage < halfUnitPage){
+			var halfUnitPage = unitPage;
+
+			if(currPage == unitPage || (currPage > unitPage && (totalPage - (currPage-1) >= unitPage)) ){
+				halfUnitPage = Math.floor(unitPage /2); 
+			}
+
+			if(currPage <= halfUnitPage){
 				currEndPage = unitPage;
 				currStartPage = 1; 
 			}else if(currPage+halfUnitPage < totalPage){
@@ -4719,7 +4722,7 @@ Plugin.prototype ={
 			,'prePage' : prePage ,'prePage_is' : prePage_is
 			,'nextPage' : nextPage,'nextPage_is' : nextPage_is
 			,'currStartPage' : currStartPage ,'currEndPage' : currEndPage
-			,'totalCount' : totalCount ,'totalPage' : totalPage
+			,'countPerPage' : countPerPage, 'totalCount' : totalCount ,'totalPage' : totalPage
 		};
 	}
 	/**
@@ -4925,45 +4928,6 @@ var _$template = {
 			return true;
 		}
 	}
-	/**
-	 * @method getEditForm
-	 * @description get edit form
-	 */
-	 ,getEditForm : function (selEl, colItem, rowItem){
-
-		var reForm =[];
-
-		var editor = colItem.editor||{};
-
-		reForm.push( '<div class="pubGrid-edit-area pubGrid-edit-type-'+editor.type+'">');
-		if(editor.type =='select'){
-			reForm.push( '<select class="pubGrid-edit-field">');
-			var items = editor.items||[];
-			var itemKey = objectMerge({code : 'CODE', label : 'LABEL'}, editor.itemKey) ;
-			var codeKey = itemKey.code;
-			var labelKey = itemKey.label;
-
-			for(var i =0, len = items.length;i < len; i++){
-				var item = items[i];
-				reForm.push( '<option value="'+item[codeKey]+'">'+item[labelKey]+'</option>');
-			}
-			reForm.push( '</select>');
-		}else if(editor.type =='textarea'){
-			reForm.push( '<textarea class="pubGrid-edit-field"></textarea>');
-		}else if(editor.type =='number'){
-			reForm.push( '<input type="number" class="pubGrid-edit-field">');
-		}else{
-			reForm.push( '<input type="text" class="pubGrid-edit-field">');
-		}
-		reForm.push( '</div>');
-
-		selEl.append(reForm.join(''));
-
-		var editEl = selEl.find('.pubGrid-edit-field');
-
-		editEl.val(rowItem[colItem.key]);
-		editEl.focus();
-	}
 }
 
 var _$util = {
@@ -4989,6 +4953,25 @@ var _$util = {
 
 		return reArr;
 	}
+	,getCellInfo : function (ctx, cellEle){
+		var posInfo = this.getGridPosition(cellEle);
+
+		return {
+			rowIdx : posInfo.r
+			,colIdx : posInfo.c
+			,rowItem : ctx.options.tbodyItem[posInfo.r]
+			,colInfo : ctx.config.tColItem[posInfo.c] 
+		}
+	}
+	// grid position 
+	,getGridPosition : function (cellEle){
+		var posInfo = cellEle.data('grid-position').split(',');
+			
+		return {
+			r : intValue(posInfo[0])
+			,c : intValue(posInfo[1])
+		}
+	}
 	// new add
 	,genAllColumnSearch : function (gridCtx){
 		var tcolItems = gridCtx.options.tColItem; 
@@ -5000,7 +4983,7 @@ var _$util = {
 		for(var i=0; i<tcolItems.length; i++){
 			var tcolItem = tcolItems[i];
 			logicStr.push(i != 0 ? defaultLogicalOp.getCode('or') : '');
-			logicStr.push(replaceLogic(searchLogic , {key : tcolItem.key}));
+			logicStr.push(replaceMesasgeFormat(searchLogic , {key : tcolItem.key}));
 		}
 		
 		return this.genSearchLogic(logicStr.join(''));
@@ -5473,6 +5456,152 @@ var gridOperators = {
 		,defaultCondition['<=']
 	]
 };
+
+
+var _$renderer = {
+	button : function (ctx, thiItem, renderer, rowItem, mode){
+		return replaceMesasgeFormat('<button class="pub-render-element button" type="button">{{label}}</button>', {
+			label: renderer.label
+		})
+	}
+	, image : function (ctx, thiItem, renderer, rowItem, mode){
+
+		var imgSrc;
+		if(isFunction(renderer.url)){
+			imgSrc = renderer.src(rowItem);
+		}else{
+			imgSrc = replaceMesasgeFormat(renderer.src, rowItem);
+		}
+
+		return replaceMesasgeFormat('<img class="pub-render-element img" src="{{src}}">', {
+			src: imgSrc
+		})
+	}
+	, checkbox : function (ctx, thiItem, renderer, rowItem, mode){
+		var strHtm = [];
+	
+		return replaceMesasgeFormat('<input type="checkbox" class="pub-render-element check">{{label}}', {
+			label : rowItem[thiItem.key]
+		})
+	}
+	, select : function (ctx, thiItem, renderer, rowItem, mode){
+		var strHtm = [];
+
+		var labelField = renderer.labelField
+			,valueField = renderer.valueField;
+						
+		var list = renderer.list ||[]; 
+		strHtm.push('<select  class="pub-render-element select">')
+
+		for(var i =0 ;i <list.length; i++){
+			var item = list[i];
+			if(labelField){
+				strHtm.push(replaceMesasgeFormat('<option value="{{value}}">{{label}}</option>', {
+					label : item[labelField]
+					,value : item[valueField]
+				}))
+			}else{
+				strHtm.push(replaceMesasgeFormat('<option value="{{label}}">{{label}}</option>', {
+					label : item
+				}))
+			}
+		}
+		
+		strHtm.push('</select>')
+		return strHtm.join('');
+	}
+	, link : function (ctx, thiItem, renderer, rowItem, mode){
+
+		var _url;
+		if(isFunction(renderer.url)){
+			_url = renderer.url(rowItem);
+		}else{
+			_url = replaceMesasgeFormat(renderer.url, rowItem);
+		}
+
+		return replaceMesasgeFormat('<a href="javascript:;" class="pub-render-element link">{{value}}</a>',{
+			value : rowItem[thiItem.key]
+			, url : _url
+		})
+	}
+	, html : function (ctx, thiItem, renderer, rowItem, mode){
+		return thiItem.template(thiItem, rowItem);
+	}
+	, text : function (ctx, thiItem, renderer, rowItem, mode){
+		var type = thiItem.type || 'string';
+
+		var itemVal;
+
+		if(ctx.config.isValueFilter && mode =='view'){
+			itemVal = ctx.options.valueFilter(thiItem, rowItem);
+		}else{
+			itemVal = rowItem[thiItem.key];
+		}
+
+		var tmpFormatter={};
+		if(type == 'money' || type == 'number'){
+			tmpFormatter = ctx.options.formatter[type];
+		}
+
+		if(isFunction(thiItem.formatter)){
+			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, formatInfo : tmpFormatter});
+		}else{
+			if(ctx.options.useDefaultFormatter===true){
+				if(type == 'money'){
+					itemVal = formatter[type](itemVal, tmpFormatter.fixed, tmpFormatter.prefix, tmpFormatter.suffix);
+				}else if(type == 'number'){
+					itemVal = formatter[type](itemVal, tmpFormatter.fixed, tmpFormatter.prefix, tmpFormatter.suffix);
+				}
+			}
+		}
+
+		return itemVal; 
+	}
+	/**
+	 * @method editCell
+	 * @description edit form
+	 */
+	,editCell : function (selEl, colItem, rowItem){
+
+		var renderInfo = colItem.renderer||{};
+		var renderType = renderInfo.type; 
+
+		if(renderType =='button' || renderType =='checkbox'){
+			return ; 
+		}
+
+		var reForm =[];
+
+		reForm.push( '<div class="pubGrid-edit-area pubGrid-edit-type-'+renderType+'">');
+		if(renderType =='select'){
+			reForm.push( '<select class="pubGrid-edit-field">');
+			var items = renderInfo.items||[];
+			var itemKey = objectMerge({code : 'CODE', label : 'LABEL'}, renderInfo.itemKey) ;
+			var codeKey = itemKey.code;
+			var labelKey = itemKey.label;
+
+			for(var i =0, len = items.length;i < len; i++){
+				var item = items[i];
+				reForm.push( '<option value="'+item[codeKey]+'">'+item[labelKey]+'</option>');
+			}
+			reForm.push( '</select>');
+		}else if(renderType =='textarea'){
+			reForm.push( '<textarea class="pubGrid-edit-field"></textarea>');
+		}else if(renderType =='number'){
+			reForm.push( '<input type="number" class="pubGrid-edit-field">');
+		}else{
+			reForm.push( '<input type="text" class="pubGrid-edit-field">');
+		}
+		reForm.push( '</div>');
+
+		selEl.append(reForm.join(''));
+
+		var editEl = selEl.find('.pubGrid-edit-field');
+
+		editEl.val(rowItem[colItem.key]);
+		editEl.focus();
+	}
+}
 
 
 var _$setting = {
@@ -6182,7 +6311,7 @@ var _$setting = {
 						chkLogicStr.push(( filterItem.logicOp ? defaultLogicalOp.getCode('and') : defaultLogicalOp.getCode('or')));
 					}
 					
-					chkLogicStr.push(replaceLogic(opItem.code , {
+					chkLogicStr.push(replaceMesasgeFormat(opItem.code , {
 						key : item.key
 						,idx : allChkVal.length -1
 					}));

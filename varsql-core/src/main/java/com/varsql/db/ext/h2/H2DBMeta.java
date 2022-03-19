@@ -1,6 +1,5 @@
 package com.varsql.db.ext.h2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -52,19 +51,20 @@ public class H2DBMeta extends DBMetaImpl{
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
 	}
+	
+	@Override
+	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNames) throws Exception {
+		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNames);
+	}
+	
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
 	}
 
 	@Override
-	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception {
-		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNmArr);
-	}
-
-	@Override
-	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception	{
-		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,tableNmArr);
+	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... viewNames) throws Exception	{
+		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,viewNames);
 	}
 
 	@Override
@@ -72,43 +72,21 @@ public class H2DBMeta extends DBMetaImpl{
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames) throws Exception {
+		setObjectNameList(dataParamInfo, functionNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionMeta" ,dataParamInfo);
 	}
-
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
 	}
 	@Override
-	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
+	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
 
 		IndexInfoHandler handler = new IndexInfoHandler(dbInstanceFactory.getDataTypeImpl());
 
-		if(indexName!=null && indexName.length > 0){
-			StringBuilder sb =new StringBuilder();
-
-			List<String> indexNameList = new ArrayList<String>();
-
-			boolean  addFlag = false;
-			for (int i = 0; i < indexName.length; i++) {
-				sb.append(addFlag ? ",":"" ).append("'").append(indexName[i]).append("'");
-
-				addFlag = true;
-				if(i!=0 && (i+1)%1000==0){
-					indexNameList.add(sb.toString());
-					sb =new StringBuilder();
-					addFlag = false;
-				}
-			}
-
-			if(sb.length() > 0){
-				indexNameList.add(sb.toString());
-			}
-
-			dataParamInfo.addCustom("objectNameList", indexNameList);
-		}
+		setObjectNameList(dataParamInfo, indexNames);
 
 		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
 
@@ -121,35 +99,14 @@ public class H2DBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
+	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerNames) throws Exception {
+		setObjectNameList(dataParamInfo, triggerNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
 	}
 
-	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
+	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... names){
 
-		if(tableNmArr!=null  && tableNmArr.length > 0){
-			StringBuilder sb =new StringBuilder();
-
-			List<String> tableInfoList = new ArrayList<String>();
-
-			boolean  addFlag = false;
-			for (int i = 0; i < tableNmArr.length; i++) {
-				sb.append(addFlag ? ",":"" ).append("'").append(tableNmArr[i]).append("'");
-
-				addFlag = true;
-				if(i!=0 && (i+1)%1000==0){
-					tableInfoList.add(sb.toString());
-					sb =new StringBuilder();
-					addFlag = false;
-				}
-			}
-
-			if(sb.length() > 0){
-				tableInfoList.add(sb.toString());
-			}
-
-			dataParamInfo.addCustom("objectNameList", tableInfoList);
-		}
+		setObjectNameList(dataParamInfo, names);
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
@@ -179,7 +136,8 @@ public class H2DBMeta extends DBMetaImpl{
 	}
 
 	@Override
-	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceArr) throws Exception {
+	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceNames) throws Exception {
+		setObjectNameList(dataParamInfo, sequenceNames);
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
 	}
 }

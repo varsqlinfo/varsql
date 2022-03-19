@@ -23,7 +23,10 @@ public class DatabaseInfo implements java.io.Serializable {
 	private long version;
 	private int maxSelectCount;
 
-	public DatabaseInfo(String vconnid,String connUUID, String type,String name,String schema,String basetableYn,String lazyLoad,long version, String schemaViewYn, int maxSelectCount, String useColumnLabel){
+	public DatabaseInfo(String vconnid, String connUUID, String type, String name, 
+			String schema, String basetableYn, String lazyLoad, long version, 
+			String schemaViewYn, int maxSelectCount, String useColumnLabel){
+		
 		this.vconnid= vconnid;
 		this.connUUID= connUUID;
 		this.type= type.toUpperCase();

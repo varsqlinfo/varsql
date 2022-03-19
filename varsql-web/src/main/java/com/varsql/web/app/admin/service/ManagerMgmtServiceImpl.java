@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import com.varsql.core.auth.AuthorityType;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBManagerEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.user.UserMapper;
@@ -60,7 +62,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 
 		Page<UserEntity> result = userMgmtRepository.findAll(
 			UserSpec.likeUnameOrUid(auth, (searchParameter.getKeyword()))
-			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
+			, VarsqlUtils.convertSearchInfoToPage(searchParameter, Sort.by(UserEntity.SORT_UNAME))
 		);
 
 		return VarsqlUtils.getResponseResult(result, searchParameter, UserMapper.INSTANCE);
@@ -103,8 +105,8 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 * @param paramMap
 	 * @return
 	 */
-	public ResponseResult searchDatabaseManager(String vconnid) {
-		List<DBManagerEntity> dbModelInfo = dbManagerRepository.findAll(DBManagerSpec.findAllVconnidManager(vconnid));
+	public ResponseResult findDatabaseManager(String vconnid) {
+		List<DBManagerEntity> dbModelInfo = dbManagerRepository.findAll(DBManagerSpec.findAllVconnidManager(vconnid), Sort.by(DBManagerEntity.SORT_USERINFO) );
 
 		List<UserResponseDTO> result =new ArrayList<>();
 		dbModelInfo.stream().forEach(item->{
@@ -126,13 +128,18 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateDbManager(String selectItem ,String vconnid, String mode) {
-		logger.info("updateManagerRole  mode :{}, vconnid :{} ,viewid : {} ",mode, vconnid, selectItem);
+		logger.info(" mode :{}, vconnid :{} ,viewid : {} ",mode, vconnid, selectItem);
 
 		String[] viewidArr = StringUtils.split(selectItem,",");
 
 		List<DBManagerEntity> addManagerList = new ArrayList<>();
 		for(String id: viewidArr){
-			addManagerList.add(DBManagerEntity.builder().vconnid(vconnid).viewid(id).build());
+			addManagerList.add(
+				DBManagerEntity.builder().vconnid(vconnid).viewid(id)
+				.user(UserEntity.builder().viewid(id).build())
+				.dbConnInfo(DBConnectionEntity.builder().vconnid(vconnid).build())
+				.build()
+			);
         }
 
 		int result = 0;
@@ -145,6 +152,6 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 			result = 1;
 		}
 
-		return VarsqlUtils.getResponseResultItemOne(result);
+		return findDatabaseManager(vconnid);
 	}
 }

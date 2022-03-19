@@ -6,7 +6,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{26}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -25,7 +25,7 @@
 
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{26}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -44,7 +44,7 @@
 
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -63,7 +63,7 @@
 
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}@%method:%line - %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{0}@%method:%line - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -89,6 +89,19 @@
 	</logger>
 
 	<logger name="org.springframework" level="info" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
+	
+	<!-- 
+		어플리케이션 구동시 handlermapping  log level
+		debug 로 변경시 모든 컨트롤러의 mapping  정보가 확인 가능.  
+	  -->
+	<logger name="_org.springframework" level="info" additivity="false">
 		<appender-ref ref="FILEOUT" />
 		<if condition='"local".equals("${runtime}")'>
 	        <then>
@@ -243,7 +256,7 @@
 
 	<!-- apache log // start -->
     <logger name="org.apache.tiles" level="info" additivity="false"/>
-    <logger name="org.apache.commons" level="info" additivity="false"/>
+    <logger name="org.apache" level="info" additivity="false"/>
 	<!-- apache log // end  -->
 
     <logger name="com.varsql.web.configuration" level="info" additivity="false"/>

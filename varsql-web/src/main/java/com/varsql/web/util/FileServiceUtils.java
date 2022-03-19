@@ -28,7 +28,6 @@ import org.springframework.core.io.UrlResource;
 
 import com.varsql.core.common.beans.ClientPcInfo;
 import com.varsql.core.common.beans.FileInfo;
-import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.common.util.ResourceUtils;

@@ -56,11 +56,9 @@ public class DownloadController extends AbstractController {
 		downloadName = ValidateUtils.getValidFileName(exportType.concatExtension(downloadName));
 
 		try(OutputStream os = res.getOutputStream()) {
-
-			if(VarsqlFileType.TEXT.equals(exportType)){
-				VarsqlUtils.setResponseDownAttr(res, req, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
-				DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
-			}
+			VarsqlUtils.setResponseDownAttr(res, req, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));
+			DataExportUtil.toTextWrite(downloadInfo.getContent(), os);
+			
 			if(os !=null) os.close();
 		}catch(Exception e) {
 			logger.error("grid download error : {}", e.getMessage() ,e);

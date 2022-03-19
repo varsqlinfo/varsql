@@ -32,6 +32,8 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 	private VarsqlFileType exportType;
 
 	private String columnInfo;
+	
+	private String charset;
 
 	public SqlStatementInfo(){
 		super();
@@ -80,6 +82,14 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 	public void setColumnInfo(String columnInfo) {
 		this.columnInfo = columnInfo;
 	}
+	
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
 
 	@Override
 	public String toString() {
@@ -88,6 +98,9 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 				.append("sql : ").append(sql)
 				.append(" , sqlParam : ").append(sqlParam)
 				.append(" , columnInfo : ").append(columnInfo)
+				.append(" , charset : ").append(charset)
 				.toString();
 	}
+
+	
 }

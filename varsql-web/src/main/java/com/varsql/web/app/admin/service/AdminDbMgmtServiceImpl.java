@@ -54,11 +54,11 @@ import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
 import com.varsql.web.repository.db.DBManagerEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverEntityRepository;
+import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverProviderRepository;
 import com.varsql.web.repository.db.DBTypeEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
 import com.varsql.web.repository.spec.DBTypeDriverProviderSpec;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.security.UserService;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlBeanUtils;
@@ -98,6 +98,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	private DBManagerEntityRepository dbManagerRepository;
 
 	@Autowired
+	@Qualifier(ResourceConfigConstants.USER_DETAIL_SERVICE)
 	private UserService userService;
 
 	@Autowired
@@ -105,7 +106,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	private CacheManager cacheManager;
 
 	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 
 	@Autowired
 	private DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
@@ -227,7 +228,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			if(PathType.PATH.equals(PathType.getPathType(driverProviderEntity.getPathType()))){
 				driverJarFiles = FileServiceUtils.getFileInfos(driverProviderEntity.getDriverPath().split(";"));
 			}else {
-				driverJarFiles = FileServiceUtils.getFileInfos(this.fileInfoEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId()));
+				driverJarFiles = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId()));
 			}
 			
 			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dbInfo.getDbTypeDriverProvider().getDriverProviderId(), dbInfo.getDbTypeDriverProvider().getDriverClass());

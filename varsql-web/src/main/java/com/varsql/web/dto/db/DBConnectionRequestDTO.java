@@ -1,10 +1,10 @@
 package com.varsql.web.dto.db;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.Range;
 
 import com.varsql.web.dto.valid.ValidUrlDirectYn;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
@@ -42,7 +42,9 @@ public class DBConnectionRequestDTO{
 	@Size(max=45)
 	private String vserverip;
 
-	@Range(min=-1, max=65535)
+	@NotNull
+	@Min(value=-1)
+	@Max(value=65535)
 	private int vport;
 
 	@Size(max=250)
@@ -92,28 +94,37 @@ public class DBConnectionRequestDTO{
 	private String schemaViewYn;
 
 	@NotNull
-	@Range(min=-1, max=1000)
+	@Min(value=-1)
+	@Max(value=1000)
 	private int maxActive;
 
 	@NotNull
-	@Range(min=-1, max=1000)
+	@Min(value=-1)
+	@Max(value=1000)
 	private int minIdle;
 
 	@NotNull
-	@Range(min=-1, max=1000000)
+	@Min(value=-1)
+	@Max(value=1000000)
 	private int timeout;
 
 	@NotNull
-	@Range(min=-1, max=100000000)
+	@Min(value=-1)
+	@Max(value=100000000)
 	private long exportcount;
 
 	@NotNull
-	@Range(min=-1, max=100000000)
+	@Min(value=-1)
+	@Max(value=100000000)
 	private long maxSelectCount;
 
 	@NotEmpty
 	@Size(max=1)
 	private String useColumnLabel;
+	
+	@NotEmpty
+	@Size(max=1)
+	private String testWhileIdle;
 
 	private boolean passwordChange;
 
@@ -145,6 +156,7 @@ public class DBConnectionRequestDTO{
 				.exportcount(exportcount)
 				.maxSelectCount(maxSelectCount)
 				.useColumnLabel(useColumnLabel)
+				.testWhileIdle(testWhileIdle)
 				.build();
 	}
 }

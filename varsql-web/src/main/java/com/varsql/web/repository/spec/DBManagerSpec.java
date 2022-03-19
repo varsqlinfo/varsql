@@ -1,6 +1,4 @@
 package com.varsql.web.repository.spec;
-import javax.persistence.criteria.Predicate;
-
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.web.model.entity.db.DBManagerEntity;
@@ -24,7 +22,7 @@ public class DBManagerSpec extends DefaultSpec{
     }
 	
 	public static Specification<DBManagerEntity> findAllVconnidManager(String vconnid) {
-    	return Specification.where(vconnid(vconnid));
+    	return Specification.where(joinViewid()).and(vconnid(vconnid));
     }
 	
 	public static Specification<DBManagerEntity> findViewid(String viewid) {
@@ -42,6 +40,13 @@ public class DBManagerSpec extends DefaultSpec{
     		return cb.equal(root.get(DBManagerEntity.VCONNID), vconnid);
     	};
 	}
+	
+	private static Specification<DBManagerEntity> joinViewid() {
+    	return (root, query, cb) -> {
+    		root.fetch(DBManagerEntity.JOIN_USERINFO);
+    		return cb.equal(cb.literal(1), 1);
+    	};
+    }
 	
 	
 

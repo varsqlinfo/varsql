@@ -3,6 +3,7 @@ package com.varsql.web.model.entity.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +17,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.varsql.web.model.base.AbstractAuditorModel;
-import com.varsql.web.model.entity.app.FileInfoEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -68,8 +68,8 @@ public class DBTypeDriverProviderEntity extends AbstractAuditorModel {
 	@Column(name = "DRIVER_PATH")
 	private String driverPath;
 
-	@OneToMany(mappedBy = "driverProviderFiles", fetch = FetchType.LAZY)
-	private List<FileInfoEntity> driverFiles = new ArrayList<>();
+	@OneToMany(mappedBy = "driverProviderFiles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<DBTypeDriverFileEntity> driverFiles = new ArrayList<>();
 
 	@Builder
 	public DBTypeDriverProviderEntity(String driverProviderId, String driverId, String providerName, String dbType,

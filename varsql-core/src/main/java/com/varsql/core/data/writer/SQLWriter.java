@@ -132,4 +132,8 @@ public class SQLWriter extends AbstractWriter{
 		writer.close();
 	}
 
+	public DBType getDbytpe() {
+		return dbytpe;
+	}
+
 }

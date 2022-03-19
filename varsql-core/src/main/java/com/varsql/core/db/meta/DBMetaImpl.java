@@ -182,9 +182,9 @@ public abstract class DBMetaImpl implements DBMeta{
 		}
 	}
 
-	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo, String... tableArr) throws Exception {
+	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo, String... tableNames) throws Exception {
 
-		logger.debug("DBMetaImpl getTableMetadata {}  tableArr :: {}", VartechReflectionUtils.reflectionToString(dataParamInfo), tableArr);
+		logger.debug("DBMetaImpl getTableMetadata {}  tableArr :: {}", VartechReflectionUtils.reflectionToString(dataParamInfo), tableNames);
 		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
 
 		try {
@@ -192,11 +192,11 @@ public abstract class DBMetaImpl implements DBMeta{
 			Connection conn = session.getConnection();
 
 			List<TableInfo> tableList = null;
-			if(tableArr !=null  && tableArr.length > 0){
+			if(tableNames !=null  && tableNames.length > 0){
 				tableList = new ArrayList<TableInfo>();
 
 				TableInfo tableInfo = null;
-				for (String nm :tableArr) {
+				for (String nm :tableNames) {
 					tableInfo = new TableInfo();
 
 					tableInfo.setName(nm);
@@ -242,17 +242,17 @@ public abstract class DBMetaImpl implements DBMeta{
 	}
 
 	@Override
-	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo, String... viewArr) throws Exception{
+	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo, String... viewNames) throws Exception{
 		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
 
 		try {
 			Connection conn = session.getConnection();
 			List<TableInfo> tableList = null;
-			if(viewArr !=null  && viewArr.length > 0){
+			if(viewNames !=null  && viewNames.length > 0){
 				tableList = new ArrayList<TableInfo>();
 
 				TableInfo tableInfo = null;
-				for (String nm :viewArr) {
+				for (String nm :viewNames) {
 					tableInfo = new TableInfo();
 
 					tableInfo.setName(nm);
@@ -305,19 +305,19 @@ public abstract class DBMetaImpl implements DBMeta{
 	 * @throws Exception
 	 */
 	@Override
-	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... proceduresArr) throws Exception{
+	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... procedureNames) throws Exception{
 		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
 
 		try {
 			Connection conn = session.getConnection();
 			List<ObjectInfo> objectInfoList = null;
-			if(proceduresArr==null){
+			if(procedureNames==null){
 				objectInfoList = dBMetaDataUtil.proceduresInfo(dataParamInfo,conn);
 			}else{
 				objectInfoList = new ArrayList<ObjectInfo>();
 
 				ObjectInfo objInfo = null;
-				for (String nm :proceduresArr) {
+				for (String nm :procedureNames) {
 					objInfo = new ObjectInfo();
 					objInfo.setName(nm);
 					objectInfoList.add(objInfo);
@@ -365,23 +365,23 @@ public abstract class DBMetaImpl implements DBMeta{
 	 * @작성일   : 2018. 8. 29.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param functionNm
+	 * @param functionNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNm)
+	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames)
 			throws Exception {
 		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
 
 		try {
 			Connection conn = session.getConnection();
 			List<ObjectInfo> objectInfoList = null;
-			if(functionNm!=null && functionNm.length > 0){
+			if(functionNames!=null && functionNames.length > 0){
 				objectInfoList = new ArrayList<ObjectInfo>();
 
 				ObjectInfo objInfo = null;
-				for (String nm :functionNm) {
+				for (String nm :functionNames) {
 					objInfo = new ObjectInfo();
 					objInfo.setName(nm);
 					objectInfoList.add(objInfo);
@@ -410,7 +410,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	}
 
 	@Override
-	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String ...sequenceArr)
+	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String ...sequenceNames)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -450,7 +450,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	}
 
 	@Override
-	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNmArr) throws Exception {
+	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
 		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
 
 		try {
@@ -464,11 +464,11 @@ public abstract class DBMetaImpl implements DBMeta{
 				DatabaseMetaData dbmd = conn.getMetaData();
 
 				List<TableInfo> tableList;
-				if(indexNmArr != null  && indexNmArr.length > 0 ){
+				if(indexNames != null  && indexNames.length > 0 ){
 					tableList = new ArrayList<TableInfo>();
 
 					TableInfo tableInfo = null;
-					for (String nm :indexNmArr) {
+					for (String nm :indexNames) {
 						tableInfo = new TableInfo();
 
 						tableInfo.setName(nm);
@@ -533,7 +533,7 @@ public abstract class DBMetaImpl implements DBMeta{
 	}
 
 	@Override
-	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
+	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerNames) throws Exception {
 		return null;
 	}
 
@@ -566,11 +566,11 @@ public abstract class DBMetaImpl implements DBMeta{
 		return reval;
 	}
 
-	protected DatabaseParamInfo setObjectNameList(DatabaseParamInfo dataParamInfo , String ... names) {
-		if(names!=null && names.length > 0){
+	protected DatabaseParamInfo setObjectNameList(DatabaseParamInfo dataParamInfo, String ... names) {
+		if(names != null && names.length > 0){
 			StringBuilder sb =new StringBuilder();
 
-			List<String> indexNameList = new ArrayList<String>();
+			List<String> nameList = new ArrayList<String>();
 
 			boolean  addFlag = false;
 			for (int i = 0; i < names.length; i++) {
@@ -578,17 +578,17 @@ public abstract class DBMetaImpl implements DBMeta{
 
 				addFlag = true;
 				if(i!=0 && (i+1)%1000==0){
-					indexNameList.add(sb.toString());
+					nameList.add(sb.toString());
 					sb =new StringBuilder();
 					addFlag = false;
 				}
 			}
 
 			if(sb.length() > 0){
-				indexNameList.add(sb.toString());
+				nameList.add(sb.toString());
 			}
 
-			dataParamInfo.addCustom("objectNameList", indexNameList);
+			dataParamInfo.addCustom("objectNameList", nameList);
 		}
 		return dataParamInfo;
 	}
@@ -596,5 +596,4 @@ public abstract class DBMetaImpl implements DBMeta{
 	public static void sessionClose(String sessionType, SqlSession session) {
 		SQLManager.getInstance().closeSession(sessionType, session);
 	}
-
 }

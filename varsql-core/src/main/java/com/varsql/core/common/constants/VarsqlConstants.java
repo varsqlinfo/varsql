@@ -1,7 +1,5 @@
 package com.varsql.core.common.constants;
 
-import java.nio.charset.Charset;
-
 import com.varsql.core.configuration.Configuration;
 
 /**

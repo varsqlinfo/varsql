@@ -124,8 +124,8 @@ public class DbGroupController extends AbstractController {
 
 	/**
 	 *
-	 * @Method Name  : addDbGroupMappingInfo
-	 * @Method 설명 : db 그룹에 db 맵핑
+	 * @Method Name  : groupDbMapping
+	 * @Method 설명 : 그룹에 db 맵핑
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 8. 16.
 	 * @변경이력  :
@@ -136,15 +136,15 @@ public class DbGroupController extends AbstractController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/addDbGroupMappingInfo", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult addDbGroupMappingInfo(@RequestParam(value = "selectItem", required = true)  String selectItem
+	@RequestMapping(value = "/groupDbMapping", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult groupDbMapping(@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "groupId", required = true) String groupId
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			, HttpServletRequest req
 			) throws Exception {
 
-
 		return dbGroupServiceImpl.updateGroupNDbMappingInfo(selectItem ,groupId ,mode);
+		
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class DbGroupController extends AbstractController {
 	}
 
 	/**
-	 * @method  : addDbGroupUser
+	 * @method  : dbGroupUserMapping
 	 * @desc : db 그룹 사용자 추가 삭제.
 	 * @author   : ytkim
 	 * @date   : 2019. 8. 16.
@@ -174,8 +174,8 @@ public class DbGroupController extends AbstractController {
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value = "/addDbGroupUser", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult addDbGroupUser(@RequestParam(value = "groupId", required = true) String groupId
+	@RequestMapping(value = "/dbGroupUserMapping", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult dbGroupUserMapping(@RequestParam(value = "groupId", required = true) String groupId
 			,@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			) {

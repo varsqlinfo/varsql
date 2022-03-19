@@ -338,14 +338,15 @@ public class ExportServiceImpl{
 
 		String requid = ddi.getRequid();
 
-		HttpSession session = req.getSession(true);
-
 		ProgressInfo progressInfo = new ProgressInfo();
 
 		progressInfo.setTotalItemSize(ddi.getItems().size());
 
 		String sessAttrKey = HttpSessionConstants.progressKey(requid);
-
+		
+		System.out.println("downloadTableData2 sessAttrKey : "+ sessAttrKey);
+		
+		HttpSession session = req.getSession();
 		session.setAttribute(sessAttrKey, progressInfo);
 
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile), Charset.forName(charset));) {

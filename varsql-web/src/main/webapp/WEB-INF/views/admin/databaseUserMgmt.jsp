@@ -79,24 +79,28 @@ VarsqlAPP.vueServiceBean( {
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
+				,valueKey : 'viewid'	
+				,labelKey : 'name'
+				,render: function (info){	// 아이템 추가될 템플릿.
+					var item = info.item; 
+					return (item.uname+'('+item.uid+')')
+				}
 				,source : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
-					,items : []
-				}
-				,target : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
-					,items : []
-				}
-				,compleateSourceMove : function (moveItem){
-					if($.isArray(moveItem)){
-						return _self.addDbManager('down', moveItem);
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.dbManagerMapping('add', moveItem);
+						}
+						return false; 
 					}
 				}
-				,compleateTargetMove : function (moveItem){
-					if($.isArray(moveItem)){
-						return _self.addDbManager('up', moveItem);
+				,target : {
+					items : []
+					,completeMove : function (moveItem){
+						if($.isArray(moveItem)){
+							_self.dbManagerMapping('del', moveItem);
+						}
+						return false; 
 					}
 				}
 			});
@@ -135,7 +139,7 @@ VarsqlAPP.vueServiceBean( {
 					_self.managerGridData = resData.items;
 					
 		    		if( _self.managerGridData.length > 0){
-		    			_self.selectObj.setSourceItem(_self.getItemFormatter(resData.items));
+		    			_self.selectObj.setSourceItem(resData.items);
 		    		}
 				}
 			})
@@ -155,21 +159,11 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector: '.manage-user-detail'
 				,data : param
 				,success: function(resData) {
-		    		_self.selectObj.setTargetItem(_self.getItemFormatter(resData.items));
+		    		_self.selectObj.setTargetItem(resData.items);
 				}
 			})
 		}
-		,getItemFormatter : function (result){
-			var resultItem = [];
-    		var item;
-    		for(var i = 0 ;i < result.length; i ++){
-    			item = result[i];
-    			item.uname =item.uname+'('+item.uemail +')';
-    			resultItem.push(item);
-    		}
-			return resultItem;
-		}
-		,addDbManager : function (mode, moveItem){
+		,dbManagerMapping : function (mode, moveItem){
 			var _self = this;
 
 			if(!_self.detailItem.vconnid){
@@ -180,14 +174,14 @@ VarsqlAPP.vueServiceBean( {
 			var param ={
 				selectItem : moveItem.join(',')
 				,vconnid : _self.detailItem.vconnid
-				, mode : mode =='up'? 'del' : 'add'
+				, mode : mode =='del'? 'del' : 'add'
 			};
 
 			_self.$ajax({
 				data:param
-				,url : {type:VARSQL.uri.admin, url:'/managerMgmt/addDbManager'}
+				,url : {type:VARSQL.uri.admin, url:'/managerMgmt/dbManagerMapping'}
 				,success:function (resData){
-					_self.dbManagerList(_self.detailItem);
+					_self.selectObj.setTargetItem(resData.items);
 				}
 			});
 		}

@@ -1,7 +1,6 @@
 package com.varsql.web.security;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 
 import javax.servlet.RequestDispatcher;
@@ -17,7 +16,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;

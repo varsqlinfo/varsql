@@ -214,6 +214,15 @@
 						</div>
 					</div>
 					<div class="view-area" data-view-mode="opt" :class="viewMode=='opt'?'on':''">
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.test_while_idle" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="testWhileIdle" value="Y" v-model="detailItem.testWhileIdle" >Y</label>
+								<label><input type="radio" name="testWhileIdle" value="N" v-model="detailItem.testWhileIdle" checked>N</label>
+							</div>
+						</div>
+						
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.minidle" /></label>
 							<div class="col-sm-8">
@@ -426,7 +435,8 @@ VarsqlAPP.vueServiceBean( {
 					,basetableYn: 'Y'
 					,lazyloadYn: 'N'
 					,schemaViewYn: 'N'
-					,useColumnLabel:'Y'
+					,useColumnLabel: 'Y'
+					,testWhileIdle: 'N'
 				}
 			}else{
 				this.detailFlag = true;

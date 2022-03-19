@@ -26,4 +26,8 @@ public interface ResourceConfigConstants {
 	final String CACHE_CONDITION_COMPONENT = "varsqlCacheCondition";
 	
 	final String CACHE_MANAGER = "varsqlCacheManager";
+	
+	final String USER_DETAIL_SERVICE = "varsqlUserDetailService";
+	
+	final String REMEMBERME_USER_DETAIL_SERVICE = "rememberMeUserService";
 }

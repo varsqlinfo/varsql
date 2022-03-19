@@ -5,21 +5,38 @@
  * For more details take a look at the Java Libraries chapter in the Gradle
  * User Manual available at https://docs.gradle.org/6.0.1/userguide/java_library_plugin.html
  */
-ext.queryDslVersion = '4.3.1'
+
 buildscript {
 	ext {
-        springBootVersion = '2.2.6.RELEASE'
-        springDependencyVersion = '1.0.9.RELEASE'
-        querydslPluginVersion = '1.0.10'
-        queryDslVersion = '4.3.1'
+        springBootVersion = '2.6.3'
+        springDependencyVersion = '1.0.11.RELEASE'
+        queryDslVersion = '5.0.0'
         sonarVersion = '3.0'
         mapstructVersion = "1.4.2.Final"
         lombokMapstructVersion = "0.2.0"
+        
+        def_version = [
+			springData: '2.2.6.RELEASE'
+			,springSecurity: '5.2.1.RELEASE'
+			,servletApi: '4.0.0'
+			,jackson : '2.13.1'
+			,poi : '5.2.0'
+			,tiles : '3.0.7'
+			,tomcat : '8.5.49'
+			,jspApi : '2.3.3'
+			,slf4j : '1.7.30'
+			,tiles : '3.0.7'
+			,junit : '5.2.0'
+			,junitPlatform : '1.5.0'
+			,mockito: '3.3.3'
+			,
+k : '1.18.10'
+			,jstl : '1.2.5'
+		]
     }
 
 	repositories {
 		mavenCentral()
-		jcenter()
 		maven {
 	      url "https://plugins.gradle.org/m2/"
 	    }
@@ -48,7 +65,9 @@ def def_build= [
 	dir : 'target'
 ]
 
-ext.varsqlVersion = '1.1.15'
+ext {
+	varsqlVersion = '1.1.15'
+}
 
 //소스 분석.
 apply plugin: 'org.sonarqube'
@@ -58,6 +77,8 @@ sonarqube {
     	property "sonar.sourceEncoding", "UTF-8"
     }
 }
+
+
 
 subprojects {
     apply plugin: 'java'
@@ -75,28 +96,9 @@ subprojects {
 	}
 
     repositories {
-        jcenter()
+    	mavenCentral()
     	flatDir{dirs rootProject.file( 'libs' )}
     }
-
-    def def_version = [
-		springData: '2.2.6.RELEASE'
-		,springSecurity: '5.2.1.RELEASE'
-		,servletApi: '4.0.0'
-		,jackson : '2.9.9'
-		,poi : '4.1.2'
-		,tiles : '3.0.7'
-		,tomcat : '8.5.49'
-		,jspApi : '2.3.3'
-		,slf4j : '1.7.30'
-		,tiles : '3.0.7'
-		,junit : '5.2.0'
-		,junitPlatform : '1.5.0'
-		,mockito: '3.3.3'
-		,lombok : '1.18.10'
-		,querydslSql : '4.3.1'
-		,jstl : '1.2.5'
-	]
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -172,7 +174,13 @@ subprojects {
 			,[ group: 'org.apache.commons' , name: 'commons-csv' , version: '1.7']
 			,[ group: 'org.apache.commons' , name: 'commons-compress' , version: '1.18']
 			,[ group: 'org.apache.commons', name: 'commons-text', version: '1.9']
+			
+			// commons
+			,[ group: 'commons-io', name: 'commons-io', version: '2.11.0']
+			,[ group: 'commons-codec', name: 'commons-codec', version: '1.15']
+			,[ group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4']
 		)
+		
 
 		implementation( // poi
 			[ group: 'org.apache.poi' , name: 'poi' , version: def_version.poi ]
@@ -187,7 +195,6 @@ subprojects {
 
 		implementation( // log
 			[ group: 'org.slf4j' , name: 'slf4j-api' , version: def_version.slf4j]
-			,[ group: 'ch.qos.logback' , name: 'logback-classic' , version: '1.2.9']
 			,[ group: 'org.codehaus.janino' , name: 'janino' , version: '3.0.12']
 		)
 
@@ -198,22 +205,22 @@ subprojects {
 		implementation group: 'com.google.guava', name: 'guava', version: '18.0'
 
 		// xml to json
-		implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.2'
+		implementation(
+        	[group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: def_version.jackson]
+        )
 
 		implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
 		implementation group: 'org.jdom' , name: 'jdom' , version: '1.1.3'
 		implementation group: 'org.mybatis' , name: 'mybatis' , version: '3.5.5'
 		implementation group: 'org.mybatis' , name: 'mybatis-spring' , version: '2.0.5'
 
-		implementation group: 'commons-io' , name: 'commons-io' , version: '2.6'
-		implementation group: 'commons-fileupload' , name: 'commons-fileupload' , version: '1.4'
-		implementation group: 'commons-codec' , name: 'commons-codec' , version: '1.11'
+		
 
 		//Reflections
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'
 
 
-		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.2'
+		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.8'
 
 		implementation group: 'com.thoughtworks.xstream' , name: 'xstream' , version: '1.4.11'
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'
@@ -231,6 +238,7 @@ subprojects {
 
     	providedCompile(
 			[ group: 'javax.servlet' , name: 'javax.servlet-api' , version: '4.0.0' ]
+			, [ group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final' ]
 			, [ group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: def_version.jspApi ]
 			, [ group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat']
 			, [ group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper']

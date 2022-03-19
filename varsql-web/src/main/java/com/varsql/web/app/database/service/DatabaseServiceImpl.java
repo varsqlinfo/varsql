@@ -70,7 +70,6 @@ public class DatabaseServiceImpl{
 	 */
 	public Map schemas(DatabaseParamInfo databaseParamInfo) throws SQLException{
 		Map json = new HashMap();
-		String connid =databaseParamInfo.getConuid();
 
 		DatabaseInfo dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
 

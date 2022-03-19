@@ -14,11 +14,10 @@ import com.varsql.core.db.DBType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.ddl.script.DDLScriptImpl;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.sql.SQL;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
@@ -201,7 +200,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			param.put("ddlOption", ddlOption);
 			param.put("ARGUMENTS",argsSb.toString());
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.FUNCTION), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.FUNCTION.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -248,7 +247,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 			param.put("ddlOption", ddlOption);
 			param.put("ARGUMENTS",argsSb.toString());
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.PROCEDURE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.PROCEDURE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
@@ -344,7 +343,7 @@ public class CubridDDLScript extends DDLScriptImpl {
 
 			param.put("ddlOption", ddlOption);
 
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQL.CREATE.getTemplateId(ObjectType.SEQUENCE), param));
+			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);

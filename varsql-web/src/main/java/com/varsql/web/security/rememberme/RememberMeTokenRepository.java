@@ -5,14 +5,12 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.user.RememberMeEntity;
 import com.varsql.web.security.repository.RememberMeEntityRepository;
 
-@Service
 public class RememberMeTokenRepository implements PersistentTokenRepository {
 
 	@Autowired

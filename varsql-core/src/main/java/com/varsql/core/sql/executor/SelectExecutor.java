@@ -16,7 +16,6 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
-import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
@@ -42,8 +41,6 @@ import com.vartech.common.utils.VartechUtils;
 public class SelectExecutor implements SQLExecutor{
 
 	private final Logger logger = LoggerFactory.getLogger(SelectExecutor.class);
-
-	private int BATCH_COUNT = 1000;
 
 	@Override
 	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {

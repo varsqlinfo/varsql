@@ -24,15 +24,15 @@ public class ConnectionInfo implements Serializable {
 	private String password;
 	private int connectionTimeOut;
 	private int exportCount;
-	private int max_active=10;
-	private int min_idle=3;
-	private long max_wait=60000;
+	private int maxActive=10;
+	private int minIdle=3;
+	private long maxWait=60000;
 	private String version;
 	private long timebetweenevictionrunsmillis;
-	private String test_while_idle;
-	private String validation_query;
-	private Map connection_opt;
-	private Map pool_opt;
+	private boolean testWhileIdle;
+	private String validationQuery;
+	private Map connectionOptions;
+	private Map poolOptions;
 	private DataSource datasource;
 
 	private JDBCDriverInfo jdbcDriverInfo;
@@ -85,12 +85,12 @@ public class ConnectionInfo implements Serializable {
 		this.password = password;
 	}
 
-	public int getMax_active() {
-		return max_active;
+	public int getMaxActive() {
+		return maxActive;
 	}
 
-	public void setMax_active(int max_active) {
-		this.max_active = max_active;
+	public void setMaxActive(int maxActive) {
+		this.maxActive = maxActive;
 	}
 
 	public long getTimebetweenevictionrunsmillis() {
@@ -102,87 +102,36 @@ public class ConnectionInfo implements Serializable {
 		this.timebetweenevictionrunsmillis = timebetweenevictionrunsmillis;
 	}
 
-	public String getTest_while_idle() {
-		return test_while_idle;
+	public boolean isTestWhileIdle() {
+		return testWhileIdle;
 	}
 
-	public void setTest_while_idle(String test_while_idle) {
-		this.test_while_idle = test_while_idle;
+	public void setTestWhileIdle(boolean testWhileIdle) {
+		this.testWhileIdle = testWhileIdle;
 	}
 
-	public String getValidation_query() {
-		return validation_query;
+	public String getValidationQuery() {
+		return validationQuery;
 	}
 
-	public void setValidation_query(String validation_query) {
-		this.validation_query = validation_query;
+	public void setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
 	}
 
-	public Map getConnection_opt() {
-		return connection_opt;
+	public int getMinIdle() {
+		return minIdle;
 	}
 
-	public void setConnection_opt(String connection_opt) {
-		if(null == connection_opt || "".equals(connection_opt)) return ;
-
-		String [] tmpOpt = CommUtils.split(connection_opt, ";");
-
-		if(this.connection_opt ==null) this.connection_opt=new HashMap();
-
-		String [] optVal = null;
-		String tmpKey = "";
-		for (int i = 0; i < tmpOpt.length; i++) {
-
-			tmpKey=tmpOpt[i];
-
-			if("".equals(tmpKey.trim())){
-				continue;
-			}
-
-			optVal = CommUtils.split(tmpKey, "=");
-
-			this.connection_opt.put(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ) );
-		}
+	public void setMinIdle(int minIdle) {
+		this.minIdle = minIdle;
 	}
 
-	public Map getPool_opt() {
-		return pool_opt;
+	public long getMaxWait() {
+		return maxWait;
 	}
 
-	public void setPool_opt(String pool_opt) {
-		if(null == pool_opt || "".equals(pool_opt)) return ;
-
-		String [] tmpOpt = CommUtils.split(pool_opt, ";");
-
-		if(this.pool_opt ==null) this.pool_opt=new HashMap();
-
-		String [] optVal = null;
-		String tmpKey = "";
-		for (int i = 0; i < tmpOpt.length; i++) {
-
-			tmpKey=tmpOpt[i];
-
-			if(!"".equals(tmpKey.trim())){
-				optVal = CommUtils.split(tmpKey, "=");
-				this.pool_opt.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
-			}
-		}
-	}
-
-	public int getMin_idle() {
-		return min_idle;
-	}
-
-	public void setMin_idle(int min_idle) {
-		this.min_idle = min_idle;
-	}
-
-	public long getMax_wait() {
-		return max_wait;
-	}
-
-	public void setMax_wait(int max_wait) {
-		this.max_wait = max_wait;
+	public void setMaxWait(int maxWait) {
+		this.maxWait = maxWait;
 	}
 
 	public String getVersion() {
@@ -200,34 +149,7 @@ public class ConnectionInfo implements Serializable {
 	public void setJdbcDriverInfo(JDBCDriverInfo jdbcDriverInfo) {
 		this.jdbcDriverInfo = jdbcDriverInfo;
 	}
-
-
-	@Override
-	public String toString() {
-
-		StringBuilder result = new StringBuilder();
-	    String NEW_LINE = System.getProperty("line.separator");
-
-	    result.append(this.getClass().getName() ).append( " Object { " ).append( NEW_LINE);
-	    result.append(" connid: ").append(connid).append(NEW_LINE);
-	    result.append(" aliasName: ").append(aliasName).append(NEW_LINE);
-	    result.append(" type: " ).append( type ).append( NEW_LINE);
-	    result.append(" url: " ).append( url ).append( NEW_LINE);
-	    result.append(" username: " ).append( username ).append( NEW_LINE);
-	    result.append(" password: " ).append( password ).append( NEW_LINE);
-	    result.append(" max_active: " ).append( max_active ).append( NEW_LINE);
-	    result.append(" min_idle: " ).append( min_idle ).append( NEW_LINE);
-	    result.append(" max_wait: " ).append( max_wait ).append( NEW_LINE);
-	    result.append(" connection_opt: " ).append( connection_opt ).append( NEW_LINE);
-	    result.append(" pool_opt: " ).append( pool_opt ).append( NEW_LINE);
-	    result.append(" timebetweenevictionrunsmillis: " ).append( timebetweenevictionrunsmillis ).append( NEW_LINE);
-	    result.append(" test_while_idle: " ).append( test_while_idle ).append( NEW_LINE);
-	    result.append(" validation_query: " ).append( validation_query ).append( NEW_LINE);
-	    result.append("}");
-
-	    return result.toString();
-	}
-
+	
 	public long getConnectionTimeOut() {
 		return connectionTimeOut;
 	}
@@ -251,4 +173,84 @@ public class ConnectionInfo implements Serializable {
 	public void setExportCount(int exportCount) {
 		this.exportCount = exportCount;
 	}
+
+	public Map getConnectionOptions() {
+		return connectionOptions;
+	}
+
+	public void setConnectionOptions(String connectionOptions) {
+		if(null == connectionOptions || "".equals(connectionOptions)) return ;
+
+		String [] tmpOpt = CommUtils.split(connectionOptions, ";");
+
+		if(this.connectionOptions ==null) this.connectionOptions=new HashMap();
+
+		String [] optVal = null;
+		String tmpKey = "";
+		for (int i = 0; i < tmpOpt.length; i++) {
+
+			tmpKey=tmpOpt[i];
+
+			if("".equals(tmpKey.trim())){
+				continue;
+			}
+
+			optVal = CommUtils.split(tmpKey, "=");
+
+			this.connectionOptions.put(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ) );
+		}
+	}
+
+	public Map getPoolOptions() {
+		return poolOptions;
+	}
+
+	public void setPoolOptions(String poolOption) {
+		if(null == poolOption || "".equals(poolOption)) return ;
+
+		String [] tmpOpt = CommUtils.split(poolOption, ";");
+
+		if(this.poolOptions ==null) this.poolOptions=new HashMap();
+
+		String [] optVal = null;
+		String tmpKey = "";
+		for (int i = 0; i < tmpOpt.length; i++) {
+
+			tmpKey=tmpOpt[i];
+
+			if(!"".equals(tmpKey.trim())){
+				optVal = CommUtils.split(tmpKey, "=");
+				this.poolOptions.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
+			}
+		}
+	}
+
+
+	@Override
+	public String toString() {
+
+		StringBuilder result = new StringBuilder();
+	    String NEW_LINE = System.getProperty("line.separator");
+
+	    result.append(this.getClass().getName() ).append( " Object { " ).append( NEW_LINE);
+	    result.append(" connid: ").append(connid).append(NEW_LINE);
+	    result.append(" aliasName: ").append(aliasName).append(NEW_LINE);
+	    result.append(" type: " ).append( type ).append( NEW_LINE);
+	    result.append(" url: " ).append( url ).append( NEW_LINE);
+	    result.append(" username: " ).append( username ).append( NEW_LINE);
+	    result.append(" password: " ).append( password ).append( NEW_LINE);
+	    result.append(" maxActive: " ).append( maxActive ).append( NEW_LINE);
+	    result.append(" minIdle: " ).append( minIdle ).append( NEW_LINE);
+	    result.append(" maxWait: " ).append( maxWait ).append( NEW_LINE);
+	    result.append(" connection_opt: " ).append( connectionOptions ).append( NEW_LINE);
+	    result.append(" pool_opt: " ).append( poolOptions ).append( NEW_LINE);
+	    result.append(" timebetweenevictionrunsmillis: " ).append( timebetweenevictionrunsmillis ).append( NEW_LINE);
+	    result.append(" test_while_idle: " ).append( testWhileIdle ).append( NEW_LINE);
+	    result.append(" validation_query: " ).append( validationQuery ).append( NEW_LINE);
+	    result.append("}");
+
+	    return result.toString();
+	}
+
+	
 }

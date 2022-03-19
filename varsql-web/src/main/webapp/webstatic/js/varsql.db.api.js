@@ -64,7 +64,7 @@ VARSQLApi.preferences = {
 VARSQLApi.sqlTemplate = {
 	/**
 	 * @method save
-	 * @param prefInfo {Object} - {conuid : String ,prefKey : String ,  prefVal : String}  설정 정보.
+	 * @param prefInfo {Object} - {dbType : String, conuid : String, templateType : String}  설정 정보.
 	 * @param callback {Object} - callback method
 	 * @description 데이터 add
 	 */

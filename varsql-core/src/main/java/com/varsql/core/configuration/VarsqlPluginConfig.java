@@ -49,7 +49,6 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void initialize(boolean initflag) throws ConfigurationLoadException {
 		FileInputStream is =null;
 		synchronized(lock){

@@ -208,11 +208,8 @@
 				this.subCodeTemplateEditor.on('change', function(cm) {
 					_this.codeDetailInfo.code = cm.getValue();
 			    })
-
 	    	}
-	    	// 정보 저장 및 적용.
-	    	,contextSave :function (){
-
+	    	,getSaveItem : function (){
 	    		var contextItems = this.contextItems;
 
 	    		for(var i =0; i < contextItems.length;i++){
@@ -226,10 +223,20 @@
 	    				if(result.isError){
 	    	    			VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0026'));
 	    	    			this.viewItem(templateInfo, 'child');
-	    	    			return ;
+	    	    			return null;
 	    	    		}
 	    			}
 	    		}
+	    		
+	    		return contextItems; 
+	    		
+	    	}
+	    	// 정보 저장 및 적용.
+	    	,contextSave :function (){
+	    		var contextItems = this.getSaveItem();
+				if(contextItems == null){
+					return ;
+				}
 
 	    		if(!confirm(VARSQL.messageFormat('varsql.0024'))){
 	    			return ;
@@ -240,6 +247,27 @@
 	    			,prefKey : 'main.contextmenu.serviceobject'
 	    			,prefVal : JSON.stringify(contextItems)
 	    		});
+	    	}
+	    	,exportInfo : function (){
+	    		
+	    		var contextItems = this.getSaveItem();
+				if(contextItems == null){
+					return ;
+				}
+				
+				
+	    		var params ={
+    				exportType :'text'
+    				,fileName :'contextmenu-template.json'
+    				,content : JSON.stringify(contextItems, null, 2)
+    			};
+	    		
+
+    			VARSQL.req.download({
+    				type: 'post'
+    				,url: '/download'
+    				,params: params
+    			});
 	    	}
 	    	// 초기화
 	    	,restoreDefault :function (messageView){
@@ -269,6 +297,7 @@
 	    		if(type == 'parent'){
 	    			this.templateInfo = this.createSubItem();
 	    		}else{
+	    			item.propItems = item.propItems ||[]; 
 	    			this.templateInfo = item;
 	    			codeDetailInfo = item.propItems[0]||{};
 	    		}

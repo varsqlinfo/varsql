@@ -7,17 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.dto.db.DBGroupRequestDTO;
-import com.varsql.web.dto.user.UserResponseDTO;
+import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
+import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.db.DBConnectionMapper;
 import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
@@ -120,7 +121,7 @@ public class DbGroupServiceImpl extends AbstractService{
 	 */
 	public ResponseResult groupNDbMappingList(String groupId) {
 
-		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId));
+		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId), Sort.by(DBGroupMappingDbEntity.SORT_VNAME));
 
 		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
 			return DBConnectionMapper.INSTANCE.toDto(item.getConnInfo());
@@ -140,25 +141,30 @@ public class DbGroupServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateGroupNDbMappingInfo(String selectItem, String groupId, String mode) {
 
-		logger.info("updateDbGroupMappingInfo  mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
+		logger.info("mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
 
 		String[] vconnidArr = StringUtils.split(selectItem,",");
 
 		List<DBGroupMappingDbEntity> dbConnList = new ArrayList<>();
 		for(String id: vconnidArr){
-			dbConnList.add(DBGroupMappingDbEntity.builder().groupId(groupId).vconnid(id).build());
+			dbConnList.add(DBGroupMappingDbEntity.builder()
+				.groupId(groupId)
+				.vconnid(id)
+				.groupDbEntity(DBGroupEntity.builder().groupId(groupId).build())
+				.connInfo(DBConnectionEntity.builder().vconnid(id).build())
+				.build()
+			);
         }
 
-		int result = 0;
 		if(dbConnList.size() > 0) {
 			if("del".equals(mode)){
 				dbGroupMappingDbEntityRepository.deleteAll(dbConnList);
 			}else{
 				dbGroupMappingDbEntityRepository.saveAll(dbConnList);
 			}
-			result = 1;
 		}
-		return VarsqlUtils.getResponseResultItemOne(result);
+		
+		return groupNDbMappingList(groupId);
 	}
 
 	/**
@@ -171,7 +177,7 @@ public class DbGroupServiceImpl extends AbstractService{
 	 */
 	public ResponseResult groupNUserMappingList(String groupId) {
 
-		List<DBGroupMappingUserEntity> result = dbGroupMappingUserEntityRepository.findAll(DBGroupMappingUserSpec.dbGroupUserList(groupId));
+		List<DBGroupMappingUserEntity> result = dbGroupMappingUserEntityRepository.findAll(DBGroupMappingUserSpec.dbGroupUserList(groupId), Sort.by(DBGroupMappingUserEntity.SORT_USERINFO));
 
 		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
 			return UserMapper.INSTANCE.toDto(item.getUserInfo());
@@ -197,7 +203,12 @@ public class DbGroupServiceImpl extends AbstractService{
 
 		List<DBGroupMappingUserEntity> dbGroupUserList = new ArrayList<>();
 		for(String id: vconnidArr){
-			dbGroupUserList.add(DBGroupMappingUserEntity.builder().groupId(groupId).viewid(id).build());
+			dbGroupUserList.add(DBGroupMappingUserEntity.builder()
+				.groupId(groupId).viewid(id)
+				.groupUserEntity(DBGroupEntity.builder().groupId(groupId).build())
+				.userInfo(UserEntity.builder().viewid(id).build())
+				.build()
+			);
         }
 
 		int result = 0;
@@ -209,7 +220,9 @@ public class DbGroupServiceImpl extends AbstractService{
 			}
 			result = 1;
 		}
-		return VarsqlUtils.getResponseResultItemOne(result);
+		
+		
+		return groupNUserMappingList(groupId);
 	}
 
 }

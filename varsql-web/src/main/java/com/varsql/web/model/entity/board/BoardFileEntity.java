@@ -55,6 +55,9 @@ public class BoardFileEntity extends FileBaseEntity{
 	@Column(name ="CONT_ID", nullable = false)
 	private long contId; 
 	
+	@Column(name ="FILE_FIELD_NAME")
+	private String fileFieldName; 
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name ="CONT_ID", referencedColumnName = "COMMENT_ID", insertable = false, updatable = false)
 	private BoardCommentEntity comment; 
@@ -62,7 +65,6 @@ public class BoardFileEntity extends FileBaseEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name ="CONT_ID", referencedColumnName = "ARTICLE_ID", insertable = false, updatable = false)
 	private BoardEntity article;
-	
 	
 	@Builder
 	public BoardFileEntity (long fileId, String boardCode, long contId, String contType, String fileFieldName, String fileName, String filePath, String fileExt, long fileSize) {
@@ -80,6 +82,7 @@ public class BoardFileEntity extends FileBaseEntity{
 	public final static String FILE_ID="fileId";
 	public final static String BOARD_CODE="boardCode";
 	public final static String CONT_TYPE="CONT_TYPE";
+	public final static String FILE_FIELD_NAME="fileFieldName";
 	
 	public static BoardFileEntity toBoardFileEntity(FileInfoEntity item) {
 		return BoardFileEntity.builder()

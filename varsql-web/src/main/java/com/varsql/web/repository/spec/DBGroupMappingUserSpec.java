@@ -1,13 +1,10 @@
 package com.varsql.web.repository.spec;
 
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
-import com.varsql.web.model.entity.user.UserEntity;
 
 /**
  * -----------------------------------------------------------------------------

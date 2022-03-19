@@ -18,7 +18,7 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
@@ -46,20 +46,22 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationSuccessHandler.class);
 
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	
+	private RequestCache requestCache = new HttpSessionRequestCache();
 
-	@Autowired
-	@Qualifier("authDao")
-	private AuthDAO authDao;
-
-	@Autowired
-	@Qualifier("varsqlRequestCache")
-	private RequestCache requestCache;
-
+	private SecurityLogDAO securityLogDAO;
+	
 	public VarsqlAuthenticationSuccessHandler() {
 		super();
 		super.setUseReferer(true);
 	}
-
+	
+	@Autowired
+	@Qualifier("securityLogDAO")
+	public void setSecurityLogDAO(SecurityLogDAO securityLogDAO) {
+		this.securityLogDAO = securityLogDAO;
+	}
+	
 	public void onAuthenticationSuccess(final HttpServletRequest request,
 			final HttpServletResponse response,
 			final Authentication authentication) throws IOException, ServletException {
@@ -72,7 +74,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			return;
 		}
 
-		authDao.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
+		securityLogDAO.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
 			try {

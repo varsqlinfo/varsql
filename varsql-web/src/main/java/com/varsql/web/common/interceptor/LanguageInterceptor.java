@@ -9,14 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.varsql.core.common.util.SecurityUtil;
 
-public class LanguageInterceptor extends HandlerInterceptorAdapter {
+public class LanguageInterceptor implements HandlerInterceptor  {
 
 	public static final String DEFAULT_PARAM_NAME = "locale";
 	private String paramName = DEFAULT_PARAM_NAME;

@@ -43,9 +43,11 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 	private UserEntity userInfo;
 
 	@Builder
-	public DBGroupMappingUserEntity(String groupId, String viewid) {
+	public DBGroupMappingUserEntity(String groupId, String viewid, DBGroupEntity groupUserEntity, UserEntity userInfo) {
 		this.groupId = groupId;
 		this.viewid = viewid;
+		this.groupUserEntity = groupUserEntity;
+		this.userInfo = userInfo;
 
 	}
 	
@@ -54,5 +56,8 @@ public class DBGroupMappingUserEntity extends AbstractRegAuditorModel{
 	public final static String GROUP_ID="groupId";
 
 	public final static String VIEWID="viewid";
+	
+	// 정렬 정보
+	public final static String SORT_USERINFO = JOIN_USERINFO+"."+ UserEntity.UNAME ;
 
 }

@@ -1,6 +1,7 @@
 package com.varsql.core.common.util;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Driver;
@@ -12,6 +13,7 @@ import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
+import com.varsql.core.exception.JdbcDriverClassException;
 
 public final class JdbcDriverLoader {
 	
@@ -72,7 +74,19 @@ public final class JdbcDriverLoader {
 			}
 			if (urlList.size() > 0) {
 				URLClassLoader ucl = new URLClassLoader(urlList.<URL>toArray(new URL[0]));
-				return (Driver) Class.forName(jdbcDriverInfo.getDriverClass(), true, ucl).newInstance(); 
+				
+				Class<?> driverClass = Class.forName(jdbcDriverInfo.getDriverClass(), true, ucl);
+					
+				try {
+					return (Driver) driverClass.getDeclaredConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+					throw new JdbcDriverClassException(e);
+				}
+					
+
+  
+				//return (Driver) Class.forName(jdbcDriverInfo.getDriverClass(), true, ucl).newInstance(); 
 			}
 		}
 		

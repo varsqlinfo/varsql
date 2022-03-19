@@ -1,9 +1,7 @@
 package com.varsql.web.dto.db;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
@@ -29,7 +27,7 @@ public class DBTypeDriverProviderResponseDTO {
 	private String driverDesc;
 	private String driverPath;
 
-	private List<FileResponseDTO> fileList = new ArrayList<>();
+	private List<DBTypeDriverFileDTO> fileList = new ArrayList<>();
 
 	public DBTypeDriverProviderResponseDTO(String driverProviderId, String providerName, String dbType, String driverClass, String pathType) {
 		this.driverProviderId = driverProviderId;
@@ -43,7 +41,7 @@ public class DBTypeDriverProviderResponseDTO {
 		DBTypeDriverProviderResponseDTO dto = DBTypeJdbcDriverMapper.INSTANCE.toDto(entity);
 
 		dto.setFileList(entity.getDriverFiles().stream().map(item->{
-			return FileResponseDTO.toDto(item);
+			return DBTypeDriverFileDTO.toDto(item);
 		}).collect(Collectors.toList()));
 
 		return dto;

@@ -8,9 +8,6 @@ import org.apache.ibatis.session.ResultHandler;
 
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.datatype.DataTypeImpl;
-import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.ColumnInfo;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.vartech.common.app.beans.ParamMap;

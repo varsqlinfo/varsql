@@ -52,6 +52,7 @@ VARSQL_LANG = {
 	,'varsql.0029' : '파일 업로드후 처리 실행해주세요.'
 	,'varsql.0030' : 'find line:{line}, ch:{ch}'
 	,'varsql.0031' : '허용하는 확장자 : {accept}'
+	,'varsql.0032' : 'DB Name 또는 Schema을 확인해주세요.'
 
 
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
@@ -153,4 +154,11 @@ VARSQL_LANG = {
 	,'msg.close.window' : '창을 닫으시겠습니까?'
 	,'msg.loading' : '로딩중 입니다.'
 	,'msg.refresh' : '새로고침 하시겠습니까?'
+	
+	,'grid.column.name' : '컬럼명'
+	,'grid.data.type' : '데이터타입'
+	,'grid.nullable' : '널여부'
+	,'grid.key' : 'Key'
+	,'grid.desc' : '설명'
+	,'grid.default.value' : '기본값'
 }

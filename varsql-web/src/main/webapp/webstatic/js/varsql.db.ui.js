@@ -626,6 +626,7 @@ _ui.headerMenu ={
 								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/genTable?conuid='+_g_options.param.conuid), {
 									name : 'gentable'
 									,viewOption : popt
+									,name : 'genTable'+_g_options.param.conuid
 								});
 
 								return ;
@@ -2266,11 +2267,11 @@ _ui.dbObjectMetadata= {
 
 					if('table' == objectType || 'view' == param.objectType){
 						if(result.length > 0){
-							callData = result[0].colList;
+							callData = result[0].colList || [];
 						}
 					}
-					_g_cache.setSOMetaCache(objectType,param.objectName, param.cacheKey,{items:callData});
-					callbackFn.call(_self,{items:callData}, param);
+					_g_cache.setSOMetaCache(objectType, param.objectName, param.cacheKey, {items:callData});
+					callbackFn.call(_self, {items:callData}, param);
 				}
 			}
 			,error: function (jqXHR, exception) {
@@ -2470,12 +2471,12 @@ _ui.addODbServiceObjectMetadata('table', {
 				,enableSearch : true
 			}
 			,tColItem : [
-				{ label: '컬럼명', key: 'name',width:80 },
-				{ label: '데이터타입', key: 'typeAndLength' },
-				{ label: 'Key', key: 'constraints', align:'center', width:45},
-				{ label: '기본값', key: 'defaultVal',width:45},
-				{ label: '널여부', key: 'nullable',width:45},
-				{ label: '설명', key: 'comment',width:45}
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeAndLength' },
+				{ label: VARSQL.messageFormat('grid.key'), key: 'constraints',width:45},
+				{ label: VARSQL.messageFormat('grid.default.value'), key: 'defaultVal',width:45},
+				{ label: VARSQL.messageFormat('grid.nullable'), key: 'nullable',width:45},
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
 			]
 			,scroll :{	// 스크롤 옵션
 				vertical : {
@@ -2483,6 +2484,9 @@ _ui.addODbServiceObjectMetadata('table', {
 				}
 			}
 			,tbodyItem :items
+			,message : {
+				empty : VARSQL.messageFormat('varsql.0032')
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2608,13 +2612,16 @@ _ui.addODbServiceObjectMetadata('view', {
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
-				{ label: '컬럼명', key: 'name',width:80 },
-				{ label: '데이터타입', key: 'typeName' },
-				{ label: '널여부', key: 'nullable',width:45},
-				{ label: 'Key', key: 'constraints',width:45},
-				{ label: '설명', key: 'comment',width:45}
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeName' },
+				{ label: VARSQL.messageFormat('grid.nullable'), key: 'nullable',width:45},
+				{ label: VARSQL.messageFormat('grid.key'), key: 'constraints',width:45},
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
 			]
 			,tbodyItem :items
+			,message : {
+				empty : VARSQL.messageFormat('varsql.0032')
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -4893,6 +4900,7 @@ _ui.SQL = {
 				,columnInfo : columnNameArr.join(',')
 				,objectName : $('#exportObjectName').val()
 				,fileName: $('#exportFileName').val()
+				,charset: $('#exportCharset').val()
 				,limit: $('#exportCount').val()
 				,conditionQuery: (!$('#exportConditionQueryArea').hasClass('display-off') ? $('#exportConditionQuery').val():'')
 			});

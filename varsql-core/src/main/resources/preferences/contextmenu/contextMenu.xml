@@ -336,4 +336,16 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 			</propItems>
 		</templateInfo>
 	</item>
+	
+	<item name="javascript">
+		<templateInfo name="json" viewMode="dialog">
+			<main>
+			<![CDATA[
+{{#columns}}
+	{{addChar @index '' ','}}{{camelCase name}} :'' 
+{{/columns}}
+				]]>
+			</main>
+		</templateInfo>
+	</item>
 </preferences>

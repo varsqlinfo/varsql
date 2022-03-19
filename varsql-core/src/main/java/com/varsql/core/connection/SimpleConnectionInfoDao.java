@@ -77,13 +77,14 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 				if (str != null && !"".equals(str))
 					connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString("VPW")));
 			}
-			connInfo.setPool_opt(rs.getString("VPOOLOPT"));
-			connInfo.setConnection_opt(rs.getString("VCONNOPT"));
-			connInfo.setMax_active(NumberUtils.toInt(rs.getString("MAX_ACTIVE"), 10));
-			connInfo.setMin_idle(NumberUtils.toInt(rs.getString("MIN_IDLE"), 3));
+			connInfo.setPoolOptions(rs.getString("VPOOLOPT"));
+			connInfo.setConnectionOptions(rs.getString("VCONNOPT"));
+			connInfo.setMaxActive(NumberUtils.toInt(rs.getString("MAX_ACTIVE"), 10));
+			connInfo.setMinIdle(NumberUtils.toInt(rs.getString("MIN_IDLE"), 3));
 			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString("TIMEOUT"), 18000));
 			connInfo.setExportCount(NumberUtils.toInt(rs.getString("EXPORTCOUNT"), 1000));
-			connInfo.setExportCount(NumberUtils.toInt(rs.getString("EXPORTCOUNT"), 1000));
+			connInfo.setTestWhileIdle("Y".equals(rs.getString("TEST_WHILE_IDLE")));
+			
 			String conn_query = rs.getString("VQUERY");
 			String dbvalidation_query = rs.getString("VALIDATION_QUERY");
 			conn_query = (conn_query == null) ? "" : conn_query;
@@ -92,12 +93,12 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 					: (!"".equals(dbvalidation_query.trim()) ? dbvalidation_query
 							: ValidationProperty.getInstance().validationQuery(connInfo.getType()));
 			this.logger.debug("valication_query : {}", validation_query);
-			connInfo.setValidation_query(validation_query);
+			connInfo.setValidationQuery(validation_query);
 			
 			String driverProviderId = rs.getString("DRIVER_PROVIDER_ID");
 					
 			pstmt.close(); 
-			pstmt = conn.prepareStatement(" select FILE_NAME,FILE_PATH,FILE_EXT from VTFILE where FILE_CONT_ID = ? ");
+			pstmt = conn.prepareStatement(" select FILE_NAME,FILE_PATH,FILE_EXT from VTDBTYPE_DRIVER_FILE where FILE_CONT_ID = ? ");
 			pstmt.setString(1, driverProviderId);
 			
 			rs.close(); 

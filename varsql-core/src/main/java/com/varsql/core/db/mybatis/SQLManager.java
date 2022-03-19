@@ -169,11 +169,15 @@ public final class SQLManager {
 		dataSource.setMaxTotal(10);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(0);
-		dataSource.setValidationQuery(connInfo.getValidation_query());
+		dataSource.setValidationQuery(connInfo.getValidationQuery());
 
 		dataSource.setTestOnBorrow(false);
 		dataSource.setTestOnReturn(false);
-		dataSource.setTestWhileIdle(true);
+		
+		if(connInfo.isTestWhileIdle()) {
+			dataSource.setTestWhileIdle(true);
+		}
+		
 		dataSource.setTimeBetweenEvictionRunsMillis(150000);
 
 		dataSource.setNumTestsPerEvictionRun(5);

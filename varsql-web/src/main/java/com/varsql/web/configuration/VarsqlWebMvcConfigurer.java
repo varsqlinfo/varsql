@@ -53,7 +53,11 @@ import com.varsql.web.constants.ViewPageConstants;
 	includeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = { Controller.class, Service.class, Repository.class, Component.class}),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "(service|controller|DAO|Repository)\\.\\.*")
-})
+	}
+	,excludeFilters = {
+			@ComponentScan.Filter(type = FilterType.REGEX, pattern = "(configuration)\\.*")	
+	}
+)
 @Import(value = {
        VarsqlMainConfigurer.class
 })
