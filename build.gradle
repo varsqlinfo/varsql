@@ -29,8 +29,7 @@ buildscript {
 			,junit : '5.2.0'
 			,junitPlatform : '1.5.0'
 			,mockito: '3.3.3'
-			,
-k : '1.18.10'
+			,lombok : '1.18.10'
 			,jstl : '1.2.5'
 		]
     }
@@ -66,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.1.15'
+	varsqlVersion = '1.1.16'
 }
 
 //소스 분석.
