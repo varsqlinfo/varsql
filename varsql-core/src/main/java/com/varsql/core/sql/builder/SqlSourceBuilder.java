@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.connection.pool.ConnectionValidation;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.sql.util.SQLParserUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -41,24 +41,24 @@ public class SqlSourceBuilder {
 	}
 
 	public static List<SqlSource> parse(String query, Map<String,String> param) {
-		return parse(query, param, DBType.OTHER);
+		return parse(query, param, DBVenderType.OTHER);
 	}
 
-	public static List<SqlSource> parse(String query, Map<String,String> param, DBType dbType) {
+	public static List<SqlSource> parse(String query, Map<String,String> param, DBVenderType dbType) {
 		try{
 			return SQLParserUtils.getSqlSourceList(query, param, dbType);
 		}catch(Exception e){
 			log.error("parse ",e);
 
 			try {
-				return SQLParserUtils.getSqlSourceList(query, param, DBType.OTHER);
+				return SQLParserUtils.getSqlSourceList(query, param, DBVenderType.OTHER);
 			}catch(Exception e1) {
 				return SQLParserUtils.getDefaultSqlSource(query, param, dbType);
 			}
 		}
 	}
 
-	public static ResponseResult parseResponseResult(String query, Map<String,String> param, DBType dbType) {
+	public static ResponseResult parseResponseResult(String query, Map<String,String> param, DBVenderType dbType) {
 		ResponseResult result = new ResponseResult();
 		try{
 			result.setItemList(parse(query, param, dbType));
@@ -83,9 +83,9 @@ public class SqlSourceBuilder {
 		return getSqlSource(sql , new HashMap());
 	}
 	public static SqlSource getSqlSource(String sql, Map<String, String> param) {
-		return getSqlSource(sql , param , DBType.OTHER);
+		return getSqlSource(sql , param , DBVenderType.OTHER);
 	}
-	public static SqlSource getSqlSource(String sql, Map<String, String> param, DBType dbType) {
+	public static SqlSource getSqlSource(String sql, Map<String, String> param, DBVenderType dbType) {
 		return SQLParserUtils.getSqlSourceList(sql , param , dbType).get(0);
 	}
 

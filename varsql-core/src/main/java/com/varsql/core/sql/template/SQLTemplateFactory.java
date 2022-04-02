@@ -18,7 +18,7 @@ import com.github.jknack.handlebars.Template;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.SQLTemplateEnum;
@@ -75,7 +75,7 @@ public class SQLTemplateFactory {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(SQLTemplateFactory.getInstance().getTemplate(DBType.OTHER, SQLTemplateCode.TABLE.create));
+		System.out.println(SQLTemplateFactory.getInstance().getTemplate(DBVenderType.OTHER, SQLTemplateCode.TABLE.create));
 	}
 
 	private void initConfig() throws IOException {
@@ -138,7 +138,7 @@ public class SQLTemplateFactory {
 	 * @param param
 	 * @return
 	 */
-	public String sqlRender(DBType dbType, SQLTemplateEnum code, Map param){
+	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Map param){
 		String dbVender= dbType.getDbVenderName();
 		
 		String templateId = code.getTemplateId(); 
@@ -157,7 +157,7 @@ public class SQLTemplateFactory {
 		return "";
 	}
 
-	public String getTemplate(DBType dbType, SQLTemplateEnum code) {
+	public String getTemplate(DBVenderType dbType, SQLTemplateEnum code) {
 		String templateId = code.getTemplateId(); 
 		
 		if(sqlTemplateTextInfo.containsKey(dbType.getDbVenderName())){

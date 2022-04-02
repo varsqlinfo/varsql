@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.meta.DBMetaImpl;
+import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.mybatis.resultset.handler.IndexInfoHandler;
-import com.varsql.core.db.mybatis.resultset.handler.TableInfoHandler;
+import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
+import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -29,7 +29,7 @@ import com.vartech.common.utils.VartechUtils;
  * @프로그램설명:
  * @변경이력	:
  */
-public class H2DBMeta extends DBMetaImpl{
+public class H2DBMeta extends AbstractDBMeta{
 
 	private final Logger logger = LoggerFactory.getLogger(H2DBMeta.class);
 

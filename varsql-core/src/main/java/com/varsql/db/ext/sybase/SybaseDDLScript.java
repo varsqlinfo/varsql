@@ -8,9 +8,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.script.DDLScriptImpl;
+import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
@@ -27,12 +27,12 @@ import com.varsql.core.sql.template.SQLTemplateFactory;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class SybaseDDLScript extends DDLScriptImpl {
+public class SybaseDDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(SybaseDDLScript.class);
 
 
 	public SybaseDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBType.SYBASE);
+		super(dbInstanceFactory, DBVenderType.SYBASE);
 	}
 
 	@Override

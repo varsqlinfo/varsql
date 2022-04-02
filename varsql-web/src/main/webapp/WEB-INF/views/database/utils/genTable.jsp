@@ -160,7 +160,7 @@ VarsqlAPP.vueServiceBean( {
 	        		COLUMN_NAME : colName
 	        		,DATA_TYPE : wordType
 	        		,COLUMN_SIZE : (sItem.wordLength ||255)
-	        		,NULLABLE : ''
+	        		,NULLABLE : 'Y'
 	        		,COLUMN_DEF : ''
 	        		,COMMENT : sItem.word
 	        	});
@@ -269,14 +269,15 @@ VarsqlAPP.vueServiceBean( {
 		        ,editable: true
 		        , tColItem: [
 		        	{label: '컬럼명', key: 'COLUMN_NAME', width: 80}
-		        	, {label: '데이터타입', key: 'DATA_TYPE', width: 80, editor :{
-		        		type : 'select'
-		        		,itemKey : {code : 'name', label : 'name'}
-			        	,items : VARSQLCont.allDataType()
+		        	, {label: '데이터타입', key: 'DATA_TYPE', width: 80, renderer :{
+		        		type : 'dropdown'
+	        			,labelField : 'name'
+	        			,valueField : 'name'
+			        	,list : VARSQLCont.allDataType()
 					}}
 		        	, {label: '길이', key: 'COLUMN_SIZE'}
 		        	, {label: 'Nullable', key: 'NULLABLE', renderer :{
-		        		type : 'select'
+		        		type : 'dropdown'
 		        		,list : [
 							'Y'
 							,'N'
@@ -293,7 +294,7 @@ VarsqlAPP.vueServiceBean( {
         		COLUMN_NAME : 'COLUMN_'+(this.addColumnIdx++)
         		,DATA_TYPE : 'VARCHAR'
         		,COLUMN_SIZE : 255
-        		,NULLABLE : ''
+        		,NULLABLE : 'Y'
         		,COLUMN_DEF : ''
         		,COMMENT : ''
         	});

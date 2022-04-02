@@ -1,11 +1,13 @@
 package com.varsql.core.db.meta;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
+import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.TableInfo;
 
 /**
@@ -17,10 +19,12 @@ import com.varsql.core.db.valueobject.TableInfo;
  * @변경이력	:
  */
 public interface DBMeta{
+	
+	public List<ServiceObject> getServiceMenu();
 
 	public List getVersion(DatabaseParamInfo dataParamInfo) throws Exception;
 
-	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws Exception;
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException;
 	public List getUsers(DatabaseParamInfo dataParamInfo) throws Exception;
 
 	// 테이블 정보.

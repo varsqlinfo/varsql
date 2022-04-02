@@ -22,7 +22,7 @@ public final class MetaControlFactory {
 
 	static {
 		// init bean
-		for(DBType dbType : DBType.values()) {
+		for(DBVenderType dbType : DBVenderType.values()) {
 			String dbname = dbType.name();
 			try {
 				metaControlBeans.put(dbname, new MetaControlBean(dbname)) ;
@@ -32,7 +32,7 @@ public final class MetaControlFactory {
 		}
 	}
 
-	public static MetaControlBean getDbInstanceFactory(DBType type){
+	public static MetaControlBean getDbInstanceFactory(DBVenderType type){
 		return getDbInstanceFactory(type.name());
 	}
 

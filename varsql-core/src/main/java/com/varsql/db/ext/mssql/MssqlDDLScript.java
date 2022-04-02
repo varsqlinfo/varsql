@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.script.DDLScriptImpl;
+import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
@@ -35,11 +35,11 @@ import com.vartech.common.app.beans.ParamMap;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class MssqlDDLScript extends DDLScriptImpl {
+public class MssqlDDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(MssqlDDLScript.class);
 
 	public MssqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBType.MSSQL);
+		super(dbInstanceFactory, DBVenderType.MSSQL);
 	}
 
 	@Override
@@ -71,13 +71,13 @@ public class MssqlDDLScript extends DDLScriptImpl {
 
 			dataParamInfo.setObjectName(name);
 
-			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
+			DataTypeFactory dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
 			ParamMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);
-				dataType = String.valueOf(source.get("DATA_TYPE"));
+				dataType = String.valueOf(source.get(MetaColumnConstants.DATA_TYPE));
 
-				DataTypeInfo dataTypeInfo = dataTypeImpl.getDataType(dataType);
+				DataType dataTypeInfo = dataTypeImpl.getDataType(dataType);
 
 				ddlStr.append("\t");
 				if (i > 0){
@@ -85,11 +85,11 @@ public class MssqlDDLScript extends DDLScriptImpl {
 				}
 				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
 
-				ddlStr.append(DbMetaUtils.getTypeName(dataTypeInfo ,null ,dataTypeInfo.getDataTypeName(), source.getString(MetaColumnConstants.COLUMN_SIZE) ,source.getString(MetaColumnConstants.DECIMAL_DIGITS)));
+				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
+				
+				ddlStr.append(getDefaultValue(source.getString(MetaColumnConstants.DATA_DEFAULT), dataTypeInfo , true));
 
-				ddlStr.append(getDefaultValue(source.getString("DATA_DEFAULT"), dataTypeInfo , true));
-
-				ddlStr.append(getNotNullValue(source.getString("NULLABLE")));
+				ddlStr.append(getNotNullValue(source.getString(MetaColumnConstants.NULLABLE)));
 
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}

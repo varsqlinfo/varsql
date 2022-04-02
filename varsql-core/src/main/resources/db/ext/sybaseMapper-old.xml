@@ -65,8 +65,8 @@
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
 		    , st.name as "DATA_TYPE"
-		    , sc.length as "CHAR_LENGTH"
-			, sc.length as "COLUMN_SIZE"
+		    , sc.prec as "CHAR_LENGTH"
+			, sc.prec as "COLUMN_SIZE"
 		    , sc.scale as "DECIMAL_DIGITS"
 			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 		    , scc.text AS "COLUMN_DEF"

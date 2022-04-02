@@ -62,9 +62,9 @@
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
-			, sc.length as "CHAR_LENGTH"
-			, sc.length as "COLUMN_SIZE"
-			, sc.syslength as "DECIMAL_DIGITS"
+			, sc.prec as "CHAR_LENGTH"
+			, sc.prec as "COLUMN_SIZE"
+			, sc.scale as "DECIMAL_DIGITS"
 			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 			, sc.default_value AS "COLUMN_DEF"
 			, sc.colno as  "ORDINAL_POSITION"

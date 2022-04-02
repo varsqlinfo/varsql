@@ -74,7 +74,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			return;
 		}
 
-		securityLogDAO.addLog(userInfo , userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
+		securityLogDAO.addLog(userInfo, userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
 			try {

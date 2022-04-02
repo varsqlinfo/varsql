@@ -53,9 +53,9 @@
 			object_name(so.id) as "TABLE_NAME",
 			sc.name as "COLUMN_NAME",
 			st.name as "DATA_TYPE" ,
-			sc.length as "CHAR_LENGTH" ,
-			sc.length as "COLUMN_SIZE" ,
-			sc.xscale as "DECIMAL_DIGITS" ,
+			sc.prec as "CHAR_LENGTH" ,
+			sc.prec as "COLUMN_SIZE" ,
+			sc.scale as "DECIMAL_DIGITS" ,
 			(CASE WHEN sc.isnullable = 0  then 'N' ELSE 'Y' END) as "IS_NULLABLE",
 			sm.text AS "COLUMN_DEF" ,
 			case when sik.keyno > 0 and sfk.keyno > 0 then 'MUL'

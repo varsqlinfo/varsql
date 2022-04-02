@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.util.SQLUtils;
 import com.vartech.common.io.writer.AbstractWriter;
@@ -25,17 +25,17 @@ import com.vartech.common.io.writer.AbstractWriter;
 public class SQLWriter extends AbstractWriter{
 	private BufferedWriter writer;
 	private String tableName;
-	private DBType dbytpe;
+	private DBVenderType dbytpe;
 	private List<GridColumnInfo> columnInfos;
 
-	public SQLWriter(OutputStream output, DBType dbytpe ,String tableName) throws IOException {
+	public SQLWriter(OutputStream output, DBVenderType dbytpe ,String tableName) throws IOException {
 		this(output, dbytpe, tableName, VarsqlConstants.CHAR_SET);
 	}
 
-	public SQLWriter(OutputStream output, DBType dbytpe, String tableName, String charset) throws IOException {
+	public SQLWriter(OutputStream output, DBVenderType dbytpe, String tableName, String charset) throws IOException {
 		this(output, dbytpe, tableName , charset, null);
 	}
-	public SQLWriter(OutputStream output, DBType dbytpe, String tableName, String charset, List<GridColumnInfo> columnInfos) throws IOException {
+	public SQLWriter(OutputStream output, DBVenderType dbytpe, String tableName, String charset, List<GridColumnInfo> columnInfos) throws IOException {
 		this.dbytpe = dbytpe;
 		this.tableName = tableName;
 		this.columnInfos = columnInfos;
@@ -132,7 +132,7 @@ public class SQLWriter extends AbstractWriter{
 		writer.close();
 	}
 
-	public DBType getDbytpe() {
+	public DBVenderType getDbytpe() {
 		return dbytpe;
 	}
 

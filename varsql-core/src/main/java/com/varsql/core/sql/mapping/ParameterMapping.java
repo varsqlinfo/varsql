@@ -1,7 +1,7 @@
 package com.varsql.core.sql.mapping;
 
 
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.sql.type.SQLDataType;
 
@@ -42,13 +42,13 @@ public class ParameterMapping {
 
 	public static class Builder {
 		private ParameterMapping parameterMapping;
-		private DBType dbType;
+		private DBVenderType dbType;
 
 		@SuppressWarnings("unused")
 		private Builder() {
 		};
 
-		public Builder(DBType dbType, String property) {
+		public Builder(DBVenderType dbType, String property) {
 			this.parameterMapping = new ParameterMapping();
 			this.dbType = dbType;
 

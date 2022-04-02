@@ -4259,6 +4259,8 @@ _ui.SQL = {
 				orientation : 'y'
 				,duplicateCheck : true
 				,height:235
+				,valueKey : 'viewid'	
+				,labelKey : 'uname'
 				,header : {
 					enableTargetLabel : true 	// target header label 보일지 여부
 				}
@@ -4266,21 +4268,15 @@ _ui.SQL = {
 					enableMoveBtn : false
 					,enableItemEvtBtn : true 
 				}
-				,i18 : {
-					targetLabel : VARSQL.messageFormat('recipient')
-				}
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
 				,source : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
-					,items : []
+					items : []
 					,emptyMessage : VARSQL.messageFormat('search.message',{searchType : VARSQL.messageFormat('user')})
 				}
 				,target : {
-					idKey : 'viewid'
-					,nameKey : 'uname'
+					label : VARSQL.messageFormat('recipient')
 					,items : []
 					,emptyMessage : ' '
 				}

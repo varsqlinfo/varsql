@@ -38,7 +38,7 @@ import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.data.writer.SQLWriter;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ResultSetConvertException;
@@ -118,7 +118,7 @@ public class SQLServiceImpl{
 	public ResponseResult sqlFormat(SqlExecuteDTO sqlExecuteInfo) throws Exception {
 		ResponseResult result =new ResponseResult();
 
-		DBType dbType = DBType.getDBType(sqlExecuteInfo.getDbType());
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDbType());
 
 		if("varsql".equals(sqlExecuteInfo.getCustom().get("formatType"))){
 			result.setItemOne(VarsqlFormatterUtil.format(sqlExecuteInfo.getSql(),dbType , VarsqlFormatterUtil.FORMAT_TYPE.VARSQL));
@@ -149,7 +149,7 @@ public class SQLServiceImpl{
 
 		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlExecuteInfo.getConuid());
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBType.getDBType(sqlExecuteInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBVenderType.getDBType(sqlExecuteInfo.getDbType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
@@ -526,7 +526,7 @@ public class SQLServiceImpl{
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
 				writer = new ExcelWriter(outstream);
 			}else {
-				writer = new SQLWriter(outstream, DBType.getDBType(sqlExecuteInfo.getDbType()), objectName, exportCharset);
+				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDbType()), objectName, exportCharset);
 			}
 
 			logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, sqlExecuteInfo.getSql());

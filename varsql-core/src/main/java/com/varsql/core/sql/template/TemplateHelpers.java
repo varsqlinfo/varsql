@@ -11,9 +11,9 @@ import org.apache.commons.collections4.MapUtils;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.util.DbMetaUtils;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.vartech.common.app.beans.ParamMap;
 import com.vartech.common.utils.StringUtils;
 
@@ -71,7 +71,7 @@ public enum TemplateHelpers implements Helper<Object> {
 
 			dataType = dataType.replaceAll("\\((.*?)\\)", "");
 
-			DataTypeInfo dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(dataType);
+			DataType dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(dataType);
 
 			if("typeAndLength".equals(mode)){
 
@@ -83,8 +83,8 @@ public enum TemplateHelpers implements Helper<Object> {
 					}
 				}
 
-				return DbMetaUtils.getTypeName(dataTypeInfo ,null ,dataTypeInfo.getDataTypeName(),MapUtils.getString(item,MetaColumnConstants.COLUMN_SIZE)
-						, MapUtils.getString(item, MetaColumnConstants.DECIMAL_DIGITS));
+				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, MapUtils.getIntValue(item, MetaColumnConstants.COLUMN_SIZE)
+						, MapUtils.getIntValue(item, MetaColumnConstants.DECIMAL_DIGITS));
 			}
 
 			if("default".equals(mode)){

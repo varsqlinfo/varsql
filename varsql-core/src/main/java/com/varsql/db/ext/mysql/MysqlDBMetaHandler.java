@@ -5,12 +5,11 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
+import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
-import com.varsql.core.db.meta.handler.DBMetaHandlerImpl;
-import com.varsql.core.db.util.DbMetaUtils;
+import com.varsql.core.db.meta.handler.AbstractDBMetaHandler;
 import com.varsql.core.db.valueobject.ColumnInfo;
-import com.varsql.core.db.valueobject.DataTypeInfo;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -21,7 +20,7 @@ import com.vartech.common.utils.StringUtils;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class MysqlDBMetaHandler extends DBMetaHandlerImpl{
+public class MysqlDBMetaHandler extends AbstractDBMetaHandler{
 	/**
 	 *
 	 * @Method Name  : getColumnInfo
@@ -30,21 +29,21 @@ public class MysqlDBMetaHandler extends DBMetaHandlerImpl{
 	 * @작성일   : 2017. 11. 20.
 	 * @변경이력  :
 	 * @param rs
-	 * @param dataTypeImpl
+	 * @param dataTypeFactory
 	 * @param keyColumn
 	 * @return
 	 * @throws SQLException
 	 */
 	@Override
-	public ColumnInfo getColumnInfo(ResultSet rs, DataTypeImpl dataTypeImpl,Set keyColumn , Map colComment) throws SQLException{
+	public ColumnInfo getColumnInfo(ResultSet rs, DataTypeFactory dataTypeFactory,Set keyColumn , Map colComment) throws SQLException{
 		ColumnInfo column = new ColumnInfo();
 
 		String cName=  rs.getString(MetaColumnConstants.COLUMN_NAME);
 		String dataType = rs.getString(MetaColumnConstants.DATA_TYPE);
 
-		String degitsLen= StringUtils.nullToString(rs.getString(MetaColumnConstants.DECIMAL_DIGITS));
-		String columnSize= rs.getString(MetaColumnConstants.COLUMN_SIZE);
-		DataTypeInfo dataTypeInfo = dataTypeImpl.getDataType(dataType);
+		int degitsLen= rs.getInt(MetaColumnConstants.DECIMAL_DIGITS);
+		int columnSize= rs.getInt(MetaColumnConstants.COLUMN_SIZE);
+		DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
 
 		column.setName(cName);
 		column.setDataType(dataType);
@@ -52,9 +51,10 @@ public class MysqlDBMetaHandler extends DBMetaHandlerImpl{
 		column.setDefaultVal(StringUtils.nullToString(rs.getString(MetaColumnConstants.COLUMN_DEF)));
 		column.setNullable(StringUtils.nullToString(rs.getString(MetaColumnConstants.IS_NULLABLE)));
 		column.setAutoincrement("");
-		column.setTypeName(dataTypeInfo.getDataTypeName());
-		column.setTypeAndLength(DbMetaUtils.getTypeName(dataTypeInfo ,column ,dataTypeInfo.getDataTypeName(), columnSize ,degitsLen));
-
+		column.setTypeName(dataTypeInfo.getTypeName());
+		
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, degitsLen));
+		
 		if(colComment != null){
 			column.setComment(StringUtils.nullToString(colComment.get(cName)!=null? (String)colComment.get(cName) : rs.getString(MetaColumnConstants.REMARKS)));
 		}

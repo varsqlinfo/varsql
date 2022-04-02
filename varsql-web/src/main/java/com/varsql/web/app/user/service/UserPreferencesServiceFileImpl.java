@@ -85,7 +85,7 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 					item.put("fileName", entry.getName());
 			    	item.put("fileSize", entry.getSize());
 			    	item.put("compressFileSize", entry.getCompressedSize());
-			    	item.put("updDt", DateUtils.dateformat(VarsqlConstants.DATE_TIME_FORMAT, entry.getLastModifiedTime().toMillis()));
+			    	item.put("updDt", DateUtils.dateformat(VarsqlConstants.TIMESTAMP_FORMAT, entry.getLastModifiedTime().toMillis()));
 					
 					fileList.add(item);
 				}

@@ -8,19 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.db.ddl.script.DDLScriptImpl;
-import com.varsql.core.db.meta.DBMetaImpl;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
-import com.varsql.core.db.meta.handler.DBMetaHandlerImpl;
-import com.varsql.core.db.report.table.TableReportImpl;
+import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.datatype.DataTypeFactoryOTHER;
+import com.varsql.core.db.ddl.script.DDLScript;
+import com.varsql.core.db.ddl.script.DDLScriptOTHER;
+import com.varsql.core.db.meta.DBMeta;
+import com.varsql.core.db.meta.DBMetaOTHER;
+import com.varsql.core.db.meta.handler.DBMetaHandler;
+import com.varsql.core.db.meta.handler.DBMetaHandlerOTHER;
+import com.varsql.core.db.report.table.TableReport;
+import com.varsql.core.db.report.table.TableReportOTHER;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
-import com.varsql.core.sql.resultset.handler.ResultSetHandler;
-import com.varsql.core.sql.resultset.handler.ResultSetHandlerImpl;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
@@ -36,13 +39,12 @@ public class MetaControlBean {
 
 	private final static Logger logger = LoggerFactory.getLogger(MetaControlBean.class);
 
-	private DBMetaImpl dbMetaImpl;
-	private DDLScriptImpl ddlScriptImpl;
-	private ResultSetHandler resultSetHandler;
-	private DataTypeImpl dataTypeImpl;
-	private TableReportImpl tableReportImpl;
+	private DBMeta dbMeta;
+	private DDLScript ddlScript;
+	private DataTypeFactory dataTypeFactory;
+	private TableReport tableReport;
 
-	private DBMetaHandlerImpl dbMetaHandlerImpl;
+	private DBMetaHandler dbMetaHandler;
 
 	private String dbVenderName;
 
@@ -52,56 +54,48 @@ public class MetaControlBean {
 		// datatype load
 
 		try {
-			this.dataTypeImpl=(DataTypeImpl)getBeanObject(DataTypeImpl.class, "DataType");
+			this.dataTypeFactory = getBeanObject(DataTypeFactoryOTHER.class, DataTypeFactory.class);
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory dataTypeImpl ",e);
+			logger.error("@@@ varsql bean error dataTypeFactory :{} ", e.getMessage(), e);
 		}
 
 		// meta load
 		try {
-			this.dbMetaImpl=(DBMetaImpl)getBeanObject(DBMetaImpl.class, "DBMeta");
+			this.dbMeta = getBeanObject(DBMetaOTHER.class, DBMeta.class);
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory dbMetaImpl ",e);
+			logger.error("@@@ varsql bean error dbMeta :{} ", e.getMessage(), e);
 		}
 
 		// script object load
 		try {
-			this.ddlScriptImpl=(DDLScriptImpl)getBeanObject(DDLScriptImpl.class, "DDLScript");
+			this.ddlScript = getBeanObject(DDLScriptOTHER.class, DDLScript.class);
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory ddlScriptImpl ",e);
+			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
 		}
-
-		//result set handler
-		try {
-			this.resultSetHandler=(ResultSetHandlerImpl)getBeanObject(ResultSetHandlerImpl.class, "ResultSetHandler");
-		} catch (Exception e) {
-			logger.info("DbInstanceFactory ResultsetHandler ",e);
-		}
-
 
 		// result set meata handler load
 		try {
-			this.dbMetaHandlerImpl=(DBMetaHandlerImpl)getBeanObject(DBMetaHandlerImpl.class, "DBMetaHandler");
+			this.dbMetaHandler = getBeanObject(DBMetaHandlerOTHER.class, DBMetaHandler.class);
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory dbMetaHandlerImpl ",e);
+			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
 		}
 
 		// tableReportImpl set meata handler load
 		try {
-			this.tableReportImpl = (TableReportImpl)getBeanObject(TableReportImpl.class, "TableReport");
+			this.tableReport = getBeanObject(TableReportOTHER.class, TableReport.class);
 		} catch (Exception e) {
-			logger.info("DbInstanceFactory TableReportImpl ",e);
+			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
 		}
 	}
 
-	private Object getBeanObject(Class clazz, String classSuffix) throws Exception {
+	private <T> T getBeanObject(Class<?> clazz, Class<?> classSuffix) throws Exception {
 		String nameLowerCase = getDbVenderName().toLowerCase();
-		String cls = String.format("%s.%s.%s%s", "com.varsql.db.ext", nameLowerCase, StringUtils.capitalize(nameLowerCase), classSuffix);
+		String cls = String.format("%s.%s.%s%s", "com.varsql.db.ext", nameLowerCase, StringUtils.capitalize(nameLowerCase), classSuffix.getSimpleName());
 
 		try{
 			Class.forName(cls);
 		}catch(Exception e){
-			cls = clazz.getName()+"OTHER";
+			cls = clazz.getName();
 		}
 
 		Constructor[] constructorArr = Class.forName(cls).getDeclaredConstructors();
@@ -117,9 +111,9 @@ public class MetaControlBean {
 		}
 
 		if(flag){
-			return Class.forName(cls).getDeclaredConstructor(MetaControlBean.class).newInstance(this);
+			return (T)Class.forName(cls).getDeclaredConstructor(MetaControlBean.class).newInstance(this);
 		}else{
-			return Class.forName(cls).getDeclaredConstructor().newInstance();
+			return (T)Class.forName(cls).getDeclaredConstructor().newInstance();
 		}
 	}
 
@@ -134,7 +128,7 @@ public class MetaControlBean {
 	 * @throws Exception
 	 */
 	public List<ServiceObject> getServiceMenu() {
-		return this.dbMetaImpl.getServiceMenu();
+		return this.dbMeta.getServiceMenu();
 	}
 
 	/**
@@ -149,7 +143,7 @@ public class MetaControlBean {
 	 * @throws Exception
 	 */
 	public List getDBInfo(DatabaseParamInfo dataParamInfo) throws Exception {
-		return this.dbMetaImpl.getVersion(dataParamInfo);
+		return this.dbMeta.getVersion(dataParamInfo);
 	}
 
 	/**
@@ -161,10 +155,10 @@ public class MetaControlBean {
 	 * @변경이력  :
 	 * @param dataParamInfo
 	 * @return
-	 * @throws SQLException
+	 * @throws Exception 
 	 */
 	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
-		return this.dbMetaImpl.getSchemas(dataParamInfo);
+		return this.dbMeta.getSchemas(dataParamInfo);
 	}
 
 
@@ -186,7 +180,7 @@ public class MetaControlBean {
 
 		String callMethodName =String.format("get%sMetadata", StringUtils.capitalize(metaType));
 
-		boolean hasMethod = VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class, new String[0].getClass());
+		boolean hasMethod = VartechReflectionUtils.hasMethod(this.dbMeta.getClass(), callMethodName, DatabaseParamInfo.class, new String[0].getClass());
 
 		try{
 			if(hasMethod){
@@ -195,12 +189,12 @@ public class MetaControlBean {
 				}
 
 				Object [] paramArr  = {paramInfo, objNm};
-				return (T)VartechReflectionUtils.invokeMethod(this.dbMetaImpl, callMethodName, paramArr);
+				return (T)VartechReflectionUtils.invokeMethod(this.dbMeta, callMethodName, paramArr);
 			}else{
-				return (T)this.dbMetaImpl.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
+				return (T)this.dbMeta.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMetaImpl.getClass(), callMethodName, StringUtils.join(objNm));
+			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMeta.getClass(), callMethodName, StringUtils.join(objNm));
 			logger.error("getDBMeta callMethodName " , e);
 			if(hasMethod) {
 				throw new DBMetadataException(VarsqlAppCode.DB_META_ERROR , e);
@@ -215,14 +209,14 @@ public class MetaControlBean {
 		String callMethodName =String.format("get%ss", StringUtils.capitalize(dbObjType));
 
 		try{
-			if(VartechReflectionUtils.hasMethod(this.dbMetaImpl.getClass(), callMethodName, DatabaseParamInfo.class)){
+			if(VartechReflectionUtils.hasMethod(this.dbMeta.getClass(), callMethodName, DatabaseParamInfo.class)){
 				Object [] paramArr  = {paramInfo};
-				return (T) VartechReflectionUtils.invokeMethod(this.dbMetaImpl, callMethodName, paramArr);
+				return (T) VartechReflectionUtils.invokeMethod(this.dbMeta, callMethodName, paramArr);
 			}else{
-				return (T)this.dbMetaImpl.getExtensionObject(paramInfo, dbObjType, paramInfo.getCustom());
+				return (T)this.dbMeta.getExtensionObject(paramInfo, dbObjType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMetaImpl.getClass(), callMethodName);
+			logger.error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMeta.getClass(), callMethodName);
 			logger.error("getDBObjectList callMethodName " , e);
 		}
 		return null;
@@ -238,35 +232,31 @@ public class MetaControlBean {
 		String callMethodName =String.format("get%ss", StringUtils.capitalize(dbObjType));
 
 		try{
-			if(VartechReflectionUtils.hasMethod(this.ddlScriptImpl.getClass(), callMethodName, DatabaseParamInfo.class, DDLCreateOption.class, objNm.getClass())){
+			if(VartechReflectionUtils.hasMethod(this.ddlScript.getClass(), callMethodName, DatabaseParamInfo.class, DDLCreateOption.class, objNm.getClass())){
 				Object [] paramArr  = {paramInfo, ddlOption, objNm};
-				Object obj = VartechReflectionUtils.invokeMethod(this.ddlScriptImpl, callMethodName, paramArr);
+				Object obj = VartechReflectionUtils.invokeMethod(this.ddlScript, callMethodName, paramArr);
 
 				return (T)obj;
 			}else{
 				throw new VarsqlMethodNotFoundException(String.format("MetaControlBean getDDLScript ->  %s method not found ", callMethodName));
 			}
 		}catch(Exception e){
-			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScriptImpl.getClass(), callMethodName, StringUtils.join(objNm));
+			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScript.getClass(), callMethodName, StringUtils.join(objNm));
 			logger.error("getDDLScript callMethodName " , e);
 		}
 		return null;
 	}
 
-	public ResultSetHandler getResultsetHandler(){
-		return this.resultSetHandler;
+	public DataTypeFactory getDataTypeImpl(){
+		return this.dataTypeFactory;
 	}
 
-	public DataTypeImpl getDataTypeImpl(){
-		return this.dataTypeImpl;
+	public DBMetaHandler getDBMetaHandlerImpl() {
+		return dbMetaHandler;
 	}
 
-	public DBMetaHandlerImpl getDBMetaHandlerImpl() {
-		return dbMetaHandlerImpl;
-	}
-
-	public TableReportImpl getTableReportImpl() {
-		return tableReportImpl;
+	public TableReport getTableReportImpl() {
+		return tableReport;
 	}
 
 	public String getDbVenderName(){

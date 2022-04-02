@@ -2,7 +2,7 @@ package com.varsql.core.pattern.convert;
 
 import static com.varsql.core.pattern.StringRegularUtils.regExpSpecialCharactersCheck;
 
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.pattern.StringRegularUtils;
 import com.varsql.core.pattern.parsing.TokenInfo;
 import com.varsql.core.pattern.parsing.function.EndDelimiterFunction;
@@ -63,18 +63,18 @@ public class SQLCommentRemoveConverter extends AbstractConverter {
 	}).build();
 
 	public String convert(String cont, String type) {
-		return convert(cont, DBType.getDBType(type));
+		return convert(cont, DBVenderType.getDBType(type));
 	}
 
 	public String convert(String cont, String type, boolean emptyLineRemove) {
-		return convert(cont, DBType.getDBType(type), emptyLineRemove);
+		return convert(cont, DBVenderType.getDBType(type), emptyLineRemove);
 	}
 
-	public String convert(String cont, DBType type) {
+	public String convert(String cont, DBVenderType type) {
 		return convert(cont, type, true);
 	}
 
-	public String convert(String cont, DBType type, boolean emptyLineRemove) {
+	public String convert(String cont, DBVenderType type, boolean emptyLineRemove) {
 		ConvertResult convertResult=null;
 
 

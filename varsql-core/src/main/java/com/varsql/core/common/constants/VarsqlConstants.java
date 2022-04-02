@@ -1,5 +1,7 @@
 package com.varsql.core.common.constants;
 
+import java.time.format.DateTimeFormatter;
+
 import com.varsql.core.configuration.Configuration;
 
 /**
@@ -15,10 +17,17 @@ import com.varsql.core.configuration.Configuration;
 *-----------------------------------------------------------------------------
  */
 public interface VarsqlConstants {
-
+	
 	// 날짜 포켓.
 	final String DATE_FORMAT = "yyyy-MM-dd";
-    final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	 
+	final String TIME_FORMAT = "HH:mm:ss.SSS";
+    
+	final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    
+    final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+    final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
+    final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern(TIMESTAMP_FORMAT);
 
     // runtime
 	final String RUNTIME = System.getProperty("varsql.runtime");

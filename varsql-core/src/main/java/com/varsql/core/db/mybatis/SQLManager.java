@@ -27,7 +27,7 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.db.mybatis.type.handler.LONGVARCHARHandler;
+import com.varsql.core.db.mybatis.handler.type.LONGVARCHARHandler;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;

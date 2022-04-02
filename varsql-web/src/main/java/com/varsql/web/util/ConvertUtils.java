@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.VarsqlDateUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -69,11 +70,11 @@ public final class ConvertUtils {
 	}
 
 	public static LocalDateTime stringToLocalDateTime(String strDate) {
-		return LocalDateTime.parse(strDate, DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
+		return LocalDateTime.parse(strDate, DateTimeFormatter.ofPattern(VarsqlConstants.TIMESTAMP_FORMAT));
 	}
 
 	public static Date stringToDate(String strDate) throws ParseException {
-		return new SimpleDateFormat(VarsqlConstants.DATE_TIME_FORMAT).parse(strDate);
+		return VarsqlDateUtils.stringToDate(strDate);
 	}
 
 	public static String dateToStringDate(LocalDate date) {
@@ -84,7 +85,7 @@ public final class ConvertUtils {
 	}
 
 	public static String dateToStringDateTime(LocalDateTime date) {
-		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT));
+		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.TIMESTAMP_FORMAT));
 	}
 
 	public static Timestamp longToTimestamp(long time){

@@ -1,7 +1,7 @@
 package com.varsql.core.sql.format;
 
 import com.varsql.core.common.constants.BlankConstants;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
 import com.vartech.common.app.beans.ResponseResult;
@@ -33,11 +33,11 @@ public final class VarsqlFormatterUtil {
 
 	private VarsqlFormatterUtil(){};
 
-	public static String format(String sql, DBType dbType){
+	public static String format(String sql, DBVenderType dbType){
 		return format(sql , dbType , FORMAT_TYPE.DRUID);
 	}
 
-	public static String format(String sql, DBType dbType, FORMAT_TYPE format_type){
+	public static String format(String sql, DBVenderType dbType, FORMAT_TYPE format_type){
 		return formatResponseResult(sql, dbType, format_type).getItem();
 	}
 
@@ -53,11 +53,11 @@ public final class VarsqlFormatterUtil {
 	 * @param format_type
 	 * @return
 	 */
-	public static ResponseResult formatResponseResult(String sql, DBType dbType){
+	public static ResponseResult formatResponseResult(String sql, DBVenderType dbType){
 		return formatResponseResult(sql, dbType, FORMAT_TYPE.DRUID);
 	}
 
-	public static ResponseResult formatResponseResult(String sql, DBType dbType, FORMAT_TYPE format_type){
+	public static ResponseResult formatResponseResult(String sql, DBVenderType dbType, FORMAT_TYPE format_type){
 		ResponseResult result = new ResponseResult();
 
 		String resultSql = "";
@@ -84,7 +84,7 @@ public final class VarsqlFormatterUtil {
 		return result;
 	}
 
-	public static String ddlFormat(String sql, DBType dbType){
+	public static String ddlFormat(String sql, DBVenderType dbType){
 		switch (dbType) {
 			case TIBERO:
 			case ORACLE:

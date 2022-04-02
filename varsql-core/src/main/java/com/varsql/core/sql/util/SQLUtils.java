@@ -1,6 +1,6 @@
 package com.varsql.core.sql.util;
 
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -66,7 +66,7 @@ public final class SQLUtils {
 		return sb.toString();
 	}
 	
-	public static String generateSelectQuery(String tblName, String conditionQuery, DBType dbType) {
+	public static String generateSelectQuery(String tblName, String conditionQuery, DBVenderType dbType) {
 
 		StringBuilder reqQuerySb = new StringBuilder().append("select * from ").append(tblName).append(" where 1=1 ");
 

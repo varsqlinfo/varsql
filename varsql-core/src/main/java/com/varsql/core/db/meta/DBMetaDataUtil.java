@@ -14,9 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
-import com.varsql.core.db.meta.handler.DBMetaHandlerImpl;
+import com.varsql.core.db.meta.handler.DBMetaHandler;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
@@ -62,7 +62,7 @@ public final class DBMetaDataUtil {
 		return reLst;
 	}
 
-	protected List<TableInfo> tableAndColumnsInfo(DatabaseParamInfo dataParamInfo, Connection conn,MetaControlBean dbInstanceFactory, String type,List<TableInfo> tableList) throws SQLException{
+	protected List<TableInfo> tableAndColumnsInfo(DatabaseParamInfo dataParamInfo, Connection conn, MetaControlBean dbInstanceFactory, String type,List<TableInfo> tableList) throws SQLException{
 		List<TableInfo> reLst = new ArrayList<TableInfo>();
 
 		ResultSet colRs = null;
@@ -71,8 +71,8 @@ public final class DBMetaDataUtil {
 
 			DatabaseMetaData dbmd = conn.getMetaData();
 
-			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			DBMetaHandlerImpl dbMetaHandlerImpl =dbInstanceFactory.getDBMetaHandlerImpl();
+			DataTypeFactory dataTypeInfo = dbInstanceFactory.getDataTypeImpl();
+			DBMetaHandler dbMetaHandlerImpl =dbInstanceFactory.getDBMetaHandlerImpl();
 
 			List<ColumnInfo> columnList = null;
 			String tableNm = "";
@@ -108,7 +108,7 @@ public final class DBMetaDataUtil {
 				tableNm = colRs.getString(MetaColumnConstants.TABLE_NAME);
 
 				if(tableInfoMap.containsKey(tableNm)) {
-					tableInfoMap.get(tableNm).getColList().add(dbMetaHandlerImpl.getColumnInfo(colRs, dataTypeImpl, pkMap.get(tableNm)));
+					tableInfoMap.get(tableNm).getColList().add(dbMetaHandlerImpl.getColumnInfo(colRs, dataTypeInfo, pkMap.get(tableNm)));
 				}
 			}
 			colRs.close();

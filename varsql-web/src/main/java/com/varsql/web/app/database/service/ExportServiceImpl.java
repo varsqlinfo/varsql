@@ -34,7 +34,7 @@ import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.data.writer.SQLWriter;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
@@ -334,7 +334,7 @@ public class ExportServiceImpl{
 
 		final VarsqlFileType exportType = ddi.getExportType();
 
-		DBType dbType = DBType.getDBType(databaseInfo.getType());
+		DBVenderType dbType = DBVenderType.getDBType(databaseInfo.getType());
 
 		String requid = ddi.getRequid();
 

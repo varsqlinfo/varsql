@@ -15,7 +15,7 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.vartech.common.utils.StringUtils;
 
 public enum SQLDataType {
@@ -224,7 +224,7 @@ public enum SQLDataType {
 		this.statementHandler.setOutParameter(pstmt, parameterIndex, this.TYPE_CODE, this.typeName);
 	}
 
-	public static SQLDataType getSQLDataType(DBType dbType, String jdbcCode) {
+	public static SQLDataType getSQLDataType(DBVenderType dbType, String jdbcCode) {
 		jdbcCode = jdbcCode.toUpperCase();
 		if(allTypeInfo.containsKey(dbType.name()+"_"+jdbcCode)) {
 			return allTypeInfo.get(dbType.name()+"_"+jdbcCode);

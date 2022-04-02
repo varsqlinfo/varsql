@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.varsql.core.common.beans.ClientPcInfo;
+import com.varsql.core.common.beans.ClientInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 
 public final class CommUtils {
@@ -140,7 +140,7 @@ public final class CommUtils {
 	 * @return
 	 */
 
-	public static ClientPcInfo getClientPcInfo(HttpServletRequest request) {
+	public static ClientInfo getClientPcInfo(HttpServletRequest request) {
 		String userAgent = "Unknown";
 	    String osType = "Unknown";
 	    String browser = "Unknown";
@@ -188,7 +188,7 @@ public final class CommUtils {
             browser = "UnKnown, More-Info: " + userAgentLower;
         }
 
-        ClientPcInfo cpi = new ClientPcInfo();
+        ClientInfo cpi = new ClientInfo();
 
         cpi.setUserAgent(userAgent);
         cpi.setOsType(osType);
@@ -198,23 +198,23 @@ public final class CommUtils {
 		return cpi;
 	}
 
-	public static boolean isIE(ClientPcInfo clientPcInfo) {
+	public static boolean isIE(ClientInfo clientPcInfo) {
 		return "msie".equalsIgnoreCase(clientPcInfo.getBrowser());
 	}
 
-	public static boolean isChrome(ClientPcInfo clientPcInfo) {
+	public static boolean isChrome(ClientInfo clientPcInfo) {
 		return "chrome".equalsIgnoreCase(clientPcInfo.getBrowser());
 	}
 
-	public static boolean isFirefox(ClientPcInfo clientPcInfo) {
+	public static boolean isFirefox(ClientInfo clientPcInfo) {
 		return "firefox".equalsIgnoreCase(clientPcInfo.getBrowser());
 	}
 
-	public static boolean isSafari(ClientPcInfo clientPcInfo) {
+	public static boolean isSafari(ClientInfo clientPcInfo) {
 		return "safari".equalsIgnoreCase(clientPcInfo.getBrowser());
 	}
 
-	public static boolean isOpera(ClientPcInfo clientPcInfo) {
+	public static boolean isOpera(ClientInfo clientPcInfo) {
 		return "opera".equalsIgnoreCase(clientPcInfo.getBrowser());
 	}
 

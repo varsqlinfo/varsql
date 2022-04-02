@@ -38,7 +38,7 @@ import com.querydsl.sql.types.DateTimeType;
 import com.querydsl.sql.types.LocalDateType;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.web.constants.ResourceConfigConstants;
 
 /**
@@ -154,25 +154,25 @@ public class JPAConfigurer {
     public com.querydsl.sql.Configuration querydslConfiguration() {
         SQLTemplates templates = H2Templates.builder().build();
 
-        DBType dbType = DBType.getDBType(Configuration.getInstance().getDbType());
+        DBVenderType dbType = DBVenderType.getDBType(Configuration.getInstance().getDbType());
 
-        if(DBType.MYSQL.equals(dbType)) {
+        if(DBVenderType.MYSQL.equals(dbType)) {
         	templates = MySQLTemplates.builder().build();
-        }else if(DBType.MSSQL.equals(dbType)) {
+        }else if(DBVenderType.MSSQL.equals(dbType)) {
         	templates = SQLServerTemplates.builder().build();
-        }else if(DBType.ORACLE.equals(dbType)) {
+        }else if(DBVenderType.ORACLE.equals(dbType)) {
         	templates = OracleTemplates.builder().build();
-        }else if(DBType.POSTGRESQL.equals(dbType)) {
+        }else if(DBVenderType.POSTGRESQL.equals(dbType)) {
         	templates = com.querydsl.sql.PostgreSQLTemplates.builder().build();
-        }else if(DBType.CUBRID.equals(dbType)) {
+        }else if(DBVenderType.CUBRID.equals(dbType)) {
         	templates = com.querydsl.sql.CUBRIDTemplates.builder().build();
-        }else if(DBType.DB2.equals(dbType)) {
+        }else if(DBVenderType.DB2.equals(dbType)) {
         	templates = com.querydsl.sql.DB2Templates.builder().build();
-        }else if(DBType.MARIADB.equals(dbType)) {
+        }else if(DBVenderType.MARIADB.equals(dbType)) {
         	templates = com.querydsl.sql.MySQLTemplates.builder().build();
-        }else if(DBType.TIBERO.equals(dbType)) {
+        }else if(DBVenderType.TIBERO.equals(dbType)) {
         	templates = com.querydsl.sql.OracleTemplates.builder().build();
-        }else if(DBType.H2.equals(dbType)) {
+        }else if(DBVenderType.H2.equals(dbType)) {
         	templates = com.querydsl.sql.H2Templates.builder().build();
         }else {
         	templates = com.querydsl.sql.H2Templates.builder().build();

@@ -36,7 +36,7 @@ public class BoardResponseDTO {
 
 	private boolean modifyAuth;
 
-	@JsonFormat(shape = Shape.STRING ,pattern=VarsqlConstants.DATE_TIME_FORMAT)
+	@JsonFormat(shape = Shape.STRING ,pattern=VarsqlConstants.TIMESTAMP_FORMAT)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime regDt;

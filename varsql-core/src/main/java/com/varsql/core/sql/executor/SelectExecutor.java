@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
@@ -53,7 +53,7 @@ public class SelectExecutor implements SQLExecutor{
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBType.getDBType(statementInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDbType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 

@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.script.DDLScriptImpl;
+import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
@@ -26,11 +26,11 @@ import com.vartech.common.app.beans.ParamMap;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class MariadbDDLScript extends DDLScriptImpl {
+public class MariadbDDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(MariadbDDLScript.class);
 
 	public MariadbDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBType.MARIADB);
+		super(dbInstanceFactory, DBVenderType.MARIADB);
 	}
 
 	@Override

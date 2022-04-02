@@ -41,7 +41,7 @@ public abstract class AbstractRegAuditorModel implements Serializable{
     private String regId;
 
     @CreatedDate
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = VarsqlConstants.DATE_TIME_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = VarsqlConstants.TIMESTAMP_FORMAT)
     @Column(name="REG_DT", nullable = false, updatable = false)
     private LocalDateTime regDt;
 

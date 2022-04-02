@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-import com.varsql.core.common.beans.ClientPcInfo;
+import com.varsql.core.common.beans.ClientInfo;
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.CommUtils;
@@ -279,7 +279,7 @@ public final class FileServiceUtils {
 	}
 
 	public static String getDownloadFileName(HttpServletRequest req, String downFileName) throws UnsupportedEncodingException {
-		ClientPcInfo clientInfo = CommUtils.getClientPcInfo(req);
+		ClientInfo clientInfo = CommUtils.getClientPcInfo(req);
 
 		if (CommUtils.isIE(clientInfo)) {
 			downFileName = URLEncoder.encode(downFileName, "UTF-8").replaceAll("\\+", "%20");

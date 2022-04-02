@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.User;
-import com.varsql.core.common.beans.ClientPcInfo;
+import com.varsql.core.common.beans.ClientInfo;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.util.DefaultValueUtils;
@@ -35,7 +35,7 @@ public final class SecurityLogDAO {
 	 * @변경이력  :
 	 * @throws Exception
 	 */
-	public void addLog(User user, String type, ClientPcInfo cpi) {
+	public void addLog(User user, String type, ClientInfo cpi) {
 		try {
 			userLogHistRepository.save(UserLogHistEntity.builder()
 					.viewid(user.getViewid())

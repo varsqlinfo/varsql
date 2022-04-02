@@ -10,11 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.constants.BlankConstants;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.ddl.script.DDLScriptImpl;
+import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.datatype.DataTypeImpl;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
@@ -32,11 +31,11 @@ import com.vartech.common.app.beans.ParamMap;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class PostgresqlDDLScript extends DDLScriptImpl {
+public class PostgresqlDDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(PostgresqlDDLScript.class);
 
 	public PostgresqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBType.POSTGRESQL);
+		super(dbInstanceFactory, DBVenderType.POSTGRESQL);
 	}
 
 	@Override
@@ -65,7 +64,6 @@ public class PostgresqlDDLScript extends DDLScriptImpl {
 
 			dataParamInfo.setObjectName(name);
 
-			DataTypeImpl dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
 			ParamMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);

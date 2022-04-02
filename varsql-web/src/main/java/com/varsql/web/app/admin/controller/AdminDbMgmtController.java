@@ -195,6 +195,6 @@ public class AdminDbMgmtController extends AbstractController{
 	@ResponseBody
 	public ResponseResult jdbcProviderList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		return this.adminServiceImpl.jdbcProviderList(searchParameter);
+		return adminServiceImpl.jdbcProviderList(searchParameter);
 	}
 }

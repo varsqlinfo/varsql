@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.User;
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
@@ -145,7 +145,7 @@ public class DatabaseServiceImpl{
 				result.setMessage(e.getMessage());
 			}else {
 				try{
-					result.setItemList(MetaControlFactory.getDbInstanceFactory(DBType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
+					result.setItemList(MetaControlFactory.getDbInstanceFactory(DBVenderType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),databaseParamInfo));
 				}catch(Exception subE){
 					logger.error("dbObjectList serverName : [{}]",objectType);
 					logger.error("dbObjectList ", subE);

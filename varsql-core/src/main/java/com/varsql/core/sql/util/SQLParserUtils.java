@@ -17,7 +17,7 @@ import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.parser.SQLParserFeature;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.VisitorFeature;
-import com.varsql.core.db.DBType;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.mapping.ParameterMapping;
@@ -38,7 +38,7 @@ public final class SQLParserUtils {
 
 	private SQLParserUtils() {}
 
-	public static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , DBType dbType) {
+	public static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , DBVenderType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
 
 		com.alibaba.druid.DbType parser = getDbParser(dbType);
@@ -58,7 +58,7 @@ public final class SQLParserUtils {
 		return queries;
 	}
 
-	private static SqlSource getSqlSourceBean(SQLStatement statement,String tmpQuery, Map<String, String> param, DBType dbType) {
+	private static SqlSource getSqlSourceBean(SQLStatement statement,String tmpQuery, Map<String, String> param, DBVenderType dbType) {
 
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setOrginSqlParam(param);
@@ -96,7 +96,7 @@ public final class SQLParserUtils {
 		return sqlSource;
 	}
 
-	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote, DBType dbType) {
+	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote, DBVenderType dbType) {
 
 		ConvertResult convertResult = parameterMappingUtil.sqlParameter(dbType, sql, variables);
 
@@ -107,12 +107,12 @@ public final class SQLParserUtils {
 		}
 	}
 
-	public static com.alibaba.druid.DbType getDbParser(DBType dbType) {
+	public static com.alibaba.druid.DbType getDbParser(DBVenderType dbType) {
 		com.alibaba.druid.DbType val = com.alibaba.druid.DbType.of(dbType.getDbVenderName());
 		return val==null ? com.alibaba.druid.DbType.other :val;
 	}
 
-	public static String getParserString(String sql ,DBType dbType) {
+	public static String getParserString(String sql ,DBVenderType dbType) {
 
 		SQLStatementParser parser = com.alibaba.druid.sql.parser.SQLParserUtils.createSQLStatementParser(sql, getDbParser(dbType), DEFAULT_FEATURES);
 
@@ -135,10 +135,10 @@ public final class SQLParserUtils {
 	 * @return
 	 */
 	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param) {
-		return getDefaultSqlSource(query, param, DBType.OTHER);
+		return getDefaultSqlSource(query, param, DBVenderType.OTHER);
 	}
 
-	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param, DBType dbType) {
+	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param, DBVenderType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setCommandType("OTHER");

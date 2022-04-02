@@ -36,11 +36,11 @@ public class JacksonConfigurer implements Jackson2ObjectMapperBuilderCustomizer 
 
 		builder.timeZone(TimeZone.getDefault()); // 올바른 타임존을 설정해야 offset/zoned datetime이 올바로 설정됨.
         builder.locale(Locale.getDefault());
-        builder.simpleDateFormat(VarsqlConstants.DATE_TIME_FORMAT);
+        builder.simpleDateFormat(VarsqlConstants.TIMESTAMP_FORMAT);
 
         builder.serializerByType(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_FORMAT)));
-        builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT)));
-        builder.serializerByType(OffsetDateTime.class, new CustomOffsetDateTimeSerializer(DateTimeFormatter.ofPattern(VarsqlConstants.DATE_TIME_FORMAT)));
+        builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(VarsqlConstants.TIMESTAMP_FORMAT)));
+        builder.serializerByType(OffsetDateTime.class, new CustomOffsetDateTimeSerializer(DateTimeFormatter.ofPattern(VarsqlConstants.TIMESTAMP_FORMAT)));
 
 	}
 
