@@ -1,6 +1,7 @@
 package com.varsql.web.app.user.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -16,12 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.web.common.service.AbstractService;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.spec.FileInfoSpec;
@@ -30,8 +34,8 @@ import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.IOUtils;
+import com.vartech.common.utils.StringUtils;
 
 @Service
 public class UserPreferencesServiceFileImpl extends AbstractService {
@@ -42,9 +46,9 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 	@Autowired
 	private FileInfoEntityRepository fileInfoEntityRepository;
 
-	public ResponseResult importFileList(UploadFileType fileType, SearchParameter searchParameter) {
+	public ResponseResult importFileList(UploadFileType fileType, String vconnid, SearchParameter searchParameter) {
 		Page<FileInfoEntity> result = fileInfoEntityRepository.findAll(
-				FileInfoSpec.fileTypeSearch(fileType, SecurityUtil.userViewId() ,searchParameter),
+				FileInfoSpec.fileTypeSearch(fileType, SecurityUtil.userViewId(), vconnid, searchParameter),
 				VarsqlUtils.convertSearchInfoToPage(searchParameter));
 		
 		List<Map> fileList = new ArrayList<>();
@@ -85,7 +89,7 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 					item.put("fileName", entry.getName());
 			    	item.put("fileSize", entry.getSize());
 			    	item.put("compressFileSize", entry.getCompressedSize());
-			    	item.put("updDt", DateUtils.dateformat(VarsqlConstants.TIMESTAMP_FORMAT, entry.getLastModifiedTime().toMillis()));
+			    	item.put("updDt", VarsqlDateUtils.format(VarsqlConstants.TIMESTAMP_FORMAT, entry.getLastModifiedTime().toMillis()));
 					
 					fileList.add(item);
 				}
@@ -171,5 +175,36 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 		}
 		
 		return VarsqlUtils.getResponseResultItemOne(sb.toString());
+	}
+
+	/**
+	 *
+	 * @Method Name  : deleteSqlFile
+	 * @Method 설명 : sql file 삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 7.
+	 * @변경이력  :
+	 * @param paramMap
+	 * @return
+	 */
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult deleteFiles(String selectItem) {
+
+		logger.debug("deleteSqlFiles : {}" , selectItem);
+
+		String[] fileIdArr = StringUtils.split(selectItem,",");
+		
+		List<FileInfoEntity> fileInfos = fileInfoEntityRepository.findAll(FileInfoSpec.findIds(SecurityUtil.userViewId(), fileIdArr));
+		
+		fileInfos.stream().forEach(fileInfo->{
+			File file = FileServiceUtils.getFileInfoToFile(fileInfo);
+			if (file.exists()) {
+				file.delete();
+			}
+		});
+
+		fileInfoEntityRepository.deleteAll(fileInfos);
+
+		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 }

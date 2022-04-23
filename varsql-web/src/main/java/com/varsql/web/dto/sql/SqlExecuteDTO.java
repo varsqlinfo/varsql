@@ -18,7 +18,7 @@ import com.varsql.core.db.valueobject.SqlStatementInfo;
  */
 public class SqlExecuteDTO extends SqlStatementInfo{
 	private String _requid_;
-
+	
 	public String get_requid_() {
 		return _requid_;
 	}

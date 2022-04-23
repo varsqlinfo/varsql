@@ -16,12 +16,15 @@ public final class VarsqlDateUtils {
 	};
 
 	// 날짜 포켓.
+	final static String YEAR_FORMAT = "yyyy";
+	
 	final static String DATE_FORMAT = "yyyy-MM-dd";
 
 	final static String TIME_FORMAT = "HH:mm:ss.SSS";
 
 	final static String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
+	final static DateTimeFormatter yearFormatter = DateTimeFormat.forPattern(YEAR_FORMAT);
 	final static DateTimeFormatter dateFormatter = DateTimeFormat.forPattern(DATE_FORMAT);
 	final static DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
 	final static DateTimeFormatter timestampFormatter = DateTimeFormat.forPattern(TIMESTAMP_FORMAT);
@@ -30,31 +33,18 @@ public final class VarsqlDateUtils {
 		YEAR, MONTH, DAY, HOUR, MINUTES
 	}
 
-	public static void main(String[] args) {
-
-		// DateTimeFormatter dateTimeFormatter =
-		// DateTimeFormatter.ofPattern(DATE_FORMAT);
-		new DateTime();
-		// date foramt 변경 할것.
-
-//		System.out.println(dateFormat(System.currentTimeMillis()));
-//		System.out.println(timeFormat(System.currentTimeMillis()));
-//		System.out.println(timestampFormat(System.currentTimeMillis()));
-//		System.out.println(dateFormat(stringToDate("2022-03-09")));
-
-		DateTime today = new DateTime();
-		DateTime yesterday = today.minusDays(165);
-
-		System.out.println(dateDiff(today.toDate(), yesterday.toDate(), DateCheckType.YEAR));
-		System.out.println(dateDiff(today.toDate(), yesterday.toDate(), DateCheckType.MONTH));
-		System.out.println(dateDiff(today.toDate(), yesterday.toDate(), DateCheckType.DAY));
-		System.out.println(dateDiff(today.toDate(), yesterday.toDate(), DateCheckType.HOUR));
-		System.out.println(dateDiff(today.toDate(), yesterday.toDate(), DateCheckType.MINUTES));
-		System.out.println(dateFormat(today.toDate()) + " :: " + dateFormat(yesterday.toDate()));
+	public static String year() {
+		return new DateTime(System.currentTimeMillis()).toString(yearFormatter);
 	}
-
-	public static String format(Date date, String foramt) {
-		return new DateTime(date).toString(DateTimeFormat.forPattern(foramt));
+	public static String format(String format) {
+		return format(format, new Date());
+	}
+	public static String format(String format, Date date) {
+		return new DateTime(date).toString(DateTimeFormat.forPattern(format));
+	}
+	
+	public static String format(String format, long mili) {
+		return new DateTime(mili).toString(DateTimeFormat.forPattern(format));
 	}
 
 	public static String dateFormat(long timeMilli) {
@@ -80,11 +70,19 @@ public final class VarsqlDateUtils {
 	public static String timestampFormat(long timeMilli) {
 		return new DateTime(timeMilli).toString(timestampFormatter);
 	}
+	
+	public static String currentDateFormat() {
+		return new DateTime().toString(dateFormatter);
+	}
+
+	public static String currentDateTimeFormat() {
+		return new DateTime().toString(timestampFormatter);
+	}
 
 	/**
 	 * 
 	 * @method : stringToDate
-	 * @desc : string -> date
+	 * @desc : string - date
 	 * @author : ytkim
 	 * @param date
 	 * @return
@@ -100,7 +98,7 @@ public final class VarsqlDateUtils {
 	/**
 	 * 
 	 * @method : stringToTimestamp
-	 * @desc : string -> timestamp
+	 * @desc : string - timestamp
 	 * @author : ytkim
 	 * @param date
 	 * @return
@@ -141,18 +139,15 @@ public final class VarsqlDateUtils {
 		}
 	}
 
-	public static String currentDate() {
-		return new DateTime().toString(dateFormatter);
-	}
-
-	public static String currentDate(String format) {
-		return new DateTime().toString(DateTimeFormat.forPattern(format));
-	}
-
-	public static String currentDateTime() {
-		return new DateTime().toString(timestampFormatter);
-	}
-
+	/**
+	 * 
+	 * @method : calcDate
+	 * @desc : 현재일 기준 날짜 계산
+	 * @author : ytkim
+	 * @param num
+	 * @param checkType
+	 * @return
+	 */
 	public static Date calcDate(int num, DateCheckType checkType) {
 
 		if (checkType == null)
@@ -171,7 +166,31 @@ public final class VarsqlDateUtils {
 			return (num < 0 ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @method : calcDateFormat
+	 * @desc : date 연산 후 format으로 리턴.
+	 * @author : ytkim
+	 * @param date
+	 * @param num
+	 * @param checkType
+	 * @return
+	 */
+	public static String calcDateFormat(int num, DateCheckType checkType, String format) {
+		return format(format, calcDate(num, checkType));
+	}
+	
+	/**
+	 * 
+	 * @method : calcDate
+	 * @desc : date 연산
+	 * @author : ytkim
+	 * @param date
+	 * @param num
+	 * @param checkType
+	 * @return
+	 */
 	public static Date calcDate(Date date, int num, DateCheckType checkType) {
 		if (checkType == null)
 			return null;
@@ -188,6 +207,21 @@ public final class VarsqlDateUtils {
 		} else {
 			return (num < 0 ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
 		}
+	}
+	
+	/**
+	 * 
+	 * @method : calcDateFormat
+	 * @desc : date 연산 후 format으로 리턴.
+	 * @author : ytkim
+	 * @param date
+	 * @param num
+	 * @param checkType
+	 * @param format
+	 * @return
+	 */
+	public static String calcDateFormat(Date date, int num, DateCheckType checkType, String format) {
+		return format(format, calcDate(date, num, checkType));
 	}
 
 }

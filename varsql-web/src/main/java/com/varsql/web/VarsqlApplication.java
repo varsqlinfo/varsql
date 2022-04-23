@@ -21,13 +21,14 @@ public class VarsqlApplication extends SpringBootServletInitializer {
 			System.setProperty("varsql.runtime", "local");
 			System.setProperty("com.varsql.install.root", "C:/zzz/resources/");
 			System.setProperty("spring.devtools.restart.enabled", "true");
+			
 			System.setProperty("spring.devtools.livereload.enable", "true");
 		}
 	}
 
 	@Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-		super.onStartup(servletContext);
+		super.onStartup(servletContext); 
     }
 
 	@Override

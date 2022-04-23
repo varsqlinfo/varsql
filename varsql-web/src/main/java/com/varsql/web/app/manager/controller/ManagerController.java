@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.vartech.common.utils.DateUtils;
 
 
 
@@ -168,8 +169,8 @@ public class ManagerController extends AbstractController{
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
-		model.addAttribute("startDate", DateUtils.getCalcDate(-7));
-		model.addAttribute("currentDate", DateUtils.getCurrentDate());
+		model.addAttribute("startDate", VarsqlDateUtils.calcDateFormat(-7, VarsqlDateUtils.DateCheckType.DAY, VarsqlConstants.DATE_FORMAT));
+		model.addAttribute("currentDate", VarsqlDateUtils.currentDateFormat());
 
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 

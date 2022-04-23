@@ -1,7 +1,14 @@
 package com.varsql.web.configuration;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,8 +16,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -18,7 +28,11 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.common.code.VarsqlSsoType;
@@ -29,7 +43,6 @@ import com.varsql.web.common.sso.SsoBeanFactory;
 import com.varsql.web.common.sso.SsoComponent;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.SecurityConstants;
-import com.varsql.web.security.RestAuthenticationEntryPoint;
 import com.varsql.web.security.UserService;
 import com.varsql.web.security.VarsqlAccessDeniedHandler;
 import com.varsql.web.security.VarsqlAuthenticationFailHandler;
@@ -59,8 +72,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	final private String CSRF_TOKEN_NAME = "varsql_ct";
 
-	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-
 	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
 	private VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler;
@@ -73,15 +84,25 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	private BeanFactory beanFactory;
 	
-	public SecurityConfigurer(RestAuthenticationEntryPoint restAuthenticationEntryPoint
-			,VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint
+	// web static resource path
+	private OrRequestMatcher staticRequestMatcher = new OrRequestMatcher(
+		new AntPathRequestMatcher("/webstatic/**")
+		, new AntPathRequestMatcher("/error/**")
+		, new AntPathRequestMatcher("/**/favicon.ico")
+		, new AntPathRequestMatcher("/favicon.ico")
+	);
+	
+	// ajax header matcher
+	private RequestMatcher ajaxRequestMatcher = new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest");
+
+	public SecurityConfigurer(
+			VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint
 			,VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler
 			,VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler
 			,VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler
 			,VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler
 			,BeanFactory beanFactory) {
 		
-		this.restAuthenticationEntryPoint = restAuthenticationEntryPoint; 
 		this.varsqlBasicAuthenticationEntryPoint = varsqlBasicAuthenticationEntryPoint; 
 		this.varsqlAuthenticationFailHandler = varsqlAuthenticationFailHandler; 
 		this.varsqlAuthenticationLogoutHandler = varsqlAuthenticationLogoutHandler; 
@@ -98,7 +119,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		firewall.setAllowUrlEncodedDoubleSlash(true);
 
         web.ignoring()
-            .antMatchers("/webstatic/**","/error/**","/favicon.ico")
+            .requestMatchers(staticRequestMatcher)
          .and().httpFirewall(firewall);
 
     }
@@ -124,10 +145,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.csrf()
 			.csrfTokenRepository(getCookieCsrfTokenRepository())
 			.ignoringAntMatchers("/login/**","/logout","/webstatic/**","/error/**","/favicon.ico")
-			.requireCsrfProtectionMatcher(new CsrfRequestMatcher())
-		.and()
-			//.addFilterBefore(new CsrfCookieGeneratorFilter(), CsrfFilter.class)
-			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+			.requireCsrfProtectionMatcher(ajaxRequestMatcher)
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
 			.sessionAuthenticationErrorUrl("/login")  // remmember me error 처리 페이지. 추가.
@@ -149,12 +167,15 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
      		.antMatchers("/manage/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name())
      		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name(),AuthorityType.USER.name())
      		.antMatchers("/guest/**").hasAuthority(AuthorityType.GUEST.name())
-     		.antMatchers("/login","/join/**").anonymous()
+     		.antMatchers("/login","/join/**","/lostPassword","/resetPassword").anonymous()
      		.antMatchers("/login_check","/index.jsp","/progress/**").permitAll()
      		.antMatchers("/**").authenticated()
      		.anyRequest().authenticated()
      	.and()
-     		.exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+     		.exceptionHandling()
+     		.defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.NOT_FOUND), staticRequestMatcher)
+     		.defaultAuthenticationEntryPointFor(restAuthenticationEntryPoint(), ajaxRequestMatcher)
+     		.accessDeniedHandler(accessDeniedHandler())
      	.and() //log out
 	     	.logout()
 	        .logoutUrl("/logout")
@@ -170,6 +191,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(varsqlBasicAuthenticationEntryPoint);
 	}
 
+	// ajax call entry point
+	private AuthenticationEntryPoint restAuthenticationEntryPoint() {
+		return  new AuthenticationEntryPoint () {
+
+			@Override
+			public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+				request.getRequestDispatcher("/invalidLogin").forward(request, response);
+			}
+		};
+	}
+	
 	private CsrfTokenRepository getCookieCsrfTokenRepository() {
 		CookieCsrfTokenRepository csrf = new CookieCsrfTokenRepository();
 

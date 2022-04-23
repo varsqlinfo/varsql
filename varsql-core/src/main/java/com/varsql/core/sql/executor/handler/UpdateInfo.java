@@ -1,9 +1,18 @@
 package com.varsql.core.sql.executor.handler;
 
+import java.util.Map;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: AbstractSQLExecutorHandler.java
-* @desc		: abstract sql executor
+* @fileName		: UpdateParameter.java
+* @desc		:  update parameter
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -12,25 +21,19 @@ package com.varsql.core.sql.executor.handler;
 
 *-----------------------------------------------------------------------------
  */
-public abstract class AbstractSQLExecutorHandler implements SQLExecutorHandler{
-	long totalCount = 0;
+@Getter
+@Setter
+@Data
+@NoArgsConstructor
+public class UpdateInfo {
+	private String sql;
 
-	long failCount = 0;
-
-	public long getTotalCount() {
-		return totalCount;
+	private Map parameter;
+	@Builder
+	public UpdateInfo(String sql, Map parameter) {
+		this.sql = sql;
+		this.parameter = parameter;
 	}
 
-	public void addTotalCount() {
-		++totalCount;
-	}
-
-	public long getFailCount() {
-		return failCount;
-	}
-
-	public void addFailCount() {
-		++this.failCount;
-	}
 
 }

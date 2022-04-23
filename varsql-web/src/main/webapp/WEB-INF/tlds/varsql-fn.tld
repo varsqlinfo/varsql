@@ -58,4 +58,16 @@
 		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
 		<function-signature>java.lang.String contextPath(javax.servlet.http.HttpServletRequest)</function-signature>
 	</function>
+	
+	<!-- password mode  -->
+	<function>
+		<name>isPasswordResetModeManager</name>
+		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
+		<function-signature>java.lang.Boolean isPasswordResetModeManager()</function-signature>
+	</function>
+	<function>
+		<name>isPasswordResetModeEmail</name>
+		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
+		<function-signature>java.lang.Boolean isPasswordResetModeEmail()</function-signature>
+	</function>
 </taglib>

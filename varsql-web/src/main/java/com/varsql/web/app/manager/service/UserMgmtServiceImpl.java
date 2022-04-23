@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.configuration.Configuration;
@@ -19,6 +20,7 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.websocket.MessageDTO;
+import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.user.UserMapper;
@@ -141,6 +143,11 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @throws EncryptDecryptException
 	 */
 	public ResponseResult initPassword(String viewid) throws EncryptDecryptException {
+		
+		if(!Configuration.getInstance().getPasswordResetMode().equals(VarsqlConstants.PASSWORD_RESET_MODE.MANAGER)) {
+			throw new VarsqlAppException(RequestResultCode.BAD_REQUEST.name());
+		}
+		
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
 
 		UserEntity entity= userMgmtRepository.findByViewid(viewid);

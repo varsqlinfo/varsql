@@ -3855,7 +3855,7 @@ _ui.SQL = {
 		VARSQL.req.ajax({
 		    url: {type:VARSQL.uri.database, url:'/preferences/convertTextSetting'}
 		    ,method :'get'
-		    ,data : {}
+		    ,data : VARSQL.util.objectMerge ({},_g_options.param)
 		    ,success:function (res){
 		    	var convertTypeList = VARSQL.parseJSON(res.item) ||[];
 			
@@ -5749,6 +5749,11 @@ function getTableName(tblName){
 
 function getFormatSql(sql, dbtype, sqlType){
 	try{
+		
+		if(toLowerCase(dbtype) == 'mssql' && sqlType=='ddl'){
+			return sql; 	
+		}
+		
 		var formatType = VARSQLCont.formatType(_g_options.dbtype);
 		
 		return sqlFormatter.format(sql, {
@@ -5801,7 +5806,7 @@ function generateSQL(scriptInfo){
 		reval.push('select ');
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
-			reval.push((i==0?'':',')+item[VARSQLCont.tableColKey.NAME]);
+			reval.push((i==0?'':', ')+item[VARSQLCont.tableColKey.NAME]);
 		}
 
 		reval.push(' from '+tmpName);
@@ -5813,8 +5818,8 @@ function generateSQL(scriptInfo){
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
 			if(i!=0){
-				reval.push(',');
-				valuesStr.push(',');
+				reval.push(', ');
+				valuesStr.push(', ');
 			}
 			reval.push(item[VARSQLCont.tableColKey.NAME]);
 
@@ -5840,7 +5845,7 @@ function generateSQL(scriptInfo){
 				keyStr.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 			}else{
 				if(!firstFlag){
-					reval.push(',');
+					reval.push(', ');
 				}
 				reval.push(item[VARSQLCont.tableColKey.NAME]+ ' = '+ tmpval);
 				firstFlag = false;

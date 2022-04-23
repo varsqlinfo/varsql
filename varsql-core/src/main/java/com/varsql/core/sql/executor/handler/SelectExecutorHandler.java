@@ -1,9 +1,11 @@
 package com.varsql.core.sql.executor.handler;
 
+import com.vartech.common.io.writer.AbstractWriter;
+
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: AbstractSQLExecutorHandler.java
-* @desc		: abstract sql executor
+* @fileName		: SelectExecutorHandler.java
+* @desc		: select executor handler
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -12,25 +14,16 @@ package com.varsql.core.sql.executor.handler;
 
 *-----------------------------------------------------------------------------
  */
-public abstract class AbstractSQLExecutorHandler implements SQLExecutorHandler{
-	long totalCount = 0;
+public abstract class SelectExecutorHandler extends AbstractSQLExecutorHandler{
+	private AbstractWriter writer;
 
-	long failCount = 0;
-
-	public long getTotalCount() {
-		return totalCount;
+	public SelectExecutorHandler(AbstractWriter writer) {
+		this.writer =writer;
 	}
 
-	public void addTotalCount() {
-		++totalCount;
+	public AbstractWriter getWriter() {
+		return writer;
 	}
 
-	public long getFailCount() {
-		return failCount;
-	}
-
-	public void addFailCount() {
-		++this.failCount;
-	}
-
+	public abstract boolean handle(SelectInfo sqlResultVO);
 }

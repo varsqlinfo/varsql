@@ -21,7 +21,7 @@
 					<div class="col-sm-8">
 						<div class="dataTables_filter">
 							<label style="float:left; margin-right: 5px;">
-								<select v-model="vconnid" class="form-control ">
+								<select v-model="vconnid" class="form-control" @change="search()">
 									<option value="ALL"><spring:message code="all"/></option>
 									<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
 										<option value="${tmpInfo.vconnid}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
@@ -47,6 +47,11 @@
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
+									<th  style="width: 10px;"><div
+											class="text-center">
+											<input type="checkbox" :checked="selectAllCheck" @click="selectAll()" />
+										</div>
+									</th>
 									<th style="width: 195px;">
 										<spring:message	code="sql_file_name" />
 									</th>
@@ -60,9 +65,10 @@
 							</thead>
 							<tbody class="dataTableContent">
 								<tr v-for="(item,index) in gridData" class="gradeA" :class="(index%2==0?'add':'even')">
+									<td><input type="checkbox" :value="item.fileId" v-model="selectItem"></td>
 									<td> 
-										<a href="javascript:;" @click="download(item)" style="margin-right:10px;"><i class="fa fa-download"></i></a>
-										<a href="javascript:;" @click="detail(item)">{{item.fileName}}</a>
+										<a href="javascript:;" @click="download(item)" title="download" style="margin-right:10px;"><i class="fa fa-download"></i></a>
+										<a href="javascript:;" @click="detail(item)" :title="item.fileName">{{item.fileName}}</a>
 									</td>
 									<td class="center">{{item.fileSize}}</td>
 									<td class="center">{{item.regDt}}</td>
@@ -166,7 +172,7 @@ VarsqlAPP.vueServiceBean({
 				this.selectItem = [];
 
 				for(var i =0 ;i <this.gridData.length; i++){
-					this.selectItem.push(this.gridData[i].sqlId)
+					this.selectItem.push(this.gridData[i].fileId)
 				}
 			}
 		}
@@ -217,6 +223,34 @@ VarsqlAPP.vueServiceBean({
 				,params: {
 					fileId : item.fileId
 					,contId : ''
+				}
+			});
+		}
+		//delete
+		,deleteInfo : function(){
+			var _this = this;
+
+			var item = _this.detailItem;
+
+			var selectItem = _this.selectItem;
+
+			if(VARSQL.isDataEmpty(selectItem)){
+				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
+				return ;
+			}
+
+			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+				return ;
+			}
+
+			this.$ajax({
+				url : {type:VARSQL.uri.user, url:'/preferences/file/delete'}
+				,data : {
+					selectItem : selectItem.join(',')
+				}
+				,success:function (resData){
+					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0017'));
+					_this.search();
 				}
 			});
 		}

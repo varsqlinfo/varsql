@@ -27,7 +27,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -39,7 +39,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setByte(parameterIndex, (Byte)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getByte(columnIndex);
 			}
 		}).build()
@@ -51,7 +51,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setShort(parameterIndex, (short)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getShort(columnIndex);
 			}
 		}).build()
@@ -63,7 +63,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setInt(parameterIndex, (int)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getInt(columnIndex);
 			}
 		}).build()
@@ -77,7 +77,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setLong(parameterIndex, (long)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getLong(columnIndex);
 			}
 		}).build()
@@ -89,7 +89,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setFloat(parameterIndex, (float)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getFloat(columnIndex);
 			}
 		}).build()
@@ -101,7 +101,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setFloat(parameterIndex, (float)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getFloat(columnIndex);
 			}
 		}).build()
@@ -113,7 +113,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setDouble(parameterIndex, (double)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getDouble(columnIndex);
 			}
 		}).build()
@@ -125,7 +125,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setBigDecimal(parameterIndex, (BigDecimal)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getBigDecimal(columnIndex);
 			}
 		}).build()
@@ -137,7 +137,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setBigDecimal(parameterIndex, (BigDecimal)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getBigDecimal(columnIndex);
 			}
 		}).build()
@@ -149,7 +149,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setString(parameterIndex, (String)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -161,7 +161,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setString(parameterIndex, (String)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -173,7 +173,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setString(parameterIndex, (String)value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -185,7 +185,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				Date val = rs.getDate(columnIndex);
 				
 				if(isNull(val)) return null;
@@ -201,7 +201,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				Time val = rs.getTime(columnIndex);
 				
 				if(isNull(val)) return null;
@@ -217,7 +217,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				Timestamp val = rs.getTimestamp(columnIndex);
 				
 				if(isNull(val)) return null;
@@ -235,7 +235,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				if(isNull(rs.getBinaryStream(columnIndex))) return null;
 				
 				return dataType.getTypeName() + " BINARY";
@@ -252,7 +252,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -265,7 +265,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -277,7 +277,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getArray(columnIndex);
 			}
 		}).build()
@@ -289,10 +289,10 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				if(isNull(rs.getBlob(columnIndex))) return null;
 				
-				return dataType.getTypeName() + " BLOB";
+				return dataType.getTypeName();
 			}
 		}).build()
 	),
@@ -303,7 +303,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				try(Reader val = rs.getCharacterStream(columnIndex);){
 					
 					if(isNull(val)) return null;
@@ -319,7 +319,15 @@ public enum DefaultDataType implements DataType {
 					val.close();
 					return output.toString();
 				}catch(Exception e){
-					return "Clob" +e.getMessage();
+					if(dert.equals(DataExceptionReturnType.NULL)) {
+						return null;
+					}else if(dert.equals(DataExceptionReturnType.EMTPY_STRING)) {
+						return "";
+					}else if(dert.equals(DataExceptionReturnType.TYPE_NAME)) {
+						return "Clob";
+					}else {
+						return "Clob" +e.getMessage();
+					}
 				}
 			}
 		}).build()
@@ -331,7 +339,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getRef(columnIndex);
 			}
 		}).build()
@@ -344,7 +352,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getBoolean(columnIndex);
 			}
 		}).build()
@@ -356,7 +364,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getRowId(columnIndex);
 			}
 		}).build()
@@ -368,7 +376,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -380,7 +388,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -392,7 +400,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -405,7 +413,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				SQLXML val  = rs.getSQLXML(columnIndex);
 				
 				if(isNull(val)) return null;
@@ -420,7 +428,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()

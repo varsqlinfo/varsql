@@ -51,7 +51,7 @@
 								<col>
 								<col style="width: 140px;">
 								<col style="width: 70px;">
-								<col style="width: 120px;">
+								<col style="width: 120px;" v-if="enableInitPassword">
 							</colgroup>
 							<thead>
 								<tr role="row">
@@ -70,7 +70,7 @@
 									<th class="text-center">
 										<spring:message	code="manage.userlist.access" />
 									</th>
-									<th class="text-center">
+									<th class="text-center" v-if="enableInitPassword">
 										<spring:message	code="manage.userlist.init.password" />
 									</th>
 								</tr>
@@ -81,13 +81,13 @@
 									<td><a href="javascript:;" class="text-ellipsis" @click="detailView(item)" :title="item.uname+'('+item.uid+')'">{{item.uname}}({{item.uid}})</a></td>
 									<td class="center" :title="item.regDt">{{VARSQL.util.dateFormat(item.regDt,'yyyy-mm-dd HH:mm:ss')}}</td>
 									<td class="center">{{item.acceptYn?'Y':'N'}}</td>
-									<td class="center">
+									<td class="center" v-if="enableInitPassword">
 										<button class="btn btn-xs btn-default" @click="initPassword(item)" >초기화</button>
 										<span>{{item.initpw}}</span>
 									</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
-									<td colspan="10"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+									<td :colspan="enableInitPassword?5:4"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -244,6 +244,7 @@ VarsqlAPP.vueServiceBean( {
 		,dbGroup : []
 		,clickItem : false
 		,clickItemDbList :[]
+		,enableInitPassword : ${varsqlfn:isPasswordResetModeManager()}
 	}
 	,computed :{
 		selectAllCheck : function (){

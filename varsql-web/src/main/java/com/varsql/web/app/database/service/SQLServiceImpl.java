@@ -36,6 +36,7 @@ import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.data.writer.SQLWriter;
 import com.varsql.core.db.DBVenderType;
@@ -52,8 +53,8 @@ import com.varsql.core.sql.builder.VarsqlCommandType;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
-import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
+import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMode;
@@ -82,7 +83,6 @@ import com.vartech.common.io.writer.ExcelWriter;
 import com.vartech.common.io.writer.JSONWriter;
 import com.vartech.common.io.writer.WriteMetadataInfo;
 import com.vartech.common.io.writer.XMLWriter;
-import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
@@ -167,7 +167,7 @@ public class SQLServiceImpl{
 		SqlSourceResultVO ssrv =null;
 
 		long stddt = System.currentTimeMillis();
-		String[] mmddHH = DateUtils.dateformat("MM-dd-HH", stddt).split("-");
+		String[] mmddHH = VarsqlDateUtils.format("MM-dd-HH", stddt).split("-");
 
 		SqlLogInfoDTO sqlLogInfo= new SqlLogInfoDTO();
 		sqlLogInfo.setVconnid(sqlExecuteInfo.getVconnid());
@@ -524,6 +524,7 @@ public class SQLServiceImpl{
 			}else if(VarsqlFileType.XML.equals(exportType)){
 				writer = new XMLWriter(outstream, "row" , exportCharset);
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
+				sqlExecuteInfo.setUseColumnAlias(false);
 				writer = new ExcelWriter(outstream);
 			}else {
 				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDbType()), objectName, exportCharset);
@@ -533,11 +534,11 @@ public class SQLServiceImpl{
 
 			final String tableName =objectName;
 
-			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new AbstractSQLExecutorHandler(writer) {
+			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new SelectExecutorHandler(writer) {
 				private boolean firstFlag = true;
 
 				@Override
-				public boolean handle(SQLHandlerParameter handleParam) {
+				public boolean handle(SelectInfo handleParam) {
 					if(firstFlag) {
 
 						WriteMetadataInfo whi = new WriteMetadataInfo("exportInfo");

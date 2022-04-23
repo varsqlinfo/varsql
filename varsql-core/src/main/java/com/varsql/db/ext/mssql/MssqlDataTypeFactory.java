@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
+import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeHandler;
 import com.varsql.core.db.datatype.DefaultDataType;
@@ -30,7 +31,7 @@ public class MssqlDataTypeFactory extends AbstractDataTypeFactory{
 		
 		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.VARBINARY.getTypeCode(), DBColumnMetaInfo.STRING, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
 			@Override
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				return new String(rs.getBytes(columnIndex));
 			}
 		}).build()));

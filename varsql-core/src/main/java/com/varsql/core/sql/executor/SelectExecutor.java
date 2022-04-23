@@ -18,8 +18,8 @@ import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
-import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
+import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
@@ -38,7 +38,7 @@ import com.vartech.common.utils.VartechUtils;
 
 *-----------------------------------------------------------------------------
  */
-public class SelectExecutor implements SQLExecutor{
+public class SelectExecutor implements Executor{
 
 	private final Logger logger = LoggerFactory.getLogger(SelectExecutor.class);
 
@@ -47,8 +47,7 @@ public class SelectExecutor implements SQLExecutor{
 		return execute(statementInfo, null);
 	}
 
-	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, AbstractSQLExecutorHandler resultHandler) throws SQLException {
+	public SQLExecuteResult execute(SqlStatementInfo statementInfo, SelectExecutorHandler resultHandler) throws SQLException {
 		SQLExecuteResult result = new SQLExecuteResult();
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
@@ -80,7 +79,7 @@ public class SelectExecutor implements SQLExecutor{
 
 			rs = pstmt.executeQuery();
 
-			SQLResultSetUtils.resultSetHandler(rs, statementInfo, resultHandler, true);
+			SQLResultSetUtils.resultSetHandler(rs, statementInfo, resultHandler, statementInfo.isUseColumnAlias());
 		} catch (Throwable e ) {
 			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
 			result.setMessage(" error message :  "+  e.getMessage());
@@ -96,8 +95,8 @@ public class SelectExecutor implements SQLExecutor{
 		return result;
 	}
 
-	private AbstractSQLExecutorHandler getDefaultSelectHandler() {
-		return new AbstractSQLExecutorHandler() {
+	private SelectExecutorHandler getDefaultSelectHandler() {
+		return new SelectExecutorHandler(null) {
 			List selectList = new ArrayList();
 
 			@Override
@@ -106,8 +105,8 @@ public class SelectExecutor implements SQLExecutor{
 			}
 
 			@Override
-			public boolean handle(SQLHandlerParameter handleParam) {
-				selectList.add(handleParam.getRowObject());
+			public boolean handle(SelectInfo selectInfo) {
+				selectList.add(selectInfo.getRowObject());
 				return true;
 			}
 		};

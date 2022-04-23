@@ -9,7 +9,11 @@ html, body{width:100%;height:100%;overflow:hidden;}
 </style>
 <script>
 function fnRefresh(){
-	history.go(-1);
+	if(document.referrer ==''){
+		location.href= '${pageContext.request.contextPath}';
+	}else{
+		history.go(-1);
+	}
 }
 </script>
 </head>

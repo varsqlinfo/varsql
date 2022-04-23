@@ -273,7 +273,7 @@ _$base.localStorage = function(opt){
 /**
  * message
  */
-_$base.messageFormat =function (fmt,msgParam){
+_$base.messageFormat =function (fmt, msgParam){
 
 	if(_$base.isUndefined(msgParam)){
 		var reval = VARSQL_LANG[fmt];
@@ -465,7 +465,7 @@ _$base.req ={
 		
 		_currentAjaxUid = ajaxUid; 
 		
-		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption ,option, (option.ignoreUid !==true ? {data: {_requid_ : ajaxUid}} : {}) );
+		var ajaxOpt =_$base.util.objectMerge({}, _defaultAjaxOption, option, (option.ignoreUid !==true ? {data: {_requid_ : ajaxUid}} : {}) );
 		
 		var cancelFlag = false; 
 
@@ -577,7 +577,7 @@ _$base.req ={
 
 		return csrfVal;
 	}
-	,uploadFile : function (formSelector , opts){
+	,uploadFile : function (formSelector, opts){
 		var _this =this;
 
 		var formData = new FormData($(formSelector)[0]);
@@ -644,7 +644,7 @@ _$base.req ={
 			$('body').centerLoadingClose();
 		});
 	}
-	,ajaxSubmit:function (formid , opts){
+	,ajaxSubmit:function (formid, opts){
 
 		var formObj = $(formid)
 			,tmpParam = opts.params?opts.params:{}
@@ -725,7 +725,7 @@ function databaseReqCancel(reqUid){
 	}
 }
 
-$(window).on("beforeunload",function(){
+$(window).on("beforeunload", function(){
 	_$base.socket.close();
 	
 	var reqKeys= []; 
@@ -915,7 +915,7 @@ jQuery.fn.centerLoading = function(options) {
 	return this;
 };
 
-jQuery.fn.centerLoadingClose= function(options) {
+jQuery.fn.centerLoadingClose = function(options) {
 
 	this.find('.centerLoading').remove();
 	var posVal = (this.attr('var-css-key')||'');
@@ -951,14 +951,14 @@ _$base.progress = {
 	}
 };
 
-_$base.isDataEmpty =function (opt){
+_$base.isDataEmpty =function(opt){
 	return $.isEmptyObject(opt);
 };
 
 /**
  add csrf html
  */
-_$base.addCsrfElement =function (eleSelector){
+_$base.addCsrfElement =function(eleSelector){
 	$(eleSelector).append(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
 		'key' : $$csrf_param ,val :$$csrf_token
 	}));
@@ -969,7 +969,7 @@ _$base.addCsrfElement =function (eleSelector){
  *check box util
  */
 _$base.check = {
-	getCheckVal:function (opt){
+	getCheckVal : function (opt){
 		var option ={delim:','}
 			,rv = [];
 
@@ -1000,7 +1000,7 @@ _$base.check = {
  * @description 페이지 빠져나가기
  */
 var $$initFlag = false;
-_$base.unload =function (mode){
+_$base.unload = function (mode){
 	if($$initFlag){
 		return ;
 	}
@@ -1097,7 +1097,7 @@ _$base.unload =function (mode){
 /**
  * drop 무효화
  */
-_$base.undrop =function (){
+_$base.undrop = function (){
 	$(document).on("dragover",function (e) {
 		return false;
 	}).on("drop",function (e) {
@@ -1108,7 +1108,7 @@ _$base.undrop =function (){
  * js, css 동적 로드
  */
 
-function _load(_url , type ,resourceName){
+function _load(_url, type, resourceName){
 	_url = _$base.getContextPathUrl(_url);
 	try{
 		if(type == 'js'){
@@ -1171,7 +1171,7 @@ _$base.generateUUID = function() {
 /**
  * 매칭되는 글자수
  */
-_$base.matchCount = function(str,ms) {
+_$base.matchCount = function(str, ms) {
 	var re = new RegExp(ms, "ig");
     var resultArray = str.match(re);
     return resultArray.length;
@@ -1180,7 +1180,7 @@ _$base.matchCount = function(str,ms) {
 /**
  * 글자 끝부분 맞는지 체크
  */
-_$base.endsWith = function(str ,searchString, position) {
+_$base.endsWith = function(str, searchString, position) {
     var subjectString = str.toString();
     if (position === undefined || position > subjectString.length) {
       position = subjectString.length;
@@ -1191,7 +1191,7 @@ _$base.endsWith = function(str ,searchString, position) {
 };
 
 // 글자 시작 부분 체크.
-_$base.startsWith = function(str ,search, pos) {
+_$base.startsWith = function(str, search, pos) {
 	return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
 };
 
@@ -1351,7 +1351,7 @@ _$base.util = {
 	 * @param masks
 	 * @description 날짜 계산
 	 */
-	calcDate:function (date,num,type) {
+	calcDate:function (date, num, type) {
 		var a = new Date(date);
 		var format = "yyyy-mm-dd";
 		if(type=='m'){
@@ -1458,7 +1458,7 @@ _$base.util = {
 	    }
 	    return html.replace(/[&<>"]/g, fn);
 	}
-	,getCharLength : function (s ,b ,i , c){
+	,getCharLength : function (s, b, i, c){
 		for(b=i=0; c=s.charCodeAt(i++); b+=c >>11?2:c>>7?2:1);
 		return b;
 	}
@@ -1522,7 +1522,7 @@ _$base.util = {
 			,height : (window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight)
 		}
 	}
-	,replaceParamUrl : function (url , param){
+	,replaceParamUrl : function (url, param){
 		var _this = this;
 		if(!url) return '';
 
@@ -1551,7 +1551,7 @@ _$base.util = {
 	 * @param replaceParam 변경함 파라미터
 	 * @description get all attirbute
 	 */
-	,replaceParam : function (str , replaceParam){
+	,replaceParam : function (str, replaceParam){
 		var matchObj = str.match(/#.*?#/g);
 
 		if(matchObj != null){
@@ -1595,7 +1595,7 @@ _$base.util = {
  * 숫자 계산
  */
 _$base.math = {
-	cal :function(a, b , calType, fixNum) {
+	cal :function(a, b, calType, fixNum) {
 
 		a = isNaN(a) ? 0 : a;
 		b = isNaN(b) ? 0 : b;

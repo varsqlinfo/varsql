@@ -22,6 +22,35 @@ if (!Object.keys) {
   };
 }
 
+if (!Array.prototype.findIndex) {
+	Object.defineProperty(Array.prototype, 'findIndex', {
+	  value: function(predicate) {
+		'use strict';
+		if (this == null) {
+		  throw new TypeError('Array.prototype.findIndex called on null or undefined');
+		}
+		if (typeof predicate !== 'function') {
+		  throw new TypeError('predicate must be a function');
+		}
+		var list = Object(this);
+		var length = list.length >>> 0;
+		var thisArg = arguments[1];
+		var value;
+  
+		for (var i = 0; i < length; i++) {
+		  value = list[i];
+		  if (predicate.call(thisArg, value, i, list)) {
+			return i;
+		  }
+		}
+		return -1;
+	  },
+	  enumerable: false,
+	  configurable: false,
+	  writable: false
+	});
+}
+
 var pluginName = "pubMultiselect"
 ,initialized = false
 ,_datastore = {}
@@ -47,12 +76,12 @@ var pluginName = "pubMultiselect"
 	,useDragSort : false // target drag 해서 정렬할지 여부.
 	,addPosition : 'last'	// 추가 되는 방향키로 추가시 어디를 추가할지. ex(source, last)
 	,duplicateCheck : true	// 중복 추가 여부.
-	,itemSelector :'.pub-select-item'	// select item selector
 	,enableAddItemCheck : true			// 추가된 아이템 표시 여부.
 	,selectStyleClass : 'selected'	// select item class
 	,items :[]			// item
 	,valueKey : 'code' 	// value key
 	,labelKey : 'name' //  label key
+	,pageNumKey : 'pageNo'	// page number key 
 	,render: function (item){	// 아이템 추가될 템플릿.
 		return item.text
 	}
@@ -70,7 +99,6 @@ var pluginName = "pubMultiselect"
 			}
 		}
 		,beforeMove : false	// 이동전  이벤트
-		,afterMove : false	//  이동후  이벤트
 		,completeMove : false	// 이동 완료  이벤트
 	}
 	,target : {
@@ -88,12 +116,10 @@ var pluginName = "pubMultiselect"
 			}
 		}
 		,beforeMove : false	// 이동전  이벤트
-		,afterMove : false	//  이동후  이벤트
 		,completeMove : false	// 이동 완료  이벤트
 		,paging :{	// 다중으로 관리할경우 처리.
-			unitPage : 1		// max page 값
+			unitPage : 1	// max page 값
 			,currPage : 1	// 현재 값
-			,pageNumKey : 'pageNo'	// page number key 
 			,enableMultiple : true 	// 페이징 처리를 item 내부의 pageNo 값으로 처리.
 		}
 	}
@@ -147,21 +173,9 @@ function getHashCode (str){
 	return ''+hash+'98';
 }
 
-function objectValues (obj){
-	if(obj){
-		if (Object.values){
-			return Object.values(obj);
-		} else{
-			return Object.keys(obj).map(function(key) {
-				return obj[key];
-			})
-		}
-	};
-
-	return [];
+function isUndefined (obj){
+	return typeof obj === 'undefined';
 }
-
-
 
 function Plugin(selector, options) {
 
@@ -180,22 +194,81 @@ function Plugin(selector, options) {
 
 	this.config ={
 		currPage : this.options.target.paging.currPage
-		, itemKey :{
-			sourceIdx :{}
-		}
+		, itemKeyInfo :{}
 		, focus : false
 		, focusType : ''
 		, addCheckStyle : (this.options.enableAddItemCheck ===true ? 'text-selected' :'')
-		, itemList : {'1':{}}
+		, allPageItem : {}
+		, currentPageItem : {}
+		, dragItems :[]
 	};
 
 	this.element = {
 		container : $(selector)
 	}
 
+	this._changePageInfo(1, true);
 	this.init();
 
 	return this;
+}
+
+function PageItem(opts){
+    this.list = [];
+    this.valueKey = opts.valueKey;
+    var _this = this; 
+
+    this.add = function (item, position){
+        if(!isUndefined(position)){
+            _this.list.splice(position, 0, item);
+            return;
+        }
+        _this.list.push(item);
+    }
+    
+    this.move = function (targetIdx, modeItemIdx){
+		if(targetIdx > -1){
+			var currentItem = _this.list.splice(modeItemIdx,1)[0];
+			_this.list.splice(targetIdx, 0, currentItem);
+		} 
+    }
+
+    this.contains = function (key){
+		var idx = _this.findIndex(key);
+        if( idx > -1) return true; 
+        else return false; 
+    }
+
+	this.remove = function (key){
+		var idx = this.findIndex(key);
+        if(idx > -1) {
+			return  _this.list.splice(idx,1);
+		}else{
+			return ;
+		} 
+    }
+
+	this.findKey = function (key){
+		return _this.list[_this.findIndex(key)];
+	}
+
+	this.get = function (idx){
+		return _this.list[idx];
+	}
+
+	this.allItem = function (){
+		return _this.list;
+	}
+
+	this.size = function (){
+		return _this.list.length;
+	}
+
+	this.findIndex = function(chkValue){
+		return _this.list.findIndex(function (element){
+			return element[_this.valueKey] === chkValue;
+		})
+	}
 }
 
 Plugin.prototype ={
@@ -217,8 +290,7 @@ Plugin.prototype ={
 	 * @description 이벤트 초기화
 	 */
 	,initEvt : function (){
-		var _this = this
-			,opts = _this.options;
+		var _this = this;
 
 		_this.initSourceEvt();
 		_this.initTargetEvt();
@@ -250,8 +322,8 @@ Plugin.prototype ={
 		// 검색
 		this.element.container.on('click.search', '.search-button', function (e){
 			var sEle = $(this);
-			var labelWrapperEle = sEle.closest('[data-mode]'); 
-			var mode = labelWrapperEle.attr('data-mode');
+			var labelWrapperEle = sEle.closest('[data-item-type]'); 
+			var mode = labelWrapperEle.attr('data-item-type');
 
 			if(mode=='source'){
 				_this.options.source.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
@@ -259,34 +331,37 @@ Plugin.prototype ={
 				_this.options.target.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
 			}
 		});
-
+		
 		// Page navigation click event
+		var pagingCallbackFlag =$.isFunction(_this.options.target.paging.callback); 
 		this.element.container.on('click.pagigng.num', '.pub-multiselect-paging .page-num', function (e){
 			var sEle = $(this);
 			var pageno = sEle.attr('pageno');
-			var modeArea = sEle.closest('[data-mode]'); 
-			var mode = modeArea.attr('data-mode');
+			var modeArea = sEle.closest('[data-item-type]'); 
+			var mode = modeArea.attr('data-item-type');
 
 			var param = {no : pageno, searchword : modeArea.find('.input-text').val()||'' ,evt :e};
 
 			if(mode=='source'){
 				_this.options.source.paging.callback.call(sEle, param);
 			}else{
-				if(_this.options.target.paging.enableMultiple === true){
-					_this.config.currPage = pageno;
-					_this.options.target.paging.currPage = pageno; 
-					_this.setTargetItem(objectValues(_this.config.itemList[pageno])||[]);
-				}else{
+				if(pagingCallbackFlag){
 					_this.options.target.paging.callback.call(sEle, param);
-				}				
+				}else {
+					if(_this.options.target.paging.enableMultiple === true){
+						_this._changePageInfo(pageno)
+						_this.setTargetItem(_this.config.currentPageItem.allItem(), null, {mode : 'page'});
+					}
+				}
+				
 			}
 		});
 
 		// search box keyup event
 		this.element.container.on('keyup.search', '.input-text', function (e){
 			var sEle = $(this);
-			var labelWrapperEle = sEle.closest('[data-mode]'); 
-			var mode = labelWrapperEle.attr('data-mode');
+			var labelWrapperEle = sEle.closest('[data-item-type]'); 
+			var mode = labelWrapperEle.attr('data-item-type');
 
 			var inputText = sEle.val(); 
 
@@ -331,8 +406,22 @@ Plugin.prototype ={
 				_this.config.focus = false;
 			}
 		});
+	}
+	/**
+	 * @method 
+	 * 
+	 * @description  
+	 */
+	,_changePageInfo : function (pageno, initFlag){
 
-		
+		this.config.currPage = pageno;
+		this.options.target.paging.currPage = pageno; 
+
+		if(initFlag || isUndefined(this.config.allPageItem[pageno])){
+			this.config.allPageItem[pageno] = new PageItem(this.options);
+		}
+
+		this.config.currentPageItem = this.config.allPageItem[pageno];
 	}
 	/**
 	 * @method _initItem
@@ -341,13 +430,13 @@ Plugin.prototype ={
 	,_initItem : function (){
 		var _this = this
 
-		_this.setTargetItem(_this.options.target.items);
+		_this.setTargetItem(_this.options.target.items, null, {mode :'init'});
 		_this.setSourceItem(_this.options.source.items);
 	}
 	/**
 	 * @method setSourceItem
 	 * @param items {Array} items array
-	 * @param items {Array} items array
+	 * @param pagingInfo {Object} 
 	 * @description item 그리기.
 	 */
 	,setSourceItem : function (items, pagingInfo){
@@ -365,14 +454,14 @@ Plugin.prototype ={
 				var itemValue = tmpItem[valKey];
 				var itemCheckFlag = false;
 				for(var j = 1 ;j <=pageMaxVal; j++){
-					if(_this.config.itemList[j] && typeof _this.config.itemList[j][itemValue] !=='undefined') {
+					if(_this.config.allPageItem[j] && !isUndefined(_this.config.allPageItem[j][itemValue])) {
 						itemCheckFlag = true;
 						break; 
 					}
 				}
 
 				strHtm.push(_this.getItemHtml('source', itemValue, tmpItem, itemCheckFlag));
-				_this.config.itemKey.sourceIdx[itemValue] = tmpItem;
+				_this.config.itemKeyInfo[itemValue] = tmpItem;
 			}
 
 			_this.element.source.empty().html(strHtm.join(''));
@@ -380,33 +469,40 @@ Plugin.prototype ={
 			_this.element.source.empty().html(_this.getEmptyMessage(sourceOpt.emptyMessage));
 		}
 		
-		_$pagingUtil.setPaging(_this, 'source',pagingInfo || sourceOpt.paging);
-		
+		_$pagingUtil.setPaging(_this, 'source', (pagingInfo || sourceOpt.paging) );
 	}
 	/**
 	 * @method setTargetItem
 	 * @param items {Array} items array
 	 * @description item 그리기.
 	 */
-	,setTargetItem : function (items, pagingInfo){
+	,setTargetItem : function (items, pagingInfo, pOpts){
 		var _this = this
 			,_opts = _this.options
 			,tmpItem;
 
+		pOpts = pOpts ||{};
+
+		var mode = pOpts.mode;
+		
 		var targetOpt= _opts.target;
 
-		var currPageNo = _this.config.currPage; 
-
+		var currPageNo = (pagingInfo||{}).currPage || _this.config.currPage; 
 		var len = items.length;
-		
-		this.config.itemList[currPageNo] ={};
 
+		if(mode==='init'){
+			_this.config.allPageItem ={};
+		}
+		
+		this._changePageInfo(currPageNo, true);
+		_this.getSourceElement().removeClass(_this.config.addCheckStyle);
+				
 		if(len > 0){
 			var valKey = _opts.valueKey;
-			var pageNumKey = targetOpt.paging.pageNumKey;
+			var pageNumKey = _opts.pageNumKey;
 			var maxPageNo = targetOpt.paging.unitPage; 
 			
-
+			var duplicateCheck = {};
 			var strHtm = [];
 			for(var i=0 ;i < len; i++){
 				tmpItem = items[i];
@@ -415,36 +511,34 @@ Plugin.prototype ={
 				var pageNo = tmpItem[pageNumKey] || currPageNo; 
 
 				if(pageNo > maxPageNo){
+					continue;
+				}
+
+				var pageItem =_this.config.allPageItem[pageNo]; 
+
+				if(isUndefined(pageItem)){
+					_this.config.allPageItem[pageNo] = new PageItem(_opts);
+					pageItem = _this.config.allPageItem[pageNo];
+				}
+
+				if(duplicateCheck[itemValue]===true){
 					continue; 
 				}
 
-				if(typeof _this.config.itemList[pageNo] ==='undefined'){
-					_this.config.itemList[pageNo] = {}
-				}
-
-				if(typeof _this.config.itemList[pageNo][itemValue] !=='undefined'){
-					continue; 
-				}
+				duplicateCheck[itemValue] = true
 
 				tmpItem['_CU'] = 'U';
 				
-				_this.config.itemList[pageNo][itemValue] = tmpItem;
+				pageItem.add(tmpItem);
 
 				if(currPageNo == pageNo){
 					strHtm.push(_this.getItemHtml('target', itemValue, tmpItem));
 				}
 				
-				this.element.source.find(_opts.itemSelector+'[data-val="'+itemValue +'"]').addClass(_this.config.addCheckStyle+ ' target-check');
-			}
-
-			this.element.source.find(_opts.itemSelector).each(function (){
-				var sEle = $(this);
-				if(!sEle.hasClass('target-check')){
-					sEle.removeClass(_this.config.addCheckStyle);
+				if(!isUndefined(this.config.itemKeyInfo[itemValue])){
+					this.getSourceElement(itemValue).addClass(_this.config.addCheckStyle);
 				}
-	
-				sEle.removeClass('target-check');
-			})
+			}
 
 			if(strHtm.length > 0){
 				_this.element.target.empty().html(strHtm.join(''));
@@ -453,7 +547,7 @@ Plugin.prototype ={
 			}
 		}else{
 			_this.element.target.empty().html(_this.getEmptyMessage(targetOpt.emptyMessage));
-			_this.element.source.find(_opts.itemSelector).removeClass(_this.config.addCheckStyle);
+			_this.getSourceElement().removeClass(_this.config.addCheckStyle);
 		}
 
 		_$pagingUtil.setPaging(_this, 'target', pagingInfo || targetOpt.paging);
@@ -471,12 +565,17 @@ Plugin.prototype ={
 		var _this = this
 			,opts = _this.options;
 
-		_this.element.source.on('click.pub-multiselect', opts.itemSelector, function (e){
+		// source click
+		_this.element.source.on('mousedown.pub-multiselect', function (){
+			_this._setFocus('source');
+		})
+
+		// source item click
+		_this.element.source.on('click.pub-multiselect', '.pub-select-item', function (e){
 			_this._setClickEvent(e, 'source', $(this));
 		})
 
-		_this.element.source.on('dblclick.pub-multiselect', opts.itemSelector, function (e){
-			_this._setFocus('source');
+		_this.element.source.on('dblclick.pub-multiselect', '.pub-select-item', function (e){
 			_this.sourceMove();
 			return ;
 		})
@@ -485,7 +584,7 @@ Plugin.prototype ={
 
 		if(opts.useDragMove !== false){
 
-			_this.element.source.find(opts.itemSelector).draggable({
+			_this.getSourceElement().draggable({
 				appendTo: "body"
 				,containment : (opts.containment|| 'parent')
 				,scroll : false
@@ -494,21 +593,34 @@ Plugin.prototype ={
 					"ui-draggable": 'pub-multiselect-drag-handle'
 				}
 				,helper: function (event){
-					var selectItem = _this.getSelectElement(_this.element.source);
-
-					if(selectItem.length  < 1){
+					var selectItem = _this.getSelectionElement(_this.element.source);
+					var selectLen = selectItem.length; 
+					if(selectLen  < 1){
 						return '<div></div>';
 					}
+					
+					var firstValue = _this.getItemVal($(selectItem[0]));
+					_this.config.dragItems = [];
+					_this.config.dragItems.push(firstValue);
 
-					var strHtm = [];
-					$.each(selectItem, function (i ,item ){
-						strHtm.push('<div class="pub-multiselect-add-item">'+$(item).html()+'</div>')
-					});
+					for(var i = 1; i< selectLen; i++){
+						var dataVal = _this.getItemVal($(selectItem[i]));
+						_this.config.dragItems.push(dataVal);
+					}
+					
+					var firstItem = _this.config.itemKeyInfo[firstValue];
 
-					return '<div class="pub-multiselect-add-helper-wrapper">'+strHtm.join('')+'</div>';
+					var helperHtml ='<div class="pub-multiselect-add-helper-wrapper"><div><span>'+ firstItem[_this.options.labelKey];
+					
+					if(selectLen > 1){
+						helperHtml += ' +'+selectLen;
+					}
+					helperHtml += '</span></div></div>';
+					return helperHtml;
+					
 				}
 				,start:function(e){
-					var selectItem = _this.getSelectElement(_this.element.source);
+					var selectItem = _this.getSelectionElement(_this.element.source);
 
 					if( $.inArray(opts.selectStyleClass,e.currentTarget.classList) < 0 || selectItem.length < 1) {
 						e.preventDefault();
@@ -530,52 +642,64 @@ Plugin.prototype ={
 		var _this = this
 			,opts = _this.options;
 
-		_this.element.target.on('click.pub-multiselect', opts.itemSelector, function (e){
+		// target area click
+		_this.element.target.on('mousedown.pub-multiselect', function (){
+			_this._setFocus('target');
+		})
+
+		// target item click
+		_this.element.target.on('click.pub-multiselect', '.pub-select-item', function (e){
 			_this._setClickEvent(e, 'target', $(this));
 		})
 
-		_this.element.target.on('dblclick.pub-multiselect', opts.itemSelector, function (e){
+		_this.element.target.on('dblclick.pub-multiselect', '.pub-select-item', function (e){
 			if($.isFunction(_this.options.target.dblclick)){
 
-				if(_this.options.target.dblclick.call($(this),e, _this.config.itemList[_this.config.currPage][_this.getItemVal($(this))]) ===false){
+				if(_this.options.target.dblclick.call($(this), e, _this.config.currentPageItem.getItem(_this.getItemVal($(this)))) ===false){
 					return false;
 				};
 			}
 			_this.targetMove();
 		})
 
-		_this.element.target.on('selectstart',function(){ return false; });
-
 		_this.element.target.sortable({
 			scroll: true
 		   ,containment : "parent"
 		   ,cancel: ((opts.useDragSort !== false) ?'li:not(.'+opts.selectStyleClass+')' :'li')
 		   ,start:function(e,ui){
+				var uiItem = $(ui.item);
+				if(!uiItem.hasClass('pub-multiselect-add-helper-wrapper')){ // drag 해서 들어온 아이템 체크
+					var selectItem = _this.getSelectionElement(_this.element.target);
 
-			   try{
-				   var uiItem = $(ui.item);
-				   if(!uiItem.hasClass('ui-draggable')){
-					   var selectItem = _this.getSelectElement(_this.element.target);
+					if( $.inArray(opts.selectStyleClass,e.currentTarget.classList) < 0 || selectItem.length < 1) {
+						//return false;
+					}
 
-					   if( $.inArray(opts.selectStyleClass,e.currentTarget.classList) < 0 || selectItem.length < 1) {
-						   //return false;
-					   }
-				   }
-			   }catch(e){
-				   console.log(e);
-			   }
+					var firstValue = _this.getItemVal($(selectItem[0]));
+					_this.config.dragItems = [];
+					_this.config.dragItems.push(firstValue);
+					
+				}			   
 		   }
 		   ,update : function (e, ui){
-			   var uiItem = $(ui.item);
-			   if(uiItem.hasClass('pub-multiselect-add-helper-wrapper')){
-				   var addHtm = _this.sourceMove({
-						returnFlag : true
-				   });
+				var uiItem = $(ui.item);
+				var appendIdx = uiItem.index();
 
-				   uiItem.replaceWith(addHtm);
-			   }else{
-				   // 정렬에 대한 item 순서 처리.
-			   }
+				if(uiItem.hasClass('pub-multiselect-add-helper-wrapper')){
+					var addHtm = _this.sourceMove({
+						appendIdx : appendIdx
+						,items : _this.config.dragItems
+						,type : 'item'
+						,returnFlag : true
+					});
+
+					uiItem.replaceWith(addHtm);
+				}else{
+					_this.config.dragItems.forEach(function (item){
+						var currentIdx = _this.config.currentPageItem.findIndex(item);
+						_this.config.currentPageItem.move(appendIdx, currentIdx);
+					})
+				}
 		   }
 		   ,change : function (e,ui){
 			   var uiItem = $(ui.position.top);
@@ -595,8 +719,6 @@ Plugin.prototype ={
 			,evtElement
 			,selectItem;
 
-		_this._setFocus(selectType);
-
 		if(selectType =='source'){
 			evtElement = _this.element.source;
 			selectItem = opts.source;
@@ -607,11 +729,11 @@ Plugin.prototype ={
 
 		var evt = window.event || e;
 
-		var lastClickEle = evtElement.find(opts.itemSelector+'[data-last-click="Y"]');
+		var lastClickEle = evtElement.find('.pub-select-item[data-last-click="Y"]');
 		var onlyClickFlag = false;
 		if(opts.useMultiSelect ===true){
 			if (evt.shiftKey){
-				var allItem = evtElement.find(opts.itemSelector);
+				var allItem = evtElement.find('.pub-select-item');
 				var beforeIdx = allItem.index(lastClickEle)
 					,currIdx = allItem.index(sEle);
 
@@ -640,9 +762,9 @@ Plugin.prototype ={
 
 		if(onlyClickFlag){
 			if($.isFunction(selectItem.click)){
-				selectItem.click.call(sEle , e, _this.config.itemList[_this.config.currPage][_this.getItemVal(sEle)]);
+				selectItem.click.call(sEle , e, _this.config.currentPageItem.findKey(_this.getItemVal(sEle)));
 			}
-			evtElement.find(opts.itemSelector+'.'+ opts.selectStyleClass).removeClass(opts.selectStyleClass);
+			evtElement.find('.pub-select-item.'+ opts.selectStyleClass).removeClass(opts.selectStyleClass);
 			sEle.addClass(opts.selectStyleClass);
 		}
 	}
@@ -662,12 +784,12 @@ Plugin.prototype ={
 			,end =  opt.end; 
 				
 		if(mode=='all'){
-			evtElement.find(opts.itemSelector).addClass(opts.selectStyleClass);
+			evtElement.find('.pub-select-item').addClass(opts.selectStyleClass);
 		}else if(mode=='selection'){
 
-			evtElement.find(opts.itemSelector+'.'+ opts.selectStyleClass).removeClass(opts.selectStyleClass);
+			evtElement.find('.pub-select-item.'+ opts.selectStyleClass).removeClass(opts.selectStyleClass);
 
-			var allItem = evtElement.find(opts.itemSelector);
+			var allItem = evtElement.find('.pub-select-item');
 			for(var i=end; i >= start; i--){
 				$(allItem[i]).addClass(opts.selectStyleClass);
 			}
@@ -677,21 +799,17 @@ Plugin.prototype ={
 	 * @method getTargetItem
 	 * @description 추가된 아이템 구하기.
 	 */
-	,getTargetItem : function (itemKey, pageNum){
+	,getTargetItem : function (pageNum){
 		var  _this = this;
 
-		if(itemKey){
-			if(typeof pageNum ==='undefined'){
-				return _this.config.itemList[_this.config.currPage][itemKey];
-			}else{
-				return _this.config.itemList[pageNum][itemKey];
-			}
+		if(!isUndefined(pageNum)){
+			return _this.config.allPageItem[pageNum].allItem();
 		}else{
 			var reInfo =[];
 
-			for(var no in _this.config.itemList){
+			for(var no in _this.config.allPageItem){
 
-				var pageItems=_this.config.itemList[no];
+				var pageItems=_this.config.allPageItem[no].allItem();
 
 				for(var key in pageItems){
 					var addItem = pageItems[key]
@@ -703,14 +821,33 @@ Plugin.prototype ={
 		}
 	}
 	/**
-	 * @method getSelectElement
-	 * @description 선택된 html eleement 얻기.
+	 * @method getSelectionElement
+	 * @description 선택된 html element 얻기.
 	 */
-	,getSelectElement : function (evtElement){
-		return 	evtElement ? evtElement.find(this.options.itemSelector+'.'+ this.options.selectStyleClass) : this.element.target.find(this.options.itemSelector+'.'+ this.options.selectStyleClass);
+	,getSelectionElement : function (evtElement){
+		return 	evtElement ? evtElement.find('.pub-select-item.'+ this.options.selectStyleClass) : this.element.target.find('.pub-select-item.'+ this.options.selectStyleClass);
 	}
-	,getElement : function (key){
+	/**
+	 * @method getTargetElement
+	 * @param key {String} item key
+	 * @description get target element 
+	 */
+	,getTargetElement : function (key){
+		if(isUndefined(key)){
+			return 	this.element.target.find('.pub-select-item');
+		}
 		return 	this.element.target.find('[data-val="'+key+'"]');
+	}
+	/**
+	 * @method getSourceElement
+	 * @param key {String} item key
+	 * @description get source element 
+	 */
+	,getSourceElement : function (key){
+		if(isUndefined(key)){
+			return 	this.element.source.find('.pub-select-item');
+		}
+		return 	this.element.source.find('[data-val="'+key+'"]');
 	}
 	/**
 	 * @method addItemStausUpdate
@@ -718,10 +855,10 @@ Plugin.prototype ={
 	 * @description 등록된 아이템 상태 업데이트.
 	 */
 	,addItemStausUpdate : function (itemKey){
-		var tmpItem = this.config.itemList[this.config.currPage][itemKey];
-		if(typeof tmpItem !=='undefined'){
+		var tmpItem = this.config.currentPageItem.findKey(itemKey);
+		if(!isUndefined(tmpItem)){
 			tmpItem['_CU'] = 'CU';
-			this.getElement(itemKey).replaceWith(this.getItemHtml('target', itemKey, tmpItem));
+			this.getTargetElement(itemKey).replaceWith(this.findKeyHtml('target', itemKey, tmpItem));
 		}
 	}
 	/**
@@ -739,28 +876,47 @@ Plugin.prototype ={
 	 */
 	,move :function (type){
 		var _this = this;
-		var selectElement =_this.getSelectElement(_this.element.target);
+		var selectElement =_this.getSelectionElement(_this.element.target);
 		var selectLen = selectElement.length;
 
 		if(selectLen < 1) return ;
 
 		var selectStyleClass =this.options.selectStyleClass;
+
+		var currPageItem = _this.config.currentPageItem;
+
 		if(type=='up'){
 			for(var i =0 ;i <selectLen ;i++){
-				var currItem = $(selectElement[i])
-					,prevItem = $(currItem.prev());
+				var currElement = $(selectElement[i])
+					,prevElement = $(currElement.prev());
 
-				if(!prevItem.hasClass(selectStyleClass)) {
-					currItem.after(prevItem);
+				if(prevElement.length > 0 && !prevElement.hasClass(selectStyleClass)) {
+					currElement.after(prevElement);
+
+					var dataVal = _this.getItemVal(currElement);
+					
+					var currPosition = currPageItem.findIndex(dataVal);
+
+					if(currPosition > -1){
+						currPageItem.move(currPosition-1, currPosition);
+					}
 				}
 			}
 		}else{
-			for(var i =selectLen-1 ;i >=0 ;i--){
-				var currItem = $(selectElement[i])
-					,nextItem = $(currItem.next());
+			for(var i =selectLen-1; i >=0; i--){
+				var currElement = $(selectElement[i])
+					,nexElement = $(currElement.next());
 
-				if(!nextItem.hasClass(selectStyleClass)) {
-					currItem.before(nextItem);
+				if(nexElement.length > 0 && !nexElement.hasClass(selectStyleClass)) {
+					currElement.before(nexElement);
+
+					var dataVal = _this.getItemVal(currElement);
+					
+					var currPosition = currPageItem.findIndex(dataVal);
+
+					if(currPosition > -1){
+						currPageItem.move(currPosition+1, currPosition);
+					}
 				}
 			}
 		}
@@ -770,7 +926,12 @@ Plugin.prototype ={
 	/**
 	 * @method sourceMove
 	 * @param opt {Object} true or false
-	 * 			
+	 * {
+	 * items : [] 
+	 * returnFlag : true or false; default false
+	 * appendIdx : append index
+	 * type : item or element; default element
+	 * }
 	 * @description source -> target 이동.
 	 */
 	,sourceMove : function (opt){
@@ -778,37 +939,45 @@ Plugin.prototype ={
 			,opts = _this.options;
 		
 		opt = opt||{};
+		
+		var selectVal = opt.items || _this.getSelectionElement(_this.element.source);
+		var selectLen = selectVal.length;
 
-		var returnFlag = opt.returnFlag;
-		var selectVal = opt.items || _this.getSelectElement(_this.element.source);
+		if(selectLen > 0){
+			var returnFlag = opt.returnFlag;
+			var appendIdx = isUndefined(opt.appendIdx) ? -1 : opt.appendIdx;
+			var type = opt.type || 'element';
 
-		if(selectVal.length > 0){
-			var tmpVal = '',tmpObj;
+			var tmpVal = '';
 			var	strHtm = [];
 
-			var addItemCount = _this.element.target.find(opts.itemSelector+':not(.ui-draggable)').length;
+			var addItemCount = _this.element.target.find('.pub-select-item:not(.ui-draggable)').length;
 
-			var addItemKey = [];
-			var addElements = [];
-			var addItemMap = {};
+			var addItems = [];
 			var dupChkFlag = true;
 			var firstKey = '';
 
-			for(var i =0; i <selectVal.length; i++){
+			for(var i =0; i <selectLen; i++){
 				var item = selectVal[i];
 
-				tmpObj = $(item);
-				tmpVal=_this.getItemVal(tmpObj);
-
-				var addChkFlag = typeof _this.config.itemList[_this.config.currPage][tmpVal] ==='undefined';
-				if(dupChkFlag && addChkFlag){
-					dupChkFlag = false;
+				if(type =='item'){
+					tmpVal = item;
+				}else{
+					tmpVal = _this.getItemVal($(item));
 				}
 
-				if(!addChkFlag) continue;
+				var selectItem = _this.config.itemKeyInfo[tmpVal];
+				
+				var addChkFlag = _this.config.currentPageItem.contains(tmpVal);
+				
+				if(dupChkFlag && !addChkFlag){
+					dupChkFlag = false;
+				}
+				
+				if(addChkFlag) continue;
 
 				if($.isFunction(opts.source.beforeMove)){
-					if(opts.source.beforeMove(tmpObj) === false){
+					if(opts.source.beforeMove(selectItem) === false){
 						continue;
 					};
 				}
@@ -827,26 +996,18 @@ Plugin.prototype ={
 					return false;
 				}
 				addItemCount+=1;
-
-				var selectItem = _this.config.itemKey.sourceIdx[tmpVal];
+				
 				var _addItem = objectMerge({}, selectItem);
 				_addItem['_CU'] = 'C';
 
-				addItemKey.push(tmpVal);
 				firstKey = tmpVal;
 
-				addItemMap[tmpVal] =_addItem;
+				addItems.push(_addItem);
 
-				strHtm.push(_this.getItemHtml('target', tmpVal ,selectItem));
-
-				addElements.push(tmpObj);
-
-				if($.isFunction(opts.source.afterMove)){
-					opts.source.afterMove(tmpObj);
-				}
+				strHtm.push(_this.getItemHtml('target', tmpVal, selectItem));
 			}
 
-			if(addItemKey.length  < 1){
+			if(addItems.length  < 1){
 				return ;
 			}
 
@@ -861,25 +1022,31 @@ Plugin.prototype ={
 			}
 
 			if($.isFunction(opts.source.completeMove)){
-				if(opts.source.completeMove(addItemKey)===false) return false;
+				var itemKeys = addItems.map(function (item){
+					return item[_this.options.valueKey];
+				})
+				if(opts.source.completeMove(itemKeys, addItems)===false) return false;
 			}
 
 			_this.element.target.find('.empty-message').remove();
 
-			for(var i =0; i <addElements.length; i++){
-				addElements[i].addClass(_this.config.addCheckStyle);
+			for(var i =0; i <addItems.length; i++){
+				_this.getSourceElement(addItems[i][_this.options.valueKey]).addClass(_this.config.addCheckStyle);
 			}
-
-			for(var key in addItemMap){
-				_this.config.itemList[_this.config.currPage][key] =addItemMap[key];
-			}
+			
+			addItems.forEach(function (item, idx){
+				if(appendIdx != -1){
+					_this.config.currentPageItem.add(item, appendIdx+idx);
+				}else{
+					_this.config.currentPageItem.add(item);
+				}
+			});
 
 			if(returnFlag===true){
 				return strHtm.join('');
 			}else{
 				if(opts.addPosition=='first'){
 					_this.element.target.prepend(strHtm.join(''));
-					
 				}else{
 					_this.element.target.append(strHtm.join(''));
 				}
@@ -906,64 +1073,49 @@ Plugin.prototype ={
 
 		opt = opt||{};
 
-		var selectVal = opt.items || _this.getSelectElement(_this.element.source);
+		var selectVal = opt.items || _this.getSelectionElement(_this.element.source);
 
-		var selectVal = _this.getSelectElement(_this.element.target);
+		var selectVal = _this.getSelectionElement(_this.element.target);
 
 		if(selectVal.length >0){
 			var removeItem;
-			var deleteItemKey = [];
-
 			var removeItems = [];
 
 			for(var i =0; i <selectVal.length; i++){
 				var item = selectVal[i];
 
 				var tmpKey = $(item).attr('data-val');
-				removeItem = _this.config.itemKey.sourceIdx[tmpKey];
+				
+				removeItem = _this.config.currentPageItem.findKey(tmpKey);
 
 				if($.isFunction(opts.target.beforeMove)){
-					if(opts.target.beforeMove($(item))===false) {
+					if(opts.target.beforeMove(removeItem)===false) {
 						continue;
 					};
 				}
-
-				var removeFlag = false;
-
-				for(var tmpPageNo in _this.config.itemList){
-					if(_this.config.currPage != tmpPageNo){
-						if(typeof _this.config.itemList[tmpPageNo][tmpKey] !=='undefined'){
-							removeFlag = true ;
-							break;
-						}
-					}
-				}
-				if(removeItem){
-					if(removeFlag !== true){
-						_this.element.source.find(opts.itemSelector+'[data-val="'+tmpKey+'"]').removeClass(_this.config.addCheckStyle);
-					}
-				}
-				
-				removeItems.push($(item))
-				deleteItemKey.push(tmpKey);
-
-				if($.isFunction(opts.target.afterMove)){
-					opts.target.afterMove(removeItem);
-				}
+				removeItems.push(removeItem);
 			}
 
 			var returnRemoveFlag = true; 
 			if($.isFunction(opts.target.completeMove)){
-				returnRemoveFlag = opts.target.completeMove(deleteItemKey);
+				var itemKeys = removeItems.map(function (item){
+					return item[_this.options.valueKey];
+				})
+
+				returnRemoveFlag = opts.target.completeMove(itemKeys, removeItems);
 			}
 			
 			if(returnRemoveFlag !== false){
 				for(var i =0; i <removeItems.length; i++){
-					removeItems[i].remove();
-					delete this.config.itemList[this.config.currPage][deleteItemKey[i]];
-				}
+					var key = removeItems[i][_this.options.valueKey]; 
+					
+					_this.getTargetElement(key).remove();
+					_this.getSourceElement(key).removeClass(_this.config.addCheckStyle);
 
-				if(Object.keys(_this.config.itemList[_this.config.currPage]).length < 1){
+					this.config.currentPageItem.remove(key);
+				}
+				
+				if(_this.config.currentPageItem.size() < 1){
 					_this.element.target.empty().html(_this.getEmptyMessage(opts.target.emptyMessage));
 				}
 			}
@@ -986,7 +1138,7 @@ Plugin.prototype ={
 
 		this.element.container.empty('').html(strHtm.join(''));
 
-		var sourceContainerEl = this.element.container.find('[data-mode="source"]');
+		var sourceContainerEl = this.element.container.find('[data-item-type="source"]');
 
 		var labelH = 0;
 		if(sourceContainerEl.find('.pub-multiselect-label').length > 0){
@@ -995,7 +1147,7 @@ Plugin.prototype ={
 		}
 		sourceContainerEl.find('.pub-multiselect-area').css('height' , 'calc(100% - '+labelH+'px)');
 
-		var targetContainerEl = this.element.container.find('[data-mode="target"]');
+		var targetContainerEl = this.element.container.find('[data-item-type="target"]');
 
 		labelH = 0; 
 		if(targetContainerEl.find('.pub-multiselect-label').length > 0){
@@ -1027,7 +1179,7 @@ Plugin.prototype ={
 		strHtm.push('	<div class="pub-multiselect-body vertical '+(opts.body.enableItemEvtBtn ?'show-row-item-btn' : '' )+'">'); // body start
 
 		if(opts.mode !='single'){
-			strHtm.push('  <div style="height:'+(bodyHeight/2 - labelHalfHeight)+'px;" data-mode="source">');
+			strHtm.push('  <div style="height:'+(bodyHeight/2 - labelHalfHeight)+'px;" data-item-type="source">');
 			
 			if(opts.header.enableSourceLabel===true){
 				strHtm.push(this.getLabelHtml('source'));
@@ -1048,7 +1200,7 @@ Plugin.prototype ={
 			}	
 		}
 		
-		strHtm.push(' <div style="height:'+(bodyHeight/2+labelHalfHeight)+'px;" data-mode="target">');
+		strHtm.push(' <div style="height:'+(bodyHeight/2+labelHalfHeight)+'px;" data-item-type="target">');
 
 		if(opts.header.enableTargetLabel===true){
 			strHtm.push(this.getLabelHtml('target'));
@@ -1111,7 +1263,7 @@ Plugin.prototype ={
 		strHtm.push('				<tr>');
 		if(opts.mode !='single'){
 			strHtm.push('					<td');
-			strHtm.push('					 <div data-mode="source">');
+			strHtm.push('					 <div data-item-type="source">');
 			strHtm.push('					   <div style="height:'+bodyHeight+'px;">');
 			
 			if(opts.header.enableSourceLabel===true){
@@ -1139,7 +1291,7 @@ Plugin.prototype ={
 		}
 		
 		strHtm.push('					<td');
-		strHtm.push('					 <div data-mode="target">');
+		strHtm.push('					 <div data-item-type="target">');
 		strHtm.push('					  <div style="height:'+bodyHeight+'px;">');
 
 		if(opts.header.enableTargetLabel===true){
@@ -1233,7 +1385,7 @@ Plugin.prototype ={
 			
 			var styleClass = '';
 
-			if(selectFlag === true || _this.config.itemList[_this.config.currPage][seletVal]){
+			if(selectFlag === true || _this.config.currentPageItem.contains(seletVal)){
 				styleClass += ' '+_this.config.addCheckStyle;
 			}
 
@@ -1248,7 +1400,7 @@ Plugin.prototype ={
 				renderTemplate += '<button type="button" class="pub-multiselect-btn" data-mode="item-del">'+this.options.i18.remove+'</button>';
 			}
 			
-			return '<li data-pageno="'+(tmpItem[_opts.target.paging.pageNumKey]||_this.config.currPage)+'" data-val="'+seletVal+'" class="pub-select-item" title="'+itemText.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
+			return '<li data-pageno="'+(tmpItem[_opts.pageNumKey]||_this.config.currPage)+'" data-val="'+seletVal+'" class="pub-select-item" title="'+itemText.replace(/["']/g,'')+'">'+renderTemplate+'</li>';
 		}
 	}
 	,destroy:function (){
@@ -1423,7 +1575,7 @@ $[ pluginName ] = function (selector,options) {
 
 	var _cacheObject = _datastore[selector];
 
-	if(typeof options === 'undefined'){
+	if(isUndefined(options)){
 		return _cacheObject||{};
 	}
 
@@ -1439,7 +1591,7 @@ $[ pluginName ] = function (selector,options) {
 
 	if(typeof options === 'string'){
 		var callObj =_cacheObject[options];
-		if(typeof callObj ==='undefined'){
+		if(isUndefined(callObj)){
 			return options+' not found';
 		}else if(typeof callObj==='function'){
 			return _cacheObject[options].apply(_cacheObject,args);

@@ -80,11 +80,11 @@ public class JPAConfigurer {
 		dataSource.setUsername(ci.getUsername());
 		dataSource.setPassword(ci.getPassword());
 
-		logger.debug("=================datasourceconfig info====================");
-		logger.debug(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());
-		logger.debug(" url : {}",ci.getUrl());
-		logger.debug(" username" ,ci.getUsername());
-		logger.debug("=================datasourceconfig info====================");
+		logger.info("=================datasourceconfig info====================");
+		logger.info(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());
+		logger.info(" url : {}",ci.getUrl());
+		logger.info(" username" ,ci.getUsername());
+		logger.info("=================datasourceconfig info====================");
 
 		mainDataSource = dataSource;
     }

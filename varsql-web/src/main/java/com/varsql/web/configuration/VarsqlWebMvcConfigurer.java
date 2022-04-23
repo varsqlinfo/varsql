@@ -93,7 +93,10 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label");
         messageSource.setDefaultEncoding(VarsqlConstants.CHAR_SET);
 
-        messageSource.setCacheMillis(180);
+        if("local".equals(System.getProperty("varsql.runtime"))) {
+        	messageSource.setCacheSeconds(3);
+        }
+        
         messageSource.setFallbackToSystemLocale(false);
         return messageSource;
     }

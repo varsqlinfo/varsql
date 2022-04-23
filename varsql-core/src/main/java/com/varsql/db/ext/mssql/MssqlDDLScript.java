@@ -122,7 +122,7 @@ public class MssqlDDLScript extends AbstractDDLScript {
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setCreateScript(ddlStr.toString());
 			reval.add(ddlInfo);
 		}
 

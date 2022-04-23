@@ -30,4 +30,6 @@ public interface ResourceConfigConstants {
 	final String USER_DETAIL_SERVICE = "varsqlUserDetailService";
 	
 	final String REMEMBERME_USER_DETAIL_SERVICE = "rememberMeUserService";
+	
+	final String MAIL_SERVICE = "mainService";
 }

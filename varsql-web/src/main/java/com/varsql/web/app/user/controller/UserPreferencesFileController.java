@@ -29,10 +29,11 @@ public class UserPreferencesFileController extends AbstractController {
 
 	@RequestMapping(value = { "/fileList" }, method = { RequestMethod.POST })
 	@ResponseBody
-	public ResponseResult importFileList(@RequestParam(value = "fileType", required = true) String fileType, HttpServletRequest req) throws Exception {
+	public ResponseResult importFileList(@RequestParam(value = "fileType", required = true) String fileType,
+			@RequestParam(value = "vconnid", required = true) String vconnid, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		
-		return this.userPreferencesServiceFileImpl.importFileList(UploadFileType.getDivType(fileType),searchParameter);
+		return this.userPreferencesServiceFileImpl.importFileList(UploadFileType.getDivType(fileType), vconnid, searchParameter);
 	}
 	
 	@RequestMapping(value = { "/detail" }, method = { RequestMethod.POST })
@@ -45,5 +46,21 @@ public class UserPreferencesFileController extends AbstractController {
 	@ResponseBody
 	public ResponseResult zipFileDetail(@RequestParam(value = "fileId", required = true) String fileId,@RequestParam(value = "fileName", required = true) String fileName, HttpServletRequest req) throws Exception {
 		return this.userPreferencesServiceFileImpl.zipFileDetail(fileId, fileName);
+	}
+	
+	/**
+	 *
+	 * @Method Name  : delete
+	 * @Method 설명 : 삭제
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 11. 1.
+	 * @변경이력  :
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value="/delete" ,method = RequestMethod.POST)
+	public @ResponseBody ResponseResult delete(@RequestParam(value = "selectItem", required = true )  String selectItem , HttpServletRequest req){
+		logger.debug("remove file removeIds : {}" , selectItem);
+		return  userPreferencesServiceFileImpl.deleteFiles(selectItem);
 	}
 }

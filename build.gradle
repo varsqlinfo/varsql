@@ -8,7 +8,7 @@
 
 buildscript {
 	ext {
-        springBootVersion = '2.6.3'
+        springBootVersion = '2.6.6'
         springDependencyVersion = '1.0.11.RELEASE'
         queryDslVersion = '5.0.0'
         sonarVersion = '3.0'
@@ -17,7 +17,7 @@ buildscript {
         
         def_version = [
 			springData: '2.2.6.RELEASE'
-			,springSecurity: '5.2.1.RELEASE'
+			,springSecurity: '5.6.2'
 			,servletApi: '4.0.0'
 			,jackson : '2.13.1'
 			,poi : '5.2.0'
@@ -65,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.1.16'
+	varsqlVersion = '1.1.17'
 }
 
 //소스 분석.
@@ -157,6 +157,7 @@ subprojects {
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-web' ]
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-cache']
+			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-mail']
 			// ,[ group: 'org.springframework.security' , name: 'spring-security-config' , version: def_version.springSecurity ]
 			,[ group: 'org.springframework.security' , name: 'spring-security-messaging' , version: def_version.springSecurity ] // websocket message 추가.
 			,[ group: 'org.springframework.security' , name: 'spring-security-taglibs' , version: def_version.springSecurity ]

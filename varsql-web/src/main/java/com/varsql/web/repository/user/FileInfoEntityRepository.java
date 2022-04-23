@@ -29,4 +29,8 @@ public interface FileInfoEntityRepository extends DefaultJpaRepository, JpaRepos
 	FileInfoEntity findByFileId(String fileId);
 
 	List<FileInfoEntity> findByFileContId(String contId);
+
+	@Modifying
+	@Query("delete from FileInfoEntity c where c.regId = :viewid and c.fileId in :fileIdArr")
+	void deleteFiles(@Param("viewid")String viewid, @Param("fileIdArr") String[] fileIdArr);
 }

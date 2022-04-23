@@ -16,6 +16,4 @@ public interface SQLExecutorHandler {
 	default Object getResult() {
 		return null;
 	}
-
-	boolean handle(SQLHandlerParameter handleParam);
 }

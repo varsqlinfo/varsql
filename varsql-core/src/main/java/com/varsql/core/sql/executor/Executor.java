@@ -3,7 +3,6 @@ package com.varsql.core.sql.executor;
 import java.sql.SQLException;
 
 import com.varsql.core.db.valueobject.SqlStatementInfo;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 
 /**
 *
@@ -19,9 +18,7 @@ import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 
 *-----------------------------------------------------------------------------
 */
-public interface SQLExecutor {
+public interface Executor {
 
 	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException;
-
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, AbstractSQLExecutorHandler resultHandler) throws SQLException;
 }

@@ -143,9 +143,13 @@ $(document).ready(function (){
 				</button>
 			</div>
 			<div>
-				<a href="./join/" class=""><button class="btn  btn-block btn-success" type="button">
-					<spring:message code="btn.signup" />
-				</button></a>
+				<a href="./join/" class="btn btn-block btn-success"><spring:message code="btn.signup" /></a>
+				
+				<c:if test="${varsqlfn:isPasswordResetModeEmail()}">
+					<span style="float:right;margin-top:10px;">
+						<a href="<c:url value="/lostPassword" />"><spring:message code="msg.lost.password" /></a>
+					</span>
+				</c:if>
 			</div>
 		</form>
 	</div>

@@ -71,14 +71,13 @@
                 <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="join.form.password.confirm" />" />
             </div>
         </div>
-
-        <div class="form-group">
-            <div class="col-sm-12 text-center">
-                <button type="button" class="btn btn-info btn-join"><spring:message code="btn.join"/></button>
-                <button type="button" class="btn btn-default btnMain"><spring:message code="btn.main"/></button>
-            </div>
-        </div>
     </form>
+    <div class="form-group">
+          <div class="col-sm-12 text-center">
+              <button type="button" class="btn btn-info btn-join"><spring:message code="btn.join"/></button>
+              <button type="button" class="btn btn-default btnMain"><spring:message code="btn.main"/></button>
+          </div>
+      </div>
 
     <div style="display:none;">
 		<form name="f" action="${varsqlfn:loginUrl(pageContext.request)}" method="post" onsubmit="return false;">
@@ -93,6 +92,7 @@
 </html>
 
 <script>
+$(function (){
 var joinForm = {
 	init : function (){
 		var _this = this;
@@ -102,7 +102,7 @@ var joinForm = {
 	,initEvt : function (){
 		var _this = this;
 
-		$('.btnMain').click(function (){
+		$('.btnMain').click(function (e){
 			location.href ='<c:url value="/" />';
 		});
 
@@ -112,7 +112,7 @@ var joinForm = {
 
 		var idChecVal = -1;
 		$('#uid').focusout(function(e) {
-
+			
 			var tmpVal =  $.trim($(this).val());
 
 			$(this).val(tmpVal);
@@ -276,7 +276,7 @@ var joinForm = {
 	}
 }
 
-$(document).ready(function (){
-	joinForm.init();
-});
+joinForm.init();
+}());
+
 </script>

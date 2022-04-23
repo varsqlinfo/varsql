@@ -18,9 +18,9 @@ import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;
-import com.varsql.core.sql.executor.SqlUpdateExecutor;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
-import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.core.sql.executor.UpdateExecutor;
+import com.varsql.core.sql.executor.handler.UpdateExecutorHandler;
+import com.varsql.core.sql.executor.handler.UpdateInfo;
 import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.dto.file.FileImportResult;
 import com.varsql.web.model.entity.app.FileInfoEntity;
@@ -122,9 +122,9 @@ public class FileImportExportServiceImpl{
 		String insertQuery = FileUtils.readFileToString(FileServiceUtils.getFileInfoToFile(fileInfo));
 		ssi.setSql(insertQuery);
 
-		SQLExecuteResult ser =new SqlUpdateExecutor().execute(ssi, new AbstractSQLExecutorHandler() {
+		SQLExecuteResult ser =new UpdateExecutor().execute(ssi, new UpdateExecutorHandler() {
 			@Override
-			public boolean handle(SQLHandlerParameter handleParam) {
+			public boolean handle(UpdateInfo handleParam) {
 				return true;
 			}
 		});

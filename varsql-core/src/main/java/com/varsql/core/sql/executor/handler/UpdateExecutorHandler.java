@@ -2,8 +2,8 @@ package com.varsql.core.sql.executor.handler;
 
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: AbstractSQLExecutorHandler.java
-* @desc		: abstract sql executor
+* @fileName		: UpdateExecutorHandler.java
+* @desc		: Update executor handler
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -12,25 +12,7 @@ package com.varsql.core.sql.executor.handler;
 
 *-----------------------------------------------------------------------------
  */
-public abstract class AbstractSQLExecutorHandler implements SQLExecutorHandler{
-	long totalCount = 0;
+public abstract class UpdateExecutorHandler extends AbstractSQLExecutorHandler{
 
-	long failCount = 0;
-
-	public long getTotalCount() {
-		return totalCount;
-	}
-
-	public void addTotalCount() {
-		++totalCount;
-	}
-
-	public long getFailCount() {
-		return failCount;
-	}
-
-	public void addFailCount() {
-		++this.failCount;
-	}
-
+	public abstract boolean handle(UpdateInfo sqlResultVO);
 }

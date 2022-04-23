@@ -36,6 +36,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
     ,SecurityConfigurer.class
     ,ServiceConfigurer.class
     ,JacksonConfigurer.class
+    ,MailConfigurer.class
 })
 public class VarsqlMainConfigurer {
 

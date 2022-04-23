@@ -10,7 +10,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 
 </head>
 <body>
-	<table data-init-msg="Y" style="width: 100%; height: 100%;">
+	<table style="width: 100%; height: 100%;">
 		<tbody>
 			<tr>
 				<td style="text-align: center;">

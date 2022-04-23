@@ -56,6 +56,21 @@ public interface VarsqlConstants {
 		public String val() {
 			return this.code;
 		}
+	}
+	
+	// password 잊어 버렸을때 변경 방법. 
+	enum PASSWORD_RESET_MODE{
+		EMAIL, MANAGER;
 
+		public static PASSWORD_RESET_MODE  getMode(String mode) {
+			
+			for(PASSWORD_RESET_MODE resetMode : PASSWORD_RESET_MODE.values()) {
+				if(resetMode.name().equalsIgnoreCase(mode)) {
+					return resetMode;
+				}
+			}
+			
+			return PASSWORD_RESET_MODE.MANAGER;
+		}
 	}
 }

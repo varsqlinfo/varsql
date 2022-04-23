@@ -34,6 +34,8 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 	private String columnInfo;
 	
 	private String charset;
+	
+	private boolean useColumnAlias = true;
 
 	public SqlStatementInfo(){
 		super();
@@ -100,6 +102,14 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 				.append(" , columnInfo : ").append(columnInfo)
 				.append(" , charset : ").append(charset)
 				.toString();
+	}
+
+	public boolean isUseColumnAlias() {
+		return useColumnAlias;
+	}
+
+	public void setUseColumnAlias(boolean useColumnAlias) {
+		this.useColumnAlias = useColumnAlias;
 	}
 
 	

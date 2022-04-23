@@ -83,6 +83,7 @@ var _dto = {
 };
 
 _dto['INT'] = VARSQL.util.objectMerge({},_dto['4'],{name:'INT'});
+_dto['TEXT'] = VARSQL.util.objectMerge({},_dto['2005'],{name:'TEXT'});
 _dto['DATETIME'] =VARSQL.util.objectMerge({},_dto['91'],{name:'DATETIME'});
 
 var DEFAULT_HINTS = [
@@ -141,7 +142,7 @@ var DEFINE_INFO = {
 		,formatType : 'tsql'
 	}
 	,MYSQL : {
-		type :'text/x-mssql'
+		type :'text/x-mysql'
 		,formatType : 'mysql'
 	}
 	,ORACLE : {
@@ -179,11 +180,11 @@ var DEFINE_INFO = {
 		,formatType : 'sql'
 	}
 	,POSTGRESQL :{
-		type :'text/x-mssql'
+		type :'text/x-mariadb'
 		,formatType : 'postgresql'
 	}
 	,DB2  :{
-		type :'text/x-mssql'
+		type :'text/x-mariadb'
 		,formatType : 'DB2'
 	}
 	,'DEFAULT' : {

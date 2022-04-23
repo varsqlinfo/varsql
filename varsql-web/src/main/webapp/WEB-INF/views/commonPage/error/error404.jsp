@@ -7,7 +7,15 @@
 <style>
 html, body{width:100%;height:100%;overflow:hidden;}
 </style>
-
+<script>
+function fnRefresh(){
+	if(document.referrer ==''){
+		location.href= '${pageContext.request.contextPath}';
+	}else{
+		history.go(-1);
+	}
+}
+</script>
 </head>
 <body>
 	<table data-init-msg="Y" style="width: 100%; height: 100%;">
@@ -21,7 +29,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 						<div>&nbsp;</div>
 					</div>
 					
-					<div><a href="javascript:history.go(-1)"><spring:message code="back.page" /></a></div>
+					<div><a href="javascript:fnRefresh()"><spring:message code="back.page" /></a></div>
 					<div><a href="${pageContext.request.contextPath}"><spring:message code="main.page" /></a></div>
 				</td>
 			</tr>

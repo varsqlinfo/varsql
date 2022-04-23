@@ -47,7 +47,8 @@ import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
-import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
+import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.util.SQLUtils;
 import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.constants.HttpSessionConstants;
@@ -344,8 +345,6 @@ public class ExportServiceImpl{
 
 		String sessAttrKey = HttpSessionConstants.progressKey(requid);
 		
-		System.out.println("downloadTableData2 sessAttrKey : "+ sessAttrKey);
-		
 		HttpSession session = req.getSession();
 		session.setAttribute(sessAttrKey, progressInfo);
 
@@ -389,11 +388,11 @@ public class ExportServiceImpl{
 
 					final String tableName = item.getName();
 					SQLExecuteResult ser = (new SelectExecutor()).execute(seDto,
-							new AbstractSQLExecutorHandler(writer) {
+							new SelectExecutorHandler(writer) {
 								private boolean firstFlag = true;
 								private int rowIdx = 0;
 
-								public boolean handle(SQLHandlerParameter handleParam) {
+								public boolean handle(SelectInfo handleParam) {
 									if (this.firstFlag) {
 										WriteMetadataInfo whi = new WriteMetadataInfo("exportInfo");
 										List<ExportColumnInfo> columns = new LinkedList<>();
@@ -415,7 +414,7 @@ public class ExportServiceImpl{
 											((SQLWriter) getWriter()).setColumnInfos(handleParam.getColumnInfoList());
 										}
 										this.firstFlag = false;
-									}
+									} 
 
 									progressInfo.setProgressContentLength(++rowIdx);
 

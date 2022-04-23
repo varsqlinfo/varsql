@@ -7,13 +7,12 @@ import org.mapstruct.Mapper;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlDateUtils;
-import com.vartech.common.utils.DateUtils;
 
 @Mapper(componentModel = "spring")
 public class DateMapper {
 
 	public String asString(Date date) {
-		return date != null ? DateUtils.dateformat(VarsqlConstants.DATE_FORMAT, date) : null;
+		return date != null ? VarsqlDateUtils.format(VarsqlConstants.DATE_FORMAT, date) : null;
 	}
 
 	public Date asDate(String date) {
@@ -21,7 +20,7 @@ public class DateMapper {
 	}
 
 	public String asTimestampString(Timestamp date) {
-		return date != null ? DateUtils.dateformat(VarsqlConstants.TIMESTAMP_FORMAT, date) : null;
+		return date != null ? VarsqlDateUtils.format(VarsqlConstants.TIMESTAMP_FORMAT, date) : null;
 	}
 
 	public Timestamp asTimestamp(String date) {

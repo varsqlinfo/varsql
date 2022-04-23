@@ -2,9 +2,11 @@ package com.varsql.web.tags;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.VarsqlDateUtils;
+import com.varsql.core.configuration.Configuration;
 import com.varsql.web.constants.WebStaticResourceVersion;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -25,11 +27,11 @@ public final class VarsqlFn{
 		return VartechUtils.objectToJsonString(json);
 	}
 
-	public static String currentDate(String foramt) {
-		return DateUtils.getCurrentDate(foramt);
+	public static String currentDate(String format) {
+		return VarsqlDateUtils.format(format);
 	}
 
-	public static boolean isRuntimelocal(String foramt) {
+	public static boolean isRuntimelocal() {
 		return VarsqlUtils.isRuntimelocal();
 	}
 
@@ -71,5 +73,13 @@ public final class VarsqlFn{
 
 	public static String logoutUrl(HttpServletRequest request) {
 		return request.getContextPath()+"/logout";
+	}
+	
+	public static boolean isPasswordResetModeManager() {
+		return Configuration.getInstance().getPasswordResetMode().equals(VarsqlConstants.PASSWORD_RESET_MODE.MANAGER);
+	}
+	
+	public static boolean isPasswordResetModeEmail() {
+		return Configuration.getInstance().getPasswordResetMode().equals(VarsqlConstants.PASSWORD_RESET_MODE.EMAIL);
 	}
 }

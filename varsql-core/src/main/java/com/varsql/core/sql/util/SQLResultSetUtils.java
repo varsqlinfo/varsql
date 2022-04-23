@@ -18,6 +18,7 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -26,7 +27,8 @@ import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
-import com.varsql.core.sql.executor.handler.SQLHandlerParameter;
+import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
+import com.varsql.core.sql.executor.handler.SelectInfo;
 
 /**
  *
@@ -145,7 +147,7 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < count; colIdx++) {
 					DataType dataType = dataTypeArr[colIdx]; 
 					if(dataType != null) {
-						row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, colIdx+1));
+						row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, colIdx+1, DataExceptionReturnType.ERROR));
 					}else {
 						row.put(columnInfoList.get(colIdx).getKey(), null);
 					}
@@ -168,11 +170,11 @@ public final class SQLResultSetUtils {
 		return ssrv;
 	}
 	
-	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, AbstractSQLExecutorHandler baseExecutorHandler) throws SQLException {
-		resultSetHandler(rs, sqlExecuteInfo, baseExecutorHandler, false);
+	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, SelectExecutorHandler selectExecutorHandler) throws SQLException {
+		resultSetHandler(rs, sqlExecuteInfo, selectExecutorHandler, false);
 	}
 
-	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, AbstractSQLExecutorHandler baseExecutorHandler, boolean gridKeyAlias) throws SQLException{
+	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, SelectExecutorHandler selectExecutorHandler, boolean gridKeyAlias) throws SQLException{
 		if (rs == null) {
 			return ;
 		}
@@ -252,17 +254,17 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < count; colIdx++) {
 					DataType dataType = dataTypeArr[colIdx]; 
 					if(dataType != null) {
-						row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, colIdx+1));
+						row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, colIdx+1, DataExceptionReturnType.ERROR));
 					}else {
 						row.put(columnInfoList.get(colIdx).getKey(), null);
 					}
 				}
-				boolean addFlag = baseExecutorHandler.handle(SQLHandlerParameter.builder().rowObject(row).columnInfoList(columnInfoList).build());
+				boolean addFlag = selectExecutorHandler.handle(SelectInfo.builder().rowObject(row).columnInfoList(columnInfoList).build());
 
 				if(addFlag) {
-					baseExecutorHandler.addTotalCount();
+					selectExecutorHandler.addTotalCount();
 				}else {
-					baseExecutorHandler.addFailCount();
+					selectExecutorHandler.addFailCount();
 				}
 			}
 		}catch(SQLException e) {

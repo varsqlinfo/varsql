@@ -1,7 +1,6 @@
 package com.varsql.core.sql.executor.handler;
 
 import java.util.List;
-import java.util.Map;
 
 import com.varsql.core.sql.beans.GridColumnInfo;
 
@@ -14,8 +13,8 @@ import lombok.Setter;
 
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: SQLHandlerParameter.java
-* @desc		:  sql handler parameter
+* @fileName		: SelectParameter.java
+* @desc		:  select parameter
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -28,19 +27,13 @@ import lombok.Setter;
 @Setter
 @Data
 @NoArgsConstructor
-public class SQLHandlerParameter {
-	private String sql;
-
-	private Map parameter;
-
+public class SelectInfo {
 	private Object rowObject;
 
 	private List<GridColumnInfo> columnInfoList;
 
 	@Builder
-	public SQLHandlerParameter(String sql, Map parameter, Object rowObject, List<GridColumnInfo> columnInfoList) {
-		this.sql = sql;
-		this.parameter = parameter;
+	public SelectInfo(Object rowObject, List<GridColumnInfo> columnInfoList) {
 		this.rowObject = rowObject;
 		this.columnInfoList = columnInfoList;
 	}

@@ -2,7 +2,6 @@ package com.varsql.web.util;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,6 +85,10 @@ public final class ConvertUtils {
 
 	public static String dateToStringDateTime(LocalDateTime date) {
 		return date.format(DateTimeFormatter.ofPattern(VarsqlConstants.TIMESTAMP_FORMAT));
+	}
+	
+	public static Date localDateTimeToDate(LocalDateTime localDateTime) {
+		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	public static Timestamp longToTimestamp(long time){
