@@ -62,8 +62,8 @@
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
-			, sc.prec as "CHAR_LENGTH"
 			, sc.prec as "COLUMN_SIZE"
+			, sc.prec as "DATA_PRECISION"
 			, sc.scale as "DECIMAL_DIGITS"
 			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 			, sc.default_value AS "COLUMN_DEF"
@@ -130,8 +130,8 @@
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
-			, sc.length as "CHAR_LENGTH"
 			, sc.length as "COLUMN_SIZE"
+			, sc.length as "DATA_PRECISION"
 			, sc.syslength as "DECIMAL_DIGITS"
 			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 			, sc.default_value AS "COLUMN_DEF"
@@ -220,8 +220,8 @@
 				so.crdate as "CREATED",
 				sc.name as "ARGUMENT_NAME",
 				st.name as "DATA_TYPE" ,
-				sc.length as "CHAR_LENGTH" ,
 				sc.length as "COLUMN_SIZE" ,
+				sc.length as "DATA_PRECISION" ,
 				sc.scale as "DECIMAL_DIGITS",
 				sc.colid as "SEQUENCE",
 				'' as "COMMENT",
@@ -372,8 +372,8 @@
 		select trim(so.table_name) as "TABLE_NAME"
 			,trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
-			, sc.length as "CHAR_LENGTH"
 			, sc.length as "COLUMN_SIZE"
+			, sc.length as "DATA_PRECISION"
 			, sc.syslength as "DECIMAL_DIGITS"
 			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END NULLABLE
 			, sc.default_value AS "COLUMN_DEF"

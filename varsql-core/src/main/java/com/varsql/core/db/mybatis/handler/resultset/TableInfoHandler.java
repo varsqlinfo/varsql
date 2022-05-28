@@ -102,6 +102,7 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 
 		String cName=  rowData.getString(MetaColumnConstants.COLUMN_NAME);
 		int columnSize= rowData.getInt(MetaColumnConstants.COLUMN_SIZE);
+		int dataPrecision= rowData.getInt(MetaColumnConstants.DATA_PRECISION, columnSize);
 		int degitsLen= rowData.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 
 		String dataType = rowData.getString(MetaColumnConstants.DATA_TYPE);
@@ -118,6 +119,7 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 				column.setLength(new BigDecimal(lenInfoObj+""));
 			}
 		}
+		
 		column.setLength(dataTypeInfo.getMetaDataHandler().getColumnLength(columnSize));
 		column.setDefaultVal(rowData.getString(MetaColumnConstants.COLUMN_DEF));
 		column.setNullable(rowData.getString(MetaColumnConstants.IS_NULLABLE));
@@ -125,7 +127,7 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 
 		String typeAndLength =rowData.getString(MetaColumnConstants.TYPE_NAME_SIZE ,"");
 		
-		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, typeAndLength, columnSize, degitsLen));
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
 
 		column.setComment(rowData.getString(MetaColumnConstants.COMMENT,""));
 

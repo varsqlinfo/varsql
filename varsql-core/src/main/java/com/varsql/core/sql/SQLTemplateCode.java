@@ -17,7 +17,7 @@ public class SQLTemplateCode {
 		addComment,	modifyComment,	dropComment,
 		select,	insert,	update,	delete,
 		selectInsert, insertUpdate, createSelect,
-		columnAdd ,columnRename ,columnModify ,columnDrop ,columnAddComment ,columnModifyComment ,columnDropComment;
+		columnAdd ,columnRename ,columnModify ,columnDrop ,columnAddComment ,columnModifyComment ,columnDropComment, constraintKey;
 
 		private String templateId; 
 		

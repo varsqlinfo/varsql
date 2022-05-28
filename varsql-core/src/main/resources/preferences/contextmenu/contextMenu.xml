@@ -14,14 +14,14 @@ values( {{columnValue}} );
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{name}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>columnValue</key>
 				<code><![CDATA[
-{{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' name}}{{/columns}}
+{{~#columns ~}}{{addChar @index '' ', '}} {{ addPreSuffix '#{' '}' name}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -39,7 +39,7 @@ set
 				<key>updateColumn</key>
 				<code><![CDATA[
 {{~#each (pkExcludeColumns columns)}}
-	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' name}}
+	{{addChar @index '' ', '}}{{name}} = {{ addPreSuffix '#{' '}' name}}
 {{/each}}
 						]]></code>
 
@@ -81,14 +81,14 @@ values( {{columnValue}} );
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}	{{addChar @index '' ','}}{{name}} {{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{name}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>columnValue</key>
 				<code><![CDATA[
-{{~#columns ~}} {{addChar @index '' ','}} {{ addPreSuffix '#{' '}' (camelCase name)}}{{/columns}}
+{{~#columns ~}}{{addChar @index '' ', '}} {{ addPreSuffix '#{' '}' (camelCase name)}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -106,7 +106,7 @@ set
 				<key>updateColumn</key>
 				<code><![CDATA[
 {{~#each (pkExcludeColumns columns)}}
-	{{addChar @index '' ','}}{{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
+	{{addChar @index '' ', '}}{{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
 {{/each}}
 						]]></code>
 
@@ -226,7 +226,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -285,7 +285,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -331,7 +331,7 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}	{{addChar @index '' ','}}{{javaType typeName}} {{camelCase name}} {{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
 						]]></code>
 			</propItems>
 		</templateInfo>

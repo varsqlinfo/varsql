@@ -22,6 +22,7 @@ public interface MetaColumnConstants {
 	String TYPE_NAME_SIZE="TYPE_NAME_SIZE";
 	String COLUMN_SIZE="COLUMN_SIZE";
 	String BUFFER_LENGTH="BUFFER_LENGTH";
+	String DATA_PRECISION="DATA_PRECISION"; // 정확한 값
 	String DECIMAL_DIGITS="DECIMAL_DIGITS"; // 소수 자릿수값.
 	String NUM_PREC_RADIX="NUM_PREC_RADIX";
 	String NULLABLE="NULLABLE";

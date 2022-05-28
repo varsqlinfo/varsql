@@ -26,6 +26,7 @@ import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -85,7 +86,7 @@ public class MssqlDDLScript extends AbstractDDLScript {
 				}
 				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
 
-				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
+				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DATA_PRECISION), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
 				
 				ddlStr.append(getDefaultValue(source.getString(MetaColumnConstants.DATA_DEFAULT), dataTypeInfo , true));
 
@@ -93,26 +94,18 @@ public class MssqlDDLScript extends AbstractDDLScript {
 
 				ddlStr.append(BlankConstants.NEW_LINE);
 			}
-
-			List srcPkList = client.selectList("tableScriptPk", dataParamInfo);
-			Map pkMap;
-			for (int i = 0; i < srcPkList.size(); i++) {
-				pkMap = (HashMap) srcPkList.get(i);
-				if (i == 0)
-					ddlStr.append(BlankConstants.TAB).append(",CONSTRAINT ")
-							.append(pkMap.get("CONSTRAINT_NAME"))
-							.append(" PRIMARY KEY ( ")
-							.append(pkMap.get("COLUMN_NAME"));
-				else {
-					ddlStr.append(", " + pkMap.get("COLUMN_NAME"));
-				}
-
-				if (i == srcPkList.size() - 1) {
-					ddlStr.append(")").append(BlankConstants.NEW_LINE);
-				}
-			}
-
+			
 			ddlStr.append(");").append(BlankConstants.NEW_LINE_TWO);
+
+			List constraintKeys= client.selectList("tableConstraintKey", dataParamInfo);
+			
+			if(constraintKeys.size() > 0) {
+				Map param = new HashMap();
+				param.put("keyList", constraintKeys);
+				param.put("objectName",dataParamInfo.getObjectName());
+				
+				ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.MSSQL, SQLTemplateCode.TABLE.constraintKey, param)).append(BlankConstants.NEW_LINE);
+			}
 
 			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);
 			for (int i = 0; i < srcCommentList.size(); i++) {

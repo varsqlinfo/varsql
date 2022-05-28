@@ -32,7 +32,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	TINYINT(Types.TINYINT, DBColumnMetaInfo.INTEGER, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	TINYINT(Types.TINYINT, DBColumnMetaInfo.TINYINT, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.TINYINT, value)) return ;
 				
@@ -44,7 +44,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	SMALLINT(Types.SMALLINT, DBColumnMetaInfo.INTEGER, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	SMALLINT(Types.SMALLINT, DBColumnMetaInfo.SMALLINT, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.SMALLINT, value)) return ;
 				
@@ -69,8 +69,8 @@ public enum DefaultDataType implements DataType {
 		}).build()
 	),
 	// custom default type 추가. int
-	INT(Types.INTEGER, DBColumnMetaInfo.INTEGER, INTEGER.getDataTypeHandler()),
-	BIGINT(Types.BIGINT, DBColumnMetaInfo.INTEGER, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	INT(Types.INTEGER, DBColumnMetaInfo.INT, INTEGER.getDataTypeHandler()),
+	BIGINT(Types.BIGINT, DBColumnMetaInfo.BIGINT, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.BIGINT, value)) return ;
 				
@@ -118,7 +118,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	NUMERIC(Types.NUMERIC, DBColumnMetaInfo.BIGDECIMAL, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	NUMERIC(Types.NUMERIC, DBColumnMetaInfo.NUMERIC, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.NUMERIC, value)) return ;
 				
@@ -130,7 +130,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	DECIMAL(Types.DECIMAL, DBColumnMetaInfo.BIGDECIMAL, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	DECIMAL(Types.DECIMAL, DBColumnMetaInfo.DECIMAL, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.DECIMAL, value)) return ;
 				
@@ -222,7 +222,7 @@ public enum DefaultDataType implements DataType {
 				
 				if(isNull(val)) return null;
 				
-				return VarsqlDateUtils.timestampFormat(val);
+				return VarsqlDateUtils.timestampMilliFormat(val);
 			}
 		}).build()
 	),

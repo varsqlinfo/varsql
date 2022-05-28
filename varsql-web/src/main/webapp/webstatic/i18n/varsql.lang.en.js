@@ -53,6 +53,7 @@ VARSQL_LANG = {
 	,'varsql.0030' : 'find line:{line}, ch:{ch}'
 	,'varsql.0031' : 'Allow Extension : {accept}'
 	,'varsql.0032' : 'Please check the DB Name or Schema.'
+	,'varsql.0033' : '[{name}] 를 닫으시겠습니까?'
 
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
@@ -90,7 +91,7 @@ VARSQL_LANG = {
 	,'varsql.form.0001' : '필수 입력사항입니다'
 	,'varsql.form.0002' : '최소 {len}글자 이상 이여야 합니다'
 	,'varsql.form.0003' : '비밀번호가 같아야합니다'
-	,'varsql.form.0004' : '크기는  {range} 사이여야 합니다'
+	,'varsql.form.0004' : '크기는 {range} 사이여야 합니다'
 
 
 	//error message code
@@ -101,6 +102,8 @@ VARSQL_LANG = {
 	,'error.403' : '권한이 없습니다.'
 	,'error.80000' : '연결[80000]이 거부되었습니다.\n관리자에게 문의하세요.'
 	,'error.80001' : '연결[80001]이 닫혀 있습니다.\n관리자에게 문의하세요.'
+	,'error.80002' : 'error code : {errorCode}\n연결이 유효하지 않습니다.\n관리자에게 문의하세요.'
+	,'error.default' : 'error code : {errorCode}\n에러가 발생하였습니다 \n관리자에게 문의하세요.'
 	,'btn.ok' : 'Ok'
 	,'btn.cancel' : 'Cancel'
 	,'btn.close' : 'Close'
@@ -159,4 +162,7 @@ VARSQL_LANG = {
 	,'grid.key' : 'Key'
 	,'grid.desc' : 'Desc'
 	,'grid.default.value' : 'Default value'
+	
+	,'grid.parameter.name' : '파라미터명'
+	,'grid.inout.name' : 'IN/OUT'
 }

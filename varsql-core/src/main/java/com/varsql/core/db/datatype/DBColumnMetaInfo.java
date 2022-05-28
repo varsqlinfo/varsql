@@ -18,23 +18,39 @@ import com.vartech.common.utils.StringUtils;
 public enum DBColumnMetaInfo {
 	
 	BIT(0, false)
+	,TINYINT(1, false)
+	,SMALLINT(1, false)
+	,INT(1, false)
+	,BIGINT(1, false)
 	,INTEGER(1,true)
 	,FLOAT(1, true, new ColumnMetaHandler(){
 		@Override
-		public String typeAndLength(int columnSize, int degitsLen) {
-			return "(" + columnSize + (degitsLen> 0 ? "," + degitsLen :"") +")";
+		public String typeAndLength(int precision, int scale) {
+			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,DOUBLE(1, true, new ColumnMetaHandler(){
 		@Override
-		public String typeAndLength(int columnSize, int degitsLen) {
-			return "(" + columnSize + (degitsLen> 0 ? "," + degitsLen :"") +")";
+		public String typeAndLength(int precision, int scale) {
+			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+		}
+	})
+	,NUMERIC(1, true, new ColumnMetaHandler(){
+		@Override
+		public String typeAndLength(int precision, int scale) {
+			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,BIGDECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
-		public String typeAndLength(int columnSize, int degitsLen) {
-			return "(" + columnSize + (degitsLen> 0 ? "," + degitsLen :"") +")";
+		public String typeAndLength(int precision, int scale) {
+			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+		}
+	})
+	,DECIMAL(1, true, new ColumnMetaHandler(){
+		@Override
+		public String typeAndLength(int precision, int scale) {
+			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,STRING(2, true)
@@ -92,7 +108,7 @@ public enum DBColumnMetaInfo {
 		return size;
 	}
 	
-	public String getTypeAndLength(DataType dataTypeInfo, String typeAndLength, int columnSize, int degitsLen) {
+	public String getTypeAndLength(DataType dataTypeInfo, String typeAndLength, int columnSize, int precision, int scale) {
 		if(!StringUtils.isBlank(typeAndLength)) {
 			return typeAndLength;
 		}else {
@@ -100,7 +116,7 @@ public enum DBColumnMetaInfo {
 			
 			String newTypeAndLength = dataTypeInfo.getTypeName();
 			if(this.columnMetaHandler != null) {
-				newTypeAndLength += this.columnMetaHandler.typeAndLength(columnSize, degitsLen);
+				newTypeAndLength += this.columnMetaHandler.typeAndLength(precision, scale);
 			}else {
 				if(this.isSize()){
 					newTypeAndLength +="(" + columnSize+")";
@@ -112,6 +128,6 @@ public enum DBColumnMetaInfo {
 	}
 	
 	interface ColumnMetaHandler{
-		String typeAndLength(int columnSize, int degitsLen);
+		String typeAndLength(int precision, int scale);
 	}
 }

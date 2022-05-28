@@ -4,6 +4,9 @@
 *varsql base object js
  */
 
+;(function() {
+"use strict";
+
 if (typeof window != "undefined") {
     if (typeof window.VARSQLCont == "undefined") {
         window.VARSQLCont = {};
@@ -14,21 +17,10 @@ if (typeof window != "undefined") {
 	}
 }
 
-
-;(function(VARSQLCont) {
-"use strict";
-
 function setHints(str) {
 	return str.split(",");
 }
 
-var _constants = {
-	newline :'\n'
-	,tab : '\t'
-	,querySuffix : ';  '
-	,queryParameterPrefix:'#{'
-	,queryParameterSuffix:'}'
-};
 /**
  * :{name : 'TIMESTAMP'	-- dataType 여부.
  * ,isNum : false	-- 숫자 여부
@@ -39,7 +31,7 @@ var _constants = {
  * }
  */
 var _dto = {
-	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'Boolean', isSize: true}
+	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'Boolean'}
 	,'-6':{name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
 	,'5':{name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
 	,'4':{name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
@@ -59,10 +51,7 @@ var _dto = {
 	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'byte[]'}
 	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'byte[]'}
 	,'0':{name : 'NULL',isNum : false ,val : '', javaType:'Object'}
-	,'1111':{name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String' , getLen : function (len){
-		return parseInt(len /2,10);
-	}}
-	//,'1111':{name : 'OTHER',isNum : false ,val : '', javaType:'Object'}
+	,'1111':{name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String'}
 	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object', isSize: false}
 	,'2001':{name : 'DISTINCT',isNum : false ,val : '', javaType:'Object', isSize: false}
 	,'2002':{name : 'STRUCT',isNum : false ,val : '', javaType:'Object'}
@@ -84,53 +73,8 @@ var _dto = {
 
 _dto['INT'] = VARSQL.util.objectMerge({},_dto['4'],{name:'INT'});
 _dto['TEXT'] = VARSQL.util.objectMerge({},_dto['2005'],{name:'TEXT'});
-_dto['DATETIME'] =VARSQL.util.objectMerge({},_dto['91'],{name:'DATETIME'});
+_dto['DATETIME'] =VARSQL.util.objectMerge({},_dto['93'],{name:'DATETIME'});
 
-var DEFAULT_HINTS = [
-	'BIT'
-	,'TINYINT'
-	,'SMALLINT'
-	,'INTEGER'
-	,'BIGINT'
-	,'FLOAT'
-	,'REAL'
-	,'DOUBLE'
-	,'NUMERIC'
-	,'DECIMAL'
-	,'CHAR'
-	,'VARCHAR'
-	,'LONGVARCHAR'
-	,'DATE'
-	,'TIME'
-	,'TIMESTAMP'
-	,'BINARY'
-	,'VARBINARY'
-	,'LONGVARBINARY'
-	,'BLOB'
-	,'CLOB'
-	,'CURRENT_TIMESTAMP'
-];
-
-var TABLE_COL_KEYS ={
-	NAME :'name'
-	,TYPE_NAME :'typeName'
-	,DATA_TYPE :'dataType'
-	,NULLABLE :'nullable'
-	,PRIMAY_KEY :'primayKey'
-	,CONSTRAINTS :'constraints'
-	,COMMENT :'comment'
-	,SIZE :'length'
-}
-
-// db 비교 키 값.
-var COMPARE_COL_KEY = [
-	{ label: '컬럼명', key: 'name'},
-	{ label: '데이터타입', key: 'typeAndLength'},
-	{ label: 'Key', key: 'constraints'},
-	{ label: '기본값', key: 'defaultVal'},
-	{ label: '널여부', key: 'nullable'},
-	{ label: '설명', key: 'comment'}
-];
 
 var DEFINE_INFO = {
 	MARIADB : {
@@ -140,6 +84,15 @@ var DEFINE_INFO = {
 	,MSSQL : {
 		type :'text/x-mssql'
 		,formatType : 'tsql'
+		,setDataType :  function (pdto){
+			pdto['DATETIME'] =VARSQL.util.objectMerge({},_dto['93'],{name:'DATETIME',val : 'getDate()'});
+			return pdto;
+		}
+		,getDefaultValue : function(columnInfo){
+			var val = columnInfo.defaultVal;
+			
+			return (val||'').replace(/^\(|\)$/g,'');
+		}
 	}
 	,MYSQL : {
 		type :'text/x-mysql'
@@ -153,9 +106,8 @@ var DEFINE_INFO = {
 			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
 			pdto['NCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
 			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
-			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
-			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
-
+			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdate'});
+			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdate'});
 			return pdto;
 		}
 		,formatType : 'plsql'
@@ -168,8 +120,8 @@ var DEFINE_INFO = {
 			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
 			pdto['NCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
 			pdto['NUMBER'] = VARSQL.util.objectMerge({},pdto['4'],{name:'NUMBER'});
-			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
-			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdatte'});
+			pdto['91'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdate'});
+			pdto['92'] = VARSQL.util.objectMerge(pdto['91'],{val:'sysdate'});
 
 			return pdto;
 		}
@@ -192,100 +144,105 @@ var DEFINE_INFO = {
 		,formatType : 'sql'
 	}
 }
-var defaultInfo = DEFINE_INFO['DEFAULT'];
 
-// vendor 정보 얻기.
-function getDBTypeObj (dbType , field){
-	var dbTypeInfo = DEFINE_INFO[dbType] || defaultInfo;
+var G_CURRENT_DTO = _dto;
+var G_CURRENT_DBTYPE_INFO = DEFINE_INFO['DEFAULT'];
 
-	if(typeof field ==='undefined') {
-		return dbTypeInfo;
-	}else{
-		return dbTypeInfo[field] || defaultInfo.field;
+VARSQLCont = {
+	constants : {
+		newline :'\n'
+		,tab : '\t'
+		,querySuffix : ';  '
+		,queryParameterPrefix:'#{'
+		,queryParameterSuffix:'}'
 	}
-}
-
-// set db type
-function setDtoInfo (dbType , pdto){
-	var dbTypeInfo = getDBTypeObj (dbType);
-	try{
-		return dbTypeInfo.setDataType(pdto);
-	}catch(e){}
-}
-
-// db data typename 을 키로 셋팅.
-function setNameKeyMapping (pdto){
-	for(var key  in pdto){
-		var item = pdto[key];
-		pdto[item.name] =item;
+	,tableColKey : {
+		NAME :'name'
+		,TYPE_NAME :'typeName'
+		,DATA_TYPE :'dataType'
+		,NULLABLE :'nullable'
+		,PRIMAY_KEY :'primayKey'
+		,CONSTRAINTS :'constraints'
+		,COMMENT :'comment'
+		,SIZE :'length'
 	}
-	return pdto;
-}
+	// db 비교 키 값.
+	,compareColKey : [
+		{ label: '컬럼명', key: 'name'},
+		{ label: '데이터타입', key: 'typeAndLength'},
+		{ label: 'Key', key: 'constraints'},
+		{ label: '기본값', key: 'defaultVal'},
+		{ label: '널여부', key: 'nullable'},
+		{ label: '설명', key: 'comment'}
+	]
+	,init : function (dbType){
+		G_CURRENT_DBTYPE_INFO = DEFINE_INFO[dbType] || DEFINE_INFO['DEFAULT'];
 
-var dataType = {};
+		if(VARSQL.isFunction(G_CURRENT_DBTYPE_INFO.setDataType)){
+			G_CURRENT_DBTYPE_INFO.setDataType(G_CURRENT_DTO);
+		}
 
-dataType.getDataTypeInfo = function (dataType){
-	dataType= (dataType+'').toUpperCase();
-
-	var tmpDataType= _dto[dataType];
-
-	if(typeof  tmpDataType !=='undefined'){
-		return  tmpDataType;
-	}else{
-		return _dto['9999'] ;
-	}
-}
-
-VARSQLCont.allDataType = function (){
-	var result =[];
-	var dupChk ={};
-	for(var key in _dto){
-		var item = _dto[key];
-
-		if(!dupChk[item.name] && item.name != 'NULL'){
-			result.push({
-				type : item.name
-				,name : item.name
-			})
-			dupChk[item.name] = true;
+		// name 을 키로 등록.
+		for(var key  in G_CURRENT_DTO){
+			var item = G_CURRENT_DTO[key];
+			G_CURRENT_DTO[item.name] =item;
 		}
 	}
-
-	return result;
-}
-
-// js formatter format type
-VARSQLCont.formatType = function (dbType){
-	return (DEFINE_INFO[dbType] || defaultInfo).formatType;
-}
-
-VARSQLCont.isDateType = function (type){
-
-	if(type=='date'){
-		return true;
-	}else if(type=='time'){
-		return true;
-	}else if(type=='timestamp'){
-		return true;
+	,getDataTypeInfo : function (dataType){
+		dataType= (dataType+'').toUpperCase();
+	
+		var tmpDataType= G_CURRENT_DTO[dataType];
+	
+		if(typeof tmpDataType !=='undefined'){
+			return tmpDataType;
+		}else{
+			return G_CURRENT_DTO['9999'] ;
+		}
 	}
-	return false;
+	// js formatter format type
+	,formatType : function (){
+		return G_CURRENT_DBTYPE_INFO.formatType;
+	}
+	,editorMimetype : function (){
+		return G_CURRENT_DBTYPE_INFO.type;
+	}
+	,allDataType : function (){
+		var result =[];
+		var dupChk ={};
+		for(var key in G_CURRENT_DTO){
+			var item = G_CURRENT_DTO[key];
+	
+			if(!dupChk[item.name] && item.name != 'NULL'){
+				result.push({
+					type : item.name
+					,name : item.name
+				})
+				dupChk[item.name] = true;
+			}
+		}
+	
+		return result;
+	}
+	// 컬럼 기본 값 
+	,getDefaultValue : function(columnInfo){
+		var reval = columnInfo.defaultVal||'';
+		
+		if(VARSQL.isFunction(G_CURRENT_DBTYPE_INFO.getDefaultValue)){
+			reval = G_CURRENT_DBTYPE_INFO.getDefaultValue(columnInfo);
+		}
+
+		if(reval !=''){
+			return reval;
+		}
+		
+		var dataType = this.getDataTypeInfo(columnInfo.dataType);
+		
+		if(dataType.isNum===true){
+			return -1;
+		}
+				
+		return "'"+VARSQL.util.toLowerCase(columnInfo.name)+"'";
+	}
 }
 
-VARSQLCont.init  = function (dbType, uiBase){
-	var _this =this;
-
-	uiBase.sqlHints = DEFAULT_HINTS.concat(getDBTypeObj(dbType , 'hint'));
-	uiBase.mimetype =getDBTypeObj(dbType , 'type');
-
-	setDtoInfo(dbType, _dto);
-	_dto = setNameKeyMapping (_dto); // name 을 키로 등록.
-
-	_this._dto = _dto;
-	_this.dataType = dataType;
-	_this.constants = _constants;
-	_this.tableColKey = TABLE_COL_KEYS;
-
-	_this.compareColKey = COMPARE_COL_KEY;
-}
-
-}(VARSQLCont));
+}());

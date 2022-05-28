@@ -3,6 +3,7 @@ package com.varsql.web.repository.db;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
-public interface DBConnTabEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnTabEntity, Long> {
+public interface DBConnTabEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnTabEntity, Long>, JpaSpecificationExecutor<DBConnTabEntity> {
 
 	// tab disable
 	@Modifying
@@ -34,8 +35,8 @@ public interface DBConnTabEntityRepository extends DefaultJpaRepository, JpaRepo
 
 	// update next tab item prevVonnid info
 	@Modifying
-	@Query(value = "update DBConnTabEntity as ste set ste.prevVconnid= :prevVconnid where ste.prevVconnid = :vconnid and ste.viewid = :viewid")
-	void updateNextTabPrevVconnid(@Param("vconnid")String vconnid, @Param("viewid") String viewid, @Param("prevVconnid") String prevVconnid);
+	@Query(value = "update DBConnTabEntity as ste set ste.prevVconnid= :prevVconnid where ste.viewid = :viewid and ste.prevVconnid = :vconnid ")
+	void updateNextTabPrevVconnid(@Param("viewid") String viewid, @Param("vconnid")String vconnid, @Param("prevVconnid") String prevVconnid);
 
 	List<DBConnTabEntity> findAllByViewid(String viewid);
 
@@ -43,5 +44,11 @@ public interface DBConnTabEntityRepository extends DefaultJpaRepository, JpaRepo
 	@Query(value = "delete from DBConnTabEntity ste where ste.viewid = :viewid and ste.vconnid in :vconnids")
 	void deleteAllTabInfo(@Param("viewid") String viewid, @Param("vconnids")List<String> vconnids);
 
+	@Modifying
+	@Query(value = "update DBConnTabEntity as ste set ste.prevVconnid= :prevVconnid where ste.viewid = :viewid and ste.vconnid = :vconnid")
+	void updatePrevIdByVconnid(@Param("viewid")String viewid, @Param("vconnid") String vconnid, @Param("prevVconnid") String prevVconnid);
+	
+	
 }
+
 

@@ -44,15 +44,17 @@ public abstract class AbstractDBMetaHandler implements DBMetaHandler{
 	}
 	@Override
 	public ColumnInfo getColumnInfo(ResultSet rs, DataTypeFactory dataTypeFactory, Set keyColumn, Map colComment) throws SQLException{
-		ColumnInfo column = new ColumnInfo(); 
 
 		String cName=  rs.getString(MetaColumnConstants.COLUMN_NAME);
 		String dataType = rs.getString(MetaColumnConstants.DATA_TYPE);
 
 		int degitsLen = rs.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 		int columnSize = rs.getInt(MetaColumnConstants.COLUMN_SIZE);
+		int dataPrecision = rs.getInt(MetaColumnConstants.DATA_PRECISION);
+		
 		DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
 
+		ColumnInfo column = new ColumnInfo(); 
 		column.setName(cName);
 		column.setDataType(dataType);
 		column.setLength(rs.getInt(MetaColumnConstants.COLUMN_SIZE));
@@ -60,7 +62,7 @@ public abstract class AbstractDBMetaHandler implements DBMetaHandler{
 		column.setNullable(StringUtils.nullToString(rs.getString(MetaColumnConstants.IS_NULLABLE)));
 		column.setAutoincrement("");
 		column.setTypeName(dataTypeInfo.getTypeName());
-		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, degitsLen));
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, dataPrecision, degitsLen));
 
 		if(colComment != null){
 			column.setComment(StringUtils.nullToString(colComment.get(cName)!=null? (String)colComment.get(cName) : rs.getString(MetaColumnConstants.REMARKS)));

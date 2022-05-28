@@ -71,6 +71,8 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	final private String CSRF_TOKEN_NAME = "varsql_ct";
+	
+	public static final String WEB_RESOURCES = "/webstatic/**";
 
 	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
@@ -86,7 +88,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	// web static resource path
 	private OrRequestMatcher staticRequestMatcher = new OrRequestMatcher(
-		new AntPathRequestMatcher("/webstatic/**")
+		new AntPathRequestMatcher(WEB_RESOURCES)
 		, new AntPathRequestMatcher("/error/**")
 		, new AntPathRequestMatcher("/**/favicon.ico")
 		, new AntPathRequestMatcher("/favicon.ico")
@@ -144,7 +146,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		.and()
 			.csrf()
 			.csrfTokenRepository(getCookieCsrfTokenRepository())
-			.ignoringAntMatchers("/login/**","/logout","/webstatic/**","/error/**","/favicon.ico")
+			.ignoringAntMatchers("/login/**","/logout")
+			.ignoringRequestMatchers(staticRequestMatcher)
 			.requireCsrfProtectionMatcher(ajaxRequestMatcher)
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)

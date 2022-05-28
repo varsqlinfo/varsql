@@ -17,7 +17,6 @@
 						<div class="control-group row" style="margin-bottom: 8px;">
 						 	<div class="col-xs-2">
 								<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control ">
-									<option value="">DB <spring:message code="select" /></option>
 									<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
 										<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 									</c:forEach>
@@ -85,7 +84,7 @@ VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,validateCheck : true
 	,data: {
-		vconnid :''
+		vconnid : $('#dbinfolist option:first').val()
 		,detailDate : ''
 	}
 	,methods:{
@@ -103,7 +102,6 @@ VarsqlAPP.vueServiceBean( {
 				if(searchGbn != ''){
 					VARSQL.util.setRangeDate('#sdt','#edt',$('#hidCurrentDate').val(),new Number(searchGbn));
 				}
-
 		    });
 
 			$('#edt').datepicker({

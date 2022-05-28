@@ -1,4 +1,6 @@
 
+apply from: "$rootDir/helpers/common-methods.gradle"
+
 task generateCode {
     doLast {
         println 'Generating some code...'
@@ -51,15 +53,19 @@ bootJar {
 
 jar{
 	enabled=true
-	baseName ='varsql-core'
-	version = project.property('varsqlVersion')
-
+	archiveClassifier = ''
+	
+	archiveBaseName ='varsql-core-' +project.property('varsqlVersion');
+	
+	// update date check
+  	fn_updateDateCheck(archivePath.parent +File.separator + archiveFileName.get(), outputs)
+	
 	from ('src/main/java'){
 		include '**/*.xml'
 	}
-
+	
 	doLast {
-		println("jar export path : " + archivePath.parent)
+		println("##### varsql-core export path : " + archivePath.parent)
 	}
 }
 

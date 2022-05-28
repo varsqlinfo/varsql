@@ -362,7 +362,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self = this;
 
-			VARSQLCont.init('other' , {});
+			VARSQLCont.init();
 
 			var dbList = _self.dbList;
 			var dbListMap = {};

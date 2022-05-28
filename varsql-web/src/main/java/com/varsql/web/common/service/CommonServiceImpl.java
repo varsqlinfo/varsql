@@ -34,15 +34,18 @@ import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 @Service
 public class CommonServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
-
-	@Autowired
+	
 	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
 
-	@Autowired
 	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
 
-	@Autowired
 	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
+	
+	public CommonServiceImpl(SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository, SqlHistoryEntityRepository sqlHistoryEntityRepository, SqlStatisticsEntityRepository sqlStatisticsEntityRepository) {
+		this.sqlExceptionLogEntityRepository = sqlExceptionLogEntityRepository; 
+		this.sqlHistoryEntityRepository = sqlHistoryEntityRepository; 
+		this.sqlStatisticsEntityRepository = sqlStatisticsEntityRepository; 
+	}
 
 	/**
 	 *
@@ -58,7 +61,7 @@ public class CommonServiceImpl{
 	public void insertExceptionLog(String exceptionType, Throwable e) {
 		try{
 			String exceptionTitle = e.getMessage();
-
+			
 			sqlExceptionLogEntityRepository.save(ExceptionLogEntity.builder()
 					.excpType(exceptionType)
 					.excpCont(CommUtils.getExceptionStr(e).substring(0 , 2000))

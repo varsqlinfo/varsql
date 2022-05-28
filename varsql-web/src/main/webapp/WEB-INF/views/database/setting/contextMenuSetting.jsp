@@ -175,7 +175,7 @@
 					handleSize : 5
 				});
 	        	
-	        	VARSQLCont.init('other' , {});
+	        	VARSQLCont.init('${dbtype}');
 	        	this.initEditor();
 	        	this.newItem();
 	        }

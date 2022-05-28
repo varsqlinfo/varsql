@@ -18,7 +18,7 @@ var $oracle = {
 		try{
 			var itemArr = resData.items;
 			
-			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#package',{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enable : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}				
 				}
@@ -83,7 +83,8 @@ var $oracle = {
 				{name: "Column", key: "column"}
 				,{name: "DDL", key: "ddl"}
 			]
-			,height:20
+			,tabHeight : 20
+			,useContentContainer :false
 			,overItemViewMode :'drop'
 			,click : function (item){
 				var tabEle= $(this)

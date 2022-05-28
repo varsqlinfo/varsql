@@ -147,7 +147,7 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 
 					if(colItem.number){
 						;
-					}else if(VARSQLCont.isDateType(colItem.type)){
+					}else if(VARSQLCont.getDataTypeInfo(colItem.dbType).isDate===true){
 						;
 					}else{
 						var val = item[colItem.key];

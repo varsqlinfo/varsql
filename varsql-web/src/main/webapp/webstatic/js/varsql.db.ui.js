@@ -209,7 +209,6 @@ function registerFn(componentInfo){
 				initResize = false;
 				return ;
 			}
-
 			componentInfo.resize(componentState, {width : container.width,height : container.height});
 		});
 	};
@@ -219,7 +218,8 @@ function registerFn(componentInfo){
 VARSQL.ui = VARSQL.ui||{};
 VARSQL.ui.create = function (_opts){
 
-	VARSQLCont.init(_opts.dbtype , _ui.base);
+	VARSQLCont.init(_opts.dbtype);
+	_ui.base.mimetype = VARSQLCont.editorMimetype(); 
 
 	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
 
@@ -242,7 +242,6 @@ VARSQL.ui.layoutResize  = function (){
 var _ui = {
 	base :{
 		mimetype: ''	// editor mime type
-		,sqlHints: {}	// sql hints
 	}
 	,extension: {}		// db object 추가 extension
 	,component: {} 	//추가 component
@@ -272,11 +271,8 @@ _ui.pluginProxy = {
 	,getActiveObjectMenu : function (){
 		return _ui.dbSchemaObject.selectObjectMenu;
 	}
-	,getActiveMetaTabInfo  : function (objType){
-		return _ui.dbObjectMetadata.getActiveTabId(objType);
-	}
 	,setMetaTabDataCache : function (objType, cacheItem){
-		var metaTabId = _ui.pluginProxy.getActiveMetaTabInfo(objType);
+		var metaTabId = _ui.dbObjectMetadata.getActiveTabId(objType);
 
 		if(_g_cache.getSOMetaCache(objType, cacheItem.name, metaTabId)) return ;
 
@@ -318,11 +314,11 @@ _ui.pluginProxy = {
 
 //컨텍스트 메뉴 sql 생성 부분 처리 .
 _ui.addDbServiceObject = function (objectKey, objectInfo){
-	_$utils.copy(_ui.dbSchemaObject,objectInfo);
+	_$utils.copy(_ui.dbSchemaObject, objectInfo);
 }
 
 _ui.addODbServiceObjectMetadata = function (objectKey, objectInfo){
-	_$utils.copy(_ui.dbObjectMetadata,objectInfo);
+	_$utils.copy(_ui.dbObjectMetadata, objectInfo);
 }
 
 _ui.initEditorOpt = function (){
@@ -350,10 +346,6 @@ var _selector = {
 		,'tabCont' : 'TabContent'
 		,'cont' : 'Content'
 	}
-}
-
-function _getSelector(key, suffixKey){
-	return _selector['plugin'][key] + (suffixKey ? (_selector['subffix'][suffixKey]||suffixKey):'' );
 }
 
 // background click check
@@ -506,7 +498,7 @@ _ui.headerMenu ={
 							var popt = 'width=800px,height=500px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 							VARSQLUI.popup.open(VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid), {
-								name : _g_options.conuid+'_import_win'
+								name : 'import_win'+_g_options.conuid
 								,viewOption : popt
 							});
 
@@ -522,7 +514,7 @@ _ui.headerMenu ={
 							var popt = 'width='+(dimension.width)+',height='+(dimension.height)+',scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 							VARSQLUI.popup.open(location.href, {
-								name : _g_options.conuid+'_new_win'
+								name : 'new_win'+_g_options.conuid
 								,viewOption : popt
 							});
 
@@ -579,7 +571,7 @@ _ui.headerMenu ={
 							//_self.openPreferences('설정',VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid));
 
 							VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid), {
-								name : 'preferencesMain'
+								name : 'preferencesMain'+_g_options.param.conuid
 								,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
 							});
 
@@ -624,9 +616,8 @@ _ui.headerMenu ={
 								var popt = 'width=1000,height=600,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/genTable?conuid='+_g_options.param.conuid), {
-									name : 'gentable'
+									name : 'gentable'+_g_options.param.conuid
 									,viewOption : popt
-									,name : 'genTable'+_g_options.param.conuid
 								});
 
 								return ;
@@ -859,32 +850,27 @@ _ui.layout = {
 	,initEvt : function (){
 		var _self = this;
 		var splitterInitFlag = false;
-		$.pubSplitter('.main-spliter',{
-			orientation: 'vertical'
-			,handleSize : 10
-			,border :true
-			,useButton : true		// 한번에 이동 버튼 사용유무
-			,percent: {vertical:true}
-			,button : {					// button option
-				enabled : true			// enabled 활성화 여부 default true
-				,toggle : true			// button min , max button 토글로 하나 보일지 두개 보일지 여부.
-				,click : function (mode){	// click callback
-					if(mode=='prev' && splitterInitFlag === false){
-						initFlag = true;
-						$('#mainArticleFrame').attr('src', _g_options.boardUrl);
-					}
-				}
+		
+		var boardEle = $('#varsqlBoardWrapper'); 
+		// board toggle btn
+		$('.database-board-view-btn').on('click.viewbtn', function (e){
+			
+			if(splitterInitFlag === false){
+				splitterInitFlag = true;
+				$('#mainArticleFrame').attr('src', _g_options.boardUrl);
 			}
-			,start :function (){
-				if(splitterInitFlag === false){
-					splitterInitFlag = true;
-					$('#mainArticleFrame').attr('src', _g_options.boardUrl);
-				}
+
+			if(boardEle.hasClass('on')){
+				boardEle.removeClass('on');
+			}else{
+				boardEle.addClass('on');
 			}
-			,stop:function (){
-				_self.layoutResize();
-			}
-		});
+		})
+		// close btn
+		$('.database-board-close-btn').on('click', function (){
+			$('.database-board-view-btn').trigger('click.viewbtn');
+		})
+		
 	}
 	,layoutResize : function (){
 		this.mainObj.updateSize();
@@ -1171,11 +1157,13 @@ _ui.pluginComponent ={
 // db schema object 처리.
 _ui.dbSchemaObject ={
 	initObjectMenu : false
-	,selectObjectMenu : ''
-	,options :{
-		objectTypeTabEleId : _getSelector('schemaObject', _selectorSuffix.TAB)
-		,objectTypeTabContentEleId : _getSelector('schemaObject', _selectorSuffix.TAB_CONT)
+	,selectObjectMenu : {}
+	,options :{}
+	,selector : {
+		schemaObject : _selector.plugin.schemaObject
+		,objectTypeTab : '#pluginSchemaObjectTab'
 	}
+	,objectTypeTab : false
 	,init :function (){
 		var _self = this;
 
@@ -1198,9 +1186,7 @@ _ui.dbSchemaObject ={
 	,initEvt : function (){
 		var _self = this;
 
-		var schemaObjEleId = _getSelector('schemaObject');
-
-		$(schemaObjEleId+' .db-schema-list-btn').on('click', function (){
+		$(_self.selector.schemaObject +' .db-schema-list-btn').on('click', function (){
 			var viewArea = $(this).closest('.schema-view-btn');
 
 			if(viewArea.hasClass('open')){
@@ -1211,19 +1197,19 @@ _ui.dbSchemaObject ={
 		})
 
 		// db default schema click
-		$(schemaObjEleId+' .default_db_view_btn').on('click', function (){
-			$(schemaObjEleId+' .db-schema-item.db-schema-default').trigger('click');
+		$(_self.selector.schemaObject +' .default_db_view_btn').on('click', function (){
+			$(_self.selector.schemaObject+' .db-schema-item.db-schema-default').trigger('click');
 		})
 
 		// 스키마 클릭.
-		$(schemaObjEleId+' .db-schema-item').on('click', function (){
+		$(_self.selector.schemaObject +' .db-schema-item').on('click', function (){
 
 			var sEle = $(this);
 
 			if(sEle.hasClass('active')){
 				return ;
 			}else{
-				$(schemaObjEleId+' .db-schema-item.active').removeClass('active');
+				$(_self.selector.schemaObject+' .db-schema-item.active').removeClass('active');
 				sEle.addClass('active');
 			}
 
@@ -1234,26 +1220,27 @@ _ui.dbSchemaObject ={
 			$('#varsqlSschemaName').val(_g_options.param.schema);
 
 			_g_cache.initSOMetaCacheObject();
-			_self.selectObjectMenu = '';
+			_self.selectObjectMenu = {};
 
-			$.pubTab(_self.options.objectTypeTabEleId).itemClick(0);
+			_self.objectTypeTab.itemClick(0);
 
 		});
 	}
 	// db object type tab
 	,_initObjectTypeTab : function (){
 		var _self = this;
-
-		_self.createTemplate();
-
-		$.pubTab(_self.options.objectTypeTabEleId ,{
+		
+		_self.objectTypeTab = $.pubTab(_self.selector.objectTypeTab, {
 			items : _g_options.serviceObject
-			,dropItemHeight : $(_self.options.objectTypeTabContentEleId).height() -10
+			,dropdownWidth : 100
+			,itemKey :{							// item key mapping
+				title :'name'
+				,id: 'contentid'
+			}
 			,titleIcon :{
-				left :{
-					html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
-					,visible : false
-					,overview : false
+				left : {
+					html : '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
+					,onlyActiveView : true
 					,click : function (item, idx){
 						if(confirm(VARSQL.messageFormat('msg.refresh'))){
 							_self.getObjectTypeData(item, true);
@@ -1262,48 +1249,19 @@ _ui.dbSchemaObject ={
 				}
 			}
 			,click : function (item){
-				_self.selectObjectMenu = item.contentid;
+				_self.selectObjectMenu = item;
 				_self.getObjectTypeData(item);
 			}
 		});
 	}
-	/**
-	 * init object tab content element
-	 */
-	,createTemplate : function (){
-		var _self = this;
-
-		var data = _g_options.serviceObject;
-
-		var len = data.length;
-
-		if(len < 1) return ;
-
-		var strHtm = [];
-		var item;
-		for(var i=0; i < len; i++){
-			item = data[i];
-			var contentid = item.contentid;
-			strHtm.push('<div id="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'"></div>'); // object element
-		}
-
-		$(_self.options.objectTypeTabContentEleId).empty().html(strHtm.join(''));
-	}
 	// 클릭시 텝메뉴에 해당하는 메뉴 그리기
-	,getObjectTypeData : function(selObj,refresh){
+	,getObjectTypeData : function(selItem, refresh){
 		var _self = this;
-		var $contentId = selObj.contentid;
+		var $contentId = selItem.contentid;
 
-		var schemaObjectEleId = _getSelector('schemaObject', _selectorSuffix.TAB_CONT);
+		if(_self.objectTypeTab.isActive(selItem)){
 
-		var activeObj = $(schemaObjectEleId+'>#'+$contentId);
-
-		if(!activeObj.hasClass('tab-on')){
-			// tab 전환.
-			$(schemaObjectEleId+'> .tab-on').removeClass('tab-on');
-			activeObj.addClass('tab-on');
-
-			var serviceGridObj = $.pubGrid(schemaObjectEleId+'>#'+$contentId);
+			var serviceGridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector(selItem));
 
 			if(serviceGridObj){
 				serviceGridObj.resizeDraw();
@@ -1320,7 +1278,7 @@ _ui.dbSchemaObject ={
 
 		var callMethod = _self.getCallMethod('_'+$contentId);
 
-		var param =_getParam({'objectType':$contentId, 'objectNames' : selObj.objectName , 'objectIdx' : selObj.objectIdx});
+		var param =_getParam({'objectType':$contentId, 'objectNames' : selItem.objectName , 'objectIdx' : selItem.objectIdx});
 
 		if(refresh !== true){
 
@@ -1332,12 +1290,12 @@ _ui.dbSchemaObject ={
 			}
 		}
 
-		_g_cache.removeSOMetaCache($contentId, selObj.objectName);
+		_g_cache.removeSOMetaCache($contentId, selItem.objectName);
 
 		param.refresh = refresh;
 
 		VARSQL.req.ajax({
-			loadSelector : _getSelector('schemaObject')
+			loadSelector : _self.selector.schemaObject 
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList'}
 			,data : param
 			,success:function (resData){
@@ -1345,7 +1303,7 @@ _ui.dbSchemaObject ={
 				_g_cache.setCacheSchemaObject($contentId, resData); // object cache
 				callMethod.call(_self, resData, param);
 
-				if(VARSQL.isBlank(selObj.objectName)){
+				if(VARSQL.isBlank(selItem.objectName)){
 					_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
 				}
 			}
@@ -1367,20 +1325,14 @@ _ui.dbSchemaObject ={
 	}
 	// resize object area
 	,resizeObjectArea : function (dimension){
-
-		if(dimension){
-			dimension.height = dimension.height - 52; // schema area +  tab area
-		}
-
 		// tab resize
-		var tabObj =$.pubTab(this.options.objectTypeTabEleId);
-		if(tabObj){
-			tabObj.refresh().setDropHeight(dimension.height-10);
-		}
+		if(this.objectTypeTab){
+			this.objectTypeTab.refresh();
+			var gridObj = $.pubGrid(this.objectTypeTab.getTabContentSelector(this.selectObjectMenu));
 
-		var gridObj = $.pubGrid(this.options.objectTypeTabContentEleId+'>#'+this.selectObjectMenu);
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 	// 데이터 내보내기
@@ -1396,8 +1348,8 @@ _ui.dbSchemaObject ={
 
 		return callMethod;
 	}
-	,getObjectMetadata : function (param,refresh){
-		_ui.dbObjectMetadata.getServiceObjectMetadata(param,refresh);
+	,getObjectMetadata : function (param, refresh){
+		_ui.dbObjectMetadata.getServiceObjectMetadata(param, refresh);
 	}
 };
 
@@ -1411,13 +1363,11 @@ _ui.addDbServiceObject('table',{
 			var $$objectType = 'table';
 			var itemArr = resData.items;
 
-			var len = itemArr.length;
-
 			var tableHint = {};
 
 			var refreshTableName = reqParam.objectNames;
 			var tableInfo = {};
-			$.each(itemArr , function (_idx, _item){
+			$.each(itemArr, function (_idx, _item){
 				var tblName =_item.name;
 				var colList = _item.colList;
 
@@ -1507,8 +1457,8 @@ _ui.addDbServiceObject('table',{
 				,{divider:true}
 				,{key : "refresh" , "name": VARSQL.messageFormat('refresh')}
 			]);
-
-			var tableObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			
+			var tableObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				setting : {
 					enabled : true
 					,click : false
@@ -1653,11 +1603,8 @@ _ui.addDbServiceObject('view',{
 		var _self = this;
 		try{
 			var $$objectType = 'view';
-			var len = resData.items?resData.items.length:0;
-
 			var itemArr = resData.items;
-			var item;
-
+			
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
 				var tblName =_item.name;
@@ -1673,14 +1620,14 @@ _ui.addDbServiceObject('view',{
 					,text :tblName
 				};
 
-				_g_cache.setSOMetaCache($$objectType,tblName,  'column', {items:colList});
+				_g_cache.setSOMetaCache($$objectType, tblName, 'column', {items:colList});
 
 			})
 
 			// 테이블 hint;
 			VARSQLHints.setTableInfo(tableHint);
 
-			var viewObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var viewObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
@@ -1688,7 +1635,7 @@ _ui.addDbServiceObject('view',{
 					{key :'name', label:'View', width:200}
 					,{key :'remarks', label:'설명'}
 				]
-				,tbodyItem :itemArr
+				,tbodyItem : itemArr
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1722,7 +1669,7 @@ _ui.addDbServiceObject('view',{
 							viewObj.config.rowContext.changeHeader('contextTitle',0,itemObj.item.name);
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
+							var sItem = this.gridItem;
 							var tmpName = sItem.name;
 
 							if(key =='copy'){
@@ -1745,7 +1692,7 @@ _ui.addDbServiceObject('view',{
 						items: [
 							{header: "title" , "key": "contextTitle"}
 							,{divider:true}
-							,{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+							,{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 							,{key : "sql_create", "name": "sql생성"
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
@@ -1767,12 +1714,9 @@ _ui.addDbServiceObject('procedure',{
 	_procedure:function (resData ,reqParam){
 		var _self = this;
 		try{
-			var len = resData.items?resData.items.length:0;
     		var $$objectType = 'procedure';
 
-			var itemArr = resData.items;
-
-			var procedureObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var procedureObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30, align: 'right'}
 				}
@@ -1781,7 +1725,7 @@ _ui.addDbServiceObject('procedure',{
 					,{key :'status', label:'상태'}
 					,{key :'remarks', label:'설명'}
 				]
-				,tbodyItem :itemArr
+				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1820,7 +1764,7 @@ _ui.addDbServiceObject('procedure',{
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1835,12 +1779,9 @@ _ui.addDbServiceObject('function',{
 	_function : function (resData ,reqParam){
 		var _self = this;
 		try{
-			var len = resData.items?resData.items.length:0;
     		var $$objectType = 'function';
 
-			var itemArr = resData.items;
-
-			var gridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1849,7 +1790,7 @@ _ui.addDbServiceObject('function',{
 					,{key :'status', label:'상태'}
 					,{key :'remarks', label:'설명'}
 				]
-				,tbodyItem :itemArr
+				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1888,7 +1829,7 @@ _ui.addDbServiceObject('function',{
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1903,12 +1844,9 @@ _ui.addDbServiceObject('index',{
 	_index : function (resData ,reqParam){
 		var _self = this;
 		try{
-			var len = resData.items?resData.items.length:0;
     		var $$objectType = 'index';
 
-			var itemArr = resData.items;
-
-			var indexObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var indexObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1920,7 +1858,7 @@ _ui.addDbServiceObject('index',{
 					,{key :'bufferPool', label:'버퍼풀'}
 					,{key :'status', label:'상태'}
 				]
-				,tbodyItem :itemArr
+				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1959,7 +1897,7 @@ _ui.addDbServiceObject('index',{
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1974,12 +1912,9 @@ _ui.addDbServiceObject('trigger',{
 	_trigger : function (resData ,reqParam){
 		var _self = this;
 		try{
-			var len = resData.items?resData.items.length:0;
-    		var $$objectType = 'trigger';
+			var $$objectType = 'trigger';
 
-			var itemArr = resData.items;
-
-			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var triggerGridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1991,7 +1926,7 @@ _ui.addDbServiceObject('trigger',{
 					,{key :'status', label:'상태'}
 					,{key :'created', label:'CREATED'}
 				]
-				,tbodyItem :itemArr
+				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -2030,7 +1965,7 @@ _ui.addDbServiceObject('trigger',{
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -2042,15 +1977,12 @@ _ui.addDbServiceObject('trigger',{
 })
 
 _ui.addDbServiceObject('sequence',{
-	_sequence : function (resData ,reqParam){
+	_sequence : function (resData, reqParam){
 		var _self = this;
 		try{
-			var len = resData.items?resData.items.length:0;
 			var $$objectType = 'sequence';
 
-			var itemArr = resData.items;
-
-			var triggerGridObj = $.pubGrid(_self.options.objectTypeTabContentEleId+'>#'+$$objectType,{
+			var triggerGridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -2060,7 +1992,7 @@ _ui.addDbServiceObject('sequence',{
 					,{key :'created', label:'생성일자'}
 					,{key :'lastDdlTime', label:'최종수정일'}
 					]
-				,tbodyItem :itemArr
+				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -2087,8 +2019,8 @@ _ui.addDbServiceObject('sequence',{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
-						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
+						,callback: function(key, sObj) {
+							var sItem = this.gridItem;
 							var tmpName = sItem.name;
 
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
@@ -2099,7 +2031,7 @@ _ui.addDbServiceObject('sequence',{
 							}
 						},
 						items: [
-							{key : "copy" , "name": "복사"}
+							{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -2119,7 +2051,7 @@ _ui.dbObjectMetadata= {
 	,metadataTabInfo:{}
 	,activeTabInfo : {}
 	,selector : {
-		contEleId : _getSelector('objectMeta', _selectorSuffix.CONT)
+		contEleId : _selector.plugin.objectMeta
 	}
 	// 왼쪽 메뉴 생성 .
 	,init : function (options){
@@ -2150,17 +2082,18 @@ _ui.dbObjectMetadata= {
 	 * @param visible {Boolean} - 보이기 여부.
      * @description 클릭시 텝메뉴에 해당하는 메뉴 그리기
      */
-	,getServiceObjectMetadata : function(param,refresh){
+	,getServiceObjectMetadata : function(param, refresh){
 
 		var _self = this
 			,objType = param.objectType
 			,objName = param.objectName;
 
-		var selObjectMetaEle = $(_self.getTabGroupEleId(objType));
+		var metaTabSelector = _self.getTabGroupEleId(objType); 
+		var selObjectMetaEle = $(metaTabSelector);
 
-		if(!selObjectMetaEle.hasClass('tab-on')){
-			$(_self.getTabGroupEleId('tab-on')).removeClass('tab-on');
-			selObjectMetaEle.addClass('tab-on');
+		if(!selObjectMetaEle.hasClass('on')){
+			$(_self.getTabGroupEleId('on')).removeClass('on');
+			selObjectMetaEle.addClass('on');
 		}
 
 		if(_self.metaInfoLoadComplete===false){
@@ -2168,7 +2101,7 @@ _ui.dbObjectMetadata= {
 			return ;
 		}
 
-		if(refresh !== true && _self.selectMetadata[objType] == objName){
+		if(refresh !== true && (_self.selectMetadata[objType]||{}).name == objName){
 			return ;
 		}
 
@@ -2178,18 +2111,19 @@ _ui.dbObjectMetadata= {
 			_self.resizeMetaArea();
 			return ;
 		}
-
-		_self.selectMetadata[objType] = objName||''; // 선택한 오브젝트 캐쉬
-
-		var metaTabEleId = _self.selector.contEleId +' [data-so-meta-tab="'+objType+'"]';
-		var metaTabObj = $.pubTab(metaTabEleId);
-
-		if(VARSQL.isUndefined(metaTabObj)){
-			$.pubTab(metaTabEleId, {
+		
+		_self.selectMetadata[objType].name = objName||''; // 선택한 오브젝트 캐쉬
+		
+		var metaTabObj = _self.selectMetadata[objType].metaTab;
+	
+		if(VARSQL.isBlank(metaTabObj)){
+			
+			_self.selectMetadata[objType].metaTab = $.pubTab(metaTabSelector, {
 				items : _self.metadataTabInfo[objType]
+				,itemKey :{title :'name', id : 'tabid'}
 				,click : function (item){
-					var tabEle= $(this)
-						,objectName = _self.selectMetadata[objType];
+
+					var objectName = _self.selectMetadata[objType].name;
 
 					var metaTabKey = item.tabid;
 
@@ -2201,15 +2135,6 @@ _ui.dbObjectMetadata= {
 
 					_self.activeTabInfo[objType] = metaTabKey;
 
-					var tabGroupContEleId = _self.getTabGroupEleId(objType);
-
-					var sEle = $(_self.getTabContEleId(objType, metaTabKey));
-
-					if(!sEle.hasClass('on')){
-						$(tabGroupContEleId+' .on[data-so-meta-tab-content]').removeClass('on');
-						sEle.addClass('on');
-					}
-
 					var cacheData;
 					if(objectName !=''){
 						cacheData = _g_cache.getSOMetaCache(objType, objectName, metaTabKey);
@@ -2217,27 +2142,32 @@ _ui.dbObjectMetadata= {
 						cacheData = {items:[]};
 					}
 
+					_self.resizeMetaArea();
+
 					if('ddl' == metaTabKey){
 						if(cacheData){
 							_self.metadataDDLView(objType, metaTabKey, cacheData);
 							return ;
-						}else{
-							_self._createDDL(tabParam, function (data){
-								_self.metadataDDLView(objType, metaTabKey, data);
-							});
 						}
+
+						_self._createDDL(tabParam, function (data){
+							_self.metadataDDLView(objType, metaTabKey, data);
+						});
+						
 					}else {
 						var callMethodStr = '_'+convertCamel(objType+'_'+metaTabKey);
 
 						if(cacheData && VARSQL.isArray(cacheData.items)){
 							_self[callMethodStr](cacheData, tabParam, metaTabKey, false);
 							return ;
-						}else{
-							_self._getMetadataInfo(tabParam, function (resData, param){
-								_self[callMethodStr](resData, tabParam, metaTabKey, true);
-							})
 						}
+						
+						_self._getMetadataInfo(tabParam, function (resData, param){
+							_self[callMethodStr](resData, tabParam, metaTabKey, true);
+						})
 					}
+
+					
 				}
 			})
 		}else{
@@ -2289,8 +2219,8 @@ _ui.dbObjectMetadata= {
 	}
 	// meta content group id
 	,getTabGroupEleId : function(objType){
-		if(objType == 'tab-on'){
-			return this.selector.contEleId +' .tab-on[data-so-meta-tab-group]';
+		if(objType == 'on'){
+			return this.selector.contEleId +' .on[data-so-meta-tab-group]';
 		}
 		return this.selector.contEleId +' [data-so-meta-tab-group="'+objType+'"]';
 	}
@@ -2342,16 +2272,20 @@ _ui.dbObjectMetadata= {
 		return callMethod;
 	}
 	// ddl source view
-	,metadataDDLView : function (objectType, eleName, ddlSource){
+	,metadataDDLView : function (objectType, tabkey, ddlSource){
 		var addHtml = $('#ddlViewTemplate').html();
-		var ddlEleId = this.getTabContEleId(objectType,eleName);
+		
+		var ele = $(this.selectMetadata[objectType].metaTab.getTabContentSelector({'tabid' : tabkey}));
 
-		var ele = $(ddlEleId);
-		ele.empty().html(addHtml);
+		var prettyEle = ele.find('.prettyprint'); 
+		if(prettyEle.length < 1){
+			ele.empty().html(addHtml);
+			prettyEle = ele.find('.prettyprint'); 
+		}
 
-		ele.find('.prettyprint').empty().html(ddlSource).removeClass('prettyprinted');
+		prettyEle.empty().html(ddlSource).removeClass('prettyprinted');
 		ele.find('textarea').val(ddlSource);
-		ele.scrollTop(0);
+		prettyEle.scrollTop(0);
 		PR.prettyPrint();
 
 	}
@@ -2366,67 +2300,57 @@ _ui.dbObjectMetadata= {
 
 		var metaStrHtm = [];
 		var item;
-		for(var i=0; i < len; i++){
+		for(var i=0; i<len; i++){
 			item = data[i];
 			var contentid = item.contentid;
 
-			metaStrHtm.push('<div data-so-meta-tab-group="'+contentid+'" class="varsql-tab-content '+(i==0?'tab-on':'')+'">');
-			metaStrHtm.push('	<div data-so-meta-tab="'+contentid +'" class="object-meta-tab"></div>');
-			metaStrHtm.push('	<div class="object-meta-tab-content">');
+			_self.metadataTabInfo[contentid] = item.tabList;
+			_self.selectMetadata[contentid] = {name : '', metaTab : ''};
 
-			var metaTabList = item.tabList;
-
-			_self.metadataTabInfo[contentid] = metaTabList;
-
-			for(var j =0 ;j <metaTabList.length; j++){
-				var tabItem = metaTabList[j];
-				metaStrHtm.push('	<div data-so-meta-tab-content="'+(contentid+'_' +tabItem.tabid)+'" class="varsql-tab-group '+(j==0?'on':'')+'"></div>');
-			}
-			metaStrHtm.push('	</div>');
-			metaStrHtm.push('</div>	');
+			metaStrHtm.push('<div data-so-meta-tab-group="'+contentid+'" class="object-meta-content '+(i==0?'on':'')+'"> </div>');
 		}
-
-		$(_getSelector('objectMeta', _selectorSuffix.CONT)).empty().html(metaStrHtm.join(''));
+		
+		$(_self.selector.contEleId).empty().html(metaStrHtm.join(''));
 	}
 	// meta 영역 resize
 	,resizeMetaArea : function (dimension){
-
-		if(dimension){
-			dimension.height = dimension.height-25; // tab height
-		}
-
-		var resizeMethod = this.getCallMethod('_'+_ui.pluginProxy.getActiveObjectMenu()+'MetaResize');
+		var resizeMethod = this.getCallMethod('_'+_ui.pluginProxy.getActiveObjectMenu().contentid+'MetaResize');
 		resizeMethod.call(this, dimension);
+
+		if(this.selectMetadata[_ui.pluginProxy.getActiveObjectMenu().contentid].metaTab){
+			this.selectMetadata[_ui.pluginProxy.getActiveObjectMenu().contentid].metaTab.refresh();
+		}
 	}
 }
 
 //table tab control
 _ui.addODbServiceObjectMetadata('table', {
 	//테이블에 대한 메타 정보 보기 .
-	_tableColumn:function (colData ,callParam, eleName, reloadFlag){
+	_tableColumn:function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
-
-		var metaEleId = _self.getTabContEleId('table',callParam.metaTabKey);
+		var $$objectType = 'table';
 
 		var items = colData.items;
 
 		if(reloadFlag===true){ // 데이터 세로 로드시 cache에 추가.
 			var colArr = [];
-			$.each(items , function (i , item){
+			$.each(items, function (i, item){
 				colArr.push(item.name);
 			});
 			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
 		}
 
+		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid' :tabKey});
+
 		var gridObj = $.pubGrid(metaEleId);
 
 		if(gridObj){
-			gridObj.setData(items,'reDraw');
+			gridObj.setData(items, 'reDraw');
 			return ;
 		}
 		
 		var contextItems =[
-			{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+			{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 			,{ key : "add_editor","name": "Ediotr 컬럼명 넣기"}
 			,{divider:true}
 			,{key : "sql_create", "name": "sql생성"
@@ -2485,7 +2409,7 @@ _ui.addODbServiceObjectMetadata('table', {
 			}
 			,tbodyItem :items
 			,message : {
-				empty : VARSQL.messageFormat('varsql.0032')
+				empty : ''
 			}
 			,rowOptions :{
 				contextMenu : {
@@ -2514,8 +2438,8 @@ _ui.addODbServiceObjectMetadata('table', {
 							_ui.pluginProxy.createScriptSql({
 								gubunKey : key
 								,sqlGenType : sObj.mode
-								,objectType : 'table'
-								,objName : _self.selectMetadata['table']
+								,objectType : $$objectType
+								,objName : _self.selectMetadata[$$objectType].name
 								,item : {
 									items:cacheData
 								}
@@ -2545,7 +2469,7 @@ _ui.addODbServiceObjectMetadata('table', {
 
 							var result =VARSQLTemplate.render.generateSource(sObj, {
 				                'table' : {
-				                	name : _self.selectMetadata['table']
+				                	name : _self.selectMetadata[$$objectType].name
 				                }
 				                ,'columns' : gridObj.getSelectionItem(['name'], true)
 				            });
@@ -2563,17 +2487,19 @@ _ui.addODbServiceObjectMetadata('table', {
 				            }
 							return ;
 						}
-					},
-					items: contextItems
+					}
+					,items: contextItems
 				}
 			}
 		});
 	}
 	,_tableMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('table',"column"));
+		if(this.selectMetadata['table'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['table'].metaTab.getTabContentSelector({'tabid' : 'column'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
@@ -2581,11 +2507,9 @@ _ui.addODbServiceObjectMetadata('table', {
 //view 정보 보기.
 _ui.addODbServiceObjectMetadata('view', {
 	// view 메타 데이터 보기.
-	_viewColumn :function (colData ,callParam, eleName, reloadFlag){
+	_viewColumn :function (colData ,callParam, tabKey, reloadFlag){
 		var _self = this;
-		var $objType = 'view';
-
-		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+		var $$objectType = 'view';
 
 		var items = colData.items;
 
@@ -2597,10 +2521,12 @@ _ui.addODbServiceObjectMetadata('view', {
 			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
 		}
 
+		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
+
 		var gridObj = $.pubGrid(metaEleId);
 
 		if(gridObj){
-			gridObj.setData(items,'reDraw');
+			gridObj.setData(items, 'reDraw');
 			return ;
 		}
 
@@ -2620,7 +2546,7 @@ _ui.addODbServiceObjectMetadata('view', {
 			]
 			,tbodyItem :items
 			,message : {
-				empty : VARSQL.messageFormat('varsql.0032')
+				empty : ''
 			}
 			,rowOptions :{
 				contextMenu : {
@@ -2647,8 +2573,8 @@ _ui.addODbServiceObjectMetadata('view', {
 						_ui.pluginProxy.createScriptSql({
 							gubunKey : key
 							,sqlGenType : sObj.mode
-							,objectType : $objType
-							,objName :  _self.selectMetadata[$objType]
+							,objectType : $$objectType
+							,objName :  _self.selectMetadata[$$objectType].name
 							,item : {
 								items:cacheData
 							}
@@ -2657,18 +2583,21 @@ _ui.addODbServiceObjectMetadata('view', {
 
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
-						,{ key : "select","name": "select" ,mode:"select"}
+						{key: "copy", "name": "Copy", hotkey: 'Ctrl+C'}
+						,{key: "select", "name": "Select query", mode: "select"}
 					]
 				}
 			}
 		});
 	}
 	,_viewMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('view',"column"));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+		if(this.selectMetadata['view'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['view'].metaTab.getTabContentSelector({'tabid' : 'column'}));
+
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 });
@@ -2676,12 +2605,12 @@ _ui.addODbServiceObjectMetadata('view', {
 // 프로시저 처리.
 _ui.addODbServiceObjectMetadata('procedure', {
 	//procedure 대한 메타 정보 보기 .
-	_procedureColumn :function (colData ,callParam, eleName, reloadFlag){
+	_procedureColumn :function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
- 		var $objType = 'procedure';
+ 		var $$objectType = 'procedure';
 
- 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+ 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var gridObj = $.pubGrid(metaEleId);
 
@@ -2700,12 +2629,15 @@ _ui.addODbServiceObjectMetadata('procedure', {
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
-				{ label: '파라미터명', key: 'name',width:80 },
-				{ label: '데이터타입', key: 'dataType' },
-				{ label: 'IN, OUT', key: 'columnType',width:45},
-				{ label: '설명', key: 'comment',width:45},
+				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },
+				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2719,17 +2651,19 @@ _ui.addODbServiceObjectMetadata('procedure', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	,_procedureMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('procedure',"column"));
+		if(this.selectMetadata['procedure'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['procedure'].metaTab.getTabContentSelector({'tabid' : 'column'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
@@ -2737,19 +2671,19 @@ _ui.addODbServiceObjectMetadata('procedure', {
 // function 정보 처리.
 _ui.addODbServiceObjectMetadata('function', {
 	//function 대한 메타 정보 보기 .
-	_functionColumn :function (colData ,callParam, eleName, reloadFlag){
+	_functionColumn :function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
- 		var $objType = 'function';
+ 		var $$objectType = 'function';
 
- 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+ 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var items = colData.items;
 
 		var gridObj = $.pubGrid(metaEleId);
 
 		if(gridObj){
-			gridObj.setData(items,'reDraw');
+			gridObj.setData(items, 'reDraw');
 			return ;
 		}
 
@@ -2761,12 +2695,15 @@ _ui.addODbServiceObjectMetadata('function', {
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
-				{ label: '파라미터명', key: 'name',width:80 },
-				{ label: '데이터타입', key: 'dataType' },
-				{ label: 'IN, OUT', key: 'columnType',width:45},
-				{ label: '설명', key: 'comment',width:45},
+				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 }, // 파라미터
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },		// datatype
+				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},	// in/out
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}	// 설명
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2780,19 +2717,19 @@ _ui.addODbServiceObjectMetadata('function', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	// function 대한 메타 정보 보기 .
-	,_functionInfo :function (colData ,callParam, eleName, reloadFlag){
+	,_functionInfo :function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
-		var $objType = 'function';
+		var $$objectType = 'function';
 
-		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var items = colData.items;
 
@@ -2815,6 +2752,9 @@ _ui.addODbServiceObjectMetadata('function', {
 				{ label: 'Value', key: 'val',width:80 },
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2828,17 +2768,19 @@ _ui.addODbServiceObjectMetadata('function', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	,_functionMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('function',"column"));
+		if(this.selectMetadata['function'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['function'].metaTab.getTabContentSelector({'tabid' : 'info'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
@@ -2846,12 +2788,12 @@ _ui.addODbServiceObjectMetadata('function', {
 // index 처리.
 _ui.addODbServiceObjectMetadata('index', {
 	// index column 정보.
-	_indexColumn : function (colData ,callParam, eleName, reloadFlag){
+	_indexColumn : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
- 		var $objType = 'index';
+ 		var $$objectType = 'index';
 
- 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+ 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var gridObj = $.pubGrid(metaEleId);
 
@@ -2870,11 +2812,14 @@ _ui.addODbServiceObjectMetadata('index', {
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
 			,tColItem : [
-				{ label: '컬럼명', key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
 				{ label: 'POSITION', key: 'no',width:80 },
 				{ label: 'ASC OR DESC', key: 'ascOrdesc' },
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2888,29 +2833,31 @@ _ui.addODbServiceObjectMetadata('index', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	,_indexMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('index',"column"));
+		if(this.selectMetadata['index'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['index'].metaTab.getTabContentSelector({'tabid' : 'column'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
 
 // trigger 처리.
 _ui.addODbServiceObjectMetadata('trigger', {
-	_triggerInfo : function (colData ,callParam, eleName, reloadFlag){
+	_triggerInfo : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
- 		var $objType = 'trigger';
+ 		var $$objectType = 'trigger';
 
- 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+ 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var gridObj = $.pubGrid(metaEleId);
 
@@ -2933,6 +2880,9 @@ _ui.addODbServiceObjectMetadata('trigger', {
 				{ label: 'Value', key: 'val',width:80 },
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -2946,17 +2896,19 @@ _ui.addODbServiceObjectMetadata('trigger', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	,_triggerMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('trigger',"column"));
+		if(this.selectMetadata['trigger'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['trigger'].metaTab.getTabContentSelector({'tabid' : 'info'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
@@ -2964,12 +2916,12 @@ _ui.addODbServiceObjectMetadata('trigger', {
 // sequence 처리.
 _ui.addODbServiceObjectMetadata('sequence', {
 	// sequence 정보보기.
-	_sequenceInfo : function (colData ,callParam, eleName, reloadFlag){
+	_sequenceInfo : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
- 		var $objType = 'sequence';
+ 		var $$objectType = 'sequence';
 
- 		var metaEleId = _self.getTabContEleId($objType,callParam.metaTabKey);
+ 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
 
 		var gridObj = $.pubGrid(metaEleId);
 
@@ -2992,6 +2944,9 @@ _ui.addODbServiceObjectMetadata('sequence', {
 				{ label: 'Value', key: 'val',width:80 },
 			]
 			,tbodyItem :items
+			,message : {
+				empty : ''
+			}
 			,rowOptions :{
 				contextMenu : {
 					beforeSelect :function (){
@@ -3005,17 +2960,19 @@ _ui.addODbServiceObjectMetadata('sequence', {
 						}
 					},
 					items: [
-						{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+						{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 					]
 				}
 			}
 		});
 	}
 	,_sequenceMetaResize : function (dimension){
-		var gridObj = $.pubGrid(this.getTabContEleId('sequence',"info"));
+		if(this.selectMetadata['sequence'].metaTab){
+			var gridObj = $.pubGrid(this.selectMetadata['sequence'].metaTab.getTabContentSelector({'tabid' : 'info'}));
 
-		if(gridObj){
-			gridObj.resizeDraw();
+			if(gridObj){
+				gridObj.resizeDraw();
+			}
 		}
 	}
 })
@@ -3027,7 +2984,7 @@ _ui.SQL = {
 	currentSqlEditorInfo : null
 	,sqlEditorBuffer : {}
 	,sqlMainEditor:{}
-	,sqlFileTabObj : null	// sql file tab list
+	,sqlFileTab : null	// sql file tab list
 	,sqlFileNameDialogEle : null // sql file name dialog
 	,allTabSqlEditorObj : {}	 // sql editor  object
 	,sqlEditorSelector : '#varsql_main_editor'
@@ -3064,128 +3021,25 @@ _ui.SQL = {
 
 		$.extend(true,_self.options, options);
 
+		_self._initTab();
 		_self._initEditor();
 		_self._initEvent();
-		_self._initTab();
 		_self.sqlFileTabList();
 		_self._initDialog();
 
-	}
-	,_initDialog : function (){
-		var _self = this;
-
-		// sql 파일명 생성 수정 dialog
-		if(_self.sqlFileNameDialogEle==null){
-			_self.sqlFileNameDialogEle = $('#editorNewSqlFileDialog').dialog({
-				height: 200
-				,width: 280
-				,resizable: false
-				,modal: true
-				,autoOpen : false
-				,close: function() {
-					_self.sqlFileNameDialogEle.dialog( "close" );
-				}
-				,buttons: {
-					"Save":function (){
-						_self.sqlFileNameSave();
-					}
-					,Cancel: function() {
-						_self.sqlFileNameDialogEle.dialog( "close" );
-					}
-				}
-			});
-
-			// sql file 생성
-			$('#editorSqlFileNameText').keydown(function(e) {
-				if (e.keyCode == '13') {
-					e.preventDefault();
-					_self.sqlFileNameSave();
-					return false;
-				}
-			});
-		}
-	}
-	// file name 저장.
-	,sqlFileNameSave : function (){
-		var nameTxt = $('#editorSqlFileNameText').val();
-		if(VARSQL.str.trim(nameTxt)==''){
-			$('#editorSqlFileNameText').focus();
-			VARSQLUI.alert.open({key:'varsql.0010'});
-			return ;
-		}
-
-		var sqlFileId = $('#editorSqlFileId').val();
-
-		this.saveSqlFile({
-			'sqlId' : sqlFileId
-			,'sqlTitle' : nameTxt
-		}, (sqlFileId =='' ? 'newfile' :'title'));
-
-		this.sqlFileNameDialogEle.dialog( "close" );
-	}
-	// 실행 취소
-	,undo :function (){
-		this.getSqlEditorObj().undo();
-	}
-	// 되살리기
-	,redo :function (){
-		this.getSqlEditorObj().redo();
-	}
-	// editor tab & editor element 삭제.
-	,deleteEditorInfo : function (mode, item){
-		if(mode == 'all' || mode == 'other'){
-
-			if(mode == 'all'){
-				this.sqlFileTabObj.removeItem('all');
-				item = {};
-			}else{
-				this.sqlFileTabObj.removeItem('other', item.sqlId);
-			}
-
-			for(var key in this.allTabSqlEditorObj){
-				if(key != item.sqlId){
-					var removeIem = this.allTabSqlEditorObj[key].item;
-
-					delete this.allTabSqlEditorObj[key];
-					delete this.sqlEditorBuffer[key];
-					_ui.sqlDataArea.removeDataGridEle(removeIem);
-				}
-			};
-		}else{
-			this.sqlFileTabObj.removeItem(item);
-			var sqlId = item.sqlId
-			if(this.allTabSqlEditorObj[sqlId]){
-				delete this.allTabSqlEditorObj[sqlId];
-				delete this.sqlEditorBuffer[sqlId];
-			}
-			_ui.sqlDataArea.removeDataGridEle(item);
-		}
-
-		if(this.sqlFileTabObj.getItemLength() < 1){
-			this.currentSqlEditorInfo= null;
-			$('[data-editor-id="empty"]').addClass('active'); // 빈파일 화면 오픈.
-			this.addParamTemplate('init', {});
-			this.sqlParameterEle.attr('data-paramter-id','');
-			this.setSqlEditorBtnDisable();
-		}
-	}
-	,setSqlEditorBtnDisable :  function(){
-		$('[data-sql-editor-menu="y"]').attr('disabled',true).addClass('disable');
-		_ui.sqlDataArea.initGridSelector();
-	}
-	,setSqlEditorBtnEnable :  function(){
-		$('[data-sql-editor-menu="y"]').removeAttr('disabled').removeClass('disable');
 	}
 	// init editor tab
 	,_initTab : function (){
 		var _self = this;
 
 		// tab-item
-		_self.sqlFileTabObj = $.pubTab('#varsqlSqlFileTab',{
+		_self.sqlFileTab = $.pubTab('#varsqlSqlFileTab',{
 			items : []
 			,width:'auto'
 			,itemMaxWidth: 100
-			,dropItemWidth : '100px'
+			,useContentContainer :false
+			,dropdownWidth : 100
+			,dropdownHeight : 200
 			,drag: {
 				enabled :true
 				,dragDrop : function (moveItem){
@@ -3199,7 +3053,7 @@ _ui.SQL = {
 					var param = {sqlId : item.sqlId};
 					if(key =='close'){
 						_self.deleteEditorInfo('del', item);
-						param.len = _self.sqlFileTabObj.getItemLength();
+						param.len = _self.sqlFileTab.getItemLength();
 						_self.saveSqlFile(param ,'delTab');
 						return ;
 					}else if(key =='close_other'){
@@ -3236,14 +3090,14 @@ _ui.SQL = {
 								,buttons: {
 									"Save and close":function (){
 										param.sqlCont = editorObj.editor.getValue();
-										param.len =_self.sqlFileTabObj.getItemLength();
+										param.len =_self.sqlFileTab.getItemLength();
 										_self.saveSqlFile(param ,'query_del');
 										_self.deleteEditorInfo('del', item);
 										dialogObj.dialog( "close" );
 										_self.setEditorHistory('remove',item)
 									}
 									,"Close":function (){
-										param.len =_self.sqlFileTabObj.getItemLength();
+										param.len =_self.sqlFileTab.getItemLength();
 										_self.saveSqlFile(param ,'delTab');
 										_self.deleteEditorInfo('del', item);
 										dialogObj.dialog( "close" );
@@ -3259,7 +3113,7 @@ _ui.SQL = {
 							})
 						}else{
 							_self.deleteEditorInfo('del', item);
-							param.len =_self.sqlFileTabObj.getItemLength();
+							param.len =_self.sqlFileTab.getItemLength();
 							_self.saveSqlFile(param ,'delTab');
 
 							_self.setEditorHistory('remove',item)
@@ -3346,11 +3200,13 @@ _ui.SQL = {
 		editor.on("change", function (cm , changeObj){
 
 			var currentEditorInfo = _self.currentSqlEditorInfo;
-
+			
+			if(VARSQL.isBlank(currentEditorInfo)) return ; 
+			
 			if(currentEditorInfo.item._isChange ===false){
 				currentEditorInfo.item._isChange = true;
-				var activeItem = _self.sqlFileTabObj.getActive();
-				_self.sqlFileTabObj.updateTitle(activeItem.item.sqlId ,'*' + activeItem.item.sqlTitle);
+				var activeItem = _self.sqlFileTab.getActive();
+				_self.sqlFileTab.updateTitle(activeItem.item.sqlId ,'*' + activeItem.item.sqlTitle);
 			}
 
 			if(_g_options.autoSave.enabled !== false){
@@ -3360,6 +3216,111 @@ _ui.SQL = {
 		})
 		
 		_self.sqlMainEditor = editor;
+	}
+	,_initDialog : function (){
+		var _self = this;
+
+		// sql 파일명 생성 수정 dialog
+		if(_self.sqlFileNameDialogEle==null){
+			_self.sqlFileNameDialogEle = $('#editorNewSqlFileDialog').dialog({
+				height: 200
+				,width: 280
+				,resizable: false
+				,modal: true
+				,autoOpen : false
+				,close: function() {
+					_self.sqlFileNameDialogEle.dialog( "close" );
+				}
+				,buttons: {
+					"Save":function (){
+						_self.sqlFileNameSave();
+					}
+					,Cancel: function() {
+						_self.sqlFileNameDialogEle.dialog( "close" );
+					}
+				}
+			});
+
+			// sql file 생성
+			$('#editorSqlFileNameText').keydown(function(e) {
+				if (e.keyCode == '13') {
+					e.preventDefault();
+					_self.sqlFileNameSave();
+					return false;
+				}
+			});
+		}
+	}
+	// file name 저장.
+	,sqlFileNameSave : function (){
+		var nameTxt = $('#editorSqlFileNameText').val();
+		if(VARSQL.str.trim(nameTxt)==''){
+			$('#editorSqlFileNameText').focus();
+			VARSQLUI.alert.open({key:'varsql.0010'});
+			return ;
+		}
+
+		var sqlFileId = $('#editorSqlFileId').val();
+
+		this.saveSqlFile({
+			'sqlId' : sqlFileId
+			,'sqlTitle' : nameTxt
+		}, (sqlFileId =='' ? 'newfile' :'title'));
+
+		this.sqlFileNameDialogEle.dialog( "close" );
+	}
+	// 실행 취소
+	,undo :function (){
+		this.getSqlEditorObj().undo();
+	}
+	// 되살리기
+	,redo :function (){
+		this.getSqlEditorObj().redo();
+	}
+	// editor tab & editor element 삭제.
+	,deleteEditorInfo : function (mode, item){
+		if(mode == 'all' || mode == 'other'){
+
+			if(mode == 'all'){
+				this.sqlFileTab.removeItem('all');
+				item = {};
+			}else{
+				this.sqlFileTab.removeItem('other', item.sqlId);
+			}
+
+			for(var key in this.allTabSqlEditorObj){
+				if(key != item.sqlId){
+					var removeIem = this.allTabSqlEditorObj[key].item;
+
+					delete this.allTabSqlEditorObj[key];
+					delete this.sqlEditorBuffer[key];
+					_ui.sqlDataArea.removeDataGridEle(removeIem);
+				}
+			};
+		}else{
+			this.sqlFileTab.removeItem(item);
+			var sqlId = item.sqlId
+			if(this.allTabSqlEditorObj[sqlId]){
+				delete this.allTabSqlEditorObj[sqlId];
+				delete this.sqlEditorBuffer[sqlId];
+			}
+			_ui.sqlDataArea.removeDataGridEle(item);
+		}
+
+		if(this.sqlFileTab.getItemLength() < 1){
+			this.currentSqlEditorInfo= null;
+			$('[data-editor-id="empty"]').addClass('active'); // 빈파일 화면 오픈.
+			this.addParamTemplate('init', {});
+			this.sqlParameterEle.attr('data-paramter-id','');
+			this.setSqlEditorBtnDisable();
+		}
+	}
+	,setSqlEditorBtnDisable :  function(){
+		$('[data-sql-editor-menu="y"]').attr('disabled',true).addClass('disable');
+		_ui.sqlDataArea.setGridSelector();
+	}
+	,setSqlEditorBtnEnable :  function(){
+		$('[data-sql-editor-menu="y"]').removeAttr('disabled').removeClass('disable');
 	}
 	,resize : function (dimension){
 		if(dimension){
@@ -3374,12 +3335,11 @@ _ui.SQL = {
 		}
 
 		try{
-			_self.sqlFileTabObj.refresh().setDropHeight(dimension.height-10);
+			_self.sqlFileTab.refresh().setDropdownHeight(dimension.height-10);
 		}catch(e){
 			console.log('editor refresh error')
 		}
 	}
-
 	//이벤트 초기화
 	,_initEvent :function (){
 		var _self = this;
@@ -3421,7 +3381,7 @@ _ui.SQL = {
 			items:[
 				{key : "run" , "name": "실행" , hotkey :'Ctrl+Enter'}
 				,{divider:true}
-				,{key : "copy" , "name": "복사", hotkey :'Ctrl+C'}
+				,{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 				,{key : "cut" , "name": "잘라내기", hotkey :'Ctrl+X'}
 				//,{key : "paste" , "name": "뭍여넣기"}
 				,{key : "delete" , "name": "지우기"}
@@ -3588,7 +3548,7 @@ _ui.SQL = {
 			$('.sql_toolbar_delete_btn').trigger('click');
 		});
 
-		// sql 복사
+		// sql Copy
 		$('.sql_toolbar_copy_btn').on('click',function (evt){
 			_self.selectionTextCopy();
 		});
@@ -4082,21 +4042,21 @@ _ui.SQL = {
 		}else if(mode =='moveTab'){
 			saveInfo = {
 				'sqlId' : item.moveItem.sqlId
-				,'firstSqlId' : _self.sqlFileTabObj.getFirstItem().sqlId
+				,'firstSqlId' : _self.sqlFileTab.getFirstItem().sqlId
 				,'prevSqlId' : (item.afterPrevItem||{}).sqlId
 			};
 		}else{
 			saveInfo = VARSQL.util.objectMerge ({}, item);
 
 			if (mode=='title'){
-				if(_self.sqlFileTabObj.isItem(item.sqlId)){
-					_self.sqlFileTabObj.updateItem({item:{
+				if(_self.sqlFileTab.isItem(item.sqlId)){
+					_self.sqlFileTab.updateItem({item:{
 						"sqlId":item.sqlId
 			    		,"sqlTitle":item.sqlTitle
 					}, enabled:false});
 				};
 			}else if('newfile' == mode){
-				saveInfo.prevSqlId = (_self.sqlFileTabObj.getLastItem().sqlId ||'');
+				saveInfo.prevSqlId = (_self.sqlFileTab.getLastItem().sqlId ||'');
 			}
 		}
 
@@ -4124,7 +4084,7 @@ _ui.SQL = {
 		    		var currentEditorInfo = _self.currentSqlEditorInfo;
 					currentEditorInfo.item._isChange = false;
 
-					_self.sqlFileTabObj.updateItem({item:{
+					_self.sqlFileTab.updateItem({item:{
 						"sqlId":currentEditorInfo.sqlId
 					}, enabled:false});
 		    	}
@@ -4188,7 +4148,7 @@ _ui.SQL = {
 			    		var editorObj = allEditorObj[sqlId];
 			    		editorObj.item._isChange = false;
 
-			    		_self.sqlFileTabObj.updateItem({item:{
+			    		_self.sqlFileTab.updateItem({item:{
 							"sqlId":sqlId
 						}, enabled:false});
 			    	}
@@ -4319,7 +4279,7 @@ _ui.SQL = {
 		    		,len = items.length;
 
 		    	if(len > 0){
-		    		_self.sqlFileTabObj.setItems(items);
+		    		_self.sqlFileTab.setItems(items);
 		    		var enableItem;
 		    		for(var i =0 ;i <len; i++){
 		    			var sItem = items[i];
@@ -4381,7 +4341,7 @@ _ui.SQL = {
 
 		    		if(mode=='view'){
 
-		    			if(_self.sqlFileTabObj.isItem(sqlId)){
+		    			if(_self.sqlFileTab.isItem(sqlId)){
 		    				_self.loadEditor(sItem);
 		    			}else{
 		    				params['sqlId'] = sqlId;
@@ -4540,12 +4500,12 @@ _ui.SQL = {
 			}
 		}
 
-		var isTabItem =_self.sqlFileTabObj.isItem(sqlId);
+		var isTabItem =_self.sqlFileTab.isItem(sqlId);
 
 		if(!isTabItem){
-			var lastItem = _self.sqlFileTabObj.getLastItem();
+			var lastItem = _self.sqlFileTab.getLastItem();
 
-			_self.sqlFileTabObj.addItem({item:{
+			_self.sqlFileTab.addItem({item:{
 				sqlId : sqlId
 				,sqlTitle : sItem.sqlTitle
 			},enabled:false});
@@ -4564,7 +4524,7 @@ _ui.SQL = {
 			}
 		}
 
-		_self.sqlFileTabObj.setActive(sItem);
+		_self.sqlFileTab.setActive(sItem);
 		_ui.sqlDataArea.setGridSelector(sItem);
 
 		// set sql parameter start
@@ -4630,6 +4590,9 @@ _ui.SQL = {
 		}else{
 			return false;
 		}
+	}
+	,getCurrentSqlEditorInfo : function (){
+		return this.currentSqlEditorInfo; 
 	}
 	,getSql: function (){
 		var _self = this;
@@ -4730,6 +4693,8 @@ _ui.SQL = {
 	,sqlData :function (evt){
 		var _self = this;
 		var sqlVal = _self.getSql();
+
+		if(top.mainSocketConnect) top.mainSocketConnect(); // socket check
 
 		_self._sqlData(sqlVal,true);
 	}
@@ -4989,105 +4954,118 @@ _ui.SQL = {
  */
 _ui.sqlDataArea =  {
 	_currnetQueryReusltData :{}
-	,resizeDimension : {} 	// resize 수치
+	,_cacheResultInfo : {}	// key= sqlid , value = sql result data
+	,curentSqlEditorId : ''
 	,currnetDataGridSelector : false
 	,currnetDataGridColumnSelector :false
-	,resultMsgAreaObj:null
-	,initDataGridContextFlag : false // data grid context 초기화 여부
+	,resultTab :{}	// sql result tab object
 	,options :{
-		dataGridSelector:'#dataGridArea'
-		,resultMsgAreaWrap:'#resultMsgAreaWrap'
-		,dataGridSelectorWrap : '#dataGridAreaWrap'
-		,dataGridResultTabWrap:'#data_grid_result_tab_wrap'
-		,active: null
-		,delay: 0
 	}
 	,init : function (){
-		this.initGridSelector();
-		this.initEvt();
+		this.initTab();
+		this.setGridSelector();
+		this.addDataGridEle({sqlId : 'empty'});
+		this.initResultDataContentMenu();
 	}
-	,initEvt : function (){
+	,initTab : function (){
 		var _self = this;
 
-		// log 삭제.
-		$(_self.options.dataGridResultTabWrap+' .log_clear_btn').on('click',function (){
-			_self.getResultMsgAreaObj().empty();
-			return false;
+		_self.resultTab = $.pubTab(_selector.plugin.sqlResult, {
+			items : [
+				{id :'queryData', name : 'Result'}
+				,{id :'queryColumn', name : 'Column'}
+				,{id :'queryLog', name : 'Log'}
+			]
+			,itemKey :{							// item key mapping
+				title :'name'
+				,id: 'id'
+			}
+			,contentStyleClass : function(item){
+				if(item.id == 'queryLog'){
+					return 'sql-result-log';
+				}
+			}
+			,titleIcon :{
+				right : {
+					html : '<i class="fa fa-eraser" style="cursor:pointer;"></i>'
+					,onlyActiveView : true
+					,visible : function (item){
+						return item.id =='queryLog' ? true : false; 
+					}
+					,click : function (item, idx){
+						_self.resultTab.clearTabContent(item);
+					}
+				}
+			}
+			,click : function (item){
+				var itemId = item.id; 
+				if(itemId =='queryData' || itemId=='queryColumn'){
+					_self.resize();
+					if(itemId=='queryColumn'){
+						_self.viewResultColumnType();
+					}
+				}
+				
+			}
 		});
 
-		// sql result tab click
-		$(_self.options.dataGridResultTabWrap+' [tab_gubun]').on('click',function (){
-			var sObj = $(this);
-			var tab_gubun = sObj.attr('tab_gubun');
-
-			if(sObj.hasClass('on')){
-				return ;
-			}
-
-			$(_self.options.dataGridResultTabWrap+' [tab_gubun]').removeClass('on');
-			sObj.addClass('on');
-
-			if(tab_gubun =='msg'){
-				// data grid araea
-				$(_self.options.dataGridSelectorWrap +' [tab_gubun="result"]').removeClass('tab-on');
-				$(_self.options.dataGridSelectorWrap +' [tab_gubun="msg"]').addClass('tab-on');
-			}else{
-				$(_self.options.dataGridSelectorWrap +' [tab_gubun="result"]').addClass('tab-on');
-				$(_self.options.dataGridSelectorWrap +' [tab_gubun="msg"]').removeClass('tab-on');
-
-				$(_self.getSqlResultSelector('active')+' .sql-editor-result-grid.on').removeClass('on')
-				$(_self.getSqlResultSelector('active',tab_gubun)).addClass('on');
-			}
-		});
-	}
-	// init grid selector
-	,initGridSelector : function (){
-		this.setGridSelector({sqlId : 'empty'});
+		return ;
 	}
 	// add data grid element
 	,addDataGridEle : function(item){
-		var addTemplateHtml = '<div class="sql-editor-result active" data-sql-result-id="'+item.sqlId+'"><div class="sql-editor-result-grid on" data-grid-type="result"></div><div class="sql-editor-result-grid" data-grid-type="columnType"></div></div>';
-		$(this.options.dataGridSelector).append(addTemplateHtml);
-		//this.setGridSelector(item);
+		$(this.resultTab.getTabContentSelector('queryData')).append('<div class="sql-result-tab-cont on" data-sqlresult-grid="'+item.sqlId+'"></div></div>');
+		$(this.resultTab.getTabContentSelector('queryColumn')).append('<div class="sql-result-tab-cont on" data-sqlresult-column="'+item.sqlId+'"></div>');
 	}
 	//remove data grid element
 	,removeDataGridEle : function(item){
-		$(this.options.dataGridSelector).find(this.getSqlResultSelector(item)).remove();
-
 		// result grid
-		var sqlResultObj = $.pubGrid(this.getSqlResultSelector(item , 'result'));
+		var resultSelector = this.getSqlResultSelector(item, 'result'); 
+		var sqlResultObj = $.pubGrid(resultSelector);
 		if(sqlResultObj) sqlResultObj.destroy();
+		$(resultSelector).remove();
 
 		//grid column
-		var sqlColmnuTypeObj = $.pubGrid(this.getSqlResultSelector(item , 'columnType'));
+		var columnSelector = this.getSqlResultSelector(item, 'columnType'); 
+		var sqlColmnuTypeObj = $.pubGrid(columnSelector);
 		if(sqlColmnuTypeObj) sqlColmnuTypeObj.destroy();
+		$(columnSelector).remove();
 
 	}
 	,setGridSelector :  function (item){
+
+		if(VARSQL.isUndefined(item)){
+			item = {sqlId : 'empty'}; 
+		}
+
+		this.curentSqlEditorId = item.sqlId;
+
 		// grid
-		this.currnetDataGridSelector = this.getSqlResultSelector(item , 'result');
+		$(this.resultTab.getTabContentSelector('queryData')+'>.on').removeClass('on')
+		this.currnetDataGridSelector = this.getSqlResultSelector(item, 'result');
+		$(this.currnetDataGridSelector).addClass('on');
+
 		//grid column
-		this.currnetDataGridColumnSelector = this.getSqlResultSelector(item , 'columnType');
+		$(this.resultTab.getTabContentSelector('queryColumn')+'>.on').removeClass('on')
+		this.currnetDataGridColumnSelector = this.getSqlResultSelector(item, 'columnType');
+		$(this.currnetDataGridColumnSelector).addClass('on');
 
-		$('.sql-editor-result[data-sql-result-id].active').removeClass('active');
-		$('.sql-editor-result[data-sql-result-id="'+item.sqlId+'"]').addClass('active');
+		if(this.resultTab.isActive('queryColumn')){
+			this.viewResultColumnType();
+		}
 
-		this.resize(this.resizeDimension);
+		this.resize();
 	}
 	// sql result select
 	,getSqlResultSelector : function (item, type){
-		var sqlResultSelector;
-		if(item =='active'){
-			sqlResultSelector = '.sql-editor-result[data-sql-result-id].active';
-		}else{
-			sqlResultSelector = '.sql-editor-result[data-sql-result-id="'+item.sqlId+'"]';
+
+		if(type == 'result'){
+			return '[data-sqlresult-grid="'+item.sqlId+'"]';
 		}
 
-		if(type){
-			return sqlResultSelector + ' [data-grid-type="'+type+'"]';
+		if(type == 'columnType'){
+			return '[data-sqlresult-column="'+item.sqlId+'"]';
 		}
 
-		return sqlResultSelector;
 	}
 	// 결과 보기.
 	,viewResult : function (resultData){
@@ -5095,66 +5073,46 @@ _ui.sqlDataArea =  {
 
 		_ui.layout.setActiveTab('sqlData');
 
-		var msgViewFlag =false,gridViewFlag = false;
+		var msgViewFlag = false, gridViewFlag = false;
 
+		var resultInfo = {};
 		var resultMsg = [];
 		var resultCode = resultData.resultCode;
 		if(resultCode == 200){
 			var resData = resultData.items;
     		var resultLen = resData.length;
 
-    		if(resultLen < 1 ){
-    			resData.data = [{result:"데이터가 없습니다."}];
-    			resData.column =[{label:'result',key:'result', align:'center'}];
-    		}
-
     		var item;
-    		var resultClass , tmpMsg;
-
 			for(var i=resultLen-1; i>=0; i--){
-				resultClass = 'success';
 				item = resData[i];
-
-				tmpMsg= item.resultMessage;
+				
 				if(item.resultType=='fail' || item.viewType=='msg'){
 					msgViewFlag = true;
-
-					if(item.resultType=='fail'){
-    					resultClass = 'error';
-					}
-				}
-
-				if(item.viewType=='grid'){
+				}else if(item.viewType=='grid'){
 					gridViewFlag = true;
-					_self._currnetQueryReusltData =item;
+					resultInfo =item;
 				}
 
-				resultMsg.push('<div class="'+resultClass+'"><span class="log-end-time">'+milli2str(item.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div>'.replace('#resultMsg#' , tmpMsg));
+				resultMsg.push('<div class="'+(item.resultType =='fail' ? 'error' :'success')+'"><span class="log-end-time">'+milli2str(item.endtime, _defaultOptions.dateFormat)+' </span>#resultMsg#</div>'.replace('#resultMsg#', item.resultMessage));
 			}
 		}else{
-			msgViewFlag =true;
+			msgViewFlag = true;
 			var errorMessage;
 			var errQuery = '';
 			var resItem = resultData.item || {};
 			var msgItemResult = resItem.result || {};
 			var errQuery = resItem.query;
-
-			if(resultCode ==80000 || resultCode ==80001){
-				errorMessage = resultData.message;
+			
+			if(resultCode == 10002){
+				resultInfo = msgItemResult;
+				errorMessage = msgItemResult.resultMessage;
+				
+				_self.setGridData(resultInfo);
 			}else{
-
-				if(resultCode ==10002){
-					_self._currnetQueryReusltData =msgItemResult;
-					errorMessage = msgItemResult.resultMessage;
-					
-					$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
-					_self.setGridData(_self._currnetQueryReusltData);
-					_self.viewResultColumnType();
-				}else{
-					errorMessage = resultData.message;
-				}
+				errorMessage = resultData.message;
 			}
-			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+'</span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+			
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 
 			resultMsg.push(logValEle.html());
@@ -5173,23 +5131,29 @@ _ui.sqlDataArea =  {
 		}
 
 		if(msgViewFlag){
-			$(_self.options.dataGridResultTabWrap+" [tab_gubun=msg]").trigger('click');
+			this.resultTab.itemClick({id :'queryLog'});
 		}else{
-			$(_self.options.dataGridResultTabWrap+" [tab_gubun=result]").trigger('click');
+			this.resultTab.itemClick({id :'queryData'});
 		}
 
 		if(gridViewFlag){
-			_self.setGridData(_self._currnetQueryReusltData);
-			_self.viewResultColumnType();
+			_self.setGridData(resultInfo);
 		}
 
-		_self.getResultMsgAreaObj().prepend(resultMsg.join(''));
-		_self.getResultMsgAreaObj().animate({scrollTop: 0},'fast');
+		var msgAreaEle = $(this.resultTab.getTabContentSelector('queryLog'));
+
+		msgAreaEle.prepend(resultMsg.join(''));
+		msgAreaEle.animate({scrollTop: 0},'fast');
 	}
 	// sql data grid
 	,setGridData: function (pGridData){
 		var _self = this;
-				
+
+		this._cacheResultInfo[this.curentSqlEditorId] = {
+			isColumnView : false
+			,resultData : pGridData
+		};
+		
 		$.pubGrid(_self.currnetDataGridSelector,{
 			setting : {
 				enabled : true
@@ -5245,133 +5209,151 @@ _ui.sqlDataArea =  {
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
 		});
-
-		if(_self.initDataGridContextFlag===false) { // grid context menu 처리.
-			_self.initDataGridContextFlag= true;
-			var dataSelectorEle =$(_self.options.dataGridSelector);
-			var gridContextObj = $.pubContextMenu(_self.options.dataGridSelector, {
-				items: [
-					{key : "copy" , "name": "복사"}
-					,{divider : true}
-					,{key : "select_col" , "name": "컬럼명"
-						,subMenu : [
-							{ key : "select_col_copy","name": "컬럼명 복사"}
-							,{ key : "select_col_editor","name": "컬럼명 넣기"}
-							,{ key : "select_col_val_editor","name": "컬럼명 & 값 넣기"}
-						]
-					}
-					,{divider : true}
-					,{key : "detail" , "name": "상세보기"}
-					,{key : "download" , "name": "다운로드"
-						,subMenu : [
-							{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
-							,{divider : true}
-							,{ key : "download_excel","name": "EXCEL" ,mode:"excel"}
-							,{ key : "download_csv","name": "CSV" ,mode:"csv" }
-							,{ key : "download_xml","name": "XML" ,mode:"xml"}
-							,{ key : "download_json","name": "json" ,mode:"json"}
-						]
-					}
-				]
-				,beforeSelect :function (contextInfo){
-					var trEle = $(contextInfo.evt.target).closest('.pub-body-tr', dataSelectorEle);
-					if(trEle.length > 0){
-						gridContextObj.enableItem('detail',0);
-						var itemObj = $.pubGrid(_self.currnetDataGridSelector).getRowItemToElement(trEle);
-						gridContextObj.setTargetInfo(itemObj.item);
-					}else{
-						gridContextObj.disableItem('detail',0);
-					}
-
+	}
+	,initResultDataContentMenu : function (){
+		var _self = this;
+		var queryColumnSelector = this.resultTab.getTabContentSelector('queryData'); 
+		
+		var dataSelectorEle =$(queryColumnSelector);
+		var gridContextObj = $.pubContextMenu(queryColumnSelector, {
+			items: [
+				{key : "copy" , "name": "Copy"}
+				,{divider : true}
+				,{key : "select_col" , "name": "컬럼명"
+					,subMenu : [
+						{ key : "select_col_copy","name": "컬럼명 Copy"}
+						,{ key : "select_col_editor","name": "컬럼명 넣기"}
+						,{ key : "select_col_val_editor","name": "컬럼명 & 값 넣기"}
+					]
 				}
-				,disableItemKey : function (items){
-					return [];
+				,{divider : true}
+				,{key : "detail" , "name": "상세보기"}
+				,{key : "download" , "name": "다운로드"
+					,subMenu : [
+						{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
+						,{divider : true}
+						,{ key : "download_excel","name": "EXCEL" ,mode:"excel"}
+						,{ key : "download_csv","name": "CSV" ,mode:"csv" }
+						,{ key : "download_xml","name": "XML" ,mode:"xml"}
+						,{ key : "download_json","name": "json" ,mode:"json"}
+					]
 				}
-				,callback: function(key,sObj) {
-					if(key =='copy'){
-						$.pubGrid(_self.currnetDataGridSelector).copyData();
-						return ;
-					}
+			]
+			,isEnabled : function (){
+				return $(_self.resultTab.getTabContentSelector('queryData')+'>.on').find('.pubGrid').length > 0;
+			}
+			,beforeSelect :function (contextInfo){
+				var trEle = $(contextInfo.evt.target).closest('.pub-body-tr', dataSelectorEle);
+				if(trEle.length > 0){
+					gridContextObj.enableItem('detail',0);
+					var itemObj = $.pubGrid(_self.currnetDataGridSelector).getRowItemToElement(trEle);
+					gridContextObj.setTargetInfo(itemObj.item);
+				}else{
+					gridContextObj.disableItem('detail',0);
+				}
 
-					if(key =='select_col_editor' || key =='select_col_copy'){
-						var colInfos= $.pubGrid(_self.currnetDataGridSelector).getSelectionColInfos();
+			}
+			,disableItemKey : function (items){
+				
+				if($.pubGrid(_self.currnetDataGridSelector).getSelectionColInfos().length < 1){
+					return [
+						{key :'select_col' , depth :0	}
+					];
+				}
+				return [];
+			}
+			,callback: function(key,sObj) {
+				if(key =='copy'){
+					$.pubGrid(_self.currnetDataGridSelector).copyData();
+					return ;
+				}
 
-						if(colInfos.length >0){
-							if(key =='select_col_copy'){
-								var colLabel  = [];
-								for(var i=0; i<colInfos.length; i++){
-									colLabel.push(colInfos[i].label);
-								}
-								copyStringToClipboard(colLabel.join('\t'));
-							}else{
-								_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfos});
+				if(key =='select_col_editor' || key =='select_col_copy'){
+					var colInfos= $.pubGrid(_self.currnetDataGridSelector).getSelectionColInfos();
+
+					if(colInfos.length >0){
+						if(key =='select_col_copy'){
+							var colLabel  = [];
+							for(var i=0; i<colInfos.length; i++){
+								colLabel.push(colInfos[i].label);
 							}
+							copyStringToClipboard(colLabel.join('\t'));
+						}else{
+							_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfos});
 						}
-						return ;
 					}
+					return ;
+				}
 
-					if(key == 'select_col_val_editor'){
-						var colInfo= $.pubGrid(_self.currnetDataGridSelector).selectionData('json');
+				if(key == 'select_col_val_editor'){
+					var colInfo= $.pubGrid(_self.currnetDataGridSelector).selectionData('json');
 
-						if(colInfo.header.length >0){
-							_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfo.header, data : colInfo.data});
-						}
-						return ;
+					if(colInfo.header && colInfo.header.length >0){
+						_ui.SQL.addTextToEditorArea('',{type:'column', header: colInfo.header, data : colInfo.data});
 					}
+					return ;
+				}
 
-					if(key =='detail'){
-						var popupId = 'pop_'+_g_options.param.conuid
+				if(key =='detail'){
+					var popupId = 'pop_'+_g_options.param.conuid
 
-						var popupObj = VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/extension/detailView?conuid='+_g_options.param.conuid), {
-							name : 'detailView' +_g_options.param.conuid
-							,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
-						});
+					var popupObj = VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/extension/detailView?conuid='+_g_options.param.conuid), {
+						name : 'detailView' +_g_options.param.conuid
+						,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
+					});
 
-						try{
-							if(VARSQL.isUndefined(popupObj.viewItem)){
-								window[popupId] = function (){
-									popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
-								}
-							}else{
+					try{
+						if(VARSQL.isUndefined(popupObj.viewItem)){
+							window[popupId] = function (){
 								popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
 							}
-						}catch(e){}
-						return ;
-					}
+						}else{
+							popupObj.viewItem( $.pubGrid(_self.currnetDataGridSelector).getHeaderItems() , $.pubGrid(_self.currnetDataGridSelector).getItems());
+						}
+					}catch(e){}
 
-					if(key.indexOf('download_') > -1){
-						var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
-						var isSelect = $("#"+sqlGridResultSelect).is(":checked");
-
-						var selData = $.pubGrid(_self.currnetDataGridSelector).getData({isSelect:isSelect, dataType:'json'});
-						var mode = sObj.mode;
-
-						var params =VARSQL.util.objectMerge ({}, _g_options.param,{
-							exportType :mode
-							,headerInfo : JSON.stringify(selData.header)
-							,gridData : JSON.stringify(selData.data)
-						});
-
-						VARSQL.req.download({
-							type: 'post'
-							,url: {type:VARSQL.uri.sql, url:'/base/gridDownload'}
-							,params: params
-						});
-
-						return
-					}
+					return ;
 				}
-			});
-		}
+
+				if(key.indexOf('download_') > -1){
+					var sqlGridResultSelect = gridContextObj.getCheckBoxId('sqlGridResultSelect');
+					var isSelect = $("#"+sqlGridResultSelect).is(":checked");
+
+					var selData = $.pubGrid(_self.currnetDataGridSelector).getData({isSelect:isSelect, dataType:'json'});
+					var mode = sObj.mode;
+
+					var params =VARSQL.util.objectMerge ({}, _g_options.param,{
+						exportType :mode
+						,headerInfo : JSON.stringify(selData.header)
+						,gridData : JSON.stringify(selData.data)
+					});
+
+					VARSQL.req.download({
+						type: 'post'
+						,url: {type:VARSQL.uri.sql, url:'/base/gridDownload'}
+						,params: params
+					});
+
+					return
+				}
+			}
+		});
 	}
 	// sql result column typ
 	,viewResultColumnType : function (){
 		var _self = this;
-		var _currnetQueryReusltData = _self._currnetQueryReusltData;
-		var columnTypeArr = _currnetQueryReusltData.column;
-		if(_currnetQueryReusltData.viewType != 'grid'){
-			columnTypeArr = [];
+
+		var cacheResultInfo = this._cacheResultInfo[this.curentSqlEditorId];
+
+		if(VARSQL.isUndefined(cacheResultInfo) || cacheResultInfo.isColumnView===true){
+			return ; 
 		}
+
+		cacheResultInfo.isColumnView = true; 
+
+		var resultData = cacheResultInfo.resultData;
+
+		var columnTypeArr = resultData.column;
 
 		var gridObj = $.pubGrid(_self.currnetDataGridColumnSelector);
 
@@ -5382,21 +5364,20 @@ _ui.sqlDataArea =  {
 
 		$.pubGrid(_self.currnetDataGridColumnSelector,{
 			height:'auto'
-			,autoResize : false
 			,page :false
 			,setting : {
 				enabled : true
 				,enableSearch : true
 			}
-			,asideOptions :{
-				lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
+			,asideOptions: {
+				lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 			}
-			,tColItem : [
+			,tColItem: [
 				{label: "NAME", key: "label"}
 				,{label: "TYPE", key: "dbType"}
 			]
-			,tbodyItem :columnTypeArr
-			,bodyOptions :{
+			,tbodyItem: columnTypeArr
+			,bodyOptions: {
 				cellDblClick : function (rowItem){
 					_ui.SQL.addTextToEditorArea('', {type:'column', header : rowItem.item});
 				}
@@ -5414,22 +5395,15 @@ _ui.sqlDataArea =  {
 
 					},
 					items: [
-						{key : "copy" , "name": "복사"}
+						{key : "copy" , "name": "Copy"}
 					]
 				}
 			}
 		});
 	}
-	//result message area
-	,getResultMsgAreaObj:function(){
-		var _self = this;
-
-		if(_self.resultMsgAreaObj==null){
-			_self.resultMsgAreaObj = $(_self.options.resultMsgAreaWrap);
-		}
-		return _self.resultMsgAreaObj;
-	}
 	,resize : function (dimension){
+		if(this.resultTab) this.resultTab.refresh()
+		
 		try{
 			$.pubGrid(this.currnetDataGridSelector).resizeDraw();
 		}catch(e){
@@ -5694,8 +5668,8 @@ _ui.text={
 
 		if(_this.modalEle === false){
 			var modalEle = $('#data-copy-modal');
-			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
-			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="복사" style="overflow:hidden" class="pretty-view-area"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql" contenteditable="true"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
+			//$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="Copy" style="overflow:hidden"><textarea id="data-copy-area" class="wh100"></textarea></div>');
+			$(_g_options.hiddenArea).append('<div id=\"data-copy-modal\" title="Copy" style="overflow:hidden" class="pretty-view-area"><pre id="data-copy-area" class="user-select-on prettyprint lang-sql" contenteditable="true"></pre><textarea id="data-orgin-area" style="display:none;"></textarea></div>');
 			modalEle = $('#data-copy-modal');
 
 			_this.modalEle = modalEle.dialog({
@@ -5823,7 +5797,7 @@ function generateSQL(scriptInfo){
 			}
 			reval.push(item[VARSQLCont.tableColKey.NAME]);
 
-			valuesStr.push(queryParameter(param_yn, item , keyMode));
+			valuesStr.push(queryParameter(param_yn, item, keyMode));
 
 		}
 		reval.push(' )'+VARSQLCont.constants.newline +'values( '+ valuesStr.join('')+' )');
@@ -5860,8 +5834,7 @@ function generateSQL(scriptInfo){
 
 		var item;
 		var keyStr = [];
-		var firstFlag = true;
-
+		
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
 			var constraintVal = item[VARSQLCont.tableColKey.CONSTRAINTS] ||'';
@@ -5882,9 +5855,8 @@ function generateSQL(scriptInfo){
 	return reval.join('');
 }
 
-function queryParameter(flag, columnInfo , colNameCase){
-	var colName = columnInfo[VARSQLCont.tableColKey.NAME]
-		, dataType = columnInfo[VARSQLCont.tableColKey.DATA_TYPE];
+function queryParameter(flag, columnInfo, colNameCase){
+	var colName = columnInfo[VARSQLCont.tableColKey.NAME];
 
 	if(flag=='Y'){
 		if(colNameCase=='camel'){
@@ -5892,14 +5864,7 @@ function queryParameter(flag, columnInfo , colNameCase){
 		}
 		return VARSQLCont.constants.queryParameterPrefix+colName+VARSQLCont.constants.queryParameterSuffix;
 	}else{
-		var tmpType = VARSQLCont.dataType.getDataTypeInfo(dataType);
-
-		if(tmpType.isNum===true){
-			return 1;
-		}else{
-			var defaultVal =tmpType.val;
-			return defaultVal==""?"'"+toLowerCase(colName)+"'" :defaultVal;
-		}
+		return VARSQLCont.getDefaultValue(columnInfo);
 	}
 }
 
@@ -6268,7 +6233,7 @@ function addTextChangeFormat(queryInfo, colInfo){
 	var revalStr = [];
 
 	revalStr.push(templateInfo.operator);
-
+	
 	for(var i =0; i < headerArr.length; i++){
 		var headerItem = headerArr[i];
 

@@ -76,6 +76,21 @@ EXEC sp_updateextendedproperty 'MS_Description', '{{COMMENT}}', 'SCHEMA', dbo, '
 EXEC sp_dropextendedproperty 'MS_Description', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN ' , {{COLUMN_NAME}}
 		</columnDropComment>
 		
+		<constraintKey>
+{{#ddlTableKey keyList objectName dbType}}
+  {{#xif type '==' 'PK'}}
+	{{#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+  {{#xif type '==' 'UQ'}}
+	{{#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+	{{/each}}
+  {{/xif}}
+{{/ddlTableKey}}
+		</constraintKey>
+		
 	</table>
 
 	<!-- function 생성-->

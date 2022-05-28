@@ -8,33 +8,20 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+
+import com.varsql.core.common.constants.VarsqlConstants;
 
 public final class VarsqlDateUtils {
 
 	private VarsqlDateUtils() {
 	};
 
-	// 날짜 포켓.
-	final static String YEAR_FORMAT = "yyyy";
-	
-	final static String DATE_FORMAT = "yyyy-MM-dd";
-
-	final static String TIME_FORMAT = "HH:mm:ss.SSS";
-
-	final static String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-
-	final static DateTimeFormatter yearFormatter = DateTimeFormat.forPattern(YEAR_FORMAT);
-	final static DateTimeFormatter dateFormatter = DateTimeFormat.forPattern(DATE_FORMAT);
-	final static DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
-	final static DateTimeFormatter timestampFormatter = DateTimeFormat.forPattern(TIMESTAMP_FORMAT);
-
 	public enum DateCheckType {
 		YEAR, MONTH, DAY, HOUR, MINUTES
 	}
 
 	public static String year() {
-		return new DateTime(System.currentTimeMillis()).toString(yearFormatter);
+		return new DateTime(System.currentTimeMillis()).toString(VarsqlConstants.yearFormatter);
 	}
 	public static String format(String format) {
 		return format(format, new Date());
@@ -48,35 +35,51 @@ public final class VarsqlDateUtils {
 	}
 
 	public static String dateFormat(long timeMilli) {
-		return new DateTime(timeMilli).toString(dateFormatter);
+		return new DateTime(timeMilli).toString(VarsqlConstants.dateFormatter);
 	}
 
 	public static String dateFormat(Date date) {
-		return new DateTime(date).toString(dateFormatter);
+		return new DateTime(date).toString(VarsqlConstants.dateFormatter);
 	}
 
 	public static String timeFormat(Time time) {
-		return new DateTime(time).toString(timeFormatter);
+		return new DateTime(time).toString(VarsqlConstants.timeFormatter);
 	}
 
 	public static String timeFormat(long timeMilli) {
-		return new DateTime(timeMilli).toString(timeFormatter);
+		return new DateTime(timeMilli).toString(VarsqlConstants.TIME_MILLISECOND_FORMAT);
+	}
+	
+	public static String timeMilliFormat(Time time) {
+		return new DateTime(time).toString(VarsqlConstants.TIME_MILLISECOND_FORMAT);
+	}
+	
+	public static String timeMilliFormat(long timeMilli) {
+		return new DateTime(timeMilli).toString(VarsqlConstants.timeFormatter);
 	}
 
 	public static String timestampFormat(Timestamp timestamp) {
-		return new DateTime(timestamp).toString(timestampFormatter);
+		return new DateTime(timestamp).toString(VarsqlConstants.timestampFormatter);
 	}
 
 	public static String timestampFormat(long timeMilli) {
-		return new DateTime(timeMilli).toString(timestampFormatter);
+		return new DateTime(timeMilli).toString(VarsqlConstants.timestampFormatter);
+	}
+	
+	public static String timestampMilliFormat(Timestamp timestamp) {
+		return new DateTime(timestamp).toString(VarsqlConstants.timestampMilliFormatter);
+	}
+	
+	public static String timestampMilliFormat(long timeMilli) {
+		return new DateTime(timeMilli).toString(VarsqlConstants.timestampMilliFormatter);
 	}
 	
 	public static String currentDateFormat() {
-		return new DateTime().toString(dateFormatter);
+		return new DateTime().toString(VarsqlConstants.dateFormatter);
 	}
 
 	public static String currentDateTimeFormat() {
-		return new DateTime().toString(timestampFormatter);
+		return new DateTime().toString(VarsqlConstants.timestampFormatter);
 	}
 
 	/**
@@ -88,7 +91,7 @@ public final class VarsqlDateUtils {
 	 * @return
 	 */
 	public static Date stringToDate(String date) {
-		return DateTime.parse(date, dateFormatter).toDate();
+		return DateTime.parse(date, VarsqlConstants.dateFormatter).toDate();
 	}
 
 	public static Date stringToDate(String date, String format) {
@@ -104,7 +107,7 @@ public final class VarsqlDateUtils {
 	 * @return
 	 */
 	public static Timestamp stringToTimestamp(String date) {
-		return new Timestamp(DateTime.parse(date, timestampFormatter).getMillis());
+		return new Timestamp(DateTime.parse(date, VarsqlConstants.timestampFormatter).getMillis());
 	}
 
 	public static Timestamp stringToTimestamp(String date, String format) {
@@ -152,18 +155,21 @@ public final class VarsqlDateUtils {
 
 		if (checkType == null)
 			return null;
+		
+		boolean addFlag = num < 0; 
+		num = Math.abs(num);
 
 		DateTime datetime = new DateTime();
 		if (DateCheckType.YEAR.equals(checkType)) {
-			return (num < 0 ? datetime.minusYears(num).toDate() : datetime.plusYears(num).toDate());
+			return (addFlag ? datetime.minusYears(num).toDate() : datetime.plusYears(num).toDate());
 		} else if (DateCheckType.MONTH.equals(checkType)) {
-			return (num < 0 ? datetime.minusMonths(num).toDate() : datetime.plusMonths(num).toDate());
+			return (addFlag ? datetime.minusMonths(num).toDate() : datetime.plusMonths(num).toDate());
 		} else if (DateCheckType.HOUR.equals(checkType)) {
-			return (num < 0 ? datetime.minusHours(num).toDate() : datetime.plusHours(num).toDate());
+			return (addFlag ? datetime.minusHours(num).toDate() : datetime.plusHours(num).toDate());
 		} else if (DateCheckType.MINUTES.equals(checkType)) {
-			return (num < 0 ? datetime.minusMinutes(num).toDate() : datetime.plusMinutes(num).toDate());
+			return (addFlag ? datetime.minusMinutes(num).toDate() : datetime.plusMinutes(num).toDate());
 		} else {
-			return (num < 0 ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
+			return (addFlag ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
 		}
 	}
 	
@@ -194,18 +200,21 @@ public final class VarsqlDateUtils {
 	public static Date calcDate(Date date, int num, DateCheckType checkType) {
 		if (checkType == null)
 			return null;
-
+		
+		boolean addFlag = num < 0; 
+		num = Math.abs(num);
+		
 		DateTime datetime = new DateTime(date);
 		if (DateCheckType.YEAR.equals(checkType)) {
-			return (num < 0 ? datetime.minusYears(num).toDate() : datetime.plusYears(num).toDate());
+			return (addFlag ? datetime.minusYears(num).toDate() : datetime.plusYears(num).toDate());
 		} else if (DateCheckType.MONTH.equals(checkType)) {
-			return (num < 0 ? datetime.minusMonths(num).toDate() : datetime.plusMonths(num).toDate());
+			return (addFlag ? datetime.minusMonths(num).toDate() : datetime.plusMonths(num).toDate());
 		} else if (DateCheckType.HOUR.equals(checkType)) {
-			return (num < 0 ? datetime.minusHours(num).toDate() : datetime.plusHours(num).toDate());
+			return (addFlag ? datetime.minusHours(num).toDate() : datetime.plusHours(num).toDate());
 		} else if (DateCheckType.MINUTES.equals(checkType)) {
-			return (num < 0 ? datetime.minusMinutes(num).toDate() : datetime.plusMinutes(num).toDate());
+			return (addFlag ? datetime.minusMinutes(num).toDate() : datetime.plusMinutes(num).toDate());
 		} else {
-			return (num < 0 ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
+			return (addFlag ? datetime.minusDays(num).toDate() : datetime.plusDays(num).toDate());
 		}
 	}
 	

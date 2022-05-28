@@ -124,9 +124,9 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/logList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid ,HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		return sqlStatsServiceImpl.findSqlLog(vconnid,searchParameter);
+		return sqlStatsServiceImpl.findSqlLog(vconnid, searchParameter);
 	}
 
 }

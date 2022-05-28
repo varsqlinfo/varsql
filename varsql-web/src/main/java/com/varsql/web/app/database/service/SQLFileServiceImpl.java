@@ -65,13 +65,14 @@ public class SQLFileServiceImpl{
 
 			if(StringUtils.isBlank(sqlFileRequestDTO.getPrevSqlId())) {
 				sqlFileTabEntityRepository.updatePrevIdBySqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getFirstSqlId(), sqlFileRequestDTO.getSqlId());
+				moveFileTabInfo.setPrevSqlId(null);
 			}else {
 				// 이동 할 위치 이전  sqlid 업데이트
 				sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getPrevSqlId(), sqlFileRequestDTO.getSqlId());
+				moveFileTabInfo.setPrevSqlId(sqlFileRequestDTO.getPrevSqlId());
 			}
 
 			moveFileTabInfo.setViewYn(true);
-			moveFileTabInfo.setPrevSqlId(sqlFileRequestDTO.getPrevSqlId());
 			sqlFileTabEntityRepository.save(moveFileTabInfo);
 		}else{
 

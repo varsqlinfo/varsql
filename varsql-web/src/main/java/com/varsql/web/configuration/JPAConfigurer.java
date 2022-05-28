@@ -152,7 +152,7 @@ public class JPAConfigurer {
 
     @Bean
     public com.querydsl.sql.Configuration querydslConfiguration() {
-        SQLTemplates templates = H2Templates.builder().build();
+        SQLTemplates templates = null;
 
         DBVenderType dbType = DBVenderType.getDBType(Configuration.getInstance().getDbType());
 

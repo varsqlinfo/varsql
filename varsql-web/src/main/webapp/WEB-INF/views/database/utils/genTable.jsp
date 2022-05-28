@@ -83,7 +83,7 @@
 <varsql:editorResource editorHeight="100%"/>
 
 <script>
-VARSQLCont.init('${dbtype}' , {});
+VARSQLCont.init('${dbtype}');
 
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'

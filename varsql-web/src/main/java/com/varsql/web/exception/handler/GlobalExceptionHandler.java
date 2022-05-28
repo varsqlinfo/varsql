@@ -79,7 +79,7 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=SQLException.class)
 	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("sqlExceptionHandler",ex);
+		insertExceptionLog("sqlExceptionHandler",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(RequestResultCode.ERROR);
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=VarsqlAppException.class)
 	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("VarsqlAppException",ex);
+		insertExceptionLog("VarsqlAppException",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode());
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=VarsqlRuntimeException.class)
 	public void varsqlRuntimeExceptionHandler(VarsqlRuntimeException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("varsqlRuntimeException",ex);
+		insertExceptionLog("varsqlRuntimeException",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setResultCode(ex.getErrorCode());
@@ -149,7 +149,7 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=ConnectionException.class)
 	public void connectionExceptionHandler(ConnectionException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("connectionException",ex);
+		insertExceptionLog("connectionException",ex);
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"connError");
@@ -169,7 +169,7 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value=ConnectionFactoryException.class)
 	public void connectionFactoryExceptionHandler(ConnectionFactoryException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("connectionFactoryException",ex);
+		insertExceptionLog("connectionFactoryException",ex);
 
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"connCreateError");
@@ -277,11 +277,15 @@ public class GlobalExceptionHandler{
 	@ExceptionHandler(value= {ClassNotFoundException.class, NoClassDefFoundError.class})
 	public void classExceptionHandler(ClassNotFoundException ex, HttpServletRequest request, HttpServletResponse response){
 
-		commonServiceImpl.insertExceptionLog("classExceptionHandler",ex);
+		insertExceptionLog("classExceptionHandler",ex);
 
 		ResponseResult result = new ResponseResult();
 		result.setMessage(ex.getMessage());
 		exceptionRequestHandle(ex, request, response ,result);
+	}
+
+	private void insertExceptionLog(String string, Throwable ex) {
+		commonServiceImpl.insertExceptionLog("sqlExceptionHandler",ex);
 	}
 
 	@ExceptionHandler(value=Exception.class)
@@ -403,17 +407,20 @@ public class GlobalExceptionHandler{
 
 	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response, ResponseResult result, String pageName) {
 
-		logger.error("exceptionRequestHandle url : {}, parameter : {} ",request.getRequestURL(), HttpUtils.getServletRequestParam(request));
+		logger.error("exceptionRequestHandle exception class : {}, url : {}, parameter : {} ", ex.getClass(), request.getRequestURL(), HttpUtils.getServletRequestParam(request));
 		logger.error("exceptionRequestHandle :{} ", ex.getMessage() , ex);
 
 		CodeEnumValue errorCode = RequestResultCode.ERROR;
 
-		if(result.getResultCode() == null) {
+		if(RequestResultCode.SUCCESS.equals(result.getResultCode())) {
 			if(VartechReflectionUtils.hasMethod(ex.getClass(), "getErrorCode")) {
-				Object obj =VartechReflectionUtils.getProperty(ex, "getErrorCode");
-
-				if(obj == null) {
-					errorCode = (CodeEnumValue)obj;
+				try {
+					Object obj = VartechReflectionUtils.invokeMethod(ex, "getErrorCode", new Object[0]);
+					if(obj != null) {
+						errorCode = (CodeEnumValue)obj;
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}else {

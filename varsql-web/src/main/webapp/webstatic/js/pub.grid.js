@@ -417,6 +417,8 @@ var formatter= {
 
 		fixedNum = fixedNum || 0;
 
+		
+
 		if (!isFinite(num)) {
 			return num;
 		}
@@ -1309,7 +1311,7 @@ Plugin.prototype ={
 				_this.moveVerticalScroll({rowIdx : rowIdx});
 			}
 		}else if(subMode =='update'){
-			this.drawGrid('vscroll');
+			_this.drawGrid('vscroll');
 		}else{
 			_this.drawGrid(mode,true);
 		}
@@ -1317,8 +1319,6 @@ Plugin.prototype ={
 		if(_this.options.navigation.usePaging === true) {
 			_this.setPaging(mode=='init' ? opt.paging : (pdata.paging ||{}));
 		}
-
-		_this._setStatusMessage();
 
 		if(_this.config.searchOn===true){
 			_this.gridElement.find('.pubGrid-setting-btn').addClass('search-on');
@@ -1683,7 +1683,6 @@ Plugin.prototype ={
 		var itemVal = (_$renderer[ rendererType ] || _$renderer.text)(this, thiItem, rowItem, mode);
 
 		if(addEle){
-			itemVal = itemVal||'';
 			if(rendererType !='text'){
 				addEle.innerHTML = itemVal;
 				itemVal = '';
@@ -2071,6 +2070,8 @@ Plugin.prototype ={
 			}else{
 				_this.element.container.find('[rowinfo="'+i+'"]').show();
 			}
+
+			this._setStatusMessage();
 		}
 	}
 	/**
@@ -2111,12 +2112,17 @@ Plugin.prototype ={
 		$('#'+this.prefix+'_hscroll').css({'height' : this.options.scroll.horizontal.height});
 
 		if(this.options.tbodyItem.length < 1){
+			if(this.options.message.empty ==''){
+				this.element.body.find('.pubGrid-empty-msg').empty();	
+				return ;
+			}
 			// empty message
 			if(isFunction(this.options.message.empty)){
 				this.element.body.find('.pubGrid-empty-msg').empty().html(this.options.message.empty());
-			}else{
-				this.element.body.find('.pubGrid-empty-msg .empty-text').empty().html(this.options.message.empty);
+				return ; 
 			}
+
+			this.element.body.find('.pubGrid-empty-msg .empty-text').empty().html(this.options.message.empty);
 		}
 	}
 	/**
@@ -3152,11 +3158,11 @@ Plugin.prototype ={
 				//console.log('111');
 								
 				//console.log('111111111');
-			}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
+			}).on('dragenter.pubGrid.dragitem', '.label-wrapper', function (e){
 				
 				return false; // mouse  cursor 이상 현상 제거 하기 위해서 처리함. 
 				
-			}).on('dragend.pubtab.dragitem',  function (e){
+			}).on('dragend.pubGrid.dragitem',  function (e){
 				//var dt = e.originalEvent.dataTransfer;
 				e.originalEvent.dataTransfer.clearData()
 				

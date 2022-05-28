@@ -33,14 +33,7 @@ public enum LocaleConstants {
 	}
 
 	public static Locale parseLocaleString(String locale) {
-		if(!StringUtils.isBlank(locale)) {
-			LocaleConstants reval = getLocaleConstantsVal(locale.toUpperCase());
-
-			if(reval !=null) {
-				return new Locale(reval.getLocale());
-			}
-		}
-		return null;
+		return new Locale(getLocaleConstantsVal(locale).getLocale());
 	}
 
 	/**
@@ -48,23 +41,25 @@ public enum LocaleConstants {
 	 * @param locale
 	 * @return
 	 */
-	private static LocaleConstants getLocaleConstantsVal(String locale) {
+	public static LocaleConstants getLocaleConstantsVal(String locale) {
+		if(locale==null) {
+			locale = "";
+		}else {
+			locale = locale.toUpperCase();
+		}
+		
 		String secondLocale = null;
 		if(locale.length() > 2) {
 			secondLocale = locale.substring(0,2);
 		}
 
-		LocaleConstants secondLocaleConstants= null;
 		for(LocaleConstants localeConstant : LocaleConstants.values()) {
-			if(localeConstant.name().equals(locale)) {
+			String localeCodeName = localeConstant.name(); 
+			if(localeCodeName.equals(locale) || localeCodeName.equals(secondLocale)) {
 				return localeConstant;
-			}
-
-			if(localeConstant.name().equals(secondLocale)) {
-				secondLocaleConstants = localeConstant;
-			}
+			}			
 		}
-		return secondLocaleConstants;
+		return LocaleConstants.KO;
 	}
 
 }

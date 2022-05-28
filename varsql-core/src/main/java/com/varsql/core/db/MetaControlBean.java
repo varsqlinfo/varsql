@@ -14,8 +14,6 @@ import com.varsql.core.db.ddl.script.DDLScript;
 import com.varsql.core.db.ddl.script.DDLScriptOTHER;
 import com.varsql.core.db.meta.DBMeta;
 import com.varsql.core.db.meta.DBMetaOTHER;
-import com.varsql.core.db.meta.handler.DBMetaHandler;
-import com.varsql.core.db.meta.handler.DBMetaHandlerOTHER;
 import com.varsql.core.db.report.table.TableReport;
 import com.varsql.core.db.report.table.TableReportOTHER;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -44,8 +42,6 @@ public class MetaControlBean {
 	private DataTypeFactory dataTypeFactory;
 	private TableReport tableReport;
 
-	private DBMetaHandler dbMetaHandler;
-
 	private String dbVenderName;
 
 	public MetaControlBean(String db){
@@ -69,13 +65,6 @@ public class MetaControlBean {
 		// script object load
 		try {
 			this.ddlScript = getBeanObject(DDLScriptOTHER.class, DDLScript.class);
-		} catch (Exception e) {
-			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
-		}
-
-		// result set meata handler load
-		try {
-			this.dbMetaHandler = getBeanObject(DBMetaHandlerOTHER.class, DBMetaHandler.class);
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
 		}
@@ -249,10 +238,6 @@ public class MetaControlBean {
 
 	public DataTypeFactory getDataTypeImpl(){
 		return this.dataTypeFactory;
-	}
-
-	public DBMetaHandler getDBMetaHandlerImpl() {
-		return dbMetaHandler;
 	}
 
 	public TableReport getTableReportImpl() {

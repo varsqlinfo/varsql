@@ -30,10 +30,12 @@ import com.varsql.web.model.entity.db.DBConnHistEntity;
 import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
 import com.varsql.web.repository.db.DBConnTabEntityRepository;
+import com.varsql.web.repository.spec.DBConnTabSpec;
 import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.sort.TreeDataSort;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -273,12 +275,31 @@ public class DatabaseServiceImpl{
 		}else if("del".equals(mode)){
 			DBConnTabEntity dte = dbConnTabEntityRepository.findByViewidAndVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getVconnid());
 
-			dbConnTabEntityRepository.updateNextTabPrevVconnid(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid() , dte.getPrevVconnid());
-
-			dbConnTabEntityRepository.deleteConnTabInfo(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid());
+			dbConnTabEntityRepository.updateNextTabPrevVconnid(dte.getVconnid(), dte.getViewid(), dte.getPrevVconnid());
+			dbConnTabEntityRepository.delete(dte);
 		}else if("view".equals(mode)){
 			dbConnTabEntityRepository.updateConnTabDisable(dbConnTabRequestDTO.getViewid());
 			dbConnTabEntityRepository.updateConnTabEnable(dbConnTabRequestDTO.getVconnid(), dbConnTabRequestDTO.getViewid());
+		}else if("moveTab".equals(mode)){
+			
+			DBConnTabEntity currentTabInfo = dbConnTabEntityRepository.findByViewidAndVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getVconnid());
+			
+			// 이동전 앞에 vconnid 업데이트.
+			dbConnTabEntityRepository.updateNextTabPrevVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getVconnid(), currentTabInfo.getPrevVconnid());
+
+			if(StringUtils.isBlank(dbConnTabRequestDTO.getPrevVconnid())) {
+				dbConnTabEntityRepository.updatePrevIdByVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getFirstVconnid(), dbConnTabRequestDTO.getVconnid());
+				currentTabInfo.setPrevVconnid(null);
+			}else {
+				// 이동 할 위치 이전  sqlid 업데이트
+				dbConnTabEntityRepository.updateNextTabPrevVconnid(dbConnTabRequestDTO.getViewid(), dbConnTabRequestDTO.getPrevVconnid(), dbConnTabRequestDTO.getVconnid());
+							
+				currentTabInfo.setPrevVconnid(dbConnTabRequestDTO.getPrevVconnid());
+			}
+			
+			currentTabInfo.setViewYn(true);
+			
+			dbConnTabEntityRepository.save(currentTabInfo);
 		}
 
 		result.setItemOne(dbConnTabRequestDTO);
@@ -288,38 +309,39 @@ public class DatabaseServiceImpl{
 
 	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
 	public List findTabInfo() {
-		TreeDataSort tds = new TreeDataSort("conuid", "prevConuid");
 
+		List<DBConnTabResponseDTO> resultList = new ArrayList<DBConnTabResponseDTO>();
 		try {
 			String viewid = SecurityUtil.userViewId();
 
-			List<DBConnTabEntity> tabList = dbConnTabEntityRepository.findAllByViewid(viewid);
+			List<DBConnTabEntity> tabList = dbConnTabEntityRepository.findAll(DBConnTabSpec.findTabs(viewid));
 
+			TreeDataSort tds = new TreeDataSort(DBConnTabEntity.VCONNID, DBConnTabEntity.PREV_VCONNID);
+			tds.sortTreeData(tabList);
+			List<DBConnTabEntity> sortList = tds.getSortList();
+			
 			User user = SecurityUtil.loginInfo();
 			Map<String, DatabaseInfo> databaseInfo= user.getDatabaseInfo();
 			Map<String,String> vconnidNconuid = user.getVconnidNconuid();
 
 			List<String> notExistsVconnid = new ArrayList<>();
-
-			tabList.forEach(item ->{
+			
+			for(DBConnTabEntity item:sortList) {
 				String vconnid = item.getVconnid();
 				if(vconnidNconuid.containsKey(vconnid)) {
 					String conuid = vconnidNconuid.get(vconnid);
-					DatabaseInfo di= databaseInfo.get(conuid);
-
-					tds.sortTreeData(
-						DBConnTabResponseDTO.builder()
-						.conuid(conuid)
-						.name(di.getName())
-						.prevConuid(vconnidNconuid.get(item.getPrevVconnid()))
-						.viewYn(item.isViewYn())
-						.build()
-					);
+					
+					resultList.add(DBConnTabResponseDTO.builder()
+					.conuid(conuid)
+					.name(databaseInfo.get(conuid).getName())
+					.prevConuid(vconnidNconuid.get(item.getPrevVconnid()))
+					.viewYn(item.isViewYn())
+					.build());
 				}else {
 					notExistsVconnid.add(vconnid);
 				}
-			});
-
+			}
+			
 			if(notExistsVconnid.size() > 0) {
 				dbConnTabEntityRepository.deleteAllTabInfo(viewid, notExistsVconnid);
 			}
@@ -327,9 +349,8 @@ public class DatabaseServiceImpl{
 		}catch(Exception e) {
 			logger.error("findTabInfo : {} ", e.getMessage() , e);
 		}
-		List sortList = tds.getSortList();
 
-		return sortList ==null? new ArrayList() :sortList;
+		return resultList;
 	}
 
 	public List<UserPermissionInfoDTO> findUserPermission() {

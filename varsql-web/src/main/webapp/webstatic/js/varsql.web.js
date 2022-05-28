@@ -269,23 +269,21 @@ _$base.localStorage = function(opt){
 	}
 }
 
-
 /**
  * message
  */
 _$base.messageFormat =function (fmt, msgParam){
 
-	if(_$base.isUndefined(msgParam)){
-		var reval = VARSQL_LANG[fmt];
-
-		if(!_$base.isUndefined(reval)){
-			return reval;
-		}
-	}else{
-		var tmpFmt = VARSQL_LANG[fmt];
-		fmt = tmpFmt ? tmpFmt :fmt;
+	var msgFormat = VARSQL_LANG[fmt];
+	
+	if(_$base.isUndefined(msgFormat)){
+		msgFormat = fmt;
 	}
-
+	
+	if(_$base.isUndefined(msgParam)){
+		return msgFormat;
+	}
+	
 	msgParam = msgParam||{};
 
 	var strFlag = false
@@ -304,7 +302,7 @@ _$base.messageFormat =function (fmt, msgParam){
 
     this.$$index = 0;
 
-    return fmt.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function(match, key) {
+    return msgFormat.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function(match, key) {
 		if(strFlag){
 			return msgParam;
 		}else if(arrFlag){
@@ -404,7 +402,15 @@ function fnReqCheck(data ,opts){
 		}
 		return false;
 	}else if(resultCode >= 80000 && resultCode < 90000){ // connection error
-		alert(_$base.messageFormat('error.'+resultCode));
+		var msgCode = 'error.'+resultCode; 
+		var msg = _$base.messageFormat(msgCode, {errorCode : resultCode});
+		
+		if(msgCode == msg){
+			msg = _$base.messageFormat('error.default', {errorCode : resultCode});	
+		}
+		
+		alert(msg);
+		
 		return false;
 	}
 
@@ -764,6 +770,7 @@ _$base.getFileSizePerFile= function (){
 _$base.socket ={
 	stompClient : null
 	,connRetryCount : 0
+	,isCreate : false
 	,maxRetry :10
 	,subScripeActive :{}
 	//알림 수신
@@ -805,6 +812,8 @@ _$base.socket ={
 	, createConnection : function (endpoint, opts){
 		var _this = this;
 
+		this.isCreate = true; 
+
 		this.subScripeActive = {};
 
 		var stompClient = Stomp.over(new SockJS(_$base.getContextPathUrl("/ws/"+ endpoint) , null, {transports : ['websocket'] }));
@@ -831,6 +840,13 @@ _$base.socket ={
 		if(this.stompClient != null){
 			this.stompClient.disconnect();
 		}
+	}
+	,isConnect : function (){
+		if(this.stompClient != null){
+			return this.stompClient.connected;
+		}
+		
+		return false; 
 	}
 }
 
@@ -1050,7 +1066,7 @@ _$base.unload = function (mode){
 	        	keychk = true;
 	        }
 		}
-
+		
 	    if(keychk){
 
 			if(mode =='security'){
@@ -1075,7 +1091,6 @@ _$base.unload = function (mode){
 
 				if(mode=='top'){
 					if(window.userMain) {
-						databaseReqCancel();
 						window.userMain.pageRefresh();
 						return false;
 					}
@@ -1083,7 +1098,8 @@ _$base.unload = function (mode){
 
 				if(top != window){
 					if(top.userMain){
-						top.userMain.viewLoadMessage();
+						top.userMain.pageRefresh();
+						return false;
 					}
 				}
 				databaseReqCancel();

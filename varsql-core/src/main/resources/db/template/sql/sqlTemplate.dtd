@@ -5,7 +5,7 @@
 <!-- ddl create template -->
 <!ELEMENT table (create| rename| addComment| modifyComment| dropComment| select| insert | update | delete | selectInsert | merge| createSelect
 
-	|columnAdd |columnRename |columnModify |columnDrop |columnAddComment |columnModifyComment |columnDropComment
+	|columnAdd |columnRename |columnModify |columnDrop |columnAddComment |columnModifyComment |columnDropComment |constraintKey
 )+>
 
 <!ELEMENT view (create| rename| addComment| modifyComment| dropComment)+>
@@ -49,3 +49,6 @@
 <!ELEMENT createSelect (#PCDATA)>
 <!-- // dml sql example end -->
 
+<!-- constraint start -->
+<!ELEMENT constraintKey (#PCDATA)>
+<!-- //constraint end -->

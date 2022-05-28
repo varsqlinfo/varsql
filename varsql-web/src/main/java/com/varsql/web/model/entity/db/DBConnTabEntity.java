@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.converter.BooleanToYnConverter;
@@ -42,7 +43,7 @@ public class DBConnTabEntity extends AbstractRegAuditorModel{
 	@Column(name ="VIEW_YN")
 	@Convert(converter = BooleanToYnConverter.class)
 	private boolean viewYn;
-
+	
 	@Builder
 	public DBConnTabEntity(String viewid, String vconnid, String prevVconnid, boolean viewYn) {
 		this.viewid = viewid;

@@ -48,9 +48,15 @@
 	
 	<!-- table adn column info -->
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
-		select atc.COLUMN_ID, ATC.TABLE_NAME, atc.COLUMN_NAME, atc.DATA_TYPE, atc.CHAR_LENGTH
-			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH, 'VARCHAR', atc.CHAR_LENGTH, 'VARCHAR2', atc.CHAR_LENGTH, 'NCHAR', atc.CHAR_LENGTH, 'NVARCHAR', atc.CHAR_LENGTH, 'NVARCHAR2', atc.CHAR_LENGTH, atc.DATA_PRECISION) as COLUMN_SIZE
-			, atc.DATA_SCALE as DECIMAL_DIGITS, atc.NULLABLE as IS_NULLABLE, atc.DATA_DEFAULT as COLUMN_DEF
+		select atc.COLUMN_ID
+			, atc.TABLE_NAME
+			, atc.COLUMN_NAME
+			, atc.DATA_TYPE
+			, atc.CHAR_LENGTH as COLUMN_SIZE
+			, atc.DATA_PRECISION as DATA_PRECISION
+			, atc.DATA_SCALE as DECIMAL_DIGITS
+			, atc.NULLABLE as IS_NULLABLE
+			, atc.DATA_DEFAULT as COLUMN_DEF
 			, nvl(ACC.COMMENTS, null) as "COMMENT"
 			, f.CONSTRAINTS
 	<choose>
@@ -172,15 +178,17 @@
 		) tbl ,
 		(
 			select
+				
 				atc.COLUMN_ID
-				,ATC.TABLE_NAME
-				,atc.COLUMN_NAME 
-				, atc.DATA_TYPE  
-				, atc.CHAR_LENGTH as DECIMAL_DIGITS
-				, atc.DATA_LENGTH as COLUMN_SIZE
-				, atc.NULLABLE  as IS_NULLABLE
+				, atc.TABLE_NAME
+				, atc.COLUMN_NAME
+				, atc.DATA_TYPE
+				, atc.CHAR_LENGTH as COLUMN_SIZE
+				, atc.DATA_PRECISION as DATA_PRECISION
+				, atc.DATA_SCALE as DECIMAL_DIGITS
+				, atc.NULLABLE as IS_NULLABLE
 				, atc.DATA_DEFAULT as COLUMN_DEF
-				, nvl(ACC.COMMENTS,'')  AS "COMMENT" 
+				, nvl(ACC.COMMENTS, null) as "COMMENT"
 	<choose>
 		<when test="baseSchemaFlag">
 			from USER_TAB_COLUMNS atc 	left  join USER_COL_COMMENTS acc 
@@ -631,13 +639,8 @@
 			, atc.DATA_TYPE
 			, atc.DATA_TYPE_MOD
 			, atc.DATA_TYPE_OWNER
-			, DECODE(atc.DATA_TYPE, 'CHAR', atc.CHAR_LENGTH,
-		                         'VARCHAR', atc.CHAR_LENGTH,
-		                         'VARCHAR2', atc.CHAR_LENGTH,
-		                         'NCHAR', atc.CHAR_LENGTH,
-		                         'NVARCHAR', atc.CHAR_LENGTH,
-		                         'NVARCHAR2', atc.CHAR_LENGTH,
-		                         atc.DATA_PRECISION) COLUMN_SIZE
+			, atc.CHAR_LENGTH as COLUMN_SIZE
+			, atc.DATA_PRECISION as DATA_PRECISION
 			, atc.DATA_SCALE as DECIMAL_DIGITS
 			, atc.NULLABLE
 			, atc.CHAR_USED

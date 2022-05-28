@@ -29,6 +29,9 @@ var pluginName = "pubContextMenu"
 		,beforeSelect :function (item){	// 선택전 이벤트.
 
 		}
+		,isEnabled :function (){
+			return true; 
+		}
 	};
 
 function isUndefined(obj){
@@ -343,15 +346,21 @@ Plugin.prototype ={
 
 		_this.contextEvent();
 
-		var disableFlag = $.isFunction(opt.disableItemKey)
-			,beforeSelectFlag = $.isFunction(opt.beforeSelect);
+		var isDisableItemKeyFn = $.isFunction(opt.disableItemKey)
+			, isBeforeSelectFn = $.isFunction(opt.beforeSelect)
+			, isEnabledFn = $.isFunction(opt.isEnabled);
+	
 
 		$(document).off('contextmenu.pubcontext'+this.contextId, _this.selector);
 		$(document).on('contextmenu.pubcontext'+this.contextId, _this.selector, function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 
-			if(disableFlag){
+			if(isEnabledFn && opt.isEnabled() === false){
+				return ; 
+			}
+
+			if(isDisableItemKeyFn){
 				var disableItem = opt.disableItemKey.call(this , opt.items);
 				_this.enableItem();
 
@@ -377,7 +386,7 @@ Plugin.prototype ={
 
 			var $dd = $('#'+ id);
 
-			if(beforeSelectFlag){
+			if(isBeforeSelectFn){
 				opt.beforeSelect.call(this, {evt : e, element : $(this)});
 			}
 

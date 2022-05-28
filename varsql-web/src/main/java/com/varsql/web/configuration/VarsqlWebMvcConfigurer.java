@@ -134,7 +134,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 
 	    registry.addInterceptor(databaseBoardAuthInterceptor()).addPathPatterns(new String[] { "/board/**" });
 
-	    registry.addInterceptor(languageInterceptor()).addPathPatterns("/**");
+	    registry.addInterceptor(languageInterceptor()).excludePathPatterns(SecurityConfigurer.WEB_RESOURCES).addPathPatterns("/**");
 	}
 
     /**

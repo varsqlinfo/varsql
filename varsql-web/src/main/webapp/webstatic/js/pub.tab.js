@@ -18,22 +18,21 @@ var pluginName = "pubTab"
 	,activeFirstItem : true	//로드시 첫번째 item 활성화 여부
 	,enableClickEventChange : false // click event item 변경시에만 활성화
 	,itemPadding: 5			// item padding 값
-	,height : '22px'		// tab height
+	,tabHeight : 25		// tab height
 	,leftMargin : 30		// 왼쪽에 item 있을경우 더 이동할 space
 	,overItemViewMode : 'drop'	// over item  보여질 방법.
-	,dropItemHeight :'auto'		//drop item height
-	,dropItemWidth :'auto'		//drop item width
-	,moveZIndex : 9				// move 영역 z- index
+	,dropdownHeight :'auto'		//drop item height
+	,dropdownWidth :'auto'		//drop item width
+	,isMultipleContainer : true	 // 하나의 컨텐츠 영역만 사용.
+	,useContentContainer : true	// 컨텐츠 영역 사용여부
 	,titleIcon :{
 		left :{
-			overview : true		// mouseover icon view  여부
-			,visible :true		// 기본 보이기 여부.
+			onlyActiveView :true		// 기본 보이기 여부.
 			,html : ''				// 활성시 추가할 html
 			,click: false			// 클릭 이벤트.
 		}
 		,right : {
-			overview : true		// mouseover icon view  여부
-			,visible :true
+			onlyActiveView :false
 			,html : ''				// 활성시 추가할 html
 			,click: false			// 클릭 이벤트.
 		}
@@ -43,6 +42,11 @@ var pluginName = "pubTab"
 	,items:[]							// tab item
 	,click :function (item){			// tab click 옵션
 
+	}
+	,contentViewSelector : false 			// tab content view selector
+	,contentStyleClass : ''
+	,contentRender : function (item, addContentAreaElement){
+		return ; 
 	}
 	,removeItem : false	// remove callback 옵션
 	,blinkClass : 'blinkcss'
@@ -110,8 +114,8 @@ function arrayRemove(array, value){
 }
 
 $(document).on('mousedown.pubtab', 'html', function (e) {
-	if(e.which !==2 && $(e.target).closest('.pubTab-drop-item-wrapper').length < 1){
-		$('.pubTab-move-area.pubTab-open').removeClass('pubTab-open');
+	if(e.which !==2 && $(e.target).closest('.pubTab-dropdown-wrapper').length < 1){
+		$('.pubTab-dropdown-wrapper.pubTab-open').removeClass('pubTab-open');
 	}
 });
 
@@ -138,17 +142,16 @@ Plugin.prototype ={
 
 		var titleIcon =_opts.titleIcon;
 
-		var addHtml = '';
-
 		var iconInfo ={left :{} , right:{}};
 
 		if(titleIcon){
-			if(titleIcon.left && titleIcon.left.html != ''){
-				iconInfo.left.html =  '<span class="pubTab-icon-area '+(titleIcon.left.visible === false ? 'visible-hide' : '')+' '+(titleIcon.left.overview === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+titleIcon.left.html+'</span></span>';
+			var leftIcon =titleIcon.left; 
+			if(leftIcon && leftIcon.html != ''){
+				iconInfo.left.html =  '<span class="pubTab-icon-area '+(leftIcon.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+leftIcon.html+'</span></span>';
 			}
 
 			if(titleIcon.right && titleIcon.right.html != ''){
-				iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.visible === false ? 'hide' : '')+' '+(titleIcon.right.overview === false ? 'pubTab-icon-hover-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
+				iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
 			}
 		}
 
@@ -235,12 +238,12 @@ Plugin.prototype ={
 				e.stopPropagation();
 
 				var sEle = $(this)
-					,tabArea=sEle.closest('.pubTab-move-area')
+					,tabArea=sEle.closest('.pubTab-more-button')
 
-				if(tabArea.hasClass('pubTab-open')){
-					tabArea.removeClass('pubTab-open');
+				if(_this.element.dropdownAreaElement.hasClass('pubTab-open')){
+					_this.element.dropdownAreaElement.removeClass('pubTab-open');
 				}else{
-					tabArea.addClass('pubTab-open');
+					_this.element.dropdownAreaElement.addClass('pubTab-open');
 				}
 			});
 
@@ -250,7 +253,7 @@ Plugin.prototype ={
 
 				var sEle = $(this);
 
-				$(_this.tabElement.find('.pubTab-move-area')).removeClass('pubTab-open');
+				_this.element.dropdownAreaElement.removeClass('pubTab-open');
 
 				var tabIdx = opts.items.length - sEle.index()-1;
 
@@ -451,15 +454,30 @@ Plugin.prototype ={
 		var tabEle= this.tabElement.find('.pubTab-item[data-tab-id="'+item[this.options.itemKey.id]+'"]');
 
 		this.removeTabBlink(item);
-		
+
+		if(this.options.isMultipleContainer === false){
+			this._appendTabContent(item);
+			return ; 
+		}else{
+			if(item._isInitialised !== true){
+				this._appendTabContent(item);
+				item._isInitialised = true; 
+			}
+		}
+
 		if(tabEle.hasClass('active')){
 			return ;
 		}
 
 		this.tabElement.find('.pubTab-item.active').removeClass('active');
+		this.element.contentContainerElement.find('.pubTab-content.active').removeClass('active');
 		this._setHistory(tabEle.attr('data-tab-id'));
 		tabEle.addClass('active');
+		this.element.contentContainerElement.find('[data-tab-cont-id="'+item[this.options.itemKey.id]+'"]').addClass('active');
 		this.movePosition(tabEle.index());
+	}
+	,reloadContent : function (item){
+		this._appendTabContent(item, true);
 	}
 	/**
 	 * @method getActive
@@ -481,8 +499,6 @@ Plugin.prototype ={
 		var _this = this;
 
 		var tabWidthItem =_this.config.tabWidth[dataIdx];
-
-		var selItem = _this.options.items[dataIdx];
 
 		var itemEndPoint = tabWidthItem.leftLast+_this.config.moveAreaWidth;
 
@@ -551,6 +567,8 @@ Plugin.prototype ={
 			return false;
 		}
 
+		item._isInitialised = false;
+
 		if(isNaN(idx)){
 			idx = this.options.items.length;
 			this.options.items.push(item);
@@ -562,12 +580,12 @@ Plugin.prototype ={
 		}
 
 		var itemHtm = this._getTabItemHtml(item)
-			,dropHtm = this._getDropItemHtml(item);
+			,dropHtm = this._getDropdownHtml(item);
 
 		var tabItem = this.tabElement.find('.pubTab-item');
 		if(tabItem.length < 1){
 			this.element.tabContainerElement.prepend(itemHtm);
-			this.tabElement.find('.pubTab-drop-item-area').prepend(dropHtm)
+			this.tabElement.find('.pubTab-dropdown-area').prepend(dropHtm)
 		}else{
 			if(idx < 1){
 				$(tabItem.get(0)).before(itemHtm);
@@ -714,6 +732,7 @@ Plugin.prototype ={
 			this.options.items = [];
 
 			this.tabElement.find('.pubTab-item[data-tab-id]').remove();
+			this.element.contentContainerElement.find('[data-tab-cont-id]').remove();
 			this.calcItemWidth();
 
 			if($.isFunction(this.options.removeItem)){
@@ -727,10 +746,10 @@ Plugin.prototype ={
 			this.config.tabHistory =[tabId];
 
 			this.tabElement.find('.pubTab-item[data-tab-id]').not( '[data-tab-id="'+tabId+'"]' ).remove();
+			this.element.contentContainerElement.find('[data-tab-cont-id]').not( '[data-tab-cont-id="'+tabId+'"]' ).remove();
 			this.tabElement.find('.pubTab-item[data-tab-id="'+tabId+'"]').find('.pubTab-item-cont').trigger('click');
 
 			this.calcItemWidth();
-
 
 			if($.isFunction(this.options.removeItem)){
 				this.options.removeItem.call(null,'other');
@@ -759,6 +778,7 @@ Plugin.prototype ={
 		reval = reval[0];
 
 		this.tabElement.find('.pubTab-item[data-tab-id="'+reval._tabid+'"]').remove();
+		this.element.contentContainerElement.find('[data-tab-cont-id="'+reval._tabid+'"]').remove();
 		this.tabElement.find('.pubTab-drop-item[data-tab-id="'+reval._tabid+'"]').remove();
 
 		this.config.tabHistory = arrayRemove(this.config.tabHistory, reval._tabid);
@@ -796,11 +816,11 @@ Plugin.prototype ={
 
 		if(_this.config.totalWidth > eleW){
 			$('#'+_this.prefix+'pubTab-move-space').show();
-			_this.tabElement.find('.pubTab-move-area').show();
+			_this.tabElement.find('.pubTab-more-button').show();
 		}else{
 			_this.tabElement.find('.pubTab-item').removeClass('pubTab-hide');
 			$('#'+_this.prefix+'pubTab-move-space').hide();
-			_this.tabElement.find('.pubTab-move-area').hide();
+			_this.tabElement.find('.pubTab-more-button').hide();
 			_this.element.tabContainerElement.css('left', '0px');
 		}
 
@@ -809,11 +829,11 @@ Plugin.prototype ={
 	/**
 	* set drop item height
 	*/
-	,setDropHeight : function (h){
+	,setDropdownHeight : function (h){
 		if(isNaN(h)){
 			return this;
 		}
-		this.element.dropItemAreaElement.css('max-height',h+'px');
+		this.element.dropdownAreaElement.css('max-height',h+'px');
 		return this;
 	}
 	/**
@@ -848,21 +868,83 @@ Plugin.prototype ={
 			//titleTag = '<span class="pubTab-item-title">'+title+'</span>';
 		}
 
+		var titleIcon =_opts.titleIcon;
+
 		var itemHtm ='';
 		if(cfgIcon.left && cfgIcon.left.html){
-			itemHtm += cfgIcon.left.html;
+
+			if(!$.isFunction(titleIcon.left.visible) || ($.isFunction(titleIcon.left.visible) && titleIcon.left.visible.call(null, item) !== false)){
+				itemHtm += cfgIcon.left.html;
+			}
 		}
 
 		itemHtm += titleTag;
-
 		if(cfgIcon.right && cfgIcon.right.html){
-			itemHtm += cfgIcon.right.html;
+			if(!$.isFunction(titleIcon.right.visible) || ($.isFunction(titleIcon.right.visible) && titleIcon.right.visible.call(null, item) !== false)){
+				itemHtm += cfgIcon.right.html;
+			}
 		}
 
-		return '<li class="pubTab-item" draggable="'+(_opts.drag.enabled ? true:false)+'" data-tab-id="'+item._tabid+'" title="'+title+'"><div class="pubTab-item-overlay" style=""></div> <div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></li>';
+		return '<div class="pubTab-item" draggable="'+(_opts.drag.enabled ? true:false)+'" data-tab-id="'+item._tabid+'" title="'+title+'"><div class="pubTab-item-overlay" style=""></div><div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></div>';
+	}
+	/**
+	 * @method getItemLength
+	 * @description tab item length
+	 */
+	,getTabContentSelector : function (item){
+		if(this.options.isMultipleContainer === false){
+			return '#'+this.prefix+'ContentContainer>[data-tab-cont-id="'+this.prefix+'"]';
+		}
+
+		return '#'+this.prefix+'ContentContainer>[data-tab-cont-id="'+(typeof item ==='string'? item : item[this.options.itemKey.id])+'"]';
+		
+	}
+	/**
+	 * @method clearTabContent
+	 * @description clear tab content 
+	 */
+	,clearTabContent : function (item){
+		$(this.getTabContentSelector(item)).empty();
+	}
+	,_appendTabContent : function (item, reloadFlag){
+		var contentContainerElement = this.element.contentContainerElement; 
+
+		var tabid = '';
+		var contentLoadFlag = false; 
+		if(this.options.isMultipleContainer === false){
+			tabid = this.prefix;
+			contentLoadFlag = true; 
+		}else{
+			tabid = item[this.options.itemKey.id];
+
+			var contentEleLen = contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]').length; 
+
+			if(contentEleLen < 1){
+				contentContainerElement.append(this._getTabContentHtml(item));
+			}
+
+			if(reloadFlag === true || item._isInitialised !== true){
+				contentLoadFlag = true; 
+			}
+		}
+
+		if(contentLoadFlag){
+			this.options.contentRender(item, contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]'));
+		}
+		
+	}
+	,_getTabContentHtml : function (item){
+		var style='';
+		if($.isFunction(this.options.contentStyleClass)){
+			style = this.options.contentStyleClass(item) ||'';
+		}else{
+			style = this.options.contentStyleClass;
+		}
+
+		return '<div class="pubTab-content '+style + (this.options.isMultipleContainer === false ? ' active':'')+'" data-tab-cont-id="'+item._tabid+'"></div>';
 	}
 	//drop item template
-	,_getDropItemHtml : function (item){
+	,_getDropdownHtml : function (item){
 		var title = item[this.options.itemKey.title];
 		return '<li class="pubTab-drop-item" data-tab-id="'+item._tabid+'" title="'+title+'">'+title+'</li>'
 	}
@@ -874,57 +956,71 @@ Plugin.prototype ={
 
 		function tabItemHtml (){
 			var tabHtm = [];
-
-			var item;
-			var itemHtm;
 			for(var i = 0 ;i < itemLen ;i++){
 				tabHtm.push(_this._getTabItemHtml(items[i]));
 			}
 			return tabHtm.join('');
 		}
 
-		function dropItemHtml (){
+		function dropdownHtml (){
 			var dropHtml = [];
 
 			for(var i = itemLen-1 ;i >= 0  ;i--){
-				dropHtml.push(_this._getDropItemHtml(items[i]));
+				dropHtml.push(_this._getDropdownHtml(items[i]));
 			}
 			return dropHtml.join('');
 		}
 
 		var strHtm = [];
 		strHtm.push('<div class="pubTab-wrapper" role="presentation">');
-		strHtm.push('	<div id="'+_this.prefix+'pubTab" class="pubTab">');
+		strHtm.push('	<div id="'+_this.prefix+'pubTab" class="pubTab" style="height:'+_opts.tabHeight+'px;">');
 		strHtm.push('		<div id="'+_this.prefix+'pubTab-scroll" class="pubTab-scroll">');
-		strHtm.push('			<ul id="'+_this.prefix+'pubTab-container" class="pubTab-container" style="height:'+_opts.height+'">');
+		strHtm.push('			<div id="'+_this.prefix+'pubTab-container" class="pubTab-container" >');
 		strHtm.push(tabItemHtml());
-		strHtm.push('			<li><div id="'+_this.prefix+'pubTab-move-space"  style="display:none;">&nbsp;</div></li>');
-		strHtm.push('			</ul>');
+		strHtm.push('			<span><div id="'+_this.prefix+'pubTab-move-space" style="display:none;">&nbsp;</div></span>');
+		strHtm.push('			</div>');
 		strHtm.push('		</div> ');
-		strHtm.push('		<div class="pubTab-move-area" style="z-index:'+_opts.moveZIndex+';">');
-
-		strHtm.push('		  <div class="pubTab-more-button">');
+		
 		if(_opts.overItemViewMode =='drop'){
-			strHtm.push('		<div id="'+_this.prefix+'DropItem" style="width:'+_opts.dropItemWidth+'" class="pubTab-drop-item-wrapper"><ul class="pubTab-drop-item-area">'+dropItemHtml()+'</ul></div>');
+			strHtm.push(' 		<div class="pubTab-more-button"></div>');
+		}
+		
+		strHtm.push('	</div>');
+
+		if(_opts.contentViewSelector===false && _opts.useContentContainer !== false){
+			strHtm.push('<div id="'+_this.prefix+'ContentContainer" class="pubTab-content-container" style="height:calc(100% - '+_opts.tabHeight+'px);">');
+			
+			if(_opts.isMultipleContainer === false){
+				strHtm.push(this._getTabContentHtml({_tabid: this.prefix}));
+			}else{
+				for(var i = 0 ;i < itemLen ;i++){
+					strHtm.push(this._getTabContentHtml(items[i]));
+				}
+			}		
+			strHtm.push('</div>');
 		}
 
-		strHtm.push('		  </div>');
-		strHtm.push('		</div>');
-		strHtm.push('	</div>');
+		if(_opts.overItemViewMode =='drop'){
+			var drw = _opts.dropdownWidth; 
+			strHtm.push('<div id="'+_this.prefix+'Dropdown" style="width:'+(drw+(drw == 'auto'?'':'px'))+';" class="pubTab-dropdown-wrapper"><ul class="pubTab-dropdown-area">'+dropdownHtml()+'</ul></div>');
+		}
+		
 		strHtm.push('</div>');
 
 		_this.tabElement.empty().html(strHtm.join(''));
 
 		_this.element.tabContainerElement =  $('#'+_this.prefix+'pubTab-container');
 		_this.element.tabScrollElement = $('#'+_this.prefix+'pubTab-scroll');
-		_this.element.dropItemAreaElement = $('#'+_this.prefix+'DropItem');
-
-		_this.config.moveAreaWidth  = this.tabElement.find('.pubTab-move-area').width();
+		_this.element.dropdownAreaElement = $('#'+_this.prefix+'Dropdown');
+		_this.element.contentContainerElement = (_opts.contentViewSelector === false ? $('#'+_this.prefix+'ContentContainer') : $(_opts.contentViewSelector));
+		
+		_this.config.moveAreaWidth  = this.tabElement.find('.pubTab-more-button').width();
 		$('#'+_this.prefix+'pubTab-move-space').css('width',_this.config.moveAreaWidth);
+		_this.element.dropdownAreaElement.css('top', (_this.element.tabContainerElement.height())+'px');
 
 		_this.calcItemWidth();
 		_this.setWidth(_opts.width);
-		_this.setDropHeight(_opts.dropItemHeight)
+		_this.setDropdownHeight(_opts.dropdownHeight)
 	}
 	,calcItemWidth :function (){
 		var _this =this;

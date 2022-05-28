@@ -1,8 +1,7 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
+apply from: "$rootDir/helpers/common-methods.gradle"
+
+
+println("@@@@@@@@@@@@@@@@@@ = $rootDir")
 
 configurations {
    //  runtime.exclude module: 'spring-boot-starter-tomcat'
@@ -10,19 +9,8 @@ configurations {
      runtime.exclude module: 'lombok'
 }
 
-
-// minify
-/*
-plugins {
-	//id "com.eriwen.gradle.js" version "2.14.2-SNAPSHOT"
-	//id "com.eriwen.gradle.css" version "2.14.0"
-}
-*/
-
-
 ext{
 	appVersion = project.property('varsqlVersion')
-	jsMinifyVersion = '2.14.1'
 
 	webResourceConfig = [
         staticFilesDir : "src/main/webapp",
@@ -85,17 +73,26 @@ eclipse {
 }
 
 bootJar {
-    enabled = false
+	// plain 으로 생성하지 않게 하기 위해서 처리.
+    archiveClassifier = 'boot'
 }
 
 jar{
-	enabled=true
-	baseName ='varsql-app-'+appVersion
+	// plain 으로 생성하지 않게 하기 위해서 처리.
+	archiveClassifier = ''
+	archiveBaseName ='varsql-app-'+appVersion
+	
+  	// update date check
+  	fn_updateDateCheck(archivePath.parent +File.separator + archiveFileName.get(), outputs)
 }
 
 //web resource jar packaging
 task webResourceJar(type: Jar) {
-	baseName=webResourceConfig.name;
+	archiveBaseName =webResourceConfig.name;
+	
+	// update date check
+  	fn_updateDateCheck(archivePath.parent +File.separator + archiveFileName.get(), outputs)
+	
     from(fileTree(webResourceConfig.staticFilesDir)) {
     	exclude 'META-INF'
         into webResourceConfig.baseDir
@@ -103,9 +100,10 @@ task webResourceJar(type: Jar) {
 }
 
 war{
-	enabled=true
+	archiveClassifier = ''
+	
 	// war name
-	baseName ='vsql' +appVersion
+	archiveBaseName ='vsql' +appVersion
 
 	exclude 'webstatic' ,'WEB-INF/*'
 
@@ -120,8 +118,11 @@ war{
 	}
 
 	doLast {
+		println("################# export info #######################")
 		println("appVersion : " + appVersion)
 		println("war export path : " + archivePath.parent)
+		println("################# export info #######################")
+		/*
 		//불필요한 파익 삭제.
 		def fileDelFlag = true;
 		if(fileDelFlag){
@@ -129,6 +130,6 @@ war{
 				include '*.jar'
 			}
 		}
-
+		*/
     }
 }

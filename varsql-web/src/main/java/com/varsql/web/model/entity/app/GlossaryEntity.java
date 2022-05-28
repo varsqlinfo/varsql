@@ -74,13 +74,4 @@ public class GlossaryEntity extends AbstractAuditorModel{
 	public final static String WORD_LENGTH="wordLength";
 
 	public final static String WORD_DESC="wordDesc";
-
-	public final static String REG_ID="regId";
-
-	public final static String REG_DT="regDt";
-
-	public final static String UPD_ID="updId";
-
-	public final static String UPD_DT="updDt";
-
 }

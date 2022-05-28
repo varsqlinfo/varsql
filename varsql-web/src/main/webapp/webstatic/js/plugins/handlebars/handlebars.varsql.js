@@ -142,8 +142,8 @@ Handlebars.registerHelper("capitalize", function(text, options) {
  * @param {options} options
  * @returns {String}
  */
-Handlebars.registerHelper("javaType", function(dbType, options) {
-	var tmpDbType = VARSQLCont.dataType.getDataTypeInfo(dbType)
+Handlebars.registerHelper("javaType", function(dbDataType, options) {
+	var tmpDbType = VARSQLCont.getDataTypeInfo(dbDataType)
 	return tmpDbType.javaType;
 });
 
@@ -285,7 +285,7 @@ Handlebars.registerHelper('ddlTableValue', function (mode, item, dbType) {
 	var dataType = item.DATA_TYPE || item.TYPE_AND_LENGTH;
 
 	dataType = dataType.replace(/\((.*?)\)/g,'');
-	var dataTypeInfo = VARSQLCont.dataType.getDataTypeInfo(dataType);
+	var dataTypeInfo = VARSQLCont.getDataTypeInfo(dataType);
 
 	if('typeAndLength' == mode){
 		if(!VARSQL.isBlank(item.TYPE_AND_LENGTH)){

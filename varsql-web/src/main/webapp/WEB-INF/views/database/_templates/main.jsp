@@ -14,8 +14,8 @@
 </div>
 <div class="varsql-body-wrapper">
 	<div id="varsqlBodyWrapper" class="wh100" ></div>
-	<div class="main-spliter" data-prev-min-size="60" data-next-min-size="0"></div>
-	<div class="side-container wh100" style="width: 0px;">
+	<div id="varsqlBoardWrapper" class="database-board-wrapper">
+		<button class="database-board-close-btn fa fa-close" style="position: absolute;left: -24px;top: -1px;"></button>
 		<iframe id="mainArticleFrame" src="" style="width: 100%;height: 100%;border: 0px solid transparent;"></iframe>
 	</div>
 </div>
@@ -62,15 +62,12 @@ $(document).ready(function(){
 	<!-- object tab area -->
 	<div id="pluginSchemaObjectTab" class="db-object-tab"></div>
 	<!-- object cont area -->
-	<div id="pluginSchemaObjectTabContent" class="db-object-tab-content"></div>
 </div>
 </script>
 
 <%--meta data 영역  component template --%>
 <script id="dbMetadataComponentTemplate" type="text/varsql-template">
-<div id="pluginObjectMeta" class="varsql-plugin-wrapper">
-	<div id="pluginObjectMetaContent" class="wh100"></div>
-</div>
+<div id="pluginObjectMeta" class="varsql-plugin-wrapper"></div>
 </script>
 
 <%--sql editor component template --%>
@@ -210,25 +207,7 @@ $(document).ready(function(){
 
 <%--query result component template --%>
 <script id="sqlDataComponentTemplate" type="text/varsql-template">
-<div id="pluginSqlResult" class="varsql-plugin-wrapper">
-	<div id="data_grid_result_tab_wrap" class="sql-result-tab-wrapper">
-		<ul id="data_grid_result_tab" class="sql-result-tab">
-			<li tab_gubun="result" class="on"><a href="javascript:;"><spring:message code="btn.resultarea.tab.grid"/></a></li>
-			<li tab_gubun="columnType"><a href="javascript:;"><spring:message code="btn.resultarea.tab.column"/></a></li>
-			<li tab_gubun="msg"><a href="javascript:;"><span><spring:message code="btn.resultarea.tab.log"/></span><span class="fa fa-file-o log_clear_btn" title="clear" style="padding-left:5px;"></span></a></li>
-		</ul>
-	</div>
-
-	<div id="dataGridAreaWrap" class="sql-result-tab-content">
-		<div id="dataGridArea" class="varsql-tab-content tab-on" tab_gubun="result">
-			<div class="sql-editor-result active" data-sql-result-id="empty">
-				<div class="sql-editor-result-grid on" data-grid-type="result"></div>
-				<div class="sql-editor-result-grid" data-grid-type="columnType"></div>
-			</div>
-		</div>
-		<div id="resultMsgAreaWrap"  class="varsql-tab-content user-select-on varsql-log-area" tab_gubun="msg"></div>
-	</div>
-</div>
+<div id="pluginSqlResult" class="varsql-plugin-wrapper"></div>
 </script>
 
 <%--glossary component template --%>

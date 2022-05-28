@@ -69,9 +69,4 @@ public class ExceptionLogEntity extends AbstractRegAuditorModel{
 	public final static String EXCP_TITLE="excpTitle";
 
 	public final static String EXCP_CONT="excpCont";
-
-	public final static String REG_ID="regId";
-
-	public final static String REG_DT="regDt";
-
 }

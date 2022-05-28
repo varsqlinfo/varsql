@@ -1,6 +1,7 @@
 package com.varsql.core.common.constants;
 
-import java.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.varsql.core.configuration.Configuration;
 
@@ -19,15 +20,24 @@ import com.varsql.core.configuration.Configuration;
 public interface VarsqlConstants {
 	
 	// 날짜 포켓.
+	final String YEAR_FORMAT = "yyyy";
+	
 	final String DATE_FORMAT = "yyyy-MM-dd";
-	 
-	final String TIME_FORMAT = "HH:mm:ss.SSS";
+
+	final String TIME_FORMAT = "HH:mm:ss";
+	
+	final String TIME_MILLISECOND_FORMAT = "HH:mm:ss.SSS";
+
+	final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	final String TIMESTAMP_MILLISECOND_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
+	final DateTimeFormatter yearFormatter = DateTimeFormat.forPattern(YEAR_FORMAT);
+	final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern(DATE_FORMAT);
+	final DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
+	final DateTimeFormatter timeMilliFormatter = DateTimeFormat.forPattern(TIME_MILLISECOND_FORMAT);
+	final DateTimeFormatter timestampFormatter = DateTimeFormat.forPattern(TIMESTAMP_FORMAT);
+	final DateTimeFormatter timestampMilliFormatter = DateTimeFormat.forPattern(TIMESTAMP_MILLISECOND_FORMAT);
     
-	final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-    
-    final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-    final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
-    final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern(TIMESTAMP_FORMAT);
 
     // runtime
 	final String RUNTIME = System.getProperty("varsql.runtime");

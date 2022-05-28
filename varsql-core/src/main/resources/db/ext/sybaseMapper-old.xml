@@ -65,8 +65,8 @@
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
 		    , st.name as "DATA_TYPE"
-		    , sc.prec as "CHAR_LENGTH"
-			, sc.prec as "COLUMN_SIZE"
+		    , sc.prec as "COLUMN_SIZE"
+			, sc.prec as "DATA_PRECISION"
 		    , sc.scale as "DECIMAL_DIGITS"
 			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 		    , scc.text AS "COLUMN_DEF"
@@ -145,8 +145,8 @@
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
 		    , st.name as "DATA_TYPE"
-		    , sc.length as "CHAR_LENGTH"
 			, sc.length as "COLUMN_SIZE"
+		    , sc.length as "DATA_PRECISION"
 		    , sc.scale as "DECIMAL_DIGITS"
 			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END IS_NULLABLE
 		    , scc.text AS "COLUMN_DEF"
@@ -245,8 +245,8 @@
 				so.sysstat2  as  STATUS ,
 				sc.name as "ARGUMENT_NAME",
 				st.name as "DATA_TYPE" ,
-				sc.length as "CHAR_LENGTH" ,
 				sc.length as "COLUMN_SIZE" ,
+				sc.length as "DATA_PRECISION" ,
 				sc.scale as "DECIMAL_DIGITS",
 				sc.colid as "SEQUENCE",
 				'' as "COMMENT",
@@ -405,8 +405,8 @@
 			 so.name AS TABLE_NAME
 			, sc.name AS COLUMN_NAME
 			, st.name AS DATA_TYPE
-			, sc.length AS CHAR_LENGTH
 			, sc.length AS COLUMN_SIZE
+			, sc.length AS DATA_PRECISION
 			, sc.scale AS DECIMAL_DIGITS
 			, CASE WHEN sc.status = 8 THEN 'YES'	ELSE 'NO' END NULLABLE
 			, scc.text AS "COLUMN_DEF"

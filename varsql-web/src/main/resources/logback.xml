@@ -109,6 +109,15 @@
 	        </then>
 	    </if>
 	</logger>
+	
+	<logger name="com.varsql.web.configuration" level="info" additivity="false">
+		<appender-ref ref="FILEOUT" />
+		<if condition='"local".equals("${runtime}")'>
+	        <then>
+				<appender-ref ref="STDOUT" />
+	        </then>
+	    </if>
+	</logger>
 
 	<logger name="com.varsql" level="debug" additivity="false">
 		<appender-ref ref="FILEOUT" />
@@ -250,7 +259,7 @@
 
     <logger name="org.hibernate" level="info"/>
 	<logger name="org.hibernate.type.descriptor" level="error"/>
-	<logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
 	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error" additivity="false"/>
     <logger name="org.hibernate.SQL" level="DEBUG"/>
 
@@ -258,8 +267,6 @@
     <logger name="org.apache.tiles" level="info" additivity="false"/>
     <logger name="org.apache" level="info" additivity="false"/>
 	<!-- apache log // end  -->
-
-    <logger name="com.varsql.web.configuration" level="info" additivity="false"/>
 
    <if condition='"local".equals("${runtime}")'>
         <then>

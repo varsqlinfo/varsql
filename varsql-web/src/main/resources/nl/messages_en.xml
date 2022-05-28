@@ -214,4 +214,8 @@
 
 <entry key="refresh.connnection.info">Refresh connection info</entry>
 
+
+<entry key="msg.lost.password">Forgot password?</entry>
+<entry key="password.reset">Password reset</entry>
+
 </properties>

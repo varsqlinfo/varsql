@@ -332,21 +332,31 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 	}
 });
 
-VARSQL.socket.connect('user', {
-	uid : $varsqlConfig.viewId
-	,callback : function (data){
-		var msgType = data.type;
+function userConnect(){
+	console.log('userConnect')
+	VARSQL.socket.connect('user', {
+		uid : $varsqlConfig.viewId
+		,callback : function (data){
+			var msgType = data.type;
 
-		if(msgType== 'NOTE'){
-			userTopObj.alarmFlag =true;
-		}else if(msgType == 'USER_BLOCK'){
-			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
-		}else if(msgType == 'USER_DB_BLOCK'){
-			userMain.blockTab(data.item);
-			userTopObj.getConnectionInfo(false);
+			if(msgType== 'NOTE'){
+				userTopObj.alarmFlag =true;
+			}else if(msgType == 'USER_BLOCK'){
+				location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
+			}else if(msgType == 'USER_DB_BLOCK'){
+				userMain.blockTab(data.item);
+				userTopObj.getConnectionInfo(false);
+			}
 		}
-	}
-});
+	});	
+}
+userConnect();
+
+window.mainSocketConnect = function (){
+	if(VARSQL.socket.isCreate === true && VARSQL.socket.isConnect() ===false){
+		userConnect();
+	};
+}; 
 
 }());
 

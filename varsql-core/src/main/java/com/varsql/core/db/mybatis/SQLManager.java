@@ -101,8 +101,8 @@ public final class SQLManager {
 			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
 			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
-			logger.error("connection info :  {} ", VartechReflectionUtils.reflectionToString(connInfo));
-			logger.error("SQLManager :{} ", e.getMessage() , e);
+			logger.error("connection info :  {}, error message : {} ", VartechReflectionUtils.reflectionToString(connInfo) , e.getMessage());
+			//logger.error("SQLManager :{} ", e.getMessage() , e);
 			throw new ConnectionException("getSqlSession IOException "+e.getMessage(), e);
 		}
 	}

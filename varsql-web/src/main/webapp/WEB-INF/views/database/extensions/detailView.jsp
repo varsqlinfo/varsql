@@ -69,7 +69,7 @@
 (function() {
 
 //VARSQL.unload('security');
-
+VARSQLCont.init('${dbtype}');
 var viewObj = VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
@@ -77,9 +77,6 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 		, itemList :[]
 		, viewItem:{}
 		, viewMode : true
-	}
-	,updated: function () {
-		$('#detailItemArea').empty().html($('#detailViewTemplate').html());
 	}
 	,methods:{
 		setViewMode : function (mode){
@@ -92,9 +89,7 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			setLayout(mode, true)
 		}
 		,setItemDetail : function (item){
-			var firstFlag = false;
 			if(VARSQL.isUndefined(item)){
-				firstFlag = true;
 				item = this.itemList[0];
 			}
 
@@ -102,10 +97,10 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 
 				for(var i=0; i <this.colInfos.length;i++){
 					var colItem = this.colInfos[i];
-
+					
 					if(colItem.number){
 						;
-					}else if(VARSQLCont.isDateType(colItem.type)){
+					}else if(VARSQLCont.getDataTypeInfo(colItem.dbType).isDate===true){
 						;
 					}else{
 						var val = item[colItem.key];
@@ -113,7 +108,7 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 
 							var line = val.split('\n').length;
 
-							if(line  > 1){
+							if(line > 1){
 								item[colItem.key+'_cls'] = 'huge'+(line > 4 ? '' : line);
 							}else{
 								if(val.length > 70){
@@ -127,10 +122,10 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			}
 
 			this.viewItem = item;
-
-			if(firstFlag){
-				$('#detailItemArea').html($('#detailViewTemplate').html());
-			}
+			
+			this.$nextTick(function (){
+				$('#detailItemArea').empty().html($('#detailViewTemplate').html());
+			});
 		}
 		,setItem : function (pColInfos, pItemList){
 
@@ -145,7 +140,7 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			this.colInfos = colInfos;
 			this.itemList = itemList;
 
-			if($('#itemList').length>0){
+			if($('#itemList').length > 0){
 				this.viewGrid();
 				this.setItemDetail();
 			}
@@ -160,7 +155,7 @@ var viewObj = VarsqlAPP.vueServiceBean( {
 			}
 
 			$.pubGrid('#itemList',{
-				selectionMode : 'multiple-row'
+				selectionMode : 'row'
 				,setting : {
 					enabled : true
 					,click : false

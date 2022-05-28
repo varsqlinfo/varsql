@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.meta.handler.DBMetaHandler;
@@ -71,8 +73,7 @@ public final class DBMetaDataUtil {
 
 			DatabaseMetaData dbmd = conn.getMetaData();
 
-			DataTypeFactory dataTypeInfo = dbInstanceFactory.getDataTypeImpl();
-			DBMetaHandler dbMetaHandlerImpl =dbInstanceFactory.getDBMetaHandlerImpl();
+			DataTypeFactory dataTypeFactory = dbInstanceFactory.getDataTypeImpl();
 
 			List<ColumnInfo> columnList = null;
 			String tableNm = "";
@@ -108,7 +109,31 @@ public final class DBMetaDataUtil {
 				tableNm = colRs.getString(MetaColumnConstants.TABLE_NAME);
 
 				if(tableInfoMap.containsKey(tableNm)) {
-					tableInfoMap.get(tableNm).getColList().add(dbMetaHandlerImpl.getColumnInfo(colRs, dataTypeInfo, pkMap.get(tableNm)));
+					Set keyColumn = pkMap.get(tableNm);
+					
+					String cName=  colRs.getString(MetaColumnConstants.COLUMN_NAME);
+					String dataType = colRs.getString(MetaColumnConstants.DATA_TYPE);
+
+					int degitsLen = colRs.getInt(MetaColumnConstants.DECIMAL_DIGITS);
+					int columnSize = colRs.getInt(MetaColumnConstants.COLUMN_SIZE);
+					
+					DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
+
+					ColumnInfo column = new ColumnInfo(); 
+					column.setName(cName);
+					column.setDataType(dataType);
+					column.setLength(columnSize);
+					column.setDefaultVal(StringUtils.nullToString(colRs.getString(MetaColumnConstants.COLUMN_DEF)));
+					column.setNullable(StringUtils.nullToString(colRs.getString(MetaColumnConstants.IS_NULLABLE)));
+					column.setAutoincrement("");
+					column.setTypeName(dataTypeInfo.getTypeName());
+					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, columnSize, degitsLen));
+
+					if(keyColumn !=null){
+						column.setConstraints(keyColumn.contains(cName)?"PK":"");
+					}
+					
+					tableInfoMap.get(tableNm).getColList().add(column);
 				}
 			}
 			colRs.close();

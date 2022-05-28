@@ -143,6 +143,7 @@
 
 <script>
 (function() {
+VARSQLCont.init();
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {

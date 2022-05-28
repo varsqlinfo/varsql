@@ -74,7 +74,7 @@
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
 <entry key="admin.menu.errorlog">Error Log</entry>
-
+<entry key="admin.menu.jdbcprovidermgmt">JDBC 제공자 관리</entry>
 
 <!-- manage menu -->
 <entry key="manage.menu.usermgmt">사용자 관리</entry>
@@ -152,6 +152,7 @@
 <entry key="msg.save.confirm">저장 하시겠습니까?</entry>
 <entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
 <entry key="msg.save.success">저장 되었습니다</entry>
+<entry key="msg.lost.password">비밀번호를 잊어버리셨나요?</entry>
 <entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
 <entry key="msg.nodata">데이터가 없습니다.</entry>
@@ -295,7 +296,7 @@
 <entry key="refresh.connnection.info">커넥션 정보 새로고침</entry>
 
 
-<entry key="admin.menu.jdbcprovidermgmt">JDBC 제공자 관리</entry>
+
 <entry key="admin.drivermgmt.db_type">DB 타입</entry>
 <entry key="admin.drivermgmt.provider_name">이름</entry>
 <entry key="admin.drivermgmt.driver_class">Driver Class</entry>
@@ -316,5 +317,9 @@
 <entry key="btn.validation.check">유효성 체크</entry>
 <entry key="btn.driverclass.check">Driver 체크</entry>
 <entry key="label.direct.input">직접 입력</entry>
+
+
+<entry key="msg.lost.password">비밀번호를 잊어버리셨나요?</entry>
+<entry key="password.reset">비밀번호 재설정</entry>
 
 </properties>

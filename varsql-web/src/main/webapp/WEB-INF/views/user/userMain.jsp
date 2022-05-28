@@ -1,5 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
+<style>
+
+
+</style>
 <script>
 (function() {
 
@@ -8,7 +12,6 @@ VARSQL.unload('top');
 var $userMain = {
 	_userConnectionInfo :'#user_connection_info'
 	,_connectionTab :'#user_connection_info_tab'
-	,_connectionIframe :'#user_connection_info_iframe'
 	,iframeLoadTemplate : ''
 	,userDbBlockTemplate : ''
 	,tabItemTemplate : ''
@@ -45,21 +48,46 @@ var $userMain = {
 		_self.tabObj = $.pubTab('#connection_tab',{
 			items :_self.tabInfo
 			,height : 20
-			,dropItemHeight : 'auto'
-			,activeFirstItem :false
+			,dropdownWidth : 150
+			,dropdownHeight : 200
+			,drag: {
+				enabled :true
+				,dragDrop : function (moveItem){
+					_self.saveConnTabInfo(moveItem , 'moveTab');
+				}
+			}
+			,activeFirstItem : false
 			,enableClickEventChange : true
+			,contentViewSelector : '#dbBrowserContainer'
+			,contentStyleClass : 'db-browser-content'
+			,contentRender : function (item, addContentElement){
+				
+				if(item.blockDb ===true){
+					callback(_self.userDbBlockTemplate);
+					return ; 
+				}
+				
+				var sconid = item.conuid;
+
+				item.url= VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
+				
+				addContentElement.empty().html(VARSQL.util.renderHtml(_self.iframeLoadTemplate, item));
+				
+				item.isContentLoad = false;
+				addContentElement.find('iframe').on('load',function(){
+					addContentElement.find('.browser-loading-msg').remove();
+					item.isContentLoad = true; 
+				});
+			}
 			,itemKey :{							// item key mapping
 				title :'name'
 				,id :'conuid'
 			}
 			,titleIcon :{
 				left :{
-					visible:false
-					,overview :false
+					onlyActiveView : true
 					,html :  '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
 					,click : function (item, idx){
-						var sconid = item.conuid;
-
 						_self.viewDb(item , true);
 					}
 				}
@@ -73,13 +101,12 @@ var $userMain = {
 							return ;
 						}
 
-						if(!confirm(item.name+' db를 닫으시겠습니까?')) return ;
+						if(!confirm(VARSQL.messageFormat('varsql.0033', {name : item.name}))) return ;
 
 						_self.tabObj.removeItem(item);
 
 						_self.saveConnTabInfo(item , 'del');
 
-						$('.tabs_'+tmpid).remove();
 						$('#wrapper_'+tmpid).remove();
 
 						if(_self.tabObj.getItemLength() < 1){
@@ -90,8 +117,8 @@ var $userMain = {
 			}
 			,click : function (item, customInfo){
 				var sconid = item.conuid;
-
-				_self.loadDbPage(item);
+				
+				$(_self._userConnectionInfo).val(sconid);
 
 				if(customInfo && customInfo.mode != 'add'){
 					_self.saveConnTabInfo(item , 'view');
@@ -114,34 +141,27 @@ var $userMain = {
 
 		if(viewItem !== false){
 			_self.tabObj.setActive(viewItem);
-			_self.loadDbPage(viewItem);
 		}
 	}
 	,viewDb : function (item , refreshFlag){
-		var sconid = item.conuid;
-
-		if($('#wrapper_'+sconid+'> .connection_select_msg_wrapper').length > 0) {
+		if(item.isContentLoad !== true) {
 			alert('loading...');
 			return ;
 		}
-
+		
 		if(refreshFlag){
-			if(!confirm('새로고침 하시겠습니까?')){
+			if(!confirm(VARSQL.messageFormat('msg.refresh'))){
 				return ;
 			}
-
-			this.viewLoadMessage();
 		}
-
-		$('.iframe_'+sconid).attr('src', this.getDbClientUrl(sconid));
+		
+		this.tabObj.reloadContent(item);
 	}
 	// add tab
 	,addTabInfo : function (sItem){
 		var _self =this;
 
-		var sconid = sItem.conuid;
-
-		if(_self.tabObj.isItem(sconid)){
+		if(_self.tabObj.isItem(sItem.conuid)){
 			_self.tabObj.itemClick(sItem , {view:true});
 			return ;
 		}
@@ -150,54 +170,27 @@ var $userMain = {
 
 		_self.tabObj.addItem({item:sItem} , {mode:'add'});
 
-		_self.loadDbPage(sItem);
-
-	}
-	// load db page
-	,loadDbPage : function (sItem){
-		var _self =this;
-
-		var sconid = sItem.conuid;
-
-		$(_self._userConnectionInfo).val(sconid);
-
-		if($('#wrapper_'+sconid).length > 0){
-			_self.dbShowHide(sconid);
-			return ;
-		}
-
-		$('#connection_select_msg_wrapper').show();
-
-		sItem.url= _self.getDbClientUrl(sconid);
-
-		$(_self._connectionIframe).append(VARSQL.util.renderHtml(_self.iframeLoadTemplate, sItem));
-
-		$('.iframe_'+sconid).on('load',function(){
-			$('#wrapper_'+sconid+'> .connection_select_msg_wrapper').remove();
-			_self.viewLoadMessage(true);
-		});
-
-		_self.dbShowHide(sconid);
-
-	}
-	// db page show hide
-	,dbShowHide : function (sconid){
-		$('.db_sql_view_area').css('z-index',1);
-		$('#wrapper_'+sconid).css('z-index',100);
 	}
 	// connection tab info save
-	,saveConnTabInfo : function (item , mode){
+	,saveConnTabInfo : function (item, mode){
 		var _self =this;
 
-		var params;
-
-		params = VARSQL.util.objectMerge ({},item);
+		var params ={};
 		params.mode = mode;
 
-		if(mode=='add'){
-			params.prevConuid = (_self.tabObj.getLastItem().conuid ||'');
-		}
-
+		if(mode=='moveTab'){
+			params.conuid = item.moveItem.conuid;
+			params.prevConuid = (item.afterPrevItem ||{}).conuid ||'';
+			params.firstConuid = _self.tabObj.getFirstItem().conuid;
+		}else {
+			params.conuid = item.conuid;
+			
+			if(mode=='add'){
+				params = VARSQL.util.objectMerge(params,item);
+				params.prevConuid = (_self.tabObj.getLastItem().conuid ||'');
+			}
+		}	
+		
 		VARSQL.req.ajax({
 		    url:{type:VARSQL.uri.database, url:'/connTabInfo'}
 		    ,data:params
@@ -207,30 +200,15 @@ var $userMain = {
 			}
 		});
 	}
-	,getDbClientUrl : function (sconid){
-		return VARSQL.url(VARSQL.uri.database)+'/?conuid='+sconid;
-	}
 	,activeClose : function (){
 		this.tabObj.rightIconClick(this.tabObj.getSelectItem());
 	}
 	,blockTab : function (tabInfo){
 		var sconid = tabInfo.vconuid;
-
-		this.tabObj.updateItem({item:{"conuid": sconid, blockDb: true}});
-		$('#wrapper_'+sconid).empty().html(this.userDbBlockTemplate);
-	}
-	,viewLoadMessage : function (hideFlag){
-		if(hideFlag ===true){
-			$('#varsql_page_load_msg_wrapper').hide();
-		}else{
-			var selItem = this.tabObj.getSelectItem();
-			if(selItem.blockDb === true){
-				$('#wrapper_'+selItem.conuid).remove();
-				alert('관리자에 의해서 차단된 db 입니다.');
-				$userMain.activeClose();
-			}else{
-				$('#varsql_page_load_msg_wrapper').show();
-			}
+		
+		if(this.tabObj.isItem(sconid)){
+			this.tabObj.updateItem({item:{"conuid": sconid, blockDb: true}});
+			this.tabObj.reloadContent(this.tabObj.getItem(sconid));
 		}
 	}
 }
@@ -249,14 +227,10 @@ window.userMain = {
 	,pageRefresh : function (){
 		var activeItem = $userMain.tabObj.getActive();
 		if(activeItem.idx > -1){
-			this.viewLoadMessage();
 			$userMain.viewDb(activeItem.item);
 		}else{
 			location.reload();
 		}
-	}
-	,viewLoadMessage : function (hideFlag){
-		$userMain.viewLoadMessage(hideFlag);
 	}
 	,isDbActive: function (conuid){
 		return $userMain.tabObj.isActive(conuid);
@@ -269,38 +243,25 @@ window.userMain = {
 <!-- Page Heading -->
 
 <script id="iframeLoadTemplate" type="text/varsql">
-<div id="wrapper_{{conuid}}" class="db_sql_view_area" style="height:100%;width:100%;z-index:100;position:absolute;background-color:#ddd;">
-	<iframe class="iframe_{{conuid}}" src="{{url}}" style="width:100%;height:calc(100% - 2px);" frameborder="0"></iframe>
+	<iframe src="{{url}}" style="width:100%;height:calc(100% - 2px);" frameborder="0"></iframe>
 
-	<table class="connection_select_msg_wrapper"  style="width: 100%; height: 100%;position:absolute;z-index:200;top:0px;">
-		<tbody>
-			<tr>
-				<td style="text-align: center; font-size: 3em;">
-					<div class="var-load-frame">
-						<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
-						<div>[{{name}}] <spring:message code="msg.dbdata.load" text="db loading" /> </div>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
+	<div class="browser-loading-msg">
+		<div style="display:table-cell;text-align:center;vertical-align: middle;font-size: 3em;">
+			<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
+			<div>[{{name}}] <spring:message code="msg.dbdata.load" text="db loading" /> </div>
+		</div>
+	</div>
 </script>
 
 <div class="user-main-body wh100">
-	<div class="wh100" id="user_connection_info_iframe">
-		<table class="wh100-absolute" style="z-index:98;top:0px;">
-			<tbody>
-				<tr>
-					<td style="text-align: center; font-size: 3em;">
-						<div class="var-db-select-text"><spring:message code="msg.connect.db.select" arguments="${pageContext.request.contextPath}" text="Select database" /></div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+	<div class="wh100" id="dbBrowserContainer">
+		<div class="db-browser-content" style="z-index:0;display:table;">
+			<div class="var-db-select-text" style="display:table-cell;text-align:center;vertical-align: middle;font-size: 3em;">
+				<spring:message code="msg.connect.db.select" arguments="${pageContext.request.contextPath}" text="Select database" />
+			</div>
+		</div>
 	</div>
 </div>
-
 
 <script id="userDbBlockTemplate" type="text/varsql">
 <table class="wh100-absolute">
@@ -315,13 +276,3 @@ window.userMain = {
 </table>
 </script>
 
-<table id="varsql_page_load_msg_wrapper" class="wh100-absolute page-reload-msg">
-	<tbody>
-		<tr>
-			<td style="text-align: center; font-size: 3em;">
-				<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
-				<div>페이지를 로드중입니다.</div>
-			</td>
-		</tr>
-	</tbody>
-</table>

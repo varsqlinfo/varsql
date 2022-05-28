@@ -214,6 +214,8 @@
 <entry key="different.count">다른 수</entry>
 <entry key="empty.count">없는 수</entry>
 
+<entry key="btn.confirm">확인</entry>
+
 
 
 </properties>

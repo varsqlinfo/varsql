@@ -19,15 +19,6 @@ import com.varsql.core.common.util.SecurityUtil;
 public class LanguageInterceptor implements HandlerInterceptor  {
 
 	public static final String DEFAULT_PARAM_NAME = "locale";
-	private String paramName = DEFAULT_PARAM_NAME;
-
-	public void setParamName(String paramName) {
-		this.paramName = paramName;
-	}
-
-	public String getParamName() {
-		return this.paramName;
-	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -69,10 +60,10 @@ public class LanguageInterceptor implements HandlerInterceptor  {
 		String newLocale = null;
 		
 		if (MapUtils.isNotEmpty(pathVariables)) {
-			newLocale = (String) pathVariables.get(getParamName());
+			newLocale = (String) pathVariables.get(DEFAULT_PARAM_NAME);
 		}
 		if (!StringUtils.hasText(newLocale)) {
-			newLocale = request.getParameter(getParamName());
+			newLocale = request.getParameter(DEFAULT_PARAM_NAME);
 		}
 		return newLocale;
 	}
