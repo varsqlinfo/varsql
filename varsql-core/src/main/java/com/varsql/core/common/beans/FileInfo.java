@@ -2,8 +2,10 @@ package com.varsql.core.common.beans;
 
 public class FileInfo {
 	private String name;
+	private String saveName;
 	private String path;
 	private String ext;
+	private long size;
 
 	public String getName() {
 		return name;

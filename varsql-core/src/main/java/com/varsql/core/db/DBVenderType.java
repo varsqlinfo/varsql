@@ -12,7 +12,7 @@ public enum DBVenderType {
 	MYSQL("mysql")
 	,DB2("db2")
 	,ORACLE("oracle")
-	,MSSQL("mssql")
+	,MSSQL("mssql", true)
 	,MARIADB("mariadb")
 	,DERBY("derby")
 	,HIVE("hive")
@@ -26,9 +26,16 @@ public enum DBVenderType {
 	,OTHER("other");
 
 	private String dbVenderName;
+	
+	private boolean useDatabaseName;
 
 	private DBVenderType(String db){
+		this(db, false);
+	}
+	
+	private DBVenderType(String db, boolean useDatabaseName){
 		this.dbVenderName =db;
+		this.useDatabaseName =useDatabaseName;
 	}
 
 	public String getDbVenderName() {
@@ -56,5 +63,9 @@ public enum DBVenderType {
 		}
 
 		return false;
+	}
+
+	public boolean isUseDatabaseName() {
+		return useDatabaseName;
 	}
 }

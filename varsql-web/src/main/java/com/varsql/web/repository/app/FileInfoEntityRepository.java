@@ -1,4 +1,4 @@
-package com.varsql.web.repository.user;
+package com.varsql.web.repository.app;
 
 import java.util.List;
 

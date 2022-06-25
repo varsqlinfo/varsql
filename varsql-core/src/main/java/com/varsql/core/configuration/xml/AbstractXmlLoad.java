@@ -9,15 +9,15 @@ import java.util.Map;
 import org.jdom.Element;
 
 import com.varsql.core.configuration.AbstractConfiguration;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
 public abstract class AbstractXmlLoad extends AbstractConfiguration implements XmlLoad {
-	protected ParamMap<String,Object> getXmlElementsInfo(Element root) throws RuntimeException {
+	protected DataMap<String,Object> getXmlElementsInfo(Element root) throws RuntimeException {
 		return getNodeValue(root);
 	}
 	
-	private ParamMap<String,Object> getNodeValue(Element el) {
-		ParamMap<String,Object> dataMap = new ParamMap<String,Object>();
+	private DataMap<String,Object> getNodeValue(Element el) {
+		DataMap<String,Object> dataMap = new DataMap<String,Object>();
 		List list = el.getChildren();
 
 		Iterator<Element> it = list.iterator();

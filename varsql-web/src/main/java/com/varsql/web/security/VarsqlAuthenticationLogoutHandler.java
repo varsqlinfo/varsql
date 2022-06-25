@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.common.util.CommUtils;
+import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
 
 /**

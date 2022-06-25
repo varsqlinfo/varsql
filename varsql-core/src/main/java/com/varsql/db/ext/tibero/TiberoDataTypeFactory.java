@@ -21,7 +21,7 @@ public class TiberoDataTypeFactory extends AbstractDataTypeFactory{
 
 		addDataType(new VenderDataType("CLOB", 2005, DBColumnMetaInfo.CLOB));
 		addDataType(new VenderDataType("RAW", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("TIMESTAMP(6)", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.OTHER));
+		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
 		
 		addDataType(new VenderDataType("VARCHAR2", 12, DBColumnMetaInfo.STRING));
 		addDataType(new VenderDataType("NUMBER", 3, DBColumnMetaInfo.INTEGER));

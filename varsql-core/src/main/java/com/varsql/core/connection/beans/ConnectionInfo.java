@@ -7,7 +7,8 @@ import java.util.Map;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
-import com.varsql.core.common.util.CommUtils;
+import com.varsql.core.common.constants.BlankConstants;
+import com.vartech.common.utils.StringUtils;
 
 
 public class ConnectionInfo implements Serializable {
@@ -181,7 +182,7 @@ public class ConnectionInfo implements Serializable {
 	public void setConnectionOptions(String connectionOptions) {
 		if(null == connectionOptions || "".equals(connectionOptions)) return ;
 
-		String [] tmpOpt = CommUtils.split(connectionOptions, ";");
+		String [] tmpOpt = StringUtils.split(connectionOptions, ";");
 
 		if(this.connectionOptions ==null) this.connectionOptions=new HashMap();
 
@@ -195,7 +196,7 @@ public class ConnectionInfo implements Serializable {
 				continue;
 			}
 
-			optVal = CommUtils.split(tmpKey, "=");
+			optVal = StringUtils.split(tmpKey, "=");
 
 			this.connectionOptions.put(optVal[0], ( optVal.length > 1 ? optVal[1]:"" ) );
 		}
@@ -208,7 +209,7 @@ public class ConnectionInfo implements Serializable {
 	public void setPoolOptions(String poolOption) {
 		if(null == poolOption || "".equals(poolOption)) return ;
 
-		String [] tmpOpt = CommUtils.split(poolOption, ";");
+		String [] tmpOpt = StringUtils.split(poolOption, ";");
 
 		if(this.poolOptions ==null) this.poolOptions=new HashMap();
 
@@ -219,7 +220,7 @@ public class ConnectionInfo implements Serializable {
 			tmpKey=tmpOpt[i];
 
 			if(!"".equals(tmpKey.trim())){
-				optVal = CommUtils.split(tmpKey, "=");
+				optVal = StringUtils.split(tmpKey, "=");
 				this.poolOptions.put(optVal[0], ( optVal.length > 1 ?optVal[1]:"" ) );
 			}
 		}
@@ -230,23 +231,22 @@ public class ConnectionInfo implements Serializable {
 	public String toString() {
 
 		StringBuilder result = new StringBuilder();
-	    String NEW_LINE = System.getProperty("line.separator");
 
-	    result.append(this.getClass().getName() ).append( " Object { " ).append( NEW_LINE);
-	    result.append(" connid: ").append(connid).append(NEW_LINE);
-	    result.append(" aliasName: ").append(aliasName).append(NEW_LINE);
-	    result.append(" type: " ).append( type ).append( NEW_LINE);
-	    result.append(" url: " ).append( url ).append( NEW_LINE);
-	    result.append(" username: " ).append( username ).append( NEW_LINE);
-	    result.append(" password: " ).append( password ).append( NEW_LINE);
-	    result.append(" maxActive: " ).append( maxActive ).append( NEW_LINE);
-	    result.append(" minIdle: " ).append( minIdle ).append( NEW_LINE);
-	    result.append(" maxWait: " ).append( maxWait ).append( NEW_LINE);
-	    result.append(" connection_opt: " ).append( connectionOptions ).append( NEW_LINE);
-	    result.append(" pool_opt: " ).append( poolOptions ).append( NEW_LINE);
-	    result.append(" timebetweenevictionrunsmillis: " ).append( timebetweenevictionrunsmillis ).append( NEW_LINE);
-	    result.append(" test_while_idle: " ).append( testWhileIdle ).append( NEW_LINE);
-	    result.append(" validation_query: " ).append( validationQuery ).append( NEW_LINE);
+	    result.append(this.getClass().getName() ).append( " Object { " ).append( BlankConstants.NEW_LINE);
+	    result.append(" connid: ").append(connid).append(BlankConstants.NEW_LINE);
+	    result.append(" aliasName: ").append(aliasName).append(BlankConstants.NEW_LINE);
+	    result.append(" type: " ).append( type ).append( BlankConstants.NEW_LINE);
+	    result.append(" url: " ).append( url ).append( BlankConstants.NEW_LINE);
+	    result.append(" username: " ).append( username ).append( BlankConstants.NEW_LINE);
+	    result.append(" password: " ).append( password ).append( BlankConstants.NEW_LINE);
+	    result.append(" maxActive: " ).append( maxActive ).append( BlankConstants.NEW_LINE);
+	    result.append(" minIdle: " ).append( minIdle ).append( BlankConstants.NEW_LINE);
+	    result.append(" maxWait: " ).append( maxWait ).append( BlankConstants.NEW_LINE);
+	    result.append(" connection_opt: " ).append( connectionOptions ).append( BlankConstants.NEW_LINE);
+	    result.append(" pool_opt: " ).append( poolOptions ).append( BlankConstants.NEW_LINE);
+	    result.append(" timebetweenevictionrunsmillis: " ).append( timebetweenevictionrunsmillis ).append( BlankConstants.NEW_LINE);
+	    result.append(" test_while_idle: " ).append( testWhileIdle ).append( BlankConstants.NEW_LINE);
+	    result.append(" validation_query: " ).append( validationQuery ).append( BlankConstants.NEW_LINE);
 	    result.append("}");
 
 	    return result.toString();

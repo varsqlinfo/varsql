@@ -68,7 +68,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 		connInfo.setConnectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
 		connInfo.setExportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
 		connInfo.setTestWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
-
+		
 		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(connInfo.getType());
 
 		String urlDirectYn = dto.getConnection().getUrlDirectYn();
@@ -90,7 +90,6 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		connInfo.setValidationQuery(validation_query);
 
-
 		List<FileInfo> driverFileInfos;
 		
 		if(PathType.PATH.equals(PathType.getPathType(dto.getProvider().getPathType()))){
@@ -104,7 +103,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 			driverFileInfos = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
 		}
 
-		JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriver().getDriverId() , dto.getDriver().getDbdriver());
+		JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriver().getDriverId(), dto.getDriver().getDbdriver());
 	    jdbcDriverInfo.setDriverFiles(driverFileInfos);
 	    
 	    connInfo.setJdbcDriverInfo(jdbcDriverInfo);

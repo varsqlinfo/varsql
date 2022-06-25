@@ -57,15 +57,16 @@ public class JoinController extends AbstractController {
 
 	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public @ResponseBody ResponseResult insertUserInfo(@Valid UserReqeustDTO joinForm, BindingResult result, ModelAndView mav, HttpServletRequest req) throws EncryptDecryptException {
-		ResponseResult resultObject = new ResponseResult();
+		
 		if(result.hasErrors()){
 
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  insertUserInfo validation check {}",errorVal.toString());
 			}
-			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
+		
+		ResponseResult resultObject = new ResponseResult();
 		Long idCheck = joinServiceImpl.idCheck(joinForm.getUid()).getItem();
 
 		if(idCheck > 0){

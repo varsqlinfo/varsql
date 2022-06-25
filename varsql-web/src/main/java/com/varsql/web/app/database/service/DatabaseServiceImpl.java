@@ -22,6 +22,7 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.web.common.cache.CacheInfo;
+import com.varsql.web.common.service.CommonServiceImpl;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBConnTabResponseDTO;
@@ -57,6 +58,9 @@ public class DatabaseServiceImpl{
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	private CommonServiceImpl commonServiceImpl;
 
 	/**
 	 *
@@ -74,14 +78,23 @@ public class DatabaseServiceImpl{
 		Map json = new HashMap();
 
 		DatabaseInfo dbinfo= SecurityUtil.userDBInfo(databaseParamInfo.getConuid());
+		
+		DBVenderType venderType = DBVenderType.getDBType(dbinfo.getType());
 
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbinfo.getType());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(venderType);
 
 		json.put("schema", dbinfo.getSchema());
 		json.put("conuid", dbinfo.getConnUUID());
 		json.put("type", dbinfo.getType());
 		json.put("lazyload", dbinfo.isLazyLoad());
-		json.put("schemaList", dbMetaEnum.getSchemas(databaseParamInfo));
+		
+		if(venderType.isUseDatabaseName()) {
+			json.put("schemaList", dbMetaEnum.getDatabases(databaseParamInfo));
+		}else {
+			json.put("schemaList", dbMetaEnum.getSchemas(databaseParamInfo));
+		}
+		
+		
 		json.put("serviceObject", dbMetaEnum.getServiceMenu());
 
 		return json;
@@ -238,17 +251,12 @@ public class DatabaseServiceImpl{
 	 * @param databaseParamInfo
 	 */
 	public void insertDbConnectionHistory(DatabaseParamInfo databaseParamInfo) {
-		try{
-			dbConnHistEntityRepository.save(DBConnHistEntity.builder()
+		commonServiceImpl.saveDbConnectionHistory(DBConnHistEntity.builder()
 				.vconnid(databaseParamInfo.getVconnid())
 				.viewid(databaseParamInfo.getViewid())
 				.connTime(DefaultValueUtils.currentTimestamp())
 				.reqUrl("main")
-				.build()
-			);
-		}catch(Exception e){
-			logger.error("insertDbConnectionHistory : ", e);
-		}
+				.build());
 	}
 
 	/**

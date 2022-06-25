@@ -102,7 +102,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 23.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconnid
 	 * @return
 	 */
 	public ResponseResult findDatabaseManager(String vconnid) {
@@ -123,7 +123,9 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 23.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param selectItem
+	 * @param vconnid
+	 * @param mode
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)

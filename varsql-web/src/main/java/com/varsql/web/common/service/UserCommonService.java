@@ -4,11 +4,9 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.beans.MailInfo;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.constants.MailType;
@@ -17,12 +15,11 @@ import com.varsql.web.model.entity.user.EmailTokenEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.EmailTokenEntityRepository;
 import com.varsql.web.repository.user.UserInfoRepository;
-import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.MailInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
-import com.vartech.common.crypto.password.PasswordUtil;
 import com.vartech.common.utils.VartechUtils;
 
 @Service

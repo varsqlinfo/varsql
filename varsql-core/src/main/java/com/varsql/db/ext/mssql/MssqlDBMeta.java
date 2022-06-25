@@ -134,14 +134,14 @@ public class MssqlDBMeta extends AbstractDBMeta{
 		if("viewMetadata".equals(queryId)){
 			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
 		}else{
-			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
+			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList", dataParamInfo));
 
 			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
 				dataParamInfo.addCustom("objectNameList", tableInfoHandler.getTableNameList());
 			}
 		}
 
-		sqlSession.select(queryId ,dataParamInfo,tableInfoHandler);
+		sqlSession.select(queryId, dataParamInfo, tableInfoHandler);
 
 		return tableInfoHandler.getTableInfoList();
 	}

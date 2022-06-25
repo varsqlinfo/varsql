@@ -32,10 +32,10 @@
 <script src="${pageContextPath}/webstatic/js/plugins/websocket/sockjs/sockjs.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/websocket/stomp/stomp.min.js"></script>
 
-<script src="${pageContextPath}/webstatic/js/varsql.web.custom.plugin.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.db.conts.js?version=${pubjs_ver}"></script>
+<script src="${pageContextPath}/webstatic/js/varsql.db.util.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.db.api.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.db.ui.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.db.vender.plugin.js?version=${pubjs_ver}"></script>

@@ -33,11 +33,11 @@ import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.app.NoteMapper;
+import com.varsql.web.repository.app.NoteEntityRepository;
+import com.varsql.web.repository.app.NoteMappingUserEntityRepository;
+import com.varsql.web.repository.app.QnAEntityRepository;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.QnASpec;
-import com.varsql.web.repository.user.NoteEntityRepository;
-import com.varsql.web.repository.user.NoteMappingUserEntityRepository;
-import com.varsql.web.repository.user.QnAEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -218,7 +218,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 8. 16.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param messageType
+	 * @param selectItem
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
@@ -243,7 +244,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 1. 3.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param searchParameter
 	 * @return
 	 */
 	public ResponseResult searchQna(SearchParameter searchParameter) {
@@ -261,7 +262,8 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param qnaInfo
+	 * @param insFlag
 	 * @return
 	 */
 	public ResponseResult saveQnaInfo(QnARequesetDTO qnaInfo, boolean insFlag) {
@@ -277,7 +279,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 1. 3.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param qnaid
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)

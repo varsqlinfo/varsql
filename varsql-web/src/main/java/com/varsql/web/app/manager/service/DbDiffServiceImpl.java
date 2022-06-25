@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
@@ -20,6 +21,7 @@ import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
+import com.vartech.common.utils.StringUtils;
 
 /**
 *-----------------------------------------------------------------------------
@@ -63,10 +65,21 @@ public class DbDiffServiceImpl{
 			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setItemList(null);
 		}else{
+			
+			String dbType = vtConnRVO.getDbTypeDriverProvider().getDbType(); 
+			
+			DBVenderType venderType = DBVenderType.getDBType(dbType);
 
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getDbTypeDriverProvider().getDbType());
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(venderType);
 			resultObject.setItemList(dbMetaEnum.getServiceMenu());
-			resultObject.addCustoms("schemaInfo",dbMetaEnum.getSchemas(  getDatabaseParamInfo(vtConnRVO)));
+			
+			DatabaseParamInfo param = getDatabaseParamInfo(vtConnRVO);
+			
+			if(venderType.isUseDatabaseName()) {
+				resultObject.addCustoms("schemaInfo", dbMetaEnum.getDatabases(param));
+			}else {
+				resultObject.addCustoms("schemaInfo", dbMetaEnum.getSchemas(param));
+			}
 		}
 
 		return resultObject;
@@ -80,10 +93,13 @@ public class DbDiffServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 12. 19.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconnid
+	 * @param objectType
+	 * @param schema
+	 * @param databaseName
 	 * @return
 	 */
-	public ResponseResult objectList(String vconnid, String schema, String objectType) {
+	public ResponseResult objectList(String vconnid, String objectType, String schema, String databaseName) {
 
 		ResponseResult resultObject = new ResponseResult();
 
@@ -95,6 +111,7 @@ public class DbDiffServiceImpl{
 		}else{
 			DatabaseParamInfo dpi = getDatabaseParamInfo(vtConnRVO);
 			dpi.setSchema(schema);
+			dpi.setDatabaseName(StringUtils.isBlank(databaseName) ? vtConnRVO.getVdatabasename() : databaseName);
 			dpi.setObjectType(objectType);
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getDbTypeDriverProvider().getDbType());
@@ -132,6 +149,7 @@ public class DbDiffServiceImpl{
 				, vtConnRVO.getSchemaViewYn()
 				, ConvertUtils.intValue(vtConnRVO.getMaxSelectCount())
 				, vtConnRVO.getUseColumnLabel()
+				, vtConnRVO.getVdatabasename()
 			)
 		);
 

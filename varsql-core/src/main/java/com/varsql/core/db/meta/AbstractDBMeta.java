@@ -153,6 +153,49 @@ public abstract class AbstractDBMeta implements DBMeta{
 		}
 		return reLst;
 	}
+	
+	@Override
+	public List<String> getDatabases(DatabaseParamInfo dataParamInfo) throws SQLException {
+		List<String> reLst = new ArrayList<String>();
+
+		String dbAlias =  dataParamInfo.getVconnid();
+
+		logger.debug("getDatabases connid: {}, shcema : {}, databaseName : {} ", dbAlias, dataParamInfo.getSchema(), dataParamInfo.getDatabaseName());
+
+		Connection conn = null;
+		ResultSet rs = null;
+
+		SqlSession session = SQLManager.getInstance().openSession(dbAlias);
+
+		try {
+			conn = session.getConnection();
+
+			DatabaseMetaData dbmd = conn.getMetaData();
+
+			String databaseName =dataParamInfo.getDatabaseName();
+			try {
+				databaseName = conn.getCatalog();
+			}catch(Throwable e1) {
+				
+			}
+			
+			if(SecurityUtil.isSchemaView(dataParamInfo)) {
+
+				rs =dbmd.getCatalogs();
+				if(rs!=null) {
+					while (rs.next()) {
+						reLst.add(rs.getString(MetaColumnConstants.TABLE_CAT));
+					}
+					if (rs != null) rs.close();
+				}
+			}else{
+				reLst.add(databaseName);
+			}
+		}finally{
+			sessionClose(dataParamInfo.getVconnid(), session);
+		}
+		return reLst;
+	}
 
 	/**
 	 *

@@ -10,9 +10,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.beans.MailInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.vartech.common.app.beans.MailInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
 

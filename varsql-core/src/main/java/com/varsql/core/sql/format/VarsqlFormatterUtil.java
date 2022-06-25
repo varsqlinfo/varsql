@@ -3,7 +3,7 @@ package com.varsql.core.sql.format;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
-import com.varsql.core.pattern.convert.SQLCommentRemoveConverter;
+import com.varsql.core.sql.util.VARSQLCommentRemoveUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
 
@@ -62,7 +62,7 @@ public final class VarsqlFormatterUtil {
 
 		String resultSql = "";
 
-		sql = new SQLCommentRemoveConverter().convert(sql,dbType);
+		sql = new VARSQLCommentRemoveUtil().convert(sql, dbType);
 
 		if(format_type.equals(FORMAT_TYPE.VARSQL)){
 			resultSql = new VarsqlFormatterImpl().execute(sql);
@@ -71,7 +71,7 @@ public final class VarsqlFormatterUtil {
 
 			try{
 
-				resultSql = com.varsql.core.sql.util.SQLParserUtils.getParserString(sql,dbType);
+				resultSql = com.varsql.core.sql.util.SQLParserUtils.getParserString(sql, dbType);
 			}catch(Exception e){
 				resultSql =new VarsqlFormatterImpl().execute(sql);
 				result.setMessage(e.getMessage());

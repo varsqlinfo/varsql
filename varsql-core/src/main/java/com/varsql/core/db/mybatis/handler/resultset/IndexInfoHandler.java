@@ -10,9 +10,9 @@ import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
-public class IndexInfoHandler implements ResultHandler<ParamMap> {
+public class IndexInfoHandler implements ResultHandler<DataMap> {
 	private List<IndexInfo> indexInfoList = new ArrayList<IndexInfo>();
 	
 	private IndexInfo currentIndexInfo; 
@@ -28,8 +28,8 @@ public class IndexInfoHandler implements ResultHandler<ParamMap> {
 		return indexInfoList;
 	}
 	@Override
-	public void handleResult(ResultContext<? extends ParamMap> paramResultContext) {
-		ParamMap rowData = paramResultContext.getResultObject();
+	public void handleResult(ResultContext<? extends DataMap> paramResultContext) {
+		DataMap rowData = paramResultContext.getResultObject();
 		
 		String indexName = rowData.getString(MetaColumnConstants.INDEX_NAME);
 		

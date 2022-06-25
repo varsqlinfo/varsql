@@ -16,7 +16,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
 /**
  *
@@ -53,7 +53,7 @@ public class MariadbDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = client.selectOne("tableScript", dataParamInfo);
+			DataMap source = client.selectOne("tableScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Table"));
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
@@ -86,7 +86,7 @@ public class MariadbDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create View"));
 
@@ -138,7 +138,7 @@ public class MariadbDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Function"));
 
@@ -168,7 +168,7 @@ public class MariadbDDLScript extends AbstractDDLScript {
 			ddlStr = new StringBuilder();
 			dataParamInfo.setObjectName(name);
 
-			ParamMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Procedure"));
 
@@ -213,7 +213,7 @@ public class MariadbDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP Trigger " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Trigger"));
 

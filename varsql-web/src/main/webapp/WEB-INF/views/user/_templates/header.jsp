@@ -333,7 +333,6 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 });
 
 function userConnect(){
-	console.log('userConnect')
 	VARSQL.socket.connect('user', {
 		uid : $varsqlConfig.viewId
 		,callback : function (data){
@@ -353,7 +352,7 @@ function userConnect(){
 userConnect();
 
 window.mainSocketConnect = function (){
-	if(VARSQL.socket.isCreate === true && VARSQL.socket.isConnect() ===false){
+	if(VARSQL.socket.isConnect() ===false){
 		userConnect();
 	};
 }; 

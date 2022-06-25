@@ -21,9 +21,6 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	}
 	
 	public void addDataType(DataType dataType) {
-		String typeName = dataType.getTypeName().toUpperCase(); 
-		if(!venderDataType.containsKey(typeName)) {
-			venderDataType.put(typeName, dataType);
-		}
+		venderDataType.put(dataType.getTypeName().toUpperCase(), dataType);
 	};
 }

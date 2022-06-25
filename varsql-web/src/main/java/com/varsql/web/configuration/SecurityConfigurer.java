@@ -146,7 +146,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		.and()
 			.csrf()
 			.csrfTokenRepository(getCookieCsrfTokenRepository())
-			.ignoringAntMatchers("/login/**","/logout")
+			.ignoringAntMatchers("/ws/**","/login/**","/logout")
 			.ignoringRequestMatchers(staticRequestMatcher)
 			.requireCsrfProtectionMatcher(ajaxRequestMatcher)
 		.and() //session
@@ -210,7 +210,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 		csrf.setCookieHttpOnly(true);
 		csrf.setCookieName(CSRF_TOKEN_NAME);
-		csrf.setHeaderName(CSRF_TOKEN_NAME);
 		csrf.setHeaderName(CSRF_TOKEN_NAME);
 		csrf.setParameterName(CSRF_TOKEN_NAME);
 

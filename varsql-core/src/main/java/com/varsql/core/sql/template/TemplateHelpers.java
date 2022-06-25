@@ -3,6 +3,7 @@ package com.varsql.core.sql.template;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.util.DbMetaUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.StringUtils;
 
 public enum TemplateHelpers implements Helper<Object> {
@@ -61,7 +62,7 @@ public enum TemplateHelpers implements Helper<Object> {
 		@Override
 		public Object apply(Object context, Options options) throws IOException {
 			String mode = (String)context;
-			Map item =options.param(0, new ParamMap());
+			Map item =options.param(0, new DataMap());
 
 			String dbType = options.param(2, "OTHER");
 
@@ -101,6 +102,14 @@ public enum TemplateHelpers implements Helper<Object> {
 	}
 
 	,ddlTableKey{
+		
+		
+		
+		
+		
+		
+		
+		                                                                
 
 		@Override
 		public Object apply(Object context, Options options) throws IOException {
@@ -111,7 +120,7 @@ public enum TemplateHelpers implements Helper<Object> {
 
 			String objectName = options.param(0,"");
 
-			Map<String, Map<String,List>> reval = new HashMap<String, Map<String,List>>();
+			Map<String, Map<String,List>> reval = new LinkedHashMap<String, Map<String,List>>();
 
 			//[{"TABLE_NAME":"test_table","INDEX_TYPE":1,"COLUMN_NAME":"col1","CONSTRAINT_NAME":"test_table_20445312861",TYPE:"PK"}]
 
@@ -129,7 +138,7 @@ public enum TemplateHelpers implements Helper<Object> {
 					Map<String,List> addItem = new HashMap<String,List>();
 					addItem.put(constName,new ArrayList());
 					addItem.get(constName).add(item);
-					reval.put(keyType,addItem);
+					reval.put(keyType, addItem);
 				}
 			}
 

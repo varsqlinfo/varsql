@@ -20,7 +20,7 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
 /**
  *
@@ -57,7 +57,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = client.selectOne("tableScript", dataParamInfo);
+			DataMap source = client.selectOne("tableScript", dataParamInfo);
 
 			ddlStr.append(source.getString("CREATE TABLE"));
 
@@ -91,7 +91,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
 			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
 			ddlStr.append(source.getString("Create View"));

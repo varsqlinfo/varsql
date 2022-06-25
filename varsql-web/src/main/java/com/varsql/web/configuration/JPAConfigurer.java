@@ -83,7 +83,7 @@ public class JPAConfigurer {
 		logger.info("=================datasourceconfig info====================");
 		logger.info(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());
 		logger.info(" url : {}",ci.getUrl());
-		logger.info(" username" ,ci.getUsername());
+		logger.info(" username : {} " ,ci.getUsername());
 		logger.info("=================datasourceconfig info====================");
 
 		mainDataSource = dataSource;

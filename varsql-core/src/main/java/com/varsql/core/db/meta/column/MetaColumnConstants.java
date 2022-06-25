@@ -70,6 +70,8 @@ public interface MetaColumnConstants {
 	String TABLE_SPACE="TABLE_SPACE";
 
 	String STATUS="STATUS";
+	
+	String SCHEMA="SCHEMA";
 
 	String CREATE_SOURCE="CREATE_SOURCE";
 

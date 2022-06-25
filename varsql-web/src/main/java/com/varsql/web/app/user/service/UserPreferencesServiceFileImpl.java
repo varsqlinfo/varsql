@@ -28,8 +28,8 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.repository.spec.FileInfoSpec;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -184,7 +184,7 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 11. 7.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param selectItem
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)

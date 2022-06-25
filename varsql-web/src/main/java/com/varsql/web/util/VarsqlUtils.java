@@ -23,8 +23,8 @@ import org.springframework.validation.ObjectError;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.constants.VarsqlParamConstants;
-import com.varsql.web.model.mapper.base.GenericMapper;
-import com.vartech.common.app.beans.ParamMap;
+import com.varsql.web.model.mapper.GenericMapper;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
@@ -131,8 +131,8 @@ public final class VarsqlUtils {
 	 * @param req
 	 * @return
 	 */
-	public static ParamMap getIncludeDefaultParam(HttpServletRequest req) {
-		ParamMap parameter = HttpUtils.getServletRequestParam(req);
+	public static DataMap getIncludeDefaultParam(HttpServletRequest req) {
+		DataMap parameter = HttpUtils.getServletRequestParam(req);
 		return setDefaultParam(parameter);
 	}
 
@@ -146,7 +146,7 @@ public final class VarsqlUtils {
 	 * @param paramInfo
 	 * @return
 	 */
-	public static ParamMap setDefaultParam(ParamMap paramInfo) {
+	public static DataMap setDefaultParam(DataMap paramInfo) {
 		// dp  = default parameter;
 		paramInfo.put("dp_viewId", SecurityUtil.userViewId());
 		return paramInfo;
@@ -235,6 +235,9 @@ public final class VarsqlUtils {
 		return returnVal.toString();
 	}
 
+	public static ResponseResult getResponseResultValidItem(BindingResult result) {
+		return getResponseResultValidItem(new ResponseResult(), result);
+	}
 	public static ResponseResult getResponseResultValidItem(ResponseResult resultObject, BindingResult result) {
 		resultObject.setResultCode(RequestResultCode.DATA_NOT_VALID);
 

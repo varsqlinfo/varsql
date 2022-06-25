@@ -121,17 +121,14 @@ public class GuestController extends AbstractController  {
 	 */
 	@RequestMapping(value="/updQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
-
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
+			
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return resultObject;
+		
+		return userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 	}
 }

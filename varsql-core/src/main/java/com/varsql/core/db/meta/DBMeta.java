@@ -24,6 +24,8 @@ public interface DBMeta{
 
 	public List getVersion(DatabaseParamInfo dataParamInfo) throws Exception;
 
+	public List<String> getDatabases(DatabaseParamInfo dataParamInfo) throws SQLException;
+	
 	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException;
 	public List getUsers(DatabaseParamInfo dataParamInfo) throws Exception;
 

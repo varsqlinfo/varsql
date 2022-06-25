@@ -76,17 +76,14 @@ public class DbGroupController extends AbstractController {
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult save(@Valid DBGroupRequestDTO dbGroupInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  DbGroupController save check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = dbGroupServiceImpl.saveDbGroupInfo(dbGroupInfo);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return resultObject;
+		
+		return dbGroupServiceImpl.saveDbGroupInfo(dbGroupInfo);
 	}
 
 	/**

@@ -13,6 +13,9 @@ import java.util.Map;
 public class BaseObjectInfo {
 	// 테이블명.
 	private String name;
+	
+	// schema
+	private String schema;
 
 	// 비고
 	private String remarks;
@@ -41,6 +44,14 @@ public class BaseObjectInfo {
 
 	public void setCustomField(Map<String,Object> customField) {
 		this.customField = customField;
+	}
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
 	}
 }
 

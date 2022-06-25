@@ -22,7 +22,6 @@ public class LONGVARCHARHandler implements TypeHandler{
         }catch(SQLException e) {
         	throw e; 
         }
-        
     }
  
     @Override

@@ -214,7 +214,8 @@ subprojects {
 		implementation group: 'org.mybatis' , name: 'mybatis' , version: '3.5.5'
 		implementation group: 'org.mybatis' , name: 'mybatis-spring' , version: '2.0.5'
 
-		
+		//varsql 
+		implementation group: 'com.varsql', name: 'varsql-token-converter', version: '0.0.1'
 
 		//Reflections
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'
@@ -224,7 +225,7 @@ subprojects {
 
 		implementation group: 'com.thoughtworks.xstream' , name: 'xstream' , version: '1.4.11'
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'
-		implementation group: 'com.github.jknack' , name: 'handlebars' , version: '4.2.0'
+		implementation group: 'com.github.jknack' , name: 'handlebars' , version: '4.3.0'
 
 		// jstl apache 모듈로 변경.
 		implementation(

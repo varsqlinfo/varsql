@@ -168,7 +168,6 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-
 		logger.debug("MssqlDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
 		TableInfoHandler tableInfoHandler;

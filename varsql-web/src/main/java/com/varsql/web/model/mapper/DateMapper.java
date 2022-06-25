@@ -1,4 +1,4 @@
-package com.varsql.web.model.mapper.base;
+package com.varsql.web.model.mapper;
 
 import java.sql.Timestamp;
 import java.util.Date;

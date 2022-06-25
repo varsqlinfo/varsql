@@ -16,10 +16,10 @@ public class CubridDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public CubridDataTypeFactory() {
-		addDataType(new VenderDataType("TIMESTAMP", 0, DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("TIMESTAMPLTZ", 0, DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("TIMESTAMPTZ", 0, DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("DATETIMELTZ", 0, DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("DATETIMETZ", 0, DBColumnMetaInfo.DATE));
+		addDataType(new VenderDataType("TIMESTAMP", 0, DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType("TIMESTAMPLTZ", 0, DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType("TIMESTAMPTZ", 0, DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType("DATETIMELTZ", 0, DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType("DATETIMETZ", 0, DBColumnMetaInfo.TIMESTAMP));
 	}
 }

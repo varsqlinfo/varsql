@@ -93,6 +93,24 @@ var DEFINE_INFO = {
 			
 			return (val||'').replace(/^\(|\)$/g,'');
 		}
+		,mainObjectServiceHeader :{
+			table :[
+				{key :'schema', label:'schema', width: 30}
+				,{key :'name', label:'Table', width: 100, formatter : function (obj){	// 보여질 값을 처리.
+					var item = obj.item;
+					return item.name;
+				}}
+				,{key :'remarks', label:'Desc', width: 100}
+			]
+			,view :[
+				{key :'schema', label:'schema', width: 30}
+				,{key :'name', label:'Table', width: 100, formatter : function (obj){	// 보여질 값을 처리.
+					var item = obj.item;
+					return item.name;
+				}}
+				,{key :'remarks', label:'Desc', width: 100}
+			]
+		} 
 	}
 	,MYSQL : {
 		type :'text/x-mysql'
@@ -142,6 +160,88 @@ var DEFINE_INFO = {
 	,'DEFAULT' : {
 		type :  'text/x-sql',hint : [] ,dataType:{}
 		,formatType : 'sql'
+		,mainObjectServiceHeader :{
+			table :[
+				{key :'name', label:'Table', width:200}
+				,{key :'remarks', label:'Desc'}
+			]
+			,view :[
+				{key :'name', label:'Table', width: 150}
+				,{key :'remarks', label:'Desc', width: 100}
+			]
+			,procedure : [
+				{key :'name', label:'Procedure',width:200}
+				,{key :'status', label:'Status'}
+				,{key :'remarks', label:'Desc'}
+			]
+			,function : [
+				{key :'name', label:'Function',width:200}
+				,{key :'status', label:'Status'}
+				,{key :'remarks', label:'Desc'}
+			]
+			,index : [
+				{key :'name', label:'Index',width:200}
+				,{key :'tblName', label:'Table'}
+				,{key :'type', label:'Type'}
+				,{key :'tableSpace', label:'Tablespace'}
+				,{key :'bufferPool', label:'Buffer Pool'}
+				,{key :'status', label:'Status'}
+			]
+			,trigger : [
+				{key :'name', label:'Trigger', width:120}
+				,{key :'tblName', label:'Table', width:100}
+				,{key :'eventType', label:'Type'}
+				,{key :'timing', label:'timing'}
+				,{key :'status', label:'Status'}
+				,{key :'created', label:'CREATED'}
+			]
+			,sequence : [
+				{key :'name', label:'Sequence',width:200}
+				,{key :'status', label:'Status'}
+				,{key :'created', label:'CREATED'}
+			]
+		}
+		,mainMetaGridHeader : {
+			tableColumn : [
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeAndLength' },
+				{ label: VARSQL.messageFormat('grid.key'), key: 'constraints',width:45},
+				{ label: VARSQL.messageFormat('grid.default.value'), key: 'defaultVal',width:45},
+				{ label: VARSQL.messageFormat('grid.nullable'), key: 'nullable',width:45},
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
+			]
+			,viewColumn : [
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeName' },
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
+			]
+			,procedureColumn : [
+				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 },
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },
+				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
+			]
+			,functionColumn : [
+				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 }, // 파라미터
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },		// datatype
+				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},	// in/out
+				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}	// 설명
+			]
+			,indexColumn : [
+				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
+				{ label: 'POSITION', key: 'no',width:80 },
+				{ label: 'ASC OR DESC', key: 'ascOrdesc' }
+			]
+			,triggerInfo : [
+				{ label: 'Name', key: 'name'},
+				{ label: 'Value', key: 'val',width:80 }
+			]
+			,sequenceInfo : [
+				{ label: 'Name', key: 'name'},
+				{ label: 'Value', key: 'val',width:80 },
+			]
+
+		}
 	}
 }
 
@@ -242,6 +342,24 @@ VARSQLCont = {
 		}
 				
 		return "'"+VARSQL.util.toLowerCase(columnInfo.name)+"'";
+	}
+	// main object service header
+	,getMainObjectServiceHeader : function (headerType){
+			
+		if(G_CURRENT_DBTYPE_INFO.mainObjectServiceHeader && G_CURRENT_DBTYPE_INFO.mainObjectServiceHeader[headerType]){
+			return G_CURRENT_DBTYPE_INFO.mainObjectServiceHeader[headerType];
+		}
+
+		return DEFINE_INFO['DEFAULT'].mainObjectServiceHeader[headerType];
+	}
+	// main object service header
+	,getMainObjectMetaHeader : function (headerType){
+			
+		if(G_CURRENT_DBTYPE_INFO.mainMetaGridHeader && G_CURRENT_DBTYPE_INFO.mainMetaGridHeader[headerType]){
+			return G_CURRENT_DBTYPE_INFO.mainMetaGridHeader[headerType];
+		}
+
+		return DEFINE_INFO['DEFAULT'].mainMetaGridHeader[headerType];
 	}
 }
 

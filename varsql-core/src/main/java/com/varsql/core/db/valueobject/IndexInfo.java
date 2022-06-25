@@ -13,7 +13,7 @@ import java.util.List;
 public class IndexInfo extends BaseObjectInfo{
 	// 테이블명
 	private String tblName;
-	// 타입 (pk ,fk ,uni)
+	// 타입 (pk, fk, uq)
 	private String type;
 	// 테이블명
 	private String tableSpace;

@@ -49,11 +49,13 @@ public class SqlStatsServiceImpl extends AbstractService{
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconid
+	 * @param sDate
+	 * @param eDate
 	 * @return
 	 */
-	public ResponseResult dbSqlDateStats(String vconid, String s_date, String e_date) {
-		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDateStat(vconid, s_date, e_date));
+	public ResponseResult dbSqlDateStats(String vconid, String sDate, String eDate) {
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDateStat(vconid, sDate, eDate));
 	}
 
 	/**
@@ -63,11 +65,13 @@ public class SqlStatsServiceImpl extends AbstractService{
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconid
+	 * @param sDate
+	 * @param eDate
 	 * @return
 	 */
-	public ResponseResult dbSqlDayStats(String vconid, String s_date, String e_date) {
-		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDayStat(vconid, s_date, e_date));
+	public ResponseResult dbSqlDayStats(String vconid, String sDate, String eDate) {
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findSqlDayStat(vconid, sDate, eDate));
 	}
 
 	/**
@@ -77,11 +81,14 @@ public class SqlStatsServiceImpl extends AbstractService{
 	 * @작성일   : 2015. 5. 6.
 	 * @작성자   : ytkim
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconid
+	 * @param sDate
+	 * @param eDate
+	 * @param commandType
 	 * @return
 	 */
-	public ResponseResult dbSqlDayUserRank(String vconid, String s_date, String e_date, String command_type) {
-		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findDayUserRank(vconid, s_date, e_date, command_type));
+	public ResponseResult dbSqlDayUserRank(String vconid, String sDate, String eDate, String commandType) {
+		return VarsqlUtils.getResponseResultItemList(sqlStatisticsEntityRepository.findDayUserRank(vconid, sDate, eDate, commandType));
 	}
 
 	/**

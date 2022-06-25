@@ -417,8 +417,6 @@ var formatter= {
 
 		fixedNum = fixedNum || 0;
 
-		
-
 		if (!isFinite(num)) {
 			return num;
 		}
@@ -942,43 +940,6 @@ Plugin.prototype ={
 
 	}
 	/**
-	 * @method _getColGroup
-	 * @param type {String} - colgroup 타입
-	 * @description colgroup 구하기.
-	 */
-	,_getColGroup :function (id , type){
-		var _this = this
-			,opt = _this.options
-			,tci = _this.config.tColItem
-			,thiItem;
-		var strHtm = [];
-
-		var startCol =0, endCol = tci.length;
-
-		if(type=='left'){
-			endCol = _this.options.colFixedIndex;
-		}else if(type=='cont'){
-			startCol = _this.options.colFixedIndex;
-		}
-
-		strHtm.push('<colgroup>');
-
-		for(var i=startCol ;i <endCol; i++){
-			thiItem = tci[i];
-			var tmpStyle = [];
-			tmpStyle.push('width:'+thiItem.width+'px;');
-			if(thiItem.visible===false){
-				tmpStyle.push('display:none;visibility: hidden;');
-			}else{
-				strHtm.push('<col id="'+id+i+'" style="'+tmpStyle.join('')+'" />');
-			}
-		}
-
-		strHtm.push('</colgroup>');
-
-		return strHtm.join('');
-	}
-	/**
 	 * @method addRow
 	 * @param data {Object , Array} - 데이터
 	 * @param opt {Object} - add option { index : index ,'first','last' ,focus : 스크롤 이동 여부 (true or false) }
@@ -1445,112 +1406,6 @@ Plugin.prototype ={
 			tag.appendChild(document.createTextNode(strCss.join('')));
 		}
 	}
-	/**
-	 * @method getTemplateHtml
-	 * @description header html
-	 */
-	,getTemplateHtml : function (){
-		var _this = this
-			,vArrowWidth = _this.options.scroll.vertical.width-2
-			,hArrowWidth = _this.options.scroll.horizontal.height-2;
-
-		var prefix =_this.prefix; 
-
-		var templateHtml =  '<div class="pubGrid-wrapper"><div id="'+prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
-			+' 	<div id="'+prefix+'_container" class="pubGrid-container '+(_this.options.colFixedIndex >0 ? 'pubGrid-col-fixed':'')+'" style="overflow:hidden;">'
-			+'    <div class="pubGrid-setting-btn"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
-			+'<g><path id="'+prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
-			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
-			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
-			+'		C22.247,0,21,1.247,21,2.78v5.052c0,0.812-0.447,1.481-1.197,1.792c-0.748,0.313-1.54,0.152-2.114-0.421l-3.571-3.571	'
-			+'		c-1.052-1.052-2.883-1.05-3.933,0l-4.553,4.553c-0.525,0.525-0.814,1.224-0.814,1.967c0,0.742,0.289,1.44,0.814,1.966l3.572,3.571	'
-			+'		c0.573,0.574,0.73,1.364,0.42,2.114S8.644,21,7.832,21H2.78C1.247,21,0,22.247,0,23.78v6.439C0,31.753,1.247,33,2.78,33h5.052	'
-			+'		c0.812,0,1.481,0.447,1.792,1.197s0.153,1.54-0.42,2.114l-3.572,3.571c-0.525,0.525-0.814,1.224-0.814,1.966	'
-			+'		c0,0.743,0.289,1.441,0.814,1.967l4.553,4.553c1.051,1.051,2.881,1.053,3.933,0l3.571-3.572c0.574-0.573,1.363-0.731,2.114-0.42	'
-			+'		c0.75,0.311,1.197,0.98,1.197,1.792v5.052c0,1.533,1.247,2.78,2.78,2.78h6.439c1.533,0,2.78-1.247,2.78-2.78v-5.052	'
-			+'		c0-0.812,0.447-1.481,1.197-1.792c0.751-0.312,1.54-0.153,2.114,0.42l3.571,3.572c1.052,1.052,2.883,1.05,3.933,0l4.553-4.553	'
-			+'		c0.525-0.525,0.814-1.224,0.814-1.967c0-0.742-0.289-1.44-0.814-1.966l-3.572-3.571c-0.573-0.574-0.73-1.364-0.42-2.114	'
-			+'		S45.356,33,46.168,33h5.052c1.533,0,2.78-1.247,2.78-2.78V23.78C54,22.247,52.753,21,51.22,21z M52,30.22	'
-			+'		C52,30.65,51.65,31,51.22,31h-5.052c-1.624,0-3.019,0.932-3.64,2.432c-0.622,1.5-0.295,3.146,0.854,4.294l3.572,3.571	'
-			+'		c0.305,0.305,0.305,0.8,0,1.104l-4.553,4.553c-0.304,0.304-0.799,0.306-1.104,0l-3.571-3.572c-1.149-1.149-2.794-1.474-4.294-0.854	'
-			+'		c-1.5,0.621-2.432,2.016-2.432,3.64v5.052C31,51.65,30.65,52,30.22,52H23.78C23.35,52,23,51.65,23,51.22v-5.052	'
-			+'		c0-1.624-0.932-3.019-2.432-3.64c-0.503-0.209-1.021-0.311-1.533-0.311c-1.014,0-1.997,0.4-2.761,1.164l-3.571,3.572	'
-			+'		c-0.306,0.306-0.801,0.304-1.104,0l-4.553-4.553c-0.305-0.305-0.305-0.8,0-1.104l3.572-3.571c1.148-1.148,1.476-2.794,0.854-4.294	'
-			+'		C10.851,31.932,9.456,31,7.832,31H2.78C2.35,31,2,30.65,2,30.22V23.78C2,23.35,2.35,23,2.78,23h5.052	'
-			+'		c1.624,0,3.019-0.932,3.64-2.432c0.622-1.5,0.295-3.146-0.854-4.294l-3.572-3.571c-0.305-0.305-0.305-0.8,0-1.104l4.553-4.553	'
-			+'		c0.304-0.305,0.799-0.305,1.104,0l3.571,3.571c1.147,1.147,2.792,1.476,4.294,0.854C22.068,10.851,23,9.456,23,7.832V2.78	'
-			+'		C23,2.35,23.35,2,23.78,2h6.439C30.65,2,31,2.35,31,2.78v5.052c0,1.624,0.932,3.019,2.432,3.64	'
-			+'		c1.502,0.622,3.146,0.294,4.294-0.854l3.571-3.571c0.306-0.305,0.801-0.305,1.104,0l4.553,4.553c0.305,0.305,0.305,0.8,0,1.104 '
-			+'		l-3.572,3.571c-1.148,1.148-1.476,2.794-0.854,4.294c0.621,1.5,2.016,2.432,3.64,2.432h5.052C51.65,23,52,23.35,52,23.78V30.22z"/>'
-			+'	<path d="M27,18c-4.963,0-9,4.037-9,9s4.037,9,9,9s9-4.037,9-9S31.963,18,27,18z M27,34c-3.859,0-7-3.141-7-7s3.141-7,7-7'
-			+'		s7,3.141,7,7S30.859,34,27,34z"/></g>'
-			+'</svg>'
-			+'		</div>'
-			+' 		<div class="pubGrid-header-container-warpper">'
-			+' 		  <div id="'+prefix+'_headerContainer" class="pubGrid-header-container">';
-			
-			if(_this.options.headerOptions.view !== false){
-				templateHtml+=' 			<div class="pubGrid-header-aside"><table class="pubGrid-header-aside-cont" style="width:'+_this.config.gridWidth.aside+'px;">'+_this.theadAsideHtml('aside') +'</table></div>'
-				+' 			<div class="pubGrid-header-left"><table class="pubGrid-header-left-cont" style="width:'+_this.config.gridWidth.left+'px;">'+_this.theadHtml('left')+'</table></div>'
-				+' 			<div class="pubGrid-header-left-cont-border"><div class="pubGrid-border"></div></div>'
-				+' 			<div class="pubGrid-header">'
-				+'				<div class="pubGrid-header-cont-wrapper" style="position:relative;"><table class="pubGrid-header-cont" onselectstart="return false">'+_this.theadHtml('cont')+'</table></div>'
-				+' 			</div>'
-			};
-
-			templateHtml+=' 		  </div>'
-			+' 		</div>'
-
-			+' 		<div id="'+prefix+'_bodyContainer" class="pubGrid-body-container-warpper">'
-			+' 			<div class="pubGrid-body-container">'
-			+' 				<div class="pubGrid-body-aside"><table style="width:'+_this.config.gridWidth.aside+'px;" class="pubGrid-body-aside-cont"></table></div>'
-			+' 				<div class="pubGrid-body-left"><table style="width:'+_this.config.gridWidth.left+'px;" class="pubGrid-body-left-cont"></table></div>'
-			+' 				<div class="pubGrid-body-left-cont-border"><div class="pubGrid-border"></div></div>'
-			+' 				<div class="pubGrid-body">'
-			+'					<div class="pubGrid-body-cont-wrapper" style="position:relative;"><table  class="pubGrid-body-cont"></table></div>'
-			+'				</div>'
-			+'				<div class="pubGrid-body-selection-cell"></div>'
-			+' 			</div>'
-			+'			<div class="pubGrid-empty-msg-area"><span class="pubGrid-empty-msg"><i class="pubGrid-icon-info"></i><span class="empty-text">no-data</span></span></div>'
-			+' 		</div>'
-			+' 		<div id="'+prefix+'_footerContainer" class="pubGrid-footer-container">'
-			+' 			<div class="pubGrid-footer-left"></div>'
-			+' 			<div class="pubGrid-footer">'
-			+' 				<div class="pubGrid-footer-cont-wrapper" style="position:relative;"><table class="pubGrid-footer-cont"></table></div>'
-			+' 			</div>'
-			+' 		</div>'
-			+' 		<div id="'+prefix+'_vscroll" class="pubGrid-vscroll">'
-			+'			<div class="pubGrid-scroll-top-area" style="height:23px;"></div>'
-			+' 			<div class="pubGrid-vscroll-bar-area">'
-			+'			  <div class="pubGrid-vscroll-bar-bg"></div>'
-			+' 			  <div class="pubGrid-vscroll-up pubGrid-vscroll-btn" data-pubgrid-btn="U"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"/></g></svg></div>'
-			+'			  <div class="pubGrid-vscroll-bar"><div class="pubGrid-vscroll-bar-tip" style="right:'+(this.options.scroll.vertical.width)+'px"></div></div>'
-			+' 			  <div class="pubGrid-vscroll-down pubGrid-vscroll-btn" data-pubgrid-btn="D"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"/></g></svg></div>'
-			+' 			</div>'
-			+' 		</div>'
-			+' 		<div id="'+prefix+'_hscroll" class="pubGrid-hscroll">'
-			+'			<div class="pubGrid-scroll-aside-area"></div>'
-			+' 			<div class="pubGrid-hscroll-bar-area">'
-			+'			  <div class="pubGrid-hscroll-bar-bg"></div>'
-			+' 			  <div class="pubGrid-hscroll-left pubGrid-hscroll-btn" data-pubgrid-btn="L"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="10,50 100,0 100,100" fill="#737171"/></g></svg></div>'
-			+'			  <div class="pubGrid-hscroll-bar"></div>'
-			+' 			  <div class="pubGrid-hscroll-right pubGrid-hscroll-btn" data-pubgrid-btn="R"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 0,100 90,50" fill="#737171"/></g></svg></div>'
-			+'			</div>'
-			+'			<div class="pubGrid-hscroll-edge" style="right:'+(_this.options.scroll.vertical.width-1)+'px;"></div>'
-			+' 		</div>'
-			+' 		<div id="'+prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
-			+' 	</div>'
-			+' </div>'
-			+' <div style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"><textarea id="'+prefix+'_pubGridPasteArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함.
-			+' <textarea id="'+prefix+'_pubGridCopyArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함.
-			+' <pre id="'+prefix+'Measurer" style="display:inline-block;white-space: pre;position: relative;padding:0px;margin:0px;"></pre></div>'
-			+' <div id="'+prefix+'_navigation" class="pubGrid-navigation" style="height:'+(_this.options.navigation.height) +'px">'
-			+'	 <div class="pubGrid-paging"><div class="pubGrid-paging-box"><div id="'+prefix+'_page"></div></div></div><div class="pubgGrid-message-info"><div id="'+prefix+'_status"></div></div>'
-			+' </div>'
-			+' </div>';
-
-			return templateHtml; 
-	}
 	,getTbodyAsideHtml : function (mode){
 		var _this =this;
 
@@ -1710,61 +1565,6 @@ Plugin.prototype ={
 		}
 		cellEle.setAttribute('class','pub-body-td '+addClass );
 	}
-	/**
-	 * @method theadHtml
-	 * @description get thead html template
-	 */
-	,theadHtml : function(type){
-		var _this = this
-			,cfg = _this.config
-			,headerOpt=_this.options.headerOptions;
-
-		var strHtm = [];
-
-		var headerInfo = cfg.headerInfo;
-
-		if(type=='left'){
-			headerInfo =  cfg.headerLeftInfo;
-		}
-
-		var headerDragEnabled = headerOpt.drag.enabled;
-
-		strHtm.push(_this._getColGroup(_this.prefix+'colHeader' , type));
-
-		strHtm.push('<thead>');
-		if(headerInfo.length > 0 && headerOpt.view){
-			var ghArr, ghItem;
-
-			for(var i =0, len=headerInfo.length ; i < len; i++){
-				ghArr = headerInfo[i];
-				
-				strHtm.push('<tr class="pub-header-tr">');
-				for(var j=0 ; j <ghArr.length; j++){
-					ghItem = ghArr[j];
-					if(ghItem.view){
-						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+ghItem.resizeIdx+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
-						if(_this.options.headerOptions.helpBtn.enabled === true){
-							strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
-						}
-						strHtm.push('  <div class="label-wrapper">');
-						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered" '+(headerDragEnabled?' draggable="true" ':'')+'>'+ghItem.label+'</div></div>');
-						if(ghItem.isSort ===true){
-							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');
-						}
-						strHtm.push('   </div>');
-						strHtm.push('  </div>');
-						strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
-						strHtm.push(' </th>');
-					}
-				}
-				strHtm.push('</tr>');
-			}
-		}
-		strHtm.push("</thead>");
-
-		return strHtm.join('');
-
-	}
 	,_isFixedPostion : function (idx, position){
 		position = position || 'l';
 
@@ -1792,35 +1592,6 @@ Plugin.prototype ={
 	,getColFixedIndex : function (){
 		return this.options.colFixedIndex;
 	}
-	,theadAsideHtml : function (){
-		var _this = this;
-
-		var strHtm = [], colGroupHtm=[];
-
-		var strHtm = [];
-
-		var headerInfo = this.config.headerInfo;
-
-
-		var items =_this.config.aside.items;
-
-		strHtm.push('<thead>');
-		strHtm.push('<tr class="pub-header-tr">');
-
-		for(var j=0 ;j < items.length; j++){
-			var item = items[j];
-			colGroupHtm.push('<col id="'+_this.prefix+'colhead'+items[j].key+'" style="width:'+item.width+'px;" />');
-
-			strHtm.push('	<th>');
-			strHtm.push('		<div class="aside-label-wrapper pub-header-'+item.key+'">'+item.name+'</div>');
-			strHtm.push('	</th>');
-		}
-		strHtm.push('</tr>');
-
-
-		strHtm.push('</thead>');
-		return '<colgroup>'+colGroupHtm.join('')+'</colgroup>' +strHtm.join('');
-	}
 	/**
 	 * @method drawGrid
 	 * @param  type {String} 그리드 타입.
@@ -1841,7 +1612,7 @@ Plugin.prototype ={
 		if(drawMode =='init'){
 
 			if(subMode ==''){
-				var templateHtm = _this.getTemplateHtml();
+				var templateHtm = _$template.getTemplateHtml.call(this);
 				_this.gridElement.empty().html(templateHtm);
 
 				_this.element.pubGrid = $('#'+_this.prefix +'_pubGrid');
@@ -1894,8 +1665,8 @@ Plugin.prototype ={
 				_this.setTheme(_this.options.theme);
 				_this._initFooterEvent();
 			}else{
-				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_this.theadHtml('left'));
-				_this.element.header.find('.pubGrid-header-cont').empty().html(_this.theadHtml('cont'));
+				_this.element.header.find('.pubGrid-header-left-cont').empty().html(_$template.theadHtml.call(this, 'left'));
+				_this.element.header.find('.pubGrid-header-cont').empty().html(_$template.theadHtml.call(this, 'cont'));
 
 				_this.getTbodyHtml('init_colfixed');
 
@@ -2358,9 +2129,6 @@ Plugin.prototype ={
 				}
 			}
 		}
-	}
-	,setColWidth : function (){
-
 	}
 	/**
 	 * @method _setPanelElementWidth
@@ -3019,9 +2787,11 @@ Plugin.prototype ={
 			// column selection
 			_this.element.header.on('click.pubGridHeader.selection','.pub-header-cont',function (e){
 				var selEle = $(this)
-					,col_idx = selEle.attr('col_idx');
+					,colIdx = selEle.attr('col_idx');
+				
+				colIdx = parseInt(colIdx);
 
-				var curr ='' , initFlag = true ;
+				var curr ='', initFlag = true;
 				if(e.ctrlKey){
 					curr = 'add';
 					initFlag  = false;
@@ -3029,13 +2799,13 @@ Plugin.prototype ={
 					_$util.clearActiveColumn(_this.element);
 				}
 
-				var rangeKey = 'col'+col_idx;
+				var rangeKey = 'col'+colIdx;
 
 				_$util.setSelectionRangeInfo(_this, {
-					rangeInfo : {_key : rangeKey, startIdx : 0, endIdx : _this.config.dataInfo.lastRowIdx, startCol : col_idx,  endCol :col_idx}
+					rangeInfo : {_key: rangeKey, startIdx: 0, endIdx: _this.config.dataInfo.lastRowIdx, startCol: colIdx, endCol: colIdx}
 					,isSelect : true
 					,curr : curr
-				}, initFlag , true);
+				}, initFlag, true);
 			});
 		}else{
 			dataSortEvent = 'click.pubGridHeader.sort';
@@ -3493,7 +3263,7 @@ Plugin.prototype ={
 					endIdx : cellInfo.rowItemIdx
 					,endCol : selectRangeInfo.endCol
 				}
-			},false , true);
+			},false, true);
 
 		})
 	
@@ -3646,6 +3416,7 @@ Plugin.prototype ={
 					}catch(e){
 						console.log('Unable to copy', e);
 					}
+					return ; 
 				}else if(evtKey==65){ // ctrl + a
 					if(	$(e.target).closest('#'+_this.prefix+'_pubGrid .pubGrid-setting-wrapper').length > 0){
 						return true;
@@ -3664,11 +3435,9 @@ Plugin.prototype ={
 			}
 
 			if(_this.options.editable===true){
-				var clickInfo = _this.getCurrentClickInfo();
-
-				var cellInfo = _$util.getCellInfo(_this, _$util.getCellElement(_this, clickInfo.r, clickInfo.c));
-
 				if((65 <= evtKey && evtKey <= 90) || (48 <= evtKey && evtKey <= 57)){
+					var clickInfo = _this.getCurrentClickInfo();
+					var cellInfo = _$util.getCellInfo(_this, _$util.getCellElement(_this, clickInfo.r, clickInfo.c));
 					_$renderer.editCell(_this, cellInfo, e);
 					return false;
 				}
@@ -3727,7 +3496,7 @@ Plugin.prototype ={
 			_$util.setSelectionRangeInfo(_this, {
 				rangeInfo : rangeInfo
 				,isMouseDown : true
-			},false , true);
+			}, false, true);
 
 		}else if(multipleFlag && e.ctrlKey){ // ctrl key
 
@@ -4949,7 +4718,7 @@ var _$template = {
 
 		if(mode=='init'){
 			var bodyHtmTemplate = '';
-			bodyHtmTemplate +=_this._getColGroup(_this.prefix+'colbody', type);
+			bodyHtmTemplate +=_$template.getColGroup.call(_this, _this.prefix+'colbody', type);
 			bodyHtmTemplate += '<tbody class="pubGrid-body-tbody">'+strHtm.join('')+'</tbody>';
 
 			tmpeElementBody.empty().html(bodyHtmTemplate);
@@ -4961,6 +4730,228 @@ var _$template = {
 			}
 			return true;
 		}
+	}
+	/**
+	 * @method getTemplateHtml
+	 * @description header html
+	 */
+	 ,getTemplateHtml : function (){
+		var _this = this
+			,vArrowWidth = _this.options.scroll.vertical.width-2
+			,hArrowWidth = _this.options.scroll.horizontal.height-2;
+
+		var prefix =_this.prefix; 
+
+		var templateHtml =  '<div class="pubGrid-wrapper"><div id="'+prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
+			+' 	<div id="'+prefix+'_container" class="pubGrid-container '+(_this.options.colFixedIndex >0 ? 'pubGrid-col-fixed':'')+'" style="overflow:hidden;">'
+			+'    <div class="pubGrid-setting-btn"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
+			+'<g><path id="'+prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
+			+'		c0.525-0.525,0.814-1.224,0.814-1.966c0-0.743-0.289-1.441-0.814-1.967l-4.553-4.553c-1.05-1.05-2.881-1.052-3.933,0l-3.571,3.571	'
+			+'		c-0.574,0.573-1.366,0.733-2.114,0.421C33.447,9.313,33,8.644,33,7.832V2.78C33,1.247,31.753,0,30.22,0H23.78	'
+			+'		C22.247,0,21,1.247,21,2.78v5.052c0,0.812-0.447,1.481-1.197,1.792c-0.748,0.313-1.54,0.152-2.114-0.421l-3.571-3.571	'
+			+'		c-1.052-1.052-2.883-1.05-3.933,0l-4.553,4.553c-0.525,0.525-0.814,1.224-0.814,1.967c0,0.742,0.289,1.44,0.814,1.966l3.572,3.571	'
+			+'		c0.573,0.574,0.73,1.364,0.42,2.114S8.644,21,7.832,21H2.78C1.247,21,0,22.247,0,23.78v6.439C0,31.753,1.247,33,2.78,33h5.052	'
+			+'		c0.812,0,1.481,0.447,1.792,1.197s0.153,1.54-0.42,2.114l-3.572,3.571c-0.525,0.525-0.814,1.224-0.814,1.966	'
+			+'		c0,0.743,0.289,1.441,0.814,1.967l4.553,4.553c1.051,1.051,2.881,1.053,3.933,0l3.571-3.572c0.574-0.573,1.363-0.731,2.114-0.42	'
+			+'		c0.75,0.311,1.197,0.98,1.197,1.792v5.052c0,1.533,1.247,2.78,2.78,2.78h6.439c1.533,0,2.78-1.247,2.78-2.78v-5.052	'
+			+'		c0-0.812,0.447-1.481,1.197-1.792c0.751-0.312,1.54-0.153,2.114,0.42l3.571,3.572c1.052,1.052,2.883,1.05,3.933,0l4.553-4.553	'
+			+'		c0.525-0.525,0.814-1.224,0.814-1.967c0-0.742-0.289-1.44-0.814-1.966l-3.572-3.571c-0.573-0.574-0.73-1.364-0.42-2.114	'
+			+'		S45.356,33,46.168,33h5.052c1.533,0,2.78-1.247,2.78-2.78V23.78C54,22.247,52.753,21,51.22,21z M52,30.22	'
+			+'		C52,30.65,51.65,31,51.22,31h-5.052c-1.624,0-3.019,0.932-3.64,2.432c-0.622,1.5-0.295,3.146,0.854,4.294l3.572,3.571	'
+			+'		c0.305,0.305,0.305,0.8,0,1.104l-4.553,4.553c-0.304,0.304-0.799,0.306-1.104,0l-3.571-3.572c-1.149-1.149-2.794-1.474-4.294-0.854	'
+			+'		c-1.5,0.621-2.432,2.016-2.432,3.64v5.052C31,51.65,30.65,52,30.22,52H23.78C23.35,52,23,51.65,23,51.22v-5.052	'
+			+'		c0-1.624-0.932-3.019-2.432-3.64c-0.503-0.209-1.021-0.311-1.533-0.311c-1.014,0-1.997,0.4-2.761,1.164l-3.571,3.572	'
+			+'		c-0.306,0.306-0.801,0.304-1.104,0l-4.553-4.553c-0.305-0.305-0.305-0.8,0-1.104l3.572-3.571c1.148-1.148,1.476-2.794,0.854-4.294	'
+			+'		C10.851,31.932,9.456,31,7.832,31H2.78C2.35,31,2,30.65,2,30.22V23.78C2,23.35,2.35,23,2.78,23h5.052	'
+			+'		c1.624,0,3.019-0.932,3.64-2.432c0.622-1.5,0.295-3.146-0.854-4.294l-3.572-3.571c-0.305-0.305-0.305-0.8,0-1.104l4.553-4.553	'
+			+'		c0.304-0.305,0.799-0.305,1.104,0l3.571,3.571c1.147,1.147,2.792,1.476,4.294,0.854C22.068,10.851,23,9.456,23,7.832V2.78	'
+			+'		C23,2.35,23.35,2,23.78,2h6.439C30.65,2,31,2.35,31,2.78v5.052c0,1.624,0.932,3.019,2.432,3.64	'
+			+'		c1.502,0.622,3.146,0.294,4.294-0.854l3.571-3.571c0.306-0.305,0.801-0.305,1.104,0l4.553,4.553c0.305,0.305,0.305,0.8,0,1.104 '
+			+'		l-3.572,3.571c-1.148,1.148-1.476,2.794-0.854,4.294c0.621,1.5,2.016,2.432,3.64,2.432h5.052C51.65,23,52,23.35,52,23.78V30.22z"/>'
+			+'	<path d="M27,18c-4.963,0-9,4.037-9,9s4.037,9,9,9s9-4.037,9-9S31.963,18,27,18z M27,34c-3.859,0-7-3.141-7-7s3.141-7,7-7'
+			+'		s7,3.141,7,7S30.859,34,27,34z"/></g>'
+			+'</svg>'
+			+'		</div>'
+			+' 		<div class="pubGrid-header-container-warpper">'
+			+' 		  <div id="'+prefix+'_headerContainer" class="pubGrid-header-container">';
+			
+			if(_this.options.headerOptions.view !== false){
+				templateHtml+=' 			<div class="pubGrid-header-aside"><table class="pubGrid-header-aside-cont" style="width:'+_this.config.gridWidth.aside+'px;">'+_$template.theadAsideHtml.call(this, 'aside') +'</table></div>'
+				+' 			<div class="pubGrid-header-left"><table class="pubGrid-header-left-cont" style="width:'+_this.config.gridWidth.left+'px;">'+_$template.theadHtml.call(this, 'left')+'</table></div>'
+				+' 			<div class="pubGrid-header-left-cont-border"><div class="pubGrid-border"></div></div>'
+				+' 			<div class="pubGrid-header">'
+				+'				<div class="pubGrid-header-cont-wrapper" style="position:relative;"><table class="pubGrid-header-cont" onselectstart="return false">'+_$template.theadHtml.call(this, 'cont')+'</table></div>'
+				+' 			</div>'
+			};
+
+			templateHtml+=' 		  </div>'
+			+' 		</div>'
+
+			+' 		<div id="'+prefix+'_bodyContainer" class="pubGrid-body-container-warpper">'
+			+' 			<div class="pubGrid-body-container">'
+			+' 				<div class="pubGrid-body-aside"><table style="width:'+_this.config.gridWidth.aside+'px;" class="pubGrid-body-aside-cont"></table></div>'
+			+' 				<div class="pubGrid-body-left"><table style="width:'+_this.config.gridWidth.left+'px;" class="pubGrid-body-left-cont"></table></div>'
+			+' 				<div class="pubGrid-body-left-cont-border"><div class="pubGrid-border"></div></div>'
+			+' 				<div class="pubGrid-body">'
+			+'					<div class="pubGrid-body-cont-wrapper" style="position:relative;"><table  class="pubGrid-body-cont"></table></div>'
+			+'				</div>'
+			+'				<div class="pubGrid-body-selection-cell"></div>'
+			+' 			</div>'
+			+'			<div class="pubGrid-empty-msg-area"><span class="pubGrid-empty-msg"><i class="pubGrid-icon-info"></i><span class="empty-text">no-data</span></span></div>'
+			+' 		</div>'
+			+' 		<div id="'+prefix+'_footerContainer" class="pubGrid-footer-container">'
+			+' 			<div class="pubGrid-footer-left"></div>'
+			+' 			<div class="pubGrid-footer">'
+			+' 				<div class="pubGrid-footer-cont-wrapper" style="position:relative;"><table class="pubGrid-footer-cont"></table></div>'
+			+' 			</div>'
+			+' 		</div>'
+			+' 		<div id="'+prefix+'_vscroll" class="pubGrid-vscroll">'
+			+'			<div class="pubGrid-scroll-top-area" style="height:23px;"></div>'
+			+' 			<div class="pubGrid-vscroll-bar-area">'
+			+'			  <div class="pubGrid-vscroll-bar-bg"></div>'
+			+' 			  <div class="pubGrid-vscroll-up pubGrid-vscroll-btn" data-pubgrid-btn="U"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"/></g></svg></div>'
+			+'			  <div class="pubGrid-vscroll-bar"><div class="pubGrid-vscroll-bar-tip" style="right:'+(this.options.scroll.vertical.width)+'px"></div></div>'
+			+' 			  <div class="pubGrid-vscroll-down pubGrid-vscroll-btn" data-pubgrid-btn="D"><svg width="'+vArrowWidth+'px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"/></g></svg></div>'
+			+' 			</div>'
+			+' 		</div>'
+			+' 		<div id="'+prefix+'_hscroll" class="pubGrid-hscroll">'
+			+'			<div class="pubGrid-scroll-aside-area"></div>'
+			+' 			<div class="pubGrid-hscroll-bar-area">'
+			+'			  <div class="pubGrid-hscroll-bar-bg"></div>'
+			+' 			  <div class="pubGrid-hscroll-left pubGrid-hscroll-btn" data-pubgrid-btn="L"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="10,50 100,0 100,100" fill="#737171"/></g></svg></div>'
+			+'			  <div class="pubGrid-hscroll-bar"></div>'
+			+' 			  <div class="pubGrid-hscroll-right pubGrid-hscroll-btn" data-pubgrid-btn="R"><svg width="8px" height="'+hArrowWidth+'px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 0,100 90,50" fill="#737171"/></g></svg></div>'
+			+'			</div>'
+			+'			<div class="pubGrid-hscroll-edge" style="right:'+(_this.options.scroll.vertical.width-1)+'px;"></div>'
+			+' 		</div>'
+			+' 		<div id="'+prefix+'_resizeHelper" class="pubGrid-resize-helper"></div>'
+			+' 	</div>'
+			+' </div>'
+			+' <div style="top:-9999px;left:-9999px;position:fixed;z-index:999999;"><textarea id="'+prefix+'_pubGridPasteArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함.
+			+' <textarea id="'+prefix+'_pubGridCopyArea"></textarea>' // copy 하기위한 textarea 꼭 위치해야함.
+			+' <pre id="'+prefix+'Measurer" style="display:inline-block;white-space: pre;position: relative;padding:0px;margin:0px;"></pre></div>'
+			+' <div id="'+prefix+'_navigation" class="pubGrid-navigation" style="height:'+(_this.options.navigation.height) +'px">'
+			+'	 <div class="pubGrid-paging"><div class="pubGrid-paging-box"><div id="'+prefix+'_page"></div></div></div><div class="pubgGrid-message-info"><div id="'+prefix+'_status"></div></div>'
+			+' </div>'
+			+' </div>';
+
+			return templateHtml; 
+	}
+	/**
+	 * @method theadHtml
+	 * @description get thead html template
+	 */
+	 ,theadHtml : function(type){
+		var _this = this
+			,cfg = _this.config
+			,headerOpt=_this.options.headerOptions;
+
+		var strHtm = [];
+
+		var headerInfo = cfg.headerInfo;
+
+		if(type=='left'){
+			headerInfo =  cfg.headerLeftInfo;
+		}
+
+		var headerDragEnabled = headerOpt.drag.enabled;
+
+		strHtm.push(_$template.getColGroup.call(_this, _this.prefix+'colHeader' , type));
+
+		strHtm.push('<thead>');
+		if(headerInfo.length > 0 && headerOpt.view){
+			var ghArr, ghItem;
+
+			for(var i =0, len=headerInfo.length ; i < len; i++){
+				ghArr = headerInfo[i];
+				
+				strHtm.push('<tr class="pub-header-tr">');
+				for(var j=0 ; j <ghArr.length; j++){
+					ghItem = ghArr[j];
+					if(ghItem.view){
+						strHtm.push(' <th '+ghItem.colspanhtm+' '+ghItem.rowspanhtm+' data-header-info="'+i+','+ghItem.resizeIdx+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
+						if(_this.options.headerOptions.helpBtn.enabled === true){
+							strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
+						}
+						strHtm.push('  <div class="label-wrapper">');
+						strHtm.push('   <div class="pub-header-cont outer '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+ghItem.resizeIdx+'"><div class="pub-inner"><div class="centered" '+(headerDragEnabled?' draggable="true" ':'')+'>'+ghItem.label+'</div></div>');
+						if(ghItem.isSort ===true){
+							strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');
+						}
+						strHtm.push('   </div>');
+						strHtm.push('  </div>');
+						strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+ghItem.resizeIdx+'"></div>');
+						strHtm.push(' </th>');
+					}
+				}
+				strHtm.push('</tr>');
+			}
+		}
+		strHtm.push("</thead>");
+
+		return strHtm.join('');
+	}
+
+	,theadAsideHtml : function (){
+		var _this = this;
+
+		var strHtm = [], colGroupHtm=[];
+
+		var items =_this.config.aside.items;
+
+		strHtm.push('<thead>');
+		strHtm.push('<tr class="pub-header-tr">');
+
+		for(var j=0 ;j < items.length; j++){
+			var item = items[j];
+			colGroupHtm.push('<col id="'+_this.prefix+'colhead'+items[j].key+'" style="width:'+item.width+'px;" />');
+
+			strHtm.push('	<th>');
+			strHtm.push('		<div class="aside-label-wrapper pub-header-'+item.key+'">'+item.name+'</div>');
+			strHtm.push('	</th>');
+		}
+		strHtm.push('</tr>');
+
+
+		strHtm.push('</thead>');
+		return '<colgroup>'+colGroupHtm.join('')+'</colgroup>' +strHtm.join('');
+	}
+	/**
+	 * @method getColGroup
+	 * @param type {String} - colgroup 타입
+	 * @description colgroup 구하기.
+	 */
+	 ,getColGroup :function (id , type){
+		var _this = this
+			,opt = _this.options
+			,tci = _this.config.tColItem
+			,thiItem;
+		var strHtm = [];
+
+		var startCol =0, endCol = tci.length;
+
+		if(type=='left'){
+			endCol = _this.options.colFixedIndex;
+		}else if(type=='cont'){
+			startCol = _this.options.colFixedIndex;
+		}
+
+		strHtm.push('<colgroup>');
+
+		for(var i=startCol ;i <endCol; i++){
+			thiItem = tci[i];
+			var tmpStyle = [];
+			tmpStyle.push('width:'+thiItem.width+'px;');
+			if(thiItem.visible===false){
+				tmpStyle.push('display:none;visibility: hidden;');
+			}else{
+				strHtm.push('<col id="'+id+i+'" style="'+tmpStyle.join('')+'" />');
+			}
+		}
+
+		strHtm.push('</colgroup>');
+
+		return strHtm.join('');
 	}
 }
 
@@ -5011,7 +5002,11 @@ var _$util = {
 	,getCellElement : function (ctx, r, c){
 		return ctx.element.body.find('.pub-body-td[data-cell-position="'+r+','+c+'"]');
 	}
-	// new add
+	/**
+	 * @method genAllColumnSearch
+	 * @param gridCtx {Object} - grid context
+	 * @description all column search logic
+	 */	
 	,genAllColumnSearch : function (gridCtx){
 		var tcolItems = gridCtx.options.tColItem; 
 
@@ -5027,11 +5022,14 @@ var _$util = {
 		
 		return this.genSearchLogic(logicStr.join(''));
 	}
-	// new add
+	/**
+	 * @method genSearchLogic
+	 * @param checkLogicStr {String} - check login string
+	 * @description 검색 로직 만들기
+	 */	
 	,genSearchLogic : function (checkLogicStr){
 		return 'if(#logic#){return true;} return false;'.replace('#logic#', checkLogicStr);
 	}
-	// new add
 	/**
 	 * @method getSearchRegExp
 	 * @param schVal {String} - search text.
@@ -5252,7 +5250,7 @@ var _$util = {
 		}
 
 		var	rangeInfo = selectionInfo.rangeInfo;
-
+		
 		if(initFlag === true){
 
 			var initOpt = {
@@ -5276,7 +5274,9 @@ var _$util = {
 
 		var currInfo = cfgSelect.range;
 
+		var isRangeInfo = false;
 		for(var key in rangeInfo){
+			isRangeInfo = true;
 			currInfo[key] = rangeInfo[key];
 		}
 
@@ -5285,7 +5285,7 @@ var _$util = {
 		cfgSelect.minIdx = cfgSelect.minIdx < -1 ? 0 : cfgSelect.minIdx;
 		cfgSelect.maxIdx = cfgSelect.maxIdx >= ctx.config.dataInfo.lastRowIdx ? ctx.config.dataInfo.lastRowIdx : cfgSelect.maxIdx;
 
-		if(initFlag !==true){
+		if(initFlag !==true || (isRangeInfo && cfgSelect.minCol == -1 )){
 			cfgSelect.minCol = (cfgSelect.minCol == -1 ? Math.min(currInfo.endCol, currInfo.startCol): Math.min(cfgSelect.minCol, currInfo.endCol, currInfo.startCol) );
 			cfgSelect.maxCol = Math.max(cfgSelect.maxCol, currInfo.endCol, currInfo.startCol);
 
@@ -6635,7 +6635,6 @@ var _$setting = {
 
 			gridCtx.config.settingConfig.filterTemplate[key] = condHtm.join('');
 		}
-		
 	}
 	,templateHtml : function (gridCtx, settingOpt){
 		var strHtm = [];

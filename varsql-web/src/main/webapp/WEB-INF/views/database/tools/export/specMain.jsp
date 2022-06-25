@@ -177,6 +177,7 @@ VarsqlAPP.vueServiceBean({
 				prefVal : JSON.stringify(prefVal)
 				,schema : _self.selectSchema
 				,conuid : '${param.conuid}'
+				,databaseName : this.selectSchema
 			};
 
 			VARSQL.req.download({
@@ -199,6 +200,7 @@ VarsqlAPP.vueServiceBean({
 			var param = {
 				conuid : '${param.conuid}'
 				,schema : this.selectSchema
+				,databaseName : this.selectSchema
 			}
 
 			VARSQL.req.ajax({

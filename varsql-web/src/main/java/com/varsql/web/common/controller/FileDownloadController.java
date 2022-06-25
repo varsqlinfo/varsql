@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
 
@@ -65,7 +65,7 @@ public class FileDownloadController {
 			return;
 		}
 		
-		ParamMap param =HttpUtils.getServletRequestParam(req);
+		DataMap param =HttpUtils.getServletRequestParam(req);
 
 		String downFileName = "";
 		int fileSize = fileList.size();
@@ -107,7 +107,7 @@ public class FileDownloadController {
 			return;
 		}
 		
-		ParamMap param =HttpUtils.getServletRequestParam(req);
+		DataMap param =HttpUtils.getServletRequestParam(req);
 		
 		String downFileName = "";
 		int fileSize = fileList.size();

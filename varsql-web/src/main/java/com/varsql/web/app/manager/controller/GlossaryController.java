@@ -83,12 +83,9 @@ public class GlossaryController extends AbstractController {
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  GlossaryController save check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = glossaryServiceImpl.saveGlossaryInfo(glossaryInfo);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return resultObject;
+		return glossaryServiceImpl.saveGlossaryInfo(glossaryInfo);
 	}
 
 	/**

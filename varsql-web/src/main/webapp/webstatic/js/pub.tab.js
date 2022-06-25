@@ -21,8 +21,12 @@ var pluginName = "pubTab"
 	,tabHeight : 25		// tab height
 	,leftMargin : 30		// 왼쪽에 item 있을경우 더 이동할 space
 	,overItemViewMode : 'drop'	// over item  보여질 방법.
-	,dropdownHeight :'auto'		//drop item height
-	,dropdownWidth :'auto'		//drop item width
+	,dropdown:{
+		width : 'auto'
+		,height : 'auto'
+		,heightResponsive : false
+	}
+	,enableDropDownSearch : true	// item search 활성화
 	,isMultipleContainer : true	 // 하나의 컨텐츠 영역만 사용.
 	,useContentContainer : true	// 컨텐츠 영역 사용여부
 	,titleIcon :{
@@ -94,7 +98,7 @@ function Plugin(element, options) {
 	this.tabElement = $(element);
 
 	if(options.width != 'auto'){
-		$(this.selector).width(options.width);
+		this.tabElement.width(options.width);
 	}
 
 	options.width= isNaN(options.width) ?  this.tabElement.width() : options.width;
@@ -123,8 +127,9 @@ Plugin.prototype ={
 	init :function(){
 		var _this =this;
 
-		_this._setConfigInfo();
-		_this.draw();
+		_$util.setConfigInfo(this);
+		_$template.init.call(this);
+		this.calcItemWidth();
 
 		_this.initEvt();
 
@@ -133,29 +138,6 @@ Plugin.prototype ={
 				_this.itemClick();
 			},100);
 		}
-	}
-	,_setConfigInfo : function (){
-		this.config = {tabWidth :[], tabHistory : [], tabIdx : 0, tabContextMenu : false};
-		this.element = {}
-
-		var _opts = this.options;
-
-		var titleIcon =_opts.titleIcon;
-
-		var iconInfo ={left :{} , right:{}};
-
-		if(titleIcon){
-			var leftIcon =titleIcon.left; 
-			if(leftIcon && leftIcon.html != ''){
-				iconInfo.left.html =  '<span class="pubTab-icon-area '+(leftIcon.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+leftIcon.html+'</span></span>';
-			}
-
-			if(titleIcon.right && titleIcon.right.html != ''){
-				iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
-			}
-		}
-
-		this.config.icon = iconInfo;
 	}
 	,initEvt : function (){
 		var _this = this
@@ -170,7 +152,6 @@ Plugin.prototype ={
 
 			_this.itemClick(tabIdx);
 		})
-
 
 		if(opts.contextMenu !== false){
 
@@ -231,23 +212,50 @@ Plugin.prototype ={
 			return false;
 		});
 
+		// dropdown 
 		if(opts.overItemViewMode =='drop'){
+
+			if(opts.enableDropDownSearch){
+				var titleKey =opts.itemKey.title; 
+				// dropdown search field
+				$('#'+_this.prefix+'SchText').on('input.tabsearch.field', function (e){
+					var schRegExp = _$util.getSearchRegExp($(this).val());
+					
+					opts.items.forEach(function (item){
+						var liEle =_this.element.dropdownAreaElement.find('.pubTab-dropdown-item[data-tab-id="'+item._tabid+'"]'); 
+	
+						if(schRegExp.test(item[titleKey])){
+							liEle.show();
+						}else{
+							liEle.hide();
+						}
+					});
+				})
+			}
 
 			_this.tabElement.on('click.pubtab.drop.btn','.pubTab-more-button', function (e){
 				e.preventDefault();
 				e.stopPropagation();
 
-				var sEle = $(this)
-					,tabArea=sEle.closest('.pubTab-more-button')
-
 				if(_this.element.dropdownAreaElement.hasClass('pubTab-open')){
 					_this.element.dropdownAreaElement.removeClass('pubTab-open');
 				}else{
 					_this.element.dropdownAreaElement.addClass('pubTab-open');
+
+					if(_this.config.dropdownSearchHeight== -1){
+						var dropDownSearchAreaEle = _this.element.dropdownAreaElement.find('.pubTab-dropdown-search'); 
+						if(dropDownSearchAreaEle.length > 0){
+							_this.config.dropdownSearchHeight = dropDownSearchAreaEle.outerHeight();
+						}else{
+							_this.config.dropdownSearchHeight = 0;
+						}
+
+						_this.setDropdownHeight(_this.config.currentDropdownHeight);
+					}
 				}
 			});
 
-			_this.tabElement.on('click.pubtab.drop.item', '.pubTab-drop-item',function (e){
+			_this.tabElement.on('click.dropdown.item', '.pubTab-dropdown-item',function (e){
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -352,7 +360,6 @@ Plugin.prototype ={
 		
 	}
 	,_setHistory : function (tabid){
-		var idx = this.config.tabHistory.indexOf(tabid);
 		this.config.tabHistory = arrayRemove(this.config.tabHistory, tabid);
 		this.config.tabHistory.push(tabid);
 	}
@@ -456,11 +463,11 @@ Plugin.prototype ={
 		this.removeTabBlink(item);
 
 		if(this.options.isMultipleContainer === false){
-			this._appendTabContent(item);
+			_$template.appendTabContent(this, item);
 			return ; 
 		}else{
 			if(item._isInitialised !== true){
-				this._appendTabContent(item);
+				_$template.appendTabContent(this, item);
 				item._isInitialised = true; 
 			}
 		}
@@ -477,7 +484,7 @@ Plugin.prototype ={
 		this.movePosition(tabEle.index());
 	}
 	,reloadContent : function (item){
-		this._appendTabContent(item, true);
+		_$template.appendTabContent(this, item, true);
 	}
 	/**
 	 * @method getActive
@@ -531,7 +538,13 @@ Plugin.prototype ={
 	 */
 	,setItems : function (items){
 		this.options.items = items;
-		this.draw();
+		this.element.tabContainerElement.empty().html(_$template.tabItemHtml(this));
+		
+		if(this.options.overItemViewMode =='drop'){
+			this.element.dropdownAreaElement.find('.pubTab-dropdown-area').empty().html(_$template.dropdownHtml(this));
+		}
+
+		this.calcItemWidth();
 	}
 	/**
 	 * @method isItem
@@ -579,8 +592,8 @@ Plugin.prototype ={
 			this.options.items.splice(idx, 0, item);
 		}
 
-		var itemHtm = this._getTabItemHtml(item)
-			,dropHtm = this._getDropdownHtml(item);
+		var itemHtm = _$template.getTabItemHtml(this, item)
+			,dropHtm = _$template.getDropdownHtml(this, item);
 
 		var tabItem = this.tabElement.find('.pubTab-item');
 		if(tabItem.length < 1){
@@ -593,18 +606,15 @@ Plugin.prototype ={
 				$(tabItem.get(idx-1)).after(itemHtm);
 			}
 
-			$(this.tabElement.find('.pubTab-drop-item').get(0)).before(dropHtm);
+			$(this.tabElement.find('.pubTab-dropdown-item').get(0)).before(dropHtm);
 		}
 
 		this.calcItemWidth();
 
 		if(enabled !== false){
-			//this.draw();
 			this.movePosition(idx);
 
 			this.itemClick(item, customInfo);
-
-			//$(this.tabElement.find('.pubTab-item').get(idx)).find('.pubTab-item-cont').trigger('click');
 		}
 
 		return true;
@@ -779,7 +789,7 @@ Plugin.prototype ={
 
 		this.tabElement.find('.pubTab-item[data-tab-id="'+reval._tabid+'"]').remove();
 		this.element.contentContainerElement.find('[data-tab-cont-id="'+reval._tabid+'"]').remove();
-		this.tabElement.find('.pubTab-drop-item[data-tab-id="'+reval._tabid+'"]').remove();
+		this.tabElement.find('.pubTab-dropdown-item[data-tab-id="'+reval._tabid+'"]').remove();
 
 		this.config.tabHistory = arrayRemove(this.config.tabHistory, reval._tabid);
 
@@ -808,7 +818,7 @@ Plugin.prototype ={
 	,getHistory : function (){
 		return this.config.tabHistory;
 	}
-	,refresh : function (){
+	,resize : function (resizeOpt){
 		var _this = this;
 		var eleW = _this.tabElement.width();
 
@@ -824,6 +834,24 @@ Plugin.prototype ={
 			_this.element.tabContainerElement.css('left', '0px');
 		}
 
+		if(this.options.dropdown.heightResponsive===true){
+
+			var h = (resizeOpt||{}).height;
+
+			if(isNaN(h)){
+				if(this.options.useContentContainer === true){
+					if(this.options.contentViewSelector !== false){
+						h = $(this.options.contentViewSelector).height();
+						h = h > this.options.dropdown.height ? h : this.options.dropdown.height;
+					}else{
+						h = this.tabElement.height()- this.options.tabHeight;
+					}
+				}
+			}
+						
+			this.setDropdownHeight(h);
+		}
+
 		return this;
 	}
 	/**
@@ -831,61 +859,18 @@ Plugin.prototype ={
 	*/
 	,setDropdownHeight : function (h){
 		if(isNaN(h)){
-			return this;
+			return ; 
 		}
-		this.element.dropdownAreaElement.css('max-height',h+'px');
-		return this;
-	}
-	/**
-	* set tab width
-	*/
-	,setWidth : function (val){
-		this.refresh();
+
+		this.config.currentDropdownHeight = h;
+		h = h - this.config.dropdownSearchHeight;
+
+		this.element.dropdownAreaElement.find('.pubTab-dropdown-area').css('max-height',(h > 0 ? h : this.config.dropdownSearchHeight)+'px');
 		return this;
 	}
 	,getSelectItem : function(){
 		var sEle = this.tabElement.find('.pubTab-item.active');
 		return this.options.items[sEle.index()];
-	}
-	// tab  item template
-	,_getTabItemHtml : function (item){
-
-		var cfgIcon = this.config.icon;
-		var _opts = this.options;
-
-		if(item[_opts.itemKey.id]){
-			item._tabid = item[_opts.itemKey.id];
-		}else{
-			this.config.tabIdx++;
-			item._tabid = 'tab_'+this.config.tabIdx;
-		}
-
-		var title = item[_opts.itemKey.title];
-
-		var titleTag = '<span class="pubTab-item-title">'+title+'</span>';
-		if(!isNaN(_opts.itemMaxWidth) && _opts.itemMaxWidth > 0){
-			titleTag = '<span class="pubTab-item-title pub-title-ellipsis" style="max-width:'+(_opts.itemMaxWidth)+'px">'+title+'</span>';
-			//titleTag = '<span class="pubTab-item-title">'+title+'</span>';
-		}
-
-		var titleIcon =_opts.titleIcon;
-
-		var itemHtm ='';
-		if(cfgIcon.left && cfgIcon.left.html){
-
-			if(!$.isFunction(titleIcon.left.visible) || ($.isFunction(titleIcon.left.visible) && titleIcon.left.visible.call(null, item) !== false)){
-				itemHtm += cfgIcon.left.html;
-			}
-		}
-
-		itemHtm += titleTag;
-		if(cfgIcon.right && cfgIcon.right.html){
-			if(!$.isFunction(titleIcon.right.visible) || ($.isFunction(titleIcon.right.visible) && titleIcon.right.visible.call(null, item) !== false)){
-				itemHtm += cfgIcon.right.html;
-			}
-		}
-
-		return '<div class="pubTab-item" draggable="'+(_opts.drag.enabled ? true:false)+'" data-tab-id="'+item._tabid+'" title="'+title+'"><div class="pubTab-item-overlay" style=""></div><div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></div>';
 	}
 	/**
 	 * @method getItemLength
@@ -897,7 +882,6 @@ Plugin.prototype ={
 		}
 
 		return '#'+this.prefix+'ContentContainer>[data-tab-cont-id="'+(typeof item ==='string'? item : item[this.options.itemKey.id])+'"]';
-		
 	}
 	/**
 	 * @method clearTabContent
@@ -905,122 +889,6 @@ Plugin.prototype ={
 	 */
 	,clearTabContent : function (item){
 		$(this.getTabContentSelector(item)).empty();
-	}
-	,_appendTabContent : function (item, reloadFlag){
-		var contentContainerElement = this.element.contentContainerElement; 
-
-		var tabid = '';
-		var contentLoadFlag = false; 
-		if(this.options.isMultipleContainer === false){
-			tabid = this.prefix;
-			contentLoadFlag = true; 
-		}else{
-			tabid = item[this.options.itemKey.id];
-
-			var contentEleLen = contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]').length; 
-
-			if(contentEleLen < 1){
-				contentContainerElement.append(this._getTabContentHtml(item));
-			}
-
-			if(reloadFlag === true || item._isInitialised !== true){
-				contentLoadFlag = true; 
-			}
-		}
-
-		if(contentLoadFlag){
-			this.options.contentRender(item, contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]'));
-		}
-		
-	}
-	,_getTabContentHtml : function (item){
-		var style='';
-		if($.isFunction(this.options.contentStyleClass)){
-			style = this.options.contentStyleClass(item) ||'';
-		}else{
-			style = this.options.contentStyleClass;
-		}
-
-		return '<div class="pubTab-content '+style + (this.options.isMultipleContainer === false ? ' active':'')+'" data-tab-cont-id="'+item._tabid+'"></div>';
-	}
-	//drop item template
-	,_getDropdownHtml : function (item){
-		var title = item[this.options.itemKey.title];
-		return '<li class="pubTab-drop-item" data-tab-id="'+item._tabid+'" title="'+title+'">'+title+'</li>'
-	}
-	,draw : function (){
-		var _this = this
-			,_opts = _this.options
-			,items = _opts.items
-			,itemLen = items.length;
-
-		function tabItemHtml (){
-			var tabHtm = [];
-			for(var i = 0 ;i < itemLen ;i++){
-				tabHtm.push(_this._getTabItemHtml(items[i]));
-			}
-			return tabHtm.join('');
-		}
-
-		function dropdownHtml (){
-			var dropHtml = [];
-
-			for(var i = itemLen-1 ;i >= 0  ;i--){
-				dropHtml.push(_this._getDropdownHtml(items[i]));
-			}
-			return dropHtml.join('');
-		}
-
-		var strHtm = [];
-		strHtm.push('<div class="pubTab-wrapper" role="presentation">');
-		strHtm.push('	<div id="'+_this.prefix+'pubTab" class="pubTab" style="height:'+_opts.tabHeight+'px;">');
-		strHtm.push('		<div id="'+_this.prefix+'pubTab-scroll" class="pubTab-scroll">');
-		strHtm.push('			<div id="'+_this.prefix+'pubTab-container" class="pubTab-container" >');
-		strHtm.push(tabItemHtml());
-		strHtm.push('			<span><div id="'+_this.prefix+'pubTab-move-space" style="display:none;">&nbsp;</div></span>');
-		strHtm.push('			</div>');
-		strHtm.push('		</div> ');
-		
-		if(_opts.overItemViewMode =='drop'){
-			strHtm.push(' 		<div class="pubTab-more-button"></div>');
-		}
-		
-		strHtm.push('	</div>');
-
-		if(_opts.contentViewSelector===false && _opts.useContentContainer !== false){
-			strHtm.push('<div id="'+_this.prefix+'ContentContainer" class="pubTab-content-container" style="height:calc(100% - '+_opts.tabHeight+'px);">');
-			
-			if(_opts.isMultipleContainer === false){
-				strHtm.push(this._getTabContentHtml({_tabid: this.prefix}));
-			}else{
-				for(var i = 0 ;i < itemLen ;i++){
-					strHtm.push(this._getTabContentHtml(items[i]));
-				}
-			}		
-			strHtm.push('</div>');
-		}
-
-		if(_opts.overItemViewMode =='drop'){
-			var drw = _opts.dropdownWidth; 
-			strHtm.push('<div id="'+_this.prefix+'Dropdown" style="width:'+(drw+(drw == 'auto'?'':'px'))+';" class="pubTab-dropdown-wrapper"><ul class="pubTab-dropdown-area">'+dropdownHtml()+'</ul></div>');
-		}
-		
-		strHtm.push('</div>');
-
-		_this.tabElement.empty().html(strHtm.join(''));
-
-		_this.element.tabContainerElement =  $('#'+_this.prefix+'pubTab-container');
-		_this.element.tabScrollElement = $('#'+_this.prefix+'pubTab-scroll');
-		_this.element.dropdownAreaElement = $('#'+_this.prefix+'Dropdown');
-		_this.element.contentContainerElement = (_opts.contentViewSelector === false ? $('#'+_this.prefix+'ContentContainer') : $(_opts.contentViewSelector));
-		
-		_this.config.moveAreaWidth  = this.tabElement.find('.pubTab-more-button').width();
-		$('#'+_this.prefix+'pubTab-move-space').css('width',_this.config.moveAreaWidth);
-		_this.element.dropdownAreaElement.css('top', (_this.element.tabContainerElement.height())+'px');
-
-		_this.calcItemWidth();
-		_this.setWidth(_opts.width);
-		_this.setDropdownHeight(_opts.dropdownHeight)
 	}
 	,calcItemWidth :function (){
 		var _this =this;
@@ -1037,7 +905,7 @@ Plugin.prototype ={
 
 		_this.config.totalWidth = containerW;
 
-		this.refresh();
+		this.resize();
 	}
 	,setScrollInfo : function (){
 		this.config.scroll = {
@@ -1067,6 +935,224 @@ Plugin.prototype ={
 		//this = {};
 	}
 };
+
+var _$util = {
+	/**
+	 * @method getSearchRegExp
+	 * @param schVal {String} - search text.
+	 * @description get search RegExp
+	 */	
+	getSearchRegExp : function(schVal, regType) { 
+		if(regType == 'all'){
+			schVal = schVal.replace(/([.?*+^$[\]\\()|{}-])/g, "\\$1");	
+		}else{
+			schVal = schVal.replace(/([.?*+^$[\]\\(){}-])/g, "\\$1");	
+		}
+		
+		return new RegExp('('+schVal + ')','i');
+	}
+	,setConfigInfo : function (tabCtx){
+
+		tabCtx.config = {tabWidth :[], tabHistory : [], tabIdx : 0, tabContextMenu : false, dropdownSearchHeight : -1, currentDropdownHeight : tabCtx.options.dropdown.height};
+		tabCtx.element = {}
+
+		var _opts = tabCtx.options;
+
+		var titleIcon =_opts.titleIcon;
+
+		var iconInfo ={left :{} , right:{}};
+
+		if(titleIcon){
+			var leftIcon =titleIcon.left; 
+			if(leftIcon && leftIcon.html != ''){
+				iconInfo.left.html =  '<span class="pubTab-icon-area '+(leftIcon.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="left">'+leftIcon.html+'</span></span>';
+			}
+
+			if(titleIcon.right && titleIcon.right.html != ''){
+				iconInfo.right.html =  '<span class="pubTab-icon-area '+(titleIcon.right.onlyActiveView === true ? 'visible-hide' : '')+'"><span class="pubTab-icon" data-posistion="right">'+titleIcon.right.html+'</span></span>';
+			}
+		}
+
+		tabCtx.config.icon = iconInfo;
+	}
+}
+
+var _$template = {
+	init : function (){
+		var _this = this
+			,_opts = _this.options;
+			
+		var tabMainTemplate = _$template.getContainerHtml(this);
+		
+		_this.tabElement.empty().html(tabMainTemplate);
+
+		_this.element.tabContainerElement =  $('#'+_this.prefix+'pubTab-container');
+		_this.element.tabScrollElement = $('#'+_this.prefix+'pubTab-scroll');
+		_this.element.dropdownAreaElement = $('#'+_this.prefix+'Dropdown');
+				
+		_this.element.contentContainerElement = (_opts.contentViewSelector === false ? $('#'+_this.prefix+'ContentContainer') : $(_opts.contentViewSelector));
+		
+		_this.config.moveAreaWidth  = this.tabElement.find('.pubTab-more-button').width();
+		$('#'+_this.prefix+'pubTab-move-space').css('width',_this.config.moveAreaWidth);
+
+		_this.element.dropdownAreaElement.css('top', ($('#'+_this.prefix+'pubTab').height()-2)+'px');
+	}
+	,appendTabContent : function (tabCtx, item, reloadFlag){
+
+		if(tabCtx.options.useContentContainer ===false) return ; 
+
+		var contentContainerElement = tabCtx.element.contentContainerElement; 
+
+		var tabid = '';
+		var contentLoadFlag = false; 
+		if(tabCtx.options.isMultipleContainer === false){
+			tabid = tabCtx.prefix;
+			contentLoadFlag = true; 
+		}else{
+			tabid = item[tabCtx.options.itemKey.id];
+
+			var contentEleLen = contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]').length; 
+
+			if(contentEleLen < 1){
+				contentContainerElement.append(_$template.getTabContentHtml(tabCtx, item));
+			}
+
+			if(reloadFlag === true || item._isInitialised !== true){
+				contentLoadFlag = true; 
+			}
+		}
+
+		if(contentLoadFlag){
+			tabCtx.options.contentRender(item, contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]'));
+		}
+	}
+	,getTabContentHtml : function (tabCtx, item){
+		var style='';
+		if($.isFunction(tabCtx.options.contentStyleClass)){
+			style = tabCtx.options.contentStyleClass(item) ||'';
+		}else{
+			style = tabCtx.options.contentStyleClass;
+		}
+
+		return '<div class="pubTab-content '+style + (tabCtx.options.isMultipleContainer === false ? ' active':'')+'" data-tab-cont-id="'+item._tabid+'"></div>';
+	}
+	//drop item template
+	,getDropdownHtml : function (tabCtx, item){
+		var title = item[tabCtx.options.itemKey.title];
+		return '<li class="pubTab-dropdown-item" data-tab-id="'+item._tabid+'" title="'+title+'">'+title+'</li>'
+	}
+	// tab  item template
+	,getTabItemHtml : function (tabCtx, item){
+
+		var cfgIcon = tabCtx.config.icon;
+		var _opts = tabCtx.options;
+
+		if(item[_opts.itemKey.id]){
+			item._tabid = item[_opts.itemKey.id];
+		}else{
+			tabCtx.config.tabIdx++;
+			item._tabid = 'tab_'+tabCtx.config.tabIdx;
+		}
+
+		var title = item[_opts.itemKey.title];
+
+		var titleTag = '<span class="pubTab-item-title">'+title+'</span>';
+		if(!isNaN(_opts.itemMaxWidth) && _opts.itemMaxWidth > 0){
+			titleTag = '<span class="pubTab-item-title pub-title-ellipsis" style="max-width:'+(_opts.itemMaxWidth)+'px">'+title+'</span>';
+			//titleTag = '<span class="pubTab-item-title">'+title+'</span>';
+		}
+
+		var titleIcon =_opts.titleIcon;
+
+		var itemHtm ='';
+		if(cfgIcon.left && cfgIcon.left.html){
+
+			if(!$.isFunction(titleIcon.left.visible) || ($.isFunction(titleIcon.left.visible) && titleIcon.left.visible.call(null, item) !== false)){
+				itemHtm += cfgIcon.left.html;
+			}
+		}
+
+		itemHtm += titleTag;
+		if(cfgIcon.right && cfgIcon.right.html){
+			if(!$.isFunction(titleIcon.right.visible) || ($.isFunction(titleIcon.right.visible) && titleIcon.right.visible.call(null, item) !== false)){
+				itemHtm += cfgIcon.right.html;
+			}
+		}
+
+		return '<div class="pubTab-item" draggable="'+(_opts.drag.enabled ? true:false)+'" data-tab-id="'+item._tabid+'" title="'+title+'"><div class="pubTab-item-overlay" style=""></div><div class="pubTab-item-cont-wrapper"><div class="pubTab-item-cont '+_opts.addClass+'" >'+itemHtm+'</div></div></div>';
+	}
+	,tabItemHtml : function (tabCtx){
+		var tabHtm = [];
+		tabCtx.options.items.forEach(function (item){
+			tabHtm.push(_$template.getTabItemHtml(tabCtx, item));
+		})
+		return tabHtm.join('');
+	}
+	,dropdownHtml : function  (tabCtx){
+		var items = tabCtx.options.items
+		var itemLen = items.length;
+
+		var dropHtml = [];
+		for(var i = itemLen-1; i >= 0; i--){
+			dropHtml.push(_$template.getDropdownHtml(tabCtx, items[i]));
+		}
+
+		return dropHtml.join('');
+	}
+	,getContainerHtml : function (tabCtx){
+		var _opts = tabCtx.options
+			,items = _opts.items
+			,itemLen = items.length;
+
+		var strHtm = [];
+		strHtm.push('<div class="pubTab-wrapper" role="presentation">');
+		strHtm.push('	<div id="'+tabCtx.prefix+'pubTab" class="pubTab" style="height:'+_opts.tabHeight+'px;">');
+		strHtm.push('		<div id="'+tabCtx.prefix+'pubTab-scroll" class="pubTab-scroll">');
+		strHtm.push('			<div id="'+tabCtx.prefix+'pubTab-container" class="pubTab-container" >');
+		strHtm.push(_$template.tabItemHtml(tabCtx));
+		strHtm.push('			<span><div id="'+tabCtx.prefix+'pubTab-move-space" style="display:none;">&nbsp;</div></span>');
+		strHtm.push('			</div>');
+		strHtm.push('		</div> ');
+		
+		if(_opts.overItemViewMode =='drop'){
+			strHtm.push(' 		<div class="pubTab-more-button"></div>');
+		}
+		
+		strHtm.push('	</div>');
+
+		if(_opts.contentViewSelector===false && _opts.useContentContainer !== false){
+			strHtm.push('<div id="'+tabCtx.prefix+'ContentContainer" class="pubTab-content-container" style="height:calc(100% - '+_opts.tabHeight+'px);">');
+			
+			if(_opts.isMultipleContainer === false){
+				strHtm.push(_$template.getTabContentHtml(tabCtx, {_tabid: tabCtx.prefix}));
+			}else{
+				for(var i = 0 ;i < itemLen ;i++){
+					strHtm.push(_$template.getTabContentHtml(tabCtx, items[i]));
+				}
+			}		
+			strHtm.push('</div>');
+		}
+
+		if(_opts.overItemViewMode =='drop'){
+			var drw = _opts.dropdown.width
+				,drh = _opts.dropdown.height;
+
+			var heightCss = (_opts.contentViewSelector !==false || _opts.useContentContainer===false) ?('max-height: none;height:'+(drh+(drh == 'auto'?'':'px'))):'';
+			strHtm.push('<div id="'+tabCtx.prefix+'Dropdown" style="width:'+(drw+(drw == 'auto'?'':'px'))+';'+heightCss+';" class="pubTab-dropdown-wrapper">');
+
+			if(_opts.enableDropDownSearch){
+				strHtm.push('  <div class="pubTab-dropdown-search"><input type="search" id="'+tabCtx.prefix+'SchText" class="pubTab-dropdown-search-text"></div>');
+			}
+			strHtm.push('  <div class="pubTab-dropdown-data"><ul class="pubTab-dropdown-area">'+_$template.dropdownHtml(tabCtx)+'</ul></div>');
+			strHtm.push('</div>');
+		}
+		
+		strHtm.push('</div>');
+
+		return strHtm.join('');
+	}
+}
+
 
 $[ pluginName ] = function (selector,options) {
 

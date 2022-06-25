@@ -17,6 +17,7 @@
 						<div class="control-group row" style="margin-bottom: 8px;">
 						 	<div class="col-xs-2">
 								<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control ">
+									<option value="">선택</option>
 									<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
 										<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 									</c:forEach>
@@ -84,7 +85,7 @@ VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
 	,validateCheck : true
 	,data: {
-		vconnid : $('#dbinfolist option:first').val()
+		vconnid : ($('#dbinfolist option:first').val() ||'')
 		,detailDate : ''
 	}
 	,methods:{
@@ -211,6 +212,8 @@ VarsqlAPP.vueServiceBean( {
 		,dbStatsInfo:function (sObj){
 			var _self = this;
 			sObj=$(sObj);
+			
+			if(VARSQL.isBlank(_self.vconnid)) return ; 
 
 			this.$ajax({
 				data:{

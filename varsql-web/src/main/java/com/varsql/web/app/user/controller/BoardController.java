@@ -36,7 +36,7 @@ import com.varsql.web.model.entity.FileBaseEntity;
 import com.varsql.web.model.entity.board.BoardFileEntity;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -114,14 +114,12 @@ public class BoardController extends AbstractController {
 
 		boardCode= VarsqlUtils.getVonnid(req);
 
-		ResponseResult resultObject = new ResponseResult();
-
 		if(result.hasErrors()){
 
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("### board save validation check {}",errorVal.toString());
 			}
-			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 
 		boardRequestDTO.setBoardCode(boardCode);
@@ -192,13 +190,12 @@ public class BoardController extends AbstractController {
 
 		boardCode= VarsqlUtils.getVonnid(req);
 
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  comment save validation check {}",errorVal.toString());
 			}
-			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 		boardCommentRequestDTO.setBoardCode(boardCode);
 		boardCommentRequestDTO.setArticleId(articleId);
@@ -231,7 +228,7 @@ public class BoardController extends AbstractController {
 			, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		logger.debug("fileDownload");
 
-		ParamMap param = HttpUtils.getServletRequestParam(req);
+		DataMap param = HttpUtils.getServletRequestParam(req);
 
 		List<BoardFileEntity>  fileList = boardService.findFileList(articleId, Long.parseLong(fileId));
 

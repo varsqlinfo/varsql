@@ -7,6 +7,7 @@ import org.apache.ibatis.type.Alias;
 
 import com.varsql.core.auth.User;
 import com.varsql.core.common.util.SecurityUtil;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -23,6 +24,9 @@ public class DatabaseParamInfo{
 	// base schema info
 	private String baseSchema="PUBLIC";
 
+	// schema info
+	private String databaseName;
+	
 	// schema info
 	private String schema;
 
@@ -69,19 +73,19 @@ public class DatabaseParamInfo{
 		setConuid(conuid, user.getViewid() , user.getDatabaseInfo().get(conuid));
 	}
 
-	public void setConuid(String conuid,String viewid ,DatabaseInfo dbInfo) {
+	public void setConuid(String conuid, String viewid, DatabaseInfo dbInfo) {
 		this.viewid =viewid;
 		this.conuid = conuid;
 		this.vconnid = dbInfo.getVconnid();
 		this.type = dbInfo.getType();
 		this.dbType = dbInfo.getType();
 		this.baseSchema = dbInfo.getSchema();
-		this.schema = this.schema==null ? dbInfo.getSchema() : this.schema;
-
 		this.basetableYn = dbInfo.isBasetableYn();
 		this.lazyLoad =dbInfo.isLazyLoad();
 		this.schemaViewYn =dbInfo.isSchemaViewYn();
-		setSchema(this.schema);
+		
+		setSchema(this.schema==null ? dbInfo.getSchema() : this.schema);
+		setDatabaseName(this.databaseName==null ? dbInfo.getDatabaseName() : this.databaseName);
 	}
 
 	protected String getVconnid(String conuid) {
@@ -117,16 +121,14 @@ public class DatabaseParamInfo{
 	}
 
 	public void setSchema(String schema) {
-
-		if(schema !=null  && !"".equals(schema.trim()) ) {
-			this.schema = schema;
+		if(!StringUtils.isBlank(schema)) {
+			this.schema = StringUtils.removeSpecialCharacter(schema);
 			if(this.basetableYn){
 				this.baseSchemaFlag = this.baseSchema.equals(this.schema);
 			}else{
 				this.baseSchemaFlag = false;
 			}
 		}
-		//this.baseSchemaFlag = false;
 	}
 
 	public String getObjectName() {
@@ -134,7 +136,7 @@ public class DatabaseParamInfo{
 	}
 
 	public void setObjectName(String objectName) {
-		this.objectName = objectName;
+		this.objectName = StringUtils.isBlank(objectName) ? objectName : StringUtils.removeSpecialCharacter(objectName);
 	}
 	
 	public String[] getObjectNames() {
@@ -157,7 +159,7 @@ public class DatabaseParamInfo{
 		this.custom = custom;
 	}
 
-	public void addCustom(String key , Object val) {
+	public void addCustom(String key, Object val) {
 		if(this.custom ==null){
 			this.custom = new HashMap<String ,Object>();
 		}
@@ -197,5 +199,13 @@ public class DatabaseParamInfo{
 
 	public void setRefresh(String refresh) {
 		this.refresh = Boolean.parseBoolean(refresh);
+	}
+
+	public String getDatabaseName() {
+		return databaseName;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = StringUtils.isBlank(databaseName) ? databaseName : StringUtils.removeSpecialCharacter(databaseName);
 	}
 }

@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.User;
-import com.varsql.core.common.beans.ClientInfo;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.util.DefaultValueUtils;
+import com.vartech.common.app.beans.ClientInfo;
 
 /**
  * security log

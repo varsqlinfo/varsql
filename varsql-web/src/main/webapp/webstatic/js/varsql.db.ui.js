@@ -214,31 +214,6 @@ function registerFn(componentInfo){
 	};
 }
 
-
-VARSQL.ui = VARSQL.ui||{};
-VARSQL.ui.create = function (_opts){
-
-	VARSQLCont.init(_opts.dbtype);
-	_ui.base.mimetype = VARSQLCont.editorMimetype(); 
-
-	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
-
-	delete _opts.userSettingInfo['main.database.setting'];
-
-	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
-
-	_ui.initContextMenu();
-	_ui.headerMenu.init();
-	_ui.initEditorOpt();
-
-	_ui.layout.init(_opts);
-	_ui.extension = VARSQL.vender[_opts.dbtype] ||{};
-}
-
-VARSQL.ui.layoutResize  = function (){
-	_ui.layout.layoutResize();
-}
-
 var _ui = {
 	base :{
 		mimetype: ''	// editor mime type
@@ -313,11 +288,11 @@ _ui.pluginProxy = {
 }
 
 //컨텍스트 메뉴 sql 생성 부분 처리 .
-_ui.addDbServiceObject = function (objectKey, objectInfo){
+_ui.addDbServiceObject = function(objectInfo){
 	_$utils.copy(_ui.dbSchemaObject, objectInfo);
 }
 
-_ui.addODbServiceObjectMetadata = function (objectKey, objectInfo){
+_ui.addODbServiceObjectMetadata = function(objectInfo){
 	_$utils.copy(_ui.dbObjectMetadata, objectInfo);
 }
 
@@ -1214,8 +1189,9 @@ _ui.dbSchemaObject ={
 			}
 
 			varsqlLayerClear();
-
-			_g_options.param.schema =sEle.attr('obj_nm');
+			var objNm =sEle.attr('obj_nm'); 
+			_g_options.param.schema = objNm;
+			_g_options.param.databaseName = objNm;
 
 			$('#varsqlSschemaName').val(_g_options.param.schema);
 
@@ -1232,7 +1208,10 @@ _ui.dbSchemaObject ={
 		
 		_self.objectTypeTab = $.pubTab(_self.selector.objectTypeTab, {
 			items : _g_options.serviceObject
-			,dropdownWidth : 100
+			,dropdown : {
+				width : 100
+				,heightResponsive : true
+			}
 			,itemKey :{							// item key mapping
 				title :'name'
 				,id: 'contentid'
@@ -1276,7 +1255,7 @@ _ui.dbSchemaObject ={
 			return ;
 		}
 
-		var callMethod = _self.getCallMethod('_'+$contentId);
+		var callMethod = this['_'+$contentId];
 
 		var param =_getParam({'objectType':$contentId, 'objectNames' : selItem.objectName , 'objectIdx' : selItem.objectIdx});
 
@@ -1327,7 +1306,7 @@ _ui.dbSchemaObject ={
 	,resizeObjectArea : function (dimension){
 		// tab resize
 		if(this.objectTypeTab){
-			this.objectTypeTab.refresh();
+			this.objectTypeTab.resize();
 			var gridObj = $.pubGrid(this.objectTypeTab.getTabContentSelector(this.selectObjectMenu));
 
 			if(gridObj){
@@ -1339,22 +1318,13 @@ _ui.dbSchemaObject ={
 	,_dataExport : function (exportObj){
 		_ui.SQL.exportDataDownload(exportObj);
 	}
-	,getCallMethod : function (methodName){
-		var callMethod  =_ui.extension[methodName];
-
-		if(VARSQL.isUndefined(callMethod)){
-			callMethod = this[methodName];
-		}
-
-		return callMethod;
-	}
 	,getObjectMetadata : function (param, refresh){
 		_ui.dbObjectMetadata.getServiceObjectMetadata(param, refresh);
 	}
 };
 
 //table
-_ui.addDbServiceObject('table',{
+_ui.addDbServiceObject({
 	objectGridObj : {},
 	_table : function (resData, reqParam){
 
@@ -1472,10 +1442,7 @@ _ui.addDbServiceObject('table',{
 				,asideOptions :{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
-				,tColItem : [
-					{key :'name', label:'Table', width:200}
-					,{key :'remarks', label:'설명'}
-				]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
 				,scroll :{	// 스크롤 옵션
 					vertical : {
 						speed : 2			// 스크롤 스피드 row 1
@@ -1487,7 +1454,9 @@ _ui.addDbServiceObject('table',{
 						var selKey =rowItem.keyItem.key;
 
 						if(selKey == 'name' ){
-							_ui.SQL._sqlData('select * from '+ getTableName(rowItem.item[selKey]),false);
+							var item  = rowItem.item;
+
+							_ui.SQL._sqlData('select * from '+ getTableName(item),false);
 						}
 					}
 					,keyNavHandler : function(moveInfo){
@@ -1495,7 +1464,7 @@ _ui.addDbServiceObject('table',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1503,7 +1472,7 @@ _ui.addDbServiceObject('table',{
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name}, true);
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item}, true);
 					}
 					,contextMenu :{
 						beforeSelect :function (){
@@ -1524,10 +1493,10 @@ _ui.addDbServiceObject('table',{
 							var tmpName = sItem.name;
 
 							if(key=='dataview_all'){
-								_ui.SQL._sqlData('select * from '+getTableName(tmpName),false);
+								_ui.SQL._sqlData('select * from '+getTableName(sItem),false);
 								return ;
 							}else if(key=='dataview_count'){
-								_ui.SQL._sqlData('select count(1) CNT from '+getTableName(tmpName),false);
+								_ui.SQL._sqlData('select count(1) CNT from '+getTableName(sItem),false);
 								return ;
 							}
 
@@ -1552,6 +1521,7 @@ _ui.addDbServiceObject('table',{
 								objectType : $$objectType
 								,gubunKey :key
 								,objName : tmpName
+								,objInfo : sItem
 								,item : cacheData
 							};
 
@@ -1598,7 +1568,7 @@ _ui.addDbServiceObject('table',{
 })
 
 // view object grid
-_ui.addDbServiceObject('view',{
+_ui.addDbServiceObject({
 	_view:function (resData ,reqParam){
 		var _self = this;
 		try{
@@ -1631,10 +1601,7 @@ _ui.addDbServiceObject('view',{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
-				,tColItem : [
-					{key :'name', label:'View', width:200}
-					,{key :'remarks', label:'설명'}
-				]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
 				,tbodyItem : itemArr
 				,setting : {
 					enabled : true
@@ -1645,7 +1612,8 @@ _ui.addDbServiceObject('view',{
 						var selKey =rowItem.keyItem.key;
 
 						if(selKey == 'name' ){
-							_ui.SQL._sqlData('select * from '+getTableName(rowItem.item[selKey]),false);
+							var item  = rowItem.item;
+							_ui.SQL._sqlData('select * from '+ getTableName(item),false);
 						}
 					}
 					,keyNavHandler : function(moveInfo){
@@ -1653,7 +1621,7 @@ _ui.addDbServiceObject('view',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1661,14 +1629,14 @@ _ui.addDbServiceObject('view',{
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							var itemObj = viewObj.getRowItemToElement($(this));
 							viewObj.config.rowContext.changeHeader('contextTitle',0,itemObj.item.name);
 						}
-						,callback: function(key,sObj) {
+						,callback: function(key, sObj) {
 							var sItem = this.gridItem;
 							var tmpName = sItem.name;
 
@@ -1683,6 +1651,7 @@ _ui.addDbServiceObject('view',{
 								gubunKey : key
 								,sqlGenType : sObj.mode
 								,objectType : $$objectType
+								,objInfo : sItem
 								,objName :  tmpName
 								,item : {
 									items : cacheData.items
@@ -1710,7 +1679,7 @@ _ui.addDbServiceObject('view',{
 });
 
 // procedure object grid
-_ui.addDbServiceObject('procedure',{
+_ui.addDbServiceObject({
 	_procedure:function (resData ,reqParam){
 		var _self = this;
 		try{
@@ -1720,11 +1689,7 @@ _ui.addDbServiceObject('procedure',{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30, align: 'right'}
 				}
-				,tColItem : [
-					{key :'name', label:'Procedure',width:200}
-					,{key :'status', label:'상태'}
-					,{key :'remarks', label:'설명'}
-				]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType) 
 				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
@@ -1736,7 +1701,7 @@ _ui.addDbServiceObject('procedure',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1746,18 +1711,13 @@ _ui.addDbServiceObject('procedure',{
 
 						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-
-							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
-
 							if(key =='copy'){
 								procedureObj.copyData();
 								return ;
@@ -1775,7 +1735,7 @@ _ui.addDbServiceObject('procedure',{
 	}
 })
 
-_ui.addDbServiceObject('function',{
+_ui.addDbServiceObject({
 	_function : function (resData ,reqParam){
 		var _self = this;
 		try{
@@ -1785,11 +1745,7 @@ _ui.addDbServiceObject('function',{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
-				,tColItem : [
-					{key :'name', label:'Function',width:200}
-					,{key :'status', label:'상태'}
-					,{key :'remarks', label:'설명'}
-				]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
 				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
@@ -1801,7 +1757,7 @@ _ui.addDbServiceObject('function',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1811,18 +1767,13 @@ _ui.addDbServiceObject('function',{
 
 						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-
-							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
-
 							if(key =='copy'){
 								gridObj.copyData();
 								return ;
@@ -1840,7 +1791,7 @@ _ui.addDbServiceObject('function',{
 	}
 });
 
-_ui.addDbServiceObject('index',{
+_ui.addDbServiceObject({
 	_index : function (resData ,reqParam){
 		var _self = this;
 		try{
@@ -1850,14 +1801,7 @@ _ui.addDbServiceObject('index',{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
-				,tColItem : [
-					{key :'name', label:'Index',width:200}
-					,{key :'tblName', label:'테이블명'}
-					,{key :'type', label:'타입'}
-					,{key :'tableSpace', label:'Tablespace'}
-					,{key :'bufferPool', label:'버퍼풀'}
-					,{key :'status', label:'상태'}
-				]
+				,tColItem :VARSQLCont.getMainObjectServiceHeader($$objectType)
 				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
@@ -1869,7 +1813,7 @@ _ui.addDbServiceObject('index',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1879,18 +1823,13 @@ _ui.addDbServiceObject('index',{
 
 						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-
-							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
-
 							if(key =='copy'){
 								indexObj.copyData();
 								return ;
@@ -1908,8 +1847,8 @@ _ui.addDbServiceObject('index',{
 	}
 })
 
-_ui.addDbServiceObject('trigger',{
-	_trigger : function (resData ,reqParam){
+_ui.addDbServiceObject({
+	_trigger : function (resData, reqParam){
 		var _self = this;
 		try{
 			var $$objectType = 'trigger';
@@ -1918,14 +1857,7 @@ _ui.addDbServiceObject('trigger',{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 				}
-				,tColItem : [
-					{key :'name', label:'Trigger', width:120}
-					,{key :'tblName', label:'테이블명', width:100}
-					,{key :'eventType', label:'타입'}
-					,{key :'timing', label:'timing'}
-					,{key :'status', label:'상태'}
-					,{key :'created', label:'CREATED'}
-				]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType) 
 				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
@@ -1937,7 +1869,7 @@ _ui.addDbServiceObject('trigger',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -1947,18 +1879,14 @@ _ui.addDbServiceObject('trigger',{
 
 						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
 
-		    			_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
 						,callback: function(key,sObj) {
-							var ele = this.element, sItem = this.gridItem;
-							var tmpName = sItem.name;
-
-							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
-
+							
 							if(key =='copy'){
 								triggerGridObj.copyData();
 								return ;
@@ -1976,7 +1904,7 @@ _ui.addDbServiceObject('trigger',{
 	}
 })
 
-_ui.addDbServiceObject('sequence',{
+_ui.addDbServiceObject({
 	_sequence : function (resData, reqParam){
 		var _self = this;
 		try{
@@ -1986,12 +1914,7 @@ _ui.addDbServiceObject('sequence',{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
-				,tColItem : [
-					{key :'name', label:'Sequence',width:200}
-					,{key :'status', label:'상태'}
-					,{key :'created', label:'생성일자'}
-					,{key :'lastDdlTime', label:'최종수정일'}
-					]
+				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
 				,tbodyItem : resData.items
 				,setting : {
 					enabled : true
@@ -2003,7 +1926,7 @@ _ui.addDbServiceObject('sequence',{
 						if(moveInfo.key == 13){
 							return false;
 						}else{
-							_self.getObjectMetadata({'objectType':$$objectType,'objectName':moveInfo.item.name});
+							_self.getObjectMetadata({'objectType':$$objectType, 'objectName':moveInfo.item.name, 'objectInfo' : moveInfo.item});
 						}
 					}
 				}
@@ -2013,18 +1936,13 @@ _ui.addDbServiceObject('sequence',{
 
 						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
 
-						_self.getObjectMetadata({'objectType':$$objectType,'objectName':item.name});
+						_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
 							$(this).trigger('click');
 						}
 						,callback: function(key, sObj) {
-							var sItem = this.gridItem;
-							var tmpName = sItem.name;
-
-							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName);
-
 							if(key =='copy'){
 								triggerGridObj.copyData();
 								return ;
@@ -2111,7 +2029,7 @@ _ui.dbObjectMetadata= {
 			_self.resizeMetaArea();
 			return ;
 		}
-		
+		_self.selectMetadata[objType].objectInfo = param.objectInfo ||{};	// 선택한 object 정보.
 		_self.selectMetadata[objType].name = objName||''; // 선택한 오브젝트 캐쉬
 		
 		var metaTabObj = _self.selectMetadata[objType].metaTab;
@@ -2121,6 +2039,9 @@ _ui.dbObjectMetadata= {
 			_self.selectMetadata[objType].metaTab = $.pubTab(metaTabSelector, {
 				items : _self.metadataTabInfo[objType]
 				,itemKey :{title :'name', id : 'tabid'}
+				,dropdown : {
+					heightResponsive : true
+				}
 				,click : function (item){
 
 					var objectName = _self.selectMetadata[objType].name;
@@ -2262,15 +2183,7 @@ _ui.dbObjectMetadata= {
 			}
 		});
 	}
-	,getCallMethod : function (methodName){
-		var callMethod  =_ui.extension[methodName];
-
-		if(VARSQL.isUndefined(callMethod)){
-			callMethod = this[methodName];
-		}
-
-		return callMethod;
-	}
+	
 	// ddl source view
 	,metadataDDLView : function (objectType, tabkey, ddlSource){
 		var addHtml = $('#ddlViewTemplate').html();
@@ -2314,17 +2227,17 @@ _ui.dbObjectMetadata= {
 	}
 	// meta 영역 resize
 	,resizeMetaArea : function (dimension){
-		var resizeMethod = this.getCallMethod('_'+_ui.pluginProxy.getActiveObjectMenu().contentid+'MetaResize');
-		resizeMethod.call(this, dimension);
+		var resizeMethod = this['_'+_ui.pluginProxy.getActiveObjectMenu().contentid+'MetaResize'];
+		if(resizeMethod) resizeMethod.call(this, dimension);
 
 		if(this.selectMetadata[_ui.pluginProxy.getActiveObjectMenu().contentid].metaTab){
-			this.selectMetadata[_ui.pluginProxy.getActiveObjectMenu().contentid].metaTab.refresh();
+			this.selectMetadata[_ui.pluginProxy.getActiveObjectMenu().contentid].metaTab.resize();
 		}
 	}
 }
 
 //table tab control
-_ui.addODbServiceObjectMetadata('table', {
+_ui.addODbServiceObjectMetadata({
 	//테이블에 대한 메타 정보 보기 .
 	_tableColumn:function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2394,14 +2307,7 @@ _ui.addODbServiceObjectMetadata('table', {
 				enabled : true
 				,enableSearch : true
 			}
-			,tColItem : [
-				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
-				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeAndLength' },
-				{ label: VARSQL.messageFormat('grid.key'), key: 'constraints',width:45},
-				{ label: VARSQL.messageFormat('grid.default.value'), key: 'defaultVal',width:45},
-				{ label: VARSQL.messageFormat('grid.nullable'), key: 'nullable',width:45},
-				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('tableColumn')
 			,scroll :{	// 스크롤 옵션
 				vertical : {
 					speed : 2			// 스크롤 스피드 row 1
@@ -2440,6 +2346,7 @@ _ui.addODbServiceObjectMetadata('table', {
 								,sqlGenType : sObj.mode
 								,objectType : $$objectType
 								,objName : _self.selectMetadata[$$objectType].name
+								,objInfo : _self.selectMetadata[$$objectType].objectInfo
 								,item : {
 									items:cacheData
 								}
@@ -2505,7 +2412,7 @@ _ui.addODbServiceObjectMetadata('table', {
 })
 
 //view 정보 보기.
-_ui.addODbServiceObjectMetadata('view', {
+_ui.addODbServiceObjectMetadata({
 	// view 메타 데이터 보기.
 	_viewColumn :function (colData ,callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2537,13 +2444,7 @@ _ui.addODbServiceObjectMetadata('view', {
 				,enableSearch : true
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
-			,tColItem : [
-				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
-				{ label: VARSQL.messageFormat('grid.data.type'), key: 'typeName' },
-				{ label: VARSQL.messageFormat('grid.nullable'), key: 'nullable',width:45},
-				{ label: VARSQL.messageFormat('grid.key'), key: 'constraints',width:45},
-				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('viewColumn')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -2571,10 +2472,11 @@ _ui.addODbServiceObjectMetadata('view', {
 						var cacheData = gridObj.getSelectionItem(['name']);
 
 						_ui.pluginProxy.createScriptSql({
-							gubunKey : key
-							,sqlGenType : sObj.mode
-							,objectType : $$objectType
-							,objName :  _self.selectMetadata[$$objectType].name
+							gubunKey: key
+							,sqlGenType: sObj.mode
+							,objectType: $$objectType
+							,objName: _self.selectMetadata[$$objectType].name
+							,objInfo: _self.selectMetadata[$$objectType].objectInfo
 							,item : {
 								items:cacheData
 							}
@@ -2603,7 +2505,7 @@ _ui.addODbServiceObjectMetadata('view', {
 });
 
 // 프로시저 처리.
-_ui.addODbServiceObjectMetadata('procedure', {
+_ui.addODbServiceObjectMetadata({
 	//procedure 대한 메타 정보 보기 .
 	_procedureColumn :function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2628,12 +2530,7 @@ _ui.addODbServiceObjectMetadata('procedure', {
 				,enableSearch : true
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
-			,tColItem : [
-				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 },
-				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },
-				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},
-				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('procedureColumn')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -2669,7 +2566,7 @@ _ui.addODbServiceObjectMetadata('procedure', {
 })
 
 // function 정보 처리.
-_ui.addODbServiceObjectMetadata('function', {
+_ui.addODbServiceObjectMetadata({
 	//function 대한 메타 정보 보기 .
 	_functionColumn :function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2694,12 +2591,7 @@ _ui.addODbServiceObjectMetadata('function', {
 				,enableSearch : true
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
-			,tColItem : [
-				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 }, // 파라미터
-				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },		// datatype
-				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},	// in/out
-				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}	// 설명
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('functionColumn')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -2786,7 +2678,7 @@ _ui.addODbServiceObjectMetadata('function', {
 })
 
 // index 처리.
-_ui.addODbServiceObjectMetadata('index', {
+_ui.addODbServiceObjectMetadata({
 	// index column 정보.
 	_indexColumn : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2811,11 +2703,7 @@ _ui.addODbServiceObjectMetadata('index', {
 				,enableSearch : true
 			}
 			,asideOptions :{lineNumber : {enabled : true	,width : 30}}
-			,tColItem : [
-				{ label: VARSQL.messageFormat('grid.column.name'), key: 'name',width:80 },
-				{ label: 'POSITION', key: 'no',width:80 },
-				{ label: 'ASC OR DESC', key: 'ascOrdesc' },
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('indexColumn')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -2851,7 +2739,7 @@ _ui.addODbServiceObjectMetadata('index', {
 })
 
 // trigger 처리.
-_ui.addODbServiceObjectMetadata('trigger', {
+_ui.addODbServiceObjectMetadata({
 	_triggerInfo : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
 
@@ -2875,10 +2763,7 @@ _ui.addODbServiceObjectMetadata('trigger', {
 				enabled : true
 				,enableSearch : true
 			}
-			,tColItem : [
-				{ label: 'Name', key: 'name'},
-				{ label: 'Value', key: 'val',width:80 },
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('triggerInfo')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -2914,7 +2799,7 @@ _ui.addODbServiceObjectMetadata('trigger', {
 })
 
 // sequence 처리.
-_ui.addODbServiceObjectMetadata('sequence', {
+_ui.addODbServiceObjectMetadata({
 	// sequence 정보보기.
 	_sequenceInfo : function (colData, callParam, tabKey, reloadFlag){
 		var _self = this;
@@ -2939,10 +2824,7 @@ _ui.addODbServiceObjectMetadata('sequence', {
 				enabled : true
 				,enableSearch : true
 			}
-			,tColItem : [
-				{ label: 'Name', key: 'name'},
-				{ label: 'Value', key: 'val',width:80 },
-			]
+			,tColItem : VARSQLCont.getMainObjectMetaHeader('sequenceInfo')
 			,tbodyItem :items
 			,message : {
 				empty : ''
@@ -3038,8 +2920,10 @@ _ui.SQL = {
 			,width:'auto'
 			,itemMaxWidth: 100
 			,useContentContainer :false
-			,dropdownWidth : 100
-			,dropdownHeight : 200
+			,dropdown: {
+				width: 100
+				,heightResponsive: true
+			}
 			,drag: {
 				enabled :true
 				,dragDrop : function (moveItem){
@@ -3059,9 +2943,11 @@ _ui.SQL = {
 					}else if(key =='close_other'){
 						_self.deleteEditorInfo('other', item);
 						_self.saveSqlFile(param ,'delTab-other');
+						_self.setEditorHistory('removeOther');
 					}else if(key =='close_all'){
 						_self.deleteEditorInfo('all');
 						_self.saveSqlFile(param ,'delTab-all');
+						_self.setEditorHistory('removeAll');
 					}
 				},
 				items: [
@@ -3129,6 +3015,7 @@ _ui.SQL = {
 				,id : 'sqlId'
 			}
 		})
+		_self.sqlFileTab.resize({height: $(_self.sqlEditorSelector).height()});
 	}
 	,_initEditor : function (){
 		var _self = this;
@@ -3335,7 +3222,7 @@ _ui.SQL = {
 		}
 
 		try{
-			_self.sqlFileTab.refresh().setDropdownHeight(dimension.height-10);
+			_self.sqlFileTab.resize({height: dimension.height-10});
 		}catch(e){
 			console.log('editor refresh error')
 		}
@@ -3458,7 +3345,7 @@ _ui.SQL = {
 	    		_self.editorFocus();
 	    	}
 		});
-
+		
 		$(_self.sqlEditorSelector).on('keydown',function (e) {
 			var evt =window.event || e;
 
@@ -3859,7 +3746,7 @@ _ui.SQL = {
 		var findPos;
 		var wrapSearchPos;
 		if(isReverseFlag){
-			wrapSearchPos = {line: 100000, ch: 100000};
+			wrapSearchPos = {line: this.getSqlEditorObj().lastLine()+1, ch: 0};
 			findPos = _self.getSelectionPosition();
 		}else{
 			wrapSearchPos = {line: 0, ch: 0};
@@ -3882,6 +3769,7 @@ _ui.SQL = {
 			if(replaceFlag){
 				if(_self.getSql().match(schTxt) != null){
 					_self.getSqlEditorObj().replaceSelection(replaceTxt);
+					findPos = _self.getSelectionPosition(true);
 				}
 			}
 		}
@@ -4404,8 +4292,10 @@ _ui.SQL = {
 
 				beforeItem = viewItem;
 			}
-			
-		}else if(mode == 'forward'){
+			return ;	
+		}
+
+		if(mode == 'forward'){
 			
 			var forwardArrLen = forwardArr.length; 
 			
@@ -4419,15 +4309,17 @@ _ui.SQL = {
 			for(var i = 0; i < forwardArrLen; i++){
 				var viewItem = forwardArr.pop();
 
-				//console.log('forward', viewItem.sqlId , this.currentSqlEditorInfo.sqlId , beforeItem.sqlId)
-
 				if(viewItem.sqlId != this.currentSqlEditorInfo.sqlId && viewItem.sqlId != beforeItem.sqlId){
 					this.loadEditor(viewItem, {isHistory :false});
 					break; 
 				}
 				beforeItem = viewItem;
 			}
-		}else if(mode == 'add'){
+			return ; 
+
+		}
+
+		if(mode == 'add'){
 			if(!VARSQL.isBlank(this.currentSqlEditorInfo)){
 				backArr.push({
 					sqlId : this.currentSqlEditorInfo.sqlId
@@ -4435,7 +4327,10 @@ _ui.SQL = {
 			}
 			backArr.push(historyItem);
 			this.editorHistory.forward = [];
-		}else if(mode == 'remove'){
+			return ; 
+		} 
+		
+		if(mode == 'remove'){
 			// remove 처리 할것. 
 			var backArrLen = backArr.length
 				, forwardArrLen = forwardArr.length; 
@@ -4455,6 +4350,10 @@ _ui.SQL = {
 					}
 				}
 			}
+		}else if(mode == 'removeAll'){
+			this.editorHistory = {back:[],forward :[]};
+		}else if(mode == 'removeOther'){
+			this.editorHistory = {back:[],forward :[]};
 		}
 	}
 	,loadEditor : function (sItem, opt){
@@ -4597,8 +4496,18 @@ _ui.SQL = {
 	,getSql: function (){
 		var _self = this;
 		var textObj = _self.getSqlEditorObj();
+		var executeSql = textObj.getSelection(); 
+		if(executeSql.trim() ==''){
+			var pos = textObj.getCursor();
+			var result = VARSQLUtils.split(textObj.getValue() ,{findLine : pos.line, findCharPos : pos.ch})
 
-		return textObj.getSelection();
+			if(result.length >0 ){
+				var item = result[0]; 
+				textObj.setSelection({line: item.startLine, ch: item.startCharPos-1 }, {line :item.endLine, ch: item.endCharPos});
+				executeSql = item.statement;
+			}
+		}
+		return executeSql;
 	}
 	// sql parameter editer
 	,setSqlParamemter: function (sqlId){
@@ -4694,8 +4603,6 @@ _ui.SQL = {
 		var _self = this;
 		var sqlVal = _self.getSql();
 
-		if(top.mainSocketConnect) top.mainSocketConnect(); // socket check
-
 		_self._sqlData(sqlVal,true);
 	}
 	,getSelectionPosition : function(endFlag){
@@ -4714,6 +4621,8 @@ _ui.SQL = {
 	// sql 데이터 보기
 	,_sqlData :function (sqlVal, paramFlag){
 		var _self = this;
+
+		if(top.mainSocketConnect) top.mainSocketConnect(); // main socket check
 
 		sqlVal=VARSQL.str.trim(sqlVal);
 		if('' == sqlVal){
@@ -4979,6 +4888,9 @@ _ui.sqlDataArea =  {
 			,itemKey :{							// item key mapping
 				title :'name'
 				,id: 'id'
+			}
+			,dropdown : {
+				heightResponsive : true
 			}
 			,contentStyleClass : function(item){
 				if(item.id == 'queryLog'){
@@ -5402,7 +5314,7 @@ _ui.sqlDataArea =  {
 		});
 	}
 	,resize : function (dimension){
-		if(this.resultTab) this.resultTab.refresh()
+		if(this.resultTab) this.resultTab.resize()
 		
 		try{
 			$.pubGrid(this.currnetDataGridSelector).resizeDraw();
@@ -5714,6 +5626,11 @@ _ui.text={
  * @param tblName {String}
  */
 function getTableName(tblName){
+
+	if(typeof tblName ==='object'){
+		tblName = !VARSQL.isBlank(tblName.schema) ? tblName.schema+'.'+tblName.name : tblName.name;
+	}
+	
 	if(_g_options.schema != _g_options.param.schema){
 		tblName = _g_options.param.schema+'.'+tblName;
 	}
@@ -5751,11 +5668,10 @@ function getFormatSql(sql, dbtype, sqlType){
  */
 function generateSQL(scriptInfo){
 	var sqlGenType = scriptInfo.sqlGenType
-		,tmpName = scriptInfo.objName
 		,data = scriptInfo.item
 		,param_yn  = scriptInfo.param_yn;
-
-	tmpName = getTableName(tmpName);
+		
+	var serviceObjName = getTableName( (scriptInfo.objInfo && scriptInfo.objInfo.name ? scriptInfo.objInfo : scriptInfo.objName));
 
 	sqlGenType =sqlGenType.split('|');
 
@@ -5771,10 +5687,10 @@ function generateSQL(scriptInfo){
 	var len = dataArr.length;
 
 	if(key=='selectStar'){ // select 모든것.
-		reval.push('select * from '+tmpName);
+		reval.push('select * from '+serviceObjName);
 
 	}else if(key=='selectCount'){// count query
-		reval.push('select count(1) from '+tmpName);
+		reval.push('select count(1) from '+serviceObjName);
 	}
 	else if(key=='select'){ // select 컬럼 값
 		reval.push('select ');
@@ -5783,11 +5699,11 @@ function generateSQL(scriptInfo){
 			reval.push((i==0?'':', ')+item[VARSQLCont.tableColKey.NAME]);
 		}
 
-		reval.push(' from '+tmpName);
+		reval.push(' from '+serviceObjName);
 
 	}
 	else if(key=='insert'){ // insert 문
-		reval.push('insert into '+tmpName+' (');
+		reval.push('insert into '+serviceObjName+' (');
 		var valuesStr = [];
 		for(var i=0; i < len; i++){
 			item = dataArr[i];
@@ -5804,7 +5720,7 @@ function generateSQL(scriptInfo){
 
 	}
 	else if(key=='update'){ // update 문
-		reval.push('update '+tmpName+VARSQLCont.constants.newline+' set ');
+		reval.push('update '+serviceObjName+VARSQLCont.constants.newline+' set ');
 
 		var keyStr = [];
 		var firstFlag = true;
@@ -5830,7 +5746,7 @@ function generateSQL(scriptInfo){
 
 	}
 	else if(key=='delete'){ // delete 문
-		reval.push('delete from '+tmpName);
+		reval.push('delete from '+serviceObjName);
 
 		var item;
 		var keyStr = [];
@@ -5849,7 +5765,7 @@ function generateSQL(scriptInfo){
 
 	}
 	else if(key=='drop'){ // drop 문
-		reval.push('drop table '+tmpName);
+		reval.push('drop table '+serviceObjName);
 	}
 
 	return reval.join('');
@@ -6343,6 +6259,34 @@ function convertTextToTemplate(val){
 	$('#convertSqlResult').val(result);
 	
 	return result; 
+}
+
+VARSQL.ui = VARSQL.ui||{};
+VARSQL.ui.create = function (_opts){
+
+	VARSQLCont.init(_opts.dbtype);
+	_ui.base.mimetype = VARSQLCont.editorMimetype(); 
+
+	_opts.screenSetting = _opts.userSettingInfo['main.database.setting'];
+
+	delete _opts.userSettingInfo['main.database.setting'];
+
+	_g_options = VARSQL.util.objectMerge(_g_options, _opts);
+
+	_ui.initContextMenu();
+	_ui.headerMenu.init();
+	_ui.initEditorOpt();
+
+	_ui.layout.init(_opts);
+
+	// add extension service object
+	var extensionServiceObject = VARSQL.vender[_opts.dbtype]||{};
+	_ui.addDbServiceObject(extensionServiceObject.serviceObject)
+	_ui.addODbServiceObjectMetadata(extensionServiceObject.objectMetadata)
+}
+
+VARSQL.ui.layoutResize  = function (){
+	_ui.layout.layoutResize();
 }
 
 }(jQuery, window, document,VARSQL));

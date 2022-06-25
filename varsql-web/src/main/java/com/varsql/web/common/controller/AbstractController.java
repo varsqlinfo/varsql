@@ -4,7 +4,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.ViewPageConstants;
+import com.vartech.common.constants.ViewResourceConstants;
 
 /**
  *
@@ -33,7 +33,7 @@ public abstract class AbstractController implements Controller{
 	 * @return
 	 */
 	private static String getRedirectUrl (String url) {
-		return String.format("%s%s", ViewPageConstants.REDIRECT_PREFIX, url);
+		return String.format("%s%s", ViewResourceConstants.REDIRECT_PREFIX, url);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public abstract class AbstractController implements Controller{
 	 * @return
 	 */
 	private static String getForwardUrl (String url) {
-		return String.format("%s%s", ViewPageConstants.FORWARD_PREFIX, url);
+		return String.format("%s%s", ViewResourceConstants.FORWARD_PREFIX, url);
 	}
 
 	protected ModelAndView getRedirectModelAndView(String viewPath) {
@@ -93,7 +93,7 @@ public abstract class AbstractController implements Controller{
 	}
 
 	protected ModelAndView getDialogModelAndView(String viewPath, VIEW_PAGE pageType, ModelMap model) {
-		return modelAndView(String.format("%s%s",viewPath,ViewPageConstants.DIALOG_SUFFIX),pageType, model);
+		return modelAndView(String.format("%s%s",viewPath,ViewResourceConstants.DIALOG_SUFFIX),pageType, model);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public abstract class AbstractController implements Controller{
 		return getDialogModelAndView(viewPath, pageType,null);
 	}
 	protected ModelAndView getPopupModelAndView(String viewPath, VIEW_PAGE pageType, ModelMap model) {
-		return modelAndView(String.format("%s%s",viewPath ,ViewPageConstants.POPUP_SUFFIX),pageType, model);
+		return modelAndView(String.format("%s%s",viewPath ,ViewResourceConstants.POPUP_SUFFIX),pageType, model);
 	}
 
 	private ModelAndView modelAndView(String viewPath, VIEW_PAGE pageType, ModelMap model) {
@@ -140,7 +140,7 @@ public abstract class AbstractController implements Controller{
 	}
 
 	protected String getPopupViewPage(VIEW_PAGE pageType,String viewPath) {
-		return viewPage(pageType,String.format("%s%s", viewPath ,ViewPageConstants.POPUP_SUFFIX));
+		return viewPage(pageType,String.format("%s%s", viewPath ,ViewResourceConstants.POPUP_SUFFIX));
 	}
 
 	private String viewPage(VIEW_PAGE pageType,String viewPath) {

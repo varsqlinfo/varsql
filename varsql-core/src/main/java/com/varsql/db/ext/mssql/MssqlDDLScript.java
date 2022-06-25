@@ -25,7 +25,7 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -64,7 +64,7 @@ public class MssqlDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			List<ParamMap> srcList = client.selectList("tableScript", dataParamInfo);
+			List<DataMap> srcList = client.selectList("tableScript", dataParamInfo);
 
 			ddlStr.append("CREATE TABLE " + name + "(\n");
 
@@ -73,7 +73,7 @@ public class MssqlDDLScript extends AbstractDDLScript {
 			dataParamInfo.setObjectName(name);
 
 			DataTypeFactory dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			ParamMap source;
+			DataMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);
 				dataType = String.valueOf(source.get(MetaColumnConstants.DATA_TYPE));

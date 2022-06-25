@@ -1,4 +1,4 @@
-package com.varsql.web.model.mapper.base;
+package com.varsql.web.model.mapper;
 
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;

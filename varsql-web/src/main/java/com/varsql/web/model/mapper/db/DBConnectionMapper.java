@@ -5,8 +5,8 @@ import org.mapstruct.factory.Mappers;
 
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.mapper.base.GenericMapper;
-import com.varsql.web.model.mapper.base.IgnoreUnmappedMapperConfig;
+import com.varsql.web.model.mapper.GenericMapper;
+import com.varsql.web.model.mapper.IgnoreUnmappedMapperConfig;
 
 @Mapper(componentModel = "spring", config = IgnoreUnmappedMapperConfig.class)
 public interface DBConnectionMapper extends GenericMapper<DBConnectionResponseDTO, DBConnectionEntity> {

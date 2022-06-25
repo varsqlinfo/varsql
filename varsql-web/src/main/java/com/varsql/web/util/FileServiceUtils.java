@@ -26,16 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-import com.varsql.core.common.beans.ClientInfo;
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.CommUtils;
+import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.web.constants.SavePathType;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.FileBaseEntity;
+import com.vartech.common.app.beans.ClientInfo;
 import com.vartech.common.utils.FileUtils;
 
 /**

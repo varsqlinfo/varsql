@@ -5,8 +5,8 @@ import org.mapstruct.factory.Mappers;
 
 import com.varsql.web.dto.user.NoteResponseDTO;
 import com.varsql.web.model.entity.app.NoteEntity;
-import com.varsql.web.model.mapper.base.GenericMapper;
-import com.varsql.web.model.mapper.base.IgnoreUnmappedMapperConfig;
+import com.varsql.web.model.mapper.GenericMapper;
+import com.varsql.web.model.mapper.IgnoreUnmappedMapperConfig;
 
 @Mapper(componentModel = "spring", config = IgnoreUnmappedMapperConfig.class)
 public interface NoteMapper extends GenericMapper<NoteResponseDTO, NoteEntity> {

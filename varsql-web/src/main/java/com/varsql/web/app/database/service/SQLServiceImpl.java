@@ -75,7 +75,7 @@ import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.io.writer.AbstractWriter;
 import com.vartech.common.io.writer.CSVWriter;
@@ -471,10 +471,12 @@ public class SQLServiceImpl{
 	/**
 	 * 데이터 내보내기.
 	 * @param paramMap
-	 * @param req 
+	 * @param sqlExecuteInfo
+	 * @param req
+	 * @param res
 	 */
 	@SuppressWarnings("rawtypes")
-	public void dataExport(ParamMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public void dataExport(DataMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		String objectName = sqlExecuteInfo.getObjectName();
 

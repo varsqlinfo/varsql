@@ -119,14 +119,11 @@ public class AdminDbMgmtController extends AbstractController{
 	 */
 	@RequestMapping(value = "/dbConnectionCheck", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbConnectionCheck(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = adminServiceImpl.connectionCheck(vtConnection);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 
-		return resultObject;
+		return adminServiceImpl.connectionCheck(vtConnection);
 	}
 
 	@RequestMapping(value = "/dbConnectionClose", method = RequestMethod.POST)
@@ -159,14 +156,11 @@ public class AdminDbMgmtController extends AbstractController{
 	 */
 	@RequestMapping(value = "/dbSave", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult dbSave(@Valid DBConnectionRequestDTO vtConnection, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = adminServiceImpl.saveVtconnectionInfo(vtConnection);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return  resultObject;
+		
+		return adminServiceImpl.saveVtconnectionInfo(vtConnection);
 	}
 
 	/**

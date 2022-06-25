@@ -147,7 +147,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 1. 22.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param vconnid
 	 * @return
 	 */
 	public ResponseResult selectDetailObject(String vconnid) {
@@ -407,7 +407,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 5. 25.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param dbType
 	 * @return
 	 */
 	public ResponseResult selectDbDriverList(String dbType) {

@@ -97,6 +97,9 @@
 					<div class="col-xs-12">
 						최대 5000 라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
 					</div>
+					<div class="pull-right" v-if="detailItem.content" @click="download(currentItem)">
+						<button type="button" class="btn btn-sm btn-default">다운로드</button>
+					</div>
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
 						<div class="col-xs-12">
@@ -131,6 +134,7 @@ VarsqlAPP.vueServiceBean({
 		,pageInfo : {}
 		,gridData :  []
 		,detailItem : {}
+		,currentItem : {}
 		,vconnid : 'ALL'
 		,isDetailFlag :false
 		,fileViewEditor : {}
@@ -198,6 +202,7 @@ VarsqlAPP.vueServiceBean({
 		}
 		,detail : function (item){
 			var _this = this;
+			this.currentItem = item; 
 
 			_this.isDetailFlag = true;
 			this.$ajax({

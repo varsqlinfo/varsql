@@ -16,7 +16,7 @@ import org.apache.tiles.request.servlet.ServletRequest;
 import org.apache.tiles.request.servlet.ServletUtil;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 
-import com.varsql.web.constants.ViewPageConstants;
+import com.vartech.common.constants.ViewResourceConstants;
 
 /**
  *
@@ -42,7 +42,7 @@ public class VarsqlTilesView extends TilesView{
 
 		String url  = this.getUrl();
 
-		if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX) || url.endsWith(ViewPageConstants.POPUP_SUFFIX)) {
+		if(url.endsWith(ViewResourceConstants.DIALOG_SUFFIX) || url.endsWith(ViewResourceConstants.POPUP_SUFFIX)) {
 
 			BasicTilesContainer container = (BasicTilesContainer) TilesAccess.getContainer(tilesContext);
 
@@ -55,12 +55,12 @@ public class VarsqlTilesView extends TilesView{
 			Request tilesRequest = new ServletRequest(container.getApplicationContext(), request, response);
 
 			Definition definition = null;
-			if(url.endsWith(ViewPageConstants.DIALOG_SUFFIX)) {
+			if(url.endsWith(ViewResourceConstants.DIALOG_SUFFIX)) {
 				definition = container.getDefinitionsFactory().getDefinition("common.dialog", tilesRequest);
-				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.DIALOG_SUFFIX)));
+				definition.putAttribute(ViewResourceConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewResourceConstants.DIALOG_SUFFIX)));
 			}else {
 				definition = container.getDefinitionsFactory().getDefinition("common.popup", tilesRequest);
-				definition.putAttribute(ViewPageConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewPageConstants.POPUP_SUFFIX)));
+				definition.putAttribute(ViewResourceConstants.BODY_KEY, Attribute.createTemplateAttribute(getViewUrl( ViewResourceConstants.POPUP_SUFFIX)));
 			}
 
 			container.render(definition, tilesRequest);
@@ -70,9 +70,9 @@ public class VarsqlTilesView extends TilesView{
 	}
 
 	private String getViewUrl(String replaceStr) {
-		return new StringBuffer().append(ViewPageConstants.VIEW_PREFIX)
+		return new StringBuffer().append(ViewResourceConstants.VIEW_PREFIX)
 				.append(this.getUrl().replace(replaceStr, ""))
-				.append(ViewPageConstants.VIEW_SUFFIX)
+				.append(ViewResourceConstants.VIEW_SUFFIX)
 				.toString();
 	}
 }

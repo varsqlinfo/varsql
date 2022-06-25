@@ -96,7 +96,7 @@ public class UserPreferencesSqlFileServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 11. 7.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param selectItem
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)

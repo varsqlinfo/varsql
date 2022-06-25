@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.CommUtils;
+import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
 import com.varsql.web.util.DatabaseUtils;

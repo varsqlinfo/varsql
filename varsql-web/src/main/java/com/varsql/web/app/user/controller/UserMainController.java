@@ -110,19 +110,14 @@ public class UserMainController extends AbstractController{
 	 */
 	@RequestMapping(value={"/sendNote", "/resendNote"}, method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sendNote(@Valid NoteRequestDTO noteInfo, BindingResult result, HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController sendNote check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-
-			String requestURI = req.getRequestURI();
-			resultObject = userMainServiceImpl.insertSendNoteInfo(noteInfo, requestURI.indexOf("resendNote") > -1 ? true : false);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 
-		return  resultObject;
+		return userMainServiceImpl.insertSendNoteInfo(noteInfo, req.getRequestURI().indexOf("resendNote") > -1 ? true : false);
 	}
 
 	/**

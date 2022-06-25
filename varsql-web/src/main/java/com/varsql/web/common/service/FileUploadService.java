@@ -18,7 +18,7 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.controller.fileupload.FileUploadController;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.model.entity.app.FileInfoEntity;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;

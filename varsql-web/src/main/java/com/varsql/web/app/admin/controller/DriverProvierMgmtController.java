@@ -52,10 +52,8 @@ public class DriverProvierMgmtController extends AbstractController {
 	@ResponseBody
 	public ResponseResult driverCheck(@Valid DBTypeDriverProviderRequestDTO dto, BindingResult result,
 			HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if (result.hasErrors()) {
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-			return resultObject;
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 		return this.driverProvierMgmtServiceImpl.driverCheck(dto);
 	}
@@ -64,14 +62,10 @@ public class DriverProvierMgmtController extends AbstractController {
 	@ResponseBody
 	public ResponseResult save(@Valid DBTypeDriverProviderRequestDTO dto, BindingResult result,
 			HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if (result.hasErrors()) {
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-			return resultObject;
-		} else {
-			resultObject = this.driverProvierMgmtServiceImpl.saveInfo(dto);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-		return resultObject;
+		return this.driverProvierMgmtServiceImpl.saveInfo(dto);
 	}
 
 	@RequestMapping(value = { "/delete" }, method = { RequestMethod.POST })

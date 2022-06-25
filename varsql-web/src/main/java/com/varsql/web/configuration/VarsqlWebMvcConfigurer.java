@@ -31,7 +31,7 @@ import com.varsql.core.common.util.VarsqlSpringBeanUtils;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.DatabaseBoardAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
-import com.varsql.web.constants.ViewPageConstants;
+import com.vartech.common.constants.ViewResourceConstants;
 
 /**
  *
@@ -72,9 +72,10 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
+    	
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix(ViewPageConstants.VIEW_PREFIX);
-        resolver.setSuffix(ViewPageConstants.VIEW_SUFFIX);
+        resolver.setPrefix(ViewResourceConstants.VIEW_PREFIX);
+        resolver.setSuffix(ViewResourceConstants.VIEW_SUFFIX);
         resolver.setOrder(2);
         //resolver.setViewClass(JstlView.class);
         registry.viewResolver(resolver);

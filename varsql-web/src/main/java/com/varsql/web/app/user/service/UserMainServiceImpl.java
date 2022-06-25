@@ -20,10 +20,10 @@ import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.user.UserMapper;
+import com.varsql.web.repository.app.NoteEntityRepository;
+import com.varsql.web.repository.app.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.UserSpec;
-import com.varsql.web.repository.user.NoteEntityRepository;
-import com.varsql.web.repository.user.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.varsql.web.util.VarsqlUtils;
@@ -53,7 +53,7 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param searchParameter
 	 * @return
 	 */
 	public ResponseResult selectSearchUserList(SearchParameter searchParameter) {
@@ -71,7 +71,8 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param noteInfo
+	 * @param resendFlag
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
@@ -121,7 +122,8 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 8. 16.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param messageType
+	 * @param searchParameter
 	 * @return
 	 */
 	public ResponseResult selectMessageInfo(String messageType, SearchParameter searchParameter) {
@@ -139,7 +141,7 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 29.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param noteId
 	 * @return
 	 */
 	public ResponseResult updateNoteViewDate(String noteId) {

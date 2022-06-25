@@ -21,7 +21,7 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
 /**
  *
@@ -58,13 +58,13 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			List<ParamMap> srcList = client.selectList("tableScript", dataParamInfo);
+			List<DataMap> srcList = client.selectList("tableScript", dataParamInfo);
 
 			ddlStr.append("CREATE TABLE " + name + "(\n");
 
 			dataParamInfo.setObjectName(name);
 
-			ParamMap source;
+			DataMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);
 
@@ -131,7 +131,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
 
-			ParamMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
 			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
 			ddlStr.append(source.getString("VIEW_SOURCE"));

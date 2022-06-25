@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +33,7 @@ import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -124,20 +126,6 @@ public final class SQLManager {
 
 		sqlSessionFactory.setConfiguration(getConfiguration());
 
-		sqlSessionFactory.setTypeAliases(new Class[] {
-			com.varsql.core.db.valueobject.ResultTypeMap.class,
-			com.varsql.core.db.valueobject.DatabaseParamInfo.class,
-			com.varsql.core.db.valueobject.TableInfo.class,
-			com.varsql.core.db.valueobject.ColumnInfo.class,
-			com.varsql.core.db.valueobject.TriggerInfo.class,
-			com.varsql.core.db.valueobject.SequenceInfo.class,
-			com.varsql.core.db.valueobject.ObjectInfo.class,
-			com.varsql.core.db.valueobject.ObjectColumnInfo.class,
-		});
-
-		sqlSessionFactory.setTypeHandlers(new TypeHandler[] {
-			new LONGVARCHARHandler()
-		});
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
 		sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
@@ -211,6 +199,21 @@ public final class SQLManager {
 		configuration.setJdbcTypeForNull(JdbcType.NULL);
 		configuration.setCacheEnabled(true);
 		configuration.setLogPrefix(LOG_PREFIX);
+		
+		Arrays.asList(new Class[] {
+			com.varsql.core.db.valueobject.DatabaseParamInfo.class,
+			com.varsql.core.db.valueobject.TableInfo.class,
+			com.varsql.core.db.valueobject.ColumnInfo.class,
+			com.varsql.core.db.valueobject.TriggerInfo.class,
+			com.varsql.core.db.valueobject.SequenceInfo.class,
+			com.varsql.core.db.valueobject.ObjectInfo.class,
+			com.varsql.core.db.valueobject.ObjectColumnInfo.class,
+		}).stream().forEach(typeAlias-> {
+			configuration.getTypeAliasRegistry().registerAlias(typeAlias);
+		});
+		
+		configuration.getTypeAliasRegistry().registerAlias("dataMap", DataMap.class);
+		configuration.getTypeHandlerRegistry().register(LONGVARCHARHandler.class);
 
 		return configuration;
 	}

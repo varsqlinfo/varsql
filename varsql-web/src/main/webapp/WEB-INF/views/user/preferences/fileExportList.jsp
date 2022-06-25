@@ -96,6 +96,9 @@
 					<div class="col-xs-12">
 						최대 5000개 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
 					</div>
+					<div class="pull-right" v-if="detailItem.fileId" @click="download(detailItem)">
+						<button type="button" class="btn btn-sm btn-default">다운로드</button>
+					</div>
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
 						<div class="col-xs-12">

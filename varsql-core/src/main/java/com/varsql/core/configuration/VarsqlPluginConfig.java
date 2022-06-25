@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.configuration.xml.AbstractXmlLoad;
 import com.varsql.core.configuration.xml.XmlField;
 import com.varsql.core.exception.ConfigurationLoadException;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 
 /**
  *
@@ -26,7 +26,7 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-	private ParamMap<String,Object> CONFIG_INFO = new ParamMap<String,Object>();
+	private DataMap<String,Object> CONFIG_INFO = new DataMap<String,Object>();
 	private Object lock = new Object();
 
 
@@ -86,7 +86,7 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 	private void getConfigInfo(Element root) throws RuntimeException {
 		CONFIG_INFO = getXmlElementsInfo(root);
 
-		Object packageObj= ((ParamMap)CONFIG_INFO.get(XmlElementsInfo.PACKAGES.getFieldName())).get(XmlElementsInfo.PACKAGE.getFieldName());
+		Object packageObj= ((DataMap)CONFIG_INFO.get(XmlElementsInfo.PACKAGES.getFieldName())).get(XmlElementsInfo.PACKAGE.getFieldName());
 
 		if(packageObj instanceof List) {
 			List packageList = ((List)packageObj);

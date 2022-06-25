@@ -34,7 +34,7 @@ import com.varsql.web.repository.spec.UserSpec;
 import com.varsql.web.repository.user.UserDBConnectionEntityRepository;
 import com.varsql.web.repository.user.UserMgmtRepository;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
@@ -112,7 +112,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 12. 1.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param acceptyn
+	 * @param selectItem
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
@@ -189,7 +190,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
-	public ResponseResult userDbBlock(String viewid, String vconnid, ParamMap param) {
+	public ResponseResult userDbBlock(String viewid, String vconnid, DataMap param) {
 		ResponseResult result = new ResponseResult();
 
 		boolean chkFlag = false;
@@ -227,7 +228,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 12. 7.
 	 * @변경이력  :
-	 * @param paramMap
+	 * @param viewid
+	 * @param blockYn
 	 * @return
 	 */
 	public ResponseResult updateBlockYn(String viewid, String blockYn) {

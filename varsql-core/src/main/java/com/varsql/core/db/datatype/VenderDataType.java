@@ -25,7 +25,12 @@ public class VenderDataType implements DataType{
 		this.typeName = typeName; 
 		this.typeCode = typeCode; 
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
-		this.dataTypeHandler = dataTypeHandler != null ? dataTypeHandler :DataTypeHandler.builder().build();
+		
+		if(dataTypeHandler != null) {
+			this.dataTypeHandler = dataTypeHandler;
+		}else {
+			this.dataTypeHandler = DefaultDataType.getDefaultDataType(jdbcDataTypeMetaInfo.name()).getDataTypeHandler();
+		}
 	};
 
 	@Override

@@ -14,10 +14,10 @@ import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.TableInfo;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.StringUtils;
 
-public class TableInfoHandler implements ResultHandler<ParamMap> {
+public class TableInfoHandler implements ResultHandler<DataMap> {
 	private List<TableInfo> tableInfoList;
 
 	private TableInfo currentTableInfo;
@@ -76,8 +76,8 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 	}
 
 	@Override
-	public void handleResult(ResultContext<? extends ParamMap> paramResultContext) {
-		ParamMap rowData = paramResultContext.getResultObject();
+	public void handleResult(ResultContext<? extends DataMap> paramResultContext) {
+		DataMap rowData = paramResultContext.getResultObject();
 
 		String tblName = rowData.getString(MetaColumnConstants.TABLE_NAME);
 
@@ -91,6 +91,7 @@ public class TableInfoHandler implements ResultHandler<ParamMap> {
 				currentTableInfo = new TableInfo();
 
 				currentTableInfo.setName(tblName);
+				currentTableInfo.setSchema(rowData.getString(MetaColumnConstants.SCHEMA));
 				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 				currentTableInfo.setRemarks(rowData.getString(MetaColumnConstants.REMARKS,""));
 

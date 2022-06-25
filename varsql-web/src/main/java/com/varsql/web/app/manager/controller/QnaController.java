@@ -78,16 +78,14 @@ public class QnaController extends AbstractController {
 	 */
 	@RequestMapping(value="/updQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.info("###  QnaController qna qnaUpdate {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = qnaServiceImpl.updateQnaAnswerContent(qnaInfo);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-		return resultObject;
+		
+		return qnaServiceImpl.updateQnaAnswerContent(qnaInfo);
 	}
 }

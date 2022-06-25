@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.CommUtils;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;
@@ -24,9 +23,10 @@ import com.varsql.core.sql.executor.handler.UpdateInfo;
 import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.dto.file.FileImportResult;
 import com.varsql.web.model.entity.app.FileInfoEntity;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.FileUtils;
 
 /**

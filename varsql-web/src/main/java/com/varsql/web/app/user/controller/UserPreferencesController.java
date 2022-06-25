@@ -101,17 +101,13 @@ public class UserPreferencesController extends AbstractController{
 	 */
 	@RequestMapping(value={"/userInfoSave"}, method = RequestMethod.POST)
 	public @ResponseBody ResponseResult userInfoSave(@Valid UserModReqeustDTO userForm, BindingResult result,HttpServletRequest req, HttpServletResponse res) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController userInfoSave check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject.setItemOne(userPreferencesServiceImpl.updateUserInfo(userForm,req,res));
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return  resultObject;
+		return VarsqlUtils.getResponseResultItemOne(userPreferencesServiceImpl.updateUserInfo(userForm,req,res));
 	}
 
 	/**
@@ -150,18 +146,15 @@ public class UserPreferencesController extends AbstractController{
 	 */
 	@RequestMapping(value="/passwordSave", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult passwordSave(@Valid PasswordRequestDTO passwordForm, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  UserMainController passwordSave check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			passwordForm.setViewid(SecurityUtil.userViewId(req));
-			resultObject = userPreferencesServiceImpl.updatePasswordInfo(passwordForm);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return  resultObject;
+		
+		passwordForm.setViewid(SecurityUtil.userViewId(req));
+		return userPreferencesServiceImpl.updatePasswordInfo(passwordForm);
 	}
 
 	/**
@@ -279,23 +272,19 @@ public class UserPreferencesController extends AbstractController{
 	 */
 	@RequestMapping(value="/insQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult insQna(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-
-			if(ValidateUtils.isEmpty(qnaInfo.getQnaid())) {
-				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
-			}else {
-				resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
-			}
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
 
-		return resultObject;
+		if(ValidateUtils.isEmpty(qnaInfo.getQnaid())) {
+			return userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
+		}
+		
+		return userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 	}
 
 	/**
@@ -336,12 +325,10 @@ public class UserPreferencesController extends AbstractController{
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
-			resultObject = VarsqlUtils.getResponseResultValidItem(resultObject, result);
-		}else{
-			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
+			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-
-		return resultObject;
+		
+		return userPreferencesServiceImpl.saveQnaInfo(qnaInfo, false);
 	}
 
 	/**

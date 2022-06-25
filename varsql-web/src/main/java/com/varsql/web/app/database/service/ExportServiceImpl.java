@@ -46,11 +46,9 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.util.SQLUtils;
-import com.varsql.web.common.beans.DataCommonVO;
 import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.UploadFileType;
@@ -59,10 +57,11 @@ import com.varsql.web.dto.DownloadItemInfo;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.model.entity.app.FileInfoEntity;
-import com.varsql.web.repository.user.FileInfoEntityRepository;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.EnumMapperValue;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.excel.ExcelReport;
@@ -118,7 +117,14 @@ public class ExportServiceImpl{
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 
 		if(SecurityUtil.isSchemaView(preferencesInfo)) {
-			model.addAttribute("schemaList",dbMetaEnum.getSchemas(preferencesInfo));
+			
+			DBVenderType venderType = DBVenderType.getDBType(preferencesInfo.getType());
+
+			if(venderType.isUseDatabaseName()) {
+				model.addAttribute("schemaList", dbMetaEnum.getDatabases(preferencesInfo));
+			}else {
+				model.addAttribute("schemaList", dbMetaEnum.getSchemas(preferencesInfo));
+			}
 		}else {
 			model.addAttribute("schemaInfo", "");
 		}
@@ -205,7 +211,7 @@ public class ExportServiceImpl{
 
 		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 
-		DataCommonVO settingInfo = VartechUtils.jsonStringToObject(jsonString, DataCommonVO.class);
+		DataMap settingInfo = VartechUtils.jsonStringToObject(jsonString, DataMap.class);
 
 		List<Map> tables = (List<Map>)settingInfo.get("tables");
 		List<Map> columns = (List<Map>)settingInfo.get("columns");
@@ -240,7 +246,7 @@ public class ExportServiceImpl{
 		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
 
-		DataCommonVO settingInfo = VartechUtils.jsonStringToObject(jsonString, DataCommonVO.class);
+		DataMap settingInfo = VartechUtils.jsonStringToObject(jsonString, DataMap.class);
 
 		Map<String, List<Map>> exportInfo = (Map<String, List<Map>>)settingInfo.get("exportInfo");
 

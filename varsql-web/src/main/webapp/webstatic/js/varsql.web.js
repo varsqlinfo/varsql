@@ -769,8 +769,8 @@ _$base.getFileSizePerFile= function (){
 
 _$base.socket ={
 	stompClient : null
-	,connRetryCount : 0
 	,isCreate : false
+	,connRetryCount : 0
 	,maxRetry :10
 	,subScripeActive :{}
 	//알림 수신
@@ -778,7 +778,7 @@ _$base.socket ={
 
 		var subscribeId = '/sub/'+endpoint+'/'+opts.uid;
 
-		if(this.subScripeActive[subscribeId]===true){
+		if(this.subScripeActive[subscribeId]===true && this.stompClient.connected ===true){
 			return ;
 		}
 
@@ -799,7 +799,16 @@ _$base.socket ={
 		if(_this.stompClient==null){
 			_this.createConnection(endpoint, opts);
 		}else{
-			if(_this.stompClient.connected !== true){
+			if(_this.isCreate){
+				_this.close();
+				_this.createConnection(endpoint, opts);
+				return ; 
+			}
+
+			if(_this.stompClient.connected === true){
+				_this.addSubscribe(endpoint, opts);
+			}else{
+				
 				var connectTimer = setInterval(function() {
 					if(_this.stompClient.connected === true){
 						clearInterval(connectTimer);
@@ -812,8 +821,6 @@ _$base.socket ={
 	, createConnection : function (endpoint, opts){
 		var _this = this;
 
-		this.isCreate = true; 
-
 		this.subScripeActive = {};
 
 		var stompClient = Stomp.over(new SockJS(_$base.getContextPathUrl("/ws/"+ endpoint) , null, {transports : ['websocket'] }));
@@ -825,6 +832,7 @@ _$base.socket ={
 		}
 
 		stompClient.connect({}, function (frame) {
+			_this.isCreate = true; 
 			_this.addSubscribe(endpoint, opts);
 		}, function(err){
 			console.log(err);

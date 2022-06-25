@@ -19,10 +19,7 @@ public class OracleDataTypeFactory extends AbstractDataTypeFactory{
 	public OracleDataTypeFactory() {
 		
 		addDataType(new VenderDataType("TIMESTAMP WITH TIME ZONE", -101, DBColumnMetaInfo.OTHER));
-
 		addDataType(new VenderDataType("CLOB", 2005, DBColumnMetaInfo.CLOB));
-		addDataType(new VenderDataType("TIMESTAMP(6)", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.OTHER));
-		
 		addDataType(new VenderDataType("VARCHAR2", 12, DBColumnMetaInfo.STRING));
 		addDataType(new VenderDataType("NUMBER", 3, DBColumnMetaInfo.INTEGER));
 		

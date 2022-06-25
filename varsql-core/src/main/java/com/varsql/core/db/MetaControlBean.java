@@ -247,5 +247,15 @@ public class MetaControlBean {
 	public String getDbVenderName(){
 		return this.dbVenderName;
 	}
+	
+	/**
+	 * database list
+	 * @param databaseParamInfo
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> getDatabases(DatabaseParamInfo databaseParamInfo) throws SQLException {
+		return this.dbMeta.getDatabases(databaseParamInfo);
+	}
 
 }

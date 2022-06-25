@@ -32,7 +32,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.security.repository.UserRepository;
-import com.vartech.common.app.beans.ParamMap;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -70,7 +70,7 @@ public final class AuthDAO {
 	 * @throws UsernameNotFoundException
 	 */
 	public User loadUserByUsername(final String userInfoJson) throws UsernameNotFoundException {
-		ParamMap userInfo = VartechUtils.jsonStringToObject(userInfoJson);
+		DataMap userInfo = VartechUtils.jsonStringToObject(userInfoJson);
 		String username = userInfo.getString("username");
 		String password = userInfo.getString("password");
 
@@ -156,7 +156,7 @@ public final class AuthDAO {
 			User user = SecurityUtil.loginInfo();
 			StringBuffer query = new StringBuffer();
 
-		  	String dbColumnQuery = "select VCONNID, VNAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT, USE_COLUMN_LABEL, b.DB_TYPE from VTCONNECTION a left outer join VTDBTYPE_DRIVER_PROVIDER b  on a.VDRIVER = b.DRIVER_PROVIDER_ID where USE_YN ='Y' and DEL_YN = 'N' AND ";
+		  	String dbColumnQuery = "select VCONNID, VNAME, VDATABASENAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT, USE_COLUMN_LABEL, b.DB_TYPE from VTCONNECTION a left outer join VTDBTYPE_DRIVER_PROVIDER b  on a.VDRIVER = b.DRIVER_PROVIDER_ID where USE_YN ='Y' and DEL_YN = 'N' AND ";
 		  	query.append( dbColumnQuery);
 
 			AuthorityType tmpAuthority = user.getTopAuthority();
@@ -219,11 +219,12 @@ public final class AuthDAO {
 								, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
 								, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
 								, rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL)
+								, rs.getString(VarsqlKeyConstants.CONN_DATABASENAME)
 							)
 						);
 						vconnidNconuid.put(vconnid, uuid);
 					}catch(Exception e) {
-						logger.error("DatabaseInfo not valid : "+ vconnid);					
+						logger.error("DatabaseInfo not valid : {}"+ vconnid);					
 					}
 				}
 
