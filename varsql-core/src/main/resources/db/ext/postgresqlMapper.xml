@@ -30,7 +30,7 @@
 	</select>
 	
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			cols.table_name as "TABLE_NAME"
 			, cols.COLUMN_NAME as "COLUMN_NAME"
@@ -42,7 +42,7 @@
 			,cols.column_default as "COLUMN_DEF"
 			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
 			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
-				WHEN tc.constraint_type ='UNIQUE' then 'UNI'
+				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
 				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
 		FROM information_schema.columns as cols 
 		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
@@ -84,7 +84,7 @@
 	</select>
 	
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			cols.table_name as "TABLE_NAME"
 			, cols.COLUMN_NAME as "COLUMN_NAME"
@@ -96,7 +96,7 @@
 			,cols.column_default as "COLUMN_DEF"
 			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
 			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
-				WHEN tc.constraint_type ='UNIQUE' then 'UNI'
+				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
 				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
 		FROM information_schema.columns as cols 
 		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
@@ -223,7 +223,7 @@
 	</select>
 	
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select pc.relname AS "TABLE_NAME", 
 			t.relname AS "INDEX_NAME",
 			pa.attname AS "COLUMN_NAME",
@@ -366,7 +366,7 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="tableScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="tableScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT
                 b.nspname as schema_name,
                 b.relname as "TABLE_NAME",
@@ -464,7 +464,7 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="viewScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="viewScript" resultType="dataMap" parameterType="databaseParamInfo">
 		select table_name , view_definition  as "VIEW_SOURCE"
 		from information_schema.views
 		where table_schema = #{schema}
@@ -474,7 +474,7 @@
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="indexScript" resultType="dataMap" parameterType="databaseParamInfo">
 		select indexname, replace(pg_get_indexdef(format('%I.%I', schemaname, indexname)::regclass), ' INDEX ', ' INDEX IF NOT EXISTS ') as "CREATE_SOURCE"
 		from pg_indexes
 		where schemaname = #{schema}
@@ -482,7 +482,7 @@
 	</select>
 	
 	<!-- create function script -->
-	<select id="functionScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="functionScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
 				, 'FUNCTION' as "OBJECT_TYPE"
 				, proargtypes as definer
@@ -497,7 +497,7 @@
 	</select>
 	
 	<!-- create procedure script -->
-	<select id="procedureScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="procedureScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
 				, 'FUNCTION' as "OBJECT_TYPE"
 				, proargtypes as definer
@@ -512,7 +512,7 @@
 	</select>
 	
 	<!-- create trigger script -->
-	<select id="triggerScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="triggerScript" resultType="dataMap" parameterType="databaseParamInfo">
 		select tgname
 			,pg_get_triggerdef(oid) as "CREATE_SOURCE"
 		from pg_trigger a ,information_schema.triggers b

@@ -60,7 +60,7 @@
 	</select>
 
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
@@ -140,7 +140,7 @@
 	</select>
 
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
@@ -309,7 +309,7 @@
 	</select>
 
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select *
 		from (
 			SELECT
@@ -400,7 +400,7 @@
 	<!--
 		Table DDL Script
 	 -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		select
 			 so.name AS TABLE_NAME
 			, sc.name AS COLUMN_NAME

@@ -231,6 +231,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
+var utils_1 = __webpack_require__(/*! ../utils */ "./src/utils.ts");
+
 var constants_1 = __webpack_require__(/*! ../constants */ "./src/constants.ts");
 
 var Splitter = /*#__PURE__*/function () {
@@ -272,7 +274,9 @@ var Splitter = /*#__PURE__*/function () {
       var textCheckerInter = null;
       var currentEndTokenKey = '';
       var lineStartCharIdx = 0;
-      var overflowFlag = false; // 문자 단위로 읽기
+      var overflowFlag = false; //찾는 문자 영역을 벋어 났는지 여부
+
+      var overflowNextSplitChk = false; // 찾는 문자 라인에 쿼리가 있는지 여부
 
       for (var i = 0; i < sqlLen; i++) {
         beforeCh1 = c1; // 이전 값 넣기.
@@ -329,11 +333,12 @@ var Splitter = /*#__PURE__*/function () {
         }
 
         statement.push(orginCh);
-
-        if (/[(),]/.test(c1)) {
-          continue;
-        } // 공백체크. ( 체크 
-
+        /*
+        if(/[(),]/.test(c1)){
+            continue;
+        }
+        */
+        // 공백체크. ( 체크 
 
         if (/[\s(]/.test(c1)) {
           if (startCommand) startCommand = false;
@@ -373,11 +378,24 @@ var Splitter = /*#__PURE__*/function () {
           }
         }
 
-        if (!overflowFlag && findLine != -1 && lineIdx >= findLine && findCharPos <= i - lineStartCharIdx) {
-          //console.log('['+command+']', endCheckerInter, 'asdf : ',lineIdx, findLine , findCharPos , i-lineStartCharIdx)
+        if (!overflowNextSplitChk && !overflowFlag && findLine != -1 && lineIdx >= findLine && findCharPos <= i - lineStartCharIdx) {
           overflowFlag = true;
 
           if (command.trim() == '' && statementList.length > 0) {
+            var newLineIdx = sql.indexOf(constants_1.LINE_CHAR, i + 1);
+
+            if (newLineIdx > -1) {
+              // 라인 끝 체크, 체크 해서 문자가 있으면 다음 query 리턴하게 처리.
+              var lineStr = sql.substring(i + 1, newLineIdx);
+              lineStr = (0, utils_1.trim)(lineStr);
+              var firstChar = lineStr.charAt(0);
+
+              if (lineStr != '' && !/[;/!@#$%^&()+=?\-]/.test(firstChar)) {
+                overflowNextSplitChk = true;
+                continue;
+              }
+            }
+
             return [statementList[statementList.length - 1]];
           }
         }
@@ -390,7 +408,7 @@ var Splitter = /*#__PURE__*/function () {
             endLine: lineIdx,
             endCharPos: i - lineStartCharIdx,
             statement: statement.join('')
-          };
+          }; //console.log(endCheckerInter, sqlSplitInfo)
 
           if (overflowFlag) {
             return [sqlSplitInfo];
@@ -407,10 +425,9 @@ var Splitter = /*#__PURE__*/function () {
                 return [sqlSplitInfo];
               }
             }
-          } else {
-            statementList.push(sqlSplitInfo);
           }
 
+          statementList.push(sqlSplitInfo);
           command = '';
           word == '';
           statement = [];
@@ -919,6 +936,39 @@ var split = function split(sql) {
 };
 
 exports.split = split;
+
+/***/ }),
+
+/***/ "./src/utils.ts":
+/*!**********************!*\
+  !*** ./src/utils.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.equalizeWhitespace = exports.trim = exports.isNumber = void 0;
+
+var isNumber = function isNumber(value) {
+  return typeof value === 'number';
+};
+
+exports.isNumber = isNumber; // string trim
+
+var trim = function trim(s) {
+  return s.replace(/^\s+|\s+$/g, "");
+};
+
+exports.trim = trim; // space -> ' '
+
+var equalizeWhitespace = function equalizeWhitespace(s) {
+  return (0, exports.trim)(s).replace(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+/g, ' ');
+};
+
+exports.equalizeWhitespace = equalizeWhitespace;
 
 /***/ })
 

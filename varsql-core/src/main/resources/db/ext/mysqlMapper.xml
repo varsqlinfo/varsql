@@ -27,7 +27,7 @@
 	</select>
 
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			a.table_name as "TABLE_NAME"
 			, a.column_name as "COLUMN_NAME"
@@ -84,7 +84,7 @@
 	</select>
 
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			a.table_name as "TABLE_NAME"
 			, a.column_name as "COLUMN_NAME"
@@ -210,7 +210,7 @@
 	</select>
 
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			idx.table_name AS  "TABLE_NAME"
 			,idx.index_name AS "INDEX_NAME"
@@ -283,27 +283,27 @@
 	</select>
 
 	<!-- table script -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		show create table ${objectName}
 	</select>
 
 	<!-- view script -->
-	<select id="viewScript" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewScript" parameterType="databaseParamInfo" resultType="dataMap">
 		show create view ${objectName}
 	</select>
 
 	<!-- function script -->
-	<select id="functionScript" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="functionScript" parameterType="databaseParamInfo" resultType="dataMap">
 		show create function ${objectName}
 	</select>
 
 	<!-- procedure script -->
-	<select id="procedureScript" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="procedureScript" parameterType="databaseParamInfo" resultType="dataMap">
 		show create procedure ${objectName}
 	</select>
 
 	<!-- trigger script -->
-	<select id="triggerScript" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="triggerScript" parameterType="databaseParamInfo" resultType="dataMap">
 		show create trigger ${objectName}
 	</select>
 

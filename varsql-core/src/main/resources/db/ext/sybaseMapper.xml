@@ -58,7 +58,7 @@
 	</select>
 
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
@@ -126,7 +126,7 @@
 	</select>
 
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"
@@ -281,7 +281,7 @@
 	</select>
 
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select 
 			trim(t.table_name) as  "TABLE_NAME"
 			, trim(c.column_name) as "COLUMN_NAME"
@@ -368,7 +368,7 @@
 	<!--
 		Table DDL Script
 	 -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			,trim(sc.cname) as  "COLUMN_NAME"
 			, trim(sc.coltype) as "DATA_TYPE"

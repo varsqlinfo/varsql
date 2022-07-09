@@ -78,16 +78,24 @@ EXEC sp_dropextendedproperty 'MS_Description', 'SCHEMA', dbo, 'TABLE', {{TABLE_N
 		
 		<constraintKey>
 {{#ddlTableKey keyList objectName dbType}}
-  {{#xif type '==' 'PK'}}
-	{{#each constList}}
-ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
-  {{#xif type '==' 'UQ'}}
-	{{#each constList}}
-CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
+  {{~#xif type '==' 'PK'}}
+	{{~#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
+  {{~#xif type '==' 'FK'}}
+	{{~#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} FOREIGN KEY ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}}) REFERENCES {{#this}}{{#if @first}}{{REFERENCED_TABLE_NAME}}{{/if}}{{/this}}({{~#this}}{{addChar @index "" ", "}}{{REFERENCED_COLUMN_NAME}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
+  {{~#xif type '==' 'UQ'}}
+	{{~#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
 {{/ddlTableKey}}
 		</constraintKey>
 		

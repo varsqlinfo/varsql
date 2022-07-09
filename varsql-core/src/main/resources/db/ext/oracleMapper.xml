@@ -47,7 +47,7 @@
 	</select>
 	
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select atc.COLUMN_ID
 			, atc.TABLE_NAME
 			, atc.COLUMN_NAME
@@ -74,7 +74,7 @@
 				 D.TABLE_NAME , D.COLUMN_NAME , CASE WHEN MAX(P.CONSTRAINT_TYPE) != MIN(P.CONSTRAINT_TYPE) THEN 'MUL' 
 					WHEN MAX(P.CONSTRAINT_TYPE) = 'P' THEN 'PK' 
 					WHEN MIN(P.CONSTRAINT_TYPE) = 'R' THEN 'FK' 
-					WHEN MIN(P.CONSTRAINT_TYPE) = 'U' THEN 'UNI' 
+					WHEN MIN(P.CONSTRAINT_TYPE) = 'U' THEN 'UQ' 
 				ELSE '' END as CONSTRAINTS
 		<choose>
 			<when test="baseSchemaFlag">
@@ -146,7 +146,7 @@
 	</select>
 	
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select TBL.* ,  col.*
 		from 
 		(
@@ -401,7 +401,7 @@
 	</select>
 	
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		 select a.* ,b.* 
 		 from (
 			 SELECT 
@@ -444,6 +444,7 @@
 			where ui.OWNER = #{schema}
 		</otherwise>
 	</choose>
+		and uc.CONSTRAINT_TYPE not in ('P')
 			<if test="custom != null and custom.indexNameList != null">
 				<foreach item="item" index="index" collection="custom.indexNameList" open="and (" close=")" separator="or">
 					ui.INDEX_NAME in (${item})
@@ -633,7 +634,7 @@
 	<!-- 
 		Table DDL Script
 	 -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT atc.TABLE_NAME
 			, atc.COLUMN_NAME
 			, atc.DATA_TYPE

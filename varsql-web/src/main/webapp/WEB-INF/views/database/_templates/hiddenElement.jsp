@@ -79,24 +79,8 @@
 				<span class="find-text-input-area"><input type="text" name="editorReplaceText"></span>
 			</li>
 		</ul>
-		<div class="rows">
-			<div><spring:message code="direction" /></div>
-			<ul class="find-text-option-area">
-				<li>
-					<label class="checkbox-container"><spring:message code="down" />
-					  <input type="radio" name="find-text-direction" value="down" checked="checked">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container"><spring:message code="up" />
-					  <input type="radio" name="find-text-direction" value="up">
-					  <span class="radiomark"></span>
-					</label>
-				</li>
-			</ul>
-		</div>
-		<div class="rows">
+		
+		<div class="rows" style="margin-top:5px;">
 			<div><spring:message code="options" /></div>
 			<ul class="find-text-option-area">
 				<li>
@@ -119,9 +103,16 @@
 				</li>
 			</ul>
 		</div>
-		<div class="rows">
+		<div class="rows" style="margin-top:38px;">
 			<ul class="find-text-button">
-				<li><button type="button" class="find_text" data-mode="find"><spring:message code="find" /></button></li>
+				<li>
+					<button type="button" class="find_text" data-mode="find-up" style="width: 48%;">
+						<spring:message code="find" /> <i class="fa fa-long-arrow-up"></i>
+					</button>
+					<button type="button" class="find_text" data-mode="find-down" style="width: 48%;">
+						<spring:message code="find" /> <i class="fa fa-long-arrow-down"></i>
+					</button>
+				</li>
 				<li><button type="button" class="find_text" data-mode="replace"><spring:message code="replace" /></button></li>
 				<li><button type="button" class="find_text" data-mode="allreplace"><spring:message code="all.replace" /></button></li>
 				<li><button type="button" class="find_text" data-mode="close"><spring:message code="close" /></button></li>

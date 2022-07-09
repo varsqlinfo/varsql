@@ -2087,8 +2087,6 @@ _ui.dbObjectMetadata= {
 							_self[callMethodStr](resData, tabParam, metaTabKey, true);
 						})
 					}
-
-					
 				}
 			})
 		}else{
@@ -3036,6 +3034,7 @@ _ui.SQL = {
 				"Ctrl-Space": "autocomplete"
 				,"Ctrl-F": function (){
 					// 검색 재정의
+					
 				}
 				,"Shift-Ctrl-F" : function (){
 					// 검색 재정의
@@ -3048,11 +3047,6 @@ _ui.SQL = {
 				}
 				,"Shift-Ctrl-/" : function (){
 					_self.toggoleComment();
-					return false; 
-				}
-				,"Ctrl-/" : function (){  // comment
-					_self.toggoleComment();
-					//editor.setSelections(selPosArr);
 					return false; 
 				}
 				,"F11": function(cm) {
@@ -3637,12 +3631,12 @@ _ui.SQL = {
 				var findText = _self.findTextEle.find('[name="editorFindText"]').val();
 				var replaceText = _self.findTextEle.find('[name="editorReplaceText"]').val()
 
-				if(mode=='find'){
-					_self.searchFindText(findText, replaceText, false);
+				if(mode=='find-up' || mode=='find-down'){
+					_self.searchFindText(mode, findText, replaceText, false);
 				}else if(mode=='replace'){
-					_self.searchFindText(findText, replaceText, true);
+					_self.searchFindText(mode, findText, replaceText, true);
 				}else if(mode=='allreplace'){
-					_self.searchFindText(findText, replaceText, false, true);
+					_self.searchFindText(mode, findText, replaceText, false, true);
 				}else{
 					_self.findTextDialog.dialog( "close" );
 				}
@@ -3730,10 +3724,15 @@ _ui.SQL = {
 		});
 	}
 	// 검색.
-	,searchFindText : function (orginTxt ,replaceTxt, replaceFlag, replaceAllFlag, wrapSearch){
+	,searchFindText : function (mode, orginTxt ,replaceTxt, replaceFlag, replaceAllFlag, wrapSearch){
 		var _self = this;
-
-		var directionValue = $("input:radio[name=find-text-direction]:checked").val();
+		
+		var directionValue = 'down';
+		
+		if(VARSQL.startsWith(mode ,'find')){
+			var modeArr = mode.split('-');
+			directionValue = modeArr.length > 1 ? modeArr[1] :'down';
+		}
 
 		var findOpt={}
 
@@ -3804,7 +3803,7 @@ _ui.SQL = {
 			_self.getSqlEditorObj().setSelection(cursorFrom, cursor.to());
 		}else{
 			if(findOpt.wrapSearch===true){
-				_self.searchFindText(orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
+				_self.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
 			}else{
 				_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0012', { findText: orginTxt}));
 				return ;
@@ -4493,14 +4492,15 @@ _ui.SQL = {
 	,getCurrentSqlEditorInfo : function (){
 		return this.currentSqlEditorInfo; 
 	}
-	,getSql: function (){
+	,getSql: function (executeSqlFlag){
 		var _self = this;
 		var textObj = _self.getSqlEditorObj();
 		var executeSql = textObj.getSelection(); 
-		if(executeSql.trim() ==''){
+		
+		if(executeSql.trim() =='' && executeSqlFlag===true){
 			var pos = textObj.getCursor();
-			var result = VARSQLUtils.split(textObj.getValue() ,{findLine : pos.line, findCharPos : pos.ch})
-
+			var result = VARSQLUtils.split(textObj.getValue() ,{findLine : pos.line, findCharPos : pos.ch});
+			
 			if(result.length >0 ){
 				var item = result[0]; 
 				textObj.setSelection({line: item.startLine, ch: item.startCharPos-1 }, {line :item.endLine, ch: item.endCharPos});
@@ -4601,7 +4601,7 @@ _ui.SQL = {
 	// sql 데이터 보기
 	,sqlData :function (evt){
 		var _self = this;
-		var sqlVal = _self.getSql();
+		var sqlVal = _self.getSql(true);
 
 		_self._sqlData(sqlVal,true);
 	}

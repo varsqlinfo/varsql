@@ -27,7 +27,7 @@
 	</select>
 	
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select 
 			tbl.class_name as "TABLE_NAME"
 			,col.attr_name as "COLUMN_NAME"
@@ -88,7 +88,7 @@
 	</select>
 	
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select 
 			tbl.class_name as "TABLE_NAME"
 			,col.attr_name as "COLUMN_NAME"
@@ -234,7 +234,7 @@
 	</select>
 	
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT 
 			a.class_name AS "TABLE_NAME",
 			a.index_name AS "INDEX_NAME",
@@ -381,21 +381,21 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="tableScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="tableScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SHOW CREATE TABLE ${objectName}
 	</select>
 	
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="viewScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="viewScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SHOW CREATE VIEW ${objectName}
 	</select>
 
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="indexScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT 
 			a.class_name AS "TABLE_NAME",
 			a.index_name AS "INDEX_NAME",
@@ -416,7 +416,7 @@
 	</select>
 	
 	<!-- create function script -->
-	<select id="functionScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="functionScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT dsp.sp_name as "OBJECT_NAME",
 			dsp.sp_type as "TYPE",
 			dsp.return_type as "RETURN_TYPE",
@@ -434,7 +434,7 @@
 	</select>
 	
 	<!-- create procedure script -->
-	<select id="procedureScript" resultType="paramMap" parameterType="databaseParamInfo">
+	<select id="procedureScript" resultType="dataMap" parameterType="databaseParamInfo">
 		SELECT dsp.sp_name as "OBJECT_NAME",
 			dsp.sp_type as "TYPE",
 			dsp.return_type as "RETURN_TYPE",

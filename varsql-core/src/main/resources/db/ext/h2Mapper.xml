@@ -28,7 +28,7 @@
 	</select>
 
 	<!-- table adn column info -->
-	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
@@ -94,7 +94,7 @@
 	</select>
 
 	<!-- view and column info -->
-	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
@@ -189,7 +189,7 @@
 	</select>
 
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="paramMap">
+	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
 			TABLE_NAME,
 			INDEX_NAME,
