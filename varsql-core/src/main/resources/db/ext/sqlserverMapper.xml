@@ -3,7 +3,7 @@
 	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mssql.mata">
+<mapper namespace="sqlserver.mata">
 	<!-- db 정보보기. -->
 	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
 		SELECT @@VERSION as INFO_VAL

@@ -1,4 +1,4 @@
-package com.varsql.db.ext.mssql;
+package com.varsql.db.ext.sqlserver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,17 +30,17 @@ import com.vartech.common.utils.VartechUtils;
 
 /**
  *
- * @FileName  : MssqlDDLScript.java
- * @프로그램 설명 : mssql ddl
+ * @FileName  : SqlserverDDLScript.java
+ * @프로그램 설명 : sqlserver ddl
  * @Date      : 2019. 1. 20.
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class MssqlDDLScript extends AbstractDDLScript {
-	private final Logger logger = LoggerFactory.getLogger(MssqlDDLScript.class);
+public class SqlserverDDLScript extends AbstractDDLScript {
+	private final Logger logger = LoggerFactory.getLogger(SqlserverDDLScript.class);
 
-	public MssqlDDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBVenderType.MSSQL);
+	public SqlserverDDLScript(MetaControlBean dbInstanceFactory){
+		super(dbInstanceFactory, DBVenderType.SQLSERVER);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class MssqlDDLScript extends AbstractDDLScript {
 				param.put("keyList", constraintKeys);
 				param.put("objectName",dataParamInfo.getObjectName());
 				
-				ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.MSSQL, SQLTemplateCode.TABLE.constraintKey, param)).append(BlankConstants.NEW_LINE);
+				ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.SQLSERVER, SQLTemplateCode.TABLE.constraintKey, param)).append(BlankConstants.NEW_LINE);
 			}
 
 			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);

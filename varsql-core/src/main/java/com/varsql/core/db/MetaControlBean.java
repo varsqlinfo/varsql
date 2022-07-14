@@ -22,6 +22,8 @@ import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
+import com.varsql.core.sql.type.CommandTypeFactory;
+import com.varsql.core.sql.type.CommandTypeFactoryOther;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
@@ -41,6 +43,7 @@ public class MetaControlBean {
 	private DDLScript ddlScript;
 	private DataTypeFactory dataTypeFactory;
 	private TableReport tableReport;
+	private CommandTypeFactory commandTypeFactory;
 
 	private String dbVenderName;
 
@@ -73,7 +76,14 @@ public class MetaControlBean {
 		try {
 			this.tableReport = getBeanObject(TableReportOTHER.class, TableReport.class);
 		} catch (Exception e) {
-			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
+			logger.error("@@@ varsql bean error tableReport :{} ", e.getMessage(), e);
+		}
+		
+		// sql command type factory
+		try {
+			this.commandTypeFactory = getBeanObject(CommandTypeFactoryOther.class, CommandTypeFactory.class);
+		} catch (Exception e) {
+			logger.error("@@@ varsql bean error commandTypeFactory :{} ", e.getMessage(), e);
 		}
 	}
 
@@ -256,6 +266,14 @@ public class MetaControlBean {
 	 */
 	public List<String> getDatabases(DatabaseParamInfo databaseParamInfo) throws SQLException {
 		return this.dbMeta.getDatabases(databaseParamInfo);
+	}
+	
+	/**
+	 * sql command type factory
+	 * @return CommandTypeFactory
+	 */
+	public CommandTypeFactory getCommandTypeFactory() {
+		return commandTypeFactory;
 	}
 
 }

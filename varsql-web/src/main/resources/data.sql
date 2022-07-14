@@ -15,7 +15,7 @@ values('002' ,'oracle','dbtype.oracle','oracle');
 insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
 values('003' ,'mysql','dbtype.mysql','mysql');
 insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
-values('004' ,'mssql','dbtype.mssql','mssql');
+values('004' ,'sqlserver','dbtype.sqlserver','sqlserver');
 insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
 values('005' ,'other','dbtype.other','other');
 insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)

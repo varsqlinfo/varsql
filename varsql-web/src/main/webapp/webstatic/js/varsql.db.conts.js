@@ -81,7 +81,7 @@ var DEFINE_INFO = {
 		type :'text/x-mariadb'
 		,formatType : 'mariadb '
 	}
-	,MSSQL : {
+	,SQLSERVER : {
 		type :'text/x-mssql'
 		,formatType : 'tsql'
 		,setDataType :  function (pdto){

@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.varsql.core.sql.mapping.ParameterMapping;
+import com.varsql.core.sql.type.SQLCommand;
+import com.varsql.core.sql.type.SQLCommandType;
 
 public class SqlSource {
-	private String commandType;
+	private SQLCommandType command;
 	private VarsqlStatementType statementType;
 	private String query;
 	private String calluserid;
@@ -14,16 +16,16 @@ public class SqlSource {
 	private List<ParameterMapping> paramList;
 	private Map orginSqlParam;
 
-	public String getCommandType() {
-		return commandType;
+	public SQLCommandType getCommand() {
+		return this.command;
 	}
 
-	public void setCommandType(String commandType) {
+	public void setCommand(SQLCommandType commandType) {
 
-		this.commandType = commandType != null? commandType.toUpperCase() : VarsqlCommandType.UNKNOWN.name();
+		this.command = commandType;
 		this.statementType = VarsqlStatementType.PREPARED;
 
-		if(this.commandType.equalsIgnoreCase(VarsqlCommandType.CALL.name())){
+		if(SQLCommandType.CALL.equals(commandType.getCommand())){
 			this.statementType = VarsqlStatementType.CALLABLE;
 		}
 	}
@@ -81,7 +83,7 @@ public class SqlSource {
 		return new StringBuffer()
 			.append("calluserid : [").append(calluserid)
 			.append("] result : [").append( result)
-			.append("] commandType : [").append(commandType)
+			.append("] commandType : [").append(command)
 			.append("] statementType : [").append(statementType)
 			.append("] query : [").append(query)
 			.append("] param : [").append(paramList)

@@ -5641,7 +5641,7 @@ function getTableName(tblName){
 function getFormatSql(sql, dbtype, sqlType){
 	try{
 		
-		if(toLowerCase(dbtype) == 'mssql' && sqlType=='ddl'){
+		if(toLowerCase(dbtype) == 'sqlserver' && sqlType=='ddl'){
 			return sql; 	
 		}
 		

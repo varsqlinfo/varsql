@@ -57,7 +57,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception {
-		logger.debug("MssqlDBMeta getTableMetadata {}  tableArr :: {}",dataParamInfo, tableNmArr);
+		logger.debug("getTableMetadata {}  tableArr :: {}",dataParamInfo, tableNmArr);
 		return tableAndColumnsInfo(dataParamInfo,"tableMetadata" ,tableNmArr);
 	}
 
@@ -168,7 +168,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-		logger.debug("MssqlDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
+		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
 		TableInfoHandler tableInfoHandler;
 

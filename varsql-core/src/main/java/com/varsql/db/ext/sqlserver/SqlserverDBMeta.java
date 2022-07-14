@@ -1,4 +1,4 @@
-package com.varsql.db.ext.mssql;
+package com.varsql.db.ext.sqlserver;
 
 import java.util.List;
 import java.util.Map;
@@ -24,17 +24,17 @@ import com.vartech.common.utils.VartechUtils;
 
 /**
  *
- * @FileName : MssqlDBMeta.java
+ * @FileName : SqlserverDBMeta.java
  * @작성자 	 : ytkim
  * @Date	 : 2014. 2. 13.
  * @프로그램설명:
  * @변경이력	:
  */
-public class MssqlDBMeta extends AbstractDBMeta{
+public class SqlserverDBMeta extends AbstractDBMeta{
 
-	private final Logger logger = LoggerFactory.getLogger(MssqlDBMeta.class);
+	private final Logger logger = LoggerFactory.getLogger(SqlserverDBMeta.class);
 
-	public MssqlDBMeta(MetaControlBean dbInstanceFactory){
+	public SqlserverDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
 			, new ServiceObject(ObjectType.FUNCTION)
 			, new ServiceObject(ObjectType.INDEX)
@@ -57,7 +57,7 @@ public class MssqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNames) throws Exception {
-		logger.debug("MssqlDBMeta getTableMetadata {}  tableArr :: {}", dataParamInfo, tableNames);
+		logger.debug("getTableMetadata {}  tableArr :: {}", dataParamInfo, tableNames);
 		return tableAndColumnsInfo(dataParamInfo,"tableMetadata", tableNames);
 	}
 
@@ -126,8 +126,7 @@ public class MssqlDBMeta extends AbstractDBMeta{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-
-		logger.debug("MssqlDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
+		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
 		TableInfoHandler tableInfoHandler;
 

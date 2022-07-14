@@ -1,4 +1,4 @@
-package com.varsql.db.ext.mssql;
+package com.varsql.db.ext.sqlserver;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,15 +14,15 @@ import com.varsql.core.db.datatype.handler.ResultSetHandler;
 
 /**
  * 
- * @FileName  : MssqlDataTypeFactory.java
- * @프로그램 설명 : mssql data type
+ * @FileName  : SqlserverDataTypeFactory.java
+ * @프로그램 설명 : sqlserver data type
  * @Date      : 2022. 3. 18. 
  * @작성자      : ytkim
  * @변경이력 :
  */
-public class MssqlDataTypeFactory extends AbstractDataTypeFactory{
+public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 	
-	public MssqlDataTypeFactory() {
+	public SqlserverDataTypeFactory() {
 		
 		addDataType(new VenderDataType("TEXT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
 		addDataType(new VenderDataType("NTEXT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));

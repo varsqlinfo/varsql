@@ -158,7 +158,7 @@ public class JPAConfigurer {
 
         if(DBVenderType.MYSQL.equals(dbType)) {
         	templates = MySQLTemplates.builder().build();
-        }else if(DBVenderType.MSSQL.equals(dbType)) {
+        }else if(DBVenderType.SQLSERVER.equals(dbType)) {
         	templates = SQLServerTemplates.builder().build();
         }else if(DBVenderType.ORACLE.equals(dbType)) {
         	templates = OracleTemplates.builder().build();

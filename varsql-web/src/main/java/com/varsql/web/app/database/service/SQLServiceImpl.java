@@ -49,7 +49,6 @@ import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
-import com.varsql.core.sql.builder.VarsqlCommandType;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
@@ -58,6 +57,7 @@ import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMode;
+import com.varsql.core.sql.type.SQLCommandType;
 import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
@@ -209,7 +209,7 @@ public class SQLServiceImpl{
 				ssrv.setResultMessage((ssrv.getDelay())+" SECOND : "+StringUtils.escape(ssrv.getResultMessage(), EscapeType.html));
 
 				sqlLogInfo.setStartTime(ssrv.getStarttime());
-				sqlLogInfo.setCommandType(tmpSqlSource.getCommandType());
+				sqlLogInfo.setCommandType(tmpSqlSource.getCommand().getCommandName());
 				sqlLogInfo.setEndTime(ssrv.getEndtime());
 
 				allSqlStatistics.add(SqlStatisticsEntity.builder()
@@ -317,10 +317,15 @@ public class SQLServiceImpl{
 	 * @변경이력  :
 	 * @param stmt
 	 * @param maxRow
+	 * @param tmpSqlSource 
 	 * @throws SQLException
 	 */
-	private void setMaxRow(Statement stmt, int maxRow) throws SQLException {
-		stmt.setMaxRows(maxRow);
+	private void setMaxRow(Statement stmt, int maxRow, SqlSource tmpSqlSource) throws SQLException {
+		if(tmpSqlSource.getCommand().isSelectCommand()) {
+			stmt.setMaxRows(maxRow);
+		}else if(SQLCommandType.OTHER.equals( tmpSqlSource.getCommand())) {
+			stmt.setMaxRows(maxRow);
+		}
 	}
 
 	/**
@@ -355,7 +360,7 @@ public class SQLServiceImpl{
 				
 				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
 				
-				setMaxRow(stmt, maxRow);
+				setMaxRow(stmt, maxRow, tmpSqlSource);
 				hasResults = stmt.execute(tmpSqlSource.getQuery());
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 				CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
@@ -363,7 +368,7 @@ public class SQLServiceImpl{
 				SqlExecuteManager.getInstance().setStatementInfo(requid, callStatement);
 				
 		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
-		        setMaxRow(callStatement, maxRow);
+		        setMaxRow(callStatement, maxRow, tmpSqlSource);
 		        hasResults = callStatement.execute();
 
 		        int cursorObjIdx = -1;
@@ -433,7 +438,7 @@ public class SQLServiceImpl{
 				SqlExecuteManager.getInstance().setStatementInfo(requid, pstmt);
 				
  				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
-				setMaxRow(pstmt, maxRow);
+				setMaxRow(pstmt, maxRow, tmpSqlSource);
 				hasResults = pstmt.execute();
 
 				stmt= pstmt;
@@ -448,10 +453,10 @@ public class SQLServiceImpl{
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.MSG.val());
 				ssrv.setResultCnt(stmt.getUpdateCount());
 
-				if(VarsqlCommandType.isUpdateCountCommand(tmpSqlSource.getCommandType())) {
-					ssrv.setResultMessage(String.format("%s count : %s", tmpSqlSource.getCommandType(), ssrv.getResultCnt()));
+				if(SQLCommandType.isUpdateCountCommand(tmpSqlSource.getCommand())) {
+					ssrv.setResultMessage(String.format("%s count : %s", tmpSqlSource.getCommand().getCommandName(), ssrv.getResultCnt()));
 				}else {
-					ssrv.setResultMessage(String.format("%s success", tmpSqlSource.getCommandType()));
+					ssrv.setResultMessage(String.format("%s success", tmpSqlSource.getCommand().getCommandName()));
 				}
 			}
 

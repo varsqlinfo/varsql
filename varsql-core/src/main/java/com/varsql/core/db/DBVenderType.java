@@ -12,7 +12,7 @@ public enum DBVenderType {
 	MYSQL("mysql")
 	,DB2("db2")
 	,ORACLE("oracle")
-	,MSSQL("mssql", true)
+	,SQLSERVER("sqlserver", true)
 	,MARIADB("mariadb")
 	,DERBY("derby")
 	,HIVE("hive")

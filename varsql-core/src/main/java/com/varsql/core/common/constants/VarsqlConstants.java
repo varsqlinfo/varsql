@@ -49,7 +49,9 @@ public interface VarsqlConstants {
 	final String UPLOAD_PATH = Configuration.getInstance().getFileUploadPath();
 
 	final String FILE_ID_DELIMITER = ",";
-
+	
+	// SEMICOLON
+	final String SEMICOLON = ";";
 
 	final String JSON_CONTENT_TYPE = "application/json;charset=" + CHAR_SET;
 

@@ -8,20 +8,27 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.SQLUtils.FormatOption;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAlterStatement;
+import com.alibaba.druid.sql.ast.statement.SQLCallStatement;
+import com.alibaba.druid.sql.ast.statement.SQLCreateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLMergeStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 import com.alibaba.druid.sql.parser.SQLParserFeature;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.VisitorFeature;
 import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMappingUtil;
+import com.varsql.core.sql.type.SQLCommandType;
 
 public final class SQLParserUtils {
 
@@ -43,7 +50,10 @@ public final class SQLParserUtils {
 
 		com.alibaba.druid.DbType parser = getDbParser(dbType);
 
-		List<SQLStatement> statements = SQLUtils.toStatementList(sql, parser);
+		
+
+		//List<SQLStatement> statements = SQLUtils.toStatementList(sql, parser);
+		List<SQLStatement> statements = SQLUtils.parseStatements(sql, parser, DEFAULT_FEATURES);
 
 		if(statements.size() ==1) {
 			queries.add(getSqlSourceBean(statements.get(0), sql, param, dbType));
@@ -62,29 +72,35 @@ public final class SQLParserUtils {
 
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setOrginSqlParam(param);
-
+		
 		if(statement instanceof SQLSelectStatement){
-			sqlSource.setCommandType("SELECT");
+			sqlSource.setCommand(SQLCommandType.SELECT);
 		}else if(statement instanceof SQLInsertStatement){
-			sqlSource.setCommandType("INSERT");
+			sqlSource.setCommand(SQLCommandType.INSERT);
 		}else if(statement instanceof SQLUpdateStatement){
-			sqlSource.setCommandType("UPDATE");
+			sqlSource.setCommand(SQLCommandType.UPDATE);
 		}else if(statement instanceof SQLDeleteStatement){
-			sqlSource.setCommandType("DELETE");
+			sqlSource.setCommand(SQLCommandType.DELETE);
 		}else if(statement instanceof SQLAlterStatement){
-			sqlSource.setCommandType("ALTER");
+			sqlSource.setCommand(SQLCommandType.ALTER);
 		}else if(statement instanceof SQLDropStatement){
-			sqlSource.setCommandType("DROP");
+			sqlSource.setCommand(SQLCommandType.DROP);
 		}else if(statement instanceof SQLTruncateStatement){
-			sqlSource.setCommandType("TRUNCATE");
+			sqlSource.setCommand(SQLCommandType.TRUNCATE);
+		}else if(statement instanceof SQLCallStatement){
+			sqlSource.setCommand(SQLCommandType.CALL);
+		}else if(statement instanceof SQLCreateStatement){
+			sqlSource.setCommand(SQLCommandType.CREATE);
+		}else if(statement instanceof SQLMergeStatement){
+			sqlSource.setCommand(SQLCommandType.MERGE);
+		}else if(statement instanceof SQLWithSubqueryClause){
+			sqlSource.setCommand(SQLCommandType.WITH_SUBQUERY);
 		}else{
 			String simpleName = statement.getClass().getSimpleName();
-			sqlSource.setCommandType( simpleName.replaceAll(removeClassNameRegular, ""));
+			sqlSource.setCommand(SQLCommandType.getSQLCommandType(simpleName.replaceAll(removeClassNameRegular, "")));
 		}
 
-		if(statement.isAfterSemi()){
-			tmpQuery = tmpQuery.replaceAll(";$","");
-		}
+		tmpQuery = MetaControlFactory.getDbInstanceFactory(dbType).getCommandTypeFactory().getCommandType(sqlSource.getCommand()).checkSql(tmpQuery);
 
 		if(param != null){
 			SqlStatement sqlstate = getSqlStatement(tmpQuery, param, false, dbType);
@@ -109,7 +125,7 @@ public final class SQLParserUtils {
 
 	public static com.alibaba.druid.DbType getDbParser(DBVenderType dbType) {
 		com.alibaba.druid.DbType val = com.alibaba.druid.DbType.of(dbType.getDbVenderName());
-		return val==null ? com.alibaba.druid.DbType.other :val;
+		return val==null ? com.alibaba.druid.DbType.mariadb :val;
 	}
 
 	public static String getParserString(String sql ,DBVenderType dbType) {
@@ -141,7 +157,7 @@ public final class SQLParserUtils {
 	public static List<SqlSource> getDefaultSqlSource(String query, Map<String, String> param, DBVenderType dbType) {
 		List<SqlSource> queries =new LinkedList<SqlSource>();
 		SqlSource sqlSource = new SqlSource();
-		sqlSource.setCommandType("OTHER");
+		sqlSource.setCommand(SQLCommandType.OTHER);
 		sqlSource.setOrginSqlParam(param);
 
 		if(param != null){

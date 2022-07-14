@@ -56,7 +56,7 @@ public class MariadbDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo,String... tableNames) throws Exception {
-		logger.debug("MssqlDBMeta getTableMetadata {}  tableArr :: {}", dataParamInfo, tableNames);
+		logger.debug("getTableMetadata {}  tableArr :: {}", dataParamInfo, tableNames);
 		return tableAndColumnsInfo(dataParamInfo,"tableMetadata", tableNames);
 	}
 
@@ -125,7 +125,7 @@ public class MariadbDBMeta extends AbstractDBMeta{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-		logger.debug("MssqlDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
+		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
 		TableInfoHandler tableInfoHandler;
 
