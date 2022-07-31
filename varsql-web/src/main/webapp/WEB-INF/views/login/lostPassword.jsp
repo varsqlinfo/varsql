@@ -14,21 +14,33 @@
 <link href="${pageContextPath}/webstatic/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+<script src="${pageContextPath}/webstatic/i18n/<varsql:resourceLocaleName name="varsql.lang"/>.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
-<!-- Bootstrap Core CSS -->
+<script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>
 
 </head>
 <body>
 
-<div class="container">
+<div id="vueArea" class="container">
     <h3 class="page-header" style="text-align:center;"><spring:message code="page.title.varsql"/> <spring:message code="password.reset"/></h3>
     <!-- form start -->
     <form name="resetForm" id="resetForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form" onsubmit="return false;">
-
+		
+		<div  style="text-align: center;">
+	        <ul style="list-style: none;font-weight: bold;">
+	        	<li v-if="msgView =='error'" style="color: #ff2b2b;">
+	        		메일 발송에 실패했습니다. <br/>
+	        		잘못된 비밀번호 재 설정 요청입니다.
+	        	</li>
+	        	<li v-else-if="msgView =='success'" style="color: #1eaef7;"> 메일을 발송하였습니다.</li>
+	        </ul>
+		</div>
+		
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="join.form.uid"/></label>
 
@@ -47,8 +59,8 @@
     </form>
     <div class="form-group">
           <div class="col-sm-12 text-center">
-              <button type="button" class="btn btn-info btn-join"><spring:message code="btn.confirm"/></button>
-              <button type="button" class="btn btn-default btnMain"><spring:message code="label.cancel"/></button>
+              <button type="button" @click="submit()" class="btn btn-info"><spring:message code="btn.confirm"/></button>
+              <button type="button" @click="goCancel()" class="btn btn-default"><spring:message code="label.cancel"/></button>
           </div>
       </div>
     <!--/form-->
@@ -58,78 +70,77 @@
 </html>
 
 <script>
-$(function (){
-var resetForm = {
-	init : function (){
-		var _this = this;
 
-		_this.initEvt();
+VarsqlAPP.vueServiceBean({
+	el: '#vueArea'
+	,data: {
+		msgView : false
 	}
-	,initEvt : function (){
-		var _this = this;
-
-		$('.btnMain').click(function (e){
-			location.href ='<c:url value="/" />';
-		});
-
-		$('.btn-join').on('click',function (){
-			$('#resetForm').submit();
-		});
-
-		$('#resetForm').bootstrapValidator({
-			message: 'This value is not valid',
-			feedbackIcons: {
-				valid: 'glyphicon glyphicon-ok',
-				invalid: 'glyphicon glyphicon-remove',
-				validating: 'glyphicon glyphicon-refresh'
-			}
-			,fields: {
-				uid: {
-					validators: {
-						notEmpty: { message: '필수 입력사항입니다.'}
-						,stringLength: { min: 3, max: 100, message: '사이즈는 3~100 사이여야 합니다'}
-					}
-			  	}
-				,uemail: {
-					validators: {
-						notEmpty: { message: '필수 입력사항입니다.'}
-						,stringLength: { min: 0, max: 500, message: '크기는 3~100 사이여야 합니다'}
-						,emailAddress: {
-							message: 'The input is not a valid email address'
-						}
-				  }
-			  	}
-			}
-		}).on('success.form.bv', function(e) {
-			// Prevent form submission
-			e.preventDefault();
-
-			_this.resetPassword();
-		});
-	}
-	,resetPassword: function (){
-		var params  =$('#resetForm').serializeJSON();
-
-		VARSQL.req.ajax({
-			url: {type:VARSQL.uri.ignore, url:'/lostPassword'},
-			data:params,
-			success: function(resData) {
-				console.log(resData);
-				if(!VARSQL.req.validationCheck(resData)){
-					return ;
-				}else{
-					
+	,methods:{
+		init : function (){
+			var _this =this;
+			
+			$('#resetForm').bootstrapValidator({
+				message: 'This value is not valid',
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
 				}
+				,fields: {
+					uid: {
+						validators: {
+							notEmpty: { message: '필수 입력사항입니다.'}
+							,stringLength: { min: 3, max: 100, message: '사이즈는 3~100 사이여야 합니다'}
+						}
+				  	}
+					,uemail: {
+						validators: {
+							notEmpty: { message: '필수 입력사항입니다.'}
+							,stringLength: { min: 0, max: 500, message: '크기는 3~100 사이여야 합니다'}
+							,emailAddress: {
+								message: 'The input is not a valid email address'
+							}
+					  }
+				  	}
+				}
+			}).on('success.form.bv', function(e) {
+				// Prevent form submission
+				e.preventDefault();
 
-			},
-			error: function(xhr, status, e) {
-				VARSQL.log(status + " : " + e + xhr.responseText);
-			}
-		});
+				_this.resetPassword();
+			});
+		}
+		,submit : function (){
+			$('#resetForm').submit();
+		}
+		,goCancel : function (){
+			location.href ='<c:url value="/" />';
+		}
+		,resetPassword: function (){
+			var _this = this; 
+			var params  =$('#resetForm').serializeJSON();
+	
+			this.$ajax({
+				url: {type:VARSQL.uri.ignore, url:'/lostPassword'},
+				data:params,
+				success: function(resData) {
+					if(!VARSQL.req.validationCheck(resData)){
+						return ;
+					}
+					
+					if(resData.resultCode == 404 || !VARSQL.isEmpty(resData.message)){
+						_this.msgView = 'error'; 
+						return ; 
+					}
+					
+					_this.msgView = 'success';
+				},
+				error: function(xhr, status, e) {
+					VARSQL.log(status + " : " + e + xhr.responseText);
+				}
+			});
+		}
 	}
-}
-
-resetForm.init();
-}());
-
+});
 </script>

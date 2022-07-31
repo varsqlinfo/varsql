@@ -467,9 +467,7 @@
 		order by a.IDX
 	</select>
 
-	<!--
-		create index  Script
-	 -->
+	<!-- create index  Script -->
 	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
 		select trim(t.table_name) AS "TABLE_NAME"
 			, trim(index_name) as "INDEX_NAME"

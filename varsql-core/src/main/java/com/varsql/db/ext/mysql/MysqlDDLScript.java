@@ -2,6 +2,7 @@ package com.varsql.db.ext.mysql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -15,7 +16,9 @@ import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
+import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 
 /**
@@ -37,6 +40,8 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		SqlSession client = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
@@ -57,7 +62,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 			DataMap source = client.selectOne("tableScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Table"));
-
+			ddlInfo.setChangeFormat(false);
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 
 			reval.add(ddlInfo);
@@ -69,6 +74,8 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		StringBuilder ddlStr;
 
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
@@ -91,7 +98,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create View"));
-
+			ddlInfo.setChangeFormat(false);
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 			reval.add(ddlInfo);
 		}
@@ -102,17 +109,24 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		
 		for (String name : objNmArr) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(name);
 			dataParamInfo.setObjectName(name);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat("",dbType));
+
+
+			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("indexScript", dataParamInfo));
+
+			String ddl = SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param);
+			ddlInfo.setChangeFormat(false);
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.addLastSemicolon(ddl, ddlOption));
 			reval.add(ddlInfo);
 		}
 
@@ -123,6 +137,8 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	public List<DDLInfo> getFunctions(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug(" Function DDL Generation...");
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
@@ -144,7 +160,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 			DataMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Function"));
-
+			ddlInfo.setChangeFormat(false);
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 
 			reval.add(ddlInfo);
@@ -156,6 +172,8 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
 		logger.debug(" Procedure DDL Generation...");
@@ -170,13 +188,16 @@ public class MysqlDDLScript extends AbstractDDLScript {
 			ddlInfo.setName(name);
 			ddlStr = new StringBuilder();
 			dataParamInfo.setObjectName(name);
+			
+			if(ddlOption.isAddDropClause()){
+				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+			}
 
 			DataMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
 
 			ddlStr.append(source.getString("Create Procedure"));
-
+			ddlInfo.setChangeFormat(false);
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
-
 			reval.add(ddlInfo);
 		}
 
@@ -199,6 +220,8 @@ public class MysqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug("Trigger DDL Generation...");
+		
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
@@ -218,10 +241,10 @@ public class MysqlDDLScript extends AbstractDDLScript {
 			}
 
 			DataMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
-
-			ddlStr.append(source.getString("Create Trigger"));
-
+			ddlInfo.setChangeFormat(false);
+			ddlStr.append(source.getString("SQL Original Statement"));
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+
 			reval.add(ddlInfo);
 		}
 

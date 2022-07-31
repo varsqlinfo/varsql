@@ -12,7 +12,7 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
-import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
+import com.varsql.core.db.mybatis.handler.resultset.TableInfoMysqlHandler;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -47,11 +47,14 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
 	}
 
 	@Override
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
 	}
 
@@ -63,6 +66,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
 	}
 	@Override
@@ -72,32 +76,37 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
 	}
 
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
-
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 
 
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
 	}
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
 	}
 
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
 	}
 	@Override
 	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 
 		IndexInfoHandler handler = new IndexInfoHandler(dbInstanceFactory.getDataTypeImpl());
 
@@ -132,16 +141,20 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List getTriggers(DatabaseParamInfo dataParamInfo){
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerList" ,dataParamInfo);
 	}
 
 	@Override
 	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
 	}
 
 	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
 
+		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
+		
 		if(tableNmArr!=null  && tableNmArr.length > 0){
 			StringBuilder sb =new StringBuilder();
 
@@ -170,21 +183,21 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
-		TableInfoHandler tableInfoHandler;
+		TableInfoMysqlHandler tableInfoMysqlHandler;
 
 		if("viewMetadata".equals(queryId)){
-			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
+			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl());
 		}else{
-			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
+			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 
-			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("objectNameList", tableInfoHandler.getTableNameList());
+			if(tableInfoMysqlHandler.getTableNameList() !=null  && tableInfoMysqlHandler.getTableNameList().size() > 0){
+				dataParamInfo.addCustom("objectNameList", tableInfoMysqlHandler.getTableNameList());
 			}
 		}
 
-		sqlSession.select(queryId ,dataParamInfo,tableInfoHandler);
+		sqlSession.select(queryId ,dataParamInfo,tableInfoMysqlHandler);
 
-		return tableInfoHandler.getTableInfoList();
+		return tableInfoMysqlHandler.getTableInfoList();
 	}
 
 	@Override

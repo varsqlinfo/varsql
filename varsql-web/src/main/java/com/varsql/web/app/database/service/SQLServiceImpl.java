@@ -353,6 +353,7 @@ public class SQLServiceImpl{
 
 		String requid = sqlExecuteInfo.get_requid_();
 		
+		String executeQuery = tmpSqlSource.getQuery(); 
 	    try{
 	    	boolean hasResults;
 			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
@@ -361,9 +362,9 @@ public class SQLServiceImpl{
 				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
 				
 				setMaxRow(stmt, maxRow, tmpSqlSource);
-				hasResults = stmt.execute(tmpSqlSource.getQuery());
+				hasResults = stmt.execute(executeQuery);
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
-				CallableStatement callStatement = conn.prepareCall(tmpSqlSource.getQuery());
+				CallableStatement callStatement = conn.prepareCall(executeQuery);
 
 				SqlExecuteManager.getInstance().setStatementInfo(requid, callStatement);
 				
@@ -433,7 +434,7 @@ public class SQLServiceImpl{
 		        }
 		        stmt = callStatement;
 			}else{
-				PreparedStatement pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
+				PreparedStatement pstmt = conn.prepareStatement(executeQuery);
 				
 				SqlExecuteManager.getInstance().setStatementInfo(requid, pstmt);
 				

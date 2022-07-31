@@ -174,9 +174,7 @@ public class Configuration extends AbstractConfiguration{
 		logger.debug("fileUploadSizePerFile : {}",fileUploadSizePerFile);
 		logger.debug("fileUploadSize : {}",fileUploadSize);
 
-		String initPasswordType = props.getProperty(PASSWORD_INIT_TYPE,"");
-
-		passwordType = "".equals(initPasswordType) ? PasswordType.LOWERORNUMBER : PasswordType.valueOf(initPasswordType.toUpperCase());
+		passwordType = PasswordType.getType(props.getProperty(PASSWORD_INIT_TYPE,""));
 	
 	}
 

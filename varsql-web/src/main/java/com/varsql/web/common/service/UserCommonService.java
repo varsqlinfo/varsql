@@ -44,8 +44,8 @@ public class UserCommonService {
 		
 		UserEntity userInfo= userInfoRepository.findByUid(uid);
 		
-		if(!userInfo.getUemail().equals(uemail)) {
-			return VarsqlUtils.getResponseResultItemOne(RequestResultCode.NOT_FOUND);
+		if(userInfo == null || !userInfo.getUemail().equals(uemail)) {
+			return ResponseResult.builder().resultCode( RequestResultCode.NOT_FOUND).build();
 		}
 		
 		EmailTokenEntity tokenInfo = EmailTokenEntity.builder().token(VartechUtils.generateUUID()).viewid(userInfo.getViewid()).tokenType(MailType.RESET_PASSWORD.getType()).build();
@@ -56,14 +56,12 @@ public class UserCommonService {
 		
 		emailTokenEntityRepository.save(tokenInfo);
 		
-		mailService.sendMail(MailInfo.builder()
+		return mailService.sendMail(MailInfo.builder()
 			.subject("Varsql password reset")
 			.from(Configuration.getInstance().getMailConfigBean().getFromUser())
 			.to(uemail)
 			.content(passwordResetUrl)
 			.build());
-		
-		return VarsqlUtils.getResponseResultItemOne(1);
 	}
 	
 	/**

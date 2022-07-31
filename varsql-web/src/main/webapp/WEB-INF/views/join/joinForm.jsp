@@ -51,10 +51,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.dept"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="join.form.organization"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control" id="udept" name="udept" placeholder="<spring:message code="join.form.dept"/>"/>
+                <input type="text" class="form-control" id="orgNm" name="orgNm" placeholder="<spring:message code="join.form.organization"/>"/>
             </div>
         </div>
         <div class="form-group">

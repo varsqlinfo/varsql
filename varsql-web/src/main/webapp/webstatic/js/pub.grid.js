@@ -221,6 +221,8 @@ var _initialized = false
 		,'search.button' : '검색'
 		,'setting.speed.label' : '스크롤속도'
 		,'setting.column.fixed.label' : '고정컬럼'
+		,'setting.column.fixed.notused' : '사용안함'
+		
 	}
 	,icon : {
 		'sortup' : '<svg width="8px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="50,0 0,100 100,100" fill="#737171"></polygon></g></svg>'
@@ -431,6 +433,11 @@ var formatter= {
 	,'string' : function (val){
 		return val ;
 	}
+}
+
+// 상수 값. 
+var CONSTANTS = {
+	custCheckSuffix:'__checkflag'
 }
 
 function Plugin(element, options) {
@@ -3219,11 +3226,19 @@ Plugin.prototype ={
 				++clickCnt;
 				conserveClick(positionInfo);
 			}
+			
+			if(!editable){
+				var renderEle = $(e.target).closest('.pub-render-element'); 
 
-			if(!editable && $(e.target).closest('.pub-render-element').length > 0){ // render item click 처리.
-				if(isFunction(cellInfo.colInfo.renderer.click)){
-					cellInfo.colInfo.renderer.click.call(null, cellInfo);
-					return false; 
+				if(renderEle.length > 0){ // render item click 처리.
+					if(isFunction(cellInfo.colInfo.renderer.click)){
+						cellInfo.colInfo.renderer.click.call(null,{
+							r: rowItemIdx
+							,c: colIdx
+							,item: cellInfo.rowItem
+						});
+						return false; 
+					}
 				}
 			}
 
@@ -3265,7 +3280,18 @@ Plugin.prototype ={
 				}
 			},false, true);
 
-		})
+		});
+
+		// custom checkbox, radio
+		_this.element.body.on('click.pubgrid.render','.pub-render-element',function (e){
+			var renderEle = $(this);
+
+			var cellInfo = _$util.getCellInfo(_this, renderEle.closest('.pub-body-td'));
+			if(renderEle.hasClass('check')){
+				cellInfo.rowItem[cellInfo.colInfo.key+CONSTANTS.custCheckSuffix] = !(cellInfo.rowItem[cellInfo.colInfo.key+CONSTANTS.custCheckSuffix] === true) ;
+			}
+		});
+
 	
 		_this.element.pubGrid.on('mouseup.'+_this.prefix,function (e) {
 			//_this.element.body.removeClass('pubGrid-noselect');
@@ -5537,9 +5563,22 @@ var _$renderer = {
 	}
 	, checkbox : function (gridCtx, thiItem, rowItem, mode){
 		var renderer = thiItem.renderer;
+
+		var checkFlag = rowItem[thiItem.key+CONSTANTS.custCheckSuffix] === true;
 		
-		return replaceMesasgeFormat('<input type="checkbox" class="pub-render-element check">{{label}}', {
-			label : rowItem[thiItem.key]
+		return replaceMesasgeFormat('<input type="checkbox" class="pub-render-element check" {{checked}}>{{label}}', {
+			label :(rowItem[thiItem.key] ||'')
+			,checked : (checkFlag?'checked':'')
+		})
+	}
+	, radio : function (gridCtx, thiItem, rowItem, mode){
+		var renderer = thiItem.renderer;
+
+		var checkFlag = rowItem[thiItem.key+CONSTANTS.custCheckSuffix] === true;
+		
+		return replaceMesasgeFormat('<input type="radio" class="pub-render-element radio" {{checked}}>{{label}}', {
+			label :(rowItem[thiItem.key] ||'')
+			,checked : (checkFlag?'checked':'')
 		})
 	}
 	, dropdown : function (gridCtx, thiItem, rowItem, mode){
@@ -6331,7 +6370,14 @@ var _$setting = {
 				sEle.addClass('on');
 			}
 		})
-	
+
+		// filter 입력후 enter key 이벤트 처리. 
+		settingAreaEle.find('.filter-area').on('keydown.filter.text','[name="filter-text"]', function (e){
+			if(e.keyCode =='13') {
+				settingAreaEle.find('.pubGrid-btn[data-mode="apply"]').trigger('click.setting.btn');
+			};
+		})
+			
 		// column up down btn
 		settingAreaEle.find('.arrow-btn [data-arrow]').on('click', function (e){
 			var sEle =$(this); 
@@ -6656,7 +6702,7 @@ var _$setting = {
 			
 			if(settingOpt.enableColumnFix ===true){
 				strHtm.push(' <div class="pubGrid-colfixed-area"><span>'+gridCtx.options.i18n['setting.column.fixed.label']+'</span>');
-				strHtm.push('  <select name="pubgrid_col_fixed"><option value="0">사용안함</option>'+optHtmStr+'</select>');
+				strHtm.push('  <select name="pubgrid_col_fixed"><option value="0">'+gridCtx.options.i18n['setting.column.fixed.notused']+'</option>'+optHtmStr+'</select>');
 				strHtm.push(' </div>');
 			}
 						

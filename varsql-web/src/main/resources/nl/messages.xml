@@ -119,7 +119,8 @@
 <entry key="join.form.uid">아이디</entry>
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
-<entry key="join.form.dept">소속</entry>
+<entry key="join.form.organization">조직</entry>
+<entry key="join.form.dept">부서</entry>
 <entry key="join.form.desc">설명</entry>
 <entry key="join.form.locale">언어선택</entry>
 
@@ -152,7 +153,6 @@
 <entry key="msg.save.confirm">저장 하시겠습니까?</entry>
 <entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
 <entry key="msg.save.success">저장 되었습니다</entry>
-<entry key="msg.lost.password">비밀번호를 잊어버리셨나요?</entry>
 <entry key="msg.save.fail">저장을 실패 하였습니다</entry>
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
 <entry key="msg.nodata">데이터가 없습니다.</entry>

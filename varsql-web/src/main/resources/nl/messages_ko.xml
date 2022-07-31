@@ -119,7 +119,8 @@
 <entry key="join.form.uid">아이디</entry>
 <entry key="join.form.email">이메일</entry>
 <entry key="join.form.name">이름</entry>
-<entry key="join.form.dept">소속</entry>
+<entry key="join.form.organization">조직</entry>
+<entry key="join.form.dept">부서</entry>
 <entry key="join.form.desc">설명</entry>
 <entry key="join.form.locale">언어선택</entry>
 

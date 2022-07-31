@@ -13,6 +13,8 @@ import com.varsql.core.db.valueobject.BaseObjectInfo;
 public class DDLInfo extends BaseObjectInfo{
 	// createScript
 	private String createScript;
+	
+	private boolean changeFormat = true;
 
 	public String getCreateScript() {
 		return createScript;
@@ -20,6 +22,14 @@ public class DDLInfo extends BaseObjectInfo{
 
 	public void setCreateScript(String createScript) {
 		this.createScript = createScript;
+	}
+
+	public boolean isChangeFormat() {
+		return changeFormat;
+	}
+
+	public void setChangeFormat(boolean clientFormat) {
+		this.changeFormat = clientFormat;
 	}
 
 }

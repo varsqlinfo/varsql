@@ -15,10 +15,10 @@
 				<div class="row search-area">
 					<div class="col-sm-6">
 						<label>
-							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" /></button>
+							<button type="button" class="btn btn-xs btn-primary" @click="acceptYn('Y')"><spring:message code="btn.accept" text="수락"/></button>
 						</label>
 						<label>
-							<button type="button" class="btn btn-xs btn-danger" @click="acceptYn('N')"><spring:message code="btn.denial" /></button>
+							<button type="button" class="btn btn-xs btn-danger" @click="acceptYn('N')"><spring:message code="btn.denial" text="거부"/></button>
 						</label>
 					</div>
 					<div class="col-sm-6">

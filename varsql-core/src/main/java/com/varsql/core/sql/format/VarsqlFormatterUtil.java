@@ -97,7 +97,10 @@ public final class VarsqlFormatterUtil {
 	}
 
 	public static String addLastSemicolon(StringBuilder ddlStr, DDLCreateOption ddlOption) {
-		String ddl = ddlStr.toString();
+		return addLastSemicolon(ddlStr.toString(), ddlOption);
+	}
+	
+	public static String addLastSemicolon(String ddl, DDLCreateOption ddlOption) {
 
 		ddl = StringUtils.rTrim(ddl);
 
@@ -106,7 +109,6 @@ public final class VarsqlFormatterUtil {
 				return ddl+";";
 			}
 		}
-
 		return ddl;
 	}
 }

@@ -267,8 +267,11 @@
     <logger name="org.apache.tiles" level="info" additivity="false"/>
     <logger name="org.apache" level="info" additivity="false"/>
 	<!-- apache log // end  -->
-
-   <if condition='"local".equals("${runtime}")'>
+    
+    <!-- jdbc driver log -->
+    <logger name="org.mariadb.jdbc" level="info" additivity="false"/>
+    
+	<if condition='"local".equals("${runtime}")'>
         <then>
 			<root level="debug">
 				<appender-ref ref="FILEOUT" />

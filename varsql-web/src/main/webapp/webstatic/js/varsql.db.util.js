@@ -531,7 +531,6 @@ var CreateChecker = /*#__PURE__*/function () {
   }, {
     key: "checkEnd",
     value: function checkEnd(word, beforeWord, c1, beforeCh1, i, sql) {
-      console.log(++this.idx);
       return c1 == '/' || c1 == ';';
     }
   }]);

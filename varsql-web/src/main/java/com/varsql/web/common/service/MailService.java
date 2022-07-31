@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.MailInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
@@ -41,9 +42,15 @@ public class MailService {
             }
         };
 
-		mailSender.send(preparator);
+        try {
+        	mailSender.send(preparator);
+        }catch(Exception e) {
+        	logger.error("mailServer :{}", e.getMessage(), e);
+        	
+        	//return ResponseResult.builder().message(e.getMessage()).build();
+        }
 		
-		return null; 
+		return ResponseResult.builder().item(1).build();
 	}
 	
 }

@@ -1272,7 +1272,7 @@ _ui.dbSchemaObject ={
 		_g_cache.removeSOMetaCache($contentId, selItem.objectName);
 
 		param.refresh = refresh;
-
+		
 		VARSQL.req.ajax({
 			loadSelector : _self.selector.schemaObject 
 			,url:{type:VARSQL.uri.database, url:'/dbObjectList'}
@@ -1281,7 +1281,7 @@ _ui.dbSchemaObject ={
 				_g_cache.setSOMetaInitFlag($contentId, true);
 				_g_cache.setCacheSchemaObject($contentId, resData); // object cache
 				callMethod.call(_self, resData, param);
-
+				
 				if(VARSQL.isBlank(selItem.objectName)){
 					_self.getObjectMetadata({'objectType':$contentId, 'initFlag' :true});
 				}
@@ -1319,6 +1319,10 @@ _ui.dbSchemaObject ={
 		_ui.SQL.exportDataDownload(exportObj);
 	}
 	,getObjectMetadata : function (param, refresh){
+		if(param.objectInfo){
+			_ui.pluginProxy.setMetaTabDataCache(param.objectType, param.objectInfo);
+		}
+		
 		_ui.dbObjectMetadata.getServiceObjectMetadata(param, refresh);
 	}
 };
@@ -1354,8 +1358,6 @@ _ui.addDbServiceObject({
 					columns:colArr
 					,text :tblName
 				};
-
-				_g_cache.setSOMetaCache($$objectType, tblName, 'column', {items:colList});
 			})
 
 			// 테이블 hint;
@@ -1589,9 +1591,6 @@ _ui.addDbServiceObject({
 					columns:colArr
 					,text :tblName
 				};
-
-				_g_cache.setSOMetaCache($$objectType, tblName, 'column', {items:colList});
-
 			})
 
 			// 테이블 hint;
@@ -1659,7 +1658,7 @@ _ui.addDbServiceObject({
 							});
 						},
 						items: [
-							{header: "title" , "key": "contextTitle"}
+							{header: "title", "key": "contextTitle"}
 							,{divider:true}
 							,{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
 							,{key : "sql_create", "name": "sql생성"
@@ -1685,9 +1684,9 @@ _ui.addDbServiceObject({
 		try{
     		var $$objectType = 'procedure';
 
-			var procedureObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
-					lineNumber : {enabled : true	,width : 30, align: 'right'}
+					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType) 
 				,tbodyItem : resData.items
@@ -1709,22 +1708,23 @@ _ui.addDbServiceObject({
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
-
 		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var itemInfo = gridObj.getRowItemToElement($(this));
+							gridObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						,callback: function(key,sObj) {
 							if(key =='copy'){
-								procedureObj.copyData();
+								gridObj.copyData();
 								return ;
 							}
 						},
 						items: [
-							{key : "copy" , "name": "Copy"}
+							{header: "title", "key": "contextTitle"}
+							, {divider:true}
+							, {key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1765,13 +1765,12 @@ _ui.addDbServiceObject({
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
-
 		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var itemInfo = gridObj.getRowItemToElement($(this));
+							gridObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						,callback: function(key,sObj) {
 							if(key =='copy'){
@@ -1780,7 +1779,9 @@ _ui.addDbServiceObject({
 							}
 						},
 						items: [
-							{key : "copy" , "name": "Copy"}
+							{header: "title", "key": "contextTitle"}
+							,{divider:true}
+							,{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1797,7 +1798,7 @@ _ui.addDbServiceObject({
 		try{
     		var $$objectType = 'index';
 
-			var indexObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1821,22 +1822,23 @@ _ui.addDbServiceObject({
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
-
 		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var itemInfo = gridObj.getRowItemToElement($(this));
+							gridObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						,callback: function(key,sObj) {
 							if(key =='copy'){
-								indexObj.copyData();
+								gridObj.copyData();
 								return ;
 							}
 						},
 						items: [
-							{key : "copy" , "name": "Copy"}
+							{header: "title", "key": "contextTitle"}
+							,{divider:true}
+							,{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1853,7 +1855,7 @@ _ui.addDbServiceObject({
 		try{
 			var $$objectType = 'trigger';
 
-			var triggerGridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1877,23 +1879,24 @@ _ui.addDbServiceObject({
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
-
 		    			_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var itemInfo = gridObj.getRowItemToElement($(this));
+							gridObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						,callback: function(key,sObj) {
 							
 							if(key =='copy'){
-								triggerGridObj.copyData();
+								gridObj.copyData();
 								return ;
 							}
 						},
 						items: [
-							{key : "copy" , "name": "Copy"}
+							{header: "title", "key": "contextTitle"}
+							,{divider:true}
+							,{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -1910,7 +1913,7 @@ _ui.addDbServiceObject({
 		try{
 			var $$objectType = 'sequence';
 
-			var triggerGridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
+			var gridObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
@@ -1934,22 +1937,23 @@ _ui.addDbServiceObject({
 					click : function (rowInfo){
 						var item = rowInfo.item;
 
-						_ui.pluginProxy.setMetaTabDataCache($$objectType, item);
-
 						_self.getObjectMetadata({'objectType':$$objectType, 'objectName':item.name, 'objectInfo' : item});
 					}
 					,contextMenu :{
 						beforeSelect :function (){
-							$(this).trigger('click');
+							var itemInfo = gridObj.getRowItemToElement($(this));
+							gridObj.config.rowContext.changeHeader('contextTitle',0,itemInfo.item.name);
 						}
 						,callback: function(key, sObj) {
 							if(key =='copy'){
-								triggerGridObj.copyData();
+								gridObj.copyData();
 								return ;
 							}
 						},
 						items: [
-							{key : "copy" , "name": "Copy"}
+							{header: "title", "key": "contextTitle"}
+							,{divider:true}
+							,{key : "copy" , "name": "Copy"}
 						]
 					}
 				}
@@ -2099,6 +2103,8 @@ _ui.dbObjectMetadata= {
 		var _self =this;
 
 		_self.metaInfoLoadComplete = false;
+		
+		console.log('_getMetadataInfo : ', param);
 
 		VARSQL.req.ajax({
 			loadSelector : _self.selector.contEleId
@@ -2114,12 +2120,12 @@ _ui.dbObjectMetadata= {
 					var callData=result;
 					var objectType = param.objectType;
 
-					if('table' == objectType || 'view' == param.objectType){
+					if(param.metaTabKey =='column'){
 						if(result.length > 0){
 							callData = result[0].colList || [];
 						}
 					}
-					_g_cache.setSOMetaCache(objectType, param.objectName, param.cacheKey, {items:callData});
+					_g_cache.setSOMetaCache(objectType, param.objectName, param.metaTabKey, {items:callData});
 					callbackFn.call(_self, {items:callData}, param);
 				}
 			}
@@ -2163,7 +2169,7 @@ _ui.dbObjectMetadata= {
 
 				var item = resData.item||{};
 
-				if(sObj.objectType == 'table'){
+				if(sObj.changeFormat){
 					item.createScript = getFormatSql(item.createScript, _g_options.dbtype, 'ddl');
 				}
 
@@ -2178,6 +2184,7 @@ _ui.dbObjectMetadata= {
 						_ui.SQL.addSqlEditContent(item.createScript, false);
 					}
 				}
+				
 			}
 		});
 	}
@@ -3049,13 +3056,17 @@ _ui.SQL = {
 					_self.toggoleComment();
 					return false; 
 				}
-				,"F11": function(cm) {
-					_self.sqlData();
+				,"Shift-Ctrl-C" : function (){
+					_self.toggoleComment();
+					return false; 
 				}
 				,"Ctrl-/" : function (){  // comment
 					_self.toggoleComment();
 					//editor.setSelections(selPosArr);
 					return false; 
+				}
+				,"F11": function(cm) {
+					_self.sqlData();
 				}
 				,"Alt-Left" : function (){  // comment
 					_self.setEditorHistory('back');
@@ -3618,13 +3629,15 @@ _ui.SQL = {
 					_self.findTextDialog.dialog( "close" );
 				}
 			});
-
+			
+			// editor enter
 			_self.findTextEle.find('[name="editorFindText"]').on('keydown',function(e) {
 				if (e.keyCode == '13') {
-					_self.findTextEle.find('.find_text[data-mode="find"]').trigger('click.find.text');
+					_self.findTextEle.find('.find_text[data-mode="find-down"]').trigger('click.find.text');
 				}
 			});
-
+			
+			// 찾기 이벤트 처리
 			_self.findTextEle.find('.find_text').on('click.find.text', function (e){
 				var sEle = $(this);
 				var mode = sEle.attr('data-mode');

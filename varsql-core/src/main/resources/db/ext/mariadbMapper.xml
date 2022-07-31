@@ -16,7 +16,7 @@
 			,TABLE_COMMENT  AS "REMARKS"
 		FROM INFORMATION_SCHEMA.TABLES tbl
 		WHERE TABLE_TYPE = 'BASE TABLE'
-		and upper(TABLE_SCHEMA) in (#{schema})
+		and upper(TABLE_SCHEMA) = #{schema}
 
 		<if test="custom != null and custom.objectNameList != null">
 			and
@@ -46,7 +46,7 @@
 		where 1=1
 		and a.TABLE_SCHEMA = tbl.TABLE_SCHEMA
 		and a.TABLE_NAME = tbl.TABLE_NAME
-		and upper(a.TABLE_SCHEMA) in (#{schema})
+		and upper(a.TABLE_SCHEMA) = #{schema}
 		and tbl.TABLE_TYPE = 'BASE TABLE'
 		<if test="custom != null and custom.objectNameList != null">
 			and
@@ -72,7 +72,7 @@
 
 	</when>
 	<otherwise>
-		and upper(TABLE_SCHEMA) in (#{schema})
+		and upper(TABLE_SCHEMA) = #{schema}
 	</otherwise>
 </choose>
 		<if test="custom != null and custom.objectNameList != null">
@@ -103,7 +103,7 @@
 		where 1=1
 		and a.TABLE_SCHEMA = tbl.TABLE_SCHEMA
 		and a.TABLE_NAME = tbl.TABLE_NAME
-		and upper(a.TABLE_SCHEMA) in (#{schema})
+		and upper(a.TABLE_SCHEMA) = #{schema}
 		and tbl.TABLE_TYPE in ('VIEW', 'SYSTEM VIEW')
 		<if test="custom != null and custom.objectNameList != null">
 			and
@@ -126,7 +126,7 @@
 		from
 			information_schema.ROUTINES
 		where 1=1
-		and routine_schema =#{schema}
+		and upper(routine_schema) = #{schema}
 		and routine_type = 'PROCEDURE'
 	</select>
 
@@ -164,7 +164,7 @@
 		on a.ROUTINE_SCHEMA =p.SPECIFIC_SCHEMA
 		and a.specific_name = p.specific_name
 		where 1=1
-		and a.ROUTINE_SCHEMA =#{schema}
+		and upper(a.ROUTINE_SCHEMA) =#{schema}
 			<choose>
 				<when test='"procedure".equalsIgnoreCase(objectType)'>
 					and a.routine_type = 'PROCEDURE'
@@ -207,7 +207,10 @@
 		    , comment
 		    ,'' as "STATUS"
 		FROM information_schema.statistics
-		WHERE upper(TABLE_SCHEMA) in (#{schema})
+		WHERE upper(TABLE_SCHEMA) = #{schema}
+		and INDEX_NAME != 'PRIMARY'
+		group by index_name
+		order by index_name
 	</select>
 
 	<!-- index and column info -->
@@ -220,14 +223,15 @@
 			,idx.index_type  AS "TYPE"
 			, idx.collation AS ASC_OR_DESC
 		FROM information_schema.statistics idx
-		WHERE upper(TABLE_SCHEMA) in (#{schema})
+		WHERE upper(TABLE_SCHEMA) = #{schema}
+		and INDEX_NAME != 'PRIMARY'
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				idx.index_name in (${item})
 			</foreach>
 		</if>
-		order by table_name , seq_in_index
+		ORDER BY table_schema, table_name, index_name, seq_in_index
 	</select>
 
 
@@ -242,7 +246,7 @@
 		    , created as "CREATED"
 		    ,'' as "STATUS"
 		FROM INFORMATION_SCHEMA.TRIGGERS
-		WHERE upper(TRIGGER_SCHEMA) in (#{schema})
+		WHERE upper(TRIGGER_SCHEMA) = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
@@ -273,7 +277,7 @@
 		    , created as "CREATED"
 		    ,'' as "STATUS"
 		FROM INFORMATION_SCHEMA.TRIGGERS
-		WHERE upper(TRIGGER_SCHEMA) in (#{schema})
+		WHERE upper(TRIGGER_SCHEMA) = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
@@ -306,6 +310,26 @@
 	<!-- trigger script -->
 	<select id="triggerScript" parameterType="databaseParamInfo" resultType="dataMap">
 		show create trigger ${objectName}
+	</select>
+	
+	<!-- create index  Script -->
+	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
+		SELECT
+		    table_name as "TABLE_NAME"
+			, index_name as "INDEX_NAME"
+			, column_name as "COLUMN_NAME" 
+			, seq_in_index as "COLUMN_POSITION"
+			, table_schema
+			, cardinality 
+			, non_unique  -- 1: 인덱스에 중복 가능.    0 : 중복 불가.
+			, (case when collation ='A' then 'ASC'
+				else 'DESC' end)   as "ASC_OR_DESC" -- A : 오름차순으로 정렬.   NULL : 정렬되지 않은 경우.
+			, sub_part  -- NULL :  전체 열이 인덱싱된 경우.  인덱싱된 문자의 수 : 부분적으로 인덱싱된 경우
+			, nullable  -- YES :  열에 NULL이 포함될 수 있음.
+		FROM information_schema.STATISTICS
+		where upper(table_schema) = #{schema}
+		and  index_name = #{objectName}
+		ORDER BY table_schema, table_name, index_name, seq_in_index
 	</select>
 
 </mapper>

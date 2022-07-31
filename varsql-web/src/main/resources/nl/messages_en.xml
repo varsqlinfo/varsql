@@ -110,6 +110,7 @@
 <entry key="join.form.uid">Id</entry>
 <entry key="join.form.email">email</entry>
 <entry key="join.form.name">Name</entry>
+<entry key="join.form.organization">Org</entry>
 <entry key="join.form.dept">Dept</entry>
 <entry key="join.form.desc">Description</entry>
 <entry key="join.form.locale">Language</entry>

@@ -65,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.1.18'
+	varsqlVersion = '1.1.19'
 }
 
 //소스 분석.
@@ -221,7 +221,7 @@ subprojects {
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'
 
 
-		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.8'
+		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.11'
 
 		implementation group: 'com.thoughtworks.xstream' , name: 'xstream' , version: '1.4.11'
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'

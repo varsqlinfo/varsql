@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE templateConfig SYSTEM  "sqlTemplate.dtd">
+
+<templateConfig>
+	<!-- 테이블 생성-->
+	<table>
+		<create>
+		<![CDATA[
+{{~#if ddlOpt.addDropClause}}
+/*DROP TABLE {{objectName}}; */
+{{/if}}
+
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+)
+
+{{#ddlTableKey keyList objectName dbType}}
+    {{#xif type '==' 'PK'}}
+    {{#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+    {{/each}}
+    {{/xif}}
+    {{#xif type '==' 'UQ'}}
+    {{#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
+    {{/each}}
+    {{/xif}}
+{{/ddlTableKey}}
+
+{{#commentsList}}
+{{#xif TYPE '==' 'TBL'}}ALTER TABLE {{../objectName}} COMMENT = '{{COMMENT}}';{{/xif}}
+{{~#xif TYPE '==' 'COL'}}ALTER TABLE {{../objectName}} MODIFY COLUMN {{NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} COMMENT '{{COMMENT}}';{{/xif}}
+{{/commentsList}}
+		]]>
+		</create>
+		
+		<!-- 테이블명 수정 추가-->
+		<rename>
+ALTER TABLE {{TABLE_NAME}} RENAME {{NEW_TABLE_NAME}}
+		</rename>
+
+        <!-- table comment 추가-->
+        <addComment>
+ALTER TABLE {{TABLE_NAME}} COMMENT = '{{COMMENT}}';
+        </addComment>
+        
+        <select>
+SELECT * FROM {{TABLE_NAME}};
+        </select>
+		
+		<insert>
+INSERT INTO  {{TABLE_NAME}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}}
+) 
+values (
+{{#columnList}}
+    {{addChar @index "" ","}} ''
+{{/columnList}}
+);
+		</insert>
+		
+		<update>
+UPDATE  {{TABLE_NAME}}
+SET 
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} =''
+{{/columnList}}
+		</update>
+        
+		<delete>
+DELETE FROM {{TABLE_NAME}};
+		</delete>
+		
+		<selectInsert>
+INSERT INTO {{TABLE_NAME}}
+SELECT * from {{TABLE_NAME}}
+		</selectInsert>
+		
+		<createSelect>
+CREATE TABLE {{NEW_TABLE_NAME}}(
+SELECT {{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}} FROM {{TABLE_NAME}}
+)
+		</createSelect>
+		
+		<merge>
+MERGE INTO {{TABLE_NAME}} AS a
+USING (SELECT 1 AS dual) AS b
+   ON (a.deptno = 50)
+ WHEN MATCHED THEN
+   UPDATE SET 
+   		{{#columnList}}
+		    {{addChar @index "" ","}} a.{{COLUMN_NAME}} =''
+		{{/columnList}}
+ WHEN NOT MATCHED THEN
+   INSERT(
+	   	{{#columnList}}
+		    {{addChar @index "" ","}} {{COLUMN_NAME}}
+		{{/columnList}}
+	) VALUES(
+		{{#columnList}}
+		    {{addChar @index "" ","}} ''
+		{{/columnList}}
+	)
+		</merge>
+		
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} ADD COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}} 
+		</columnAdd>
+		
+		<!-- 컬럼명 변경-->
+		<columnRename>
+ALTER TABLE {{TABLE_NAME}} CHANGE COLUMN {{COLUMN_NAME}} {{NEW_COLUMN_NAME}} {{DATA_TYPE}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 -->
+		<columnModify>
+alter table {{TABLE_NAME}} MODIFY COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+ALTER TABLE {{TABLE_NAME}} MODIFY {{COLUMN_NAME}} {{DATA_TYPE}} COMMENT '{{COMMENT}}';
+		</columnAddComment>
+	
+		
+	</table>
+
+    <!-- view 생성-->
+    <view>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP VIEW {{objectName}}; */
+{{/if}}
+
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </view>
+
+    <!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP FUNCTION {{objectName}}; */
+{{/if}}
+
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </function>
+
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP PROCEDURE {{objectName}}; */
+{{/if}}
+
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </procedure>
+
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/*DROP TRIGGER {{objectName}}; */
+{{/if}}
+{{#items}} {{{SOURCE_TEXT}}} {{/items}}
+        </create>
+    </trigger>
+
+
+	<!-- index 생성-->
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}
+/*DROP INDEX {{objectName}}; */
+{{/if}}
+
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{INDEX_NAME}}
+on {{TABLE_NAME}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+		</create>
+	</index>
+
+    <!-- sequence 생성-->
+	<sequence>
+		<create>
+{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
+{{/equals}}
+
+CREATE SEQUENCE {{OBJECT_NAME}}
+START WITH 1
+INCREMENT BY {{INCREMENT_BY}}
+MINVALUE {{MIN_VALUE}}
+MAXVALUE {{MAX_VALUE}}
+		</create>
+	</sequence>
+	
+</templateConfig>

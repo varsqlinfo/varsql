@@ -28,7 +28,6 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
@@ -94,6 +93,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		, new AntPathRequestMatcher("/favicon.ico")
 	);
 	
+	private OrRequestMatcher csrfIgnoreRequestMatcher = new OrRequestMatcher(
+		 new AntPathRequestMatcher("/ws/**")
+		, new AntPathRequestMatcher("/login/**")
+		, new AntPathRequestMatcher("/logout")
+	);
+	
 	// ajax header matcher
 	private RequestMatcher ajaxRequestMatcher = new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest");
 
@@ -146,8 +151,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		.and()
 			.csrf()
 			.csrfTokenRepository(getCookieCsrfTokenRepository())
-			.ignoringAntMatchers("/ws/**","/login/**","/logout")
-			.ignoringRequestMatchers(staticRequestMatcher)
+			.ignoringRequestMatchers(staticRequestMatcher, csrfIgnoreRequestMatcher)
 			.requireCsrfProtectionMatcher(ajaxRequestMatcher)
 		.and() //session
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
