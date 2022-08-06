@@ -3,13 +3,16 @@ varsql websqltool sqltool
 
 # site
 <https://varsql.com/>
-	
+
+[![youtube](https://i.ytimg.com/an_webp/PxbI65AQ6dU/mqdefault_6s.webp?du=3000&sqp=CJPQuJcG&rs=AOn4CLBeBsrU8fOg7ClZgQ3ZPlwaTbF-9Q)](https://www.youtube.com/watch?v=PxbI65AQ6dU)
+
 # 개발환경
 - java : 1.8
 - eclipse : Version: 2020-03 (4.15.0)
 - gradle : 6.0.1
 - spring boot : 2.2.6
 - lombok : 1.18.10
+
 
 # Varsql 실행 및 문제 해결
 - [wiki](https://github.com/varsqlinfo/varsql/wiki/)
