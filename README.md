@@ -4,7 +4,7 @@ varsql websqltool sqltool
 # site
 <https://varsql.com/>
 
-[![youtube](https://i.ytimg.com/an_webp/PxbI65AQ6dU/mqdefault_6s.webp?du=3000&sqp=CJPQuJcG&rs=AOn4CLBeBsrU8fOg7ClZgQ3ZPlwaTbF-9Q)]{: width="600" height="300"}
+![youtube](https://i.ytimg.com/an_webp/PxbI65AQ6dU/mqdefault_6s.webp?du=3000&sqp=CJPQuJcG&rs=AOn4CLBeBsrU8fOg7ClZgQ3ZPlwaTbF-9Q){: width="600" height="300"}{: .center}
 
 # 개발환경
 - java : 1.8
