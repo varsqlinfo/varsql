@@ -3,6 +3,7 @@ package com.varsql.web.app.admin.service;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -253,8 +254,11 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 				driverJarFiles = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(entity.getDriverProviderId()));
 			}
 			
-			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriverProviderId(), dto.getDriverClass());
-			jdbcDriverInfo.setDriverFiles(driverJarFiles);
+			JDBCDriverInfo jdbcDriverInfo =	JDBCDriverInfo.builder()
+				.driverId(dto.getDriverProviderId())
+				.driverClass(dto.getDriverClass())
+				.driverFiles(driverJarFiles)
+				.build();
 
 			if (JdbcDriverLoader.checkDriver(jdbcDriverInfo) != null) {
 				resultObject.setResultCode(VarsqlAppCode.SUCCESS);

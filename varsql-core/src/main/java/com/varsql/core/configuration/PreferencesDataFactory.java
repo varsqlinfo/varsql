@@ -18,12 +18,10 @@ import com.vartech.common.utils.VartechUtils;
 
 
 /**
- *
- * @FileName : PreferencesDataFactory.java
- * @작성자 	 : ytkim
- * @Date	 : 2020. 09. 04.
- * @프로그램설명: varsql 환경설정 기본 값
- * @변경이력	:
+ * varsql 환경설정 기본 값
+* 
+* @fileName	: PreferencesDataFactory.java
+* @author	: ytkim
  */
 public class PreferencesDataFactory{
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);

@@ -20,9 +20,18 @@ public final class VarsqlDateUtils {
 		YEAR, MONTH, DAY, HOUR, MINUTES
 	}
 
-	public static String year() {
+	public static String currentYyyy() {
 		return new DateTime(System.currentTimeMillis()).toString(VarsqlConstants.yearFormatter);
 	}
+	
+	public static String currentYyyyMM() {
+		return new DateTime(System.currentTimeMillis()).toString(VarsqlConstants.monthFormatter);
+	}
+	
+	public static String currentYyyyMMdd() {
+		return new DateTime(System.currentTimeMillis()).toString(VarsqlConstants.dateFormatter);
+	}
+	
 	public static String format(String format) {
 		return format(format, new Date());
 	}

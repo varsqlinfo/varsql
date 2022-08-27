@@ -65,7 +65,7 @@ public class AdminController extends AbstractController{
 
 	/**
 	 * @method  : databaseOptMgmt
-	 * @desc : database option manage
+	 * @desc : database option management
 	 * @author   : ytkim
 	 * @date   : 2020. 4. 14.
 	 * @param req

@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.varsql.core.common.beans.FileInfo;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class JDBCDriverInfo implements Serializable {
 	private static final long serialVersionUID = -3088926375387532055L;
 	
@@ -19,32 +25,10 @@ public class JDBCDriverInfo implements Serializable {
 	@SuppressWarnings("unused")
 	private JDBCDriverInfo() {}
 	
-	public JDBCDriverInfo(String driverId, String driverClass) {
+	@Builder
+	public JDBCDriverInfo(String driverId, String driverClass, List<FileInfo> driverFiles) {
 		this.driverId = driverId;
 		this.driverClass = driverClass;
-	}
-
-	public String getDriverId() {
-		return driverId;
-	}
-
-	public void setDriverId(String driverId) {
-		this.driverId = driverId;
-	}
-	
-	public String getDriverClass() {
-		return driverClass;
-	}
-
-	public void setDriverClass(String driverClass) {
-		this.driverClass = driverClass;
-	}
-
-	public List<FileInfo> getDriverFiles() {
-		return this.driverFiles;
-	}
-
-	public void setDriverFiles(List<FileInfo> jdbcDriverList) {
-		this.driverFiles = jdbcDriverList;
+		this.driverFiles = driverFiles;
 	}
 }

@@ -158,11 +158,14 @@ subprojects {
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-cache']
 			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-mail']
+			// quartz
+			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-batch']
+			,[ group: 'org.springframework.boot' , name: 'spring-boot-starter-quartz']
+			
 			// ,[ group: 'org.springframework.security' , name: 'spring-security-config' , version: def_version.springSecurity ]
 			,[ group: 'org.springframework.security' , name: 'spring-security-messaging' , version: def_version.springSecurity ] // websocket message 추가.
 			,[ group: 'org.springframework.security' , name: 'spring-security-taglibs' , version: def_version.springSecurity ]
-
-
+			
 			// jpa model history
 			,[ group: 'org.springframework.data' , name: 'spring-data-envers' , version: def_version.springData ]
 		)

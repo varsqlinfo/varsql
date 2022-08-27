@@ -25,6 +25,8 @@ import com.vartech.common.app.beans.DataMap;
 public class VarsqlPluginConfig extends AbstractXmlLoad{
 
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
+	
+	private final String PLUGIN_CONFIG_FILE = "config/varsql-plugin-config.xml";
 
 	private DataMap<String,Object> CONFIG_INFO = new DataMap<String,Object>();
 	private Object lock = new Object();
@@ -54,9 +56,9 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 		synchronized(lock){
 			try{
 
-				logger.info("configuration plugin xml property : {}",Constants.PLUGIN_CONFIG_FILE);
+				logger.info("configuration plugin xml property : {}",PLUGIN_CONFIG_FILE);
 
-				File propFile = new File(getInstallRoot(), Constants.PLUGIN_CONFIG_FILE);
+				File propFile = new File(getInstallRoot(), PLUGIN_CONFIG_FILE);
 
 				logger.info("config plugin xml path : {}",propFile);
 

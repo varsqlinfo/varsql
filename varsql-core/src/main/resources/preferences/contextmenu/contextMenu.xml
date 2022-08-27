@@ -178,17 +178,19 @@ public class {{capitalize (camelCase table.name)}}{
 		<templateInfo name="java_jpa" viewMode="dialog">
 			<main>
 			<![CDATA[
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Getter
@@ -205,7 +207,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 
 	@Builder
 	public {{capitalize (camelCase table.name)}}Entity ({{columnName}}) {
-	{{{builderVariable}}}
+		{{{builderVariable}}}
 	}
 
 	{{{finalProperty}}}
@@ -243,7 +245,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 				<key>finalProperty</key>
 				<code><![CDATA[
 {{~#columns}}
-	public final static {{javaType typeName}} {{upperCase name}}="{{camelCase name}}";
+	public final static String {{upperCase name}}="{{camelCase name}}";
 {{/columns}}
 						]]></code>
 

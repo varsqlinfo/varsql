@@ -33,9 +33,9 @@
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manage.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manage.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manage.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manager.userlist.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manager.userlist.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manager.userlist.dept" /></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -81,9 +81,9 @@
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manage.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manage.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manage.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manager.userlist.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manager.userlist.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manager.userlist.dept" /></th>
 								</tr>
 							</thead>
 							<tbody>

@@ -9,20 +9,15 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+import com.varsql.core.configuration.ConfigurationFilePath;
+
 
 @SpringBootApplication
 @ServletComponentScan
 public class VarsqlApplication extends SpringBootServletInitializer {
-
+	
 	static {
-		String catalinaHome = System.getProperty("catalina.home" ,"");
-
-		if("".equals(catalinaHome)) {
-			System.setProperty("varsql.runtime", "local");
-			System.setProperty("com.varsql.install.root", "C:/zzz/resources/");
-			System.setProperty("spring.devtools.restart.enabled", "true");
-			System.setProperty("spring.devtools.livereload.enable", "true");
-		}
+		ConfigurationFilePath.getInstance().setSystemProperties();
 	}
 
 	@Override

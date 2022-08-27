@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.usermgmt" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.usermgmt" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -61,17 +61,17 @@
 										</div>
 									</th>
 									<th class="text-center">
-										<spring:message	code="manage.userlist.name" />
-										(<spring:message	code="manage.userlist.id" />)
+										<spring:message	code="manager.userlist.name" />
+										(<spring:message	code="manager.userlist.id" />)
 									</th>
 									<th class="text-center">
-										<spring:message	code="manage.userlist.date" />
+										<spring:message	code="manager.userlist.date" />
 									</th>
 									<th class="text-center">
-										<spring:message	code="manage.userlist.access" />
+										<spring:message	code="manager.userlist.access" />
 									</th>
 									<th class="text-center" v-if="enableInitPassword">
-										<spring:message	code="manage.userlist.init.password" />
+										<spring:message	code="manager.userlist.init.password" />
 									</th>
 								</tr>
 							</thead>
@@ -102,7 +102,7 @@
 	</div>
 	<div class="col-lg-6">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manage.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<div class="panel-heading"><spring:message code="manager.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<table class="user-detail-info table table-striped table-bordered table-hover dataTable no-footer">

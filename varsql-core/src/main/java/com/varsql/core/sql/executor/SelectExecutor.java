@@ -52,7 +52,7 @@ public class SelectExecutor implements Executor{
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
@@ -68,12 +68,15 @@ public class SelectExecutor implements Executor{
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getVconnid());
+			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 
 			logger.debug("execute query: {} ", tmpSqlSource.getQuery());
 
 			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
-			pstmt.setMaxRows(statementInfo.getLimit());
+			
+			if(statementInfo.getLimit() > 0) {
+				pstmt.setMaxRows(statementInfo.getLimit());
+			}
 
 			SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
 

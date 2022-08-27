@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.varsql.core.common.code.VarsqlFileType;
 
-public class DataDownloadInfo {
+import lombok.ToString;
+
+@ToString
+public class DataExportVO {
 
 	private String requid;
 	
@@ -20,7 +23,7 @@ public class DataDownloadInfo {
 
 	private VarsqlFileType exportType;
 	
-	private List<DownloadItemInfo> items;
+	private List<DataExportItemVO> exportItems;
 	
 	public String getRequid() {
 		return requid;
@@ -78,12 +81,12 @@ public class DataDownloadInfo {
 		this.exportType = VarsqlFileType.getFileType(exportType);
 	}
 
-	public List<DownloadItemInfo> getItems() {
-		return items;
+	public List<DataExportItemVO> getExportItems() {
+		return exportItems;
 	}
 
-	public void setItems(List<DownloadItemInfo> items) {
-		this.items = items;
+	public void setExportItems(List<DataExportItemVO> items) {
+		this.exportItems = items;
 	}
 	
 }

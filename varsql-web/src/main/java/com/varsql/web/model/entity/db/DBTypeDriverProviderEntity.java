@@ -40,7 +40,7 @@ public class DBTypeDriverProviderEntity extends AbstractAuditorModel {
 	@GeneratedValue(generator = "driverProviderIdGenerator")
 	@Column(name = "DRIVER_PROVIDER_ID")
 	private String driverProviderId;
-
+	
 	@Column(name = "DRIVER_ID")
 	private String driverId;
 
@@ -70,6 +70,9 @@ public class DBTypeDriverProviderEntity extends AbstractAuditorModel {
 
 	@OneToMany(mappedBy = "driverProviderFiles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<DBTypeDriverFileEntity> driverFiles = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "dbTypeDriverProvider", fetch = FetchType.LAZY)
+	private List<DBConnectionEntity> driverDbConnection = new ArrayList<>();
 
 	@Builder
 	public DBTypeDriverProviderEntity(String driverProviderId, String driverId, String providerName, String dbType,

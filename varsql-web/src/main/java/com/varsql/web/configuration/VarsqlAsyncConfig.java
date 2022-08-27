@@ -17,9 +17,9 @@ public class VarsqlAsyncConfig {
     @Bean(name = ResourceConfigConstants.APP_WEB_SOCKET_TASK_EXECUTOR)
     public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(3);
-        taskExecutor.setMaxPoolSize(10);
-        taskExecutor.setQueueCapacity(20);
+        taskExecutor.setCorePoolSize(5);
+        taskExecutor.setMaxPoolSize(30);
+        taskExecutor.setQueueCapacity(30);
         taskExecutor.setThreadNamePrefix("WebSocket-Executor-");
         taskExecutor.initialize();
         

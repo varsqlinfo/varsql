@@ -1262,7 +1262,7 @@ Plugin.prototype ={
 		strHtm.push('			<tbody>');
 		strHtm.push('				<tr>');
 		if(opts.mode !='single'){
-			strHtm.push('					<td');
+			strHtm.push('					<td>');
 			strHtm.push('					 <div data-item-type="source">');
 			strHtm.push('					   <div style="height:'+bodyHeight+'px;">');
 			
@@ -1290,7 +1290,7 @@ Plugin.prototype ={
 			strHtm.push('					</td>');
 		}
 		
-		strHtm.push('					<td');
+		strHtm.push('					<td>');
 		strHtm.push('					 <div data-item-type="target">');
 		strHtm.push('					  <div style="height:'+bodyHeight+'px;">');
 

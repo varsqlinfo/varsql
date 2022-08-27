@@ -118,9 +118,12 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 				jarFileList.add(fi);
 			}
 			
-			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(rs.getString("DRIVER_PROVIDER_ID"), rs.getString("DRIVER_CLASS"));
-			jdbcDriverInfo.setDriverFiles(jarFileList);
-			connInfo.setJdbcDriverInfo(jdbcDriverInfo);
+			connInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
+				.driverId(rs.getString("DRIVER_PROVIDER_ID"))
+				.driverClass(rs.getString("DRIVER_CLASS"))
+				.driverFiles(jarFileList)
+				.build()
+			);
 			
 			return connInfo;
 		} catch (EncryptDecryptException e) {

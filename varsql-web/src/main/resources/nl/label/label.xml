@@ -32,7 +32,11 @@
 <entry key="all">전체</entry>
 <entry key="remarks">비고</entry>
 <entry key="apply">Apply</entry>
+<entry key="charset">Charset</entry>
+<entry key="export.filetype">내보내기 타입</entry>
+<entry key="export.info">내보내기 정보</entry>
 <entry key="restore.default">Restore Defaults</entry>
+<entry key="type">타입</entry>
 
 
 <entry key="regular.expression">정규식</entry>

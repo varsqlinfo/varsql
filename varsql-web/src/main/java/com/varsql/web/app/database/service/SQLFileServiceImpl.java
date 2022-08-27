@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.sql.SqlFileRequestDTO;
 import com.varsql.web.dto.sql.SqlFileResponseDTO;
@@ -18,6 +19,7 @@ import com.varsql.web.repository.spec.SqlFileSpec;
 import com.varsql.web.repository.sql.SqlFileEntityRepository;
 import com.varsql.web.repository.sql.SqlFileTabEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
 
@@ -42,33 +44,36 @@ public class SQLFileServiceImpl{
 	/**
 	 * 쿼리 저장.
 	 * @param sqlFileRequestDTO
+	 * @param dataMap 
 	 */
 	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
-	public ResponseResult saveSql(SqlFileRequestDTO sqlFileRequestDTO) {
+	public ResponseResult saveSql(SqlFileRequestDTO sqlFileRequestDTO, DataMap dataMap) {
 		ResponseResult result = new ResponseResult();
+		
+		String viewId = SecurityUtil.userViewId();
 
-		String mode = String.valueOf(sqlFileRequestDTO.getCustom().get("mode"));
+		String mode = dataMap.getString("mode");
 
 		SqlFileEntity sqlFileInfo = sqlFileRequestDTO.toEntity();
 
 		if("newfile".equals(mode)){
 
-			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+			sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 
 			sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
 		}else if("moveTab".equals(mode)){
 
-			SqlFileTabEntity moveFileTabInfo= sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+			SqlFileTabEntity moveFileTabInfo= sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 
 			// 이동전 앞에 sqlid 파일 업데이트.
-			sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId(), moveFileTabInfo.getPrevSqlId());
+			sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId(), moveFileTabInfo.getPrevSqlId());
 
 			if(StringUtils.isBlank(sqlFileRequestDTO.getPrevSqlId())) {
-				sqlFileTabEntityRepository.updatePrevIdBySqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getFirstSqlId(), sqlFileRequestDTO.getSqlId());
+				sqlFileTabEntityRepository.updatePrevIdBySqlId(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getFirstSqlId(), sqlFileRequestDTO.getSqlId());
 				moveFileTabInfo.setPrevSqlId(null);
 			}else {
 				// 이동 할 위치 이전  sqlid 업데이트
-				sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getPrevSqlId(), sqlFileRequestDTO.getSqlId());
+				sqlFileTabEntityRepository.updatePrevIdByPrevId(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getPrevSqlId(), sqlFileRequestDTO.getSqlId());
 				moveFileTabInfo.setPrevSqlId(sqlFileRequestDTO.getPrevSqlId());
 			}
 
@@ -77,17 +82,17 @@ public class SQLFileServiceImpl{
 		}else{
 
 			if("addTab".equals(mode)){
-				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
-				SqlFileTabEntity sqlFileTabEntity= SqlFileTabEntity.builder().vconnid(sqlFileRequestDTO.getVconnid()).viewid(sqlFileRequestDTO.getViewid()).sqlId(sqlFileRequestDTO.getSqlId())
+				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
+				SqlFileTabEntity sqlFileTabEntity= SqlFileTabEntity.builder().vconnid(sqlFileRequestDTO.getVconnid()).viewid(viewId).sqlId(sqlFileRequestDTO.getSqlId())
 					.prevSqlId(sqlFileRequestDTO.getPrevSqlId()).viewYn(true).build();
 
 				sqlFileTabEntity = sqlFileTabEntityRepository.save(sqlFileTabEntity);
 
 			}else if(mode.startsWith("delTab")){
-				deleteSqlFileTabInfo(sqlFileRequestDTO, mode);
+				deleteSqlFileTabInfo(sqlFileRequestDTO, mode, dataMap);
 			}else if("viewTab".equals(mode)){
-				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
-				sqlFileTabEntityRepository.updateSqlFileTabEnable(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				sqlFileTabEntityRepository.updateSqlFileTabDisable(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
+				sqlFileTabEntityRepository.updateSqlFileTabEnable(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 			}else{
 
 				sqlFileInfo = sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId())).orElse(null);
@@ -101,7 +106,7 @@ public class SQLFileServiceImpl{
 				}
 
 				if("query_del".equals(mode)){
-					deleteSqlFileTabInfo(sqlFileRequestDTO);
+					deleteSqlFileTabInfo(sqlFileRequestDTO, dataMap);
 				}
 			}
 		}
@@ -124,10 +129,8 @@ public class SQLFileServiceImpl{
 	 * @return
 	 */
 	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
-	public ResponseResult saveAllSql(SqlFileRequestDTO sqlParamInfo) {
-		Map<String,Object> customParam = (Map<String,Object>)sqlParamInfo.getCustom();
-
-		String sqlIdStr = String.valueOf(customParam.get("sqlIdArr"));
+	public ResponseResult saveAllSql(SqlFileRequestDTO sqlParamInfo, DataMap customParam) {
+		String sqlIdStr = customParam.getString("sqlIdArr");
 
 		String[] sqlIdArr= sqlIdStr.split(";");
 
@@ -158,11 +161,11 @@ public class SQLFileServiceImpl{
 	 * @param sqlParamInfo
 	 * @return
 	 */
-	public ResponseResult selectSqlFileList(SqlFileRequestDTO sqlParamInfo) {
+	public ResponseResult selectSqlFileList(SqlFileRequestDTO sqlParamInfo, DataMap customParam) {
 
 		List<SqlFileResponseDTO> files = new ArrayList<>();
 
-		sqlFileEntityRepository.findAll(SqlFileSpec.findVconnSqlFileName(sqlParamInfo.getVconnid(), String.valueOf(sqlParamInfo.getCustom().get("searchVal")))).forEach(item ->{
+		sqlFileEntityRepository.findAll(SqlFileSpec.findVconnSqlFileName(sqlParamInfo.getVconnid(), customParam.getString("searchVal"))).forEach(item ->{
 			files.add(SqlFileResponseDTO.builder()
 				.sqlId(item.getSqlId())
 				.sqlTitle(item.getSqlTitle())
@@ -179,9 +182,9 @@ public class SQLFileServiceImpl{
 	 * @return
 	 */
 	@Transactional(value = ResourceConfigConstants.APP_TRANSMANAGER,rollbackFor=Throwable.class)
-	public ResponseResult deleteSqlSaveInfo(SqlFileRequestDTO sqlFileRequestDTO) {
+	public ResponseResult deleteSqlSaveInfo(SqlFileRequestDTO sqlFileRequestDTO, DataMap customParam) {
 		sqlFileEntityRepository.deleteSqlFileInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId());
-		deleteSqlFileTabInfo(sqlFileRequestDTO);
+		deleteSqlFileTabInfo(sqlFileRequestDTO, customParam);
 
 		return VarsqlUtils.getResponseResultItemOne(1);
 	}
@@ -197,7 +200,7 @@ public class SQLFileServiceImpl{
 	 * @return
 	 */
 	public ResponseResult selectSqlFileTabList(SqlFileRequestDTO sqlParamInfo) {
-		return VarsqlUtils.getResponseResultItemList(sqlFileTabEntityRepository.findSqlFileTab(sqlParamInfo.getVconnid() , sqlParamInfo.getViewid()));
+		return VarsqlUtils.getResponseResultItemList(sqlFileTabEntityRepository.findSqlFileTab(sqlParamInfo.getVconnid(), SecurityUtil.userViewId()));
 	}
 
 	/**
@@ -214,31 +217,28 @@ public class SQLFileServiceImpl{
 		return VarsqlUtils.getResponseResultItemOne(sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlParamInfo.getVconnid(), sqlParamInfo.getSqlId())).orElse(null));
 	}
 
-	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO) {
-		deleteSqlFileTabInfo(sqlFileRequestDTO, "delTab");
+	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO, DataMap customParam) {
+		deleteSqlFileTabInfo(sqlFileRequestDTO, "delTab", customParam);
 	}
 
-	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO, String mode) {
+	private void deleteSqlFileTabInfo(SqlFileRequestDTO sqlFileRequestDTO, String mode, DataMap customParam) {
 		try{
-			int tabLen = -1;
-			try{
-				tabLen = Integer.parseInt(String.valueOf(sqlFileRequestDTO.getCustom().get("len")));
-			}catch(Exception e){
-				tabLen = -1;
-			}
+			int tabLen = customParam.getInt("len");
+			
+			String viewId = SecurityUtil.userViewId();
 
 			if("delTab-all".equals(mode) || tabLen ==0) {
-				sqlFileTabEntityRepository.deleteAllSqlFileTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid());
+				sqlFileTabEntityRepository.deleteAllSqlFileTabInfo(sqlFileRequestDTO.getVconnid(), viewId);
 			}else {
-				SqlFileTabEntity sfte = sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+				SqlFileTabEntity sfte = sqlFileTabEntityRepository.findByVconnidAndViewidAndSqlId(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 
 				if("delTab-other".equals(mode)) {
 					if(sfte != null) {
 						sfte.setPrevSqlId(null);
 					}
-					sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+					sqlFileTabEntityRepository.deleteOtherFileTab(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 				}else {
-					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getViewid(), sqlFileRequestDTO.getSqlId());
+					sqlFileTabEntityRepository.deleteTabInfo(sqlFileRequestDTO.getVconnid(), viewId, sqlFileRequestDTO.getSqlId());
 				}
 
 				if(sfte != null) {

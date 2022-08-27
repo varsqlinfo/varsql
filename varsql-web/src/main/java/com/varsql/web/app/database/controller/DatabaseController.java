@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
-import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.BlockingUserException;
 import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.sql.SqlExecuteManager;
@@ -36,6 +35,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
+import com.varsql.web.dto.db.DBMetadataRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.dto.user.UserPermissionInfoDTO;
 import com.varsql.web.exception.DatabaseBlockingException;
@@ -120,13 +120,13 @@ public class DatabaseController extends AbstractController {
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 6.
 	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @param dbMetadataRequestDTO
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/serviceMenu", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult serviceMenu(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
-		return databaseServiceImpl.serviceMenu(databaseParamInfo);
+	public @ResponseBody ResponseResult serviceMenu(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
+		return databaseServiceImpl.serviceMenu(dbMetadataRequestDTO);
 	}
 
 	/**
@@ -136,26 +136,26 @@ public class DatabaseController extends AbstractController {
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 6.
 	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @param dbMetadataRequestDTO
 	 * @param mav
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbObjectList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbObjectList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult dbObjectList(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
 
-		if(databaseParamInfo.isRefresh()) {
-			String cacheKey = CacheUtils.getObjectTypeKey(databaseParamInfo);
+		if(dbMetadataRequestDTO.isRefresh()) {
+			String cacheKey = CacheUtils.getObjectTypeKey(dbMetadataRequestDTO);
 			Cache tableMetaCache = cacheManager.getCache(CacheInfo.CacheType.OBJECT_TYPE_METADATA.getCacheName());
 
 			ValueWrapper value = tableMetaCache.get(cacheKey);
 
-			if(value !=null && databaseParamInfo.getObjectNames() != null && databaseParamInfo.getObjectNames().length > 0) {
+			if(value !=null && dbMetadataRequestDTO.getObjectNames() != null && dbMetadataRequestDTO.getObjectNames().length > 0) {
 
 				ResponseResult objValue = (ResponseResult)value.get();
 
-				ResponseResult result = databaseServiceImpl.dbObjectList(databaseParamInfo);
+				ResponseResult result = databaseServiceImpl.dbObjectList(dbMetadataRequestDTO);
 
 				List<BaseObjectInfo> resultItems =result.getItems();
 
@@ -182,7 +182,7 @@ public class DatabaseController extends AbstractController {
 			}
 		}
 
-		return databaseServiceImpl.dbObjectList(databaseParamInfo) ;
+		return databaseServiceImpl.dbObjectList(dbMetadataRequestDTO) ;
 	}
 
 	/**
@@ -199,9 +199,9 @@ public class DatabaseController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbObjectMetadataList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbObjectMetadataList(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult dbObjectMetadataList(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
 
-		return databaseServiceImpl.dbObjectMetadataList(databaseParamInfo);
+		return databaseServiceImpl.dbObjectMetadataList(dbMetadataRequestDTO);
 	}
 
 	/**
@@ -211,16 +211,16 @@ public class DatabaseController extends AbstractController {
 	 * @작성자   : ytkim
 	 * @작성일   : 2017. 11. 6.
 	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @param dbMetadataRequestDTO
 	 * @param mav
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/createDDL", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult createDDL(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult createDDL(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
 
-		return databaseServiceImpl.createDDL(databaseParamInfo);
+		return databaseServiceImpl.createDDL(dbMetadataRequestDTO);
 
 	}
 
@@ -231,20 +231,19 @@ public class DatabaseController extends AbstractController {
 	 * @작성자   : ytkim
 	 * @작성일   : 2018. 10. 8.
 	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @param dbMetadataRequestDTO
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbInfo", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbInfo(DatabaseParamInfo databaseParamInfo, HttpServletRequest req) throws Exception {
-		return databaseServiceImpl.dbInfo(databaseParamInfo);
+	public @ResponseBody ResponseResult dbInfo(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
+		return databaseServiceImpl.dbInfo(dbMetadataRequestDTO);
 	}
 
 	@RequestMapping(value = "/connTabInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult connTabInfo(DBConnTabRequestDTO dbConnTabRequestDTO, HttpServletRequest req) throws Exception {
-		dbConnTabRequestDTO.setCustom(HttpUtils.getServletRequestParam(req));
-		return databaseServiceImpl.connTabInfo(dbConnTabRequestDTO);
+		return databaseServiceImpl.connTabInfo(dbConnTabRequestDTO, HttpUtils.getServletRequestParam(req));
 	}
 	
 	@RequestMapping(value =  "/reqCancel", method = RequestMethod.POST)

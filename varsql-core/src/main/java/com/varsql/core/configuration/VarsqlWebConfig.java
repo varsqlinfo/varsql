@@ -25,6 +25,8 @@ import com.vartech.common.utils.VartechUtils;
 public class VarsqlWebConfig{
 
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
+	
+	private final String WEB_CONFIG_FILE = "config/varsql-web-config.xml";
 
 	private VarsqlWebConfigBean webConfigBean;
 
@@ -60,12 +62,12 @@ public class VarsqlWebConfig{
 	 */
 	private void initConfig() throws IOException {
 
-		logger.debug("default preferences template file path : {} ", Constants.WEB_CONFIG_FILE);
+		logger.debug("default preferences template file path : {} ", WEB_CONFIG_FILE);
 
-		Resource resources = ResourceUtils.getInstallPathResource(Constants.WEB_CONFIG_FILE);
+		Resource resources = ResourceUtils.getInstallPathResource(WEB_CONFIG_FILE);
 
 		if(resources== null || !resources.exists()) {
-			throw new ConfigurationLoadException(String.format("web config file not found : %s" ,Constants.WEB_CONFIG_FILE));
+			throw new ConfigurationLoadException(String.format("web config file not found : %s" ,WEB_CONFIG_FILE));
 		}
 
 		String xml = ResourceUtils.getResourceString(resources);

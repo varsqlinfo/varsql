@@ -10,5 +10,10 @@ var $varsqlConfig ={
 		maxUploadSize : ${fileUploadSize}
 		,sizePerFile : ${fileUploadSizePerFile}
 	}
+	,dateFormat:{
+		yyyyMMddHHmmSS:'yyyy-mm-dd HH:MM:ss'
+		,yyyyMMdd:'yyyy-mm-dd'
+		,HHmmSS:'yyyy-mm-dd'
+	}
 }
 </script>

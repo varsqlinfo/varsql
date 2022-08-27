@@ -26,9 +26,9 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<div class="field-group" style="height: 42px;">
-						<label class="col-xs-2 control-label"><spring:message code="manage.glossary.word" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="manager.glossary.word" /></label>
 						<div class="col-xs-10">
-							<input class="form-control text required input-md" v-model="glossarySearchTxt" @keydown.enter="searchGlossary()" style="margin:0px 5px 0px 5px;width: calc(100% - 120px);" placeholder="<spring:message code="manage.glossary.word" />">
+							<input class="form-control text required input-md" v-model="glossarySearchTxt" @keydown.enter="searchGlossary()" style="margin:0px 5px 0px 5px;width: calc(100% - 120px);" placeholder="<spring:message code="manager.glossary.word" />">
 							<button @click="searchGlossary()" class="varsql-btn-default  btn-md" style="padding: 3px 10px;width: 100px;vertical-align: top;"><spring:message code="btn.search" /></button>
 						</div>
 	

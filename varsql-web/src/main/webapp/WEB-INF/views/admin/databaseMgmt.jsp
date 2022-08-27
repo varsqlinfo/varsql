@@ -79,7 +79,7 @@
 		    			</template>
 		            </ul>
 
-					<div class="view-area" data-view-mode="view" :class="viewMode=='view'?'on':''">
+					<div class="view-area" :class="viewMode=='view'?'on':''">
 						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.vname" /></label>
 							<div class="col-sm-8">
@@ -213,7 +213,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="view-area" data-view-mode="opt" :class="viewMode=='opt'?'on':''">
+					<div class="view-area" :class="viewMode=='opt'?'on':''">
 						
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.test_while_idle" /></label>
@@ -444,7 +444,7 @@ VarsqlAPP.vueServiceBean( {
 				this.detailItem = item;
 			}
 
-			this.setProviderInfo(this.detailItem .vdriver);
+			this.setProviderInfo(this.detailItem.vdriver);
 
 		}
 		,save : function (mode){

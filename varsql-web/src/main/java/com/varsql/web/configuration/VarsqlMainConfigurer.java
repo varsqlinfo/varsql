@@ -31,7 +31,7 @@ import com.varsql.core.common.constants.VarsqlConstants;
 *-----------------------------------------------------------------------------
  */
 @Import(value = {
-	JPAConfigurer.class
+	DBConfigurer.class
 	,VarsqlTilesConfigurer.class
     ,SecurityConfigurer.class
     ,ServiceConfigurer.class

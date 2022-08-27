@@ -19,8 +19,6 @@ public class DBConnectionResponseDTO{
 	@JsonIgnore
 	private String vurl;
 
-	private String vdriver;
-
 	private LocalDateTime regDt;
 
 	private String regId;

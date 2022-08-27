@@ -36,7 +36,7 @@ var $userMain = {
 
 			var sItemInfo = {
 				conuid : sEle.val()
-				,'name' : sEle.attr('vname')
+				,'name' : sEle.text()
 			};
 
 			_self.addTabInfo(sItemInfo);

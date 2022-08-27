@@ -1,5 +1,6 @@
 package com.varsql.web.dto.sql;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 
 /**
@@ -17,6 +18,9 @@ import com.varsql.core.db.valueobject.SqlStatementInfo;
 *-----------------------------------------------------------------------------
  */
 public class SqlExecuteDTO extends SqlStatementInfo{
+	
+	private String conuid;
+	
 	private String _requid_;
 	
 	public String get_requid_() {
@@ -25,5 +29,10 @@ public class SqlExecuteDTO extends SqlStatementInfo{
 
 	public void set_requid_(String _requid_) {
 		this._requid_ = _requid_;
+	}
+	
+	public void setConuid(String conuid) {
+		this.conuid = conuid; 
+		setDatabaseInfo(SecurityUtil.loginInfo().getDatabaseInfo().get(conuid));
 	}
 }

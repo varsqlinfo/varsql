@@ -1,5 +1,6 @@
 package com.varsql.web.configuration;
 
+import com.varsql.core.configuration.Constants;
 import com.vartech.common.utils.StringUtils;
 
 import ch.qos.logback.classic.Level;
@@ -30,7 +31,7 @@ public class LoggerListener extends ContextAwareBase implements LoggerContextLis
     public void start() {
         if (started) return;
 
-        String varsqlRuntime = System.getProperty("varsql.runtime");
+        String varsqlRuntime = System.getProperty(Constants.RUNTIME_KEY);
 
         Context context = getContext();
 

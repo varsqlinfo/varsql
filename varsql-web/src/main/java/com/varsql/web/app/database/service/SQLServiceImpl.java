@@ -62,7 +62,7 @@ import com.varsql.core.sql.type.SQLDataType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
-import com.varsql.web.common.service.CommonServiceImpl;
+import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
@@ -102,7 +102,7 @@ public class SQLServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 
 	@Autowired
-	private CommonServiceImpl commonServiceImpl;
+	private CommonLogService commonLogService;
 	
 	/**
 	 *
@@ -118,7 +118,7 @@ public class SQLServiceImpl{
 	public ResponseResult sqlFormat(SqlExecuteDTO sqlExecuteInfo) throws Exception {
 		ResponseResult result =new ResponseResult();
 
-		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDbType());
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
 
 		if("varsql".equals(sqlExecuteInfo.getCustom().get("formatType"))){
 			result.setItemOne(VarsqlFormatterUtil.format(sqlExecuteInfo.getSql(),dbType , VarsqlFormatterUtil.FORMAT_TYPE.VARSQL));
@@ -143,13 +143,13 @@ public class SQLServiceImpl{
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
+	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, String ip) throws Exception {
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
 
-		DatabaseInfo dbinfo = SecurityUtil.userDBInfo(sqlExecuteInfo.getConuid());
+		DatabaseInfo dbinfo = sqlExecuteInfo.getDatabaseInfo();
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBVenderType.getDBType(sqlExecuteInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBVenderType.getDBType( dbinfo.getType() ));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
@@ -165,27 +165,29 @@ public class SQLServiceImpl{
 
 		Connection conn = null;
 		SqlSourceResultVO ssrv =null;
+		
+		String vconnid = sqlExecuteInfo.getDatabaseInfo().getVconnid(); 
 
 		long stddt = System.currentTimeMillis();
 		String[] mmddHH = VarsqlDateUtils.format("MM-dd-HH", stddt).split("-");
 
 		SqlLogInfoDTO sqlLogInfo= new SqlLogInfoDTO();
-		sqlLogInfo.setVconnid(sqlExecuteInfo.getVconnid());
-		sqlLogInfo.setViewid(sqlExecuteInfo.getViewid());
+		sqlLogInfo.setVconnid(vconnid);
+		sqlLogInfo.setViewid(SecurityUtil.userViewId());
 		sqlLogInfo.setStartTime(stddt);
 
 		sqlLogInfo.setSMm(Integer.valueOf(mmddHH[0]));
 		sqlLogInfo.setSDd(Integer.valueOf(mmddHH[1]));
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 
-		sqlLogInfo.setUsrIp(VarsqlUtils.getClientIp(req));
+		sqlLogInfo.setUsrIp(ip);
 
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size();
 
 		String errorMsg = "";
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getVconnid());
+			conn = ConnectionFactory.getInstance().getConnection(sqlLogInfo.getVconnid());
 			
 			if(!StringUtils.isBlank(sqlExecuteInfo.get_requid_())) {
 				SqlExecuteManager.getInstance().setStatementInfo(sqlExecuteInfo.get_requid_(), null);
@@ -230,7 +232,7 @@ public class SQLServiceImpl{
 				}
 			}
 
-			commonServiceImpl.sqlLogInsert(allSqlStatistics);
+			commonLogService.sqlLogInsert(allSqlStatistics);
 
 			result.setItemList(reLst);
 			conn.commit();
@@ -294,7 +296,7 @@ public class SQLServiceImpl{
 
 		long enddt = System.currentTimeMillis();
 
-		commonServiceImpl.saveSqlHistory(SqlHistoryEntity.builder()
+		commonLogService.saveSqlHistory(SqlHistoryEntity.builder()
 				.vconnid(sqlLogInfo.getVconnid())
 				.viewid(sqlLogInfo.getViewid())
 				.startTime(ConvertUtils.longToTimestamp(stddt))
@@ -486,7 +488,7 @@ public class SQLServiceImpl{
 
 		String objectName = sqlExecuteInfo.getObjectName();
 
-		if(!sqlExecuteInfo.getBaseSchema().equals(sqlExecuteInfo.getSchema())) {
+		if(!sqlExecuteInfo.getDatabaseInfo().getSchema().equals(sqlExecuteInfo.getSchema())) {
 			objectName = sqlExecuteInfo.getSchema()+"."+objectName;
 		}
 
@@ -535,7 +537,7 @@ public class SQLServiceImpl{
 				sqlExecuteInfo.setUseColumnAlias(false);
 				writer = new ExcelWriter(outstream);
 			}else {
-				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDbType()), objectName, exportCharset);
+				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType()), objectName, exportCharset);
 			}
 
 			logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, sqlExecuteInfo.getSql());

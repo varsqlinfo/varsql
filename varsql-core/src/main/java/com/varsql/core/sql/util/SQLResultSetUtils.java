@@ -26,7 +26,6 @@ import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
-import com.varsql.core.sql.executor.handler.AbstractSQLExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectInfo;
 
@@ -66,7 +65,7 @@ public final class SQLResultSetUtils {
 			return ssrv;
 		}
 		
-		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDbType())).getDataTypeImpl();
+		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getDataTypeImpl();
 
 		ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -179,7 +178,7 @@ public final class SQLResultSetUtils {
 			return ;
 		}
 		
-		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDbType())).getDataTypeImpl();
+		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getDataTypeImpl();
 		
 		ResultSetMetaData rsmd = rs.getMetaData();
 		

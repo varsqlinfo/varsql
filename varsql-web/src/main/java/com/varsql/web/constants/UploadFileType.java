@@ -6,6 +6,7 @@ public enum UploadFileType {
 	,APPFILE("appFile", "appFile")
 	,JDBC_DIRVER("jdbcDriver", "jdbcDriver", true, SavePathType.CONT_ID)
 	,BOARD("board", "board")
+	,TEMP("temp", "temp")
 	,OTHER("other", "other");
 	
 	private String div;

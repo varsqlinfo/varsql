@@ -3,7 +3,6 @@ package com.varsql.web.dto.sql;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,14 +24,13 @@ public class SqlStatisticsReponseDTO {
 	@JsonProperty("yCol")
 	private Long yCol;
 	
-	public SqlStatisticsReponseDTO(LocalDateTime startTime,Integer sMm, Integer sDd, Long yCol) {
+	public SqlStatisticsReponseDTO(LocalDateTime startTime, Integer sMm, Integer sDd, Long yCol) {
 		this.startTime = startTime; 
 		this.yCol = yCol; 
 		this.sMm = sMm; 
 		this.sDd = sDd; 
 	}
 	
-	@QueryProjection
 	public SqlStatisticsReponseDTO(String xCol, Long yCol) {
 		this.xCol = xCol; 
 		this.yCol = yCol; 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" version="2.0">
+<!-- 
+<named-native-query name="Post.findPostByPk" result-class="sample.jpa.Inter"><query><![CDATA[
+select 
+	a.job_name
+	,a.job_group
+	,a.description
+	,a.job_class_name
+	,a.is_durable
+	,a.is_nonconcurrent
+	,a.is_update_data
+	,a.requests_recovery
+	,b.trigger_name
+	,b.trigger_type
+	,b.description as trigger_desc
+	,b.trigger_state
+	,c.cron_expression
+	,c.time_zone_id
+	,0 as repeat_count
+	,0 as repeat_interval
+	,0 as times_triggered
+from VTQTZ_job_details a left outer join VTQTZ_triggers b on a.job_name = b.job_name
+left outer join VTQTZ_cron_triggers c on b.trigger_name = c.trigger_name
+where trigger_type = 'CRON'
+and a.job_name like  '%'||?||'%'
+union all
+select 
+	a.job_name
+	,a.job_group
+	,a.description
+	,a.job_class_name
+	,a.is_durable
+	,a.is_nonconcurrent
+	,a.is_update_data
+	,a.requests_recovery
+	,b.trigger_name
+	,b.trigger_type
+	,b.description as trigger_desc
+	,b.trigger_state
+	,'' as cron_expression
+	,'' as time_zone_id
+	,c.repeat_count
+	,c.repeat_interval
+	,c.times_triggered
+from VTQTZ_job_details a left outer join VTQTZ_triggers b on a.job_name = b.job_name
+left outer join VTQTZ_simple_triggers c on b.trigger_name = c.trigger_name
+where trigger_type = 'SIMPLE'
+and a.job_name like '%'||?||'%'
+]]></query></named-native-query>
+ -->
+</entity-mappings>

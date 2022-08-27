@@ -77,17 +77,20 @@
 <entry key="admin.menu.jdbcprovidermgmt">JDBC 제공자 관리</entry>
 
 <!-- manage menu -->
-<entry key="manage.menu.usermgmt">사용자 관리</entry>
-<entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
-<entry key="manage.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
-<entry key="manage.menu.dbgroup">DB 그룹관리</entry>
-<entry key="manage.menu.dbgroupnuser"><![CDATA[DB 그룹 & 사용자관리]]></entry>
-<entry key="manage.menu.glossary"><![CDATA[용어집]]></entry>
-<entry key="manage.menu.logmgmt">로그</entry>
-<entry key="manage.menu.dbcomparemgmt">DB 비교</entry>
-<entry key="manage.menu.sqllogmgmt">SQL 통계</entry>
-<entry key="manage.menu.sqllog">SQL 로그</entry>
-<entry key="manage.menu.userlogmgmt">사용자 로그 통계</entry>
+<entry key="manager.menu.usermgmt">사용자 관리</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manager.menu.dbgroup">DB 그룹관리</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB 그룹 & 사용자관리]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[용어집]]></entry>
+<entry key="manager.menu.logmgmt">로그</entry>
+<entry key="manager.menu.dbcomparemgmt">DB 비교</entry>
+<entry key="manager.menu.sqllogmgmt">SQL 통계</entry>
+<entry key="manager.menu.sqllog">SQL 로그</entry>
+<entry key="manager.menu.userlogmgmt">사용자 로그 통계</entry>
+<entry key="manager.menu.backgmgmt">백업 관리</entry>
+<entry key="manager.menu.databackgmgmt">데이터 백업 관리</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL 백업 관리</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">프로필 수정</entry>
@@ -226,35 +229,35 @@
 
 
 
-<entry key="manage.userlist.head">사용자 목록</entry>
-<entry key="manage.userlist.name">이름</entry>
-<entry key="manage.userlist.id">아이디</entry>
-<entry key="manage.userlist.dept">소속</entry>
-<entry key="manage.userlist.init.password">패스워드 초기화</entry>
-<entry key="manage.userlist.date">등록일</entry>
-<entry key="manage.userlist.access">수락여부</entry>
-<entry key="manage.userlist.useyn">사용여부</entry>
-<entry key="manage.userlist.dept">소속</entry>
-<entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
-<entry key="manage.answeryn">답변여부</entry>
-<entry key="manage.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
+<entry key="manager.userlist.head">사용자 목록</entry>
+<entry key="manager.userlist.name">이름</entry>
+<entry key="manager.userlist.id">아이디</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.userlist.init.password">패스워드 초기화</entry>
+<entry key="manager.userlist.date">등록일</entry>
+<entry key="manager.userlist.access">수락여부</entry>
+<entry key="manager.userlist.useyn">사용여부</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.qnalist.head"><![CDATA[Q&A 목록]]></entry>
+<entry key="manager.answeryn">답변여부</entry>
+<entry key="manager.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
 
 
-<entry key="manage.glossary.word">용어</entry>
-<entry key="manage.glossary.word_en">영문명</entry>
-<entry key="manage.glossary.word_abbr">약어명</entry>
-<entry key="manage.glossary.desc">설명</entry>
-<entry key="manage.glossary.word_type">데이터 타입</entry>
-<entry key="manage.glossary.word_length">길이</entry>
+<entry key="manager.glossary.word">용어</entry>
+<entry key="manager.glossary.word_en">영문명</entry>
+<entry key="manager.glossary.word_abbr">약어명</entry>
+<entry key="manager.glossary.desc">설명</entry>
+<entry key="manager.glossary.word_type">데이터 타입</entry>
+<entry key="manager.glossary.word_length">길이</entry>
 
-<entry key="manage.dbgroup.nm">그룹명</entry>
-<entry key="manage.dbgroup.mapping">DB 그룹맵핑</entry>
-<entry key="manage.dbgroup.usermapping">그룹 사용자 맵핑</entry>
+<entry key="manager.dbgroup.nm">그룹명</entry>
+<entry key="manager.dbgroup.mapping">DB 그룹맵핑</entry>
+<entry key="manager.dbgroup.usermapping">그룹 사용자 맵핑</entry>
 
 
-<entry key="manage.log.command">Command</entry>
-<entry key="manage.log.query">Query</entry>
-<entry key="manage.log.delay">걸린시간</entry>
+<entry key="manager.log.command">Command</entry>
+<entry key="manager.log.query">Query</entry>
+<entry key="manager.log.delay">걸린시간</entry>
 
 <entry key="user.edit.msgtitle">제목</entry>
 <entry key="user.edit.send_id">보낸사람</entry>

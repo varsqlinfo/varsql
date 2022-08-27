@@ -33,11 +33,7 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class Configuration extends AbstractConfiguration{
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
-
-	final String VARSQL_INSTALL_PATH = getInstallRoot();
-	final String CONFIG_FILE= "config/varsqlConfig.properties";
-	final String CONNECTION_CONFIG_FILE= "config/varsqlConnectionConfig.xml";
-
+	
 	private Properties props = new Properties();
 
 	private ConnectionInfo vConInfo = new ConnectionInfo();
@@ -52,6 +48,7 @@ public class Configuration extends AbstractConfiguration{
 	private final String FILE_UPLOAD_SIZE = "file.upload.size";
 	private final String FILE_UPLOAD_SIZEPERFILE = "file.upload.sizeperfile";
 	private final String FILE_UPLOAD_MAX_IN_MEMORY_SIZE = "file.upload.maxinmemorysize";
+	private final String BACKUP_PATH = "backup.path";
 
 	private PasswordType passwordType;
 
@@ -68,8 +65,12 @@ public class Configuration extends AbstractConfiguration{
 	private int port;
 
 	private boolean useConnUID = true;
+	
+	private boolean scheduleEnable = true;
 
 	private String fileUploadPath="";
+	
+	private String backupPath="";
 
 	private long fileUploadSize=0;
 
@@ -78,6 +79,14 @@ public class Configuration extends AbstractConfiguration{
 	private int fileUploadMaxInMemorySize=0;
 	
 	private VarsqlConstants.PASSWORD_RESET_MODE passwordResetMode;
+	
+	private static class ConfigurationHolder{
+        private static final Configuration instance = new Configuration();
+    }
+
+	public static Configuration getInstance() {
+		return ConfigurationHolder.instance;
+    }
 
 	private Configuration(){
 		initialize();
@@ -102,27 +111,14 @@ public class Configuration extends AbstractConfiguration{
 	 * @throws Exception
 	 */
 	private void initConfig() throws Exception {
-		String configPropFile = getSystemProperty(Constants.CONFIG_DEFAULT_KEY);
 
 		logger.info("VARSQL_INSTALL_PATH : {}",VARSQL_INSTALL_PATH);
-		logger.info("configuration system property : {}",configPropFile);
-		logger.info("configuration filename : {}",CONFIG_FILE);
+		logger.info("configuration filename : {}",VARSQL_PROPERTIES_FILE);
 
-		Resource configResource;
-
-		if(null != configPropFile && !"".equals(configPropFile)){
-			configResource = ResourceUtils.getResource(configPropFile);
-		}else {
-			File file = new File(VARSQL_INSTALL_PATH, CONFIG_FILE);
-			if(file.exists()) {
-				configResource = ResourceUtils.getResource(file.getPath());
-			}else {
-				configResource = ResourceUtils.getResource(CONFIG_FILE);
-			}
-		}
+		Resource configResource = getResourceFile(VARSQL_PROPERTIES_FILE);
 
 		if (configResource ==null ){
-			throw new ConfigurationException("Can't open configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONFIG_FILE ,configPropFile));
+			throw new ConfigurationException("Can't open configuration file : " + String.format("default path : %s/%s ", VARSQL_INSTALL_PATH, VARSQL_PROPERTIES_FILE));
 		}
 
 		try(InputStream is = configResource.getInputStream()){
@@ -144,6 +140,7 @@ public class Configuration extends AbstractConfiguration{
 
 		// file upload config
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
+		backupPath= props.getProperty(BACKUP_PATH, getInstallRoot() +File.separator + "backup");
 		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
 		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));
 		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
@@ -170,11 +167,12 @@ public class Configuration extends AbstractConfiguration{
 		logger.debug("siteAddr : {}", siteAddr);
 		logger.debug("passwordLen : {}",passwordLen);
 		logger.debug("fileUploadPath : {}",fileUploadPath);
-		logger.debug("fileUploadMaxInMemorySize : {}",fileUploadMaxInMemorySize);
-		logger.debug("fileUploadSizePerFile : {}",fileUploadSizePerFile);
-		logger.debug("fileUploadSize : {}",fileUploadSize);
+		logger.debug("backupPath : {}",backupPath);
+		logger.debug("fileUpload uploadSize:{}, MaxInMemorySize : {}, sizePerFile: {}, ", fileUploadSize, fileUploadMaxInMemorySize, fileUploadSizePerFile);
 
 		passwordType = PasswordType.getType(props.getProperty(PASSWORD_INIT_TYPE,""));
+		
+		scheduleEnable = "true".equals(props.getProperty("schedule.enable","true"));
 	
 	}
 
@@ -198,27 +196,27 @@ public class Configuration extends AbstractConfiguration{
 		String connectionFileInfo = getConnectionFile();
 		Resource connectionResource;
 
-		logger.info("connection default config file : {}",CONNECTION_CONFIG_FILE);
+		logger.info("connection default config file : {}",CONNECTION_XML_FILE);
 
 		if(null != connectionFileInfo && !"".equals(connectionFileInfo)){
 			logger.info("connection config read file path : {}", connectionFileInfo);
 			connectionResource = ResourceUtils.getResource(connectionFileInfo);
 		}else {
-			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_CONFIG_FILE);
+			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_XML_FILE);
 			if(file.exists()) {
 				connectionResource = ResourceUtils.getResource(file.getPath());
 			}else {
-				connectionResource = ResourceUtils.getResource(CONNECTION_CONFIG_FILE);
+				connectionResource = ResourceUtils.getResource(CONNECTION_XML_FILE);
 			}
 		}
 
 		if(connectionResource==null){
-			throw new ConfigurationException("Can't open connection configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONNECTION_CONFIG_FILE ,connectionFileInfo));
+			throw new ConfigurationException("Can't open connection configuration file : " + String.format("default path : %s/%s , config path : %s", VARSQL_INSTALL_PATH, CONNECTION_XML_FILE ,connectionFileInfo));
 		}
 
 		parseXml(connectionResource);
 
-		logger.info("varsql Connection Info : {}" , vConInfo);
+		logger.info("varsql Connection Info : {}" , this.vConInfo);
 	}
 
 	/**
@@ -234,21 +232,26 @@ public class Configuration extends AbstractConfiguration{
 		try {
 			JsonNode jsonInfo =VartechUtils.xmlToJsonNode(ResourceUtils.getResourceString(connectionResource, getCharset()));
 
-			vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
-			vConInfo.setAliasName(jsonInfo.get("name").asText(""));
-			vConInfo.setType(jsonInfo.get("name").asText("local"));
+			this.vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
+			this.vConInfo.setAliasName(jsonInfo.get("name").asText(""));
+			this.vConInfo.setType(jsonInfo.get("name").asText("local"));
 			
-			vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
-			vConInfo.setUsername(jsonInfo.get("username").asText(""));
-			vConInfo.setPassword(jsonInfo.get("password").asText(""));
-			vConInfo.setMaxActive(jsonInfo.get("max_active").asInt(10));
-			vConInfo.setPoolOptions(jsonInfo.get("pool_option").asText(""));
-			vConInfo.setConnectionOptions(jsonInfo.get("connection_option").asText(""));
-			vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
-			vConInfo.setTestWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()));
+			this.vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
+			this.vConInfo.setUsername(jsonInfo.get("username").asText(""));
+			this.vConInfo.setPassword(jsonInfo.get("password").asText(""));
+			this.vConInfo.setMaxActive(jsonInfo.get("max_active").asInt(10));
+			this.vConInfo.setPoolOptions(jsonInfo.get("pool_option").asText(""));
+			this.vConInfo.setConnectionOptions(jsonInfo.get("connection_option").asText(""));
+			this.vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
+			this.vConInfo.setTestWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()));
 			
-			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo("base", jsonInfo.get("driver").asText("org.h2.Driver"));  
-		    this.vConInfo.setJdbcDriverInfo(jdbcDriverInfo);
+			
+			this.vConInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
+				.driverId("base")
+				.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
+				.build()
+			);
+			
 
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);
@@ -264,14 +267,6 @@ public class Configuration extends AbstractConfiguration{
 		return System.getProperty(key);
 	}
 
-	private static class ConfigurationHolder{
-        private static final Configuration instance = new Configuration();
-    }
-
-	public static Configuration getInstance() {
-		return ConfigurationHolder.instance;
-    }
-
 	public String getDbType() {
 		return props.getProperty(TYPE , "h2");
 	}
@@ -285,11 +280,15 @@ public class Configuration extends AbstractConfiguration{
 	}
 
 	public ConnectionInfo getVarsqlDB(){
-		return vConInfo;
+		return this.vConInfo;
 	}
 
 	public String getFileUploadPath() {
 		return fileUploadPath;
+	}
+	
+	public String getBackupPath() {
+		return backupPath;
 	}
 
 	public long getFileUploadSize() {
@@ -347,4 +346,30 @@ public class Configuration extends AbstractConfiguration{
 	public VarsqlConstants.PASSWORD_RESET_MODE getPasswordResetMode() {
 		return passwordResetMode;
 	}
+
+	public boolean isScheduleEnable() {
+		return scheduleEnable;
+	}
+	
+	public Resource getQuartzConfig() {
+		return getResourceFile(VARSQL_QUARTZ_PROPERTIES_FILE);
+	}
+	
+	public Resource getHibernateConfig() {
+		return getResourceFile(VARSQL_HIBERNATE_PROPERTIES_FILE);
+	}
+	
+	public Resource getLogbackConfig() {
+		return getResourceFile(LOGBACK_XML_FILE);
+	}
+	
+	private Resource getResourceFile(String filePath) {
+		File file = new File(VARSQL_INSTALL_PATH, filePath);
+		if(file.exists()) {
+			return ResourceUtils.getResource(file.getPath());
+		}else {
+			return ResourceUtils.getResource(filePath);
+		}
+	}
+
 }

@@ -39,7 +39,7 @@ public class DBTypeDriverFileEntity extends FileBaseEntity {
 	private String fileContId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "FILE_CONT_ID", referencedColumnName = "DRIVER_PROVIDER_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "FILE_CONT_ID", insertable = false, updatable = false)
 	private DBTypeDriverProviderEntity driverProviderFiles;
 
 	@Builder

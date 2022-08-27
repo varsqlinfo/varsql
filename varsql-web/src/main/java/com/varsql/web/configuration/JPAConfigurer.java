@@ -1,45 +1,35 @@
 package com.varsql.web.configuration;
+import java.io.IOException;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.querydsl.sql.H2Templates;
-import com.querydsl.sql.MySQLTemplates;
 import com.querydsl.sql.OracleTemplates;
 import com.querydsl.sql.SQLQueryFactory;
-import com.querydsl.sql.SQLServerTemplates;
 import com.querydsl.sql.SQLTemplates;
 import com.querydsl.sql.spring.SpringConnectionProvider;
 import com.querydsl.sql.spring.SpringExceptionTranslator;
 import com.querydsl.sql.types.DateTimeType;
 import com.querydsl.sql.types.LocalDateType;
 import com.varsql.core.configuration.Configuration;
-import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.vartech.common.utils.StringUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -53,8 +43,6 @@ import com.varsql.web.constants.ResourceConfigConstants;
 
 *-----------------------------------------------------------------------------
  */
-@EnableTransactionManagement
-@PropertySource({ "classpath:persistence-h2.properties" })
 @EnableJpaAuditing(auditorAwareRef = "customAuditorAware")
 @EnableJpaRepositories(basePackages = {"com.varsql.web.repository" ,"com.varsql.web.security.repository"}
 ,includeFilters ={
@@ -66,65 +54,37 @@ public class JPAConfigurer {
 	private final Logger logger = LoggerFactory.getLogger(JPAConfigurer.class);
 
     @Autowired
-    private Environment env;
-
+    @Qualifier(ResourceConfigConstants.APP_DATASOURCE)
     private DataSource mainDataSource;
 
-	@PostConstruct
-    public void initialize(){
-		ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
-
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(ci.getJdbcDriverInfo().getDriverClass());
-		dataSource.setUrl(ci.getUrl());
-		dataSource.setUsername(ci.getUsername());
-		dataSource.setPassword(ci.getPassword());
-
-		logger.info("=================datasourceconfig info====================");
-		logger.info(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());
-		logger.info(" url : {}",ci.getUrl());
-		logger.info(" username : {} " ,ci.getUsername());
-		logger.info("=================datasourceconfig info====================");
-
-		mainDataSource = dataSource;
-    }
-
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws IOException {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(mainDataSource);
         em.setPackagesToScan(new String[] {"com.varsql.web.model" });
-
+        
+        // native query 사용시 설정. 
+//        Resource [] resources  = ResourceUtils.getPackageResources("classpath*:com/varsql/web/repository/xml/*.xml");
+//        
+//        if(resources.length > 0) {
+//	        List<String> xmlList = new ArrayList<>();
+//	        for (int i =0 ;i < resources.length;i++) {
+//	        	Resource resource = resources[i];
+//	        	if(resource != null && resource.exists()) {
+//	        		xmlList.add("com/varsql/web/repository/xml/"+resource.getFile().getName());
+//	        	}
+//			}
+//	        
+//	        if(xmlList.size()> 0) {
+//	        	em.setMappingResources(xmlList.toArray(new String[0]));
+//	        }
+//        }
+        
         final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
 
         return em;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        return mainDataSource;
-    }
-    
-    @Primary
-    @Bean(name = ResourceConfigConstants.APP_TRANSMANAGER)
-    public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
-        return transactionManager;
-    }
-
-    @Bean(name = ResourceConfigConstants.APP_BATCH_TRANSMANAGER)
-    public PlatformTransactionManager batchTransactionManager(final EntityManagerFactory emf) {
-    	final JpaTransactionManager transactionManager = new JpaTransactionManager();
-    	transactionManager.setEntityManagerFactory(emf);
-    	return transactionManager;
-    }
-
-    @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
-        return new PersistenceExceptionTranslationPostProcessor();
     }
 
 	@Bean
@@ -133,10 +93,20 @@ public class JPAConfigurer {
 	}
 
     final Properties additionalProperties() {
+    	
+    	PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+		propertiesFactoryBean.setLocation(com.varsql.core.configuration.Configuration.getInstance().getHibernateConfig());
+    	
+    	Properties properties = null;
+		try {
+			propertiesFactoryBean.afterPropertiesSet();
+			properties = propertiesFactoryBean.getObject();
+		} catch (Exception e) {
+			logger.error("Cannot load hibernate config path : {} , msg: {} " , com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig(), e.getMessage(), e);
+		}
 
         final Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        hibernateProperties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", properties.getProperty("hibernate.hbm2ddl.auto"));
         hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
         hibernateProperties.setProperty("hibernate.default_batch_fetch_size", "10"); // join할때
 
@@ -145,10 +115,44 @@ public class JPAConfigurer {
         hibernateProperties.setProperty("org.hibernate.envers.store_data_at_delete", "true");	// delete 전에  모든 필드의 값을 쌓을때
 
         hibernateProperties.setProperty("hibernate.envers.autoRegisterListeners", "false");	// 감사 로그 등록 여부.
-
+        
+        DBVenderType dbType = DBVenderType.getDBType(Configuration.getInstance().getDbType());
+        
+        
+        String dialect = properties.getProperty("hibernate.dialect");
+        
+        if(!StringUtils.isBlank(dialect)) {
+        	hibernateProperties.setProperty("hibernate.dialect", dialect);
+        }else {
+	        if(DBVenderType.MYSQL.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.MySQLDialect.class.getName());
+	        }else if(DBVenderType.SQLSERVER.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.SQLServerDialect.class.getName());
+	        }else if(DBVenderType.ORACLE.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.Oracle12cDialect.class.getName());
+	        }else if(DBVenderType.POSTGRESQL.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.PostgreSQL10Dialect.class.getName());
+	        }else if(DBVenderType.CUBRID.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.CUBRIDDialect.class.getName());
+	        }else if(DBVenderType.DB2.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.DB2Dialect.class.getName());
+	        }else if(DBVenderType.MARIADB.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.MariaDBDialect.class.getName());
+	        }else if(DBVenderType.TIBERO.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.Oracle12cDialect.class.getName());
+	        }else if(DBVenderType.H2.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.H2Dialect.class.getName());
+	        }else if(DBVenderType.SYBASE.equals(dbType)) {
+	        	hibernateProperties.setProperty("hibernate.dialect", org.hibernate.dialect.SybaseDialect.class.getName());
+	        }else {
+	        	throw new Error("hibernate.dialect not load dbType : "+ dbType.getDbVenderName());
+	        }
+        }
+        
+        logger.info("hibernateProperties : {} ", hibernateProperties);
+        
         return hibernateProperties;
     }
-
 
     @Bean
     public com.querydsl.sql.Configuration querydslConfiguration() {
@@ -157,11 +161,11 @@ public class JPAConfigurer {
         DBVenderType dbType = DBVenderType.getDBType(Configuration.getInstance().getDbType());
 
         if(DBVenderType.MYSQL.equals(dbType)) {
-        	templates = MySQLTemplates.builder().build();
+        	templates = com.querydsl.sql.MySQLTemplates.builder().build();
         }else if(DBVenderType.SQLSERVER.equals(dbType)) {
-        	templates = SQLServerTemplates.builder().build();
+        	templates = com.querydsl.sql.SQLServerTemplates.builder().build();
         }else if(DBVenderType.ORACLE.equals(dbType)) {
-        	templates = OracleTemplates.builder().build();
+        	templates = com.querydsl.sql.OracleTemplates.builder().build();
         }else if(DBVenderType.POSTGRESQL.equals(dbType)) {
         	templates = com.querydsl.sql.PostgreSQLTemplates.builder().build();
         }else if(DBVenderType.CUBRID.equals(dbType)) {
@@ -171,11 +175,11 @@ public class JPAConfigurer {
         }else if(DBVenderType.MARIADB.equals(dbType)) {
         	templates = com.querydsl.sql.MySQLTemplates.builder().build();
         }else if(DBVenderType.TIBERO.equals(dbType)) {
-        	templates = com.querydsl.sql.OracleTemplates.builder().build();
+        	templates = OracleTemplates.builder().build();
         }else if(DBVenderType.H2.equals(dbType)) {
         	templates = com.querydsl.sql.H2Templates.builder().build();
         }else {
-        	templates = com.querydsl.sql.H2Templates.builder().build();
+        	templates = com.querydsl.sql.MySQLTemplates.builder().build();
         }
 
         com.querydsl.sql.Configuration configuration = new com.querydsl.sql.Configuration(templates);
@@ -187,6 +191,6 @@ public class JPAConfigurer {
 
     @Bean
     public SQLQueryFactory queryFactory() {
-        return new SQLQueryFactory(querydslConfiguration(), new SpringConnectionProvider(dataSource()));
+        return new SQLQueryFactory(querydslConfiguration(), new SpringConnectionProvider(mainDataSource));
     }
 }

@@ -44,9 +44,9 @@ public class User implements UserDetails {
 	private boolean accountNonLocked = true;
 	private boolean credentialsNonExpired = true;
 	private boolean enabled = true;
-	private Map<String,DatabaseInfo> databaseInfo = new HashMap<String,DatabaseInfo>();
+	private Map<String, DatabaseInfo> databaseInfo = new HashMap<String, DatabaseInfo>();
 
-	private Map<String,String> vconnidNconuid = new HashMap<String, String>();
+	private Map<String, String> vconnidNconuid = new HashMap<String, String>();
 	
 	public String getViewid() {
 		return viewid;
@@ -130,7 +130,7 @@ public class User implements UserDetails {
 		this.enabled = enabled;
 	}
 
-	public Map<String,DatabaseInfo> getDatabaseInfo() {
+	public Map<String, DatabaseInfo> getDatabaseInfo() {
 		return databaseInfo;
 	}
 

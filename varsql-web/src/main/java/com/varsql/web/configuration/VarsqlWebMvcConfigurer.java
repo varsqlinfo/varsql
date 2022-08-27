@@ -28,9 +28,11 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlSpringBeanUtils;
+import com.varsql.core.configuration.Constants;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.DatabaseBoardAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.constants.ViewResourceConstants;
 
 /**
@@ -94,11 +96,15 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label");
         messageSource.setDefaultEncoding(VarsqlConstants.CHAR_SET);
 
-        if("local".equals(System.getProperty("varsql.runtime"))) {
+        if(VarsqlUtils.isRuntimelocal()) {
         	messageSource.setCacheSeconds(3);
         }
         
         messageSource.setFallbackToSystemLocale(false);
+        
+        // message 없을때 에러 코드 표시 여부.
+        //messageSource.setUseCodeAsDefaultMessage(true);
+        
         return messageSource;
     }
 

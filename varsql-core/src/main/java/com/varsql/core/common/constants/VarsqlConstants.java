@@ -22,6 +22,8 @@ public interface VarsqlConstants {
 	// 날짜 포켓.
 	final String YEAR_FORMAT = "yyyy";
 	
+	final String MONTY_FORMAT = "yyyy-MM";
+	
 	final String DATE_FORMAT = "yyyy-MM-dd";
 
 	final String TIME_FORMAT = "HH:mm:ss";
@@ -32,6 +34,7 @@ public interface VarsqlConstants {
 	final String TIMESTAMP_MILLISECOND_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
 	final DateTimeFormatter yearFormatter = DateTimeFormat.forPattern(YEAR_FORMAT);
+	final DateTimeFormatter monthFormatter = DateTimeFormat.forPattern(MONTY_FORMAT);
 	final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern(DATE_FORMAT);
 	final DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
 	final DateTimeFormatter timeMilliFormatter = DateTimeFormat.forPattern(TIME_MILLISECOND_FORMAT);

@@ -90,7 +90,7 @@ public class BoardCommentEntity extends AbstractAuditorModel{
 	
 	@NotFound(action = NotFoundAction.IGNORE)
 	@ManyToOne(fetch= FetchType.LAZY)
-	@JoinColumn(name="PARENT_COMMENT_ID" , referencedColumnName = "COMMENT_ID", insertable = false, updatable = false)
+	@JoinColumn(name="PARENT_COMMENT_ID", insertable = false, updatable = false)
 	private BoardCommentEntity parent; 
 	
 	@OneToMany(fetch=FetchType.LAZY, mappedBy = "parent")

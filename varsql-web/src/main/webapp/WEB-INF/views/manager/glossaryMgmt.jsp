@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.glossary" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.glossary" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -48,10 +48,10 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manage.glossary.word" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.word_en" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.word_abbr" /></th>
-									<th class="text-center"><spring:message	code="manage.glossary.desc" /></th>
+									<th class="text-center"><spring:message	code="manager.glossary.word" /></th>
+									<th class="text-center"><spring:message	code="manager.glossary.word_en" /></th>
+									<th class="text-center"><spring:message	code="manager.glossary.word_abbr" /></th>
+									<th class="text-center"><spring:message	code="manager.glossary.desc" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
@@ -79,7 +79,7 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-5">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manage.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<div class="panel-heading"><spring:message code="manager.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<input type="hidden" v-model="detailItem.wordIdx">
@@ -95,25 +95,25 @@
 					</div>
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.word">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_en" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_en" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordEn">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_abbr" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_abbr" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordAbbr">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_type" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_type" /></label>
 						<div class="col-sm-8">
 							<select	v-model="detailItem.wordType" class="form-control text required">
 								<option v-for="(item,index) in wordTypeArr" :value="item.type">{{item.name}}</option>
@@ -121,14 +121,14 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.word_length" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_length" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordLength">
 							<div>char,string -> 정수값 , number, float -> (0,1)</div>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manage.glossary.desc" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.desc" /></label>
 						<div class="col-sm-8">
 							<textarea class="form-control text" rows="3" v-model="detailItem.wordDesc" style="width:100%;"></textarea>
 						</div>

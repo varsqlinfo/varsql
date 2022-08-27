@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.dbgroupnuser" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.dbgroupnuser" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -44,7 +44,7 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manage.dbgroup.nm" /></th>
+									<th class="text-center"><spring:message	code="manager.dbgroup.nm" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
@@ -69,7 +69,7 @@
 	<div class="col-xs-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<spring:message code="manage.dbgroup.usermapping" />
+				<spring:message code="manager.dbgroup.usermapping" />
 				<template v-if="detailItem.groupName">
 					[[<b>{{detailItem.groupName}}</b>]]
 				</template>

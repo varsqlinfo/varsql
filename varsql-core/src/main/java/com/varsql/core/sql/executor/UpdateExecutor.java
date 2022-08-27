@@ -74,7 +74,7 @@ public class UpdateExecutor implements Executor{
 			};
 		}
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDbType()));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
 
 		List<SqlSource> sqlList = parseInfo.getItems();
 
@@ -86,7 +86,7 @@ public class UpdateExecutor implements Executor{
 		Connection conn = null;
 		Statement statement = null;
 		try {
-			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getVconnid());
+			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 			conn.setAutoCommit(false);
 
 			statement = conn.createStatement();

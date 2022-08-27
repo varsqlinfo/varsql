@@ -5598,7 +5598,17 @@ var _$renderer = {
 		return replaceMesasgeFormat('<span class="pub-render-element link">{{value}}</span>',{value : rowItem[thiItem.key]});
 	}
 	, html : function (gridCtx, thiItem, rowItem, mode){
-		return thiItem.template(thiItem, rowItem);
+		var itemVal = rowItem[thiItem.key];
+
+		if(isFunction(thiItem.formatter)){
+			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, value : itemVal});
+		}
+
+		if(thiItem.template){
+			return thiItem.template(thiItem, rowItem, itemVal);
+		}
+
+		return itemVal;
 	}
 	, text : function (gridCtx, thiItem, rowItem, mode){
 		var type = thiItem.type || 'string';
@@ -5617,7 +5627,7 @@ var _$renderer = {
 		}
 
 		if(isFunction(thiItem.formatter)){
-			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, formatInfo : tmpFormatter});
+			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, formatInfo : tmpFormatter, value : itemVal});
 		}else{
 			if(gridCtx.options.useDefaultFormatter===true){
 				if(type == 'money'){

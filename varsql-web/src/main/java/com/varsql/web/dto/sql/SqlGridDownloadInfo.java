@@ -1,23 +1,14 @@
 package com.varsql.web.dto.sql;
 
 import com.varsql.core.common.code.VarsqlFileType;
-import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: SqlGridDownloadInfo.java
-* @DESC		: sql grid download info
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-* 2018. 10. 12. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * sql grid download info
+* 
+* @fileName	: SqlGridDownloadInfo.java
+* @author	: ytkim
  */
-public class SqlGridDownloadInfo extends DatabaseParamInfo{
+public class SqlGridDownloadInfo{
 	private VarsqlFileType exportType;
 
 	private String headerInfo;

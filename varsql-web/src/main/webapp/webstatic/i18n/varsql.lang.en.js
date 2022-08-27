@@ -54,6 +54,8 @@ VARSQL_LANG = {
 	,'varsql.0031' : 'Allow Extension : {accept}'
 	,'varsql.0032' : 'Please check the DB Name or Schema.'
 	,'varsql.0033' : '[{name}] 를 닫으시겠습니까?'
+	,'varsql.0034' : '{msg} 항목을 선택해주세요.'
+	,'varsql.0035' : '{msg} 하시겠습니까?'
 
 	,'varsql.m.0001' : '변경되었습니다.\n변경된 패스워드는 5초후에 사라집니다.'
 	,'varsql.m.0002' : ' 매니저 권한을 삭제 하시겠습니까?'
@@ -119,6 +121,7 @@ VARSQL_LANG = {
 	,'export' : 'Export'
 	,'refresh' : 'Refresh'
 	,'data.export' : 'Export Data'
+	,'item.select.message' : '{}을(를) 선택하세요.'
 	
 	,'up' : 'up'
 	,'down' : 'down'

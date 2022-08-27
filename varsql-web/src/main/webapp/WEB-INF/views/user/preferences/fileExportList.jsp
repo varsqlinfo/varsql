@@ -170,7 +170,7 @@ VarsqlAPP.vueServiceBean({
 									,loadSelector : '#main-content'
 									,data : {
 										fileId : _this.detailItem.fileId
-										,fileName : info.rowItem.fileName
+										,fileName : info.item.fileName
 									}
 									,success:function (resData){
 										_this.fileViewEditor.setValue(resData.item||'');

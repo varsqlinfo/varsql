@@ -237,12 +237,8 @@ VarsqlAPP.vueServiceBean( {
 					break; 
 				}
 			}
-			try{
-				aaa
-			}catch(e){
-				console.log(e)
-			}
-			console.log(selVal, this.detailItem, selItem)
+		
+			//console.log(selVal, this.detailItem, selItem)
 			
 			this.detailItem.driverClass = selItem.dbdriver;
 			this.detailItem.validationQuery = selItem.validationQuery;

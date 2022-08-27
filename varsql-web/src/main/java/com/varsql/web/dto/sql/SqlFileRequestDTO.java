@@ -1,8 +1,9 @@
 package com.varsql.web.dto.sql;
 
-import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.common.constants.SqlDataConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
+import com.varsql.web.util.DatabaseUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class SqlFileRequestDTO extends DatabaseParamInfo{
+public class SqlFileRequestDTO{
+	
+	private String conuid;
+	
+	private String vconnid;
 
 	// sql id
 	private String sqlId;
@@ -38,7 +43,7 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 
 	// sql content
 	private String sqlCont;
-
+	
 	private String editorCursor;
 
 	// limit count
@@ -56,15 +61,20 @@ public class SqlFileRequestDTO extends DatabaseParamInfo{
 	public int getLimit() {
 		return limit > -1 ? this.limit : SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT;
 	}
+	
+	public void setConuid(String conuid) {
+		this.conuid = conuid; 
+		this.vconnid = DatabaseUtils.convertConUidToVconnid(conuid);
+	}
 
 	public SqlFileEntity toEntity() {
 		return SqlFileEntity.builder()
-			.sqlId(sqlId)
-			.sqlTitle(sqlTitle ==null ? "":sqlTitle)
-			.sqlCont(sqlCont)
-			.sqlParam(sqlParam)
-			.vconnid(getVconnid())
-			.viewid(getViewid())
+			.sqlId(this.sqlId)
+			.sqlTitle(this.sqlTitle ==null ? "": this.sqlTitle)
+			.sqlCont(this.sqlCont)
+			.sqlParam(this.sqlParam)
+			.vconnid(this.vconnid)
+			.viewid(SecurityUtil.userViewId())
 			.editorCursor(editorCursor)
 			.build();
 	}

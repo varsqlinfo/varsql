@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 
 import com.varsql.web.dto.valid.ValidUrlDirectYn;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.util.ConvertUtils;
 
 import lombok.Getter;
@@ -140,7 +141,7 @@ public class DBConnectionRequestDTO{
 				.vport(vport)
 				.vdatabasename(vdatabasename)
 				.vurl(vurl)
-				.vdriver(vdriver)
+				.dbTypeDriverProvider(DBTypeDriverProviderEntity.builder().driverProviderId(vdriver).build())
 				.vid(vid)
 				.vpw(vpw)
 				.urlDirectYn(urlDirectYn)

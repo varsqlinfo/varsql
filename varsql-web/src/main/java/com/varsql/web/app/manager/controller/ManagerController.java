@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,7 +44,7 @@ public class ManagerController extends AbstractController{
 	@Autowired
 	private ManagerCommonServiceImpl dbnUserServiceImpl;
 
-	@RequestMapping(value = {"", "/","/main"}, method =RequestMethod.GET)
+	@GetMapping(value = {"", "/","/main"})
 	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "userMgmt");
@@ -63,7 +64,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/qnaMgmt"}, method =RequestMethod.GET)
+	@GetMapping("/qnaMgmt")
 	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "qnaMgmt");
@@ -83,7 +84,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/glossaryMgmt"}, method =RequestMethod.GET)
+	@GetMapping("/glossaryMgmt")
 	public ModelAndView glossaryMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "glossaryMgmt");
@@ -102,7 +103,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/dbGroupMgmt"}, method =RequestMethod.GET)
+	@GetMapping("/dbGroupMgmt")
 	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
@@ -122,7 +123,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/dbGroupUserMgmt", method =RequestMethod.GET)
+	@GetMapping("/dbGroupUserMgmt")
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
@@ -142,7 +143,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/dbCompareMgmt"}, method =RequestMethod.GET)
+	@GetMapping("/dbCompareMgmt")
 	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbCompareMgmt");
@@ -165,7 +166,7 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/sqlLogStat"}, method =RequestMethod.GET)
+	@GetMapping("/sqlLogStat")
 	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
@@ -190,12 +191,50 @@ public class ManagerController extends AbstractController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/sqlLogHistory"}, method =RequestMethod.GET)
+	@GetMapping("/sqlLogHistory")
 	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "sqlLog");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
 		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER,model);
+	}
+	
+	/**
+	 * 데이터 백업 관리.
+	 *
+	 * @method : dataBackupMgmt
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/dataBackupMgmt")
+	public ModelAndView dataBackupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "backupMgmt");
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+		
+		return getModelAndView("/dataBackupMgmt", VIEW_PAGE.MANAGER,model);
+	}
+	
+	/**
+	 * ddl backpu 관리
+	 *
+	 * @method : ddlBackupMgmt
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/ddlBackupMgmt")
+	public ModelAndView ddlBackupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "backupMgmt");
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+		
+		return getModelAndView("/ddlBackupMgmt", VIEW_PAGE.MANAGER,model);
 	}
 }

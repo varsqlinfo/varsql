@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.sqllog" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.sqllog" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -49,18 +49,18 @@
 								<col style="width:*;">
 								<col style="width:120px;">
 								<col style="width:100px;">
-								<col style="width:130px;">
+								<col style="width:145px;">
 								<col style="width:50px;">
 								<col style="width:40px;">
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manage.log.query" /></th>
+									<th class="text-center"><spring:message	code="manager.log.query" /></th>
 									<th class="text-center"><spring:message	code="id" /></th>
 									<th class="text-center"><spring:message	code="ip" /></th>
 									<th class="text-center"><spring:message	code="std_time" /><br><spring:message code="end_time" /></th>
 									<th class="text-center"><spring:message code="result" /></th>
-									<th class="text-center"><spring:message	code="manage.log.delay" /></th>
+									<th class="text-center"><spring:message	code="manager.log.delay" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">

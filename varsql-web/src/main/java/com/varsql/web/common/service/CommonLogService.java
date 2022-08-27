@@ -9,54 +9,49 @@ import org.springframework.stereotype.Service;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
 import com.varsql.web.model.entity.db.DBConnHistEntity;
+import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
+import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 import com.vartech.common.utils.CommUtils;
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: CommonServiceImpl.java
-* @DESC		: 공통 서비스
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-* 2019. 4. 16. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * 공통 로그 서비스
+* 
+* @fileName	: CommonLogService.java
+* @author	: ytkim
  */
 @Service
-public class CommonServiceImpl{
-	private final Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
+public class CommonLogService{
+	private final Logger logger = LoggerFactory.getLogger(CommonLogService.class);
 	
-	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
+	final private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
 
-	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
+	final private SqlHistoryEntityRepository sqlHistoryEntityRepository;
 
-	private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
+	final private SqlStatisticsEntityRepository sqlStatisticsEntityRepository;
 	
-	private DBConnHistEntityRepository dbConnHistEntityRepository;
+	final private DBConnHistEntityRepository dbConnHistEntityRepository;
 	
-	public CommonServiceImpl(SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository, SqlHistoryEntityRepository sqlHistoryEntityRepository, SqlStatisticsEntityRepository sqlStatisticsEntityRepository, DBConnHistEntityRepository dbConnHistEntityRepository) {
+	final private ScheduleHistoryEntityRepository scheduleHistoryEntityRepository;
+	
+	public CommonLogService(SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository, SqlHistoryEntityRepository sqlHistoryEntityRepository, SqlStatisticsEntityRepository sqlStatisticsEntityRepository
+			, DBConnHistEntityRepository dbConnHistEntityRepository,ScheduleHistoryEntityRepository scheduleHistoryEntityRepository) {
 		this.sqlExceptionLogEntityRepository = sqlExceptionLogEntityRepository; 
 		this.sqlHistoryEntityRepository = sqlHistoryEntityRepository; 
 		this.sqlStatisticsEntityRepository = sqlStatisticsEntityRepository; 
 		this.dbConnHistEntityRepository = dbConnHistEntityRepository; 
+		this.scheduleHistoryEntityRepository = scheduleHistoryEntityRepository; 
 	}
 
 	/**
+	 * error insert
 	 *
-	 * @Method Name  : insertExceptionLog
-	 * @Method 설명 : error insert
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 4. 16.
-	 * @변경이력  :
+	 * @method : insertExceptionLog
 	 * @param exceptionType
 	 * @param e
 	 */
@@ -76,12 +71,9 @@ public class CommonServiceImpl{
 	}
 
 	/**
+	 * sql history 저장.
 	 *
-	 * @Method Name  : saveSqlHistory
-	 * @Method 설명 : sql history 저장.
-	 * @작성일   : 2020. 11. 04.
-	 * @작성자   : ytkim
-	 * @변경이력  :
+	 * @method : saveSqlHistory
 	 * @param sqlHistoryEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -94,12 +86,10 @@ public class CommonServiceImpl{
 	}
 
 	/**
+	 * 사용자 sql 로그 저장
 	 *
-	 * @Method Name  : sqlLogInsert
-	 * @Method 설명 : 사용자 sql 로그 저장
-	 * @작성일   : 2015. 5. 6.
-	 * @작성자   : ytkim
-	 * @변경이력  :
+	 * @method : sqlLogInsert
+	 * @param allSqlStatistics
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
 	public void sqlLogInsert(List<SqlStatisticsEntity> allSqlStatistics) {
@@ -115,12 +105,9 @@ public class CommonServiceImpl{
 	}
 	
 	/**
+	 * 사용자 접속 로그 저장
 	 *
-	 * @Method Name  : saveDbConnectionHistory
-	 * @Method 설명 : 사용자 접속 로그 저장
-	 * @작성일   : 2015. 5. 6.
-	 * @작성자   : ytkim
-	 * @변경이력  :
+	 * @method : saveDbConnectionHistory
 	 * @param dbConnHistEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -129,6 +116,21 @@ public class CommonServiceImpl{
 			dbConnHistEntityRepository.save(dbConnHistEntity);
 		}catch(Exception e){
 			logger.error(" saveDbConnectionHistory {}", e.getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 *
+	 * @method : saveScheduleHistory
+	 * @param scheduleHistoryEntity
+	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
+	public void saveScheduleHistory(ScheduleHistoryEntity scheduleHistoryEntity) {
+		try{
+			scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
+		}catch(Exception e){
+			logger.error(" saveScheduleHistory {}", e.getMessage());
 		}
 	}
 }

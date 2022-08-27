@@ -78,20 +78,33 @@
 <entry key="admin.menu.jdbcprovidermgmt">JDBC Provider</entry>
 
 <!-- manage menu -->
-<entry key="manage.menu.usermgmt">User Management</entry>
-<entry key="manage.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
-<entry key="manage.menu.dbnuser"><![CDATA[DB & User]]></entry>
-<entry key="manage.menu.logmgmt">Log Statistics</entry>
-<entry key="manage.menu.sqllogmgmt">SQL Statistics</entry>
-<entry key="manage.menu.userlogmgmt">User Log Statistics</entry>
+<entry key="manager.menu.usermgmt">User Management</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
+<entry key="manager.menu.logmgmt">Log Statistics</entry>
+<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
+
+
+<entry key="manager.menu.usermgmt">User Management</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
+<entry key="manager.menu.dbgroup">DB Group</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB Group & User]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[Glossary]]></entry>
+<entry key="manager.menu.logmgmt">Log</entry>
+<entry key="manager.menu.dbcomparemgmt">DB Compare</entry>
+<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manager.menu.sqllog">SQL Log</entry>
+<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
+<entry key="manager.menu.backgmgmt">Backup</entry>
+<entry key="manager.menu.databackgmgmt">Data Backup</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL Backup</entry>
 
 <!-- user menu -->
 <entry key="user.edit.general">Modify Profile</entry>
 <entry key="user.edit.pasword">Password Change</entry>
 <entry key="user.edit.message">Message Management</entry>
-
-
-
 
 <entry key="login.form.id">Id</entry>
 <entry key="login.form.pw">Password</entry>
@@ -184,18 +197,18 @@
 
 <entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
 
-<entry key="manage.userlist.head">사용자 목록</entry>
-<entry key="manage.userlist.name">이름</entry>
-<entry key="manage.userlist.id">아이디</entry>
-<entry key="manage.userlist.dept">소속</entry>
-<entry key="manage.userlist.init.password">패스워드 초기화</entry>
-<entry key="manage.userlist.date">등록일</entry>
-<entry key="manage.userlist.access">수락여부</entry>
-<entry key="manage.userlist.useyn">사용여부</entry>
-<entry key="manage.userlist.dept">소속</entry>
-<entry key="manage.qnalist.head"><![CDATA[Q&A 목록]]></entry>
-<entry key="manage.answeryn">답변여부</entry>
-<entry key="manage.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
+<entry key="manager.userlist.head">사용자 목록</entry>
+<entry key="manager.userlist.name">이름</entry>
+<entry key="manager.userlist.id">아이디</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.userlist.init.password">패스워드 초기화</entry>
+<entry key="manager.userlist.date">등록일</entry>
+<entry key="manager.userlist.access">수락여부</entry>
+<entry key="manager.userlist.useyn">사용여부</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.qnalist.head"><![CDATA[Q&A 목록]]></entry>
+<entry key="manager.answeryn">답변여부</entry>
+<entry key="manager.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">General</entry>

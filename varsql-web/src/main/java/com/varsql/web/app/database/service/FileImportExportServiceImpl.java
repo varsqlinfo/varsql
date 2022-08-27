@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;
@@ -116,7 +117,7 @@ public class FileImportExportServiceImpl{
 	 */
 	private SQLExecuteResult sqlImport(FileInfoEntity fileInfo, String conuid) throws IOException, SQLException {
 		SqlStatementInfo ssi = new SqlStatementInfo();
-		ssi.setConuid(conuid);
+		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setSqlParam("{}");
 
 		String insertQuery = FileUtils.readFileToString(FileServiceUtils.getFileInfoToFile(fileInfo));
@@ -158,7 +159,7 @@ public class FileImportExportServiceImpl{
 	private SQLExecuteResult jsonImport(FileInfoEntity fileInfo, String conuid) throws SQLException {
 
 		SqlStatementInfo ssi = new SqlStatementInfo();
-		ssi.setConuid(conuid);
+		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setExportType(VarsqlFileType.JSON.name());
 		ssi.addCustom(FileImportExecutor.IMPORT_FILE_PARAM_NAME, FileServiceUtils.getPath(fileInfo.getFilePath()).toUri());
 
@@ -168,7 +169,7 @@ public class FileImportExportServiceImpl{
 
 	private SQLExecuteResult xmlImport(FileInfoEntity fileInfo, String conuid) throws SQLException {
 		SqlStatementInfo ssi = new SqlStatementInfo();
-		ssi.setConuid(conuid);
+		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setExportType(VarsqlFileType.XML.name());
 		ssi.addCustom(FileImportExecutor.IMPORT_FILE_PARAM_NAME, FileServiceUtils.getPath(fileInfo.getFilePath()).toUri());
 

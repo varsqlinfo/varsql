@@ -3,6 +3,8 @@ package com.varsql.web.constants;
 public interface ResourceConfigConstants {
 
 	final String APP_DB_RESOURCE ="varsqlAppSqlSession";
+	
+	final String APP_DATASOURCE ="varsqlDataSource";
 
 	final String APP_TRANSMANAGER ="transactionManager";
 
@@ -32,4 +34,6 @@ public interface ResourceConfigConstants {
 	final String REMEMBERME_USER_DETAIL_SERVICE = "rememberMeUserService";
 	
 	final String MAIL_SERVICE = "mainService";
+	
+	final String APP_SCHEDULER = "varsqlScheduler";
 }

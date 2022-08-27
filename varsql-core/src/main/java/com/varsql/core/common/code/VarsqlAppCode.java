@@ -65,6 +65,9 @@ public enum VarsqlAppCode implements CodeEnumValue {
 
 	//board permission error
 	,EC_BOARD_PERMISSION(21002)
+	
+	//scheduler error
+	,EC_SCHEDULER(22000)
 
 
 

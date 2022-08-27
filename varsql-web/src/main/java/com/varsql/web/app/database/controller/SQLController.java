@@ -15,6 +15,7 @@ import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
@@ -49,7 +50,7 @@ public class SQLController extends AbstractController  {
 		
 		sqlExecuteInfo.set_requid_(req.getParameter("_requid_"));
 		
-		return sQLServiceImpl.sqlData(sqlExecuteInfo, req);
+		return sQLServiceImpl.sqlData(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
 	}
 
 	/**

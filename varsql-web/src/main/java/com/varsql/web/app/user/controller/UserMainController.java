@@ -1,9 +1,10 @@
 package com.varsql.web.app.user.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,7 +68,7 @@ public class UserMainController extends AbstractController{
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
 		DatabaseUtils.reloadUserDatabaseInfo();
-		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo());
 
 		// tab 정보
 		model.addAttribute("conTabInfo", VartechUtils.objectToJsonString(databaseServiceImpl.findTabInfo()));
@@ -172,18 +173,18 @@ public class UserMainController extends AbstractController{
 		ResponseResult resultObject = new ResponseResult();
 
 		DatabaseUtils.reloadUserDatabaseInfo();
-
-		Collection<DatabaseInfo> dataBaseInfo = SecurityUtil.loginInfo(req).getDatabaseInfo().values();
-
+		
 		List<HashMap<String,String>> databaseList =new ArrayList<>();
-		dataBaseInfo.forEach(item -> {
+		for(Entry<String, DatabaseInfo> entry :  SecurityUtil.loginInfo(req).getDatabaseInfo().entrySet()) {
 			HashMap<String,String> addMap = new HashMap<>();
+			
+			DatabaseInfo item = entry.getValue();
 
-			addMap.put("uuid", item.getConnUUID());
+			addMap.put("uuid", entry.getKey());
 			addMap.put("type", item.getType());
 			addMap.put("name", item.getName());
 			databaseList.add(addMap);
-		});
+		}
 
 		resultObject.setItemList(databaseList);
 

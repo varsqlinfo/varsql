@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.dbcomparemgmt" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.dbcomparemgmt" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -1011,14 +1011,25 @@ VarsqlAPP.vueServiceBean( {
 
 			var errorFormatter =  function (colItemInfo){
 				if(colItemInfo.item[colItemInfo.colInfo.key +'_ne']===true){
-					return '<span style="color:red;">'+(colItemInfo.item[colItemInfo.colInfo.key]||'')+'</span>';
+					return '<span style="font-weight: bold;color:#ff0000;">'+(colItemInfo.item[colItemInfo.colInfo.key]||'')+'</span>';
 				}else{
 					if(VARSQL.isUndefined(colItemInfo.item[colItemInfo.colInfo.key])){
-						return '<span style="color:red;">-----</span>';;
+						return '<span style="font-weight: bold;color:#ff0000;">-----</span>';;
 					}else{
 						return colItemInfo.item[colItemInfo.colInfo.key];
 					}
 				}
+			}
+			
+			var styleClass = function (colItemInfo){
+				if(colItemInfo.item[colItemInfo.colInfo.key +'_ne']===true){
+					return 'pub-bg-warning';
+				}else{
+					if(VARSQL.isUndefined(colItemInfo.item[colItemInfo.colInfo.key])){
+						return 'pub-bg-warning'; 
+					}
+				}
+				return '';
 			}
 
 			var sourceColumnGridObj = $.pubGrid('#sourceColumn');
@@ -1029,18 +1040,13 @@ VarsqlAPP.vueServiceBean( {
 				$.pubGrid('#sourceColumn', {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
-						{ label: '컬럼명', key: 'name',width:80 , render : 'html',formatter : errorFormatter},
-						{ label: '데이터타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
-						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
-						{ label: '기본값', key: 'defaultVal',width:45 , render : 'html',formatter : errorFormatter},
-						{ label: '널여부', key: 'nullable',width:45 , render : 'html',formatter : errorFormatter},
-						{ label: '설명', key: 'comment',width:45 , render : 'html',formatter : errorFormatter}
+						{ label: '컬럼명', key: 'name',width:80 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '데이터타입', key: 'typeAndLength', renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
+						{ label: 'Key', key: 'constraints', align:'center', width:45, renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '기본값', key: 'defaultVal',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '널여부', key: 'nullable',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '설명', key: 'comment',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
 					]
-					,rowOptions :{
-						addStyle :function (a){
-							return a['__ne'] ? 'background:#fbdcdc;' :'';
-						}
-					}
 					,tbodyItem : compareSourceColList
 					,headerOptions:{
 						resize:{
@@ -1090,18 +1096,13 @@ VarsqlAPP.vueServiceBean( {
 				$.pubGrid('#targetColumn', {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
-						{ label: '컬럼명', key: 'name',width:80, render : 'html',formatter : errorFormatter},
-						{ label: '데이터타입', key: 'typeAndLength', render : 'html',formatter : errorFormatter },
-						{ label: 'Key', key: 'constraints', align:'center', width:45, render : 'html',formatter : errorFormatter},
-						{ label: '기본값', key: 'defaultVal',width:45, render : 'html',formatter : errorFormatter},
-						{ label: '널여부', key: 'nullable',width:45, render : 'html',formatter : errorFormatter},
-						{ label: '설명', key: 'comment',width:45, render : 'html',formatter : errorFormatter}
+						{ label: '컬럼명', key: 'name',width:80, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '데이터타입', key: 'typeAndLength', renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
+						{ label: 'Key', key: 'constraints', align:'center', width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '기본값', key: 'defaultVal',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '널여부', key: 'nullable',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: '설명', key: 'comment',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
 					]
-					,rowOptions :{
-						addStyle :function (a){
-							return a['__ne'] ? 'background:#fbdcdc;' :'';
-						}
-					}
 					,tbodyItem : compareTargetColList
 					,headerOptions:{
 						resize:{

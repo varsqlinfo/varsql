@@ -10,29 +10,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: MenuController.java
-* @DESC		: db 메뉴 컨트롤.
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-* 2019. 11. 18. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * 메뉴 컨트롤.
+* 
+* @fileName	: DatabaseMenuController.java
+* @author	: ytkim
  */
 @Controller
 @RequestMapping("/database/menu")
 public class DatabaseMenuController extends AbstractController  {
 	
-	@RequestMapping(value="/fileImport" , method = {RequestMethod.GET , RequestMethod.POST})
-	public ModelAndView fileImport(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	@RequestMapping(value="/fileImport" , method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView fileImport(ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
 		if(VarsqlUtils.isAjaxRequest(req)) {
@@ -42,8 +33,8 @@ public class DatabaseMenuController extends AbstractController  {
 		}
 	}
 	
-	@RequestMapping(value="/fileExport" , method = {RequestMethod.GET , RequestMethod.POST})
-	public ModelAndView fileExport(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	@RequestMapping(value="/fileExport" , method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView fileExport(ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 		
 		if(VarsqlUtils.isAjaxRequest(req)) {

@@ -3,18 +3,10 @@ import org.springframework.stereotype.Service;
 
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: CommonServiceImpl.java
-* @DESC		: 공통 서비스
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-* 2019. 4. 16. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * 공통 추상화 클래스.
+* 
+* @fileName	: AbstractService.java
+* @author	: ytkim
  */
 @Service
 public class AbstractService{

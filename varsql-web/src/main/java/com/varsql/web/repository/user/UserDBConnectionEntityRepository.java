@@ -23,7 +23,6 @@ import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
 public interface UserDBConnectionEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnectionEntity, String>, JpaSpecificationExecutor<DBConnectionEntity> ,UserDBConnectionEntityCustom {
-	public DBConnectionEntity findByVconnid(String vconnid);
 
 	public class UserDBConnectionEntityCustomImpl extends QuerydslRepositorySupport implements UserDBConnectionEntityCustom {
 

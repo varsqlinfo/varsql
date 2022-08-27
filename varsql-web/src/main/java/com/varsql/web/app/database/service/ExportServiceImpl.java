@@ -52,8 +52,9 @@ import com.varsql.core.sql.util.SQLUtils;
 import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.UploadFileType;
-import com.varsql.web.dto.DataDownloadInfo;
-import com.varsql.web.dto.DownloadItemInfo;
+import com.varsql.web.dto.DataExportItemVO;
+import com.varsql.web.dto.DataExportVO;
+import com.varsql.web.dto.db.DBMetadataRequestDTO;
 import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.model.entity.app.FileInfoEntity;
@@ -111,19 +112,22 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public void selectExportConfigInfo(PreferencesRequestDTO preferencesInfo, ModelMap model) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+			
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
 		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
 		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 
-		if(SecurityUtil.isSchemaView(preferencesInfo)) {
+		if(SecurityUtil.isSchemaView(dpi)) {
 			
-			DBVenderType venderType = DBVenderType.getDBType(preferencesInfo.getType());
+			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
 
 			if(venderType.isUseDatabaseName()) {
-				model.addAttribute("schemaList", dbMetaEnum.getDatabases(preferencesInfo));
+				model.addAttribute("schemaList", dbMetaEnum.getDatabases(dpi));
 			}else {
-				model.addAttribute("schemaList", dbMetaEnum.getSchemas(preferencesInfo));
+				model.addAttribute("schemaList", dbMetaEnum.getSchemas(dpi));
 			}
 		}else {
 			model.addAttribute("schemaInfo", "");
@@ -142,11 +146,14 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public ResponseResult selectExportTableInfo(PreferencesRequestDTO preferencesInfo) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
 		ResponseResult result =new ResponseResult();
 
-		result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(),preferencesInfo));
+		result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
 
 		return result ;
 
@@ -165,10 +172,10 @@ public class ExportServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult selectExportDbObjectInfo(DatabaseParamInfo databaseParam) throws Exception {
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(databaseParam.getDbType());
+	public ResponseResult selectExportDbObjectInfo(DBMetadataRequestDTO dbMetadataRequestDTO) throws Exception {
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType());
 
-		Map customParam = databaseParam.getCustom();
+		Map customParam = dbMetadataRequestDTO.getCustom();
 
 		String ddlObjInfo = String.valueOf(customParam.get("ddlObjInfo"));
 
@@ -178,7 +185,7 @@ public class ExportServiceImpl{
 
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			result.addCustoms(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId() , databaseParam));
+			result.addCustoms(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId(), dbMetadataRequestDTO));
 		}
 
 		return result;
@@ -186,20 +193,17 @@ public class ExportServiceImpl{
 
 
 	/**
+	 * 테이블 정보 내보내기.
 	 *
-	 * @param req 
-	 * @param paramInfo
-	 * @Method Name  : tableExport
-	 * @Method 설명 : 테이블 정보 내보내기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 23.
-	 * @변경이력  :
-	 * @param databaseParamInfo
-	 * @param paramInfo
+	 * @method : tableSpecExport
+	 * @param preferencesInfo
+	 * @param req
 	 * @param res
 	 * @throws Exception
 	 */
 	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
 
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
 
@@ -207,7 +211,7 @@ public class ExportServiceImpl{
 
 		logger.debug("tableSpecExport :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
-		logger.debug("MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() :{}", MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() );
+		logger.debug("MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() :{}", MetaControlFactory.getDbInstanceFactory(dpi.getDbType()).getTableReportImpl() );
 
 		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
 
@@ -218,7 +222,7 @@ public class ExportServiceImpl{
 
 		String[] tableNmArr =  Arrays.stream(tables.toArray(new HashMap[tables.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 
-		ExcelReport excelReport=MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl().columnsInfo(preferencesInfo, columns,settingInfo.getBoolean("addTableDefinitionFlag", false) ,settingInfo.getBoolean("sheetFlag" ,false), tableNmArr);
+		ExcelReport excelReport=MetaControlFactory.getDbInstanceFactory(dpi.getDbType()).getTableReportImpl().columnsInfo(dpi, columns,settingInfo.getBoolean("addTableDefinitionFlag", false) ,settingInfo.getBoolean("sheetFlag" ,false), tableNmArr);
 
 		String exportFileName =settingInfo.getString("exportName","table-spec");
 
@@ -242,6 +246,8 @@ public class ExportServiceImpl{
 	 */
 	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String jsonString = preferencesInfo.getPrefVal();
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
 
 		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
@@ -252,7 +258,7 @@ public class ExportServiceImpl{
 
 		Iterator<String> iter =exportInfo.keySet().iterator();
 
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType());
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
 		StringBuilder allDDLScript = new StringBuilder();
 		DDLCreateOption ddlOption = new DDLCreateOption();
@@ -263,9 +269,9 @@ public class ExportServiceImpl{
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 
-			preferencesInfo.setObjectType(ObjectType.getDBObjectType( objectName).name());
+			dpi.setObjectType(ObjectType.getDBObjectType( objectName).name());
 
-			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( objectName).getObjectTypeId(),preferencesInfo,ddlOption, objNmArr);
+			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( objectName).getObjectTypeId(), dpi, ddlOption, objNmArr);
 
 			for (DDLInfo ddlInfo : ddlList) {
 				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE_TWO);
@@ -286,19 +292,41 @@ public class ExportServiceImpl{
 	}
 	
 	/**
-	 * @method  : downloadTableData
-	 * @desc : download table data
-	 * @author   : ytkim
-	 * @date   : 2022. 1. 28. 
+	 * download table data 
+	 *
+	 * @method : downloadTableData
 	 * @param preferencesInfo
 	 * @param req
 	 * @param res
 	 * @throws Exception
 	 */
 	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
-		ResponseResult result = downloadTableData2(preferencesInfo, req, res);
+		
+		DataExportVO dataExportVO = VartechUtils.jsonStringToObject(preferencesInfo.getPrefVal(), DataExportVO.class, true);
 
-		FileInfoEntity fie = result.getItem();
+		logger.debug("downloadTableData : {}", preferencesInfo.getPrefVal());
+
+		String requid = dataExportVO.getRequid();
+
+		ProgressInfo progressInfo = new ProgressInfo();
+
+		progressInfo.setTotalItemSize(dataExportVO.getExportItems().size());
+
+		String sessAttrKey = HttpSessionConstants.progressKey(requid);
+		
+		HttpSession session = req.getSession();
+		session.setAttribute(sessAttrKey, progressInfo);
+		
+		
+		Path fileExportPath = FileServiceUtils.getSavePath(UploadFileType.EXPORT);
+		File zipFile = new File(FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(),
+				VarsqlFileType.ZIP.concatExtension(ValidateUtils.getValidFileName(dataExportVO.getFileName()))));
+		
+		FileInfoEntity fie = exportTableData(SecurityUtil.loginInfo().getDatabaseInfo().get(dataExportVO.getConuid()), dataExportVO, zipFile, progressInfo);
+
+		fileInfoEntityRepository.save(fie);
+
+		session.setAttribute(sessAttrKey, "complete");
 
 		VarsqlUtils.setResponseDownAttr(res, req, fie.getFileName());
 
@@ -320,63 +348,70 @@ public class ExportServiceImpl{
 		}
 	}
 
-	public ResponseResult downloadTableData2(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,	HttpServletResponse res) throws Exception {
-		DataDownloadInfo ddi = VartechUtils.jsonStringToObject(preferencesInfo.getPrefVal(), DataDownloadInfo.class, true);
+	/**
+	 * db table data export
+	 *
+	 * @method : exportTableData
+	 * @param databaseInfo
+	 * @param dataExportVO
+	 * @param zipFile
+	 * @return
+	 * @throws Exception
+	 */
+	public FileInfoEntity exportTableData(DatabaseInfo databaseInfo, DataExportVO dataExportVO, File zipFile) throws Exception {
+		return exportTableData(databaseInfo, dataExportVO, zipFile, null);
+	}
+	
+	/**
+	 * db table data export
+	 *
+	 * @method : exportTableData
+	 * @param databaseInfo
+	 * @param dataExportVO
+	 * @param zipFile
+	 * @param progressInfo
+	 * @return
+	 * @throws Exception
+	 */
+	public FileInfoEntity exportTableData(DatabaseInfo databaseInfo, DataExportVO dataExportVO, File zipFile, ProgressInfo progressInfo) throws Exception {
+		
+		String prefixSchema = StringUtils.isBlank(dataExportVO.getSchema()) ? "" : dataExportVO.getSchema() + ".";
+		String charset = StringUtils.isBlank(dataExportVO.getCharset()) ? VarsqlConstants.CHAR_SET : dataExportVO.getCharset();
 
-		DatabaseInfo databaseInfo = SecurityUtil.loginInfo().getDatabaseInfo().get(ddi.getConuid());
+		String exportFileName = zipFile.getName();
 
-		logger.debug("downloadTableData : {}", preferencesInfo.getPrefVal());
-
-		String prefixSchema = StringUtils.isBlank(ddi.getSchema()) ? "" : ddi.getSchema() + ".";
-		String charset = StringUtils.isBlank(ddi.getCharset()) ? VarsqlConstants.CHAR_SET : ddi.getCharset();
-
-		String exportFileName = ValidateUtils.getValidFileName(ddi.getFileName());
-		String fileId = VartechUtils.generateUUID();
-
-		Path fileExportPath = FileServiceUtils.getSavePath(UploadFileType.EXPORT);
-		File zipFile = new File(FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(),
-				VarsqlFileType.ZIP.concatExtension(fileId)));
-
-		int bufferSize = 2048;
-
-		final VarsqlFileType exportType = ddi.getExportType();
-
+		final VarsqlFileType exportType = dataExportVO.getExportType();
+		
 		DBVenderType dbType = DBVenderType.getDBType(databaseInfo.getType());
 
-		String requid = ddi.getRequid();
-
-		ProgressInfo progressInfo = new ProgressInfo();
-
-		progressInfo.setTotalItemSize(ddi.getItems().size());
-
-		String sessAttrKey = HttpSessionConstants.progressKey(requid);
+		int bufferSize = 2048;
 		
-		HttpSession session = req.getSession();
-		session.setAttribute(sessAttrKey, progressInfo);
-
+		String exportTempFilePath = FileServiceUtils.getSavePath(UploadFileType.TEMP).toAbsolutePath().toString();
+		
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile), Charset.forName(charset));) {
 
 			int idx = 0;
-			for (DownloadItemInfo item : ddi.getItems()) {
+			for (DataExportItemVO item : dataExportVO.getExportItems()) {
 				++idx;
 
 				SqlExecuteDTO seDto = new SqlExecuteDTO();
-				seDto.setLimit(ddi.getLimit());
-				seDto.setConuid(ddi.getConuid(), exportFileName, databaseInfo);
+				seDto.setLimit(dataExportVO.getLimit());
+				seDto.setDatabaseInfo(databaseInfo);
 
 				String objectName = prefixSchema + item.getName();
 
 				seDto.setSqlParam("{}");
 				seDto.setSql(SQLUtils.generateSelectQuery(objectName, item.getCondition(), dbType));
 
-				String downloadFilePath = FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(),
-						exportType.concatExtension(VartechUtils.generateUUID()));
+				String exportFilePath = FileUtils.pathConcat(exportTempFilePath, exportType.concatExtension(VartechUtils.generateUUID()));
 
-				progressInfo.setName(item.getName());
-				progressInfo.setItemIdx(idx);
+				if(progressInfo != null) {
+					progressInfo.setName(item.getName());
+					progressInfo.setItemIdx(idx);
+				}
 
 				AbstractWriter writer = null;
-				try (OutputStream outstream = new FileOutputStream(downloadFilePath);) {
+				try (OutputStream outstream = new FileOutputStream(exportFilePath);) {
 
 					if (VarsqlFileType.CSV.equals(exportType)) {
 						writer = new CSVWriter(outstream, ',', charset);
@@ -390,7 +425,7 @@ public class ExportServiceImpl{
 						writer = new SQLWriter(outstream, dbType, objectName, charset);
 					}
 
-					logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, seDto.getSql());
+					logger.debug("data export exportFilePath :{} , query : {}", exportFilePath, seDto.getSql());
 
 					final String tableName = item.getName();
 					SQLExecuteResult ser = (new SelectExecutor()).execute(seDto,
@@ -422,7 +457,9 @@ public class ExportServiceImpl{
 										this.firstFlag = false;
 									} 
 
-									progressInfo.setProgressContentLength(++rowIdx);
+									if(progressInfo != null) {
+										progressInfo.setProgressContentLength(++rowIdx);
+									}
 
 									try {
 										getWriter().addRow(handleParam.getRowObject());
@@ -439,13 +476,13 @@ public class ExportServiceImpl{
 					String zipFileName = exportType.concatExtension(item.getName());
 
 					if (ser.getResultCode() != null) {
-						VarsqlUtils.textDownload(new FileOutputStream(downloadFilePath), ser.getMessage());
+						VarsqlUtils.textDownload(new FileOutputStream(exportFilePath), ser.getMessage());
 						zipFileName = item.getName() + "-export-error.txt";
 					}
 
-					try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(downloadFilePath));) {
+					try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(exportFilePath));) {
 						ZipEntry zentry = new ZipEntry(zipFileName);
-						zentry.setSize(new File(downloadFilePath).length());
+						zentry.setSize(new File(exportFilePath).length());
 						zos.putNextEntry(zentry);
 
 						byte[] buffer = new byte[bufferSize];
@@ -456,7 +493,7 @@ public class ExportServiceImpl{
 						zos.closeEntry();
 					}
 
-					new File(downloadFilePath).delete();
+					new File(exportFilePath).delete();
 
 				} catch (Exception e) {
 					throw e;
@@ -466,19 +503,16 @@ public class ExportServiceImpl{
 			}
 			IOUtils.close(zos);
 		}
-
+		
+		String fileId = VartechUtils.generateUUID();
+		
 		FileInfoEntity fie = FileInfoEntity.builder().fileId(fileId).fileContId(fileId)
 				.contGroupId(databaseInfo.getVconnid()).fileDiv(UploadFileType.EXPORT.getDiv())
-				.fileFieldName("downloadZipFile").fileName(VarsqlFileType.ZIP.concatExtension(exportFileName))
+				.fileFieldName("exportZipFile").fileName(VarsqlFileType.ZIP.concatExtension(exportFileName))
 				.fileSize(zipFile.length()).fileExt(VarsqlFileType.ZIP.getExtension()).filePath(FileUtils
 						.pathConcat(FileServiceUtils.getSaveRelativePath(UploadFileType.EXPORT), zipFile.getName()))
 				.build();
-
-		fileInfoEntityRepository.save(fie);
-
-		session.setAttribute(sessAttrKey, "complete");
-
-		return VarsqlUtils.getResponseResultItemOne(fie);
-
+		
+		return fie; 
 	}
 }

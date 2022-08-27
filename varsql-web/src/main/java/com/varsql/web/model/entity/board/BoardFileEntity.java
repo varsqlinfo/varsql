@@ -59,11 +59,11 @@ public class BoardFileEntity extends FileBaseEntity{
 	private String fileFieldName; 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name ="CONT_ID", referencedColumnName = "COMMENT_ID", insertable = false, updatable = false)
+	@JoinColumn(name ="CONT_ID", insertable = false, updatable = false)
 	private BoardCommentEntity comment; 
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name ="CONT_ID", referencedColumnName = "ARTICLE_ID", insertable = false, updatable = false)
+	@JoinColumn(name ="CONT_ID", insertable = false, updatable = false)
 	private BoardEntity article;
 	
 	@Builder

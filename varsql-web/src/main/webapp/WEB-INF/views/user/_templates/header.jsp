@@ -11,7 +11,7 @@
 		<select id="user_connection_info">
 			<option value="">----connection info---</option>
 			<c:forEach items="${dblist}" var="tmpInfo" varStatus="status">
-				<option value="${tmpInfo.connUUID}" dbtype="${tmpInfo.type}" vname="${tmpInfo.name}">${tmpInfo.name}</option>
+				<option value="${tmpInfo.key}">${tmpInfo.value.name}</option>
 			</c:forEach>
 		</select>
 	</div>
@@ -213,7 +213,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 					strHtm.push('<option value="">----connection info---</option>');
 					for(var i =0, len = items.length;i <len; i++){
 						var item = items[i];
-						strHtm.push('<option value="'+item.uuid+'" dbtype="'+item.type+'" vname="'+item.name+'">'+item.name+'</option>');
+						strHtm.push('<option value="'+item.uuid+'">'+item.name+'</option>');
 					}
 
 					$('#user_connection_info').empty().html(strHtm.join(''));

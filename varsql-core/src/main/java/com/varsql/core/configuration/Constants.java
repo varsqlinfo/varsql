@@ -10,11 +10,8 @@ package com.varsql.core.configuration;
  */
 public interface Constants {
 	
-	public final String CONFIG_DEFAULT_KEY = "com.varsql.config.file";
 	public final String DB_CONFIG_FILE = "com.varsql.connection.file";
-	public final String VARSQL_INSTALL_ROOT = "com.varsql.install.root";
-	public final String CONFIG_PROP_NAME = "varsqlConfig";
+	public final String CONFIG_PROPERTY_KEY= "com.varsql.resource.root";
 	
-	public final String WEB_CONFIG_FILE = "config/varsql-web-config.xml";
-	public final String PLUGIN_CONFIG_FILE = "config/varsql-plugin-config.xml";
+	public final String RUNTIME_KEY = "varsql.runtime";
 }

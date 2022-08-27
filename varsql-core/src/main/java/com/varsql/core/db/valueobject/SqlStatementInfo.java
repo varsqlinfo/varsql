@@ -1,5 +1,8 @@
 package com.varsql.core.db.valueobject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.SqlDataConstants;
 
@@ -17,16 +20,22 @@ import com.varsql.core.common.constants.SqlDataConstants;
 
 *-----------------------------------------------------------------------------
  */
-public class SqlStatementInfo extends DatabaseParamInfo{
+public class SqlStatementInfo{
 
 	// sql
 	private String sql;
-
+	
+	// schema info
+	private String schema;
+		
 	// limit count
 	private int limit;
 
 	// sql parameer
 	private String sqlParam;
+	
+	// db object name
+	private String objectName;
 
 	// export type (sql, csv, json, xml ...)
 	private VarsqlFileType exportType;
@@ -36,6 +45,10 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 	private String charset;
 	
 	private boolean useColumnAlias = true;
+	
+	private Map<String , Object> custom;
+	
+	private DatabaseInfo databaseInfo;
 
 	public SqlStatementInfo(){
 		super();
@@ -93,6 +106,39 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 		this.charset = charset;
 	}
 
+	public boolean isUseColumnAlias() {
+		return useColumnAlias;
+	}
+
+	public void setUseColumnAlias(boolean useColumnAlias) {
+		this.useColumnAlias = useColumnAlias;
+	}
+
+	public Map<String , Object> getCustom() {
+		return custom;
+	}
+
+	public void setCustom(Map custom) {
+		this.custom = custom;
+	}
+
+	public void addCustom(String key, Object val) {
+		if(this.custom ==null){
+			this.custom = new HashMap<String ,Object>();
+		}
+
+		this.custom.put(key, val);
+
+	}
+
+	public DatabaseInfo getDatabaseInfo() {
+		return databaseInfo;
+	}
+
+	public void setDatabaseInfo(DatabaseInfo databaseInfo) {
+		this.databaseInfo = databaseInfo;
+	}
+
 	@Override
 	public String toString() {
 
@@ -104,13 +150,19 @@ public class SqlStatementInfo extends DatabaseParamInfo{
 				.toString();
 	}
 
-	public boolean isUseColumnAlias() {
-		return useColumnAlias;
+	public String getSchema() {
+		return schema;
 	}
 
-	public void setUseColumnAlias(boolean useColumnAlias) {
-		this.useColumnAlias = useColumnAlias;
+	public void setSchema(String schema) {
+		this.schema = schema;
 	}
 
-	
+	public String getObjectName() {
+		return objectName;
+	}
+
+	public void setObjectName(String objectName) {
+		this.objectName = objectName;
+	}
 }

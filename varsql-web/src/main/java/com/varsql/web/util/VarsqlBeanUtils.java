@@ -3,9 +3,13 @@ package com.varsql.web.util;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 
+import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.configuration.ApplicationContextProvider;
+import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -36,5 +40,13 @@ public class VarsqlBeanUtils {
 	 */
     public static <T extends Serializable> T copyEntity(T source) {
     	return SerializationUtils.clone(source);
+	}
+    
+    public static void copyNonNullProperties(Object src, Object target, String... checkProperty) {
+	    try {
+			BeanUtils.copyProperties(src, target, VartechReflectionUtils.getNullPropertyNames(src, checkProperty));
+		} catch (Exception e) {
+			throw new VarsqlRuntimeException(VarsqlAppCode.COMM_RUNTIME_ERROR, e);
+		}
 	}
 }

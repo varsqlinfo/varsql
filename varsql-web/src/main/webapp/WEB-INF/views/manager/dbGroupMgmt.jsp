@@ -3,7 +3,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.dbgroup" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.dbgroup" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -46,7 +46,7 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manage.dbgroup.nm" /></th>
+									<th class="text-center"><spring:message	code="manager.dbgroup.nm" /></th>
 									<th class="text-center"><spring:message	code="reg_user" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
@@ -73,7 +73,7 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-7">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manage.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<div class="panel-heading"><spring:message code="manager.menu.dbgroup" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="form-group">
@@ -89,7 +89,7 @@
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<input type="hidden" v-model="detailItem.wordIdx">
 					<div class="form-group" :class="errors.has('GROUPNAME') ? 'has-error' :''">
-						<label class="col-sm-4 control-label"><spring:message code="manage.dbgroup.nm" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="manager.dbgroup.nm" /></label>
 						<div class="col-sm-8">
 							<input type="text" v-model="detailItem.groupName" v-validate="'required'" name="GROUPNAME" class="form-control" />
 							<div v-if="errors.has('GROUPNAME')" class="help-block">{{ errors.first('GROUPNAME') }}</div>
@@ -108,7 +108,7 @@
 		</div>
 
 		<div class="panel panel-default" :class="isViewMode ?'' :'hidden'" >
-			<div class="panel-heading"><spring:message code="manage.dbgroup.mapping" /></div>
+			<div class="panel-heading"><spring:message code="manager.dbgroup.mapping" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="col-sm-12">

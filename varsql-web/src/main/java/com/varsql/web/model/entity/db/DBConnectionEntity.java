@@ -10,25 +10,28 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
+import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @SuppressWarnings("serial")
 @Getter
@@ -38,6 +41,7 @@ import lombok.Setter;
 @DynamicUpdate
 @Audited
 @Table(name = DBConnectionEntity._TB_NAME)
+@ToString(exclude = {"vpw","dbTypeDriverProvider","managerList", "jobScheduleEntity"})
 public class DBConnectionEntity extends AbstractAuditorModel{
 
 	public final static String _TB_NAME="VTCONNECTION";
@@ -57,9 +61,12 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	@Column(name ="VURL")
 	private String vurl;
 
-	@Column(name ="VDRIVER")
-	private String vdriver;
-
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "VDRIVER", nullable = false)
+	private DBTypeDriverProviderEntity dbTypeDriverProvider;
+	
 	@Column(name ="VID")
 	private String vid;
 
@@ -128,15 +135,15 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@NotAudited
 	@JsonIgnore
-	@OneToOne(optional = true, cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-	@JoinColumn(name = "VDRIVER", referencedColumnName = "DRIVER_PROVIDER_ID", nullable = false, insertable =false , updatable =false)
-	private DBTypeDriverProviderEntity dbTypeDriverProvider;
-
-	@NotAudited
-	@JsonIgnore
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> managerList;
+	
+	@NotAudited
+	@JsonIgnore
+	@JsonManagedReference
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "scheduleDBConnection")
+    private Set<JobScheduleEntity> jobScheduleEntity;
 
 //	@NotAudited
 //	@JsonManagedReference
@@ -144,12 +151,12 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, String vdriver, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel, String testWhileIdle) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, DBTypeDriverProviderEntity dbTypeDriverProvider, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel, String testWhileIdle) {
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;
 		this.vurl = vurl;
-		this.vdriver = vdriver;
+		this.dbTypeDriverProvider = dbTypeDriverProvider;
 		this.vid = vid;
 		this.vpw = vpw;
 		this.maxActive = maxActive;
@@ -229,4 +236,5 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	public final static String USE_COLUMN_LABEL ="useColumnLabel";
 	
 	public final static String TEST_WHILE_IDLE ="testWhileIdle";
+	
 }

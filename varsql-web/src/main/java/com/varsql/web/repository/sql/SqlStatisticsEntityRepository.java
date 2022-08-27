@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.dto.sql.QSqlStatisticsReponseDTO;
 import com.varsql.web.dto.sql.SqlStatisticsReponseDTO;
 import com.varsql.web.model.entity.sql.QSqlStatisticsEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
@@ -36,10 +35,8 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 		public List<SqlStatisticsReponseDTO> findSqlDateStat(String vconid, String s_date, String e_date) {
 			final QSqlStatisticsEntity sqlStat = QSqlStatisticsEntity.sqlStatisticsEntity;
 
-			//StringExpression viewDt = QueryDslUtils.toChar(sqlStat.startTime.max(),"yyyy-mm-dd");
-
 			return from(sqlStat)
-				.select(Projections.constructor(SqlStatisticsReponseDTO.class,sqlStat.startTime.max(),sqlStat.sMm, sqlStat.sDd ,sqlStat.vconnid.count().as("YCol")))
+				.select(Projections.constructor(SqlStatisticsReponseDTO.class, sqlStat.startTime.max(), sqlStat.sMm, sqlStat.sDd, sqlStat.vconnid.count().as("YCol")))
 				.where(sqlStat.vconnid.eq(vconid).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
 				.groupBy(sqlStat.sMm,sqlStat.sDd)
 				.orderBy(sqlStat.sMm.asc(),sqlStat.sDd.asc())
@@ -55,7 +52,7 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 			final QSqlStatisticsEntity sqlStat = QSqlStatisticsEntity.sqlStatisticsEntity;
 
 			return from(sqlStat)
-				.select(new QSqlStatisticsReponseDTO(sqlStat.commandType.as("xCol") ,sqlStat.vconnid.count().as("yCol")))
+				.select(Projections.constructor(SqlStatisticsReponseDTO.class,sqlStat.commandType.as("xCol") ,sqlStat.vconnid.count().as("yCol")))
 				.where(sqlStat.vconnid.eq(vconid).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
 				.groupBy(sqlStat.commandType)
 				.fetch();
@@ -73,30 +70,15 @@ public interface SqlStatisticsEntityRepository extends DefaultJpaRepository, Jpa
 			}
 
 			return from(user)
-			.select(new QSqlStatisticsReponseDTO(user.uname.as("viewid") ,sqlStat.vconnid.count().as("cnt")))
-			.innerJoin(sqlStat)
-			.on(user.viewid.eq(sqlStat.viewid))
-			.where(sqlStat.vconnid.eq(vconid).and(commandTypeChk).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
-			.groupBy(sqlStat.viewid)
-			.orderBy(sqlStat.vconnid.count().asc())
-			.limit(5)
-			.fetch();
-
-
-			//new QSqlStatisticsReponseDTO(sqlStat.viewid.as("xCol") ,sqlStat.vconnid.count().as("yCol"))
-
-			//from(sqlStat).join(JPAExpressions.)
-
-			//return null;
-			/*
-			return from(sqlStat)
-				.select(sqlStat.viewid.as("viewid") , sqlStat.vconnid.count().as("cnt"))
-				.where(sqlStat.vconnid.eq(vconid).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
+				.select(Projections.constructor(SqlStatisticsReponseDTO.class,user.uname.as("viewid") ,sqlStat.vconnid.count().as("cnt")))
+				.innerJoin(sqlStat)
+				.on(user.viewid.eq(sqlStat.viewid))
+				.where(sqlStat.vconnid.eq(vconid).and(commandTypeChk).and(sqlStat.startTime.between(ConvertUtils.stringToLocalDateTime(s_date), ConvertUtils.stringToLocalDateTime(e_date))))
 				.groupBy(sqlStat.viewid)
 				.orderBy(sqlStat.vconnid.count().asc())
 				.limit(5)
 				.fetch();
-				*/
+
 		}
 	}
 }

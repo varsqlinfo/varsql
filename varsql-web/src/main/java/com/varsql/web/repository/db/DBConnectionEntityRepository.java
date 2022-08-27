@@ -2,20 +2,77 @@ package com.varsql.web.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.querydsl.core.types.Projections;
+import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.app.component.ConnectionInfoDTO;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.QDBConnectionEntity;
+import com.varsql.web.model.entity.db.QDBTypeDriverEntity;
+import com.varsql.web.model.entity.db.QDBTypeDriverProviderEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
+import com.varsql.web.util.ConvertUtils;
 
 @Repository
-public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnectionEntity, String>, JpaSpecificationExecutor<DBConnectionEntity>  {
+public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaRepository<DBConnectionEntity, String>, JpaSpecificationExecutor<DBConnectionEntity> , DBConnectionEntityCustom {
 	public DBConnectionEntity findByVconnid(String vconnid);
 
-	@Query(value = "select new com.varsql.web.app.component.ConnectionInfoDTO(a, b, c) "
-			+ "from DBConnectionEntity a join DBTypeDriverProviderEntity b on a.vdriver = b.driverProviderId "
-			+ " join DBTypeDriverEntity c on b.driverId = c.driverId where a.vconnid = :vconnid ")
-	ConnectionInfoDTO findByConnInfo(@Param(DBConnectionEntity.VCONNID) String connid);
+	@Transactional(readOnly = true , value=ResourceConfigConstants.APP_TRANSMANAGER)
+	public class DBConnectionEntityCustomImpl extends QuerydslRepositorySupport implements DBConnectionEntityCustom {
+
+		public DBConnectionEntityCustomImpl() {
+			super(DBConnectionEntity.class);
+		}
+
+		@Override
+		public ConnectionInfoDTO findByConnInfo(String vconnid) {
+			final QDBConnectionEntity dBConnectionEntity = QDBConnectionEntity.dBConnectionEntity;
+			final QDBTypeDriverProviderEntity dBTypeDriverProviderEntity = QDBTypeDriverProviderEntity.dBTypeDriverProviderEntity;
+			final QDBTypeDriverEntity dBTypeDriverEntity = QDBTypeDriverEntity.dBTypeDriverEntity;
+			
+			return from(dBConnectionEntity).innerJoin(dBTypeDriverProviderEntity).on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
+			.innerJoin(dBTypeDriverEntity).on(dBTypeDriverProviderEntity.driverId.eq(dBTypeDriverEntity.driverId))
+			.select(Projections.constructor(ConnectionInfoDTO.class, dBConnectionEntity, dBTypeDriverProviderEntity, dBTypeDriverEntity))
+			.where(dBConnectionEntity.vconnid.eq(vconnid)).fetchOne();
+			
+		}
+
+		@Override
+		public DatabaseInfo findDatabaseInfo(String vconnid) {
+			final QDBConnectionEntity dBConnectionEntity = QDBConnectionEntity.dBConnectionEntity;
+			final QDBTypeDriverProviderEntity dBTypeDriverProviderEntity = QDBTypeDriverProviderEntity.dBTypeDriverProviderEntity;
+			
+			ConnectionInfoDTO dto = from(dBConnectionEntity).innerJoin(dBTypeDriverProviderEntity)
+				.on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
+				.select(Projections.constructor(ConnectionInfoDTO.class, dBConnectionEntity, dBTypeDriverProviderEntity))
+				.where(dBConnectionEntity.vconnid.eq(vconnid)).fetchOne();
+			
+			return DatabaseInfo.builder()
+					.vconnid(dto.getConnection().getVconnid())
+					.type(dto.getProvider().getDbType())
+					.name(dto.getConnection().getVname())
+					.schema(dto.getConnection().getVdbschema())
+					.basetableYn(dto.getConnection().getBasetableYn())
+					.lazyLoad(dto.getConnection().getLazyloadYn())
+					.version(ConvertUtils.longValueOf(dto.getConnection().getVdbversion()))
+					.schemaViewYn(dto.getConnection().getSchemaViewYn())
+					.maxSelectCount(ConvertUtils.intValue(dto.getConnection().getMaxSelectCount()))
+					.useColumnLabel(dto.getConnection().getUseColumnLabel())
+					.databaseName(dto.getConnection().getVdatabasename())
+					.build();
+			
+		}
+
+	}
+}
+
+interface DBConnectionEntityCustom {
+	ConnectionInfoDTO findByConnInfo(@Param(DBConnectionEntity.VCONNID) String vconnid);
+	
+	DatabaseInfo findDatabaseInfo(String vconnid);
 }

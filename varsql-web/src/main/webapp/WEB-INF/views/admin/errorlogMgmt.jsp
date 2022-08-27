@@ -84,7 +84,7 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-7">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manage.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<div class="panel-heading"><spring:message code="manager.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" >

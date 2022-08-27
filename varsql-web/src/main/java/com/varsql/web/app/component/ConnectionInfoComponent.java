@@ -102,11 +102,12 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 		}else {
 			driverFileInfos = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
 		}
-
-		JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dto.getDriver().getDriverId(), dto.getDriver().getDbdriver());
-	    jdbcDriverInfo.setDriverFiles(driverFileInfos);
-	    
-	    connInfo.setJdbcDriverInfo(jdbcDriverInfo);
+		
+	    connInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
+    		.driverId(dto.getDriver().getDriverId())
+    		.driverClass(dto.getDriver().getDbdriver())
+    		.driverFiles(driverFileInfos)
+    		.build());
 
 		return connInfo;
 	}

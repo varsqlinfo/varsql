@@ -16,7 +16,6 @@ import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
@@ -40,28 +39,23 @@ public class DatabaseUtilsController extends AbstractController  {
 	private final Logger logger = LoggerFactory.getLogger(DatabaseUtilsController.class);
 
 	/**
+	 * excel -> ddl 변환
 	 *
-	 * @Method Name  : genTable
-	 * @Method 설명 : excel -> ddl 변환
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 8. 24.
-	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @method : genTable
 	 * @param mav
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/genTable", method = RequestMethod.GET)
-	public ModelAndView genTable(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView genTable(ModelAndView mav, HttpServletRequest req) throws Exception {
 		return getModelAndView("/genTable", VIEW_PAGE.DATABASE_UTILS, mav.getModelMap());
 	}
 
 	/**
-	 * @method  : sqlTemplate
-	 * @desc : get sql template
-	 * @author   : ytkim
-	 * @date   : 2021. 3. 6.
+	 * get sql template
+	 *
+	 * @method : sqlTemplate
 	 * @param dbType
 	 * @param templateType
 	 * @param req

@@ -62,7 +62,7 @@ public class FileImportExecutor extends UpdateExecutor{
 
 		result.setStartTime(System.currentTimeMillis());
 
-		Connection conn = ConnectionFactory.getInstance().getConnection(statementInfo.getVconnid());
+		Connection conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 		final HandlerVariable handlerVariable = new HandlerVariable(conn);
 		try {
 

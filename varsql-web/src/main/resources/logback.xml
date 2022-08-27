@@ -87,7 +87,8 @@
 	        </then>
 	    </if>
 	</logger>
-
+	
+	<!-- spring logger start -->
 	<logger name="org.springframework" level="info" additivity="false">
 		<appender-ref ref="FILEOUT" />
 		<if condition='"local".equals("${runtime}")'>
@@ -109,6 +110,7 @@
 	        </then>
 	    </if>
 	</logger>
+	<!-- spring logger end -->
 	
 	<logger name="com.varsql.web.configuration" level="info" additivity="false">
 		<appender-ref ref="FILEOUT" />
@@ -138,7 +140,7 @@
 	</logger>
 
 	<logger name="com.core.varsql_query" level="debug" additivity="false">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILEOUT" />
 		<if condition='"local".equals("${runtime}")'>
 	        <then>
 				<appender-ref ref="STDOUT" />
@@ -264,9 +266,18 @@
     <logger name="org.hibernate.SQL" level="DEBUG"/>
 
 	<!-- apache log // start -->
-    <logger name="org.apache.tiles" level="info" additivity="false"/>
-    <logger name="org.apache" level="info" additivity="false"/>
+    <logger name="org.apache.tiles" level="info"/>
+    <logger name="org.apache" level="info">
+		
+	</logger>
 	<!-- apache log // end  -->
+	
+	<!-- quartz log // start
+	<logger name="org.quartz.core" level="debug" additivity="false"/>
+	<logger name="org.quartz.simpl" level="debug" additivity="false"/>
+	<logger name="org.quartz.impl.jdbcjobstore" level="debug" additivity="false"/>
+	 -->
+    <!-- quartz log // end -->
     
     <!-- jdbc driver log -->
     <logger name="org.mariadb.jdbc" level="info" additivity="false"/>

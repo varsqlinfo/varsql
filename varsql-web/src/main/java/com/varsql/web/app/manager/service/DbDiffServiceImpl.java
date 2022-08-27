@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
@@ -18,10 +16,12 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
-import com.varsql.web.util.ConvertUtils;
+import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.StringUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
 *-----------------------------------------------------------------------------
@@ -37,12 +37,12 @@ import com.vartech.common.utils.StringUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class DbDiffServiceImpl{
 
 	private final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
 
-	@Autowired
-	private DBConnectionEntityRepository  dbConnectionEntityRepository;
+	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
 
 	/**
 	 *
@@ -73,7 +73,7 @@ public class DbDiffServiceImpl{
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(venderType);
 			resultObject.setItemList(dbMetaEnum.getServiceMenu());
 			
-			DatabaseParamInfo param = getDatabaseParamInfo(vtConnRVO);
+			DatabaseParamInfo param = DatabaseUtils.dbConnectionEntityToDatabaseParamInfo(vtConnRVO);
 			
 			if(venderType.isUseDatabaseName()) {
 				resultObject.addCustoms("schemaInfo", dbMetaEnum.getDatabases(param));
@@ -103,18 +103,18 @@ public class DbDiffServiceImpl{
 
 		ResponseResult resultObject = new ResponseResult();
 
-		DBConnectionEntity vtConnRVO = dbConnectionEntityRepository.findByVconnid(vconnid);
+		DatabaseInfo databaseInfo = dbConnectionEntityRepository.findDatabaseInfo(vconnid);
 
-		if(vtConnRVO==null){
+		if(databaseInfo==null){
 			resultObject.setResultCode(RequestResultCode.ERROR);
-			resultObject.setItemList(null);
+			return resultObject;
 		}else{
-			DatabaseParamInfo dpi = getDatabaseParamInfo(vtConnRVO);
+			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
 			dpi.setSchema(schema);
-			dpi.setDatabaseName(StringUtils.isBlank(databaseName) ? vtConnRVO.getVdatabasename() : databaseName);
+			dpi.setDatabaseName(StringUtils.isBlank(databaseName) ? databaseInfo.getDatabaseName(): databaseName);
 			dpi.setObjectType(objectType);
 
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(vtConnRVO.getDbTypeDriverProvider().getDbType());
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){
 				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
@@ -134,25 +134,5 @@ public class DbDiffServiceImpl{
 		}
 
 		return resultObject;
-	}
-
-	private DatabaseParamInfo getDatabaseParamInfo(DBConnectionEntity vtConnRVO) {
-		DatabaseParamInfo dpi = new DatabaseParamInfo();
-		dpi.setConuid(null, SecurityUtil.loginInfo().getViewid(), new DatabaseInfo(vtConnRVO.getVconnid()
-				, null
-				, vtConnRVO.getDbTypeDriverProvider().getDbType()
-				, vtConnRVO.getVname()
-				, vtConnRVO.getVdbschema()
-				, vtConnRVO.getBasetableYn()
-				, vtConnRVO.getLazyloadYn()
-				, ConvertUtils.longValueOf(vtConnRVO.getVdbversion())
-				, vtConnRVO.getSchemaViewYn()
-				, ConvertUtils.intValue(vtConnRVO.getMaxSelectCount())
-				, vtConnRVO.getUseColumnLabel()
-				, vtConnRVO.getVdatabasename()
-			)
-		);
-
-		return dpi;
 	}
 }

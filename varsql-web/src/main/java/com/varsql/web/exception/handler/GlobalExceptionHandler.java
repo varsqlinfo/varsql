@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.BlockingUserException;
@@ -28,7 +29,7 @@ import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.web.common.service.CommonServiceImpl;
+import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.exception.BoardNotFoundException;
 import com.varsql.web.exception.BoardPermissionException;
 import com.varsql.web.exception.DataDownloadException;
@@ -44,18 +45,10 @@ import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: GlobalExceptionHandler.java
-* @DESC		: exception handler
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-* 2019. 4. 16. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * exception handler
+* 
+* @fileName	: GlobalExceptionHandler.java
+* @author	: ytkim
  */
 @ControllerAdvice
 public class GlobalExceptionHandler{
@@ -63,18 +56,15 @@ public class GlobalExceptionHandler{
 	private final Logger logger = LoggerFactory.getLogger("appErrorLog");
 
 	@Autowired
-	private CommonServiceImpl commonServiceImpl;
+	private CommonLogService commonLogService;
 
 	/**
+	 * sql exception 처리.
 	 *
-	 * @Method Name  : sqlExceptionHandle
-	 * @Method 설명 : sql exception 처리.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 13.
-	 * @변경이력  :
+	 * @method : sqlExceptionHandler
 	 * @param ex
+	 * @param request
 	 * @param response
-	 * @return
 	 */
 	@ExceptionHandler(value=SQLException.class)
 	public void sqlExceptionHandler(SQLException ex, HttpServletRequest request, HttpServletResponse response){
@@ -90,15 +80,12 @@ public class GlobalExceptionHandler{
 
 
 	/**
+	 * var sql error 처리.
 	 *
-	 * @Method Name  : varsqlAppExceptionHandler
-	 * @Method 설명 : var sql error 처리.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 13.
-	 * @변경이력  :
+	 * @method : varsqlAppExceptionHandler
 	 * @param ex
+	 * @param request
 	 * @param response
-	 * @return
 	 */
 	@ExceptionHandler(value=VarsqlAppException.class)
 	public void varsqlAppExceptionHandler(VarsqlAppException ex, HttpServletRequest request, HttpServletResponse response){
@@ -285,7 +272,7 @@ public class GlobalExceptionHandler{
 	}
 
 	private void insertExceptionLog(String string, Throwable ex) {
-		commonServiceImpl.insertExceptionLog("sqlExceptionHandler",ex);
+		commonLogService.insertExceptionLog("sqlExceptionHandler",ex);
 	}
 
 	@ExceptionHandler(value=Exception.class)
@@ -426,6 +413,8 @@ public class GlobalExceptionHandler{
 		}else {
 			errorCode =result.getResultCode();
 		}
+		
+		result.setStatus(RequestResultCode.ERROR.getCode());
 
 		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);

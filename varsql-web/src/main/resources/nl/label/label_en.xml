@@ -32,7 +32,11 @@
 <entry key="all">All</entry>
 <entry key="remarks">Remarks</entry>
 <entry key="apply">Apply</entry>
+<entry key="charset">Charset</entry>
+<entry key="export.filetype">Export Type</entry>
+<entry key="export.info">Export Info</entry>
 <entry key="restore.default">Restore Defaults</entry>
+<entry key="type">Type</entry>
 
 
 <entry key="regular.expression">Regular Expression</entry>

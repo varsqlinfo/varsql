@@ -78,7 +78,6 @@ public class GlossaryController extends AbstractController {
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult save(@Valid GlossaryRequestDTO glossaryInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("###  GlossaryController save check {}",errorVal.toString());

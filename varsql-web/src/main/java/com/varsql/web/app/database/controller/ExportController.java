@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.db.DBMetadataRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
@@ -47,13 +47,10 @@ public class ExportController extends AbstractController  {
 	private ExportServiceImpl exportServiceImpl;
 
 	/**
+	 * 명세서
 	 *
-	 * @Method Name  : specMain
-	 * @Method 설명 : 명세서
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 8. 24.
-	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @method : specMain
+	 * @param preferencesInfo
 	 * @param mav
 	 * @param req
 	 * @return
@@ -73,12 +70,9 @@ public class ExportController extends AbstractController  {
 	}
 
 	/**
+	 * table list
 	 *
-	 * @Method Name  : specMainTableInfoList
-	 * @Method 설명 : table list
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 4. 29.
-	 * @변경이력  :
+	 * @method : tableList
 	 * @param preferencesInfo
 	 * @param mav
 	 * @param req
@@ -93,14 +87,10 @@ public class ExportController extends AbstractController  {
 		return exportServiceImpl.selectExportTableInfo(preferencesInfo);
 	}
 
-
 	/**
+	 * 테이블 명세서 다운로드.
 	 *
-	 * @Method Name  : tableExport
-	 * @Method 설명 : 테이블 명세서 다운로드.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 8. 24.
-	 * @변경이력  :
+	 * @method : tableExport
 	 * @param preferencesInfo
 	 * @param req
 	 * @param res
@@ -112,23 +102,20 @@ public class ExportController extends AbstractController  {
 	}
 
 	/**
+	 * ddl 메인
 	 *
-	 * @Method Name  : ddlMain
-	 * @Method 설명 : ddl 메인
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 8. 24.
-	 * @변경이력  :
-	 * @param databaseParamInfo
+	 * @method : ddlMain
+	 * @param dbMetadataRequestDTO
 	 * @param mav
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/ddlMain", method =  RequestMethod.GET)
-	public ModelAndView ddlMain(DatabaseParamInfo databaseParamInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public ModelAndView ddlMain(DBMetadataRequestDTO dbMetadataRequestDTO, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
 
-		model.put("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(databaseParamInfo.getDbType()).getServiceMenu());
+		model.put("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType()).getServiceMenu());
 
 		return getModelAndView("/export/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}
@@ -147,9 +134,9 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/ddl/objInfo", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult objInfo(DatabaseParamInfo paramInfo, HttpServletRequest req) throws Exception {
-		paramInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		return  exportServiceImpl.selectExportDbObjectInfo(paramInfo);
+	public @ResponseBody ResponseResult objInfo(DBMetadataRequestDTO dbMetadataRequestDTO, HttpServletRequest req) throws Exception {
+		dbMetadataRequestDTO.setCustom(HttpUtils.getServletRequestParam(req));
+		return  exportServiceImpl.selectExportDbObjectInfo(dbMetadataRequestDTO);
 	}
 
 
@@ -204,17 +191,5 @@ public class ExportController extends AbstractController  {
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
 
 		exportServiceImpl.downloadTableData(preferencesInfo, req, response);
-	}
-
-	@PostMapping(value = { "/downloadTableData2" })
-	@ResponseBody
-	public ResponseResult downloadTableData2(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,
-			HttpServletResponse response) throws Exception {
-
-		this.logger.debug("downloadTableData data export : {} ", preferencesInfo);
-
-		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
-
-		return exportServiceImpl.downloadTableData2(preferencesInfo, req, response);
 	}
 }

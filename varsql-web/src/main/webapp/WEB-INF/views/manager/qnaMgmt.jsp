@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manage.menu.qnamgmt" /></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.qnamgmt" /></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>

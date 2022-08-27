@@ -44,9 +44,8 @@ public class SQLFileController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/saveSql", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult saveSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		return sqlFileServiceImpl.saveSql(sqlParamInfo);
+	public @ResponseBody ResponseResult saveSql(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sqlFileServiceImpl.saveSql(sqlParamInfo, HttpUtils.getServletRequestParam(req));
 	}
 
 	/**
@@ -62,9 +61,8 @@ public class SQLFileController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/saveAllSql", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult saveAllSql( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-		return sqlFileServiceImpl.saveAllSql(sqlParamInfo);
+	public @ResponseBody ResponseResult saveAllSql(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
+		return sqlFileServiceImpl.saveAllSql(sqlParamInfo, HttpUtils.getServletRequestParam(req));
 	}
 
 	/**
@@ -80,8 +78,7 @@ public class SQLFileController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/sqlFileDetailInfo", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult sqlFileDetailInfo( SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
+	public @ResponseBody ResponseResult sqlFileDetailInfo(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
 		return sqlFileServiceImpl.sqlFileDetailInfo(sqlParamInfo);
 	}
 
@@ -95,17 +92,11 @@ public class SQLFileController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/sqlList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlList(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-
-		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-
-		return sqlFileServiceImpl.selectSqlFileList(sqlParamInfo);
+		return sqlFileServiceImpl.selectSqlFileList(sqlParamInfo, HttpUtils.getServletRequestParam(req));
 	}
 
 	@RequestMapping(value = "/sqlFileTab", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlFileTab(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-
-		sqlParamInfo.setCustom(HttpUtils.getServletRequestParam(req));
-
 		return sqlFileServiceImpl.selectSqlFileTabList(sqlParamInfo);
 	}
 	/**
@@ -118,6 +109,6 @@ public class SQLFileController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/delSqlSaveInfo", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult delSqlSaveInfo(SqlFileRequestDTO sqlParamInfo, HttpServletRequest req) throws Exception {
-		return sqlFileServiceImpl.deleteSqlSaveInfo(sqlParamInfo);
+		return sqlFileServiceImpl.deleteSqlSaveInfo(sqlParamInfo, HttpUtils.getServletRequestParam(req));
 	}
 }

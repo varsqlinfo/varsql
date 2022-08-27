@@ -68,6 +68,7 @@ import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
+import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -231,10 +232,12 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 				driverJarFiles = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId()));
 			}
 			
-			JDBCDriverInfo jdbcDriverInfo = new JDBCDriverInfo(dbInfo.getDbTypeDriverProvider().getDriverProviderId(), dbInfo.getDbTypeDriverProvider().getDriverClass());
-		    jdbcDriverInfo.setDriverFiles(driverJarFiles);
-		    
-		    Driver dbDriver = JdbcDriverLoader.checkDriver(jdbcDriverInfo);
+		    Driver dbDriver = JdbcDriverLoader.checkDriver(JDBCDriverInfo.builder()
+				.driverId(dbInfo.getDbTypeDriverProvider().getDriverProviderId())
+				.driverClass(dbInfo.getDbTypeDriverProvider().getDriverClass())
+				.driverFiles(driverJarFiles)
+				.build()
+			);
 
 		    connChk = dbDriver.connect(url, p);
 		    pstmt = connChk.prepareStatement(validation_query);
@@ -305,7 +308,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 				saveEntity = new DBConnectionEntity();
 				BeanUtils.copyProperties(currentEntity, saveEntity);
 				updateFlag = true;
-				copyNonNullProperties(reqEntity, saveEntity, new String[] { "vpw" });
+				VarsqlBeanUtils.copyNonNullProperties(reqEntity, saveEntity, new String[] { DBConnectionEntity.VPW });
 			}
 		}
 		if (!updateFlag)
@@ -329,33 +332,6 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		return resultObject;
 	}
 
-	public static void copyNonNullProperties(Object src, Object target, String... checkProperty) throws BeansException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-	    BeanUtils.copyProperties(src, target, getNullPropertyNames(src, checkProperty));
-	}
-
-	public static String[] getNullPropertyNames (Object source, String[] checkProperty) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-	    final BeanWrapper src = new BeanWrapperImpl(source);
-	    java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
-	    List<String> prop = Arrays.asList(checkProperty);
-	    Set<String> emptyNames = new HashSet<String>();
-	    for(java.beans.PropertyDescriptor pd : pds) {
-	    	String name = pd.getName();
-
-	    	if(prop.contains(name)) {
-	    		Object srcValue = src.getPropertyValue(pd.getName());
-		        if (srcValue == null || "".equals(srcValue)) {
-		        	emptyNames.add(name);
-		        }else {
-		        	if("".equals(srcValue.toString().trim())) {
-		        		PropertyUtils.setProperty(source, name, srcValue.toString().trim());
-		        	}
-		        }
-	    	}
-	    }
-	    String[] result = new String[emptyNames.size()];
-	    return emptyNames.toArray(result);
-	}
-
 	/**
 	 * @method  : deleteVtconnectionInfo
 	 * @desc : db 정보 삭제 처리.
@@ -364,7 +340,6 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @param vconnid
 	 * @return
 	 */
-
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public boolean deleteVtconnectionInfo(String vconnid) {
 

@@ -32,6 +32,7 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.security.repository.UserRepository;
+import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 
@@ -157,7 +158,7 @@ public final class AuthDAO {
 			StringBuffer query = new StringBuffer();
 
 		  	String dbColumnQuery = "select VCONNID, VNAME, VDATABASENAME, VDBSCHEMA, VDBVERSION, BASETABLE_YN, LAZYLOAD_YN,SCHEMA_VIEW_YN, MAX_SELECT_COUNT, USE_COLUMN_LABEL, b.DB_TYPE from VTCONNECTION a left outer join VTDBTYPE_DRIVER_PROVIDER b  on a.VDRIVER = b.DRIVER_PROVIDER_ID where USE_YN ='Y' and DEL_YN = 'N' AND ";
-		  	query.append( dbColumnQuery);
+		  	query.append(dbColumnQuery);
 
 			AuthorityType tmpAuthority = user.getTopAuthority();
 
@@ -207,20 +208,20 @@ public final class AuthDAO {
 					uuid = UUIDUtil.vconnidUUID(viewid, vconnid);
 
 					try {
-
-						userDatabaseInfo.put(uuid, new DatabaseInfo(vconnid
-								, uuid
-								, rs.getString("DB_TYPE")
-								, rs.getString(VarsqlKeyConstants.CONN_NAME)
-								, rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA)
-								, rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN)
-								, rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN)
-								, rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION)
-								, rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN)
-								, rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT)
-								, rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL)
-								, rs.getString(VarsqlKeyConstants.CONN_DATABASENAME)
-							)
+						
+						userDatabaseInfo.put(uuid, DatabaseInfo.builder()
+							.vconnid(vconnid)
+							.type(rs.getString("DB_TYPE"))
+							.name(rs.getString(VarsqlKeyConstants.CONN_NAME))
+							.schema(rs.getString(VarsqlKeyConstants.CONN_DBSCHEMA))
+							.basetableYn(rs.getString(VarsqlKeyConstants.CONN_BASETABLE_YN))
+							.lazyLoad(rs.getString(VarsqlKeyConstants.CONN_LAZYLOAD_YN))
+							.version(rs.getLong(VarsqlKeyConstants.CONN_VDBVERSION))
+							.schemaViewYn(rs.getString(VarsqlKeyConstants.CONN_SCHEMA_VIEW_YN))
+							.maxSelectCount(rs.getInt(VarsqlKeyConstants.CONN_MAX_SELECT_COUNT))
+							.useColumnLabel(rs.getString(VarsqlKeyConstants.CONN_USE_COLUMN_LABEL))
+							.databaseName(rs.getString(VarsqlKeyConstants.CONN_DATABASENAME))
+							.build()
 						);
 						vconnidNconuid.put(vconnid, uuid);
 					}catch(Exception e) {

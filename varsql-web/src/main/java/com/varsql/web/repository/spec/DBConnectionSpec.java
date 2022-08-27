@@ -69,11 +69,11 @@ public class DBConnectionSpec extends DefaultSpec{
 
     // 권한 있는 db connection 정보 보기.
     public static Specification<DBConnectionEntity> mgmtDbList(String viewid, String keyword) {
-    	return Specification.where(managetAuthDbList(viewid)).and(getDelYn()).and(getUseYn()).and(getVname(keyword));
+    	return Specification.where(managerAuthDbList(viewid)).and(getDelYn()).and(getUseYn()).and(getVname(keyword));
     }
 
     // manager 권한을 가진 db
-    private static Specification<DBConnectionEntity> managetAuthDbList(String viewid) {
+    private static Specification<DBConnectionEntity> managerAuthDbList(String viewid) {
     	return (root, query, cb) -> {
     		if(SecurityUtil.isAdmin()) {
     			return cb.equal(cb.literal(1), 1);

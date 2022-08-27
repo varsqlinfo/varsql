@@ -14,6 +14,11 @@ public class ConnectionInfoDTO {
 	private DBTypeDriverProviderEntity provider;
 	private DBTypeDriverEntity driver;
 	
+	public ConnectionInfoDTO(DBConnectionEntity connection, DBTypeDriverProviderEntity provider) {
+		this.connection = connection;
+		this.provider = provider;
+	}
+	
 	public ConnectionInfoDTO(DBConnectionEntity connection, DBTypeDriverProviderEntity provider, DBTypeDriverEntity driver) {
 		this.connection = connection;
 		this.provider = provider;
