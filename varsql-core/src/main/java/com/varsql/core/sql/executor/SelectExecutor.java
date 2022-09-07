@@ -70,7 +70,7 @@ public class SelectExecutor implements Executor{
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 
-			logger.debug("execute query: {} ", tmpSqlSource.getQuery());
+			logger.debug("execute query: {}", tmpSqlSource.getQuery());
 
 			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 			

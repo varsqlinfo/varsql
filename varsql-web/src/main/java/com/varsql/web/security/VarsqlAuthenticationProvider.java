@@ -16,7 +16,7 @@ import com.varsql.core.exception.BlockingUserException;
 @Component
 public class VarsqlAuthenticationProvider implements AuthenticationProvider {
 
-	private UserService userService;
+	final private UserService userService;
 	
 	public VarsqlAuthenticationProvider(UserService userService) {
 		this.userService = userService;

@@ -18,8 +18,8 @@ public class DataTypeHandler {
 			MetaDataHandler metaDataHandler) {
 		
 		this.statementHandler = statementHandler != null ? statementHandler : getDefaultStatementHandler();
-		this.resultSetHandler = resultSetHandler != null? resultSetHandler : getDefaultResultSetHandler();
-		this.metaDataHandler = metaDataHandler != null? metaDataHandler : getDefaultMetaDataHandler();
+		this.resultSetHandler = resultSetHandler != null ? resultSetHandler : getDefaultResultSetHandler();
+		this.metaDataHandler = metaDataHandler != null ? metaDataHandler : getDefaultMetaDataHandler();
 	}
 	
 	public StatementHandler getStatementHandler() {

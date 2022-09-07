@@ -21,12 +21,12 @@ import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserModReqeustDTO;
-import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -56,6 +56,9 @@ public class UserPreferencesController extends AbstractController{
 
 	@Autowired
 	private UserPreferencesServiceImpl userPreferencesServiceImpl;
+	
+	@Autowired
+	private UserCommonService userCommonService;
 
 	/**
 	 *
@@ -319,8 +322,6 @@ public class UserPreferencesController extends AbstractController{
 	 */
 	@RequestMapping(value="/updQna", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult qnaUpdate(@Valid QnARequesetDTO qnaInfo, BindingResult result,HttpServletRequest req) throws Exception {
-		ResponseResult resultObject = new ResponseResult();
-
 		if(result.hasErrors()){
 			for(ObjectError errorVal : result.getAllErrors()){
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
@@ -348,9 +349,8 @@ public class UserPreferencesController extends AbstractController{
 	public ModelAndView sqlFile(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req , model);
-		DatabaseUtils.reloadUserDatabaseInfo();
-		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
-
+		
+		model.addAttribute("dblist", userCommonService.databaseList());
 		return getModelAndView("/sqlFile", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 	
@@ -359,9 +359,9 @@ public class UserPreferencesController extends AbstractController{
 			throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req, model);
+		
 		model.addAttribute("selectMenu", "fileList");
-		DatabaseUtils.reloadUserDatabaseInfo();
-		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+		model.addAttribute("dblist", userCommonService.databaseList());
 		return getModelAndView("/fileImportList", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 
@@ -370,9 +370,9 @@ public class UserPreferencesController extends AbstractController{
 			throws Exception {
 		ModelMap model = mav.getModelMap();
 		setModelDefaultValue(req, model);
+		
 		model.addAttribute("selectMenu", "fileList");
-		DatabaseUtils.reloadUserDatabaseInfo();
-		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo().values());
+		model.addAttribute("dblist", userCommonService.databaseList());
 		return getModelAndView("/fileExportList", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 

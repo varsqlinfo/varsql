@@ -31,7 +31,6 @@ public interface JobScheduleEntityRepository extends DefaultJpaRepository, JpaRe
 	
 	JobScheduleEntity findByJobUid(String jobUid);
 
-	@Transactional(readOnly = true , value=ResourceConfigConstants.APP_TRANSMANAGER)
 	public class JobScheduleEntityCustomImpl extends QuerydslRepositorySupport implements JobScheduleEntityCustom {
 
 		public JobScheduleEntityCustomImpl() {

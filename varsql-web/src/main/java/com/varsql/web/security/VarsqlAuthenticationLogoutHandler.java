@@ -14,27 +14,25 @@ import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
 
 /**
- *
- * @FileName  : VarsqlAuthenticationLogoutHandler.java
- * @프로그램 설명 : log out handler
- * @Date      : 2019. 9. 21.
- * @작성자      : ytkim
- * @변경이력 :
+ * log out handler
+* 
+* @fileName	: VarsqlAuthenticationLogoutHandler.java
+* @author	: ytkim
  */
 @Component
 public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 	private final Logger logger = LoggerFactory.getLogger(VarsqlAuthenticationLogoutSuccessHandler.class);
 
 	@Autowired
-	private SecurityLogDAO securityLogDAO;
+	private SecurityLogService securityLogService;
 
     public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
 
     	if (authentication != null && authentication.getDetails() != null) {
 			try {
-				securityLogDAO.addLog(SecurityUtil.loginInfo() , "logout", CommUtils.getClientPcInfo(request));
+				securityLogService.addLog(SecurityUtil.loginInfo(), "logout", CommUtils.getClientPcInfo(request));
 			} catch (Exception e) {
-				logger.error("VarsqlAuthenticationLogoutSuccessHandler  onLogoutSuccess " , e.getMessage() , e);
+				logger.error("logout " , e.getMessage() , e);
 			}
 		}
     }

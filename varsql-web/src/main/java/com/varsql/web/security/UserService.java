@@ -20,22 +20,22 @@ import com.varsql.web.constants.ResourceConfigConstants;
 public class UserService implements UserDetailsService {
 
 	@Autowired
-	private AuthDAO authDao;
+	private AuthService authService;
 
 	@Override
 	public User loadUserByUsername(final String username) throws UsernameNotFoundException {
-		return authDao.loadUserByUsername(username);
+		return authService.loadUserByUsername(username);
 	}
 
 	public User loadUserByUsername(String username, String password) {
-		return authDao.loadUserByUsername(username, password, false);
+		return authService.loadUserByUsername(username, password, false);
 	}
 	
 	public User loadUserByUsername(String username, String password, boolean ssoFlag) {
-		return authDao.loadUserByUsername(username, password, ssoFlag);
+		return authService.loadUserByUsername(username, password, ssoFlag);
 	}
 	
 	public boolean passwordCheck(String username, String password) {
-		return authDao.passwordCheck(username, password);
+		return authService.passwordCheck(username, password);
 	}
 }

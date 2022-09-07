@@ -6,6 +6,12 @@ import com.varsql.core.db.datatype.handler.MetaDataHandler;
 import com.varsql.core.db.datatype.handler.ResultSetHandler;
 import com.varsql.core.db.datatype.handler.StatementHandler;
 
+/**
+ * db vender data type 
+* 
+* @fileName	: VenderDataType.java
+* @author	: ytkim
+ */
 public class VenderDataType implements DataType{
 	
 	@SuppressWarnings("unused")
@@ -15,16 +21,23 @@ public class VenderDataType implements DataType{
 	private int typeCode;
 	private DBColumnMetaInfo jdbcDataTypeMetaInfo;
 	private DataTypeHandler dataTypeHandler;
+	private boolean excludeImportColumn; // import 시 제외할 컬럼 정보
 	
 	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo){
 		this(typeName, typeCode, jdbcDataTypeMetaInfo, null);
 	};
+	
 	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler){
+		this(typeName, typeCode, jdbcDataTypeMetaInfo, null, false);
+	}
+	
+	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn){
 		Validate.notNull(typeName, "typeName can't be null");
 		
 		this.typeName = typeName; 
 		this.typeCode = typeCode; 
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
+		this.excludeImportColumn = excludeImportColumn;
 		
 		if(dataTypeHandler != null) {
 			this.dataTypeHandler = dataTypeHandler;
@@ -64,7 +77,12 @@ public class VenderDataType implements DataType{
 	}
 	
 	public static VenderDataType newCustomDataType(String typeName, DefaultDataType dataType) {
-		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), dataType.getDataTypeHandler());
+		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+	}
+	
+	@Override
+	public boolean isExcludeImportColumn() {
+		return this.excludeImportColumn;
 	}
 	
 }

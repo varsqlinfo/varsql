@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manager.menu.databackupgmgmt"/></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.ddlbackupmgmt"/></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -137,13 +137,6 @@
 								</div>
 								
 								<div class="margin-bottom5">
-									<label><spring:message code="type"  /></label>
-									<select class="form-control" v-model="detailItem.jobData.exportType">
-										<option v-for="(val,key) in exportTypeList" :value="key">{{val}}</option>
-									</select>
-								</div>
-								
-								<div class="margin-bottom5">
 									<label><spring:message code="manager.backupmgmt.connection"  /></label>
 									<div>
 										<select class="form-control" v-model="detailItem.vconnid" @change="getObjectInfo(detailItem.vconnid)">
@@ -202,12 +195,6 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem :{jobData:{}}
 		,viewMode : 'form'
-		,exportTypeList : {
-			'xml' : 'XML'
-			,'json' : 'JSON'
-			,'csv' : 'CSV'
-			,'sql' : 'Insert Query'
-		}
 		,selectObj : {}
 		,historyItem : {}
 	}
@@ -217,20 +204,13 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.selectObj= $.pubMultiselect('#backupList', {
 				duplicateCheck : true
-				,header : {
-					enableSourceLabel : true 	// source header label 보일지 여부
-					,enableTargetLabel : false 	// target header label 보일지 여부
-				}
 				,message :{
 					duplicate: VARSQL.messageFormat('varsql.0018')
 				}
-				,valueKey : 'name'	
+				,valueKey : 'contentid'	
 				,labelKey : 'name'
 				,source : {
 					items : []
-					,search :{
-						enable : true
-					}
 				}
 				,target : {
 					items : []
@@ -250,7 +230,7 @@ VarsqlAPP.vueServiceBean( {
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/dataBackup/list'}
+				url : {type:VARSQL.uri.manager, url:'/ddlBackup/list'}
 				,data : param
 				,success: function(resData) {
 					_this.gridData = resData.items;
@@ -302,7 +282,6 @@ VarsqlAPP.vueServiceBean( {
                     ,jobDescription : ''
                     ,jobData :{
                     	charset : 'utf-8'
-                    	, exportType : 'xml'
                     	, exportItems : []
                     }
 				}
@@ -311,7 +290,6 @@ VarsqlAPP.vueServiceBean( {
 				
 				var jobData = {
                    	charset : 'utf-8'
-                 	, exportType : 'xml'
                  	, exportItems : []
 				};
 				
@@ -356,7 +334,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 					
 					item.jobData.exportItems = backupItems.map(item=>{
-						return {'name' : item.name} 
+						return {"name" : item.name, "contentid": item.contentid} 
 					})
 					
 					item.jobData =  JSON.stringify(item.jobData);
@@ -366,7 +344,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 
 					_this.$ajax({
-						url : {type:VARSQL.uri.manager, url:'/dataBackup/save'}
+						url : {type:VARSQL.uri.manager, url:'/ddlBackup/save'}
 						,data: item
 						,success:function (resData){
 							_this.setDetailItem();
@@ -446,7 +424,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/dataBackup/dataObjectList'}
+				url : {type:VARSQL.uri.manager, url:'/ddlBackup/dataObjectList'}
 				,loadSelector : '#backupList'
 				,data : param
 				,success:function (resData){

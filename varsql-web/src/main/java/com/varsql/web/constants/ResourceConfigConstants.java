@@ -36,4 +36,8 @@ public interface ResourceConfigConstants {
 	final String MAIL_SERVICE = "mainService";
 	
 	final String APP_SCHEDULER = "varsqlScheduler";
+	
+	final String APP_SECURITY_LOG_SERVICE = "securityLogService";
+	
+	final String APP_USER_COMMON_SERVICE = "userCommonService";
 }

@@ -54,7 +54,7 @@
 		</a>
 		<ul id="backup-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'backupMgmt'}"> in</c:if>">
 			<li>
-               <a href="<c:url value="./dataBackupMgmt" />"><spring:message code="manager.menu.databackgmgmt" text="데이터 백업 관리" /></a>
+               <a href="<c:url value="./dataBackupMgmt" />"><spring:message code="manager.menu.databackupgmgmt" text="데이터 백업 관리" /></a>
             </li>
             <li>
                <a href="<c:url value="./ddlBackupMgmt" />"><spring:message code="manager.menu.ddlbackupmgmt" text="DDL 백업 관리" /></a>

@@ -191,7 +191,7 @@ VarsqlAPP.vueServiceBean({
 				,conuid : '${param.conuid}'
 				,schema : _self.selectSchema
 				,exportType : _self.exportType
-				,items : _self.exportItems
+				,exportItems : _self.exportItems
 			}, _self.exportInfo);
 		
 			var beforeCurrIdx = 0;	
@@ -205,7 +205,9 @@ VarsqlAPP.vueServiceBean({
 					,success:function (resData){
 						var item = resData.item; 
 						
-						if(item == 'complete'){
+						if(item == 'fail'){
+							_self.downloadStatus = 'fail';
+						}else if(item == 'complete'){
 							_self.downloadStatus = 'complete'; 
 							for(var i =beforeCurrIdx; i < _self.exportItems.length; i++){
 								_self.exportItems[i].status= true;
@@ -323,11 +325,18 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
+				,header : {
+					enableSourceLabel : true 	// source header label 보일지 여부
+					,enableTargetLabel : false 	// target header label 보일지 여부
+				}
 				,valueKey : 'name'	
 				,labelKey : 'name'
 				,source : {
 					emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
 					,items : paramSourceItem
+					,search :{
+						enable : true
+					}
 				}
 				,target : {
 					items : []

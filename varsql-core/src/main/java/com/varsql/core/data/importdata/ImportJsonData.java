@@ -23,7 +23,6 @@ public class ImportJsonData extends AbstractImportData{
 
 	public ImportJsonData(File importFilePath) {
 		super(importFilePath);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

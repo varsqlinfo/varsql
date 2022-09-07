@@ -1,5 +1,7 @@
 package com.varsql.web.app.manager.service;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -86,13 +88,9 @@ public class DbDiffServiceImpl{
 	}
 
 	/**
-	 *
-	 * @param objectType
-	 * @Method Name  : objectList
-	 * @Method 설명 : object list
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 12. 19.
-	 * @변경이력  :
+	 * object list
+	 *  
+	 * @method : objectList
 	 * @param vconnid
 	 * @param objectType
 	 * @param schema
@@ -116,20 +114,11 @@ public class DbDiffServiceImpl{
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
-			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){
+			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
 				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
-			}else{
+			}else{ // 테이블이 아닌 경우는 ddl를 비교.
 				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);
-
-				String[] objectNameArr = new String[objectList.size()];
-
-				int idx =0 ;
-				for(BaseObjectInfo boi : objectList){
-					//System.out.println("boi.getName() : "+ boi.getName());
-					objectNameArr[idx] =boi.getName();
-					++idx;
-				}
-				resultObject.setItemList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectNameArr));
+				resultObject.setItemList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectList.stream().map(tmp-> tmp.getName()).toArray(String[]::new)));
 			}
 		}
 

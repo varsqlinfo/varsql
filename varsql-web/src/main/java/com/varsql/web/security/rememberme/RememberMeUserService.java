@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.varsql.core.auth.User;
-import com.varsql.web.security.AuthDAO;
+import com.varsql.web.security.AuthService;
 import com.varsql.web.security.UserService;
 
 
@@ -18,10 +18,10 @@ import com.varsql.web.security.UserService;
 public class RememberMeUserService extends UserService {
 
 	@Autowired
-	private AuthDAO authDao;
+	private AuthService authService;
 
 	@Override
 	public User loadUserByUsername(final String username) throws UsernameNotFoundException {
-		return authDao.loadUserByUsername(username,true);
+		return authService.loadUserByUsername(username,true);
 	}
 }

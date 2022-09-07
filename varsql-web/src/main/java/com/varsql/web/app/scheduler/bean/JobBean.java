@@ -1,10 +1,11 @@
 package com.varsql.web.app.scheduler.bean;
 
+import java.util.concurrent.TimeUnit;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
 import org.quartz.PersistJobDataAfterExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,9 @@ import com.vartech.common.utils.VartechUtils;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 @Component
-public abstract class VarsqlJobBean extends QuartzJobBean implements JobService{
+public abstract class JobBean extends QuartzJobBean implements JobService{
  
-	private final Logger logger = LoggerFactory.getLogger(VarsqlJobBean.class);
+	private final Logger logger = LoggerFactory.getLogger(JobBean.class);
 	
 	@Autowired
 	private CommonLogService commonLogService;
@@ -56,6 +57,8 @@ public abstract class VarsqlJobBean extends QuartzJobBean implements JobService{
     		logger.debug("jobScheduleVO : {}", jsv);
     	}
     	
+    	long startTime = System.currentTimeMillis(); 
+    	
     	JobResultVO jobResultVo;
         try {
         	jobResultVo= doExecute(context, jsv);
@@ -64,27 +67,27 @@ public abstract class VarsqlJobBean extends QuartzJobBean implements JobService{
         	status = BatchStatus.FAILED.name();
         	message = e.getMessage();
         	logger.error("executeInternal : {} ", message, e);
-        	jobResultVo = JobResultVO.builder().message(message).build();
+        	jobResultVo = JobResultVO.builder().build();
         }
         
         if(message != null) {
-        	message += message.length() > 1500 ? message.substring(0 , 1500) : message;
+        	message = message.length() > 1500 ? message.substring(0 , 1500) : message;
         }
         
-        System.out.println("context.getTrigger().getJobKey().getGroup() : "+ context.getTrigger().getKey().getGroup());
-		
+        long endTime = System.currentTimeMillis(); 
+        
 		ScheduleHistoryEntity schedulerHistoryEntity = ScheduleHistoryEntity.builder()
-				.instanceId(context.getFireInstanceId())
-				.jobUid(jsv.getJobUid())
-				.startTime(ConvertUtils.longToTimestamp(context.getFireTime().getTime()))
-				.endTime(ConvertUtils.longToTimestamp(System.currentTimeMillis()))
-				.runTime(context.getJobRunTime())
-				.runType(context.getTrigger().getKey().getGroup().startsWith(JOBServiceUtils.RUN_SIMPLE_TIGGER_GROUP_PREFIX)?"run":"batch")
-				.message(message)
-				.status(status)
-				.resultCount(jobResultVo.getResultCount())
-				.failCount(jobResultVo.getFailCount())
-				.build();
+			.instanceId(context.getFireInstanceId())
+			.jobUid(jsv.getJobUid())
+			.startTime(ConvertUtils.longToTimestamp(startTime))
+			.endTime(ConvertUtils.longToTimestamp(endTime))
+			.runTime(TimeUnit.MILLISECONDS.toSeconds(endTime - startTime))
+			.runType(context.getTrigger().getKey().getGroup().startsWith(JOBServiceUtils.RUN_SIMPLE_TIGGER_GROUP_PREFIX)?"run":"batch")
+			.message(message)
+			.status(status)
+			.resultCount(jobResultVo.getResultCount())
+			.failCount(jobResultVo.getFailCount())
+			.build();
 		
 		commonLogService.saveScheduleHistory(schedulerHistoryEntity);
         

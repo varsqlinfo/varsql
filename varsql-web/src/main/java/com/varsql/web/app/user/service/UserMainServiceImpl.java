@@ -24,7 +24,7 @@ import com.varsql.web.repository.app.NoteEntityRepository;
 import com.varsql.web.repository.app.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.UserSpec;
-import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -35,7 +35,7 @@ public class UserMainServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(UserMainServiceImpl.class);
 
 	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private UserInfoRepository userInfoRepository;
 
 	@Autowired
 	private NoteEntityRepository noteEntityRepository;
@@ -57,7 +57,7 @@ public class UserMainServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectSearchUserList(SearchParameter searchParameter) {
-		List<UserEntity> result = userMgmtRepository.findAll(
+		List<UserEntity> result = userInfoRepository.findAll(
 			UserSpec.findUser(searchParameter.getKeyword())
 		);
 

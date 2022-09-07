@@ -3,6 +3,8 @@ package com.varsql.db.ext.sqlserver;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.codec.binary.Hex;
+
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
@@ -30,9 +32,17 @@ public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.VARBINARY.getTypeCode(), DBColumnMetaInfo.STRING, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
 			@Override
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
-				return new String(rs.getBytes(columnIndex));
+				byte[] val = rs.getBytes(columnIndex);
+				
+				if(val == null) return null;
+				
+				try {
+					return Hex.encodeHex(val);
+				}catch(Exception e) {
+					return rs.getObject(columnIndex).toString();
+				}
 			}
-		}).build()));
+		}).build(), true));
 		
 	}
 }

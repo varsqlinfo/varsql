@@ -467,7 +467,7 @@ _ui.headerMenu ={
 						case 'allsave': // 모두 저장
 							$('.sql_toolbar_allsave_btn').trigger('click');
 							break;
-						case 'import': // 가져오기 및 내보내기
+						case 'import': // 가져오기
 
 							var dimension = VARSQL.util.browserSize();
 							var popt = 'width=800px,height=500px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
@@ -478,7 +478,7 @@ _ui.headerMenu ={
 							});
 
 							break;
-						case 'export': // 가져오기 및 내보내기
+						case 'export': // 내보내기
 
 							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 

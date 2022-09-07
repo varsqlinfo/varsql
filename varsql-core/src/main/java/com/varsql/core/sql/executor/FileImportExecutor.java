@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,6 +19,11 @@ import com.varsql.core.data.importdata.ImportData;
 import com.varsql.core.data.importdata.ImportJsonData;
 import com.varsql.core.data.importdata.ImportXmlData;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.util.JdbcUtils;
@@ -51,7 +57,7 @@ public class FileImportExecutor extends UpdateExecutor{
 
 			if(!importFile.exists() || importFile.length() == 0 ) {
 				result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
-				result.setMessage(" import file size zero ");
+				result.setMessage(" import file not valid ");
 				return result;
 			}
 		} catch (IOException e1) {
@@ -74,28 +80,46 @@ public class FileImportExecutor extends UpdateExecutor{
 			}else if(VarsqlFileType.XML.equals(statementInfo.getExportType())) {
 				ijd = new ImportXmlData(importFile);
 			}
+			
+			MetaControlBean metaControlBean = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
+			DataTypeFactory dataTypeFactory = metaControlBean.getDataTypeImpl();
 
-			ijd.startImport(new AbstractImportDataHandler() {
+			ijd.startImport(new AbstractImportDataHandler(metaControlBean) {
 
 				boolean firstFlag = true;
 				ExportColumnInfo [] columnArr =null;
 				private PreparedStatement statement;
+				DataType [] dataTypeArr = null;
 
 				@Override
 				public void handler(Map rowInfo) throws SQLException {
 					if(firstFlag) {
 						statement = handlerVariable.getStatement(getSql());
 						firstFlag = false;
-
-						columnArr = getColumns().toArray(new ExportColumnInfo[0]);
+						
+						List<ExportColumnInfo> columnList = getColumns();
+						
+						int columnSize = columnList.size();
+						
+						columnArr = new ExportColumnInfo[columnSize];
+						dataTypeArr = new DataType[columnSize];
+						
+						for (int i = 0; i < columnSize; i++) {
+							ExportColumnInfo eci = columnList.get(i);
+							columnArr[i] = eci;
+							dataTypeArr[i] = dataTypeFactory.getDataType(eci.getType());
+						}
 					}
 
 					for (int i = 0; i < columnArr.length; i++) {
 						ExportColumnInfo eci = columnArr[i];
 						
-						//SQLDataType.getCode(eci.getType()).setParameter(this.statement,i + 1, rowInfo.get(eci.getAlias()));
-						
-						statement.setObject(i+1, rowInfo.get(eci.getAlias()));
+						try {
+							dataTypeArr[i].getStatementHandler().setParameter(this.statement, i+1, rowInfo.get(eci.getAlias()));
+						}catch(Exception e) {
+							statement.setObject(i+1, rowInfo.get(eci.getAlias()));
+							//e.printStackTrace();
+						}
 					}
 
 					statement.addBatch();

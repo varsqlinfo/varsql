@@ -1,7 +1,6 @@
 package com.varsql.core.db.datatype;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +35,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.TINYINT, value)) return ;
 				
-				pstmt.setByte(parameterIndex, (Byte)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -48,7 +47,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.SMALLINT, value)) return ;
 				
-				pstmt.setShort(parameterIndex, (short)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -60,7 +59,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.INTEGER, value)) return ;
 				
-				pstmt.setInt(parameterIndex, (int)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -74,7 +73,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.BIGINT, value)) return ;
 				
-				pstmt.setLong(parameterIndex, (long)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -86,7 +85,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.FLOAT, value)) return ;
 				
-				pstmt.setFloat(parameterIndex, (float)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -98,7 +97,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.REAL, value)) return ;
 				
-				pstmt.setFloat(parameterIndex, (float)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -110,7 +109,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.DOUBLE, value)) return ;
 				
-				pstmt.setDouble(parameterIndex, (double)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -122,7 +121,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.NUMERIC, value)) return ;
 				
-				pstmt.setBigDecimal(parameterIndex, (BigDecimal)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -134,7 +133,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.DECIMAL, value)) return ;
 				
-				pstmt.setBigDecimal(parameterIndex, (BigDecimal)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -146,7 +145,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.CHAR, value)) return ;
 				
-				pstmt.setString(parameterIndex, (String)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -158,7 +157,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.VARCHAR, value)) return ;
 			
-				pstmt.setString(parameterIndex, (String)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -170,7 +169,7 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.LONGVARCHAR, value)) return ;
 			
-				pstmt.setString(parameterIndex, (String)value);
+				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -303,6 +302,8 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
+			
+			@Override
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				try(Reader val = rs.getCharacterStream(columnIndex);){
 					
@@ -437,9 +438,10 @@ public enum DefaultDataType implements DataType {
 	TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE, DBColumnMetaInfo.OTHER),
 	OTHER(Types.OTHER, DBColumnMetaInfo.OTHER);
 	
-	private int typeCode;
-	private DBColumnMetaInfo jdbcDataTypeMetaInfo;
-	private DataTypeHandler dataTypeHandler;
+	private int typeCode; // sql type code
+	private DBColumnMetaInfo jdbcDataTypeMetaInfo; 
+	private DataTypeHandler dataTypeHandler;	// data type handler
+	private boolean excludeImportColumn;	// file import exclude flag
 
 	private final static Map<Integer, DefaultDataType> allTypeInfo = new HashMap<Integer, DefaultDataType>();
 
@@ -452,11 +454,17 @@ public enum DefaultDataType implements DataType {
 	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo) {
 		this(code, jdbcDataTypeMetaInfo, null);
 	}
-
 	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler) {
+		this(code, jdbcDataTypeMetaInfo, dataTypeHandler, false);
+	}
+
+	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn) {
 		this.typeCode = code;
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
 		this.dataTypeHandler = dataTypeHandler != null ? dataTypeHandler : DataTypeHandler.builder().build();
+		this.excludeImportColumn = excludeImportColumn;
+		
+		
 	}
 
 	@Override
@@ -521,5 +529,10 @@ public enum DefaultDataType implements DataType {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public boolean isExcludeImportColumn() {
+		return excludeImportColumn;
 	}
 }

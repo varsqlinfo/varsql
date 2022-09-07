@@ -2,6 +2,8 @@ package com.varsql.core.common.code;
 
 import com.vartech.common.constants.CodeEnumValue;
 
+import lombok.ToString;
+
 /**
  *
 *-----------------------------------------------------------------------------
@@ -113,11 +115,6 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	}
 
 	@Override
-	public String toString() {
-		return this.name()+" ("+this.code+")";
-	}
-
-	@Override
 	public int getCode() {
 		return this.code;
 	}
@@ -136,5 +133,9 @@ public enum VarsqlAppCode implements CodeEnumValue {
 
 		return VarsqlAppCode.ERROR;
 	}
-
+	
+	@Override
+	public String toString() {
+		return this.name()+" ("+this.code+")";
+	}
 }

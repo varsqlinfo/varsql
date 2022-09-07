@@ -441,21 +441,18 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 	@Override
 	public List getUsers(DatabaseParamInfo dataParamInfo) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List getSequences(DatabaseParamInfo dataParamInfo)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String ...sequenceNames)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

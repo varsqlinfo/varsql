@@ -12,7 +12,6 @@ import com.varsql.web.dto.user.UserPermissionInfoDTO;
 import com.varsql.web.model.entity.db.QDBBlockingUserEntity;
 import com.varsql.web.model.entity.user.QUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.security.repository.UserRepository;
 
 @Repository
 public interface UserInfoRepository extends UserRepository ,JpaSpecificationExecutor<UserEntity> , UserInfoRepositoryCustom {

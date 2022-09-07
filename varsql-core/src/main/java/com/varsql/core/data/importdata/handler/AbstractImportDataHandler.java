@@ -1,7 +1,9 @@
 package com.varsql.core.data.importdata.handler;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 
 public abstract class AbstractImportDataHandler implements ImportDataHandler{
@@ -11,14 +13,20 @@ public abstract class AbstractImportDataHandler implements ImportDataHandler{
 	private List<ExportColumnInfo> columns;
 
 	private String sql;
+	
+	private MetaControlBean metaControlBean;
 
-	public AbstractImportDataHandler() {}
+	public AbstractImportDataHandler(MetaControlBean metaControlBean) {
+		this.metaControlBean = metaControlBean; 
+	}
 
-	public AbstractImportDataHandler(String sql) {
+	public AbstractImportDataHandler(MetaControlBean metaControlBean, String sql) {
+		this.metaControlBean = metaControlBean;
 		this.sql = sql;
 	}
 
-	public AbstractImportDataHandler(String tableName, List<ExportColumnInfo> columns) {
+	public AbstractImportDataHandler(MetaControlBean metaControlBean, String tableName, List<ExportColumnInfo> columns) {
+		this.metaControlBean = metaControlBean;
 		setTableName(tableName);
 		setColumns(columns);
 	}
@@ -36,14 +44,21 @@ public abstract class AbstractImportDataHandler implements ImportDataHandler{
 	}
 
 	public void setColumns(List<ExportColumnInfo> columns) {
-		this.columns = columns;
+		
 		StringBuffer querySb = new StringBuffer();
 
 		querySb.append("insert into ").append(this.tableName).append(" (");
 
 		StringBuilder paramSb =new StringBuilder();
 		boolean firstFlag = true;
-		for (ExportColumnInfo gci : this.columns) {
+		
+		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
+		for (ExportColumnInfo gci : columns) {
+			
+			if(this.metaControlBean.getDataTypeImpl().getDataType(gci.getType()).isExcludeImportColumn()) {
+				continue;
+			}
+			newColumnList.add(gci);
 			if(firstFlag) {
 				querySb.append(gci.getName());
 				paramSb.append("?");
@@ -55,11 +70,17 @@ public abstract class AbstractImportDataHandler implements ImportDataHandler{
 		}
 
 		querySb.append(") values ( ").append(paramSb.toString()).append(") ") ;
-
-		this.sql = querySb.toString();
+		
+		this.columns = newColumnList;
+		
+		if(this.sql == null) this.sql = querySb.toString();
 	}
 
 	public String getSql() {
 		return sql;
+	}
+
+	public MetaControlBean getMetaControlBean() {
+		return metaControlBean;
 	}
 }

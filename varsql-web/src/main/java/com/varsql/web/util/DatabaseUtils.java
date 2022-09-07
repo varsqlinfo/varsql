@@ -5,7 +5,6 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.security.DatabaseService;
 
 /**
  * -----------------------------------------------------------------------------
@@ -22,19 +21,6 @@ import com.varsql.web.security.DatabaseService;
 public final class DatabaseUtils {
 	
 	private DatabaseUtils(){}
-	
-	/**
-	 * 
-	 * @Method Name  : reloadUserDatabaseInfo
-	 * @Method 설명 : 사용자 권한 있는 db 정보 reload
-	 * @작성일   : 2019. 3. 20. 
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @return
-	 */
-	public static void reloadUserDatabaseInfo(){
-		new DatabaseService().getUserDatabaseInfo();
-	}
 	
 	/**
 	 * dbConnectionEntity to DatabaseParamInfo

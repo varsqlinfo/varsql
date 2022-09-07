@@ -226,6 +226,10 @@ VarsqlAPP.vueServiceBean({
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				targetSelector : '#target'
 				,addItemClass:'text_selected'
+				,header : {
+					enableSourceLabel : true 	// source header label 보일지 여부
+					,enableTargetLabel : false 	// target header label 보일지 여부
+				}
 				,useMultiSelect : true
 				,duplicateCheck : true
 				,useDragMove :false

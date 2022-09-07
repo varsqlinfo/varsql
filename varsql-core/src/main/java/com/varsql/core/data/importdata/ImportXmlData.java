@@ -25,7 +25,6 @@ public class ImportXmlData extends AbstractImportData{
 
 	public ImportXmlData(File importFilePath) {
 		super(importFilePath);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

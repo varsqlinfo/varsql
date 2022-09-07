@@ -19,8 +19,8 @@ public class DataDownloadException extends VarsqlRuntimeException {
 		super(VarsqlAppCode.COMM_FILE_DOWNLOAD_ERROR, errorMessage);
 	}
 
-	public DataDownloadException(VarsqlAppCode resultCode, String message, VarsqlAppException varsqlAppException) {
-		super(resultCode, message, varsqlAppException);
+	public DataDownloadException(VarsqlAppCode resultCode, String message, Exception e) {
+		super(resultCode, message, e);
 	}
 
 }

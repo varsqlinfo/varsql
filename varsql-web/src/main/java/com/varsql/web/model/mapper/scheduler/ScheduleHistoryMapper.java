@@ -19,7 +19,6 @@ public interface ScheduleHistoryMapper extends GenericMapper<ScheduleHistoryResp
 	
 	@Override
 	default void updateFromDto(ScheduleHistoryResponseDTO dto, ScheduleHistoryEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 }

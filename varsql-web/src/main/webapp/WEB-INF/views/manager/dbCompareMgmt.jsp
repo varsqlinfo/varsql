@@ -127,9 +127,13 @@
 							</div>
 						</div>
 						<div>
-							<div class="panel-heading" style="padding:3px;">
+							<div class="panel-heading" style="padding: 3px;height: 30px;">
 								<span><spring:message code="compare.result" text="비교결과"/></span>
-								<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;"><spring:message code="result.download" text="결과 다운로드"/></button>
+								<span class="pull-right" style="margin-top: -7px;">
+									<button type="button"  @click="resultDownload()" class="btn btn-sm btn-primary" style="margin-left:10px;margin-bottom: 3px;">
+										<spring:message code="result.download" text="결과 다운로드"/>
+									</button>
+								</span>
 							</div>
 							<div id="compareResultArea" class="panel-body" style="height:380px;overflow:auto;padding:0px;border:1px solid #ddd;">
 <div>

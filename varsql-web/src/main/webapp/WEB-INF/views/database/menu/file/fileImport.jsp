@@ -70,15 +70,15 @@
 								</ul>
 							</template>
 						</div>
-						<div class="col-xs-6 import-file-result">
-							<template v-for="(item,index) in importResult">
+						<div id="importFileResult" class="col-xs-6 import-file-result">
+							<div v-for="(item, index) in importResult" v-bind:key="item._uid">
 								<div class="file-import-result-msg user-select-on">
 									<div :class="(item.resultCode == 200 ? 'success' :'error')">
 										<span> {{item.fileName}}</span> <span v-if="item.resultCode == 200">count : {{item.resultCount}}</span>
 									</div>
 					    			<div v-if="item.resultCode > 200" class="error">{{item.message}}</div>
 				    			</div>
-			    			</template>
+			    			</div>
 						</div>
 					</div>
 				</div>
@@ -151,6 +151,7 @@ VarsqlAPP.vueServiceBean({
 		,fileList : []
 		,callback : {}
 		,importResult :[]
+		,logSeq: 0
 	}
 	,mounted : function (){
 		this.setFileTypeInfo(this.importType);
@@ -225,7 +226,13 @@ VarsqlAPP.vueServiceBean({
 				,loadSelector : 'body'
 				,data : param
 				,success: function(resData) {
-					_this.importResult = _this.importResult.concat(resData.items); //console.log(resData);
+					var items = resData.items.reverse().map(function(item){
+						item._uid = _this.logSeq++;
+						return item; 
+					})
+					_this.importResult.unshift(...items); //console.log(resData);
+					
+					document.getElementById('importFileResult').scrollTop =0;
 				}
 			})
 		}

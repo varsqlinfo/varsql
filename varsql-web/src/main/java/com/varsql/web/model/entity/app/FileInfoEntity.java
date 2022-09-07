@@ -1,9 +1,13 @@
 package com.varsql.web.model.entity.app;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -40,10 +44,13 @@ public class FileInfoEntity extends FileBaseEntity {
 
 	@Column(name = "CONT_GROUP_ID")
 	private String contGroupId;
+	
+	@Transient
+	private Map customInfo;
 
 	@Builder
 	public FileInfoEntity(String fileId, String fileDiv, String fileContId, String fileFieldName, String fileName,
-			String filePath, String fileExt, long fileSize, String contGroupId) {
+			String filePath, String fileExt, long fileSize, String contGroupId, Map customInfo) {
 		setFileId(fileId);
 		setFileDiv(fileDiv);
 		setFileContId(fileContId);
@@ -53,6 +60,7 @@ public class FileInfoEntity extends FileBaseEntity {
 		setFileExt(fileExt);
 		setFileSize(fileSize);
 		setContGroupId(contGroupId);
+		setCustomInfo(customInfo);
 	}
 
 	public static final String FILE_ID = "fileId";
@@ -66,4 +74,12 @@ public class FileInfoEntity extends FileBaseEntity {
 	public static final String FILE_SIZE = "fileSize";
 	
 	public final static String FILE_FIELD_NAME="fileFieldName";
+	
+	public void addCustomInfo(String key, Object val) {
+		if(customInfo == null) {
+			customInfo = new HashMap();
+		}
+		
+		customInfo.put(key, val);
+	}
 }

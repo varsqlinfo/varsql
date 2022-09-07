@@ -10,6 +10,8 @@ public interface DataType {
 	
 	public String getTypeName();
 	
+	public boolean isExcludeImportColumn();
+	
 	public DBColumnMetaInfo getJDBCDataTypeMetaInfo();
 	
 	public StatementHandler getStatementHandler();

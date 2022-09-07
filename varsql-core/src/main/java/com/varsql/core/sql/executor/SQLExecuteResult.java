@@ -4,6 +4,7 @@ import com.varsql.core.common.code.VarsqlAppCode;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
 *
@@ -21,6 +22,7 @@ import lombok.Setter;
 */
 @Getter
 @Setter
+@ToString
 public class SQLExecuteResult {
 	private long startTime;
 	private long endTime;

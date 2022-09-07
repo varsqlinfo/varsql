@@ -18,7 +18,12 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
-//TODO 2022
+/**
+ * user 환경설정 파일 관리
+* 
+* @fileName	: UserPreferencesFileController.java
+* @author	: ytkim
+ */
 @Controller
 @RequestMapping({ "/user/preferences/file" })
 public class UserPreferencesFileController extends AbstractController {

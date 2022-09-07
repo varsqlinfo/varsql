@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.User;
+import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.user.UserLogHistEntity;
 import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.util.DefaultValueUtils;
@@ -13,15 +14,14 @@ import com.vartech.common.app.beans.ClientInfo;
 
 /**
  * security log
- * @FileName : SecurityLogDAO.java
- * @Author   : ytkim
- * @Program desc : 인증 dao
- * @Hisotry :
+* 
+* @fileName	: SecurityLogService.java
+* @author	: ytkim
  */
-@Service(value = "securityLogDAO")
-public final class SecurityLogDAO {
+@Service(value = ResourceConfigConstants.APP_SECURITY_LOG_SERVICE)
+public final class SecurityLogService {
 
-	private final Logger logger = LoggerFactory.getLogger(SecurityLogDAO.class);
+	private final Logger logger = LoggerFactory.getLogger(SecurityLogService.class);
 
 	@Autowired
 	private UserLogHistRepository userLogHistRepository;
@@ -46,7 +46,7 @@ public final class SecurityLogDAO {
 					.histTime(DefaultValueUtils.currentTimestamp())
 					.platform(cpi.getOsType()).build());
 		} catch (Exception e) {
-			logger.error(this.getClass().getName() +" addLog ", e);
+			logger.error(this.getClass().getName() +" addLog ", e.getMessage());
 		}
 
 	}

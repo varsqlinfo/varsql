@@ -44,6 +44,6 @@ public class TriggerListenerImpl implements TriggerListener {
     public void triggerComplete(Trigger trigger, JobExecutionContext context,
 								Trigger.CompletedExecutionInstruction triggerInstructionCode) {
 //        JobKey jobKey = trigger.getJobKey();
-//        logger.info("triggerComplete at jobKey {} :: jobName ,{} startTime : {} , endTime :{}",jobKey, jobKey.getName(), trigger.getStartTime(), trigger.getEndTime() );
+//        logger.info("triggerComplete at jobKey {} :: jobName ,{} startTime : {} , endTime :{}", jobKey, jobKey.getName(), context.getFireTime(), context.getJobRunTime());
     }
 }

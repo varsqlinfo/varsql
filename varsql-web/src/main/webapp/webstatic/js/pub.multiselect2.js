@@ -94,9 +94,11 @@ var pluginName = "pubMultiselect"
 		,search :{
 			enable : false
 			,enableKeyPress : false 	// keypress event 활성화 여부
+			/*
 			,callback : function (searchWord, evtType){ // enter ,search button click callback 
 				//console.log(searchWord)		
 			}
+			*/
 		}
 		,beforeMove : false	// 이동전  이벤트
 		,completeMove : false	// 이동 완료  이벤트
@@ -111,9 +113,11 @@ var pluginName = "pubMultiselect"
 		,search :{
 			enable : false
 			,enableKeyPress : false 	// keypress event 활성화 여부
+			/*
 			,callback : function (searchWord, evtType){ // enter ,search button click callback 
 				//console.log(searchWord)		
 			}
+			*/
 		}
 		,beforeMove : false	// 이동전  이벤트
 		,completeMove : false	// 이동 완료  이벤트
@@ -319,19 +323,6 @@ Plugin.prototype ={
 			}
 		});
 
-		// 검색
-		this.element.container.on('click.search', '.search-button', function (e){
-			var sEle = $(this);
-			var labelWrapperEle = sEle.closest('[data-item-type]'); 
-			var mode = labelWrapperEle.attr('data-item-type');
-
-			if(mode=='source'){
-				_this.options.source.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
-			}else{
-				_this.options.target.search.callback.call(sEle, labelWrapperEle.find('.input-text').val(), e);
-			}
-		});
-		
 		// Page navigation click event
 		var pagingCallbackFlag =$.isFunction(_this.options.target.paging.callback); 
 		this.element.container.on('click.pagigng.num', '.pub-multiselect-paging .page-num', function (e){
@@ -353,30 +344,20 @@ Plugin.prototype ={
 						_this.setTargetItem(_this.config.currentPageItem.allItem(), null, {mode : 'page'});
 					}
 				}
-				
 			}
 		});
 
+		// 검색
+		this.element.container.on('click.search', '.search-button', function (e){
+			_$search.search(_this, $(this), e);
+		});
+		
 		// search box keyup event
 		this.element.container.on('keyup.search', '.input-text', function (e){
-			var sEle = $(this);
-			var labelWrapperEle = sEle.closest('[data-item-type]'); 
-			var mode = labelWrapperEle.attr('data-item-type');
-
-			var inputText = sEle.val(); 
-
-			if(mode=='source'){
-				if(_this.options.source.search.enableKeyPress === true){
-					_this.options.source.search.callback.call(sEle, inputText, e);
-				}else if(e.keyCode === 13){
-					_this.options.source.search.callback.call(sEle, inputText, e);
-				}
-			}else{
-				if(_this.options.target.search.enableKeyPress === true){
-					_this.options.target.search.callback.call(sEle, inputText, e);
-				}else if(e.keyCode === 13){
-					_this.options.target.search.callback.call(sEle, inputText, e);
-				}
+			if(_this.options.source.search.enableKeyPress === true){
+				_$search.search(_this, $(this), e);
+			}else if(e.keyCode === 13){
+				_$search.search(_this, $(this), e);
 			}
 		});
 		
@@ -825,7 +806,7 @@ Plugin.prototype ={
 	 * @description 선택된 html element 얻기.
 	 */
 	,getSelectionElement : function (evtElement){
-		return 	evtElement ? evtElement.find('.pub-select-item.'+ this.options.selectStyleClass) : this.element.target.find('.pub-select-item.'+ this.options.selectStyleClass);
+		return 	evtElement ? evtElement.find('.pub-select-item.'+ this.options.selectStyleClass+':not(.hide)') : this.element.target.find('.pub-select-item.'+ this.options.selectStyleClass+':not(.hide)');
 	}
 	/**
 	 * @method getTargetElement
@@ -1407,6 +1388,47 @@ Plugin.prototype ={
 		$(document).off('keydown.'+this.prefix).off('mousedown.'+this.prefix);
 	}
 };
+
+// 검색. 
+var _$search = {
+	search : function (ctx, sEle, e){
+		
+		var labelWrapperEle = sEle.closest('[data-item-type]'); 
+		var mode = labelWrapperEle.attr('data-item-type');
+
+		var searchObj; 
+		var searchElement;
+
+		if(mode=='source'){
+			searchObj = ctx.options.source;
+			searchElement = ctx.element.source;
+		}else{
+			searchObj = ctx.options.target;
+			searchElement = ctx.element.target;
+		}
+		var schText = labelWrapperEle.find('.input-text').val(); 
+
+		if(searchObj.search.callback){
+			searchObj.search.callback.call(sEle, schText, e);
+		}else{
+			schText = schText.replace(/^\s+|\s+$/g,"");
+							
+			var schRegExp = new RegExp('('+schText.replace(/([.?*+^$[\]\\(){}-])/g, "\\$1") + ')','i');
+
+			searchElement.find('li').each(function (){
+				var itemEle = $(this); 
+				var itemTitle = itemEle.attr('title');
+				if(schText==''){
+					itemEle.removeClass('hide')
+				}else if(schRegExp.test(itemTitle)){
+					itemEle.removeClass('hide')
+				}else{
+					itemEle.addClass('hide')
+				}
+			})
+		}
+	}
+}
 
 var _$pagingUtil = {
 	setPaging : function (_ctx, type,_paging){

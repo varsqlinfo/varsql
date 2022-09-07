@@ -1,6 +1,11 @@
 package com.varsql.core.common.beans;
 
-//TODO 2022
+/**
+ * data download progress info
+* 
+* @fileName	: ProgressInfo.java
+* @author	: ytkim
+ */
 public class ProgressInfo {
 	
 	private String requid;

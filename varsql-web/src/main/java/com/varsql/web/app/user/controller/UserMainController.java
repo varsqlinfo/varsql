@@ -3,7 +3,6 @@ package com.varsql.web.app.user.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +27,7 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.user.service.UserMainServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.util.DatabaseUtils;
@@ -62,13 +62,16 @@ public class UserMainController extends AbstractController{
 
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
+	
+	@Autowired
+	private UserCommonService userCommonService;
 
 	@RequestMapping(value={"","/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("originalURL", HttpUtils.getOriginatingRequestUri(req));
-		DatabaseUtils.reloadUserDatabaseInfo();
-		model.addAttribute("dblist", SecurityUtil.loginInfo(req).getDatabaseInfo());
+		
+		model.addAttribute("dblist", userCommonService.reloadDatabaseList());
 
 		// tab 정보
 		model.addAttribute("conTabInfo", VartechUtils.objectToJsonString(databaseServiceImpl.findTabInfo()));
@@ -172,10 +175,8 @@ public class UserMainController extends AbstractController{
 	public @ResponseBody ResponseResult connectionInfo(HttpServletRequest req) throws Exception {
 		ResponseResult resultObject = new ResponseResult();
 
-		DatabaseUtils.reloadUserDatabaseInfo();
-		
 		List<HashMap<String,String>> databaseList =new ArrayList<>();
-		for(Entry<String, DatabaseInfo> entry :  SecurityUtil.loginInfo(req).getDatabaseInfo().entrySet()) {
+		for(Entry<String, DatabaseInfo> entry :  userCommonService.reloadDatabaseList().entrySet()) {
 			HashMap<String,String> addMap = new HashMap<>();
 			
 			DatabaseInfo item = entry.getValue();

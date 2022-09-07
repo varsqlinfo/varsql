@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -26,11 +24,11 @@ import org.springframework.stereotype.Component;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
-import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.HttpUtils;
 
 /**
@@ -49,17 +47,15 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
-	private SecurityLogDAO securityLogDAO;
+	final private SecurityLogService securityLogService;
 	
-	public VarsqlAuthenticationSuccessHandler() {
+	final private UserCommonService userCommonService;
+	
+	public VarsqlAuthenticationSuccessHandler(SecurityLogService securityLogService, UserCommonService userCommonService) {
 		super();
 		super.setUseReferer(true);
-	}
-	
-	@Autowired
-	@Qualifier("securityLogDAO")
-	public void setSecurityLogDAO(SecurityLogDAO securityLogDAO) {
-		this.securityLogDAO = securityLogDAO;
+		this.securityLogService = securityLogService;
+		this.userCommonService = userCommonService;
 	}
 	
 	public void onAuthenticationSuccess(final HttpServletRequest request,
@@ -74,11 +70,11 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			return;
 		}
 
-		securityLogDAO.addLog(userInfo, userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
+		securityLogService.addLog(userInfo, userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
 			try {
-	    		DatabaseUtils.reloadUserDatabaseInfo(); // database information reload
+				userCommonService.reloadDatabaseList(); // database information reload
 	    	}catch(Throwable e) {
 	    		logger.error("database information reload error {} ", e.getMessage());
 	    	}

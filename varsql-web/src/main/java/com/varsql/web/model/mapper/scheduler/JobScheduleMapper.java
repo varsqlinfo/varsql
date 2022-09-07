@@ -19,7 +19,6 @@ public interface JobScheduleMapper extends GenericMapper<JobScheduleResponseDTO,
 	
 	@Override
 	default void updateFromDto(JobScheduleResponseDTO dto, JobScheduleEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 	

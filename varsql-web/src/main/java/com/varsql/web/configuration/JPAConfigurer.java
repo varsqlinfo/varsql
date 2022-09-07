@@ -47,7 +47,7 @@ import com.vartech.common.utils.StringUtils;
 @EnableJpaRepositories(basePackages = {"com.varsql.web.repository" ,"com.varsql.web.security.repository"}
 ,includeFilters ={
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value={Repository.class})
-		,@ComponentScan.Filter(type = FilterType.REGEX, pattern="(service|controller|DAO|Repository)\\.\\.*")
+		,@ComponentScan.Filter(type = FilterType.REGEX, pattern="(service|controller|repository)\\.\\.*")
 })
 public class JPAConfigurer {
 

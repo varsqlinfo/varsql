@@ -1,6 +1,11 @@
 package com.varsql.core.sql.mapping;
 
-//TODO 0927 new 
+/**
+ * sql parameter mode
+* 
+* @fileName	: ParameterMode.java
+* @author	: ytkim
+ */
 public enum ParameterMode {
   IN, OUT, INOUT;
   

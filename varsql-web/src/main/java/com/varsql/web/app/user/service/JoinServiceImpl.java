@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.crypto.EncryptDecryptException;
@@ -26,7 +26,7 @@ public class JoinServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
 
 	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private UserInfoRepository userInfoRepository;
 
 	/**
 	 * @method  : saveUser
@@ -44,7 +44,7 @@ public class JoinServiceImpl{
 		entity.setUserRole(AuthorityType.GUEST.name());
 		entity.setAcceptYn(false);
 
-		userMgmtRepository.save(entity);
+		userInfoRepository.save(entity);
 
 		return true;
 	}
@@ -58,7 +58,7 @@ public class JoinServiceImpl{
 	 * @return
 	 */
 	public ResponseResult idCheck(String uid) {
-		return VarsqlUtils.getResponseResultItemOne(userMgmtRepository.countByUid(uid));
+		return VarsqlUtils.getResponseResultItemOne(userInfoRepository.countByUid(uid));
 	}
 
 	/**
@@ -70,6 +70,6 @@ public class JoinServiceImpl{
 	 * @return
 	 */
 	public ResponseResult emailCheck(String uemail) {
-		return VarsqlUtils.getResponseResultItemOne(userMgmtRepository.countByUemail(uemail));
+		return VarsqlUtils.getResponseResultItemOne(userInfoRepository.countByUemail(uemail));
 	}
 }

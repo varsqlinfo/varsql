@@ -12,21 +12,33 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.MailInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
 
+/**
+ * 메일 service 
+* 
+* @fileName	: MailService.java
+* @author	: ytkim
+ */
 @Service
 public class MailService {
 	private final Logger logger = LoggerFactory.getLogger(MailService.class);
 	
-	private JavaMailSender mailSender;
+	final private JavaMailSender mailSender;
 	
 	public MailService(@Qualifier(ResourceConfigConstants.MAIL_SERVICE) JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
 	
+	/**
+	 * 메일 보내기.
+	 *
+	 * @method : sendMail
+	 * @param mailInfo
+	 * @return
+	 */
 	public ResponseResult sendMail(MailInfo mailInfo) {
 		
 		final MimeMessagePreparator preparator = new MimeMessagePreparator() {

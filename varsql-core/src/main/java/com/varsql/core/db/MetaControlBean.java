@@ -216,7 +216,7 @@ public class MetaControlBean {
 			}
 		}catch(Exception e){
 			logger.error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMeta.getClass(), callMethodName);
-			logger.error("getDBObjectList callMethodName " , e);
+			logger.error("getDBObjectList callMethodName :{} ", e.getMessage(), e);
 		}
 		return null;
 	}

@@ -1,4 +1,5 @@
 package com.varsql.web.app.manager.service;
+import org.quartz.Job;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.scheduler.JOBServiceUtils;
+import com.varsql.web.app.scheduler.bean.JobBean;
 import com.varsql.web.app.scheduler.job.DataBackupJob;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
@@ -36,19 +38,10 @@ import com.vartech.common.constants.RequestResultCode;
 import lombok.RequiredArgsConstructor;
 
 /**
- *
- *
-*-----------------------------------------------------------------------------
-* @PROJECT	: varsql
-* @NAME		: ScheduleMgmtServiceImpl.java
-* @DESC		: schedule management service
-* @AUTHOR	: ytkim
-*-----------------------------------------------------------------------------
-  DATE			AUTHOR			DESCRIPTION
-*-----------------------------------------------------------------------------
-*2017. 12. 1. 			ytkim			최초작성
-
-*-----------------------------------------------------------------------------
+ * schedule management service
+* 
+* @fileName	: ScheduleMgmtServiceImpl.java
+* @author	: ytkim
  */
 @Service
 @RequiredArgsConstructor
@@ -123,8 +116,8 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 * @param jobScheduleVO
 	 * @throws SchedulerException
 	 */
-	public void saveOrUpdate(Class<DataBackupJob> class1, JobScheduleVO jobScheduleVO) throws SchedulerException {
-		JOBServiceUtils.saveOrUpdate(scheduler, DataBackupJob.class, jobScheduleVO);
+	public void saveOrUpdate(Class<? extends JobBean> clazz, JobScheduleVO jobScheduleVO) throws SchedulerException {
+		JOBServiceUtils.saveOrUpdate(scheduler, clazz, jobScheduleVO);
 	}
 	
 	/**

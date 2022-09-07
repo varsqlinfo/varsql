@@ -23,7 +23,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.VisitorFeature;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.pattern.convert.ConvertResult;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.mapping.ParameterMapping;
@@ -42,7 +41,6 @@ public final class SQLParserUtils {
 
 	private static ParameterMappingUtil parameterMappingUtil = new ParameterMappingUtil();
 
-
 	private SQLParserUtils() {}
 
 	public static List<SqlSource> getSqlSourceList(String sql, Map<String, String> param , DBVenderType dbType) {
@@ -50,9 +48,6 @@ public final class SQLParserUtils {
 
 		com.alibaba.druid.DbType parser = getDbParser(dbType);
 
-		
-
-		//List<SQLStatement> statements = SQLUtils.toStatementList(sql, parser);
 		List<SQLStatement> statements = SQLUtils.parseStatements(sql, parser, DEFAULT_FEATURES);
 
 		if(statements.size() ==1) {
@@ -112,6 +107,7 @@ public final class SQLParserUtils {
 		return sqlSource;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static SqlStatement getSqlStatement(String sql, Map<String, String> variables, boolean addSingleQuote, DBVenderType dbType) {
 
 		ConvertResult convertResult = parameterMappingUtil.sqlParameter(dbType, sql, variables);

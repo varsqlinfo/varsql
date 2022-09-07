@@ -38,7 +38,7 @@ import com.varsql.web.repository.app.NoteMappingUserEntityRepository;
 import com.varsql.web.repository.app.QnAEntityRepository;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.QnASpec;
-import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -53,7 +53,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	private QnAEntityRepository qnaEntityRepository;
 
 	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private UserInfoRepository userInfoRepository;
 
 	@Autowired
 	private NoteEntityRepository noteEntityRepository;
@@ -76,7 +76,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public UserEntity findUserInfo(String viewid) {
-		return userMgmtRepository.findByViewid(viewid);
+		return userInfoRepository.findByViewid(viewid);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 
 		logger.debug("updateUserInfo : {}" , userForm);
 
-		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
+		UserEntity userInfo = userInfoRepository.findByViewid(SecurityUtil.userViewId());
 
 		if(userInfo==null) throw new VarsqlAppException("user infomation not found : " + SecurityUtil.userViewId());
 
@@ -105,7 +105,7 @@ public class UserPreferencesServiceImpl extends AbstractService{
 		userInfo.setDeptNm(userForm.getDeptNm());
 		userInfo.setDescription(userForm.getDescription());
 
-		userMgmtRepository.save(userInfo);
+		userInfoRepository.save(userInfo);
 
 		// 언어 변경시 처리.
 		Locale userLocale= LocaleConstants.parseLocaleString(userForm.getLang());
@@ -140,13 +140,13 @@ public class UserPreferencesServiceImpl extends AbstractService{
 	 */
 	public ResponseResult updatePasswordInfo(PasswordRequestDTO passwordForm) throws EncryptDecryptException {
 
-		UserEntity userInfo = userMgmtRepository.findByViewid(SecurityUtil.userViewId());
+		UserEntity userInfo = userInfoRepository.findByViewid(SecurityUtil.userViewId());
 
 		ResponseResult resultObject = new ResponseResult();
 
 		if(passwordEncoder.matches(passwordForm.getCurrPw(), userInfo.getUpw())){
 			userInfo.setUpw(passwordForm.getUpw());
-			userMgmtRepository.save(userInfo);
+			userInfoRepository.save(userInfo);
 			resultObject.setItemOne(1);
 		}else{
 			resultObject.setResultCode(VarsqlAppCode.COMM_PASSWORD_NOT_VALID);
