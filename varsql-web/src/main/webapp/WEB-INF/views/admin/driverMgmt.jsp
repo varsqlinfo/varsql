@@ -217,7 +217,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/driverMgmt/list'}
 				,data : param
 				,success: function(resData) {
-					_this.gridData = resData.items;
+					_this.gridData = resData.list;
 					_this.pageInfo = resData.page;
 				}
 			})
@@ -438,7 +438,7 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,success:function (resData){
 
-					var result = resData.items;
+					var result = resData.list;
 		    		var resultLen = result.length;
 
 		    		if(resultLen==0){
@@ -449,7 +449,7 @@ VarsqlAPP.vueServiceBean( {
 		    		_this.driverList = result;
 		    		
 		    		if(mode != 'detail'){
-						_this.detailItem.driverId = resData.items[0].driverId;
+						_this.detailItem.driverId = resData.list[0].driverId;
 		    		}
 					_this.changeDriverInfo();
 

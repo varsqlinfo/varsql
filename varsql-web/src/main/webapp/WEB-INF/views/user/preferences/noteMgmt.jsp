@@ -258,7 +258,7 @@ VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList'}
 			    ,data : VARSQL.util.copyObject(item)
 			    ,success:function (resData){
-			    	_self.replyList = resData.items;
+			    	_self.replyList = resData.list;
 				}
 			});
 		}
@@ -303,7 +303,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.user, url:'/preferences/listMsg'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})

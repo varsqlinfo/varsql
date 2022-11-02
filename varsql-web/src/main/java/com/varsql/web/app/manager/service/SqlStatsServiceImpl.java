@@ -109,7 +109,7 @@ public class SqlStatsServiceImpl extends AbstractService{
 		);
 
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.getContent().stream().map(item ->{
+		responseResult.setList(result.getContent().stream().map(item ->{
 			SqlHistoryResponseDTO sqlUserHistoryInfo = SqlHistoryMapper.INSTANCE.toDto(item);
 			RegInfoEntity regInfo = item.getRegInfo();
 			sqlUserHistoryInfo.setRegInfo(RegInfoDTO.builder().uid(regInfo.getUid()).uname(regInfo.getUname()).build());

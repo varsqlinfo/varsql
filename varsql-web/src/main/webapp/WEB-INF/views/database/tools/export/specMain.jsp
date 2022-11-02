@@ -208,7 +208,7 @@ VarsqlAPP.vueServiceBean({
 				,data: param
 				,loadSelector : '.table-select-area'
 				,success:function (resData){
-					var list = resData.items;
+					var list = resData.list;
 
 					_self.selectTableObj.setSourceItem(list);
 

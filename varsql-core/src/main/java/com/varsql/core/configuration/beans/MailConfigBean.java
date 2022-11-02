@@ -37,7 +37,7 @@ public class MailConfigBean {
 		
 		mailConfigBean.username = props.getProperty("mail.username","");
 		
-		mailConfigBean.fromUser = props.getProperty("mail.fromuser","");
+		mailConfigBean.fromUser = props.getProperty("mail.fromuser","noreply@varsql.com");
 		
 		mailConfigBean.password = props.getProperty("mail.password","");
 		

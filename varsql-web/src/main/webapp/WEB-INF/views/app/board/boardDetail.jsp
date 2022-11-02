@@ -265,7 +265,7 @@ VarsqlAPP.vueServiceBean({
 				url: '<varsql-app:boardUrl addUrl="commentList" contextPath="false"/>'
 				,data: param
 				,success: function(resData) {
-					var list = resData.items;
+					var list = resData.list;
 
 					var commentInfos = [];
 					var commentMap = {};

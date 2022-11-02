@@ -99,7 +99,7 @@ public class FileImportExportServiceImpl{
 			resultInfo.add(fileImportResult);
 		});
 
-		result.setItemList(resultInfo);
+		result.setList(resultInfo);
 
 		return result;
 	}

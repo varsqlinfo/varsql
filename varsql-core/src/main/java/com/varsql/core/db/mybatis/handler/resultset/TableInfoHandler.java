@@ -128,7 +128,7 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 
 		String typeAndLength =rowData.getString(MetaColumnConstants.TYPE_NAME_SIZE ,"");
 		
-		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
 
 		column.setComment(rowData.getString(MetaColumnConstants.COMMENT,""));
 

@@ -84,7 +84,7 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-			resultObject.setItemList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+			resultObject.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
 		}
 
 		return resultObject;

@@ -1023,7 +1023,9 @@ var _$template = {
 		}
 
 		if(contentLoadFlag){
-			tabCtx.options.contentRender(item, contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]'));
+			var tabContEle = contentContainerElement.find('[data-tab-cont-id="'+tabid+'"]'); 
+			tabContEle.addClass('active');
+			tabCtx.options.contentRender(item, tabContEle);
 		}
 	}
 	,getTabContentHtml : function (tabCtx, item){

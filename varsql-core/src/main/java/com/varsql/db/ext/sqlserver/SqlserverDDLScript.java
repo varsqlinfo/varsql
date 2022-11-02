@@ -86,7 +86,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 				}
 				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
 
-				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DATA_PRECISION), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
+				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DATA_PRECISION), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
 				
 				ddlStr.append(getDefaultValue(source.getString(MetaColumnConstants.DATA_DEFAULT), dataTypeInfo , true));
 

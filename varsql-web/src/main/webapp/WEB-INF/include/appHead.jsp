@@ -13,10 +13,12 @@
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.app.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
 
-
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/filesaver/FileSaver.min.js"></script>
+
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/sortable/Sortable.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/i18n/<varsql:resourceLocaleName name="varsql.lang"/>.js?version=${varsqlfn:staticResourceVersion('')}"></script>

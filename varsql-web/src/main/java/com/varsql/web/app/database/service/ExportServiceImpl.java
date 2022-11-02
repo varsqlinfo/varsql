@@ -161,7 +161,7 @@ public class ExportServiceImpl{
 
 		ResponseResult result =new ResponseResult();
 
-		result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+		result.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
 
 		return result ;
 
@@ -193,7 +193,7 @@ public class ExportServiceImpl{
 
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			result.addCustoms(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId(), dbMetadataRequestDTO));
+			result.addCustomMapAttribute(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId(), dbMetadataRequestDTO));
 		}
 
 		return result;
@@ -527,7 +527,7 @@ public class ExportServiceImpl{
 				.fileDiv(UploadFileType.EXPORT.getDiv())
 				.contGroupId(databaseInfo.getVconnid())
 				.fileFieldName("exportZipFile")
-				.fileName(VarsqlFileType.ZIP.concatExtension(exportFileName))
+				.fileName(exportFileName)
 				.fileSize(zipFile.length())
 				.fileExt(VarsqlFileType.ZIP.getExtension())
 				.filePath(FileUtils.pathConcat(FileServiceUtils.getSaveRelativePath(UploadFileType.EXPORT), zipFile.getName()))
@@ -574,9 +574,9 @@ public class ExportServiceImpl{
 				String[] objNmArr = null;
 				if(exportItemVO.isAllObjectExport()) {
 					List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectType.getObjectTypeId(), dpi);
-					objNmArr = objectList.stream().map(tmp->tmp.getName()).collect(Collectors.toList()).toArray(String[]::new);
+					objNmArr = objectList.stream().map(tmp->tmp.getName()).collect(Collectors.toList()).toArray(new String[0]);
 				}else {
-					objNmArr = exportItemVO.getObjectNameList().toArray(String[]::new);
+					objNmArr = exportItemVO.getObjectNameList().toArray(new String[0]);
 				}
 				
 				List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(objectType.getObjectTypeId(), dpi, ddlOption, objNmArr);

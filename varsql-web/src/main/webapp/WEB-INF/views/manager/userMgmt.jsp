@@ -343,7 +343,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/user/userList'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})
@@ -379,8 +379,8 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector : '#main-content'
 				,success: function(resData) {
 					_self.clickItem =resData.item;
-					_self.clickItemDbList =resData.items || [];
-					_self.dbGroup =resData.customs.dbGroup;
+					_self.clickItemDbList =resData.list || [];
+					_self.dbGroup =resData.customMap.dbGroup;
 
 					//_self.detailDialog.dialog("open");
 				}

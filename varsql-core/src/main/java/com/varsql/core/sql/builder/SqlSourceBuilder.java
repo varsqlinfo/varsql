@@ -61,11 +61,11 @@ public class SqlSourceBuilder {
 	public static ResponseResult parseResponseResult(String query, Map<String,String> param, DBVenderType dbType) {
 		ResponseResult result = new ResponseResult();
 		try{
-			result.setItemList(parse(query, param, dbType));
+			result.setList(parse(query, param, dbType));
 		}catch(Exception e){
 			log.error("parse ",e);
 			result.setMessage(e.getMessage());
-			result.setItemList(SQLParserUtils.getDefaultSqlSource(query, param));
+			result.setList(SQLParserUtils.getDefaultSqlSource(query, param));
 
 			//result.setItemList(new OldSqlSourceBuilder().parse(query, param));
 		}

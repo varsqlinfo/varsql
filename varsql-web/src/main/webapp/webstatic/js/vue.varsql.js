@@ -457,7 +457,7 @@ Vue.component('file-upload', {
 						this.removeFile(files[i]);
 					}
 
-					addFileList(_this, resp.items);
+					addFileList(_this, resp.list);
 					_this.callback.successmultiple (files, resp);
 				}else{
 					if(resp.resultCode==50000){
@@ -476,14 +476,14 @@ Vue.component('file-upload', {
 
 			dropzone.on('completemultiple', function (file) {
 				//var resData = JSON.parse(file.xhr.responseText);
-				//_this.fileList = _this.fileList.concat(resData.items);
+				//_this.fileList = _this.fileList.concat(resData.list);
 	        });
 		}else{
 			dropzone.on('success', function(file, resp){
 
 				if(VARSQL.reqCheck(resp)){
 					this.removeFile(file);
-					addFileList(_this, resp.items);
+					addFileList(_this, resp.list);
 					_this.callback.success (file,resp);
 				}else{
 					this.emit('error', file, resp.message);
@@ -493,7 +493,7 @@ Vue.component('file-upload', {
 
 			dropzone.on('complete', function (file) {
 				//var resData = JSON.parse(file.xhr.responseText);
-				//_this.fileList = _this.fileList.concat(resData.items);
+				//_this.fileList = _this.fileList.concat(resData.list);
 			});
 		}
 

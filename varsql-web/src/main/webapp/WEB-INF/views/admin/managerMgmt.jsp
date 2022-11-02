@@ -136,7 +136,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/managerMgmt/userList'}
 				,data : param
 				,success: function(resData) {
-					_self.userGridData = resData.items;
+					_self.userGridData = resData.list;
 					_self.userPageInfo = resData.page;
 				}
 			})
@@ -153,7 +153,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
 				,data : param
 				,success: function(resData) {
-					_self.managerGridData = resData.items;
+					_self.managerGridData = resData.list;
 					_self.managerPageInfo = resData.page;
 				}
 			})

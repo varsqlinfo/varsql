@@ -226,7 +226,7 @@ VarsqlAPP.vueServiceBean({
 				,loadSelector : 'body'
 				,data : param
 				,success: function(resData) {
-					var items = resData.items.reverse().map(function(item){
+					var items = resData.list.reverse().map(function(item){
 						item._uid = _this.logSeq++;
 						return item; 
 					})

@@ -65,7 +65,7 @@ public class DbDiffServiceImpl{
 
 		if(vtConnRVO==null){
 			resultObject.setResultCode(RequestResultCode.ERROR);
-			resultObject.setItemList(null);
+			resultObject.setList(null);
 		}else{
 			
 			String dbType = vtConnRVO.getDbTypeDriverProvider().getDbType(); 
@@ -73,14 +73,14 @@ public class DbDiffServiceImpl{
 			DBVenderType venderType = DBVenderType.getDBType(dbType);
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(venderType);
-			resultObject.setItemList(dbMetaEnum.getServiceMenu());
+			resultObject.setList(dbMetaEnum.getServiceMenu());
 			
 			DatabaseParamInfo param = DatabaseUtils.dbConnectionEntityToDatabaseParamInfo(vtConnRVO);
 			
 			if(venderType.isUseDatabaseName()) {
-				resultObject.addCustoms("schemaInfo", dbMetaEnum.getDatabases(param));
+				resultObject.addCustomMapAttribute("schemaInfo", dbMetaEnum.getDatabases(param));
 			}else {
-				resultObject.addCustoms("schemaInfo", dbMetaEnum.getSchemas(param));
+				resultObject.addCustomMapAttribute("schemaInfo", dbMetaEnum.getSchemas(param));
 			}
 		}
 
@@ -115,10 +115,10 @@ public class DbDiffServiceImpl{
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
-				resultObject.setItemList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
+				resultObject.setList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
 			}else{ // 테이블이 아닌 경우는 ddl를 비교.
 				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);
-				resultObject.setItemList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectList.stream().map(tmp-> tmp.getName()).toArray(String[]::new)));
+				resultObject.setList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectList.stream().map(tmp-> tmp.getName()).toArray(String[]::new)));
 			}
 		}
 

@@ -85,7 +85,7 @@ public class GuestController extends AbstractController  {
 				logger.warn("###  GuestController qna check {}",errorVal.toString());
 			}
 			resultObject.setResultCode(RequestResultCode.DATA_NOT_VALID);
-			resultObject.setItemList(result.getAllErrors());
+			resultObject.setList(result.getAllErrors());
 		}else{
 			resultObject = userPreferencesServiceImpl.saveQnaInfo(qnaInfo, true);
 		}

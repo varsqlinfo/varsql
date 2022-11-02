@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.varsql.core.configuration.beans.MailConfigBean;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 public class MailConfigurer {
@@ -25,8 +26,11 @@ public class MailConfigurer {
         
         mailSender.setHost(mailConfig.getHost());
         mailSender.setPort(mailConfig.getPort());
-        mailSender.setUsername(mailConfig.getUsername());
-        mailSender.setPassword(mailConfig.getPassword());
+        
+        if(!StringUtils.isBlank(mailConfig.getUsername())){
+	        mailSender.setUsername(mailConfig.getUsername());
+	        mailSender.setPassword(mailConfig.getPassword());
+        }
         
         Properties javaMailProperties = new Properties();
         

@@ -109,7 +109,7 @@ VarsqlAPP.vueServiceBean({
 				url :{type:VARSQL.uri.manager, url:'/qnaMgmtList'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})

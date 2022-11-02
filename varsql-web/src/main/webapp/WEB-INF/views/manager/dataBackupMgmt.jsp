@@ -33,8 +33,8 @@
 							id="dataTables-example" style="table-layout:fixed;">
 							<colgroup>
 								<col style="width:100px">
-								<col style="width:*;">
-								<col style="width:120px;">
+								<col style="min-width:50px;width:*;">
+								<col style="width:100px;">
 								<col style="width:145px;">
 								<col style="width:75px;">
 							</colgroup>
@@ -52,7 +52,7 @@
 								<tr v-for="(item,index) in gridData" class="gradeA cursor-pointer" :class="(index%2==0?'add':'even')">
 									<td :title="item.vname"><div class="text-ellipsis ellipsis0">{{item.vname}}</div></td>
 									<td :title="item.jobName">
-										<div class="text-ellipsis ellipsis0"><a @click="itemView(item)">{{item.jobName}}</a></div><br/>
+										<div class="text-ellipsis ellipsis0"><a href="javascript:;" @click="itemView(item)">{{item.jobName}}</a></div><br/>
 										<div class="text-ellipsis ellipsis0">{{item.jobDescription}}</div>
 									</td>
 									<td :title="item.cronExpression"><div class="text-ellipsis ellipsis0">{{item.cronExpression}}</div></td>
@@ -253,7 +253,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/dataBackup/list'}
 				,data : param
 				,success: function(resData) {
-					_this.gridData = resData.items;
+					_this.gridData = resData.list;
 					_this.pageInfo = resData.page;
 				}
 			})
@@ -450,7 +450,7 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector : '#backupList'
 				,data : param
 				,success:function (resData){
-		    		_self.selectObj.setSourceItem(resData.items);
+		    		_self.selectObj.setSourceItem(resData.list);
 				}
 			});
 		}
@@ -487,7 +487,7 @@ VarsqlAPP.vueServiceBean( {
 			if($.pubGrid('#historyList')){
 				$.pubGrid('#historyList').resizeDraw();
 				$.pubGrid('#historyList').setData({
-					items : resData.items
+					items : resData.list
 					,paging : resData.page
 				});
 				return ; 
@@ -511,10 +511,10 @@ VarsqlAPP.vueServiceBean( {
 				,rowOptions:{	// 로우 옵션.
 					height: 30	// cell 높이
 				}
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,height : 520
 				,navigation: {
-					usePaging : true
+					enablePaging : true
 					,callback : function (no){
 						_this.historyView(no);
 					}

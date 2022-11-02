@@ -72,12 +72,12 @@
 	<definition name="tool-main-def" template="/WEB-INF/views/database/tools/_templates/toolMain.jsp">
 	</definition>
     
-    <!-- export TODO modify  -->
+    <!-- export modify  -->
     <definition name="/database/tools/export/*" extends="tool-main-def">
         <put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}.jsp" />
     </definition>
 
-    <!-- export main TODO modify -->
+    <!-- export main modify -->
     <definition name="/database/tools/export/*/*" extends="tool-main-def">
     	<put-attribute name="body" value="/WEB-INF/views/database/tools/export/{1}/{2}.jsp" />
     </definition>

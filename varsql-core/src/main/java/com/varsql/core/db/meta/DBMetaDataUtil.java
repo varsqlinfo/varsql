@@ -127,7 +127,7 @@ public final class DBMetaDataUtil {
 					column.setNullable(StringUtils.nullToString(colRs.getString(MetaColumnConstants.IS_NULLABLE)));
 					column.setAutoincrement("");
 					column.setTypeName(dataTypeInfo.getTypeName());
-					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, columnSize, degitsLen));
+					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, null, columnSize, columnSize, degitsLen));
 
 					if(keyColumn !=null){
 						column.setConstraints(keyColumn.contains(cName)?"PK":"");

@@ -148,7 +148,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 					messageType : 'new'
 				},
 				success : function(res) {
-					var items = res.items;
+					var items = res.list;
 					var len = items.length;
 
 					_this.noteItems = items;
@@ -208,7 +208,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 				success : function(res) {
 					var strHtm = [];
 
-					var items = res.items;
+					var items = res.list;
 
 					strHtm.push('<option value="">----connection info---</option>');
 					for(var i =0, len = items.length;i <len; i++){
@@ -324,8 +324,8 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.user, url:'/message'}
 				,data : param
 				,success: function(resData) {
-					_this.noteItems = resData.items;
-					_this.pastNoteItems = resData.items;
+					_this.noteItems = resData.list;
+					_this.pastNoteItems = resData.list;
 				}
 			})
 		}
@@ -333,19 +333,16 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 });
 
 function userConnect(){
-	VARSQL.socket.connect('user', {
-		uid : $varsqlConfig.viewId
-		,callback : function (data){
-			var msgType = data.type;
+	VARSQL.socket.connect('user', {uid : $varsqlConfig.viewId}, function (data){
+		var msgType = data.type;
 
-			if(msgType== 'NOTE'){
-				userTopObj.alarmFlag =true;
-			}else if(msgType == 'USER_BLOCK'){
-				location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
-			}else if(msgType == 'USER_DB_BLOCK'){
-				userMain.blockTab(data.item);
-				userTopObj.getConnectionInfo(false);
-			}
+		if(msgType== 'NOTE'){
+			userTopObj.alarmFlag =true;
+		}else if(msgType == 'USER_BLOCK'){
+			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
+		}else if(msgType == 'USER_DB_BLOCK'){
+			userMain.blockTab(data.item);
+			userTopObj.getConnectionInfo(false);
 		}
 	});	
 }

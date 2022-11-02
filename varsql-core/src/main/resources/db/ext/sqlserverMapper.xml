@@ -50,8 +50,8 @@
 		from ${databaseName}.INFORMATION_SCHEMA.tables tb 
 		inner join ${databaseName}.INFORMATION_SCHEMA.columns col on tb.TABLE_NAME = col.TABLE_NAME
 		LEFT JOIN ${databaseName}.INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu on tb.TABLE_NAME = ccu.TABLE_NAME and col.COLUMN_NAME = ccu.COLUMN_NAME
-		LEFT JOIN ${databaseName}.SYS.EXTENDED_PROPERTIES prop ON prop.MAJOR_ID = OBJECT_ID(tb.TABLE_CATALOG +'.'+tb.TABLE_SCHEMA +'.'+tb.TABLE_NAME ) AND prop.MINOR_ID= col.ORDINAL_POSITION 
-		AND prop.class = 1 AND prop.name = 'MS_Description'
+		LEFT JOIN ${databaseName}.SYS.EXTENDED_PROPERTIES prop ON prop.MAJOR_ID = OBJECT_ID(tb.TABLE_CATALOG +'.'+tb.TABLE_SCHEMA +'.'+tb.TABLE_NAME )
+		AND prop.MINOR_ID = COLUMNPROPERTY(prop.MAJOR_ID, col.COLUMN_NAME, 'COLUMNID') AND prop.class = 1 AND prop.name = 'MS_Description'
 		LEFT JOIN   (SELECT k1.name, k1.object_id, type, k2.TABLE_NAME, k2.COLUMN_NAME FROM ${databaseName}.sys.objects k1
 		                LEFT JOIN ${databaseName}.INFORMATION_SCHEMA.KEY_COLUMN_USAGE k2
 		                ON k1.name = k2.CONSTRAINT_NAME
@@ -115,7 +115,8 @@
 			, prop.value as "COMMENT"
 		from ${databaseName}.INFORMATION_SCHEMA.tables tb 
 		inner join ${databaseName}.INFORMATION_SCHEMA.columns col on tb.TABLE_NAME = col.TABLE_NAME
-		LEFT JOIN   ${databaseName}.SYS.EXTENDED_PROPERTIES prop ON prop.MAJOR_ID = OBJECT_ID(tb.TABLE_CATALOG +'.'+tb.TABLE_SCHEMA +'.'+tb.TABLE_NAME ) AND prop.MINOR_ID= col.ORDINAL_POSITION 
+		LEFT JOIN   ${databaseName}.SYS.EXTENDED_PROPERTIES prop ON prop.MAJOR_ID = OBJECT_ID(tb.TABLE_CATALOG +'.'+tb.TABLE_SCHEMA +'.'+tb.TABLE_NAME ) 
+		AND prop.MINOR_ID= COLUMNPROPERTY(prop.MAJOR_ID, col.COLUMN_NAME, 'COLUMNID') 
 		AND prop.class = 1 AND prop.name = 'MS_Description'
 		where 1=1 
 		and tb.TABLE_TYPE = 'VIEW'
@@ -138,12 +139,11 @@
 			, so.status as "STATUS"
 		FROM        ${databaseName}.sys.sysobjects as so
 		INNER JOIN  ${databaseName}.sys.sysusers as u
-			ON      u.uid = so.uid
+			ON      u.uid = so.uid and so.type='P'
 		LEFT OUTER JOIN ${databaseName}.sys.extended_properties AS prop
 			ON      prop.major_id = so.id
 			AND     prop.minor_id = 0
 			AND     prop.name = 'MS_Description'
-			and so.type='P'
 		ORDER  BY so.name
 	</select>
 

@@ -84,7 +84,7 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 			resultObject.setMessage("connection info not found : "+ vconnid);
 			return resultObject; 
 		}else{
-			resultObject.setItemList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getServiceMenu());
+			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getServiceMenu());
 		}
 
 		return resultObject;

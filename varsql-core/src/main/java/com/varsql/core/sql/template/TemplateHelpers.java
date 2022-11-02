@@ -84,7 +84,7 @@ public enum TemplateHelpers implements Helper<Object> {
 					}
 				}
 				int columnSize = MapUtils.getIntValue(item, MetaColumnConstants.COLUMN_SIZE); 
-				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize,
+				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, null, columnSize,
 						MapUtils.getIntValue(item, MetaColumnConstants.DATA_PRECISION, columnSize), MapUtils.getIntValue(item, MetaColumnConstants.DECIMAL_DIGITS));
 			}
 

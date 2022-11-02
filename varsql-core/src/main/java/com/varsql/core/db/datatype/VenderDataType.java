@@ -34,7 +34,7 @@ public class VenderDataType implements DataType{
 	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn){
 		Validate.notNull(typeName, "typeName can't be null");
 		
-		this.typeName = typeName; 
+		this.typeName = typeName.toUpperCase(); 
 		this.typeCode = typeCode; 
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
 		this.excludeImportColumn = excludeImportColumn;

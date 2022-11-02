@@ -151,7 +151,7 @@ public class SQLServiceImpl{
 
 		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBVenderType.getDBType( dbinfo.getType() ));
 
-		List<SqlSource> sqlList = parseInfo.getItems();
+		List<SqlSource> sqlList = parseInfo.getList();
 
 		int limit = sqlExecuteInfo.getLimit();
 
@@ -234,7 +234,7 @@ public class SQLServiceImpl{
 
 			commonLogService.sqlLogInsert(allSqlStatistics);
 
-			result.setItemList(reLst);
+			result.setList(reLst);
 			conn.commit();
 		} catch (Throwable e ) {
 			
@@ -278,7 +278,7 @@ public class SQLServiceImpl{
 				}
 			}
 
-			result.addCustoms("errorLine", sqldx);
+			result.addCustomMapAttribute("errorLine", sqldx);
 			result.setItemOne(tmpSqlSource==null?sqlList.get(0):tmpSqlSource);
 
 			LoggerFactory.getLogger("sqlErrorLog").error("sqlData errorLine : {}", sqldx,e);

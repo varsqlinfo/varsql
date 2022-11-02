@@ -227,7 +227,7 @@ VarsqlAPP.vueServiceBean({
 				url :{type:VARSQL.uri.user, url:'/preferences/file/fileList'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})
@@ -245,7 +245,7 @@ VarsqlAPP.vueServiceBean({
 					fileId : item.fileId
 				}
 				,success:function (resData){
-					_this.fileListGridObj.setData(resData.items);
+					_this.fileListGridObj.setData(resData.list);
 				}
 			});
 		}

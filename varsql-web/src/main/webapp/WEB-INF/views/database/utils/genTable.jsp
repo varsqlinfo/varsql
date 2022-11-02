@@ -225,7 +225,7 @@ VarsqlAPP.vueServiceBean( {
 			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search'}
 			    ,data : params
 			    ,success:function (res){
-			    	_this.glossaryGridObj.setData(res.items,'reDraw');
+			    	_this.glossaryGridObj.setData(res.list,'reDraw');
 				}
 			});
 		}

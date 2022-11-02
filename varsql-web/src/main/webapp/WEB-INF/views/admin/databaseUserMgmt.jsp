@@ -118,7 +118,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbNameSearch'}
 				,data : param
 				,success: function(resData) {
-					_self.searchData = resData.items;
+					_self.searchData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})
@@ -136,10 +136,10 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/managerMgmt/managerList'}
 				,data : param
 				,success: function(resData) {
-					_self.managerGridData = resData.items;
+					_self.managerGridData = resData.list;
 					
 		    		if( _self.managerGridData.length > 0){
-		    			_self.selectObj.setSourceItem(resData.items);
+		    			_self.selectObj.setSourceItem(resData.list);
 		    		}
 				}
 			})
@@ -159,7 +159,7 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector: '.manage-user-detail'
 				,data : param
 				,success: function(resData) {
-		    		_self.selectObj.setTargetItem(resData.items);
+		    		_self.selectObj.setTargetItem(resData.list);
 				}
 			})
 		}
@@ -181,7 +181,7 @@ VarsqlAPP.vueServiceBean( {
 				data:param
 				,url : {type:VARSQL.uri.admin, url:'/managerMgmt/dbManagerMapping'}
 				,success:function (resData){
-					_self.selectObj.setTargetItem(resData.items);
+					_self.selectObj.setTargetItem(resData.list);
 				}
 			});
 		}

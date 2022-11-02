@@ -108,22 +108,24 @@ public enum DBColumnMetaInfo {
 		return size;
 	}
 	
-	public String getTypeAndLength(DataType dataTypeInfo, String typeAndLength, int columnSize, int precision, int scale) {
+	public String getTypeAndLength(String dataType, DataType dataTypeInfo, String typeAndLength, int columnSize, int precision, int scale) {
 		if(!StringUtils.isBlank(typeAndLength)) {
 			return typeAndLength;
 		}else {
 			columnSize = dataTypeInfo.getMetaDataHandler().getColumnLength(columnSize);
 			
-			String newTypeAndLength = dataTypeInfo.getTypeName();
 			if(this.columnMetaHandler != null) {
-				newTypeAndLength += this.columnMetaHandler.typeAndLength(precision, scale);
+				dataType += this.columnMetaHandler.typeAndLength(precision, scale);
 			}else {
+				
+				if(columnSize < 0) return dataType;
+				
 				if(this.isSize()){
-					newTypeAndLength +="(" + columnSize+")";
+					dataType +="(" + columnSize+")";
 				}
 			}
 			
-			return newTypeAndLength;
+			return dataType;
 		}
 	}
 	

@@ -156,7 +156,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/dbGroup/list'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items || [];
+					_self.gridData = resData.list || [];
 					_self.pageInfo = resData.page;
 				}
 			})
@@ -171,7 +171,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.manager, url:'/comm/userList'}
 				,data : param
 				,success: function(resData) {
-					_self.selectObj.setSourceItem( resData.items);
+					_self.selectObj.setSourceItem( resData.list);
 				}
 			})
 		}
@@ -190,7 +190,7 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector: '#main-content'
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMappingList'}
 				,success:function (resData){
-					var result = resData.items;
+					var result = resData.list;
 		    		_self.selectObj.setTargetItem(result);
 				}
 			});
@@ -217,7 +217,7 @@ VarsqlAPP.vueServiceBean( {
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMapping'}
 				,success:function (res){
 					console.log(res);
-					_self.selectObj.setTargetItem(res.items)
+					_self.selectObj.setTargetItem(res.list)
 				}
 			});
 		}

@@ -138,7 +138,7 @@ var sqlLogStat ={
 			,url : {type:VARSQL.uri.manager, url:'/comm/dbList'}
 			,success:function (resData){
 
-				var result = resData.items;
+				var result = resData.list;
 	    		var resultLen = result.length;
 
 	    		var strHtm = [];
@@ -170,7 +170,7 @@ var sqlLogStat ={
 			}
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
 			,success:function (response){
-				var items = response.items ||[];
+				var items = response.list ||[];
 
 				VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 					axis : [{
@@ -206,7 +206,7 @@ var sqlLogStat ={
 			}
 			,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
 			,success:function (response){
-				var items = response.items ||[];
+				var items = response.list ||[];
 
 				if(items.length > 0){
 					VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {

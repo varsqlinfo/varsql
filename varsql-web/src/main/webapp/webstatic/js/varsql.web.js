@@ -559,7 +559,7 @@ _$base.req ={
 	}
 	,validationCheck : function (resData){
 		if(resData.messageCode=='valid'){
-			var items = resData.items;
+			var items = resData.list;
 
 			if(isArray(items)){
 				var objLen = items.length;
@@ -676,41 +676,88 @@ _$base.req ={
 		formObj.ajaxSubmit(opts);
 	}
 	,download :function (opts){
-		var tmpMethod = opts.method?opts.method:'post'
-			,tmpParam = opts.params?opts.params:{}
+		
+		var tmpParam = opts.params?opts.params:{}
 			,urlObj = opts.url;
+			
+		var loadSelector = (opts.loadSelector ? opts.loadSelector :'body');
+		
+		tmpParam[ $$csrf_param] = $$csrf_token
+		
+		try{
+			$.ajax({
+			    type: "POST",
+			    url: (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url),
+			    data: tmpParam,
+				xhrFields: {
+			        responseType: "blob"
+			    }
+			    ,beforeSend : function (xhr){
+					xhr.setRequestHeader($$csrf_header, $$csrf_token);
+		
+					if($(loadSelector).length > 0){
+						
+						$(loadSelector).centerLoading({
+							contentClear:false
+						});
+					}
+				}
+			    ,success: function(response, status, xhr) {
+			        // check for a filename
+			        var filename = "";
+			        var disposition = xhr.getResponseHeader('Content-Disposition');
+			        
+					var filenameIdx = disposition.indexOf('filename');
+					filename =  filenameIdx < 0 ? 'filename-empty' : disposition.substring(filenameIdx).replace(/filename[- ]?=[- ]?"/,'').replace(/[-"]?[- ]?;[- ]?$/,'')
+			        var type = xhr.getResponseHeader('Content-Type');
+			        var blob = new Blob([response], { type: type });
+			        
+			        saveAs(blob, filename)
+			    }
+			}).done(function (xhr){
+				if(loadSelector){
+					$(loadSelector).centerLoadingClose();
+				}
+			}).fail(function (xhr){
+				alert(xhr);
+				if(loadSelector) {
+					$(loadSelector).centerLoadingClose();
+				}
+			})
+		}catch(e){
+			var tmpParam = opts.params?opts.params:{}
+                ,urlObj = opts.url;
 
-		if($('#varsql_hidden_down_area').length < 1){
-			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
-				+'<iframe name="varsql_hidden_down_iframe"  style="width:0px;height:0px;"></iframe><div id="varsql_hidden_down_form_area"></div><div>';
-			$('body').append(strHtm);
+            if($('#varsql_hidden_down_area').length < 1){
+                var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
+                    +'<iframe name="varsql_hidden_down_iframe"  style="width:0px;height:0px;"></iframe><div id="varsql_hidden_down_form_area"></div><div>';
+                $('body').append(strHtm);
+            }
+
+            opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
+
+            var contHtm = [];
+            contHtm.push('<form action="'+opts.url+'" method="post" name="varsql_hidden_down_form" target="varsql_hidden_down_iframe">');
+
+            var tmpVal;
+
+            contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+                'key' : $$csrf_param ,val :$$csrf_token
+            }));
+
+            for(var key in tmpParam){
+                tmpVal = tmpParam[key];
+
+                contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+                    'key' : key ,val : (typeof tmpVal==='string' ?tmpVal:JSON.stringify(tmpVal))
+                }));
+            }
+            contHtm.push('</form>');
+
+            $('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
+
+            document.varsql_hidden_down_form.submit();
 		}
-
-		opts.url = (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url);
-
-		var contHtm = [];
-		contHtm.push('<form action="'+opts.url+'" method="post" name="varsql_hidden_down_form" target="varsql_hidden_down_iframe">');
-
-		var tmpVal;
-
-		var token = {};
-		contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-			'key' : $$csrf_param ,val :$$csrf_token
-		}));
-
-		for(var key in tmpParam){
-			tmpVal = tmpParam[key];
-
-			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-				'key' : key ,val : (typeof tmpVal==='string' ?tmpVal:JSON.stringify(tmpVal))
-			}));
-		}
-		contHtm.push('</form>');
-
-		$('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
-
-		document.varsql_hidden_down_form.submit();
-
 	}
 };
 
@@ -772,56 +819,69 @@ _$base.socket ={
 	,isCreate : false
 	,connRetryCount : 0
 	,maxRetry :10
-	,subScripeActive :{}
+	,subscripeActiveMap :{}
+	,subscripeObj :{}
 	//알림 수신
-	,addSubscribe : function (endpoint, opts){
+	,addSubscribe : function (endpoint, headers, callback){
 
-		var subscribeId = '/sub/'+endpoint+'/'+opts.uid;
+		var subscribeId = this.getSubscribeId(endpoint, headers.uid);
 
-		if(this.subScripeActive[subscribeId]===true && this.stompClient.connected ===true){
+		if(this.subscripeActiveMap[subscribeId]===true && this.stompClient.connected ===true){
 			return ;
 		}
 
-		this.subScripeActive[subscribeId] =true;
+		this.subscripeActiveMap[subscribeId] =true;
 
-		this.stompClient.subscribe(subscribeId, function (data) {
-    		if(_$base.isFunction(opts.callback)){
-    			opts.callback.call(null, parseJSON( data.body));
+		this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function (data) {
+    		if(_$base.isFunction(callback)){
+    			callback.call(null, parseJSON(data.body));
     		}
     	});
 	}
-	,connect : function(endpoint, opts){
+	,getSubscribeId : function (endpoint, id){
+		return '/user/'+endpoint+'/'+id;
+	}
+	,unSubscribe : function (endpoint, id){
+		var subscribeId = this.getSubscribeId(endpoint, id);
+		try{
+			delete this.subscripeActiveMap[subscribeId];
+			this.subscripeObj[subscribeId].unsubscribe();
+		}catch(e){
+			console.log(e);
+		}
+	}
+	,connect : function(endpoint, headers, callback){
 		var _this = this;
-		opts = opts ||{};
+		headers = headers ||{};
 
 		if(_$base.isUndefined(endpoint))  return ;
 
 		if(_this.stompClient==null){
-			_this.createConnection(endpoint, opts);
+			_this._createConnection(endpoint, headers, callback);
 		}else{
 			if(_this.isCreate){
 				_this.close();
-				_this.createConnection(endpoint, opts);
+				_this._createConnection(endpoint, headers, callback);
 				return ; 
 			}
 
 			if(_this.stompClient.connected === true){
-				_this.addSubscribe(endpoint, opts);
+				_this.addSubscribe(endpoint, headers, callback);
 			}else{
 				
 				var connectTimer = setInterval(function() {
 					if(_this.stompClient.connected === true){
 						clearInterval(connectTimer);
-						_this.addSubscribe(endpoint, opts);
+						_this.addSubscribe(endpoint, headers, callback);
 					}
 				}, 1000);
 			}
 		}
 	}
-	, createConnection : function (endpoint, opts){
+	, _createConnection : function (endpoint, headers, callback){
 		var _this = this;
 
-		this.subScripeActive = {};
+		this.subscripeActiveMap = {};
 
 		var stompClient = Stomp.over(new SockJS(_$base.getContextPathUrl("/ws/"+ endpoint) , null, {transports : ['websocket'] }));
 		stompClient.heartbeat.outgoing = 20000;
@@ -833,7 +893,7 @@ _$base.socket ={
 
 		stompClient.connect({}, function (frame) {
 			_this.isCreate = true; 
-			_this.addSubscribe(endpoint, opts);
+			_this.addSubscribe(endpoint, headers, callback);
 		}, function(err){
 			console.log(err);
 	    });
@@ -846,6 +906,7 @@ _$base.socket ={
 	// 알림 연결 끊기
 	close : function(){
 		if(this.stompClient != null){
+			this.stompClient .reconnect_delay = -1;
 			this.stompClient.disconnect();
 		}
 	}

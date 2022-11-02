@@ -224,10 +224,12 @@ public final class FileServiceUtils {
 	}
 
 	public static void fileDownload(HttpServletRequest req, HttpServletResponse res, String downFileName, FileBaseEntity ... fileBaseEntity) throws IOException {
-		res.setContentType("application/download; "+VarsqlConstants.CHAR_SET);
-		res.setHeader("Content-Type", "application/octet-stream;");
-		res.setHeader("Content-Transfer-Encoding", "binary");
-		res.setHeader("Content-Disposition", "attachment;fileName="+getDownloadFileName(req, downFileName)+ ";");
+		res.setContentType("application/octet-stream; "+VarsqlConstants.CHAR_SET);
+		res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", getDownloadFileName(req, downFileName)));
+		res.setHeader("Content-Transfer-Encoding", "binary;");
+		res.setHeader("Pragma", "no-cache;");
+		res.setHeader("Expires", "-1;");
+		
 
 		int bufferSize = 2048;
 		int fileLen = fileBaseEntity.length;

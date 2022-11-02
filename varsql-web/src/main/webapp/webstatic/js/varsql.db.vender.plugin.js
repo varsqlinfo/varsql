@@ -31,7 +31,7 @@ var $oracle = {
 						{key :'name', label:'Package', width:200, sort:true}
 						,{key :'remarks', label:'비고', sort:false}
 					]
-					,tbodyItem: resData.items
+					,tbodyItem: resData.list
 					,setting : {
                         enabled : true
                         ,enableSearch : true
@@ -84,7 +84,7 @@ var $oracle = {
     
             var gridObj = $.pubGrid(metaEleId);
     
-            var items = colData.items;
+            var items = colData.list;
     
             if(gridObj){
                 gridObj.setData(items,'reDraw');

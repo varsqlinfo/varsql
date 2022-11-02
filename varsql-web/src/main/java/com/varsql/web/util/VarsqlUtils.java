@@ -64,10 +64,9 @@ public final class VarsqlUtils {
 		res.setContentType("application/octet-stream");
 
 		if (req != null) {
-			res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", FileServiceUtils.getDownloadFileName(req, fileName)));
-		} else {
-			res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", fileName));
+			fileName = FileServiceUtils.getDownloadFileName(req, fileName);
 		}
+		res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", fileName));
 		res.setCharacterEncoding(VarsqlConstants.CHAR_SET);
 		res.setHeader("Content-Transfer-Encoding", "binary;");
 		res.setHeader("Pragma", "no-cache;");
@@ -174,14 +173,14 @@ public final class VarsqlUtils {
 
 	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter) {
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.getContent());
+		responseResult.setList(result.getContent());
 		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
 		return responseResult;
 	}
 
 	public static ResponseResult getResponseResult(List <?> result, long totalCount , SearchParameter searchParameter) {
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result);
+		responseResult.setList(result);
 		responseResult.setPage(PagingUtil.getPageObject(totalCount, searchParameter));
 		return responseResult;
 	}
@@ -203,7 +202,7 @@ public final class VarsqlUtils {
 
 	public static ResponseResult getResponseResultItemList(List<?> list) {
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(list);
+		responseResult.setList(list);
 		return responseResult;
 	}
 
@@ -268,14 +267,14 @@ public final class VarsqlUtils {
 	public static ResponseResult getResponseResult(Page<?> result, SearchParameter searchParameter, GenericMapper instance) {
 
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
+		responseResult.setList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
 		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
 		return responseResult;
 	}
 
 	public static ResponseResult getResponseResult(List<?> result, GenericMapper instance) {
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
+		responseResult.setList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
 		return responseResult;
 	}
 }

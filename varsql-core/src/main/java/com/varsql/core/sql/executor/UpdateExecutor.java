@@ -76,7 +76,7 @@ public class UpdateExecutor implements Executor{
 
 		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
 
-		List<SqlSource> sqlList = parseInfo.getItems();
+		List<SqlSource> sqlList = parseInfo.getList();
 
 		result.setStartTime(System.currentTimeMillis());
 

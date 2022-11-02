@@ -62,7 +62,7 @@ public abstract class AbstractDBMetaHandler implements DBMetaHandler{
 		column.setNullable(StringUtils.nullToString(rs.getString(MetaColumnConstants.IS_NULLABLE)));
 		column.setAutoincrement("");
 		column.setTypeName(dataTypeInfo.getTypeName());
-		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataTypeInfo, null, columnSize, dataPrecision, degitsLen));
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, null, columnSize, dataPrecision, degitsLen));
 
 		if(colComment != null){
 			column.setComment(StringUtils.nullToString(colComment.get(cName)!=null? (String)colComment.get(cName) : rs.getString(MetaColumnConstants.REMARKS)));

@@ -166,7 +166,7 @@ VarsqlAPP.vueServiceBean({
 				,data: param
 				,loadSelector : '.menu-tools-body'
 				,success:function (resData){
-					var customItem = resData.customs;
+					var customItem = resData.customMap;
 
 					var firstFlag = true;
 

@@ -323,7 +323,7 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dblist'}
 				,data : param
 				,success: function(resData) {
-					_this.gridData = resData.items;
+					_this.gridData = resData.list;
 					_this.pageInfo = resData.page;
 				}
 			})
@@ -622,7 +622,7 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,success:function (resData){
 
-					var result = resData.items;
+					var result = resData.list;
 		    		var resultLen = result.length;
 
 		    		if(resultLen==0){

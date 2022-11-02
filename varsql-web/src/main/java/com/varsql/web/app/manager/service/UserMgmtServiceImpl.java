@@ -172,8 +172,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 		ResponseResult result = new ResponseResult();
 
 		result.setItemOne(UserMapper.INSTANCE.toDto(userMgmtRepository.findByViewid(viewid)));
-		result.setItemList(userDBConnectionEntityRepository.userConnInfo(viewid));
-		result.addCustoms("dbGroup",dbGroupEntityRepository.findAll(DBGroupSpec.userGroupList(viewid)));
+		result.setList(userDBConnectionEntityRepository.userConnInfo(viewid));
+		result.addCustomMapAttribute("dbGroup",dbGroupEntityRepository.findAll(DBGroupSpec.userGroupList(viewid)));
 
 		return result;
 	}

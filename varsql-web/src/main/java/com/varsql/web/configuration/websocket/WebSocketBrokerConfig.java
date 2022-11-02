@@ -33,17 +33,18 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 	
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-    	String [] destinationPrefixes= Arrays.asList(WebSocketConstants.Type.values()).stream().map(item -> item.getPrefix()).toArray(String[]::new); 
+    	String [] destinationPrefixes= Arrays.asList(WebSocketConstants.Type.values()).stream().map(item -> item.getClientDestination()).toArray(String[]::new); 
     	
     	if(logger.isDebugEnabled()) {
 	    	logger.debug("WebSocketBrokerConfig configureMessageBroker start");
 	    	logger.debug("enableSimpleBroker : {}", StringUtils.join(destinationPrefixes));
 	    	logger.debug("applicationDestinationPrefixes : {}", WebSocketConstants.APP_DESTINATION_PREFIX);
-	    	logger.debug("userDestinationPrefix : {}", WebSocketConstants.CLIENT_DESTINATION_PREFIX);
+	    	logger.debug("userDestinationPrefix : {}", WebSocketConstants.USER_DESTINATION_PREFIX);
 	    	logger.debug("WebSocketBrokerConfig configureMessageBroker end");
     	}
     	
         config.enableSimpleBroker(destinationPrefixes);
+        config.setUserDestinationPrefix(WebSocketConstants.USER_DESTINATION_PREFIX);
         config.setApplicationDestinationPrefixes(WebSocketConstants.APP_DESTINATION_PREFIX);
         
     }

@@ -15,7 +15,7 @@ package com.varsql.web.constants;
  */
 public interface WebSocketConstants {
 	final String APP_DESTINATION_PREFIX = "/app";
-	final String CLIENT_DESTINATION_PREFIX = "/sub";
+	final String USER_DESTINATION_PREFIX = "/user";
 	final String ENDPOINT_PREFIX = "/ws";
 	
 	//final String DESTINATION_PREFIX = 
@@ -24,7 +24,7 @@ public interface WebSocketConstants {
 		,DATABASE("database");
 		//,FILE("file");
 		
-		String prefix; 
+		String clientDestination; 
 		String endPoint; 
 		String destMatcher;
 		
@@ -37,21 +37,21 @@ public interface WebSocketConstants {
 		}
 		
 		Type(String dest, String endPoint, String destMatcher){
-			this.prefix =  String.format("%s/%s", CLIENT_DESTINATION_PREFIX, dest);
+			this.clientDestination =  String.format("%s/%s", USER_DESTINATION_PREFIX, dest);
 			
 			if(endPoint != null) {
 				this.endPoint = String.format("%s/%s", ENDPOINT_PREFIX, dest);
 			}
 			
 			if(dest.equals(destMatcher)) {
-				this.destMatcher = String.format("%s/%s%s", CLIENT_DESTINATION_PREFIX, destMatcher, "/**");
+				this.destMatcher = String.format("%s/%s%s", USER_DESTINATION_PREFIX, destMatcher, "/**");
 			}else {
-				this.destMatcher = String.format("%s/%s", CLIENT_DESTINATION_PREFIX, destMatcher);
+				this.destMatcher = String.format("%s/%s", USER_DESTINATION_PREFIX, destMatcher);
 			}
 		}
 
-		public String getPrefix() {
-			return prefix;
+		public String getClientDestination() {
+			return clientDestination;
 		}
 
 		public String getEndPoint() {

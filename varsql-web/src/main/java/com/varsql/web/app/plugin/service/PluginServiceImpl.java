@@ -78,7 +78,7 @@ public class PluginServiceImpl extends AbstractService{
 		);
 
 		ResponseResult responseResult = new ResponseResult();
-		responseResult.setItemList(result.getContent().stream().map(item ->{
+		responseResult.setList(result.getContent().stream().map(item ->{
 			SqlHistoryResponseDTO sqlUserHistoryInfo = SqlHistoryMapper.INSTANCE.toDto(item);
 			sqlUserHistoryInfo.setErrorLog(null);
 			sqlUserHistoryInfo.setUsrIp(null);

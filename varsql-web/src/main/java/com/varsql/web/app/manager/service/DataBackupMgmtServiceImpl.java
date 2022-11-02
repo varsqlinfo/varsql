@@ -91,7 +91,7 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
 			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
 
-			resultObject.setItemList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
 		}
 
 		return resultObject;

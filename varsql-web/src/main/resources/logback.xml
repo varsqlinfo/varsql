@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
 
-	 <contextListener class="com.varsql.web.configuration.LoggerListener"/>
+	<contextListener class="com.varsql.web.configuration.LoggerListener"/>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
@@ -100,7 +100,8 @@
 	
 	<!-- 
 		어플리케이션 구동시 handlermapping  log level
-		debug 로 변경시 모든 컨트롤러의 mapping  정보가 확인 가능.  
+		debug 로 변경시 모든 컨트롤러의 mapping 정보가 확인 가능.
+		_ 언더바가 붙어 있음 위와 동일한것 아님  
 	  -->
 	<logger name="_org.springframework" level="info" additivity="false">
 		<appender-ref ref="FILEOUT" />
@@ -272,11 +273,11 @@
 	</logger>
 	<!-- apache log // end  -->
 	
-	<!-- quartz log // start
-	<logger name="org.quartz.core" level="debug" additivity="false"/>
-	<logger name="org.quartz.simpl" level="debug" additivity="false"/>
-	<logger name="org.quartz.impl.jdbcjobstore" level="debug" additivity="false"/>
-	 -->
+	<!-- quartz log // start -->
+	<logger name="org.quartz.core" level="info" additivity="false"/>
+	<logger name="org.quartz.simpl" level="info" additivity="false"/>
+	<logger name="org.quartz.impl.jdbcjobstore" level="info" additivity="false"/>
+	
     <!-- quartz log // end -->
     
     <!-- jdbc driver log -->

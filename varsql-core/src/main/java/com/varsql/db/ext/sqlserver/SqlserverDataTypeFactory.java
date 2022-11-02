@@ -29,7 +29,7 @@ public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 		addDataType(new VenderDataType("TEXT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
 		addDataType(new VenderDataType("NTEXT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
 		addDataType(new VenderDataType("DATETIME2", DefaultDataType.DATETIME.getTypeCode(), DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.VARBINARY.getTypeCode(), DBColumnMetaInfo.STRING, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
+		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.VARBINARY.getTypeCode(), DBColumnMetaInfo.OTHER, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
 			@Override
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
 				byte[] val = rs.getBytes(columnIndex);

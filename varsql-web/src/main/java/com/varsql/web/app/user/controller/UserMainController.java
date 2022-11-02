@@ -187,7 +187,7 @@ public class UserMainController extends AbstractController{
 			databaseList.add(addMap);
 		}
 
-		resultObject.setItemList(databaseList);
+		resultObject.setList(databaseList);
 
 		return resultObject;
 	}

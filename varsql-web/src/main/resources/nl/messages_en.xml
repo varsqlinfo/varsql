@@ -97,8 +97,8 @@
 <entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
 <entry key="manager.menu.sqllog">SQL Log</entry>
 <entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
-<entry key="manager.menu.backgmgmt">Backup</entry>
-<entry key="manager.menu.databackgmgmt">Data Backup</entry>
+<entry key="manager.menu.scheduler">Scheduler</entry>
+<entry key="manager.menu.databackupmgmt">Data Backup</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL Backup</entry>
 
 <!-- user menu -->

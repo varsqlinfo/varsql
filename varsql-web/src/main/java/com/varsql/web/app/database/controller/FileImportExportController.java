@@ -79,7 +79,7 @@ public class FileImportExportController extends AbstractController {
 		List<FileInfoEntity> uploadFiles = fileUploadService.uploadFiles(mtfRequest, UploadFileType.getDivType(div), paramFileContId, vconnid);
 
         if(uploadFiles.size() > 0) {
-        	result.setItemList(uploadFiles);
+        	result.setList(uploadFiles);
     	}else {
     		result.setResultCode(VarsqlAppCode.COMM_FILE_EMPTY);
     		result.setMessage("select file");

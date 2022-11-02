@@ -65,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.1.19'
+	varsqlVersion = '1.2.1'
 }
 
 //소스 분석.
@@ -218,7 +218,7 @@ subprojects {
 		implementation group: 'org.mybatis' , name: 'mybatis-spring' , version: '2.0.5'
 
 		//varsql 
-		implementation group: 'com.varsql', name: 'varsql-token-converter', version: '0.0.1'
+		implementation group: 'com.varsql', name: 'varsql-token-converter', version: '0.0.2'
 
 		//Reflections
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'

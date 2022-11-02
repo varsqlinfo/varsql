@@ -157,14 +157,14 @@ public class DatabaseController extends AbstractController {
 
 				ResponseResult result = databaseServiceImpl.dbObjectList(dbMetadataRequestDTO);
 
-				List<BaseObjectInfo> resultItems =result.getItems();
+				List<BaseObjectInfo> resultItems =result.getList();
 
 				HashMap<String , BaseObjectInfo> newItemInfos = new HashMap<String,BaseObjectInfo>();
 				resultItems.stream().forEach(item ->{
 					newItemInfos.put(item.getName(), item);
 				});
 
-				List<BaseObjectInfo> cacheItems = objValue.getItems();
+				List<BaseObjectInfo> cacheItems = objValue.getList();
 				cacheItems = cacheItems.stream().map(item ->{
 					if(newItemInfos.containsKey(item.getName())) {
 						return newItemInfos.get(item.getName());
@@ -172,7 +172,7 @@ public class DatabaseController extends AbstractController {
 					return item;
 				}).collect(Collectors.toList());
 
-				objValue.setItemList(cacheItems);;
+				objValue.setList(cacheItems);;
 
 				tableMetaCache.put(cacheKey, objValue);
 

@@ -185,7 +185,7 @@ VarsqlAPP.vueServiceBean({
 				url :{type:VARSQL.uri.user, url:'/preferences/sqlFile/list'}
 				,data : param
 				,success: function(resData) {
-					_self.gridData = resData.items;
+					_self.gridData = resData.list;
 					_self.pageInfo = resData.page;
 				}
 			})

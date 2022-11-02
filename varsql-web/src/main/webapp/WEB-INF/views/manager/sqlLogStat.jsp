@@ -223,7 +223,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDateStats'}
 				,success:function (response){
-					var items = response.items ||[];
+					var items = response.list ||[];
 
 					VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 						axis : [{
@@ -259,7 +259,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,url : {type:VARSQL.uri.manager, url:'/stats/dbSqlDayStats'}
 				,success:function (response){
-					var items = response.items ||[];
+					var items = response.list ||[];
 
 					if(items.length > 0){
 						VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
@@ -301,7 +301,7 @@ VarsqlAPP.vueServiceBean( {
 
 					var chartData = [];
 
-					var items = response.items;
+					var items = response.list;
 					var countData = {};
 					$.each(items , function (idx , item){
 						var label = item.xCol;

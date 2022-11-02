@@ -186,9 +186,10 @@ VarsqlAPP.vueServiceBean({
 			
 			this.getExportItems();
 			
+			var requid = VARSQL.generateUUID();
+			
 			var prefVal = VARSQL.util.objectMerge({
-				requid : VARSQL.generateUUID()
-				,conuid : '${param.conuid}'
+				conuid : '${param.conuid}'
 				,schema : _self.selectSchema
 				,exportType : _self.exportType
 				,exportItems : _self.exportItems
@@ -199,7 +200,7 @@ VarsqlAPP.vueServiceBean({
 				VARSQL.req.ajax({
 					url : {type:VARSQL.uri.progress, url:'/info'}
 					,data: {
-						requid : prefVal.requid
+						requid : requid
 						,type : 'dataExport'
 					}
 					,success:function (resData){
@@ -239,9 +240,10 @@ VarsqlAPP.vueServiceBean({
 			this.downloadStatus = 'start';
 			VARSQL.req.download({
 				type: 'post'
-				,url: {type:VARSQL.uri.database, url:'/tools/export/downloadTableData'}
+				,url: {type:VARSQL.uri.database, url:'/tools/export/downloadTableData?'}
 				,params : {
 					prefVal : JSON.stringify(prefVal)
+					,requid : requid
 					,schema : _self.selectSchema
 					,conuid : '${param.conuid}'
 				}
@@ -287,7 +289,7 @@ VarsqlAPP.vueServiceBean({
 				,data: param
 				,loadSelector : '.table-select-area'
 				,success:function (resData){
-					var list = resData.items;
+					var list = resData.list;
 
 					_self.selectTableObj.setSourceItem(list);
 

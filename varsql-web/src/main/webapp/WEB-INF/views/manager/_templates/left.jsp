@@ -48,8 +48,8 @@
 	</li>
     <li class="dropdown<c:if test="${selectMenu eq 'backupMgmt'}"> active</c:if>">
 		<a href="#" data-toggle="collapse" data-target="#backup-sub-menu">
-			<i class="fa fa-bar-chart-o"></i>
-			<span class="hidden-xs"><spring:message code="manager.menu.backgmgmt" text="백업" /></span>
+			<i class="fa fa-calendar"></i>
+			<span class="hidden-xs"><spring:message code="manager.menu.scheduler" text="Scheduler" /></span>
 			<i class="fa fa-fw fa-caret-down"></i>
 		</a>
 		<ul id="backup-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'backupMgmt'}"> in</c:if>">

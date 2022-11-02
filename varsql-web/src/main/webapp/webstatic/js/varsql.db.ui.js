@@ -622,7 +622,7 @@ _ui.headerMenu ={
 								url:{type:VARSQL.uri.database, url:'/dbInfo'}
 								,data: param
 								,success:function (resData){
-									var list = resData.items;
+									var list = resData.list;
 
 									var strHtm =[];
 
@@ -1335,7 +1335,7 @@ _ui.addDbServiceObject({
 		var _self = this;
 		try{
 			var $$objectType = 'table';
-			var itemArr = resData.items;
+			var itemArr = resData.list;
 
 			var tableHint = {};
 
@@ -1575,7 +1575,7 @@ _ui.addDbServiceObject({
 		var _self = this;
 		try{
 			var $$objectType = 'view';
-			var itemArr = resData.items;
+			var itemArr = resData.list;
 			
 			var tableHint = {};
 			$.each(itemArr , function (_idx, _item){
@@ -1689,7 +1689,7 @@ _ui.addDbServiceObject({
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType) 
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1746,7 +1746,7 @@ _ui.addDbServiceObject({
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1803,7 +1803,7 @@ _ui.addDbServiceObject({
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem :VARSQLCont.getMainObjectServiceHeader($$objectType)
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1860,7 +1860,7 @@ _ui.addDbServiceObject({
 					lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType) 
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -1918,7 +1918,7 @@ _ui.addDbServiceObject({
 					lineNumber : {enabled : true	,width : 30	,styleCss : 'text-align:right;padding-right:3px;'}
 				}
 				,tColItem : VARSQLCont.getMainObjectServiceHeader($$objectType)
-				,tbodyItem : resData.items
+				,tbodyItem : resData.list
 				,setting : {
 					enabled : true
 					,enableSearch : true
@@ -2104,8 +2104,6 @@ _ui.dbObjectMetadata= {
 
 		_self.metaInfoLoadComplete = false;
 		
-		console.log('_getMetadataInfo : ', param);
-
 		VARSQL.req.ajax({
 			loadSelector : _self.selector.contEleId
 			,url:{type:VARSQL.uri.database, url:'/dbObjectMetadataList'}
@@ -2114,7 +2112,7 @@ _ui.dbObjectMetadata= {
 
 				_self.metaInfoLoadComplete = true;
 
-				var result = resData.items;
+				var result = resData.list;
 
 				if(result.length > 0){
 					var callData=result;
@@ -3886,7 +3884,7 @@ _ui.SQL = {
 
 		var rowTemplate = '<div class="sql-param-row">'
 		+'	<span class="key"><input type="text" class="sql-param-key" name="sql-param-key" value="" /></span>'
-		+'	<span class="val"><input type="text" class="sql-param-value" name="sql-param-value" value=""/></span>'
+		+'	<span class="val"><textarea class="sql-param-value" name="sql-param-value" rows="1"></textarea></span>'
 		+'	<span class="remove"><button type="button" class="sql-param-del-btn"><i class="fa fa-minus"></i></button></span>'
 		+'</div>';
 
@@ -4150,11 +4148,8 @@ _ui.SQL = {
 					VARSQL.req.ajax({
 					    url:{type:VARSQL.uri.user, url:'/searchUserList'}
 					    ,data: params
-					    ,success:function (data){
-					    	
-					    	
-					    	
-					    	_self.recvIdMultiSelectObj.setSourceItem(data.items);
+					    ,success:function (resData){
+					    	_self.recvIdMultiSelectObj.setSourceItem(resData.list);
 						}
 					});
 				}
@@ -4175,7 +4170,7 @@ _ui.SQL = {
 		    ,url:{type:VARSQL.uri.sql, url:'/file/sqlFileTab'}
 		    ,data:_g_options.param
 		    ,success:function (res){
-		    	var items = res.items
+		    	var items = res.list
 		    		,len = items.length;
 
 		    	if(len > 0){
@@ -4211,7 +4206,7 @@ _ui.SQL = {
 		    url:{type:VARSQL.uri.sql, url:'/file/sqlList'}
 		    ,data:params
 		    ,success:function (res){
-		    	var items = res.items;
+		    	var items = res.list;
 		    	var paging = res.page;
 		    	var strHtm = []
 		    		,len = items.length;
@@ -5004,7 +4999,7 @@ _ui.sqlDataArea =  {
 		var resultMsg = [];
 		var resultCode = resultData.resultCode;
 		if(resultCode == 200){
-			var resData = resultData.items;
+			var resData = resultData.list;
     		var resultLen = resData.length;
 
     		var item;
@@ -5037,7 +5032,7 @@ _ui.sqlDataArea =  {
 				errorMessage = resultData.message;
 			}
 			
-			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customs.errorLine+']</span> query: <span class="log-query"></span>'));
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customMap.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 
 			resultMsg.push(logValEle.html());
@@ -5084,6 +5079,13 @@ _ui.sqlDataArea =  {
 				enabled : true
 				,mode :'full'
 				,btnClose : true
+				,width:700
+				,height:230
+				,util : {
+					isTypeNumber : function (hederInfo){ 
+						return hederInfo.number;
+					}
+				}
 			}
 			,autoResize : false
 			,asideOptions :{
@@ -5130,6 +5132,7 @@ _ui.sqlDataArea =  {
 			,navigation : {
 				status :true
 				,height :20
+				,enableSelectionInfo : true
 			}
 			,tColItem : pGridData.column
 			,tbodyItem :pGridData.data
@@ -5430,7 +5433,7 @@ _ui.registerPlugin({
 			    ,url:{type:VARSQL.uri.plugin, url:'/glossary/search'}
 			    ,data : params
 			    ,success:function (res){
-			    	_self.gridObj.setData(res.items,'reDraw');
+			    	_self.gridObj.setData(res.list,'reDraw');
 				}
 			});
 		}
@@ -5525,7 +5528,7 @@ _ui.registerPlugin({
 			    ,data : params
 			    ,success:function (res){
 
-			    	var items = res.items ||[];
+			    	var items = res.list ||[];
 
 			    	var itemLen =items.length;
 

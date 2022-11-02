@@ -88,8 +88,8 @@
 <entry key="manager.menu.sqllogmgmt">SQL 통계</entry>
 <entry key="manager.menu.sqllog">SQL 로그</entry>
 <entry key="manager.menu.userlogmgmt">사용자 로그 통계</entry>
-<entry key="manager.menu.backgmgmt">백업 관리</entry>
-<entry key="manager.menu.databackgmgmt">데이터 백업 관리</entry>
+<entry key="manager.menu.scheduler">Scheduler</entry>
+<entry key="manager.menu.databackupgmgmt">데이터 백업 관리</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL 백업 관리</entry>
 
 <!-- user menu -->
@@ -160,7 +160,7 @@
 <entry key="msg.delete.confirm">삭제  하시겠습니까?</entry>
 <entry key="msg.nodata">데이터가 없습니다.</entry>
 <entry key="msg.success">성공</entry>
-<entry key="msg.search.placeholder">검색어를 입려하시오...</entry>
+<entry key="msg.search.placeholder">검색어를 입력하세요.</entry>
 <entry key="msg.data.select">데이터를 선택하시오.</entry>
 <entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
 <entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
@@ -258,12 +258,12 @@
 <entry key="manager.log.delay">걸린시간</entry>
 
 <!-- data backup -->
-<entry key="manager.databackupmgmt.form.header">Job Info</entry>
-<entry key="manager.databackupmgmt.jobgroup">Job Group</entry>
-<entry key="manager.databackupmgmt.jobname">Job Name</entry>
-<entry key="manager.databackupmgmt.type">Type</entry>
-<entry key="manager.databackupmgmt.expression">Expression</entry>
-<entry key="manager.databackupmgmt.connection">연결 DB</entry>
+<entry key="manager.backupmgmt.form.header">Job Info</entry>
+<entry key="manager.backupmgmt.jobgroup">Job Group</entry>
+<entry key="manager.backupmgmt.jobname">Job Name</entry>
+<entry key="manager.backupmgmt.type">Type</entry>
+<entry key="manager.backupmgmt.expression">Expression</entry>
+<entry key="manager.backupmgmt.connection">연결 DB</entry>
 
 
 <entry key="user.edit.msgtitle">제목</entry>

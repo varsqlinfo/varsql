@@ -579,7 +579,7 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,convertResDateUpperCase : function (objectType, resData){
 
-			var items = resData.items;
+			var items = resData.list;
 			var len = items.length;
 
 			if(objectType == 'table'){
@@ -800,7 +800,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(mode=='source'){
-				var itemArr = resData.items;
+				var itemArr = resData.list;
 				this.sourceItems = itemArr;
 				$.pubGrid('#sourceObjectMeta',{
 					selectionMode :'row'
@@ -843,7 +843,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 				});
 			}else{
-				var itemArr = resData.items;
+				var itemArr = resData.list;
 				this.targetItems = itemArr;
 
 				$.pubGrid('#targetObjectMeta',{
@@ -1139,7 +1139,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(mode=='source'){
-				var itemArr = resData.items;
+				var itemArr = resData.list;
 				this.sourceItems = itemArr;
 				$.pubGrid('#sourceObjectMeta',{
 					selectionMode :'row'
@@ -1182,7 +1182,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 				});
 			}else{
-				var itemArr = resData.items;
+				var itemArr = resData.list;
 				this.targetItems = itemArr;
 
 				$.pubGrid('#targetObjectMeta',{
@@ -1381,8 +1381,8 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,loadSelector : '#varsqlVueArea'
 				,success: function(resData) {
-					_self.objectList = resData.items;
-					var schemaInfo = resData.customs.schemaInfo;
+					_self.objectList = resData.list;
+					var schemaInfo = resData.customMap.schemaInfo;
 
 					if(schemaInfo.indexOf(_self.dbListMap[val].vdbschema) > -1){
 						_self.diffItem.sourceSchema = _self.dbListMap[val].vdbschema||'';
@@ -1406,7 +1406,7 @@ VarsqlAPP.vueServiceBean( {
 					vconnid : val
 				}
 				,success: function(resData) {
-					var schemaList = resData.customs.schemaInfo;
+					var schemaList = resData.customMap.schemaInfo;
 
 					if(_self.diffItem.sourceSchema != ''){
 						for(var i =0, len =schemaList.length; i< len; i++ ){

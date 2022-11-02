@@ -108,7 +108,7 @@ public class UserCommonService {
 
 	
 	/**
-	 * password 초기화
+	 * password reset
 	 *
 	 * @method : resetPassword
 	 * @param token

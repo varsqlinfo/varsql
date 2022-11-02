@@ -115,7 +115,7 @@ public class DatabaseServiceImpl{
 	public ResponseResult serviceMenu(DBMetadataRequestDTO dbMetadataRequestDTO) {
 		ResponseResult result = new ResponseResult();
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType());
-		result.setItemList(dbMetaEnum.getServiceMenu());
+		result.setList(dbMetaEnum.getServiceMenu());
 		return result;
 	}
 
@@ -145,12 +145,12 @@ public class DatabaseServiceImpl{
 
 			if(ObjectType.TABLE.getObjectTypeId().equals(objectType) && dbMetadataRequestDTO.isLazyLoad()){
 				if(dbMetadataRequestDTO.getCustom()!=null && "Y".equals(dbMetadataRequestDTO.getCustom().get("allMetadata"))){
-					result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
+					result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
 				} else {
-					result.setItemList(dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
+					result.setList(dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
 				}
 			}else{
-				result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
+				result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
 			}
 		}catch(Exception e){
 			logger.error("dbObjectList objectType : [{}]",objectType);
@@ -161,7 +161,7 @@ public class DatabaseServiceImpl{
 				result.setMessage(e.getMessage());
 			}else {
 				try{
-					result.setItemList(MetaControlFactory.getDbInstanceFactory(DBVenderType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
+					result.setList(MetaControlFactory.getDbInstanceFactory(DBVenderType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
 				}catch(Exception subE){
 					logger.error("dbObjectList serverName : [{}]",objectType);
 					logger.error("dbObjectList ", subE);
@@ -189,7 +189,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 
 		try{
-			result.setItemList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
+			result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
 		}catch(Exception e){
 			logger.error("dbObjectMetadataList : {} ", e.getMessage() , e);
 		}
@@ -235,7 +235,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 
 		try{
-			result.setItemList(dbMetaEnum.getDBInfo(dbMetadataRequestDTO));
+			result.setList(dbMetaEnum.getDBInfo(dbMetadataRequestDTO));
 		}catch(Exception e){
 			logger.error("createDDL : ", e);
 		}
