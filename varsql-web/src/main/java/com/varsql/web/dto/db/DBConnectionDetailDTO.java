@@ -63,4 +63,6 @@ public class DBConnectionDetailDTO{
 	private String useColumnLabel;
 	
 	private String testWhileIdle;
+	
+	private String enableConnectionPool;
 }

@@ -1,5 +1,6 @@
 package com.varsql.db.ext.h2;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -46,7 +47,7 @@ public class H2DBMeta extends AbstractDBMeta{
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
 	}
-
+	
 	@Override
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
@@ -121,7 +122,7 @@ public class H2DBMeta extends AbstractDBMeta{
 			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 
 			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("objectNameList", tableInfoHandler.getTableNameList());
+				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 			}
 		}
 

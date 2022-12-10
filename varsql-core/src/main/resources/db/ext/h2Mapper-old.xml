@@ -32,7 +32,8 @@
 		select
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
-			col.DATA_TYPE as "TYPE_NAME",
+			-- col.DATA_TYPE as "TYPE_NAME" ,
+			col.TYPE_NAME as "TYPE_NAME",
 			col.CHARACTER_OCTET_LENGTH as "COLUMN_SIZE",
 			col.NUMERIC_PRECISION as "DATA_PRECISION",
 			col.NUMERIC_SCALE as "DECIMAL_DIGITS",
@@ -49,19 +50,18 @@
 			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
 			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE in ('TABLE','BASE TABLE')
 			left outer join (
-				select a.TABLE_NAME , b.COLUMN_NAME, case when MAX(a.INDEX_TYPE_NAME) = 'PRIMARY KEY' then 'PK'
-					WHEN MAX(a.INDEX_TYPE_NAME) = 'UNIQUE INDEX' then 'UQ'
+				select TABLE_NAME , COLUMN_NAME, case when MAX(PRIMARY_KEY) = TRUE then 'PK'
+					WHEN MAX(INDEX_TYPE_NAME) = 'UNIQUE INDEX' then 'UQ'
 					else null end as "CONSTRAINTS"
-				from  information_schema.INDEXES a inner join information_schema.INDEX_COLUMNS b
-				on a.INDEX_NAME = b.INDEX_NAME 
-				where a.TABLE_SCHEMA = #{schema}
+				from  information_schema.INDEXES 
+				where TABLE_SCHEMA = #{schema}
 				<if test="custom != null and custom.objectNameList != null">
 					and
 					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-						a.table_name in (${item})
+						table_name in (${item})
 					</foreach>
 				</if>
-				group by a.TABLE_NAME, b.COLUMN_NAME
+				group by  TABLE_NAME , COLUMN_NAME
 			) ind on col.TABLE_NAME = ind.TABLE_NAME and col.COLUMN_NAME = ind.COLUMN_NAME
 		where col.TABLE_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
@@ -99,7 +99,8 @@
 		select
 			col.TABLE_NAME as "TABLE_NAME",
 			col.COLUMN_NAME as "COLUMN_NAME",
-			col.DATA_TYPE as "TYPE_NAME" ,
+			-- col.DATA_TYPE as "TYPE_NAME" ,
+			col.TYPE_NAME as "TYPE_NAME",
 			col.CHARACTER_OCTET_LENGTH as "COLUMN_SIZE",
 			col.NUMERIC_PRECISION as "DATA_PRECISION",
 			col.NUMERIC_SCALE as "DECIMAL_DIGITS",

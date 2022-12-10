@@ -35,7 +35,7 @@
 			 tb.TABLE_SCHEMA as "SCHEMA"
 			, tb.TABLE_NAME as "TABLE_NAME"
 			, col.COLUMN_NAME as "COLUMN_NAME"
-			, col.DATA_TYPE  as "DATA_TYPE"
+			, col.DATA_TYPE  as "TYPE_NAME"
 			, case when CHARINDEX( col.DATA_TYPE, 'char,varchar,nchar,nvarchar' , 0) > 0 then col.CHARACTER_MAXIMUM_LENGTH  else '' end as COLUMN_SIZE
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_PRECISION  else '' end as "DATA_PRECISION"
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_SCALE  else '' end as "DECIMAL_DIGITS"
@@ -106,7 +106,7 @@
 			 tb.TABLE_SCHEMA as "SCHEMA"
 			, tb.TABLE_NAME as "TABLE_NAME"
 			, col.COLUMN_NAME as "COLUMN_NAME"
-			, col.DATA_TYPE  as "DATA_TYPE"
+			, col.DATA_TYPE  as "TYPE_NAME"
 			, case when CHARINDEX( col.DATA_TYPE, 'char,varchar,nchar,nvarchar' , 0) > 0 then col.CHARACTER_MAXIMUM_LENGTH  else '' end as COLUMN_SIZE
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_PRECISION  else '' end as "DATA_PRECISION"
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_SCALE  else '' end as "DECIMAL_DIGITS"
@@ -160,7 +160,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -172,7 +172,7 @@
 			so.STATUS as "STATUS",
 			so.type as "OBJECT_TYPE",
 			sc.name as "ARGUMENT_NAME",
-			st.name as "DATA_TYPE" ,
+			st.name as "TYPE_NAME" ,
 			sc.length as "COLUMN_SIZE" ,
 			sc.length as "DATA_PRECISION" ,
 			sc.xscale as "DECIMAL_DIGITS" ,
@@ -413,7 +413,7 @@
 			 tb.TABLE_SCHEMA as "SCHEMA_NAME"
 			, tb.TABLE_NAME as "TABLE_NAME"
 			, col.COLUMN_NAME as "COLUMN_NAME"
-			, col.DATA_TYPE  as "DATA_TYPE"
+			, col.DATA_TYPE  as "TYPE_NAME"
 			, case when CHARINDEX( col.DATA_TYPE, 'char,varchar,nchar,nvarchar' , 0) > 0 then col.CHARACTER_MAXIMUM_LENGTH  else '' end as COLUMN_SIZE
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_PRECISION  else '' end as "DATA_PRECISION"
 			, case when CHARINDEX( col.DATA_TYPE, 'float,real,numeric,decimal' , 0) > 0 then col.NUMERIC_SCALE  else '' end as "DECIMAL_DIGITS"

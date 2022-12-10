@@ -1,5 +1,6 @@
 package com.varsql.db.ext.mysql;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,11 @@ public class MysqlDBMeta extends AbstractDBMeta{
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+	}
+	
+	@Override
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("schemaList" ,dataParamInfo);
 	}
 
 	@Override
@@ -131,7 +137,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 				indexNameList.add(sb.toString());
 			}
 
-			dataParamInfo.addCustom("objectNameList", indexNameList);
+			dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, indexNameList);
 		}
 
 		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
@@ -176,7 +182,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 				tableInfoList.add(sb.toString());
 			}
 
-			dataParamInfo.addCustom("objectNameList", tableInfoList);
+			dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoList);
 		}
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
@@ -191,7 +197,7 @@ public class MysqlDBMeta extends AbstractDBMeta{
 			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 
 			if(tableInfoMysqlHandler.getTableNameList() !=null  && tableInfoMysqlHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("objectNameList", tableInfoMysqlHandler.getTableNameList());
+				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoMysqlHandler.getTableNameList());
 			}
 		}
 

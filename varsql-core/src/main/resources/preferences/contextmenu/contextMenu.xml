@@ -157,7 +157,7 @@ public class {{capitalize (camelCase table.name)}}{
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
+	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 
@@ -166,7 +166,7 @@ public class {{capitalize (camelCase table.name)}}{
 				<key>get_set</key>
 				<code><![CDATA[
 {{#columns}}
-	public {{javaType typeName}} get{{capitalize (camelCase name)}}(){
+	public {{javaType this}} get{{capitalize (camelCase name)}}(){
 		return this.{{camelCase name}};
 	}
 {{/columns}}
@@ -219,7 +219,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 				<code><![CDATA[
 {{#columns}}
 	@Column(name ="{{name}}")
-	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
+	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 
 {{/columns}}
 						]]></code>
@@ -228,7 +228,7 @@ public class {{capitalize (camelCase table.name)}}Entity{
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -279,7 +279,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
+	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 
@@ -287,7 +287,7 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -325,7 +325,7 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 				<key>classProperty</key>
 				<code><![CDATA[
 {{#columns}}
-	private {{javaType typeName}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
+	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
 {{/columns}}
 						]]></code>
 
@@ -333,7 +333,7 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType typeName}} {{camelCase name}}{{/columns}}
+{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
 						]]></code>
 			</propItems>
 		</templateInfo>

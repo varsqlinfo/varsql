@@ -20,6 +20,8 @@ import com.varsql.core.db.valueobject.TableInfo;
  */
 public interface DBMeta{
 	
+	public String OBJECT_NAME_LIST_KEY = "objectNameList";
+	
 	public List<ServiceObject> getServiceMenu();
 
 	public List getVersion(DatabaseParamInfo dataParamInfo) throws Exception;

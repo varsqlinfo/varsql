@@ -84,6 +84,7 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString("TIMEOUT"), 18000));
 			connInfo.setExportCount(NumberUtils.toInt(rs.getString("EXPORTCOUNT"), 1000));
 			connInfo.setTestWhileIdle("Y".equals(rs.getString("TEST_WHILE_IDLE")));
+			connInfo.setEnableConnectionPool(!"N".equals(rs.getString("ENABLE_CONNECTION_POOL")));
 			
 			String conn_query = rs.getString("VQUERY");
 			String dbvalidation_query = rs.getString("VALIDATION_QUERY");

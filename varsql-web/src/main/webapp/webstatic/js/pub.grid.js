@@ -1,6 +1,4 @@
 /**
- * pubGrid v1.0.5
- * ========================================================================
  * Copyright 2016-2022 ytkim
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
@@ -14,7 +12,7 @@
 af :  add function
 ap  : add parameter
 */
-var VERSION = '1.0.4';
+var VERSION = '1.0.5';
 
 var _initialized = false
 ,_$win = $(window)
@@ -278,18 +276,6 @@ function arrayCopy(orginArray){
 
 function eventKeyCode (e){
 	return window.event ? e.keyCode : e.which; 
-}
-
-function createArray(m,n,initial){
-	var reval = [];
-	for(var j=0; j < m; j++){
-		reval[j] =[];
-		for(var k =0 ; k < n; k++){
-			reval[j][k] = initial;
-		}
-	}
-
-	return reval; 
 }
 
 function replaceMesasgeFormat(logicCode, param){
@@ -609,7 +595,9 @@ Plugin.prototype ={
 		_this.config.fixedHeaderIndex = _this.options.fixedHeaderIndex;
 		_this.config.settingConfig.operators = objectMerge(gridOperators, _this.options.operators);
 
+		_this.config.dataInfo.orginHeader = arrayCopy(_this.options.tColItem);
 		var columnGroupInfo = _$util._getHeaderGroupInfo(this);
+		
 		_this.config.dataInfo.orginLeafHeaders = arrayCopy(columnGroupInfo.leaf);
 		_this.config.dataInfo.orginLeafHeaders.forEach(function (item, idx){
 			item['$$opType'] = _$util.getOpType(_this, item);
@@ -640,10 +628,8 @@ Plugin.prototype ={
 
 			if(_hcb){
 				_this.options.headerOptions.contextMenu.callback = function(key,sObj) {
-					var headerInfo = this.element.attr('data-header-info');
-					headerInfo = headerInfo.split(',');
-					var selHeaderInfo = _this.config.headerBodyGroup[headerInfo[0]][headerInfo[1]];
-					this.gridItem = selHeaderInfo;
+					var colIdx = this.element.attr('header-col-idx');
+					this.gridItem = _this.config.currentHeaderItems[colIdx];
 					_hcb.call(this,key,sObj);
 				}
 			}
@@ -1024,7 +1010,6 @@ Plugin.prototype ={
 		}
 
 		if(settingOpt.enabled ===true){
-
 			
 			var schArr = [];
 			var orginData = this.config.orginData;
@@ -1461,24 +1446,28 @@ Plugin.prototype ={
 	 */
 	,getRenderValue : function (thiItem, rowItem, mode, addEle){
 
+		var itemValue = rowItem[thiItem.key];
 		var rendererType = thiItem.renderer.type; 
 
+		if(isFunction(thiItem.formatter)){
+			itemValue = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, value : itemValue});
+		}
+
 		if(mode == 'data' && rendererType != 'text'){
-			
-			return rowItem[thiItem.key];
+			return itemValue;
 		}
 		
-		var itemVal = (_$renderer[ rendererType ] || _$renderer.text)(this, thiItem, rowItem, mode);
+		var renderValue = (_$renderer[ rendererType ] || _$renderer.text)(this, thiItem, itemValue, rowItem, mode);
 	
 		if(addEle){
 			if(rendererType !='text'){
-				addEle.innerHTML = itemVal;
-				itemVal = '';
+				addEle.innerHTML = renderValue;
+				renderValue = '';
 			}else{
-				addEle.textContent = itemVal+'';
+				addEle.textContent = renderValue+'';
 			}
 		}
-		return itemVal;
+		return renderValue;
 	}
 	/**
 	 * @method _setCellStyle
@@ -1603,7 +1592,6 @@ Plugin.prototype ={
 					// 실제 header height 값 넣기.
 					_this.config.header.height = _this.element.header.height();
 				}
-
 				_this.setElementDimensionAndMessage();
 				_this.calcDimension('init');
 
@@ -1624,10 +1612,11 @@ Plugin.prototype ={
 
 				_this.getTbodyHtml('init_colfixed');
 
+				_this.setElementDimensionAndMessage();
 				_this.calcDimension('colfixed');
 				_this.calcViewCol(_this.config.scroll.left);
 			}
-		}
+		}		
 
 		if(tbi.length < 1){
 			_this.element.body.addClass('pubGrid-data-empty');
@@ -2437,15 +2426,13 @@ Plugin.prototype ={
 			if(isUndefined(moveObj.colIdx)){
 				leftVal =_this.config.scroll.left+((posVal=='L'?-1:1) * _this.config.scroll.oneColMove);
 			}else{
-				var lastHeaderIdx = _this.config.headerBodyGroup.length-1;
-
-				var colIdxHeaderEle = _this.element.header.find('[data-header-info="'+lastHeaderIdx+','+moveObj.colIdx+'"]');
-				var headerPos = colIdxHeaderEle.position();
+				var firstRowEle = _this.element.body.find('[data-cell-position="0,'+moveObj.colIdx+'"]');
+				var headerPos = firstRowEle.position();
 
 				if(posVal =='L'){
 					leftVal = headerPos.left;
 				}else{
-					leftVal = headerPos.left + colIdxHeaderEle.outerWidth();
+					leftVal = headerPos.left + firstRowEle.outerWidth();
 					leftVal = leftVal - (_this.config.gridWidth.mainInsideWidth);
 				}
 
@@ -2749,7 +2736,7 @@ Plugin.prototype ={
 			// column selection
 			_this.element.header.on('click.pubGridHeader.selection','.pub-header-cont',function (e){
 				var selEle = $(this)
-					,colIdx = selEle.attr('col_idx');
+					,colIdx = selEle.closest('[header-col-idx]').attr('header-col-idx');
 				
 				colIdx = parseInt(colIdx);
 
@@ -2814,9 +2801,9 @@ Plugin.prototype ={
 			if(isFunction(fnHelpClick)){
 				_this.element.header.on('click.pubGrid.helpbtn','.pub-header-help-btn',function (e){
 					var selEle = $(this);
-					var headerInfo = selEle.closest('[data-header-info]').attr('data-header-info').split(',');
+					var colIdx = selEle.closest('[data-header-info]').attr('header-col-idx');
 
-					fnHelpClick.call(selEle, {item :_this.config.headerBodyGroup[headerInfo[0]][headerInfo[1]], c :headerInfo[1] })
+					fnHelpClick.call(selEle, {item :_this.config.currentHeaderItems[colIdx], c :colIdx })
 				});
 			}
 
@@ -2824,9 +2811,9 @@ Plugin.prototype ={
 			if(isFunction(fnHelpDblclick)){
 				_this.element.header.on('dblclick.pubGrid.helpbtn','.pub-header-help-btn',function (e){
 					var selEle = $(this);
-					var headerInfo = selEle.closest('[data-header-info]').attr('data-header-info').split(',');
+					var colIdx = selEle.closest('[data-header-info]').attr('header-col-idx');
 
-					fnHelpDblclick.call(selEle, {item :_this.config.headerBodyGroup[headerInfo[0]][headerInfo[1]], c :headerInfo[1] })
+					fnHelpDblclick.call(selEle, {item :_this.config.currentHeaderItems[colIdx], c :colIdx })
 				});
 			}
 		}
@@ -2834,9 +2821,9 @@ Plugin.prototype ={
 		// sort
 		_this.element.header.on(dataSortEvent,'.pub-header-cont.sort-header',function (e){
 			var selEle = $(this)
-				,col_idx = selEle.attr('col_idx')
+				,colIdx = selEle.closest('[header-col-idx]').attr('header-col-idx');
 
-			var sortKey = _this.config.currentHeaderItems[col_idx].key;
+			var sortKey = _this.config.currentHeaderItems[colIdx].key;
 
 			if(!e.shiftKey){
 				if(_this.config.sort.sortMap.size > 1 || !_this.config.sort.sortMap.has(sortKey)){
@@ -2871,11 +2858,11 @@ Plugin.prototype ={
 			_this.element.header.on('dragstart.pubGrid.dragitem', '.pub-header-cont', function (e){
 				
 				var selEle = $(this)
-					,col_idx = selEle.attr('col_idx');
+					,colIdx = selEle.closest('[header-col-idx]').attr('header-col-idx');
 				
 				var dt = e.originalEvent.dataTransfer;
 				dt.effectAllowed = 'copyMove';
-				dt.setData('text/plain',_this.config.currentHeaderItems[col_idx].label);
+				dt.setData('text/plain',_this.config.currentHeaderItems[colIdx].label);
 							
 			}).on('drag.pubGrid.dragitem', '.label-wrapper', function (e){
 					
@@ -4181,7 +4168,7 @@ Plugin.prototype ={
 
 				for(var i =0, len = cfg.dataInfo.orginRowLen ;i <len;i++){
 					
-					tmpVal = _this.getRenderValue(selColItem, tbodyItem[i], 'view');
+					tmpVal = _this.getRenderValue(selColItem, tbodyItem[i], 'data');
 
 					if(tmpVal == null || isUndefined(tmpVal)) continue; 
 											
@@ -4646,17 +4633,6 @@ var _$header = {
 			columnGroupInfo.body[depth] = [];
 		}
 
-
-
-		//컬럼 고정 일때 처리 할것. 
-		//클릭후 스크롤시 cell selection 되는 부분 수정 할것. 
-
-		
-
-		
-
-
-
 		if(fixedIndex > node.$resizeIdx - node.$colspan){  // 컬럼 고정 처리.
 			
 			if(node.$colspan == 1){	
@@ -4664,11 +4640,9 @@ var _$header = {
 			}else{
 				var leftNode = objectMerge({}, node);
 
-				console.log(leftNode, leftNode.label ,fixedIndex, node)
-
 				if(leftNode.$resizeIdx > fixedIndex){
 					leftNode.$colspan = (fixedIndex - (leftNode.$resizeIdx - leftNode.$colspan))
-					
+					leftNode.$resizeIdx = fixedIndex;
 				}
 			
 				columnGroupInfo.left[depth].push(leftNode);
@@ -4909,18 +4883,18 @@ var _$template = {
 
 					var resizeIdx = ghItem.$resizeIdx; 
 					
-					strHtm.push(' <th '+spanHtm+' data-header-info="'+i+','+j+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
+					strHtm.push(' <th '+spanHtm+' data-header-info="'+i+','+j+'" header-col-idx="'+resizeIdx+'" class="pubGrid-header-th" '+(ghItem.style?' style="'+ghItem.style+'" ':'')+'>');
 					if(_this.options.headerOptions.helpBtn.enabled === true){
 						strHtm.push('  <div class="pub-header-help-wrapper" title="'+_this.options.headerOptions.helpBtn.title+'"><svg class="pub-header-help" viewBox="0 0 100 100"><g><polygon class="pub-header-help-btn" points="0 0,0 100,100 0"></polygon></g></svg> </div>');
 					}
 					strHtm.push('  <div class="label-wrapper">');
-					strHtm.push('   <div class="pub-header-cont '+(ghItem.isSort===true?'sort-header':'')+'" col_idx="'+resizeIdx+'"><div class="pub-inner"><div class="centered" '+(headerDragEnabled?' draggable="true" ':'')+'>'+ghItem.label+'</div></div>');
+					strHtm.push('   <div class="pub-header-cont '+(ghItem.isSort===true?'sort-header':'')+'" ><div class="pub-inner"><div class="centered" '+(headerDragEnabled?' draggable="true" ':'')+'>'+ghItem.label+'</div></div>');
 					if(ghItem.isSort ===true){
 						strHtm.push('<div class="pub-sort-icon pubGrid-sort-up">'+_this.options.icon.sortup+'</div><div class="pub-sort-icon pubGrid-sort-down">'+ _this.options.icon.sortdown+'</div>');
 					}
 					strHtm.push('   </div>');
 					strHtm.push('  </div>');
-					strHtm.push('   <div class="pub-header-resizer" data-resize-idx="'+resizeIdx+'"></div>');
+					strHtm.push('   <div class="pub-header-resizer"></div>');
 					strHtm.push(' </th>');
 					
 				}
@@ -5027,10 +5001,7 @@ var _$util = {
 		header group 수정 할것. 
 		검색값 처리 할것. 
 		*/
-
-		var tci = gridCtx.options.tColItem;
-
-		var currentHeaderItems = gridCtx.config.currentHeaderItems;
+		var tci = gridCtx.config.currentHeaderItems || gridCtx.options.tColItem;
 
 		var fixedHeaderIndex = gridCtx.config.fixedHeaderIndex;
 		var columnGroupInfo = {left: [], body: [], leaf: [], depth: 1};
@@ -5496,7 +5467,9 @@ var _$util = {
 
 		_this.drag.ele = sEle;
 
-		_this.drag.resizeIdx = parseInt(_this.drag.ele.attr('data-resize-idx'),10);
+		var colIdx = _this.drag.ele.closest('[header-col-idx]').attr('header-col-idx');
+
+		_this.drag.resizeIdx = parseInt(colIdx,10);
 		_this.drag.isLeftContent  = _this._isFixedPostion(_this.drag.resizeIdx);
 		_this.drag.colHeader= $('#'+_this.prefix+'colHeader'+_this.drag.resizeIdx);
 
@@ -5615,13 +5588,13 @@ var gridOperators = {
 };
 
 var _$renderer = {
-	button : function (gridCtx, thiItem, rowItem, mode){
+	button : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		var renderer = thiItem.renderer;
 		return replaceMesasgeFormat('<span class="pub-render-element button">{{label}}</span>', {
 			label: renderer.label
 		})
 	}
-	, image : function (gridCtx, thiItem, rowItem, mode){
+	, image : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		var renderer = thiItem.renderer;
 
 		var imgSrc;
@@ -5635,56 +5608,50 @@ var _$renderer = {
 			src: imgSrc
 		})
 	}
-	, checkbox : function (gridCtx, thiItem, rowItem, mode){
+	, checkbox : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		var renderer = thiItem.renderer;
 
 		var checkFlag = rowItem[thiItem.key+CONSTANTS.custCheckSuffix] === true;
 		
 		return replaceMesasgeFormat('<input type="checkbox" class="pub-render-element check" {{checked}}>{{label}}', {
-			label :(rowItem[thiItem.key] ||'')
+			label : itemValue
 			,checked : (checkFlag?'checked':'')
 		})
 	}
-	, radio : function (gridCtx, thiItem, rowItem, mode){
+	, radio : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		var renderer = thiItem.renderer;
 
 		var checkFlag = rowItem[thiItem.key+CONSTANTS.custCheckSuffix] === true;
 		
 		return replaceMesasgeFormat('<input type="radio" class="pub-render-element radio" {{checked}}>{{label}}', {
-			label :(rowItem[thiItem.key] ||'')
+			label : itemValue
 			,checked : (checkFlag?'checked':'')
 		})
 	}
-	, dropdown : function (gridCtx, thiItem, rowItem, mode){
+	, dropdown : function (gridCtx, thiItem, itemValue, rowItem, mode){
 
 		var renderer = thiItem.renderer;
 
 		var strHtm = [];
 
 		strHtm.push('<span class="pub-render-element dropdown">');
-		strHtm.push(replaceMesasgeFormat('<span class="pub-content ">{{text}}</span>',{text : rowItem[thiItem.key]}));
+		strHtm.push(replaceMesasgeFormat('<span class="pub-content ">{{text}}</span>',{text : itemValue}));
 		strHtm.push('<span class="pub-icon"><svg width="12px" height="8px" viewBox="0 0 110 110" style="enable-background:new 0 0 100 100;"><g><polygon points="0,0 100,0 50,90" fill="#737171"></polygon></g></svg></span>');
 		strHtm.push('</span>');
 
 		return strHtm.join('');
 	}
-	, link : function (gridCtx, thiItem, rowItem, mode){
-		return replaceMesasgeFormat('<span class="pub-render-element link">{{value}}</span>',{value : rowItem[thiItem.key]});
+	, link : function (gridCtx, thiItem, itemValue, rowItem, mode){
+		return replaceMesasgeFormat('<span class="pub-render-element link">{{value}}</span>',{value : itemValue});
 	}
-	, html : function (gridCtx, thiItem, rowItem, mode){
-		var itemVal = rowItem[thiItem.key];
-
-		if(isFunction(thiItem.formatter)){
-			itemVal = thiItem.formatter.call(null,{colInfo:thiItem, item: rowItem, value : itemVal});
-		}
-
+	, html : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		if(thiItem.template){
-			return thiItem.template(thiItem, rowItem, itemVal);
+			return thiItem.template(thiItem, rowItem, itemValue);
 		}
 
-		return itemVal;
+		return itemValue;
 	}
-	, text : function (gridCtx, thiItem, rowItem, mode){
+	, text : function (gridCtx, thiItem, itemValue, rowItem, mode){
 		var type = thiItem.type || 'string';
 
 		var itemVal;
@@ -5901,7 +5868,7 @@ var _$sorting = {
 		var sortMap = gridCtx.config.sort.sortMap;
 
 		gridCtx.config.currentHeaderItems.forEach((item, idx)=>{
-			var labelWrapperEl = gridCtx.element.header.find('.pub-header-cont.sort-header[col_idx="'+idx+'"]').closest('.label-wrapper');
+			var labelWrapperEl = gridCtx.element.header.find('.pubGrid-header-th[header-col-idx="'+idx+'"] .label-wrapper');
 
 			labelWrapperEl.removeClass('sortasc sortdesc');
 
@@ -6301,16 +6268,19 @@ var _$setting = {
 				gridCtx.config.settingConfig.viewInitFlag = true; 
 				gridCtx.config.settingConfig.filterCheckItem = false; 
 				
-				gridCtx.config.currentHeaderItems = gridCtx.config.dataInfo.orginLeafHeaders;
+				gridCtx.config.currentHeaderItems =gridCtx.config.dataInfo.orginHeader;
 				
 				dataSearchEle.val('');
 				gridCtx.options.setting.configVal.search = {
 					field : ''
 					,val : ''
 				};
+
+				// 체크박스 전체 체크
+				settingAreaEle.find('.view-col-check').addClass('on')
 				
 				gridCtx._setSearchData('search', false); 
-				gridCtx.setFixedHeaderIndex(0, false);
+				gridCtx.setFixedHeaderIndex(gridCtx.config.fixedHeaderIndex, false);
 				return ; 
 			}else{	 // cancel
 				gridCtx.config.currentHeaderItems = gridCtx.config.settingConfig.orginCurrentHeaderItems;
@@ -6568,7 +6538,6 @@ var _$setting = {
 						
 			strHtm.push('</div>');
 		}else{
-
 			
 			this.initFilterItemTemplateHtml(gridCtx);
 
@@ -6584,12 +6553,13 @@ var _$setting = {
 			strHtm.push('				<ul class="tcol-all-list"> ');
 
 			var allColItems = gridCtx.config.dataInfo.orginLeafHeaders;
+
 			allColItems.forEach(function (item, idx){
 				strHtm.push('<li data-key="'+item.key+'">');
 				strHtm.push(' <span class="view-col-check on" data-key="'+item.key+'"></span>');
 				strHtm.push(' <span class="view-col-label">'+item.label+'</span>');
 				strHtm.push(' <input type="number" class="view-col-width" value="'+item.width+'">');
-				strHtm.push(' <span class="column-fix-icon" title="Column fixed"></span>');
+				strHtm.push(' <span class="column-fix-icon '+(gridCtx.config.fixedHeaderIndex== (idx+1)?'on':'')+'" title="Column fixed"></span>');
 				strHtm.push('</li>');
 			})
 			

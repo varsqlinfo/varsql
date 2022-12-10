@@ -66,13 +66,13 @@ public enum TemplateHelpers implements Helper<Object> {
 
 			String dbType = options.param(2, "OTHER");
 
-			String dataType = MapUtils.getString(item, MetaColumnConstants.DATA_TYPE);
+			String typeName = MapUtils.getString(item, MetaColumnConstants.TYPE_NAME);
 
-			dataType = !StringUtils.isBlank(dataType)? dataType : (item.containsKey(MetaColumnConstants.TYPE_AND_LENGTH) ? MapUtils.getString(item, MetaColumnConstants.TYPE_AND_LENGTH) :"" );
+			typeName = !StringUtils.isBlank(typeName)? typeName : (item.containsKey(MetaColumnConstants.TYPE_AND_LENGTH) ? MapUtils.getString(item, MetaColumnConstants.TYPE_AND_LENGTH) :"" );
 
-			dataType = dataType.replaceAll("\\((.*?)\\)", "");
+			typeName = typeName.replaceAll("\\((.*?)\\)", "");
 
-			DataType dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(dataType);
+			DataType dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(typeName);
 
 			if("typeAndLength".equals(mode)){
 
@@ -84,7 +84,7 @@ public enum TemplateHelpers implements Helper<Object> {
 					}
 				}
 				int columnSize = MapUtils.getIntValue(item, MetaColumnConstants.COLUMN_SIZE); 
-				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, null, columnSize,
+				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, null, columnSize,
 						MapUtils.getIntValue(item, MetaColumnConstants.DATA_PRECISION, columnSize), MapUtils.getIntValue(item, MetaColumnConstants.DECIMAL_DIGITS));
 			}
 

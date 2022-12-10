@@ -65,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.2.1'
+	varsqlVersion = '1.2.2'
 }
 
 //소스 분석.
@@ -250,7 +250,7 @@ subprojects {
 
 		// db driver
 		implementation(
-			[ group: 'com.h2database' , name: 'h2' , version: '1.4.200' ]
+			[ group: 'com.h2database' , name: 'h2' , version: '2.1.214' ]
 		)
 	}
 
@@ -307,10 +307,23 @@ project(':varsql-web') {
 		)
     }
 
-    def generated = "src/main/generated"
+    def generatedPath = "src/main/generated"
 
     sourceSets {
-		main.java.srcDirs += [ generated ]
+	    generated {
+			java {
+				srcDir generatedPath
+			}
+		}
+		
+		main {
+			compileClasspath += generated.output
+			runtimeClasspath += generated.output
+		}
+		test {
+			compileClasspath += generated.output
+			runtimeClasspath += generated.output
+		}
 	}
 
 	tasks.withType(JavaCompile) {
@@ -320,10 +333,10 @@ project(':varsql-web') {
 	        '-Amapstruct.verbose=true'
 	    ]
 
-		options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+		options.annotationProcessorGeneratedSourcesDirectory = file(generatedPath)
 	}
 
 	clean.doLast {
-		file(generated).deleteDir()
+		file(generatedPath).deleteDir()
 	}
 }

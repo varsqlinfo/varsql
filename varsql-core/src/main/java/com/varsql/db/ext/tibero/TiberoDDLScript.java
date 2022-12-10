@@ -70,7 +70,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 
 			ddlStr.append("CREATE TABLE " + name + "(\n");
 
-			String dataType = "";
+			String typeName = "";
 
 			dataParamInfo.setObjectName(name);
 
@@ -78,9 +78,9 @@ public class TiberoDDLScript extends AbstractDDLScript {
 			DataMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);
-				dataType = String.valueOf(source.get(MetaColumnConstants.DATA_TYPE));
+				typeName = String.valueOf(source.get(MetaColumnConstants.TYPE_NAME));
 
-				DataType dataTypeInfo = dataTypeImpl.getDataType(dataType);
+				DataType dataTypeInfo = dataTypeImpl.getDataType(typeName);
 
 				ddlStr.append("\t");
 				if (i > 0){
@@ -88,7 +88,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 				}
 				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
 				
-				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
+				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
 
 				ddlStr.append(getDefaultValue(source.getString(MetaColumnConstants.DATA_DEFAULT), dataTypeInfo , true));
 

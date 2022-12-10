@@ -136,7 +136,7 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList", dataParamInfo));
 
 			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("objectNameList", tableInfoHandler.getTableNameList());
+				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 			}
 		}
 

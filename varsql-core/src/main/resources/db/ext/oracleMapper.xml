@@ -37,9 +37,9 @@
 		where	ATS.OWNER = #{schema}
 	</otherwise>
 </choose>
-		<if test="custom != null and custom.tableInfoList != null">
+		<if test="custom != null and custom.objectNameList != null">
 			and 
-			<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 				ATS.TABLE_NAME in (${item})
 			</foreach>
 		</if>
@@ -51,7 +51,7 @@
 		select atc.COLUMN_ID
 			, atc.TABLE_NAME
 			, atc.COLUMN_NAME
-			, atc.DATA_TYPE
+			, atc.DATA_TYPE as TYPE_NAME
 			, atc.CHAR_LENGTH as COLUMN_SIZE
 			, atc.DATA_PRECISION as DATA_PRECISION
 			, atc.DATA_SCALE as DECIMAL_DIGITS
@@ -92,9 +92,9 @@
 				where D.owner =  #{schema} 
 			</otherwise>
 		</choose>
-			<if test="custom != null and custom.tableInfoList != null">
+			<if test="custom != null and custom.objectNameList != null">
 				and 
-				<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 					d.TABLE_NAME in (${item})
 				</foreach>
 			</if> 
@@ -109,9 +109,9 @@
 		where	atc.OWNER = #{schema}
 	</otherwise>
 </choose>
-		<if test="custom != null and custom.tableInfoList != null">
+		<if test="custom != null and custom.objectNameList != null">
 			and 
-			<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 				atc.TABLE_NAME in (${item})
 			</foreach>
 		</if>
@@ -168,9 +168,9 @@
 		</otherwise>
 	</choose>
 			and OBJECT_TYPE='VIEW'
-			<if test="custom != null and custom.tableInfoList != null">
+			<if test="custom != null and custom.objectNameList != null">
 				and 
-				<foreach item="item" index="index" collection="custom.tableInfoList" open="(" close=")" separator="or">
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
 					ao.OBJECT_NAME in (${item})
 				</foreach>
 			</if>
@@ -182,7 +182,7 @@
 				atc.COLUMN_ID
 				, atc.TABLE_NAME
 				, atc.COLUMN_NAME
-				, atc.DATA_TYPE
+				, atc.DATA_TYPE as TYPE_NAME
 				, atc.CHAR_LENGTH as COLUMN_SIZE
 				, atc.DATA_PRECISION as DATA_PRECISION
 				, atc.DATA_SCALE as DECIMAL_DIGITS
@@ -245,7 +245,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -257,7 +257,7 @@
 			, procsb.CREATED   
 			, procsb.STATUS   
 		    , nvl(argsb.ARGUMENT_NAME ,'null') as ARGUMENT_NAME
-		    , argsb.DATA_TYPE 
+		    , argsb.DATA_TYPE as TYPE_NAME
 		    , argsb.IN_OUT 
 		    , argsb.SEQUENCE
 		from       
@@ -283,7 +283,7 @@
 		        SELECT  
 		            object_name
 		            ,ARGUMENT_NAME
-					, DATA_TYPE
+					, DATA_TYPE as TYPE_NAME
 					,IN_OUT
 					,SEQUENCE 
 					,OVERLOAD 
@@ -637,7 +637,7 @@
 	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT atc.TABLE_NAME
 			, atc.COLUMN_NAME
-			, atc.DATA_TYPE
+			, atc.DATA_TYPE as TYPE_NAME
 			, atc.DATA_TYPE_MOD
 			, atc.DATA_TYPE_OWNER
 			, atc.CHAR_LENGTH as COLUMN_SIZE

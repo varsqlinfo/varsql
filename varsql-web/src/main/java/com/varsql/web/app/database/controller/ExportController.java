@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,11 +81,12 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/specMain/tableList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult tableList(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult tableList(DBMetadataRequestDTO dbMetadataRequestDTO, ModelAndView mav, HttpServletRequest req) throws Exception {
 
-		logger.debug("export specMain tableInfoList : {} ", preferencesInfo);
+		logger.debug("export specMain tableInfoList : {} ", dbMetadataRequestDTO);
+		
 
-		return exportServiceImpl.selectExportTableInfo(preferencesInfo);
+		return exportServiceImpl.selectExportTableInfo(dbMetadataRequestDTO);
 	}
 
 	/**
@@ -97,8 +99,11 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/spec/tableExport", method = RequestMethod.POST)
-	public void tableExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,  HttpServletResponse res) throws Exception {
-		exportServiceImpl.tableSpecExport(preferencesInfo, req, res);
+	public void tableExport(PreferencesRequestDTO preferencesInfo, 
+			@RequestParam(value = "schema", required = true) String schema,
+			@RequestParam(value = "databaseName", required = true) String databaseName,
+			HttpServletRequest req,  HttpServletResponse res) throws Exception {
+		exportServiceImpl.tableSpecExport(preferencesInfo, schema, databaseName, req, res);
 	}
 
 	/**

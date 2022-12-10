@@ -133,7 +133,7 @@ VarsqlAPP.vueServiceBean({
 	}
 	,methods:{
 		init : function (){
-			this.selectSchema = this.userSetting.schema;
+			this.selectSchema = this.userSetting.schema || '${currentSchemaName}';
 			this.setUserConfigInfo();
 		}
 		,selectStep : function (step){
@@ -163,14 +163,29 @@ VarsqlAPP.vueServiceBean({
 			var _self = this;
 
 			var info = $("#firstConfigForm").serializeJSON();
-
+			
+			var tableList =[];
+			_self.selectTableObj.getTargetItem().forEach(item=>{
+				tableList.push({name : item.name});
+			}) 
+			
+			var columnList =[];
+			_self.selectColumnObj.getTargetItem().forEach(item=>{
+				var newItem = VARSQL.util.objectMerge({}, item);
+				
+				delete newItem['_CU'];
+				delete newItem['_pageNum'];
+				
+				columnList.push(newItem);
+			}) 
+			
 			var prefVal = {
 				exportName : _self.userSetting.exportName
 				,schema : _self.selectSchema
 				,sheetFlag : _self.userSetting.sheetFlag
 				,addTableDefinitionFlag : _self.userSetting.addTableDefinitionFlag
-				,tables : _self.selectTableObj.getTargetItem()
-				,columns: _self.selectColumnObj.getTargetItem()
+				,tables : tableList
+				,columns: columnList
 			};
 
 			var param = {
@@ -246,11 +261,18 @@ VarsqlAPP.vueServiceBean({
 
 			_self.selectTableObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
+				,header : {
+					enableSourceLabel : true 	// source header label 보일지 여부
+					,enableTargetLabel : false 	// target header label 보일지 여부
+				}
 				,valueKey : 'name'	
 				,labelKey : 'name'
 				,source : {
 					emptyMessage : '<spring:message code="msg.export.spec.schema.select" />'
 					,items : paramSourceItem
+					,search :{
+						enable : true
+					}
 				}
 				,target : {
 					items : []

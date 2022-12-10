@@ -64,7 +64,7 @@
 		select
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
-		    , st.name as "DATA_TYPE"
+		    , st.name as "TYPE_NAME"
 		    , sc.prec as "COLUMN_SIZE"
 			, sc.prec as "DATA_PRECISION"
 		    , sc.scale as "DECIMAL_DIGITS"
@@ -144,7 +144,7 @@
 		select
 		     so.name as "TABLE_NAME"
 		    , sc.name as "COLUMN_NAME"
-		    , st.name as "DATA_TYPE"
+		    , st.name as "TYPE_NAME"
 			, sc.length as "COLUMN_SIZE"
 		    , sc.length as "DATA_PRECISION"
 		    , sc.scale as "DECIMAL_DIGITS"
@@ -228,7 +228,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -244,7 +244,7 @@
 				so.crdate as "CREATED",
 				so.sysstat2  as  STATUS ,
 				sc.name as "ARGUMENT_NAME",
-				st.name as "DATA_TYPE" ,
+				st.name as "TYPE_NAME" ,
 				sc.length as "COLUMN_SIZE" ,
 				sc.length as "DATA_PRECISION" ,
 				sc.scale as "DECIMAL_DIGITS",

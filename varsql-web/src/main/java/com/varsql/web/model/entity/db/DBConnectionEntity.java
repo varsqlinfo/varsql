@@ -132,6 +132,9 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@Column(name ="USE_COLUMN_LABEL")
 	private String useColumnLabel;
+	
+	@Column(name ="ENABLE_CONNECTION_POOL")
+	private String enableConnectionPool;
 
 	@NotAudited
 	@JsonIgnore
@@ -151,7 +154,12 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 //	private Set<DBGroupMappingDbEntity> dbGroupList;
 
 	@Builder
-	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, DBTypeDriverProviderEntity dbTypeDriverProvider, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount, String useColumnLabel, String testWhileIdle) {
+	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, DBTypeDriverProviderEntity dbTypeDriverProvider
+			, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt
+			, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn
+			, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount
+			, String useColumnLabel, String testWhileIdle, String enableConnectionPool) {
+		
 		this.vconnid = vconnid;
 		this.vname = vname;
 		this.vdbschema = vdbschema;
@@ -178,6 +186,7 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 		this.maxSelectCount = maxSelectCount;
 		this.useColumnLabel = useColumnLabel;
 		this.testWhileIdle = testWhileIdle;
+		this.enableConnectionPool = enableConnectionPool;
 
 	}
 
@@ -235,6 +244,8 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	public final static String USE_COLUMN_LABEL ="useColumnLabel";
 	
-	public final static String TEST_WHILE_IDLE ="testWhileIdle";
+ 	public final static String TEST_WHILE_IDLE ="testWhileIdle";
+ 	
+ 	public final static String ENABLE_CONNECTION_POOL ="enableConnectionPool";
 	
 }

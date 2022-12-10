@@ -269,7 +269,7 @@ VarsqlAPP.vueServiceBean( {
 		        ,editable: true
 		        , tColItem: [
 		        	{label: '컬럼명', key: 'COLUMN_NAME', width: 80}
-		        	, {label: '데이터타입', key: 'DATA_TYPE', width: 80, renderer :{
+		        	, {label: '데이터타입', key: 'TYPE_NAME', width: 80, renderer :{
 		        		type : 'dropdown'
 	        			,labelField : 'name'
 	        			,valueField : 'name'
@@ -292,7 +292,7 @@ VarsqlAPP.vueServiceBean( {
 		,addRow : function(){
 			this.tableGridObj.addRow({
         		COLUMN_NAME : 'COLUMN_'+(this.addColumnIdx++)
-        		,DATA_TYPE : 'VARCHAR'
+        		,TYPE_NAME : 'VARCHAR'
         		,COLUMN_SIZE : 255
         		,NULLABLE : 'Y'
         		,COLUMN_DEF : ''

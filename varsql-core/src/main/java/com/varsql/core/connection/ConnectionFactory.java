@@ -3,10 +3,12 @@ package com.varsql.core.connection;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.checkerframework.checker.units.qual.K;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -38,9 +40,9 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private PoolType connectionPoolType = PoolType.DBCP2;
 
-	private ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
+	private final static ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
 
-	private ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
+	private final static ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
 
 	private ConnectionInfoDao connectionInfoDao;
 
@@ -149,10 +151,9 @@ public final class ConnectionFactory implements ConnectionContext{
 	 * @throws Exception
 	 */
 	public synchronized void resetConnectionPool(String connid) throws SQLException, ConnectionFactoryException  {
-		if(connectionShutdownInfo.containsKey(connid)) connectionShutdownInfo.remove(connid);
-
+		poolShutdown(connid);
+		connectionShutdownInfo.remove(connid);
 		createConnectionInfo(connid);
-		resetMetaDataSource(connid);
 	}
 
 	/**
@@ -174,13 +175,25 @@ public final class ConnectionFactory implements ConnectionContext{
 		closeMataDataSource(connid);
 		connectionShutdownInfo.put(connid, true);
 	}
+	
+	public static void poolShutdown() throws SQLException, ConnectionFactoryException  {
+		if(connectionConfig.size() > 0) {
+			getInstance().allPoolShutdown();
+		}
+		
+	}
+	
+	private synchronized void allPoolShutdown() throws SQLException, ConnectionFactoryException  {
+		for(Entry<String, ConnectionInfo> connEntry: connectionConfig.entrySet()) {
+			String connid = connEntry.getKey();
+			getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
+			closeMataDataSource(connid);
+			connectionShutdownInfo.put(connid, true);
+		}
+	}
 
 	public synchronized void closeMataDataSource(String connid) throws SQLException, ConnectionFactoryException  {
 		SQLManager.getInstance().close(connid);
-	}
-
-	public synchronized void resetMetaDataSource(String connid) throws SQLException, ConnectionFactoryException  {
-		SQLManager.getInstance().reset(connid);
 	}
 
 	private static class FactoryHolder{

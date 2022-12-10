@@ -106,11 +106,12 @@ public class TableInfoMysqlHandler implements ResultHandler<DataMap> {
 		BigDecimal dataPrecision= new BigDecimal(rowData.getString(MetaColumnConstants.DATA_PRECISION,columnSize+""));
 		BigDecimal degitsLen= new BigDecimal(rowData.getString(MetaColumnConstants.DECIMAL_DIGITS,columnSize+""));
 
-		String dataType = rowData.getString(MetaColumnConstants.DATA_TYPE);
+		String dataType = rowData.getString(MetaColumnConstants.TYPE_NAME);
 		DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
 
 		column.setName(cName);
-		column.setDataType(dataType);
+		column.setTypeCode(dataTypeInfo.getTypeCode());
+		column.setTypeName(dataType);
 		Object lenInfoObj = rowData.get(MetaColumnConstants.COLUMN_SIZE);
 
 		if(lenInfoObj != null) {

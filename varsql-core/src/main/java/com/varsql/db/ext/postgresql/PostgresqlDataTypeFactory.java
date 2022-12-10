@@ -17,7 +17,6 @@ public class PostgresqlDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public PostgresqlDataTypeFactory() {
-		addDataType(new VenderDataType("DATETIME", DefaultDataType.TIMESTAMP.getTypeCode() , DBColumnMetaInfo.TIMESTAMP));
 		addDataType(new VenderDataType("character varying", DefaultDataType.VARCHAR.getTypeCode() , DBColumnMetaInfo.STRING));
 		addDataType(new VenderDataType("character", DefaultDataType.CHAR.getTypeCode() , DBColumnMetaInfo.STRING));
 		addDataType(new VenderDataType("double precision", DefaultDataType.DECIMAL.getTypeCode() , DBColumnMetaInfo.DECIMAL));

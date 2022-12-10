@@ -8,6 +8,13 @@
 	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
 		SHOW VARIABLES LIKE '%VERSION%'
 	</select>
+	
+	<select id="schemaList" parameterType="databaseParamInfo" resultType="string">
+		select schema_name as database_name
+		from information_schema.schemata a
+		where schema_name not in ('information_schema','performance_schema','sys', 'mysql') 
+		order by schema_name
+	</select>
 
 	<!-- ================= table start ================= -->
 	<!--  tableList 목록 보기. -->
@@ -33,9 +40,9 @@
 			a.table_name as "TABLE_NAME"
 			, a.column_name as "COLUMN_NAME"
 			, if ( isnull(CHARACTER_MAXIMUM_LENGTH),NUMERIC_PRECISION, CHARACTER_MAXIMUM_LENGTH ) as "COLUMN_SIZE"
-			, a.data_type as "DATA_TYPE"
+			, a.data_type as "TYPE_NAME"
 			, a.column_type as "TYPE_NAME_SIZE"
-			, a.is_nullable as "IS_NULLABLE"
+			, (case when a.is_nullable ='YES' then 'Y' else 'N' end)   as "IS_NULLABLE" 
 			, a.column_key as "CONSTRAINTS"
 			, a.column_default as "COLUMN_DEF"
 			, a.column_comment as "COMMENT"
@@ -90,9 +97,9 @@
 			a.table_name as "TABLE_NAME"
 			, a.column_name as "COLUMN_NAME"
 			, if ( isnull(CHARACTER_MAXIMUM_LENGTH),NUMERIC_PRECISION, CHARACTER_MAXIMUM_LENGTH ) as "COLUMN_SIZE"
-			, a.data_type as "DATA_TYPE"
+			, a.data_type as "TYPE_NAME"
 			, a.column_type as "TYPE_NAME_SIZE"
-			, a.is_nullable as "IS_NULLABLE"
+			, (case when a.is_nullable ='YES' then 'Y' else 'N' end)   as "IS_NULLABLE" 
 			, a.column_key as "CONSTRAINTS"
 			, a.column_default as "COLUMN_DEF"
 			, a.column_comment as "COMMENT"
@@ -143,7 +150,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->

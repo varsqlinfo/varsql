@@ -77,7 +77,7 @@ public class OracleDDLScript extends AbstractDDLScript {
 			DataMap source;
 			for (int i = 0; i < srcList.size(); i++) {
 				source = srcList.get(i);
-				dataType = String.valueOf(source.get(MetaColumnConstants.DATA_TYPE));
+				dataType = String.valueOf(source.get(MetaColumnConstants.TYPE_NAME));
 
 				DataType dataTypeInfo = dataTypeImpl.getDataType(dataType);
 

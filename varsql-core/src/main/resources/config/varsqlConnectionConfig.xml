@@ -4,7 +4,7 @@
 <dataSource name="varsql">
 	<type>local</type>
 	<driver>org.h2.Driver</driver>
-	<url>jdbc:h2:file:#resourePath#/varsql</url>
+	<url>jdbc:h2:file:#resourePath#/varsql;AUTO_SERVER=TRUE;CACHE_SIZE=131072;</url>
 	<username>sa</username>
 	<password>sa</password>
 	<max_active>10</max_active>

@@ -31,7 +31,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
 
 {{#commentsList}}
 {{#xif TYPE '==' 'TBL'}}ALTER TABLE {{../objectName}} COMMENT = '{{COMMENT}}';{{/xif}}
-{{~#xif TYPE '==' 'COL'}}ALTER TABLE {{../objectName}} MODIFY COLUMN {{NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} COMMENT '{{COMMENT}}';{{/xif}}
+{{~#xif TYPE '==' 'COL'}}ALTER TABLE {{../objectName}} MODIFY COLUMN {{NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} COMMENT '{{COMMENT}}';{{/xif}}
 {{/commentsList}}
 		]]>
 		</create>
@@ -112,17 +112,17 @@ USING (SELECT 1 AS dual) AS b
 		
 		<!-- 컬럼 추가-->
 		<columnAdd>
-alter table {{TABLE_NAME}} ADD COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}} 
+alter table {{TABLE_NAME}} ADD COLUMN {{COLUMN_NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}} 
 		</columnAdd>
 		
 		<!-- 컬럼명 변경-->
 		<columnRename>
-ALTER TABLE {{TABLE_NAME}} CHANGE COLUMN {{COLUMN_NAME}} {{NEW_COLUMN_NAME}} {{DATA_TYPE}}
+ALTER TABLE {{TABLE_NAME}} CHANGE COLUMN {{COLUMN_NAME}} {{NEW_COLUMN_NAME}} {{TYPE_NAME}}
 		</columnRename>
 		
 		<!-- 컬럼 수정 -->
 		<columnModify>
-alter table {{TABLE_NAME}} MODIFY COLUMN {{COLUMN_NAME}} {{DATA_TYPE}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}}
+alter table {{TABLE_NAME}} MODIFY COLUMN {{COLUMN_NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} DEFAULT {{DEFAULT_VALUE}}
 		</columnModify>
 		
 		<!-- 컬럼 삭제-->
@@ -132,7 +132,7 @@ alter table {{TABLE_NAME}} DROP COLUMN {{COLUMN_NAME}}
 		
 		<!-- 컬럼 주석 추가 -->
 		<columnAddComment>
-ALTER TABLE {{TABLE_NAME}} MODIFY {{COLUMN_NAME}} {{DATA_TYPE}} COMMENT '{{COMMENT}}';
+ALTER TABLE {{TABLE_NAME}} MODIFY {{COLUMN_NAME}} {{TYPE_NAME}} COMMENT '{{COMMENT}}';
 		</columnAddComment>
 	
 		

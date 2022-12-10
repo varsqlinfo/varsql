@@ -61,7 +61,7 @@
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
-			, trim(sc.coltype) as "DATA_TYPE"
+			, trim(sc.coltype) as "TYPE_NAME"
 			, sc.prec as "COLUMN_SIZE"
 			, sc.prec as "DATA_PRECISION"
 			, sc.scale as "DECIMAL_DIGITS"
@@ -129,7 +129,7 @@
 	<select id="viewMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			, trim(sc.cname) as  "COLUMN_NAME"
-			, trim(sc.coltype) as "DATA_TYPE"
+			, trim(sc.coltype) as "TYPE_NAME"
 			, sc.length as "COLUMN_SIZE"
 			, sc.length as "DATA_PRECISION"
 			, sc.syslength as "DECIMAL_DIGITS"
@@ -204,7 +204,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -219,7 +219,7 @@
 				so.type as "OBJECT_TYPE",
 				so.crdate as "CREATED",
 				sc.name as "ARGUMENT_NAME",
-				st.name as "DATA_TYPE" ,
+				st.name as "TYPE_NAME" ,
 				sc.length as "COLUMN_SIZE" ,
 				sc.length as "DATA_PRECISION" ,
 				sc.scale as "DECIMAL_DIGITS",
@@ -371,7 +371,7 @@
 	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
 		select trim(so.table_name) as "TABLE_NAME"
 			,trim(sc.cname) as  "COLUMN_NAME"
-			, trim(sc.coltype) as "DATA_TYPE"
+			, trim(sc.coltype) as "TYPE_NAME"
 			, sc.length as "COLUMN_SIZE"
 			, sc.length as "DATA_PRECISION"
 			, sc.syslength as "DECIMAL_DIGITS"

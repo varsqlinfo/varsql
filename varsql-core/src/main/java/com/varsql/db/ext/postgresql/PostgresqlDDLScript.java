@@ -74,7 +74,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 				}
 				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
 
-				ddlStr.append(source.get(MetaColumnConstants.DATA_TYPE)).append(" ");
+				ddlStr.append(source.get(MetaColumnConstants.TYPE_NAME)).append(" ");
 
 				ddlStr.append(source.getString(MetaColumnConstants.COLUMN_DEF)).append(" ");
 

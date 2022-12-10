@@ -34,7 +34,7 @@
 		SELECT
 			cols.table_name as "TABLE_NAME"
 			, cols.COLUMN_NAME as "COLUMN_NAME"
-			, cols.data_type  as "DATA_TYPE"
+			, cols.data_type  as "TYPE_NAME"
 			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE" 
 			,character_maximum_length as  "COLUMN_SIZE" 
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
@@ -88,7 +88,7 @@
 		SELECT
 			cols.table_name as "TABLE_NAME"
 			, cols.COLUMN_NAME as "COLUMN_NAME"
-			, cols.data_type  as "DATA_TYPE"
+			, cols.data_type  as "TYPE_NAME"
 			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
 			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE" 
 			,character_maximum_length as  "COLUMN_SIZE" 
@@ -130,7 +130,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -372,7 +372,7 @@
                 b.nspname as schema_name,
                 b.relname as "TABLE_NAME",
                 a.attname as "COLUMN_NAME",
-                pg_catalog.format_type(a.atttypid, a.atttypmod) as "DATA_TYPE",
+                pg_catalog.format_type(a.atttypid, a.atttypmod) as "TYPE_NAME",
                 CASE WHEN
                     (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
                      FROM pg_catalog.pg_attrdef d

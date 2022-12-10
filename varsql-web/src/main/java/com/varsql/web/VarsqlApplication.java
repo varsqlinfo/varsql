@@ -8,11 +8,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 
 import com.varsql.core.configuration.ConfigurationFilePath;
+import com.varsql.web.configuration.ShutdownHookConfiguration;
 
 
-@SpringBootApplication
+@SpringBootApplication 
 @ServletComponentScan
 public class VarsqlApplication extends SpringBootServletInitializer {
 	
@@ -33,5 +35,10 @@ public class VarsqlApplication extends SpringBootServletInitializer {
 	public static void main(String[] args) {
 		SpringApplication.run(VarsqlApplication.class, args);
 	}
+	
+	@Bean(destroyMethod = "destroy")
+    public ShutdownHookConfiguration shutdownHookConfiguration() {
+        return new ShutdownHookConfiguration();
+    }
 }
 

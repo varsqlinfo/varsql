@@ -179,6 +179,7 @@
 <entry key="admin.form.db.vdriver">Driver</entry>
 <entry key="admin.form.db.vid">Id</entry>
 <entry key="admin.form.db.vpw">Password</entry>
+<entry key="admin.form.db.enableConnectionPool">DB Metadata Pool Enable</entry>
 <entry key="admin.form.db.vconnopt">Connection Option</entry>
 <entry key="admin.form.db.vpoolopt">Pool Option</entry>
 

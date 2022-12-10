@@ -133,6 +133,7 @@ var DEFINE_INFO = {
 	,TIBERO :{
 		type : 'text/x-plsql'
 		,hint : setHints('VARCHAR2,NVARCHAR2,NCHAR2,NUMBER')
+		,formatType : 'plsql'
 		,setDataType :  function (pdto){
 			pdto['VARCHAR2'] = VARSQL.util.objectMerge({},pdto['12'],{name:'VARCHAR2'});
 			pdto['NVARCHAR2'] = VARSQL.util.objectMerge({},pdto['1111'],{name:'NVARCHAR2'});
@@ -143,7 +144,6 @@ var DEFINE_INFO = {
 
 			return pdto;
 		}
-		,formatType : 'plsql'
 	}
 	,H2 : {
 		type : 'text/x-mariadb'
@@ -152,6 +152,16 @@ var DEFINE_INFO = {
 	,POSTGRESQL :{
 		type :'text/x-mariadb'
 		,formatType : 'postgresql'
+		,setDataType :  function (pdto){
+			pdto['CHARACTER VARYING'] = VARSQL.util.objectMerge({},pdto['12'],{name:'VARCHAR2'});
+			pdto['CHARACTER'] = VARSQL.util.objectMerge({},pdto['1']);
+			
+			pdto['DOUBLE PRECISION'] = VARSQL.util.objectMerge({},pdto['2']);
+			pdto['BIGSERIAL'] = VARSQL.util.objectMerge({},pdto['4']);
+			pdto['TIMESTAMP WITHOUT TIME ZONE'] = VARSQL.util.objectMerge({},pdto['93']);
+
+			return pdto;
+		}
 	}
 	,DB2  :{
 		type :'text/x-mariadb'
@@ -217,13 +227,13 @@ var DEFINE_INFO = {
 			]
 			,procedureColumn : [
 				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 },
-				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'typeName' },
 				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},
 				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}
 			]
 			,functionColumn : [
 				{ label: VARSQL.messageFormat('grid.parameter.name'), key: 'name',width:80 }, // 파라미터
-				{ label: VARSQL.messageFormat('grid.data.type') , key: 'dataType' },		// datatype
+				{ label: VARSQL.messageFormat('grid.data.type') , key: 'typeName' },		// datatype
 				{ label: VARSQL.messageFormat('grid.inout.name'), key: 'columnType',width:45},	// in/out
 				{ label: VARSQL.messageFormat('grid.desc'), key: 'comment',width:45}	// 설명
 			]
@@ -259,7 +269,7 @@ VARSQLCont = {
 	,tableColKey : {
 		NAME :'name'
 		,TYPE_NAME :'typeName'
-		,DATA_TYPE :'dataType'
+		,TYPE_CODE :'typeCode'
 		,NULLABLE :'nullable'
 		,PRIMAY_KEY :'primayKey'
 		,CONSTRAINTS :'constraints'

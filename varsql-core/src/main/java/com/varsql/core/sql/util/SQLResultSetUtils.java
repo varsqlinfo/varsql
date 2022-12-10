@@ -21,6 +21,7 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ResultSetConvertException;
@@ -114,6 +115,7 @@ public final class SQLResultSetUtils {
 			}
 			columnNameArr[i] = columnName;
 			dataTypeArr[i] = dataTypeFactory.getDataType(columnTypeName);
+			dataTypeArr[i] = dataTypeArr[i] == DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataTypeArr[i];
 
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(columnType, columnInfo);
@@ -224,7 +226,9 @@ public final class SQLResultSetUtils {
 				columnKeyCheck.put(columnName, 0);
 			}
 			columnNameArr[i] = columnName;
+			
 			dataTypeArr[i] = dataTypeFactory.getDataType(columnTypeName);
+			dataTypeArr[i] = dataTypeArr[i] == DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataTypeArr[i];
 
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(columnType, columnInfo);
@@ -314,6 +318,8 @@ public final class SQLResultSetUtils {
 		}else if(columnType == Types.SQLXML ){
 			varsqlColumnType = "sqlxml";
 			isLob =  true;
+		}else if(columnType == Types.ARRAY ){
+			varsqlColumnType = "array";
 		}else{
 			varsqlColumnType = "string";
 		}

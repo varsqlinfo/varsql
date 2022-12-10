@@ -1,6 +1,7 @@
 package com.varsql.core.db.datatype;
 
 import java.io.Reader;
+import java.sql.Array;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -277,7 +278,8 @@ public enum DefaultDataType implements DataType {
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
-				return rs.getArray(columnIndex);
+				Array reval = rs.getArray(columnIndex);
+				return reval==null ? null : reval.getArray();
 			}
 		}).build()
 	),
@@ -434,8 +436,38 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE, DBColumnMetaInfo.OTHER),
-	TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE, DBColumnMetaInfo.OTHER),
+	TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE, DBColumnMetaInfo.TIME, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
+	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP_WITH_TIMEZONE, value)) return ;
+				
+				pstmt.setObject(parameterIndex, value);
+			}
+		}).resultSetHandler(new ResultSetHandler() {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
+				Time val = rs.getTime(columnIndex);
+				
+				if(isNull(val)) return null;
+				
+				return val.toLocalTime().toString();
+			}
+		}).build()
+	),
+	TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE, DBColumnMetaInfo.TIMESTAMP, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
+	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP_WITH_TIMEZONE, value)) return ;
+				
+				pstmt.setObject(parameterIndex, value);
+			}
+		}).resultSetHandler(new ResultSetHandler() {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
+				Timestamp val = rs.getTimestamp(columnIndex);
+				
+				if(isNull(val)) return null;
+				
+				return val.toLocalDateTime().toString();
+			}
+		}).build()
+	),
 	OTHER(Types.OTHER, DBColumnMetaInfo.OTHER);
 	
 	private int typeCode; // sql type code
@@ -507,6 +539,16 @@ public enum DefaultDataType implements DataType {
 				return datatype;
 			}
 		}
+		return DefaultDataType.OTHER;
+	}
+	
+	public static DataType getDataType(int typeCode) {
+		for (DefaultDataType datatype : DefaultDataType.values()) {
+			if(datatype.getTypeCode() == typeCode) {
+				return datatype;
+			}
+		}
+		
 		return DefaultDataType.OTHER;
 	}
 	

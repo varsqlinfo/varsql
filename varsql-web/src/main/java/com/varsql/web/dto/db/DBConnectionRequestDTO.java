@@ -1,5 +1,6 @@
 package com.varsql.web.dto.db;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -10,6 +11,7 @@ import com.varsql.web.dto.valid.ValidUrlDirectYn;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.util.ConvertUtils;
+import com.vartech.common.utils.StringUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -61,6 +63,7 @@ public class DBConnectionRequestDTO{
 	@Size(max=100)
 	private String vid;
 
+	@Transient
 	@Size(max=500)
 	private String vpw;
 
@@ -126,6 +129,9 @@ public class DBConnectionRequestDTO{
 	@NotEmpty
 	@Size(max=1)
 	private String testWhileIdle;
+	
+	@Size(max=1)
+	private String enableConnectionPool;
 
 	private boolean passwordChange;
 
@@ -140,7 +146,7 @@ public class DBConnectionRequestDTO{
 				.vserverip(vserverip)
 				.vport(vport)
 				.vdatabasename(vdatabasename)
-				.vurl(vurl)
+				.vurl(StringUtils.trim(vurl) )
 				.dbTypeDriverProvider(DBTypeDriverProviderEntity.builder().driverProviderId(vdriver).build())
 				.vid(vid)
 				.vpw(vpw)
@@ -158,6 +164,7 @@ public class DBConnectionRequestDTO{
 				.maxSelectCount(maxSelectCount)
 				.useColumnLabel(useColumnLabel)
 				.testWhileIdle(testWhileIdle)
+				.enableConnectionPool(enableConnectionPool)
 				.build();
 	}
 }

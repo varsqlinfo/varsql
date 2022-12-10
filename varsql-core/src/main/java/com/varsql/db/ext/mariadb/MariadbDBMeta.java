@@ -1,5 +1,6 @@
 package com.varsql.db.ext.mariadb;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,11 @@ public class MariadbDBMeta extends AbstractDBMeta{
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+	}
+	
+	@Override
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("schemaList" ,dataParamInfo);
 	}
 
 	@Override
@@ -146,7 +152,7 @@ public class MariadbDBMeta extends AbstractDBMeta{
 			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 
 			if(tableInfoMysqlHandler.getTableNameList() !=null  && tableInfoMysqlHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("objectNameList", tableInfoMysqlHandler.getTableNameList());
+				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoMysqlHandler.getTableNameList());
 			}
 		}
 

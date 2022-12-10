@@ -69,8 +69,10 @@
 				</div>
 				<div style="padding-top: 10px;">
 					<span style="margin-right:5px;">
-						<label for="caseSensitive" style="margin-bottom:0px;">Case sensitive</label>
-						<input style="margin:0px;" id="caseSensitive" type="checkbox" v-model="caseSensitive" value="Y">
+						<label for="scrollSync" style="margin-bottom:0px;">
+							<input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y">
+							Scroll sync
+						</label>
 					</span>
 				</div>
 			</div>
@@ -91,16 +93,22 @@
 									<div style="float:right;">
 										<template v-if="currentObjectType == 'table'">
 											<span style="margin-right:5px;">
-												<label for="compareView" style="margin-bottom:0px;">Compare view</label>
-												<input style="margin:0px;" id="compareView" type="checkbox" v-model="compareView" value="Y">
+												<label for="compareView" style="margin-bottom:0px;">
+													<input style="margin:0px;" id="compareView" type="checkbox" v-model="compareView" value="Y">
+													Compare view
+												</label>
 											</span>
 										</template>
+										
+										<label for="caseSensitive" style="margin-bottom:0px;">
+											<input style="margin:0px;" id="caseSensitive" @click="changeCaseSensitive($event)" type="checkbox" v-model="caseSensitive" value="Y">
+											<spring:message code="label.case.sensitive" text="대소문자"/>
+										</label>
+										
 										<span>
-											<label for="scrollSync" style="margin-bottom:0px;">Scroll sync</label>
-											<input style="margin:0px;" id="scrollSync" type="checkbox" v-model="scrollSync" value="Y">
-										</span>
-										<span>
-											<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-success" style="padding:2px 3px;">select compare</button>
+											<button type="button" @click="selectItemCompare()" class="btn btn-sm btn-default" style="padding:2px 3px;">Select compare</button>
+											
+											<button type="button" @click="clientDataCompare('reverse')" class="btn btn-sm btn-success" style="padding:2px 3px;">Reverse compare</button>
 										</span>
 									</div>
 								</div>
@@ -288,6 +296,10 @@
 
 <script>
 (function() {
+	
+function getKeyName(key, caseSensitive){
+	return caseSensitive ? (key+'_caseVal') : key;
+}
 
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
@@ -304,7 +316,7 @@ VarsqlAPP.vueServiceBean( {
 			,targetSchema : ''
 			,objectType : ''
 		}
-		,caseSensitive : false	// 대소문자 체크
+		,caseSensitive : true	// 대소문자 체크
 		,scrollSync : true		// object scroll sync
 		,compareView : true		// 테이블 없는 컬럼 체크
 		,currentObjectType : ''
@@ -312,31 +324,22 @@ VarsqlAPP.vueServiceBean( {
 		,loading:false
 		,isCompleteCompare :false
 		,compareObjectName :''
-		,compareObjectMetaResult :{}
 		,objectList : []
 
 		,sourceSchemaList :[]
 		,targetSchemaList :[]
 		,sourceItems : false	// 원천 item 목록.
 		,targetItems : false
-		,compareItem : {
-			sourceNameMap : {}
-			, targetNameMap : {}
-			, objectColNameMap :{}
-		}
-		,resultInfo:{
-			sourceCount :0
-			,sourceSchCnt : 0
-			,targetCount :0
-			,targetSchCnt : 0
-		}
-		,sameInfo : {cnt: 0 , htm :[]}
-		,differentInfo : {cnt: 0 , htm :[]}
-		,emptyInfo : {cnt: 0 , htm :[]}
 		,resultReport : ''
 
 		,compareSourceItem:{}
 		,compareTargetItem:{}
+		,orginSourceData : {}
+		,orginTargetData : {}
+		
+	}
+	,created : function (){
+		this.initLoadingStatus(true);
 	}
 	,watch : {
 		compareView : function (){
@@ -353,8 +356,9 @@ VarsqlAPP.vueServiceBean( {
 			if(this.isCompleteCompare ===true){
 				return '';
 			}
-
+			
 			if(this.sourceItems !==false && this.targetItems !== false){
+				
 				this.objectCompare(true);
 				this.isCompleteCompare = true;
 				this.loading =false;
@@ -417,8 +421,11 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
+		// 대소문자 변환 비교.
+		,changeCaseSensitive:function(){
+			this.clientDataCompare('caseSensitive');
+		}
 		,objectCompare : function (initFlag){
-
 			try{
 				var compareFn = this[this.diffItem.objectType+'Compare'];
 
@@ -445,11 +452,6 @@ VarsqlAPP.vueServiceBean( {
 					this.sourceSearchObj = new Fuse(this.sourceItems, options);
 					this.targetSearchObj = new Fuse(this.targetItems, options);
 				}
-
-				this.resultReport = '';
-				this.sameInfo ={cnt: 0 , htm :[]};
-				this.differentInfo ={cnt: 0 , htm :[]};
-				this.emptyInfo ={cnt: 0 , htm :[]};
 
 				var resultVal = '';
 				if(compareFn){
@@ -492,6 +494,35 @@ VarsqlAPP.vueServiceBean( {
 			$.pubGrid('#sourceObjectMeta').setData(sList,'reDraw');
 			$.pubGrid('#targetObjectMeta').setData(tList,'reDraw');
 		}
+		// init loading status 
+		,initLoadingStatus : function(initFlag){
+			this.loading = initFlag == true ? false : true;
+			this.targetItems = false;
+			this.sourceItems = false;
+
+			this.compareObjectName = '';
+			this.isCompleteCompare = false;
+			
+			this.resultReport = '';
+			
+			this.compareItem = {
+				sourceNameMap : {}
+				, targetNameMap : {}
+				, objectColNameMap :{}
+			};
+			
+			this.resultInfo ={
+				sourceCount :0
+				,sourceSchCnt : 0
+				,targetCount :0
+				,targetSchCnt : 0
+			};
+			this.sameInfo = {cnt: 0 , htm :[]};
+			this.differentInfo = {cnt: 0 , htm :[]};
+			this.emptyInfo = {cnt: 0 , htm :[]};
+			this.compareObjectMetaResult = {};
+			
+		}
 		// db object search.
 		,getObjectList : function(){
 			var _self = this;
@@ -514,14 +545,9 @@ VarsqlAPP.vueServiceBean( {
 
 			_self.initDetailArea();
 
-
-			this.loading =true;
-			_self.targetItems = false;
-			_self.sourceItems = false;
-
-			_self.compareObjectName = '';
-			_self.isCompleteCompare = false;
-			_self.compareObjectMetaResult = {};
+			_self.initLoadingStatus();
+			
+			
 			_self.currentObjectType = objectType;
 			_self.currentObject = VARSQL.util.objectMerge ({},diffItem);
 
@@ -537,9 +563,9 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,success: function(resData) {
 
-					if(_self.caseSensitive===true){
-						resData= _self.convertResDateUpperCase(objectType, resData);
-					}
+					resData= _self.convertResDataUpperCase(objectType, resData);
+					
+					_self.orginSourceData = resData;
 
 					var objViewFn = _self[objectType+'ObjectView'];
 
@@ -563,10 +589,9 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,success: function(resData) {
 
-					if(_self.caseSensitive===true){
-						resData= _self.convertResDateUpperCase(objectType, resData);
-					}
-
+					resData= _self.convertResDataUpperCase(objectType, resData);
+					
+					_self.orginTargetData = resData;
 					var objViewFn = _self[objectType+'ObjectView'];
 
 					if(objViewFn){
@@ -577,7 +602,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
-		,convertResDateUpperCase : function (objectType, resData){
+		,convertResDataUpperCase : function (objectType, resData){
 
 			var items = resData.list;
 			var len = items.length;
@@ -597,15 +622,16 @@ VarsqlAPP.vueServiceBean( {
 								for(var colKey in coltem){
 									var colItemVal = coltem[colKey];
 									if(colKey != 'comment'){
-										coltem[colKey] = VARSQL.util.toUpperCase((colItemVal ? (colItemVal +'') :''));
+										coltem[getKeyName(colKey,true)] = VARSQL.util.toUpperCase((colItemVal ? (colItemVal +'') :''));
 									}
 								}
 							}
-						}else if(key != 'remarks'){
-							itemVal = VARSQL.util.toUpperCase((itemVal ? (itemVal +'') : ''));
+							continue; 
+						}else if(key == 'remarks'){
+							continue; 
 						}
 
-						item[key] = itemVal
+						item[getKeyName(key,true)] =VARSQL.util.toUpperCase((itemVal ? (itemVal +'') : ''));
 					}
 				}
 			}else{
@@ -617,8 +643,8 @@ VarsqlAPP.vueServiceBean( {
 						if(key != 'remarks'){
 							itemVal = VARSQL.util.toUpperCase(itemVal);
 						}
-
-						item[key] = itemVal
+						
+						item[getKeyName(key,true)] = itemVal
 					}
 				}
 			}
@@ -641,6 +667,8 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
+			
+			var caseSensitiveFlag = this.caseSensitive;
 
 			var compareColKey = VARSQLCont.compareColKey;
 			var compareColKeyLength =compareColKey.length;
@@ -648,22 +676,27 @@ VarsqlAPP.vueServiceBean( {
 
 			var sourceNameMap = {}, targetNameMap={}, targetCompareNameMap={};
 			var sourceItem, targetItem;
+			
 			for(var i =0 ;i < maxLen; i++){
 				sourceItem = sourceItems[i];
+				
 				if(sourceItem){
-					sourceItem._lower_name = VARSQL.util.removeUnderscore(sourceItem.name, true);
-					sourceNameMap[sourceItem.name] = sourceItem;
+					var nameVal = sourceItem.name.toUpperCase();
+					sourceItem._lower_name = VARSQL.util.removeUnderscore(nameVal, true);
+					sourceNameMap[nameVal] = sourceItem;
 				}
 
 				targetItem = targetItems[i];
 				if(targetItem) {
-					targetItem._lower_name = VARSQL.util.removeUnderscore(targetItem.name, true);
+					var nameVal = targetItem.name.toUpperCase();
+					
+					targetItem._lower_name = VARSQL.util.removeUnderscore(nameVal, true);
 
-					targetCompareNameMap[targetItem.name] = targetItem;
-					targetNameMap[targetItem.name] = targetItem;
+					targetCompareNameMap[nameVal] = targetItem;
+					targetNameMap[nameVal] = targetItem;
 				}
 			}
-
+			
 			this.compareItem.sourceNameMap = sourceNameMap;
 			this.compareItem.targetNameMap = targetNameMap;
 
@@ -701,23 +734,28 @@ VarsqlAPP.vueServiceBean( {
 						compareLog.push(VARSQL.messageFormat('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
 					}
 
-					var maxColLen = Math.max(sourceColLen,targetColLen);
+					var maxColLen = Math.max(sourceColLen, targetColLen);
 
 					var sourceColMap = {};
 					var targetColMap = {};
 					var sourceColItem, targetColItem;
 					var colNameMap = {};
+					
+					var nameKey = getKeyName('name',caseSensitiveFlag);
+					
 					for(var i =0 ; i< maxColLen; i++){
 						sourceColItem = sourceColList[i];
 						if(sourceColItem){
-							sourceColMap[sourceColItem.name] = sourceColItem;
-							colNameMap[sourceColItem.name] = '';
+							var colNameVal = sourceColItem[nameKey]; 
+							sourceColMap[colNameVal] = sourceColItem;
+							colNameMap[colNameVal] = '';
 						}
 
 						targetColItem= targetColList[i];
 						if(targetColItem){
-							targetColMap[targetColItem.name] = targetColItem;
-							colNameMap[targetColItem.name] = '';
+							var colNameVal = targetColItem[nameKey]; 
+							targetColMap[colNameVal] = targetColItem;
+							colNameMap[colNameVal] = '';
 						}
 					}
 
@@ -735,10 +773,12 @@ VarsqlAPP.vueServiceBean( {
 								var firstFlag = true;
 								var addFlag = false;
 								var compareItemInfo;
+								var orginColItemKey;
 								var colItemKey;
 								for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
 									compareItemInfo = compareColKey[colKeyIdx];
-									colItemKey = compareItemInfo.key;
+									orginColItemKey = compareItemInfo.key;
+									colItemKey = getKeyName(orginColItemKey, caseSensitiveFlag);
 									if($.trim(sourceColItem[colItemKey]) != $.trim(targetColItem[colItemKey])){
 										addFlag = true;
 										compareFlag = true;
@@ -890,22 +930,26 @@ VarsqlAPP.vueServiceBean( {
 			}
 		}
 		// 테이블  column 비교.
-		, tableObjectMetaView:  function (viewItem,selectItemCompareFlag){
+		, tableObjectMetaView:  function (viewItem, selectItemCompareFlag){
 
 			var tblName = viewItem;
 			if(VARSQL.isObject(viewItem)){
 				tblName = viewItem.name;
 			}
+			
+			tblName =tblName.toUpperCase();
+			
+			var caseSensitiveFlag = this.caseSensitive;
 
 			this.compareObjectName = tblName;
 
 			var compareSourceColList;
 			var compareTargetColList;
-
-			if(!VARSQL.isUndefined(this.compareObjectMetaResult[tblName])){
+			
+			if(tblName !='' && !VARSQL.isUndefined(this.compareObjectMetaResult[tblName])){
 				compareSourceColList =this.compareObjectMetaResult[tblName].source;
 				compareTargetColList =this.compareObjectMetaResult[tblName].target;
-
+				
 				this.compareSourceItem = this.compareItem.sourceNameMap[tblName];
 				this.compareTargetItem =this.compareItem.targetNameMap[tblName];
 
@@ -914,10 +958,12 @@ VarsqlAPP.vueServiceBean( {
 				var targetItem;
 
 				if(selectItemCompareFlag === true){
+					var nameKey = getKeyName('name',true);
 					var sourceSelArr = $.pubGrid('#sourceObjectMeta').getSelectionItem('name');
-					sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'')]||{});
+					
+					sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'').toUpperCase()]||{});
 					var targetSelArr = $.pubGrid('#targetObjectMeta').getSelectionItem('name');
-					targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'')]||{});
+					targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'').toUpperCase()]||{});
 				}else{
 					sourceItem = this.compareItem.sourceNameMap[tblName]||{};
 					targetItem = this.compareItem.targetNameMap[tblName]||{};
@@ -944,16 +990,18 @@ VarsqlAPP.vueServiceBean( {
 
 					var sourceColMap={};
 					var targetColMap={};
+					
+					var nameKey = getKeyName('name', caseSensitiveFlag);
 
 					for(var i =0 ; i < maxLen; i++){
 						var sourceColItem = sourceColList[i];
 						if(sourceColItem){
-							sourceColMap[sourceColItem.name] = sourceColItem;
+							sourceColMap[sourceColItem[nameKey]] = sourceColItem;
 						}
 
 						var targetColItem= targetColList[i];
 						if(targetColItem){
-							targetColMap[targetColItem.name] = targetColItem;
+							targetColMap[targetColItem[nameKey]] = targetColItem;
 						}
 					}
 
@@ -976,14 +1024,15 @@ VarsqlAPP.vueServiceBean( {
 						var equlasFlag = true;
 						for(var colKeyIdx =0; colKeyIdx <compareColKeyLength; colKeyIdx++){
 							var colKey = compareColKey[colKeyIdx].key;
+							var caseSenColKey = getKeyName(colKey, caseSensitiveFlag); // 대소문자 구별하기 위한 키값 
 
 							sourceCol[colKey+'_ne'] =false;
 							if(targetCol[colKey+'_ne']) targetCol[colKey+'_ne'] =false;
 
-							var targetColVal = targetCol[colKey];
+							var targetColVal = targetCol[caseSenColKey];
 							if(!VARSQL.isUndefined(targetColVal)){
 
-								if($.trim(sourceCol[colKey]) != $.trim(targetColVal)){
+								if($.trim(sourceCol[caseSenColKey]) != $.trim(targetColVal)){
 									sourceCol[colKey+'_ne'] = true;
 									targetCol[colKey+'_ne'] = true;
 									equlasFlag = false;
@@ -1232,23 +1281,32 @@ VarsqlAPP.vueServiceBean( {
 
 			var sourceItems =this.sourceItems
 				,targetItems = this.targetItems;
+			
+			var caseSensitiveFlag = this.caseSensitive;
 
-			var maxLen = Math.max(sourceItems.length,targetItems.length);
+			var maxLen = Math.max(sourceItems.length, targetItems.length);
 
 			var sourceNameMap = {}, targetNameMap={}, targetCompareNameMap={};
 			var sourceItem, targetItem;
+			
+			var nameKey = getKeyName('name', caseSensitiveFlag);
+			
 			for(var i =0 ;i < maxLen; i++){
 				sourceItem = sourceItems[i];
 				if(sourceItem){
-					sourceItem._lower_name = VARSQL.util.removeUnderscore(sourceItem.name, true);
-					sourceNameMap[sourceItem.name] = sourceItem;
+					var nameVal= sourceItem[nameKey];
+					sourceItem._lower_name = VARSQL.util.removeUnderscore(nameVal, true);
+					sourceNameMap[nameVal] = sourceItem;
 				}
-
+				
 				targetItem = targetItems[i];
 				if(targetItem) {
-					targetItem._lower_name = VARSQL.util.removeUnderscore(targetItem.name, true);
-					targetCompareNameMap[targetItem.name] = targetItem;
-					targetNameMap[targetItem.name] = targetItem;
+					var nameVal= targetItem[nameKey];
+					
+					targetItem._lower_name = VARSQL.util.removeUnderscore(nameVal, true);
+				
+					targetCompareNameMap[nameVal] = targetItem;
+					targetNameMap[nameVal] = targetItem;
 				}
 			}
 
@@ -1271,8 +1329,10 @@ VarsqlAPP.vueServiceBean( {
 					targetItem = targetCompareNameMap[key];
 
 					for(var itemKey in sourceItem){
-
-						if(sourceItem[itemKey] != targetItem[itemKey]){
+						
+						var chkItemKey = getKeyName(itemKey, caseSensitiveFlag);
+						
+						if(sourceItem[chkItemKey] != targetItem[chkItemKey]){
 							compareFlag = true;
 
 							if(itemKey =='createScript'){
@@ -1310,22 +1370,24 @@ VarsqlAPP.vueServiceBean( {
 
 			return compareResult.join('\n');
 		}
-		,otherMetaView :  function (viewItem ,selectItemCompareFlag ){
+		,otherMetaView :  function (viewItem, selectItemCompareFlag){
 			var objName = viewItem;
 			if(typeof viewItem==='object'){
 				objName = viewItem.name;
 			}
 
+			objName = (objName||'').toUpperCase();
 			this.compareObjectName = objName;
 
 			var sourceItem;
 			var targetItem;
-
+			
 			if(selectItemCompareFlag === true){
+				var nameKey = getKeyName('name',true);
 				var sourceSelArr = $.pubGrid('#sourceObjectMeta').getSelectionItem('name');
-				sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'')]||{});
+				sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0][nameKey] :'')]||{});
 				var targetSelArr = $.pubGrid('#targetObjectMeta').getSelectionItem('name');
-				targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'')]||{});
+				targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0][nameKey] :'')]||{});
 			}else{
 				sourceItem = this.compareItem.sourceNameMap[objName]||{};
 				targetItem = this.compareItem.targetNameMap[objName]||{};
@@ -1396,6 +1458,10 @@ VarsqlAPP.vueServiceBean( {
 		}
 		,targetChange : function (val){
 			var _self = this;
+			
+			if(val ==''){
+				return ; 
+			}
 
 			_self.diffItem.targetSchema = _self.dbListMap[val].vdbschema;
 
@@ -1431,6 +1497,22 @@ VarsqlAPP.vueServiceBean( {
 					}
 				}
 			}
+		}
+		// 역 비교
+		,clientDataCompare: function (mode){
+			this.initLoadingStatus();
+			
+			if(mode =='reverse'){
+				var orginTargetData = this.orginTargetData;
+				
+				this.orginTargetData = this.orginSourceData
+				this.orginSourceData = orginTargetData;
+			}else{
+				
+			}
+			
+			this.tableObjectView(this.orginSourceData, 'source');
+			this.tableObjectView(this.orginTargetData, 'target');
 		}
 		,resultDownload : function (){
 

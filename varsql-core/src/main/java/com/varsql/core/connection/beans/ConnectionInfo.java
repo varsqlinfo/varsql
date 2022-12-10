@@ -35,6 +35,8 @@ public class ConnectionInfo implements Serializable {
 	private Map connectionOptions;
 	private Map poolOptions;
 	private DataSource datasource;
+	
+	private boolean enableConnectionPool;
 
 	private JDBCDriverInfo jdbcDriverInfo;
 
@@ -247,9 +249,18 @@ public class ConnectionInfo implements Serializable {
 	    result.append(" timebetweenevictionrunsmillis: " ).append( timebetweenevictionrunsmillis ).append( BlankConstants.NEW_LINE);
 	    result.append(" test_while_idle: " ).append( testWhileIdle ).append( BlankConstants.NEW_LINE);
 	    result.append(" validation_query: " ).append( validationQuery ).append( BlankConstants.NEW_LINE);
+	    result.append(" isDisablePool: " ).append( enableConnectionPool ).append( BlankConstants.NEW_LINE);
 	    result.append("}");
 
 	    return result.toString();
+	}
+
+	public boolean enableConnectionPool() {
+		return enableConnectionPool;
+	}
+
+	public void setEnableConnectionPool(boolean enableConnectionPool) {
+		this.enableConnectionPool = enableConnectionPool;
 	}
 
 	

@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.vartech.common.app.beans.EnumMapperType;
+import com.vartech.common.excel.CellValueHandler;
+import com.vartech.common.excel.ExcelReportVO;
 import com.vartech.common.report.ExcelConstants;
+import com.vartech.common.utils.StringUtils;
 
 public interface VarsqlReportConfig {
 	
@@ -24,10 +27,26 @@ public interface VarsqlReportConfig {
 	enum TABLE_COLUMN implements EnumMapperType{
 		NO("no", "NO", 2 ), 	// no 
 		NAME("name", "NAME", 15),	// 컬럼 명.
-		DATATYPE("dataType", "DATATYPE", 6), // 컬럼 타입
 		TYPENAME("typeName", "TYPE", 10),	// 컬럼 타입명
 		TYPEANDLENGTH("typeAndLength", "Type and length", 13),	// 컬럼 타입명
-		LENGTH("length", "Length", 6),	//사이즈
+		LENGTH("length", "Length", 6, ExcelConstants.ALIGN.RIGHT.align(),  new CellValueHandler() {
+
+			@Override
+			public String valueHandler(ExcelReportVO arg0, String val) {
+				if(StringUtils.isBlank(val)) {
+					return "";
+				}
+				
+				try {
+					int intVal = Integer.parseInt(val);
+					
+					return intVal > 0 ? intVal+"": "";
+				}catch(Exception e) {
+					return "";
+				}
+			}
+			
+		}),	//사이즈
 		NULLABLE("nullable", "Nullable", 6, ExcelConstants.ALIGN.CENTER.align()),	// null 여부.
 		COMMENT("comment", "Comment", 15), 	// 코멘트
 		CONSTRAINTS("constraints", "constraints", 6, ExcelConstants.ALIGN.CENTER.align()),	// 제약조건 여부.
@@ -39,16 +58,22 @@ public interface VarsqlReportConfig {
 		private int width;
 		private ExcelConstants.ALIGN align;
 		private Map<String , Object> custom = new HashMap<String , Object> ();
+		private CellValueHandler cellValueHandler;
 		
 		TABLE_COLUMN(String key ,String name , int width){
 			this(key , name , width , ExcelConstants.ALIGN.LEFT.align());
 		}
 		
 		TABLE_COLUMN(String key ,String name , int width , int align){
+			this(key , name , width , align, null);
+		}
+		
+		TABLE_COLUMN(String key ,String name , int width , int align, CellValueHandler cellValueHandler){
 			this.key = key; 
 			this.name= name; 
 			this.width = width;
 			this.align = ExcelConstants.ALIGN.getAlign(align);
+			this.cellValueHandler = cellValueHandler;
 			
 			custom.put("width", width);
 		}
@@ -80,6 +105,10 @@ public interface VarsqlReportConfig {
 		@Override
 		public Map<String, Object> getCustom() {
 			return custom;
+		}
+
+		public CellValueHandler getCellValueHandler() {
+			return cellValueHandler;
 		}
 	}
 	

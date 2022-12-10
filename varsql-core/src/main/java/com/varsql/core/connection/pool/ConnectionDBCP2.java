@@ -138,7 +138,7 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 	public void poolShutdown(String nm) throws ConnectionFactoryException {
 		try{
-			logger.info("poolShutdown start : {}", nm);
+			logger.info("poolShutdown start connid: {}", nm);
 			driver.closePool(nm);
 			logger.info("poolName stop");
 		}catch(Exception e){

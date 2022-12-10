@@ -112,22 +112,23 @@ public final class DBMetaDataUtil {
 					Set keyColumn = pkMap.get(tableNm);
 					
 					String cName=  colRs.getString(MetaColumnConstants.COLUMN_NAME);
-					String dataType = colRs.getString(MetaColumnConstants.DATA_TYPE);
+					String typeName = colRs.getString(MetaColumnConstants.TYPE_NAME);
 
 					int degitsLen = colRs.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 					int columnSize = colRs.getInt(MetaColumnConstants.COLUMN_SIZE);
 					
-					DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
+					DataType dataTypeInfo = dataTypeFactory.getDataType(typeName);
 
 					ColumnInfo column = new ColumnInfo(); 
 					column.setName(cName);
-					column.setDataType(dataType);
+					column.setTypeCode(dataTypeInfo.getTypeCode());
+					column.setTypeName(typeName);
 					column.setLength(columnSize);
 					column.setDefaultVal(StringUtils.nullToString(colRs.getString(MetaColumnConstants.COLUMN_DEF)));
 					column.setNullable(StringUtils.nullToString(colRs.getString(MetaColumnConstants.IS_NULLABLE)));
 					column.setAutoincrement("");
 					column.setTypeName(dataTypeInfo.getTypeName());
-					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, null, columnSize, columnSize, degitsLen));
+					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, null, columnSize, columnSize, degitsLen));
 
 					if(keyColumn !=null){
 						column.setConstraints(keyColumn.contains(cName)?"PK":"");
@@ -194,7 +195,7 @@ public final class DBMetaDataUtil {
 					cName=  colRs.getString(MetaColumnConstants.COLUMN_NAME);
 
 					oci.setName(cName);
-					oci.setDataType(colRs.getString(MetaColumnConstants.TYPE_NAME));
+					oci.setTypeName(colRs.getString(MetaColumnConstants.TYPE_NAME));
 					oci.setComment(StringUtils.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
 					oci.setColumnType(colRs.getString(MetaColumnConstants.PROCEDURE_COL_TYPE));
 
@@ -236,7 +237,7 @@ public final class DBMetaDataUtil {
 					cName=  colRs.getString(MetaColumnConstants.COLUMN_NAME);
 
 					oci.setName(cName);
-					oci.setDataType(colRs.getString(MetaColumnConstants.TYPE_NAME));
+					oci.setTypeName(colRs.getString(MetaColumnConstants.TYPE_NAME));
 					oci.setComment(StringUtils.nullToString(colRs.getString(MetaColumnConstants.REMARKS)));
 					oci.setColumnType(colRs.getString(MetaColumnConstants.PROCEDURE_COL_TYPE));
 

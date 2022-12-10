@@ -1,5 +1,9 @@
 package com.varsql.db.ext.oracle;
 
+import java.sql.Types;
+
+import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
+
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
@@ -17,11 +21,10 @@ public class OracleDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public OracleDataTypeFactory() {
-		
-		addDataType(new VenderDataType("TIMESTAMP WITH TIME ZONE", -101, DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("CLOB", 2005, DBColumnMetaInfo.CLOB));
-		addDataType(new VenderDataType("VARCHAR2", 12, DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("NUMBER", 3, DBColumnMetaInfo.INTEGER));
+		addDataType(new VenderDataType("TIMESTAMP WITH TIME ZONE", Types.TIMESTAMP_WITH_TIMEZONE, DBColumnMetaInfo.OTHER));
+		addDataType(new VenderDataType("CLOB", Types.CLOB, DBColumnMetaInfo.CLOB));
+		addDataType(new VenderDataType("VARCHAR2", Types.VARCHAR, DBColumnMetaInfo.STRING));
+		addDataType(new VenderDataType("NUMBER", Types.DECIMAL, DBColumnMetaInfo.BIGDECIMAL));
 		
 	}
 }

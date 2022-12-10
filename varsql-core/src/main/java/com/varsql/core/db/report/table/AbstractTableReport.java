@@ -37,7 +37,7 @@ public abstract class AbstractTableReport implements TableReport{
 	public ExcelReport columnsInfo(DatabaseParamInfo dataParamInfo, List<Map> columnInfoList, boolean addTableDefinitionFlag, boolean multiSheetFlag, String... tableNmArr) throws Exception {
 		ExcelReport report;
 		
-		List<TableInfo> tableList= MetaControlFactory.getDbInstanceFactory(dataParamInfo.getDbType()).getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(),dataParamInfo,tableNmArr );
+		List<TableInfo> tableList= MetaControlFactory.getDbInstanceFactory(dataParamInfo.getDbType()).getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(),dataParamInfo, tableNmArr);
 		
 		List<String> tableNames= Arrays.asList(tableNmArr);
 		
@@ -105,6 +105,7 @@ public abstract class AbstractTableReport implements TableReport{
 			columnList.add(ExcelReportVO.builder().key(tableInfo.getKey()).name(title).width(width)
 					.cellStyle(ExcelCellStyle.builder().align(tableInfo.getAlign()).build())
 					.headerCellStyle(ExcelCellStyle.builder().align(ExcelConstants.ALIGN.CENTER).bgColor(ExcelConstants.DEFAULT_LABEL_BG_COLOR).bold(true).build())
+					.cellValueHandler(tableInfo.getCellValueHandler())
 					.build());
 		}
 		

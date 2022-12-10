@@ -6,6 +6,7 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
@@ -23,6 +24,7 @@ import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
@@ -76,6 +78,10 @@ public final class SQLManager {
 	}
 
 	public SqlSession openSession(String connid) throws ConnectionFactoryException {
+		if(ConnectionFactory.getInstance().isShutdown(connid)) {
+			return null;
+		}
+		
 		if (!sqlSessionFactoryMap.containsKey(connid)) {
 			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
 		}
@@ -147,6 +153,19 @@ public final class SQLManager {
 	 * @throws InstantiationException
 	 */
 	private DataSource dataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+		
+		Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
+	    if (dbDriver != null) {
+	      logger.info("jdbc driver load success driver class : {}", dbDriver);
+	    } else {
+	      logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
+	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
+	    } 
+	    
+		if(!connInfo.enableConnectionPool()) {
+			return new SimpleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+		}
+		
 		BasicDataSource dataSource = new BasicDataSource();
 
 		dataSource.setUrl(connInfo.getUrl());
@@ -171,15 +190,7 @@ public final class SQLManager {
 		dataSource.setNumTestsPerEvictionRun(5);
 		dataSource.setMinEvictableIdleTimeMillis(-1);
 		dataSource.setPoolPreparedStatements(true);
-
-		Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
-	    if (dbDriver != null) {
-	      logger.info("jdbc driver load success");
-	      dataSource.setDriver(dbDriver);
-	    } else {
-	      logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
-	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
-	    } 
+		dataSource.setDriver(dbDriver);
 
 		return dataSource;
 	}
@@ -219,24 +230,23 @@ public final class SQLManager {
 	}
 
 	public synchronized void close(String connid) {
-		logger.info("meta sql mapper datasource close : {} " , connid);
+		
 		if (sqlSessionFactoryMap.containsKey(connid)) {
+			logger.info("meta sql mapper datasource close connid: {} " , connid);
 			try {
-				((BasicDataSource)sqlSessionFactoryMap.get(connid).getConfiguration().getEnvironment().getDataSource()).close();
+				
+				DataSource dataSource = sqlSessionFactoryMap.get(connid).getConfiguration().getEnvironment().getDataSource();
+				
+				if(dataSource instanceof BasicDataSource) {
+					((BasicDataSource) dataSource).close();
+				}
+				
 				sqlSessionFactoryMap.remove(connid);
 				sqlSessionMap.remove(connid);
 			} catch (SQLException e) {
-				throw new ConnectionException("mybatis datasource close exception : "+e.getMessage() , e);
+				throw new ConnectionException("mybatis datasource close connid:"+connid+", exception : "+e.getMessage() , e);
 			}
 		}
 
 	}
-
-	public synchronized void reset(String connid) {
-		logger.info("meta sql mapper datasource reset : {}" , connid);
-		close(connid);
-		//setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
-
-	}
-
 }

@@ -203,6 +203,9 @@ public class Configuration extends AbstractConfiguration{
 			connectionResource = ResourceUtils.getResource(connectionFileInfo);
 		}else {
 			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_XML_FILE);
+			
+			logger.info("connection config read file path : {}", file.getAbsolutePath());
+			
 			if(file.exists()) {
 				connectionResource = ResourceUtils.getResource(file.getPath());
 			}else {

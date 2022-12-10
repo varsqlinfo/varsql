@@ -33,7 +33,7 @@ public class JacksonConfigurer implements Jackson2ObjectMapperBuilderCustomizer 
 	public void customize(Jackson2ObjectMapperBuilder builder) {
 
 
-
+		//builder.failOnEmptyBeans(false);
 		builder.timeZone(TimeZone.getDefault()); // 올바른 타임존을 설정해야 offset/zoned datetime이 올바로 설정됨.
         builder.locale(Locale.getDefault());
         builder.simpleDateFormat(VarsqlConstants.TIMESTAMP_FORMAT);

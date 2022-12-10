@@ -5,17 +5,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.beans.FileInfo;
+import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.JdbcDriverClassException;
 
 public final class JdbcDriverLoader {
+	private final Logger logger = LoggerFactory.getLogger(JdbcDriverLoader.class);
 	
 	private ConcurrentHashMap<String, Driver> DRIVER_CACHE = new ConcurrentHashMap<>();
 	
@@ -98,4 +104,31 @@ public final class JdbcDriverLoader {
 		return getInstance().getJdbcDriver(jdbcDriverInfo);
 	}
 	
+	public static void allDeregister() {
+		getInstance().allDeregisterDriver();
+	}
+	
+	private  void allDeregisterDriver() {
+		for (Entry<String, Driver> entry : DRIVER_CACHE.entrySet()) {
+			try {
+				deregisterDriver(entry.getKey());
+			} catch (Exception ex) {
+				logger.error("Not deregistering JDBC driver id : {} error message : {}", entry.getKey(), ex.getMessage());
+			}
+		}
+	}
+
+	public void deregisterDriver(String driverId) {
+		if(!DRIVER_CACHE.containsKey(driverId)) {
+			throw new JdbcDriverClassException("Not deregistering JDBC driver id : "+ driverId);
+		}
+		
+		Driver driver = DRIVER_CACHE.get(driverId);
+		try {
+			logger.info("DeregisterDriver driver id: {}", driverId);
+			DriverManager.deregisterDriver(driver);
+		} catch (Exception ex) {
+			logger.error("Not deregistering JDBC driver id : {} error message : {}", driverId, ex.getMessage());
+		}
+	}
 }

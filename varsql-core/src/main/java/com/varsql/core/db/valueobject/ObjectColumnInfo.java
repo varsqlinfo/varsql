@@ -16,8 +16,11 @@ public class ObjectColumnInfo {
 	// 컬럼 명. 
 	private String name; 
 	
+	//데이타 cd
+	private String typeCode;
+	
 	//데이타 타입
-	private String dataType;
+	private String typeName;
 	
 	//컬럼 타입
 	private String columnType;
@@ -42,13 +45,21 @@ public class ObjectColumnInfo {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getDataType() {
-		return dataType;
+	
+	public String getTypeCode() {
+		return typeCode;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setTypeCode(String typeCode) {
+		this.typeCode = typeCode;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
 	}
 
 	public String getComment() {
@@ -74,7 +85,5 @@ public class ObjectColumnInfo {
 	public void setAscOrdesc(String ascOrdesc) {
 		this.ascOrdesc = ascOrdesc;
 	}
-
-	
 }
 

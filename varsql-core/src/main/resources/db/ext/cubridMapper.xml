@@ -31,7 +31,7 @@
 		select 
 			tbl.class_name as "TABLE_NAME"
 			,col.attr_name as "COLUMN_NAME"
-			,col.data_type as "DATA_TYPE"
+			,col.data_type as "TYPE_NAME"
 			,(CASE WHEN  col.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
 			,col.prec as "COLUMN_SIZE" 
 			,col.prec as "DATA_PRECISION" 
@@ -92,7 +92,7 @@
 		select 
 			tbl.class_name as "TABLE_NAME"
 			,col.attr_name as "COLUMN_NAME"
-			,col.data_type as "DATA_TYPE"
+			,col.data_type as "TYPE_NAME"
 			,(CASE WHEN  col.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
 			,col.prec as "COLUMN_SIZE" 
 			,col.prec as "DATA_PRECISION" 
@@ -143,7 +143,7 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="dataType" column="DATA_TYPE"/>
+	    <result property="typeName" column="TYPE_NAME"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
@@ -167,7 +167,7 @@
 			dsp.lang as "LANG",
 			dsp.target as "SOURCE",
 			dspa.arg_name AS "ARGUMENT_NAME",
-			dspa.data_type AS "DATA_TYPE",
+			dspa.data_type AS "TYPE_NAME",
 			dspa.mode as "IN_OUT",
 			dsp.COMMENT as "COMMENT"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
@@ -203,7 +203,7 @@
 			dsp.lang as "LANG",
 			dsp.target as "SOURCE",
 			dspa.arg_name AS "ARGUMENT_NAME",
-			dspa.data_type AS "DATA_TYPE",
+			dspa.data_type AS "TYPE_NAME",
 			dspa.mode as "IN_OUT",
 			dsp.COMMENT as "COMMENT"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
@@ -423,7 +423,7 @@
 			dsp.arg_count,
 			dsp.lang as "LANG",
 			dsp.target as "SOURCE",
-			dspa.data_type AS "DATA_TYPE",
+			dspa.data_type AS "TYPE_NAME",
 			dspa.mode as "IN_OUT",
 			dsp.COMMENT as "COMMENT"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
@@ -441,7 +441,7 @@
 			dsp.arg_count,
 			dsp.lang as "LANG",
 			dsp.target as "SOURCE",
-			dspa.data_type AS "DATA_TYPE",
+			dspa.data_type AS "TYPE_NAME",
 			dspa.mode as "IN_OUT",
 			dsp.COMMENT as "COMMENT"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa

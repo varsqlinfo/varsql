@@ -1,6 +1,7 @@
 package com.varsql.core.db.mybatis.handler.resultset;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,18 +103,19 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		ColumnInfo column = new ColumnInfo();
 
 		String cName=  rowData.getString(MetaColumnConstants.COLUMN_NAME);
-		int columnSize= rowData.getInt(MetaColumnConstants.COLUMN_SIZE);
-		int dataPrecision= rowData.getInt(MetaColumnConstants.DATA_PRECISION, columnSize);
+		Long columnSize= rowData.getLong(MetaColumnConstants.COLUMN_SIZE);
+		int dataPrecision= rowData.getInt(MetaColumnConstants.DATA_PRECISION);
 		int degitsLen= rowData.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 
-		String dataType = rowData.getString(MetaColumnConstants.DATA_TYPE);
+		String dataType = rowData.getString(MetaColumnConstants.TYPE_NAME);
 		DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
 
 		column.setName(cName);
-		column.setDataType(dataType);
+		column.setTypeCode(dataTypeInfo.getTypeCode());
+		column.setTypeName(dataType);
 		Object lenInfoObj = rowData.get(MetaColumnConstants.COLUMN_SIZE);
 
-		if(lenInfoObj != null) {
+		if(lenInfoObj != null && dataTypeInfo.getJDBCDataTypeMetaInfo().isSize()) {
 			if(lenInfoObj instanceof Integer) {
 				column.setLength(Integer.parseInt(lenInfoObj+""));
 			}else{
@@ -121,7 +123,6 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 			}
 		}
 		
-		column.setLength(dataTypeInfo.getMetaDataHandler().getColumnLength(columnSize));
 		column.setDefaultVal(rowData.getString(MetaColumnConstants.COLUMN_DEF));
 		column.setNullable(rowData.getString(MetaColumnConstants.IS_NULLABLE));
 		column.setTypeName(dataTypeInfo.getTypeName());

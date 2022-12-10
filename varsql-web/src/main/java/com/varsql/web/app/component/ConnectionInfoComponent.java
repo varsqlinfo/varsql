@@ -68,6 +68,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 		connInfo.setConnectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
 		connInfo.setExportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
 		connInfo.setTestWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
+		connInfo.setEnableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()));
 		
 		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(connInfo.getType());
 

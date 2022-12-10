@@ -106,14 +106,14 @@
 							</div>
 						</div>
 
-						<div class="form-group" v-show="selectJdbcProvider.directYn != 'Y'">
+						<div class="form-group">
 							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
 								<input type="checkbox" v-model="detailItem.urlDirectYn" true-value="Y" false-value="N" /><spring:message code="admin.form.db.urldirectmsg" />
 							</div>
 						</div>
 
-						<div v-if="detailItem.urlDirectYn != 'Y' && selectJdbcProvider.directYn != 'Y'">
+						<div v-if="detailItem.urlDirectYn != 'Y'">
 							<div class="form-group" :class="errors.has('SERVERIP') ? 'has-error' :''">
 								<label class="col-sm-4 control-label"><spring:message code="admin.form.db.serverip" /></label>
 								<div class="col-sm-8">
@@ -181,6 +181,14 @@
 							<div class="col-sm-8">
 								<label><input type="radio" name="useyn" value="Y" v-model="detailItem.useYn" checked>Y</label>
 								<label><input type="radio" name="useyn" value="N" v-model="detailItem.useYn" >N</label>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label"><spring:message code="admin.form.db.enableConnectionPool" /></label>
+							<div class="col-sm-8">
+								<label><input type="radio" name="enableConnectionPool" value="Y" v-model="detailItem.enableConnectionPool" checked>Y</label>
+								<label><input type="radio" name="enableConnectionPool" value="N" v-model="detailItem.enableConnectionPool">N</label>
 							</div>
 						</div>
 
@@ -335,19 +343,15 @@ VarsqlAPP.vueServiceBean( {
 			this.setProviderInfo(evt.target.value)
 		}
 		,setProviderInfo : function (selectVal){
+			this.selectJdbcProvider = {};
+			
 			for(var i =0 ;i < this.jdbcProviderList.length; i++){
 				var item = this.jdbcProviderList[i];
 
 				if(item.driverProviderId == selectVal){
 					this.selectJdbcProvider = item;
-					return ;
+					break; 
 				}
-			}
-
-			this.selectJdbcProvider = {};
-
-			if(this.selectJdbcProvider.directYn == 'Y'){
-				this.detailItem.urlDirectYn ='Y';
 			}
 		}
 		// 상세보기
@@ -437,6 +441,7 @@ VarsqlAPP.vueServiceBean( {
 					,schemaViewYn: 'N'
 					,useColumnLabel: 'Y'
 					,testWhileIdle: 'N'
+					,enableConnectionPool:'Y'
 				}
 			}else{
 				this.detailFlag = true;
@@ -466,20 +471,18 @@ VarsqlAPP.vueServiceBean( {
 								if(resData.resultCode != 200){
 									alert(resData.message);
 									return ;
+								}else{
+									VARSQLUI.toast.open(VARSQL.messageFormat('varsql.a.0005'));
 								}
 								_this.search();
 								_this.setDetailItem();
-							}else{
-								//resData.item
 							}
 						}
 					});
 				}else{
 					var errorItem = _this.errors.items[0];
-
-					var viewMode = $('[name="'+errorItem.field+'"]').closest('.view-area').data('view-mode');
-
-					if(_this.viewMode != viewMode){
+					
+					if(!$('[name="'+errorItem.field+'"]').closest('.view-area').hasClass('on')){
 						alert(errorItem.msg);
 						_this.viewMode = _this.viewMode=='opt' ?'view' : 'opt';
 					}

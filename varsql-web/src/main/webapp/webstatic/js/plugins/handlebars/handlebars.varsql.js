@@ -138,12 +138,18 @@ Handlebars.registerHelper("capitalize", function(text, options) {
 /**
  * Database 컬럼 타입을 Java Type으로 변환
  * @method javaType
- * @param {String} dbType
+ * @param {Object} columnInfo
  * @param {options} options
  * @returns {String}
  */
-Handlebars.registerHelper("javaType", function(dbDataType, options) {
-	var tmpDbType = VARSQLCont.getDataTypeInfo(dbDataType)
+Handlebars.registerHelper("javaType", function(columnInfo, options) {
+	
+	var tmpDbType = VARSQLCont.getDataTypeInfo(columnInfo.typeCode);
+	
+	if(tmpDbType.name=='OTHER'){
+		return VARSQLCont.getDataTypeInfo(columnInfo.typeName).javaType;
+	}
+	
 	return tmpDbType.javaType;
 });
 
@@ -282,10 +288,10 @@ Handlebars.registerHelper('ddlIndexKeyword', function (mode , item) {
  * @returns {String}
  */
 Handlebars.registerHelper('ddlTableValue', function (mode, item, dbType) {
-	var dataType = item.DATA_TYPE || item.TYPE_AND_LENGTH;
+	var typeName = item.TYPE_NAME || item.TYPE_AND_LENGTH;
 
-	dataType = dataType.replace(/\((.*?)\)/g,'');
-	var dataTypeInfo = VARSQLCont.getDataTypeInfo(dataType);
+	typeName = typeName.replace(/\((.*?)\)/g,'');
+	var dataTypeInfo = VARSQLCont.getDataTypeInfo(typeName);
 
 	if('typeAndLength' == mode){
 		if(!VARSQL.isBlank(item.TYPE_AND_LENGTH)){

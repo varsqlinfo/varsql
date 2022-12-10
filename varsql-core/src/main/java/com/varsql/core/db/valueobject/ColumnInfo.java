@@ -19,7 +19,7 @@ public class ColumnInfo {
 	private String name; 
 	
 	//컬럼 타입
-	private String dataType;
+	private int typeCode;
 	
 	//컬럼 타입명
 	private String typeName;
@@ -97,12 +97,12 @@ public class ColumnInfo {
 		this.autoincrement = autoincrement;
 	}
 
-	public String getDataType() {
-		return dataType;
+	public int getTypeCode() {
+		return typeCode;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setTypeCode(int dataType) {
+		this.typeCode = dataType;
 	}
 
 	public String getTypeName() {
@@ -141,7 +141,7 @@ public class ColumnInfo {
 	public String toString() {
 		return new StringBuilder()
 				.append("name : ").append(name)
-				.append(" dataType : ").append(dataType)
+				.append(" dataType : ").append(typeCode)
 				.append(" typeAndLength : ").append(typeAndLength)
 				.append(" comment : ").append(comment)
 				.append(" constraints : ").append(constraints)

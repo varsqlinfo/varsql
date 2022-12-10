@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	protected AbstractDataTypeFactory() {};
 	
-	private ConcurrentMap<String , DataType> venderDataType = new ConcurrentHashMap<String , DataType>();
+	private ConcurrentMap<String , DataType> venderDataType = new ConcurrentHashMap<String, DataType>();
 	
 	public DataType getDataType(String typeName) {
 		if(typeName ==null) return DefaultDataType.OTHER;
@@ -18,6 +18,12 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 		}
 		
 		return DefaultDataType.getDataType(typeName);
+	}
+	
+	public DataType getDataType(int typeCode) {
+		DataType dataType =  venderDataType.values().stream().filter(item-> item.getTypeCode() == typeCode).findFirst().orElse(DefaultDataType.getDataType(typeCode));
+		
+		return dataType != null ? dataType :  DefaultDataType.OTHER;
 	}
 	
 	public void addDataType(DataType dataType) {

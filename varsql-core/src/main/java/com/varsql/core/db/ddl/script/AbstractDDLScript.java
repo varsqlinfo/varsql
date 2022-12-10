@@ -151,7 +151,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 			for (int i = 0; i < columnList.size(); i++) {
 				columnInfo =  columnList.get(i);
 
-				dataTypeInfo = dbInstanceFactory.getDataTypeImpl().getDataType(columnInfo.getDataType());
+				dataTypeInfo = dbInstanceFactory.getDataTypeImpl().getDataType(columnInfo.getTypeName());
 
 				ddlStrBuf.append(BlankConstants.TAB);
 				if (i > 0){

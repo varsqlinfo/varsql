@@ -125,8 +125,9 @@ public class ExportServiceImpl{
 			
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
-		model.addAttribute("userSettingInfo",preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
-		model.addAttribute("columnInfo",Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
+		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("userSettingInfo", preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
+		model.addAttribute("columnInfo", Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 
 		if(SecurityUtil.isSchemaView(dpi)) {
 			
@@ -149,19 +150,21 @@ public class ExportServiceImpl{
 	 * @작성자   : ytkim
 	 * @작성일   : 2019. 4. 29.
 	 * @변경이력  :
-	 * @param preferencesInfo
+	 * @param dbMetadataRequestDTO
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseResult selectExportTableInfo(PreferencesRequestDTO preferencesInfo) throws Exception {
+	public ResponseResult selectExportTableInfo(DBMetadataRequestDTO dbMetadataRequestDTO) throws Exception {
 		
-		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(dbMetadataRequestDTO.getConuid()));
 		
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
 		ResponseResult result =new ResponseResult();
+		
+		dbMetadataRequestDTO.setObjectType(ObjectType.TABLE.getObjectTypeId());
 
-		result.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+		result.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dbMetadataRequestDTO));
 
 		return result ;
 
@@ -205,24 +208,31 @@ public class ExportServiceImpl{
 	 *
 	 * @method : tableSpecExport
 	 * @param preferencesInfo
+	 * @param databaseName 
+	 * @param schema 
 	 * @param req
 	 * @param res
 	 * @throws Exception
 	 */
-	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, String schema, String databaseName, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
-
-		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
-
+		dpi.setSchema(schema);
+		dpi.setDatabaseName(databaseName);
+		
 		String jsonString = preferencesInfo.getPrefVal();
-
-		logger.debug("tableSpecExport :{}", VartechUtils.reflectionToString(preferencesInfo));
-		logger.debug("settingInfo :{}", jsonString );
-		logger.debug("MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() :{}", MetaControlFactory.getDbInstanceFactory(dpi.getDbType()).getTableReportImpl() );
-
-		preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
-
+		
+		try {
+			preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_EXPORT.key());
+			logger.debug("tableSpecExport :{}", VartechUtils.reflectionToString(preferencesInfo));
+			logger.debug("settingInfo :{}", jsonString);
+			logger.debug("MetaControlFactory.getDbInstanceFactory(preferencesInfo.getDbType()).getTableReportImpl() :{}", MetaControlFactory.getDbInstanceFactory(dpi.getDbType()).getTableReportImpl() );
+	
+			preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
+		}catch(Exception e) {
+			logger.error("tableSpecExport : {}", e.getMessage(), e);
+		}
+		
 		DataMap settingInfo = VartechUtils.jsonStringToObject(jsonString, DataMap.class);
 
 		List<Map> tables = (List<Map>)settingInfo.get("tables");

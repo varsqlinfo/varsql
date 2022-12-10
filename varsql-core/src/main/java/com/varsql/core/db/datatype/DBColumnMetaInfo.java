@@ -26,30 +26,35 @@ public enum DBColumnMetaInfo {
 	,FLOAT(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
+			if(precision < 0) return "";
 			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,DOUBLE(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
+			if(precision < 0) return "";
 			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,NUMERIC(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
+			if(precision < 0) return "";
 			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,BIGDECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
+			if(precision < 0) return "";
 			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
 	,DECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
+			if(precision < 0) return "";
 			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
 		}
 	})
@@ -108,7 +113,7 @@ public enum DBColumnMetaInfo {
 		return size;
 	}
 	
-	public String getTypeAndLength(String dataType, DataType dataTypeInfo, String typeAndLength, int columnSize, int precision, int scale) {
+	public String getTypeAndLength(String dataType, DataType dataTypeInfo, String typeAndLength, long columnSize, int precision, int scale) {
 		if(!StringUtils.isBlank(typeAndLength)) {
 			return typeAndLength;
 		}else {

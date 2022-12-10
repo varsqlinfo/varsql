@@ -133,7 +133,7 @@ public class TiberoDBMeta extends AbstractDBMeta{
 		}else{
 			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom("tableInfoList", tableInfoHandler.getTableNameList());
+				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 			}
 		}
 

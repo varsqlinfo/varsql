@@ -145,7 +145,7 @@ VarsqlAPP.vueServiceBean({
 	}
 	,methods:{
 		init : function (){
-			this.selectSchema = this.userSetting.schema;
+			this.selectSchema = this.userSetting.schema ||'${currentSchemaName}';
 			this.setUserConfigInfo();
 		}
 		,selectStep : function (step){
