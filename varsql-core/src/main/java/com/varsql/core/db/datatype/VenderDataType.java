@@ -42,7 +42,14 @@ public class VenderDataType implements DataType{
 		if(dataTypeHandler != null) {
 			this.dataTypeHandler = dataTypeHandler;
 		}else {
-			this.dataTypeHandler = DefaultDataType.getDefaultDataType(jdbcDataTypeMetaInfo.name()).getDataTypeHandler();
+			
+			DefaultDataType ddt = DefaultDataType.getDefaultDataType(typeCode);
+			
+			if(ddt.equals(DefaultDataType.OTHER)) {
+				this.dataTypeHandler = DefaultDataType.getDefaultDataType(jdbcDataTypeMetaInfo.name()).getDataTypeHandler();
+			}else {
+				this.dataTypeHandler = ddt.getDataTypeHandler();
+			}
 		}
 	};
 

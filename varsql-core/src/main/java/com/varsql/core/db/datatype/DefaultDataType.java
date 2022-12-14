@@ -561,6 +561,15 @@ public enum DefaultDataType implements DataType {
 		return DefaultDataType.OTHER;
 	}
 	
+	public static DefaultDataType getDefaultDataType(int typeCode) {
+		for (DefaultDataType datatype : DefaultDataType.values()) {
+			if(datatype.getTypeCode() == typeCode) {
+				return datatype;
+			}
+		}
+		return DefaultDataType.OTHER;
+	}
+	
 	private static boolean isNull(Object value) throws SQLException {
 		return value ==null ? true:false;
 	}

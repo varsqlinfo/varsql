@@ -83,9 +83,9 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					
 			List<DatabaseInfo> result =new ArrayList<>();
 			query.fetch().forEach(item->{
-				result.add(DatabaseInfo.builder()
+				
+				DatabaseInfo databaseInfo= DatabaseInfo.builder()
 					.vconnid(item.getConnection().getVconnid())
-					.type(item.getProvider().getDbType())
 					.name(item.getConnection().getVname())
 					.schema(item.getConnection().getVdbschema())
 					.basetableYn(item.getConnection().getBasetableYn())
@@ -95,7 +95,18 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					.maxSelectCount(ConvertUtils.intValue(item.getConnection().getMaxSelectCount()))
 					.useColumnLabel(item.getConnection().getUseColumnLabel())
 					.databaseName(item.getConnection().getVdatabasename())
-					.build());
+					.build();
+				
+				if(item.getProvider() != null) {
+					databaseInfo.setType(item.getProvider().getDbType());
+					result.add(databaseInfo);
+				}else {
+					if(tmpAuthority.equals(AuthorityType.ADMIN)) {
+						databaseInfo.setName("(Driver not found)-"+ databaseInfo.getName());
+						databaseInfo.setType(null);
+					}
+					result.add(databaseInfo);
+				}
 			});
 			
 			return result; 

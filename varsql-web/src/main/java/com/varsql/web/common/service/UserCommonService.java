@@ -151,7 +151,7 @@ public class UserCommonService {
 	 * @return
 	 */
 	public List<DatabaseInfo> databaseList(){
-		return this.userDBMappingInfoEntityRepository.userDBInfo(SecurityUtil.loginInfo());
+		return userDBMappingInfoEntityRepository.userDBInfo(SecurityUtil.loginInfo());
 	}
 	
 	/**
