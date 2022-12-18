@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.Projections;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.web.app.component.ConnectionInfoDTO;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
@@ -35,10 +37,21 @@ public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaR
 			final QDBTypeDriverProviderEntity dBTypeDriverProviderEntity = QDBTypeDriverProviderEntity.dBTypeDriverProviderEntity;
 			final QDBTypeDriverEntity dBTypeDriverEntity = QDBTypeDriverEntity.dBTypeDriverEntity;
 			
-			return from(dBConnectionEntity).innerJoin(dBTypeDriverProviderEntity).on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
-			.innerJoin(dBTypeDriverEntity).on(dBTypeDriverProviderEntity.driverId.eq(dBTypeDriverEntity.driverId))
+			
+			ConnectionInfoDTO resultDto = from(dBConnectionEntity).leftJoin(dBTypeDriverProviderEntity).on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
+			.leftJoin(dBTypeDriverEntity).on(dBTypeDriverProviderEntity.driverId.eq(dBTypeDriverEntity.driverId))
 			.select(Projections.constructor(ConnectionInfoDTO.class, dBConnectionEntity, dBTypeDriverProviderEntity, dBTypeDriverEntity))
 			.where(dBConnectionEntity.vconnid.eq(vconnid)).fetchOne();
+			
+			if(resultDto == null) {
+				throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_INFO_EMPTY, "connection id : [" + vconnid + "] Connection info is null");
+			}
+			
+			if(resultDto.getProvider() == null) {
+				throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_DRIVER_ERROR, "connection id : [" + vconnid + "] Driver info is null");
+			}
+			
+			return resultDto;
 			
 		}
 

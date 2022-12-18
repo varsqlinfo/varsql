@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.beans.MailConfigBean;
+import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionContext;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
@@ -237,25 +238,26 @@ public class Configuration extends AbstractConfiguration{
 
 			this.vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
 			this.vConInfo.setAliasName(jsonInfo.get("name").asText(""));
-			this.vConInfo.setType(jsonInfo.get("name").asText("local"));
+			this.vConInfo.setType(jsonInfo.get("type").asText("h2"));
 			
 			this.vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
 			this.vConInfo.setUsername(jsonInfo.get("username").asText(""));
 			this.vConInfo.setPassword(jsonInfo.get("password").asText(""));
-			this.vConInfo.setMaxActive(jsonInfo.get("max_active").asInt(10));
-			this.vConInfo.setPoolOptions(jsonInfo.get("pool_option").asText(""));
+			
+			this.vConInfo.setInitialSize(jsonInfo.get("initial_size")==null ? 5 : jsonInfo.get("initial_size").asInt(5));
+			this.vConInfo.setMinIdle(jsonInfo.get("min_idle") ==null ? 3 : jsonInfo.get("min_idle").asInt(3));
+			this.vConInfo.setMaxIdle(jsonInfo.get("max_idle") == null ? 10 : jsonInfo.get("max_idle").asInt(10));
+			this.vConInfo.setMaxActive(jsonInfo.get("max_active") == null ? 10 : jsonInfo.get("max_active").asInt(10));
 			this.vConInfo.setConnectionOptions(jsonInfo.get("connection_option").asText(""));
 			this.vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
 			this.vConInfo.setTestWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()));
-			
+			this.vConInfo.setValidationQuery(ValidationProperty.getInstance().validationQuery(this.vConInfo.getType()));
 			
 			this.vConInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
 				.driverId("base")
 				.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
 				.build()
 			);
-			
-
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);
 			throw new Error(io);

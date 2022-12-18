@@ -2,14 +2,17 @@
 <!DOCTYPE dataSource SYSTEM  "../dtd/connection.config.dtd">
 
 <dataSource name="varsql">
-	<type>local</type>
+	<type>h2</type>
 	<driver>org.h2.Driver</driver>
 	<url>jdbc:h2:file:#resourePath#/varsql;AUTO_SERVER=TRUE;CACHE_SIZE=131072;</url>
 	<username>sa</username>
 	<password>sa</password>
+	<initial_size>5</initial_size>
 	<max_active>10</max_active>
-	<pool_option>max_idle=5;min_idle=5;</pool_option>
-	<connection_option>sslConnection=true</connection_option>
+	<min_idle>3</min_idle>
+	<max_idle>5</max_idle>
 	<timebetweenevictionrunsmillis>60000</timebetweenevictionrunsmillis>
 	<test_while_idle>true</test_while_idle>
+	<pool_option></pool_option>
+	<connection_option>sslConnection=true</connection_option>
 </dataSource>

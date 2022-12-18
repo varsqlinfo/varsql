@@ -98,6 +98,8 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 	        
 	        //커넥션 최소갯수 설정
 	        poolConfig.setMinIdle(connInfo.getMinIdle());
+	        poolConfig.setMaxIdle(connInfo.getMaxIdle());
+	        
 	        //커넥션 최대 갯수 설정
 	        poolConfig.setMaxTotal(connInfo.getMaxActive());
 

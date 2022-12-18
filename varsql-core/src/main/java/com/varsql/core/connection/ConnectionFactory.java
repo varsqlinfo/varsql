@@ -58,8 +58,6 @@ public final class ConnectionFactory implements ConnectionContext{
 			ConnectionInfo baseConInfo = new ConnectionInfo();
 			try {
 				BeanUtils.copyProperties(baseConInfo, Configuration.getInstance().getVarsqlDB());
-				baseConInfo.setMaxActive(10);
-				baseConInfo.setMinIdle(2);
 				createPool(baseConInfo);
 			} catch (IllegalAccessException |InvocationTargetException e) {
 				logger.error("vsql connection pool error : {} ", e.getMessage(), e);
@@ -133,8 +131,12 @@ public final class ConnectionFactory implements ConnectionContext{
 			this.connectionConfig.put(connid, connInfo);
 			return connInfo;
 		} catch (Exception e) {
-			this.logger.error("empty connection info", e);
-			throw new ConnectionFactoryException("empty connection info : [" + connid + "]", e);
+			this.logger.error("createConnectionInfo error ", e);
+			if(e instanceof ConnectionFactoryException) {
+				throw (ConnectionFactoryException)e;
+			}
+			
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR ,"createConnectionInfo error : [" + connid + "]", e);
 		}
 	}
 

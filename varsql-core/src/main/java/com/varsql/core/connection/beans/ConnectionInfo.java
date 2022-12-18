@@ -25,8 +25,11 @@ public class ConnectionInfo implements Serializable {
 	private String password;
 	private int connectionTimeOut;
 	private int exportCount;
+	private int initialSize=5;
 	private int maxActive=10;
 	private int minIdle=3;
+	private int maxIdle=5;
+	
 	private long maxWait=60000;
 	private String version;
 	private long timebetweenevictionrunsmillis;
@@ -241,8 +244,10 @@ public class ConnectionInfo implements Serializable {
 	    result.append(" url: " ).append( url ).append( BlankConstants.NEW_LINE);
 	    result.append(" username: " ).append( username ).append( BlankConstants.NEW_LINE);
 	    result.append(" password: " ).append( password ).append( BlankConstants.NEW_LINE);
+	    result.append(" initialSize: " ).append( initialSize ).append( BlankConstants.NEW_LINE);
 	    result.append(" maxActive: " ).append( maxActive ).append( BlankConstants.NEW_LINE);
 	    result.append(" minIdle: " ).append( minIdle ).append( BlankConstants.NEW_LINE);
+	    result.append(" maxIdle: " ).append( maxIdle ).append( BlankConstants.NEW_LINE);
 	    result.append(" maxWait: " ).append( maxWait ).append( BlankConstants.NEW_LINE);
 	    result.append(" connection_opt: " ).append( connectionOptions ).append( BlankConstants.NEW_LINE);
 	    result.append(" pool_opt: " ).append( poolOptions ).append( BlankConstants.NEW_LINE);
@@ -263,5 +268,19 @@ public class ConnectionInfo implements Serializable {
 		this.enableConnectionPool = enableConnectionPool;
 	}
 
-	
+	public int getMaxIdle() {
+		return maxIdle;
+	}
+
+	public void setMaxIdle(int maxIdle) {
+		this.maxIdle = maxIdle;
+	}
+
+	public int getInitialSize() {
+		return initialSize;
+	}
+
+	public void setInitialSize(int initialSize) {
+		this.initialSize = initialSize;
+	}
 }

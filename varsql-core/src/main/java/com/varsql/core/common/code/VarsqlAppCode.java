@@ -42,6 +42,10 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	,EC_FACTORY_CONNECTION_ERROR(20001)
 	// connection info dao not generate
 	,EC_FACTORY_CONNECTION_INFO(20002)
+	// connection info empty
+	,EC_FACTORY_CONNECTION_INFO_EMPTY(20003)
+	// connection jdbc driver error
+	,EC_FACTORY_CONNECTION_DRIVER_ERROR(20004)
 
 	// driver not found
 	,EC_DRIVER_NOT_FOUND(20002)

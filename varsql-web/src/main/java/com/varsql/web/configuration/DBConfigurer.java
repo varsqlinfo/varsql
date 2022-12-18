@@ -3,21 +3,13 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -52,12 +44,20 @@ public class DBConfigurer {
 	@PostConstruct
     public void initialize(){
 		ConnectionInfo ci = Configuration.getInstance().getVarsqlDB();
-
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(ci.getJdbcDriverInfo().getDriverClass());
-		dataSource.setUrl(ci.getUrl());
-		dataSource.setUsername(ci.getUsername());
-		dataSource.setPassword(ci.getPassword());
+		
+		BasicDataSource dataSource = new BasicDataSource();
+	    dataSource.setDriverClassName(ci.getJdbcDriverInfo().getDriverClass());
+	    dataSource.setUrl(ci.getUrl());
+	    dataSource.setUsername(ci.getUsername());
+	    dataSource.setPassword(ci.getPassword());
+	    dataSource.setInitialSize(ci.getInitialSize());
+	    dataSource.setMaxTotal(ci.getMaxActive());
+	    dataSource.setMinIdle(ci.getMinIdle());
+	    dataSource.setMaxIdle(ci.getMaxIdle());
+	    dataSource.setMaxWaitMillis(60000);
+	    dataSource.setValidationQuery(ci.getValidationQuery());
+	    dataSource.setTestWhileIdle(true);
+	    
 
 		logger.info("=================datasourceconfig info====================");
 		logger.info(" driver : {}", ci.getJdbcDriverInfo().getDriverClass());

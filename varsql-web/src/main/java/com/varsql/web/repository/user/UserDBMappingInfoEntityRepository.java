@@ -84,7 +84,7 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 			List<DatabaseInfo> result =new ArrayList<>();
 			query.fetch().forEach(item->{
 				
-				DatabaseInfo databaseInfo= DatabaseInfo.builder()
+				DatabaseInfo.DatabaseInfoBuilder databaseInfoBuilder= DatabaseInfo.builder()
 					.vconnid(item.getConnection().getVconnid())
 					.name(item.getConnection().getVname())
 					.schema(item.getConnection().getVdbschema())
@@ -94,18 +94,17 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					.schemaViewYn(item.getConnection().getSchemaViewYn())
 					.maxSelectCount(ConvertUtils.intValue(item.getConnection().getMaxSelectCount()))
 					.useColumnLabel(item.getConnection().getUseColumnLabel())
-					.databaseName(item.getConnection().getVdatabasename())
-					.build();
+					.databaseName(item.getConnection().getVdatabasename());
 				
 				if(item.getProvider() != null) {
-					databaseInfo.setType(item.getProvider().getDbType());
-					result.add(databaseInfo);
+					databaseInfoBuilder.type(item.getProvider().getDbType());
+					result.add(databaseInfoBuilder.build());
 				}else {
 					if(tmpAuthority.equals(AuthorityType.ADMIN)) {
-						databaseInfo.setName("(Driver not found)-"+ databaseInfo.getName());
-						databaseInfo.setType(null);
+						databaseInfoBuilder.name("(Driver not found)-"+ item.getConnection().getVname());
+						databaseInfoBuilder.type("");
 					}
-					result.add(databaseInfo);
+					result.add(databaseInfoBuilder.build());
 				}
 			});
 			
