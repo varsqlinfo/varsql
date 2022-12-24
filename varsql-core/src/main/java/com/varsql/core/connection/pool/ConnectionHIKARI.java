@@ -1,5 +1,7 @@
 package com.varsql.core.connection.pool;
 import java.sql.Connection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 public class ConnectionHIKARI extends AbstractConnectionPool{
 
 	private final Logger log = LoggerFactory.getLogger(ConnectionHIKARI.class);
+	
+	private final static Map<String, HikariDataSource> DATASOURCE = new ConcurrentHashMap<String, HikariDataSource>();
 
 	@Override
 	public void createDataSource(ConnectionInfo connInfo) throws ConnectionFactoryException {
@@ -49,8 +53,7 @@ public class ConnectionHIKARI extends AbstractConnectionPool{
 
 			poolShutdown(connInfo);
 
-			connInfo.setDatasource(new HikariDataSource( config ));
-
+			DATASOURCE.put(connInfo.getConnid(),  new HikariDataSource( config ));
 
 			log.info("poolName : {}", poolName);
 			log.info("connInfo : {}", connInfo);
@@ -62,7 +65,7 @@ public class ConnectionHIKARI extends AbstractConnectionPool{
 
 	public Connection getConnection(ConnectionInfo ci) throws ConnectionFactoryException {
 		try{
-			return ci.getDatasource().getConnection();
+			return DATASOURCE.get(ci.getConnid()).getConnection();
 		}catch(Exception e){
 			throw new ConnectionFactoryException(e.getMessage() , e);
 		}
@@ -70,8 +73,8 @@ public class ConnectionHIKARI extends AbstractConnectionPool{
 
 	public void poolShutdown(ConnectionInfo ci) throws ConnectionFactoryException {
 		try{
-			if(ci.getDatasource() != null){
-				((HikariDataSource)ci.getDatasource()).close();
+			if(DATASOURCE.get(ci.getConnid()) != null){
+				DATASOURCE.get(ci.getConnid()).close();
 			}
 		}catch(Exception e){
 			log.error("poolShutdown " ,e.getMessage());

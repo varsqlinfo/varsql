@@ -22,6 +22,7 @@ import com.varsql.core.crypto.DBPasswordCryptionFactory;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.utils.StringUtils;
 
 @ConnectionInfoConfig(beanType = BeanType.JAVA)
 public class SimpleConnectionInfoDao implements ConnectionInfoDao {
@@ -50,41 +51,46 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 			pstmt = conn.prepareStatement(querySb.toString());
 			pstmt.setString(1, connid);
 			rs = pstmt.executeQuery();
-			if (rs == null)
+			if (rs == null) {
 				throw new ConnectionFactoryException("not valid connection infomation :" + connid);
+			}
+			
 			rs.next();
-			ConnectionInfo connInfo = new ConnectionInfo();
-			connInfo.setConnid(rs.getString("VCONNID"));
-			connInfo.setAliasName(rs.getString("VNAME"));
-			connInfo.setType(rs.getString("VTYPE").toLowerCase());
+
+			ConnectionInfo.ConnectionInfoBuilder builder = ConnectionInfo.builder();
+			
+			String type =rs.getString("VTYPE").toLowerCase(); 
+			
+			builder.connid(rs.getString("VCONNID"));
+			builder.aliasName(rs.getString("VNAME"));
+			builder.type(type);
 			String urlDirectYn = rs.getString("URL_DIRECT_YN");
 			if ("Y".equals(urlDirectYn)) {
-				connInfo.setUrl(rs.getString("VURL"));
+				builder.url(rs.getString("VURL"));
 			} else {
-				connInfo.setUrl(VarsqlJdbcUtil.getJdbcUrl(rs.getString("URL_FORMAT"), JdbcURLFormatParam.builder()
+				builder.url(VarsqlJdbcUtil.getJdbcUrl(rs.getString("URL_FORMAT"), JdbcURLFormatParam.builder()
 					.serverIp(rs.getString("VSERVERIP"))
 					.port(Integer.parseInt(rs.getString("VPORT")))
 					.databaseName(rs.getString("VDATABASENAME"))
 					.build())
 				);
 			}
-			connInfo.setUsername(rs.getString("VID"));
-			if ("varsql".equals(connInfo.getConnid())) {
-				connInfo.setPassword(rs.getString("VPW"));
-			} else {
-				String str = rs.getString("VPW");
-				connInfo.setPassword("");
-				if (str != null && !"".equals(str))
-					connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString("VPW")));
+			builder.username(rs.getString("VID"));
+			
+			String vpw = rs.getString("VPW");
+			builder.password("");
+			if (!StringUtils.isBlank(vpw)) {
+				builder.password(DBPasswordCryptionFactory.getInstance().decrypt(rs.getString("VPW")));
 			}
-			connInfo.setPoolOptions(rs.getString("VPOOLOPT"));
-			connInfo.setConnectionOptions(rs.getString("VCONNOPT"));
-			connInfo.setMaxActive(NumberUtils.toInt(rs.getString("MAX_ACTIVE"), 10));
-			connInfo.setMinIdle(NumberUtils.toInt(rs.getString("MIN_IDLE"), 3));
-			connInfo.setConnectionTimeOut(NumberUtils.toInt(rs.getString("TIMEOUT"), 18000));
-			connInfo.setExportCount(NumberUtils.toInt(rs.getString("EXPORTCOUNT"), 1000));
-			connInfo.setTestWhileIdle("Y".equals(rs.getString("TEST_WHILE_IDLE")));
-			connInfo.setEnableConnectionPool(!"N".equals(rs.getString("ENABLE_CONNECTION_POOL")));
+			
+			builder.useColumnLabel(rs.getString("USE_COLUMN_LABEL"));
+			builder.connectionOptions(rs.getString("VCONNOPT"));
+			builder.maxActive(NumberUtils.toInt(rs.getString("MAX_ACTIVE"), 10));
+			builder.minIdle(NumberUtils.toInt(rs.getString("MIN_IDLE"), 3));
+			builder.connectionTimeOut(NumberUtils.toInt(rs.getString("TIMEOUT"), 18000));
+			builder.exportCount(NumberUtils.toInt(rs.getString("EXPORTCOUNT"), 1000));
+			builder.testWhileIdle("Y".equals(rs.getString("TEST_WHILE_IDLE")));
+			builder.enableConnectionPool(!"N".equals(rs.getString("ENABLE_CONNECTION_POOL")));
 			
 			String conn_query = rs.getString("VQUERY");
 			String dbvalidation_query = rs.getString("VALIDATION_QUERY");
@@ -92,9 +98,9 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 			dbvalidation_query = (dbvalidation_query == null) ? "" : dbvalidation_query;
 			String validation_query = !"".equals(conn_query.trim()) ? conn_query
 					: (!"".equals(dbvalidation_query.trim()) ? dbvalidation_query
-							: ValidationProperty.getInstance().validationQuery(connInfo.getType()));
+							: ValidationProperty.getInstance().validationQuery(type));
 			this.logger.debug("valication_query : {}", validation_query);
-			connInfo.setValidationQuery(validation_query);
+			builder.validationQuery(validation_query);
 			
 			String driverProviderId = rs.getString("DRIVER_PROVIDER_ID");
 					
@@ -119,14 +125,14 @@ public class SimpleConnectionInfoDao implements ConnectionInfoDao {
 				jarFileList.add(fi);
 			}
 			
-			connInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
+			builder.jdbcDriverInfo(JDBCDriverInfo.builder()
 				.driverId(rs.getString("DRIVER_PROVIDER_ID"))
 				.driverClass(rs.getString("DRIVER_CLASS"))
 				.driverFiles(jarFileList)
 				.build()
 			);
 			
-			return connInfo;
+			return builder.build();
 		} catch (EncryptDecryptException e) {
 			this.logger.error("password decrypt error", e);
 			throw new ConnectionFactoryException("password decrypt error", e);

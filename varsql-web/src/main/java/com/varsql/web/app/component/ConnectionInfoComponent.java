@@ -45,38 +45,39 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		logger.debug("create connection info : {}", connid);
 
-		ConnectionInfo connInfo = new ConnectionInfo();
+		ConnectionInfo.ConnectionInfoBuilder builder = ConnectionInfo.builder();
 
 		ConnectionInfoDTO dto = dbConnectionEntityRepository.findByConnInfo(connid);
 
-		connInfo.setConnid(dto.getConnection().getVconnid());
-		connInfo.setAliasName(dto.getConnection().getVname());
-		connInfo.setType(dto.getProvider().getDbType().toLowerCase());
-		connInfo.setUsername(dto.getConnection().getVid());
+		String type = dto.getProvider().getDbType().toLowerCase(); 
+		builder.connid(dto.getConnection().getVconnid());
+		builder.aliasName(dto.getConnection().getVname());
+		builder.type(type);
+		builder.username(dto.getConnection().getVid());
 
 		String pw = dto.getConnection().getVpw();
-		connInfo.setPassword("");
+		builder.password("");
 
 		if (!StringUtils.isBlank(pw)) {
-			connInfo.setPassword(DBPasswordCryptionFactory.getInstance().decrypt(pw));
+			builder.password(DBPasswordCryptionFactory.getInstance().decrypt(pw));
 		}
-
-		connInfo.setPoolOptions(dto.getConnection().getVpoolopt());
-		connInfo.setConnectionOptions(dto.getConnection().getVconnopt());
-		connInfo.setMaxActive(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10));
-		connInfo.setMinIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 3));
-		connInfo.setConnectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
-		connInfo.setExportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
-		connInfo.setTestWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
-		connInfo.setEnableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()));
 		
-		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(connInfo.getType());
+		builder.useColumnLabel(dto.getConnection().getUseColumnLabel());
+		builder.connectionOptions(dto.getConnection().getVconnopt());
+		builder.maxActive(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10));
+		builder.minIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 5));
+		builder.connectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
+		builder.exportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
+		builder.testWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
+		builder.enableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()));
+		
+		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(type);
 
 		String urlDirectYn = dto.getConnection().getUrlDirectYn();
 		if ("Y".equals(urlDirectYn)) {
-			connInfo.setUrl(dto.getConnection().getVurl());
+			builder.url(dto.getConnection().getVurl());
 		} else {
-			connInfo.setUrl(VarsqlJdbcUtil.getJdbcUrl(dto.getDriver().getUrlFormat(), JdbcURLFormatParam.builder()
+			builder.url(VarsqlJdbcUtil.getJdbcUrl(dto.getDriver().getUrlFormat(), JdbcURLFormatParam.builder()
 					.serverIp(dto.getConnection().getVserverip())
 					.port(Integer.parseInt(dto.getConnection().getVport()+""))
 					.databaseName(dto.getConnection().getVdatabasename())
@@ -89,7 +90,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		validation_query = StringUtils.isBlank(validation_query) ? defaultDriverValidationQuery : validation_query;
 
-		connInfo.setValidationQuery(validation_query);
+		builder.validationQuery(validation_query);
 
 		List<FileInfo> driverFileInfos;
 		
@@ -104,12 +105,12 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 			driverFileInfos = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(dto.getProvider().getDriverProviderId()));
 		}
 		
-	    connInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
+	    builder.jdbcDriverInfo(JDBCDriverInfo.builder()
     		.driverId(dto.getDriver().getDriverId())
     		.driverClass(dto.getDriver().getDbdriver())
     		.driverFiles(driverFileInfos)
     		.build());
 
-		return connInfo;
+		return builder.build();
 	}
 }

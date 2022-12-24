@@ -170,7 +170,7 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 		p.setProperty("user", ci.getUsername());
 		p.setProperty("password", ci.getPassword());
 
-		Map customInfo =  ci.getConnectionOptions();
+		Map customInfo =  getConnectionOptions(ci.getConnectionOptions());
 
 		if(customInfo != null){
 			Iterator iter = customInfo.keySet().iterator();

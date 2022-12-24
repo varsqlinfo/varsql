@@ -1,4 +1,4 @@
-package com.varsql.web.dto.sql;
+package com.varsql.core.sql.beans;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
@@ -7,8 +7,8 @@ import com.varsql.core.db.valueobject.SqlStatementInfo;
  *
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: SqlFileRequestDTO.java
-* @DESC		: sql file info
+* @NAME		: SqlExecuteDTO.java
+* @DESC		: Sql execute dto
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION

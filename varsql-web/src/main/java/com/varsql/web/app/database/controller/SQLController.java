@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.dto.sql.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -33,7 +33,7 @@ public class SQLController extends AbstractController  {
 	private final Logger logger = LoggerFactory.getLogger(SQLController.class);
 
 	@Autowired
-	private SQLServiceImpl sQLServiceImpl;
+	private SQLServiceImpl sqlServiceImpl;
 
 	/**
 	 *
@@ -50,7 +50,7 @@ public class SQLController extends AbstractController  {
 		
 		sqlExecuteInfo.set_requid_(req.getParameter("_requid_"));
 		
-		return sQLServiceImpl.sqlData(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
+		return sqlServiceImpl.sqlData(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class SQLController extends AbstractController  {
 	@RequestMapping(value = "/sqlFormat", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlFormat(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 		sqlExecuteInfo.addCustom("formatType", HttpUtils.getString(req, "formatType"));
-		return sQLServiceImpl.sqlFormat(sqlExecuteInfo);
+		return sqlServiceImpl.sqlFormat(sqlExecuteInfo);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class SQLController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/dataExport", method = RequestMethod.POST)
 	public void dataExport(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sQLServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, req, response);
+		sqlServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, req, response);
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class SQLController extends AbstractController  {
 	 */
 	@RequestMapping(value = "/gridDownload", method = RequestMethod.POST)
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sQLServiceImpl.gridDownload(sqlGridDownloadInfo, req, response);
+		sqlServiceImpl.gridDownload(sqlGridDownloadInfo, req, response);
 	}
 
 }

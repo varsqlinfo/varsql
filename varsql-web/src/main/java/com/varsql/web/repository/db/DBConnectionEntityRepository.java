@@ -75,7 +75,6 @@ public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaR
 					.version(ConvertUtils.longValueOf(dto.getConnection().getVdbversion()))
 					.schemaViewYn(dto.getConnection().getSchemaViewYn())
 					.maxSelectCount(ConvertUtils.intValue(dto.getConnection().getMaxSelectCount()))
-					.useColumnLabel(dto.getConnection().getUseColumnLabel())
 					.databaseName(dto.getConnection().getVdatabasename())
 					.build();
 			

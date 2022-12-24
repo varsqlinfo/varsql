@@ -162,7 +162,7 @@ public final class SQLManager {
 	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
 	    } 
 	    
-		if(!connInfo.enableConnectionPool()) {
+		if(!connInfo.isEnableConnectionPool()) {
 			return new SimpleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
 		}
 		

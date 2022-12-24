@@ -51,7 +51,6 @@ public final class DatabaseUtils {
 			.version(ConvertUtils.longValueOf(dbConnectionEntity.getVdbversion()))
 			.schemaViewYn(dbConnectionEntity.getSchemaViewYn())
 			.maxSelectCount(ConvertUtils.intValue(dbConnectionEntity.getMaxSelectCount()))
-			.useColumnLabel(dbConnectionEntity.getUseColumnLabel())
 			.databaseName(dbConnectionEntity.getVdatabasename())
 			.build();
 	}

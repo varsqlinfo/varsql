@@ -93,7 +93,6 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					.version(ConvertUtils.longValueOf(item.getConnection().getVdbversion()))
 					.schemaViewYn(item.getConnection().getSchemaViewYn())
 					.maxSelectCount(ConvertUtils.intValue(item.getConnection().getMaxSelectCount()))
-					.useColumnLabel(item.getConnection().getUseColumnLabel())
 					.databaseName(item.getConnection().getVdatabasename());
 				
 				if(item.getProvider() != null) {

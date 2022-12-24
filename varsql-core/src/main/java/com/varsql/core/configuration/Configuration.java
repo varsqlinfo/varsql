@@ -37,7 +37,7 @@ public class Configuration extends AbstractConfiguration{
 	
 	private Properties props = new Properties();
 
-	private ConnectionInfo vConInfo = new ConnectionInfo();
+	private ConnectionInfo vConInfo;
 	private MailConfigBean mailConfigBean;
 
 	private final String TYPE = "varsql.type";
@@ -235,29 +235,32 @@ public class Configuration extends AbstractConfiguration{
 
 		try {
 			JsonNode jsonInfo =VartechUtils.xmlToJsonNode(ResourceUtils.getResourceString(connectionResource, getCharset()));
-
-			this.vConInfo.setConnid(ConnectionContext.DEFAULT_CONN_ID);
-			this.vConInfo.setAliasName(jsonInfo.get("name").asText(""));
-			this.vConInfo.setType(jsonInfo.get("type").asText("h2"));
 			
-			this.vConInfo.setUrl(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()));
-			this.vConInfo.setUsername(jsonInfo.get("username").asText(""));
-			this.vConInfo.setPassword(jsonInfo.get("password").asText(""));
+			String type = jsonInfo.get("type").asText("h2"); 
+			this.vConInfo = ConnectionInfo.builder()
+				.connid(ConnectionContext.DEFAULT_CONN_ID)
+				.aliasName(jsonInfo.get("name").asText(""))
+				.type(type)
+				
+				.url(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()))
+				.username(jsonInfo.get("username").asText(""))
+				.password(jsonInfo.get("password").asText(""))
+				
+				.initialSize(jsonInfo.get("initial_size")==null ? 5 : jsonInfo.get("initial_size").asInt(5))
+				.minIdle(jsonInfo.get("min_idle") ==null ? 3 : jsonInfo.get("min_idle").asInt(3))
+				.maxIdle(jsonInfo.get("max_idle") == null ? 10 : jsonInfo.get("max_idle").asInt(10))
+				.maxActive(jsonInfo.get("max_active") == null ? 10 : jsonInfo.get("max_active").asInt(10))
+				.connectionOptions(jsonInfo.get("connection_option").asText(""))
+				.timebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong())
+				.testWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()))
+				.validationQuery(ValidationProperty.getInstance().validationQuery(type))
+				.jdbcDriverInfo(JDBCDriverInfo.builder()
+					.driverId("base")
+					.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
+					.build()
+				)
+			.build();
 			
-			this.vConInfo.setInitialSize(jsonInfo.get("initial_size")==null ? 5 : jsonInfo.get("initial_size").asInt(5));
-			this.vConInfo.setMinIdle(jsonInfo.get("min_idle") ==null ? 3 : jsonInfo.get("min_idle").asInt(3));
-			this.vConInfo.setMaxIdle(jsonInfo.get("max_idle") == null ? 10 : jsonInfo.get("max_idle").asInt(10));
-			this.vConInfo.setMaxActive(jsonInfo.get("max_active") == null ? 10 : jsonInfo.get("max_active").asInt(10));
-			this.vConInfo.setConnectionOptions(jsonInfo.get("connection_option").asText(""));
-			this.vConInfo.setTimebetweenevictionrunsmillis(jsonInfo.get("timebetweenevictionrunsmillis").asLong());
-			this.vConInfo.setTestWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()));
-			this.vConInfo.setValidationQuery(ValidationProperty.getInstance().validationQuery(this.vConInfo.getType()));
-			
-			this.vConInfo.setJdbcDriverInfo(JDBCDriverInfo.builder()
-				.driverId("base")
-				.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
-				.build()
-			);
 		} catch (IOException io) {
 			logger.error("CONNECTION_FILE IOException",io);
 			throw new Error(io);

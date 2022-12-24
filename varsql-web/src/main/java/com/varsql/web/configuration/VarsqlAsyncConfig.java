@@ -30,11 +30,11 @@ public class VarsqlAsyncConfig {
     public Executor logThreadPoolTaskExecutor() {
     	ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
     	taskExecutor.setCorePoolSize(3);
-    	taskExecutor.setMaxPoolSize(5);
+    	taskExecutor.setMaxPoolSize(10);
     	taskExecutor.setQueueCapacity(5);
     	taskExecutor.setThreadNamePrefix("AppLog-Executor-");
     	taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-    	taskExecutor.setAwaitTerminationSeconds(3);
+    	taskExecutor.setAwaitTerminationSeconds(30);
     	taskExecutor.initialize(); // thread 초기화 
     	
     	
