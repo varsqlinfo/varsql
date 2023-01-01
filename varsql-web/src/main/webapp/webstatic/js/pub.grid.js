@@ -922,7 +922,7 @@ Plugin.prototype ={
 	 * @param rowItem {Object} - update item
 	 * @description 데이터 그리기
 	 */
-	,updateRow : function (idx ,rowItem, clickFlag){
+	,updateRow : function (idx, rowItem, clickFlag){
 
 		var updItem = this.options.tbodyItem[idx];
 
@@ -1115,7 +1115,7 @@ Plugin.prototype ={
 					}
 				}
 			}else{
-				if(gridMode != 'init' && subMode !='keepCheck'){
+				if(gridMode != 'init' && subMode !='keepCheck' &&  subMode !='update'){
 					_this.setCheckItems('all', false, false);
 				}
 
@@ -5498,10 +5498,9 @@ var _$util = {
 $(document).on('mousedown.pubgrid.background', function (e){
 	if(e.which !==2){
 		var targetEle = $(e.target);
-		var pubGridLayterEle = targetEle.closest('.pubGrid-layer');
-		if(pubGridLayterEle.length < 1 ){
+		var pubGridLayerEle = targetEle.closest('.pubGrid-layer');
+		if(pubGridLayerEle.length < 1 ){
 			
-
 			$('.pubGrid-layer.open').each(function (){
 				var sEle = $(this); 
 				if(!sEle.data('pubgrid-close-btn')){
@@ -5532,7 +5531,7 @@ $(document).on('mousedown.pubgrid.background', function (e){
 				}, 300);
 			})
 		}else{
-			var layerid = pubGridLayterEle.data('pubgrid-layer');
+			var layerid = pubGridLayerEle.data('pubgrid-layer');
 			$('.pubGrid-layer.open').each(function (){
 				var sEle = $(this);
 
@@ -5686,6 +5685,10 @@ var _$renderer = {
 	 * @description edit form
 	 */
 	,editCell : function (gridCtx, cellInfo, e){
+
+		if(cellInfo.colInfo.editable===false){
+			return ;
+		}
 
 		if(gridCtx.config.isCellEdit){
 			_$renderer.editAreaClose(gridCtx, false); // 이전 에디트창 닫기

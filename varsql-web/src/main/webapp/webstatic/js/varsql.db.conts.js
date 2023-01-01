@@ -268,6 +268,7 @@ VARSQLCont = {
 	}
 	,tableColKey : {
 		NAME :'name'
+		,ALIAS :'alias'
 		,TYPE_NAME :'typeName'
 		,TYPE_CODE :'typeCode'
 		,NULLABLE :'nullable'

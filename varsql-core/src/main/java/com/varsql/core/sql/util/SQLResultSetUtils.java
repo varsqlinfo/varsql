@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.connection.ConnectionFactory;
@@ -30,8 +32,9 @@ import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectInfo;
+import com.vartech.common.app.beans.DataMap;
+import com.vartech.common.utils.VartechUtils;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -72,11 +75,12 @@ public final class SQLResultSetUtils {
 		}
 		
 		String viewColumnInfo = sqlExecuteInfo.getColumnInfo();
-		Set<String> viewColumnCheck = Collections.emptySet();
+		
+		HashMap<String, DataMap> viewColumnMap = null; 
 		boolean columnChkFlag = false;
 		if(viewColumnInfo !=null  && !"".equals(viewColumnInfo)) {
 			columnChkFlag = true;
-			viewColumnCheck =  new HashSet<String>(Arrays.asList(viewColumnInfo.toUpperCase().split(",")));
+			viewColumnMap = getViewColumnMap(viewColumnInfo);
 		}
 		
 		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getDataTypeImpl();
@@ -100,10 +104,13 @@ public final class SQLResultSetUtils {
 		boolean useColumnLabel = ConnectionFactory.getInstance().getConnectionInfo(sqlExecuteInfo.getDatabaseInfo().getVconnid()).isUseColumnLabel();
 
 		for (int idx = 1; idx <= count; idx++) {
-			
 			columnName= useColumnLabel ? rsmd.getColumnLabel(idx) : rsmd.getColumnName(idx);
-			if(columnChkFlag  && !viewColumnCheck.contains(columnName.toUpperCase())) {
-				continue ;
+			
+			if(columnChkFlag) {
+				if(!viewColumnMap.containsKey(columnName.toUpperCase())) {
+					continue ;
+				}
+				columnName = viewColumnMap.get(columnName.toUpperCase()).getString("alias");
 			}
 
 			columnType = rsmd.getColumnType(idx);
@@ -178,6 +185,15 @@ public final class SQLResultSetUtils {
 		return ssrv;
 	}
 	
+	private static HashMap<String, DataMap> getViewColumnMap(String viewColumnInfo) {
+		ArrayList<DataMap> columnInfoList = VartechUtils.jsonStringToObject(viewColumnInfo, new TypeReference<ArrayList<DataMap>>() {});
+		HashMap<String, DataMap> viewColumnMap = new HashMap<String, DataMap>();
+		columnInfoList.forEach(item->{
+			viewColumnMap.put(item.getString("name").toUpperCase() ,item);
+		});
+		
+		return viewColumnMap; 
+	}
 	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, SelectExecutorHandler selectExecutorHandler) throws SQLException {
 		resultSetHandler(rs, sqlExecuteInfo, selectExecutorHandler, false);
 	}
@@ -188,11 +204,12 @@ public final class SQLResultSetUtils {
 		}
 		
 		String viewColumnInfo = sqlExecuteInfo.getColumnInfo();
-		Set<String> viewColumnCheck = Collections.emptySet();
+		
+		HashMap<String, DataMap> viewColumnMap = null; 
 		boolean columnChkFlag = false;
 		if(viewColumnInfo !=null  && !"".equals(viewColumnInfo)) {
 			columnChkFlag = true;
-			viewColumnCheck =  new HashSet<String>(Arrays.asList(viewColumnInfo.toUpperCase().split(",")));
+			viewColumnMap = getViewColumnMap(viewColumnInfo);
 		}
 		
 		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getDataTypeImpl();
@@ -206,7 +223,7 @@ public final class SQLResultSetUtils {
 		String columnName = "";
 
 		String [] columnGridKeyArr = GridUtils.getAliasKeyArr(count);
-		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
+		Map<String,Integer> columnNameDuplicateCheck = new HashMap<String,Integer>();
 		DataType dataType;
 		int gridIdx=0;
 		List<ResultSetGridInfo> resultSetGridList = new LinkedList<>(); 
@@ -214,19 +231,22 @@ public final class SQLResultSetUtils {
 		int columnWidth = count > 10 ? 70 : 0;
 		for (int idx = 1; idx <= count; idx++) {
 			columnName= rsmd.getColumnName(idx);
-			if(columnChkFlag  && !viewColumnCheck.contains(columnName.toUpperCase())) {
-				continue ;
+			if(columnChkFlag) {
+				if(!viewColumnMap.containsKey(columnName.toUpperCase())) {
+					continue ;
+				}
+				columnName = viewColumnMap.get(columnName.toUpperCase()).getString("alias");
 			}
 			
 			columnType = rsmd.getColumnType(idx);
 			columnTypeName = rsmd.getColumnTypeName(idx);
 			
-			if(columnKeyCheck.containsKey(columnName)){
-				int idxVal =columnKeyCheck.get(columnName)+1;
-				columnKeyCheck.put(columnName, idxVal);
+			if(columnNameDuplicateCheck.containsKey(columnName)){
+				int idxVal =columnNameDuplicateCheck.get(columnName)+1;
+				columnNameDuplicateCheck.put(columnName, idxVal);
 				columnName = columnName+"_"+idxVal;
 			}else{
-				columnKeyCheck.put(columnName, 0);
+				columnNameDuplicateCheck.put(columnName, 0);
 			}
 			
 			dataType = dataTypeFactory.getDataType(columnTypeName);
@@ -249,7 +269,7 @@ public final class SQLResultSetUtils {
 			columnInfoList.add(columnInfo);
 		}
 
-		columnKeyCheck = null;
+		columnNameDuplicateCheck = null;
 
 		try {
 			ResultSetGridInfo[] resultSetGridInfoArr = resultSetGridList.toArray(new ResultSetGridInfo[0]);

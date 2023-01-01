@@ -215,6 +215,17 @@
 					</td>
 				</tr>
 				<tr>
+					<td><label class="control-label">Alias</label></td>
+					<td>
+						<select id="exportAliasType">
+							<option value="default">기본</option>
+							<option value="upper">대문자</option>
+							<option value="lower">소문자</option>
+							<option value="camel">Camel Case</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
 					<td class="vertical-top"><label class="control-label">Export Type</label></td>
 					<td>
 						<ul class="export-type">

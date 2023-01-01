@@ -4726,7 +4726,18 @@ _ui.SQL = {
 			,tmpName = exportInfo.objName
 			,data = exportInfo.item;
 
-		var items = data.items;
+		var exportItems = data.items;
+		
+		var items = [];
+		for(var i =0; i<exportItems.length; i++){
+			var exportItem = exportItems[i];
+			items.push({
+				name : exportItem[VARSQLCont.tableColKey.NAME] 
+				,comment : exportItem[VARSQLCont.tableColKey.COMMENT] 
+				,alias : exportItem[VARSQLCont.tableColKey.NAME] 
+			});
+			
+		}
 
 		var modalEle = $('#data-export-modal');
 
@@ -4736,6 +4747,7 @@ _ui.SQL = {
 			$('#exportObjectName').val(tmpName);
 			$('#exportConditionQueryArea').addClass('display-off');
 			$('#exportConditionQuery').val('');
+			$('#exportAliasType').val('default');
 			$.pubGrid('#data-export-column-list').setData(items);
 			$.pubGrid('#data-export-column-list').setCheckItems('all');
 
@@ -4770,12 +4782,15 @@ _ui.SQL = {
 			var columnNameArr = [];
 			for(var i =0 ;i < chkItemLen;i++){
 				var item = chkItems[i];
-				columnNameArr.push(item[VARSQLCont.tableColKey.NAME]);
+				columnNameArr.push({
+					name : item.name
+					,alias : item.alias
+				});
 			}
 
 			var params =VARSQL.util.objectMerge ({}, _g_options.param,{
 				exportType : VARSQL.check.radio('input:radio[name="exportType"]')
-				,columnInfo : columnNameArr.join(',')
+				,columnInfo : JSON.stringify(columnNameArr)
 				,objectName : $('#exportObjectName').val()
 				,fileName: $('#exportFileName').val()
 				,charset: $('#exportCharset').val()
@@ -4812,10 +4827,32 @@ _ui.SQL = {
 			  $( this ).dialog( "close" );
 			}
 		});
+		
+		$('#exportAliasType').on('change',function (){
+			var val = $(this).val(); 
+			
+			var gridItems = $.pubGrid('#data-export-column-list').getItems();
+			
+			for(var i =0; i <gridItems.length; i++){
+				var gridItem = gridItems[i];
+				
+				if(val=='upper'){
+					gridItem.alias = toUpperCase(gridItem.alias); 
+				}else if(val == 'lower'){
+					gridItem.alias = toLowerCase(gridItem.alias);
+				}else if(val == 'camel'){
+					gridItem.alias = convertCamel(gridItem.alias);
+				}else{
+					gridItem.alias = gridItem.name;
+				}
+				$.pubGrid('#data-export-column-list').updateRow(i, gridItem);
+			}
+		})
 
 		if(VARSQL.isUndefined($.pubGrid('#data-export-column-list'))){
 			$.pubGrid('#data-export-column-list',{
 				autoResize :false
+				,editable:true 
 				,asideOptions :{
 					lineNumber : {enabled : true,width : 30}
 					,rowSelector :{
@@ -4826,8 +4863,9 @@ _ui.SQL = {
 					}
 				}
 				,tColItem : [
-					{key:VARSQLCont.tableColKey.NAME ,label :'Column'}
-					,{key:VARSQLCont.tableColKey.COMMENT ,label :'Desc'}
+					{key:'name' ,label :'Column', editable:false}
+					,{key:'alias' ,label :'Alias', editable:true}
+					,{key:'comment' ,label :'Desc', editable:false}
 				]
 				,tbodyItem :items
 			});
