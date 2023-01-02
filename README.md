@@ -5,8 +5,7 @@ varsql websqltool sqltool
 <https://varsql.com/>
 
 <p>
-![다운로드](https://user-images.githubusercontent.com/46696460/210193661-3fee9240-a83e-4c70-81ba-5acbeabf6a9c.gif)
-
+<img src="https://user-images.githubusercontent.com/46696460/210193661-3fee9240-a83e-4c70-81ba-5acbeabf6a9c.gif"/>
 </p>
 
 # 개발환경
