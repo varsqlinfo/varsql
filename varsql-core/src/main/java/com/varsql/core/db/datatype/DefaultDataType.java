@@ -1,6 +1,7 @@
 package com.varsql.core.db.datatype;
 
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -60,7 +61,12 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.INTEGER, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setInt(parameterIndex, Integer.parseInt(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
+				
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -74,7 +80,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.BIGINT, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setLong(parameterIndex, Long.parseLong(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -86,7 +96,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.FLOAT, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setFloat(parameterIndex, Float.parseFloat(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -98,7 +112,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.REAL, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setFloat(parameterIndex, Float.parseFloat(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -110,7 +128,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.DOUBLE, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setDouble(parameterIndex, Double.parseDouble(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -122,7 +144,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.NUMERIC, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setBigDecimal(parameterIndex, new BigDecimal(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -134,7 +160,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.DECIMAL, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					pstmt.setBigDecimal(parameterIndex, new BigDecimal(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -182,7 +212,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.DATE, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+	            if(value instanceof String) {
+					pstmt.setDate(parameterIndex, new Date(VarsqlDateUtils.stringToDate(value.toString()).getTime()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -198,7 +232,21 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.TIME, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+	            if(value instanceof String) {
+	            	Time time = null;
+					try {
+						time = Time.valueOf(value.toString());
+					}catch(IllegalArgumentException e) {
+						try {
+							time = VarsqlDateUtils.stringToTime(value.toString());
+						}catch(Exception e1) {
+							System.out.println("time set parameter error : "+e1.getMessage());
+						}
+					}
+					pstmt.setTime(parameterIndex, time);
+				}else {
+					pstmt.setObject(parameterIndex, value); 
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -214,7 +262,21 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+				if(value instanceof String) {
+					Timestamp timestamp = null;
+					try {
+						timestamp = Timestamp.valueOf(value.toString());
+					}catch(IllegalArgumentException e) {
+						try {
+							timestamp = VarsqlDateUtils.millisecondStringToTimestamp(value.toString());
+						}catch(Exception e1) {
+							timestamp = VarsqlDateUtils.stringToTimestamp(value.toString());
+						}
+					}
+					pstmt.setTimestamp(parameterIndex, timestamp);
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -456,7 +518,11 @@ public enum DefaultDataType implements DataType {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP_WITH_TIMEZONE, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+	            if(value instanceof String) {
+					pstmt.setObject(parameterIndex, VarsqlDateUtils.stringToTimestamp(value.toString()).getTime());
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {

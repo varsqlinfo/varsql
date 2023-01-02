@@ -30,6 +30,8 @@ public class GridColumnInfo {
 
 	// db type
 	private String dbType;
+	
+	private int dbTypeCode;
 
 	// 숫자 여부.
 	private boolean number;
@@ -103,6 +105,12 @@ public class GridColumnInfo {
 				.append(" dbType : ").append(dbType)
 				.append(" type : ").append(type)
 				.toString();
+	}
+	public int getDbTypeCode() {
+		return dbTypeCode;
+	}
+	public void setDbTypeCode(int dbTypeCode) {
+		this.dbTypeCode = dbTypeCode;
 	}
 }
 

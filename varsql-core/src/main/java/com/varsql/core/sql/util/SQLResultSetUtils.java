@@ -125,8 +125,9 @@ public final class SQLResultSetUtils {
 			}
 			
 			dataType = dataTypeFactory.getDataType(columnTypeName);
+			dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType);
 			
-			resultSetGridList.add(new ResultSetGridInfo(idx, (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType)));
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(columnType, columnInfo);
@@ -140,7 +141,8 @@ public final class SQLResultSetUtils {
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
-			columnInfo.setDbType(columnTypeName);
+			columnInfo.setDbType(dataType.getTypeName());
+			columnInfo.setDbTypeCode(columnType);
 			columnInfo.setWidth(columnWidth);
 
 			columnInfoList.add(columnInfo);
@@ -250,8 +252,8 @@ public final class SQLResultSetUtils {
 			}
 			
 			dataType = dataTypeFactory.getDataType(columnTypeName);
-			
-			resultSetGridList.add(new ResultSetGridInfo(idx, (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType)));
+			dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType);
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(columnType, columnInfo);
@@ -264,6 +266,8 @@ public final class SQLResultSetUtils {
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
+			columnInfo.setDbType(dataType.getTypeName());
+			columnInfo.setDbTypeCode(columnType);
 			columnInfo.setWidth(columnWidth);
 
 			columnInfoList.add(columnInfo);

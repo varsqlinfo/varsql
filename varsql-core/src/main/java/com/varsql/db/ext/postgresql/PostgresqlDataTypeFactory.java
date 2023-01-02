@@ -40,6 +40,6 @@ public class PostgresqlDataTypeFactory extends AbstractDataTypeFactory{
 		addDataType(new VenderDataType("txid_snapshot", DefaultDataType.OTHER.getTypeCode() , DBColumnMetaInfo.OTHER));
 		addDataType(new VenderDataType("uuid", DefaultDataType.OTHER.getTypeCode() , DBColumnMetaInfo.OTHER));
 		addDataType(new VenderDataType("text", DefaultDataType.VARCHAR.getTypeCode() , DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("timestamp without time zone", DefaultDataType.TIMESTAMP.getTypeCode() , DBColumnMetaInfo.DATE));
+		addDataType(new VenderDataType("timestamp without time zone", DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode() , DBColumnMetaInfo.DATE));
 	}
 }

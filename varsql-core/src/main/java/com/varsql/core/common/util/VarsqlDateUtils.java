@@ -90,6 +90,22 @@ public final class VarsqlDateUtils {
 	public static String currentDateTimeFormat() {
 		return new DateTime().toString(VarsqlConstants.timestampFormatter);
 	}
+	
+	/**
+	 * 
+	 * @method : stringToTime
+	 * @desc : string - time
+	 * @author : ytkim
+	 * @param date
+	 * @return
+	 */
+	public static Time stringToTime(String date) {
+		return new Time(DateTime.parse(date, VarsqlConstants.timeFormatter).getMillis());
+	}
+
+	public static Date stringToTime(String date, String format) {
+		return new Time(DateTime.parse(date, DateTimeFormat.forPattern(format)).getMillis());
+	}
 
 	/**
 	 * 
@@ -120,6 +136,14 @@ public final class VarsqlDateUtils {
 	}
 
 	public static Timestamp stringToTimestamp(String date, String format) {
+		return new Timestamp(DateTime.parse(date, DateTimeFormat.forPattern(format)).getMillis());
+	}
+	
+	public static Timestamp millisecondStringToTimestamp(String date) {
+		return new Timestamp(DateTime.parse(date, VarsqlConstants.timestampMilliFormatter).getMillis());
+	}
+	
+	public static Timestamp millisecondStringToTimestamp(String date, String format) {
 		return new Timestamp(DateTime.parse(date, DateTimeFormat.forPattern(format)).getMillis());
 	}
 
