@@ -5149,8 +5149,8 @@ _ui.sqlDataArea =  {
 			}
 			,valueFilter : function (colInfo, objValue){
 				var val = objValue[colInfo.key];
-				if(colInfo.dbType =='CLOB' && !VARSQL.isBlank(val)){
-					return val.substring(0, 2000);
+				if((colInfo.type =='string' || colInfo.lob) && !VARSQL.isBlank(val) && val.length >1000){
+						return val.substring(0, 1000)+'...';
 				}else{
 					return val;
 				}
@@ -5158,13 +5158,6 @@ _ui.sqlDataArea =  {
 			,bodyOptions :{
 				cellDblClick : function (rowItem){
 					_ui.SQL.addTextToEditorArea(rowItem.item[rowItem.keyItem.key]);
-				}
-				,valueFilter : function (headerItem, bodyItem){
-					if(headerItem.dbType=='CLOB'){
-						var reval = bodyItem[headerItem.key];
-						return (reval||'').substring(0,2000);
-					}
-					return false;
 				}
 			}
 			,navigation : {

@@ -441,7 +441,7 @@ public class ExportServiceImpl{
 					if (VarsqlFileType.CSV.equals(exportType)) {
 						writer = new CSVWriter(outstream, ',', charset);
 					} else if (VarsqlFileType.JSON.equals(exportType)) {
-						writer = new JSONWriter(outstream, "row", charset);
+						writer = new JSONWriter(outstream, charset);
 					} else if (VarsqlFileType.XML.equals(exportType)) {
 						writer = new XMLWriter(outstream, "row", charset);
 					} else if (VarsqlFileType.EXCEL.equals(exportType)) {
@@ -483,9 +483,11 @@ public class ExportServiceImpl{
 								progressInfo.setProgressContentLength(++rowIdx);
 							}
 
+							Object rowObj = handleParam.getRowObject(); 
 							try {
-								getWriter().addRow(handleParam.getRowObject());
+								getWriter().addRow(rowObj);
 							} catch (IOException e) {
+								logger.error("error row idx : {}, info : {}", rowIdx, rowObj);
 								logger.error(e.getMessage(), e);
 								return false;
 							}

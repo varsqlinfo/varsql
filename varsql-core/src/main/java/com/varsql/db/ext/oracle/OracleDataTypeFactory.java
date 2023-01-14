@@ -2,11 +2,8 @@ package com.varsql.db.ext.oracle;
 
 import java.sql.Types;
 
-import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
-
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
-import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 
 /**

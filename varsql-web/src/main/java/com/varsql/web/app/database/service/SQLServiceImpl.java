@@ -364,7 +364,7 @@ public class SQLServiceImpl{
 			if(VarsqlFileType.CSV.equals(exportType)){
 				writer = new  CSVWriter(outstream, ',' , exportCharset);
 			}else if(VarsqlFileType.JSON.equals(exportType)){
-				writer = new JSONWriter(outstream, "row", exportCharset);
+				writer = new JSONWriter(outstream, exportCharset);
 			}else if(VarsqlFileType.XML.equals(exportType)){
 				writer = new XMLWriter(outstream, "row" , exportCharset);
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
@@ -482,7 +482,7 @@ public class SQLServiceImpl{
 			if(VarsqlFileType.CSV.equals(exportType)){
 				writer = new  CSVWriter(outstream, ',' , exportCharset);
 			}else if(VarsqlFileType.JSON.equals(exportType)){
-				writer = new JSONWriter(outstream, "row", exportCharset);
+				writer = new JSONWriter(outstream, exportCharset);
 			}else if(VarsqlFileType.XML.equals(exportType)){
 				writer = new XMLWriter(outstream, "row" , exportCharset);
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){

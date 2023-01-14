@@ -2,8 +2,6 @@ package com.varsql.core.common.code;
 
 import com.vartech.common.constants.CodeEnumValue;
 
-import lombok.ToString;
-
 /**
  *
 *-----------------------------------------------------------------------------

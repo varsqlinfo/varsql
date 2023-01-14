@@ -16,7 +16,6 @@ public interface ConnectionContext {
 	final public String DEFAULT_CONN_ID = "varsql";
 	final public String DEFAULT_ALIAS = "varsql";
 
-	public Connection getConnection() throws  ConnectionFactoryException;
 	public Connection getConnection(String dbalias) throws  ConnectionFactoryException;
 	public boolean isShutdown(String dbalias) throws  ConnectionFactoryException;
 }

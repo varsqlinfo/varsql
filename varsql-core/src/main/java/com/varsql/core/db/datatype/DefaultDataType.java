@@ -152,7 +152,32 @@ public enum DefaultDataType implements DataType {
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
-				return rs.getBigDecimal(columnIndex);
+				Object reval = rs.getObject(columnIndex);
+				
+				if(reval ==null) {
+					return null; 
+				}
+				
+				if(reval instanceof Long) {
+					return reval;
+				}
+				
+				BigDecimal bd = (BigDecimal)reval; 
+				
+				if( bd == BigDecimal.ZERO) {
+					return null; 
+				}
+				
+				if(bd.signum() == 0 || bd.scale() <=0 || bd.stripTrailingZeros().scale() <= 0) {
+					try {
+						return bd.toBigInteger();
+					}catch(Exception e) {
+						e.printStackTrace();
+						return bd;
+					}
+				}
+				
+				return bd;
 			}
 		}).build()
 	),
@@ -168,7 +193,22 @@ public enum DefaultDataType implements DataType {
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
-				return rs.getBigDecimal(columnIndex);
+				BigDecimal bd = rs.getBigDecimal(columnIndex); 
+				
+				if(bd == null || bd == BigDecimal.ZERO) {
+					return null; 
+				}
+				
+				if(bd.signum() == 0 || bd.scale() <=0 || bd.stripTrailingZeros().scale() <= 0) {
+					try {
+						return bd.toBigInteger();
+					}catch(Exception e) {
+						e.printStackTrace();
+						return bd;
+					}
+				}
+				
+				return bd;
 			}
 		}).build()
 	),

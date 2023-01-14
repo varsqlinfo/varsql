@@ -1,13 +1,11 @@
 package com.varsql.core.connection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -49,24 +47,6 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private ConnectionFactory() {
 		init();
-	}
-
-	@Override
-	public synchronized Connection getConnection() throws ConnectionFactoryException {
-		if(initFlag==false) {
-			ConnectionInfo baseConInfo = new ConnectionInfo();
-			try {
-				BeanUtils.copyProperties(baseConInfo, Configuration.getInstance().getVarsqlDB());
-				createPool(baseConInfo);
-			} catch (IllegalAccessException |InvocationTargetException e) {
-				logger.error("vsql connection pool error : {} ", e.getMessage(), e);
-			} catch (SQLException e) {
-				logger.error("vsql connection pool error : {} ", e.getMessage(), e);
-			}
-			initFlag = true;
-		}
-
-		return getConnection("varsql");
 	}
 
 	@Override
@@ -215,7 +195,7 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private void init() {
 		try {
-			Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("com.varsql")).setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
+			Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage())).setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
 
 			Set<Class<?>> types = reflections.getTypesAnnotatedWith(ConnectionInfoConfig.class);
 			StringBuffer sb =new StringBuffer();

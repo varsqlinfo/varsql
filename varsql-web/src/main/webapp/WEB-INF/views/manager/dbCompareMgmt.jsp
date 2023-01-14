@@ -641,7 +641,7 @@ VarsqlAPP.vueServiceBean( {
 					for(var key in item){
 						var itemVal = item[key];
 						if(key != 'remarks'){
-							itemVal = VARSQL.util.toUpperCase(itemVal);
+							itemVal = VARSQL.util.toUpperCase((itemVal ? (itemVal +'') : ''));
 						}
 						
 						item[getKeyName(key,true)] = itemVal

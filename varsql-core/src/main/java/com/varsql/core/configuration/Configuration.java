@@ -63,6 +63,8 @@ public class Configuration extends AbstractConfiguration{
 	
 	private String contextPath;
 	
+	private String connectiondaoPackage;
+	
 	private int port;
 
 	private boolean useConnUID = true;
@@ -151,6 +153,7 @@ public class Configuration extends AbstractConfiguration{
 		hostname = props.getProperty("varsql.hostname", "localhost");
 		port = Integer.parseInt(props.getProperty("varsql.port", "12312"));
 		contextPath = props.getProperty("varsql.contextpath", "/vsql");
+		connectiondaoPackage = props.getProperty("varsql.connectiondao.package", "com.varsql");
 		
 		siteAddr = protocol;
 		
@@ -367,10 +370,6 @@ public class Configuration extends AbstractConfiguration{
 		return getResourceFile(VARSQL_HIBERNATE_PROPERTIES_FILE);
 	}
 	
-	public Resource getLogbackConfig() {
-		return getResourceFile(LOGBACK_XML_FILE);
-	}
-	
 	private Resource getResourceFile(String filePath) {
 		File file = new File(VARSQL_INSTALL_PATH, filePath);
 		if(file.exists()) {
@@ -378,6 +377,10 @@ public class Configuration extends AbstractConfiguration{
 		}else {
 			return ResourceUtils.getResource(filePath);
 		}
+	}
+
+	public String getConnectiondaoPackage() {
+		return connectiondaoPackage;
 	}
 
 }
