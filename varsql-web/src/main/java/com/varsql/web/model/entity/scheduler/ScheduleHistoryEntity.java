@@ -75,10 +75,13 @@ public class ScheduleHistoryEntity {
 
 	@Column(name = "STATUS")
 	private String status;
+	
+	@Column(name = "CUSTOM_INFO")
+	private String customInfo;
 
 	@Builder
 	public ScheduleHistoryEntity(String instanceId, String jobUid, String runType, Timestamp startTime,
-			Timestamp endTime, long runTime, long resultCount, long failCount, String message, String status) {
+			Timestamp endTime, long runTime, long resultCount, long failCount, String message, String status,  String customInfo) {
 		this.instanceId = instanceId;
 		this.jobUid = jobUid;
 		this.runType = runType;
@@ -89,6 +92,7 @@ public class ScheduleHistoryEntity {
 		this.resultCount = resultCount;
 		this.message = message;
 		this.status = status;
+		this.customInfo = customInfo;
 	}
 
 	public final static String HIST_SEQ = "histSeq";

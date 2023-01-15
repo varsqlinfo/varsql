@@ -22,7 +22,7 @@ import lombok.ToString;
 */
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "result")
 public class SQLExecuteResult {
 	private long startTime;
 	private long endTime;

@@ -3,6 +3,7 @@ package com.varsql.core.common.util;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -265,5 +266,20 @@ public final class VarsqlDateUtils {
 	public static String calcDateFormat(Date date, int num, DateCheckType checkType, String format) {
 		return format(format, calcDate(date, num, checkType));
 	}
+	
+	public static String calcDuration(long elapsedTime) {
+		long millis = elapsedTime;
+	    long dd = TimeUnit.MILLISECONDS.toDays(millis);
+	    millis -= TimeUnit.DAYS.toMillis(dd);
+	    long hh = TimeUnit.MILLISECONDS.toHours(millis);
+	    millis -= TimeUnit.HOURS.toMillis(hh);
+	    long mm = TimeUnit.MILLISECONDS.toMinutes(millis);
+	    millis -= TimeUnit.MINUTES.toMillis(mm);
+	    long ss = TimeUnit.MILLISECONDS.toSeconds(millis);
+	    millis -= TimeUnit.SECONDS.toMillis(ss);
+		
+		return String.format("%d days %02d:%02d:%02d.%03d", dd, hh, mm, ss, millis);
+	}
+	
 
 }

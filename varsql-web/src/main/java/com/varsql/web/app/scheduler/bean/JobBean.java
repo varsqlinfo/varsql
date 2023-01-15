@@ -21,7 +21,9 @@ import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.dto.JobResultVO;
 import com.varsql.web.dto.scheduler.JobScheduleVO;
 import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
+import com.varsql.web.model.entity.scheduler.ScheduleHistoryLogEntity;
 import com.varsql.web.util.ConvertUtils;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -74,6 +76,11 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
         	message = message.length() > 1500 ? message.substring(0 , 1500) : message;
         }
         
+        String customInfo =null;
+        if(jobResultVo.getCustomInfo() != null) {
+        	customInfo = VartechUtils.objectToJsonString(jobResultVo.getCustomInfo());
+        }
+        
         long endTime = System.currentTimeMillis(); 
         
 		ScheduleHistoryEntity schedulerHistoryEntity = ScheduleHistoryEntity.builder()
@@ -87,10 +94,19 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
 			.status(status)
 			.resultCount(jobResultVo.getResultCount())
 			.failCount(jobResultVo.getFailCount())
+			.customInfo(customInfo)
 			.build();
 		
 		commonLogService.saveScheduleHistory(schedulerHistoryEntity);
-        
+		
+		if(!StringUtils.isBlank(jobResultVo.getLog())) {
+			commonLogService.saveScheduleHistoryLog(ScheduleHistoryLogEntity.builder()
+					.histSeq(schedulerHistoryEntity.getHistSeq())
+					.logType(jobResultVo.getJobType().name())
+					.log(jobResultVo.getLog())
+					.build());
+		}
+		
     }
     
 }

@@ -10,14 +10,18 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
 import com.varsql.web.model.entity.db.DBConnHistEntity;
 import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
+import com.varsql.web.model.entity.scheduler.ScheduleHistoryLogEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
 import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
+import com.varsql.web.repository.scheduler.ScheduleHistoryLogEntityRepository;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
 import com.vartech.common.utils.CommUtils;
+
+import lombok.AllArgsConstructor;
 
 /**
  * 공통 로그 서비스
@@ -26,6 +30,7 @@ import com.vartech.common.utils.CommUtils;
 * @author	: ytkim
  */
 @Service
+@AllArgsConstructor
 public class CommonLogService{
 	private final Logger logger = LoggerFactory.getLogger(CommonLogService.class);
 	
@@ -39,15 +44,8 @@ public class CommonLogService{
 	
 	final private ScheduleHistoryEntityRepository scheduleHistoryEntityRepository;
 	
-	public CommonLogService(SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository, SqlHistoryEntityRepository sqlHistoryEntityRepository, SqlStatisticsEntityRepository sqlStatisticsEntityRepository
-			, DBConnHistEntityRepository dbConnHistEntityRepository,ScheduleHistoryEntityRepository scheduleHistoryEntityRepository) {
-		this.sqlExceptionLogEntityRepository = sqlExceptionLogEntityRepository; 
-		this.sqlHistoryEntityRepository = sqlHistoryEntityRepository; 
-		this.sqlStatisticsEntityRepository = sqlStatisticsEntityRepository; 
-		this.dbConnHistEntityRepository = dbConnHistEntityRepository; 
-		this.scheduleHistoryEntityRepository = scheduleHistoryEntityRepository; 
-	}
-
+	final private ScheduleHistoryLogEntityRepository scheduleHistoryLogEntityRepository;
+	
 	/**
 	 * error insert
 	 *
@@ -81,7 +79,7 @@ public class CommonLogService{
 		try {
 			sqlHistoryEntityRepository.save(sqlHistoryEntity);
 		}catch(Throwable e) {
-			logger.error(" sqlData sqlHistoryEntity : {}", e.getMessage());
+			logger.error("sqlData sqlHistoryEntity : {}", e.getMessage());
 		}
 	}
 
@@ -100,7 +98,7 @@ public class CommonLogService{
 				sqlStatisticsEntityRepository.saveAll(allSqlStatistics);
 			}
 	    }catch(Exception e){
-	    	logger.error(" sqlLogInsert {}", e.getMessage());
+	    	logger.error("sqlLogInsert {}", e.getMessage());
 	    }
 	}
 	
@@ -115,12 +113,11 @@ public class CommonLogService{
 		try{
 			dbConnHistEntityRepository.save(dbConnHistEntity);
 		}catch(Exception e){
-			logger.error(" saveDbConnectionHistory {}", e.getMessage());
+			logger.error("saveDbConnectionHistory {}", e.getMessage());
 		}
 	}
 	
 	/**
-	 * 
 	 *
 	 * @method : saveScheduleHistory
 	 * @param scheduleHistoryEntity
@@ -130,7 +127,21 @@ public class CommonLogService{
 		try{
 			scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
 		}catch(Exception e){
-			logger.error(" saveScheduleHistory {}", e.getMessage());
+			logger.error("saveScheduleHistory {}", e.getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 * @method  : saveScheduleHistoryLog
+	 * @param scheduleHistoryLogEntity
+	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
+	public void saveScheduleHistoryLog(ScheduleHistoryLogEntity scheduleHistoryLogEntity) {
+		try{
+			scheduleHistoryLogEntityRepository.save(scheduleHistoryLogEntity);
+		}catch(Exception e){
+			logger.error("saveScheduleHistoryLog {}", e.getMessage());
 		}
 	}
 }

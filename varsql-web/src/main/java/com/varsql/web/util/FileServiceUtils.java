@@ -52,6 +52,8 @@ import com.vartech.common.utils.FileUtils;
 *-----------------------------------------------------------------------------
  */
 public final class FileServiceUtils {
+	
+	private final static int BUFFER_SIZE = 2048;
 
 	private FileServiceUtils() {};
 
@@ -222,19 +224,42 @@ public final class FileServiceUtils {
 
 		return retFormat;
 	}
-
-	public static void fileDownload(HttpServletRequest req, HttpServletResponse res, String downFileName, FileBaseEntity ... fileBaseEntity) throws IOException {
+	
+	public static void fileDownload(HttpServletRequest req, HttpServletResponse res, String downFileName, File file) throws IOException {
 		res.setContentType("application/octet-stream; "+VarsqlConstants.CHAR_SET);
 		res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", getDownloadFileName(req, downFileName)));
 		res.setHeader("Content-Transfer-Encoding", "binary;");
 		res.setHeader("Pragma", "no-cache;");
 		res.setHeader("Expires", "-1;");
 		
+		byte b[] = new byte[BUFFER_SIZE];
 
-		int bufferSize = 2048;
+		if (file.isFile()) {
+			try(BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file));
+				BufferedOutputStream outs = new BufferedOutputStream(res.getOutputStream());){
+				int read = 0;
+				while ((read = fin.read(b)) != -1){
+					outs.write(b,0,read);
+				}
+
+				if(fin != null) fin.close();
+				if(outs != null) outs.close();
+			}
+		}
+		
+	}
+
+	public static void fileDownload(HttpServletRequest req, HttpServletResponse res, String downFileName, FileBaseEntity ... fileBaseEntity) throws IOException {
+		
 		int fileLen = fileBaseEntity.length;
 
 		if(fileLen > 1) {
+			res.setContentType("application/octet-stream; "+VarsqlConstants.CHAR_SET);
+			res.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", getDownloadFileName(req, downFileName)));
+			res.setHeader("Content-Transfer-Encoding", "binary;");
+			res.setHeader("Pragma", "no-cache;");
+			res.setHeader("Expires", "-1;");
+			
 			try(ZipOutputStream zos = new ZipOutputStream(res.getOutputStream(), Charset.forName(VarsqlConstants.CHAR_SET));){
 				for(int idx=0; idx < fileLen; idx++){
 					FileBaseEntity fileInfo = fileBaseEntity[idx];
@@ -249,9 +274,9 @@ public final class FileServiceUtils {
 							ZipEntry zentry = new ZipEntry(orginName);
 					        zos.putNextEntry(zentry);
 
-					        byte[] buffer = new byte[bufferSize];
+					        byte[] buffer = new byte[BUFFER_SIZE];
 					        int cnt = 0;
-					        while ((cnt = bis.read(buffer, 0, bufferSize)) != -1) {
+					        while ((cnt = bis.read(buffer, 0, BUFFER_SIZE)) != -1) {
 					            zos.write(buffer, 0, cnt);
 					        }
 					        zos.closeEntry();
@@ -261,22 +286,7 @@ public final class FileServiceUtils {
 				if(zos != null) zos.close();
 			}
 		}else {
-			File file = getFileInfoToFile(fileBaseEntity[0]);
-
-			byte b[] = new byte[bufferSize];
-
-			if (file.isFile()) {
-				try(BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file));
-					BufferedOutputStream outs = new BufferedOutputStream(res.getOutputStream());){
-					int read = 0;
-					while ((read = fin.read(b)) != -1){
-						outs.write(b,0,read);
-					}
-
-					if(fin != null) fin.close();
-					if(outs != null) outs.close();
-				}
-			}
+			fileDownload(req, res, downFileName, getFileInfoToFile(fileBaseEntity[0]));
 		}
 	}
 

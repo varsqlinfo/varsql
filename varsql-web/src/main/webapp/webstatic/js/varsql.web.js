@@ -704,22 +704,54 @@ _$base.req ={
 				}
 			    ,success: function(response, status, xhr) {
 			        // check for a filename
+			        
+			        
 			        var filename = "";
 			        var disposition = xhr.getResponseHeader('Content-Disposition');
 			        
 					var filenameIdx = disposition.indexOf('filename');
-					filename =  filenameIdx < 0 ? 'filename-empty' : disposition.substring(filenameIdx).replace(/filename[- ]?=[- ]?"/,'').replace(/[-"]?[- ]?;[- ]?$/,'')
+					filename =  filenameIdx < 0 ? 'filename-empty' : disposition.substring(filenameIdx).replace(/filename[- ]?=[- ]?"/,'').replace(/[-"]?[- ]?;[- ]?$/,'');
+					filename = decodeURIComponent(filename);
+					
 			        var type = xhr.getResponseHeader('Content-Type');
 			        var blob = new Blob([response], { type: type });
 			        
 			        saveAs(blob, filename)
 			    }
+			    ,error : function (xhr){
+					if (xhr.readyState == 4) {
+						// xhr.status , xhr.statusText check
+					}else if (xhr.readyState == 0) { // connection refused , access denied
+	
+						if(_this.isConnectError===true){
+							return ;
+						}
+						$('body').centerLoadingClose();
+						alert(_$base.messageFormat('error.0004'));
+						_this.isConnectError = true;
+	
+						setTimeout(function() {
+							_this.isConnectError =false;
+						},2000 );
+	
+						return ;
+					}else {
+						//Other errors
+					}
+				}
 			}).done(function (xhr){
 				if(loadSelector){
 					$(loadSelector).centerLoadingClose();
 				}
 			}).fail(function (xhr){
-				alert(xhr);
+				if(xhr.status == 404){
+					alert('File not found');	
+				}else if(xhr.status == 401){
+					alert('Unauthorized');
+				}else{
+					alert('File download error');
+				}
+				
 				if(loadSelector) {
 					$(loadSelector).centerLoadingClose();
 				}

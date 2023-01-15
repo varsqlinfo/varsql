@@ -2,6 +2,10 @@ package com.varsql.web.dto.scheduler;
 
 import java.io.Serializable;
 
+import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
+import com.varsql.web.model.entity.scheduler.ScheduleHistoryLogEntity;
+import com.varsql.web.model.mapper.scheduler.ScheduleHistoryMapper;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,5 +28,6 @@ public class ScheduleHistoryResponseDTO implements Serializable{
 	private long failCount; 
 	private String message; 
 	private String status;
-
+	private String log;
+	
 }

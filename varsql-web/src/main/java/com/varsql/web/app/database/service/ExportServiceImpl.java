@@ -542,7 +542,7 @@ public class ExportServiceImpl{
 				.fileName(exportFileName)
 				.fileSize(zipFile.length())
 				.fileExt(VarsqlFileType.ZIP.getExtension())
-				.filePath(FileUtils.pathConcat(FileServiceUtils.getSaveRelativePath(UploadFileType.EXPORT), zipFile.getName()))
+				.filePath(zipFile.getAbsolutePath())
 				.customInfo(tableExportCount)
 				.build();
 		
@@ -626,7 +626,7 @@ public class ExportServiceImpl{
 				.fileName(VarsqlFileType.ZIP.concatExtension(exportFileName))
 				.fileSize(zipFile.length())
 				.fileExt(VarsqlFileType.ZIP.getExtension())
-				.filePath(FileUtils.pathConcat(FileServiceUtils.getSaveRelativePath(UploadFileType.EXPORT), zipFile.getName()))
+				.filePath(zipFile.getAbsolutePath())
 				.build();
 		
 		return fie; 

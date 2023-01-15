@@ -80,7 +80,7 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	,DB_META_DDL_ERROR(30001)
 	,DB_BLOCKING_ERROR(30002)
 
-	// 공통 코드 50000 ~60000
+	// 공통 코드 50000 ~59999
 	// file upload empty
 	,COMM_FILE_EMPTY(50000)
 	// 유효 하지 않은 비밀번호
@@ -94,9 +94,13 @@ public enum VarsqlAppCode implements CodeEnumValue {
 
 	// runtime error
 	,COMM_RUNTIME_ERROR(50005)
+	
+	//security error 60000 ~69999
+	// SECURITY Authorize error
+	,SECURITY_AUTH_ERROR(60000)
 
 
-	//db error 80000 ~90000
+	//db error 80000 ~89999
 	// db pool error
 	,EC_DB_POOL(80000)
 	// db pool close error

@@ -484,7 +484,20 @@ VarsqlAPP.vueServiceBean( {
 					}}
 					,{key :'resultCount', label:'Result Count', width:50}
 					,{key :'failCount', label:'Fail Count', width:50}
-					,{key :'message', label:'Message', width:70}
+					,{key :'message', label:'Message', width:70, renderer:{
+						type : 'link'
+						,click : function (clickItem){
+							console.log(clickItem)
+							VARSQL.req.download({
+								type: 'post'
+								,url: '/file/backup/download'
+								,params: {
+									fileId : clickItem.item.histSeq
+								}
+							});
+						}
+					}}
+					,{key :'log', label:'log', width:70}
 				]
 				,rowOptions:{	// 로우 옵션.
 					height: 30	// cell 높이

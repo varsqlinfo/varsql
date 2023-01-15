@@ -1,5 +1,4 @@
 package com.varsql.web.app.manager.service;
-import org.quartz.Job;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -19,14 +18,13 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.scheduler.JOBServiceUtils;
 import com.varsql.web.app.scheduler.bean.JobBean;
-import com.varsql.web.app.scheduler.job.DataBackupJob;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.scheduler.JobScheduleDetailDTO;
 import com.varsql.web.dto.scheduler.JobScheduleVO;
+import com.varsql.web.dto.scheduler.ScheduleHistoryResponseDTO;
 import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
 import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
-import com.varsql.web.model.mapper.scheduler.ScheduleHistoryMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.scheduler.JobScheduleEntityRepository;
 import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
@@ -194,8 +192,8 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 */
 	public ResponseResult findHistory(String jobUid, SearchParameter schParam) {
 		
-		Page<ScheduleHistoryEntity> result = scheduleHistoryEntityRepository.findByJobUid(jobUid, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ScheduleHistoryEntity.START_TIME).descending()));
+		Page<ScheduleHistoryResponseDTO> result = scheduleHistoryEntityRepository.findByJobUid(jobUid, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ScheduleHistoryEntity.START_TIME).descending()));
 		
-		return VarsqlUtils.getResponseResult(result, schParam, ScheduleHistoryMapper.INSTANCE);
+		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}
 }

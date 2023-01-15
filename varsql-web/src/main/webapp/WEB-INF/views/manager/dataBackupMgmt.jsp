@@ -507,9 +507,18 @@ VarsqlAPP.vueServiceBean( {
 					,{key :'resultCount', label:'Result Count', width:50}
 					,{key :'failCount', label:'Fail Count', width:50}
 					,{key :'message', label:'Message', width:70}
+					,{key :'log', label:'log', width:70}
 				]
 				,rowOptions:{	// 로우 옵션.
 					height: 30	// cell 높이
+				}
+				,valueFilter : function (colInfo, objValue){
+					var val = objValue[colInfo.key];
+					if(colInfo.key=='log' && !VARSQL.isBlank(val) && val.length > 1000){
+							return val.substring(0, 1000)+'...';
+					}else{
+						return val;
+					}
 				}
 				,tbodyItem : resData.list
 				,height : 520

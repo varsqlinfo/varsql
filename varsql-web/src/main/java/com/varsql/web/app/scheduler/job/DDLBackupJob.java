@@ -19,6 +19,7 @@ import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.database.service.ExportServiceImpl;
+import com.varsql.web.app.scheduler.JobType;
 import com.varsql.web.app.scheduler.bean.JobBean;
 import com.varsql.web.dto.DDLExportItemVO;
 import com.varsql.web.dto.DDLExportVO;
@@ -79,6 +80,6 @@ public class DDLBackupJob extends JobBean {
 		
 		logger.debug("## ddl backup end ## : {}", zipFile.getAbsolutePath());
 		
-		return JobResultVO.builder().message(fie.getFilePath()).build(); 
+		return JobResultVO.builder().jobType(JobType.DDL).message(fie.getFileName()).build().addCustomInfo("filePath", fie.getFilePath()); 
 	}
 }
