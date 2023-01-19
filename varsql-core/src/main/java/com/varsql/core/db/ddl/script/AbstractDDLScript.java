@@ -227,6 +227,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 			if(ddlOption.isAddDropClause()){
 				ddlStrBuf.append("/* DROP VIEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
 			}
+			ddlStrBuf.append("CREATE TABLE " + viewNm + " as ").append( BlankConstants.NEW_LINE);
 
 			List<String> srcProcList = sqlSesseion.selectList("viewScript", dataParamInfo);
 			for (int j = 0; j < srcProcList.size(); j++) {

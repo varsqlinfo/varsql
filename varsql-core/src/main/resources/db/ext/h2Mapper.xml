@@ -82,7 +82,7 @@
 		SELECT
 			tbl.TABLE_NAME  AS "NAME"
 			, tbl.REMARKS AS "REMARKS"
-		FROM INFORMATION_SCHEMA.views  tbl
+		FROM INFORMATION_SCHEMA.TABLES  tbl
 		WHERE TABLE_SCHEMA = #{schema}
 		and tbl.TABLE_TYPE in ('VIEW')
 		<if test="custom != null and custom.objectNameList != null">

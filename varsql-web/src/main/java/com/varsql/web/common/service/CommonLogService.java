@@ -125,23 +125,21 @@ public class CommonLogService{
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
 	public void saveScheduleHistory(ScheduleHistoryEntity scheduleHistoryEntity) {
 		try{
-			scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
+			scheduleHistoryEntity = scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
 		}catch(Exception e){
 			logger.error("saveScheduleHistory {}", e.getMessage());
 		}
 	}
 	
-	/**
-	 * 
-	 * @method  : saveScheduleHistoryLog
-	 * @param scheduleHistoryLogEntity
-	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
-	public void saveScheduleHistoryLog(ScheduleHistoryLogEntity scheduleHistoryLogEntity) {
+	public void saveScheduleHistory(ScheduleHistoryEntity scheduleHistoryEntity, ScheduleHistoryLogEntity scheduleHistoryLogEntity) {
 		try{
+			scheduleHistoryEntity = scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
+			scheduleHistoryLogEntity.setHistSeq(scheduleHistoryEntity.getHistSeq());
 			scheduleHistoryLogEntityRepository.save(scheduleHistoryLogEntity);
 		}catch(Exception e){
-			logger.error("saveScheduleHistoryLog {}", e.getMessage());
+			logger.error("saveScheduleHistory {}", e.getMessage());
 		}
 	}
+	
 }

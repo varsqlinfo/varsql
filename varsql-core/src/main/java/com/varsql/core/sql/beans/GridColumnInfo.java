@@ -1,5 +1,10 @@
 package com.varsql.core.sql.beans;
 
+import com.varsql.core.common.constants.ColumnJavaType;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * @FileName  : ColumnInfo.java
@@ -8,6 +13,8 @@ package com.varsql.core.sql.beans;
  * @작성자      : ytkim
  * @변경이력 :
  */
+@Getter
+@Setter
 public class GridColumnInfo {
 
 	// grid idx
@@ -26,7 +33,7 @@ public class GridColumnInfo {
 	private String align;
 
 	// varsql type
-	private String type;
+	private ColumnJavaType type;
 
 	// db type
 	private String dbType;
@@ -38,61 +45,13 @@ public class GridColumnInfo {
 
 	// lob type 여부
 	private boolean lob;
-
-	public int getNo() {
-		return no;
-	}
-	public void setNo(int no) {
-		this.no = no;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
-	public String getKey() {
-		return key;
-	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	public int getWidth() {
-		return width;
-	}
-	public void setWidth(int width) {
-		this.width = width;
-	}
-	public String getAlign() {
-		return align;
-	}
-	public void setAlign(String align) {
-		this.align = align;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
+	
+	public void setType(ColumnJavaType type) {
 		this.type = type;
 	}
-	public boolean isNumber() {
-		return number;
-	}
-	public void setNumber(boolean number) {
-		this.number = number;
-	}
-	public String getDbType() {
-		return dbType;
-	}
-	public void setDbType(String dbType) {
-		this.dbType = dbType;
-	}
-	public boolean isLob() {
-		return lob;
-	}
-	public void setLob(boolean lob) {
-		this.lob = lob;
+	
+	public void setType(String type) {
+		this.type = ColumnJavaType.getType(type);
 	}
 
 	@Override
@@ -105,12 +64,6 @@ public class GridColumnInfo {
 				.append(" dbType : ").append(dbType)
 				.append(" type : ").append(type)
 				.toString();
-	}
-	public int getDbTypeCode() {
-		return dbTypeCode;
-	}
-	public void setDbTypeCode(int dbTypeCode) {
-		this.dbTypeCode = dbTypeCode;
 	}
 }
 

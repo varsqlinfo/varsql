@@ -65,7 +65,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.2.5'
+	varsqlVersion = '1.2.6'
 }
 
 //소스 분석.

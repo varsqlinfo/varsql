@@ -17,6 +17,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.constants.ColumnJavaType;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBVenderType;
@@ -301,61 +302,50 @@ public final class SQLResultSetUtils {
 	}
 
 	private static void setColumnTypeInfo(int columnType, GridColumnInfo columnInfo) {
-		String varsqlColumnType = "";
 		columnInfo.setAlign("left");
-		boolean isLob =  false;
-		boolean isNumber =  false;
+		ColumnJavaType columnJavaType; 
 		
 		if(columnType ==Types.NUMERIC || columnType ==Types.DECIMAL){
-			varsqlColumnType = "decimal";
-			isNumber = true; 
+			columnJavaType = ColumnJavaType.DECIMAL;
 		}else if(columnType ==Types.REAL || columnType == Types.FLOAT) {
-			varsqlColumnType = "float";
-			isNumber = true;
+			columnJavaType = ColumnJavaType.FLOAT;
 		}else if(columnType ==Types.DOUBLE) {
-			varsqlColumnType = "double";
-			isNumber = true;
+			columnJavaType = ColumnJavaType.DOUBLE;
 		}else if(columnType == Types.INTEGER||columnType ==Types.BIGINT
 				||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
-			varsqlColumnType = "number";
 			
-			isNumber = true; 
+			columnJavaType = ColumnJavaType.INTEGER;
 		}else if(columnType == Types.DATE ){
-			varsqlColumnType = "date";
+			columnJavaType = ColumnJavaType.DATE;
 		}else if(columnType == Types.TIME ){
-			varsqlColumnType = "time";
+			columnJavaType = ColumnJavaType.TIME;
 		}else if(columnType == Types.TIMESTAMP ){
-			varsqlColumnType = "timestamp";
+			columnJavaType = ColumnJavaType.TIMESTAMP;
 		}else if(columnType == Types.BLOB ){
-			varsqlColumnType = "blob";
-			isLob =  true;
+			columnJavaType = ColumnJavaType.BLOB;
 		}else if(columnType == Types.CLOB ){
-			varsqlColumnType = "clob";
-			isLob =  true;
+			columnJavaType = ColumnJavaType.CLOB;
 		}else if(columnType == Types.REF ){
-			varsqlColumnType = "ref";
+			columnJavaType = ColumnJavaType.REF;
 		}else if(columnType == Types.NCLOB ){
-			varsqlColumnType = "nclob";
-			isLob =  true;
+			columnJavaType = ColumnJavaType.NCLOB;
 		}else if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
-			varsqlColumnType = "binary";
-			isLob =  true;
+			columnJavaType = ColumnJavaType.BINARY;
 		}else if(columnType == Types.SQLXML ){
-			varsqlColumnType = "sqlxml";
-			isLob =  true;
-		}else if(columnType == Types.ARRAY ){
-			varsqlColumnType = "array";
+			columnJavaType = ColumnJavaType.SQLXML;
+		}else if(columnType == Types.ARRAY){
+			columnJavaType = ColumnJavaType.ARRAY;
 		}else{
-			varsqlColumnType = "string";
+			columnJavaType = ColumnJavaType.STRING;
 		}
 		
-		if(isNumber) {
+		if(columnJavaType.isNumber()) {
 			columnInfo.setAlign("right");
 			columnInfo.setNumber(true);
 		}
 		
-		columnInfo.setLob(isLob);
-		columnInfo.setType(varsqlColumnType);
+		columnInfo.setLob(columnJavaType.isLob());
+		columnInfo.setType(columnJavaType);
 	}
 }
 

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
+import com.varsql.core.common.constants.ColumnJavaType;
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.GridUtils;
@@ -523,15 +524,32 @@ public class SQLServiceImpl{
 
 	        			valueToken = parser.currentToken();
 
-	        			if(valueToken==null) {
+	        			if(valueToken==null || JsonToken.VALUE_NULL.equals(valueToken)) {
 	        				rowInfo.put(columnInfo.getLabel(), null);
-	        			}else {
-	        				if(columnInfo.isNumber() && valueToken.isNumeric()) {
-		        				rowInfo.put(columnInfo.getLabel(), parser.getNumberValue());
-		        			}else{
-		        				rowInfo.put(columnInfo.getLabel(), parser.getText());
-		        			}
+	        				continue; 
 	        			}
+	        			
+	        			if(JsonToken.VALUE_FALSE.equals(valueToken) || JsonToken.VALUE_TRUE.equals(valueToken)){
+	        				rowInfo.put(columnInfo.getLabel(), parser.getBooleanValue());
+	        				continue; 
+	        			}
+	        			
+	        			if(JsonToken.VALUE_NUMBER_INT.equals(valueToken) || JsonToken.VALUE_NUMBER_FLOAT.equals(valueToken)){
+	        				if(ColumnJavaType.DECIMAL.equals(columnInfo.getType())) {
+	        					rowInfo.put(columnInfo.getLabel(), parser.getDecimalValue());
+	        				}else if(ColumnJavaType.FLOAT.equals(columnInfo.getType())) {
+	        					rowInfo.put(columnInfo.getLabel(), parser.getFloatValue());
+	        				}else if(ColumnJavaType.DOUBLE.equals(columnInfo.getType())) {
+	        					rowInfo.put(columnInfo.getLabel(), parser.getDoubleValue());
+	        				}else {
+	        					rowInfo.put(columnInfo.getLabel(), parser.getNumberValue());
+	        				}
+		        			
+	        				continue; 
+	        			}
+	        			
+		        		rowInfo.put(columnInfo.getLabel(), parser.getText());
+		        		
 	        		}
 	        	}
 	        	writer.addRow(rowInfo);

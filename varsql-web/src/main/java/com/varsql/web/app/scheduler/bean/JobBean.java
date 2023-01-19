@@ -97,15 +97,16 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
 			.customInfo(customInfo)
 			.build();
 		
-		commonLogService.saveScheduleHistory(schedulerHistoryEntity);
-		
 		if(!StringUtils.isBlank(jobResultVo.getLog())) {
-			commonLogService.saveScheduleHistoryLog(ScheduleHistoryLogEntity.builder()
+			commonLogService.saveScheduleHistory(schedulerHistoryEntity, ScheduleHistoryLogEntity.builder()
 					.histSeq(schedulerHistoryEntity.getHistSeq())
 					.logType(jobResultVo.getJobType().name())
 					.log(jobResultVo.getLog())
 					.build());
+		}else {
+			commonLogService.saveScheduleHistory(schedulerHistoryEntity);
 		}
+		
 		
     }
     

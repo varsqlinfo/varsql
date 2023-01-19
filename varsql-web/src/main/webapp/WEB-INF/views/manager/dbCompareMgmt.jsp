@@ -555,6 +555,7 @@ VarsqlAPP.vueServiceBean( {
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
 				,loadSelector : '#sourceObjectMeta'
+				,disableResultCheck : true
 				,data :  {
 					vconnid : diffItem.source
 					,objectType : objectType
@@ -562,6 +563,12 @@ VarsqlAPP.vueServiceBean( {
 					,databaseName : diffItem.sourceSchema
 				}
 				,success: function(resData) {
+					
+					if(resData.resultCode == 500){
+						alert('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
+						_self.loading = false;
+						return ; 
+					}
 
 					resData= _self.convertResDataUpperCase(objectType, resData);
 					
@@ -575,12 +582,14 @@ VarsqlAPP.vueServiceBean( {
 						_self.otherObjectView.call(_self, resData,'source');
 					}
 				}
+					
 			})
 
 			// target data load
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
 				,loadSelector : '#targetObjectMeta'
+				,disableResultCheck : true
 				,data :  {
 					vconnid : diffItem.target
 					,objectType : objectType
@@ -588,6 +597,11 @@ VarsqlAPP.vueServiceBean( {
 					,databaseName : diffItem.targetSchema
 				}
 				,success: function(resData) {
+					if(resData.resultCode == 500){
+						alert('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
+						_self.loading = false;
+						return ; 
+					}
 
 					resData= _self.convertResDataUpperCase(objectType, resData);
 					
@@ -599,6 +613,9 @@ VarsqlAPP.vueServiceBean( {
 					}else{
 						_self.otherObjectView.call(_self, resData,'target');
 					}
+				}
+				,error : function (){
+					_self.loading = false;
 				}
 			})
 		}
@@ -1384,14 +1401,17 @@ VarsqlAPP.vueServiceBean( {
 			
 			if(selectItemCompareFlag === true){
 				var nameKey = getKeyName('name',true);
+				
 				var sourceSelArr = $.pubGrid('#sourceObjectMeta').getSelectionItem('name');
-				sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0][nameKey] :'')]||{});
+				sourceItem = VARSQL.util.objectMerge({},this.compareItem.sourceNameMap[(sourceSelArr.length > 0 ?sourceSelArr[0].name :'')]||{});
 				var targetSelArr = $.pubGrid('#targetObjectMeta').getSelectionItem('name');
-				targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0][nameKey] :'')]||{});
+				targetItem = VARSQL.util.objectMerge({},this.compareItem.targetNameMap[(targetSelArr.length > 0 ?targetSelArr[0].name :'')]||{});
 			}else{
 				sourceItem = this.compareItem.sourceNameMap[objName]||{};
 				targetItem = this.compareItem.targetNameMap[objName]||{};
 			}
+			
+			console.log(sourceItem, targetItem)
 
 
 			this.compareSourceItem = sourceItem;
