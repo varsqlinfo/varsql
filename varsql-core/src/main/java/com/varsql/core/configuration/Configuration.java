@@ -150,6 +150,8 @@ public class Configuration extends AbstractConfiguration{
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
 		backupPath= props.getProperty(BACKUP_PATH, getInstallRoot() +File.separator + "backup");
 		backupExpireDay= Integer.parseInt(props.getProperty(BACKUP_EXPIRE_PATH, "30"));
+		
+		backupExpireDay = backupExpireDay > 0 ? backupExpireDay * -1 : backupExpireDay; 
 		backupExpireCron= props.getProperty(BACKUP_EXPIRE_CRON, "0 0 3 * * ?");
 		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
 		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));

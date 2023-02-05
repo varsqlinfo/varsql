@@ -1,9 +1,9 @@
 package com.varsql.web.app.scheduler.job;
 import java.io.File;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
