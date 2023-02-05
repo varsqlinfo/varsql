@@ -18,7 +18,7 @@ import org.quartz.TriggerKey;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
+import com.varsql.web.dto.scheduler.JobVO;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -37,7 +37,7 @@ public class JOBServiceUtils {
 	 * @param vo
 	 * @throws SchedulerException
 	 */
-	public static void saveOrUpdate(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobScheduleVO vo) throws SchedulerException{
+	public static void saveOrUpdate(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobVO vo) throws SchedulerException{
 		
 		if(StringUtils.isBlank(vo.getCronExpression())) {
 			throw new VarsqlRuntimeException(VarsqlAppCode.ERROR ,"cron");
@@ -60,7 +60,7 @@ public class JOBServiceUtils {
 	 * @param jobKey
 	 * @throws SchedulerException
 	 */
-	private static void createJobInfo(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobScheduleVO vo) throws SchedulerException {
+	private static void createJobInfo(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobVO vo) throws SchedulerException {
 		String jobName = vo.getJobUid();
 		String jobGroup = vo.getJobGroup();
 		
@@ -72,7 +72,7 @@ public class JOBServiceUtils {
                 .withDescription(StringUtils.isBlank(vo.getJobDescription())? vo.getJobName() : vo.getJobDescription())
                 .build();
         
-		cronTrigger.getJobDataMap().put("jobScheduleVO", VartechUtils.objectToJsonString(vo));
+		cronTrigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
 		
 		scheduler.scheduleJob(jobDetail, cronTrigger);
 	}
@@ -87,7 +87,7 @@ public class JOBServiceUtils {
 	 * @param jobKey
 	 * @throws SchedulerException
 	 */
-	private static void updateJobInfo(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobScheduleVO vo) throws SchedulerException {
+	private static void updateJobInfo(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobVO vo) throws SchedulerException {
 		
 		TriggerKey triggerKey = TriggerKey.triggerKey(vo.getJobUid(), vo.getJobGroup());
 
@@ -98,7 +98,7 @@ public class JOBServiceUtils {
 						StringUtils.isBlank(vo.getJobDescription()) ? vo.getJobName() : vo.getJobDescription())
 				.build();
 		
-		cronTrigger.getJobDataMap().put("jobScheduleVO", VartechUtils.objectToJsonString(vo));
+		cronTrigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
 
 		scheduler.rescheduleJob(triggerKey, cronTrigger);
 		
@@ -112,7 +112,7 @@ public class JOBServiceUtils {
 	 * @param vo
 	 * @throws SchedulerException
 	 */
-	public static void deleteJob(Scheduler scheduler, JobScheduleVO vo) throws SchedulerException {
+	public static void deleteJob(Scheduler scheduler, JobVO vo) throws SchedulerException {
 		JobKey jobKey = JobKey.jobKey(vo.getJobUid(), vo.getJobGroup());
 		scheduler.deleteJob(jobKey);
 	}
@@ -125,7 +125,7 @@ public class JOBServiceUtils {
 	 * @param vo
 	 * @throws SchedulerException
 	 */
-	public static void runJob(Scheduler scheduler, JobScheduleVO vo) throws SchedulerException{
+	public static void runJob(Scheduler scheduler, JobVO vo) throws SchedulerException{
 		
         JobKey jobKey = JobKey.jobKey(vo.getJobUid(), vo.getJobGroup());
         
@@ -140,7 +140,7 @@ public class JOBServiceUtils {
                 .build();
         
         
-        trigger.getJobDataMap().put("jobScheduleVO", VartechUtils.objectToJsonString(vo));
+        trigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
         
         /*
         Trigger trigger = TriggerBuilder.newTrigger()
@@ -161,7 +161,7 @@ public class JOBServiceUtils {
 	 * @param vo
 	 * @throws SchedulerException
 	 */
-	public static void pauseJob(Scheduler scheduler, JobScheduleVO vo) throws SchedulerException {
+	public static void pauseJob(Scheduler scheduler, JobVO vo) throws SchedulerException {
 		JobKey jobKey = JobKey.jobKey(vo.getJobUid(), vo.getJobGroup());
 		scheduler.pauseJob(jobKey);
 	}
@@ -174,7 +174,7 @@ public class JOBServiceUtils {
 	 * @param vo
 	 * @throws SchedulerException
 	 */
-	public static void resumeJob(Scheduler scheduler, JobScheduleVO vo) throws SchedulerException{
+	public static void resumeJob(Scheduler scheduler, JobVO vo) throws SchedulerException{
         JobKey jobKey = JobKey.jobKey(vo.getJobUid(), vo.getJobGroup());
         scheduler.resumeJob(jobKey);
     }

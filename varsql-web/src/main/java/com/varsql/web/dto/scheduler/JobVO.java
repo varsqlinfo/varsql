@@ -1,7 +1,7 @@
 package com.varsql.web.dto.scheduler;
 import java.io.Serializable;
 
-import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
+import com.varsql.web.model.entity.scheduler.JobEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class JobScheduleVO implements Serializable{
+public class JobVO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public class JobScheduleVO implements Serializable{
 	private String jobData;
 	
 	@Builder
-	public JobScheduleVO(String jobUid, String jobName, String jobGroup, String vconnid, String jobDescription, 
+	public JobVO(String jobUid, String jobName, String jobGroup, String vconnid, String jobDescription, 
 			String cronExpression, String jobData){
 		this.jobUid = jobUid;
 		this.jobName = jobName;
@@ -43,8 +43,8 @@ public class JobScheduleVO implements Serializable{
 		this.jobData = jobData;
 	}
 	
-	public static JobScheduleVO toVo(JobScheduleRequestDTO dto) {
-		return JobScheduleVO.builder()
+	public static JobVO toVo(JobRequestDTO dto) {
+		return JobVO.builder()
 			.jobUid(dto.getJobUid())
 			.jobName(dto.getJobName())
 			.jobGroup(dto.getJobGroup())
@@ -55,12 +55,12 @@ public class JobScheduleVO implements Serializable{
 			.build();
 	}
 	
-	public static JobScheduleVO toVo(JobScheduleEntity entity) {
-		return JobScheduleVO.builder()
+	public static JobVO toVo(JobEntity entity) {
+		return JobVO.builder()
 				.jobUid(entity.getJobUid())
 				.jobName(entity.getJobName())
 				.jobGroup(entity.getJobGroup())
-				.vconnid(entity.getScheduleDBConnection().getVconnid())
+				.vconnid(entity.getJobDBConnection().getVconnid())
 				.cronExpression(entity.getCronExpression())
 				.jobDescription(entity.getJobDescription())
 				.jobData(entity.getJobData())

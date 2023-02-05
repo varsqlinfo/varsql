@@ -3,7 +3,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ import com.varsql.web.app.scheduler.JobType;
 import com.varsql.web.app.scheduler.bean.JobBean;
 import com.varsql.web.dto.DataExportVO;
 import com.varsql.web.dto.JobResultVO;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
+import com.varsql.web.dto.scheduler.JobVO;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.ValidateUtils;
@@ -34,7 +33,7 @@ import com.vartech.common.utils.VartechUtils;
 @Component
 public class DataBackupJob extends JobBean {
 	private final Logger logger = LoggerFactory.getLogger(DataBackupJob.class);
-	private static String BACKUP_PATH = Configuration.getInstance().getBackupPath();
+	private final static String BACKUP_PATH = Configuration.getInstance().getBackupPath();
 	
 	@Autowired
 	private ExportServiceImpl exportServiceImpl;
@@ -43,7 +42,7 @@ public class DataBackupJob extends JobBean {
 	private DBConnectionEntityRepository dbConnectionEntityRepository; 
 
 	@Override
-	public JobResultVO doExecute(JobExecutionContext context, JobScheduleVO jsv) throws Exception {
+	public JobResultVO doExecute(JobExecutionContext context, JobVO jsv) throws Exception {
 		logger.debug("## data backup start : {}", jsv);
 		
 		String vconnid = jsv.getVconnid(); 

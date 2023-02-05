@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.app.manager.service.ScheduleMgmtServiceImpl;
+import com.varsql.web.app.manager.service.SchedulerMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -21,19 +21,19 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * schedule management
+ * scheduler management
 * 
-* @fileName	: ScheduleMgmtController.java
+* @fileName	: SchedulerMgmtController.java
 * @author	: ytkim
  */
 @Controller
-@RequestMapping("/manager/scheduleMgmt")
-public class ScheduleMgmtController extends AbstractController {
+@RequestMapping("/manager/schedulerMgmt")
+public class SchedulerMgmtController extends AbstractController {
 
-	private final Logger logger = LoggerFactory.getLogger(ScheduleMgmtController.class);
+	private final Logger logger = LoggerFactory.getLogger(SchedulerMgmtController.class);
 
 	@Autowired
-	private ScheduleMgmtServiceImpl scheduleMgmtServiceImpl;
+	private SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
 	
 	/**
 	 * job 상세보기.
@@ -45,7 +45,7 @@ public class ScheduleMgmtController extends AbstractController {
 	 */
 	@PostMapping("/detail")
 	public @ResponseBody ResponseResult detail(@RequestParam(value = "jobUid", required = true )  String jobUid) {
-		return scheduleMgmtServiceImpl.findDetailInfo(jobUid);
+		return schedulerMgmtServiceImpl.findDetailInfo(jobUid);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class ScheduleMgmtController extends AbstractController {
 	@PostMapping("/delete")
 	public @ResponseBody ResponseResult delete(@RequestParam(value = "jobUid" , required = true) String jobUid, HttpServletRequest req) {
 		logger.info("job delete viewid: {}, ip: {} , jobUid: {}, mode: {}", SecurityUtil.userViewId(), VarsqlUtils.getClientIp(req), jobUid);
-		return scheduleMgmtServiceImpl.delete(jobUid);
+		return schedulerMgmtServiceImpl.delete(jobUid);
 	}
 	
 	@PostMapping("/jobCtrl")
@@ -68,7 +68,7 @@ public class ScheduleMgmtController extends AbstractController {
 		
 		logger.info("job ctrl viewid: {}, ip: {} , jobUid: {}, mode: {}", SecurityUtil.userViewId(), VarsqlUtils.getClientIp(req), jobUid, mode);
 		
-		return scheduleMgmtServiceImpl.jobCtrl(jobUid, mode);
+		return schedulerMgmtServiceImpl.jobCtrl(jobUid, mode);
 	}
 	/**
 	 * 
@@ -81,7 +81,7 @@ public class ScheduleMgmtController extends AbstractController {
 	 */
 	@PostMapping("/history")
 	public @ResponseBody ResponseResult history(@RequestParam(value = "jobUid" , required = true) String jobUid, HttpServletRequest req){
-		return scheduleMgmtServiceImpl.findHistory(jobUid, HttpUtils.getSearchParameter(req));
+		return schedulerMgmtServiceImpl.findHistory(jobUid, HttpUtils.getSearchParameter(req));
 	}
 	
 }

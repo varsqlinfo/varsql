@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.DDLBackupMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.dto.scheduler.JobScheduleRequestDTO;
+import com.varsql.web.dto.scheduler.JobRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -60,13 +60,13 @@ public class DDLBackupMgmtController extends AbstractController {
 	}
 	
 	@PostMapping("/save")
-	public @ResponseBody ResponseResult save(@Valid JobScheduleRequestDTO jobScheduleRequestDTO, BindingResult result,HttpServletRequest req) {
+	public @ResponseBody ResponseResult save(@Valid JobRequestDTO jobRequestDTO, BindingResult result,HttpServletRequest req) {
 		if(result.hasErrors()){
 			for(ObjectError errorVal :result.getAllErrors()){
 				logger.warn("### save check {}", errorVal.toString());
 			}
 			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-		return ddlBackupMgmtServiceImpl.save(jobScheduleRequestDTO);
+		return ddlBackupMgmtServiceImpl.save(jobRequestDTO);
 	}
 }

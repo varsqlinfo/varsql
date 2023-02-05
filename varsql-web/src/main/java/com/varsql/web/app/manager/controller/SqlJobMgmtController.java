@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.web.app.manager.service.DataBackupMgmtServiceImpl;
+import com.varsql.web.app.manager.service.SqlJobServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.dto.scheduler.JobRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
@@ -25,22 +25,22 @@ import com.vartech.common.utils.HttpUtils;
 
 
 /**
- * data backup 
+ * sql job
 * 
-* @fileName	: DataBackupMgmtController.java
+* @fileName	: SqlJobMgmtController.java
 * @author	: ytkim
  */
 @Controller
-@RequestMapping("/manager/dataBackup")
-public class DataBackupMgmtController extends AbstractController {
+@RequestMapping("/manager/sqlJob")
+public class SqlJobMgmtController extends AbstractController {
 
-	private final Logger logger = LoggerFactory.getLogger(DataBackupMgmtController.class);
+	private final Logger logger = LoggerFactory.getLogger(SqlJobMgmtController.class);
 
 	@Autowired
-	private DataBackupMgmtServiceImpl dataBackupMgmtServiceImpl;
+	private SqlJobServiceImpl sqlJobServiceImpl;
 	
 	/**
-	 * backup list
+	 * job list
 	 *
 	 * @method : list
 	 * @param req
@@ -51,12 +51,7 @@ public class DataBackupMgmtController extends AbstractController {
 	public @ResponseBody ResponseResult list(HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
-		return dataBackupMgmtServiceImpl.findDataBackupJobList(searchParameter);
-	}
-	
-	@PostMapping("/dataObjectList")
-	public @ResponseBody ResponseResult dataObjectList(@RequestParam(value = "vconnid", required = true) String vconnid, HttpServletRequest req) {
-		return dataBackupMgmtServiceImpl.dataObjectList(vconnid);
+		return sqlJobServiceImpl.findJobList(searchParameter);
 	}
 	
 	@PostMapping("/save")
@@ -67,6 +62,6 @@ public class DataBackupMgmtController extends AbstractController {
 			}
 			return VarsqlUtils.getResponseResultValidItem(result);
 		}
-		return dataBackupMgmtServiceImpl.save(jobRequestDTO);
+		return sqlJobServiceImpl.save(jobRequestDTO);
 	}
 }

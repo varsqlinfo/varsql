@@ -50,6 +50,8 @@ public class Configuration extends AbstractConfiguration{
 	private final String FILE_UPLOAD_SIZEPERFILE = "file.upload.sizeperfile";
 	private final String FILE_UPLOAD_MAX_IN_MEMORY_SIZE = "file.upload.maxinmemorysize";
 	private final String BACKUP_PATH = "backup.path";
+	private final String BACKUP_EXPIRE_PATH = "backup.expire.day";
+	private final String BACKUP_EXPIRE_CRON = "backup.expire.cron";
 
 	private PasswordType passwordType;
 
@@ -74,6 +76,9 @@ public class Configuration extends AbstractConfiguration{
 	private String fileUploadPath="";
 	
 	private String backupPath="";
+	private String backupExpireCron="";
+	
+	private int backupExpireDay = 30;
 
 	private long fileUploadSize=0;
 
@@ -144,6 +149,8 @@ public class Configuration extends AbstractConfiguration{
 		// file upload config
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
 		backupPath= props.getProperty(BACKUP_PATH, getInstallRoot() +File.separator + "backup");
+		backupExpireDay= Integer.parseInt(props.getProperty(BACKUP_EXPIRE_PATH, "30"));
+		backupExpireCron= props.getProperty(BACKUP_EXPIRE_CRON, "0 0 3 * * ?");
 		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
 		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));
 		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
@@ -300,6 +307,14 @@ public class Configuration extends AbstractConfiguration{
 	
 	public String getBackupPath() {
 		return backupPath;
+	}
+	
+	public int backupExpireDay() {
+		return backupExpireDay;
+	}
+	
+	public String getBackupExpireCron() {
+		return backupExpireCron;
 	}
 
 	public long getFileUploadSize() {

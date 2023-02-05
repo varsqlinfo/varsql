@@ -20,14 +20,14 @@ import com.varsql.web.app.scheduler.JOBServiceUtils;
 import com.varsql.web.app.scheduler.bean.JobBean;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.dto.scheduler.JobScheduleDetailDTO;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
-import com.varsql.web.dto.scheduler.ScheduleHistoryResponseDTO;
-import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
+import com.varsql.web.dto.scheduler.JobDetailDTO;
+import com.varsql.web.dto.scheduler.JobVO;
+import com.varsql.web.dto.scheduler.JobHistoryResponseDTO;
+import com.varsql.web.model.entity.scheduler.JobEntity;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
-import com.varsql.web.repository.scheduler.JobScheduleEntityRepository;
-import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
+import com.varsql.web.repository.scheduler.JobEntityRepository;
+import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -36,16 +36,16 @@ import com.vartech.common.constants.RequestResultCode;
 import lombok.RequiredArgsConstructor;
 
 /**
- * schedule management service
+ * scheduler management service
 * 
-* @fileName	: ScheduleMgmtServiceImpl.java
+* @fileName	: SchedulerMgmtServiceImpl.java
 * @author	: ytkim
  */
 @Service
 @RequiredArgsConstructor
-public class ScheduleMgmtServiceImpl extends AbstractService{
+public class SchedulerMgmtServiceImpl extends AbstractService{
 	
-	private final Logger logger = LoggerFactory.getLogger(ScheduleMgmtServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(SchedulerMgmtServiceImpl.class);
 	
 	enum JOB_MODE{
 		RUN, PAUSE, RESUME
@@ -53,9 +53,9 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	
 	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
 
-	final private JobScheduleEntityRepository jobScheduleEntityRepository;
+	final private JobEntityRepository jobEntityRepository;
 	
-	final private ScheduleHistoryEntityRepository scheduleHistoryEntityRepository;  
+	final private JobHistoryEntityRepository jobHistoryEntityRepository;  
 	
 	@Qualifier(ResourceConfigConstants.APP_SCHEDULER) 
 	final private Scheduler scheduler;
@@ -96,11 +96,11 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult findDetailInfo(String jobUid) {
-		JobScheduleDetailDTO detailDto = jobScheduleEntityRepository.findJobDetailInfo(jobUid);
+		JobDetailDTO detailDto = jobEntityRepository.findJobDetailInfo(jobUid);
 		
 		if(detailDto == null) {
 			return ResponseResult.builder().resultCode((RequestResultCode.NOT_FOUND))
-					.message("job schedule info not found : "+ jobUid).build();
+					.message("job info not found : "+ jobUid).build();
 		}
 		
 		return VarsqlUtils.getResponseResultItemOne(detailDto);
@@ -111,11 +111,11 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 *
 	 * @method : saveOrUpdate
 	 * @param class1
-	 * @param jobScheduleVO
+	 * @param jobVO
 	 * @throws SchedulerException
 	 */
-	public void saveOrUpdate(Class<? extends JobBean> clazz, JobScheduleVO jobScheduleVO) throws SchedulerException {
-		JOBServiceUtils.saveOrUpdate(scheduler, clazz, jobScheduleVO);
+	public void saveOrUpdate(Class<? extends JobBean> clazz, JobVO jobVO) throws SchedulerException {
+		JOBServiceUtils.saveOrUpdate(scheduler, clazz, jobVO);
 	}
 	
 	/**
@@ -127,20 +127,20 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult delete(String jobUid) {
-		logger.info("delete job schedule uid : {}", jobUid);
-		JobScheduleEntity entity = jobScheduleEntityRepository.findByJobUid(jobUid);
+		logger.info("delete job uid : {}", jobUid);
+		JobEntity entity = jobEntityRepository.findByJobUid(jobUid);
 		
 		if(entity == null) {
 			return ResponseResult.builder()
 					.resultCode(RequestResultCode.NOT_FOUND)
-					.message("job schedule info not found : "+ jobUid)
+					.message("job info not found : "+ jobUid)
 					.build();
 		}
 		
-		jobScheduleEntityRepository.delete(entity);
+		jobEntityRepository.delete(entity);
 		
 		try {
-			JOBServiceUtils.deleteJob(scheduler, JobScheduleVO.toVo(entity));
+			JOBServiceUtils.deleteJob(scheduler, JobVO.toVo(entity));
 		} catch (SchedulerException e) {
 			throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, e);
 		}
@@ -157,12 +157,12 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult jobCtrl(String jobUid, String mode) { 
-		JobScheduleEntity entity = jobScheduleEntityRepository.findByJobUid(jobUid);
+		JobEntity entity = jobEntityRepository.findByJobUid(jobUid);
 		
 		if(entity == null) {
 			return ResponseResult.builder()
 					.resultCode(RequestResultCode.NOT_FOUND)
-					.message("job schedule info not found : "+ jobUid)
+					.message("job info not found : "+ jobUid)
 					.build();
 		}
 		
@@ -170,11 +170,11 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 		
 		try {
 			if(JOB_MODE.RUN.equals(jobMode)) { // 실행
-				JOBServiceUtils.runJob(scheduler, JobScheduleVO.toVo(entity));
+				JOBServiceUtils.runJob(scheduler, JobVO.toVo(entity));
 			}else if(JOB_MODE.PAUSE.equals(jobMode)) { // 멈춤 
-				JOBServiceUtils.pauseJob(scheduler, JobScheduleVO.toVo(entity));
+				JOBServiceUtils.pauseJob(scheduler, JobVO.toVo(entity));
 			}else if(JOB_MODE.RESUME.equals(jobMode)) { // 재시작
-				JOBServiceUtils.resumeJob(scheduler, JobScheduleVO.toVo(entity));
+				JOBServiceUtils.resumeJob(scheduler, JobVO.toVo(entity));
 			}
 			return findDetailInfo(jobUid);
 		} catch (SchedulerException e) {
@@ -192,7 +192,7 @@ public class ScheduleMgmtServiceImpl extends AbstractService{
 	 */
 	public ResponseResult findHistory(String jobUid, SearchParameter schParam) {
 		
-		Page<ScheduleHistoryResponseDTO> result = scheduleHistoryEntityRepository.findByJobUid(jobUid, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ScheduleHistoryEntity.START_TIME).descending()));
+		Page<JobHistoryResponseDTO> result = jobHistoryEntityRepository.findByJobUid(jobUid, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
 		
 		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}

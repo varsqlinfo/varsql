@@ -4,7 +4,7 @@
 <!-- Page Heading -->
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header"><spring:message code="manager.menu.ddlbackupmgmt"/></h1>
+        <h1 class="page-header"><spring:message code="manager.menu.sqljobmgmt"/></h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -131,20 +131,45 @@
 						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
 							<label class="col-sm-3 control-label"><spring:message code="export.info" /></label>
 							<div class="col-sm-9">
-								<div class="margin-bottom5">
-									<label><spring:message code="charset"  /></label>
-									<input type="text" v-model="detailItem.jobData.charset" class="form-control" />
-								</div>
 								
 								<div class="margin-bottom5">
 									<label><spring:message code="manager.backupmgmt.connection"  /></label>
 									<div>
-										<select class="form-control" v-model="detailItem.vconnid" @change="getObjectInfo(detailItem.vconnid)">
+										<select class="form-control" v-model="detailItem.vconnid" style="margin-bottom:5px;">
 											<option value=""><spring:message code="select" text="선택"/></option>
 											<option v-for="(item,index) in dbList" :value="item.vconnid">{{item.vname}}</option>
 										</select>
 										
-										<div id="backupList" style="height: 200px;padding:10px 0px;"></div>
+										<textarea id="sqlEditor" rows="10" class="form-control input-init-type" style="border:1px solid #ddd;"></textarea>
+										
+										<div>
+											<table class="table table-striped table-bordered table-hover dataTable no-footer" style="margin-top:10px;table-layout:fixed;">
+												<colgroup>
+													<col style="width:150px">
+													<col style="min-width:50px;width:*;">
+												</colgroup>
+												<thead>
+													<tr role="row">
+														<th class="text-center">
+															Parameter Name
+														</th>
+														<th class="text-center">
+															Parameter Value <a href="javascript:;" @click="addParameter()" title="Add"><i class="fa fa-plus"></i></a>
+														</th>
+													</tr>
+												</thead>
+					
+												<tbody class="dataTableContent">
+													<tr  v-for="(paramItem, index) in detailItem.jobData.parameter" class="gradeA cursor-pointer vertical-top" :class="(index%2==0?'add':'even')">
+														<td style="vertical-align:top">
+															<a href="javascript:;" @click="removeParameter(paramItem, index)" title="Remove"><i class="fa fa-trash"></i></a>
+															<input class="form-control" type="text" v-model="paramItem.key">
+														</td>
+														<td style="vertical-align:top"><textarea class="form-control" row="2" v-model="paramItem.value"></textarea></td>
+													</tr>	
+												</tbody>
+											</table>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -182,6 +207,8 @@
 </div>
 <!-- /.row -->
 
+<varsql:editorResource editorHeight="200"/>
+
 <script>
 
 VarsqlAPP.vueServiceBean( {
@@ -197,28 +224,28 @@ VarsqlAPP.vueServiceBean( {
 		,viewMode : 'form'
 		,selectObj : {}
 		,historyItem : {}
+		,sqlEditor:{}
+	}
+	,created : function (){
+		this.setDetailItem('init');
 	}
 	,methods:{
 		init : function(){
 			var _self = this; 
 			
-			this.selectObj= $.pubMultiselect('#backupList', {
-				duplicateCheck : true
-				,message :{
-					duplicate: VARSQL.messageFormat('varsql.0018')
-				}
-				,valueKey : 'contentid'	
-				,labelKey : 'name'
-				,source : {
-					items : []
-				}
-				,target : {
-					items : []
-				}
+			this.sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlEditor'), {
+				mode: 'text/x-sql',
+				indentWithTabs: true,
+				smartIndent: true,
+				autoCloseBrackets: true,
+				indentUnit : 4,
+				lineNumbers: true,
+				height:200,
+				lineWrapping: false,
+				matchBrackets : true,
+				autofocus: true,
+				hintOptions: {tables:{}}
 			});
-			
-			
-			this.setDetailItem('init');
 		}
 		,search : function(no){
 			var _this = this;
@@ -230,13 +257,24 @@ VarsqlAPP.vueServiceBean( {
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/ddlBackup/list'}
+				url : {type:VARSQL.uri.manager, url:'/sqlJob/list'}
 				,data : param
 				,success: function(resData) {
 					_this.gridData = resData.list;
 					_this.pageInfo = resData.page;
 				}
 			})
+		}
+		//add
+		,addParameter : function (){
+			this.detailItem.jobData.parameter.push({key:'',value:''});
+		}
+		// remove
+		,removeParameter : function (paramItem, index){
+			var idx = this.detailItem.jobData.parameter.indexOf(paramItem);
+			if(idx > -1){
+				this.detailItem.jobData.parameter.splice(idx, 1);
+			}
 		}
 		// 상세보기
 		,itemView : function(item){
@@ -281,20 +319,29 @@ VarsqlAPP.vueServiceBean( {
                     ,vconnid :''
                     ,jobDescription : ''
                     ,jobData :{
-                    	charset : 'utf-8'
-                    	, exportItems : []
+                    	sql : ''
+         				, parameter:[]
                     }
 				}
-				this.getObjectInfo('');
-			}else{
 				
+				//if(item !='init') this.sqlEditor.setValue('');
+				
+			}else{
 				var jobData = {
-                   	charset : 'utf-8'
-                 	, exportItems : []
+					 sql : ''
+					, parameter:[{key : '', value : ''}]
 				};
 				
 				try{
 					jobData = VARSQL.parseJSON(item.jobData);
+					
+					var paramMap = jobData.parameter;
+					var parameter =[];
+					
+					for(var key in paramMap){
+						parameter.push({key : key , value : paramMap[key]});
+					}
+					jobData.parameter = parameter;
 				}catch(e){
 					console.log(e);
 				}
@@ -304,13 +351,11 @@ VarsqlAPP.vueServiceBean( {
 				this.detailFlag = true;
 				this.detailItem = item;
 				
+				this.sqlEditor.setValue(jobData.sql);
+				
 				this.$nextTick(function (){
 					this.setTriggerGrid(item);
 				});
-				
-				this.getObjectInfo(item.vconnid);
-
-                this.selectObj.setTargetItem(item.jobData.exportItems);
 			}
 		}
 		// save
@@ -326,25 +371,31 @@ VarsqlAPP.vueServiceBean( {
 						return ;
 					}
 					
-					var backupItems = _this.selectObj.getTargetItem(); 
+					item.jobData.sql = _this.sqlEditor.getValue();
 					
-					if(backupItems.length < 1){
-						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0034', 'Data Backup'));
+					if(item.jobData.sql == ''){
+						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0034', 'Sql not empty'));
 						return ;
 					}
 					
-					item.jobData.exportItems = backupItems.map(item=>{
-						return {"name" : item.name, "contentid": item.contentid} 
-					})
-					
+					var param = {}
+					for(var i =0 ;i < item.jobData.parameter.length; i++){
+						var paramItem = item.jobData.parameter[i];
+						
+						if(VARSQL.str.allTrim(paramItem.key) != ''){
+							param[paramItem.key] = paramItem.value;	
+						}
+						
+					}
+					item.jobData.parameter = param;
 					item.jobData =  JSON.stringify(item.jobData);
 					
 					if(!confirm(VARSQL.messageFormat('varsql.0019'))){
 						return ;
 					}
-
+					
 					_this.$ajax({
-						url : {type:VARSQL.uri.manager, url:'/ddlBackup/save'}
+						url : {type:VARSQL.uri.manager, url:'/sqlJob/save'}
 						,data: item
 						,success:function (resData){
 							_this.setDetailItem();
@@ -408,29 +459,6 @@ VarsqlAPP.vueServiceBean( {
 					
 				}
 			});
-			
-		}
-		// get backup object info
-		,getObjectInfo : function (id){
-			var _self = this;
-			var param = {
-				vconnid : id
-			};
-			
-			if(VARSQL.isBlank(id)){
-				_self.selectObj.setSourceItem([]);
-				_self.selectObj.setTargetItem([]);
-				return ;
-			}
-
-			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/ddlBackup/dataObjectList'}
-				,loadSelector : '#backupList'
-				,data : param
-				,success:function (resData){
-		    		_self.selectObj.setSourceItem(resData.list);
-				}
-			});
 		}
 		// job control
 		,jobCtrl : function (item, mode){
@@ -484,19 +512,7 @@ VarsqlAPP.vueServiceBean( {
 					}}
 					,{key :'resultCount', label:'Result Count', width:50}
 					,{key :'failCount', label:'Fail Count', width:50}
-					,{key :'message', label:'Message', width:70, renderer:{
-						type : 'link'
-						,click : function (clickItem){
-							console.log(clickItem)
-							VARSQL.req.download({
-								type: 'post'
-								,url: '/file/backup/download'
-								,params: {
-									fileId : clickItem.item.histSeq
-								}
-							});
-						}
-					}}
+					,{key :'message', label:'Message', width:70}
 					,{key :'log', label:'log', width:70}
 				]
 				,rowOptions:{	// 로우 옵션.

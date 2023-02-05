@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.varsql.web.model.id.ScheduleHistoryLogID;
+import com.varsql.web.model.id.JobHistoryLogID;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +19,9 @@ import lombok.Setter;
 @DynamicUpdate
 @NoArgsConstructor
 @Entity
-@Table(name = ScheduleHistoryLogEntity._TB_NAME)
-@IdClass(ScheduleHistoryLogID.class)
-public class ScheduleHistoryLogEntity{
+@Table(name = JobHistoryLogEntity._TB_NAME)
+@IdClass(JobHistoryLogID.class)
+public class JobHistoryLogEntity{
 
 	public final static String _TB_NAME="VTQTZ_HISTORY_LOG";
 
@@ -35,7 +35,7 @@ public class ScheduleHistoryLogEntity{
 	private String log;
 
 	@Builder
-	public ScheduleHistoryLogEntity (long histSeq, String logType, String log) {
+	public JobHistoryLogEntity (long histSeq, String logType, String log) {
 		this.histSeq = histSeq;
 		this.logType = logType;
 		this.log = log;

@@ -30,19 +30,19 @@ import lombok.Setter;
 @DynamicUpdate
 @NoArgsConstructor
 @Entity
-@Table(name = ScheduleHistoryEntity._TB_NAME)
-public class ScheduleHistoryEntity {
+@Table(name = JobHistoryEntity._TB_NAME)
+public class JobHistoryEntity {
 
 	public final static String _TB_NAME = "VTQTZ_HISTORY";
 
 	@Id
 	@TableGenerator(
-		name = "scheduleHistoryIdGenerator"
+		name = "jobHistoryIdGenerator"
 		,table= VarsqlJpaConstants.TABLE_SEQUENCE_NAME
 		,pkColumnValue = _TB_NAME
 		,allocationSize = 1
 	)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "scheduleHistoryIdGenerator")
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "jobHistoryIdGenerator")
 	@Column(name = "HIST_SEQ", nullable = false)
 	private long histSeq;
 	
@@ -80,7 +80,7 @@ public class ScheduleHistoryEntity {
 	private String customInfo;
 
 	@Builder
-	public ScheduleHistoryEntity(String instanceId, String jobUid, String runType, Timestamp startTime,
+	public JobHistoryEntity(String instanceId, String jobUid, String runType, Timestamp startTime,
 			Timestamp endTime, long runTime, long resultCount, long failCount, String message, String status,  String customInfo) {
 		this.instanceId = instanceId;
 		this.jobUid = jobUid;

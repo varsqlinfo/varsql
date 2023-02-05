@@ -5,7 +5,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
+import com.varsql.web.model.entity.scheduler.JobEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class JobScheduleRequestDTO implements Serializable{
+public class JobRequestDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,12 +39,12 @@ public class JobScheduleRequestDTO implements Serializable{
 	
 	private String jobData;
 	
-	public JobScheduleEntity toEntity() {
-		return JobScheduleEntity.builder()
+	public JobEntity toEntity() {
+		return JobEntity.builder()
 			.jobUid(jobUid)
 			.jobName(jobName)
 			.jobGroup(jobGroup)
-			.scheduleDBConnection(DBConnectionEntity.builder().vconnid(vconnid).build() )
+			.jobDBConnection(DBConnectionEntity.builder().vconnid(vconnid).build() )
 			.cronExpression(cronExpression)
 			.jobDescription(jobDescription)
 			.jobData(jobData)

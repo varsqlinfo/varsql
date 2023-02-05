@@ -1,9 +1,5 @@
 package com.varsql.web.app.scheduler.job;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -15,7 +11,6 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
-import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.database.service.ExportServiceImpl;
@@ -24,7 +19,7 @@ import com.varsql.web.app.scheduler.bean.JobBean;
 import com.varsql.web.dto.DDLExportItemVO;
 import com.varsql.web.dto.DDLExportVO;
 import com.varsql.web.dto.JobResultVO;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
+import com.varsql.web.dto.scheduler.JobVO;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.ValidateUtils;
@@ -36,7 +31,7 @@ public class DDLBackupJob extends JobBean {
 	
 	private final Logger logger = LoggerFactory.getLogger(DDLBackupJob.class);
 	
-	private static String BACKUP_PATH = Configuration.getInstance().getBackupPath();
+	private final static String BACKUP_PATH = Configuration.getInstance().getBackupPath();
 	
 	@Autowired
 	private ExportServiceImpl exportServiceImpl;
@@ -45,7 +40,7 @@ public class DDLBackupJob extends JobBean {
 	private DBConnectionEntityRepository dbConnectionEntityRepository; 
 
 	@Override
-	public JobResultVO doExecute(JobExecutionContext context, JobScheduleVO jsv) throws Exception{
+	public JobResultVO doExecute(JobExecutionContext context, JobVO jsv) throws Exception{
 		logger.debug("## ddl backup start : {}", jsv);
 		
 		String vconnid = jsv.getVconnid(); 

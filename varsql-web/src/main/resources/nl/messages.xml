@@ -91,6 +91,7 @@
 <entry key="manager.menu.scheduler">Scheduler</entry>
 <entry key="manager.menu.databackupgmgmt">데이터 백업 관리</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL 백업 관리</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">프로필 수정</entry>

@@ -19,9 +19,9 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.scheduler.JOBServiceUtils;
 import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.dto.JobResultVO;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryLogEntity;
+import com.varsql.web.dto.scheduler.JobVO;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
+import com.varsql.web.model.entity.scheduler.JobHistoryLogEntity;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -49,14 +49,14 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
     	
     	JobDataMap jobDataMap = context.getMergedJobDataMap();
     	
-    	JobScheduleVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString("jobScheduleVO"), JobScheduleVO.class);
+    	JobVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString("jobCustomVO"), JobVO.class);
     	
     	if(jsv == null) {
-    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "JobScheduleVO not found : " + jsv);
+    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "jobCustomVO not found : " + jsv);
     	}
     	
     	if(logger.isDebugEnabled()) {
-    		logger.debug("jobScheduleVO : {}", jsv);
+    		logger.debug("jobCustomVO : {}", jsv);
     	}
     	
     	long startTime = System.currentTimeMillis(); 
@@ -83,7 +83,7 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
         
         long endTime = System.currentTimeMillis(); 
         
-		ScheduleHistoryEntity schedulerHistoryEntity = ScheduleHistoryEntity.builder()
+		JobHistoryEntity jobHistoryEntity = JobHistoryEntity.builder()
 			.instanceId(context.getFireInstanceId())
 			.jobUid(jsv.getJobUid())
 			.startTime(ConvertUtils.longToTimestamp(startTime))
@@ -98,13 +98,13 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
 			.build();
 		
 		if(!StringUtils.isBlank(jobResultVo.getLog())) {
-			commonLogService.saveScheduleHistory(schedulerHistoryEntity, ScheduleHistoryLogEntity.builder()
-					.histSeq(schedulerHistoryEntity.getHistSeq())
+			commonLogService.saveJobHistory(jobHistoryEntity, JobHistoryLogEntity.builder()
+					.histSeq(jobHistoryEntity.getHistSeq())
 					.logType(jobResultVo.getJobType().name())
 					.log(jobResultVo.getLog())
 					.build());
 		}else {
-			commonLogService.saveScheduleHistory(schedulerHistoryEntity);
+			commonLogService.saveJobHistory(jobHistoryEntity);
 		}
 		
 		

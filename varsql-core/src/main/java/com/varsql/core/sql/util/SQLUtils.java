@@ -13,13 +13,15 @@ import java.util.Map;
 
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.db.DBVenderType;
-import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
+import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
+import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMode;
 import com.varsql.core.sql.type.SQLCommandType;
@@ -124,6 +126,9 @@ public final class SQLUtils {
 	 * @throws SQLException
 	 */
 	public static SqlSourceResultVO getSqlExecute(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias) throws SQLException {
+		return getSqlExecute(sqlExecuteInfo, conn, tmpSqlSource, gridKeyAlias, null); 
+	}
+	public static SqlSourceResultVO getSqlExecute(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias, SelectExecutorHandler selectExecutorHandler) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
@@ -201,7 +206,12 @@ public final class SQLUtils {
 		        	rs = (ResultSet)callStatement.getObject(cursorObjIdx);
 
 		        	if(rs != null) {
-			        	SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, gridKeyAlias);
+		        		if(selectExecutorHandler != null) {
+		        			SQLResultSetUtils.resultSetHandler(rs, sqlExecuteInfo, selectExecutorHandler, gridKeyAlias);
+		        		}else {
+		        			SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, gridKeyAlias);
+		        		}
+			        	
 			            ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 			            ssrv.setResultMessage(String.format("select count : %s ", new Object[] { Long.valueOf(ssrv.getResultCnt()) }));
 		        	}else {

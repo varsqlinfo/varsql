@@ -100,6 +100,7 @@
 <entry key="manager.menu.scheduler">Scheduler</entry>
 <entry key="manager.menu.databackupmgmt">Data Backup</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL Backup</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
 
 <!-- user menu -->
 <entry key="user.edit.general">Modify Profile</entry>

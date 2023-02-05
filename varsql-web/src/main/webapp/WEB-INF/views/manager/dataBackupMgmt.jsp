@@ -277,7 +277,7 @@ VarsqlAPP.vueServiceBean( {
 			_this.errors.clear();
 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/scheduleMgmt/detail'}
+				url : {type:VARSQL.uri.manager, url:'/schedulerMgmt/detail'}
 				,data : param
 				,loadSelector : '#addForm'
 				,success: function(resData) {
@@ -394,7 +394,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/scheduleMgmt/delete'}
+				url : {type:VARSQL.uri.manager, url:'/schedulerMgmt/delete'}
 				,data: {
 					jobUid : _this.detailItem.jobUid
 				}
@@ -417,7 +417,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/scheduleMgmt/history'}
+				url : {type:VARSQL.uri.manager, url:'/schedulerMgmt/history'}
 				,data : {
 					jobUid : this.historyItem.jobUid
 					,countPerPage : 15
@@ -472,7 +472,7 @@ VarsqlAPP.vueServiceBean( {
 			}
 			
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/scheduleMgmt/jobCtrl'}
+				url : {type:VARSQL.uri.manager, url:'/schedulerMgmt/jobCtrl'}
 				,data : param
 				,success:function (resData){
 					if(_this.detailItem.jobUid == item.jobUid){

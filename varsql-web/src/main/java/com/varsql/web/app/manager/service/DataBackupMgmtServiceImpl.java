@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -16,15 +15,14 @@ import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.app.scheduler.job.DataBackupJob;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
-import com.varsql.web.dto.scheduler.JobScheduleDetailDTO;
-import com.varsql.web.dto.scheduler.JobScheduleRequestDTO;
-import com.varsql.web.dto.scheduler.JobScheduleVO;
+import com.varsql.web.dto.scheduler.JobDetailDTO;
+import com.varsql.web.dto.scheduler.JobRequestDTO;
+import com.varsql.web.dto.scheduler.JobVO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
-import com.varsql.web.model.mapper.scheduler.JobScheduleMapper;
+import com.varsql.web.model.entity.scheduler.JobEntity;
+import com.varsql.web.model.mapper.scheduler.JobMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
-import com.varsql.web.repository.scheduler.JobScheduleEntityRepository;
-import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.repository.scheduler.JobEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -48,15 +46,11 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	
 	private String TABLE_BACKUP_JOB_GROUP = "TABLE_DATA_BACKUP";
 	
-	enum JOB_MODE{
-		RUN, PAUSE, RESUME
-	}
-	
 	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
 
-	final private JobScheduleEntityRepository jobScheduleEntityRepository;
+	final private JobEntityRepository jobEntityRepository;
 	
-	final private ScheduleMgmtServiceImpl scheduleMgmtServiceImpl;
+	final private SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
 	
 	/**
 	 * 목록보기
@@ -66,8 +60,8 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult findDataBackupJobList(SearchParameter searchParameter) {
-		Page<JobScheduleEntity> result = jobScheduleEntityRepository.findByJobGroupAndJobNameContaining(TABLE_BACKUP_JOB_GROUP, searchParameter.getKeyword(), VarsqlUtils.convertSearchInfoToPage(searchParameter));
-		return VarsqlUtils.getResponseResult(result, searchParameter, JobScheduleMapper.INSTANCE);
+		Page<JobEntity> result = jobEntityRepository.findByJobGroupAndJobNameContaining(TABLE_BACKUP_JOB_GROUP, searchParameter.getKeyword(), VarsqlUtils.convertSearchInfoToPage(searchParameter));
+		return VarsqlUtils.getResponseResult(result, searchParameter, JobMapper.INSTANCE);
 	}
 	
 	/**
@@ -105,11 +99,11 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult findDetailInfo(String jobUid) {
-		JobScheduleDetailDTO detailDto = jobScheduleEntityRepository.findJobDetailInfo(jobUid);
+		JobDetailDTO detailDto = jobEntityRepository.findJobDetailInfo(jobUid);
 		
 		if(detailDto == null) {
 			return ResponseResult.builder().resultCode((RequestResultCode.NOT_FOUND))
-					.message("job schedule info not found : "+ jobUid).build();
+					.message("job info not found : "+ jobUid).build();
 		}
 		
 		return VarsqlUtils.getResponseResultItemOne(detailDto);
@@ -123,14 +117,14 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
-	public ResponseResult save(JobScheduleRequestDTO dto){
+	public ResponseResult save(JobRequestDTO dto){
 		
-		logger.info("job schedule info : {}", dto);
+		logger.info("job info : {}", dto);
 		ResponseResult resultObject = new ResponseResult();
 		
 		String jobUid =  dto.getJobUid();
 		
-		JobScheduleEntity entity;
+		JobEntity entity;
 		
 		if(StringUtils.isBlank(jobUid)) {
 			entity = dto.toEntity();
@@ -140,11 +134,11 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 			dto.setJobUid(jobUid);
 			entity.setJobUid(jobUid);
 		}else {
-			entity = jobScheduleEntityRepository.findByJobUid(jobUid);
+			entity = jobEntityRepository.findByJobUid(jobUid);
 			if(entity == null) {
 				
 				resultObject.setResultCode(RequestResultCode.NOT_FOUND);
-				resultObject.setMessage("job schedule info not found : "+ jobUid);
+				resultObject.setMessage("job info not found : "+ jobUid);
 				return resultObject;
 			}
 			
@@ -157,12 +151,12 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 		entity.setJobGroup(TABLE_BACKUP_JOB_GROUP);
 		
 		DBConnectionEntity dbConnectionEntity = dbConnectionEntityRepository.findByVconnid(dto.getVconnid());
-		entity.setScheduleDBConnection(dbConnectionEntity);
+		entity.setJobDBConnection(dbConnectionEntity);
 		
-		jobScheduleEntityRepository.save(entity);
+		jobEntityRepository.save(entity);
 		
 		try {
-			scheduleMgmtServiceImpl.saveOrUpdate(DataBackupJob.class, JobScheduleVO.toVo(entity));
+			schedulerMgmtServiceImpl.saveOrUpdate(DataBackupJob.class, JobVO.toVo(entity));
 		} catch (SchedulerException e) {
 			throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, e);
 		}

@@ -24,9 +24,9 @@ import lombok.ToString;
 @DynamicUpdate
 @NoArgsConstructor
 @Entity
-@Table(name = JobScheduleEntity._TB_NAME)
-@ToString(exclude = {"scheduleDBConnection"})
-public class JobScheduleEntity extends AbstractAuditorModel{
+@Table(name = JobEntity._TB_NAME)
+@ToString(exclude = {"jobDBConnection"})
+public class JobEntity extends AbstractAuditorModel{
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class JobScheduleEntity extends AbstractAuditorModel{
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "VCONNID", nullable = false)
-	private DBConnectionEntity scheduleDBConnection;
+	private DBConnectionEntity jobDBConnection;
 
 	@Column(name ="JOB_DATA")
 	private String jobData; 
@@ -57,11 +57,11 @@ public class JobScheduleEntity extends AbstractAuditorModel{
 	private String jobDescription; 
 	
 	@Builder
-	public JobScheduleEntity (String jobUid, String jobName, String jobGroup, DBConnectionEntity scheduleDBConnection, String jobData, String cronExpression, String jobDescription) {
+	public JobEntity (String jobUid, String jobName, String jobGroup, DBConnectionEntity jobDBConnection, String jobData, String cronExpression, String jobDescription) {
 		this.jobUid = jobUid;
 		this.jobName = jobName;
 		this.jobGroup = jobGroup;
-		this.scheduleDBConnection = scheduleDBConnection;
+		this.jobDBConnection = jobDBConnection;
 		this.jobData = jobData;
 		this.cronExpression = cronExpression;
 		this.jobDescription = jobDescription;
@@ -70,7 +70,7 @@ public class JobScheduleEntity extends AbstractAuditorModel{
 	public final static String JOB_UID="jobUid";
 	public final static String JOB_NAME="jobName";
 	public final static String JOB_GROUP="jobGroup";
-	public final static String SCHEDULE_DBCONNECTION="scheduleDBConnection";
+	public final static String SCHEDULE_DBCONNECTION="jobDBConnection";
 	public final static String JOB_DATA="jobData";
 	public final static String CRON_EXPRESSION="cronExpression";
 	public final static String JOB_DESCRIPTION="jobDescription";

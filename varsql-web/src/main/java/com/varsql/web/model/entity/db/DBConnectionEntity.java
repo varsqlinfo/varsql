@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
-import com.varsql.web.model.entity.scheduler.JobScheduleEntity;
+import com.varsql.web.model.entity.scheduler.JobEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -145,8 +145,8 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	@NotAudited
 	@JsonIgnore
 	@JsonManagedReference
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "scheduleDBConnection")
-    private Set<JobScheduleEntity> jobScheduleEntity;
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "jobDBConnection")
+    private Set<JobEntity> jobEntity;
 
 //	@NotAudited
 //	@JsonManagedReference

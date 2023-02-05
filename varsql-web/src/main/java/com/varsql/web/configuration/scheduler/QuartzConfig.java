@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.varsql.web.app.scheduler.InitJobBean;
 import com.varsql.web.app.scheduler.listener.JobsListenerImpl;
 import com.varsql.web.app.scheduler.listener.TriggerListenerImpl;
 import com.varsql.web.constants.ResourceConfigConstants;
@@ -78,5 +79,10 @@ public class QuartzConfig {
 			logger.warn("Cannot load quartz config path : {} , msg: {} " , com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig(), e.getMessage(), e);
 		}
 		return properties;
+	}
+	
+	@Bean(initMethod="init")
+	public InitJobBean initJobBean() {
+	    return new InitJobBean();
 	}
 }

@@ -26,6 +26,7 @@ public class ContextLoaderListener  implements ServletContextListener{
 	
 	public void contextInitialized(ServletContextEvent event)
     {
+		System.out.println("init servlet context listener");
 		ServletContext sc = event.getServletContext();
 		Configuration.getInstance();
 		
@@ -33,7 +34,7 @@ public class ContextLoaderListener  implements ServletContextListener{
 	}
 
 	public void contextDestroyed(ServletContextEvent event){
-		System.out.println("contextDestroyed-------------------------");
+		System.out.println("servlet context listener destroyed");
 		
 		webApplicationContext.close();
 		

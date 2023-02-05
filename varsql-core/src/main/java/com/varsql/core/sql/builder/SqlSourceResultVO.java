@@ -19,7 +19,7 @@ public class SqlSourceResultVO {
 	// return result 
 	private long resultCnt;
 	// 쿼리 total count 
-	private int totalCnt;
+	private long totalCnt;
 	// 페이징 정보. 
 	private Map pagingInfo;
 	
@@ -106,11 +106,11 @@ public class SqlSourceResultVO {
 		this.numberTypeFlag = numberTypeFlag;
 	}
 	
-	public int getTotalCnt() {
+	public long getTotalCnt() {
 		return totalCnt;
 	}
 
-	public void setTotalCnt(int totalCnt) {
+	public void setTotalCnt(long totalCnt) {
 		this.totalCnt = totalCnt;
 	}
 	

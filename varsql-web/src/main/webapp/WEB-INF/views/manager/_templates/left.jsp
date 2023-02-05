@@ -46,18 +46,21 @@
             </li>
 		</ul>
 	</li>
-    <li class="dropdown<c:if test="${selectMenu eq 'backupMgmt'}"> active</c:if>">
+    <li class="dropdown<c:if test="${selectMenu eq 'jobMgmt'}"> active</c:if>">
 		<a href="#" data-toggle="collapse" data-target="#backup-sub-menu">
 			<i class="fa fa-calendar"></i>
 			<span class="hidden-xs"><spring:message code="manager.menu.scheduler" text="Scheduler" /></span>
 			<i class="fa fa-fw fa-caret-down"></i>
 		</a>
-		<ul id="backup-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'backupMgmt'}"> in</c:if>">
+		<ul id="backup-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'jobMgmt'}"> in</c:if>">
 			<li>
                <a href="<c:url value="./dataBackupMgmt" />"><spring:message code="manager.menu.databackupgmgmt" text="데이터 백업 관리" /></a>
             </li>
             <li>
                <a href="<c:url value="./ddlBackupMgmt" />"><spring:message code="manager.menu.ddlbackupmgmt" text="DDL 백업 관리" /></a>
+            </li>
+            <li>
+               <a href="<c:url value="./sqlJobMgmt" />"><spring:message code="manager.menu.sqljobmgmt" text="SQL Job" /></a>
             </li>
 		</ul>
 	</li>

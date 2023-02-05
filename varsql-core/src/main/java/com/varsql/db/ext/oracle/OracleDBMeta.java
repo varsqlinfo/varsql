@@ -34,8 +34,8 @@ public class OracleDBMeta extends AbstractDBMeta{
 
 	public OracleDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-			, new ServiceObject(ObjectType.FUNCTION, true)
-			, new ServiceObject(ObjectType.INDEX, true)
+			, new ServiceObject(ObjectType.FUNCTION)
+			, new ServiceObject(ObjectType.INDEX)
 			, new ServiceObject(ObjectType.PROCEDURE)
 			, new ServiceObject(ObjectType.PACKAGE)
 			, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)

@@ -35,9 +35,9 @@ public class PostgresqlDBMeta extends AbstractDBMeta{
 
 	public PostgresqlDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.PROCEDURE, false, ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.FUNCTION)
+				, new ServiceObject(ObjectType.PROCEDURE)
+				, new ServiceObject(ObjectType.INDEX)
 				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 		);

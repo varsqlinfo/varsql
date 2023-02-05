@@ -213,14 +213,14 @@ public class ManagerController extends AbstractController{
 	@GetMapping("/dataBackupMgmt")
 	public ModelAndView dataBackupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("selectMenu", "backupMgmt");
+		model.addAttribute("selectMenu", "jobMgmt");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 		
 		return getModelAndView("/dataBackupMgmt", VIEW_PAGE.MANAGER,model);
 	}
 	
 	/**
-	 * ddl backpu 관리
+	 * ddl backup 관리
 	 *
 	 * @method : ddlBackupMgmt
 	 * @param req
@@ -232,9 +232,28 @@ public class ManagerController extends AbstractController{
 	@GetMapping("/ddlBackupMgmt")
 	public ModelAndView ddlBackupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
-		model.addAttribute("selectMenu", "backupMgmt");
+		model.addAttribute("selectMenu", "jobMgmt");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 		
 		return getModelAndView("/ddlBackupMgmt", VIEW_PAGE.MANAGER,model);
+	}
+	
+	/**
+	 * sql job 관리
+	 *
+	 * @method : sqlJobMgmt
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/sqlJobMgmt")
+	public ModelAndView sqlJobMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "jobMgmt");
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+		
+		return getModelAndView("/sqlJobMgmt", VIEW_PAGE.MANAGER,model);
 	}
 }

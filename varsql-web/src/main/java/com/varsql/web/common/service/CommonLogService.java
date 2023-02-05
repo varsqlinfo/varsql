@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.app.ExceptionLogEntity;
 import com.varsql.web.model.entity.db.DBConnHistEntity;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryLogEntity;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
+import com.varsql.web.model.entity.scheduler.JobHistoryLogEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
-import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
-import com.varsql.web.repository.scheduler.ScheduleHistoryLogEntityRepository;
+import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
+import com.varsql.web.repository.scheduler.JobHistoryLogEntityRepository;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
@@ -42,9 +42,9 @@ public class CommonLogService{
 	
 	final private DBConnHistEntityRepository dbConnHistEntityRepository;
 	
-	final private ScheduleHistoryEntityRepository scheduleHistoryEntityRepository;
+	final private JobHistoryEntityRepository scheduleHistoryEntityRepository;
 	
-	final private ScheduleHistoryLogEntityRepository scheduleHistoryLogEntityRepository;
+	final private JobHistoryLogEntityRepository jobHistoryLogEntityRepository;
 	
 	/**
 	 * error insert
@@ -119,26 +119,26 @@ public class CommonLogService{
 	
 	/**
 	 *
-	 * @method : saveScheduleHistory
-	 * @param scheduleHistoryEntity
+	 * @method : saveJobHistory
+	 * @param jobHistoryEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
-	public void saveScheduleHistory(ScheduleHistoryEntity scheduleHistoryEntity) {
+	public void saveJobHistory(JobHistoryEntity jobHistoryEntity) {
 		try{
-			scheduleHistoryEntity = scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
+			jobHistoryEntity = scheduleHistoryEntityRepository.save(jobHistoryEntity);
 		}catch(Exception e){
-			logger.error("saveScheduleHistory {}", e.getMessage());
+			logger.error("saveJobHistory {}", e.getMessage());
 		}
 	}
 	
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
-	public void saveScheduleHistory(ScheduleHistoryEntity scheduleHistoryEntity, ScheduleHistoryLogEntity scheduleHistoryLogEntity) {
+	public void saveJobHistory(JobHistoryEntity jobHistoryEntity, JobHistoryLogEntity jobHistoryLogEntity) {
 		try{
-			scheduleHistoryEntity = scheduleHistoryEntityRepository.save(scheduleHistoryEntity);
-			scheduleHistoryLogEntity.setHistSeq(scheduleHistoryEntity.getHistSeq());
-			scheduleHistoryLogEntityRepository.save(scheduleHistoryLogEntity);
+			jobHistoryEntity = scheduleHistoryEntityRepository.save(jobHistoryEntity);
+			jobHistoryLogEntity.setHistSeq(jobHistoryEntity.getHistSeq());
+			jobHistoryLogEntityRepository.save(jobHistoryLogEntity);
 		}catch(Exception e){
-			logger.error("saveScheduleHistory {}", e.getMessage());
+			logger.error("saveJobHistory {}", e.getMessage());
 		}
 	}
 	

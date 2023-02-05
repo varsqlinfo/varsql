@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.web.app.scheduler.job.DDLBackupJob;
+import com.varsql.web.app.scheduler.job.SqlExecuteJob;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
@@ -31,18 +29,18 @@ import com.vartech.common.utils.VartechUtils;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data backup service
+ * sql job service
 * 
-* @fileName	: DataBackupMgmtServiceImpl.java
+* @fileName	: SqlJobServiceImpl.java
 * @author	: ytkim
  */
 @Service
 @RequiredArgsConstructor
-public class DDLBackupMgmtServiceImpl extends AbstractService{
+public class SqlJobServiceImpl extends AbstractService{
 	
-	private final Logger logger = LoggerFactory.getLogger(DDLBackupMgmtServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(SqlJobServiceImpl.class);
 	
-	private String DDL_BACKUP_JOB_GROUP = "DDL_BACKUP";
+	private String JOB_GROUP = "SQL_EXECUTE_JOB";
 	
 	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
 
@@ -53,37 +51,13 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 	/**
 	 * 목록보기
 	 *
-	 * @method : findDataBackupJobList
+	 * @method : findJobList
 	 * @param searchParameter
 	 * @return
 	 */
-	public ResponseResult findDataBackupJobList(SearchParameter searchParameter) {
-		Page<JobEntity> result = jobEntityRepository.findByJobGroupAndJobNameContaining(DDL_BACKUP_JOB_GROUP, searchParameter.getKeyword(), VarsqlUtils.convertSearchInfoToPage(searchParameter));
+	public ResponseResult findJobList(SearchParameter searchParameter) {
+		Page<JobEntity> result = jobEntityRepository.findByJobGroupAndJobNameContaining(JOB_GROUP, searchParameter.getKeyword(), VarsqlUtils.convertSearchInfoToPage(searchParameter));
 		return VarsqlUtils.getResponseResult(result, searchParameter, JobMapper.INSTANCE);
-	}
-	
-	/**
-	 * 
-	 *
-	 * @method : dataObjectList
-	 * @param vconnid
-	 * @return
-	 */
-	public ResponseResult dataObjectList(String vconnid) {
-		
-		ResponseResult resultObject = new ResponseResult();
-		
-		DatabaseInfo databaseInfo = dbConnectionEntityRepository.findDatabaseInfo(vconnid);
-
-		if(databaseInfo==null){
-			resultObject.setResultCode(RequestResultCode.ERROR);
-			resultObject.setMessage("connection info not found : "+ vconnid);
-			return resultObject; 
-		}else{
-			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getServiceMenu());
-		}
-
-		return resultObject;
 	}
 	
 	/**
@@ -133,7 +107,7 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 			if(entity == null) {
 				
 				resultObject.setResultCode(RequestResultCode.NOT_FOUND);
-				resultObject.setMessage("job schedule info not found : "+ jobUid);
+				resultObject.setMessage("job info not found : "+ jobUid);
 				return resultObject;
 			}
 			
@@ -143,7 +117,7 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 			entity.setJobDescription(dto.getJobDescription());
 		}
 		
-		entity.setJobGroup(DDL_BACKUP_JOB_GROUP);
+		entity.setJobGroup(JOB_GROUP);
 		
 		DBConnectionEntity dbConnectionEntity = dbConnectionEntityRepository.findByVconnid(dto.getVconnid());
 		entity.setJobDBConnection(dbConnectionEntity);
@@ -151,7 +125,7 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 		jobEntityRepository.save(entity);
 		
 		try {
-			schedulerMgmtServiceImpl.saveOrUpdate(DDLBackupJob.class, JobVO.toVo(entity));
+			schedulerMgmtServiceImpl.saveOrUpdate(SqlExecuteJob.class, JobVO.toVo(entity));
 		} catch (SchedulerException e) {
 			throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, e);
 		}

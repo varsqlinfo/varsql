@@ -3,21 +3,17 @@ package com.varsql.web.common.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,15 +23,13 @@ import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
-import com.varsql.web.model.entity.scheduler.ScheduleHistoryEntity;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
-import com.varsql.web.repository.scheduler.ScheduleHistoryEntityRepository;
+import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
-import com.vartech.common.constants.RequestResultCode;
-import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -50,7 +44,7 @@ public class FileDownloadController {
 	
 	private FileInfoEntityRepository fileInfoEntityRepository;
 	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
-	private ScheduleHistoryEntityRepository ScheduleHistoryEntityRepository;
+	private JobHistoryEntityRepository jobHistoryEntityRepository;
 	
 	// 첨부파일 다운로드
 	@RequestMapping(value = "/download")
@@ -100,9 +94,9 @@ public class FileDownloadController {
 			fileErrorMessage(req, res, VarsqlAppCode.SECURITY_AUTH_ERROR);
 		}
 		
-		ScheduleHistoryEntity she =null;
+		JobHistoryEntity she =null;
 		if(fileId > 0) {
-			she = ScheduleHistoryEntityRepository.findByHistSeq(fileId);
+			she = jobHistoryEntityRepository.findByHistSeq(fileId);
 		}
 		
 		String customInfo = she.getCustomInfo();
