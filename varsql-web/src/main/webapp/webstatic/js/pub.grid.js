@@ -226,7 +226,7 @@ var _initialized = false
 	}
 	,i18n :{
 		'setting.label' : '설정'
-		,'search.button' : '검색'
+		,'search.button' : 'Search'
 		,'setting.speed.label' : '스크롤속도'
 		,'setting.column.fixed.label' : '고정컬럼'
 		,'setting.column.fixed.notused' : '사용안함'

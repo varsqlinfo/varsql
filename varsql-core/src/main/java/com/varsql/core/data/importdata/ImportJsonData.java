@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
+import com.varsql.core.exception.ImportDataException;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.vartech.common.utils.StringUtils;
 
@@ -26,7 +27,7 @@ public class ImportJsonData extends AbstractImportData{
 	}
 
 	@Override
-	public void startImport(AbstractImportDataHandler importDataHandler) {
+	public void startImport(AbstractImportDataHandler importDataHandler) throws ImportDataException {
 		File importFile = getImportFilePath();
 		logger.debug("import file : {}" , importFile.getAbsolutePath());
 
@@ -71,7 +72,8 @@ public class ImportJsonData extends AbstractImportData{
 	        parser.close();
 
 		}catch(Exception e) {
-			logger.error("import xml data " , e);
+			logger.error("import json data " , e);
+			throw new ImportDataException("import json exception", e);
 		}
 	}
 

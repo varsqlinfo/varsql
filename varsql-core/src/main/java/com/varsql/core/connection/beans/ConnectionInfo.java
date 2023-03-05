@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Transient;
 
 import com.varsql.core.common.constants.BlankConstants;
+import com.varsql.core.db.meta.DBVersionInfo;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class ConnectionInfo implements Serializable {
 	private static final long serialVersionUID = -3088926375387532055L;
 
 	private String connid;
-	private String version;
+	private DBVersionInfo version;
 	private String aliasName;
 	private String type;
 	private String url;
@@ -46,7 +47,7 @@ public class ConnectionInfo implements Serializable {
 	private JDBCDriverInfo jdbcDriverInfo;
 	
 	@Builder
-	public ConnectionInfo(String connid, String version, String aliasName, String type, String url, String username, String password
+	public ConnectionInfo(String connid, DBVersionInfo version, String aliasName, String type, String url, String username, String password
 			, int connectionTimeOut, int exportCount, int initialSize, int maxActive, int minIdle, int maxIdle, long maxWait
 			, long timebetweenevictionrunsmillis, boolean testWhileIdle, String validationQuery, String useColumnLabel
 			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo) {

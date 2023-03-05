@@ -151,7 +151,7 @@ public class DBConnectionRequestDTO{
 				.vid(vid)
 				.vpw(vpw)
 				.urlDirectYn(urlDirectYn)
-				.vdbversion(ConvertUtils.longValueOf(vdbversion))
+				.vdbversion(vdbversion)
 				.vdbschema(vdbschema)
 				.useYn(useYn)
 				.basetableYn(basetableYn)

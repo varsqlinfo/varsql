@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.data.importdata.handler.AbstractImportDataHandler;
+import com.varsql.core.exception.ImportDataException;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.vartech.common.utils.StringUtils;
 
@@ -28,7 +29,7 @@ public class ImportXmlData extends AbstractImportData{
 	}
 
 	@Override
-	public void startImport(AbstractImportDataHandler importDataHandler) {
+	public void startImport(AbstractImportDataHandler importDataHandler) throws ImportDataException {
 
 		File importFile = getImportFilePath();
 		logger.debug("import file : {}" , importFile.getAbsolutePath());
@@ -68,8 +69,8 @@ public class ImportXmlData extends AbstractImportData{
 			}
 			// xmlreader 닫기
 			xmlreader.close();
-		} catch (Throwable e) {
-			logger.error("import xml data " , e);
+		} catch (Exception e) {
+			throw new ImportDataException("import xml exception", e);
 		}finally {
 			if(xmlreader != null)try {xmlreader.close();} catch (XMLStreamException e) {}
 		}

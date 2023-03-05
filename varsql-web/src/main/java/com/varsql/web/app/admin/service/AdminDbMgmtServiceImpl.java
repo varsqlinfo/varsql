@@ -38,11 +38,15 @@ import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
+import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
@@ -67,6 +71,7 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
+import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
@@ -128,8 +133,17 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			DBConnectionSpec.getVnameOrVurl(searchParameter.getKeyword())
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
+		
+		ResponseResult responseResult = new ResponseResult();
+		responseResult.setList(result.stream().map(item->{
+			DBConnectionResponseDTO dto = DBConnectionMapper.INSTANCE.toDto(item);
+			dto.setStatus(ConnectionFactory.getInstance().getStatus(dto.getVconnid()).name());
+			return dto;
+		}).collect(Collectors.toList()));
+		responseResult.setPage(PagingUtil.getPageObject(result.getTotalElements(), searchParameter));
+		
+		return responseResult;
 
-		return VarsqlUtils.getResponseResult(result, searchParameter, DBConnectionMapper.INSTANCE);
 	}
 
 	public ResponseResult selectDbNameSearch(SearchParameter searchParameter) {
@@ -238,6 +252,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 				.driverFiles(driverJarFiles)
 				.build()
 			);
+		    
+		    System.out.println(dbDriver.getMajorVersion()+" :: " + dbDriver.getMinorVersion());
 
 		    connChk = dbDriver.connect(url, p);
 		    pstmt = connChk.prepareStatement(validation_query);
@@ -311,10 +327,15 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 				VarsqlBeanUtils.copyNonNullProperties(reqEntity, saveEntity, new String[] { DBConnectionEntity.VPW });
 			}
 		}
-		if (!updateFlag)
+		
+		if (!updateFlag) {
 			saveEntity = reqEntity;
-		if (vtConnection.isPasswordChange())
+		}
+		
+		if (vtConnection.isPasswordChange()) {
 			saveEntity.setVpw(vtConnection.getVpw());
+		}
+			
 		logger.debug("saveVtconnectionInfo object param :  {}", VartechUtils.reflectionToString(saveEntity));
 		this.dbConnectionModelRepository.save(saveEntity);
 		if (updateFlag)
@@ -490,6 +511,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			dto.setDriverProviderId(item.getDriverProviderId());
 			dto.setDriverId(item.getDriverId());
 			dto.setDirectYn(item.getDirectYn());
+			dto.setVersionList(MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(item.getDbType())).getVenderVersionInfo());
 			return dto;
 		}).collect(Collectors.toList());
 

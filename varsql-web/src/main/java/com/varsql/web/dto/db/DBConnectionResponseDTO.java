@@ -15,6 +15,8 @@ public class DBConnectionResponseDTO{
 	private String vname;
 
 	private String vdbschema;
+	
+	private String status;
 
 	@JsonIgnore
 	private String vurl;

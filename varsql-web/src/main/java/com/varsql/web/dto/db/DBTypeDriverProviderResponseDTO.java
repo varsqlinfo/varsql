@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
 import com.varsql.web.model.mapper.db.DBTypeJdbcDriverMapper;
 
@@ -27,6 +28,8 @@ public class DBTypeDriverProviderResponseDTO {
 	private String driverDesc;
 	private String driverPath;
 
+	private List<DBVersionInfo> versionList = new ArrayList<>();
+	
 	private List<DBTypeDriverFileDTO> fileList = new ArrayList<>();
 
 	public DBTypeDriverProviderResponseDTO(String driverProviderId, String providerName, String dbType, String driverClass, String pathType) {

@@ -267,6 +267,7 @@ public class Configuration extends AbstractConfiguration{
 				.testWhileIdle(Boolean.parseBoolean(jsonInfo.get("test_while_idle").asText()))
 				.validationQuery(ValidationProperty.getInstance().validationQuery(type))
 				.jdbcDriverInfo(JDBCDriverInfo.builder()
+					.providerId("baseProvider")
 					.driverId("base")
 					.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
 					.build()

@@ -25,6 +25,7 @@
 					<template v-for="(item,index) in gridData">
 						<div class="list-group-item row">
 							<div class="col-sm-5 padding0">
+								<span class="status-circle big" :class="item.statusStyle" :title="item.status"></span>
 								<span class="clickItem" @click="itemView(item)"><a href="javascript:;">{{item.vname}}</a></span>
 							</div>
 							<div class="col-sm-7 padding0">
@@ -96,6 +97,25 @@
 										<option value="" disabled="disabled">선택</option>
 										<option v-for="(item,index) in jdbcProviderList" :value="item.driverProviderId" :data-driver="item.driverProviderId" selected="{{detailItem.vdriver==item.driverProviderId?true:(detailItem.vdriver==''&& index==0?true:false)}}">
 											{{item.dbType}}({{item.providerName}})
+										</option>
+									</select>
+									<div><a href="<c:url value="/admin/driverMgmt"/>">JDBC Provider 설정 바로가기</a></div>
+								</div>
+								<div v-else>
+									<a href="<c:url value="/admin/driverMgmt"/>">먼저 JDBC Provider를 설정해주세요.</a>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Version</label>
+							<div class="col-sm-8">
+							
+								<div v-if="selectJdbcProvider.versionList.length > 0">
+									<select class="form-control text required" id="vdbversion" name="vdbversion" v-model="detailItem.vdbversion">
+										<option value="" disabled="disabled">선택</option>
+										<option v-for="(item,index) in selectJdbcProvider.versionList" :value="item.version" selected="{{detailItem.vdbversion==item.version?true:false}}">
+											{{item.version}}
 										</option>
 									</select>
 									<div><a href="<c:url value="/admin/driverMgmt"/>">JDBC Provider 설정 바로가기</a></div>
@@ -282,6 +302,39 @@
 </div>
 <!-- /.row -->
 
+<style>
+
+.status-circle {
+    border-radius: 50%;
+    display: inline-block
+}
+
+.status-circle.big {
+    width: 12px;
+    height: 12px
+}
+
+.status-circle.small {
+    width: 8px;
+    height: 8px
+}
+
+.status-circle.green {
+    background-color: #4FCE67;
+    border: 2px solid #4FCE67
+}
+
+.status-circle.orange {
+    background-color: #F7A443;
+    border: 2px solid #F7A443
+}
+
+.status-circle.red {
+    background-color: #FF5858;
+    border: 2px solid #FF5858
+}
+</style>
+
 
 <script>
 VarsqlAPP.vueServiceBean( {
@@ -299,7 +352,7 @@ VarsqlAPP.vueServiceBean( {
 		,dbPwViewItem :{}
 		,userPw : ''
 		,dbPw : ''
-		,selectJdbcProvider : {}
+		,selectJdbcProvider : {versionList:[]}
 		,jdbcUrlFormat : ${jdbcUrlFormat}
 	}
 	,methods:{
@@ -331,7 +384,20 @@ VarsqlAPP.vueServiceBean( {
 				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dblist'}
 				,data : param
 				,success: function(resData) {
-					_this.gridData = resData.list;
+					var list = resData.list;
+					
+					list.forEach(item=>{
+						if(item.status=='STOP'){
+							item.statusStyle = 'red';
+						}else if(item.status=='SHUTDOWN'){
+							item.statusStyle = 'orange';
+						}else{
+							item.statusStyle = 'green';	
+						}
+					})
+					
+					_this.gridData = list;
+					
 					_this.pageInfo = resData.page;
 				}
 			})
@@ -353,6 +419,15 @@ VarsqlAPP.vueServiceBean( {
 					break; 
 				}
 			}
+			var versionList = this.selectJdbcProvider.versionList ||[];
+			
+			if(versionList.length > 0){
+				if(this.detailItem.vdbversion ==''){
+					this.detailItem.vdbversion = versionList[versionList.length-1].version;
+				}
+			}
+			
+			this.selectJdbcProvider.versionList = versionList;
 		}
 		// 상세보기
 		,itemView : function(item){
@@ -428,6 +503,7 @@ VarsqlAPP.vueServiceBean( {
 					,vdatabasename: ""
 					,vport: 0
 					,vdriver: ""
+					,vdbversion: ""
 					,useYn: "Y"
 					,urlDirectYn:'N'
 					,vid: ""
@@ -551,6 +627,8 @@ VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 
+			var _this = this;
+			
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionClose'}
 				,loadSelector : 'body'
@@ -561,6 +639,7 @@ VarsqlAPP.vueServiceBean( {
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode ==200){
 							alert(VARSQL.messageFormat('varsql.a.0002'));
+							_this.search();
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
@@ -595,6 +674,8 @@ VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 
+			var _this = this;
+			
 			this.$ajax({
 				url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbConnectionReset'}
 				,loadSelector : 'body'
@@ -605,6 +686,7 @@ VarsqlAPP.vueServiceBean( {
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode ==200){
 							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
+							_this.search();
 							return
 						}else{
 							alert(resData.messageCode  +'\n'+ resData.message);
@@ -626,9 +708,8 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 
 					var result = resData.list;
-		    		var resultLen = result.length;
 
-		    		if(resultLen==0){
+		    		if(result.length==0){
 		    			_this.jdbcProviderList = [];
 		    			return ;
 		    		}

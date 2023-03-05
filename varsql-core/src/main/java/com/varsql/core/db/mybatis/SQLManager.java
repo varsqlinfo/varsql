@@ -30,12 +30,14 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.handler.type.LONGVARCHARHandler;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.app.beans.DataMap;
+import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -133,8 +135,15 @@ public final class SQLManager {
 		sqlSessionFactory.setConfiguration(getConfiguration());
 
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-
-		sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
+		
+		DBVersionInfo dbVersionInfo=connInfo.getVersion();
+		
+		if(dbVersionInfo.isDefultFlag() || dbVersionInfo.getMajor()==-1) {
+			sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
+		}else {
+			sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper-%s.xml",connInfo.getType(), dbVersionInfo.getVersion())));
+		}
+		
 		return sqlSessionFactory;
 	}
 
@@ -156,7 +165,7 @@ public final class SQLManager {
 		
 		Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
 	    if (dbDriver != null) {
-	      logger.info("jdbc driver load success driver class : {}", dbDriver);
+	      logger.info("jdbc driver load success driver class : {},majorVersion:{}, minorVersion: {}", dbDriver, dbDriver.getMajorVersion(), dbDriver.getMinorVersion());
 	    } else {
 	      logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
 	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());

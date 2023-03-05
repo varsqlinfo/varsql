@@ -914,8 +914,13 @@ _$base.socket ={
 		var _this = this;
 
 		this.subscripeActiveMap = {};
+		
+		var url = location.protocol+'//'+location.host +_$base.getContextPathUrl("/ws/"+endpoint);
 
-		var stompClient = Stomp.over(new SockJS(_$base.getContextPathUrl("/ws/"+ endpoint) , null, {transports : ['websocket'] }));
+		var sockJSConn = new SockJS(url , null, {transports : ['websocket'] ,timeout:60000});
+		//sockJSConn._transportTimeout = function() { console.log('gotcha!!!'); };
+
+		var stompClient = Stomp.over(sockJSConn);
 		stompClient.heartbeat.outgoing = 20000;
 		stompClient.heartbeat.incoming = 20000;
 		stompClient.reconnect_delay = 5000;

@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class JdbcUtils {
+	
+	private final static int FETCH_COUNT = 1000;
+	
 	private JdbcUtils() {}
 
 	public static void close(ResultSet rs) {
@@ -32,5 +35,13 @@ public final class JdbcUtils {
 		try {if (rs != null)  rs.close();} catch (SQLException e) {}
 		try {if (stmt != null) stmt.close();} catch (Exception ex) {}
 		try {if (con != null) con.close();} catch (SQLException e) {}
+	}
+	
+	public static void setStatementFetchSize(Statement statement, int maxRow) throws SQLException {
+		setStatementFetchSize(statement, maxRow, FETCH_COUNT);
+	}
+	
+	public static void setStatementFetchSize(Statement statement, int maxRow, int fetchCount) throws SQLException {
+		statement.setFetchSize(maxRow <= 0 ? fetchCount : (maxRow > fetchCount ? fetchCount : maxRow));
 	}
 }

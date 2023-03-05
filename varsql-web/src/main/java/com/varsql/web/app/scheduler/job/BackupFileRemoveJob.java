@@ -1,5 +1,6 @@
 package com.varsql.web.app.scheduler.job;
 import java.io.File;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -25,7 +26,7 @@ public class BackupFileRemoveJob extends JobBean {
 	
 	@Override
 	public JobResultVO doExecute(JobExecutionContext context, JobVO jsv) throws Exception {
-		logger.debug("## backup file delete job start : {}", jsv);
+		logger.debug("## backup file delete job start expire day: {}, backup path: {}", BACKUP_EXPIRE_DAY, BACKUP_PATH);
 
 		File chkDir = new File(BACKUP_PATH);
 		
@@ -48,11 +49,18 @@ public class BackupFileRemoveJob extends JobBean {
 	public void removeExpireFile(File chkFile, LocalDate currentLdt) {
 		if(chkFile.isFile()) {
 			if(ChronoUnit.DAYS.between(currentLdt, new Date( chkFile.lastModified()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()) < BACKUP_EXPIRE_DAY) {
+				logger.debug("remove file info :{}", chkFile.getAbsolutePath());
 				chkFile.delete();
 			}else {
 				
 			}
 		}else {
+			// SymbolicLink check
+//			boolean isSymbolicLink = Files.isSymbolicLink(chkFile.toPath());
+//			if(isSymbolicLink) {
+//				
+//			}
+			
 			for(File file :chkFile.listFiles()) {
 				removeExpireFile(file, currentLdt);
 			}

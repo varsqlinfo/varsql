@@ -5,15 +5,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
@@ -54,7 +50,7 @@ import lombok.Setter;
 *-----------------------------------------------------------------------------
  */
 public final class SQLResultSetUtils {
-
+	
 	private SQLResultSetUtils(){}
 	/**
 	 * resultSet을  리스트로 만드는 방법
@@ -67,10 +63,10 @@ public final class SQLResultSetUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, int maxRow) throws SQLException{
-		return resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, true);
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo) throws SQLException{
+		return resultSetHandler(rs, ssrv, sqlExecuteInfo, true);
 	}
-	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, int maxRow, boolean gridKeyAlias) throws SQLException{
+	public static SqlSourceResultVO resultSetHandler(ResultSet rs, SqlSourceResultVO ssrv, SqlExecuteDTO sqlExecuteInfo, boolean gridKeyAlias) throws SQLException{
 		if (rs == null) {
 			return ssrv;
 		}
@@ -150,6 +146,7 @@ public final class SQLResultSetUtils {
 		}
 
 		columnKeyCheck = null;
+		int maxRow = sqlExecuteInfo.getLimit();
 		int first = 0,last = maxRow;
 
 		ssrv.setColumn(columnInfoList);
@@ -161,6 +158,7 @@ public final class SQLResultSetUtils {
 			int columnSize = resultSetGridList.size();
 			Map row = null;
 			ResultSetGridInfo resultSetGridInfo;
+			
 			while (rs.next()) {
 				row = new LinkedHashMap(count);
 				

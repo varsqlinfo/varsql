@@ -30,16 +30,21 @@ import com.varsql.core.db.valueobject.TableInfo;
  * @변경이력	:
  */
 public class OracleDBMeta extends AbstractDBMeta{
+	
 	private final Logger logger = LoggerFactory.getLogger(OracleDBMeta.class);
 
 	public OracleDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-			, new ServiceObject(ObjectType.FUNCTION)
-			, new ServiceObject(ObjectType.INDEX)
-			, new ServiceObject(ObjectType.PROCEDURE)
-			, new ServiceObject(ObjectType.PACKAGE)
-			, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-			, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			,new ServiceObject[] { 
+				new ServiceObject(ObjectType.TABLE)
+				, new ServiceObject(ObjectType.VIEW)
+				, new ServiceObject(ObjectType.FUNCTION)
+				, new ServiceObject(ObjectType.INDEX)
+				, new ServiceObject(ObjectType.PROCEDURE)
+				, new ServiceObject(ObjectType.PACKAGE)
+				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			}
 		);
 	}
 

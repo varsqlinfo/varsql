@@ -48,7 +48,7 @@ public final class DatabaseUtils {
 			.schema(dbConnectionEntity.getVdbschema())
 			.basetableYn(dbConnectionEntity.getBasetableYn())
 			.lazyLoad(dbConnectionEntity.getLazyloadYn())
-			.version(ConvertUtils.longValueOf(dbConnectionEntity.getVdbversion()))
+			.version(dbConnectionEntity.getVdbversion())
 			.schemaViewYn(dbConnectionEntity.getSchemaViewYn())
 			.maxSelectCount(ConvertUtils.intValue(dbConnectionEntity.getMaxSelectCount()))
 			.databaseName(dbConnectionEntity.getVdatabasename())

@@ -3884,7 +3884,7 @@ _ui.SQL = {
 
 		var rowTemplate = '<div class="sql-param-row">'
 		+'	<span class="key"><input type="text" class="sql-param-key" name="sql-param-key" value="" /></span>'
-		+'	<span class="val"><textarea class="sql-param-value" name="sql-param-value" rows="1"></textarea></span>'
+		+'	<span class="val"><textarea class="sql-param-value" name="sql-param-value" rows="2"></textarea></span>'
 		+'	<span class="remove"><button type="button" class="sql-param-del-btn"><i class="fa fa-minus"></i></button></span>'
 		+'</div>';
 
@@ -4738,8 +4738,10 @@ _ui.SQL = {
 			});
 			
 		}
-
-		var modalEle = $('#data-export-modal');
+		
+		var dataExportModealElId = '#data-export-modal';
+	
+		var modalEle = $(dataExportModealElId);
 
 		if(modalEle.length > 0){
 			modalEle.dialog( "open" );
@@ -4754,7 +4756,7 @@ _ui.SQL = {
 			return ;
 		}else{
 			$(_g_options.hiddenArea).append($('#dataExportTemplate').html());
-			modalEle = $('#data-export-modal');
+			modalEle = $(dataExportModealElId);
 			$('#exportFileName').val(tmpName);
 			$('#exportObjectName').val(tmpName);
 
@@ -4800,6 +4802,7 @@ _ui.SQL = {
 
 			VARSQL.req.download({
 				type: 'post'
+				,loadSelector : dataExportModealElId
 				,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
 				,params:params
 			});

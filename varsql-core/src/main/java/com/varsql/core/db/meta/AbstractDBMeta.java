@@ -45,20 +45,45 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 	protected MetaControlBean dbInstanceFactory;
 	protected List<ServiceObject> serviceMenu =new LinkedList<ServiceObject>();
+	protected List<DBVersionInfo> dbVersionInfo =new LinkedList<DBVersionInfo>();
+	protected DBVersionInfo defaultVersion;
 
 	private DBMetaDataUtil dBMetaDataUtil = new DBMetaDataUtil();
 
-	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, ServiceObject... serviceObjectArr){
-		this(dbInstanceFactory, true, serviceObjectArr);
-	}
+	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, ServiceObject[] serviceObjectArr){
 
-	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, boolean baseMenuFlag, ServiceObject... serviceObjectArr){
 		this.dbInstanceFactory = dbInstanceFactory;
-		if(baseMenuFlag){
+		if(serviceObjectArr==null){
 			addBaseMenu();
+		}else {
+			addServiceMenu(serviceObjectArr);
 		}
-
-		addServiceMenu(serviceObjectArr);
+	}
+	
+	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, ServiceObject[] serviceObjectArr, DBVersionInfo[] versionArr){
+		
+		this.dbInstanceFactory = dbInstanceFactory;
+		if(serviceObjectArr==null){
+			addBaseMenu();
+		}else {
+			addServiceMenu(serviceObjectArr);
+		}
+		
+		if(versionArr != null) {
+			for (DBVersionInfo versionInfo : versionArr) {
+				dbVersionInfo.add(versionInfo);
+				
+				if(versionInfo.isDefultFlag()) {
+					this.defaultVersion = versionInfo;
+				}
+			}
+			
+			if(this.defaultVersion ==null) {
+				this.defaultVersion = versionArr[versionArr.length -1];
+			}
+		}else {
+			this.defaultVersion = DBVersionInfo.builder(-1, -1, -1).defultFlag(true).build();
+		}
 	}
 
 	private void addBaseMenu() {
@@ -72,6 +97,14 @@ public abstract class AbstractDBMeta implements DBMeta{
 		for (ServiceObject serviceObj : serviceObjectArr) {
 			serviceMenu.add(serviceObj);
 		}
+	}
+	
+	public List<DBVersionInfo> getVenderVersionInfo() {
+		return dbVersionInfo;
+	}
+	
+	public DBVersionInfo getDefaultVenderVersion() {
+		return defaultVersion;
 	}
 
 	public List<ServiceObject> getServiceMenu(){

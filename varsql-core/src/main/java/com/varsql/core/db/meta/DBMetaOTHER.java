@@ -13,7 +13,7 @@ import com.varsql.core.db.MetaControlBean;
 public class DBMetaOTHER extends AbstractDBMeta{
 
 	public DBMetaOTHER(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory);
+		super(dbInstanceFactory, null);
 		//serviceMenu.put("Functions", "not visible");
 	}
 }

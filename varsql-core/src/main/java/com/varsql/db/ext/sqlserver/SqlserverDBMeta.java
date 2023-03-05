@@ -36,12 +36,15 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 
 	public SqlserverDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-			, new ServiceObject(ObjectType.FUNCTION)
-			, new ServiceObject(ObjectType.INDEX)
-			, new ServiceObject(ObjectType.PROCEDURE)
-			, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-			, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-
+			,new ServiceObject[] {
+				new ServiceObject(ObjectType.TABLE)
+				, new ServiceObject(ObjectType.VIEW)
+				, new ServiceObject(ObjectType.FUNCTION)
+				, new ServiceObject(ObjectType.INDEX)
+				, new ServiceObject(ObjectType.PROCEDURE)
+				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			}
 		);
 	}
 

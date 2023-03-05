@@ -165,7 +165,7 @@ public enum DefaultDataType implements DataType {
 				BigDecimal bd = (BigDecimal)reval; 
 				
 				if( bd == BigDecimal.ZERO) {
-					return null; 
+					return 0; 
 				}
 				
 				if(bd.signum() == 0 || bd.scale() <=0 || bd.stripTrailingZeros().scale() <= 0) {
@@ -196,7 +196,7 @@ public enum DefaultDataType implements DataType {
 				BigDecimal bd = rs.getBigDecimal(columnIndex); 
 				
 				if(bd == null || bd == BigDecimal.ZERO) {
-					return null; 
+					return 0; 
 				}
 				
 				if(bd.signum() == 0 || bd.scale() <=0 || bd.stripTrailingZeros().scale() <= 0) {

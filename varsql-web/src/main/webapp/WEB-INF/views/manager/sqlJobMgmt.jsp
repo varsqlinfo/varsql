@@ -324,7 +324,7 @@ VarsqlAPP.vueServiceBean( {
                     }
 				}
 				
-				//if(item !='init') this.sqlEditor.setValue('');
+				if(item !='init') this.sqlEditor.setValue('');
 				
 			}else{
 				var jobData = {

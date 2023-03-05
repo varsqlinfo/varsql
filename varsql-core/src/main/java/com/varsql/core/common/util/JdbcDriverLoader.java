@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.beans.FileInfo;
-import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.JdbcDriverClassException;
 
@@ -40,9 +39,9 @@ public final class JdbcDriverLoader {
 	}
 	
 	public synchronized Driver load(JDBCDriverInfo jdbcDriverInfo, boolean reload) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-		
+		String providerId = jdbcDriverInfo.getProviderId();
 		if(!reload) {
-			if(!DRIVER_CACHE.containsKey(jdbcDriverInfo.getDriverId())) {
+			if(!DRIVER_CACHE.containsKey(providerId)) {
 				reload = true; 
 			}
 		}
@@ -58,14 +57,14 @@ public final class JdbcDriverLoader {
 						urlList.add(resource.getURL());
 				}
 				if (urlList.size() > 0) {
-					DRIVER_CACHE.put(jdbcDriverInfo.getDriverId(), getJdbcDriver(jdbcDriverInfo));
+					DRIVER_CACHE.put(providerId, getJdbcDriver(jdbcDriverInfo));
 				}
 			}else {
-				DRIVER_CACHE.remove(jdbcDriverInfo.getDriverId());
+				DRIVER_CACHE.remove(providerId);
 			}
 		}
 		
-		return DRIVER_CACHE.getOrDefault(jdbcDriverInfo.getDriverId(), null);
+		return DRIVER_CACHE.getOrDefault(providerId, null);
 	}
 
 	private Driver getJdbcDriver(JDBCDriverInfo jdbcDriverInfo)throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -79,20 +78,17 @@ public final class JdbcDriverLoader {
 					urlList.add(resource.getURL());
 			}
 			if (urlList.size() > 0) {
-				URLClassLoader ucl = new URLClassLoader(urlList.<URL>toArray(new URL[0]));
+				
+				URLClassLoader ucl = URLClassLoader.newInstance(urlList.<URL>toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent());
 				
 				Class<?> driverClass = Class.forName(jdbcDriverInfo.getDriverClass(), true, ucl);
-					
+				
 				try {
 					return (Driver) driverClass.getDeclaredConstructor().newInstance();
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new JdbcDriverClassException(e);
 				}
-					
-
-  
-				//return (Driver) Class.forName(jdbcDriverInfo.getDriverClass(), true, ucl).newInstance(); 
 			}
 		}
 		

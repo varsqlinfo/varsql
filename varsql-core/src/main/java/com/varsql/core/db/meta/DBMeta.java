@@ -24,6 +24,10 @@ public interface DBMeta{
 	
 	public List<ServiceObject> getServiceMenu();
 
+	public List<DBVersionInfo> getVenderVersionInfo();
+	
+	public DBVersionInfo getDefaultVenderVersion();
+	
 	public List getVersion(DatabaseParamInfo dataParamInfo) throws Exception;
 
 	public List<String> getDatabases(DatabaseParamInfo dataParamInfo) throws SQLException;

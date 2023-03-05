@@ -53,7 +53,7 @@ public class SqlExecuteJob extends JobBean {
 		
 		SqlExecuteDTO seDto = new SqlExecuteDTO();
 		seDto.setDatabaseInfo(databaseInfo);
-		seDto.setSqlParam("{}");
+		seDto.setSqlParam(sqlExecuteJobVO.getParameter()== null? "{}" : VartechUtils.objectToJsonString(sqlExecuteJobVO.getParameter()));
 		seDto.setSql(sqlExecuteJobVO.getSql());
 
 		Connection conn = null;

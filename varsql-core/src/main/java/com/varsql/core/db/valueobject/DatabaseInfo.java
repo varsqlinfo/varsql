@@ -23,12 +23,12 @@ public class DatabaseInfo implements java.io.Serializable {
 	private boolean basetableYn;
 	private boolean lazyLoad;
 	private boolean schemaViewYn;
-	private long version;
+	private String version;
 	private int maxSelectCount;
 
 	@Builder
 	public DatabaseInfo(String vconnid, String type, String name, 
-			String schema, String basetableYn, String lazyLoad, long version, 
+			String schema, String basetableYn, String lazyLoad, String version, 
 			String schemaViewYn, int maxSelectCount, String databaseName){
 		
 		this.vconnid= vconnid;

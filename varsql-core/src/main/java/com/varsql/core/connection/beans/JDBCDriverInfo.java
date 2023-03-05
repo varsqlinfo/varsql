@@ -15,6 +15,8 @@ public class JDBCDriverInfo implements Serializable {
 	private static final long serialVersionUID = -3088926375387532055L;
 	
 
+	private String providerId;
+	
 	private String driverId;
 
 	private String driverClass;
@@ -26,7 +28,8 @@ public class JDBCDriverInfo implements Serializable {
 	private JDBCDriverInfo() {}
 	
 	@Builder
-	public JDBCDriverInfo(String driverId, String driverClass, List<FileInfo> driverFiles) {
+	public JDBCDriverInfo(String providerId, String driverId, String driverClass, List<FileInfo> driverFiles) {
+		this.providerId = providerId;
 		this.driverId = driverId;
 		this.driverClass = driverClass;
 		this.driverFiles = driverFiles;

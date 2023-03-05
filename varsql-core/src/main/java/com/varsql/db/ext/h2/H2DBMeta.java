@@ -1,6 +1,5 @@
 package com.varsql.db.ext.h2;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
@@ -33,16 +33,24 @@ import com.vartech.common.utils.VartechUtils;
 public class H2DBMeta extends AbstractDBMeta{
 
 	private final Logger logger = LoggerFactory.getLogger(H2DBMeta.class);
-
+	
 	public H2DBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
-			, new ServiceObject(ObjectType.FUNCTION)
-			, new ServiceObject(ObjectType.INDEX)
-			, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-			, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			,new ServiceObject[] {
+				 new ServiceObject(ObjectType.TABLE)
+				, new ServiceObject(ObjectType.VIEW)
+				, new ServiceObject(ObjectType.FUNCTION)
+				, new ServiceObject(ObjectType.INDEX)
+				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+			}
+			,new DBVersionInfo[] {
+				DBVersionInfo.builder(1,4,200).build()
+				, DBVersionInfo.builder(2,1,214).defultFlag(true).build()
+			}
 		);
 	}
-
+	
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);

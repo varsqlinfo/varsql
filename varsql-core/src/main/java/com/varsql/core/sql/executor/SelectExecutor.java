@@ -71,13 +71,17 @@ public class SelectExecutor implements Executor{
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 
 			logger.debug("execute query: {}", tmpSqlSource.getQuery());
+			
+			conn.setAutoCommit(false);
 
 			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
 			
 			if(statementInfo.getLimit() > 0) {
 				pstmt.setMaxRows(statementInfo.getLimit());
 			}
-
+			
+			JdbcUtils.setStatementFetchSize(pstmt, statementInfo.getLimit());
+			
 			SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
 
 			rs = pstmt.executeQuery();
@@ -89,7 +93,10 @@ public class SelectExecutor implements Executor{
 
 			logger.error("select : {} ", e.getMessage(), e);
 		}finally{
-			JdbcUtils.close(conn, pstmt, rs);
+			if (conn != null && !conn.isClosed()) {
+				conn.setAutoCommit(true);
+				JdbcUtils.close(conn, pstmt, rs);
+			}
 		}
 		result.setTotalCount(resultHandler.getTotalCount());
 		result.setEndTime(System.currentTimeMillis());

@@ -94,6 +94,8 @@ public enum VarsqlAppCode implements CodeEnumValue {
 
 	// runtime error
 	,COMM_RUNTIME_ERROR(50005)
+	// file import error
+	,COMM_FILE_IMPORT_ERROR(50006)
 	
 	//security error 60000 ~69999
 	// SECURITY Authorize error

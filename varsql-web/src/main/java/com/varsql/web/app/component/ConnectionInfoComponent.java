@@ -19,6 +19,9 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.DBPasswordCryptionFactory;
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
@@ -45,35 +48,36 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 		logger.debug("create connection info : {}", connid);
 
-		ConnectionInfo.ConnectionInfoBuilder builder = ConnectionInfo.builder();
-
 		ConnectionInfoDTO dto = dbConnectionEntityRepository.findByConnInfo(connid);
 
 		String type = dto.getProvider().getDbType().toLowerCase(); 
-		builder.connid(dto.getConnection().getVconnid());
-		builder.aliasName(dto.getConnection().getVname());
-		builder.type(type);
-		builder.username(dto.getConnection().getVid());
-
 		String pw = dto.getConnection().getVpw();
-		builder.password("");
-
-		if (!StringUtils.isBlank(pw)) {
-			builder.password(DBPasswordCryptionFactory.getInstance().decrypt(pw));
-		}
+		String validation_query = dto.getProvider().getValidationQuery();
+		String version =dto.getConnection().getVdbversion(); 
 		
-		builder.useColumnLabel(dto.getConnection().getUseColumnLabel());
-		builder.connectionOptions(dto.getConnection().getVconnopt());
-		builder.maxActive(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10));
-		builder.minIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 5));
-		builder.connectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000));
-		builder.exportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000));
-		builder.testWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()));
-		builder.enableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()));
+		List<DBVersionInfo> versionList = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(type)).getVenderVersionInfo();
 		
-		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(type);
-
+		DBVersionInfo versionInfo = versionList.stream().filter(item->item.getVersion().equals(version)).findFirst().orElse(MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(type)).getDefaultVenderVersion());
+		
+		ConnectionInfo.ConnectionInfoBuilder builder = ConnectionInfo.builder()
+			.connid(dto.getConnection().getVconnid())
+			.aliasName(dto.getConnection().getVname())
+			.type(type)
+			.version(versionInfo)
+			.username(dto.getConnection().getVid())
+			.useColumnLabel(dto.getConnection().getUseColumnLabel())
+			.connectionOptions(dto.getConnection().getVconnopt())
+			.maxActive(NumberUtils.toInt(dto.getConnection().getMaxActive()+"", 10))
+			.minIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 5))
+			.connectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000))
+			.exportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000))
+			.testWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()))
+			.enableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()))
+			.validationQuery(StringUtils.isBlank(validation_query) ? ValidationProperty.getInstance().validationQuery(type) : validation_query)
+			.password(StringUtils.isBlank(pw)?"":DBPasswordCryptionFactory.getInstance().decrypt(pw));
+			
 		String urlDirectYn = dto.getConnection().getUrlDirectYn();
+		
 		if ("Y".equals(urlDirectYn)) {
 			builder.url(dto.getConnection().getVurl());
 		} else {
@@ -83,15 +87,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 					.databaseName(dto.getConnection().getVdatabasename())
 					.build()));
 		}
-
-		defaultDriverValidationQuery = StringUtils.isBlank(dto.getDriver().getValidationQuery()) ? defaultDriverValidationQuery : dto.getDriver().getValidationQuery();
-
-		String validation_query = dto.getProvider().getValidationQuery();
-
-		validation_query = StringUtils.isBlank(validation_query) ? defaultDriverValidationQuery : validation_query;
-
-		builder.validationQuery(validation_query);
-
+		
 		List<FileInfo> driverFileInfos;
 		
 		if(PathType.PATH.equals(PathType.getPathType(dto.getProvider().getPathType()))){
@@ -106,6 +102,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 		}
 		
 	    builder.jdbcDriverInfo(JDBCDriverInfo.builder()
+	    	.providerId(dto.getProvider().getDriverProviderId())
     		.driverId(dto.getDriver().getDriverId())
     		.driverClass(dto.getDriver().getDbdriver())
     		.driverFiles(driverFileInfos)

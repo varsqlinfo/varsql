@@ -451,7 +451,7 @@ public class ExportServiceImpl{
 					}
 
 					final String tableName = item.getName();
-					SQLExecuteResult ser = (new SelectExecutor()).execute(seDto,new SelectExecutorHandler(writer) {
+					SQLExecuteResult ser = new SelectExecutor().execute(seDto,new SelectExecutorHandler(writer) {
 						private boolean firstFlag = true;
 						private int rowIdx = 0;
 

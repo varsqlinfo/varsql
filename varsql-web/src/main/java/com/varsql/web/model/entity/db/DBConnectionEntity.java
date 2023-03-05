@@ -94,7 +94,7 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	private String vpoolopt;
 
 	@Column(name ="VDBVERSION")
-	private Long vdbversion;
+	private String vdbversion;
 
 	@Column(name ="USE_YN")
 	private String useYn;
@@ -156,7 +156,7 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 	@Builder
 	public DBConnectionEntity(String vconnid, String vname, String vdbschema, String vurl, DBTypeDriverProviderEntity dbTypeDriverProvider
 			, String vid, String vpw, int maxActive, int minIdle, int timeout, long exportcount, String vconnopt
-			, String vpoolopt, Long vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn
+			, String vpoolopt, String vdbversion, String useYn, String schemaViewYn, boolean delYn, String basetableYn
 			, String lazyloadYn, String urlDirectYn, String vserverip, String vdatabasename, int vport, long maxSelectCount
 			, String useColumnLabel, String testWhileIdle, String enableConnectionPool) {
 		

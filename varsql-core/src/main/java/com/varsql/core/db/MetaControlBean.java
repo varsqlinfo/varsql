@@ -14,6 +14,7 @@ import com.varsql.core.db.ddl.script.DDLScript;
 import com.varsql.core.db.ddl.script.DDLScriptOTHER;
 import com.varsql.core.db.meta.DBMeta;
 import com.varsql.core.db.meta.DBMetaOTHER;
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.report.table.TableReport;
 import com.varsql.core.db.report.table.TableReportOTHER;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -158,6 +159,32 @@ public class MetaControlBean {
 	 */
 	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
 		return this.dbMeta.getSchemas(dataParamInfo);
+	}
+	/**
+	 * 
+	 * Method Name  : getVenderVersionInfo
+	 * Method 설명 : get vender version info
+	 * @author   : ytkim
+	 * 작성일   : 2023. 2. 13. 
+	 * 변경이력  :
+	 * @param dataParamInfo
+	 * @return
+	 */
+	public List<DBVersionInfo> getVenderVersionInfo() {
+		return this.dbMeta.getVenderVersionInfo();
+	}
+	
+	/**
+	 * 
+	 * Method Name  : getDefaultVenderVersion
+	 * Method 설명 :
+	 * @author   : ytkim
+	 * 작성일   : 2023. 2. 15. 
+	 * 변경이력  :
+	 * @return
+	 */
+	public DBVersionInfo getDefaultVenderVersion() {
+		return this.dbMeta.getDefaultVenderVersion();
 	}
 
 

@@ -2,6 +2,7 @@ package com.varsql.core.connection;
 
 import java.sql.Connection;
 
+import com.varsql.core.connection.pool.PoolStatus;
 import com.varsql.core.exception.ConnectionFactoryException;
 
 /**
@@ -18,4 +19,5 @@ public interface ConnectionContext {
 
 	public Connection getConnection(String dbalias) throws  ConnectionFactoryException;
 	public boolean isShutdown(String dbalias) throws  ConnectionFactoryException;
+	public PoolStatus getStatus(String dbalias);
 }

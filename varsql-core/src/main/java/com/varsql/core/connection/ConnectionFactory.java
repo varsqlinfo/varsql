@@ -19,6 +19,7 @@ import com.varsql.core.common.util.VarsqlSpringBeanUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.pool.ConnectionPoolInterface;
+import com.varsql.core.connection.pool.PoolStatus;
 import com.varsql.core.connection.pool.PoolType;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.exception.ConnectionFactoryException;
@@ -37,13 +38,11 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private PoolType connectionPoolType = PoolType.DBCP2;
 
-	private final static ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
+	private final ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
 
-	private final static ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
+	private final ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
 
 	private ConnectionInfoDao connectionInfoDao;
-
-	private boolean initFlag = false;
 
 	private ConnectionFactory() {
 		init();
@@ -158,19 +157,20 @@ public final class ConnectionFactory implements ConnectionContext{
 	}
 	
 	public static void poolShutdown() throws SQLException, ConnectionFactoryException  {
-		if(connectionConfig.size() > 0) {
-			getInstance().allPoolShutdown();
-		}
-		
+		getInstance().allPoolShutdown();
 	}
 	
 	private synchronized void allPoolShutdown() throws SQLException, ConnectionFactoryException  {
-		for(Entry<String, ConnectionInfo> connEntry: connectionConfig.entrySet()) {
-			String connid = connEntry.getKey();
-			getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
-			closeMataDataSource(connid);
-			connectionShutdownInfo.put(connid, true);
+		
+		if(connectionConfig.size() > 0) {
+			for(Entry<String, ConnectionInfo> connEntry: connectionConfig.entrySet()) {
+				String connid = connEntry.getKey();
+				getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
+				closeMataDataSource(connid);
+				connectionShutdownInfo.put(connid, true);
+			}
 		}
+		
 	}
 
 	public synchronized void closeMataDataSource(String connid) throws SQLException, ConnectionFactoryException  {
@@ -191,6 +191,17 @@ public final class ConnectionFactory implements ConnectionContext{
 			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection shutdown");
 		}
 		return false;
+	}
+	
+	@Override
+	public PoolStatus getStatus(String connid) {
+		if(connectionShutdownInfo.containsKey(connid)) {
+			return PoolStatus.SHUTDOWN; 
+		}
+		if(connectionConfig.containsKey(connid)){
+			return PoolStatus.START; 
+		}
+		return PoolStatus.STOP;
 	}
 
 	private void init() {

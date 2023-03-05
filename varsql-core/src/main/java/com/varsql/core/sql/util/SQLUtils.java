@@ -143,6 +143,8 @@ public final class SQLUtils {
 			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
 				stmt  = conn.createStatement();
 				
+				JdbcUtils.setStatementFetchSize(stmt, sqlExecuteInfo.getLimit());
+				
 				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
 				
 				setMaxRow(stmt, maxRow, tmpSqlSource);
@@ -209,7 +211,7 @@ public final class SQLUtils {
 		        		if(selectExecutorHandler != null) {
 		        			SQLResultSetUtils.resultSetHandler(rs, sqlExecuteInfo, selectExecutorHandler, gridKeyAlias);
 		        		}else {
-		        			SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, gridKeyAlias);
+		        			SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, gridKeyAlias);
 		        		}
 			        	
 			            ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
@@ -226,6 +228,7 @@ public final class SQLUtils {
 				PreparedStatement pstmt = conn.prepareStatement(executeQuery);
 				
 				SqlExecuteManager.getInstance().setStatementInfo(requid, pstmt);
+				JdbcUtils.setStatementFetchSize(pstmt, sqlExecuteInfo.getLimit());
 				
  				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
 				setMaxRow(pstmt, maxRow, tmpSqlSource);
@@ -236,7 +239,7 @@ public final class SQLUtils {
 			
 			if(hasResults) {
 				rs = stmt.getResultSet();
-				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, maxRow, gridKeyAlias);
+				SQLResultSetUtils.resultSetHandler(rs, ssrv, sqlExecuteInfo, gridKeyAlias);
 				ssrv.setViewType(SqlDataConstants.VIEWTYPE.GRID.val());
 				ssrv.setResultMessage(String.format("select count : %s ", ssrv.getResultCnt()));
 			}else{
