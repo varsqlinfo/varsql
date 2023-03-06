@@ -107,18 +107,16 @@
 							</div>
 						</div>
 						
-						<div class="form-group">
+						<div class="form-group" v-if="selectJdbcProvider.versionList.length > 0">
 							<label class="col-sm-4 control-label">Version</label>
 							<div class="col-sm-8">
-							
-								<div v-if="selectJdbcProvider.versionList.length > 0">
+								<div>
 									<select class="form-control text required" id="vdbversion" name="vdbversion" v-model="detailItem.vdbversion">
 										<option value="" disabled="disabled">선택</option>
 										<option v-for="(item,index) in selectJdbcProvider.versionList" :value="item.version" selected="{{detailItem.vdbversion==item.version?true:false}}">
 											{{item.version}}
 										</option>
 									</select>
-									<div><a href="<c:url value="/admin/driverMgmt"/>">JDBC Provider 설정 바로가기</a></div>
 								</div>
 								<div v-else>
 									<a href="<c:url value="/admin/driverMgmt"/>">먼저 JDBC Provider를 설정해주세요.</a>
