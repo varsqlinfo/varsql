@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.HttpUtils;
 
 
 
@@ -56,21 +55,21 @@ public class LoginController extends AbstractController {
 		if(auth != null && !"anonymousUser".equals(auth.getPrincipal())){
 			final Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
 
-			String url  = AuthorityType.GUEST.mainPage();
+			String url  = AuthorityTypeImpl.GUEST.mainPage();
 			String tmpAuthority = "";
 			for (final GrantedAuthority grantedAuthority : authorities) {
 				tmpAuthority = grantedAuthority.getAuthority();
-				if (tmpAuthority.equals(AuthorityType.USER.name())) {
-					url  =  AuthorityType.USER.mainPage();
+				if (tmpAuthority.equals(AuthorityTypeImpl.USER.name())) {
+					url  =  AuthorityTypeImpl.USER.mainPage();
 					break;
-				}else if (tmpAuthority.equals(AuthorityType.GUEST.name())) {
-					url  =  AuthorityType.GUEST.mainPage();
+				}else if (tmpAuthority.equals(AuthorityTypeImpl.GUEST.name())) {
+					url  =  AuthorityTypeImpl.GUEST.mainPage();
 					break;
-				}else if (tmpAuthority.equals(AuthorityType.MANAGER.name())) {
-					url  =  AuthorityType.USER.mainPage();
+				}else if (tmpAuthority.equals(AuthorityTypeImpl.MANAGER.name())) {
+					url  =  AuthorityTypeImpl.USER.mainPage();
 					break;
-				}else if (tmpAuthority.equals(AuthorityType.ADMIN.name())) {
-					url  =  AuthorityType.USER.mainPage();
+				}else if (tmpAuthority.equals(AuthorityTypeImpl.ADMIN.name())) {
+					url  =  AuthorityTypeImpl.USER.mainPage();
 					break;
 				}
 			}

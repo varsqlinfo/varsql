@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.dto.user.UserReqeustDTO;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.UserInfoRepository;
@@ -41,7 +41,7 @@ public class JoinServiceImpl{
 		logger.debug("saveUser {} " , VartechUtils.reflectionToString(joinForm));
 		UserEntity entity = joinForm.toEntity();
 
-		entity.setUserRole(AuthorityType.GUEST.name());
+		entity.setUserRole(AuthorityTypeImpl.GUEST.name());
 		entity.setAcceptYn(false);
 
 		userInfoRepository.save(entity);

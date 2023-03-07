@@ -33,7 +33,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.code.VarsqlSsoType;
 import com.varsql.core.configuration.VarsqlWebConfig;
 import com.varsql.core.sso.SimpleSsoHandler;
@@ -170,10 +170,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	    .and() // auth
 		    .authorizeRequests()
 		    .antMatchers("/sso/proc").permitAll()
-     		.antMatchers("/admin/**").hasAuthority(AuthorityType.ADMIN.name())
-     		.antMatchers("/manage/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name())
-     		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityType.ADMIN.name(),AuthorityType.MANAGER.name(),AuthorityType.USER.name())
-     		.antMatchers("/guest/**").hasAuthority(AuthorityType.GUEST.name())
+     		.antMatchers("/admin/**").hasAuthority(AuthorityTypeImpl.ADMIN.name())
+     		.antMatchers("/manager/**").hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name())
+     		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name(),AuthorityTypeImpl.USER.name())
+     		.antMatchers("/guest/**").hasAuthority(AuthorityTypeImpl.GUEST.name())
      		.antMatchers("/login","/join/**","/lostPassword","/resetPassword").anonymous()
      		.antMatchers("/login_check","/index.jsp","/progress/**").permitAll()
      		.antMatchers("/**").authenticated()

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.UUIDUtil;
@@ -119,10 +120,10 @@ public class UserMgmtServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
 		String[] viewidArr = StringUtils.split(selectItem,",");
-		AuthorityType role = "Y".equals(acceptyn)?AuthorityType.USER:AuthorityType.GUEST;
+		AuthorityType role = "Y".equals(acceptyn)?AuthorityTypeImpl.USER:AuthorityTypeImpl.GUEST;
 
 		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
-			item.setUserRole(role.name());
+			item.setUserRole(role.getName());
 			item.setAcceptYn("Y".equals(acceptyn)?true:false);
 			return item;
 		}).collect(Collectors.toList());
@@ -248,7 +249,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(chkFlag){
 			UserEntity userInfo =userMgmtRepository.findByViewid(viewid);
 
-			if(SecurityUtil.loginInfo().getTopAuthority().getPriority() > AuthorityType.valueOf(userInfo.getUserRole()).getPriority()){
+			if(SecurityUtil.loginInfo().getTopAuthority().getPriority() > AuthorityTypeImpl.valueOf(userInfo.getUserRole()).getPriority()){
 				boolean blockYFlag = "Y".equals(blockYn);
 				if(blockYFlag) {
 					userInfo.setBlockYn(true);

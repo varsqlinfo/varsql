@@ -22,6 +22,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
@@ -132,8 +133,8 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		AuthorityType topAuthority = userInfo.getTopAuthority();
 
 		List<AuthorityType> userScreen = new ArrayList<AuthorityType>();
-		for(AuthorityType auth : AuthorityType.values()){
-			if(!AuthorityType.GUEST.equals(auth) &&  topAuthority.getPriority() >=auth.getPriority()){
+		for(AuthorityType auth : AuthorityTypeImpl.values()){
+			if(!AuthorityTypeImpl.GUEST.equals(auth) &&  topAuthority.getPriority() >=auth.getPriority()){
 				userScreen.add(auth);
 			}
 		}

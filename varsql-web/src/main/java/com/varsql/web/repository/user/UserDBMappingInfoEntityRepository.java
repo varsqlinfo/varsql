@@ -13,7 +13,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.auth.User;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
@@ -41,9 +41,9 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 
 		@Override
 		public List<DatabaseInfo> userDBInfo(User userInfo) {
-			AuthorityType tmpAuthority = userInfo.getTopAuthority();
+			AuthorityTypeImpl tmpAuthority = (AuthorityTypeImpl) userInfo.getTopAuthority();
 			
-			if(tmpAuthority.equals(AuthorityType.GUEST)) return Collections.emptyList();
+			if(tmpAuthority.equals(AuthorityTypeImpl.GUEST)) return Collections.emptyList();
 			
 			final QDBConnectionEntity connInfo= QDBConnectionEntity.dBConnectionEntity;
 			final QDBTypeDriverProviderEntity provider= QDBTypeDriverProviderEntity.dBTypeDriverProviderEntity; 
@@ -57,7 +57,7 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 			
 			BooleanBuilder builder = new BooleanBuilder();
 			
-			if (!tmpAuthority.equals(AuthorityType.ADMIN)) {
+			if (!tmpAuthority.equals(AuthorityTypeImpl.ADMIN)) {
 				builder.and(connInfo.vconnid.in(
 						JPAExpressions.select(dbGroupMappingDb.vconnid).from(dbGroup).innerJoin(dbGroupMappingDb).on(dbGroup.groupId.eq(dbGroupMappingDb.groupId))
 						.innerJoin(dbGroupMappingUser).on(dbGroupMappingDb.groupId.eq(dbGroupMappingUser.groupId))
@@ -68,7 +68,7 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 							.and(dbBlockingUser.viewid.isNull())
 							.and(connInfo.useYn.eq("Y"))
 						)
-					).or(tmpAuthority.equals(AuthorityType.MANAGER) ? connInfo.vconnid.in( // 매니저 체크 
+					).or(tmpAuthority.equals(AuthorityTypeImpl.MANAGER) ? connInfo.vconnid.in( // 매니저 체크 
 							JPAExpressions.select(dbManager.vconnid)
 							.from(dbManager)
 							.where(dbManager.viewid.eq(userInfo.getViewid()))
@@ -99,7 +99,7 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					databaseInfoBuilder.type(item.getProvider().getDbType());
 					result.add(databaseInfoBuilder.build());
 				}else {
-					if(tmpAuthority.equals(AuthorityType.ADMIN)) {
+					if(tmpAuthority.equals(AuthorityTypeImpl.ADMIN)) {
 						databaseInfoBuilder.name("(Driver not found)-"+ item.getConnection().getVname());
 						databaseInfoBuilder.type("");
 					}

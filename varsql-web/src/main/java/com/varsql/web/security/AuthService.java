@@ -1,11 +1,7 @@
 package com.varsql.web.security;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.core.common.util.UUIDUtil;
-import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.UserDBMappingInfoEntityRepository;
@@ -118,7 +112,7 @@ public final class AuthService {
 			List<Authority> roles = new ArrayList<Authority>();
 			Authority r = new Authority();
 
-			AuthorityType authType = AuthorityType.valueOf(userRole);
+			AuthorityType authType = AuthorityTypeImpl.valueOf(userRole);
 			r = new Authority();
 			r.setName(userRole);
 			r.setPriority(authType.getPriority());

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.code.VarsqlSsoType;
 import com.varsql.core.configuration.VarsqlWebConfig;
 import com.varsql.core.sso.SsoHandler;
@@ -80,7 +80,7 @@ public class SsoController implements InitializingBean  {
     		return new ModelAndView("redirect:/");
     	}
 
-		return new ModelAndView("redirect:" + AuthorityType.USER.getMainPage());
+		return new ModelAndView("redirect:" + AuthorityTypeImpl.USER.getMainPage());
 	}
 
 

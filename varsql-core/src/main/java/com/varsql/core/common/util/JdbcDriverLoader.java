@@ -17,7 +17,9 @@ import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.JdbcDriverClassException;
+import com.vartech.common.utils.StringUtils;
 
 public final class JdbcDriverLoader {
 	private final Logger logger = LoggerFactory.getLogger(JdbcDriverLoader.class);
@@ -40,6 +42,11 @@ public final class JdbcDriverLoader {
 	
 	public synchronized Driver load(JDBCDriverInfo jdbcDriverInfo, boolean reload) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		String providerId = jdbcDriverInfo.getProviderId();
+		
+		if(StringUtils.isBlank(providerId)) {
+			throw new JdbcDriverClassException("jdbc provider id is null : ["+ providerId+"]");
+		}
+		
 		if(!reload) {
 			if(!DRIVER_CACHE.containsKey(providerId)) {
 				reload = true; 

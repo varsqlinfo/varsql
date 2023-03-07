@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.auth.User;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -149,7 +150,7 @@ public final class SecurityUtil {
 		
 		java.util.Iterator<? extends GrantedAuthority> iter =loginInfo().getAuthorities().iterator();
 		while(iter.hasNext()){
-			if(AuthorityType.ADMIN.name().equals(((Authority)iter.next()).getName())){
+			if(AuthorityTypeImpl.ADMIN.name().equals(((Authority)iter.next()).getName())){
 				return true;
 			}
 		}
@@ -168,7 +169,7 @@ public final class SecurityUtil {
 	public static boolean isManager(){
 		java.util.Iterator<? extends GrantedAuthority> iter =loginInfo().getAuthorities().iterator();
 		while(iter.hasNext()){
-			if(AuthorityType.MANAGER.name().equals(((Authority)iter.next()).getName())){
+			if(AuthorityTypeImpl.MANAGER.name().equals(((Authority)iter.next()).getName())){
 				return true;
 			}
 		}
@@ -325,7 +326,7 @@ public final class SecurityUtil {
 	}
 
 	public static boolean isSchemaView(DatabaseParamInfo dataParamInfo) {
-		return dataParamInfo.isSchemaViewYn() || SecurityUtil.loginRolePriority() >= AuthorityType.MANAGER.getPriority();
+		return dataParamInfo.isSchemaViewYn() || SecurityUtil.loginRolePriority() >= AuthorityTypeImpl.MANAGER.getPriority();
 	}
 
 	public static Authentication getAuthentication () {

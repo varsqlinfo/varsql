@@ -7,6 +7,7 @@ import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.model.entity.user.UserEntity;
 
 /**
@@ -26,9 +27,9 @@ public class UserSpec extends DefaultSpec{
 	public static Specification<UserEntity> userRoleNotIn(boolean isAdmin) {
 		return (root, query, criteriaBuilder) -> {
 			if(isAdmin) {
-				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityType.ADMIN.name()));
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name()));
 			}else {
-				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityType.ADMIN.name(), AuthorityType.MANAGER.name()));
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name(), AuthorityTypeImpl.MANAGER.name()));
 			}
 		};
 	}
@@ -54,7 +55,7 @@ public class UserSpec extends DefaultSpec{
     }
 
     public static Specification<UserEntity> managerCheck(String viewid) {
-    	return Specification.where(getUserRole(AuthorityType.MANAGER)).and(blockyn()).and(viewid(viewid));
+    	return Specification.where(getUserRole(AuthorityTypeImpl.MANAGER)).and(blockyn()).and(viewid(viewid));
     }
 
 	public static Specification<UserEntity> likeUnameOrUid(AuthorityType userAuth, String name) {
@@ -76,7 +77,7 @@ public class UserSpec extends DefaultSpec{
     // auth check
     private static Specification<UserEntity> getUserRole(AuthorityType userAuth ) {
     	return (root, query, criteriaBuilder) -> {
-    		Predicate predicate = criteriaBuilder.equal(root.get(UserEntity.USER_ROLE), userAuth.name());
+    		Predicate predicate = criteriaBuilder.equal(root.get(UserEntity.USER_ROLE), userAuth.getName());
     		return predicate;
     	};
     }

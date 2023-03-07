@@ -68,7 +68,6 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 			String poolName = connInfo.getConnid();
 			Properties properties = setConnectionOption(connInfo);
 
-
 			Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
 
 			ConnectionFactory connectionFactory;

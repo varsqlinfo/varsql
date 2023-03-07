@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.UserResponseDTO;
@@ -84,7 +85,7 @@ public class ManagerMgmtServiceImpl  extends AbstractService{
 
 		UserEntity  userInfo = userMgmtRepository.findByViewid(viewid);
 
-		userInfo.setUserRole("add".equals(mode)? AuthorityType.MANAGER.name() : AuthorityType.USER.name());
+		userInfo.setUserRole("add".equals(mode)? AuthorityTypeImpl.MANAGER.name() : AuthorityTypeImpl.USER.name());
 
 		userInfo = userMgmtRepository.save(userInfo);
 

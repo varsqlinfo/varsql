@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.auth.AuthorityType;
+import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.app.admin.service.ManagerMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
@@ -55,7 +55,7 @@ public class ManagerMgmtController extends AbstractController{
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
-		return managerMgmtServiceImpl.searchRoleUserList(AuthorityType.USER , searchParameter);
+		return managerMgmtServiceImpl.searchRoleUserList(AuthorityTypeImpl.USER , searchParameter);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ManagerMgmtController extends AbstractController{
 	@RequestMapping(value="/managerList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult managerlist(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		return managerMgmtServiceImpl.searchRoleUserList(AuthorityType.MANAGER , searchParameter);
+		return managerMgmtServiceImpl.searchRoleUserList(AuthorityTypeImpl.MANAGER , searchParameter);
 	}
 
 	@RequestMapping(value = "/managerRoleMgmt", method = RequestMethod.POST)
