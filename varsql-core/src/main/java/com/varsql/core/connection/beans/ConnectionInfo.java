@@ -82,6 +82,7 @@ public class ConnectionInfo implements Serializable {
 
 	    result.append(this.getClass().getName() ).append( " Object { " ).append( BlankConstants.NEW_LINE);
 	    result.append(" connid: ").append(connid).append(BlankConstants.NEW_LINE);
+	    result.append(" version: ").append(version).append(BlankConstants.NEW_LINE);
 	    result.append(" aliasName: ").append(aliasName).append(BlankConstants.NEW_LINE);
 	    result.append(" type: " ).append( type ).append( BlankConstants.NEW_LINE);
 	    result.append(" url: " ).append( url ).append( BlankConstants.NEW_LINE);

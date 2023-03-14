@@ -114,9 +114,9 @@ public class DbGroupController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbGroupMappingList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbGroupMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
+	public @ResponseBody ResponseResult dbGroupMappingList(@RequestParam(value = "groupId", required = true) String groupId, HttpServletRequest req) throws Exception {
 
-		return dbGroupServiceImpl.groupNDbMappingList(groupId);
+		return dbGroupServiceImpl.groupNDbMappingList(groupId, HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -139,9 +139,13 @@ public class DbGroupController extends AbstractController {
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
 			, HttpServletRequest req
 			) throws Exception {
-
-		return dbGroupServiceImpl.updateGroupNDbMappingInfo(selectItem ,groupId ,mode);
 		
+		ResponseResult result = dbGroupServiceImpl.updateGroupNDbMappingInfo(selectItem ,groupId ,mode);
+		
+		boolean reusltFlag = result.getItem(); 
+		if(!reusltFlag) return result; 
+		
+		return dbGroupServiceImpl.groupNDbMappingList(groupId, HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -156,8 +160,8 @@ public class DbGroupController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbGroupUserMappingList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbGroupUserMappingList(@RequestParam(value = "groupId", required = true) String groupId) throws Exception {
-		return dbGroupServiceImpl.groupNUserMappingList(groupId);
+	public @ResponseBody ResponseResult dbGroupUserMappingList(@RequestParam(value = "groupId", required = true) String groupId, HttpServletRequest req) throws Exception {
+		return dbGroupServiceImpl.groupNUserMappingList(groupId, HttpUtils.getSearchParameter(req));
 	}
 
 	/**
@@ -175,8 +179,14 @@ public class DbGroupController extends AbstractController {
 	public @ResponseBody ResponseResult dbGroupUserMapping(@RequestParam(value = "groupId", required = true) String groupId
 			,@RequestParam(value = "selectItem", required = true)  String selectItem
 			,@RequestParam(value = "mode", required = true , defaultValue = "del") String mode
+			,HttpServletRequest req
 			) {
-
-		return dbGroupServiceImpl.updateGroupNUserMappingInfo(selectItem, groupId, mode);
+		ResponseResult result = dbGroupServiceImpl.updateGroupNUserMappingInfo(selectItem, groupId, mode);
+		
+		boolean reusltFlag = result.getItem(); 
+		if(!reusltFlag) return result; 
+		
+		return dbGroupServiceImpl.groupNUserMappingList(groupId, HttpUtils.getSearchParameter(req));
+		
 	}
 }

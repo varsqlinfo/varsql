@@ -1,5 +1,6 @@
 package com.varsql.web.dto.user;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -19,9 +20,19 @@ public class UserReqeustDTO{
 	@Size(max=250)
 	private String uid;
 	
+	@Email
 	@NotBlank
 	@Size(max=250)
 	private String uemail;
+	
+	@Size(max=20)
+	private String mobileNo;
+	
+	@Size(max=20)
+	private String telNo;
+	
+	@Size(max=0)
+	private String empNo;
 	
 	@NotBlank
 	@Size(max=250)
@@ -53,6 +64,9 @@ public class UserReqeustDTO{
 				.uid(uid)
 				.uname(uname)
 				.uemail(uemail)
+				.mobileNo(mobileNo)
+				.telNo(telNo)
+				.empNo(empNo)
 				.orgNm(orgNm)
 				.deptNm(deptNm)
 				.lang(lang)

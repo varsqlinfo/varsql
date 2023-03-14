@@ -3,6 +3,8 @@ package com.varsql.web.dto.user;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponseDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -27,6 +31,12 @@ public class UserResponseDTO implements Serializable{
 	private String lang;
 
 	private String uemail;
+	
+	private String mobileNo;
+	
+	private String telNo;
+	
+	private String empNo;
 
 	private String userRole;
 

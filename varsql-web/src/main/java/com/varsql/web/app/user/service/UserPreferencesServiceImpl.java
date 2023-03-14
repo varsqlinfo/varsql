@@ -103,6 +103,9 @@ public class UserPreferencesServiceImpl extends AbstractService{
 		userInfo.setUname(userForm.getUname());
 		userInfo.setOrgNm(userForm.getOrgNm());
 		userInfo.setDeptNm(userForm.getDeptNm());
+		userInfo.setMobileNo(userForm.getMobileNo());
+		userInfo.setTelNo(userForm.getTelNo());
+		userInfo.setEmpNo(userForm.getEmpNo());
 		userInfo.setDescription(userForm.getDescription());
 
 		userInfoRepository.save(userInfo);

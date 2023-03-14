@@ -34,6 +34,35 @@ public class User implements UserDetails {
 	private String fullname;
 	private String orgNm;
 	private String deptNm;
+	
+	private String mobileNo;
+	private String telNo;
+	private String empNo;
+	
+	public String getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+
+	public String getTelNo() {
+		return telNo;
+	}
+
+	public void setTelNo(String telNo) {
+		this.telNo = telNo;
+	}
+
+	public String getEmpNo() {
+		return empNo;
+	}
+
+	public void setEmpNo(String empNo) {
+		this.empNo = empNo;
+	}
+
 	private boolean acceptYn;
 	private boolean blockYn;
 

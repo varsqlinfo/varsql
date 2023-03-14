@@ -18,7 +18,7 @@ import com.varsql.core.connection.ConnectionInfoDao;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
-import com.varsql.core.crypto.DBPasswordCryptionFactory;
+import com.varsql.core.crypto.PasswordCryptionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.meta.DBVersionInfo;
@@ -74,7 +74,7 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 			.testWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()))
 			.enableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()))
 			.validationQuery(StringUtils.isBlank(validation_query) ? ValidationProperty.getInstance().validationQuery(type) : validation_query)
-			.password(StringUtils.isBlank(pw)?"":DBPasswordCryptionFactory.getInstance().decrypt(pw));
+			.password(StringUtils.isBlank(pw)?"":PasswordCryptionFactory.getInstance().decrypt(pw));
 			
 		String urlDirectYn = dto.getConnection().getUrlDirectYn();
 		

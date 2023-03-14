@@ -1,35 +1,32 @@
 package com.varsql.web.app.manager.service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.dto.db.DBGroupRequestDTO;
+import com.varsql.web.dto.user.UserResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingDbEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.model.mapper.db.DBConnectionMapper;
-import com.varsql.web.model.mapper.user.UserMapper;
 import com.varsql.web.repository.db.DBGroupEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingDbEntityRepository;
 import com.varsql.web.repository.db.DBGroupMappingUserEntityRepository;
-import com.varsql.web.repository.spec.DBGroupMappingDbSpec;
-import com.varsql.web.repository.spec.DBGroupMappingUserSpec;
 import com.varsql.web.repository.spec.DBGroupSpec;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -105,6 +102,12 @@ public class DbGroupServiceImpl extends AbstractService{
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult deleteDbGroupInfo(String groupId) {
+		
+		DBGroupEntity entity = dbGroupEntityRepository.findByGroupId(groupId);
+		
+		if(entity==null) {
+			return ResponseResult.builder().item(false).resultCode(RequestResultCode.NOT_FOUND).message("db group not found [id : "+ groupId+"]").build();
+		}
 
 		dbGroupEntityRepository.deleteByGroupId(groupId);
 
@@ -117,15 +120,14 @@ public class DbGroupServiceImpl extends AbstractService{
 	 * @author   : ytkim
 	 * @date   : 2019. 8. 12.
 	 * @param groupId
+	 * @param searchParameter 
 	 * @return
 	 */
-	public ResponseResult groupNDbMappingList(String groupId) {
+	public ResponseResult groupNDbMappingList(String groupId, SearchParameter searchParameter) {
 
-		List<DBGroupMappingDbEntity> result = dbGroupMappingDbEntityRepository.findAll(DBGroupMappingDbSpec.dbGroupConnList(groupId), Sort.by(DBGroupMappingDbEntity.SORT_VNAME));
+		Page<DBConnectionResponseDTO> result = dbGroupMappingDbEntityRepository.findByDbGroupDbList(groupId, searchParameter, VarsqlUtils.convertSearchInfoToPage(searchParameter));
 
-		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
-			return DBConnectionMapper.INSTANCE.toDto(item.getConnInfo());
-		}).collect(Collectors.toList()));
+		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements() ,searchParameter);
 	}
 
 	/**
@@ -141,7 +143,13 @@ public class DbGroupServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateGroupNDbMappingInfo(String selectItem, String groupId, String mode) {
 
-		logger.info("mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
+		logger.info("mode :{}, groupId :{}, selectItem : {} ", mode, groupId, selectItem);
+		
+		DBGroupEntity entity = dbGroupEntityRepository.findByGroupId(groupId);
+		
+		if(entity==null) {
+			return ResponseResult.builder().item(false).resultCode(RequestResultCode.NOT_FOUND).message("db group not found [id : "+ groupId+"]").build();
+		}
 
 		String[] vconnidArr = StringUtils.split(selectItem,",");
 
@@ -157,14 +165,22 @@ public class DbGroupServiceImpl extends AbstractService{
         }
 
 		if(dbConnList.size() > 0) {
-			if("del".equals(mode)){
-				dbGroupMappingDbEntityRepository.deleteAll(dbConnList);
-			}else{
-				dbGroupMappingDbEntityRepository.saveAll(dbConnList);
+			if(dbConnList.size() ==1) {
+				if("del".equals(mode)){
+					dbGroupMappingDbEntityRepository.delete(dbConnList.get(0));
+				}else{
+					dbGroupMappingDbEntityRepository.save(dbConnList.get(0));
+				}
+			}else {
+				if("del".equals(mode)){
+					dbGroupMappingDbEntityRepository.deleteAll(dbConnList);
+				}else{
+					dbGroupMappingDbEntityRepository.saveAll(dbConnList);
+				}
 			}
 		}
 		
-		return groupNDbMappingList(groupId);
+		return VarsqlUtils.getResponseResultItemOne(true);
 	}
 
 	/**
@@ -173,15 +189,14 @@ public class DbGroupServiceImpl extends AbstractService{
 	 * @author   : ytkim
 	 * @date   : 2018. 1. 23.
 	 * @param groupId
+	 * @param searchParameter 
 	 * @return
 	 */
-	public ResponseResult groupNUserMappingList(String groupId) {
+	public ResponseResult groupNUserMappingList(String groupId, SearchParameter searchParameter) {
 
-		List<DBGroupMappingUserEntity> result = dbGroupMappingUserEntityRepository.findAll(DBGroupMappingUserSpec.dbGroupUserList(groupId), Sort.by(DBGroupMappingUserEntity.SORT_USERINFO));
+		Page<UserResponseDTO> result  = dbGroupMappingUserEntityRepository.findByDbGroupUserList(groupId, searchParameter, VarsqlUtils.convertSearchInfoToPage(searchParameter));
 
-		return VarsqlUtils.getResponseResultItemList(result.stream().map(item -> {
-			return UserMapper.INSTANCE.toDto(item.getUserInfo());
-		}).collect(Collectors.toList()));
+		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements() ,searchParameter);
 
 	}
 
@@ -193,12 +208,20 @@ public class DbGroupServiceImpl extends AbstractService{
 	 * @param selectItem
 	 * @param groupId
 	 * @param mode
+	 * @param searchParameter 
 	 * @return
 	 */
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public ResponseResult updateGroupNUserMappingInfo(String selectItem, String groupId, String mode) {
 		logger.info("updateGroupNUserMappingInfo  mode :{}, groupId :{} ,selectItem : {} ",mode, groupId, selectItem);
-
+		
+		DBGroupEntity entity = dbGroupEntityRepository.findByGroupId(groupId);
+		
+		if(entity==null) {
+			return ResponseResult.builder().item(false).resultCode(RequestResultCode.NOT_FOUND).message("project not found id : "+ groupId).build();
+		}
+		entity = null; 
+		
 		String[] vconnidArr = StringUtils.split(selectItem,",");
 
 		List<DBGroupMappingUserEntity> dbGroupUserList = new ArrayList<>();
@@ -211,18 +234,27 @@ public class DbGroupServiceImpl extends AbstractService{
 			);
         }
 
-		int result = 0;
 		if(dbGroupUserList.size() > 0) {
-			if("del".equals(mode)){
-				dbGroupMappingUserEntityRepository.deleteAll(dbGroupUserList);
-			}else{
-				dbGroupMappingUserEntityRepository.saveAll(dbGroupUserList);
+			
+			if(dbGroupUserList.size() ==1) {
+				if("del".equals(mode)){
+					dbGroupMappingUserEntityRepository.delete(dbGroupUserList.get(0));
+				}else{
+					dbGroupMappingUserEntityRepository.save(dbGroupUserList.get(0));
+				}
+			}else {
+				if("del".equals(mode)){
+					dbGroupMappingUserEntityRepository.deleteAll(dbGroupUserList);
+				}else{
+					dbGroupMappingUserEntityRepository.saveAll(dbGroupUserList);
+				}
 			}
-			result = 1;
+			
+			
+			
 		}
 		
-		
-		return groupNUserMappingList(groupId);
+		return VarsqlUtils.getResponseResultItemOne(true);
 	}
 
 }

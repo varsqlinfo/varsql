@@ -11,5 +11,7 @@ import com.varsql.web.repository.DefaultJpaRepository;
 public interface DBGroupEntityRepository extends DefaultJpaRepository, JpaRepository<DBGroupEntity, String> , JpaSpecificationExecutor<DBGroupEntity>  {
 	
 	public void deleteByGroupId(String groupId);
+	
+	public DBGroupEntity findByGroupId(String groupId);
 
 }

@@ -22,6 +22,15 @@ public class UserModReqeustDTO{
 	@Size(max=250)
 	private String deptNm;
 	
+	@Size(max=20)
+	private String mobileNo;
+	
+	@Size(max=20)
+	private String telNo;
+	
+	@Size(max=20)
+	private String empNo;
+	
 	@Size(max=5)
 	private String lang;
 

@@ -76,6 +76,15 @@ public class UserEntity extends AbstractAuditorModel{
 
 	@Column(name ="UEMAIL")
 	private String uemail;
+	
+	@Column(name ="MOBILE_NO")
+	private String mobileNo;
+	
+	@Column(name ="TEL_NO")
+	private String telNo;
+	
+	@Column(name ="EMP_NO")
+	private String empNo;
 
 	@Column(name ="USER_ROLE")
 	private String userRole;
@@ -102,7 +111,9 @@ public class UserEntity extends AbstractAuditorModel{
 	private Set<DBBlockingUserEntity> dbBlockingUserEntity;
 
 	@Builder
-	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail, String userRole, String description, boolean acceptYn, boolean blockYn) {
+	public UserEntity(String viewid, String uid, String upw, String uname, String orgNm, String deptNm, String lang, String uemail,
+			String mobileNo, String telNo, String empNo,
+			String userRole, String description, boolean acceptYn, boolean blockYn) {
 		this.viewid = viewid;
 		this.uid = uid;
 		this.upw = upw;
@@ -111,6 +122,9 @@ public class UserEntity extends AbstractAuditorModel{
 		this.deptNm = deptNm;
 		this.lang = lang;
 		this.uemail = uemail;
+		this.mobileNo = mobileNo;
+		this.telNo = telNo;
+		this.empNo = empNo;
 		this.userRole = userRole;
 		this.description = description;
 		this.acceptYn = acceptYn;
@@ -133,6 +147,12 @@ public class UserEntity extends AbstractAuditorModel{
 	public final static String LANG="lang";
 
 	public final static String UEMAIL="uemail";
+	
+	public final static String MOBILE_NO="mobileNo";
+	
+	public final static String TEL_NO="telNo";
+	
+	public final static String EMP_NO="empNo";
 
 	public final static String USER_ROLE="userRole";
 

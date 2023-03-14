@@ -279,6 +279,8 @@ VarsqlAPP.vueServiceBean( {
 
 			var param = {
 				groupId : this.detailItem.groupId
+				,pageNo: 1
+				,countPerPage : 10000
 			};
 
 			VARSQL.req.ajax({

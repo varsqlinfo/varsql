@@ -3,21 +3,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,10 +31,10 @@ import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
-import com.varsql.core.crypto.DBPasswordCryptionFactory;
+import com.varsql.core.crypto.PasswordCryptionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.valueobject.BaseObjectInfo;
+import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.service.AbstractService;
@@ -73,7 +67,6 @@ import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtils;
-import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -233,7 +226,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			if (pwd == null || "".equals(pwd))
 				pwd = dbInfo.getVpw();
 			pwd = (pwd == null) ? "" : pwd;
-			pwd = DBPasswordCryptionFactory.getInstance().decrypt(pwd);
+			pwd = PasswordCryptionFactory.getInstance().decrypt(pwd);
 			Properties p = new Properties();
 			p.setProperty("user", username);
 			p.setProperty("password", pwd);
@@ -260,10 +253,6 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 			pstmt.executeQuery();
 			connChk.close();
-		} catch (EncryptDecryptException e) {
-			resultCode = VarsqlAppCode.ERROR;
-			failMessage = "password decrypt error : " + e.getMessage();
-			logger.error(getClass().getName(), (Throwable) e);
 		} catch (ClassNotFoundException e) {
 			resultCode = VarsqlAppCode.ERROR;
 			failMessage = e.getMessage();
@@ -471,8 +460,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
 		try {
-			resultObject.setItemOne(DBPasswordCryptionFactory.getInstance().decrypt(dbInfo.getVpw()));
-		}catch(EncryptDecryptException e) {
+			resultObject.setItemOne(PasswordCryptionFactory.getInstance().decrypt(dbInfo.getVpw()));
+		}catch(VarsqlRuntimeException e) {
 			resultObject.setItemOne("password decrypt error");
 		}
 		return resultObject;

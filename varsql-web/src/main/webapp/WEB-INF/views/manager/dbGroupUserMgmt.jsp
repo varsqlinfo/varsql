@@ -71,7 +71,7 @@
 			<div class="panel-heading">
 				<spring:message code="manager.dbgroup.usermapping" />
 				<template v-if="detailItem.groupName">
-					[[<b>{{detailItem.groupName}}</b>]]
+					[<b>{{detailItem.groupName}}</b>]
 				</template>
 			</div>
 
@@ -101,37 +101,79 @@ VarsqlAPP.vueServiceBean( {
 		,detailItem : {}
 		,isViewMode : false
 		,selectObj : {}
+		,unitPage : 5
+		,mappingUserSearchKeyword :''
 	}
 	,methods:{
 		init : function (){
 			var _self = this;
 
-			this.initDbMappingInfo();
-
-			_self.selectObj= $.pubMultiselect('#source', {
-				valueKey : 'viewid'	
+			this.userList(1,'');
+			
+			this.selectObj= $.pubMultiselect('#source', {
+				header : {
+					enableSourceLabel : true 	// source header label 보일지 여부
+					,enableTargetLabel : true 	// target header label 보일지 여부
+				}
+				,body : {
+					enableItemEvtBtn : true // 추가,삭제 버튼 보이기
+				}
+				,i18 : {
+					add : 'Add'
+					,remove : 'Del'
+				}
+				,height : 350
+				,enableAddItemCheck :false
+				,valueKey : 'viewid'
 				,labelKey : 'uname'
-				,render: function (info){	// 아이템 추가될 템플릿.
-					var item = info.item; 
-					return (item.uname+'('+item.uid+')')
+				,render: function (info){
+					var item = info.item;
+					return (item.uname +'('+item.uid+')');
 				}
 				,source : {
 					items : []
+					,emptyMessage :'검색해주세요.'
+					,search :{
+						enable : true
+						,callback : function (searchWord){
+							_self.userList(1, searchWord);
+						}
+					}
 					,completeMove : function (moveItem){
 						if($.isArray(moveItem)){
 							_self.dbGroupUserMappingInfo('add', moveItem);
 						}
 						
-						return false; 
+						return true; 
+					}
+					,paging :{
+						unitPage : _self.unitPage
+						,callback : function (clickInfo){
+							_self.userList(clickInfo.no, clickInfo.searchword);
+						}
 					}
 				}
 				,target : {
 					items : []
+					,emptyMessage :'데이터가 존재하지 않습니다.'
+					,search :{
+						enable : true
+						,callback : function (searchWord){
+							_self.mappingUserSearchKeyword = searchWord;
+							_self.dbMappingInfo(1, searchWord);
+						}
+					}
 					,completeMove : function (moveItem){
 						if($.isArray(moveItem)){
 							_self.dbGroupUserMappingInfo('del', moveItem);
 						}
-						return false; 
+						return true;
+					}
+					,paging :{
+						unitPage : _self.unitPage
+						,callback : function (clickInfo){
+							_self.dbMappingInfo(clickInfo.no, clickInfo.searchword);
+						}
 					}
 				}
 			});
@@ -140,7 +182,7 @@ VarsqlAPP.vueServiceBean( {
 		,itemView : function (item){
 			this.isViewMode = true;
 			this.detailItem = item;
-			this.dbMappingInfo();
+			this.dbMappingInfo(1,this.mappingUserSearchKeyword);
 		}
 		// 검색
 		,search : function(no){
@@ -161,37 +203,40 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
-		,initDbMappingInfo: function (){
+		,userList: function (no, searchWord){
 			var _self = this;
-			var param = {
-				'searchVal':''
-			};
 
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/comm/userList'}
-				,data : param
+				,data : {
+					pageNo: (no?no:1)
+					,countPerPage : 10
+					,unitPage : _self.unitPage
+					,searchVal : searchWord
+				}
 				,success: function(resData) {
-					_self.selectObj.setSourceItem( resData.list);
+					_self.selectObj.setSourceItem(resData.list ||[], resData.page);	
 				}
 			})
 		}
 		// db mapping info
-		,dbMappingInfo: function (){
+		,dbMappingInfo: function(no, searchWord){
 			var _self = this;
 
 			if(this.isViewMode ===false) return ;
 
-			var param = {
-				groupId : this.detailItem.groupId
-			};
-
 			VARSQL.req.ajax({
-				data:param
-				,loadSelector: '#main-content'
-				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMappingList'}
+				url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMappingList'}
+				,data : {
+					pageNo: (no?no:1)
+					,countPerPage : 10
+					,unitPage : _self.unitPage
+					,groupId : this.detailItem.groupId
+					,searchVal : searchWord
+				}
+				,loadSelector: '#source [data-item-type="source"]'
 				,success:function (resData){
-					var result = resData.list;
-		    		_self.selectObj.setTargetItem(result);
+		    		_self.selectObj.setTargetItem(resData.list ||[], resData.page);
 				}
 			});
 		}
@@ -215,8 +260,8 @@ VarsqlAPP.vueServiceBean( {
 			VARSQL.req.ajax({
 				data:param
 				,url : {type:VARSQL.uri.manager, url:'/dbGroup/dbGroupUserMapping'}
+				,loadSelector: '#source'
 				,success:function (res){
-					console.log(res);
 					_self.selectObj.setTargetItem(res.list)
 				}
 			});

@@ -51,13 +51,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 	private DBMetaDataUtil dBMetaDataUtil = new DBMetaDataUtil();
 
 	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, ServiceObject[] serviceObjectArr){
-
-		this.dbInstanceFactory = dbInstanceFactory;
-		if(serviceObjectArr==null){
-			addBaseMenu();
-		}else {
-			addServiceMenu(serviceObjectArr);
-		}
+		this(dbInstanceFactory, serviceObjectArr, null);
 	}
 	
 	protected AbstractDBMeta(MetaControlBean dbInstanceFactory, ServiceObject[] serviceObjectArr, DBVersionInfo[] versionArr){
