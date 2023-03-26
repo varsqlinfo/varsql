@@ -31,15 +31,15 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.DEFAULT_END_SPLITTER = exports.CREATE_END_CHECK_KEYWORD = exports.DEFAULT_TEXT_CHECK_TOKEN = exports.TAB_CHAR = exports.LINE_CHAR = void 0;
 
-var CreateChecker_1 = __importDefault(__webpack_require__(/*! ./core/create/CreateChecker */ "./src/core/create/CreateChecker.ts"));
+var CreateChecker_1 = __importDefault(__webpack_require__(/*! ./core/sql/split/create/CreateChecker */ "./src/core/sql/split/create/CreateChecker.ts"));
 
-var CreateFunctionChecker_1 = __importDefault(__webpack_require__(/*! ./core/create/CreateFunctionChecker */ "./src/core/create/CreateFunctionChecker.ts"));
+var CreateFunctionChecker_1 = __importDefault(__webpack_require__(/*! ./core/sql/split/create/CreateFunctionChecker */ "./src/core/sql/split/create/CreateFunctionChecker.ts"));
 
-var CreateTriggerCheckerr_1 = __importDefault(__webpack_require__(/*! ./core/create/CreateTriggerCheckerr */ "./src/core/create/CreateTriggerCheckerr.ts"));
+var CreateTriggerCheckerr_1 = __importDefault(__webpack_require__(/*! ./core/sql/split/create/CreateTriggerCheckerr */ "./src/core/sql/split/create/CreateTriggerCheckerr.ts"));
 
-var CreateProcedureChecker_1 = __importDefault(__webpack_require__(/*! ./core/create/CreateProcedureChecker */ "./src/core/create/CreateProcedureChecker.ts"));
+var CreateProcedureChecker_1 = __importDefault(__webpack_require__(/*! ./core/sql/split/create/CreateProcedureChecker */ "./src/core/sql/split/create/CreateProcedureChecker.ts"));
 
-var DefaultChecker_1 = __importDefault(__webpack_require__(/*! ./core/DefaultChecker */ "./src/core/DefaultChecker.ts")); // line char
+var DefaultChecker_1 = __importDefault(__webpack_require__(/*! ./core/sql/split/DefaultChecker */ "./src/core/sql/split/DefaultChecker.ts")); // line char
 
 
 exports.LINE_CHAR = '\n'; // tab char
@@ -96,10 +96,86 @@ exports.DEFAULT_END_SPLITTER = {
 
 /***/ }),
 
-/***/ "./src/core/DefaultChecker.ts":
-/*!************************************!*\
-  !*** ./src/core/DefaultChecker.ts ***!
-  \************************************/
+/***/ "./src/core/sql/db/standard.splitter.ts":
+/*!**********************************************!*\
+  !*** ./src/core/sql/db/standard.splitter.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var constants_1 = __webpack_require__(/*! ../../../constants */ "./src/constants.ts");
+
+var Splitter_1 = __importDefault(__webpack_require__(/*! ../split/Splitter */ "./src/core/sql/split/Splitter.ts"));
+
+var TextCheckTokenInfo_1 = __webpack_require__(/*! ../split/TextCheckTokenInfo */ "./src/core/sql/split/TextCheckTokenInfo.ts");
+
+var EndCheckTokenInfo_1 = __webpack_require__(/*! ../split/EndCheckTokenInfo */ "./src/core/sql/split/EndCheckTokenInfo.ts");
+
+var StandardSplitter = /*#__PURE__*/function (_Splitter_1$default) {
+  _inherits(StandardSplitter, _Splitter_1$default);
+
+  var _super = _createSuper(StandardSplitter);
+
+  function StandardSplitter() {
+    _classCallCheck(this, StandardSplitter);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(StandardSplitter, [{
+    key: "checker",
+    value: function checker() {
+      return {
+        textChecker: new TextCheckTokenInfo_1.TextCheckTokenInfo(constants_1.DEFAULT_TEXT_CHECK_TOKEN),
+        endChecker: new EndCheckTokenInfo_1.EndCheckTokenInfo(constants_1.DEFAULT_END_SPLITTER)
+      };
+    }
+  }]);
+
+  return StandardSplitter;
+}(Splitter_1["default"]);
+
+exports["default"] = StandardSplitter;
+
+/***/ }),
+
+/***/ "./src/core/sql/split/DefaultChecker.ts":
+/*!**********************************************!*\
+  !*** ./src/core/sql/split/DefaultChecker.ts ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -114,7 +190,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var constants_1 = __webpack_require__(/*! ../constants */ "./src/constants.ts"); // create function check token
+var constants_1 = __webpack_require__(/*! ../../../constants */ "./src/constants.ts"); // create function check token
 
 
 var DefaultChecker = /*#__PURE__*/function () {
@@ -159,10 +235,10 @@ exports["default"] = DefaultChecker;
 
 /***/ }),
 
-/***/ "./src/core/EndCheckTokenInfo.ts":
-/*!***************************************!*\
-  !*** ./src/core/EndCheckTokenInfo.ts ***!
-  \***************************************/
+/***/ "./src/core/sql/split/EndCheckTokenInfo.ts":
+/*!*************************************************!*\
+  !*** ./src/core/sql/split/EndCheckTokenInfo.ts ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -213,10 +289,10 @@ exports.EndCheckTokenInfo = EndCheckTokenInfo;
 
 /***/ }),
 
-/***/ "./src/core/Splitter.ts":
-/*!******************************!*\
-  !*** ./src/core/Splitter.ts ***!
-  \******************************/
+/***/ "./src/core/sql/split/Splitter.ts":
+/*!****************************************!*\
+  !*** ./src/core/sql/split/Splitter.ts ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -231,9 +307,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var utils_1 = __webpack_require__(/*! ../utils */ "./src/utils.ts");
+var utils_1 = __webpack_require__(/*! ../../utils */ "./src/core/utils.ts");
 
-var constants_1 = __webpack_require__(/*! ../constants */ "./src/constants.ts");
+var constants_1 = __webpack_require__(/*! ../../../constants */ "./src/constants.ts");
 
 var Splitter = /*#__PURE__*/function () {
   function Splitter(cfg) {
@@ -447,10 +523,10 @@ exports["default"] = Splitter;
 
 /***/ }),
 
-/***/ "./src/core/TextCheckTokenInfo.ts":
-/*!****************************************!*\
-  !*** ./src/core/TextCheckTokenInfo.ts ***!
-  \****************************************/
+/***/ "./src/core/sql/split/TextCheckTokenInfo.ts":
+/*!**************************************************!*\
+  !*** ./src/core/sql/split/TextCheckTokenInfo.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -498,10 +574,10 @@ exports.TextCheckTokenInfo = TextCheckTokenInfo;
 
 /***/ }),
 
-/***/ "./src/core/create/CreateChecker.ts":
-/*!******************************************!*\
-  !*** ./src/core/create/CreateChecker.ts ***!
-  \******************************************/
+/***/ "./src/core/sql/split/create/CreateChecker.ts":
+/*!****************************************************!*\
+  !*** ./src/core/sql/split/create/CreateChecker.ts ***!
+  \****************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -542,10 +618,10 @@ exports["default"] = CreateChecker;
 
 /***/ }),
 
-/***/ "./src/core/create/CreateFunctionChecker.ts":
-/*!**************************************************!*\
-  !*** ./src/core/create/CreateFunctionChecker.ts ***!
-  \**************************************************/
+/***/ "./src/core/sql/split/create/CreateFunctionChecker.ts":
+/*!************************************************************!*\
+  !*** ./src/core/sql/split/create/CreateFunctionChecker.ts ***!
+  \************************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -613,10 +689,10 @@ exports["default"] = CreateFunctionChecker;
 
 /***/ }),
 
-/***/ "./src/core/create/CreateProcedureChecker.ts":
-/*!***************************************************!*\
-  !*** ./src/core/create/CreateProcedureChecker.ts ***!
-  \***************************************************/
+/***/ "./src/core/sql/split/create/CreateProcedureChecker.ts":
+/*!*************************************************************!*\
+  !*** ./src/core/sql/split/create/CreateProcedureChecker.ts ***!
+  \*************************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -684,10 +760,10 @@ exports["default"] = CreateProcedureChecker;
 
 /***/ }),
 
-/***/ "./src/core/create/CreateTriggerCheckerr.ts":
-/*!**************************************************!*\
-  !*** ./src/core/create/CreateTriggerCheckerr.ts ***!
-  \**************************************************/
+/***/ "./src/core/sql/split/create/CreateTriggerCheckerr.ts":
+/*!************************************************************!*\
+  !*** ./src/core/sql/split/create/CreateTriggerCheckerr.ts ***!
+  \************************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -755,79 +831,79 @@ exports["default"] = CreateTriggerCheckerr;
 
 /***/ }),
 
-/***/ "./src/db/standard.splitter.ts":
-/*!*************************************!*\
-  !*** ./src/db/standard.splitter.ts ***!
-  \*************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ "./src/core/utils.ts":
+/*!***************************!*\
+  !*** ./src/core/utils.ts ***!
+  \***************************/
+/***/ ((__unused_webpack_module, exports) => {
 
 
-
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
 
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+exports.millitimeToFormat = exports.removeAllComment = exports.removeComment = exports.removeMultilineComment = exports.equalizeWhitespace = exports.isNewline = exports.trim = exports.isNumber = void 0;
 
-var constants_1 = __webpack_require__(/*! ../constants */ "./src/constants.ts");
+var isNumber = function isNumber(value) {
+  return typeof value === 'number';
+};
 
-var Splitter_1 = __importDefault(__webpack_require__(/*! ../core/Splitter */ "./src/core/Splitter.ts"));
+exports.isNumber = isNumber; // string trim
 
-var TextCheckTokenInfo_1 = __webpack_require__(/*! ../core/TextCheckTokenInfo */ "./src/core/TextCheckTokenInfo.ts");
+var trim = function trim(s) {
+  return s.replace(/^\s+|\s+$/g, "");
+};
 
-var EndCheckTokenInfo_1 = __webpack_require__(/*! ../core/EndCheckTokenInfo */ "./src/core/EndCheckTokenInfo.ts");
+exports.trim = trim;
 
-var StandardSplitter = /*#__PURE__*/function (_Splitter_1$default) {
-  _inherits(StandardSplitter, _Splitter_1$default);
+var isNewline = function isNewline(s) {
+  return /\r|\n/.test(s);
+};
 
-  var _super = _createSuper(StandardSplitter);
+exports.isNewline = isNewline; // space -> ' '
 
-  function StandardSplitter() {
-    _classCallCheck(this, StandardSplitter);
+var equalizeWhitespace = function equalizeWhitespace(s) {
+  return (0, exports.trim)(s).replace(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+/g, ' ');
+};
 
-    return _super.apply(this, arguments);
-  }
+exports.equalizeWhitespace = equalizeWhitespace; // multi line comment remove (/* */)
 
-  _createClass(StandardSplitter, [{
-    key: "checker",
-    value: function checker() {
-      return {
-        textChecker: new TextCheckTokenInfo_1.TextCheckTokenInfo(constants_1.DEFAULT_TEXT_CHECK_TOKEN),
-        endChecker: new EndCheckTokenInfo_1.EndCheckTokenInfo(constants_1.DEFAULT_END_SPLITTER)
-      };
-    }
-  }]);
+var removeMultilineComment = function removeMultilineComment(s) {
+  return s.replace(/\/\*(.|[\r\n])*?\\*\//gm, '');
+};
 
-  return StandardSplitter;
-}(Splitter_1["default"]);
+exports.removeMultilineComment = removeMultilineComment; // comment remove (--)
 
-exports["default"] = StandardSplitter;
+var removeComment = function removeComment(s) {
+  return s.replace(/--.*\n/gm, '');
+};
+
+exports.removeComment = removeComment; // comment all remove (--, /**/)
+
+var removeAllComment = function removeAllComment(s) {
+  return (0, exports.removeComment)((0, exports.removeMultilineComment)(s));
+};
+
+exports.removeAllComment = removeAllComment;
+
+var millitimeToFormat = function millitimeToFormat(milliTime, format) {
+  var inDate = new Date(milliTime);
+  var z = {
+    M: inDate.getMonth() + 1,
+    d: inDate.getDate(),
+    h: inDate.getHours(),
+    m: inDate.getMinutes(),
+    s: inDate.getSeconds()
+  };
+  format = format.replace(/(M+|d+|h+|m+|s+)/g, function (v) {
+    return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2);
+  });
+  return format.replace(/(y+)/g, function (v) {
+    return inDate.getFullYear().toString().slice(-v.length);
+  });
+};
+
+exports.millitimeToFormat = millitimeToFormat;
 
 /***/ }),
 
@@ -872,6 +948,10 @@ __exportStar(__webpack_require__(/*! ./sqlSplitter */ "./src/sqlSplitter.ts"), e
 
 __exportStar(__webpack_require__(/*! ./splitOptions */ "./src/splitOptions.ts"), exports);
 
+__exportStar(__webpack_require__(/*! ./sqlParamChecker */ "./src/sqlParamChecker.ts"), exports);
+
+__exportStar(__webpack_require__(/*! ./core/utils */ "./src/core/utils.ts"), exports);
+
 /***/ }),
 
 /***/ "./src/splitOptions.ts":
@@ -885,6 +965,74 @@ __exportStar(__webpack_require__(/*! ./splitOptions */ "./src/splitOptions.ts"),
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+
+/***/ }),
+
+/***/ "./src/sqlParamChecker.ts":
+/*!********************************!*\
+  !*** ./src/sqlParamChecker.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.getSqlParam = void 0;
+
+var utils_1 = __webpack_require__(/*! ./core/utils */ "./src/core/utils.ts"); // split function
+
+
+var getSqlParam = function getSqlParam(sql) {
+  if (typeof sql !== "string") {
+    throw new Error("Invalid sql argument. Expected string, instead got " + _typeof(sql));
+  }
+
+  sql = (0, utils_1.removeAllComment)(sql);
+  var sqlParam = {};
+  var matchArr = sql.match(/[#|$]{(.+?)}/gi);
+
+  if (matchArr) {
+    for (var i = 0; i < matchArr.length; i++) {
+      var propertyVal = matchArr[i].replace(/[$|#|{|}]/gi, '');
+      propertyVal = propertyVal.replace(/\s/g, ''); // 공백 제거
+
+      var allProperty = propertyVal.split(',');
+      var propertyKey = '';
+      var propertyMode = '';
+
+      for (var j = 0; j < allProperty.length; j++) {
+        var propSplitArr = allProperty[j].split("=");
+        var key = propSplitArr[0];
+
+        if (propSplitArr.length > 1) {
+          var val = propSplitArr[1];
+
+          if ("MODE" == key.toUpperCase()) {
+            propertyMode = propSplitArr[1];
+          }
+        } else {
+          propertyKey = key;
+        }
+      }
+
+      if (!sqlParam.hasOwnProperty(propertyKey)) {
+        var sqlParamInfo = {
+          key: propertyKey,
+          mode: propertyMode
+        };
+        sqlParam[propertyKey] = sqlParamInfo;
+      }
+    }
+  }
+
+  return sqlParam;
+};
+
+exports.getSqlParam = getSqlParam;
 
 /***/ }),
 
@@ -909,7 +1057,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.split = void 0;
 
-var standard_splitter_1 = __importDefault(__webpack_require__(/*! ./db/standard.splitter */ "./src/db/standard.splitter.ts"));
+var standard_splitter_1 = __importDefault(__webpack_require__(/*! ./core/sql/db/standard.splitter */ "./src/core/sql/db/standard.splitter.ts"));
 
 var splitters = {
   standard: standard_splitter_1["default"]
@@ -935,39 +1083,6 @@ var split = function split(sql) {
 };
 
 exports.split = split;
-
-/***/ }),
-
-/***/ "./src/utils.ts":
-/*!**********************!*\
-  !*** ./src/utils.ts ***!
-  \**********************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.equalizeWhitespace = exports.trim = exports.isNumber = void 0;
-
-var isNumber = function isNumber(value) {
-  return typeof value === 'number';
-};
-
-exports.isNumber = isNumber; // string trim
-
-var trim = function trim(s) {
-  return s.replace(/^\s+|\s+$/g, "");
-};
-
-exports.trim = trim; // space -> ' '
-
-var equalizeWhitespace = function equalizeWhitespace(s) {
-  return (0, exports.trim)(s).replace(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+/g, ' ');
-};
-
-exports.equalizeWhitespace = equalizeWhitespace;
 
 /***/ })
 

@@ -276,7 +276,7 @@ Plugin.prototype ={
 	,dragMove : function (){
 		var _this = this; 
 
-		_this.drag = {};
+		_this.drag = {mouseScrollDirectionX :-1, elementStartX : 0};
 
 		var dragElement;
 
@@ -284,18 +284,38 @@ Plugin.prototype ={
 		var dragItemIdx; 
 
 		var dragFncs = this.options.drag; 
-
+		
+		var bodyDragTimer;
+		var bodyDragDelay = 150;
+		
+		function dragScrollMove(ctx){
+			
+			bodyDragTimer = setInterval(function() {
+				var directionX =ctx.drag.mouseScrollDirectionX; 
+				if( directionX !== 0){
+					ctx._moveContainerPos( ctx.element.tabScrollElement.scrollLeft() + (directionX * 50));
+				}
+			}, bodyDragDelay);	
+		}
+		
 		this.tabElement.on('dragstart.pubtab.dragitem', '.pubTab-item', function (e){
 			_this.element.tabContainerElement.addClass('drag-on');
-
-			dragItemIdx = $(this).index();
+			var sEle = $(this); 
+			dragItemIdx = sEle.index();
 
 			var dragItem = _this.options.items[dragItemIdx]; 
 
 			if(_this.isActive(dragItem) ===false){
 				_this.itemClick(dragItem);
 			}
+			
+			_this.drag.startX = e.originalEvent.pageX;
+			_this.drag.dragElementStartX = sEle.offset().left;
+			_this.drag.dragElementEndX = _this.drag.dragElementStartX + sEle.width();
 
+			_this.drag.elementStartX = _this.tabElement.offset().left;
+			_this.drag.elementEndX = _this.drag.elementStartX+_this.config.width;
+			
 			startX = e.originalEvent.pageX;
 			dragElement = $(this);
 			
@@ -304,8 +324,24 @@ Plugin.prototype ={
 			if(dragFncs['dragStart'].call($(this), dragItem) ===false){
 				return false; 
 			}
-
+			dragScrollMove(_this);
 		}).on('drag.pubtab.dragitem', '.pubTab-item', function (e){
+			_this.drag.enableDrag = true; 
+
+			var originPageX = e.originalEvent.pageX;
+
+			if(originPageX == 0) return ; 
+
+			var moveX = originPageX - _this.drag.startX;
+			
+			if(moveX < 0 && (_this.drag.dragElementStartX - Math.abs(moveX) <  _this.drag.elementStartX)){
+				_this.drag.mouseScrollDirectionX = -1;
+			}else if(moveX > 0 &&_this.drag.dragElementEndX+moveX > _this.drag.elementEndX){
+				_this.drag.mouseScrollDirectionX = 1;
+			}else{
+				_this.drag.mouseScrollDirectionX = 0;
+			}
+				
 			//e.preventDefault();
 		}).on('dragenter.pubtab.dragitem', '.pubTab-item', function (e){
 			var enterEle = $(this); 
@@ -319,6 +355,7 @@ Plugin.prototype ={
 		}).on('dragend.pubtab.dragitem',  function (e){
 			_this.element.tabContainerElement.removeClass('drag-on');
 			dragFncs['dragEnd'].call($(this));
+			clearInterval(bodyDragTimer);
 		}).on('drop.pubtab.dragitem', '.pubTab-item', function (e){
 			
 			var dropEle = $(this); 
@@ -506,6 +543,10 @@ Plugin.prototype ={
 		var _this = this;
 
 		var tabWidthItem =_this.config.tabWidth[dataIdx];
+
+		if(typeof tabWidthItem === 'undefined'){
+			return ; 
+		}
 
 		var itemEndPoint = tabWidthItem.leftLast+_this.config.moveAreaWidth;
 

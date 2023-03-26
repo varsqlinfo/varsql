@@ -5557,6 +5557,8 @@ var defaultCondition ={
 	,'<': {nm: '작다', code: 'item["{{key}}"] < chkOpts[{{idx}}].chkVal'}
 	,'<=': {nm: '작거나같다', code: 'item["{{key}}"] <= chkOpts[{{idx}}].chkVal'}
 	,'searchIndex': {nm: '포함한다', isRegExp: true, code: 'chkRegExp.test(item["{{key}}"])'}
+	,'isNull': {nm: 'Null', code: 'null == item["{{key}}"]', isRequred : false}
+	,'isNotNull': {nm: 'Null이 아님', code: 'null != item["{{key}}"]', isRequred : false}
 };
 
 var defaultLogicalOp ={
@@ -5575,6 +5577,8 @@ var gridOperators = {
 		,defaultCondition['!=']
 		,defaultCondition['startsWith']
 		,defaultCondition['endsWith']
+		,defaultCondition['isNull']
+		,defaultCondition['isNotNull']
 	]
 	,'number' : [
 		defaultCondition['==']
@@ -6300,7 +6304,7 @@ var _$setting = {
 		settingAreaEle.find('.add-op-btn').trigger('click.addop.item');
 
 		// add filter item
-		settingAreaEle.on('change.filerkey', '[name="filter-key"]', function (e){
+		settingAreaEle.on('change.filterkey', '[name="filter-key"]', function (e){
 			var sEle = $(this);
 
 			var item = gridCtx.config.dataInfo.orginLeafHeaderKeyMap[sEle.val()];
@@ -6318,6 +6322,20 @@ var _$setting = {
 
 			filterOPEl.attr('data-optype', opType);
 			filterOPEl.empty().html(gridCtx.config.settingConfig.filterOperatorTemplate[opType]);
+		});
+
+		// filter operation change event
+		settingAreaEle.on('change.filterop', '[name="filter-op"]', function (e){
+			var sEle = $(this);
+
+			var opType = sEle.attr('data-optype'); 
+			var opArr = gridCtx.config.settingConfig.operators[opType];
+			var opItem = opArr[sEle.val()];
+			if(opItem.isRequred === false){
+				sEle.closest('li').find('[name="filter-value"]').hide();
+			}else{
+				sEle.closest('li').find('[name="filter-value"]').show();
+			}
 		});
 		
 		// remove filter row item 
@@ -6435,19 +6453,19 @@ var _$setting = {
 			var item = gridCtx.config.dataInfo.orginLeafHeaderKeyMap[filterKey]; 
 			var filterText = sEle.find('[name="filter-value"]').val(); 
 
-			if(filterText !=''){
+			var opArr = gridCtx.config.settingConfig.operators[item.$$opType];
 			
-				var opArr = gridCtx.config.settingConfig.operators[item.$$opType];
-				
-				filterItem = {
-					op : sEle.find('[name="filter-op"]').val()
-					,text : filterText
-					,logicOp : sEle.find('[name="filter-op-logical"]').is(':checked')
-				}
+			filterItem = {
+				op : sEle.find('[name="filter-op"]').val()
+				,text : filterText
+				,logicOp : sEle.find('[name="filter-op-logical"]').is(':checked')
+			}
 
-				if(filterChkFlag) chkLogicStr.push(( filterItem.logicOp ? defaultLogicalOp.getCode('and') : defaultLogicalOp.getCode('or')));
+			if(filterChkFlag) chkLogicStr.push(( filterItem.logicOp ? defaultLogicalOp.getCode('and') : defaultLogicalOp.getCode('or')));
 
-				var opItem = opArr[filterItem.op];
+			var opItem = opArr[filterItem.op];
+
+			if(opItem.isRequred ===false || filterText !=''){
 
 				allChkVal.push({
 					chkVal : filterItem.text

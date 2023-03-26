@@ -5,10 +5,6 @@
 ;(function($, window, document, VARSQL) {
 "use strict";
 
-var _defaultOptions = {
-	dateFormat :'yyyy-MM-dd hh:mm:ss'
-}
-
 // 전역 변수
 var _g_options={
 	dbtype:''
@@ -597,6 +593,17 @@ _ui.headerMenu ={
 
 								return ;
 							}
+							
+							if(menu_mode3 =='multidbsqlexecute'){
+								var popt = 'width=1280,height=700,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
+
+								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/multiDbSqlExecute?conuid='+_g_options.param.conuid), {
+									name : 'multidbsqlexecute'+_g_options.param.conuid
+									,viewOption : popt
+								});
+
+								return ;
+							}
 
 							break;
 						default:
@@ -1022,7 +1029,7 @@ _ui.layout = {
 				}
 
 				if(!a1 || varsqlLayout._maximisedItem) return ;
-
+				
 				clearTimeout(layoutSaveTimer);
 
 				layoutSaveTimer = setTimeout(function() {
@@ -4065,7 +4072,7 @@ _ui.SQL = {
 			sqlVal=VARSQL.str.trim(sqlVal);
 		}
 
-		$('#noteTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_제목');
+		$('#noteTitle').val(VARSQL.util.dateFormat(new Date(), 'yyyy-mm-dd HH:MM')+'_title');
 		$('#noteContent').val(sqlVal);
 
 		if(_self.noteDialog==null){
@@ -4544,43 +4551,16 @@ _ui.SQL = {
 	,sqlParamCheck : function (sqlVal, sqlParam){
 		var _self =this;
 		
-		// 주석 /**/ 지우기
-		sqlVal = sqlVal.replace(/\/\*(.|[\r\n])*?\\*\//gm,'');
-	
-		// 주석 -- 지우기
-		sqlVal = sqlVal.replace(/--.*\n/gm,'');
-		
-		var matchArr = sqlVal.match(/[#|$]{(.+?)}/gi);
+		var sqlAllParam =VARSQLUtils.getSqlParam(sqlVal);
 
-		if(matchArr){
+		if(VARSQL.getLength(sqlAllParam) > 0){
 			var addParam = {};
 			var flag = true;
-			for(var i =0 ;i < matchArr.length;i++){
-				var propertyVal = matchArr[i].replace(/[$|#|{|}]/gi,'');
-				
-				propertyVal = propertyVal.replace(/\s/g,''); // 공백 제거
-	
-				var allProperty = propertyVal.split(',');
-				var propertyKey = '';
-				var propertyMode = '';
-				for (var j = 0; j < allProperty.length ; j++) {
-					var propSplitArr = allProperty[j].split("=");
-					var key = propSplitArr[0];
-					if (propSplitArr.length > 1) {
-						var val = propSplitArr[1];
-						if ("MODE"==key.toUpperCase()) {
-							propertyMode = propSplitArr[1];
-						}
-					}else {
-						propertyKey = key;
-					}
-				}
-	
-				if(propertyMode.toUpperCase() != 'OUT'){
-					if(!VARSQL.hasProperty(sqlParam, propertyKey)){
-						addParam[propertyKey] = '';
-						flag = false;
-					}
+			
+			for(var key in sqlAllParam){
+				if(!VARSQL.hasProperty(sqlParam, key)){
+					addParam[key] = '';
+					flag = false;
 				}
 			}
 
@@ -5054,7 +5034,7 @@ _ui.sqlDataArea =  {
 					resultInfo =item;
 				}
 
-				resultMsg.push('<div class="'+(item.resultType =='fail' ? 'error' :'success')+'"><span class="log-end-time">'+milli2str(item.endtime, _defaultOptions.dateFormat)+' </span>#resultMsg#</div>'.replace('#resultMsg#', item.resultMessage));
+				resultMsg.push('<div class="'+(item.resultType =='fail' ? 'error' :'success')+'"><span class="log-end-time">'+VARSQLUtils.millitimeToFormat(item.endtime, VARSQLCont.timestampFormat)+' </span>#resultMsg#</div>'.replace('#resultMsg#', item.resultMessage));
 			}
 		}else{
 			msgViewFlag = true;
@@ -5073,7 +5053,7 @@ _ui.sqlDataArea =  {
 				errorMessage = resultData.message;
 			}
 			
-			var logValEle = $('<div><div class="error"><span class="log-end-time">'+milli2str(msgItemResult.endtime,_defaultOptions.dateFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customMap.errorLine+']</span> query: <span class="log-query"></span>'));
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+VARSQLUtils.millitimeToFormat(msgItemResult.endtime,VARSQLCont.timestampFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customMap.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 
 			resultMsg.push(logValEle.html());
@@ -5902,29 +5882,6 @@ function copyStringToClipboard (copyText, prefix) {
 	document.execCommand('copy');
 }
 
-function milli2str(milliTime, format) {
-
-	var inDate = new Date(milliTime);
-    var z = {
-        M: inDate.getMonth() + 1,
-        d: inDate.getDate(),
-        h: inDate.getHours(),
-        m: inDate.getMinutes(),
-        s: inDate.getSeconds()
-    };
-    format = format.replace(/(M+|d+|h+|m+|s+)/g, function(v) {
-        return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2)
-    });
-
-    return format.replace(/(y+)/g, function(v) {
-        return inDate.getFullYear().toString().slice(-v.length)
-    });
-}
-
-function isNewline(str){
-	return /\r|\n/.test(str);
-}
-
 // get sql add template info
 function getTemplateInfo(queryInfo){
 
@@ -5932,7 +5889,7 @@ function getTemplateInfo(queryInfo){
 	var chkQuery = queryInfo.before.toLowerCase();
 
 	var beforeNewLineFlag = false;
-	if(isNewline(chkQuery.substr(chkQuery.replace(/\s+$/,"").length))){
+	if(VARSQLUtils.isNewline(chkQuery.substr(chkQuery.replace(/\s+$/,"").length))){
 		beforeNewLineFlag = true; 
 	}
 	
@@ -5973,7 +5930,7 @@ function getTemplateInfo(queryInfo){
 		}
 
 		if(type.indexOf('comment') < 1 ){ // 줄바꿈 체크
-			if(isNewline(token.whitespaceBefore)){
+			if(VARSQLUtils.isNewline(token.whitespaceBefore)){
 				beforeNewLineFlag = true; 
 			}
 		}else{

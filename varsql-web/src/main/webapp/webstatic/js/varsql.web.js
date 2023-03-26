@@ -793,10 +793,12 @@ _$base.req ={
 	}
 };
 
+// database request cancel
 function databaseReqCancel(reqUid){
 	reqUid =  reqUid|| _currentAjaxUid;
 	
-	if(!_$base.isBlank(reqUid)){
+	if(!_$base.isBlank(reqUid) && ($varsqlConfig||{}).conuid){
+		
 		_$base.req.ajax({
 			url : {type:VARSQL.uri.database, url:'/reqCancel'}
 			,ignoreUid : true

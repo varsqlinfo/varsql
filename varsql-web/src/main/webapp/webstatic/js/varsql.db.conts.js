@@ -259,7 +259,10 @@ var G_CURRENT_DTO = _dto;
 var G_CURRENT_DBTYPE_INFO = DEFINE_INFO['DEFAULT'];
 
 VARSQLCont = {
-	constants : {
+	timeFormat :'hh:mm:ss'
+	,dateFormat :'yyyy-MM-dd'
+	,timestampFormat :'yyyy-MM-dd hh:mm:ss'
+	,constants : {
 		newline :'\n'
 		,tab : '\t'
 		,querySuffix : ';  '
