@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>varsql</comment>
+<entry key="page.title.varsql">Varsql</entry>
+<entry key="varsql.info">Varsql</entry>
+<entry key="user.home.title">- VarSQL -</entry>
+<entry key="manager.home.title">-- Manager --</entry>
+<entry key="admin.home.title">--- Admin ---</entry>
+<entry key="user.preferences.title">Preferences</entry>
+<entry key="msg.please.sign.in">VARSQL Login</entry>
+
+
+<entry key="header.menu.file">File</entry>
+<entry key="header.menu.file.new">New</entry>
+<entry key="header.menu.file.save">Save</entry>
+<entry key="header.menu.file.allsave">Save As...</entry>
+
+<entry key="header.menu.file.import">Import...</entry>
+<entry key="header.menu.file.export">Export...</entry>
+<entry key="header.menu.file.import_export"><![CDATA[Import & Export...]]></entry>
+<entry key="header.menu.file.newwin">New Window</entry>
+
+<entry key="header.menu.file.close">Close</entry>
+
+<entry key="header.menu.edit">Edit</entry>
+<entry key="header.menu.edit.paste">Paste</entry>
+<entry key="header.menu.edit.undo">Undo</entry>
+<entry key="header.menu.edit.redo">Redo</entry>
+<entry key="header.menu.edit.compare">Query compare</entry>
+
+<!-- 검색 메뉴 -->
+<entry key="header.menu.search">Search</entry>
+<entry key="header.menu.search.find">Find</entry>
+
+
+<entry key="header.menu.tool">Tool</entry>
+<entry key="header.menu.tool.import">Import</entry>
+<entry key="header.menu.tool.export">Export</entry>
+<entry key="header.menu.tool.export.specification">Table spec</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">Data</entry>
+<entry key="header.menu.tool.setting">Preferences</entry>
+<entry key="header.menu.tool.initlayout">Init Layout</entry>
+
+<entry key="header.menu.tool.show.plugin">Show Component</entry>
+<entry key="header.menu.tool.show.glossary">Glossary</entry>
+<entry key="header.menu.tool.show.history">History</entry>
+
+
+<entry key="header.menu.tool.theme">Color Theme</entry>
+<entry key="header.menu.tool.theme.light">light</entry>
+<entry key="header.menu.tool.theme.dark">dark</entry>
+
+
+<entry key="header.menu.tool.utils">Utils</entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[Table Generate]]></entry>
+
+<!-- 도움말 메뉴 -->
+<entry key="header.menu.help">Help</entry>
+<entry key="header.menu.help.help">Help</entry>
+<entry key="header.menu.help.dbinfo">DB Infomation</entry>
+<entry key="header.menu.help.info">About Varsql</entry>
+
+<entry key="screen">Screen</entry>
+<entry key="screen.user">User</entry>
+<entry key="screen.manager">App Management</entry>
+<entry key="screen.admin">Administration Console</entry>
+
+<!-- admin menu -->
+<entry key="admin.menu.database">Database</entry>
+<entry key="admin.menu.databaseoptmgmt">Database Options</entry>
+<entry key="admin.menu.managermgmt">Manager Auth Authority</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager]]></entry>
+<entry key="admin.menu.report">Report</entry>
+<entry key="admin.menu.dbmenumgmt">Menu  Management</entry>
+<entry key="admin.menu.jdbcprovidermgmt">JDBC Provider</entry>
+
+<!-- manage menu -->
+<entry key="manager.menu.usermgmt">User Management</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
+<entry key="manager.menu.logmgmt">Log Statistics</entry>
+<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
+
+
+<entry key="manager.menu.usermgmt">User Management</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
+<entry key="manager.menu.dbgroup">DB Group</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB Group & User]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[Glossary]]></entry>
+<entry key="manager.menu.logmgmt">Log</entry>
+<entry key="manager.menu.dbcomparemgmt">DB Compare</entry>
+<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manager.menu.sqllog">SQL Log</entry>
+<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
+<entry key="manager.menu.scheduler">Scheduler</entry>
+<entry key="manager.menu.databackupmgmt">Data Backup</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL Backup</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+
+<!-- user menu -->
+<entry key="user.edit.general">Modify Profile</entry>
+<entry key="user.edit.pasword">Password Change</entry>
+<entry key="user.edit.message">Message Management</entry>
+
+<entry key="login.form.id">Id</entry>
+<entry key="login.form.pw">Password</entry>
+
+<!-- guest  -->
+<entry key="guest.title">Welcome Varsql.</entry>
+<entry key="guest.message"><![CDATA[Sir, your authority has not been processed yet.Please contact your <br/> administrator.]]></entry>
+<entry key="btn.contact">Question</entry>
+<entry key="btn.login.screen">Login</entry>
+<entry key="guest.form.title">Title</entry>
+<entry key="guest.form.question">Questions</entry>
+<entry key="guest.form.answer">Answer</entry>
+
+<!-- join form -->
+<entry key="join.form.title">Sign up</entry>
+<entry key="join.form.uid">Id</entry>
+<entry key="join.form.email">email</entry>
+<entry key="join.form.name">Name</entry>
+<entry key="join.form.organization">Org</entry>
+<entry key="join.form.dept">Dept</entry>
+<entry key="join.form.desc">Description</entry>
+<entry key="join.form.locale">Language</entry>
+
+
+<entry key="join.form.password">Password</entry>
+<entry key="join.form.password.confirm">Password confirm</entry>
+<entry key="btn.join">Join</entry>
+<entry key="btn.main">Main</entry>
+
+<!-- user form  -->
+<entry key="user.form.password.current">Current Password</entry>
+<entry key="user.form.password.new">New Password</entry>
+<entry key="user.form.password.confirm">Re Password</entry>
+
+<entry key="msg.email.empty">Please enter an your email</entry>
+<entry key="msg.title.empty">Please enter a title</entry>
+<entry key="msg.contactus.empty">Please enter your inquiry</entry>
+<entry key="msg.name.empty">Please enter a name</entry>
+<entry key="msg.password.empty">Please enter a password</entry>
+<entry key="msg.password.differrent">The password is not the same.</entry>
+<entry key="msg.password.length.check">Password must be at least 6 digits long</entry>
+<entry key="msg.login.fail">wrong ID or password.</entry>
+<entry key="msg.save.confirm">Save it?</entry>
+<entry key="msg.save.success">Saved</entry>
+<entry key="msg.save.fail">Save failed</entry>
+<entry key="msg.delete.confirm">Delete it?</entry>
+<entry key="msg.nodata">No Data.</entry>
+<entry key="msg.success">Success</entry>
+<entry key="msg.search.placeholder">Search...</entry>
+<entry key="msg.data.select">Select the data.</entry>
+<entry key="msg.accept.msg">Do you want to accept the selected user?</entry>
+<entry key="msg.denial.msg">Are you sure you want to reject the selected user?</entry>
+<entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
+<entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
+<entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
+
+
+<entry key="msg.select.value">선택된 값</entry>
+<entry key="msg.warning.select">선택하시오</entry>
+<entry key="msg.records.per.page">페이지 당 레코드</entry>
+<entry key="msg.table.dbclick.move">* 테이블을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
+<entry key="msg.column.dbclick.move">* 컬럼을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
+
+<entry key="database.preferences">환경설정</entry>
+<entry key="database.tools">도구</entry>
+
+<entry key="admin.form.header">Database info</entry>
+<entry key="admin.form.db.vname">Name</entry>
+<entry key="admin.form.db.vurl">Url</entry>
+<entry key="admin.form.db.databasename">schema name</entry>
+<entry key="admin.form.db.vdriver">Driver</entry>
+<entry key="admin.form.db.vid">Id</entry>
+<entry key="admin.form.db.vpw">Password</entry>
+<entry key="admin.form.db.enableConnectionPool">DB Metadata Pool Enable</entry>
+<entry key="admin.form.db.vconnopt">Connection Option</entry>
+<entry key="admin.form.db.vpoolopt">Pool Option</entry>
+
+<entry key="admin.form.db.maxactive">Max Active</entry>
+<entry key="admin.form.db.test_while_idle">Test While Idle</entry>
+
+<entry key="admin.form.db.minidle">Min Idle</entry>
+<entry key="admin.form.db.timeout">Timeout</entry>
+<entry key="admin.form.db.exportcount">Export Count</entry>
+<entry key="admin.form.db.usecolumnlabel">ResultSet ColumnLabel use</entry>
+
+<entry key="admin.userlist.search.head">사용자 검색</entry>
+<entry key="admin.managerlist.head">관리자 목록</entry>
+
+<entry key="admin.managerlist.dbuser">매니저 </entry>
+
+<entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
+
+<entry key="manager.userlist.head">사용자 목록</entry>
+<entry key="manager.userlist.name">이름</entry>
+<entry key="manager.userlist.id">아이디</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.userlist.init.password">패스워드 초기화</entry>
+<entry key="manager.userlist.date">등록일</entry>
+<entry key="manager.userlist.access">수락여부</entry>
+<entry key="manager.userlist.useyn">사용여부</entry>
+<entry key="manager.userlist.dept">소속</entry>
+<entry key="manager.qnalist.head"><![CDATA[Q&A 목록]]></entry>
+<entry key="manager.answeryn">답변여부</entry>
+<entry key="manager.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
+
+<!-- user menu -->
+<entry key="user.prefernces.menu.general">General</entry>
+<entry key="user.prefernces.menu.pasword">Password</entry>
+<entry key="user.prefernces.menu.message">Note</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
+
+<entry key="user.edit.msgtitle">Title</entry>
+<entry key="user.edit.send_id">Sender</entry>
+<entry key="user.edit.recv_id">Recv</entry>
+<entry key="user.edit.msgcont">Content</entry>
+<entry key="detail.view">Detail</entry>
+<entry key="reg_dt">Registration Date</entry>
+<entry key="view_dt">View Date</entry>
+<entry key="upd_dt">Modified Date</entry>
+
+<entry key="refresh.connnection.info">Refresh connection info</entry>
+
+
+<entry key="msg.lost.password">Forgot password?</entry>
+<entry key="password.reset">Password reset</entry>
+
+</properties>
