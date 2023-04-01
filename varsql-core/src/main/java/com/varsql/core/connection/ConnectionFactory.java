@@ -49,26 +49,18 @@ public final class ConnectionFactory implements ConnectionContext{
 	}
 
 	@Override
-	public synchronized Connection getConnection(String connid) throws ConnectionFactoryException  {
-		return getConnection(connid ,true);
-	}
-
-	public synchronized Connection getConnection(String connid , boolean returnFlag) throws ConnectionFactoryException  {
+	public Connection getConnection(String connid) throws ConnectionFactoryException  {
 		ConnectionInfo connInfo  = getConnectionInfo(connid);
 
 		if(connInfo != null){
-			if(isShutdown(connid))
-				;
+			if(isShutdown(connid)) {
+				return null; 
+			}
 
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}
 
 		throw new ConnectionFactoryException(" null connection infomation : "+ connid);
-	}
-
-	public synchronized void createPool(ConnectionInfo connInfo) throws SQLException, ConnectionFactoryException  {
-		connectionPoolType.getPoolBean().createDataSource(connInfo);
-		connectionConfig.put(connInfo.getConnid(), connInfo);
 	}
 
 	/**
@@ -188,7 +180,7 @@ public final class ConnectionFactory implements ConnectionContext{
 	@Override
 	public boolean isShutdown(String connid) throws ConnectionFactoryException {
 		if(connectionShutdownInfo.containsKey(connid)) {
-			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection shutdown");
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection refused");
 		}
 		return false;
 	}
@@ -236,7 +228,7 @@ public final class ConnectionFactory implements ConnectionContext{
 		}
 	}
 
-	private ConnectionPoolInterface getPoolBean() {
+	public ConnectionPoolInterface getPoolBean() {
 		return this.connectionPoolType.getPoolBean();
 	}
 }

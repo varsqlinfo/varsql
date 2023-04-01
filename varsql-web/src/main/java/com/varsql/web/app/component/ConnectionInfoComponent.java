@@ -12,7 +12,6 @@ import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
-import com.varsql.core.connection.BeanType;
 import com.varsql.core.connection.ConnectionInfoConfig;
 import com.varsql.core.connection.ConnectionInfoDao;
 import com.varsql.core.connection.beans.ConnectionInfo;
@@ -29,7 +28,7 @@ import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
 
 @Component("connectionInfoDao")
-@ConnectionInfoConfig(beanType = BeanType.SPRING, beanName = "connectionInfoDao", primary = true)
+@ConnectionInfoConfig(beanName = "connectionInfoDao", primary = true)
 public class ConnectionInfoComponent implements ConnectionInfoDao {
 
 	private final Logger logger = LoggerFactory.getLogger(ConnectionInfoComponent.class);

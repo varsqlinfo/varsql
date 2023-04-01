@@ -28,7 +28,6 @@ public class CommonControllerAdvice {
 
 	  String contextPath = request.getContextPath();
 
-      model.addAttribute("pageContextPath", contextPath);
       model.addAttribute("fileUploadSize", Configuration.getInstance().getFileUploadSize());
       model.addAttribute("fileUploadSizePerFile", Configuration.getInstance().getFileUploadSizePerFile());
       model.addAttribute("pageContextPath", contextPath);
