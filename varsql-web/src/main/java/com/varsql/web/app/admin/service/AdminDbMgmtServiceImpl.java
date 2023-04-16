@@ -1,8 +1,5 @@
 package com.varsql.web.app.admin.service;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.varsql.core.common.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.PathType;
-import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
-import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.PasswordCryptionFactory;
 import com.varsql.core.db.DBVenderType;
@@ -217,9 +212,6 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		validation_query = StringUtils.isBlank(validation_query) ? defaultDriverValidationQuery : validation_query;
 
 		String failMessage = "";
-		PreparedStatement pstmt = null;
-		Connection connChk = null;
-
 		VarsqlAppCode resultCode = VarsqlAppCode.SUCCESS;
 		try {
 			String pwd = vtConnection.getVpw();
@@ -239,18 +231,10 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 				driverJarFiles = FileServiceUtils.getFileInfos(dbTypeDriverFileEntityRepository.findByFileContId(driverProviderEntity.getDriverProviderId()));
 			}
 			
-		    Driver dbDriver = JdbcDriverLoader.checkDriver(JDBCDriverInfo.builder()
-				.driverId(dbInfo.getDbTypeDriverProvider().getDriverProviderId())
-				.driverClass(dbInfo.getDbTypeDriverProvider().getDriverClass())
-				.driverFiles(driverJarFiles)
-				.build()
-			);
+		    JdbcUtils.connectionCheck(dbInfo.getDbTypeDriverProvider().getDriverProviderId()
+		    		, dbInfo.getDbTypeDriverProvider().getDriverClass()
+		    		, driverProviderEntity.getDbType(), url, p, driverJarFiles, validation_query, 30, 20);
 		    
-		    connChk = dbDriver.connect(url, p);
-		    pstmt = connChk.prepareStatement(validation_query);
-
-			pstmt.executeQuery();
-			connChk.close();
 		} catch (ClassNotFoundException e) {
 			resultCode = VarsqlAppCode.ERROR;
 			failMessage = e.getMessage();
@@ -260,9 +244,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			resultCode = VarsqlAppCode.ERROR;
 			failMessage = e.getMessage();
 			logger.error(getClass().getName(), e);
-		}finally {
-			JdbcUtils.close(connChk, pstmt, null);
 		}
+		
 		resultObject.setResultCode(resultCode);
 		resultObject.setMessage(failMessage);
 		return resultObject;

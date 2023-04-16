@@ -369,9 +369,16 @@ VarsqlAPP.vueServiceBean( {
 						url : {type:VARSQL.uri.manager, url:'/dataBackup/save'}
 						,data: item
 						,success:function (resData){
-							_this.setDetailItem();
 							
-							_this.search();
+							if(VARSQL.req.validationCheck(resData)){
+								if(resData.resultCode != 200){
+									alert(resData.message);
+									return ;
+								}
+								
+								_this.setDetailItem();
+								_this.search();
+							}
 						}
 					});
 				}

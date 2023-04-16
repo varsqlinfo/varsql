@@ -40,15 +40,14 @@
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
-			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
+			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
 			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
 				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
 				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
 		FROM information_schema.columns as cols 
-		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
-		left join information_schema.table_constraints as tc  on kcu.constraint_name =tc.constraint_name
-		left join information_schema.tables as tbls on cols.table_name = tbls.table_name
-		left join pg_catalog.pg_class as pc on pc.relname = cols.table_name
+		left join information_schema.key_column_usage as kcu on (cols.table_schema =kcu.constraint_schema and cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
+		left join information_schema.table_constraints as tc  on cols.table_schema =tc.constraint_schema and  kcu.constraint_name =tc.constraint_name
+		left join information_schema.tables as tbls on cols.table_schema =tbls.table_schema and cols.table_name = tbls.table_name
 		WHERE cols.table_schema = #{schema}
 		AND tbls.table_type = 'BASE TABLE'
 		<if test="custom != null and custom.objectNameList != null">
@@ -95,15 +94,14 @@
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
-			,pg_catalog.col_description(pc.oid, cols.ordinal_position) "COMMENT"
+			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
 			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
 				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
 				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
 		FROM information_schema.columns as cols 
-		left join information_schema.key_column_usage as kcu on (cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
-		left join information_schema.table_constraints as tc  on kcu.constraint_name =tc.constraint_name
-		left join information_schema.tables as tbls on cols.table_name = tbls.table_name
-		left join pg_catalog.pg_class as pc on pc.relname = cols.table_name
+		left join information_schema.key_column_usage as kcu on (cols.table_schema =kcu.constraint_schema and cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
+		left join information_schema.table_constraints as tc  on cols.table_schema =tc.constraint_schema and  kcu.constraint_name =tc.constraint_name
+		left join information_schema.tables as tbls on cols.table_schema =tbls.table_schema and cols.table_name = tbls.table_name
 		WHERE cols.table_schema = #{schema}
 		AND tbls.table_type = 'VIEW'
 		<if test="custom != null and custom.objectNameList != null">

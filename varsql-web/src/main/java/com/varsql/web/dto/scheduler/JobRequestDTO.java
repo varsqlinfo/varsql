@@ -24,7 +24,6 @@ public class JobRequestDTO implements Serializable{
 	@Size(max=200)
 	private String jobName;
 	
-	@NotEmpty
 	@Size(max=200)
 	private String jobGroup;
 	

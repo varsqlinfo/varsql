@@ -98,6 +98,13 @@ public final class ConnectionFactory implements ConnectionContext{
 		try {
 			ConnectionInfo connInfo = connectionInfoDao.getConnectionInfo(connid);
 			getPoolBean().createDataSource(connInfo);
+			
+			try(Connection conn =  connectionPoolType.getPoolBean().getConnection(connInfo);){
+				if(conn == null) {
+					throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR ,"createConnectionInfo error : [" + connid + "]");
+				}
+			}
+			
 			this.connectionConfig.put(connid, connInfo);
 			return connInfo;
 		} catch (Exception e) {
