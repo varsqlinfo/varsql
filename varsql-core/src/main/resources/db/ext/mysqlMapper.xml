@@ -163,7 +163,7 @@
 			, a.created as "CREATED"
 			,'' as "STATUS"
 			,p.PARAMETER_NAME  as ARGUMENT_NAME
-			,p.DATA_TYPE as DATA_TYPE
+			,p.DATA_TYPE as TYPE_NAME
 			,p.parameter_mode as "IN_OUT"
 			,p.ORDINAL_POSITION as "SEQUENCE"
 		from
@@ -322,15 +322,15 @@
 	<!-- create index  Script -->
 	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
 		SELECT
-		    table_name as "TABLE_NAME"
-			, index_name as "INDEX_NAME"
-			, column_name as "COLUMN_NAME" 
-			, seq_in_index as "COLUMN_POSITION"
-			, table_schema
+			table_name as "tableName"
+			, index_name as "objectName"
+			, column_name as "columnName" 
+			, seq_in_index as "ordinalPosition"
+			, table_schema as "schema"
 			, cardinality 
 			, non_unique  -- 1: 인덱스에 중복 가능.    0 : 중복 불가.
 			, (case when collation ='A' then 'ASC'
-				else 'DESC' end)   as "ASC_OR_DESC" -- A : 오름차순으로 정렬.
+				else 'DESC' end)   as "ascOrDesc" -- A : 오름차순으로 정렬.   NULL : 정렬되지 않은 경우.
 			, sub_part  -- NULL :  전체 열이 인덱싱된 경우.  인덱싱된 문자의 수 : 부분적으로 인덱싱된 경우
 			, nullable  -- YES :  열에 NULL이 포함될 수 있음.
 		FROM information_schema.STATISTICS

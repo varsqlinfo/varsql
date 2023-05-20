@@ -17,10 +17,10 @@ public class H2DataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public H2DataTypeFactory() {
-		addDataType(new VenderDataType("CHARACTER VARYING", DefaultDataType.VARCHAR.getTypeCode() , DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("VARCHAR_IGNORECASE", DefaultDataType.VARCHAR.getTypeCode() , DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("CHARACTER LARGE OBJECT", DefaultDataType.CLOB.getTypeCode() , DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("CHARACTER", DefaultDataType.CHAR.getTypeCode() , DBColumnMetaInfo.STRING));
+		addDataType(new VenderDataType("VARCHAR_IGNORECASE", DefaultDataType.NVARCHAR.getTypeCode(), DBColumnMetaInfo.STRING));
+		addDataType(new VenderDataType("CHARACTER VARYING", DefaultDataType.VARCHAR.getTypeCode(), DBColumnMetaInfo.STRING));
+		addDataType(new VenderDataType("CHARACTER LARGE OBJECT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.STRING));
+		addDataType(new VenderDataType("CHARACTER", DefaultDataType.CHAR.getTypeCode(), DBColumnMetaInfo.STRING));
 		addDataType(new VenderDataType("TIME WITH TIME ZONE", DefaultDataType.TIME.getTypeCode() , DBColumnMetaInfo.TIME));
 		addDataType(new VenderDataType("TIMESTAMP WITH TIME ZONE", DefaultDataType.TIMESTAMP.getTypeCode() , DBColumnMetaInfo.DATE));
 	}

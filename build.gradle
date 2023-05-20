@@ -21,7 +21,6 @@ buildscript {
 			,servletApi: '4.0.0'
 			,jackson : '2.13.1'
 			,poi : '5.2.0'
-			,tiles : '3.0.7'
 			,tomcat : '8.5.49'
 			,jspApi : '2.3.3'
 			,slf4j : '1.7.30'

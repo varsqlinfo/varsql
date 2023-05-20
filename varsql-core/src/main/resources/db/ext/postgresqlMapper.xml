@@ -29,7 +29,7 @@
 		order BY a.relname
 	</select>
 	
-	<!-- table adn column info -->
+	<!-- table and column info -->
 	<select id="tableMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT
 			cols.table_name as "TABLE_NAME"
@@ -41,13 +41,21 @@
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
 			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
-			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
-				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
-				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
-		FROM information_schema.columns as cols 
-		left join information_schema.key_column_usage as kcu on (cols.table_schema =kcu.constraint_schema and cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
-		left join information_schema.table_constraints as tc  on cols.table_schema =tc.constraint_schema and  kcu.constraint_name =tc.constraint_name
-		left join information_schema.tables as tbls on cols.table_schema =tbls.table_schema and cols.table_name = tbls.table_name
+			,const.CONSTRAINTS as "CONSTRAINTS"
+		FROM information_schema.tables as tbls inner join information_schema.columns as cols  on tbls.table_schema = cols.table_schema and cols.table_name = tbls.table_name
+		left join (
+			select tc.table_name, kcu.column_name, 'PK' as CONSTRAINTS
+			from information_schema.table_constraints as tc  inner join  information_schema.key_column_usage as kcu on tc.constraint_schema =kcu.constraint_schema and tc.table_name  = kcu.table_name
+			where  tc.constraint_type ='PRIMARY KEY'
+			and tc.constraint_schema = #{schema}
+			<if test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					tc.table_name in (${item}) 
+				</foreach>
+			</if>
+			group by tc.table_name, kcu.column_name
+		) const on cols.table_name = const.table_name and cols.column_name = const.column_name
 		WHERE cols.table_schema = #{schema}
 		AND tbls.table_type = 'BASE TABLE'
 		<if test="custom != null and custom.objectNameList != null">
@@ -88,20 +96,13 @@
 			cols.table_name as "TABLE_NAME"
 			, cols.COLUMN_NAME as "COLUMN_NAME"
 			, cols.data_type  as "TYPE_NAME"
-			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE"
 			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "IS_NULLABLE" 
 			,character_maximum_length as  "COLUMN_SIZE" 
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
 			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
-			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
-				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
-				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "CONSTRAINTS"
-		FROM information_schema.columns as cols 
-		left join information_schema.key_column_usage as kcu on (cols.table_schema =kcu.constraint_schema and cols.table_name  = kcu.table_name and cols.column_name = kcu.column_name) 
-		left join information_schema.table_constraints as tc  on cols.table_schema =tc.constraint_schema and  kcu.constraint_name =tc.constraint_name
-		left join information_schema.tables as tbls on cols.table_schema =tbls.table_schema and cols.table_name = tbls.table_name
+		FROM information_schema.tables as tbls inner join information_schema.columns as cols  on tbls.table_schema = cols.table_schema and cols.table_name = tbls.table_name
 		WHERE cols.table_schema = #{schema}
 		AND tbls.table_type = 'VIEW'
 		<if test="custom != null and custom.objectNameList != null">
@@ -350,101 +351,76 @@
 		시퀸스 script
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
-		SELECT a.sequence_name as  "OBJECT_NAME"
-			,REGEXP_REPLACE(xpath('/row/last_value/text()',(query_to_xml(format('select last_value from %I.%I', sequence_schema, sequence_name), false, true, '')))::text,'[{}]','','gi') as "LAST_NUMBER"
-			,increment as  "INCREMENT_BY"
-			,minimum_value as  "MIN_VALUE"
-			, maximum_value as  "MAX_VALUE"
-			, start_value as  "START_VALUE"
-			,cycle_option as "CYCLE_OPTION"
+		SELECT a.sequence_name as  "objectName"
+			, REGEXP_REPLACE(xpath('/row/last_value/text()',(query_to_xml(format('select last_value from %I.%I', sequence_schema, sequence_name), false, true, '')))::text,'[{}]','','gi') as "lastNumber"
+			, increment as  "increment"
+			, minimum_value as  "minValue"
+			, maximum_value as  "maxValue"
+			, start_value as  "startValue"
+			, cycle_option as "cycleOption"
 		FROM information_schema.sequences a
 		where sequence_schema =#{schema}
 		and	a.sequence_name = #{objectName}
 	</select>    
 	
 	<!-- 
-	 view script 생성  create 문	
+	 table script 생성  create 문	
 	 -->
-	<select id="tableScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="tableScriptColumn" parameterType="databaseParamInfo" resultType="columnInfo">
 		SELECT
-                b.nspname as schema_name,
-                b.relname as "TABLE_NAME",
-                a.attname as "COLUMN_NAME",
-                pg_catalog.format_type(a.atttypid, a.atttypmod) as "TYPE_NAME",
-                CASE WHEN
-                    (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
-                     FROM pg_catalog.pg_attrdef d
-                     WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef) IS NOT NULL THEN
-                    'DEFAULT '|| (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
-                                  FROM pg_catalog.pg_attrdef d
-                                  WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)
-                ELSE
-                    ''
-                END as "COLUMN_DEF",
-                CASE WHEN a.attnotnull = true THEN
-                    'NOT NULL'
-                ELSE
-                    'NULL'
-                END as "NULLABLE",
-                a.attnum as attnum,
-                e.max_attnum as max_attnum
-            FROM
-                pg_catalog.pg_attribute a
-                INNER JOIN
-                 (SELECT c.oid,
-                    n.nspname,
-                    c.relname
-                  FROM pg_catalog.pg_class c
-                       LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-                  WHERE c.oid = (
-					  SELECT c.oid FROM pg_catalog.pg_class c
-						LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-							WHERE relkind = 'r'
-							AND n.nspname = #{schema}
-							AND relname = #{objectName}
-				  )
-                  ORDER BY 2, 3) b
-                ON a.attrelid = b.oid
-                INNER JOIN
-                 (SELECT
-                      a.attrelid,
-                      max(a.attnum) as max_attnum
-                  FROM pg_catalog.pg_attribute a
-                  WHERE a.attnum > 0
-                    AND NOT a.attisdropped
-                  GROUP BY a.attrelid) e
-                ON a.attrelid=e.attrelid
-            WHERE a.attnum > 0
-              AND NOT a.attisdropped
-            ORDER BY a.attnum
+			cols.table_name as "tableName"
+			, cols.COLUMN_NAME as "name"
+			, cols.data_type  as "typeName"
+			,(CASE WHEN  cols.is_nullable = 'NO'  then 'N' ELSE 'Y' END)  as "nullable" 
+			,character_maximum_length as  "length" 
+			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision else -1 end) as "dataPrecision"
+			,(case when character_maximum_length is null then cols.numeric_scale else -1 end) as "decimalDigits"
+			,cols.column_default as "defaultVal"
+			,cols.ordinal_position as "no"
+		FROM information_schema.tables as tbls inner join information_schema.columns as cols  on tbls.table_schema = cols.table_schema and cols.table_name = tbls.table_name
+		WHERE cols.table_schema = #{schema}
+		AND tbls.table_type = 'BASE TABLE'
+		and tbls.table_name = #{objectName}
+		order by cols.table_name , cols.ordinal_position
 	</select>
 	
-	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
-		SELECT conname as "CONSTRAINT_NAME", pg_get_constraintdef(c.oid) as "CONSTRAINDDEF"
-		FROM pg_constraint c
-		WHERE conrelid=(
-		    SELECT attrelid FROM pg_attribute
-		    WHERE attrelid = (
-		        SELECT oid FROM pg_class WHERE relname = #{objectName}
-		            AND relnamespace = (SELECT ns.oid FROM pg_namespace ns WHERE ns.nspname =  #{schema})
-		    ) AND attname='tableoid'
-		)
+	<select id="tableConstraints" parameterType="databaseParamInfo" resultType="constraintInfo">
+		SELECT
+			tc.constraint_name as "constraintName"
+			, tc.table_name as "tableName"
+			, kcu.COLUMN_NAME as "columnName"
+			,( case when tc.constraint_type ='PRIMARY KEY' then 'PK'
+				WHEN tc.constraint_type ='UNIQUE' then 'UQ'
+				when tc.constraint_type !='CHECK' and tc.constraint_type is not null then tc.constraint_type else '' end)as "type"
+			,kcu.ordinal_position as "sortOrder"
+		FROM information_schema.table_constraints tc inner join information_schema.key_column_usage as kcu  
+		on tc.constraint_schema = kcu.constraint_schema  and  tc.table_name =kcu.table_name and tc.constraint_name = kcu.constraint_name 
+		WHERE tc.constraint_schema = #{schema}
+		and tc.table_name = #{objectName}
+		order by tc.constraint_type,  kcu.ordinal_position
 	</select>
 	
-	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
+	<select id="tableColumnComments" parameterType="databaseParamInfo" resultType="commentInfo">
 		<![CDATA[
-		select COMMENT_SCRIPT as "COMMENT_SCRIPT" from (	
+		select * from (
 			SELECT 
-				'COMMENT ON TABLE '|| PS.RELNAMe || ' IS '|| ' ''' ||PD.DESCRIPTION || ''';' as COMMENT_SCRIPT
+				'TBL' as "type" 
+				,schemaname as "schema"
+				, PS.RELNAME as "name"
+				, PD.DESCRIPTION as "comment"
 				, 0 as sort_order
 			FROM pg_catalog.PG_STAT_ALL_TABLES  PS
 			  ,pg_catalog.PG_DESCRIPTION      PD
 			WHERE  PS.RELID   = PD.OBJOID 
+			and schemaname= #{schema}
 			AND PS.RELNAME  = #{objectName}
 			AND PD.OBJSUBID  = 0
 			union
 			SELECT 
-				'COMMENT ON COLUMN '|| PS.RELNAME ||'.'||PA.ATTNAME || ' is ' || ' ''' || PD.DESCRIPTION || ''';' as COMMENT_SCRIPT
+				'COL' as "type" 
+				,schemaname as "schema"
+				, PS.RELNAME as "name"
+				, PD.DESCRIPTION as "comment"
 				,PA.ATTNUM as sort_order
 			FROM PG_STAT_ALL_TABLES PS
 			  ,PG_DESCRIPTION     PD
@@ -463,7 +439,7 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="viewScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="viewScript" parameterType="databaseParamInfo" resultType="dataMap">
 		select table_name , view_definition  as "VIEW_SOURCE"
 		from information_schema.views
 		where table_schema = #{schema}
@@ -481,7 +457,7 @@
 	</select>
 	
 	<!-- create function script -->
-	<select id="functionScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="functionScript" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
 				, 'FUNCTION' as "OBJECT_TYPE"
 				, proargtypes as definer
@@ -496,7 +472,7 @@
 	</select>
 	
 	<!-- create procedure script -->
-	<select id="procedureScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="procedureScript" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT pg_get_functiondef(proname::regproc)  as "CREATE_SOURCE"
 				, 'FUNCTION' as "OBJECT_TYPE"
 				, proargtypes as definer
@@ -511,7 +487,7 @@
 	</select>
 	
 	<!-- create trigger script -->
-	<select id="triggerScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="triggerScript" parameterType="databaseParamInfo" resultType="dataMap">
 		select tgname
 			,pg_get_triggerdef(oid) as "CREATE_SOURCE"
 		from pg_trigger a ,information_schema.triggers b

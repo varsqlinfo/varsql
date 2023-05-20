@@ -122,7 +122,6 @@ public enum DBColumnMetaInfo {
 			if(this.columnMetaHandler != null) {
 				dataType += this.columnMetaHandler.typeAndLength(precision, scale);
 			}else {
-				
 				if(columnSize < 0) return dataType;
 				
 				if(this.isSize()){

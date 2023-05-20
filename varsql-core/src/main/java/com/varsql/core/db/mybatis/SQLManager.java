@@ -32,6 +32,8 @@ import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.handler.type.LONGVARCHARHandler;
+import com.varsql.core.db.valueobject.CommentInfo;
+import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -228,6 +230,8 @@ public final class SQLManager {
 			com.varsql.core.db.valueobject.SequenceInfo.class,
 			com.varsql.core.db.valueobject.ObjectInfo.class,
 			com.varsql.core.db.valueobject.ObjectColumnInfo.class,
+			ConstraintInfo.class,
+			CommentInfo.class
 		}).stream().forEach(typeAlias-> {
 			configuration.getTypeAliasRegistry().registerAlias(typeAlias);
 		});

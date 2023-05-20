@@ -49,12 +49,11 @@
 			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
 			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE in ('TABLE','BASE TABLE')
 			left outer join (
-				select a.TABLE_NAME , b.COLUMN_NAME, case when MAX(a.INDEX_TYPE_NAME) = 'PRIMARY KEY' then 'PK'
-					WHEN MAX(a.INDEX_TYPE_NAME) = 'UNIQUE INDEX' then 'UQ'
-					else null end as "CONSTRAINTS"
+				select a.TABLE_NAME , b.COLUMN_NAME, 'PK' as "CONSTRAINTS"
 				from  information_schema.INDEXES a inner join information_schema.INDEX_COLUMNS b
 				on a.INDEX_NAME = b.INDEX_NAME 
 				where a.TABLE_SCHEMA = #{schema}
+				and a.INDEX_TYPE_NAME = 'PRIMARY KEY'
 				<if test="custom != null and custom.objectNameList != null">
 					and
 					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -145,80 +144,104 @@
 	<resultMap id="objectColInfoMap" type="objectColumnInfo">
 	    <id property="no" column="SEQUENCE" />
 	    <result property="name" column="ARGUMENT_NAME"/>
-	    <result property="typeName" column="TYPE_NAME"/>
+	    <result property="typeName" column="DATA_TYPE"/>
 	    <result property="columnType" column="IN_OUT"/>
 	</resultMap>
 	<!-- object info info map end  -->
+	
+	<!-- procedure arguments list -->
+	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
+		select
+			a.routine_name as "OBJECT_NAME"
+			,'' as "COMMENT"
+			,'' as "CREATED"
+			,'' as "STATUS"
+			,p.PARAMETER_NAME  as "ARGUMENT_NAME"
+			,p.DATA_TYPE as "DATA_TYPE"
+			,p.parameter_mode as "IN_OUT"
+			,p.ORDINAL_POSITION as "SEQUENCE"
+		from
+			information_schema.ROUTINES a left outer join information_schema.parameters p
+		on a.ROUTINE_SCHEMA =p.SPECIFIC_SCHEMA
+		and a.specific_name = p.specific_name
+		where 1=1
+		and upper(a.ROUTINE_SCHEMA) =#{schema}
+			<choose>
+				<when test='"procedure".equalsIgnoreCase(objectType)'>
+					and a.routine_type = 'PROCEDURE'
+				</when>
+				<when test='"function".equalsIgnoreCase(objectType)'>
+					and a.routine_type = 'FUNCTION'
+				</when>
+				<otherwise>
+					and a.routine_type =#{objectType}
+				</otherwise>
+			</choose>
+			<if test="custom != null and custom.objectNameList != null">
+				and
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					a.routine_name in (${item})
+				</foreach>
+			</if>
+		order by a.routine_name , p.ORDINAL_POSITION
+	</select>
 
 	<!-- function list -->
 	<select id="functionList" parameterType="databaseParamInfo" resultType="objectInfo">
-		select func.ALIAS_NAME AS "NAME"
-			,'FUNCTION' as "TYPE"
-			, func.REMARKS  AS "REMARKS"
+		select
+			a.ROUTINE_NAME  AS "name"
+			,a.ROUTINE_TYPE  as "type"
+			, a.REMARKS  AS "remarks"
 			, '' as "CREATED"
 			, '' as "STATUS"
-		from information_schema.FUNCTION_ALIASES func
-		WHERE func.ALIAS_SCHEMA = #{schema}
-	</select>
-
-	<select id="functionMeta" parameterType="databaseParamInfo" resultType="objectInfo">
-		select
-			ALIAS_NAME as "OBJECT_NAME"
-			,JAVA_CLASS as "OBJECT_TYPE"
-			,JAVA_METHOD as "ARGUMENT_NAME"
-			,DATA_TYPE as "TYPE_NAME"
-			,'' as "COLUMN_SIZE"
-			,'' as "DATA_PRECISION"
-			,'' as "DECIMAL_DIGITS"
-			,'' as "COMMENT"
-			,'' as "IN_OUT"
-		from information_schema.FUNCTION_ALIASES func
-		WHERE func.ALIAS_SCHEMA = #{schema}
+		from INFORMATION_SCHEMA.ROUTINES a
+		where SPECIFIC_SCHEMA=#{schema}
+		and a.ROUTINE_TYPE = 'FUNCTION'
 	</select>
 
 	<!-- index list -->
 	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
 		select
-			 ind.INDEX_NAME as "NAME"
-			,'' as "STATUS"
+			 ind.INDEX_NAME as "name"
+			,'' as "status"
 		from information_schema.INDEXES  ind
 		WHERE ind.TABLE_SCHEMA = #{schema}
 		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
-		group by ind.index_NAME
 		order by ind.TABLE_NAME, ind.index_NAME
 	</select>
 
 	<!-- index and column info -->
 	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		select
-			TABLE_NAME,
-			INDEX_NAME,
-			COLUMN_NAME,
-			ORDINAL_POSITION,
+			ind.TABLE_NAME as "TABLE_NAME",
+			ind.INDEX_NAME as "INDEX_NAME",
+			indc.COLUMN_NAME as "COLUMN_NAME",
+			indc.ORDINAL_POSITION as "ORDINAL_POSITION",
 			INDEX_TYPE_NAME||'' as  "TYPE",
-			ASC_OR_DESC,
-			'' as "STATUS"
-		from information_schema.INDEXES  ind
-		WHERE ind.TABLE_SCHEMA = #{schema}
+			ORDERING_SPECIFICATION as  "ASC_OR_DESC"
+		from information_schema.INDEXES  ind , information_schema.INDEX_COLUMNS indc
+		where ind.INDEX_SCHEMA  = indc.INDEX_SCHEMA
+		and ind.index_NAME  = indc.index_NAME
+		and ind.INDEX_SCHEMA = #{schema}
 		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				ind.INDEX_NAME in (${item})
 			</foreach>
 		</if>
-		order by TABLE_NAME, index_NAME, ORDINAL_POSITION
+		order by ind.TABLE_NAME, ind.index_NAME, indc.ORDINAL_POSITION;
 	</select>
 
 
 	<!-- trigger list -->
 	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
 		select
-			TABLE_NAME as "TABLE_NAME",
-	        TRIGGER_NAME as "NAME" ,
-			'' as "CREATED"
+			EVENT_OBJECT_TABLE as "TABLE_NAME",
+	        TRIGGER_NAME as "name" ,
+			'' as "created"
 		from information_schema.TRIGGERS
-		WHERE TABLE_SCHEMA = #{schema}
-		order by TABLE_NAME , TRIGGER_NAME
+		WHERE TRIGGER_SCHEMA = #{schema}
+		order by EVENT_OBJECT_TABLE , TRIGGER_NAME
 	</select>
 
 	<!-- trigger info map -->
@@ -229,23 +252,25 @@
 	    <result property="timing" column="TIMING"/>
 	    <result property="created" column="CREATED"/>
 	    <result property="status" column="STATUS"/>
+	    <result property="remarks" column="REMARKS"/>
 	</resultMap>
 
 	<!-- trigger metadata -->
 	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
 		select
-			TABLE_NAME as "TABLE_NAME",
+			EVENT_OBJECT_TABLE as "TABLE_NAME",
 	        TRIGGER_NAME as "NAME" ,
-			TRIGGER_TYPE as "EVENTTYPE",
-			'' as "STATUS"
+			EVENT_MANIPULATION as "EVENTTYPE",
+			'' as "STATUS",
+			REMARKS as "REMARKS"
 		from information_schema.TRIGGERS
-		WHERE TABLE_SCHEMA = #{schema}
+		WHERE TRIGGER_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				TRIGGER_NAME in (${item})
 			</foreach>
 		</if>
-		order by TABLE_NAME , TRIGGER_NAME
+		order by EVENT_OBJECT_TABLE , TRIGGER_NAME
 	</select>
 
 	<!-- sequence info map -->
@@ -267,9 +292,9 @@
 	<!-- sequence list -->
 	<select id="sequenceList" parameterType="databaseParamInfo" resultType="objectInfo">
 		select
-			SEQUENCE_NAME as  "NAME",
+			SEQUENCE_NAME as  "name",
 			INCREMENT as  "increment",
-			CURRENT_VALUE as "current_value"
+			BASE_VALUE as "current_value"
 		from information_schema.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 	</select>
@@ -281,9 +306,11 @@
 		select
 			SEQUENCE_NAME as "OBJECT_NAME"
 			,'' as CREATED
-			,MIN_VALUE as "MIN_VALUE"
+			,MINIMUM_VALUE as "MIN_VALUE"
+			,MAXIMUM_VALUE as "MAX_VALUE"
+			,CYCLE_OPTION as "CYCLE_FLAG"
 			,INCREMENT as "INCREMENT_BY"
-			,CURRENT_VALUE as "LAST_NUMBER"
+			,BASE_VALUE as "LAST_NUMBER"
 		from information_schema.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
@@ -299,12 +326,12 @@
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
 		select
-			SEQUENCE_NAME as "OBJECT_NAME"
+			SEQUENCE_NAME as "objectName"
 			,'' as CREATED
-			,MIN_VALUE as "MIN_VALUE"
-			,MAX_VALUE as "MAX_VALUE"
-			,INCREMENT as "INCREMENT_BY"
-			,CURRENT_VALUE as "LAST_NUMBER"
+			,MINIMUM_VALUE as "minValue"
+			,MAXIMUM_VALUE as "maxValue"
+			,INCREMENT as "increment"
+			,BASE_VALUE as "lastNumber"
 		from information_schema.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 		and seq.SEQUENCE_NAME = #{objectName}
@@ -323,21 +350,27 @@
 	<!--
 		create index  Script
 	 -->
-	<select id="indexScript" resultType="string" parameterType="databaseParamInfo">
+	<select id="indexScript" resultType="dataMap" parameterType="databaseParamInfo">
 		select
-			SQL
-		from information_schema.INDEXES
-		WHERE TABLE_SCHEMA = #{schema}
+			indc.TABLE_NAME as "tableName",
+			indc.INDEX_NAME as "objectName",
+			indc.INDEX_SCHEMA as "schema",
+			indc.COLUMN_NAME as "columnName",
+			indc.ORDINAL_POSITION as "ordinalPosition",
+			ORDERING_SPECIFICATION as  "ascOrDesc"
+		from information_schema.INDEX_COLUMNS indc
+		where  indc.INDEX_SCHEMA = #{schema}
 		and INDEX_NAME =#{objectName}
-		and ORDINAL_POSITION = 1
+		order by TABLE_NAME , INDEX_NAME , ORDINAL_POSITION 
 	</select>
 
 	<!-- create function script -->
 	<select id="functionScript" resultType="string" parameterType="databaseParamInfo">
-		select SOURCE
-		from information_schema.FUNCTION_ALIASES func
-		WHERE func.ALIAS_SCHEMA = 'PUBLIC'
-		and func.ALIAS_NAME = #{objectName}
+		select ROUTINE_DEFINITION  
+		from information_schema.ROUTINES
+		where SPECIFIC_SCHEMA=#{schema}
+		and ROUTINE_TYPE = 'FUNCTION'
+		and ROUTINE_NAME = #{objectName}
 	</select>
 
 </mapper>

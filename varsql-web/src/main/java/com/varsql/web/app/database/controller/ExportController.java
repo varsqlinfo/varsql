@@ -101,9 +101,8 @@ public class ExportController extends AbstractController  {
 	@RequestMapping(value="/spec/tableExport", method = RequestMethod.POST)
 	public void tableExport(PreferencesRequestDTO preferencesInfo, 
 			@RequestParam(value = "schema", required = true) String schema,
-			@RequestParam(value = "databaseName", required = true) String databaseName,
 			HttpServletRequest req,  HttpServletResponse res) throws Exception {
-		exportServiceImpl.tableSpecExport(preferencesInfo, schema, databaseName, req, res);
+		exportServiceImpl.tableSpecExport(preferencesInfo, schema, req, res);
 	}
 
 	/**
@@ -119,8 +118,8 @@ public class ExportController extends AbstractController  {
 	@RequestMapping(value="/ddlMain", method =  RequestMethod.GET)
 	public ModelAndView ddlMain(DBMetadataRequestDTO dbMetadataRequestDTO, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
-
-		model.put("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType()).getServiceMenu());
+		
+		exportServiceImpl.ddlMainInfo(dbMetadataRequestDTO, model);
 
 		return getModelAndView("/export/ddlMain", VIEW_PAGE.DATABASE_TOOLS, model);
 	}

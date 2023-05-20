@@ -604,6 +604,24 @@ _ui.headerMenu ={
 
 								return ;
 							}
+							
+							if(menu_mode3 =='tableddlconvert'){
+								var popt = 'width=1280,height=700,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
+								
+								
+								_self.openPreferences('Table DDL Convert',VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid));
+								
+								//_self.openMenuDialog(VARSQL.messageFormat('menu.file.export'),'tableDDLConvert',{type:VARSQL.uri.database, url:'/utils/tableDDLConvert?conuid='+_g_options.param.conuid}, {'width':600,'height' : 400});
+								
+								/*
+								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid), {
+									name : 'multidbsqlexecute'+_g_options.param.conuid
+									,viewOption : popt
+								})
+								*/
+
+								return ;
+							}
 
 							break;
 						default:
@@ -753,11 +771,11 @@ _ui.headerMenu ={
 		var _self = this;
 
 		if(type=='spec'){
-			_self.openPreferences('명세서 내보내기',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
+			_self.openPreferences('Table Spec Export',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
 		}else if(type=='ddl'){
-			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
+			_self.openPreferences('DDL Export',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
 		}else if(type=='tableData'){
-			_self.openPreferences('DDL 내보내기',VARSQL.getContextPathUrl('/database/tools/export/tableDataExport?conuid='+_g_options.param.conuid));
+			_self.openPreferences('Table Data Export',VARSQL.getContextPathUrl('/database/tools/export/tableDataExport?conuid='+_g_options.param.conuid));
 		}
 	}
 	//header 메뉴 환경설정처리.
@@ -1198,7 +1216,6 @@ _ui.dbSchemaObject ={
 			varsqlLayerClear();
 			var objNm =sEle.attr('obj_nm'); 
 			_g_options.param.schema = objNm;
-			_g_options.param.databaseName = objNm;
 
 			$('#varsqlSschemaName').val(_g_options.param.schema);
 
@@ -2056,6 +2073,7 @@ _ui.dbObjectMetadata= {
 				,click : function (item){
 
 					var objectName = _self.selectMetadata[objType].name;
+					var selectSchema = _self.selectMetadata[objType].schema;
 
 					var metaTabKey = item.tabid;
 
@@ -2164,7 +2182,7 @@ _ui.dbObjectMetadata= {
 	,_createDDL :function (sObj, callbackFn){
 		var _self = this;
 
-		var param =_getParam({'objectType':sObj.objectType ,objectName:sObj.objectName});
+		var param =_getParam({'objectType':sObj.objectType, objectName:sObj.objectName});
 
 		VARSQL.req.ajax({
 			url:{type:VARSQL.uri.database, url:'/createDDL'}
@@ -5658,7 +5676,11 @@ _ui.text={
 function getTableName(tblName){
 
 	if(typeof tblName ==='object'){
-		tblName = !VARSQL.isBlank(tblName.schema) ? tblName.schema+'.'+tblName.name : tblName.name;
+		if(!VARSQL.isBlank(tblName.schema)){
+			return tblName.schema+'.'+tblName.name; 
+		}
+		
+		tblName = tblName.name;
 	}
 	
 	if(_g_options.schema != _g_options.param.schema){

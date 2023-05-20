@@ -83,7 +83,9 @@ public class H2DBMeta extends AbstractDBMeta{
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames) throws Exception {
 		setObjectNameList(dataParamInfo, functionNames);
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionMeta" ,dataParamInfo);
+		List<ObjectInfo> obj = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		
+		return obj; 
 	}
 
 	@Override

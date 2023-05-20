@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
@@ -75,7 +76,14 @@ public interface DBMeta{
 	public List<ObjectInfo> getTriggers(DatabaseParamInfo dataParamInfo) throws Exception;
 	// trigger metadata
 	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo,String... triggerNames) throws Exception;
-
+	
+	/**
+	 * 키 정보 
+	 * @param dataParamInfo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<ConstraintInfo> getConstraintsKeys(DatabaseParamInfo dataParamInfo, String tableNm) throws Exception;
 
 	public <T>T getExtensionMetadata(DatabaseParamInfo dataParamInfo, String serviceName, Map param) throws Exception;
 	public <T>T getExtensionObject(DatabaseParamInfo dataParamInfo, String serviceName, Map param) throws Exception;

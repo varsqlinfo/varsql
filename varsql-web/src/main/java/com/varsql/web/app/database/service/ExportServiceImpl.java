@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -214,11 +215,10 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception
 	 */
-	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, String schema, String databaseName, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public void tableSpecExport(PreferencesRequestDTO preferencesInfo, String schema, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
 		dpi.setSchema(schema);
-		dpi.setDatabaseName(databaseName);
 		
 		String jsonString = preferencesInfo.getPrefVal();
 		
@@ -630,5 +630,32 @@ public class ExportServiceImpl{
 				.build();
 		
 		return fie; 
+	}
+
+	public List<String> schemaList(DatabaseParamInfo dpi) throws SQLException {
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
+
+		DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
+
+		if(venderType.isUseDatabaseName()) {
+			return dbMetaEnum.getDatabases(dpi); 
+		}else {
+			return dbMetaEnum.getSchemas(dpi); 
+		}
+	}
+	
+	/**
+	 * ddl export main 정보 셋팅 
+	 * @param dbMetadataRequestDTO
+	 * @param model
+	 * @throws SQLException
+	 */
+	public void ddlMainInfo(DBMetadataRequestDTO dbMetadataRequestDTO, ModelMap model) throws SQLException {
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(dbMetadataRequestDTO.getConuid()));
+		
+		model.addAttribute("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType()).getServiceMenu());
+		model.addAttribute("schemaList", schemaList(dpi));
+		model.addAttribute("currentSchemaName", dpi.getSchema());
 	}
 }

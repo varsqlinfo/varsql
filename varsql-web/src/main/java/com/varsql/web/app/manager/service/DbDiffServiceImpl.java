@@ -97,7 +97,7 @@ public class DbDiffServiceImpl{
 	 * @param databaseName
 	 * @return
 	 */
-	public ResponseResult objectList(String vconnid, String objectType, String schema, String databaseName) {
+	public ResponseResult objectList(String vconnid, String objectType, String schema) {
 
 		ResponseResult resultObject = new ResponseResult();
 
@@ -109,7 +109,7 @@ public class DbDiffServiceImpl{
 		}else{
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
 			dpi.setSchema(schema);
-			dpi.setDatabaseName(StringUtils.isBlank(databaseName) ? databaseInfo.getDatabaseName(): databaseName);
+			dpi.setDatabaseName(databaseInfo.getDatabaseName());
 			dpi.setObjectType(objectType);
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());

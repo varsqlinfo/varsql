@@ -13,6 +13,7 @@ import org.apache.ibatis.session.ResultHandler;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
+import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.vartech.common.app.beans.DataMap;
@@ -108,12 +109,16 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		int degitsLen= rowData.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 
 		String dataType = rowData.getString(MetaColumnConstants.TYPE_NAME);
-		DataType dataTypeInfo = dataTypeFactory.getDataType(dataType);
+		
+		String standardDataType = DbMetaUtils.getTypeName(dataType);
+		DataType dataTypeInfo = dataTypeFactory.getDataType(standardDataType);
 
 		column.setName(cName);
 		column.setTypeCode(dataTypeInfo.getTypeCode());
 		column.setTypeName(dataType);
 		Object lenInfoObj = rowData.get(MetaColumnConstants.COLUMN_SIZE);
+		column.setDataPrecision(dataPrecision);
+		column.setDecimalDigits(degitsLen);
 
 		if(lenInfoObj != null && dataTypeInfo.getJDBCDataTypeMetaInfo().isSize()) {
 			if(lenInfoObj instanceof Integer) {
@@ -125,14 +130,11 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		
 		column.setDefaultVal(rowData.getString(MetaColumnConstants.COLUMN_DEF));
 		column.setNullable(rowData.getString(MetaColumnConstants.IS_NULLABLE));
-		column.setTypeName(dataTypeInfo.getTypeName());
-
 		String typeAndLength =rowData.getString(MetaColumnConstants.TYPE_NAME_SIZE ,"");
 		
 		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
 
 		column.setComment(rowData.getString(MetaColumnConstants.COMMENT,""));
-
 		column.setConstraints(rowData.getString(MetaColumnConstants.CONSTRAINTS,""));
 
 		currentTableInfo.addColInfo(column);

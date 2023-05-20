@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.apache.ibatis.type.Alias;
 
+import lombok.ToString;
+
 /**
  * 
  * @FileName  : ColumnInfo.java
@@ -13,6 +15,7 @@ import org.apache.ibatis.type.Alias;
  * @변경이력 :
  */
 @Alias("columnInfo")
+@ToString
 public class ColumnInfo {
 	private int no;  
 	// 컬럼 명. 
@@ -29,6 +32,10 @@ public class ColumnInfo {
 	
 	// 사이즈
 	private BigDecimal length;
+	
+	private int dataPrecision; 
+	
+	private int decimalDigits; 
 	
 	// null 여부.
 	private String nullable;
@@ -137,15 +144,21 @@ public class ColumnInfo {
 		this.constraints = constraints;
 	}
 	
-	@Override
-	public String toString() {
-		return new StringBuilder()
-				.append("name : ").append(name)
-				.append(" dataType : ").append(typeCode)
-				.append(" typeAndLength : ").append(typeAndLength)
-				.append(" comment : ").append(comment)
-				.append(" constraints : ").append(constraints)
-				.toString();
+	public int getDataPrecision() {
+		return dataPrecision;
 	}
+
+	public void setDataPrecision(int dataPrecision) {
+		this.dataPrecision = dataPrecision;
+	}
+
+	public int getDecimalDigits() {
+		return decimalDigits;
+	}
+
+	public void setDecimalDigits(int decimalDigits) {
+		this.decimalDigits = decimalDigits;
+	}
+
 }
 

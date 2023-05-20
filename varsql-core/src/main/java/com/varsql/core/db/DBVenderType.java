@@ -12,7 +12,7 @@ public enum DBVenderType {
 	MYSQL("mysql")
 	,DB2("db2")
 	,ORACLE("oracle")
-	,SQLSERVER("sqlserver", true)
+	,SQLSERVER("sqlserver", false)
 	,MARIADB("mariadb")
 	,DERBY("derby")
 	,HIVE("hive")
@@ -40,6 +40,10 @@ public enum DBVenderType {
 
 	public String getDbVenderName() {
 		return dbVenderName;
+	}
+	
+	public String getName() {
+		return name();
 	}
 
 	public static DBVenderType getDBType(String db) {

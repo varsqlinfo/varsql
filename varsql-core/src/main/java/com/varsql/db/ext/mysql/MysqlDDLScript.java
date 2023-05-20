@@ -2,13 +2,11 @@ package com.varsql.db.ext.mysql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.ddl.script.AbstractDDLScript;
@@ -16,10 +14,11 @@ import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -46,24 +45,23 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for(String name : objNmArr){
-
-			ddlStr = new StringBuilder();
-
+		for(String objNm : objNmArr){
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
 			DataMap source = client.selectOne("tableScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(StringUtils.trim(source.getString("Create Table")))
+			.build();
 
-			ddlStr.append(source.getString("Create Table"));
-			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
 
 			reval.add(ddlInfo);
 		}
@@ -76,30 +74,28 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		
-		StringBuilder ddlStr;
-
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 
-		for (String name : objNmArr) {
-
-			ddlStr = new StringBuilder();
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			dataParamInfo.setObjectName(objNm);
 
 			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
-			ddlStr.append(source.getString("Create View"));
-			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString("Create View"))
+			.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -115,18 +111,22 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.items(sqlSesseion.selectList("indexScript", dataParamInfo))
+			.build();
 
-
-			Map param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("indexScript", dataParamInfo));
-
-			String ddl = SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param);
-			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.addLastSemicolon(ddl, ddlOption));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
+			
 			reval.add(ddlInfo);
 		}
 
@@ -143,25 +143,26 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 		
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			dataParamInfo.setObjectName(objNm);
 
 			DataMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString("Create Function"))
+			.build();
 
-			ddlStr.append(source.getString("Create Function"));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
 			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
 
 			reval.add(ddlInfo);
 		}
@@ -180,24 +181,26 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 		
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-			dataParamInfo.setObjectName(name);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 			
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
 			DataMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString("Create Procedure"))
+			.build();
 
-			ddlStr.append(source.getString("Create Procedure"));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
 			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			
 			reval.add(ddlInfo);
 		}
 
@@ -227,23 +230,24 @@ public class MysqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 		
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP Trigger " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
 			DataMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
-			ddlInfo.setChangeFormat(false);
-			ddlStr.append(source.getString("SQL Original Statement"));
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString("SQL Original Statement"))
+			.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
 
 			reval.add(ddlInfo);
 		}

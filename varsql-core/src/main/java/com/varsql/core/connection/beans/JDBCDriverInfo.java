@@ -3,7 +3,7 @@ package com.varsql.core.connection.beans;
 import java.io.Serializable;
 import java.util.List;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 
 import lombok.Builder;
 import lombok.Getter;

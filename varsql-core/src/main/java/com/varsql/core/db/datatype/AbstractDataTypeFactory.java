@@ -4,6 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public abstract class AbstractDataTypeFactory implements DataTypeFactory {
+	public static final int VARCHAR_DEFAULT_SIZE = 512;
+	
 	protected AbstractDataTypeFactory() {};
 	
 	private ConcurrentMap<String , DataType> venderDataType = new ConcurrentHashMap<String, DataType>();

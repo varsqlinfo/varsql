@@ -55,6 +55,7 @@
 <entry key="header.menu.tool.utils">유틸리티</entry>
 <entry key="header.menu.tool.utils.gentable"><![CDATA[Table 생성]]></entry>
 <entry key="header.menu.tool.utils.multidbsqlexecute">멀티 DB SQL 실행</entry>
+<entry key="header.menu.tool.utils.tableddlconvert">Table DDL 변환</entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">도움말</entry>

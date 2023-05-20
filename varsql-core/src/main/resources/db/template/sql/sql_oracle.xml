@@ -6,39 +6,25 @@
 	<table>
 		<create>
 		<![CDATA[
-{{~#if ddlOpt.addDropClause}}
-/*DROP TABLE {{objectName}}; */
-{{/if}}
-
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
 CREATE TABLE {{objectName}}(
 {{#columnList}}
-    {{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+    {{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
 {{/columnList}}
 )
 
-{{#ddlTableKey keyList objectName dbType}}
-    {{#xif type '==' 'PK'}}
-    {{#each constList}}
-ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-    {{/each}}
-    {{/xif}}
-    {{#xif type '==' 'UQ'}}
-    {{#each constList}}
-CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-    {{/each}}
-    {{/xif}}
-{{/ddlTableKey}}
+{{#xif sourceText '!=' ''}}{{{sourceText}}}{{/xif}}
 
 {{#commentsList}}
-{{#xif TYPE '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{COMMENT}}';{{/xif}}
-{{~#xif TYPE '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{NAME}} is '{{COMMENT}}';{{/xif}}
+{{#xif type '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{name}} is '{{{comment}}}';{{/xif}}
 {{/commentsList}}
 		]]>
 		</create>
 
         <!-- table comment 추가-->
         <addComment>
-COMMENT ON TABLE {{TABLE_NAME}}  IS '{{COMMENT}}'
+COMMENT ON TABLE {{name}}  IS '{{{comment}}}'
         </addComment>    
 		
 		<!-- 테이블명 수정 추가-->
@@ -68,23 +54,99 @@ alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
 		
 		<!-- 컬럼 주석 추가 -->
 		<columnAddComment>
-COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{COMMENT}}';
+COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{{comment}}}';
 		</columnAddComment>
 	
 		
 	</table>
+	
+	<!-- view 생성-->
+    <view>
+        <create>
+{{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
+CREATE OR REPLACE VIEW {{objectName}} ({{item.header}})
+AS
+{{item.body}}
+        </create>
+    </view>
+
+	<!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP FUNCTION {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </function>
+    
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP PROCEDURE {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </procedure>
+    
+     <!-- package 생성-->
+    <package>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* 
+DROP PACKAGE BODY {{objectName}}; 
+DROP PACKAGE {{objectName}};
+*/
+{{/if}}
+
+CREATE OR REPLACE {{{item.package}}}
+
+CREATE OR REPLACE {{{item.packageBody}}}
+        </create>
+    </package>
+    
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP TRIGGER {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </trigger>
+    
+    <!-- index 생성-->
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
+
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
+on {{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}} {{#xif INDEX_TYPE '==' 'NORMAL'}} {{columnName}} {{/xif}}   {{#xif INDEX_TYPE '!=' 'NORMAL'}} {{COLUMN_EXPRESSION}} {{/xif}} {{/items}})
+{{#with items.[0]}}
+{{#xif LOGGING '==' 'YES'}}LOGGING{{/xif}}{{#xif LOGGING '!=' 'YES'}}NO LOGGING{{/xif}}
+TABLESPACE {{TABLESPACE_NAME}}
+PCTFREE {{INI_TRANS}}
+MAXTRANS {{MAX_TRANS}}
+  INITIAL {{INITIAL_EXTENT}}
+  MINEXTENTS {{MIN_EXTENTS}}
+  MAXEXTENTS {{MAX_EXTENTS}}
+  PCTINCREASE {{PCT_INCREASE}}
+  BUFFER_POOL {{BUFFER_POOL}}
+{{/with~}}
+		</create>
+	</index>
 
 	<!-- sequence 생성-->
 	<sequence>
 		<create>
-{{#equals true ddlOption.addDropClause}}/* DROP SERIAL {{OBJECT_NAME}}; */
-{{/equals}}
+{{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
 
-CREATE SERIAL {{OBJECT_NAME}}
+CREATE SEQUENCE {{objectName}}
 START WITH 1
-INCREMENT BY {{INCREMENT_BY}}
-MINVALUE {{MIN_VALUE}}
-MAXVALUE {{MAX_VALUE}}
+INCREMENT BY {{item.increment}}
+MINVALUE {{item.minValue}}
+MAXVALUE {{item.maxValue}}
 		</create>
 	</sequence>
 	

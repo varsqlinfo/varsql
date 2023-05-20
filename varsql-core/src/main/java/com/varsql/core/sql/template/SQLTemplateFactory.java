@@ -74,10 +74,6 @@ public class SQLTemplateFactory {
 		}
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(SQLTemplateFactory.getInstance().getTemplate(DBVenderType.OTHER, SQLTemplateCode.TABLE.create));
-	}
-
 	private void initConfig() throws IOException {
 
 		logger.debug("default sql template file path : {} ", TEMPLATE_PACKAGE);
@@ -138,18 +134,18 @@ public class SQLTemplateFactory {
 	 * @param param
 	 * @return
 	 */
-	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Map param){
+	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Object param){
 		String dbVender= dbType.getDbVenderName();
 		
 		String templateId = code.getTemplateId(); 
-		Template template = getDDLTemplate( dbVender, templateId);
+		Template template = getDDLTemplate(dbVender, templateId);
 
 		if(template ==null){
 			throw new VarsqlRuntimeException(VarsqlAppCode.EC_TEMPLATE_CONFIGURATION ,new StringBuilder().append("sqlRender template ").append("dbVender : [").append(dbVender).append("] templateId : [").append(templateId).append("] template : [").append(template).append("]").toString());
 		}
 
 		try {
-			return template.apply(param);
+			return StringUtils.trim(template.apply(param));
 		} catch (IOException e) {
 			logger.error("sqlRender IOException : {} ",e.getMessage() , e);
 
@@ -180,9 +176,11 @@ public class SQLTemplateFactory {
 	 */
 	private Template getDDLTemplate(String dbVender ,String templateId){
 		if(sqlTemplateInfo.containsKey(dbVender)){
-			return sqlTemplateInfo.get(dbVender).get(templateId);
+			if(sqlTemplateInfo.get(dbVender).containsKey(templateId)) {
+				return sqlTemplateInfo.get(dbVender).get(templateId);
+			}
+			return sqlTemplateInfo.get(DEFAULT_FILE).get(templateId);
 		}
-
 		return sqlTemplateInfo.get(DEFAULT_FILE).get(templateId);
 	}
 

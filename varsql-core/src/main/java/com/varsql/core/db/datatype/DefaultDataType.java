@@ -235,7 +235,7 @@ public enum DefaultDataType implements DataType {
 				return rs.getString(columnIndex);
 			}
 		}).build()
-	),
+	, false, VARCHAR_DEFAULT_SIZE),
 	LONGVARCHAR(Types.LONGVARCHAR, DBColumnMetaInfo.STRING, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 				if(setNullValue(pstmt, parameterIndex, Types.LONGVARCHAR, value)) return ;
@@ -577,6 +577,7 @@ public enum DefaultDataType implements DataType {
 	OTHER(Types.OTHER, DBColumnMetaInfo.OTHER);
 	
 	private int typeCode; // sql type code
+	private int defaultSize; // char default size
 	private DBColumnMetaInfo jdbcDataTypeMetaInfo; 
 	private DataTypeHandler dataTypeHandler;	// data type handler
 	private boolean excludeImportColumn;	// file import exclude flag
@@ -592,22 +593,29 @@ public enum DefaultDataType implements DataType {
 	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo) {
 		this(code, jdbcDataTypeMetaInfo, null);
 	}
+	
 	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler) {
 		this(code, jdbcDataTypeMetaInfo, dataTypeHandler, false);
 	}
-
 	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn) {
+		this(code, jdbcDataTypeMetaInfo, dataTypeHandler, false, -1);
+	}
+	private DefaultDataType(int code, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn, int defaultSize) {
 		this.typeCode = code;
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
 		this.dataTypeHandler = dataTypeHandler != null ? dataTypeHandler : DataTypeHandler.builder().build();
 		this.excludeImportColumn = excludeImportColumn;
-		
-		
+		this.defaultSize = defaultSize;
 	}
 
 	@Override
 	public int getTypeCode() {
 		return this.typeCode;
+	}
+	
+	@Override
+	public int getDefaultSize() {
+		return this.defaultSize;
 	}
 
 	@Override

@@ -2,10 +2,6 @@ package com.varsql.core.configuration;
 
 import java.io.File;
 
-import org.springframework.core.io.Resource;
-
-import com.varsql.core.common.util.ResourceUtils;
-
 
 /**
  *
@@ -34,7 +30,7 @@ public abstract class AbstractConfiguration{
 		}else {
 			String catalinaHome = System.getProperty("catalina.home" ,"");
 			if(!"".equals(catalinaHome)) {
-				installRoot =System.getProperty("catalina.home")+File.separator +"resources";
+				installRoot =catalinaHome+File.separator +"resources";
 			}else {
 				return Thread.currentThread().getContextClassLoader().getResource("").getFile();
 			}
@@ -47,14 +43,5 @@ public abstract class AbstractConfiguration{
 		}
 		
 		return installRoot;
-	}
-	
-	private Resource getResourceFile(String filePath) {
-		File file = new File(VARSQL_INSTALL_PATH, filePath);
-		if(file.exists()) {
-			return ResourceUtils.getResource(file.getPath());
-		}else {
-			return ResourceUtils.getResource(filePath);
-		}
 	}
 }

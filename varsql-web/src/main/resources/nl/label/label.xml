@@ -48,6 +48,7 @@
 <entry key="data.import">데이터 가져오기</entry>
 
 <entry key="block">차단</entry>
+<entry key="convert">변환</entry>
 
 <entry key="release">해제</entry>
 <entry key="options">옵션</entry>
@@ -84,7 +85,7 @@
 <entry key="compare.detail">비교 상세</entry>
 <entry key="compare.info">비교 정보</entry>
 
-<entry key="label.db">db</entry>
+<entry key="label.db">DB</entry>
 <entry key="label.database">Database</entry>
 <entry key="label.remove">제거</entry>
 <entry key="label.user">사용자</entry>

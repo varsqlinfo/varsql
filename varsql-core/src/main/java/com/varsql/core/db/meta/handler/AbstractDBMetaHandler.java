@@ -10,6 +10,7 @@ import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.sql.ConstraintType;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -70,7 +71,7 @@ public abstract class AbstractDBMetaHandler implements DBMetaHandler{
 		}
 
 		if(keyColumn !=null){
-			column.setConstraints(keyColumn.contains(cName)?"PK":"");
+			column.setConstraints(keyColumn.contains(cName)?ConstraintType.PRIMARY.getType():"");
 		}
 		return column;
 	}

@@ -135,4 +135,6 @@ error -> error.
 <entry key="grid.parameter.name">파라미터명</entry>
 <entry key="grid.inout.name">IN/OUT</entry>
 
+<entry key="db.select">DB를 선택해주세요.</entry>
+
 </properties>

@@ -18,7 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.SecurityUtil;
@@ -308,7 +308,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			
 		logger.debug("saveVtconnectionInfo object param :  {}", VartechUtils.reflectionToString(saveEntity));
 		this.dbConnectionModelRepository.save(saveEntity);
-		if (updateFlag)
+		
+		if (updateFlag) {
 			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
 				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
 			} else if (!reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())) {
@@ -319,6 +320,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 					|| reqEntity.getVport() != currentEntity.getVport()) {
 				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
 			}
+		}
+		
 		resultObject.setItemOne(Integer.valueOf(1));
 		return resultObject;
 	}

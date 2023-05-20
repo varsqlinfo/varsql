@@ -60,9 +60,8 @@ public class DbDiffController extends AbstractController {
 	@RequestMapping(value = "/objectList", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid
 			,@RequestParam(value = "objectType" ,required = true) String objectType
-			,@RequestParam(value = "schema" ,required = true) String schema
-			,@RequestParam(value = "databaseName" ,required = true) String databaseName) throws Exception {
+			,@RequestParam(value = "schema" ,required = true) String schema	) throws Exception {
 
-		return dbDiffServiceImpl.objectList(vconnid, objectType, schema, databaseName);
+		return dbDiffServiceImpl.objectList(vconnid, objectType, schema);
 	}
 }

@@ -21,12 +21,14 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.TableInfo;
+import com.varsql.core.sql.ConstraintType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
@@ -662,5 +664,38 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 	public static void sessionClose(String sessionType, SqlSession session) {
 		SQLManager.getInstance().closeSession(sessionType, session);
+	}
+	
+	@Override
+	public List<ConstraintInfo> getConstraintsKeys(DatabaseParamInfo dataParamInfo, String tableNm) throws Exception {
+		Connection conn = null;
+		ResultSet rs = null;
+		List<ConstraintInfo> keyColumn = new LinkedList<ConstraintInfo>();
+		String dbAlias =  dataParamInfo.getVconnid();
+		String schema = dataParamInfo.getSchema();
+
+		SqlSession session  = SQLManager.getInstance().openSession(dbAlias);
+
+		try {
+			conn = session.getConnection();
+			DatabaseMetaData dbmd = conn.getMetaData();
+
+			rs = dbmd.getPrimaryKeys(null, schema, tableNm);
+
+			while(rs.next()){
+				keyColumn.add(ConstraintInfo.builder()
+				.type(ConstraintType.PRIMARY.getType())
+				.columnName(rs.getString(MetaColumnConstants.COLUMN_NAME))
+				.constraintName(rs.getString(MetaColumnConstants.PK_NAME))
+				.seq(rs.getInt(MetaColumnConstants.KEY_SEQ))
+				.build());
+			}
+		} catch (SQLException e) {
+			throw e;
+		}finally{
+			SQLManager.getInstance().closeSession(dbAlias, session);
+			JdbcUtils.close(conn, null ,rs);
+		}
+		return keyColumn;
 	}
 }

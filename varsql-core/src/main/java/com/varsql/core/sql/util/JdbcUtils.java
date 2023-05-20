@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.beans.JDBCDriverInfo;

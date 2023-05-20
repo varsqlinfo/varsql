@@ -50,11 +50,10 @@
 			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
 			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE in ('TABLE','BASE TABLE')
 			left outer join (
-				select TABLE_NAME , COLUMN_NAME, case when MAX(PRIMARY_KEY) = TRUE then 'PK'
-					WHEN MAX(INDEX_TYPE_NAME) = 'UNIQUE INDEX' then 'UQ'
-					else null end as "CONSTRAINTS"
+				select TABLE_NAME , COLUMN_NAME, 'PK' as "CONSTRAINTS"
 				from  information_schema.INDEXES 
 				where TABLE_SCHEMA = #{schema}
+				and PRIMARY_KEY = TRUE
 				<if test="custom != null and custom.objectNameList != null">
 					and
 					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -300,12 +299,12 @@
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
 		select
-			SEQUENCE_NAME as "OBJECT_NAME"
+			SEQUENCE_NAME as "objectName"
 			,'' as CREATED
-			,MIN_VALUE as "MIN_VALUE"
-			,MAX_VALUE as "MAX_VALUE"
-			,INCREMENT as "INCREMENT_BY"
-			,CURRENT_VALUE as "LAST_NUMBER"
+			,MIN_VALUE as "minValue"
+			,MAX_VALUE as "maxValue"
+			,INCREMENT as "increment"
+			,CURRENT_VALUE as "lastNumber"
 		from information_schema.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 		and seq.SEQUENCE_NAME = #{objectName}

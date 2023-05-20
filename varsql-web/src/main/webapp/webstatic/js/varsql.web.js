@@ -269,9 +269,13 @@ _$base.localStorage = function(opt){
 	}
 }
 
+
 /**
  * message
  */
+_$base.confirmMessage = function (fmt, msgParam){
+	return confirm(_$base.messageFormat(fmt, msgParam));			
+}
 _$base.messageFormat =function (fmt, msgParam){
 
 	var msgFormat = VARSQL_LANG[fmt];

@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
@@ -45,64 +47,26 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for(String name : objNmArr){
-
-			ddlStr = new StringBuilder();
+		for(String objNm : objNmArr){
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			List<DataMap> srcList = client.selectList("tableScript", dataParamInfo);
-
-			ddlStr.append("CREATE TABLE " + name + "(\n");
-
-			dataParamInfo.setObjectName(name);
-
-			DataMap source;
-			for (int i = 0; i < srcList.size(); i++) {
-				source = srcList.get(i);
-
-				ddlStr.append(BlankConstants.TAB);
-				if (i > 0){
-					ddlStr.append(",");
-				}
-				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
-
-				ddlStr.append(source.get(MetaColumnConstants.TYPE_NAME)).append(" ");
-
-				ddlStr.append(source.getString(MetaColumnConstants.COLUMN_DEF)).append(" ");
-
-				ddlStr.append(getNotNullValue(source.getString(MetaColumnConstants.NULLABLE)));
-
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			List srcPkList = client.selectList("tableScriptPk", dataParamInfo);
-			Map pkMap;
-			for (int i = 0; i < srcPkList.size(); i++) {
-				pkMap = (HashMap) srcPkList.get(i);
-				ddlStr.append(BlankConstants.TAB).append(",CONSTRAINT ")
-				.append(pkMap.get("CONSTRAINT_NAME")).append(" ").append(pkMap.get("CONSTRAINDDEF"));
-			}
-
-			ddlStr.append(");").append(BlankConstants.NEW_LINE_TWO);
-
-			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);
-			for (int i = 0; i < srcCommentList.size(); i++) {
-				ddlStr.append( srcCommentList.get(i)).append(BlankConstants.NEW_LINE);
-			}
-
-			if(srcCommentList.size() > 0){
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.columnList(client.selectList("tableScriptColumn", dataParamInfo))
+				.keyList(client.selectList("tableConstraints", dataParamInfo))
+				.commentsList(client.selectList("tableColumnComments",dataParamInfo))
+			.build();
+			
+			param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
+			
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -112,31 +76,28 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 
-		StringBuilder ddlStr;
-
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 
-		for (String name : objNmArr) {
-
-			ddlStr = new StringBuilder();
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
+			dataParamInfo.setObjectName(objNm);
 
 			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
 
-			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append(" AS ").append(BlankConstants.NEW_LINE_TWO);
-			ddlStr.append(source.getString("VIEW_SOURCE"));
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(source.getString("VIEW_SOURCE"))
+				.build();
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -150,24 +111,24 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
-			ddlStr = new StringBuilder();
+			DataMap source = sqlSesseion.selectOne("indexScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
+			.build();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			Map indexInfo = sqlSesseion.selectOne("indexScript", dataParamInfo);
-			ddlStr.append(indexInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -182,25 +143,25 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
+			dataParamInfo.setObjectName(objNm);
+			
+			DataMap source = sqlSesseion.selectOne("functionScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
+			.build();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			Map scriptInfo = sqlSesseion.selectOne("functionScript", dataParamInfo);
-
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -215,25 +176,24 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
-			dataParamInfo.setObjectName(name);
+			DataMap source = sqlSesseion.selectOne("procedureScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
+			.build();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			Map scriptInfo = sqlSesseion.selectOne("procedureScript", dataParamInfo);
-
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -261,71 +221,37 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 		
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-			dataParamInfo.setObjectName(name);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			DataMap source = sqlSesseion.selectOne("triggerScript", dataParamInfo);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
+			.build();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP Trigger " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			Map scriptInfo = sqlSesseion.selectOne("triggerScript", dataParamInfo);
-
-			ddlStr.append(scriptInfo.get(MetaColumnConstants.CREATE_SOURCE));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
 			reval.add(ddlInfo);
 		}
 
 		return reval;
 	}
 
-	/**
-	 *
-	 * @Method Name  : getSequence
-	 * @Method 설명 : Sequence 구하기.
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScriptImpl#getSequence(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 9. 19.
-	 * @변경이력  :
-	 * @param dataParamInfo
-	 * @param objNmArr
-	 * @return
-	 * @throws Exception
-	 */
 	@Override
-	public List<DDLInfo> getSequences(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-		logger.debug("Sequence DDL Generation...");
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
-		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
-		for (String name : objNmArr) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-
-			dataParamInfo.setObjectName(name);
-
-			Map param =  sqlSesseion.selectOne("sequenceScript",  dataParamInfo);
-			param.put("schema", dataParamInfo.getSchema());
-
-			param.put("ddlOption", ddlOption);
-
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
-			reval.add(ddlInfo);
+	public String getStandardDefaultValue(String val, DataType type) {
+		int lastIdx = val.lastIndexOf("::");
+		
+		if(lastIdx > -1) {
+			return super.getStandardDefaultValue(val.substring(0,lastIdx), type);
 		}
-
-		return reval;
+		return super.getStandardDefaultValue(val, type);
 	}
-
 }

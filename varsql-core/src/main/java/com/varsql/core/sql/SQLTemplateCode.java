@@ -73,6 +73,20 @@ public class SQLTemplateCode {
 		}
 	}
 	
+	public enum PACKAGE implements SQLTemplateEnum {
+		create, rename,	addComment,	modifyComment,	dropComment;
+
+		private String templateId; 
+		
+		PACKAGE() {
+			templateId = this.getClass().getSimpleName().toLowerCase()+StringUtils.capitalize(this.name());
+		}
+		@Override
+		public String getTemplateId() {
+			return templateId;
+		}
+	}
+	
 	public enum TRIGGER implements SQLTemplateEnum {
 		create, rename,	addComment,	modifyComment,	dropComment;
 

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE templateConfig SYSTEM  "sqlTemplate.dtd">
+
+<templateConfig>
+	<!-- 테이블 생성-->
+	<table>
+		<create>
+		<![CDATA[
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+);
+
+{{{sourceText}}}
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{name}} is '{{{comment}}}';{{/xif}}
+{{/commentsList}}
+		]]>
+		</create>
+		
+		<!-- 테이블명 수정 추가-->
+		<rename>
+ALTER TABLE {{TABLE_NAME}} RENAME {{NEW_TABLE_NAME}}
+		</rename>
+
+        <!-- table comment 추가-->
+        <addComment>
+ALTER TABLE {{TABLE_NAME}} COMMENT = '{{{comment}}}';
+        </addComment>
+        
+        <select>
+SELECT * FROM {{TABLE_NAME}};
+        </select>
+		
+		<insert>
+INSERT INTO  {{TABLE_NAME}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}}
+) 
+values (
+{{#columnList}}
+    {{addChar @index "" ","}} ''
+{{/columnList}}
+);
+		</insert>
+		
+		<update>
+UPDATE  {{TABLE_NAME}}
+SET 
+{{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}} =''
+{{/columnList}}
+		</update>
+        
+		<delete>
+DELETE FROM {{TABLE_NAME}};
+		</delete>
+		
+		<selectInsert>
+INSERT INTO {{TABLE_NAME}}
+SELECT * from {{TABLE_NAME}}
+		</selectInsert>
+		
+		<createSelect>
+CREATE TABLE {{NEW_TABLE_NAME}} AS 
+SELECT {{#columnList}}
+    {{addChar @index "" ","}} {{COLUMN_NAME}}
+{{/columnList}} FROM {{TABLE_NAME}};
+		</createSelect>
+		
+		<merge>
+MERGE INTO {{TABLE_NAME}} AS a
+USING (SELECT 1 AS dual) AS b
+   ON (a.deptno = 50)
+ WHEN MATCHED THEN
+   UPDATE SET 
+   		{{#columnList}}
+		    {{addChar @index "" ","}} a.{{COLUMN_NAME}} =''
+		{{/columnList}}
+ WHEN NOT MATCHED THEN
+   INSERT(
+	   	{{#columnList}}
+		    {{addChar @index "" ","}} {{COLUMN_NAME}}
+		{{/columnList}}
+	) VALUES(
+		{{#columnList}}
+		    {{addChar @index "" ","}} ''
+		{{/columnList}}
+	)
+		</merge>
+		
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{TYPE_NAME}} {{DEFAULT_VALUE}}
+		</columnAdd>
+		
+		<!-- 컬럼명 수정 추가-->
+		<columnRename>
+ALTER TABLE {{TABLE_NAME}} RENAME COLUMN {{COLUMN_NAME}} TO {{NEW_COLUMN_NAME}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 추가-->
+		<columnModify>
+alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+ALTER TABLE {{TABLE_NAME}} MODIFY {{COLUMN_NAME}} {{TYPE_NAME}} COMMENT '{{{comment}}}';
+		</columnAddComment>
+	
+		
+	</table>
+
+    <!-- view 생성-->
+    <view>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* DROP VIEW {{objectName}}; */
+{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </view>
+
+    <!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* DROP ALIAS {{objectName}}; */
+{{/if}}
+
+CREATE ALIAS {{objectName}} as '
+{{{sourceText}}}
+';
+        </create>
+    </function>
+
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* DROP PROCEDURE {{objectName}}; */
+{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </procedure>
+
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* DROP TRIGGER {{objectName}}; */
+{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </trigger>
+
+
+	<!-- index 생성-->
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
+
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
+on
+{{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{columnName}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+		</create>
+	</index>
+
+    <!-- sequence 생성-->
+	<sequence>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
+
+CREATE SEQUENCE {{objectName}}
+START WITH 1
+INCREMENT BY {{item.increment}}
+MINVALUE {{item.minValue}}
+MAXVALUE {{item.maxValue}}
+		</create>
+	</sequence>
+	
+	
+</templateConfig>

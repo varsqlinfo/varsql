@@ -1,5 +1,10 @@
 package com.varsql.db.ext.sqlserver;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,8 +12,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
+import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
@@ -51,6 +58,10 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+	}
+	
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException{
+		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("schemaList" ,dataParamInfo);
 	}
 
 	@Override

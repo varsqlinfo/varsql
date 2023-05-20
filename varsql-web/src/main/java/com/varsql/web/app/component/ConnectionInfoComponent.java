@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;

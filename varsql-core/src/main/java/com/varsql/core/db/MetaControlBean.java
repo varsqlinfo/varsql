@@ -2,12 +2,14 @@ package com.varsql.core.db;
 
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.datatype.DataTypeFactoryOTHER;
 import com.varsql.core.db.ddl.script.DDLScript;
@@ -17,10 +19,12 @@ import com.varsql.core.db.meta.DBMetaOTHER;
 import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.report.table.TableReport;
 import com.varsql.core.db.report.table.TableReportOTHER;
+import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
 import com.varsql.core.sql.type.CommandTypeFactory;
@@ -220,8 +224,7 @@ public class MetaControlBean {
 				return (T)this.dbMeta.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("getDBMeta class : {} , callMethodName: {}, objArr : {} " , this.dbMeta.getClass(), callMethodName, StringUtils.join(objNm));
-			logger.error("getDBMeta callMethodName " , e);
+			logger.error("message {}, getDBMeta class : {} , callMethodName: {}, objArr : {} ", e.getMessage(), this.dbMeta.getClass(), callMethodName, StringUtils.join(objNm), e);
 			if(hasMethod) {
 				throw new DBMetadataException(VarsqlAppCode.DB_META_ERROR , e);
 			}
@@ -242,8 +245,7 @@ public class MetaControlBean {
 				return (T)this.dbMeta.getExtensionObject(paramInfo, dbObjType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("getDBObjectList class : {}  , callMethodName : {}" , this.dbMeta.getClass(), callMethodName);
-			logger.error("getDBObjectList callMethodName :{} ", e.getMessage(), e);
+			logger.error("getDBObjectList class : {}, callMethodName : {}", e.getMessage(), this.dbMeta.getClass(), callMethodName, e);
 		}
 		return null;
 	}
@@ -267,10 +269,27 @@ public class MetaControlBean {
 				throw new VarsqlMethodNotFoundException(String.format("MetaControlBean getDDLScript ->  %s method not found ", callMethodName));
 			}
 		}catch(Exception e){
-			logger.error("getDDLScript class : {} , callMethodName : {}, objArr : {}  " , this.ddlScript.getClass(), callMethodName, StringUtils.join(objNm));
-			logger.error("getDDLScript callMethodName " , e);
+			logger.error("getDDLScript class : {}, callMethodName : {}, objArr : {}", this.ddlScript.getClass(), callMethodName, StringUtils.join(objNm), e);
 		}
 		return null;
+	}
+	
+	public List<ConstraintInfo> getConstraintsKeys(DatabaseParamInfo dataParamInfo, String tableNm) throws Exception{
+		return this.dbMeta.getConstraintsKeys(dataParamInfo, tableNm);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DDLInfo> tableDdlConvertDB(DatabaseParamInfo paramInfo, DDLCreateOption ddlOption, DBVenderType convertDB, String ... objNm){
+		try{
+			return this.ddlScript.tableDdlConvertDB(paramInfo, ddlOption, convertDB, objNm);
+		}catch(Exception e){
+			logger.error("msg : {}, objArr : {}", e.getMessage(), StringUtils.join(objNm), e);
+		}
+		return Collections.EMPTY_LIST;
+	}
+	
+	public String getDefaultValueToVenderValue(String val, DataType dataType){
+		return this.ddlScript.getDefaultValueToVenderValue(val, dataType);
 	}
 
 	public DataTypeFactory getDataTypeImpl(){

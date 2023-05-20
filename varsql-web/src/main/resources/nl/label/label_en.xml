@@ -50,6 +50,7 @@
 <entry key="data.import">Data Import</entry>
 
 <entry key="block">Block</entry>
+<entry key="convert">Convert</entry>
 
 <entry key="release">Release</entry>
 <entry key="options">Options</entry>
@@ -86,7 +87,7 @@
 <entry key="compare.detail">Comparison Details</entry>
 <entry key="compare.info">Comparison Info</entry>
 
-<entry key="label.db">db</entry>
+<entry key="label.db">DB</entry>
 <entry key="label.database">Database</entry>
 <entry key="label.remove">Remove</entry>
 <entry key="label.user">User</entry>

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.ResourceUtils;

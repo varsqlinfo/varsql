@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!ELEMENT templateConfig (table | view | function | procedure | trigger | index | sequence)*>
+<!ELEMENT templateConfig (table | view | function | procedure? | package | trigger | index | sequence)*>
 
 <!-- ddl create template -->
 <!ELEMENT table (create| rename| addComment| modifyComment| dropComment| select| insert | update | delete | selectInsert | merge| createSelect
@@ -13,6 +13,8 @@
 <!ELEMENT function (create| rename| addComment| modifyComment| dropComment)+>
 
 <!ELEMENT procedure (create| rename| addComment| modifyComment| dropComment)+>
+
+<!ELEMENT package (create| rename| addComment| modifyComment| dropComment)+>
 
 <!ELEMENT trigger (create| rename| addComment| modifyComment| dropComment)+>
 

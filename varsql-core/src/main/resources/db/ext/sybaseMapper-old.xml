@@ -425,16 +425,18 @@
 	<!--
 		Table DDL Script => Primary key list
 	 -->
-	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
+	<select id="tableScriptPk" resultType="constraintInfo" parameterType="databaseParamInfo">
 		select *
 		from (
 			SELECT
-			     o.name AS "TABLE_NAME", i.name as "CONSTRAINT_NAME",index_col(o.name, i.indid, c.colid, o.uid) AS "COLUMN_NAME",
-			    (case WHEN i.status >= 2048  THEN 'PK'
+			   o.name AS "TABLE_NAME"
+			   , i.name as "CONSTRAINT_NAME"
+			   , index_col(o.name, i.indid, c.colid, o.uid) AS "COLUMN_NAME"
+			   , (case WHEN i.status >= 2048  THEN 'PK'
 			    when i.status =2 then 'UQ'
 			    else 'IDX'
 			    end) AS TYPE
-			    , i.indid as seq
+			   , i.indid as seq
 			FROM
 			    sysobjects o
 			    INNER JOIN sysindexes i on i.id = o.id
@@ -454,9 +456,9 @@
 	<!--
 		Table DDL Script => Table, Column Comment Script
 	 -->
-	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
+	<select id="tableScriptComments" resultType="commentInfo" parameterType="databaseParamInfo">
 		select * from (
-		select
+			select
 				'TBL' as "TYPE"
 				,'' as "NAME"
 				,sc.text AS "COMMENT"
@@ -483,7 +485,7 @@
 	<!--
 		object function  , procedure 소스
 	 -->
-	<select id="objectScriptSource" parameterType="databaseParamInfo" resultType="hashmap">
+	<select id="objectScriptSource" parameterType="databaseParamInfo" resultType="dataMap">
 		select * from
 		(
 			select o.name as "OBJECT_NAME", c.text as "SOURCE_TEXT", c.colid as "IDX"

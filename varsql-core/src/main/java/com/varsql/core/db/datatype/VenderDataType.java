@@ -19,19 +19,24 @@ public class VenderDataType implements DataType{
 	
 	private String typeName;
 	private int typeCode;
+	private int defaultSize;
 	private DBColumnMetaInfo jdbcDataTypeMetaInfo;
 	private DataTypeHandler dataTypeHandler;
 	private boolean excludeImportColumn; // import 시 제외할 컬럼 정보
 	
 	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo){
-		this(typeName, typeCode, jdbcDataTypeMetaInfo, null);
+		this(typeName, typeCode, jdbcDataTypeMetaInfo, -1, null);
 	};
 	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler){
-		this(typeName, typeCode, jdbcDataTypeMetaInfo, null, false);
+	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize){
+		this(typeName, typeCode, jdbcDataTypeMetaInfo, defaultSize, null);
+	};
+	
+	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize, DataTypeHandler dataTypeHandler){
+		this(typeName, typeCode, jdbcDataTypeMetaInfo, defaultSize, null, false);
 	}
 	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, DataTypeHandler dataTypeHandler, boolean excludeImportColumn){
+	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize, DataTypeHandler dataTypeHandler, boolean excludeImportColumn){
 		Validate.notNull(typeName, "typeName can't be null");
 		
 		this.typeName = typeName.toUpperCase(); 
@@ -39,12 +44,17 @@ public class VenderDataType implements DataType{
 		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
 		this.excludeImportColumn = excludeImportColumn;
 		
+		DefaultDataType ddt = DefaultDataType.getDefaultDataType(typeCode);
+		
+		if(defaultSize > 0) {
+			this.defaultSize = defaultSize;
+		}else {
+			this.defaultSize = ddt.getDefaultSize();
+		}
+		
 		if(dataTypeHandler != null) {
 			this.dataTypeHandler = dataTypeHandler;
 		}else {
-			
-			DefaultDataType ddt = DefaultDataType.getDefaultDataType(typeCode);
-			
 			if(ddt.equals(DefaultDataType.OTHER)) {
 				this.dataTypeHandler = DefaultDataType.getDefaultDataType(jdbcDataTypeMetaInfo.name()).getDataTypeHandler();
 			}else {
@@ -83,13 +93,25 @@ public class VenderDataType implements DataType{
 		return this.dataTypeHandler.getMetaDataHandler();
 	}
 	
+	public static VenderDataType newCustomDataType(DefaultDataType dataType, int defaultSize) {
+		return new VenderDataType(dataType.getTypeName(), dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), defaultSize, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+	}
+	
 	public static VenderDataType newCustomDataType(String typeName, DefaultDataType dataType) {
-		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), -1, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+	}
+	
+	public static VenderDataType newCustomDataType(String typeName, DefaultDataType dataType, int defaultSize) {
+		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), defaultSize, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
 	}
 	
 	@Override
 	public boolean isExcludeImportColumn() {
 		return this.excludeImportColumn;
 	}
-	
+
+	@Override
+	public int getDefaultSize() {
+		return this.defaultSize;
+	}
 }

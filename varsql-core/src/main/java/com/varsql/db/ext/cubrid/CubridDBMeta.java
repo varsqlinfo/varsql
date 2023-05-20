@@ -116,7 +116,7 @@ public class CubridDBMeta extends AbstractDBMeta{
 
 		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 
-		logger.debug("CubridDBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
+		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
 		TableInfoHandler tableInfoHandler;
 

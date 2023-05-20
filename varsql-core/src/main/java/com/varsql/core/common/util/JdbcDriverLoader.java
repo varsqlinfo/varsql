@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import com.varsql.core.common.beans.FileInfo;
+import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.JdbcDriverClassException;

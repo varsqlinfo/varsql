@@ -72,9 +72,7 @@
 			, sk.KEYCONST as "CONSTRAINTS"
 		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
 			left outer join (
-				select t.table_name, c.column_name,  (case WHEN min(ix.index_category) =1  THEN 'PK'
-							when min(ix.index_category) =2 then 'FK'
-							else ''	end) as  KEYCONST
+				select t.table_name, c.column_name, 'PK' as  KEYCONST
 				from sysidx ix, systable t, sysidxcol ixc , syscolumn c
 				where ix.table_id = t.table_id 
 				and ixc.table_id = t.table_id 
@@ -82,6 +80,7 @@
 				and ixc.table_id = c.table_id
 				and ixc.column_id = c.column_id 
 				and t.creator = user_id (#{schema})
+				and ix.index_category = 1
 				<if test="custom != null and custom.objectNameList != null">
 					and
 					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -137,28 +136,8 @@
 			, sc.default_value AS "COLUMN_DEF"
 			, sc.colno as  "ORDINAL_POSITION"
 			, sc.remarks as "COMMENT"
-			, sk.KEYCONST as "CONSTRAINTS"
+			, '' as "CONSTRAINTS"
 		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
-			left outer join (
-				select t.table_name, c.column_name,  (case WHEN min(ix.index_category) =1  THEN 'PK'
-							when min(ix.index_category) =2 then 'FK'
-							else ''	end) as  KEYCONST
-				from sysidx ix, systable t, sysidxcol ixc , syscolumn c
-				where ix.table_id = t.table_id 
-				and ixc.table_id = t.table_id 
-				and ixc.index_id = ix.index_id 
-				and ixc.table_id = c.table_id
-				and ixc.column_id = c.column_id 
-				and t.creator = user_id (#{schema})
-				<if test="custom != null and custom.objectNameList != null">
-					and
-					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-						t.table_name in (${item})
-					</foreach>
-				</if>
-				and ix.index_category =1
-				group by t.table_name, c.column_name
-			) sk on (so.table_name = sk.table_name and sc.cname = sk.column_name)
 		where so.creator = user_id (#{schema})
 		and so.table_type = 'VIEW'
 		and sc.creator = #{schema}
@@ -368,17 +347,17 @@
 	<!--
 		Table DDL Script
 	 -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
-		select trim(so.table_name) as "TABLE_NAME"
-			,trim(sc.cname) as  "COLUMN_NAME"
-			, trim(sc.coltype) as "TYPE_NAME"
-			, sc.length as "COLUMN_SIZE"
-			, sc.length as "DATA_PRECISION"
-			, sc.syslength as "DECIMAL_DIGITS"
-			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END NULLABLE
-			, sc.default_value AS "COLUMN_DEF"
-			, sc.colno as  "ORDINAL_POSITION"
-			, sc.remarks as "COMMENT"
+	<select id="tableScriptColumn"  parameterType="databaseParamInfo" resultType="columnInfo">
+		select trim(so.table_name) as "tableName"
+			,trim(sc.cname) as  "name"
+			, trim(sc.coltype) as "typeName"
+			, sc.length as "length"
+			, sc.length as "dataPrecision"
+			, sc.syslength as "decimalDigits"
+			, CASE WHEN sc.nulls = 'N' THEN 'YES'	ELSE 'NO' END nullable
+			, sc.default_value AS "defaultVal"
+			, sc.colno as  "no"
+			, sc.remarks as "comment"
 		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
 		where so.creator = user_id (#{schema})
 		and so.table_type = 'BASE'
@@ -389,15 +368,15 @@
 	<!--
 		Table DDL Script => Primary key list
 	 -->
-	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
-		select trim(t.table_name) AS "TABLE_NAME"
-			, trim(index_name) as "CONSTRAINT_NAME"
-			, trim(c.column_name) AS "COLUMN_NAME" 
+	<select id="tableConstraints" resultType="hashmap" parameterType="databaseParamInfo">
+		select trim(t.table_name) AS "tableName"
+			, trim(index_name) as "constraintName"
+			, trim(c.column_name) AS "columnName" 
 			, (case WHEN ix.index_category =1  THEN 'PK'
 				when ix.index_category =2 then 'FK'
 				when ix.index_category =3 then 'IDX'
 				else convert(varchar, ix.index_category) 
-				end) as  TYPE
+				end) as  type
 		from sysidx ix, systable t, sysidxcol ixc , syscolumn c
 		where ix.table_id = t.table_id 
 		and ixc.table_id = t.table_id 
@@ -406,18 +385,18 @@
 		and ixc.column_id = c.column_id 
 		and t.creator = user_id (#{schema})
 		and t.table_name = #{objectName}
-		and ix.index_category = 1
+		and ix.index_category in(1,2)
 		order by t.table_name , index_name, ixc.sequence
 	</select>
 
 	<!--
 		Table DDL Script => Table, Column Comment Script
 	 -->
-	<select id="tableScriptComments" resultType="hashmap" parameterType="databaseParamInfo">
+	<select id="tableColumnComments" resultType="hashmap" parameterType="databaseParamInfo">
 		select 
-			'TBL' as "TYPE"
-			,trim(so.table_name) as "NAME"
-			,so.remarks AS "COMMENT"
+			'TBL' as "type"
+			,trim(so.table_name) as "name"
+			,so.remarks AS "comment"
 		from sys.systable so 
 		where so.creator = user_id (#{schema})
 		and so.table_type = 'BASE'
@@ -425,9 +404,9 @@
 		and so.table_name =  #{objectName}
 		union all 
 		select 
-			'COL' as "TYPE"
-			,trim(sc.cname) as "NAME"
-			,sc.remarks AS "COMMENT"
+			'COL' as "type"
+			,trim(sc.cname) as "name"
+			,sc.remarks AS "comment"
 		from sys.systable so inner join sys.syscolumns sc on so.table_name = sc.tname
 		where so.creator = user_id (#{schema})
 		and so.table_type = 'BASE'
@@ -469,20 +448,21 @@
 
 	<!-- create index  Script -->
 	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
-		select trim(t.table_name) AS "TABLE_NAME"
-			, trim(index_name) as "INDEX_NAME"
-			, trim(c.column_name) AS "COLUMN_NAME" 
+		select trim(t.table_name) AS "tableName"
+			, trim(index_name) as "indexName"
+			, trim(c.column_name) AS "columnName" 
 			, (case WHEN ix.index_category =1  THEN 'PK'
 				when ix.index_category =2 then 'FK'
 				when ix.index_category =3 then 'IDX'
 				else convert(varchar, ix.index_category) 
-				end) as  TYPE
+				end) as  type
 		from sysidx ix, systable t, sysidxcol ixc , syscolumn c
 		where ix.table_id = t.table_id 
 		and ixc.table_id = t.table_id 
 		and ixc.index_id = ix.index_id 
 		and ixc.table_id = c.table_id
 		and ixc.column_id = c.column_id 
+		and ix.index_category in (1)
 		and t.creator = user_id (#{schema})
 		and ix.index_name = #{objectName}
 		order by t.table_name , index_name, ixc.sequence

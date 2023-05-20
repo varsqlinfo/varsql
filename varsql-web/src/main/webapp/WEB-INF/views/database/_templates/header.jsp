@@ -158,6 +158,9 @@
 					<li class="varsql-menu-item" data-menu-item="tool_utils_multidbsqlexecute">
 						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.multidbsqlexecute" /></span></a>
 					</li>
+					<li class="varsql-menu-item" data-menu-item="tool_utils_tableddlconvert">
+						<a href="javascript:;"><span class="varsql-menu-item-text"><spring:message code="header.menu.tool.utils.tableddlconvert" /></span></a>
+					</li>
 				</ul>
 			</li>
 			<li class="divider"></li>

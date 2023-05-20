@@ -53,4 +53,20 @@ public final class DbMetaUtils {
 		}
 		return "";
 	}
+	
+	/**
+	 * standard data type
+	 * 
+	 * @example
+	 * TIMESTAMP(6) -> TIMESTAMP
+	 * 
+	 * @param typeName
+	 * @return
+	 */
+	public static String getTypeName(String typeName) {
+		if(typeName.indexOf("(") > -1) {
+			return typeName.replaceAll("\\(.*\\)", "").trim();
+		}
+		return typeName;
+	}
 }

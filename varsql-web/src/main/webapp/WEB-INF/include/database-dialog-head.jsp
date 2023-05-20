@@ -13,6 +13,7 @@
 <!-- Custom CSS -->
 <link href="${pageContextPath}/webstatic/css/pub.tree.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/varsql.db.preferences.min.css?version=${static_random_ver}" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/js/plugins/highlight/default.min.css" rel="stylesheet" type="text/css">
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/filesaver/FileSaver.min.js"></script>
@@ -21,6 +22,7 @@
 <script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sortable/Sortable.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/highlight/highlight.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>

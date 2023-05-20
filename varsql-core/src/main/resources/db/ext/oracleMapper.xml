@@ -71,24 +71,20 @@
 	</choose>
 		left outer join (
 			SELECT 
-				 D.TABLE_NAME , D.COLUMN_NAME , CASE WHEN MAX(P.CONSTRAINT_TYPE) != MIN(P.CONSTRAINT_TYPE) THEN 'MUL' 
-					WHEN MAX(P.CONSTRAINT_TYPE) = 'P' THEN 'PK' 
-					WHEN MIN(P.CONSTRAINT_TYPE) = 'R' THEN 'FK' 
-					WHEN MIN(P.CONSTRAINT_TYPE) = 'U' THEN 'UQ' 
-				ELSE '' END as CONSTRAINTS
+				 D.TABLE_NAME , D.COLUMN_NAME , 'PK' as CONSTRAINTS
 		<choose>
 			<when test="baseSchemaFlag">
 				FROM USER_CONS_COLUMNS D JOIN USER_CONSTRAINTS P 
 				ON D.TABLE_NAME = P.TABLE_NAME 
 				AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
-				AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+				AND  P.CONSTRAINT_TYPE ('P')
 				where 1=1
 			</when>
 			<otherwise>
 				FROM ALL_CONS_COLUMNS D JOIN ALL_CONSTRAINTS P ON D.owner = P.owner 
 				and D.TABLE_NAME = P.TABLE_NAME 
 				AND D.CONSTRAINT_NAME = P.CONSTRAINT_NAME
-				AND  P.CONSTRAINT_TYPE IN ('P', 'R', 'U')
+				AND  P.CONSTRAINT_TYPE IN ('P')
 				where D.owner =  #{schema} 
 			</otherwise>
 		</choose>
@@ -257,7 +253,7 @@
 			, procsb.CREATED   
 			, procsb.STATUS   
 		    , nvl(argsb.ARGUMENT_NAME ,'null') as ARGUMENT_NAME
-		    , argsb.DATA_TYPE as TYPE_NAME
+		    , argsb.TYPE_NAME as TYPE_NAME
 		    , argsb.IN_OUT 
 		    , argsb.SEQUENCE
 		from       
@@ -603,17 +599,17 @@
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
 		SELECT 
-			ao.OBJECT_NAME
-			,ao.CREATED
-			,ao.LAST_DDL_TIME
-			,ao.STATUS
-			,alls.MIN_VALUE
-			,alls.MAX_VALUE
-			,alls.INCREMENT_BY
-			,alls.CACHE_SIZE
-			,alls.CYCLE_FLAG
-			,alls.ORDER_FLAG
-			,alls.LAST_NUMBER
+			ao.OBJECT_NAME as "objectName"
+			,ao.CREATED as "created"
+			,ao.LAST_DDL_TIME as "lastDdlTime"
+			,ao.STATUS as "status"
+			,alls.MIN_VALUE as "minValue"
+			,alls.MAX_VALUE as "maxValue"
+			,alls.INCREMENT_BY as "increment"
+			,alls.CACHE_SIZE as "cacheSize"
+			,alls.CYCLE_FLAG as "cycleFlag"
+			,alls.ORDER_FLAG as "orderFlag"
+			,alls.LAST_NUMBER as "lastNumber"
 <choose>
 	<when test="baseSchemaFlag">
 		FROM USER_OBJECTS ao INNER JOIN USER_SEQUENCES  alls
@@ -634,19 +630,20 @@
 	<!-- 
 		Table DDL Script
 	 -->
-	<select id="tableScript"  parameterType="databaseParamInfo" resultType="dataMap">
-		SELECT atc.TABLE_NAME
-			, atc.COLUMN_NAME
-			, atc.DATA_TYPE as TYPE_NAME
+	<select id="tableScriptColumn"  parameterType="databaseParamInfo" resultType="columnInfo">
+		SELECT atc.TABLE_NAME as "tableName"
+			, atc.COLUMN_NAME as "name"
+			, atc.DATA_TYPE as "typeName"
 			, atc.DATA_TYPE_MOD
 			, atc.DATA_TYPE_OWNER
-			, atc.CHAR_LENGTH as COLUMN_SIZE
-			, atc.DATA_PRECISION as DATA_PRECISION
-			, atc.DATA_SCALE as DECIMAL_DIGITS
-			, atc.NULLABLE
+			, atc.CHAR_LENGTH as "length"
+			, atc.DATA_PRECISION as "dataPrecision"
+			, atc.DATA_SCALE as "decimalDigits"
+			, atc.NULLABLE  as "nullable" 
 			, atc.CHAR_USED
 			, USER OWNER
-			, atc.DATA_DEFAULT
+			, atc.DATA_DEFAULT AS "defaultVal"
+			, atc.COLUMN_ID as "no"
 <choose>
 	<when test="baseSchemaFlag">
 		from USER_TAB_COLUMNS atc
@@ -664,8 +661,16 @@
 	<!-- 
 		Table DDL Script => Primary key list
 	 -->
-	<select id="tableScriptPk" resultType="hashmap" parameterType="databaseParamInfo">
-		SELECT acc.CONSTRAINT_NAME, acc.COLUMN_NAME
+	<select id="tableConstraints" parameterType="databaseParamInfo" resultType="constraintInfo">
+		SELECT 
+			acc.CONSTRAINT_NAME  as "constraintName"
+			, acc.TABLE_NAME  as "tableName"
+			, acc.COLUMN_NAME as "columnName"
+			, (case when ac.CONSTRAINT_TYPE='P' then 'PK'
+					WHEN ac.CONSTRAINT_TYPE='U' then 'UQ'
+					else '' end
+				) as  "type"
+			,acc.POSITION as ORDINAL
 <choose>
 	<when test="baseSchemaFlag">
 		FROM USER_CONS_COLUMNS acc , USER_CONSTRAINTS ac 
@@ -688,15 +693,13 @@
 	<!-- 
 		Table DDL Script => Table, Column Comment Script
 	 -->
-	<select id="tableScriptComments" resultType="string" parameterType="databaseParamInfo">
-		SELECT    'COMMENT ON TABLE '
-		       || '${schema}'
-		       || '.'
-		       || C.TABLE_NAME
-		       || ' IS '''
-		       || C.COMMENTS
-		       || ''';'
-		          AS COMMENT_TEXT
+	<select id="tableColumnComments" parameterType="databaseParamInfo" resultType="commentInfo" >
+		SELECT
+			'TBL' as "type"
+			, '${schema}' as "schema"
+			, C.TABLE_NAME as "name"
+			, C.COMMENTS as "comment"
+			, 0 as sort_order
 <choose>
 	<when test="baseSchemaFlag">
 		from USER_TAB_COMMENTS c
@@ -710,15 +713,12 @@
 		AND C.COMMENTS IS NOT NULL
 		AND C.TABLE_NAME = #{objectName}
 		UNION ALL
-		SELECT    'COMMENT ON COLUMN '
-		       || '${schema}'
-		       || '.'
-		       || C.TABLE_NAME
-		       || '.'
-		       || C.COLUMN_NAME
-		       || ' IS '''
-		       || C.COMMENTS
-		       || ''';'
+		SELECT
+			'COL' as "type"
+			, '${schema}' as "schema"
+			, C.COLUMN_NAME as "name"
+			, C.COMMENTS as "comment"
+			, 0 as sort_order 
 <choose>
 	<when test="baseSchemaFlag">
 		from USER_COL_COMMENTS c
@@ -736,7 +736,7 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
+	<select id="viewHeaderScript" parameterType="databaseParamInfo" resultType="string" >
 		select COLUMN_NAME
 <choose>
 	<when test="baseSchemaFlag">
@@ -755,7 +755,7 @@
 	<!-- 
 		 view script source
 	 -->
-	<select id="viewScriptSource" resultType="string" parameterType="databaseParamInfo">
+	<select id="viewBodyScript"  parameterType="databaseParamInfo" resultType="string">
 		select TEXT as SOURCE_TEXT
 	<choose>
 		<when test="baseSchemaFlag">
@@ -821,12 +821,13 @@
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScriptSource" resultType="hashmap" parameterType="databaseParamInfo">
+	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="hashmap" >
 		SELECT 
-			  aic.COLUMN_POSITION
-			, ai.INDEX_NAME
-			, ai.TABLE_NAME
+			  aic.COLUMN_POSITION as ORDINAL
+			, ai.INDEX_NAME as "indexName"
+			, ai.TABLE_NAME as "tableName"
 			, ai.INDEX_TYPE
+			, case when UNIQUENESS ='UNIQUE' then 'UQ' else '' end as "type"
 			, ai.TABLE_OWNER
 			, ai.UNIQUENESS
 			, ai.COMPRESSION
@@ -840,8 +841,8 @@
 			, ai.MAX_EXTENTS
 			, NVL(ai.PCT_INCREASE,0) AS PCT_INCREASE
 			, ai.BUFFER_POOL
-			, aic.DESCEND
-			, aic.COLUMN_NAME
+			, aic.DESCEND as "ascOrDesc"
+			, aic.COLUMN_NAME as "columnName"
 			, aie.COLUMN_EXPRESSION
 	<choose>
 		<when test="baseSchemaFlag">

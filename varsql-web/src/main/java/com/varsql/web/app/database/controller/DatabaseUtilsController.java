@@ -1,6 +1,7 @@
 package com.varsql.web.app.database.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +14,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.web.app.database.service.DatabaseSourceGenImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -50,6 +55,9 @@ public class DatabaseUtilsController extends AbstractController  {
 	
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
+	
+	@Autowired
+	private DatabaseSourceGenImpl databaseSourceGenImpl;
 
 	/**
 	 * excel -> ddl 변환
@@ -98,5 +106,40 @@ public class DatabaseUtilsController extends AbstractController  {
 		model.addAttribute("settingInfo", preferencesServiceImpl.selectPreferencesInfo(preferencesInfo,true));
 		
 		return getModelAndView("/multiDbSqlExecute", VIEW_PAGE.DATABASE_UTILS, model);
+	}
+	
+	/**
+	 * 테이블 DDL 변경
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tableDDLConvert", method = RequestMethod.GET)
+	public ModelAndView tableDDLConvert(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		ModelMap model = mav.getModelMap();
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
+
+		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("dbTypeList", DBVenderType.values());
+
+		if(SecurityUtil.isSchemaView(dpi)) {
+			
+			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
+
+			if(venderType.isUseDatabaseName()) {
+				model.addAttribute("schemaList", dbMetaEnum.getDatabases(dpi));
+			}else {
+				model.addAttribute("schemaList", dbMetaEnum.getSchemas(dpi));
+			}
+		}else {
+			model.addAttribute("schemaInfo", "");
+		}
+		
+		return getModelAndView("/tableDDLConvert", VIEW_PAGE.DATABASE_UTILS, model);
 	}
 }

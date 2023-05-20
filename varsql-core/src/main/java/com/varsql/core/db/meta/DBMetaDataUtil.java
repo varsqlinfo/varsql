@@ -24,6 +24,7 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;
 import com.varsql.core.db.valueobject.ObjectInfo;
 import com.varsql.core.db.valueobject.TableInfo;
+import com.varsql.core.sql.ConstraintType;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.StringUtils;
 
@@ -131,7 +132,7 @@ public final class DBMetaDataUtil {
 					column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, null, columnSize, columnSize, degitsLen));
 
 					if(keyColumn !=null){
-						column.setConstraints(keyColumn.contains(cName)?"PK":"");
+						column.setConstraints(keyColumn.contains(cName)?ConstraintType.PRIMARY.getType():"");
 					}
 					
 					tableInfoMap.get(tableNm).getColList().add(column);

@@ -1,9 +1,7 @@
 package com.varsql.db.ext.oracle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -13,15 +11,13 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
-import com.varsql.core.db.datatype.DataType;
-import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.ddl.script.AbstractDDLScript;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.template.SQLTemplateFactory;
@@ -38,9 +34,11 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class OracleDDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(OracleDDLScript.class);
-
+	
 	public OracleDDLScript(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory, DBVenderType.ORACLE);
+		
+		addDefaultValueToVenderValue("CURRENT_TIMESTAMP", "sysdate");
 	}
 
 	@Override
@@ -50,82 +48,27 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for(String name : objNmArr){
-
-			ddlStr = new StringBuilder();
+		for(String objNm : objNmArr){
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
+			dataParamInfo.setObjectName(objNm);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP TABLE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			List<DataMap> srcList = client.selectList("tableScript", dataParamInfo);
-
-			ddlStr.append("CREATE TABLE " + name + "(\n");
-
-			String dataType = "";
-
-			dataParamInfo.setObjectName(name);
-
-			DataTypeFactory dataTypeImpl = dbInstanceFactory.getDataTypeImpl();
-			DataMap source;
-			for (int i = 0; i < srcList.size(); i++) {
-				source = srcList.get(i);
-				dataType = String.valueOf(source.get(MetaColumnConstants.TYPE_NAME));
-
-				DataType dataTypeInfo = dataTypeImpl.getDataType(dataType);
-
-				ddlStr.append("\t");
-				if (i > 0){
-					ddlStr.append(",");
-				}
-				ddlStr.append(source.get(MetaColumnConstants.COLUMN_NAME)).append(" ");
-
-				ddlStr.append(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, "", source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.COLUMN_SIZE), source.getInt(MetaColumnConstants.DECIMAL_DIGITS)));
-				
-				ddlStr.append(getDefaultValue(source.getString(MetaColumnConstants.DATA_DEFAULT), dataTypeInfo , true));
-
-				ddlStr.append(getNotNullValue(source.getString(MetaColumnConstants.NULLABLE)));
-
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			List srcPkList = client.selectList("tableScriptPk", dataParamInfo);
-			Map pkMap;
-			for (int i = 0; i < srcPkList.size(); i++) {
-				pkMap = (HashMap) srcPkList.get(i);
-				if (i == 0)
-					ddlStr.append(BlankConstants.TAB).append(",CONSTRAINT ")
-							.append(pkMap.get("CONSTRAINT_NAME"))
-							.append(" PRIMARY KEY ( ")
-							.append(pkMap.get("COLUMN_NAME"));
-				else {
-					ddlStr.append(", " + pkMap.get("COLUMN_NAME"));
-				}
-
-				if (i == srcPkList.size() - 1) {
-					ddlStr.append(")").append(BlankConstants.NEW_LINE);
-				}
-			}
-
-			ddlStr.append(");").append(BlankConstants.NEW_LINE_TWO);
-
-			List srcCommentList = client.selectList("tableScriptComments",dataParamInfo);
-			for (int i = 0; i < srcCommentList.size(); i++) {
-				ddlStr.append( srcCommentList.get(i)).append(BlankConstants.NEW_LINE);
-			}
-
-			if(srcCommentList.size() > 0){
-				ddlStr.append(BlankConstants.NEW_LINE);
-			}
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(ddlStr.toString(),dbType));
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.columnList(client.selectList("tableScriptColumn", dataParamInfo))
+				.keyList(client.selectList("tableConstraints", dataParamInfo))
+				.commentsList(client.selectList("tableColumnComments",dataParamInfo))
+			.build();
+			
+			param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
+			
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -139,41 +82,40 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
+			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(name);
-			ddlStr = new StringBuilder();
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP ViEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			List<String> srcViewHeadList = sqlSesseion.selectList("viewScript", dataParamInfo);
-
-
-			ddlStr.append("CREATE OR REPLACE VIEW ").append(name).append("(");
-
+			dataParamInfo.setObjectName(objNm);
+			
+			DataMap sourceInfo = new DataMap();
+			
+			StringBuilder sourceSb = new StringBuilder();
+			List<String> viewHeaderList = sqlSesseion.selectList("viewHeaderScript", dataParamInfo);
 			boolean firstCheck = true;
-			for (String source :srcViewHeadList) {
-				ddlStr.append(firstCheck ? "" :", ").append(source);
+			for (String source :viewHeaderList) {
+				sourceSb.append(firstCheck ? "" :", ").append(source);
 				firstCheck = false;
 			}
-			ddlStr.append(" )").append(BlankConstants.NEW_LINE).append("AS ");
+			
+			sourceInfo.put("header", sourceSb.toString());
 
-
-
-			ddlStr.append(BlankConstants.NEW_LINE);
-
-			List<String> srcViewBodyList = sqlSesseion.selectList("viewScriptSource", dataParamInfo);
-
+			List<String> srcViewBodyList = sqlSesseion.selectList("viewBodyScript", dataParamInfo);
+			sourceSb = new StringBuilder();
 			for (String source :srcViewBodyList) {
-				ddlStr.append(source).append(BlankConstants.NEW_LINE);
+				sourceSb.append(source).append(BlankConstants.NEW_LINE);
 			}
+			sourceInfo.put("body", sourceSb.toString());
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.item(sourceInfo)
+				.build();
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -187,74 +129,22 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
-			ddlStr = new StringBuilder();
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.items(sqlSesseion.selectList("indexScriptSource", dataParamInfo))
+			.build();
 
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
-			List srcScriptList = sqlSesseion.selectList("indexScriptSource", dataParamInfo);
-			ddlStr.append("CREATE ");
-
-			Map indexMap;
-			if (srcScriptList.size() > 0) {
-				indexMap = (Map) srcScriptList.get(0);
-				if ("UNIQUE".equals(indexMap.get("UNIQUENESS")))
-					ddlStr.append(" UNIQUE INDEX ");
-				else {
-					ddlStr.append(" INDEX ");
-				}
-
-				ddlStr.append( indexMap.get("TABLE_OWNER") + ".");
-				ddlStr.append( indexMap.get("INDEX_NAME") + " ON ");
-				ddlStr.append( indexMap.get("TABLE_OWNER") + ".");
-				ddlStr.append( indexMap.get("TABLE_NAME") + "\n ( ");
-
-				for (int i = 0; i < srcScriptList.size(); i++) {
-					indexMap = (Map) srcScriptList.get(i);
-
-					if (("NORMAL".equals(indexMap.get("INDEX_TYPE")))
-							&& (indexMap.get("COLUMN_EXPRESSION") == null)) {
-						if (i > 0)
-							ddlStr.append(",");
-						ddlStr.append( indexMap.get("COLUMN_NAME"));
-					} else {
-						if (i > 0)
-							ddlStr.append(",");
-						ddlStr.append( indexMap.get("COLUMN_EXPRESSION"));
-					}
-				}
-				ddlStr.append(" ) ").append(BlankConstants.NEW_LINE);;
-
-				if ("YES".equals(indexMap.get("LOGGING")))
-					ddlStr.append(" LOGGING ").append(BlankConstants.NEW_LINE);
-				else {
-					ddlStr.append(" NO LOGGING ").append(BlankConstants.NEW_LINE);
-				}
-				ddlStr.append(" TABLESPACE " +  indexMap.get("TABLESPACE_NAME") + BlankConstants.NEW_LINE);
-
-				ddlStr.append(" PCTFREE " + String.valueOf(indexMap.get("PCT_FREE")) + BlankConstants.NEW_LINE);
-				ddlStr.append(" INITRANS " + String.valueOf(indexMap.get("INI_TRANS")) +BlankConstants.NEW_LINE);
-				ddlStr.append(" MAXTRANS " + String.valueOf(indexMap.get("MAX_TRANS")) + BlankConstants.NEW_LINE);
-				ddlStr.append(" STORAGE ( \n ");
-				ddlStr.append(BlankConstants.TAB+" INITIAL " + String.valueOf(indexMap.get("INITIAL_EXTENT")) + BlankConstants.NEW_LINE);
-				ddlStr.append(BlankConstants.TAB+" MINEXTENTS " + String.valueOf(indexMap.get("MIN_EXTENTS")) + BlankConstants.NEW_LINE);
-				ddlStr.append(BlankConstants.TAB+" MAXEXTENTS " + String.valueOf(indexMap.get("MAX_EXTENTS")) + BlankConstants.NEW_LINE);
-				ddlStr.append(BlankConstants.TAB+" PCTINCREASE " + String.valueOf(indexMap.get("PCT_INCREASE")) + BlankConstants.NEW_LINE);
-				ddlStr.append(BlankConstants.TAB+" BUFFER_POOL " + String.valueOf(indexMap.get("BUFFER_POOL")) + BlankConstants.NEW_LINE);
-				ddlStr.append("\t ) \n ");
-
-			}
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
 			reval.add(ddlInfo);
 		}
 
@@ -268,30 +158,30 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
 
 		dataParamInfo.setObjectType(ObjectType.FUNCTION.name());
 
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP FUNCTION " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+			StringBuilder sourceSb = new StringBuilder();
+			List<String> srcProcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+			for (int j = 0; j < srcProcList.size(); j++) {
+				sourceSb.append( srcProcList.get(j));
 			}
 
-			ddlStr.append("CREATE OR REPLACE ");
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
 
-			List srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			for (int i = 0; i < srcList.size(); i++) {
-				ddlStr.append( srcList.get(i));
-			}
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -306,51 +196,55 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-			dataParamInfo.setObjectName(name);
-
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+			.build();
+			
+			reval.add(ddlInfo);
+			
 			String objType = sqlSesseion.selectOne("sourceObjectType",dataParamInfo);
-
-			List srcScriptList = null;
 			if (StringUtils.contains(objType, "PROCEDURE")) {
-				if(ddlOption.isAddDropClause()){
-					ddlStr.append("/* DROP PROCEDURE " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+				for (int j = 0; j < srcList.size(); j++) {
+					sourceSb.append( srcList.get(j));
 				}
-				ddlStr.append("CREATE OR REPLACE ");
-				srcScriptList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int i = 0; i < srcScriptList.size(); i++){
-					ddlStr.append( srcScriptList.get(i));
-				}
+				param.setSourceText(sourceSb.toString());
+				
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
 			} else if (StringUtils.contains(objType, "PACKAGE")) {
-
-				if(ddlOption.isAddDropClause()){
-					ddlStr.append(BlankConstants.NEW_LINE).append("/* DROP PACKAGE BODY " + name + "; */").append(BlankConstants.NEW_LINE_TWO);;
-					ddlStr.append("/* DROP PACKAGE " + name + "; */").append(BlankConstants.NEW_LINE_TWO);
-				}
-
+				DataMap sourceInfo = new DataMap();
+				
 				dataParamInfo.setObjectType("PACKAGE");
-				ddlStr.append("CREATE OR REPLACE ");
-				srcScriptList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int i = 0; i < srcScriptList.size(); i++) {
-					ddlStr.append( srcScriptList.get(i));
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+				for (int i = 0; i < srcList.size(); i++) {
+					sourceSb.append( srcList.get(i));
 				}
+				sourceInfo.put("package", sourceSb.toString());
 
+				sourceSb = new StringBuilder();
 				dataParamInfo.setObjectType("PACKAGE BODY");
-				ddlStr.append("/ \n\n ");
-				ddlStr.append("CREATE OR REPLACE ");
-				srcScriptList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int i = 0; i < srcScriptList.size(); i++) {
-					ddlStr.append( srcScriptList.get(i));
+				srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+				for (int i = 0; i < srcList.size(); i++) {
+					sourceSb.append( srcList.get(i));
 				}
+				sourceInfo.put("packageBody", sourceSb.toString());
+				
+				param.setItem(sourceInfo);
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PACKAGE.create, param));
 			}
-
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
+			
 			reval.add(ddlInfo);
 		}
 
@@ -378,72 +272,28 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
-		for (String name : objNmArr) {
+		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-			dataParamInfo.setObjectName(name);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStr.append("/* DROP TRIGGER " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-			ddlStr.append("CREATE OR REPLACE ");
-
-			List scrList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-
-			for (int i = 0; i < scrList.size(); i++) {
-				ddlStr.append( scrList.get(i));
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			StringBuilder sourceSb = new StringBuilder();
+			List<String> srcProcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
+			for (int j = 0; j < srcProcList.size(); j++) {
+				sourceSb.append( srcProcList.get(j));
 			}
 
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
 
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
-			reval.add(ddlInfo);
-		}
-
-		return reval;
-	}
-
-	/**
-	 *
-	 * @Method Name  : getSequence
-	 * @Method 설명 : Sequence 구하기.
-	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScriptImpl#getSequence(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 9. 19.
-	 * @변경이력  :
-	 * @param dataParamInfo
-	 * @param objNmArr
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public List<DDLInfo> getSequences(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-		logger.debug("Sequence DDL Generation...");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
-		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		StringBuilder ddlStr;
-		for (String name : objNmArr) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			ddlStr = new StringBuilder();
-
-			dataParamInfo.setObjectName(name);
-
-			Map param =  sqlSesseion.selectOne("sequenceScript",  dataParamInfo);
-			param.put("schema", dataParamInfo.getSchema());
-
-			param.put("ddlOption", ddlOption);
-
-			ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.SEQUENCE.create, param));
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(VarsqlFormatterUtil.addLastSemicolon(ddlStr, ddlOption), dbType));
-
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+			
 			reval.add(ddlInfo);
 		}
 

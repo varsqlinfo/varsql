@@ -1,21 +1,22 @@
 package com.varsql.core.sql.template;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.MapUtils;
-
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
+import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.util.DbMetaUtils;
-import com.vartech.common.app.beans.DataMap;
+import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.ConstraintInfo;
+import com.varsql.core.sql.ConstraintType;
 import com.vartech.common.utils.StringUtils;
 
 public enum TemplateHelpers implements Helper<Object> {
@@ -27,12 +28,13 @@ public enum TemplateHelpers implements Helper<Object> {
 			Map item =options.param(0, new HashMap());
 
 			if("unique".equalsIgnoreCase(mode)) {
-				return "UQ".equals(item.get("TYPE"))?"unique" :"";
+				return ConstraintType.UNIQUE.typeEquals(String.valueOf(item.get("type")))?"unique" :"";
 			}
 
 			if("ascDesc".equalsIgnoreCase(mode)) {
-				return "ASC".equals(item.get("ASC_OR_DESC"))?"" :"desc";
+				return "ASC".equalsIgnoreCase(String.valueOf(item.get("ascOrDesc")))?"" :"desc";
 			}
+			
 			return "";
 		}
 	}
@@ -62,58 +64,56 @@ public enum TemplateHelpers implements Helper<Object> {
 		@Override
 		public Object apply(Object context, Options options) throws IOException {
 			String mode = (String)context;
-			Map item =options.param(0, new DataMap());
+			ColumnInfo item =options.param(0, new ColumnInfo());
 
-			String dbType = options.param(2, "OTHER");
+			String dbType = options.param(1, "OTHER");
 
-			String typeName = MapUtils.getString(item, MetaColumnConstants.TYPE_NAME);
-
-			typeName = !StringUtils.isBlank(typeName)? typeName : (item.containsKey(MetaColumnConstants.TYPE_AND_LENGTH) ? MapUtils.getString(item, MetaColumnConstants.TYPE_AND_LENGTH) :"" );
-
-			typeName = typeName.replaceAll("\\((.*?)\\)", "");
-
-			DataType dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(typeName);
-
+			String typeName = item.getTypeName();
+			
+			DataType dataTypeInfo = null;
+			
+			if(StringUtils.isBlank(typeName)) {
+				dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(item.getTypeCode());
+				typeName = dataTypeInfo.getTypeName();
+			}else {
+				String standardTypeName = DbMetaUtils.getTypeName(item.getTypeName());
+				
+				if(!StringUtils.isBlank(standardTypeName)) {
+					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(standardTypeName);
+				}
+				
+				if((dataTypeInfo == null || DefaultDataType.OTHER.equals(dataTypeInfo)) && !StringUtils.isBlank(item.getTypeAndLength())) {
+					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(DbMetaUtils.getTypeName(item.getTypeAndLength()));
+				}
+			}
+				
 			if("typeAndLength".equals(mode)){
 
-				if(item.containsKey(MetaColumnConstants.TYPE_AND_LENGTH)){
-					Object val = item.get(MetaColumnConstants.TYPE_AND_LENGTH);
-
-					if(val != null  && !"".equals(val)) {
-						return String.valueOf(String.valueOf(item.get(MetaColumnConstants.TYPE_AND_LENGTH)));
-					}
+				if(!StringUtils.isBlank(item.getTypeAndLength())){
+					return item.getTypeAndLength();
 				}
-				int columnSize = MapUtils.getIntValue(item, MetaColumnConstants.COLUMN_SIZE); 
-				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, null, columnSize,
-						MapUtils.getIntValue(item, MetaColumnConstants.DATA_PRECISION, columnSize), MapUtils.getIntValue(item, MetaColumnConstants.DECIMAL_DIGITS));
+				
+				BigDecimal columnSize = item.getLength(); 
+				return dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, null, (columnSize == null? -1 : columnSize.longValue()),
+						item.getDataPrecision(), item.getDecimalDigits());
 			}
 
 			if("default".equals(mode)){
-				return DbMetaUtils.getDefaultValue(MapUtils.getString(item,MetaColumnConstants.COLUMN_DEF), dataTypeInfo, true);
+				return DbMetaUtils.getDefaultValue(item.getDefaultVal(), dataTypeInfo, true);
 			}
 
 			if("nullable".equals(mode)){
-				return DbMetaUtils.getNotNullValue(MapUtils.getString(item,MetaColumnConstants.NULLABLE));
+				return DbMetaUtils.getNotNullValue(item.getNullable());
 			}
-
 			return "";
 		}
-
 	}
 
 	,ddlTableKey{
 		
-		
-		
-		
-		
-		
-		
-		                                                                
-
 		@Override
 		public Object apply(Object context, Options options) throws IOException {
-			List list = (List)context;
+			List<ConstraintInfo> list = (List)context;
 			if(list.size() < 1){
 				return options.inverse();
 			}
@@ -122,12 +122,10 @@ public enum TemplateHelpers implements Helper<Object> {
 
 			Map<String, Map<String,List>> reval = new LinkedHashMap<String, Map<String,List>>();
 
-			//[{"TABLE_NAME":"test_table","INDEX_TYPE":1,"COLUMN_NAME":"col1","CONSTRAINT_NAME":"test_table_20445312861",TYPE:"PK"}]
-
 			for(int i =0; i< list.size(); i++){
-				Map item = (Map)list.get(i);
-				String keyType = MapUtils.getString(item, "TYPE");
-				String constName = MapUtils.getString(item, "CONSTRAINT_NAME");
+				ConstraintInfo item = list.get(i);
+				String keyType = item.getType();
+				String constName = item.getConstraintName();
 				if(reval.containsKey(keyType)){
 					if(!reval.get(keyType).containsKey(constName)){
 						reval.get(keyType).put(constName, new ArrayList());

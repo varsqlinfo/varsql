@@ -560,7 +560,6 @@ VarsqlAPP.vueServiceBean( {
 					vconnid : diffItem.source
 					,objectType : objectType
 					,schema : diffItem.sourceSchema
-					,databaseName : diffItem.sourceSchema
 				}
 				,success: function(resData) {
 					
@@ -594,7 +593,6 @@ VarsqlAPP.vueServiceBean( {
 					vconnid : diffItem.target
 					,objectType : objectType
 					,schema : diffItem.targetSchema
-					,databaseName : diffItem.targetSchema
 				}
 				,success: function(resData) {
 					if(resData.resultCode == 500){

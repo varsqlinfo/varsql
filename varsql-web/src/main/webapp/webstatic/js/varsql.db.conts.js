@@ -31,44 +31,43 @@ function setHints(str) {
  * }
  */
 var _dto = {
-	'-7':{name : 'BIT',isNum : false ,val : '', javaType:'Boolean'}
-	,'-6':{name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
-	,'5':{name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
-	,'4':{name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
-	,'-5':{name : 'BIGINT',isNum : true ,val : 0, javaType:'long'}
-	,'6':{name : 'FLOAT',isNum : true ,val : 0.0, javaType:'float'}
-	,'7':{name : 'REAL',isNum : true ,val : 0, javaType:'float'}
-	,'8':{name : 'DOUBLE',isNum : true ,val : 0, javaType:'double'}
-	,'2':{name : 'NUMERIC',isNum : true ,val : 0, javaType:'BigDecimal'}
-	,'3':{name : 'DECIMAL',isNum : true ,val : 0, javaType:'BigDecimal'}
-	,'1':{name : 'CHAR',isNum : false ,val : '', javaType:'String'}
-	,'12':{name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'-1':{name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'91':{name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'Date', isSize: false}
-	,'92':{name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'Time', isSize: false}
-	,'93':{name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'Timestamp', isSize: false}
-	,'-2':{name : 'BINARY',isNum : false ,val : '', javaType:'String'}
-	,'-3':{name : 'VARBINARY',isNum : false ,val : '', javaType:'byte[]'}
-	,'-4':{name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'byte[]'}
-	,'0':{name : 'NULL',isNum : false ,val : '', javaType:'Object'}
-	,'1111':{name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String'}
-	,'2000':{name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object', isSize: false}
-	,'2001':{name : 'DISTINCT',isNum : false ,val : '', javaType:'Object', isSize: false}
-	,'2002':{name : 'STRUCT',isNum : false ,val : '', javaType:'Object'}
-	,'2003':{name : 'ARRAY',isNum : false ,val : '', javaType:'Object'}
-	,'2004':{name : 'BLOB',isNum : false ,val : '', javaType:'Object'}
-	,'2005':{name : 'CLOB',isNum : false ,val : '', javaType:'String'}
-	,'2006':{name : 'REF',isNum : false ,val : '', javaType:'Object'}
-	,'70':{name : 'DATALINK',isNum : false ,val : '', javaType:'Object', isSize: false}
-	,'16':{name : 'BOOLEAN',isNum : false ,val : '', javaType:'boolean', isSize: false}
-	,'-8':{name : 'ROWID',isNum : false ,val : '', javaType:'Object', isSize: false}
-	,'-15':{name : 'NCHAR',isNum : false ,val : '', javaType:'String'}
-	,'-9':{name : 'NVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'-16':{name : 'LONGNVARCHAR',isNum : false ,val : '', javaType:'String'}
-	,'2011':{name : 'NCLOB',isNum : false ,val : '', javaType:'String'}
-	,'2009':{name : 'SQLXML',isNum : false ,val : '', javaType:'String', isSize: false}
-	,'9999':{name : 'OTHER',isNum : false ,val : '', javaType:'Object', isSize: false}
-
+	'-7':{typeCode: -7, name : 'BIT',isNum : false ,val : '', javaType:'Boolean'}
+	,'-6':{typeCode: -6, name : 'TINYINT',isNum : true ,val : 0, javaType:'int'}
+	,'5':{typeCode: 5, name : 'SMALLINT',isNum : true ,val : 0, javaType:'int'}
+	,'4':{typeCode: 4, name : 'INTEGER',isNum : true ,val : 0, javaType:'int'}
+	,'-5':{typeCode: -5, name : 'BIGINT',isNum : true ,val : 0, javaType:'long'}
+	,'6':{typeCode: 6, name : 'FLOAT',isNum : true ,val : 0.0, javaType:'float'}
+	,'7':{typeCode: 7, name : 'REAL',isNum : true ,val : 0, javaType:'float'}
+	,'8':{typeCode: 8, name : 'DOUBLE',isNum : true ,val : 0, javaType:'double'}
+	,'2':{typeCode: 2, name : 'NUMERIC',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'3':{typeCode: 3, name : 'DECIMAL',isNum : true ,val : 0, javaType:'BigDecimal'}
+	,'1':{typeCode: 1, name : 'CHAR',isNum : false ,val : '', javaType:'String'}
+	,'12':{typeCode: 12, name : 'VARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-1':{typeCode: -1, name : 'LONGVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'91':{typeCode: 91, name : 'DATE',isNum : false, isDate : true, val : 'current_date', javaType:'Date', isSize: false}
+	,'92':{typeCode: 92, name : 'TIME',isNum : false, isDate : true, val : 'current_time', javaType:'Time', isSize: false}
+	,'93':{typeCode: 93, name : 'TIMESTAMP',isNum : false, isDate : true, val : 'current_timestamp', javaType:'Timestamp', isSize: false}
+	,'-2':{typeCode: -2, name : 'BINARY',isNum : false ,val : '', javaType:'String'}
+	,'-3':{typeCode: -3, name : 'VARBINARY',isNum : false ,val : '', javaType:'byte[]'}
+	,'-4':{typeCode: -4, name : 'LONGVARBINARY',isNum : false ,val : '', javaType:'byte[]'}
+	,'0':{typeCode: 0, name : 'NULL',isNum : false ,val : '', javaType:'Object'}
+	,'1111':{typeCode: 1111, name : 'NVARCHAR2',isNum : false ,val : '', javaType:'String'}
+	,'2000':{typeCode: 2000, name : 'JAVA_OBJECT',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'2001':{typeCode: 2001, name : 'DISTINCT',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'2002':{typeCode: 2002, name : 'STRUCT',isNum : false ,val : '', javaType:'Object'}
+	,'2003':{typeCode: 2003, name : 'ARRAY',isNum : false ,val : '', javaType:'Object'}
+	,'2004':{typeCode: 2004, name : 'BLOB',isNum : false ,val : '', javaType:'Object'}
+	,'2005':{typeCode: 2005, name : 'CLOB',isNum : false ,val : '', javaType:'String'}
+	,'2006':{typeCode: 2006, name : 'REF',isNum : false ,val : '', javaType:'Object'}
+	,'70':{typeCode: 70, name : 'DATALINK',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'16':{typeCode: 16, name : 'BOOLEAN',isNum : false ,val : '', javaType:'boolean', isSize: false}
+	,'-8':{typeCode: -8, name : 'ROWID',isNum : false ,val : '', javaType:'Object', isSize: false}
+	,'-15':{typeCode: -15, name : 'NCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-9':{typeCode: -9, name : 'NVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'-16':{typeCode: -16, name : 'LONGNVARCHAR',isNum : false ,val : '', javaType:'String'}
+	,'2011':{typeCode: 2011, name : 'NCLOB',isNum : false ,val : '', javaType:'String'}
+	,'2009':{typeCode: 2009, name : 'SQLXML',isNum : false ,val : '', javaType:'String', isSize: false}
+	,'9999':{typeCode: 9999, name : 'OTHER',isNum : false ,val : '', javaType:'Object', isSize: false}
 };
 
 _dto['INT'] = VARSQL.util.objectMerge({},_dto['4'],{name:'INT'});

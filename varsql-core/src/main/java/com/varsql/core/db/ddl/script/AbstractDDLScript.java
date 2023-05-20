@@ -1,11 +1,9 @@
 package com.varsql.core.db.ddl.script;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,19 +12,24 @@ import org.apache.ibatis.session.SqlSession;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
+import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
+import com.varsql.core.db.valueobject.CommentInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
+import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
+import com.varsql.core.sql.CommentType;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
-import com.varsql.core.sql.util.JdbcUtils;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -41,12 +44,31 @@ public abstract class AbstractDDLScript implements DDLScript{
 	protected MetaControlBean dbInstanceFactory;
 
 	protected DBVenderType dbType;
+	
+	// db 별 기본값을 표준 값으로 지정
+	protected Map<String,String> STANDARD_DEFAULT_VALUE = new HashMap<String,String>(){
+		private static final long serialVersionUID = 1L;
+	{
+		put("sysdate", "CURRENT_TIMESTAMP");
+		put("getdate()", "CURRENT_TIMESTAMP");
+		put("now()", "CURRENT_TIMESTAMP");
+	}};
+	
+	// 기본 값을 db vender 값으로 지정
+	protected Map<String,String> DEFAULT_VALUE_TO_VENDER_VALUE = new HashMap<String,String>();
 
 	protected AbstractDDLScript(MetaControlBean dbInstanceFactory, DBVenderType dbType){
 		this.dbInstanceFactory =  dbInstanceFactory;
 		this.dbType =  dbType;
 	}
 	
+	protected void addStandardDefaultValue(String key, String value) {
+		STANDARD_DEFAULT_VALUE.put(key, value);
+	}
+	
+	protected void addDefaultValueToVenderValue(String key, String value) {
+		DEFAULT_VALUE_TO_VENDER_VALUE.put(key, value);
+	}
 	
 	/**
 	 *
@@ -83,28 +105,14 @@ public abstract class AbstractDDLScript implements DDLScript{
 		return DbMetaUtils.getNotNullValue(nullable);
 	}
 
-	protected Map getDefaultTemplateParam(DDLCreateOption ddlOption, DatabaseParamInfo dataParamInfo, List listMap) {
-		Map param =  new HashMap();
-		param.put("ddlOpt", ddlOption);
-		param.put("dbType", dataParamInfo.getDbType());
-		param.put("schema", dataParamInfo.getSchema());
-		param.put("objectName", dataParamInfo.getObjectName());
-		param.put("items", listMap);
-
-		return param;
-	}
-
-	protected Map getDefaultTableTemplateParam(DDLCreateOption ddlOption, DatabaseParamInfo dataParamInfo, List columnList, List keyList, List commentsList) {
-		Map param =  new HashMap();
-		param.put("ddlOpt", ddlOption);
-		param.put("dbType", dataParamInfo.getDbType());
-		param.put("schema", dataParamInfo.getSchema());
-		param.put("objectName", dataParamInfo.getObjectName());
-		param.put("columnList", columnList);
-		param.put("keyList", keyList);
-		param.put("commentsList", commentsList);
-
-		return param;
+	protected DDLTemplateParam getDefaultTemplateParam(DDLCreateOption ddlOption, DatabaseParamInfo dataParamInfo, List listMap) {
+		return DDLTemplateParam.builder()
+			.dbType(dataParamInfo.getDbType())
+			.ddlOpt(ddlOption)
+			.schema(dataParamInfo.getSchema())
+			.objectName(dataParamInfo.getObjectName())
+			.items(listMap)
+			.build();
 	}
 
 	/**
@@ -116,19 +124,20 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
-	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
+	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 
-		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(),dataParamInfo,objNmArr );
+		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
 
 		StringBuilder ddlStrBuf;
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-
+		
 		DDLInfo ddlInfo;
+		
 		for(TableInfo tableInfo: tableInfoList){
 
 			String name = tableInfo.getName();
@@ -137,54 +146,34 @@ public abstract class AbstractDDLScript implements DDLScript{
 			ddlInfo  = new DDLInfo();
 			ddlInfo.setName(name);
 			ddlStrBuf = new StringBuilder();
-
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP TABLE " + name+ " CASCADE CONSTRAINT; */ ").append(BlankConstants.NEW_LINE_TWO);
+			
+			List<CommentInfo> commentsList = new LinkedList<>();
+			
+			if(!StringUtils.isBlank(tableInfo.getRemarks())) {
+				commentsList.add(CommentInfo.builder().type(CommentType.TABLE.getType()).name(name).item(tableInfo).comment(tableInfo.getRemarks()).build());
 			}
-
+			
 			List<ColumnInfo> columnList =tableInfo.getColList();
-
-			ddlStrBuf.append("CREATE TABLE " + name + "(").append( BlankConstants.NEW_LINE);
-
-			DataType dataTypeInfo;
-			ColumnInfo columnInfo;
-			for (int i = 0; i < columnList.size(); i++) {
-				columnInfo =  columnList.get(i);
-
-				dataTypeInfo = dbInstanceFactory.getDataTypeImpl().getDataType(columnInfo.getTypeName());
-
-				ddlStrBuf.append(BlankConstants.TAB);
-				if (i > 0){
-					ddlStrBuf.append(",");
+			
+			columnList.forEach(item->{
+				if(!StringUtils.isBlank(item.getComment())) {
+					commentsList.add(CommentInfo.builder().type(CommentType.COLUMN.getType()).name(item.getName()).item(item).comment(item.getComment()).build());
 				}
+			});
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(name)
+				.ddlOpt(ddlOption)
+				.columnList(columnList)
+				.keyList(dbInstanceFactory.getConstraintsKeys(dataParamInfo,name))
+				.commentsList(commentsList)
+			.build();
+			
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
 
-				ddlStrBuf.append(columnInfo.getName()).append(" ");
-
-				ddlStrBuf.append(columnInfo.getTypeAndLength());
-
-				ddlStrBuf.append(getDefaultValue(columnInfo.getDefaultVal(), dataTypeInfo));
-
-				ddlStrBuf.append(getNotNullValue(columnInfo.getNullable()));
-
-				ddlStrBuf.append(BlankConstants.NEW_LINE);
-			}
-
-			List<Map> keyInfo = getTablePrimaryKeyInfo(dataParamInfo, name);
-
-			if(keyInfo.size() > 0){
-				Map source;
-
-				ddlStrBuf.append(BlankConstants.TAB).append(",CONSTRAINT ")
-				.append(keyInfo.get(0).get(MetaColumnConstants.PK_NAME))
-				.append(" PRIMARY KEY  ( ");
-				for (int i = 0; i < keyInfo.size(); i++) {
-					source =  keyInfo.get(i);
-					ddlStrBuf.append(i==0?"":", ").append(source.get(MetaColumnConstants.COLUMN_NAME));
-				}
-				ddlStrBuf.append(")").append(BlankConstants.NEW_LINE);
-			}
-
-			ddlStrBuf.append(")").append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			ddlStrBuf.append(BlankConstants.NEW_LINE_TWO);
 
 			ddlInfo.setCreateScript(ddlStrBuf.toString());
 
@@ -203,40 +192,38 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-
-		StringBuilder ddlStrBuf;
+	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String viewNm : objNmArr) {
+		for (String viewNm : objNames) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(viewNm);
 
-			ddlStrBuf = new StringBuilder();
-
 			dataParamInfo.setObjectName(viewNm);
 
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP VIEW " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-			ddlStrBuf.append("CREATE TABLE " + viewNm + " as ").append( BlankConstants.NEW_LINE);
-
+			StringBuilder sourceSb = new StringBuilder();
 			List<String> srcProcList = sqlSesseion.selectList("viewScript", dataParamInfo);
 			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append( srcProcList.get(j));
+				sourceSb.append( srcProcList.get(j));
 			}
 
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(viewNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
 
-			ddlInfo.setCreateScript(ddlStrBuf.toString());
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -252,38 +239,37 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
-		StringBuilder ddlStrBuf;
-
+	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames)	throws Exception {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String viewNm : objNmArr) {
+		for (String objNm : objNames) {
 
 			ddlInfo = new DDLInfo();
-			ddlInfo.setName(viewNm);
+			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
 
-			ddlStrBuf = new StringBuilder();
-
-			dataParamInfo.setObjectName(viewNm);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP INDEX " + dataParamInfo.getObjectName() + "; */").append(BlankConstants.NEW_LINE_TWO);
+			StringBuilder sourceSb = new StringBuilder();
+			List<String> srcList = sqlSesseion.selectList("indexScript", dataParamInfo);
+			
+			for (int j = 0; j < srcList.size(); j++) {
+				sourceSb.append( srcList.get(j));
 			}
 
-			List<String> srcProcList = sqlSesseion.selectList("indexScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append( srcProcList.get(j));
-			}
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
 
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
-
-			ddlInfo.setCreateScript(ddlStrBuf.toString());
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -299,36 +285,38 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getFunctions(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-
-		StringBuilder ddlStrBuf;
+	public List<DDLInfo> getFunctions(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNmArr) {
+		for (String objNm : objNames) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(objNm);
-			ddlStrBuf = new StringBuilder();
-
 			dataParamInfo.setObjectName(objNm);
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP FUNCTION " + objNm + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
+			
+			StringBuilder sourceSb = new StringBuilder();
 			List<String> srcProcList = sqlSesseion.selectList("functionScript", dataParamInfo);
 			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append(srcProcList.get(j));
+				sourceSb.append( srcProcList.get(j));
 			}
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 
-			ddlInfo.setCreateScript(ddlStrBuf.toString());
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+			
 			reval.add(ddlInfo);
 		}
 
@@ -344,37 +332,37 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
-
-		StringBuilder ddlStrBuf;
+	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames)	throws Exception {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNmArr) {
+		for (String objNm : objNames) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(objNm);
-			ddlStrBuf = new StringBuilder();
-
 			dataParamInfo.setObjectName(objNm);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP PROCEDURE " + objNm+ "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
+			
+			StringBuilder sourceSb = new StringBuilder();
 			List<String> srcProcList = sqlSesseion.selectList("procedureScript", dataParamInfo);
 			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append(srcProcList.get(j));
+				sourceSb.append( srcProcList.get(j));
 			}
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 
-			ddlInfo.setCreateScript(ddlStrBuf.toString());
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -390,37 +378,36 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-
-		StringBuilder ddlStrBuf;
-
+	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNmArr) {
+		for (String objNm : objNames) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(objNm);
-			ddlStrBuf = new StringBuilder();
-
 			dataParamInfo.setObjectName(objNm);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP TRIGGER " + objNm + "; */").append(BlankConstants.NEW_LINE_TWO);
-			}
-
+			
+			StringBuilder sourceSb = new StringBuilder();
 			List<String> srcProcList = sqlSesseion.selectList("triggerScript", dataParamInfo);
 			for (int j = 0; j < srcProcList.size(); j++) {
-				ddlStrBuf.append(srcProcList.get(j));
+				sourceSb.append( srcProcList.get(j));
 			}
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
 
-			ddlInfo.setCreateScript(ddlStrBuf.toString());
+			DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(sourceSb.toString())
+				.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
 			reval.add(ddlInfo);
 		}
 
@@ -436,39 +423,127 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 * @작성일   : 2015. 6. 18.
 	 * @변경이력  :
 	 * @param dataParamInfo
-	 * @param objNm
+	 * @param objNames
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public List<DDLInfo> getSequences(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-		StringBuilder ddlStrBuf;
+	public List<DDLInfo> getSequences(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
 		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNmArr) {
+		
+		for (String objNm : objNames) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(objNm);
+			dataParamInfo.setObjectName(objNm);
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(dataParamInfo.getDbType())
+				.schema(dataParamInfo.getSchema())
+				.objectName(objNm)
+				.ddlOpt(ddlOption)
+				.item(sqlSesseion.selectOne("sequenceScript", dataParamInfo))
+			.build();
+
+			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.SEQUENCE.create, param));
+			reval.add(ddlInfo);
+		}
+
+		return reval;
+	}
+
+	/**
+	 *
+	 * @Method Name  : getTable
+	 * @Method 설명 : table ddl
+	 * @Method override : @see com.varsql.core.db.ddl.script.DDLScript#getTable(com.varsql.core.db.valueobject.DatabaseParamInfo, java.lang.String[])
+	 * @작성자   : ytkim
+	 * @작성일   : 2015. 6. 18.
+	 * @변경이력  :
+	 * @param dataParamInfo
+	 * @param objNames
+	 * @return
+	 * @throws Exception
+	 */
+	public List<DDLInfo> tableDdlConvertDB(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, DBVenderType convertDb, String ...objNames) throws Exception {
+
+		List<DDLInfo> reval = new ArrayList<DDLInfo>();
+		
+		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
+
+		DDLInfo ddlInfo;
+		
+		StringBuilder ddlStrBuf;
+		
+		DataTypeFactory dataTypeFactory = dbInstanceFactory.getDataTypeImpl();
+		
+		MetaControlBean convertDbDataTypeFactory = MetaControlFactory.getDbInstanceFactory(convertDb);
+		
+		for(TableInfo tableInfo: tableInfoList){
+
+			String name = tableInfo.getName();
+			
+			ddlInfo = new DDLInfo();
+			ddlInfo.setName(name);
+			dataParamInfo.setObjectName(name);
+			
 			ddlStrBuf = new StringBuilder();
 
-			dataParamInfo.setObjectName(objNm);
-
-			if(ddlOption.isAddDropClause()){
-				ddlStrBuf.append("/* DROP SEQUENCE " + objNm + "; */").append(BlankConstants.NEW_LINE_TWO);
+			List<CommentInfo> commentsList = new LinkedList<>();
+			
+			if(!StringUtils.isBlank(tableInfo.getRemarks())) {
+				commentsList.add(CommentInfo.builder().type(CommentType.TABLE.getType()).name(name).item(tableInfo).comment(tableInfo.getRemarks()).build());
 			}
-
-			Map param = sqlSesseion.selectOne("sequenceScript", dataParamInfo);
-
-			param.put("schema", dataParamInfo.getSchema());
-
-			param.put("ddlOption", ddlOption);
-
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.OTHER, SQLTemplateCode.SEQUENCE.create, param));
-
-			ddlStrBuf.append(ddlOption.isAddLastSemicolon()?";":"").append(BlankConstants.NEW_LINE_TWO);
-
+			
+			List<ColumnInfo> columnList =tableInfo.getColList();
+			
+			
+			
+			columnList.forEach(item->{
+				
+				String typeName = DbMetaUtils.getTypeName(item.getTypeName()); 
+				
+				DataType dataType = dataTypeFactory.getDataType(typeName);
+				dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(item.getTypeCode()) : dataType);
+				
+				item.setTypeName(null);
+				item.setTypeAndLength(null);
+				
+				item.setTypeCode(dataType.getTypeCode());
+				
+				// Postgresql의 varchar 같은경우 사이즈 가 없을 경우 default size로 셋팅
+				if(dataType.getJDBCDataTypeMetaInfo().isSize() && dataType.getDefaultSize() > -1 && ( item.getLength()== null || item.getLength().compareTo(BigDecimal.ZERO) < 0)) {
+					item.setLength(dataType.getDefaultSize());
+				}
+				
+				String defaultVal = item.getDefaultVal(); 
+				if(!StringUtils.isBlank(defaultVal)) {
+					item.setDefaultVal(convertDbDataTypeFactory.getDefaultValueToVenderValue(getStandardDefaultValue(defaultVal, dataType), dataType));
+				}
+				
+				String comment = item.getComment(); 
+				if(!StringUtils.isBlank(comment)) {
+					commentsList.add(CommentInfo.builder().type(CommentType.COLUMN.getType()).name(item.getName()).item(item).comment(comment).build());
+				}
+			});
+			
+			DDLTemplateParam param = DDLTemplateParam.builder()
+				.dbType(convertDb.getDbVenderName())
+				.schema(dataParamInfo.getSchema())
+				.objectName(name)
+				.ddlOpt(ddlOption)
+				.columnList(columnList)
+				.keyList(dbInstanceFactory.getConstraintsKeys(dataParamInfo,name))
+				.commentsList(commentsList)
+			.build();
+			
+			param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.constraintKey, param));
+			
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.create, param));
+			
 			ddlInfo.setCreateScript(ddlStrBuf.toString());
 			reval.add(ddlInfo);
 		}
@@ -476,36 +551,22 @@ public abstract class AbstractDDLScript implements DDLScript{
 		return reval;
 	}
 
-	private List<Map> getTablePrimaryKeyInfo(DatabaseParamInfo dataParamInfo, String tableNm) throws Exception {
-		Connection conn = null;
-		ResultSet rs = null;
-		List<Map> keyColumn = new ArrayList<Map>();
-		String dbAlias =  dataParamInfo.getVconnid();
-		String schema = dataParamInfo.getSchema();
-
-		SqlSession session  = SQLManager.getInstance().openSession(dbAlias);
-
-		try {
-			conn = session.getConnection();
-			DatabaseMetaData dbmd = conn.getMetaData();
-
-			rs = dbmd.getPrimaryKeys(null, schema, tableNm);
-
-			Map tc = null;
-			while(rs.next()){
-				tc =new HashMap();
-				tc.put(MetaColumnConstants.COLUMN_NAME, rs.getString(MetaColumnConstants.COLUMN_NAME));
-				tc.put(MetaColumnConstants.PK_NAME, rs.getString(MetaColumnConstants.PK_NAME));
-				tc.put(MetaColumnConstants.KEY_SEQ, rs.getString(MetaColumnConstants.KEY_SEQ));
-				keyColumn.add(tc);
-			}
-		} catch (SQLException e) {
-			throw e;
-		}finally{
-			SQLManager.getInstance().closeSession(dbAlias, session);
-			JdbcUtils.close(conn, null ,rs);
+	@Override
+	public String getStandardDefaultValue(String val, DataType type) {
+		if(com.vartech.common.utils.StringUtils.isBlank(val)) {
+			return val ;
 		}
-		return keyColumn;
+		String lowerVal = val.toLowerCase().trim();
+		
+		if(STANDARD_DEFAULT_VALUE.containsKey(lowerVal)) {
+			return STANDARD_DEFAULT_VALUE.get(lowerVal); 
+		}
+		
+		return val;
 	}
-
+	
+	@Override
+	public String getDefaultValueToVenderValue(String val, DataType type) {
+		return DEFAULT_VALUE_TO_VENDER_VALUE.containsKey(val) ? DEFAULT_VALUE_TO_VENDER_VALUE.get(val) : val; 
+	}
 }

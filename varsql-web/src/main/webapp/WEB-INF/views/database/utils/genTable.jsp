@@ -56,7 +56,7 @@
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body"  style="height: calc(100% - 35px); padding-bottom:5px;">
-					<div id="tableInfo" class="wh100"></div>
+					<div id="tableColumnEle" class="wh100"></div>
 				</div>
 			</div>
 			
@@ -101,7 +101,6 @@ VarsqlAPP.vueServiceBean( {
 		,glossaryGridObj : {}
 		,tableGridObj : {}
 		,tableDDLEditor:{}
-		,ddlTemplate :''
 		,dbType : '${dbtype}'
 		,schema : '${schema}'
 		,resultMessage : ''
@@ -139,10 +138,6 @@ VarsqlAPP.vueServiceBean( {
 			_this.initGlossary();
 			_this.initExcelTableInfo();
 
-			VARSQLApi.sqlTemplate.load({dbType : this.dbType, conuid :'${conuid}', 'templateType' : 'TABLE'}, function(resData){
-				_this.ddlTemplate = resData.item;
-			});
-
 			this.tableDDLEditor = CodeMirror.fromTextArea(document.getElementById('tableDDLInfo'), {
 				mode: 'text/x-sql'
 			})
@@ -157,13 +152,13 @@ VarsqlAPP.vueServiceBean( {
 				colName = colName.split(' ').join('_');
 				
 	        	_this.tableGridObj.addRow({
-	        		COLUMN_NAME : colName
-	        		,DATA_TYPE : wordType
-	        		,TYPE_NAME : wordType
-	        		,COLUMN_SIZE : (sItem.wordLength ||255)
-	        		,NULLABLE : 'Y'
-	        		,COLUMN_DEF : ''
-	        		,COMMENT : sItem.word
+	        		name : colName
+	        		,typeCode : VARSQLCont.getDataTypeInfo(wordType).typeCode
+	        		,typeName : wordType
+	        		,length : (sItem.wordLength ||255)
+	        		,nullable : 'Y'
+	        		,defaultVal : ''
+	        		,comment : sItem.word
 	        	});
 				return ;
 			}
@@ -234,7 +229,7 @@ VarsqlAPP.vueServiceBean( {
 			var _this =this;
 			var tbodyItems = [];
 
-		    _this.tableGridObj = $.pubGrid('#tableInfo', {
+		    _this.tableGridObj = $.pubGrid('#tableColumnEle', {
 		        headerOptions: {
 		            redraw: false
 		        }
@@ -269,77 +264,70 @@ VarsqlAPP.vueServiceBean( {
 		        }
 		        ,editable: true
 		        , tColItem: [
-		        	{label: '컬럼명', key: 'COLUMN_NAME', width: 80}
-		        	, {label: '데이터타입', key: 'TYPE_NAME', width: 80, renderer :{
+		        	{label: '컬럼명', key: 'name', width: 80}
+		        	, {label: '데이터타입', key: 'typeName', width: 80, renderer :{
 		        		type : 'dropdown'
 	        			,labelField : 'name'
 	        			,valueField : 'name'
 			        	,list : VARSQLCont.allDataType()
 					}}
-		        	, {label: '길이', key: 'COLUMN_SIZE'}
-		        	, {label: 'Nullable', key: 'NULLABLE', renderer :{
+		        	, {label: '길이', key: 'length', renderer :{
+		        		type : 'number'
+			        }}
+		        	, {label: 'Nullable', key: 'nullable', renderer :{
 		        		type : 'dropdown'
 		        		,list : [
 							'Y'
 							,'N'
 						]
 		        	}}
-		        	, {label: '기본값', key: 'COLUMN_DEF', width: 45}
-		        	, {label: '설명', key: 'COMMENT', width: 45}
+		        	, {label: '기본값', key: 'defaultVal', width: 45}
+		        	, {label: '설명', key: 'comment', width: 45}
 		        ]
 		        , tbodyItem: tbodyItems
 		    });
 		}
 		,addRow : function(){
 			this.tableGridObj.addRow({
-        		COLUMN_NAME : 'COLUMN_'+(this.addColumnIdx++)
-        		,TYPE_NAME : 'VARCHAR'
-        		,COLUMN_SIZE : 255
-        		,NULLABLE : 'Y'
-        		,COLUMN_DEF : ''
-        		,COMMENT : ''
+				name : 'COLUMN_'+(this.addColumnIdx++)
+        		,typeCode : VARSQLCont.getDataTypeInfo('VARCHAR').typeCode
+        		,typeName : 'VARCHAR'
+        		,length : 255
+        		,nullable : 'Y'
+        		,defaultVal : ''
+        		,comment : ''
         	});
 		}
 		,removeRow : function(){
 			this.tableGridObj.removeSelectionRow()
 		}
-		,generateDDL : function(){
+		,generateDDL : function(callback){
 			var tableInfoObj = this.tableGridObj;
 	        var items = tableInfoObj.options.tbodyItem;
 	        var tableName = VARSQL.str.trim(this.tableName);
 
 	        var columnList = [];
-	        var commentList = [];
+	        var commentsList = [];
 	        var keyList = [];
 	        for(var i =0; i<items.length; i++){
 	        	var item = items[i];
 
-	        	var itemName = item.COLUMN_NAME || '';
+	        	var itemName = item.name || '';
 
 	            if (itemName == '') continue;
 
 	            columnList.push(item);
 
 	            if (item._pubcheckbox === true) { // primary key check
-	            	keyList.push({"COLUMN_NAME":itemName, "CONSTRAINT_NAME": "pk_"+tableName, TYPE:"PK"})
+	            	keyList.push({"columnName":itemName, "constraintName": "pk_"+tableName, type:"PK"})
 	            }
 
-	        	if(!VARSQL.isBlank(item.COMMENT)){
-	        		commentList.push({TYPE: 'COL', NAME: item.COLUMN_NAME, COMMENT: item.COMMENT});
+	        	if(!VARSQL.isBlank(item.comment)){
+	        		commentsList.push({type: 'COL', name: itemName, comment: item.comment});
 				}
 	        }
-
-			var param = {
-				"dbType" : this.dbType
-				,"schema" : this.schema
-				,"objectName" : tableName
-				,"keyList":keyList
-				,"columnList": columnList
-				,"commentsList": commentList
-				,"ddlOpt":{"addDropClause":true,"addLastSemicolon":true}
-			};
-			
-			if(VARSQL.isBlank(tableName)){
+	        
+	        if(VARSQL.isBlank(tableName)){
 				VARSQLUI.toast.open({text :VARSQL.messageFormat('varsql.0039','테이블명을 입력해주세요.')})
 				return false; 
 			}
@@ -348,38 +336,69 @@ VarsqlAPP.vueServiceBean( {
 				VARSQLUI.toast.open({text :VARSQL.messageFormat('varsql.0040','컬럼 정보를 입력해주세요.')})
 				return false; 
 			}
-
-			var obj = Handlebars.compile(this.ddlTemplate);
-			var ddl = obj(param); 
 			
-	        return ddl;
+			var params = {
+				schema : this.schema
+				,conuid : '${conuid}'
+				,convertDb : this.dbType
+				,templateParam : JSON.stringify({
+					"dbType" : this.dbType
+					,"schema" : this.schema
+					,"objectName" : tableName
+					,"keyList":keyList
+					,"columnList": columnList
+					,"commentsList": commentsList
+					,"ddlOpt":{"addDropClause":true,"addLastSemicolon":true}
+				})
+			};
+
+			VARSQL.req.ajax({
+			    loadSelector : 'body'
+			    ,url: {type:VARSQL.uri.database, url:'/utils/gen/createTableDDL'}
+			    ,data : params
+			    ,success:function (resData){
+					var list = resData.list||[];
+					
+					var scriptArr = [];
+					
+					list.forEach(item=>{
+						scriptArr.push(item.createScript);
+					})
+					
+					callback(scriptArr.join('\n\n'));
+				}
+			});
+			
 		}
 		,ddlView : function (){
-			var ddl = this.generateDDL();
-			
-			if(ddl==false) return ; 
-			
-			this.ddlDialog.dialog('open');
-			
-			this.tableDDLEditor.setValue(ddl);
+			var _this = this; 
+			this.generateDDL(function(ddl){
+				if(ddl==false) return ; 
+				
+				_this.ddlDialog.dialog('open');
+				
+				_this.tableDDLEditor.setValue(ddl);	
+			});
 		}
 		,createTable: function (){
-			var ddl = this.generateDDL();
-			
-			if(ddl==false) return ; 
-			
-			if(!confirm(VARSQL.messageFormat('varsql.0041','테이블을 생성하시겠습니까?'))){
-				return ;
-			}
-			var _this =this;
-			
-			VARSQLApi.sql.execute({sql : ddl}, function (resData){
-				if(resData.resultCode==200){
-					_this.resultMessage = 'Success'; 
-				}else{
-					_this.resultMessage = VARSQL.str.trim(ddl) + '\n' + resData.message;
+			var _this = this; 
+			this.generateDDL(function(ddl){
+				if(ddl==false) return ; 
+				
+				if(!confirm(VARSQL.messageFormat('varsql.0041','테이블을 생성하시겠습니까?'))){
+					return ;
 				}
-			})
+				
+				VARSQLApi.sql.execute({sql : ddl}, function (resData){
+					if(resData.resultCode==200){
+						_this.resultMessage = 'Success'; 
+					}else{
+						_this.resultMessage = VARSQL.str.trim(ddl) + '\n' + resData.message;
+					}
+				})
+			});
+			
+			
 		}
 	}
 });

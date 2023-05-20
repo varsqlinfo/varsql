@@ -29,6 +29,14 @@
 							<input class="form-control text required input-sm" name="export_name" v-model="downloadConfig.exportName">
 						</div>
 					</div>
+					<div class="field-group">
+						<label class="col-xs-3"><spring:message code="label.schema" /> : </label>
+						<select v-model="selectSchema" id="selectSchema" class="col-xs-9 padding0">
+							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
+								<option value="${item}">${item}</option>
+							</c:forEach>
+						</select>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -89,6 +97,7 @@ VarsqlAPP.vueServiceBean({
 		,downloadConfig :{
 			exportName : 'ddlInfo'
 		}
+		,selectSchema : '${currentSchemaName}'
 		,selectExportObject : ''
 		,selectDbObjectInfo : []
 		,selectObjectItems :{}
@@ -111,13 +120,18 @@ VarsqlAPP.vueServiceBean({
 	}
 	,methods:{
 		init : function (){
-
 		}
 		,selectStep : function (step){
 			this.$refs.stepButton.move(step);
 		}
 		,moveStep : function (step){
 			var _self = this;
+			
+			if(step == 2 && VARSQL.isBlank($('#selectSchema option:selected').val())){
+				VARSQLUI.toast.open('Schema '+VARSQL.messageFormat('varsql.0006'));
+				this.selectStep(1);
+				return false;
+			}
 
 			if(step < 3){
 				return true;
@@ -159,6 +173,7 @@ VarsqlAPP.vueServiceBean({
 			var param = {
 				conuid : '${param.conuid}'
 				,ddlObjInfo : dbObjType.join(',')
+				,schema : this.selectSchema
 			}
 
 			VARSQL.req.ajax({
@@ -211,6 +226,7 @@ VarsqlAPP.vueServiceBean({
 			var param = {
 				prefVal : JSON.stringify(prefVal)
 				,conuid : '${param.conuid}'
+				,schema : this.selectSchema
 			};
 
 			VARSQL.req.download({

@@ -366,14 +366,14 @@
 	 -->
 	<select id="sequenceScript" parameterType="databaseParamInfo" resultType="hashmap">
 		SELECT 
-			NAME as  "OBJECT_NAME",
+			NAME as  "objectName",
 			owner,
-			current_val as "LAST_NUMBER",
-			increment_val as  "INCREMENT_BY",
-			max_val as "MAX_VALUE",
-			min_val as "MIN_VALUE",
-			COMMENT AS "COMMENT",
-			cached_num as "CACHED"
+			current_val as "lastNumber",
+			increment_val as  "increment",
+			max_val as "maxValue",
+			min_val as "minValue",
+			COMMENT AS "comment",
+			cached_num as "cached"
 		FROM db_serial seq
 		where seq.NAME = #{objectName}
 	</select>    
@@ -381,33 +381,32 @@
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="tableScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="tableScript" parameterType="databaseParamInfo" resultType="dataMap">
 		SHOW CREATE TABLE ${objectName}
 	</select>
 	
 	<!-- 
 	 view script 생성  create 문	
 	 -->
-	<select id="viewScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="viewScript" parameterType="databaseParamInfo" resultType="dataMap">
 		SHOW CREATE VIEW ${objectName}
 	</select>
 
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScript" resultType="dataMap" parameterType="databaseParamInfo">
+	<select id="indexScript" parameterType="databaseParamInfo" resultType="dataMap">
 		SELECT 
-			a.class_name AS "TABLE_NAME",
-			a.index_name AS "INDEX_NAME",
-			b.key_attr_name AS "COLUMN_NAME",
-			b.key_order AS "COLUMN_POSITION",
-			b.key_prefix_length AS column_length,
+			a.index_name AS "indexName",
+			a.class_name AS "tableName",
+			b.key_attr_name AS "columnName",
+			b.key_order AS "ordinal",
+			b.key_prefix_length AS "columnLength",
 			CASE WHEN a.is_primary_key =  'YES' THEN 'PK'
 	         WHEN a.is_foreign_key = 'YES' THEN 'FK'
 	         WHEN a.is_unique = 'YES' then 'UQ'
-	        ELSE ' ' END as "INDEX_TYPE",
-			b.asc_desc  as "ASC_OR_DESC",
-			'' as "STATUS"
+	        ELSE '' END as "INDEX_TYPE",
+			b.asc_desc  as "ascOrDesc"
 		FROM 
 			db_index a left join db_index_key b on  a.index_name = b.index_name
 		WHERE 1=1
@@ -416,16 +415,16 @@
 	</select>
 	
 	<!-- create function script -->
-	<select id="functionScript" resultType="dataMap" parameterType="databaseParamInfo">
-		SELECT dsp.sp_name as "OBJECT_NAME",
-			dsp.sp_type as "TYPE",
-			dsp.return_type as "RETURN_TYPE",
+	<select id="functionScript" parameterType="databaseParamInfo" resultType="dataMap">
+		SELECT dsp.sp_name as "objectName",
+			dsp.sp_type as "type",
+			dsp.return_type as "returnType",
 			dsp.arg_count,
-			dsp.lang as "LANG",
-			dsp.target as "SOURCE",
-			dspa.data_type AS "TYPE_NAME",
-			dspa.mode as "IN_OUT",
-			dsp.COMMENT as "COMMENT"
+			dsp.lang as "lang",
+			dsp.target as "source",
+			dspa.data_type AS "typeName",
+			dspa.mode as "inOuut",
+			dsp.COMMENT as "comment"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1
@@ -434,16 +433,16 @@
 	</select>
 	
 	<!-- create procedure script -->
-	<select id="procedureScript" resultType="dataMap" parameterType="databaseParamInfo">
-		SELECT dsp.sp_name as "OBJECT_NAME",
-			dsp.sp_type as "TYPE",
-			dsp.return_type as "RETURN_TYPE",
+	<select id="procedureScript" parameterType="databaseParamInfo" resultType="dataMap">
+		SELECT dsp.sp_name as "objectName",
+			dsp.sp_type as "type",
+			dsp.return_type as "returnType",
 			dsp.arg_count,
-			dsp.lang as "LANG",
-			dsp.target as "SOURCE",
-			dspa.data_type AS "TYPE_NAME",
-			dspa.mode as "IN_OUT",
-			dsp.COMMENT as "COMMENT"
+			dsp.lang as "lang",
+			dsp.target as "source",
+			dspa.data_type AS "typeName",
+			dspa.mode as "inOuut",
+			dsp.COMMENT as "comment"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1

@@ -6,32 +6,18 @@
 	<table>
 		<create>
 		<![CDATA[
-{{~#if ddlOpt.addDropClause}}
-/*DROP TABLE {{objectName}}; */
-{{/if}}
-
+{{~#if ddlOpt.addDropClause}}/*DROP TABLE {{objectName}}; */{{/if}}
 CREATE TABLE {{objectName}}(
 {{#columnList}}
-	{{addChar @index "" ","}} {{COLUMN_NAME}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+	{{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
 {{/columnList}}
-)
+);
 
-{{#ddlTableKey keyList objectName dbType}}
-  {{#xif type '==' 'PK'}}
-	{{#each constList}}
-ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
-  {{#xif type '==' 'UQ'}}
-	{{#each constList}}
-CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ","}}{{COLUMN_NAME}}{{/this}});
-	{{/each}}
-  {{/xif}}
-{{/ddlTableKey}}
+{{sourceText}}
 
 {{#commentsList}}
-{{#xif TYPE '==' 'TBL'}}EXEC sp_addextendedproperty 'MS_Description', '{{COMMENT}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}};{{/xif}}
-{{~#xif TYPE '==' 'COL'}}EXEC sp_addextendedproperty 'MS_Description', '{{COMMENT}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}}, 'COLUMN', {{NAME}};{{/xif}}
+{{#xif type '==' 'TBL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}};{{/xif}}
+{{~#xif type '==' 'COL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}}, 'COLUMN', {{name}};{{/xif}}
 {{/commentsList}}
 		]]>
 		</create>
@@ -63,12 +49,12 @@ alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
 		
 		<!-- 컬럼 주석 추가 -->
 		<columnAddComment>
-EXEC sp_addextendedproperty 'MS_Description', '{{COMMENT}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
+EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
 		</columnAddComment>
 	
 		<!-- 컬럼 주석 수정-->
 		<columnModifyComment>
-EXEC sp_updateextendedproperty 'MS_Description', '{{COMMENT}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
+EXEC sp_updateextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
 		</columnModifyComment>
 	
 		<!-- 컬럼 주석 삭제-->
@@ -80,19 +66,19 @@ EXEC sp_dropextendedproperty 'MS_Description', 'SCHEMA', dbo, 'TABLE', {{TABLE_N
 {{#ddlTableKey keyList objectName dbType}}
   {{~#xif type '==' 'PK'}}
 	{{~#each constList}}
-ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}});
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}});
 	{{/each~}}
   {{/xif~}}
   
   {{~#xif type '==' 'FK'}}
 	{{~#each constList}}
-ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} FOREIGN KEY ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}}) REFERENCES {{#this}}{{#if @first}}{{REFERENCED_TABLE_NAME}}{{/if}}{{/this}}({{~#this}}{{addChar @index "" ", "}}{{REFERENCED_COLUMN_NAME}}{{/this}});
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} FOREIGN KEY ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}}) REFERENCES {{#this}}{{#if @first}}{{referencedTableName}}{{/if}}{{/this}}({{~#this}}{{addChar @index "" ", "}}{{referencedColumnName}}{{/this}});
 	{{/each~}}
   {{/xif~}}
   
   {{~#xif type '==' 'UQ'}}
 	{{~#each constList}}
-CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ", "}}{{COLUMN_NAME}}{{/this}});
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}});
 	{{/each~}}
   {{/xif~}}
   
@@ -101,38 +87,55 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
 		
 	</table>
 
-	<!-- function 생성-->
-	<function>
-		<create>
-CREATE FUNCTION {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
-AS LANGUAGE {{LANG}}
-NAME {{SOURCE}};
-		</create>
-	</function>
-
-	<!-- procedure 생성-->
-	<procedure>
-		<create>
-CREATE FUNCTION {{OBJECT_NAME}} ({{ARGUMENTS}}) RETURN {{RETURN_TYPE}}
-AS LANGUAGE {{LANG}}
-NAME {{SOURCE}};
-		</create>
-	</procedure>
-
-	<!-- trigger 생성-->
-	<trigger>
-		<create>
-/* DROP TRIGGER ; */
-CREATE OR REPLACE
-		</create>
-	</trigger>
 	
+	<!-- view 생성-->
+    <view>
+        <create>
+{{~#if ddlOpt.addDropClause}}/*DROP VIEW {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </view>
+
+    <!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}/*DROP FUNCTION {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </function>
+
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}/*DROP PROCEDURE {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </procedure>
+
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}/*DROP TRIGGER {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </trigger>
+    
 
 	<!-- index 생성-->
 	<index>
 		<create>
-/* DROP TRIGGER ; */
-CREATE OR REPLACE
+{{#if ddlOpt.addDropClause}}/*DROP INDEX {{objectName}}; */{{/if}}
+
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
+on
+{{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{columnName}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
 		</create>
 	</index>
 	
@@ -140,14 +143,13 @@ CREATE OR REPLACE
 	<!-- sequence 생성-->
 	<sequence>
 		<create>
-{{#equals true ddlOption.addDropClause}}/* DROP SEQUENCE {{OBJECT_NAME}}; */
-{{/equals}}
+{{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
 
-CREATE SEQUENCE {{OBJECT_NAME}}
+CREATE SEQUENCE {{objectName}}
 START WITH 1
-INCREMENT BY {{INCREMENT_BY}}
-MINVALUE {{MIN_VALUE}}
-MAXVALUE {{MAX_VALUE}}
+INCREMENT BY {{item.increment}}
+MINVALUE {{item.minValue}}
+MAXVALUE {{item.maxValue}}
 		</create>
 	</sequence>
 	
