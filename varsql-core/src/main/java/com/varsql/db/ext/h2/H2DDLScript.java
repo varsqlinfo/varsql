@@ -31,7 +31,7 @@ public class H2DDLScript extends AbstractDDLScript {
 	private final Logger logger = LoggerFactory.getLogger(H2DDLScript.class);
 
 	public H2DDLScript(MetaControlBean dbInstanceFactory){
-		super(dbInstanceFactory, DBVenderType.MARIADB);
+		super(dbInstanceFactory, DBVenderType.H2);
 	}
 
 	@Override
