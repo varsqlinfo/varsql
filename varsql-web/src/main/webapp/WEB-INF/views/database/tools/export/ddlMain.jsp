@@ -128,7 +128,7 @@ VarsqlAPP.vueServiceBean({
 			var _self = this;
 			
 			if(step == 2 && VARSQL.isBlank($('#selectSchema option:selected').val())){
-				VARSQLUI.toast.open('Schema '+VARSQL.messageFormat('varsql.0006'));
+				VARSQLUI.toast.open('Schema '+VARSQL.message('varsql.0006'));
 				this.selectStep(1);
 				return false;
 			}
@@ -160,7 +160,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			if(VARSQL.getLength(_self.selectObjectItems) < 1){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0006'));
+				VARSQL.toastMessage('varsql.0006');
 				this.selectStep(2);
 				return false;
 			}

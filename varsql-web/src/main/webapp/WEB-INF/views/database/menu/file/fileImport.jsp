@@ -202,7 +202,7 @@ VarsqlAPP.vueServiceBean({
 					}
 				}
 				if(importFileIds.length < 1){
-					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0029'));
+					VARSQL.toastMessage('varsql.0029');
 					return false;
 				}
 

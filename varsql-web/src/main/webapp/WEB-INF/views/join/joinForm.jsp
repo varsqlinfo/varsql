@@ -174,8 +174,8 @@ var joinForm = {
 			,fields: {
 				uid: {
 					validators: {
-						notEmpty: { message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')}
-						,stringLength: { min: 3, max: 100, message: VARSQL.messageFormat('varsql.0043',{size:'3~100'})}
+						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
+						,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.0043',{size:'3~100'})}
 						,callback: {
 		                     message: '이미 존재하는 아이디 입니다.',
 		                     callback: function (value, validator, $field) {
@@ -186,9 +186,9 @@ var joinForm = {
 			  	}
 				,uname: {
 					validators: {
-						notEmpty: { message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')}
+						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
 						,callback: {
-		                     message: VARSQL.messageFormat('varsql.0043',{size:'2~100'}),
+		                     message: VARSQL.message('varsql.0043',{size:'2~100'}),
 		                     callback: function (value, validator, $field) {
 		                   	  	return $.trim(value).length > 1;
 		                     }
@@ -197,13 +197,13 @@ var joinForm = {
 			  	}
 				,uemail: {
 					validators: {
-						notEmpty: { message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')}
-						,stringLength: { min: 0, max: 250, message: VARSQL.messageFormat('varsql.0043',{size:'3~100'})}
+						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
+						,stringLength: { min: 0, max: 250, message: VARSQL.message('varsql.0043',{size:'3~100'})}
 						,emailAddress: {
 							message: 'The input is not a valid email address'
 						}
 						,callback: {
-		                     message: VARSQL.messageFormat('varsql.0044','존재하는 이메일 입니다.'),
+		                     message: VARSQL.message('varsql.0044','존재하는 이메일 입니다.'),
 		                     callback: function (value, validator, $field) {
 		                   	  	return emailChecVal < 1;
 		                     }
@@ -213,31 +213,31 @@ var joinForm = {
 				,upw: {
 	                validators: {
 	                    notEmpty: {
-	                        message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')
+	                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
 	                    }
 	                    ,different: {
 	                        field: 'uid',
-	                        message: VARSQL.messageFormat('varsql.0045','아이디와 달라야 합니다.')
+	                        message: VARSQL.message('varsql.0045','아이디와 달라야 합니다.')
 	                    }
 	                    ,identical: {
 	                        field: 'confirmUpw',
-	                        message: VARSQL.messageFormat('varsql.0046','비밀번호가 같아야합니다.')
+	                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
 	                    }
 	                    ,stringLength: {
 	                        min: 4,
 	                        max: 200,
-	                        message: VARSQL.messageFormat('varsql.0047', {size : 4})
+	                        message: VARSQL.message('varsql.0047', {size : 4})
 	                    }
 	                }
 	            }
 	            ,confirmUpw: {
 	                validators: {
 	                    notEmpty: {
-	                        message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')
+	                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
 	                    }
 	                    ,identical: {
 	                        field: 'upw',
-	                        message: VARSQL.messageFormat('varsql.0046','비밀번호가 같아야합니다.')
+	                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
 	                    }
 	                }
 	            }
@@ -261,7 +261,7 @@ var joinForm = {
 					return ;
 				}else{
 					if(resData.code ==409){
-						alert(VARSQL.messageFormat('varsql.0049','아이디 중복 입니다.'));
+						VARSQL.alertMessage('varsql.0049','아이디 중복 입니다.');
 						return ;
 					}
 				}

@@ -53,18 +53,19 @@ public abstract class AbstractImportDataHandler implements ImportDataHandler{
 		boolean firstFlag = true;
 		
 		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
-		for (ExportColumnInfo gci : columns) {
+		for (ExportColumnInfo eci : columns) {
 			
-			if(this.metaControlBean.getDataTypeImpl().getDataType(gci.getType()).isExcludeImportColumn()) {
+			if(this.metaControlBean.getDataTypeImpl().getDataType(eci.getTypeCode(), eci.getType()).isExcludeImportColumn()) {
 				continue;
 			}
-			newColumnList.add(gci);
+			
+			newColumnList.add(eci);
 			if(firstFlag) {
-				querySb.append(gci.getName());
+				querySb.append(eci.getName());
 				paramSb.append("?");
 				firstFlag = false;
 			}else {
-				querySb.append(", ").append(gci.getName());
+				querySb.append(", ").append(eci.getName());
 				paramSb.append(", ?");
 			}
 		}

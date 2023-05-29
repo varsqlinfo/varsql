@@ -166,7 +166,7 @@ VarsqlAPP.vueServiceBean({
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
-									alert(resData.message);
+									VARSQL.alertMessage(resData.message);
 									return ;
 								}
 								_this.qnaModify();

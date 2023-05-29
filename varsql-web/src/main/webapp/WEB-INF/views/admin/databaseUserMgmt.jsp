@@ -77,7 +77,7 @@ VarsqlAPP.vueServiceBean( {
 				orientation : 'y'
 				,duplicateCheck : true
 				,message :{
-					duplicate: VARSQL.messageFormat('varsql.0018')
+					duplicate: VARSQL.message('varsql.0018')
 				}
 				,valueKey : 'viewid'	
 				,labelKey : 'name'
@@ -167,7 +167,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(!_self.detailItem.vconnid){
-				alert(VARSQL.messageFormat('varsql.0003'));
+				VARSQL.alertMessage('varsql.0003');
 				return false;
 			}
 

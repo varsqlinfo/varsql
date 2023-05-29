@@ -457,7 +457,7 @@ VarsqlAPP.vueServiceBean( {
 			this.userPw = VARSQL.str.trim(this.userPw);
 
 			if(this.userPw == ''){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0023'));
+				VARSQL.toastMessage('varsql.0023');
 				return ;
 			}
 
@@ -473,7 +473,7 @@ VarsqlAPP.vueServiceBean( {
 				,data : param
 				,success:function (resData){
 					if(resData.resultCode != 200){
-						alert(resData.message);
+						VARSQL.alertMessage(resData.message);
 						return ;
 					}else{
 						_this.dbPw = resData.item;
@@ -529,7 +529,7 @@ VarsqlAPP.vueServiceBean( {
 				if(result){
 					var param = _this.getParamVal();
 
-					if(param.passwordChange==true && !confirm(VARSQL.messageFormat('varsql.a.0004'))){
+					if(param.passwordChange==true && !VARSQL.confirmMessage('varsql.a.0004')){
 						return ;
 					}
 
@@ -539,10 +539,10 @@ VarsqlAPP.vueServiceBean( {
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
-									alert(resData.message);
+									VARSQL.alertMessage(resData.message);
 									return ;
 								}else{
-									VARSQLUI.toast.open(VARSQL.messageFormat('varsql.a.0005'));
+									VARSQL.toastMessage('varsql.a.0005');
 								}
 								_this.search();
 								_this.setDetailItem();
@@ -553,7 +553,7 @@ VarsqlAPP.vueServiceBean( {
 					var errorItem = _this.errors.items[0];
 					
 					if(!$('[name="'+errorItem.field+'"]').closest('.view-area').hasClass('on')){
-						alert(errorItem.msg);
+						VARSQL.alertMessage(errorItem.msg);
 						_this.viewMode = _this.viewMode=='opt' ?'view' : 'opt';
 					}
 
@@ -574,11 +574,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.vconnid ==='undefined'){
-				$('#warningMsgDiv').html(VARSQL.messageFormat('varsql.0004'));
+				$('#warningMsgDiv').html(VARSQL.message('varsql.0004'));
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+			if(!VARSQL.confirmMessage('varsql.0016')){
 				return ;
 			}
 
@@ -607,17 +607,17 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode == 200){
-							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
+							VARSQL.toastMessage('success');
 							return
 						}else{
-							alert(resData.messageCode  +'\n'+ resData.message);
+							VARSQL.alertMessage(resData.messageCode  +'\n'+ resData.message);
 						}
 					}
 				}
 			});
 		}
 		,connectionClose : function (item){
-			if(!confirm(VARSQL.messageFormat('varsql.a.0001'))){
+			if(!VARSQL.confirmMessage('varsql.a.0001')){
 				return ;
 			}
 
@@ -632,11 +632,11 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode ==200){
-							alert(VARSQL.messageFormat('varsql.a.0002'));
+							VARSQL.alertMessage('varsql.a.0002');
 							_this.search();
 							return
 						}else{
-							alert(resData.messageCode  +'\n'+ resData.message);
+							VARSQL.alertMessage(resData.messageCode  +'\n'+ resData.message);
 						}
 					}
 				}
@@ -652,19 +652,19 @@ VarsqlAPP.vueServiceBean( {
 				,data:param
 				,success:function (resData){
 					if(resData.resultCode ==200){
-						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0027'));
+						VARSQL.toastMessage('varsql.0027');
 						_this.search();
 
 						_this.itemView({vconnid : resData.item});
 						return
 					}else{
-						alert(resData.messageCode  +'\n'+ resData.message);
+						VARSQL.alertMessage(resData.messageCode  +'\n'+ resData.message);
 					}
 				}
 			});
 		}
 		,connectionReset : function (item){
-			if(!confirm(VARSQL.messageFormat('varsql.a.0003'))){
+			if(!VARSQL.confirmMessage('varsql.a.0003')){
 				return ;
 			}
 
@@ -679,11 +679,11 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode ==200){
-							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
+							VARSQL.toastMessage('success');
 							_this.search();
 							return
 						}else{
-							alert(resData.messageCode  +'\n'+ resData.message);
+							VARSQL.alertMessage(resData.messageCode  +'\n'+ resData.message);
 						}
 					}
 				}

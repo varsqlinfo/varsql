@@ -82,27 +82,27 @@ response.setDateHeader ("Expires", -1);
 				fields: {
 					currPw: {
 		                validators: {
-		                    notEmpty: { message: VARSQL.messageFormat('varsql.form.0001') }
+		                    notEmpty: { message: VARSQL.message('varsql.form.0001') }
 		                }
 		            }
 					,upw : {
 		                validators: {
-		                	 notEmpty: { message: VARSQL.messageFormat('varsql.form.0001')}
-	                    	,stringLength: {min: 4, max: 500, message:  VARSQL.messageFormat('varsql.form.0002' , {len:4}) }
+		                	 notEmpty: { message: VARSQL.message('varsql.form.0001')}
+	                    	,stringLength: {min: 4, max: 500, message:  VARSQL.message('varsql.form.0002' , {len:4}) }
 		                    ,identical: {
 		                        field: 'confirmUpw',
-		                        message: VARSQL.messageFormat('varsql.form.0003')
+		                        message: VARSQL.message('varsql.form.0003')
 		                    }
 		                }
 		            }
 		            ,confirmUpw : {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.messageFormat('varsql.form.0001')
+		                        message: VARSQL.message('varsql.form.0001')
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
-		                        message: VARSQL.messageFormat('varsql.form.0003')
+		                        message: VARSQL.message('varsql.form.0003')
 		                    }
 		                }
 		            }
@@ -129,16 +129,16 @@ response.setDateHeader ("Expires", -1);
 					}
 
 					if(resData.resultCode == 50001){
-						VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0007'));
+						VARSQL.alertMessage('varsql.m.0007');
 						return ;
 					}else{
 						if(resData.resultCode != 200){
-							alert(resData.message);
+							VARSQL.alertMessage(resData.message);
 							return ;
 						}
 					}
 
-					VARSQLUI.alert.open(VARSQL.messageFormat('varsql.m.0008'));
+					VARSQL.alertMessage('varsql.m.0008');
 
 					location.href= location.href;
 				}

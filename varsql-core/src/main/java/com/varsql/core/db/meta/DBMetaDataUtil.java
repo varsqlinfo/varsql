@@ -118,7 +118,7 @@ public final class DBMetaDataUtil {
 					int degitsLen = colRs.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 					int columnSize = colRs.getInt(MetaColumnConstants.COLUMN_SIZE);
 					
-					DataType dataTypeInfo = dataTypeFactory.getDataType(typeName);
+					DataType dataTypeInfo = dataTypeFactory.getDataType(0, typeName);
 
 					ColumnInfo column = new ColumnInfo(); 
 					column.setName(cName);

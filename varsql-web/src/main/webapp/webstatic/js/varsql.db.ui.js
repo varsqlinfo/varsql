@@ -478,7 +478,7 @@ _ui.headerMenu ={
 
 							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 
-							_self.openMenuDialog(VARSQL.messageFormat('menu.file.export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
+							_self.openMenuDialog(VARSQL.message('menu.file.export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
 							break;
 						case 'newwin': // 새창 보기.
 							var dimension = VARSQL.util.browserSize();
@@ -495,7 +495,7 @@ _ui.headerMenu ={
 							if(isInIFrame==true){
 								parent.userMain.activeClose();
 							}else {
-								if(confirm(VARSQL.messageFormat('msg.close.window'))){
+								if(VARSQL.confirmMessage('msg.close.window')){
 									window.close();
 								}
 							}
@@ -574,7 +574,7 @@ _ui.headerMenu ={
 
 							break;
 						case 'layout':	//레이아웃 초기화
-							if(confirm(VARSQL.messageFormat('varsql.0013'))){
+							if(VARSQL.confirmMessage('varsql.0013')){
 								_ui.preferences.save('init', function (){
 									location.href = location.href;
 									return ;
@@ -611,7 +611,7 @@ _ui.headerMenu ={
 								
 								_self.openPreferences('Table DDL Convert',VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid));
 								
-								//_self.openMenuDialog(VARSQL.messageFormat('menu.file.export'),'tableDDLConvert',{type:VARSQL.uri.database, url:'/utils/tableDDLConvert?conuid='+_g_options.param.conuid}, {'width':600,'height' : 400});
+								//_self.openMenuDialog(VARSQL.message('menu.file.export'),'tableDDLConvert',{type:VARSQL.uri.database, url:'/utils/tableDDLConvert?conuid='+_g_options.param.conuid}, {'width':600,'height' : 400});
 								
 								/*
 								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid), {
@@ -1245,7 +1245,7 @@ _ui.dbSchemaObject ={
 					html : '<i class="fa fa-refresh" style="cursor:pointer;"></i>'
 					,onlyActiveView : true
 					,click : function (item, idx){
-						if(confirm(VARSQL.messageFormat('msg.refresh'))){
+						if(VARSQL.confirmMessage('msg.refresh')){
 							_self.getObjectTypeData(item, true);
 						}
 					}
@@ -1397,13 +1397,13 @@ _ui.addDbServiceObject({
 			var contextItems = [
 				{header: "title" , "key": "contextTitle"}
 				,{divider:true}
-				,{key : "dataview" , "name": VARSQL.messageFormat('dataview')
+				,{key : "dataview" , "name": VARSQL.message('dataview')
 					,subMenu: [
-						{ key : "dataview_all","name": VARSQL.messageFormat('data') , mode: "selectStar"}
-						,{ key : "dataview_count","name": VARSQL.messageFormat('count') ,mode:"selectCount"}
+						{ key : "dataview_all","name": VARSQL.message('data') , mode: "selectStar"}
+						,{ key : "dataview_count","name": VARSQL.message('count') ,mode:"selectCount"}
 					]
 				}
-				,{key : "copy" , "name": VARSQL.messageFormat('copy')}
+				,{key : "copy" , "name": VARSQL.message('copy')}
 				,{divider:true}
 				,{key : "sql_create", "name": "sql"
 					,subMenu: [
@@ -1445,13 +1445,13 @@ _ui.addDbServiceObject({
 
 			contextItems = contextItems.concat([
 				{divider:true}
-				,{key :'export', "name": VARSQL.messageFormat('export')
+				,{key :'export', "name": VARSQL.message('export')
 					,subMenu:[
-						{key : "export_data","name": VARSQL.messageFormat('data.export')}
+						{key : "export_data","name": VARSQL.message('data.export')}
 					]
 				}
 				,{divider:true}
-				,{key : "refresh" , "name": VARSQL.messageFormat('refresh')}
+				,{key : "refresh" , "name": VARSQL.message('refresh')}
 			]);
 			
 			var tableObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
@@ -1564,7 +1564,7 @@ _ui.addDbServiceObject({
 					            });
 
 								if(result.isError){
-									VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0025'));
+									VARSQL.toastMessage('varsql.0025');
 					            	return ;
 					    		}
 
@@ -2410,7 +2410,7 @@ _ui.addODbServiceObjectMetadata({
 				            });
 
 							if(result.isError){
-								VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0025'));
+								VARSQL.toastMessage('varsql.0025');
 				            	return ;
 				    		}
 
@@ -3821,7 +3821,7 @@ _ui.SQL = {
 			    cursor.replace(replaceTxt)
 			}
 
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0011', { count: replaceCount}))
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0011', { count: replaceCount}))
 
 			return ;
 		}
@@ -3829,19 +3829,19 @@ _ui.SQL = {
 		var isNext = cursor.find(isReverseFlag);
 
 		if(wrapSearch===true && isNext===false){
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0012', { findText: orginTxt}));
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
 			return ;
 		}
 
 		if(isNext){
 			var cursorFrom = cursor.from();
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
 			_self.getSqlEditorObj().setSelection(cursorFrom, cursor.to());
 		}else{
 			if(findOpt.wrapSearch===true){
 				_self.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
 			}else{
-				_self.findTextEle.find('.find-result').empty().html(VARSQL.messageFormat('varsql.0012', { findText: orginTxt}));
+				_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
 				return ;
 			}
 		}
@@ -4107,7 +4107,7 @@ _ui.SQL = {
 							return ;
 						}
 
-						if(!confirm(VARSQL.messageFormat('varsql.0014'))) return ;
+						if(!VARSQL.confirmMessage('varsql.0014')) return ;
 
 						var recv_id = [];
 						
@@ -4152,14 +4152,14 @@ _ui.SQL = {
 					,enableItemEvtBtn : true 
 				}
 				,message :{
-					duplicate: VARSQL.messageFormat('varsql.0018')
+					duplicate: VARSQL.message('varsql.0018')
 				}
 				,source : {
 					items : []
-					,emptyMessage : VARSQL.messageFormat('search.message',{searchType : VARSQL.messageFormat('user')})
+					,emptyMessage : VARSQL.message('search.message',{searchType : VARSQL.messageFormat('user')})
 				}
 				,target : {
-					label : VARSQL.messageFormat('recipient')
+					label : VARSQL.message('recipient')
 					,items : []
 					,emptyMessage : ' '
 				}
@@ -4281,7 +4281,7 @@ _ui.SQL = {
 
 						_self.sqlFileNameDialogEle.dialog("open");
 		    		}else{
-		    			if(!confirm(VARSQL.messageFormat('varsql.0015', {itemText : sItem.sqlTitle}))){
+		    			if(!VARSQL.confirmMessage('varsql.0015', {itemText : sItem.sqlTitle})){
 		    				return ;
 		    			}
 
@@ -4777,7 +4777,7 @@ _ui.SQL = {
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0008'))) return false;
+			if(!VARSQL.confirmMessage('varsql.0008')) return false;
 
 			var columnNameArr = [];
 			for(var i =0 ;i < chkItemLen;i++){

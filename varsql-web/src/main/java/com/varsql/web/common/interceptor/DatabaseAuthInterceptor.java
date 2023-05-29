@@ -32,7 +32,7 @@ public class DatabaseAuthInterceptor implements HandlerInterceptor {
 		String conuid =req.getParameter(VarsqlParamConstants.CONN_UUID);
 
 		if (!authCheck(req, conuid)) {
-			if(StringUtils.isBlank(conuid) && VarsqlUtils.isRuntimelocal() && SecurityUtil.isAdmin()) {
+			if(StringUtils.isBlank(conuid) && VarsqlUtils.isRuntimeLocal() && SecurityUtil.isAdmin()) {
 				return true;
 			}
 

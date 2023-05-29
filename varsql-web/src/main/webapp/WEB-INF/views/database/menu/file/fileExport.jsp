@@ -130,12 +130,12 @@ VarsqlAPP.vueServiceBean({
 			var _self = this;
 			if(_self.selectTableObj.getTargetItem().length < 1){
 				this.step=2;
-    			alert('<spring:message code="msg.table.select" />');
+    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
     			return ;
     		}
 
 			if(_self.selectColumnObj.getTargetItem().length < 1){
-    			alert('<spring:message code="msg.column.select" />');
+    			VARSQL.alertMessage('<spring:message code="msg.column.select" />');
     			return ;
     		}
 

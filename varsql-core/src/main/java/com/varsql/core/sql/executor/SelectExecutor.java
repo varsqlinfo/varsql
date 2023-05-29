@@ -52,7 +52,7 @@ public class SelectExecutor implements Executor{
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
+		ResponseResult parseInfo = SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
 
 		List<SqlSource> sqlList = parseInfo.getList();
 

@@ -11,7 +11,6 @@
     <!-- /.col-lg-12 -->
 </div>
 
-
 <div class="wh100" id=epViewArea style="padding-top: 5px;height:calc(100% - 45px)">
 	<div id="layoutArea" class="wh100">
 	</div>
@@ -71,6 +70,62 @@
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
+
+<%--editor 문자 찾기 다이얼로그. --%>
+<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="<spring:message code="find" />">
+	<div class="find-text-area">
+		<ul class="find-text">
+			<li>
+				<label class="find-text-label"><spring:message code="find.word" /></label>
+				<span class="find-text-input-area"><input type="text" name="editorFindText"></span>
+			</li>
+			<li>
+				<label class="find-text-label"><spring:message code="replace.word" /></label>
+				<span class="find-text-input-area"><input type="text" name="editorReplaceText"></span>
+			</li>
+		</ul>
+		
+		<div class="rows" style="margin-top:5px;">
+			<div><spring:message code="options" /></div>
+			<ul class="find-text-option-area">
+				<li>
+					<label class="checkbox-container"><spring:message code="label.case.sensitive" />
+					  <input type="checkbox" name="find-text-option" value="caseSearch">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
+				<li>
+					<label class="checkbox-container"><spring:message code="label.wrap.search" />
+					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
+				<li>
+					<label class="checkbox-container"><spring:message code="regular.expression" />
+					  <input type="checkbox" name="find-text-option" value="regularSearch">
+					  <span class="checkmark"></span>
+					</label>
+				</li>
+			</ul>
+		</div>
+		<div class="rows" style="margin-top:38px;">
+			<ul class="find-text-button">
+				<li>
+					<button type="button" class="find_text" data-mode="find-up" style="width: 48%;">
+						<spring:message code="find" /> <i class="fa fa-long-arrow-up"></i>
+					</button>
+					<button type="button" class="find_text" data-mode="find-down" style="width: 48%;">
+						<spring:message code="find" /> <i class="fa fa-long-arrow-down"></i>
+					</button>
+				</li>
+				<li><button type="button" class="find_text" data-mode="replace"><spring:message code="replace" /></button></li>
+				<li><button type="button" class="find_text" data-mode="allreplace"><spring:message code="all.replace" /></button></li>
+				<li><button type="button" class="find_text" data-mode="close"><spring:message code="close" /></button></li>
+			</ul>
+		</div>
+		<div class="find-result"></div>
 	</div>
 </div>
 
@@ -293,6 +348,7 @@ function initVue(){
 			,limitRowCnt : 100
 			,editor : {}
 			,allResultData : {}
+			,findTextDialog : null
 		}
 		,computed :{
 			selectAllCheck : function (){
@@ -312,7 +368,7 @@ function initVue(){
 		,methods:{
 			init : function(){
 				var _this = this; 
-				this.editor= CodeMirror(document.getElementById('editor'), {
+				this.editor = CodeMirror(document.getElementById('editor'), {
 					mode: 'text/x-sql',
 					indentWithTabs: true,
 					smartIndent: true,
@@ -325,7 +381,9 @@ function initVue(){
 					autofocus: true,
 					extraKeys: {
 						"Ctrl-Space": "autocomplete"
-						,"Ctrl-F": function (){}
+						,"Ctrl-F": function (){
+							_this.findTextOpen();
+						}
 						,"Ctrl-S": function (){
 							_this.saveSql();
 						}
@@ -333,7 +391,9 @@ function initVue(){
 							_this.sqlData();
 							return false; 
 						}
-						,"Shift-Ctrl-F" : function (){}
+						,"Shift-Ctrl-F" : function (){
+							_this.findTextOpen();
+						}
 						,"Shift-Ctrl-R" : function (){}
 						,"Ctrl-R" : function (){}
 						,"Shift-Ctrl-/" : function (){
@@ -359,6 +419,143 @@ function initVue(){
 				
 				this.addResultItem(this.dbList[this.conuid])
 				this.loadObject();
+			}
+			,findTextOpen : function(){
+				var _this = this;
+				
+				if(_this.findTextDialog==null){
+					_this.findTextEle = $('#editorFindTextDialog');
+					_this.findTextDialog = _this.findTextEle.dialog({
+						height: 315
+						,width: 280
+						,resizable: false
+						,modal: false
+						,close: function() {
+							_this.findTextDialog.dialog( "close" );
+						}
+					});
+					
+					// editor enter
+					_this.findTextEle.find('[name="editorFindText"]').on('keydown',function(e) {
+						if (e.keyCode == '13') {
+							_this.findTextEle.find('.find_text[data-mode="find-down"]').trigger('click.find.text');
+						}
+					});
+					
+					// 찾기 이벤트 처리
+					_this.findTextEle.find('.find_text').on('click.find.text', function (e){
+						var sEle = $(this);
+						var mode = sEle.attr('data-mode');
+						var findText = _this.findTextEle.find('[name="editorFindText"]').val();
+						var replaceText = _this.findTextEle.find('[name="editorReplaceText"]').val()
+	
+						if(mode=='find-up' || mode=='find-down'){
+							_this.searchFindText(mode, findText, replaceText, false);
+						}else if(mode=='replace'){
+							_this.searchFindText(mode, findText, replaceText, true);
+						}else if(mode=='allreplace'){
+							_this.searchFindText(mode, findText, replaceText, false, true);
+						}else{
+							_this.findTextDialog.dialog( "close" );
+						}
+					})
+				}
+	
+				var findSqlText = _this.getSql();
+				if(!VARSQL.isBlank(findSqlText)){
+					_this.findTextEle.find('[name="editorFindText"]').val(findSqlText);
+				}
+	
+				_this.findTextDialog.dialog("open");
+				_this.findTextEle.find('[name="editorFindText"]').focus();
+				_this.findTextEle.find('.find-result').empty();
+			}
+			// 검색.
+			,searchFindText : function (mode, orginTxt ,replaceTxt, replaceFlag, replaceAllFlag, wrapSearch){
+				var _this = this;
+				
+				var directionValue = 'down';
+				
+				if(VARSQL.startsWith(mode ,'find')){
+					var modeArr = mode.split('-');
+					directionValue = modeArr.length > 1 ? modeArr[1] :'down';
+				}
+	
+				var findOpt={}
+	
+				$('input:checkbox[name=find-text-option]:checked').each(function() {
+					findOpt[this.value] = true;
+				});
+	
+				var isReverseFlag = directionValue =='down' ? false : true;
+	
+				var findPos;
+				var wrapSearchPos;
+				if(isReverseFlag){
+					wrapSearchPos = {line: this.editor.lastLine()+1, ch: 0};
+					findPos = _this.getSelectionPosition();
+				}else{
+					wrapSearchPos = {line: 0, ch: 0};
+					findPos = _this.getSelectionPosition(true);
+				}
+				var schTxt = orginTxt;
+	
+				var caseSearchOpt = findOpt.caseSearch == true?'' :'i';
+	
+				if(findOpt.regularSearch===true){
+					schTxt = new RegExp(schTxt,caseSearchOpt);
+				}else{
+					schTxt = new RegExp(schTxt.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),caseSearchOpt);
+				}
+	
+				if(replaceAllFlag ===true){ //  모두 바꾸기
+					findPos = {line: 0, ch: 0};
+					isReverseFlag = false;
+				}else{
+					if(replaceFlag){
+						if(_this.getSql().match(schTxt) != null){
+							_this.editor.replaceSelection(replaceTxt);
+							findPos = _this.getSelectionPosition(true);
+						}
+					}
+				}
+	
+				var cursor =_this.editor.getSearchCursor(schTxt, (replaceAllFlag ? findPos :( wrapSearch ? wrapSearchPos : findPos)) , {
+					caseFold : !findOpt.caseSearch
+				})
+	
+				if(replaceAllFlag ===true){
+					var replaceCount =0;
+	
+					while (cursor.findNext()){
+						replaceCount++;
+					    cursor.replace(replaceTxt)
+					}
+	
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0011', { count: replaceCount}))
+	
+					return ;
+				}
+	
+				var isNext = cursor.find(isReverseFlag);
+	
+				if(wrapSearch===true && isNext===false){
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+					return ;
+				}
+	
+				if(isNext){
+					var cursorFrom = cursor.from();
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
+					_this.editor.setSelection(cursorFrom, cursor.to());
+				}else{
+					if(findOpt.wrapSearch===true){
+						_this.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
+					}else{
+						_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+						return ;
+					}
+				}
 			}
 			,selectAll : function (){
 				if(this.selectAllCheck){
@@ -477,6 +674,19 @@ function initVue(){
 					}
 				}
 				return executeSql;
+			}
+			,getSelectionPosition : function(endFlag){
+				var std = this.editor.listSelections()[0].anchor
+				,end = this.editor.listSelections()[0].head;
+
+				var isChange = false;
+				if(std.line > end.line){
+					isChange = true;
+				}else if(std.line == end.line && std.ch > end.ch){
+					isChange = true;
+				}
+
+				return endFlag===true ? (isChange ? std :end ): (isChange ? end :std);
 			}
 			,sqlData : function (){
 				

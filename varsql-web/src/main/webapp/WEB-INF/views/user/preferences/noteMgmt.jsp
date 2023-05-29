@@ -227,11 +227,11 @@ VarsqlAPP.vueServiceBean( {
 			var selectItem = _self.selectItem;
 
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
+				VARSQL.alertMessage('varsql.0006');
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+			if(!VARSQL.confirmMessage('varsql.0016')){
 				return ;
 			}
 
@@ -275,7 +275,7 @@ VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendNote'}
 			    ,data:params
 			    ,success:function (resData){
-			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
+			    	VARSQL.toastMessage('varsql.0002');
 
 			    	_this.viewItem(_this.detailItem)
 				}

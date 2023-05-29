@@ -89,37 +89,24 @@ public class ImportJsonData extends AbstractImportData{
 				parser.nextToken();
 				importDataHandler.setTableName(parser.getText());
 			}else if("columns".equals(fieldName)){
-				ExportColumnInfo gci = null;
+				ExportColumnInfo eci = null;
 				List<ExportColumnInfo> columns = new ArrayList<ExportColumnInfo>();
 				parser.nextToken();
 				while (parser.nextToken() != JsonToken.END_ARRAY) {
-					gci= new ExportColumnInfo();
+					eci= new ExportColumnInfo();
 
 					while (parser.nextToken() != JsonToken.END_OBJECT) {
 						fieldName = parser.getCurrentName();
 
 						parser.nextValue();
 						
-						String attrVal = parser.getText(); 
-
-						if ("name".equals(fieldName)) {
-							gci.setName(attrVal);
-						} else if ("type".equals(fieldName)) {
-							gci.setType(attrVal);
-						} else if ("number".equals(fieldName)) {
-							gci.setNumber(Boolean.parseBoolean(attrVal));
-						} else if ("lob".equals(fieldName)) {
-							gci.setLob(Boolean.parseBoolean(attrVal));
-						} else if ("alias".equals(fieldName)) {
-							gci.setAlias(attrVal);
-						}
+						eci = setExportColumnInfo(eci, fieldName, parser.getText());
 					}
 					
-					if(StringUtils.isBlank(gci.getAlias())) {
-			        	gci.setAlias(gci.getName());
+					if(StringUtils.isBlank(eci.getAlias())) {
+			        	eci.setAlias(eci.getName());
 			        }
-
-					columns.add(gci);
+					columns.add(eci);
 	        	}
 				importDataHandler.setColumns(columns);
 			}

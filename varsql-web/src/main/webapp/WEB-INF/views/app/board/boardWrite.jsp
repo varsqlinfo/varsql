@@ -85,7 +85,7 @@ VarsqlAPP.vueServiceBean({
 			var saveInfo = VARSQL.util.objectMerge({}, this.articleInfo);
 
 			if(VARSQL.isBlank(saveInfo.title)){
-				VARSQLUI.toast.open({text : VARSQL.messageFormat('varsql.0038','제목을 입력 하세요.')});
+				VARSQLUI.toast.open({text : VARSQL.message('varsql.0038','제목을 입력 하세요.')});
 				return ;
 			}
 

@@ -73,17 +73,17 @@ public enum TemplateHelpers implements Helper<Object> {
 			DataType dataTypeInfo = null;
 			
 			if(StringUtils.isBlank(typeName)) {
-				dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(item.getTypeCode());
+				dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(item.getTypeCode(), null);
 				typeName = dataTypeInfo.getTypeName();
 			}else {
 				String standardTypeName = DbMetaUtils.getTypeName(item.getTypeName());
 				
 				if(!StringUtils.isBlank(standardTypeName)) {
-					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(standardTypeName);
+					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(0, standardTypeName);
 				}
 				
 				if((dataTypeInfo == null || DefaultDataType.OTHER.equals(dataTypeInfo)) && !StringUtils.isBlank(item.getTypeAndLength())) {
-					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(DbMetaUtils.getTypeName(item.getTypeAndLength()));
+					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(0, DbMetaUtils.getTypeName(item.getTypeAndLength()));
 				}
 			}
 				

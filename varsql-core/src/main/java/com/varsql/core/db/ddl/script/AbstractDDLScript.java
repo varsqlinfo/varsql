@@ -500,14 +500,11 @@ public abstract class AbstractDDLScript implements DDLScript{
 			
 			List<ColumnInfo> columnList =tableInfo.getColList();
 			
-			
-			
 			columnList.forEach(item->{
 				
 				String typeName = DbMetaUtils.getTypeName(item.getTypeName()); 
 				
-				DataType dataType = dataTypeFactory.getDataType(typeName);
-				dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(item.getTypeCode()) : dataType);
+				DataType dataType = dataTypeFactory.getDataType(item.getTypeCode(), typeName);
 				
 				item.setTypeName(null);
 				item.setTypeAndLength(null);

@@ -378,11 +378,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.driverProviderId ==='undefined'){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0004'));
+				VARSQL.toastMessage('varsql.0004');
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+			if(!VARSQL.confirmMessage('varsql.0016')){
 				return ;
 			}
 
@@ -417,10 +417,10 @@ VarsqlAPP.vueServiceBean( {
 				,success:function (resData){
 					if(VARSQL.req.validationCheck(resData)){
 						if(resData.resultCode == 200){
-							VARSQLUI.toast.open(VARSQL.messageFormat('success'));
+							VARSQL.toastMessage('success');
 							return
 						}else{
-							alert(resData.messageCode  +'\n'+ resData.message);
+							VARSQL.alertMessage(resData.messageCode  +'\n'+ resData.message);
 						}
 					}
 				}

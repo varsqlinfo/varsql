@@ -108,14 +108,14 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		int dataPrecision= rowData.getInt(MetaColumnConstants.DATA_PRECISION);
 		int degitsLen= rowData.getInt(MetaColumnConstants.DECIMAL_DIGITS);
 
-		String dataType = rowData.getString(MetaColumnConstants.TYPE_NAME);
+		String typeName = rowData.getString(MetaColumnConstants.TYPE_NAME);
 		
-		String standardDataType = DbMetaUtils.getTypeName(dataType);
-		DataType dataTypeInfo = dataTypeFactory.getDataType(standardDataType);
+		String standardDataType = DbMetaUtils.getTypeName(typeName);
+		DataType dataTypeInfo = dataTypeFactory.getDataType(0, standardDataType);
 
 		column.setName(cName);
 		column.setTypeCode(dataTypeInfo.getTypeCode());
-		column.setTypeName(dataType);
+		column.setTypeName(typeName);
 		Object lenInfoObj = rowData.get(MetaColumnConstants.COLUMN_SIZE);
 		column.setDataPrecision(dataPrecision);
 		column.setDecimalDigits(degitsLen);
@@ -132,7 +132,7 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		column.setNullable(rowData.getString(MetaColumnConstants.IS_NULLABLE));
 		String typeAndLength =rowData.getString(MetaColumnConstants.TYPE_NAME_SIZE ,"");
 		
-		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(dataType, dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
+		column.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(typeName, dataTypeInfo, typeAndLength, columnSize, dataPrecision, degitsLen));
 
 		column.setComment(rowData.getString(MetaColumnConstants.COMMENT,""));
 		column.setConstraints(rowData.getString(MetaColumnConstants.CONSTRAINTS,""));

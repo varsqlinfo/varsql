@@ -97,14 +97,14 @@
 				fields: {
 					uname : {
 						validators: {
-							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001') }
-							,stringLength: { min: 3, max: 100, message: VARSQL.messageFormat('varsql.form.0004',{range : '3~100'}) }
+							notEmpty: { message: VARSQL.message('varsql.form.0001') }
+							,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.form.0004',{range : '3~100'}) }
 						}
 				  	}
 					,uemail : {
 						validators: {
-							notEmpty: { message: VARSQL.messageFormat('varsql.form.0001')}
-							,stringLength: { min: 0, max: 500, message: VARSQL.messageFormat('varsql.form.0004',{range : '0~250'}) }
+							notEmpty: { message: VARSQL.message('varsql.form.0001')}
+							,stringLength: { min: 0, max: 500, message: VARSQL.message('varsql.form.0004',{range : '0~250'}) }
 							,emailAddress: {
 								message: 'The input is not a valid email address'
 							}
@@ -112,7 +112,7 @@
 				  	}
 					,udept : {
 						validators: {
-							stringLength: { min: 0, max: 120, message: VARSQL.messageFormat('varsql.form.0004',{range : '0~120'}) }
+							stringLength: { min: 0, max: 120, message: VARSQL.message('varsql.form.0004',{range : '0~120'}) }
 					  }
 				  	}
 				}
@@ -137,7 +137,7 @@
 						return ;
 					}else{
 						if(resData.resultCode != 200){
-							alert(resData.message);
+							VARSQL.alertMessage(resData.message);
 							return ;
 						}
 					}

@@ -101,7 +101,7 @@ var $userMain = {
 							return ;
 						}
 
-						if(!confirm(VARSQL.messageFormat('varsql.0033', {name : item.name}))) return ;
+						if(!VARSQL.confirmMessage('varsql.0033', {name : item.name})) return ;
 
 						_self.tabObj.removeItem(item);
 
@@ -145,12 +145,12 @@ var $userMain = {
 	}
 	,viewDb : function (item , refreshFlag){
 		if(item.isContentLoad !== true) {
-			alert('loading...');
+			VARSQL.alertMessage('loading...');
 			return ;
 		}
 		
 		if(refreshFlag){
-			if(!confirm(VARSQL.messageFormat('msg.refresh'))){
+			if(!VARSQL.confirmMessage('msg.refresh')){
 				return ;
 			}
 		}

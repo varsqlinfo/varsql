@@ -89,16 +89,16 @@ VarsqlAPP.vueServiceBean({
 				,fields: {
 					uid: {
 						validators: {
-							notEmpty: { message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')}
-							,stringLength: { min: 3, max: 100, message: VARSQL.messageFormat('varsql.0043',{size:'3~100'})}
+							notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
+							,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.0043',{size:'3~100'})}
 						}
 				  	}
 					,uemail: {
 						validators: {
-							notEmpty: { message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')}
-							,stringLength: { min: 0, max: 250, message: VARSQL.messageFormat('varsql.0043',{size:'0~250'})}
+							notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
+							,stringLength: { min: 0, max: 250, message: VARSQL.message('varsql.0043',{size:'0~250'})}
 							,emailAddress: {
-								message: VARSQL.messageFormat('varsql.0051', '유효하지않은 Email입니다.'))
+								message: VARSQL.message('varsql.0051', '유효하지않은 Email입니다.'))
 							}
 					  }
 				  	}

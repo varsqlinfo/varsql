@@ -148,7 +148,7 @@ VarsqlAPP.vueServiceBean( {
 			_self.selectObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
 				,message :{
-					duplicate: VARSQL.messageFormat('varsql.0018')
+					duplicate: VARSQL.message('varsql.0018')
 				}
 				,valueKey : 'vconnid'	
 				,labelKey : 'vname'
@@ -224,7 +224,7 @@ VarsqlAPP.vueServiceBean( {
 									return ;
 								}else{
 									var message = resData.messageCode;
-									alert(resData.messageCode +'\n'+ resData.message);
+									VARSQL.alertMessage(resData.messageCode +'\n'+ resData.message);
 									return ;
 								}
 							}
@@ -240,7 +240,7 @@ VarsqlAPP.vueServiceBean( {
 		,deleteInfo : function(){
 			var _self = this;
 
-			if(!confirm(VARSQL.messageFormat('varsql.m.0006', _self.detailItem))){
+			if(!VARSQL.confirmMessage('varsql.m.0006', _self.detailItem)){
 				return ;
 			}
 

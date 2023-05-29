@@ -102,7 +102,7 @@ public class AppResourceMessageBundleSource extends ReloadableResourceBundleMess
 	
 	@Override
 	protected long getCacheMillis() {
-		if(VarsqlUtils.isRuntimelocal()) {
+		if(VarsqlUtils.isRuntimeLocal()) {
 			return 3*1000;
 		}else {
 			return super.getCacheMillis();

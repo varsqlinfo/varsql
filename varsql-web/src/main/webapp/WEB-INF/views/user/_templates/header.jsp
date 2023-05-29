@@ -287,14 +287,14 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			var _this =this;
 
 			if(VARSQL.isBlank(this.detailItem.noteId)){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0006'));
+				VARSQL.toastMessage('varsql.0006');
 				return ;
 			}else if(VARSQL.isBlank(this.detailItem.reNoteCont)){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0028'));
+				VARSQL.toastMessage('varsql.0028');
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0014'))){
+			if(!VARSQL.confirmMessage('varsql.0014')){
 				return ;
 			}
 
@@ -306,7 +306,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendNote'}
 			    ,data:params
 			    ,success:function (resData){
-			    	VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0002'));
+			    	VARSQL.toastMessage('varsql.0002');
 				}
 			});
 		}

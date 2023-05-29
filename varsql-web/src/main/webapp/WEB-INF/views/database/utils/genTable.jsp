@@ -328,12 +328,12 @@ VarsqlAPP.vueServiceBean( {
 	        }
 	        
 	        if(VARSQL.isBlank(tableName)){
-				VARSQLUI.toast.open({text :VARSQL.messageFormat('varsql.0039','테이블명을 입력해주세요.')})
+				VARSQLUI.toast.open({text :VARSQL.message('varsql.0039','테이블명을 입력해주세요.')})
 				return false; 
 			}
 			
 			if(columnList.length < 1){
-				VARSQLUI.toast.open({text :VARSQL.messageFormat('varsql.0040','컬럼 정보를 입력해주세요.')})
+				VARSQLUI.toast.open({text :VARSQL.message('varsql.0040','컬럼 정보를 입력해주세요.')})
 				return false; 
 			}
 			
@@ -385,7 +385,7 @@ VarsqlAPP.vueServiceBean( {
 			this.generateDDL(function(ddl){
 				if(ddl==false) return ; 
 				
-				if(!confirm(VARSQL.messageFormat('varsql.0041','테이블을 생성하시겠습니까?'))){
+				if(!VARSQL.confirmMessage('varsql.0041','테이블을 생성하시겠습니까?')){
 					return ;
 				}
 				

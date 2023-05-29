@@ -21,7 +21,6 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
-import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
@@ -121,9 +120,7 @@ public final class SQLResultSetUtils {
 				columnKeyCheck.put(columnName, 0);
 			}
 			
-			dataType = dataTypeFactory.getDataType(columnTypeName);
-			dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType);
-			
+			dataType = dataTypeFactory.getDataType(0, columnTypeName);
 			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();
@@ -250,8 +247,7 @@ public final class SQLResultSetUtils {
 				columnNameDuplicateCheck.put(columnName, 0);
 			}
 			
-			dataType = dataTypeFactory.getDataType(columnTypeName);
-			dataType = (dataType== DefaultDataType.OTHER ? dataTypeFactory.getDataType(columnType) : dataType);
+			dataType = dataTypeFactory.getDataType(0, columnTypeName);
 			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();

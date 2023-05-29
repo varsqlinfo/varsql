@@ -48,7 +48,7 @@ public class VarsqlWebConfigurer implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public FilterRegistrationBean filterRegistrationBean() {
+	public FilterRegistrationBean<CharacterEncodingFilter> filterRegistrationBean() {
 	    FilterRegistrationBean<CharacterEncodingFilter> registrationBean = new FilterRegistrationBean<>();
 	    CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
 	    characterEncodingFilter.setForceEncoding(true);

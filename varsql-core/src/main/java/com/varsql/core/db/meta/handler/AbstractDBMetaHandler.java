@@ -53,7 +53,7 @@ public abstract class AbstractDBMetaHandler implements DBMetaHandler{
 		int columnSize = rs.getInt(MetaColumnConstants.COLUMN_SIZE);
 		int dataPrecision = rs.getInt(MetaColumnConstants.DATA_PRECISION);
 		
-		DataType dataTypeInfo = dataTypeFactory.getDataType(typeName);
+		DataType dataTypeInfo = dataTypeFactory.getDataType(0, typeName);
 
 		ColumnInfo column = new ColumnInfo(); 
 		column.setName(cName);

@@ -171,10 +171,10 @@ Vue.component('step-button', {
 	,data : function (){
 		return {
 			btnName : VARSQL.util.objectMerge({
-				prev : VARSQL.messageFormat('step.prev')
-				,next : VARSQL.messageFormat('step.next')
-				,complete :VARSQL.messageFormat('step.complete')
-				,close :VARSQL.messageFormat('step.close')
+				prev : VARSQL.message('step.prev')
+				,next : VARSQL.message('step.next')
+				,complete :VARSQL.message('step.complete')
+				,close :VARSQL.message('step.close')
 			}, this.buttons)
 		};
 	}
@@ -329,9 +329,9 @@ Vue.component('file-upload', {
 		,buttons :{
 			type: Object
 			, default :{
-				add : VARSQL.messageFormat('file.add')
-				,upload : VARSQL.messageFormat('file.upload')
-				,remove : VARSQL.messageFormat('file.remove')
+				add : VARSQL.message('file.add')
+				,upload : VARSQL.message('file.upload')
+				,remove : VARSQL.message('file.remove')
 			}
 		}
 		,isViewUploadFile : {
@@ -419,7 +419,7 @@ Vue.component('file-upload', {
 				
 				if(VARSQL.inArray(_this.accept.split(','), ext) < 0){
 					this.removeFile(file);
-					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0031',{accept : _this.accept}));
+					VARSQL.toastMessage('varsql.0031',{accept : _this.accept});
 					return '';
 				}
 			}

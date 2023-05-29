@@ -103,7 +103,7 @@
 				<template v-if="downloadStatus != 'complete'">
 					<div id="exportItemEl" style="margin-top: 15px;border: 1px solid #ddd;padding: 10px;height: 200px;width: 100%; overflow:auto;">
 						<template v-for="(item,index) in exportItems">
-							<div style="height:20px;line-height:20px;"><span>{{item.name}}</span><span class="pull-right">{{item.status?VARSQL.messageFormat('complete'):item.exportCount}}</span></div>
+							<div style="height:20px;line-height:20px;"><span>{{item.name}}</span><span class="pull-right">{{item.status?VARSQL.message('complete'):item.exportCount}}</span></div>
 						</template>
 					</div>
 					
@@ -140,7 +140,7 @@ VarsqlAPP.vueServiceBean({
 		, selectTableObj : {}
 		, userSetting : VARSQL.util.objectMerge({schema:'${schemaInfo}', tables:[]},${userSettingInfo})
 		, detailItem :{}
-		, navItems :['<spring:message code="msg.export.spec.step1" />','<spring:message code="msg.export.spec.step2" />', VARSQL.messageFormat('complete')]
+		, navItems :['<spring:message code="msg.export.spec.step1" />','<spring:message code="msg.export.spec.step2" />', VARSQL.message('complete')]
 		, exportItems : []
 	}
 	,methods:{
@@ -158,7 +158,7 @@ VarsqlAPP.vueServiceBean({
 			this.step = step;
 			if(this.step == 3 && this.selectTableObj.getTargetItem().length < 1){
 				this.step=2;
-    			alert('<spring:message code="msg.table.select" />');
+    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
     			return false;
     		}
 			

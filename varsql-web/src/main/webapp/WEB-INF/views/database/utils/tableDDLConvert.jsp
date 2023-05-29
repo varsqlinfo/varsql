@@ -87,12 +87,12 @@ VarsqlAPP.vueServiceBean({
 		,convert : function (){
 			var _self = this;
 			if(_self.selectTableObj.getTargetItem().length < 1){
-    			alert('<spring:message code="msg.table.select" />');
+    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
     			return ;
     		}
 			
 			if(VARSQL.isBlank(_self.selectConvertDB)){
-    			alert('<spring:message code="db.select" />');
+    			VARSQL.alertMessage('<spring:message code="db.select" />');
     			return ;
     		}
 

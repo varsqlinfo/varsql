@@ -321,8 +321,6 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) {
-		
-		
 		String requid = HttpUtils.getString(req, "requid");
 		String sessAttrKey = HttpSessionConstants.progressKey(requid);
 		
@@ -338,7 +336,6 @@ public class ExportServiceImpl{
 			progressInfo.setTotalItemSize(dataExportVO.getExportItems().size());
 			
 			session.setAttribute(sessAttrKey, progressInfo);
-			
 			
 			Path fileExportPath = FileServiceUtils.getSavePath(UploadFileType.EXPORT);
 			File zipFile = new File(FileUtils.pathConcat(fileExportPath.toAbsolutePath().toString(),
@@ -451,24 +448,25 @@ public class ExportServiceImpl{
 					}
 
 					final String tableName = item.getName();
-					SQLExecuteResult ser = new SelectExecutor().execute(seDto,new SelectExecutorHandler(writer) {
+					SQLExecuteResult ser = new SelectExecutor().execute(seDto, new SelectExecutorHandler(writer) {
 						private boolean firstFlag = true;
 						private int rowIdx = 0;
 
 						public boolean handle(SelectInfo handleParam) {
-							if (this.firstFlag) {
+							if (this.firstFlag){
 								WriteMetadataInfo whi = new WriteMetadataInfo("exportInfo");
 								List<ExportColumnInfo> columns = new LinkedList<>();
 								handleParam.getColumnInfoList().forEach(item -> {
-									ExportColumnInfo gci = new ExportColumnInfo();
-									gci.setName(item.getLabel());
+									ExportColumnInfo eci = new ExportColumnInfo();
+									eci.setName(item.getLabel());
 
 									// 추가 할것.
-									gci.setAlias(item.getKey());
-									gci.setType(item.getDbType());
-									gci.setNumber(item.isNumber());
-									gci.setLob(item.isLob());
-									columns.add(gci);
+									eci.setAlias(item.getKey());
+									eci.setType(item.getDbType());
+									eci.setTypeCode(item.getDbTypeCode());
+									eci.setNumber(item.isNumber());
+									eci.setLob(item.isLob());
+									columns.add(eci);
 								});
 								whi.addMetedata("tableName", tableName);
 								whi.addMetedata("columns", columns);
@@ -498,7 +496,6 @@ public class ExportServiceImpl{
 					logger.debug("data export result :{} ", ser);
 					
 					tableExportCount.put(objectName, ser);
-					
 					writer.writeAndClose();
 
 					String zipFileName = exportType.concatExtension(item.getName());

@@ -32,7 +32,7 @@ public final class VarsqlFn{
 	}
 
 	public static boolean isRuntimelocal() {
-		return VarsqlUtils.isRuntimelocal();
+		return VarsqlUtils.isRuntimeLocal();
 	}
 
 	public static long randomVal(Integer val) {
@@ -40,7 +40,7 @@ public final class VarsqlFn{
 	}
 
 	public static String pubJsVersion() {
-		if(VarsqlUtils.isRuntimelocal()) {
+		if(VarsqlUtils.isRuntimeLocal()) {
 			return randomVal(10000)+"";
 		}else {
 			return WebStaticResourceVersion.PUB_JS;
@@ -55,7 +55,7 @@ public final class VarsqlFn{
 		}else if("prettify".equals(type)) {
 			return WebStaticResourceVersion.PRETTIFY;
 		}else {
-			if(VarsqlUtils.isRuntimelocal()) {
+			if(VarsqlUtils.isRuntimeLocal()) {
 				return randomVal(10000)+"";
 			}else {
 				return WebStaticResourceVersion.STATIC_RESOURCE;

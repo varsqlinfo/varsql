@@ -240,11 +240,11 @@ VarsqlAPP.vueServiceBean({
 			var selectItem = _this.selectItem;
 
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQLUI.alert.open(VARSQL.messageFormat('varsql.0006'));
+				VARSQL.alertMessage('varsql.0006');
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+			if(!VARSQL.confirmMessage('varsql.0016')){
 				return ;
 			}
 
@@ -254,7 +254,7 @@ VarsqlAPP.vueServiceBean({
 					selectItem : selectItem.join(',')
 				}
 				,success:function (resData){
-					VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0017'));
+					VARSQL.toastMessage('varsql.0017');
 					_this.search();
 				}
 			});

@@ -222,7 +222,7 @@ VarsqlAPP.vueServiceBean( {
 					,enableTargetLabel : false 	// target header label 보일지 여부
 				}
 				,message :{
-					duplicate: VARSQL.messageFormat('varsql.0018')
+					duplicate: VARSQL.message('varsql.0018')
 				}
 				,valueKey : 'name'	
 				,labelKey : 'name'
@@ -344,14 +344,14 @@ VarsqlAPP.vueServiceBean( {
 					var item = _this.getParamVal();
 					
 					if(VARSQL.isBlank(item.vconnid)){
-						VARSQLUI.toast.open(VARSQL.messageFormat('item.select.message', '<spring:message code="manager.backupmgmt.connection"  />'));
+						VARSQL.toastMessage('item.select.message', '<spring:message code="manager.backupmgmt.connection"  />');
 						return ;
 					}
 					
 					var backupItems = _this.selectObj.getTargetItem(); 
 					
 					if(backupItems.length < 1){
-						VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0034', 'Data Backup'));
+						VARSQL.toastMessage('varsql.0034', 'Data Backup');
 						return ;
 					}
 					
@@ -361,7 +361,7 @@ VarsqlAPP.vueServiceBean( {
 					
 					item.jobData =  JSON.stringify(item.jobData);
 					
-					if(!confirm(VARSQL.messageFormat('varsql.0019'))){
+					if(!VARSQL.confirmMessage('varsql.0019')){
 						return ;
 					}
 
@@ -372,7 +372,7 @@ VarsqlAPP.vueServiceBean( {
 							
 							if(VARSQL.req.validationCheck(resData)){
 								if(resData.resultCode != 200){
-									alert(resData.message);
+									VARSQL.alertMessage(resData.message);
 									return ;
 								}
 								
@@ -392,11 +392,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.jobUid ==='undefined'){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0004'));
+				VARSQL.toastMessage('varsql.0004');
 				return ;
 			}
 
-			if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+			if(!VARSQL.confirmMessage('varsql.0016')){
 				return ;
 			}
 
@@ -470,11 +470,11 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			if(VARSQL.isBlank(param.jobUid)){
-				VARSQLUI.toast.open(mode + ' '+VARSQL.messageFormat('varsql.0006'));
+				VARSQLUI.toast.open(mode + ' '+VARSQL.message('varsql.0006'));
 				return ;
 			}
 			
-			if(!confirm(VARSQL.messageFormat('varsql.0035', mode))){
+			if(!VARSQL.confirmMessage('varsql.0035', mode)){
 				return ; 
 			}
 			

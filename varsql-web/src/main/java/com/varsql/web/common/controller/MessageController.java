@@ -30,7 +30,7 @@ public class MessageController {
 
 		Locale locale = LocaleConstants.parseLocaleString(lang);
 		
-		if(VarsqlUtils.isRuntimelocal()){
+		if(VarsqlUtils.isRuntimeLocal()){
 			return ResponseEntity.ok()
 					.body(messageResolveService.getMessages(locale));
 		}else {

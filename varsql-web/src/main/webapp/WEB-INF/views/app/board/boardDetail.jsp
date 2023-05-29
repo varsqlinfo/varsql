@@ -187,7 +187,7 @@ VarsqlAPP.vueServiceBean({
 		}
 		,deleteItem : function(){
 
-			if(!confirm(VARSQL.messageFormat('varsql.0037','게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?'))) return ;
+			if(!VARSQL.confirmMessage('varsql.0037','게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
 
 			var param = {
 				'articleId' : this.articleInfo.articleId
@@ -230,7 +230,7 @@ VarsqlAPP.vueServiceBean({
 			}
 
 			if(VARSQL.isBlank(saveInfo.contents)){
-				VARSQLUI.toast.open({text : VARSQL.messageFormat('varsql.0028','내용을 입력해주세요.')});
+				VARSQLUI.toast.open({text : VARSQL.message('varsql.0028','내용을 입력해주세요.')});
 				return ;
 			}
 
@@ -353,7 +353,7 @@ VarsqlAPP.vueServiceBean({
 		,commentDelete : function(item){
 			var _this = this;
 
-			if(!confirm(VARSQL.messageFormat('varsql.0036','댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?'))) return ;
+			if(!VARSQL.confirmMessage('varsql.0036','댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
 
 			var param = {
 				articleId : this.articleInfo.articleId

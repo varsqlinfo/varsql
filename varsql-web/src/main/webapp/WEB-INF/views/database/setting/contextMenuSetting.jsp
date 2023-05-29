@@ -149,7 +149,7 @@
 	    		this.contextItems = allContextInfo;
 
 	    		if(!VARSQL.isArray(this.contextItems)){
-	    			if(confirm(VARSQL.messageFormat('varsql.0022'))){
+	    			if(VARSQL.confirmMessage('varsql.0022')){
 	    				this.restoreDefault(false);
 	    			}
 	    		}
@@ -221,7 +221,7 @@
 	    				var result =VARSQLTemplate.render.generateSource(templateInfo, defaultTableColumnInfo);
 
 	    				if(result.isError){
-	    	    			VARSQLUI.toast.open(VARSQL.messageFormat('varsql.0026'));
+	    	    			VARSQL.toastMessage('varsql.0026');
 	    	    			this.viewItem(templateInfo, 'child');
 	    	    			return null;
 	    	    		}
@@ -238,7 +238,7 @@
 					return ;
 				}
 
-	    		if(!confirm(VARSQL.messageFormat('varsql.0024'))){
+	    		if(!VARSQL.confirmMessage('varsql.0024')){
 	    			return ;
 	    		}
 
@@ -273,7 +273,7 @@
 	    	,restoreDefault :function (messageView){
 
 	    		if(messageView !== false){
-		    		if(!confirm(VARSQL.messageFormat('varsql.0021'))){
+		    		if(!VARSQL.confirmMessage('varsql.0021')){
 		    			return ;
 		    		}
 	    		}
@@ -351,7 +351,7 @@
 	    	}
 	    	// item 삭제.
 	    	,removeItem : function (items,index,item){
-	    		if(!confirm(VARSQL.messageFormat('varsql.0016'))){
+	    		if(!VARSQL.confirmMessage('varsql.0016')){
 					return ;
 				}
 

@@ -116,7 +116,7 @@ public final class VarsqlUtils {
         return ip;
     }
 
-	public static boolean isRuntimelocal() {
+	public static boolean isRuntimeLocal() {
 		return "local".equals(VarsqlConstants.RUNTIME);
 	}
 

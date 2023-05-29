@@ -79,7 +79,7 @@ $(document).ready(function (){
 		shiftKey=e.shiftKey;
 
 		if (((keyCode >= 65 && keyCode <= 90)&& !shiftKey)||((keyCode >= 97 && keyCode <= 122)&& shiftKey)){
-			$('.error-msg').empty().html(VARSQL.messageFormat('varsql.0050', 'CapsLock이 켜져 있습니다'));
+			$('.error-msg').empty().html(VARSQL.message('varsql.0050', 'CapsLock이 켜져 있습니다'));
 		}else{
 			$('.error-msg').empty().html("");
 		}

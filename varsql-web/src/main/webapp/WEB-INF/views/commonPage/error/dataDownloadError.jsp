@@ -6,5 +6,5 @@ if(parent){
 	viewWin = parent;
 }
 
-viewWin.alert(document.getElementById('errorMessageArea').value);
+viewWin.VARSQL.alertMessage(document.getElementById('errorMessageArea').value);
 </script>

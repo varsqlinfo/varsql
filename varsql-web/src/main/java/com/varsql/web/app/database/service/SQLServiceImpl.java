@@ -391,15 +391,16 @@ public class SQLServiceImpl{
 						List<ExportColumnInfo> columns = new LinkedList<ExportColumnInfo>();
 
 						handleParam.getColumnInfoList().forEach(item->{
-							ExportColumnInfo gci = new ExportColumnInfo();
+							ExportColumnInfo eci = new ExportColumnInfo();
 							
-							gci.setName(item.getLabel());
-							gci.setAlias(item.getKey());
-							gci.setType(item.getDbType());
-							gci.setNumber(item.isNumber());
-							gci.setLob(item.isLob());
+							eci.setName(item.getLabel());
+							eci.setAlias(item.getKey());
+							eci.setType(item.getDbType());
+							eci.setTypeCode(item.getDbTypeCode());
+							eci.setNumber(item.isNumber());
+							eci.setLob(item.isLob());
 
-							columns.add(gci);
+							columns.add(eci);
 						});
 
 						whi.addMetedata("tableName", tableName);

@@ -218,7 +218,7 @@ VarsqlAPP.vueServiceBean( {
 						return ;
 					}else{
 						if(resData.resultCode != 200){
-							alert(resData.message);
+							VARSQL.alertMessage(resData.message);
 							return ;
 						}
 					}

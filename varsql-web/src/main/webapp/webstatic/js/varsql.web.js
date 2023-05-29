@@ -274,9 +274,15 @@ _$base.localStorage = function(opt){
  * message
  */
 _$base.confirmMessage = function (fmt, msgParam){
-	return confirm(_$base.messageFormat(fmt, msgParam));			
+	return confirm(_$base.message(fmt, msgParam));			
 }
-_$base.messageFormat =function (fmt, msgParam){
+_$base.alertMessage = function (fmt, msgParam){
+	return VARSQLUI.alert.open(_$base.message(fmt, msgParam));			
+}
+_$base.toastMessage = function (fmt, msgParam){
+	return VARSQLUI.toast.open(_$base.message(fmt, msgParam));			
+}
+_$base.message =function (fmt, msgParam){
 
 	var msgFormat = VARSQL_LANG[fmt];
 	

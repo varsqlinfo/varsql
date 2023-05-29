@@ -245,7 +245,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(!_self.detailItem.groupId){
-				alert(VARSQL.messageFormat('varsql.0003'));
+				VARSQL.alertMessage('varsql.0003');
 				return false;
 			}
 

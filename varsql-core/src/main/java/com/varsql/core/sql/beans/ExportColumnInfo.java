@@ -5,6 +5,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * @FileName  : ExportColumnInfo.java
@@ -13,6 +16,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
  * @작성자      : ytkim
  * @변경이력 :
  */
+
+@Getter
+@Setter
 @JacksonXmlRootElement(localName = "column")
 public class ExportColumnInfo {
 	// column name
@@ -28,6 +34,11 @@ public class ExportColumnInfo {
 	@XmlAttribute
 	@JacksonXmlProperty(isAttribute = true)
 	private String type;
+	
+	// column type code
+	@XmlAttribute
+	@JacksonXmlProperty(isAttribute = true)
+	private int typeCode;
 
 	// 숫자 여부.
 	@XmlAttribute
@@ -39,53 +50,13 @@ public class ExportColumnInfo {
 	@JacksonXmlProperty(isAttribute = true)
 	private boolean lob;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public boolean isNumber() {
-		return number;
-	}
-
-	public void setNumber(boolean number) {
-		this.number = number;
-	}
-
-	public boolean isLob() {
-		return lob;
-	}
-
-	public void setLob(boolean lob) {
-		this.lob = lob;
-	}
-	
-	public String getAlias() {
-		return alias;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
-	}
-
 	@Override
 	public String toString() {
-
 		return new StringBuffer()
 				.append("name : ").append(name)
 				.append(" alias : ").append(alias)
 				.append(" type : ").append(type)
+				.append(" typeCode : ").append(typeCode)
 				.append(" number : ").append(number)
 				.toString();
 	}

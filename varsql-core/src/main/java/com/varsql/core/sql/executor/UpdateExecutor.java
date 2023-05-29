@@ -59,14 +59,14 @@ public class UpdateExecutor implements Executor{
 		return execute(statementInfo , null);
 	}
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, UpdateExecutorHandler resultHandler) throws SQLException {
+	public SQLExecuteResult execute(SqlStatementInfo statementInfo, UpdateExecutorHandler updateHandler) throws SQLException {
 
 		SQLExecuteResult result = new SQLExecuteResult();
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
 		
-		if(resultHandler==null) {
-			resultHandler = new UpdateExecutorHandler() {
+		if(updateHandler==null) {
+			updateHandler = new UpdateExecutorHandler() {
 				@Override
 				public boolean handle(UpdateInfo sqlResultVO) {
 					return true;
@@ -91,13 +91,13 @@ public class UpdateExecutor implements Executor{
 
 			statement = conn.createStatement();
 
-			boolean handleFlag = (resultHandler != null);
+			boolean handleFlag = (updateHandler != null);
 			for (sqlIdx =0; sqlIdx <sqlSize; sqlIdx++){
 
 				tmpSqlSource = sqlList.get(sqlIdx);
 				if(handleFlag){
-					resultHandler.addTotalCount();
-					if(!resultHandler.handle(UpdateInfo.builder().sql(tmpSqlSource.getQuery()).parameter(sqlParamMap).build())) {
+					updateHandler.addTotalCount();
+					if(!updateHandler.handle(UpdateInfo.builder().sql(tmpSqlSource.getQuery()).parameter(sqlParamMap).build())) {
 						continue ;
 					}
 				};
@@ -129,7 +129,7 @@ public class UpdateExecutor implements Executor{
 				JdbcUtils.close(conn, statement);
 			}
 		}
-		result.setTotalCount(resultHandler.getTotalCount());
+		result.setTotalCount(updateHandler.getTotalCount());
 		result.setEndTime(System.currentTimeMillis());
 		result.setExecuteCount(addCount);
 		result.setResult(addCount);

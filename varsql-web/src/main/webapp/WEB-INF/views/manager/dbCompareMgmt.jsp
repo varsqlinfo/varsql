@@ -467,7 +467,7 @@ VarsqlAPP.vueServiceBean( {
 				this.resultReport = resultVal;
 			}catch(e){
 				console.log(e);
-				alert(e.message);
+				VARSQL.alertMessage(e.message);
 			}
 		}
 		// object search
@@ -529,17 +529,17 @@ VarsqlAPP.vueServiceBean( {
 
 			var diffItem = _self.diffItem;
 			if(diffItem.source ==''){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0010'));
+				VARSQL.toastMessage('varsql.m.0010');
 				return ;
 			}
 			if(diffItem.target ==''){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0011'));
+				VARSQL.toastMessage('varsql.m.0011');
 				return ;
 			}
 
 			var objectType = diffItem.objectType;
 			if(objectType ==''){
-				VARSQLUI.toast.open(VARSQL.messageFormat('varsql.m.0012'));
+				VARSQL.toastMessage('varsql.m.0012');
 				return ;
 			}
 
@@ -564,7 +564,7 @@ VarsqlAPP.vueServiceBean( {
 				,success: function(resData) {
 					
 					if(resData.resultCode == 500){
-						alert('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
+						VARSQL.alertMessage('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
 						_self.loading = false;
 						return ; 
 					}
@@ -596,7 +596,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,success: function(resData) {
 					if(resData.resultCode == 500){
-						alert('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
+						VARSQL.alertMessage('Message code : '+resData.messageCode +"\nMessage : "+ resData.message);
 						_self.loading = false;
 						return ; 
 					}
@@ -728,14 +728,14 @@ VarsqlAPP.vueServiceBean( {
 				compareFlag = false;
 				if(targetCompareNameMap.hasOwnProperty(key)){
 					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a> ');
-					compareLog.push(VARSQL.messageFormat('varsql.m.0015')+'<div class="column-compare-log" data-tbl-name="'+key+'">');
+					compareLog.push(VARSQL.message('varsql.m.0015')+'<div class="column-compare-log" data-tbl-name="'+key+'">');
 
 					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 
 					if(sourceItem.remarks != targetItem.remarks){
 						compareFlag = true;
-						compareLog.push(VARSQL.messageFormat('varsql.m.0013',{sourceRemark : sourceNameMap[key].remarks, targetRemark : targetCompareNameMap[key].remarks })+'\n');
+						compareLog.push(VARSQL.message('varsql.m.0013',{sourceRemark : sourceNameMap[key].remarks, targetRemark : targetCompareNameMap[key].remarks })+'\n');
 					}
 
 					sourceColList = sourceItem.colList;
@@ -746,7 +746,7 @@ VarsqlAPP.vueServiceBean( {
 
 					if(sourceColLen != targetColLen){
 						compareFlag = true;
-						compareLog.push(VARSQL.messageFormat('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
+						compareLog.push(VARSQL.message('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
 					}
 
 					var maxColLen = Math.max(sourceColLen, targetColLen);
@@ -776,7 +776,7 @@ VarsqlAPP.vueServiceBean( {
 
 					objectColNameMap[key] = colNameMap; // table columun name 저장.
 
-					compareLog.push('# '+VARSQL.messageFormat('varsql.m.0025')+' #\n');
+					compareLog.push('# '+VARSQL.message('varsql.m.0025')+' #\n');
 					for(var sourceColKey in sourceColMap){
 						sourceColItem = sourceColMap[sourceColKey];
 						targetColItem = targetColMap[sourceColKey];
@@ -800,7 +800,7 @@ VarsqlAPP.vueServiceBean( {
 										if(firstFlag){
 											compareLog.push('Column : '+sourceColKey+' \t ');
 										}
-										compareLog.push(VARSQL.messageFormat('varsql.m.0016',{columnLabel : compareItemInfo.label, sourceValue : sourceColItem[colItemKey], targetValue: targetColItem[colItemKey] }) + (firstFlag ? '' : ','));
+										compareLog.push(VARSQL.message('varsql.m.0016',{columnLabel : compareItemInfo.label, sourceValue : sourceColItem[colItemKey], targetValue: targetColItem[colItemKey] }) + (firstFlag ? '' : ','));
 										firstFlag = false;
 
 									}
@@ -808,15 +808,15 @@ VarsqlAPP.vueServiceBean( {
 								if(addFlag) compareLog.push('\n');
 							}else{
 								compareFlag = true;
-								compareLog.push(VARSQL.messageFormat('varsql.m.0017',{sourceKey : sourceColKey})+'\n');
+								compareLog.push(VARSQL.message('varsql.m.0017',{sourceKey : sourceColKey})+'\n');
 							}
 						}
 					}
 
-					compareLog.push('# '+VARSQL.messageFormat('varsql.m.0026')+' #\n');
+					compareLog.push('# '+VARSQL.message('varsql.m.0026')+' #\n');
 					for(var targetColKey in targetColMap){
 						compareFlag = true;
-						compareLog.push(VARSQL.messageFormat('varsql.m.0024',{targetKey : targetColKey})+'\n');
+						compareLog.push(VARSQL.message('varsql.m.0024',{targetKey : targetColKey})+'\n');
 					}
 
 					compareLog.push('</div>');
@@ -832,7 +832,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.messageFormat('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -841,7 +841,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.messageFormat('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');
@@ -1138,7 +1138,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : VARSQL.messageFormat('varsql.m.0019')
+						empty : VARSQL.message('varsql.m.0019')
 					}
 				});
 			}
@@ -1194,7 +1194,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : VARSQL.messageFormat('varsql.m.0019')
+						empty : VARSQL.message('varsql.m.0019')
 					}
 				});
 			}
@@ -1351,9 +1351,9 @@ VarsqlAPP.vueServiceBean( {
 							compareFlag = true;
 
 							if(itemKey =='createScript'){
-								compareLog.push(VARSQL.messageFormat('varsql.m.0021', {key: itemKey})+'\n');
+								compareLog.push(VARSQL.message('varsql.m.0021', {key: itemKey})+'\n');
 							}else{
-								compareLog.push(VARSQL.messageFormat('varsql.m.0022', {key: itemKey, sourceValue : sourceItem[itemKey], targetValue : targetItem[itemKey]})+'\n');
+								compareLog.push(VARSQL.message('varsql.m.0022', {key: itemKey, sourceValue : sourceItem[itemKey], targetValue : targetItem[itemKey]})+'\n');
 							}
 						}
 					}
@@ -1371,7 +1371,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.messageFormat('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+' </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+' </span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -1380,7 +1380,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.messageFormat('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');

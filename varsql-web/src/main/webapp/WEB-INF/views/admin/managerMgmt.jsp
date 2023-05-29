@@ -161,7 +161,7 @@ VarsqlAPP.vueServiceBean( {
 		,roleAction : function (item,mode){
 			var _this = this;
 
-			if(!confirm(VARSQL.messageFormat(mode=='add'?'msg.add.manager.confirm':'msg.del.manager.confirm', {name:item.uname +'('+item.uid+')'}))){
+			if(!VARSQL.confirmMessage(mode=='add'?'msg.add.manager.confirm':'msg.del.manager.confirm', {name:item.uname +'('+item.uid+')'})){
                 return ;
             }
 

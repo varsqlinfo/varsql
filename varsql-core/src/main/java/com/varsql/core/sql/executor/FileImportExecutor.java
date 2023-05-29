@@ -107,7 +107,7 @@ public class FileImportExecutor extends UpdateExecutor{
 						for (int i = 0; i < columnSize; i++) {
 							ExportColumnInfo eci = columnList.get(i);
 							columnArr[i] = eci;
-							dataTypeArr[i] = dataTypeFactory.getDataType(eci.getType());
+							dataTypeArr[i] = dataTypeFactory.getDataType(eci.getTypeCode(), eci.getType());
 						}
 					}
 

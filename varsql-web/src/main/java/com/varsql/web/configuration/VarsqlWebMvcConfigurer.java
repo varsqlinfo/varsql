@@ -97,7 +97,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label",  "classpath:nl/client/scriptMessages");
         messageSource.setDefaultEncoding(VarsqlConstants.CHAR_SET);
 
-        if(VarsqlUtils.isRuntimelocal()) {
+        if(VarsqlUtils.isRuntimeLocal()) {
         	messageSource.setCacheSeconds(3);
         }
         messageSource.setFallbackToSystemLocale(false);

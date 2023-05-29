@@ -79,27 +79,27 @@ VarsqlAPP.vueServiceBean({
 					upw: {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')
+		                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
 		                    }
 		                    ,identical: {
 		                        field: 'confirmUpw',
-		                        message: VARSQL.messageFormat('varsql.0046','비밀번호가 같아야합니다.')
+		                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
 		                    }
 		                    ,stringLength: {
 		                        min: 4,
 		                        max: 200,
-		                        message: VARSQL.messageFormat('varsql.0047', {size : 4})
+		                        message: VARSQL.message('varsql.0047', {size : 4})
 		                    }
 		                }
 		            }
 		            ,confirmUpw: {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.messageFormat('varsql.0042','필수 입력사항입니다.')
+		                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
-		                        message: VARSQL.messageFormat('varsql.0046','비밀번호가 같아야합니다.')
+		                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
 		                    }
 		                }
 		            }
@@ -130,16 +130,16 @@ VarsqlAPP.vueServiceBean({
 	                    
                     if(item != 'success'){
                         if(item=='token'){
-                            alert(VARSQL.messageFormat('varsql.0052','유효하지 않은 토근입니다.'));
+                            VARSQL.alertMessage('varsql.0052','유효하지 않은 토근입니다.');
                         }else if(item=='password'){
-                            alert(VARSQL.messageFormat('varsql.0053', '패스워드를 정확히 입력해주세요.'));
+                            VARSQL.alertMessage('varsql.0053', '패스워드를 정확히 입력해주세요.');
                         }else{
-                            alert(item);
+                            VARSQL.alertMessage(item);
                         }
                         
                         return ;
                     }else{
-                        alert(VARSQL.messageFormat('varsql.0054', '변경되었습니다.'));
+                        VARSQL.alertMessage('varsql.0054', '변경되었습니다.');
                         location.href='<c:url value="/" />';
                     }
 				},

@@ -113,7 +113,7 @@ public class ImportXmlData extends AbstractImportData{
 		}
 	}
 
-	private static void getExportInfo(XMLStreamReader xmlreader, AbstractImportDataHandler importDataHandler) throws XMLStreamException {
+	private void getExportInfo(XMLStreamReader xmlreader, AbstractImportDataHandler importDataHandler) throws XMLStreamException {
 
 		List<ExportColumnInfo> columns = new ArrayList<ExportColumnInfo>();
 		ExportColumnInfo eci = null;
@@ -134,20 +134,7 @@ public class ImportXmlData extends AbstractImportData{
 							eci = new ExportColumnInfo();
 
 							for (int i = 0; i < xmlreader.getAttributeCount(); i++) {
-								String attrName = xmlreader.getAttributeLocalName(i);
-								String attrVal = xmlreader.getAttributeValue(i);
-
-								if("name".equals(attrName)) {
-									eci.setName(attrVal);
-								}else if("type".equals(attrName)) {
-									eci.setType(attrVal);
-								}else if("number".equals(attrName)) {
-									eci.setNumber(Boolean.parseBoolean(attrVal));
-								}else if("lob".equals(attrName)) {
-									eci.setLob(Boolean.parseBoolean(attrVal));
-								}else if ("alias".equals(attrName)) { 
-					                  eci.setAlias(attrVal);
-					              }
+								eci = setExportColumnInfo(eci, xmlreader.getAttributeLocalName(i), xmlreader.getAttributeValue(i));
 							}
 						}
 						

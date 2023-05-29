@@ -310,7 +310,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 			var clickItem = _self.clickItem;
 
-			if(!confirm(mode=='Y'?VARSQL.messageFormat('varsql.m.0003'):VARSQL.messageFormat('varsql.m.0004'))){
+			if(!confirm(mode=='Y'?VARSQL.message('varsql.m.0003'):VARSQL.messageFormat('varsql.m.0004'))){
 				return ;
 			}
 
@@ -356,7 +356,7 @@ VarsqlAPP.vueServiceBean( {
 				,groupId : item.groupId
 			};
 
-			if(!confirm(VARSQL.messageFormat('varsql.m.0005', {itemName : item.groupName}))){
+			if(!VARSQL.confirmMessage('varsql.m.0005', {itemName : item.groupName})){
 				return ;;
 			}
 
@@ -390,7 +390,7 @@ VarsqlAPP.vueServiceBean( {
 		,initPassword :function(sItem){
 			var _self = this;
 
-			if(!confirm(VARSQL.messageFormat('varsql.m.0009', {userName : sItem.uname}))){
+			if(!VARSQL.confirmMessage('varsql.m.0009', {userName : sItem.uname})){
 				return ;
 			}
 
@@ -412,9 +412,9 @@ VarsqlAPP.vueServiceBean( {
 			var confirmMsg =this.clickItem.uname +' ['+item.vname+']';
 
 			if(mode=='block'){
-				confirmMsg += VARSQL.messageFormat('varsql.m.0003');
+				confirmMsg += VARSQL.message('varsql.m.0003');
 			}else{
-				confirmMsg += VARSQL.messageFormat('varsql.m.0004');
+				confirmMsg += VARSQL.message('varsql.m.0004');
 			}
 
 			if(!confirm(confirmMsg)){
