@@ -52,7 +52,7 @@ var _g_cache = {
 		tabKey =tabKey||'column';
 
 		var objectCacheKey = this.getObjectTypeKey(objectType);
-
+		
 		var cacheObj = _g_cache_obj_meta_store[objectCacheKey][objecName];
 
 		if(VARSQL.isUndefined(cacheObj)){
@@ -1517,7 +1517,7 @@ _ui.addDbServiceObject({
 						,callback: function(key,sObj) {
 							var sItem = this.gridItem;
 							var tmpName = sItem.name;
-
+							
 							if(key=='dataview_all'){
 								_ui.SQL._sqlData('select * from '+getTableName(sItem),false);
 								return ;
@@ -1542,6 +1542,11 @@ _ui.addDbServiceObject({
 							}
 
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
+							
+							if(sItem.colList){
+								_g_cache.setSOMetaCache($$objectType, tmpName, 'column', sItem.colList);
+								cacheData = {items:sItem.colList};
+							}
 
 							var params ={
 								objectType : $$objectType
@@ -4156,7 +4161,7 @@ _ui.SQL = {
 				}
 				,source : {
 					items : []
-					,emptyMessage : VARSQL.message('search.message',{searchType : VARSQL.messageFormat('user')})
+					,emptyMessage : VARSQL.message('search.message',{searchType : VARSQL.message('user')})
 				}
 				,target : {
 					label : VARSQL.message('recipient')
@@ -6228,7 +6233,7 @@ function addTextChangeFormat(queryInfo, colInfo){
 			 }
 		}
 
-		revalStr.push(VARSQL.messageFormat(formatStr,{
+		revalStr.push(VARSQL.message(formatStr,{
 			col : (headerItem.column||headerItem.label)
 			,val : addVal
 		})+' ');

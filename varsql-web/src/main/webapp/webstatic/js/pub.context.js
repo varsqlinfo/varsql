@@ -29,7 +29,7 @@ var pluginName = "pubContextMenu"
 		,beforeSelect :function (item){	// 선택전 이벤트.
 
 		}
-		,isEnabled :function (){
+		,isEnabled :function (){	// context menu 활성화 여부.
 			return true; 
 		}
 	};

@@ -686,6 +686,7 @@ _$base.req ={
 		formObj.ajaxSubmit(opts);
 	}
 	,download :function (opts){
+		var _this =this;
 		
 		var tmpParam = opts.params?opts.params:{}
 			,urlObj = opts.url;
@@ -699,8 +700,18 @@ _$base.req ={
 			    type: "POST",
 			    url: (typeof urlObj) ==='string' ? _$base.url(urlObj) :_$base.url(urlObj.type, urlObj.url),
 			    data: tmpParam,
-				xhrFields: {
-			        responseType: "blob"
+			    xhr: function() {
+			        var xhr = new XMLHttpRequest();
+			        xhr.onreadystatechange = function() {
+			            if (xhr.readyState == 2) {
+			                if (xhr.status == 200) {
+			                    xhr.responseType = "blob";
+			                } else {
+			                    xhr.responseType = "text";
+			                }
+			            }
+			        };
+			        return xhr;
 			    }
 			    ,beforeSend : function (xhr){
 					xhr.setRequestHeader($$csrf_header, $$csrf_token);
@@ -714,7 +725,6 @@ _$base.req ={
 				}
 			    ,success: function(response, status, xhr) {
 			        // check for a filename
-			        
 			        
 			        var filename = "";
 			        var disposition = xhr.getResponseHeader('Content-Disposition');
@@ -759,7 +769,14 @@ _$base.req ={
 				}else if(xhr.status == 401){
 					alert('Unauthorized');
 				}else{
-					alert('File download error');
+					if (xhr.responseText) {
+						var responseData = JSON.parse(xhr.responseText);
+						if(responseData.message){
+							alert(responseData.message);	
+						}else{
+							alert('File download error');
+						}
+					}
 				}
 				
 				if(loadSelector) {

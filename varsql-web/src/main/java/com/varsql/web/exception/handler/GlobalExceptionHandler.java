@@ -419,6 +419,10 @@ public class GlobalExceptionHandler{
 		if(VarsqlUtils.isAjaxRequest(request)){
 			response.setContentType(VarsqlConstants.JSON_CONTENT_TYPE);
 			response.setStatus(HttpStatus.OK.value());
+			
+			if(ex instanceof DataDownloadException) {
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
 
 			if(errorCode == null) {
 				result.setResultCode(RequestResultCode.ERROR);
@@ -426,18 +430,33 @@ public class GlobalExceptionHandler{
 				result.setResultCode(errorCode);
 			}
 
-			if(!SecurityUtil.isAdmin()) {
-				result.setMessage(result.getResultCode() + " :: " + ex.getClass());
+			if(SecurityUtil.isAdmin()) {
+				result.setMessage(result.getResultCode() + " :: " + ex.getClass() + ex.getMessage());
+			}else {
+				if(ex instanceof DataDownloadException) {
+					result.setMessage(ex.getMessage());
+				}else {
+					result.setMessage(result.getResultCode() + " :: " + ex.getClass());
+				}
 			}
-
+			
 			try (Writer writer= response.getWriter()){
 				writer.write(VartechUtils.objectToJsonString(result));
 			} catch (IOException e) {
 				logger.error("exceptionRequestHandle Cause :" + e.getMessage() ,e);
 			}
 		}else{
-
-			request.setAttribute("errorMessage", ex.getMessage());
+			if(SecurityUtil.isAdmin()) {
+				request.setAttribute("errorMessage", result.getResultCode() + " :: " + ex.getClass() + ex.getMessage());
+			}else {
+				if(ex instanceof DataDownloadException) {
+					request.setAttribute("errorMessage", ex.getMessage());
+				}else {
+					request.setAttribute("errorMessage", result.getResultCode() + " :: " + ex.getClass());
+				}
+			}
+			
+			
 			try {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);
 				dispatcher.forward(request, response);

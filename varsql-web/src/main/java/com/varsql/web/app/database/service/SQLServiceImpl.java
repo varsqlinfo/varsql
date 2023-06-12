@@ -336,12 +336,6 @@ public class SQLServiceImpl{
 				conditionQuery = conditionQuery.replaceFirst("where", "");
 			}
 
-			if(conditionQuery.startsWith("and")) {
-				conditionQuery = conditionQuery.replaceFirst("and", "");
-			}
-
-			conditionQuery =  " and " +conditionQuery;
-
 			reqQuerySb.append(conditionQuery);
 		}
 
