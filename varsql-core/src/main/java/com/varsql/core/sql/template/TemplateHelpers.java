@@ -13,6 +13,7 @@ import com.github.jknack.handlebars.Options;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DefaultDataType;
+import com.varsql.core.db.util.DataTypeUtils;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.ConstraintInfo;
@@ -70,21 +71,10 @@ public enum TemplateHelpers implements Helper<Object> {
 
 			String typeName = item.getTypeName();
 			
-			DataType dataTypeInfo = null;
+			DataType dataTypeInfo = DataTypeUtils.getDataType(typeName, dbType, item);
 			
 			if(StringUtils.isBlank(typeName)) {
-				dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(item.getTypeCode(), null);
 				typeName = dataTypeInfo.getTypeName();
-			}else {
-				String standardTypeName = DbMetaUtils.getTypeName(item.getTypeName());
-				
-				if(!StringUtils.isBlank(standardTypeName)) {
-					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(0, standardTypeName);
-				}
-				
-				if((dataTypeInfo == null || DefaultDataType.OTHER.equals(dataTypeInfo)) && !StringUtils.isBlank(item.getTypeAndLength())) {
-					dataTypeInfo = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl().getDataType(0, DbMetaUtils.getTypeName(item.getTypeAndLength()));
-				}
 			}
 				
 			if("typeAndLength".equals(mode)){

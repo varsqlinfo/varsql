@@ -1,6 +1,7 @@
 package com.varsql.core.sql.util;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -11,18 +12,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 
-import com.vartech.common.app.beans.FileInfo;
-import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
-import com.varsql.core.exception.VarsqlRuntimeException;
-import com.zaxxer.hikari.util.UtilityElf.DefaultThreadFactory;
+import com.vartech.common.app.beans.FileInfo;
 
 public final class JdbcUtils {
 	
@@ -82,7 +78,11 @@ public final class JdbcUtils {
 			}
 			
 			connChk = dbDriver.connect(connectionUrl, p);
-			connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+			
+			if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
+				connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+			}
+			
 			pstmt = connChk.prepareStatement(validationQuery);
 
 			pstmt.setQueryTimeout(queryTimeout);
@@ -93,8 +93,19 @@ public final class JdbcUtils {
 		}finally {
 			JdbcUtils.close(connChk, pstmt, null);
 		}
-
 	}
+	
+	private static boolean hasMethodName(Class clazz, String methodName) {
+		Method[] methods = clazz.getClass().getMethods();
+		for (Method m : methods) {
+		  if (m.getName().equals(methodName)) {
+		    return true;
+		  }
+		}
+		
+		return false; 
+	}
+	
 	
 	private static class MysqlExecutor implements Executor {
 		@Override

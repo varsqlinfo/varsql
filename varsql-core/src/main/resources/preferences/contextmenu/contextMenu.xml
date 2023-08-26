@@ -4,6 +4,22 @@
 
 <preferences key="main.contextmenu.serviceobject">
 	<item name="mybatis">
+		<templateInfo name="selectWhere" viewMode="editor">
+			<main>
+			<![CDATA[
+select * from {{table.name}} 
+where {{{whereClause}}};
+				]]>
+			</main>
+			<propItems>
+				<key>whereClause</key>
+				<code><![CDATA[
+{{~#columns}}{{addChar @index '' 'and'}} {{name}} = {{ addPreSuffix '#{' '}' (camelCase name)}}
+{{/columns}}
+						]]></code>
+
+			</propItems>
+		</templateInfo>
 		<templateInfo name="insert" viewMode="editor">
 			<main>
 			<![CDATA[

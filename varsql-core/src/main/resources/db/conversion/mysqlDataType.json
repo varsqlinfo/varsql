@@ -1,0 +1,573 @@
+{
+    "BIGINT": {
+        "sqlserver": {
+            "type": "BIGINT"
+        },
+        "oracle": {
+            "type": "NUMBER(19)"
+        },
+        "mariadb": {
+            "type": "BIGINT"
+        }
+    },
+    "BINARY": {
+        "sqlserver": {
+            "type": "BINARY"
+        },
+        "oracle": {
+            "type": "RAW"
+        },
+        "mariadb": {
+            "type": "BINARY"
+        }
+    },
+    "BIT": {
+        "sqlserver": {
+            "type": "BINARY"
+        },
+        "oracle": {
+            "type": "RAW"
+        },
+        "mariadb": {
+            "type": "BIT"
+        }
+    },
+    "BLOB": {
+        "sqlserver": {
+            "type": "VARBINARY(max)"
+        },
+        "oracle": {
+            "type": "BLOB"
+        },
+        "mariadb": {
+            "type": "BLOB"
+        }
+    },
+    "BOOL": {
+        "sqlserver": {
+            "type": "BIT"
+        },
+        "oracle": {
+            "type": "CHAR(1)"
+        },
+        "mariadb": {
+            "type": "BOOL"
+        }
+    },
+    "BOOLEAN": {
+        "sqlserver": {
+            "type": "BIT"
+        },
+        "oracle": {
+            "type": "CHAR(1)"
+        },
+        "mariadb": {
+            "type": "BOOLEAN"
+        }
+    },
+    "CHAR": {
+        "sqlserver": {
+            "type": "CHAR"
+        },
+        "oracle": {
+            "type": "CHAR"
+        },
+        "mariadb": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER": {
+        "sqlserver": {
+            "type": "CHAR"
+        },
+        "oracle": {
+            "type": "CHAR"
+        },
+        "mariadb": {
+            "type": "CHARACTER"
+        }
+    },
+    "CHARACTER VARYING": {
+        "sqlserver": {
+            "type": "CHARACTER VARYING"
+        },
+        "oracle": {
+            "type": "VARCHAR2"
+        },
+        "mariadb": {
+            "type": "CHARACTER VARYING"
+        }
+    },
+    "DATE": {
+        "sqlserver": {
+            "type": "DATE"
+        },
+        "oracle": {
+            "type": "DATE"
+        },
+        "mariadb": {
+            "type": "DATE"
+        }
+    },
+    "DATETIME": {
+        "postgresql": {
+            "type": "TIMESTAMP"
+        },
+        "sqlserver": {
+            "type": "DATETIME2"
+        },
+        "oracle": {
+            "type": "TIMESTAMP"
+        },
+        "mariadb": {
+            "type": "DATETIME"
+        }
+    },
+    "DEC": {
+        "sqlserver": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        },
+        "mariadb": {
+            "type": "DEC"
+        }
+    },
+    "DECIMAL": {
+        "postgresql": {
+            "type": "DECIMAL"
+        },
+        "sqlserver": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        },
+        "mariadb": {
+            "type": "DECIMAL"
+        }
+    },
+    "DOUBLE": {
+        "sqlserver": {
+            "type": "FLOAT"
+        },
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        },
+        "mariadb": {
+            "type": "DOUBLE"
+        }
+    },
+    "FIXED": {
+        "sqlserver": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        },
+        "mariadb": {
+            "type": "FIXED"
+        }
+    },
+    "FLOAT": {
+        "postgresql": {
+            "type": "FLOAT"
+        },
+        "sqlserver": {
+            "type": "FLOAT"
+        },
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        },
+        "mariadb": {
+            "type": "FLOAT"
+        }
+    },
+    "FLOAT4": {
+        "sqlserver": {
+            "type": "FLOAT"
+        },
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        },
+        "mariadb": {
+            "type": "FLOAT4"
+        }
+    },
+    "FLOAT8": {
+        "sqlserver": {
+            "type": "BINARY_DOUBLE"
+        },
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        },
+        "mariadb": {
+            "type": "FLOAT8"
+        }
+    },
+    "INT": {
+        "postgresql": {
+            "type": "INT"
+        },
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(10)"
+        },
+        "mariadb": {
+            "type": "INT"
+        }
+    },
+    "INT1": {
+        "sqlserver": {
+            "type": "SMALLINT"
+        },
+        "oracle": {
+            "type": "NUMBER(3)"
+        },
+        "mariadb": {
+            "type": "INT1"
+        }
+    },
+    "INT2": {
+        "sqlserver": {
+            "type": "SMALLINT"
+        },
+        "oracle": {
+            "type": "NUMBER(5)"
+        },
+        "mariadb": {
+            "type": "INT2"
+        }
+    },
+    "INT3": {
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(7)"
+        },
+        "mariadb": {
+            "type": "INT3"
+        }
+    },
+    "INT4": {
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(10)"
+        },
+        "mariadb": {
+            "type": "INT4"
+        }
+    },
+    "INT8": {
+        "sqlserver": {
+            "type": "BIGINT"
+        },
+        "oracle": {
+            "type": "NUMBER(19)"
+        },
+        "mariadb": {
+            "type": "INT8"
+        }
+    },
+    "INTEGER": {
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(10)"
+        },
+        "mariadb": {
+            "type": "INTEGER"
+        }
+    },
+    "LONG": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        },
+        "oracle": {
+            "type": "CLOB"
+        },
+        "mariadb": {
+            "type": "LONG"
+        }
+    },
+    "LONG VARBINARY": {
+        "sqlserver": {
+            "type": "VARBINARY(max)"
+        },
+        "oracle": {
+            "type": "BLOB"
+        },
+        "mariadb": {
+            "type": "LONG VARBINARY"
+        }
+    },
+    "LONG VARCHAR": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        },
+        "oracle": {
+            "type": "CLOB"
+        },
+        "mariadb": {
+            "type": "LONG VARCHAR"
+        }
+    },
+    "LONGBLOB": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "sqlserver": {
+            "type": "VARBINARY(max)"
+        },
+        "oracle": {
+            "type": "BLOB"
+        },
+        "mariadb": {
+            "type": "LONGBLOB"
+        }
+    },
+    "LONGTEXT": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        },
+        "oracle": {
+            "type": "CLOB"
+        },
+        "mariadb": {
+            "type": "LONGTEXT"
+        }
+    },
+    "MEDIUMBLOB": {
+        "sqlserver": {
+            "type": "VARBINARY(max)"
+        },
+        "oracle": {
+            "type": "BLOB"
+        },
+        "mariadb": {
+            "type": "MEDIUMBLOB"
+        }
+    },
+    "MEDIUMINT": {
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(7)"
+        },
+        "mariadb": {
+            "type": "MEDIUMINT"
+        }
+    },
+    "MEDIUMTEXT": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        },
+        "oracle": {
+            "type": "CLOB"
+        },
+        "mariadb": {
+            "type": "MEDIUMTEXT"
+        }
+    },
+    "MIDDLEINT": {
+        "sqlserver": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(7)"
+        },
+        "mariadb": {
+            "type": "MIDDLEINT"
+        }
+    },
+    "NCHAR": {
+        "sqlserver": {
+            "type": "NCHAR"
+        },
+        "oracle": {
+            "type": "NCHAR"
+        },
+        "mariadb": {
+            "type": "NCHAR"
+        }
+    },
+    "NUMERIC": {
+        "postgresql": {
+            "type": "NUMERIC"
+        },
+        "sqlserver": {
+            "type": "NUMERIC"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        },
+        "mariadb": {
+            "type": "NUMERIC"
+        }
+    },
+    "NVARCHAR": {
+        "sqlserver": {
+            "type": "NVARCHAR"
+        },
+        "oracle": {
+            "type": "NVARCHAR2"
+        },
+        "mariadb": {
+            "type": "NVARCHAR"
+        }
+    },
+    "REAL": {
+        "sqlserver": {
+            "type": "DOUBLE PRECISION"
+        },
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        },
+        "mariadb": {
+            "type": "REAL"
+        }
+    },
+    "SERIAL": {
+        "sqlserver": {
+            "type": "NUMERIC(20)"
+        },
+        "oracle": {
+            "type": "Sequence and trigger"
+        },
+        "mariadb": {
+            "type": "SERIAL"
+        }
+    },
+    "SMALLINT": {
+        "sqlserver": {
+            "type": "SMALLINT"
+        },
+        "oracle": {
+            "type": "NUMBER(5)"
+        },
+        "mariadb": {
+            "type": "SMALLINT"
+        }
+    },
+    "TEXT": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        },
+        "oracle": {
+            "type": "CLOB"
+        },
+        "mariadb": {
+            "type": "TEXT"
+        }
+    },
+    "TIME": {
+        "sqlserver": {
+            "type": "TIME"
+        },
+        "oracle": {
+            "type": "TIMESTAMP"
+        },
+        "mariadb": {
+            "type": "TIME"
+        }
+    },
+    "TIMESTAMP": {
+        "postgresql": {
+            "type": "TIMESTAMP"
+        },
+        "sqlserver": {
+            "type": "DATETIME2"
+        },
+        "oracle": {
+            "type": "TIMESTAMP"
+        },
+        "mariadb": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "TINYBLOB": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "sqlserver": {
+            "type": "VARBINARY(255)"
+        },
+        "oracle": {
+            "type": "RAW(255)"
+        },
+        "mariadb": {
+            "type": "TINYBLOB"
+        }
+    },
+    "TINYINT": {
+        "sqlserver": {
+            "type": "SMALLINT"
+        },
+        "oracle": {
+            "type": "NUMBER(3)"
+        },
+        "mariadb": {
+            "type": "TINYINT"
+        }
+    },
+    "TINYTEXT": {
+        "sqlserver": {
+            "type": "VARCHAR(255)"
+        },
+        "oracle": {
+            "type": "VARCHAR2(255)"
+        },
+        "mariadb": {
+            "type": "TINYTEXT"
+        }
+    },
+    "VARBINARY": {
+        "sqlserver": {
+            "type": "VARBINARY"
+        },
+        "oracle": {
+            "type": "RAW"
+        },
+        "mariadb": {
+            "type": "VARBINARY"
+        }
+    },
+    "VARCHAR": {
+        "sqlserver": {
+            "type": "VARCHAR"
+        },
+        "oracle": {
+            "type": "VARCHAR2"
+        },
+        "mariadb": {
+            "type": "VARCHAR"
+        }
+    },
+    "YEAR": {
+        "sqlserver": {
+            "type": "NUMERIC(4)"
+        },
+        "oracle": {
+            "type": "NUMBER(4)"
+        },
+        "mariadb": {
+            "type": "YEAR"
+        }
+    },
+    "JSON": {
+        "mariadb": {
+            "type": "LONGTEXT"
+        }
+    }
+}

@@ -16,8 +16,11 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.datatype.DefaultDataType;
+import com.varsql.core.db.ddl.conversion.ConversionType;
+import com.varsql.core.db.ddl.conversion.DDLConversionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.util.DataTypeUtils;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.CommentInfo;
@@ -504,16 +507,40 @@ public abstract class AbstractDDLScript implements DDLScript{
 				
 				String typeName = DbMetaUtils.getTypeName(item.getTypeName()); 
 				
+				ConversionType conversionType = DDLConversionFactory.getInstance().getConversionType(this.dbType, convertDb, typeName);
+				
 				DataType dataType = dataTypeFactory.getDataType(item.getTypeCode(), typeName);
 				
-				item.setTypeName(null);
-				item.setTypeAndLength(null);
-				
-				item.setTypeCode(dataType.getTypeCode());
-				
-				// Postgresql의 varchar 같은경우 사이즈 가 없을 경우 default size로 셋팅
-				if(dataType.getJDBCDataTypeMetaInfo().isSize() && dataType.getDefaultSize() > -1 && ( item.getLength()== null || item.getLength().compareTo(BigDecimal.ZERO) < 0)) {
-					item.setLength(dataType.getDefaultSize());
+				if(conversionType != null) {
+					String conversionTypeName = conversionType.getType();
+					// Postgresql,sqlserver varchar 사이즈 없을 경우 처리.
+					if(dataType.getJDBCDataTypeMetaInfo().isSize() && dataType.getDefaultSize() > -1 && ( item.getLength()== null || item.getLength().compareTo(BigDecimal.ZERO) < 0)) {
+						conversionTypeName = conversionType.getMax() != null ? conversionType.getMax() : conversionTypeName; 
+					}
+					
+					item.setTypeName(conversionTypeName);
+					
+					BigDecimal columnSize = item.getLength();
+					
+					DataType dataTypeInfo = DataTypeUtils.getDataType(conversionTypeName, convertDb, item);
+					
+					if(DataTypeUtils.isTypeAndLengthPattern(conversionTypeName)) {
+						item.setTypeAndLength(conversionTypeName);
+					}else {
+						item.setTypeAndLength(dataTypeInfo.getJDBCDataTypeMetaInfo().getTypeAndLength(conversionTypeName, dataTypeInfo, null, (columnSize == null? -1 : columnSize.longValue()),
+							item.getDataPrecision(), item.getDecimalDigits()));
+					}
+					
+					item.setTypeCode(dataTypeInfo.getTypeCode());
+				}else {
+					// Postgresql의 varchar 같은 경우 사이즈 가 없을 경우 default size로 셋팅
+					if(dataType.getJDBCDataTypeMetaInfo().isSize() && dataType.getDefaultSize() > -1 && ( item.getLength()== null || item.getLength().compareTo(BigDecimal.ZERO) < 0)) {
+						item.setLength(dataType.getDefaultSize());
+					}
+					
+					item.setTypeName(null);
+					item.setTypeAndLength(null);
+					item.setTypeCode(dataType.getTypeCode());
 				}
 				
 				String defaultVal = item.getDefaultVal(); 
@@ -539,7 +566,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 			
 			param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.constraintKey, param));
 			
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.create, param));
+			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.createConversion, param, SQLTemplateCode.TABLE.create));
 			
 			ddlInfo.setCreateScript(ddlStrBuf.toString());
 			reval.add(ddlInfo);

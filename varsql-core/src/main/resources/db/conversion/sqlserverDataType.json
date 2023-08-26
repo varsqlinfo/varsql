@@ -1,0 +1,379 @@
+{
+    "BIGINT": {
+        "postgresql": {
+            "type": "BIGINT"
+        },
+        "mysql": {
+            "type": "BIGINT"
+        },
+        "oracle": {
+            "type": "NUMBER(19)"
+        }
+    },
+    "BINARY": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "BINARY"
+        },
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "BIT": {
+        "postgresql": {
+            "type": "BOOLEAN"
+        },
+        "mysql": {
+            "type": "TINYINT"
+        },
+        "oracle": {
+            "type": "NUMBER(3)"
+        }
+    },
+    "CHAR": {
+        "postgresql": {
+            "type": "CHAR"
+        },
+        "mysql": {
+            "type": "CHAR"
+        },
+        "oracle": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER": {
+        "postgresql": {
+            "type": "CHAR"
+        }
+    },
+    "DATE": {
+        "postgresql": {
+            "type": "DATE"
+        },
+        "mysql": {
+            "type": "DATE"
+        },
+        "oracle": {
+            "type": "DATE"
+        }
+    },
+    "DATETIME": {
+        "postgresql": {
+            "type": "TIMESTAMP(3)"
+        },
+        "mysql": {
+            "type": "DATETIME(3)"
+        },
+        "oracle": {
+            "type": "DATE"
+        }
+    },
+    "DATETIME2": {
+        "postgresql": {
+            "type": "TIMESTAMP"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        },
+        "oracle": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "DATETIMEOFFSET": {
+        "postgresql": {
+            "type": "TIMESTAMP WITH TIME ZONE"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        }
+        ,"oracle": {
+            "type": "TIMESTAMP WITH TIME ZONE"
+        }
+    },
+    "DEC": {
+        "postgresql": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "DECIMAL": {
+        "postgresql": {
+            "type": "DECIMAL"
+        },
+        "mysql": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "DOUBLE PRECISION": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE PRECISION"
+        }
+    },
+    "FLOAT": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE"
+        },
+        "oracle": {
+            "type": "FLOAT(49)"
+        }
+    },
+    "IMAGE": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "LONGBLOB"
+        },
+        "oracle": {
+            "type": "LONG RAW"
+        }
+    },
+    "INT": {
+        "postgresql": {
+            "type": "INT"
+        },
+        "mysql": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(9)"
+        }
+    },
+    "INTEGER": {
+        "postgresql": {
+            "type": "INT"
+        },
+        "mysql": {
+            "type": "INT"
+        },
+        "oracle": {
+            "type": "NUMBER(10)"
+        }
+    },
+    "MONEY": {
+        "postgresql": {
+            "type": "MONEY"
+        },
+        "mysql": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER(19,4)"
+        }
+    },
+    "NCHAR": {
+        "postgresql": {
+            "type": "CHAR"
+        },
+        "mysql": {
+            "type": "NCHAR"
+        },
+        "oracle": {
+            "type": "NCHAR"
+        }
+    },
+    "NTEXT": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        },
+        "oracle": {
+            "type": "LONG"
+        }
+    },
+    "NUMERIC": {
+        "postgresql": {
+            "type": "NUMERIC"
+        },
+        "mysql": {
+            "type": "NUMERIC"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "NVARCHAR": {
+        "postgresql": {
+            "type": "VARCHAR", "max": "TEXT"
+        },
+        "mysql": {
+            "type": "NVARCHAR", "max": "LONGTEXT"
+        },
+        "oracle": {
+            "type": "NCHAR", "max": "CLOB"
+        }
+        ,"default": {
+		    "type": "VARCHAR", "max":"CLOB"
+		}
+    },
+    "REAL": {
+        "postgresql": {
+            "type": "REAL"
+        },
+        "mysql": {
+            "type": "REAL"
+        },
+        "oracle": {
+            "type": "FLOAT(23)"
+        }
+    },
+    "ROWVERSION": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "BINARY(8)"
+        }
+    },
+    "SMALL DATETIME": {
+        "oracle": {
+            "type": "DATE"
+        }
+    },
+    "SMALL MONEY": {
+        "oracle": {
+            "type": "NUMBER(10,4)"
+        }
+    },
+    "SMALLDATETIME": {
+        "postgresql": {
+            "type": "TIMESTAMP(0)"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        }
+    },
+    "SMALLINT": {
+        "postgresql": {
+            "type": "SMALLINT"
+        },
+        "mysql": {
+            "type": "SMALLINT"
+        },
+        "oracle": {
+            "type": "NUMBER(5)"
+        }
+    },
+    "SMALLMONEY": {
+        "postgresql": {
+            "type": "MONEY"
+        },
+        "mysql": {
+            "type": "DECIMAL"
+        },
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "SYSNAME": {
+        "mysql": {
+            "type": "NVARCHAR(128)"
+        }
+    },
+    "TEXT": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        },
+        "oracle": {
+            "type": "LONG"
+        }
+    },
+    "TIME": {
+        "postgresql": {
+            "type": "TIME"
+        },
+        "mysql": {
+            "type": "TIME"
+        },
+        "oracle": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "TIMESTAMP": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "BINARY(8)"
+        },
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "TINYINT": {
+        "postgresql": {
+            "type": "SMALLINT"
+        },
+        "mysql": {
+            "type": "TINYINT UNSIGNED"
+        },
+        "oracle": {
+            "type": "NUMBER(3)"
+        }
+    },
+    "UNIQUEIDENTIFIER": {
+        "postgresql": {
+            "type": "CHAR(16)"
+        },
+        "mysql": {
+            "type": "CHAR(16)"
+        },
+        "oracle": {
+            "type": "CHAR(36)"
+        }
+    },
+    "VARBINARY": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "VARBINARY" , "max" : "LONGBLOB"
+        },
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "VARCHAR": {
+        "postgresql": {
+            "type": "VARCHAR", "max": "TEXT"
+        },
+        "mysql": {
+            "type": "VARCHAR", "max": "LONGTEXT"
+        },
+        "oracle": {
+            "type": "VARCHAR2", "max": "CLOB"
+        }
+        ,"default": {
+		    "type": "VARCHAR", "max":"CLOB"
+		}
+    },
+    "XML": {
+        "postgresql": {
+            "type": "XML"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        },
+        "oracle": {
+            "type": "XMLTYPE"
+        }
+    }
+}

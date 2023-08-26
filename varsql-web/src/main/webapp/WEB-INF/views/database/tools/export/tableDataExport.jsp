@@ -75,7 +75,7 @@
 		
 		<div class="process-step" :class="step==2?'active':''">
 			<div class="col-xs-12">
-				<div class="process-title">{{navItems[1]}</div>
+				<div class="process-title">{{navItems[1]}}</div>
 
 				<c:if test="${schemaInfo ne ''}">
 					<div style="padding: 5px 0px 0px;">

@@ -12,6 +12,25 @@
 		]]>
 		</create>
 		
+		<!-- create conversion -->
+		<createConversion>
+		<![CDATA[
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+	{{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+);
+
+{{sourceText}}
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}ALTER TABLE {{../objectName}} COMMENT '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}ALTER TABLE {{../objectName}} MODIFY  {{name}} {{ddlTableValue 'typeAndLength' item dbType}} {{{ddlTableValue 'nullable' item dbType}}} {{{ddlTableValue 'default' item dbType}}} COMMENT '{{{comment}}}';{{/xif}}
+{{/commentsList}}
+		]]>
+		</createConversion>
+		
 		<!-- 테이블명 수정 추가-->
 		<rename>
 ALTER TABLE {{TABLE_NAME}} RENAME {{NEW_TABLE_NAME}}

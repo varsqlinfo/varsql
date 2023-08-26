@@ -1,5 +1,7 @@
 package com.varsql.core.sql.type;
 
+import java.util.regex.Pattern;
+
 import com.varsql.core.sql.type.function.SQLCheckFunction;
 import com.vartech.common.utils.StringUtils;
 
@@ -23,6 +25,8 @@ public enum SQLCommandType implements SQLCommand {
 	private boolean semicolonRemove;
 	private boolean selectCommand;
 	
+	private Pattern pattern = Pattern.compile(";\\s*$");
+	
 	SQLCommandType(boolean semicolonRemove, boolean selectCommand) {
 		this(semicolonRemove, selectCommand, null);
 	}
@@ -34,7 +38,7 @@ public enum SQLCommandType implements SQLCommand {
 		if(scf ==null) {
 			if(semicolonRemove) {
 				this.sqlCheckFunction =(sql)->{
-					return sql.trim().replaceAll(";$", ""); 
+					return pattern.matcher(sql).replaceFirst(""); 
 				};
 			}else {
 				this.sqlCheckFunction =(sql)->{

@@ -1,0 +1,262 @@
+{
+    "BIGINT": {
+        "oracle": {
+            "type": "NUMBER(19)"
+        }
+    },
+    "BINARY": {
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "BIT": {
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "BLOB": {
+        "oracle": {
+            "type": "BLOB"
+        }
+    },
+    "BOOL": {
+        "oracle": {
+            "type": "CHAR(1)"
+        }
+    },
+    "BOOLEAN": {
+        "oracle": {
+            "type": "CHAR(1)"
+        }
+    },
+    "CHAR": {
+        "oracle": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER": {
+        "oracle": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER VARYING": {
+        "oracle": {
+            "type": "VARCHAR2" , "max":"CLOB"
+        }
+        ,"sqlserver": {
+            "type": "VARCHAR" , "max":"VARCHAR"
+        }
+        ,"default": {
+            "type": "VARCHAR" , "max":"CLOB"
+        }
+    },
+    "DATE": {
+        "oracle": {
+            "type": "DATE"
+        }
+    },
+    "DATETIME": {
+        "oracle": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "DEC": {
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "DECIMAL": {
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "DOUBLE": {
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        }
+    },
+    "FIXED": {
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "FLOAT": {
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        }
+    },
+    "FLOAT4": {
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        }
+    },
+    "FLOAT8": {
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        }
+    },
+    "INT": {
+        "oracle": {
+            "type": "NUMBER(10)"
+        }
+    },
+    "INT1": {
+        "oracle": {
+            "type": "NUMBER(3)"
+        }
+    },
+    "INT2": {
+        "oracle": {
+            "type": "NUMBER(5)"
+        }
+    },
+    "INT3": {
+        "oracle": {
+            "type": "NUMBER(7)"
+        }
+    },
+    "INT4": {
+        "oracle": {
+            "type": "NUMBER(10)"
+        }
+    },
+    "INT8": {
+        "oracle": {
+            "type": "NUMBER(19)"
+        }
+    },
+    "INTEGER": {
+        "oracle": {
+            "type": "NUMBER(10)"
+        }
+    },
+    "LONG": {
+        "oracle": {
+            "type": "CLOB"
+        }
+    },
+    "LONG VARBINARY": {
+        "oracle": {
+            "type": "BLOB"
+        }
+    },
+    "LONG VARCHAR": {
+        "oracle": {
+            "type": "CLOB"
+        }
+    },
+    "LONGBLOB": {
+        "oracle": {
+            "type": "BLOB"
+        }
+    },
+    "LONGTEXT": {
+        "oracle": {
+            "type": "CLOB"
+        }
+    },
+    "MEDIUMBLOB": {
+        "oracle": {
+            "type": "BLOB"
+        }
+    },
+    "MEDIUMINT": {
+        "oracle": {
+            "type": "NUMBER(7)"
+        }
+    },
+    "MEDIUMTEXT": {
+        "oracle": {
+            "type": "CLOB"
+        }
+    },
+    "MIDDLEINT": {
+        "oracle": {
+            "type": "NUMBER(7)"
+        }
+    },
+    "NCHAR": {
+        "oracle": {
+            "type": "NCHAR"
+        }
+    },
+    "NUMERIC": {
+        "oracle": {
+            "type": "NUMBER"
+        }
+    },
+    "NVARCHAR": {
+        "oracle": {
+            "type": "NVARCHAR2"
+        }
+        ,"sqlserver": {
+            "type": "VARCHAR" , "max":"NVARCHAR"
+        }
+    },
+    "REAL": {
+        "oracle": {
+            "type": "BINARY_DOUBLE"
+        }
+    },
+    "SERIAL": {
+        "oracle": {
+            "type": "Sequence and trigger"
+        }
+    },
+    "SMALLINT": {
+        "oracle": {
+            "type": "NUMBER(5)"
+        }
+    },
+    "TEXT": {
+        "oracle": {
+            "type": "CLOB"
+        }
+    },
+    "TIME": {
+        "oracle": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "TIMESTAMP": {
+        "oracle": {
+            "type": "TIMESTAMP"
+        }
+    },
+    "TINYBLOB": {
+        "oracle": {
+            "type": "RAW(255)"
+        }
+    },
+    "TINYINT": {
+        "oracle": {
+            "type": "NUMBER(3)"
+        }
+    },
+    "TINYTEXT": {
+        "oracle": {
+            "type": "VARCHAR2(255)"
+        }
+    },
+    "VARBINARY": {
+        "oracle": {
+            "type": "RAW"
+        }
+    },
+    "VARCHAR": {
+        "oracle": {
+            "type": "VARCHAR2" , "max":"CLOB"
+        }
+        ,"sqlserver": {
+            "type": "VARCHAR" , "max":"VARCHAR"
+        }
+        ,"default": {
+            "type": "VARCHAR" , "max":"CLOB"
+        }
+    },
+    "YEAR": {
+        "oracle": {
+            "type": "NUMBER(4)"
+        }
+    }
+}

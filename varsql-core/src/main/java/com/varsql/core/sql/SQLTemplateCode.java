@@ -13,7 +13,7 @@ import com.vartech.common.utils.StringUtils;
 public class SQLTemplateCode {
 	
 	public enum TABLE implements SQLTemplateEnum {
-		create, rename,
+		create, createConversion, rename,
 		addComment,	modifyComment,	dropComment,
 		select,	insert,	update,	delete,
 		selectInsert, insertUpdate, createSelect,

@@ -1,0 +1,162 @@
+{
+    "BIGINT": {
+        "sqlserver": {
+            "type": "BIGINT"
+        }
+    },
+    "BLOB": {
+        "sqlserver": {
+            "type": "VARBINARY(max)"
+        }
+    },
+    "CHAR": {
+        "sqlserver": {
+            "type": "CHAR"
+        }
+    },
+    "CHAR FOR BIT DATA": {
+        "sqlserver": {
+            "type": "BINARY"
+        }
+    },
+    "CHARACTER": {
+        "sqlserver": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER VARYING": {
+        "sqlserver": {
+            "type": "CHARACTER VARYING"
+        }
+    },
+    "CLOB": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        }
+    },
+    "DATE": {
+        "sqlserver": {
+            "type": "DATE"
+        }
+    },
+    "DBCLOB": {
+        "sqlserver": {
+            "type": "NVARCHAR(max)"
+        }
+    },
+    "DEC": {
+        "sqlserver": {
+            "type": "DECIMAL"
+        }
+    },
+    "DECFLOAT": {
+        "sqlserver": {
+            "type": "FLOAT"
+        }
+    },
+    "DECIMAL": {
+        "sqlserver": {
+            "type": "DECIMAL"
+        }
+    },
+    "DOUBLE": {
+        "sqlserver": {
+            "type": "FLOAT"
+        }
+    },
+    "FLOAT": {
+        "sqlserver": {
+            "type": "FLOAT"
+        }
+    },
+    "GRAPHIC": {
+        "sqlserver": {
+            "type": "NCHAR"
+        }
+    },
+    "INT": {
+        "sqlserver": {
+            "type": "INTEGER"
+        }
+    },
+    "INTEGER": {
+        "sqlserver": {
+            "type": "INTEGER"
+        }
+    },
+    "LONG VARCHAR": {
+        "sqlserver": {
+            "type": "VARCHAR(max)"
+        }
+    },
+    "NCHAR": {
+        "sqlserver": {
+            "type": "NCHAR"
+        }
+    },
+    "NCHAR VARYING": {
+        "sqlserver": {
+            "type": "NCHAR VARYING"
+        }
+    },
+    "NCLOB": {
+        "sqlserver": {
+            "type": "NVARCHAR(max)"
+        }
+    },
+    "NUM": {
+        "sqlserver": {
+            "type": "NUMERIC"
+        }
+    },
+    "NUMERIC": {
+        "sqlserver": {
+            "type": "NUMERIC"
+        }
+    },
+    "NVARCHAR": {
+        "sqlserver": {
+            "type": "NVARCHAR"
+        }
+    },
+    "REAL": {
+        "sqlserver": {
+            "type": "REAL"
+        }
+    },
+    "SMALLINT": {
+        "sqlserver": {
+            "type": "SMALLINT"
+        }
+    },
+    "TIME": {
+        "sqlserver": {
+            "type": "TIME(0)"
+        }
+    },
+    "TIMESTAMP": {
+        "sqlserver": {
+            "type": "DATETIME2"
+        }
+    },
+    "VARCHAR": {
+        "sqlserver": {
+            "type": "VARCHAR"
+        }
+    },
+    "VARCHAR FOR BIT DATA": {
+        "sqlserver": {
+            "type": "VARBINARY"
+        }
+    },
+    "VARGRAPHIC": {
+        "sqlserver": {
+            "type": "NVARCHAR"
+        }
+    },
+    "XML": {
+        "sqlserver": {
+            "type": "XML"
+        }
+    }
+}

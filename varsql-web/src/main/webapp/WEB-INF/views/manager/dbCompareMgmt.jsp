@@ -832,7 +832,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.message('varsql.m.0023')+'</span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -841,7 +841,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.message('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');
@@ -1371,7 +1371,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.messageFormat('varsql.m.0023')+' </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.message('varsql.m.0023')+' </span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -1380,7 +1380,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.messageFormat('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.message('varsql.m.0023')+'</span>');
 			}
 
 			return compareResult.join('\n');

@@ -135,13 +135,21 @@ public class SQLTemplateFactory {
 	 * @return
 	 */
 	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Object param){
+		return sqlRender(dbType, code, param, null);
+	}
+	
+	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Object param, SQLTemplateEnum defaultCode){
+		
 		String dbVender= dbType.getDbVenderName();
 		
-		String templateId = code.getTemplateId(); 
-		Template template = getDDLTemplate(dbVender, templateId);
+		Template template = getDDLTemplate(dbVender, code.getTemplateId());
+		
+		if(template == null  && defaultCode != null) {
+			template = getDDLTemplate(dbVender, defaultCode.getTemplateId());
+		}
 
 		if(template ==null){
-			throw new VarsqlRuntimeException(VarsqlAppCode.EC_TEMPLATE_CONFIGURATION ,new StringBuilder().append("sqlRender template ").append("dbVender : [").append(dbVender).append("] templateId : [").append(templateId).append("] template : [").append(template).append("]").toString());
+			throw new VarsqlRuntimeException(VarsqlAppCode.EC_TEMPLATE_CONFIGURATION ,new StringBuilder().append("sqlRender template ").append("dbVender : [").append(dbVender).append("] templateId : [").append(code.getTemplateId()).append("] template : [").append(template).append("]").toString());
 		}
 
 		try {

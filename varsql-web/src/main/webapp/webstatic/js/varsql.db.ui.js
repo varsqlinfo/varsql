@@ -1543,7 +1543,7 @@ _ui.addDbServiceObject({
 
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
 							
-							if(sItem.colList){
+							if(VARSQL.isUndefined(cacheData) && sItem.colList){
 								_g_cache.setSOMetaCache($$objectType, tmpName, 'column', sItem.colList);
 								cacheData = {items:sItem.colList};
 							}
@@ -2302,6 +2302,7 @@ _ui.addODbServiceObjectMetadata({
 			,{key : "sql_create", "name": "sql생성"
 				,subMenu: [
 					{ key : "create_select","name": "select" ,mode:"select"}
+					,{ key : "create_selectWhere","name": "selectWhere" ,mode:"selectWhere"}
 					,{ key : "create_insert","name": "insert" , mode:"insert"}
 					,{ key : "create_update","name": "update" ,mode:"update"}
 				]
@@ -5758,6 +5759,18 @@ function generateSQL(scriptInfo){
 
 		reval.push(' from '+serviceObjName);
 
+	}
+	else if(key=='selectWhere'){ // select 컬럼 값
+		reval.push('select ');
+		var whereClause = [];
+		for(var i=0; i < len; i++){
+			item = dataArr[i];
+			reval.push((i==0?'':', ')+item[VARSQLCont.tableColKey.NAME]);
+			whereClause.push((i==0?'where ':'and ')+item[VARSQLCont.tableColKey.NAME]+" = ''");
+		}
+
+		reval.push('\nfrom '+serviceObjName);
+		reval.push('\n'+whereClause.join('\n'));
 	}
 	else if(key=='insert'){ // insert 문
 		reval.push('insert into '+serviceObjName+' (');

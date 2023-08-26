@@ -10,7 +10,7 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	
 	protected AbstractDataTypeFactory() {};
 	
-	private ConcurrentMap<String , DataType> venderDataType = new ConcurrentHashMap<String, DataType>();
+	private ConcurrentMap<Integer , DataType> typeCodeDataType = new ConcurrentHashMap<Integer, DataType>();
 	
 	private DataType getDataType(String typeName) {
 		
@@ -18,7 +18,7 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 		
 		typeName = typeName.toUpperCase();
 		
-		for(DataType item: venderDataType.values()) {
+		for(DataType item: typeCodeDataType.values()) {
 			if(item.getTypeName().equals(typeName)) {
 				return item;
 			}
@@ -28,12 +28,10 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	
 	private DataType getDataType(int typeCode) {
 		
-		for(DataType item: venderDataType.values()) {
-			if(item.getTypeCode() == typeCode) {
-				return item;
-			}
+		if(typeCodeDataType.containsKey(typeCode)) {
+			return typeCodeDataType.get(typeCode);
 		}
-		
+				
 		if(typeCode == 0) {
 			return null;
 		}
@@ -61,6 +59,6 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	}
 	
 	public void addDataType(DataType dataType) {
-		venderDataType.put(dataType.getTypeName().toUpperCase(), dataType);
+		typeCodeDataType.put(dataType.getTypeCode(), dataType);
 	};
 }

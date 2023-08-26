@@ -6,7 +6,7 @@
 	<table>
 		<create>
 		<![CDATA[
-{{~#if ddlOpt.addDropClause}}/*DROP TABLE {{objectName}}; */{{/if}}
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
 CREATE TABLE {{objectName}}(
 {{#columnList}}
 	{{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
@@ -91,7 +91,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
 	<!-- view 생성-->
     <view>
         <create>
-{{~#if ddlOpt.addDropClause}}/*DROP VIEW {{objectName}}; */{{/if}}
+{{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
 
 {{{sourceText}}}
         </create>
@@ -100,7 +100,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
     <!-- function 생성-->
     <function>
         <create>
-{{#if ddlOpt.addDropClause}}/*DROP FUNCTION {{objectName}}; */{{/if}}
+{{#if ddlOpt.addDropClause}}/* DROP FUNCTION {{objectName}}; */{{/if}}
 
 {{{sourceText}}}
         </create>
@@ -109,7 +109,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
     <!-- procedure 생성-->
     <procedure>
         <create>
-{{#if ddlOpt.addDropClause}}/*DROP PROCEDURE {{objectName}}; */{{/if}}
+{{#if ddlOpt.addDropClause}}/* DROP PROCEDURE {{objectName}}; */{{/if}}
 
 {{{sourceText}}}
         </create>
@@ -118,7 +118,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
     <!-- trigger 생성-->
     <trigger>
         <create>
-{{#if ddlOpt.addDropClause}}/*DROP TRIGGER {{objectName}}; */{{/if}}
+{{#if ddlOpt.addDropClause}}/* DROP TRIGGER {{objectName}}; */{{/if}}
 
 {{{sourceText}}}
         </create>
@@ -128,7 +128,7 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
 	<!-- index 생성-->
 	<index>
 		<create>
-{{#if ddlOpt.addDropClause}}/*DROP INDEX {{objectName}}; */{{/if}}
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
 
 {{#with items.[0]}}
 create {{ddlIndexKeyword 'unique' this}} index {{objectName}}

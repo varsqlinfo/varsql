@@ -310,7 +310,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 			var clickItem = _self.clickItem;
 
-			if(!confirm(mode=='Y'?VARSQL.message('varsql.m.0003'):VARSQL.messageFormat('varsql.m.0004'))){
+			if(!confirm(mode=='Y'?VARSQL.message('varsql.m.0003'):VARSQL.message('varsql.m.0004'))){
 				return ;
 			}
 

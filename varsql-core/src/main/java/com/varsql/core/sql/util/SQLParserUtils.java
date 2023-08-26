@@ -3,6 +3,7 @@ package com.varsql.core.sql.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.SQLUtils.FormatOption;
@@ -68,14 +69,20 @@ public final class SQLParserUtils {
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setOrginSqlParam(param);
 		
+		boolean lastSemicolonRemove = false; 
+		
 		if(statement instanceof SQLSelectStatement){
 			sqlSource.setCommand(SQLCommandType.SELECT);
+			lastSemicolonRemove = true;
 		}else if(statement instanceof SQLInsertStatement){
 			sqlSource.setCommand(SQLCommandType.INSERT);
+			lastSemicolonRemove = true;
 		}else if(statement instanceof SQLUpdateStatement){
 			sqlSource.setCommand(SQLCommandType.UPDATE);
+			lastSemicolonRemove = true;
 		}else if(statement instanceof SQLDeleteStatement){
 			sqlSource.setCommand(SQLCommandType.DELETE);
+			lastSemicolonRemove = true;
 		}else if(statement instanceof SQLAlterStatement){
 			sqlSource.setCommand(SQLCommandType.ALTER);
 		}else if(statement instanceof SQLDropStatement){
@@ -94,7 +101,7 @@ public final class SQLParserUtils {
 			String simpleName = statement.getClass().getSimpleName();
 			sqlSource.setCommand(SQLCommandType.getSQLCommandType(simpleName.replaceAll(removeClassNameRegular, "")));
 		}
-
+		
 		tmpQuery = MetaControlFactory.getDbInstanceFactory(dbType).getCommandTypeFactory().getCommandType(sqlSource.getCommand()).checkSql(tmpQuery);
 
 		if(param != null){
@@ -155,6 +162,8 @@ public final class SQLParserUtils {
 		SqlSource sqlSource = new SqlSource();
 		sqlSource.setCommand(SQLCommandType.OTHER);
 		sqlSource.setOrginSqlParam(param);
+		
+		query = MetaControlFactory.getDbInstanceFactory(dbType).getCommandTypeFactory().getCommandType(sqlSource.getCommand()).checkSql(query);
 
 		if(param != null){
 			SqlStatement sqlstate = getSqlStatement(query, param, false, dbType);
@@ -174,7 +183,7 @@ class SqlStatement{
 	public List<ParameterMapping> parameter;
 
 	SqlStatement(String sql , List<ParameterMapping> parameter){
-		this.sql = sql ;
+		this.sql = sql;
 		this.parameter =parameter;
 	}
 

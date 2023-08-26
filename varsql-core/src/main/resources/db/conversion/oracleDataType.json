@@ -1,0 +1,392 @@
+{
+    "BFILE": {
+        "postgresql": {
+            "type": "VARCHAR(255)"
+        },
+        "mysql": {
+            "type": "VARCHAR(255)"
+        },
+        "sqlserver": {
+            "type": "VARBINARY(MAX)"
+        }
+    },
+    "BINARY_DOUBLE": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE"
+        },
+        "mariadb": {
+            "type": "DOUBLE"
+        }
+    },
+    "BINARY_FLOAT": {
+        "postgresql": {
+            "type": "REAL"
+        },
+        "mysql": {
+            "type": "FLOAT"
+        }
+    },
+    "BLOB": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "LONGBLOB"
+        },
+        "sqlserver": {
+            "type": "VARBINARY(MAX)"
+        }
+    },
+    "CHAR": {
+        "postgresql": {
+            "type": "CHAR"
+        },
+        "mysql": {
+            "type": "CHAR"
+        },
+        "sqlserver": {
+            "type": "CHAR"
+        }
+    },
+    "CHARACTER": {
+        "postgresql": {
+            "type": "CHAR"
+        }
+    },
+    "CLOB": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        },
+        "mariadb": {
+            "type": "LONGTEXT"
+        },
+        "sqlserver": {
+            "type": "VARCHAR(MAX)"
+        }
+    },
+    "DATE": {
+        "postgresql": {
+            "type": "TIMESTAMP(0)"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        },
+        "mariadb": {
+            "type": "DATETIME"
+        },
+        "sqlserver": {
+            "type": "DATETIME"
+        }
+    },
+    "DEC": {
+        "postgresql": {
+            "type": "DECIMAL"
+        },
+        "mysql": {
+            "type": "DECIMAL"
+        },
+        "mariadb": {
+            "type": "DECIMAL"
+        }
+    },
+    "DECIMAL": {
+        "postgresql": {
+            "type": "DECIMAL"
+        },
+        "mysql": {
+            "type": "DECIMAL"
+        },
+        "mariadb": {
+            "type": "DECIMAL"
+        }
+    },
+    "DOUBLE PRECISION": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE PRECISION"
+        }
+    },
+    "FLOAT": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE"
+        },
+        "sqlserver": {
+            "type": "FLOAT"
+        }
+    },
+    "INT": {
+        "postgresql": {
+            "type": "DECIMAL(38)"
+        },
+        "mysql": {
+            "type": "INT"
+        },
+        "sqlserver": {
+            "type": "NUMERIC(38)"
+        }
+    },
+    "INTEGER": {
+        "postgresql": {
+            "type": "DECIMAL(38)"
+        },
+        "mysql": {
+            "type": "INT"
+        }
+    },
+    "INTERVAL": {
+        "sqlserver": {
+            "type": "DATETIME"
+        }
+    },
+    "INTERVAL DAY TO SECOND(s)": {
+        "postgresql": {
+            "type": "INTERVAL DAY TO SECOND"
+        },
+        "mysql": {
+            "type": "VARCHAR(30)"
+        }
+    },
+    "INTERVAL YEAR TO MONTH": {
+        "postgresql": {
+            "type": "INTERVAL YEAR TO MONTH"
+        },
+        "mysql": {
+            "type": "VARCHAR(30)"
+        }
+    },
+    "LONG": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        },
+        "mariadb": {
+            "type": "LONGTEXT"
+        },
+        "sqlserver": {
+            "type": "VARCHAR(MAX)"
+        }
+    },
+    "LONG RAW": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "LONGBLOB"
+        },
+        "sqlserver": {
+            "type": "IMAGE"
+        }
+    },
+    "NCHAR": {
+        "postgresql": {
+            "type": "CHAR"
+        },
+        "mysql": {
+            "type": "NVARCHAR"
+        },
+        "mariadb": {
+            "type": "NCHAR"
+        },
+        "sqlserver": {
+            "type": "NCHAR"
+        }
+    },
+    "NCHAR VARYING": {
+        "postgresql": {
+            "type": "VARCHAR"
+        },
+        "mysql": {
+            "type": "NCHAR VARYING"
+        }
+    },
+    "NCLOB": {
+        "postgresql": {
+            "type": "TEXT"
+        },
+        "mysql": {
+            "type": "NVARCHAR(max)"
+        },
+        "mariadb": {
+            "type": "LONGTEXT"
+        },
+        "sqlserver": {
+            "type": "NVARCHAR(MAX)"
+        }
+    },
+    "NUMBER": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE"
+        },
+        "sqlserver": {
+            "type": "NUMERIC"
+        }
+    },
+    "NUMERIC": {
+        "postgresql": {
+            "type": "NUMERIC"
+        },
+        "mysql": {
+            "type": "NUMERIC"
+        }
+    },
+    "NVARCHAR2": {
+        "postgresql": {
+            "type": "VARCHAR"
+        },
+        "mysql": {
+            "type": "NVARCHAR"
+        },
+        "sqlserver": {
+            "type": "NVARCHAR"
+        }
+    },
+    "RAW": {
+        "postgresql": {
+            "type": "BYTEA"
+        },
+        "mysql": {
+            "type": "VARBINARY"
+        },
+        "sqlserver": {
+            "type": "VARBINARY"
+        }
+    },
+    "REAL": {
+        "postgresql": {
+            "type": "DOUBLE PRECISION"
+        },
+        "mysql": {
+            "type": "DOUBLE"
+        },
+        "sqlserver": {
+            "type": "FLOAT"
+        }
+    },
+    "ROWID": {
+        "postgresql": {
+            "type": "CHAR(10)"
+        },
+        "mysql": {
+            "type": "CHAR(10)"
+        },
+        "sqlserver": {
+            "type": "CHAR(18)"
+        }
+    },
+    "SMALLINT": {
+        "postgresql": {
+            "type": "DECIMAL(38)"
+        },
+        "mysql": {
+            "type": "DECIMAL(38)"
+        }
+    },
+    "SYS_REFCURSOR": {
+        "postgresql": {
+            "type": "REFCURSOR"
+        }
+    },
+    "TIMESTAMP": {
+        "postgresql": {
+            "type": "TIMESTAMP"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        },
+        "sqlserver": {
+            "type": "DATETIME"
+        }
+    },
+    "TIMESTAMP WITH TIME ZONE": {
+        "postgresql": {
+            "type": "TIMESTAMP WITH TIME ZONE"
+        },
+        "mysql": {
+            "type": "DATETIME"
+        }
+    },
+    "TIMESTAMP(0-7)": {
+        "sqlserver": {
+            "type": "DATETIME"
+        }
+    },
+    "TIMESTAMP(0-7) WITH LOCAL TIME ZONE": {
+        "sqlserver": {
+            "type": "VARCHAR(37)"
+        }
+    },
+    "TIMESTAMP(0-7) WITH TIME ZONE": {
+        "sqlserver": {
+            "type": "VARCHAR(37)"
+        }
+    },
+    "TIMESTAMP(8-9)": {
+        "sqlserver": {
+            "type": "DATETIME"
+        }
+    },
+    "TIMESTAMP(8-9) WITH LOCAL TIME ZONE": {
+        "sqlserver": {
+            "type": "VARCHAR(37)"
+        }
+    },
+    "TIMESTAMP(8-9) WITH TIME ZONE": {
+        "sqlserver": {
+            "type": "VARCHAR(37)"
+        }
+    },
+    "UROWID": {
+        "postgresql": {
+            "type": "VARCHAR"
+        },
+        "mysql": {
+            "type": "VARCHAR"
+        },
+        "sqlserver": {
+            "type": "CHAR(18)"
+        }
+    },
+    "VARCHAR": {
+        "postgresql": {
+            "type": "VARCHAR"
+        },
+        "mysql": {
+            "type": "VARCHAR"
+        }
+    },
+    "VARCHAR2": {
+        "postgresql": {
+            "type": "VARCHAR"
+        },
+        "mysql": {
+            "type": "VARCHAR"
+        },
+        "sqlserver": {
+            "type": "VARCHAR"
+        }
+    },
+    "XMLTYPE": {
+        "postgresql": {
+            "type": "XML"
+        },
+        "mysql": {
+            "type": "LONGTEXT"
+        }
+    }
+}

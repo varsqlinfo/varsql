@@ -93,7 +93,7 @@ CREATE OR REPLACE  TRIGGER {{objectName}}
 	<!-- index 생성-->
 	<index>
 		<create>
-{{#if ddlOpt.addDropClause}}/*DROP INDEX {{objectName}}; */{{/if}}
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
 
 {{#with items.[0]}}
 create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
