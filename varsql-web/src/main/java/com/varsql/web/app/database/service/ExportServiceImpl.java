@@ -282,6 +282,8 @@ public class ExportServiceImpl{
 		DDLCreateOption ddlOption = new DDLCreateOption();
 		while(iter.hasNext()){
 			String objectName = iter.next();
+			
+			if(exportInfo.get(objectName) == null) continue;
 
 			allDDLScript.append("--------- "+objectName+" start----------").append(BlankConstants.NEW_LINE_TWO);
 			List<Map> objList =  exportInfo.get(objectName);

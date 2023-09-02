@@ -66,7 +66,7 @@ COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{{comment}}}';
 {{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
 CREATE OR REPLACE VIEW {{objectName}} ({{item.header}})
 AS
-{{item.body}}
+{{{item.body}}}
         </create>
     </view>
 
@@ -118,22 +118,7 @@ CREATE OR REPLACE {{{sourceText}}}
 		<create>
 {{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
 
-{{#with items.[0]}}
-create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
-on {{../schema}}.{{tableName}}
-{{/with~}}
-({{~#items}}{{addChar @index "" ","}} {{#xif INDEX_TYPE '==' 'NORMAL'}} {{columnName}} {{/xif}}   {{#xif INDEX_TYPE '!=' 'NORMAL'}} {{COLUMN_EXPRESSION}} {{/xif}} {{/items}})
-{{#with items.[0]}}
-{{#xif LOGGING '==' 'YES'}}LOGGING{{/xif}}{{#xif LOGGING '!=' 'YES'}}NO LOGGING{{/xif}}
-TABLESPACE {{TABLESPACE_NAME}}
-PCTFREE {{INI_TRANS}}
-MAXTRANS {{MAX_TRANS}}
-  INITIAL {{INITIAL_EXTENT}}
-  MINEXTENTS {{MIN_EXTENTS}}
-  MAXEXTENTS {{MAX_EXTENTS}}
-  PCTINCREASE {{PCT_INCREASE}}
-  BUFFER_POOL {{BUFFER_POOL}}
-{{/with~}}
+{{{sourceText}}}
 		</create>
 	</index>
 

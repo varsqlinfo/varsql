@@ -392,7 +392,9 @@
 		AND uc.status = 'ENABLED'  
 		where ui.OWNER = #{schema}
 	</otherwise>
-</choose>		
+</choose>	
+		and ui.index_type = 'NORMAL'
+		and (uc.CONSTRAINT_TYPE is null or uc.CONSTRAINT_TYPE not in ('P'))
 		ORDER BY ui.table_name, ui.index_name
 	</select>
 	
@@ -440,7 +442,8 @@
 			where ui.OWNER = #{schema}
 		</otherwise>
 	</choose>
-		and uc.CONSTRAINT_TYPE not in ('P')
+		and ui.index_type = 'NORMAL'
+		and (uc.CONSTRAINT_TYPE is null or uc.CONSTRAINT_TYPE not in ('P'))
 			<if test="custom != null and custom.indexNameList != null">
 				<foreach item="item" index="index" collection="custom.indexNameList" open="and (" close=")" separator="or">
 					ui.INDEX_NAME in (${item})
@@ -618,7 +621,7 @@
 	</when>
 	<otherwise>
 		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
-		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		ON ao.OWNER = alls.SEQUENCE_OWNER and ao.OBJECT_NAME = alls.SEQUENCE_NAME
 		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
@@ -821,57 +824,8 @@
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="hashmap" >
-		SELECT 
-			  aic.COLUMN_POSITION as ORDINAL
-			, ai.INDEX_NAME as "indexName"
-			, ai.TABLE_NAME as "tableName"
-			, ai.INDEX_TYPE
-			, case when UNIQUENESS ='UNIQUE' then 'UQ' else '' end as "type"
-			, ai.TABLE_OWNER
-			, ai.UNIQUENESS
-			, ai.COMPRESSION
-			, ai.TABLESPACE_NAME
-			, ai.LOGGING
-			, ai.PCT_FREE
-			, ai.INI_TRANS
-			, ai.MAX_TRANS
-			, ai.INITIAL_EXTENT
-			, ai.MIN_EXTENTS
-			, ai.MAX_EXTENTS
-			, NVL(ai.PCT_INCREASE,0) AS PCT_INCREASE
-			, ai.BUFFER_POOL
-			, aic.DESCEND as "ascOrDesc"
-			, aic.COLUMN_NAME as "columnName"
-			, aie.COLUMN_EXPRESSION
-	<choose>
-		<when test="baseSchemaFlag">
-		FROM USER_INDEXES ai INNER JOIN USER_IND_COLUMNS aic 
-		ON ai.INDEX_NAME     = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN USER_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		WHERE 1  = 1		
-		</when>
-		<otherwise>
-		FROM ALL_INDEXES ai INNER JOIN ALL_IND_COLUMNS aic 
-		ON ai.OWNER = aic.INDEX_OWNER
-		AND ai.INDEX_NAME = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN ALL_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_OWNER  = aic.INDEX_OWNER
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		where ai.OWNER = #{schema}
-		</otherwise>
-	</choose>	  
-		AND aic.INDEX_NAME      = UPPER( #{objectName})
-		ORDER BY aic.COLUMN_POSITION
+	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="string" >
+		SELECT DBMS_METADATA.GET_DDL('INDEX', UPPER( #{objectName}), #{schema}) FROM DUAL
 	</select>
 
 	<!-- 

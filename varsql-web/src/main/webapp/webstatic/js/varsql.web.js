@@ -770,11 +770,15 @@ if (typeof window != "undefined") {
 						alert('Unauthorized');
 					} else {
 						if (xhr.responseText) {
-							var responseData = JSON.parse(xhr.responseText);
-							if (responseData.message) {
-								alert(responseData.message);
-							} else {
-								alert('File download error');
+							try{
+								var responseData = JSON.parse(xhr.responseText);
+								if (responseData.message) {
+									alert(responseData.message);
+								} else {
+									alert('File download error');
+								}
+							}catch(e){
+								alert('File download error\n'+e.message);
 							}
 						}
 					}

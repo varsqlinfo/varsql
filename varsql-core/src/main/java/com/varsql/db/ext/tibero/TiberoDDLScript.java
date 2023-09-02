@@ -138,7 +138,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 				.schema(dataParamInfo.getSchema())
 				.objectName(objNm)
 				.ddlOpt(ddlOption)
-				.items(sqlSesseion.selectList("indexScriptSource", dataParamInfo))
+				.sourceText(StringUtils.trim(sqlSesseion.selectOne("indexScriptSource", dataParamInfo)))
 			.build();
 
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));

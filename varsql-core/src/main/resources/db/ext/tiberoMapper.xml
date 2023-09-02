@@ -3,11 +3,18 @@
 	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tibero.mata">
+<mapper namespace="oracle.mata">
 
 	<!-- db 정보보기. -->
 	<select id="dbSystemView" parameterType="databaseParamInfo" resultType="hashmap">
-		SELECT NAME as INFO_NAME, VALUE as INFO_VAL, BANNER as ETC FROM v$version;
+		SELECT banner as INFO_VAL FROM v$version
+		where (
+			banner like 'Oracle%'
+			or banner like 'PL/SQL%'
+			or banner like 'CORE%'
+			or banner like 'TNS%'
+			or banner like 'PL/SQL%'
+		)
 	</select>	
 
 	<!-- ================= table start ================= -->
@@ -27,7 +34,7 @@
 		FROM ALL_TABLES ATS 	LEFT  JOIN ALL_TAB_COMMENTS ATC 
 		ON ATS.TABLE_NAME = ATC.TABLE_NAME 
 		and	ATS.OWNER =ATC.OWNER 
-		where	ATS.OWNER = upper(#{schema})
+		where	ATS.OWNER = #{schema}
 	</otherwise>
 </choose>
 		<if test="custom != null and custom.objectNameList != null">
@@ -127,7 +134,7 @@
 		FROM ALL_OBJECTS ao 	LEFT  JOIN ALL_TAB_COMMENTS atc 
 		ON ao.OBJECT_NAME = atc.TABLE_NAME 
 		and	ao.OWNER =atc.OWNER 
-		where	ao.OWNER = upper(#{schema})
+		where	ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and OBJECT_TYPE='VIEW'
@@ -153,7 +160,7 @@
 			FROM ALL_OBJECTS ao 	LEFT  JOIN ALL_TAB_COMMENTS atc 
 			ON ao.OBJECT_NAME = atc.TABLE_NAME 
 			and	ao.OWNER =atc.OWNER 
-			where	ao.OWNER = upper(#{schema})
+			where	ao.OWNER = #{schema}
 		</otherwise>
 	</choose>
 			and OBJECT_TYPE='VIEW'
@@ -167,16 +174,17 @@
 		) tbl ,
 		(
 			select
+				
 				atc.COLUMN_ID
 				, atc.TABLE_NAME
-				, atc.COLUMN_NAME 
+				, atc.COLUMN_NAME
 				, atc.DATA_TYPE as TYPE_NAME
 				, atc.CHAR_LENGTH as COLUMN_SIZE
-		        , atc.DATA_PRECISION as DATA_PRECISION
+				, atc.DATA_PRECISION as DATA_PRECISION
 				, atc.DATA_SCALE as DECIMAL_DIGITS
-				, atc.NULLABLE  as IS_NULLABLE
+				, atc.NULLABLE as IS_NULLABLE
 				, atc.DATA_DEFAULT as COLUMN_DEF
-				, nvl(ACC.COMMENTS,'')  AS "COMMENT" 
+				, nvl(ACC.COMMENTS, null) as "COMMENT"
 	<choose>
 		<when test="baseSchemaFlag">
 			from USER_TAB_COLUMNS atc 	left  join USER_COL_COMMENTS acc 
@@ -189,7 +197,7 @@
 			on atc.TABLE_NAME = acc.TABLE_NAME 
 			and	atc.COLUMN_NAME = acc.COLUMN_NAME 
 			and	atc.OWNER = acc.OWNER 
-			where	atc.OWNER = upper(#{schema}) 
+			where	atc.OWNER = #{schema} 
 		</otherwise>
 	</choose>			
 			order  by atc.TABLE_NAME , atc.COLUMN_ID
@@ -213,7 +221,7 @@
 	</when>
 	<otherwise>
 		FROM ALL_OBJECTS ao  
-		where OWNER = upper(#{schema})
+		where OWNER = #{schema}
 	</otherwise>
 </choose>
 		AND OBJECT_TYPE='PROCEDURE'
@@ -245,8 +253,9 @@
 			, procsb.CREATED   
 			, procsb.STATUS   
 		    , nvl(argsb.ARGUMENT_NAME ,'null') as ARGUMENT_NAME
-		    , argsb.DATA_TYPE as TYPE_NAME
+		    , argsb.TYPE_NAME as TYPE_NAME
 		    , argsb.IN_OUT 
+		    , argsb.SEQUENCE
 		from       
 		(
 		    SELECT  
@@ -261,7 +270,7 @@
 		</when>
 		<otherwise>
 			FROM ALL_OBJECTS ao  
-			where OWNER = upper(#{schema})
+			where OWNER = #{schema}
 		</otherwise>
 	</choose>
 	    	AND OBJECT_TYPE=UPPER(#{objectType})
@@ -272,6 +281,7 @@
 		            ,ARGUMENT_NAME
 					, DATA_TYPE as TYPE_NAME
 					,IN_OUT
+					,SEQUENCE 
 					,OVERLOAD 
 		<choose>
 			<when test="baseSchemaFlag">
@@ -280,12 +290,12 @@
 			</when>
 			<otherwise>
 				FROM  ALL_ARGUMENTS  aa
-				where OWNER = upper(#{schema})
+				where OWNER = #{schema}
 			</otherwise>
 		</choose>
 		 ) argsb
 		 on procsb.OBJECT_NAME = argsb.OBJECT_NAME
-		 ORDER BY procsb.OBJECT_NAME, OVERLOAD
+		 ORDER BY procsb.OBJECT_NAME, OVERLOAD, SEQUENCE
 	</select>
 	
 	<!-- package list -->
@@ -303,7 +313,7 @@
 	</when>
 	<otherwise>
 		FROM ALL_OBJECTS ao  
-		where OWNER = upper(#{schema})
+		where OWNER = #{schema}
 	</otherwise>
 </choose>    
 		AND   ao.OBJECT_TYPE = 'PACKAGE'
@@ -333,7 +343,7 @@
 	</when>
 	<otherwise>
 		FROM ALL_PROCEDURES ap 
-		where OWNER = upper(#{schema})
+		where OWNER = #{schema}
 	</otherwise>
 </choose>
 		 and ap.OBJECT_NAME = upper(#{objectName})
@@ -353,7 +363,7 @@
 	</when>
 	<otherwise>
 		FROM ALL_OBJECTS ao  
-		where OWNER = upper(#{schema})
+		where OWNER = #{schema}
 	</otherwise>
 </choose>
 		AND OBJECT_TYPE='FUNCTION'
@@ -371,18 +381,20 @@
 		FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
 		ON	ui.table_name = uc.table_name
 		AND	ui.index_name = uc.constraint_name
-		where 1 =1 
 		AND	uc.status = 'ENABLED'
+		where 1 =1 
 	</when>
 	<otherwise>
 		FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
 		ON  ui.OWNER = uc.OWNER
 		AND ui.table_name = uc.table_name
 		AND ui.index_name = uc.constraint_name
-		where ui.OWNER = upper(#{schema})
 		AND uc.status = 'ENABLED'  
+		where ui.OWNER = #{schema}
 	</otherwise>
-</choose>		
+</choose>	
+		and ui.index_type = 'NORMAL'
+		and (uc.CONSTRAINT_TYPE is null or uc.CONSTRAINT_TYPE not in ('P'))
 		ORDER BY ui.table_name, ui.index_name
 	</select>
 	
@@ -396,6 +408,15 @@
 				,ui.TABLESPACE_NAME as "TABLE_SPACE"
 				,ui.UNIQUENESS
 				,ui.TABLE_OWNER
+				,ui.COMPRESSION
+				,ui.LOGGING
+				,ui.PCT_FREE
+				,ui.INI_TRANS
+				,ui.MAX_TRANS
+				,ui.INITIAL_EXTENT
+				,ui.MIN_EXTENTS
+				,ui.MAX_EXTENTS
+				,ui.PCT_INCREASE
 				,ui.BUFFER_POOL
 				,CASE
 					WHEN uc.CONSTRAINT_TYPE = 'P' THEN 'PK'
@@ -409,18 +430,20 @@
 			FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
 			ON	ui.TABLE_NAME = uc.TABLE_NAME
 			AND	ui.INDEX_NAME = uc.CONSTRAINT_NAME
-			where 1 =1 
 			AND	uc.STATUS = 'ENABLED'
+			where 1 =1 
 		</when>
 		<otherwise>
 			FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
 			ON  ui.OWNER = uc.OWNER
 			and  ui.TABLE_NAME = uc.TABLE_NAME
 			AND ui.INDEX_NAME = uc.CONSTRAINT_NAME
-			where ui.OWNER = upper(#{schema})
 			AND uc.STATUS = 'ENABLED'  
+			where ui.OWNER = #{schema}
 		</otherwise>
 	</choose>
+		and ui.index_type = 'NORMAL'
+		and (uc.CONSTRAINT_TYPE is null or uc.CONSTRAINT_TYPE not in ('P'))
 			<if test="custom != null and custom.indexNameList != null">
 				<foreach item="item" index="index" collection="custom.indexNameList" open="and (" close=")" separator="or">
 					ui.INDEX_NAME in (${item})
@@ -438,7 +461,7 @@
 		</when>
 		<otherwise>
 			from ALL_IND_COLUMNS
-			where INDEX_OWNER = upper(#{schema})
+			where INDEX_OWNER = #{schema}
 		</otherwise>
 	</choose>
 		)b
@@ -461,7 +484,7 @@
 	<otherwise>
 		FROM  ALL_OBJECTS ao left outer join ALL_TRIGGERS at
 		ON ao.OBJECT_NAME = at.TRIGGER_NAME
-		where ao.OWNER = upper(#{schema})
+		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and ao.object_type = 'TRIGGER'
@@ -496,7 +519,7 @@
 	<otherwise>
 		FROM  ALL_OBJECTS ao left outer join ALL_TRIGGERS at
 		ON ao.OBJECT_NAME = at.TRIGGER_NAME
-		where ao.OWNER = upper(#{schema})
+		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and ao.object_type = 'TRIGGER'
@@ -533,9 +556,9 @@
 		where 1 =1 
 	</when>
 	<otherwise>
-		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
-		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
-		where ao.OWNER = upper(#{schema})
+		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls 
+		ON ao.OWNER = alls.SEQUENCE_OWNER and ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and ao.object_type = 'SEQUENCE'
@@ -566,8 +589,8 @@
 	</when>
 	<otherwise>
 		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
-		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
-		where ao.OWNER = upper(#{schema})
+		ON ao.OWNER = alls.SEQUENCE_OWNER and ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and ao.object_type = 'SEQUENCE'
@@ -598,8 +621,8 @@
 	</when>
 	<otherwise>
 		FROM  ALL_OBJECTS ao left outer join ALL_SEQUENCES alls
-		ON ao.OBJECT_NAME = alls.SEQUENCE_NAME
-		where ao.OWNER = upper(#{schema})
+		ON ao.OWNER = alls.SEQUENCE_OWNER and ao.OBJECT_NAME = alls.SEQUENCE_NAME
+		where ao.OWNER = #{schema}
 	</otherwise>
 </choose>
 		and ao.object_type = 'SEQUENCE'
@@ -623,7 +646,7 @@
 			, atc.CHAR_USED
 			, USER OWNER
 			, atc.DATA_DEFAULT AS "defaultVal"
-			, acc.POSITION as "no"
+			, atc.COLUMN_ID as "no"
 <choose>
 	<when test="baseSchemaFlag">
 		from USER_TAB_COLUMNS atc
@@ -751,7 +774,6 @@
 		order by VIEW_NAME
 	</select>
 
-
 	<!-- 
 		object function  , procedure 소스 
 	 -->
@@ -769,11 +791,12 @@
 		FROM ALL_OBJECTS a INNER JOIN ALL_SOURCE b 
 		ON a.object_name = b.name
 		and a.OBJECT_TYPE = b.type 
-		where a.OWNER = upper(#{schema})
+		where a.OWNER = #{schema}
 		</otherwise>
 	</choose> 	
 		AND a.object_type =UPPER( #{objectType})
 		AND a.object_name =#{objectName}
+		ORDER BY b.line
 	</select>
 
 
@@ -789,7 +812,7 @@
 	</when>
 	<otherwise>
 		FROM all_objects
-		WHERE OWNER = upper(#{schema})
+		WHERE OWNER = #{schema}
 	</otherwise>
 </choose> 
 		AND object_name = UPPER (#{objectName})
@@ -801,57 +824,8 @@
 	<!-- 
 		create index  Script 
 	 -->
-	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="hashmap" >
-		SELECT 
-			  aic.COLUMN_POSITION as ORDINAL
-			, ai.INDEX_NAME as "indexName"
-			, ai.TABLE_NAME as "tableName"
-			, ai.INDEX_TYPE
-			, case when UNIQUENESS ='UNIQUE' then 'UQ' else '' end as "type"
-			, ai.TABLE_OWNER
-			, ai.UNIQUENESS
-			, ai.COMPRESSION
-			, ai.TABLESPACE_NAME
-			, ai.LOGGING
-			, ai.PCT_FREE
-			, ai.INI_TRANS
-			, ai.MAX_TRANS
-			, ai.INITIAL_EXTENT
-			, ai.MIN_EXTENTS
-			, ai.MAX_EXTENTS
-			, NVL(ai.PCT_INCREASE,0) AS PCT_INCREASE
-			, ai.BUFFER_POOL
-			, aic.DESCEND as "ascOrDesc"
-			, aic.COLUMN_NAME as "columnName"
-			, aie.COLUMN_EXPRESSION
-	<choose>
-		<when test="baseSchemaFlag">
-		FROM USER_INDEXES ai INNER JOIN USER_IND_COLUMNS aic 
-		ON ai.INDEX_NAME     = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN USER_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		WHERE 1  = 1		
-		</when>
-		<otherwise>
-		FROM ALL_INDEXES ai INNER JOIN ALL_IND_COLUMNS aic 
-		ON ai.OWNER = aic.INDEX_OWNER
-		AND ai.INDEX_NAME = aic.INDEX_NAME
-		AND ai.TABLE_NAME = aic.TABLE_NAME
-		LEFT JOIN ALL_IND_EXPRESSIONS aie
-		ON 1 = 1
-		AND aie.INDEX_OWNER  = aic.INDEX_OWNER
-		AND aie.INDEX_NAME      = aic.INDEX_NAME
-		AND aie.TABLE_NAME      = aic.TABLE_NAME
-		AND aie.COLUMN_POSITION = aic.COLUMN_POSITION
-		where ai.OWNER = #{schema}
-		</otherwise>
-	</choose>	  
-		AND aic.INDEX_NAME      = UPPER( #{objectName})
-		ORDER BY aic.COLUMN_POSITION
+	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="string" >
+		SELECT DBMS_METADATA.GET_DDL('INDEX', UPPER( #{objectName}), #{schema}) FROM DUAL
 	</select>
 
 	<!-- 
