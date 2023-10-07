@@ -6024,23 +6024,62 @@ const _$toolbar ={
 		})
 
 		const strHtm = [];
-		
-		for(let item of gridCtx.options.toolbar.items){
+		const items = gridCtx.options.toolbar.items; 
 
+		for(let i=0; i < items.length;i++){
+			let item = items[i];
 			if(item.search){
 				gridCtx.config.searchEnable = true; 
-				strHtm.push(' <div class="pubGrid-search-area">');
+				strHtm.push(' <span class="pubGrid-search-area">');
 				strHtm.push('  <select name="dataSearchField"><option value="$all">All</option>'+optHtm.join('')+'</select>');
-				strHtm.push('  <input type="text" name="dataSearch" class="pubGrid-search-field">');
+				strHtm.push('  <input type="text" name="dataSearch" class="input-text">');
 				strHtm.push('  <button type="button" class="pubGrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
-				strHtm.push(' </div>');
+				strHtm.push(' </span>');
+				continue; 
 			}
 
 			if(item.divider){
-				strHtm.push(' <div class="toolbar-divider"></div>');
+				strHtm.push(' <span class="toolbar-divider"></span>');
+				continue; 
 			}
-		}
+			
+			strHtm.push('<span class="pubGrid-toolbar-item" data-item-idx="'+i+'">');
+			
+			let style = item.style??{}; 
+			let labelStyle = style.labelWidth?`width:${style.labelWidth};`:'';
+			let valueStyle = style.valueWidth?`width:${style.valueWidth};`:'';
 
+			let labelTemplate = item.label?`<span class="toolbar-label" style="${labelStyle}">${item.label}</span>`:'';
+
+			if(item.renderType=='dropdown'){
+				const listItem = item.listItem;
+
+				const valueKey =  listItem.valueField ? listItem.valueField : "value";
+				const labelKey =  listItem.labelField ? listItem.labelField : "label";
+				
+				let optTemplate = '';
+				(listItem.list??[]).forEach(val=>{
+					const attr = `${val.selected ? "selected" : ""} ${val.disabled ? "disabled" : ""}`;
+					if (isUndefined(val[valueKey]) && val.label) {
+						optTemplate += `<option value="${val.value || ""}" ${attr}>${val.label}</option>`;
+					} else {
+						optTemplate += `<option value="${val[valueKey]}" ${attr}>${val[labelKey]}</option>`;
+					}
+				})
+
+				strHtm.push(`${labelTemplate}<select name="${item.key}" class="toolbar-dropdown" style="${valueStyle}">${optTemplate}</select>`);
+			}
+
+			if(item.renderType =='text'){
+				strHtm.push(`${labelTemplate}<input type="text" name="${item.key}" class="input-text toolbar-text" style="${valueStyle}">`);
+			}
+
+			if(item.renderType =='button'){
+				strHtm.push(`<button type="button" class="pubGrid-btn toolbar-button ${style.customClass??''}" style="${valueStyle}">${item.label}</button>`);
+			}
+			strHtm.push(`</span>`);
+		}
+		
 		return strHtm.join('');
 	}
 	,initEvent: function (gridCtx){
@@ -6074,6 +6113,48 @@ const _$toolbar ={
 				return false; 
 			}
 		});
+
+		// dropdown change 
+		toolbarEle.find('.toolbar-dropdown').on('change', function (e){
+			const sEle = $(this); 
+			const val = $(this).val();
+
+			const idx = sEle.closest('.pubGrid-toolbar-item').attr('data-item-idx')
+
+			const sItem = toolbarOpts.items[+idx];
+
+			if(sItem.change){
+				sItem.change.call(null, {value:val, item: sItem});
+			}
+		})
+
+		// dropdown change 
+		toolbarEle.find('.toolbar-text').on('input', function (e){
+			const sEle = $(this); 
+			const val = $(this).val();
+
+			const idx = sEle.closest('.pubGrid-toolbar-item').attr('data-item-idx')
+
+			const sItem = toolbarOpts.items[+idx];
+
+			if(sItem.change){
+				sItem.change.call(null, {value:val, item: sItem});
+			}
+		})
+
+		// button click
+		toolbarEle.find('.toolbar-button').on('click', function (e){
+			const sEle = $(this); 
+			const val = $(this).val();
+
+			const idx = sEle.closest('.pubGrid-toolbar-item').attr('data-item-idx');
+
+			const sItem = toolbarOpts.items[+idx];
+
+			if(sItem.click){
+				sItem.click.call(null, {item: sItem});
+			}
+		})
 	}
 }
 
@@ -6683,7 +6764,7 @@ var _$setting = {
 			strHtm.push('<div class="pubGrid-setting-simple-body">');
 			strHtm.push(' <div class="pubGrid-search-area">');
 			strHtm.push('  <select name="dataSearchField"><option value="$all">All</option>'+optHtmStr+'</select>');
-			strHtm.push('  <input type="text" name="dataSearch" class="pubGrid-search-field">');
+			strHtm.push('  <input type="text" name="dataSearch" class="input-text">');
 			strHtm.push('  <button type="button" class="pubGrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
 			strHtm.push(' </div>');
 			
