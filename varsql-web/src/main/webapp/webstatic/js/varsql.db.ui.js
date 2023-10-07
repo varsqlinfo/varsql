@@ -606,7 +606,11 @@ _ui.headerMenu ={
 							}
 							
 							if(menu_mode3 =='tableddlconvert'){
-								_self.openPreferences(VARSQL.message('header.menu.tool.utils.tableddlconvert'),VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid));
+								_self.openPreferences(VARSQL.message('header.menu.tool.utils.tableddlconvert')
+								,VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid)
+								,{
+									width:700,height:470
+								});
 								return ;
 							}
 							
