@@ -91,7 +91,6 @@ public final class SQLResultSetUtils {
 		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
 
 		int gridIdx=0;
-		int columnType=-1;
 		String columnName = "";
 		String columnTypeName;
 		GridColumnInfo columnInfo;
@@ -109,7 +108,6 @@ public final class SQLResultSetUtils {
 				columnName = viewColumnMap.get(columnName.toUpperCase()).getString("alias");
 			}
 
-			columnType = rsmd.getColumnType(idx);
 			columnTypeName = rsmd.getColumnTypeName(idx);
 
 			if(columnKeyCheck.containsKey(columnName)){
@@ -124,7 +122,7 @@ public final class SQLResultSetUtils {
 			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();
-			setColumnTypeInfo(columnType, columnInfo);
+			setColumnTypeInfo(dataType.getTypeCode(), columnInfo);
 			
 			if(gridKeyAlias) {
 				columnInfo.setKey(columnGridKeyArr[gridIdx]);
@@ -136,7 +134,7 @@ public final class SQLResultSetUtils {
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
 			columnInfo.setDbType(dataType.getTypeName());
-			columnInfo.setDbTypeCode(columnType);
+			columnInfo.setDbTypeCode(dataType.getTypeCode());
 			columnInfo.setWidth(columnWidth);
 
 			columnInfoList.add(columnInfo);
@@ -214,7 +212,6 @@ public final class SQLResultSetUtils {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int count = rsmd.getColumnCount();
 
-		int columnType=-1;
 		String columnTypeName = "";
 		GridColumnInfo columnInfo=null;
 		List<GridColumnInfo> columnInfoList = new LinkedList<GridColumnInfo>();
@@ -236,7 +233,6 @@ public final class SQLResultSetUtils {
 				columnName = viewColumnMap.get(columnName.toUpperCase()).getString("alias");
 			}
 			
-			columnType = rsmd.getColumnType(idx);
 			columnTypeName = rsmd.getColumnTypeName(idx);
 			
 			if(columnNameDuplicateCheck.containsKey(columnName)){
@@ -251,7 +247,7 @@ public final class SQLResultSetUtils {
 			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
 
 			columnInfo = new GridColumnInfo();
-			setColumnTypeInfo(columnType, columnInfo);
+			setColumnTypeInfo(dataType.getTypeCode(), columnInfo);
 			
 			if (gridKeyAlias) {
 				columnInfo.setKey(columnGridKeyArr[gridIdx]);
@@ -262,7 +258,7 @@ public final class SQLResultSetUtils {
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
 			columnInfo.setDbType(dataType.getTypeName());
-			columnInfo.setDbTypeCode(columnType);
+			columnInfo.setDbTypeCode(dataType.getTypeCode());
 			columnInfo.setWidth(columnWidth);
 
 			columnInfoList.add(columnInfo);

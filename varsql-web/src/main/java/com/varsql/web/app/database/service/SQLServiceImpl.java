@@ -466,7 +466,7 @@ public class SQLServiceImpl{
 		VarsqlFileType exportType = sqlGridDownloadInfo.getExportType();
 
 		String exportCharset = VarsqlConstants.CHAR_SET;
-		String downloadName = "varsql-select-data";
+		String downloadName = StringUtils.isBlank(sqlGridDownloadInfo.getFileName())? "varsql-select-data" : sqlGridDownloadInfo.getFileName();
 
 		AbstractWriter writer = null;
 		JsonParser parser =null;

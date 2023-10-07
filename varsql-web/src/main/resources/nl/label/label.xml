@@ -268,5 +268,6 @@
 <entry key="sender">보낸사람</entry>
 <entry key="recipient">받는사람</entry>
 <entry key="complete">완료</entry>
+<entry key="download">다운로드</entry>
 
 </properties>

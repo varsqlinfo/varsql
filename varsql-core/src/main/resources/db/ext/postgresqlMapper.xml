@@ -419,7 +419,7 @@
 			SELECT 
 				'COL' as "type" 
 				,schemaname as "schema"
-				, PS.RELNAME as "name"
+				, PA.ATTNAME as "name"
 				, PD.DESCRIPTION as "comment"
 				,PA.ATTNUM as sort_order
 			FROM PG_STAT_ALL_TABLES PS

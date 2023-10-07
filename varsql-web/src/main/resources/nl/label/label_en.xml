@@ -248,5 +248,6 @@
 <entry key="sender">Sender</entry>
 <entry key="recipient">Recipient</entry>
 <entry key="complete">Complete</entry>
+<entry key="download">Download</entry>
 
 </properties>

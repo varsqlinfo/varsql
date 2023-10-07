@@ -120,6 +120,49 @@ var _initialized = false
 			}
 		}
 	}
+	,toolbar:{
+		enabled : false
+		,align : 'right'	// left, center, right 
+		,height : 30
+		,items:[]
+	}
+	/*
+	toolbar:{
+	enabled : false
+	,align : 'center'
+	,items:[
+		{
+		label : string,
+		renderType?: 'dropdown' | 'text' | 'button',
+		style: {
+			labelWidth: stirng | number;
+			valueWidth: stirng | number;
+			customClass: string;
+		},
+		listItem : {
+			labelField: string;
+			valueField: string;
+			list: any[];
+		},
+		change : ()=>{
+
+		}
+		,click :()=>{
+
+		}
+		},
+		{
+		search :true,
+		callback : (keyword)=>{
+
+		}
+		},
+		,{
+		divider :true
+		}
+	]
+	}
+	*/
 	,asideOptions :{	// aside 옵션
 		lineNumber : {	// 번호
 			enabled :false	// 활성화 여부
@@ -487,9 +530,11 @@ Plugin.prototype ={
 		this.config = {
 			gridWidth :{aside : 0,left : 0, main:0, total:0, mainOverWidth:0 ,mainInsideWidth:0}
 			, container :{height : 0,width : 0, bodyHeight:0}
+			, searchEnable: false
 			, header :{height : 0, width : 0}
 			, footer :{height : 0, width : 0}
 			, navi :{height : 0, width : 0}
+			, toolbar :{height : 0, width : 0}
 			, initSettingFlag :false
 			, aside :{items :[], lineNumberCharLength : 0, initWidth: 0}
 			, select : {}
@@ -1009,7 +1054,7 @@ Plugin.prototype ={
 			this.config.orginData = arrayCopy(this.options.tbodyItem);			
 		}
 
-		if(settingOpt.enabled ===true){
+		if(this.config.searchEnable ===true){
 			
 			var schArr = [];
 			var orginData = this.config.orginData;
@@ -1018,7 +1063,7 @@ Plugin.prototype ={
 			var schField = settingOpt.configVal.search.field ||''
 				,schVal = settingOpt.configVal.search.val ||'';
 						
-			schVal = _$util.trim(schVal); 
+			schVal = _$util.trim(schVal);
 
 			this.config.settingConfig.searchCheckItem = false; 
 
@@ -1562,6 +1607,7 @@ Plugin.prototype ={
 				
 				_this.element.container = $('#'+_this.prefix+'_container');
 				_this.element.left = $('#'+_this.prefix+'_left');
+				_this.element.toolbar = $('#'+_this.prefix+'_toolbarContainer');
 				_this.element.header= $('#'+_this.prefix+'_headerContainer');
 				_this.element.body = $('#'+_this.prefix +'_bodyContainer');
 				_this.element.footer = $('#'+_this.prefix +'_footerContainer');
@@ -1598,6 +1644,7 @@ Plugin.prototype ={
 				_this.calcViewCol(0);
 
 				_this._initHeaderEvent();
+				_this._initToolbar();
 				_this._headerResize(headerOpt.resize.enabled);
 				_this.scroll();
 
@@ -1804,6 +1851,12 @@ Plugin.prototype ={
 		var header_height = this.config.header.height;
 
 		this.config.navi.height = 0;
+		this.config.toolbar.height = 0;
+
+		if(this.options.toolbar.enabled){
+			this.element.toolbar.show();
+			this.config.toolbar.height = this.element.toolbar.outerHeight();
+		}
 
 		if(this.options.navigation.enablePaging === true || this.options.navigation.status === true){
 			this.element.navi.show();
@@ -1872,7 +1925,8 @@ Plugin.prototype ={
 
 		opt = objectMerge(dimension ,opt);
 		cfg.container.height = opt.height;
-		var mainHeight = opt.height - cfg.navi.height;
+
+		var mainHeight = opt.height - cfg.navi.height - cfg.toolbar.height;
 
 		if(type =='init' || type =='resize'){
 
@@ -2719,6 +2773,9 @@ Plugin.prototype ={
 		if(drawFlag !== false){
 			this.drawGrid();
 		}
+	}
+	,_initToolbar: function (){
+		_$toolbar.init(this);
 	}
 	/**
 	 * @method _initHeaderEvent
@@ -4737,7 +4794,19 @@ var _$template = {
 
 		var prefix =_this.prefix; 
 
-		var templateHtml =  '<div class="pubGrid-wrapper"><div id="'+prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
+		var templateHtml =  '<div class="pubGrid-wrapper">'
+
+		if(_this.options.toolbar.enabled){
+			const alignClass = {
+				'left':'text-al'
+				,'center':'text-ac'
+				,'right':'text-ar'
+			}
+			const align = alignClass[_this.options.toolbar.align]??alignClass['right'];
+			templateHtml+=`<div id="${prefix}_toolbarContainer" class="pubGrid-toolbar ${align}" style="height:${_this.options.toolbar.height}px;"></div>`;
+		}
+
+		templateHtml+='<div id="'+prefix+'_pubGrid" class="pubGrid pubGrid-noselect" tabindex="-1"  style="outline:none !important;overflow:hidden;width:'+_this.config.container.width+'px;">'
 			+' 	<div id="'+prefix+'_container" class="pubGrid-container '+(_this.config.fixedHeaderIndex >0 ? 'pubGrid-col-fixed':'')+'" style="overflow:hidden;">'
 			+'    <div class="pubGrid-setting-btn"><svg version="1.1" width="'+vArrowWidth+'px" height="'+vArrowWidth+'px" viewBox="0 0 54 54" style="enable-background:new 0 0 54 54;">	'
 			+'<g><path id="'+prefix+'_settingBtn" d="M51.22,21h-5.052c-0.812,0-1.481-0.447-1.792-1.197s-0.153-1.54,0.42-2.114l3.572-3.571	'
@@ -5942,6 +6011,72 @@ var _$sorting = {
 	
 }
 
+const _$toolbar ={
+	init : function (gridCtx){
+		gridCtx.element.toolbar.empty().html (this.template(gridCtx));
+		this.initEvent(gridCtx);
+	}
+	,template : function (gridCtx){
+		var optHtm = [];
+
+		gridCtx.config.currentHeaderItems.forEach(function (item){
+			optHtm.push('<option value="'+item.key+'">'+item.label+'</option>');
+		})
+
+		const strHtm = [];
+		
+		for(let item of gridCtx.options.toolbar.items){
+
+			if(item.search){
+				gridCtx.config.searchEnable = true; 
+				strHtm.push(' <div class="pubGrid-search-area">');
+				strHtm.push('  <select name="dataSearchField"><option value="$all">All</option>'+optHtm.join('')+'</select>');
+				strHtm.push('  <input type="text" name="dataSearch" class="pubGrid-search-field">');
+				strHtm.push('  <button type="button" class="pubGrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
+				strHtm.push(' </div>');
+			}
+
+			if(item.divider){
+				strHtm.push(' <div class="toolbar-divider"></div>');
+			}
+		}
+
+		return strHtm.join('');
+	}
+	,initEvent: function (gridCtx){
+		const toolbarEle = gridCtx.element.toolbar;
+		const toolbarOpts = gridCtx.options.toolbar;
+
+		const dataSearchFieldEle = toolbarEle.find('[name="dataSearchField"]')
+			,dataSearchEle = toolbarEle.find('[name="dataSearch"]')
+			,dataSearchBtn = toolbarEle.find('.data-search-btn');
+		
+		dataSearchBtn.on('click.data.search',  function (e){
+			var searchVal = dataSearchEle.val(); 
+
+			gridCtx.options.setting.configVal.search = {
+				field : dataSearchFieldEle.val()
+				,val : searchVal
+			};
+
+			gridCtx._setSearchData('search');		
+			
+			if(isFunction(toolbarOpts.callback)){
+				toolbarOpts.callback.call(null,{evt :e , item : {search : searchVal}})
+			}
+		});
+
+		dataSearchEle.on('keydown.data.search',  function (e){
+			var keycode = eventKeyCode(e);
+
+			if (keycode == 13) {
+				dataSearchBtn.trigger('click.data.search');
+				return false; 
+			}
+		});
+	}
+}
+
 var _$setting = {
 	filterCheckboxIdx : 0
 	/**
@@ -5950,6 +6085,7 @@ var _$setting = {
 	 */
 	,init : function (gridCtx, btnEnabledFlag){
 		var _this = this; 
+		gridCtx.config.searchEnable = true; 
 		var settingOpt = gridCtx.options.setting;
 
 		var settingBtn = gridCtx.element.container.find('.pubGrid-setting-btn'); 
@@ -6548,7 +6684,7 @@ var _$setting = {
 			strHtm.push(' <div class="pubGrid-search-area">');
 			strHtm.push('  <select name="dataSearchField"><option value="$all">All</option>'+optHtmStr+'</select>');
 			strHtm.push('  <input type="text" name="dataSearch" class="pubGrid-search-field">');
-			strHtm.push('  <button type="button" class="pubgrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
+			strHtm.push('  <button type="button" class="pubGrid-btn data-search-btn">'+gridCtx.options.i18n['search.button']+'</button>');
 			strHtm.push(' </div>');
 			
 			if(settingOpt.enableColumnFix ===true){
@@ -6564,7 +6700,7 @@ var _$setting = {
 
 			strHtm.push('	<div class="pubGrid-setting-header">All Search : <input class="input-sch" type="text" name="dataSearch" />');
 			strHtm.push('	<button type="button" class="data-search-btn">Search</button>');
-			strHtm.push('   <button type="button" class="pubgrid-btn header-close-btn"></button></div>');
+			strHtm.push('   <button type="button" class="pubGrid-btn header-close-btn"></button></div>');
 			strHtm.push('	<div class="pubGrid-setting-body">');
 			strHtm.push('		<div class="tcol all-item-panel">');
 			strHtm.push('			<div class="label">All Column</div>');

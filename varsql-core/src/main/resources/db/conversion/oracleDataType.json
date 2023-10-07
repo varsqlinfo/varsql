@@ -228,7 +228,7 @@
     },
     "NUMBER": {
         "postgresql": {
-            "type": "DOUBLE PRECISION"
+            "type": "NUMERIC"
         },
         "mysql": {
             "type": "DOUBLE"

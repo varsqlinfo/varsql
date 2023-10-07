@@ -11,8 +11,11 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.joda.time.DateTime;
 
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.db.datatype.handler.MetaDataHandler;
@@ -540,9 +543,13 @@ public enum DefaultDataType implements DataType {
 	),
 	TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE, DBColumnMetaInfo.TIME, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
-	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP_WITH_TIMEZONE, value)) return ;
+	            if(setNullValue(pstmt, parameterIndex, Types.TIME_WITH_TIMEZONE, value)) return ;
 				
-				pstmt.setObject(parameterIndex, value);
+	            if(value instanceof String) {
+					pstmt.setObject(parameterIndex, VarsqlDateUtils.stringToTime(value.toString()));
+				}else {
+					pstmt.setObject(parameterIndex, value);
+				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
@@ -559,7 +566,7 @@ public enum DefaultDataType implements DataType {
 	            if(setNullValue(pstmt, parameterIndex, Types.TIMESTAMP_WITH_TIMEZONE, value)) return ;
 				
 	            if(value instanceof String) {
-					pstmt.setObject(parameterIndex, VarsqlDateUtils.stringToTimestamp(value.toString()).getTime());
+					pstmt.setObject(parameterIndex, VarsqlDateUtils.stringToTimestamp(value.toString()));
 				}else {
 					pstmt.setObject(parameterIndex, value);
 				}
@@ -570,7 +577,9 @@ public enum DefaultDataType implements DataType {
 				
 				if(isNull(val)) return null;
 				
-				return val.toLocalDateTime().toString();
+				
+				
+				return val.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
 			}
 		}).build()
 	),

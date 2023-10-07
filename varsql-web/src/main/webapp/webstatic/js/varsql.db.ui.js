@@ -606,20 +606,16 @@ _ui.headerMenu ={
 							}
 							
 							if(menu_mode3 =='tableddlconvert'){
-								var popt = 'width=1280,height=700,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
-								
-								
-								_self.openPreferences('Table DDL Convert',VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid));
-								
-								//_self.openMenuDialog(VARSQL.message('menu.file.export'),'tableDDLConvert',{type:VARSQL.uri.database, url:'/utils/tableDDLConvert?conuid='+_g_options.param.conuid}, {'width':600,'height' : 400});
-								
-								/*
-								VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid), {
-									name : 'multidbsqlexecute'+_g_options.param.conuid
-									,viewOption : popt
-								})
-								*/
-
+								_self.openPreferences(VARSQL.message('header.menu.tool.utils.tableddlconvert'),VARSQL.getContextPathUrl('/database/utils/tableDDLConvert?conuid='+_g_options.param.conuid));
+								return ;
+							}
+							
+							if(menu_mode3 =='tablecolumnsearch'){
+								_self.openPreferences(VARSQL.message('header.menu.tool.utils.tablecolumnsearch'),
+								VARSQL.getContextPathUrl('/database/utils/tableColumnSearch?conuid='+_g_options.param.conuid)
+								,{
+									width:800,height:500
+								});
 								return ;
 							}
 
@@ -779,24 +775,24 @@ _ui.headerMenu ={
 		}
 	}
 	//header 메뉴 환경설정처리.
-	,openPreferences : function (title , loadUrl){
+	,openPreferences : function (title , loadUrl, opt){
 		var _self = this;
+		
+		const opts = VARSQL.util.objectMerge({width:700,height:400}, opt??{});
 
-		if(_self.preferencesDialog ==''){
-			_self.preferencesDialog = $('#preferencesTemplate').dialog({
-				height: 460
-				,width: 700
-				,modal: true
-				,buttons: {
-					Close:function (){
-						_self.preferencesDialog.dialog( "close" );
-					}
-				}
-				,close: function() {
+		_self.preferencesDialog = $('#preferencesTemplate').dialog({
+			height: opts.height
+			,width: opts.width
+			,modal: true
+			,buttons: {
+				Close:function (){
 					_self.preferencesDialog.dialog( "close" );
 				}
-			});
-		}
+			}
+			,close: function() {
+				_self.preferencesDialog.dialog( "close" );
+			}
+		});
 
 		VARSQLUI.frame.open('#preferencesTemplate iframe', loadUrl)
 

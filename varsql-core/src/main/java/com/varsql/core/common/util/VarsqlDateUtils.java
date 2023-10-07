@@ -101,7 +101,7 @@ public final class VarsqlDateUtils {
 	 * @return
 	 */
 	public static Time stringToTime(String date) {
-		return new Time(DateTime.parse(date, VarsqlConstants.timeFormatter).getMillis());
+		return new Time(DateTime.parse(date).getMillis());
 	}
 
 	public static Date stringToTime(String date, String format) {
@@ -117,7 +117,7 @@ public final class VarsqlDateUtils {
 	 * @return
 	 */
 	public static Date stringToDate(String date) {
-		return DateTime.parse(date, VarsqlConstants.dateFormatter).toDate();
+		return DateTime.parse(date).toDate();
 	}
 
 	public static Date stringToDate(String date, String format) {
@@ -133,7 +133,7 @@ public final class VarsqlDateUtils {
 	 * @return
 	 */
 	public static Timestamp stringToTimestamp(String date) {
-		return new Timestamp(DateTime.parse(date, VarsqlConstants.timestampFormatter).getMillis());
+		return new Timestamp(DateTime.parse(date).getMillis());
 	}
 
 	public static Timestamp stringToTimestamp(String date, String format) {
@@ -141,7 +141,7 @@ public final class VarsqlDateUtils {
 	}
 	
 	public static Timestamp millisecondStringToTimestamp(String date) {
-		return new Timestamp(DateTime.parse(date, VarsqlConstants.timestampMilliFormatter).getMillis());
+		return new Timestamp(DateTime.parse(date).getMillis());
 	}
 	
 	public static Timestamp millisecondStringToTimestamp(String date, String format) {

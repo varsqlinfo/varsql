@@ -142,4 +142,41 @@ public class DatabaseUtilsController extends AbstractController  {
 		
 		return getModelAndView("/tableDDLConvert", VIEW_PAGE.DATABASE_UTILS, model);
 	}
+	
+	/**
+	 * 
+	 * @method  : tableColumnSearch
+	 * @desc : 테이블 컬럼 검색
+	 * @author      : ytkim
+	 * @param preferencesInfo
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tableColumnSearch", method = RequestMethod.GET)
+	public ModelAndView tableColumnSearch(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
+		ModelMap model = mav.getModelMap();
+		
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
+		
+		model.addAttribute("currentSchemaName", dpi.getSchema());
+		
+		if(SecurityUtil.isSchemaView(dpi)) {
+			
+			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
+			
+			if(venderType.isUseDatabaseName()) {
+				model.addAttribute("schemaList", dbMetaEnum.getDatabases(dpi));
+			}else {
+				model.addAttribute("schemaList", dbMetaEnum.getSchemas(dpi));
+			}
+		}else {
+			model.addAttribute("schemaInfo", "");
+		}
+		
+		return getModelAndView("/tableColumnSearch", VIEW_PAGE.DATABASE_UTILS, model);
+	}
 }

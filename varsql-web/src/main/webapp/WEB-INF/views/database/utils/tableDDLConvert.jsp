@@ -53,6 +53,7 @@
 					<button type="button" class="btn-md" @click="convert()"><spring:message code="convert" /></button>
 				</template>
 				<template v-else>
+					<button type="button" class="btn-md" @click="download()"><spring:message code="download" /></button>
 					<button type="button" class="btn-md" @click="step=1"><spring:message code="step.prev" /></button>
 				</template>
 			</div>
@@ -135,15 +136,21 @@ VarsqlAPP.vueServiceBean({
 					
 					_self.tableDDLEditor.setValue(scriptArr.join('\n\n'));
 					
-					//_self.ddl = hljs.highlight('sql', scriptArr.join()).value;
 				}
 			});
-
-// 			VARSQL.req.download({
-// 				type: 'post'
-// 				,url: {type:VARSQL.uri.database, url:'/utils/gen/convertDbDDL'}
-// 				,params : param
-// 			});
+		}
+		,download:function (){
+			var params ={
+   				exportType :'text'
+   				,fileName :'table-convert-ddl'+VARSQL.util.dateFormat(new Date(),'yyyy-mm-dd')+'.sql'
+   				,content : this.tableDDLEditor.getValue()
+   			};
+    		
+   			VARSQL.req.download({
+   				type: 'post'
+   				,url: '/download'
+   				,params: params
+   			});
 		}
 		,setUserConfigInfo : function (){
 			var _self = this;
