@@ -782,7 +782,7 @@ _ui.headerMenu ={
 	,openPreferences : function (title , loadUrl, opt){
 		var _self = this;
 		
-		const opts = VARSQL.util.objectMerge({width:700,height:400}, opt??{});
+		const opts = VARSQL.util.objectMerge({width:700,height:440}, opt??{});
 
 		_self.preferencesDialog = $('#preferencesTemplate').dialog({
 			height: opts.height

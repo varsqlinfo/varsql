@@ -276,7 +276,7 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < columnSize; colIdx++) {
 					resultSetGridInfo = resultSetGridInfoArr[colIdx];
 					dataType = resultSetGridInfo.getDataType();
-					row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
+					row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR, true));
 				}
 				boolean addFlag = selectExecutorHandler.handle(SelectInfo.builder().rowObject(row).columnInfoList(columnInfoList).build());
 

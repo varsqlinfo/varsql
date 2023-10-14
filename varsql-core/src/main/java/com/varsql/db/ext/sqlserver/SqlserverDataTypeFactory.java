@@ -32,7 +32,7 @@ public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 		addDataType(new VenderDataType("DATETIMEOFFSET", DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode(), DBColumnMetaInfo.DATE));
 		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.BINARY.getTypeCode(), DBColumnMetaInfo.OTHER, -1, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
 			@Override
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
 				byte[] val = rs.getBytes(columnIndex);
 				
 				if(val == null) return null;
