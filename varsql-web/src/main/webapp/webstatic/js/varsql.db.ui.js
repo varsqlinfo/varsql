@@ -773,17 +773,17 @@ _ui.headerMenu ={
 		if(type=='spec'){
 			_self.openPreferences('Table Spec Export',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
 		}else if(type=='ddl'){
-			_self.openPreferences('DDL Export',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid));
+			_self.openPreferences('DDL Export',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid), {width:700,height:470});
 		}else if(type=='tableData'){
 			_self.openPreferences('Table Data Export',VARSQL.getContextPathUrl('/database/tools/export/tableDataExport?conuid='+_g_options.param.conuid));
 		}
 	}
 	//header 메뉴 환경설정처리.
-	,openPreferences : function (title , loadUrl, opt){
+	,openPreferences : function (title, loadUrl, opt){
 		var _self = this;
 		
-		const opts = VARSQL.util.objectMerge({width:700,height:440}, opt??{});
-
+		const opts = VARSQL.util.objectMerge({width:700,height:470}, opt??{});
+		
 		_self.preferencesDialog = $('#preferencesTemplate').dialog({
 			height: opts.height
 			,width: opts.width

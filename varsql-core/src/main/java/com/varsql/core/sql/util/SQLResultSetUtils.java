@@ -21,6 +21,7 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.beans.GridColumnInfo;
@@ -133,7 +134,7 @@ public final class SQLResultSetUtils {
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
-			columnInfo.setDbType(dataType.getTypeName());
+			columnInfo.setDbType(dataType == DefaultDataType.OTHER ? columnTypeName :dataType.getTypeName());
 			columnInfo.setDbTypeCode(dataType.getTypeCode());
 			columnInfo.setWidth(columnWidth);
 
@@ -257,7 +258,7 @@ public final class SQLResultSetUtils {
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
-			columnInfo.setDbType(dataType.getTypeName());
+			columnInfo.setDbType(dataType == DefaultDataType.OTHER ? columnTypeName :dataType.getTypeName());
 			columnInfo.setDbTypeCode(dataType.getTypeCode());
 			columnInfo.setWidth(columnWidth);
 

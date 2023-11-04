@@ -48,9 +48,7 @@ public class DataTypeHandler {
 	
 	private static ResultSetHandler getDefaultResultSetHandler() {
 		return new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
-				return rs.getObject(columnIndex);
-			}
+			
 		};
 	}
 	

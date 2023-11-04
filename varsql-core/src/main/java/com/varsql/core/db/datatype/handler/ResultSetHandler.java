@@ -27,7 +27,7 @@ public interface ResultSetHandler {
 			return dataType.getTypeName() + " BINARY";
 		}
 		
-		return obj;
+		return obj.toString();
 	}
 
 	default Object getValue(DataType dataType, ResultSet rs, String columnLabel, DataExceptionReturnType dert) throws SQLException {
@@ -49,7 +49,7 @@ public interface ResultSetHandler {
 			return dataType.getTypeName() + " BINARY";
 		}
 		
-		return obj;
+		return obj.toString();
 	}
 }
 

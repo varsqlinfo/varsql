@@ -19,7 +19,7 @@ buildscript {
 			springData: '2.2.6.RELEASE'
 			,springSecurity: '5.6.2'
 			,servletApi: '4.0.0'
-			,jackson : '2.13.1'
+			,jackson : '2.15.0'
 			,poi : '5.2.0'
 			,tomcat : '8.5.49'
 			,jspApi : '2.3.3'
@@ -64,7 +64,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.11'
+	varsqlVersion = '1.3.12'
 }
 
 //소스 분석.
@@ -208,11 +208,23 @@ subprojects {
 		// guava
 		implementation group: 'com.google.guava', name: 'guava', version: '18.0'
 
-		// xml to json
-		implementation(
-        	[group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: def_version.jackson]
-        )
-
+		implementation( // jackson
+			[ group: 'com.fasterxml.jackson.core' , name: 'jackson-core' , version: def_version.jackson ]
+			,[ group: 'com.fasterxml.jackson.core' , name: 'jackson-annotations' , version: def_version.jackson ]
+			,[ group: 'com.fasterxml.jackson.core' , name: 'jackson-databind' , version: def_version.jackson ]
+			
+			// datatype
+			,[ group: 'com.fasterxml.jackson.datatype' , name: 'jackson-datatype-jsr310' , version: def_version.jackson ]
+			,[ group: 'com.fasterxml.jackson.datatype' , name: 'jackson-datatype-jdk8' , version: def_version.jackson ]
+			
+			// dataformat
+			,[ group: 'com.fasterxml.jackson.dataformat' , name: 'jackson-dataformat-xml' , version: def_version.jackson ]
+			,[ group: 'com.fasterxml.jackson.dataformat' , name: 'jackson-dataformat-csv' , version: def_version.jackson ]
+			
+			//module
+			,[ group: 'com.fasterxml.jackson.module' , name: 'jackson-module-parameter-names' , version: def_version.jackson ] 
+		)
+		
 		implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
 		implementation group: 'org.jdom' , name: 'jdom' , version: '1.1.3'
 		implementation group: 'org.mybatis' , name: 'mybatis' , version: '3.5.5'
