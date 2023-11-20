@@ -17,6 +17,20 @@ varsql websqltool sqltool
 - lombok : 1.18.10
 
 
+# 도커 
+```
+- 도커 내려받기
+docker pull varsql/app:latest
+
+- 이미지 실행. 
+docker run -d --privileged --name=varsql-app -p 12312:8080 varsql/app
+
+- 웹 뷰
+http://localhost:12312/vsql
+id : varsqladmin
+pw : varsqladmin
+```
+
 # Varsql 실행 및 문제 해결
 - [wiki](https://github.com/varsqlinfo/varsql/wiki/)
 
