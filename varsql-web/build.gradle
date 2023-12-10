@@ -118,6 +118,12 @@ war{
 	}
 
 	doLast {
+	
+		def exportFileName = new StringBuilder().append('vsql').append(appVersion).append('.war')
+		
+		println("exportFileName : $exportFileName")
+		exportFileRename(exportFileName, 'vsql-docker.war');
+		
 		println("################# export info #######################")
 		println("appVersion : " + appVersion)
 		println("war export path : " + archivePath.parent)
@@ -132,4 +138,20 @@ war{
 		}
 		*/
     }
+}
+
+boolean exportFileRename(changeFileName, newFileName){
+	// docker file 용 war 파일 복사	
+	
+	println("exportFileRename changeFileName : $changeFileName")
+	
+	copy{
+		from 'build/libs'
+		into 'build/libs'
+		include new StringBuilder().append(changeFileName).toString()
+		rename new StringBuilder().append(changeFileName).toString(), new StringBuilder().append(newFileName).toString()
+		// docker file 용 war 파일 복사	
+	}
+	
+	true
 }

@@ -904,7 +904,7 @@ if (typeof window != "undefined") {
 			});
 		}
 		, getSubscribeId: function (endpoint, id) {
-			return '/user/' + endpoint + '/' + id;
+			return '/user/' + endpoint + '.' + id;
 		}
 		, unSubscribe: function (endpoint, id) {
 			var subscribeId = this.getSubscribeId(endpoint, id);
@@ -947,8 +947,9 @@ if (typeof window != "undefined") {
 			var _this = this;
 
 			this.subscripeActiveMap = {};
-
-			var url = location.protocol + '//' + location.host + _$base.getContextPathUrl("/ws/" + endpoint);
+			
+			//var url = location.protocol + '//' + location.host + _$base.getContextPathUrl("/ws/" + endpoint);
+			var url = _$base.getContextPathUrl("/ws/" + endpoint);
 
 			var sockJSConn = new SockJS(url, null, { transports: ['websocket'], timeout: 60000 });
 			//sockJSConn._transportTimeout = function() { console.log('gotcha!!!'); };
@@ -965,11 +966,12 @@ if (typeof window != "undefined") {
 				_this.isCreate = true;
 				_this.addSubscribe(endpoint, headers, callback);
 			}, function (err) {
-				console.log(err);
+				if(_this.stompClient){
+					console.log(location.href, err);
+				}
 			});
 
 			_this.stompClient = stompClient;
-
 			return stompClient;
 		}
 		,
@@ -978,6 +980,7 @@ if (typeof window != "undefined") {
 			if (this.stompClient != null) {
 				this.stompClient.reconnect_delay = -1;
 				this.stompClient.disconnect();
+				this.stompClient = null; 
 			}
 		}
 		, isConnect: function () {

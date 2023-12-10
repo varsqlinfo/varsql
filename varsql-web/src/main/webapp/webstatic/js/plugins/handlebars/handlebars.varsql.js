@@ -257,7 +257,22 @@ Handlebars.registerHelper('xif', function (v1,o1,v2,options) {
          '||': function(a, b){ return a||b},
       }
     var isTrue = operators[o1](v1,v2);
-    return isTrue ? options.fn(this) : options.inverse(this);
+    
+	if(VARSQL.isUndefined(options.fn) || VARSQL.isUndefined(options.inverse)){
+		return isTrue;
+	}
+	
+	return isTrue ? options.fn(this) : options.inverse(this);
+	
+});
+
+Handlebars.registerHelper({
+    and() {
+        return Array.prototype.every.call(arguments, Boolean);
+    },
+    or() {
+        return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+    }
 });
 
 /**

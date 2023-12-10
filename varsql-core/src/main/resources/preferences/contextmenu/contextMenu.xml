@@ -172,20 +172,23 @@ public class {{capitalize (camelCase table.name)}}{
 			<propItems>
 				<key>classProperty</key>
 				<code><![CDATA[
-{{#columns}}
+{{#columns}}{{#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
-{{/columns}}
+{{/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>get_set</key>
 				<code><![CDATA[
-{{#columns}}
+{{#columns}}{{#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	public {{javaType this}} get{{capitalize (camelCase name)}}(){
 		return this.{{camelCase name}};
 	}
-{{/columns}}
+	public {{javaType this}} set{{capitalize (camelCase name)}}({{javaType this}} {{camelCase name}}){
+		this.{{camelCase name}} = {{camelCase name}};
+	}
+{{/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -233,36 +236,37 @@ public class {{capitalize (camelCase table.name)}}Entity{
 			<propItems>
 				<key>classProperty</key>
 				<code><![CDATA[
-{{#columns}}
+{{#columns}}{{#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	@Column(name ="{{name}}")
 	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
-
-{{/columns}}
+{{/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
+{{~#columns~}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}{{addChar @index '' ', '}}
+	{{~ javaType this}} {{camelCase name}}
+{{~/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>builderVariable</key>
 				<code><![CDATA[
-{{~#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 		this.{{camelCase name}} = {{camelCase name}};
-{{/columns}}
+{{~/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>finalProperty</key>
 				<code><![CDATA[
-{{~#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	public final static String {{upperCase name}}="{{camelCase name}}";
-{{/columns}}
+{{~/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
@@ -294,26 +298,28 @@ public class {{capitalize (camelCase table.name)}}RequestDTO {
 			<propItems>
 				<key>classProperty</key>
 				<code><![CDATA[
-{{#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
-{{/columns}}
+{{~/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>columnName</key>
 				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
+{{~#columns~}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}{{addChar @index '' ', '}}
+	{{~ javaType this}} {{camelCase name}}
+{{~/if}}{{/columns}}
 						]]></code>
 
 			</propItems>
 			<propItems>
 				<key>builderVariable</key>
 				<code><![CDATA[
-{{~#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 		this.{{camelCase name}} = {{camelCase name}};
-{{/columns}}
-						]]></code>
+{{~/if}}{{/columns}}
+				]]></code>
 
 			</propItems>
 		</templateInfo>
@@ -340,17 +346,11 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 			<propItems>
 				<key>classProperty</key>
 				<code><![CDATA[
-{{#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	private {{javaType this}} {{camelCase name}}; {{#xif comment '!=' ""}}//{{comment}}{{/xif}}
-{{/columns}}
+{{~/if}}{{/columns}}
 						]]></code>
 
-			</propItems>
-			<propItems>
-				<key>columnName</key>
-				<code><![CDATA[
-{{~#columns~}}{{addChar @index '' ', '}}{{javaType this}} {{camelCase name}}{{/columns}}
-						]]></code>
 			</propItems>
 		</templateInfo>
 	</item>
@@ -360,9 +360,9 @@ public class {{capitalize (camelCase table.name)}}ResponseDTO implements Seriali
 			<main>
 			<![CDATA[
 {
-{{#columns}}
+{{~#columns}}{{~#if (and (xif (camelCase name) '!=' "regId") (xif (camelCase name) '!=' "regDt") (xif (camelCase name) '!=' "updId") (xif (camelCase name) '!=' "updDt"))}}
 	{{addChar @index '' ','}}{{camelCase name}} :'' 
-{{/columns}}
+{{~/if}}{{/columns}}
 }
 				]]>
 			</main>

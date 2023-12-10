@@ -64,7 +64,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.12'
+	varsqlVersion = '1.3.13'
 }
 
 //소스 분석.
@@ -231,7 +231,7 @@ subprojects {
 		implementation group: 'org.mybatis' , name: 'mybatis-spring' , version: '2.0.5'
 
 		//varsql 
-		implementation group: 'com.varsql', name: 'varsql-token-converter', version: '0.0.2'
+		implementation group: 'com.varsql', name: 'varsql-token-converter', version: '0.0.3'
 
 		//Reflections
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'
@@ -343,7 +343,8 @@ project(':varsql-web') {
 		options.compilerArgs += [
 	        '-Amapstruct.suppressGeneratorTimestamp=true',
 	        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
-	        '-Amapstruct.verbose=true'
+	        '-Amapstruct.verbose=true',
+	        '-Amapstruct.disableBuilders=true' // Mapper java 코드 대체 builder = @org.mapstruct.Builder(disableBuilder = true),
 	    ]
 
 		options.annotationProcessorGeneratedSourcesDirectory = file(generatedPath)
