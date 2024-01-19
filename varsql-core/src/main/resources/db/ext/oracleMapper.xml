@@ -665,32 +665,74 @@
 		Table DDL Script => Primary key list
 	 -->
 	<select id="tableConstraints" parameterType="databaseParamInfo" resultType="constraintInfo">
-		SELECT 
-			acc.CONSTRAINT_NAME  as "constraintName"
-			, acc.TABLE_NAME  as "tableName"
-			, acc.COLUMN_NAME as "columnName"
-			, (case when ac.CONSTRAINT_TYPE='P' then 'PK'
-					WHEN ac.CONSTRAINT_TYPE='U' then 'UQ'
-					else '' end
-				) as  "type"
-			,acc.POSITION as ORDINAL
-<choose>
-	<when test="baseSchemaFlag">
-		FROM USER_CONS_COLUMNS acc , USER_CONSTRAINTS ac 
-		where acc.TABLE_NAME = ac.TABLE_NAME 
-		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME 
-	</when>
-	<otherwise>
-		FROM ALL_CONS_COLUMNS acc , ALL_CONSTRAINTS ac
-		WHERE	acc.OWNER = ac.OWNER 
-		AND acc.TABLE_NAME = ac.TABLE_NAME 
-		AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME
-		AND acc.OWNER = #{schema}
-	</otherwise>
-</choose>
-		AND acc.TABLE_NAME = #{objectName}
-		AND ac.CONSTRAINT_TYPE in ('P')
-		ORDER BY acc.POSITION
+		select
+			 a.INDEX_NAME  as "constraintName"
+			, a.TABLE_NAME  as "tableName"
+			, b.COLUMN_NAME as "columnName"
+			, "TYPE" as  "type"
+			,b.ORDINAL_POSITION as ORDINAL
+		from (
+			 SELECT 
+				ui.INDEX_NAME
+				,ui.TABLE_NAME
+				,ui.TABLESPACE_NAME as "TABLE_SPACE"
+				,ui.UNIQUENESS
+				,ui.TABLE_OWNER
+				,ui.COMPRESSION
+				,ui.LOGGING
+				,ui.PCT_FREE
+				,ui.INI_TRANS
+				,ui.MAX_TRANS
+				,ui.INITIAL_EXTENT
+				,ui.MIN_EXTENTS
+				,ui.MAX_EXTENTS
+				,ui.PCT_INCREASE
+				,ui.BUFFER_POOL
+				,CASE
+					WHEN uc.CONSTRAINT_TYPE = 'P' THEN 'PK'
+					WHEN ui.UNIQUENESS = 'UNIQUE' THEN 'UQ'
+					ELSE ''
+				 END
+					AS "TYPE"
+				,uc.STATUS
+	<choose>
+		<when test="baseSchemaFlag">
+			FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
+			ON	ui.TABLE_NAME = uc.TABLE_NAME
+			AND	ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND	uc.STATUS = 'ENABLED'
+			where 1 =1 
+		</when>
+		<otherwise>
+			FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
+			ON  ui.OWNER = uc.OWNER
+			and  ui.TABLE_NAME = uc.TABLE_NAME
+			AND ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND uc.STATUS = 'ENABLED'  
+			where ui.OWNER = #{schema}
+		</otherwise>
+	</choose>
+		and ui.index_type = 'NORMAL'
+		and ui.table_name = #{objectName}
+		and (uc.CONSTRAINT_TYPE = 'P' or ui.UNIQUENESS = 'UNIQUE')
+	  ) a , (
+			select 
+				INDEX_NAME
+				,COLUMN_NAME
+				,COLUMN_POSITION as "ORDINAL_POSITION"
+				,DESCEND as "ASC_OR_DESC"
+	<choose>
+		<when test="baseSchemaFlag">
+			from USER_IND_COLUMNS
+		</when>
+		<otherwise>
+			from ALL_IND_COLUMNS
+			where INDEX_OWNER = #{schema}
+		</otherwise>
+	</choose>
+		)b
+		where a.INDEX_NAME = b.INDEX_NAME
+		ORDER BY a.TABLE_NAME, a.INDEX_NAME , b.ORDINAL_POSITION
 	</select>
 
 	<!-- 

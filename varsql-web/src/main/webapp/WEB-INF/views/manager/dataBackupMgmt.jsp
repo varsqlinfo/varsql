@@ -146,12 +146,26 @@
 								<div class="margin-bottom5">
 									<label><spring:message code="manager.backupmgmt.connection"  /></label>
 									<div>
-										<select class="form-control" v-model="detailItem.vconnid" @change="getObjectInfo(detailItem.vconnid)">
+										<select class="form-control" v-model="detailItem.vconnid" @change="getSchemaInfo(detailItem.vconnid)">
 											<option value=""><spring:message code="select" text="선택"/></option>
 											<option v-for="(item,index) in dbList" :value="item.vconnid">{{item.vname}}</option>
 										</select>
+									</div>
+								</div>
+								
+								<div class="margin-bottom5">
+									<label>
+										<spring:message code="schema" text="Schema" />
 										
-										<div id="backupList" style="height: 200px;padding:10px 0px;"></div>
+										<input type="checkbox" v-model="detailItem.jobData.isAllData" /> <spring:message code="all.table" text="All Table" />
+									</label>
+									<select id="schemaList" class="form-control" v-model="detailItem.jobData.schema" @change="getObjectInfo(detailItem.vconnid, detailItem.jobData.schema)">
+										<option v-for="(val,key) in schemaList" :value="val">{{val}}</option>
+									</select>
+									
+									<div id="backupList" style="height: 200px;padding:10px 0px;" v-show="!detailItem.jobData.isAllData"></div>
+									<div v-show="detailItem.jobData.isAllData" style="height: 35px;padding: 10px 0px;text-align: center;vertical-align: middle;background: #ededed;margin: 10px 0px;">
+										<spring:message code="all.table" text="All Data" />
 									</div>
 								</div>
 							</div>
@@ -201,6 +215,7 @@ VarsqlAPP.vueServiceBean( {
 		,pageInfo : {}
 		,gridData :  []
 		,detailItem :{jobData:{}}
+		,schemaList :[]
 		,viewMode : 'form'
 		,exportTypeList : {
 			'xml' : 'XML'
@@ -303,10 +318,12 @@ VarsqlAPP.vueServiceBean( {
                     ,jobData :{
                     	charset : 'utf-8'
                     	, exportType : 'xml'
+                    	, schema : ''
+                    	, isAllData : false
                     	, exportItems : []
                     }
 				}
-				this.getObjectInfo('');
+				this.getObjectInfo('','');
 			}else{
 				
 				var jobData = {
@@ -321,6 +338,8 @@ VarsqlAPP.vueServiceBean( {
 					console.log(e);
 				}
 				
+				jobData.isAllData = VARSQL.isUndefined(jobData.isAllData) ? false : jobData.isAllData; 
+				
 				item.jobData = jobData;
 					
 				this.detailFlag = true;
@@ -330,7 +349,8 @@ VarsqlAPP.vueServiceBean( {
 					this.setTriggerGrid(item);
 				});
 				
-				this.getObjectInfo(item.vconnid);
+				this.getSchemaInfo(item.vconnid);
+				this.getObjectInfo(item.vconnid, item.jobData.schema);
 
                 this.selectObj.setTargetItem(item.jobData.exportItems);
 			}
@@ -348,16 +368,20 @@ VarsqlAPP.vueServiceBean( {
 						return ;
 					}
 					
-					var backupItems = _this.selectObj.getTargetItem(); 
-					
-					if(backupItems.length < 1){
-						VARSQL.toastMessage('varsql.0034', 'Data Backup');
-						return ;
+					if(item.jobData.isAllData){
+						item.jobData.exportItems = [];
+					}else{
+						var backupItems = _this.selectObj.getTargetItem(); 
+						
+						if(backupItems.length < 1){
+							VARSQL.toastMessage('varsql.0034', 'Data Backup');
+							return ;
+						}
+						
+						item.jobData.exportItems = backupItems.map(item=>{
+							return {'name' : item.name} 
+						})
 					}
-					
-					item.jobData.exportItems = backupItems.map(item=>{
-						return {'name' : item.name} 
-					})
 					
 					item.jobData =  JSON.stringify(item.jobData);
 					
@@ -439,8 +463,8 @@ VarsqlAPP.vueServiceBean( {
 			});
 			
 		}
-		// get backup object info
-		,getObjectInfo : function (id){
+		// schema info
+		,getSchemaInfo : function (id){
 			var _self = this;
 			var param = {
 				vconnid : id
@@ -451,6 +475,35 @@ VarsqlAPP.vueServiceBean( {
 				_self.selectObj.setTargetItem([]);
 				return ;
 			}
+
+			this.$ajax({
+				url : {type:VARSQL.uri.manager, url:'/dataBackup/schemaList'}
+				,loadSelector : '#schemaList'
+				,data : param
+				,success:function (resData){
+		    		_self.schemaList = resData.list;
+				}
+			});
+		}
+		// get backup object info
+		,getObjectInfo : function (id, schema){
+			var _self = this;
+			
+			if(VARSQL.isBlank(id)){
+				_self.selectObj.setSourceItem([]);
+				_self.selectObj.setTargetItem([]);
+				return ;
+			}
+			
+			if(VARSQL.isBlank(schema)){
+				VARSQLUI.toast.open(VARSQL.message('Select schema'));
+				return ;
+			}
+			
+			var param = {
+				vconnid : id
+				,schema : schema
+			};
 
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/dataBackup/dataObjectList'}

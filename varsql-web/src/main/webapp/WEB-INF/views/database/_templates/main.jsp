@@ -44,7 +44,7 @@ $(document).ready(function(){
 <div id="pluginSchemaObject" class="varsql-plugin-wrapper">
 	<div class="db-schema">
 		<a href="javascript:;" title="View Default DB" class="default_db_view_btn"><img src="${pageContextPath}/webstatic/imgs/Database.gif" style="position: relative;top: 3px;"/></a>
-		<input type="text" id="varsqlSschemaName" value="${screenConfigInfo.schema}" class="schema-name-text" disabled="">
+		<input type="text" id="varsqlSschemaName" value="${fn:length(screenConfigInfo.schemaList) == 0?screenConfigInfo.schemaList[0]: screenConfigInfo.schema}" class="schema-name-text" disabled="">
 
 		<div class="schema-view-btn pull-right varsql-widget-layer">
 			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">

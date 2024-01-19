@@ -55,8 +55,14 @@ public class DataBackupMgmtController extends AbstractController {
 	}
 	
 	@PostMapping("/dataObjectList")
-	public @ResponseBody ResponseResult dataObjectList(@RequestParam(value = "vconnid", required = true) String vconnid, HttpServletRequest req) {
-		return dataBackupMgmtServiceImpl.dataObjectList(vconnid);
+	public @ResponseBody ResponseResult dataObjectList(@RequestParam(value = "vconnid", required = true) String vconnid,
+			@RequestParam(value = "schema", required = true) String schema,HttpServletRequest req) {
+		return dataBackupMgmtServiceImpl.dataObjectList(vconnid, schema);
+	}
+	
+	@PostMapping("/schemaList")
+	public @ResponseBody ResponseResult schemaList(@RequestParam(value = "vconnid", required = true) String vconnid, HttpServletRequest req) {
+		return dataBackupMgmtServiceImpl.schemaList(vconnid);
 	}
 	
 	@PostMapping("/save")

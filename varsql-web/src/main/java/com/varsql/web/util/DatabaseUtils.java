@@ -1,10 +1,20 @@
 package com.varsql.web.util;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.varsql.core.auth.User;
 import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.report.VarsqlReportConfig;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.vartech.common.app.beans.EnumMapperValue;
 
 /**
  * -----------------------------------------------------------------------------
@@ -68,6 +78,37 @@ public final class DatabaseUtils {
 			return user.getDatabaseInfo().get(conuid).getVconnid();
 		}
 		return null;
+	}
+	
+	/**
+	 * 스키마 목록.
+	 * 
+	 * @param conuid
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<String> schemaList(String conuid) throws SQLException {
+		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(conuid));
+		return schemaList(dpi);
+	}
+	
+	/**
+	 * 스키마 목록
+	 * @param dpi
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<String> schemaList(DatabaseParamInfo dpi) throws SQLException {
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
+		
+		DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
+		
+		if(venderType.isUseDatabaseName()) {
+			return dbMetaEnum.getDatabases(dpi);
+		}else {
+			return dbMetaEnum.getSchemas(dpi);
+		}
 	}
 	
 }

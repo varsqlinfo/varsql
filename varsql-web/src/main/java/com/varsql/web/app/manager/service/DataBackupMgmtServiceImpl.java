@@ -1,4 +1,6 @@
 package com.varsql.web.app.manager.service;
+import java.sql.SQLException;
+
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -23,6 +28,7 @@ import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.model.mapper.scheduler.JobMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
+import com.varsql.web.util.DatabaseUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -69,9 +75,10 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	 *
 	 * @method : dataObjectList
 	 * @param vconnid
+	 * @param schema 
 	 * @return
 	 */
-	public ResponseResult dataObjectList(String vconnid) {
+	public ResponseResult dataObjectList(String vconnid, String schema) {
 		
 		ResponseResult resultObject = new ResponseResult();
 		
@@ -83,6 +90,7 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 			return resultObject; 
 		}else{
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
+			dpi.setSchema(schema);
 			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
 
 			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
@@ -163,6 +171,32 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 		
 		resultObject.setItemOne(Integer.valueOf(1));
 		
+		return resultObject;
+	}
+	
+	/**
+	 * 스키마 목록
+	 * 
+	 * @param vconnid
+	 * @return
+	 */
+	public ResponseResult schemaList(String vconnid) {
+		ResponseResult resultObject = new ResponseResult();
+		
+		DatabaseInfo databaseInfo = dbConnectionEntityRepository.findDatabaseInfo(vconnid);
+
+		if(databaseInfo==null){
+			resultObject.setResultCode(RequestResultCode.ERROR);
+			resultObject.setMessage("connection info not found : "+ vconnid);
+			return resultObject; 
+		}else{
+			try {
+				resultObject.setList(DatabaseUtils.schemaList(new DatabaseParamInfo(databaseInfo)));
+			} catch (SQLException e) {
+				throw new VarsqlRuntimeException(RequestResultCode.ERROR, e);
+			}
+		}
+
 		return resultObject;
 	}
 }

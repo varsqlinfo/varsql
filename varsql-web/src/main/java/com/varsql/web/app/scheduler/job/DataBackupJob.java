@@ -15,12 +15,17 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
+import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.app.scheduler.JobType;
 import com.varsql.web.app.scheduler.bean.JobBean;
+import com.varsql.web.dto.DataExportItemVO;
 import com.varsql.web.dto.DataExportVO;
 import com.varsql.web.dto.JobResultVO;
 import com.varsql.web.dto.scheduler.JobVO;
@@ -55,7 +60,7 @@ public class DataBackupJob extends JobBean {
 		
 		databaseInfo.setMaxSelectCount(-1);
 		
-		DataExportVO dataExportVO = VartechUtils.jsonStringToObject(jsv.getJobData(), DataExportVO.class);
+		DataExportVO dataExportVO = VartechUtils.jsonStringToObject(jsv.getJobData(), DataExportVO.class, true);
 		
 		String fileName = "(DATA)"+jsv.getJobName()+"-"+VarsqlDateUtils.currentDateFormat();
 		
@@ -63,6 +68,22 @@ public class DataBackupJob extends JobBean {
 		
 		if(!dir.exists()) {
 			dir.mkdirs();
+		}
+		
+		//To-do 할것. 
+		if(dataExportVO.getExportItems().size() ==0) {
+			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
+			dpi.setSchema(dataExportVO.getSchema());
+			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
+
+			List<TableInfo> tableList = MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi);
+			
+			List<DataExportItemVO> exportItems = new ArrayList<>();
+			tableList.forEach(item->{
+				exportItems.add(DataExportItemVO.builder().name(item.getName()).build());
+			});
+			
+			dataExportVO.setExportItems(exportItems);
 		}
 		
 		File zipFile = new File(dir, VarsqlFileType.ZIP.concatExtension(ValidateUtils.getValidFileName(fileName)));
