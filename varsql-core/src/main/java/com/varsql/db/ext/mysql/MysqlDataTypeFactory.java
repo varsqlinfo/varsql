@@ -16,7 +16,7 @@ public class MysqlDataTypeFactory extends AbstractDataTypeFactory{
 	public MysqlDataTypeFactory() {
 		addDataType(VenderDataType.newCustomDataType(DefaultDataType.VARCHAR, VARCHAR_DEFAULT_SIZE));
 		addDataType(new VenderDataType("TEXT", DefaultDataType.CLOB.getTypeCode() , DBColumnMetaInfo.TEXT));
-		addDataType(new VenderDataType("TEXT", DefaultDataType.NCLOB.getTypeCode() , DBColumnMetaInfo.TEXT));
+		addDataType(new VenderDataType("NTEXT", DefaultDataType.NCLOB.getTypeCode() , DBColumnMetaInfo.TEXT));
 		addDataType(new VenderDataType("TIME", DefaultDataType.TIME_WITH_TIMEZONE.getTypeCode() , DBColumnMetaInfo.TIME));
 		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode() , DBColumnMetaInfo.DATE));
 	}

@@ -7,8 +7,6 @@ import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.CommentType;
 
 
 public interface DDLScript{

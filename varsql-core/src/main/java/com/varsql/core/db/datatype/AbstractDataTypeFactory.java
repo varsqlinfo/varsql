@@ -8,6 +8,8 @@ import com.vartech.common.utils.StringUtils;
 public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	public static final int VARCHAR_DEFAULT_SIZE = 512;
 	
+	private int typeCodeSeq = 1000000;
+	
 	protected AbstractDataTypeFactory() {};
 	
 	private ConcurrentMap<Integer , DataType> typeCodeDataType = new ConcurrentHashMap<Integer, DataType>();
@@ -42,7 +44,7 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	public DataType getDataType(int typeCode, String typeName) {
 		
 		DataType typeNameDataType = null; 
-		if(typeCode != 0 && !StringUtils.isBlank(typeName)) {
+		if(typeCode == 0 && !StringUtils.isBlank(typeName)) {
 			typeNameDataType = getDataType(typeName);
 			if(typeNameDataType.getTypeCode() == typeCode) {
 				return typeNameDataType;
@@ -59,6 +61,17 @@ public abstract class AbstractDataTypeFactory implements DataTypeFactory {
 	}
 	
 	public void addDataType(DataType dataType) {
-		typeCodeDataType.put(dataType.getTypeCode(), dataType);
+		int typeCode =dataType.getTypeCode(); 
+		if(typeCodeDataType.containsKey(typeCode)) {
+			typeCodeSeq += 1000000;
+			if(typeCode < 0) { // 타입 코드가 minus 인경우  이걸 구분하기 위해서 90000 으로 값을 넣고 typecode를 양수로 변경한다.  
+				typeCodeDataType.put(typeCodeSeq + 90000 + Math.abs(typeCode), dataType);
+			}else {
+				typeCodeDataType.put(typeCodeSeq + typeCode, dataType);
+			}
+		}else {
+			typeCodeDataType.put(dataType.getTypeCode(), dataType);
+		}
+		
 	};
 }

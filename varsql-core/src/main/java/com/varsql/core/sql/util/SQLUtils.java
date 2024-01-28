@@ -13,15 +13,15 @@ import java.util.Map;
 
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.db.DBVenderType;
-import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.sql.SqlExecuteManager;
+import com.varsql.core.sql.StatementSetter;
 import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
-import com.varsql.core.sql.executor.handler.SelectInfo;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMode;
 import com.varsql.core.sql.type.SQLCommandType;
@@ -138,6 +138,9 @@ public final class SQLUtils {
 		String requid = sqlExecuteInfo.get_requid_();
 		
 		String executeQuery = tmpSqlSource.getQuery(); 
+		
+		StatementSetter statementSetter = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getStatementSetter();
+		
 	    try{
 	    	boolean hasResults;
 			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
@@ -147,7 +150,7 @@ public final class SQLUtils {
 				
 				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
 				
-				setMaxRow(stmt, maxRow, tmpSqlSource);
+				statementSetter.setMaxRow(stmt, maxRow, tmpSqlSource);
 				hasResults = stmt.execute(executeQuery);
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 				CallableStatement callStatement = conn.prepareCall(executeQuery);
@@ -155,7 +158,7 @@ public final class SQLUtils {
 				SqlExecuteManager.getInstance().setStatementInfo(requid, callStatement);
 				
 		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
-		        setMaxRow(callStatement, maxRow, tmpSqlSource);
+		        statementSetter.setMaxRow(callStatement, maxRow, tmpSqlSource);
 		        hasResults = callStatement.execute();
 
 		        int cursorObjIdx = -1;
@@ -231,7 +234,7 @@ public final class SQLUtils {
 				JdbcUtils.setStatementFetchSize(pstmt, sqlExecuteInfo.getLimit());
 				
  				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
-				setMaxRow(pstmt, maxRow, tmpSqlSource);
+ 				statementSetter.setMaxRow(pstmt, maxRow, tmpSqlSource);
 				hasResults = pstmt.execute();
 
 				stmt= pstmt;
@@ -266,25 +269,5 @@ public final class SQLUtils {
 	    }
 	    
 	    return ssrv;
-	}
-	
-	/**
-	 *
-	 * @Method Name  : setMaxRow
-	 * @Method 설명 : row 갯수 셋팅
-	 * @작성일   : 2015. 4. 9.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param stmt
-	 * @param maxRow
-	 * @param tmpSqlSource 
-	 * @throws SQLException
-	 */
-	public static void setMaxRow(Statement stmt, int maxRow, SqlSource tmpSqlSource) throws SQLException {
-		if(tmpSqlSource.getCommand().isSelectCommand()) {
-			stmt.setMaxRows(maxRow);
-		}else if(SQLCommandType.OTHER.equals( tmpSqlSource.getCommand())) {
-			stmt.setMaxRows(maxRow);
-		}
 	}
 }

@@ -159,10 +159,12 @@ $(document).ready(function(){
 				LIMIT
 				<select id="limitRowCnt"  name="limitRowCnt">
 					<option value="100" selected>100</option>
-					<option value="500">500</option>
-					<option value="1000">1000</option>
-					<option value="5000">5000</option>
-					<option value="10000">10000</option>
+					<c:forTokens var="item" items="500,1000,5000,10000" delims=",">
+						<c:if test="${item < limitSelectRow}">
+       					<option value="${item}">${item}</option>
+						</c:if>
+					</c:forTokens>
+					<option value="${limitSelectRow}">${limitSelectRow}</option>
 				</select>
 			</span>
 			<button type="button" id="sql_filelist_view_btn" class="varsql-btn-default sql-filelist-view-btn"><i class="fa fa-bars" style="margin-right:3px;"></i>File</button></button>

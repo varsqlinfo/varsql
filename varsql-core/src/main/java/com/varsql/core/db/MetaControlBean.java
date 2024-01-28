@@ -24,9 +24,10 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
-import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
+import com.varsql.core.sql.StatementSetter;
+import com.varsql.core.sql.StatementSetterOther;
 import com.varsql.core.sql.type.CommandTypeFactory;
 import com.varsql.core.sql.type.CommandTypeFactoryOther;
 import com.vartech.common.utils.StringUtils;
@@ -49,6 +50,7 @@ public class MetaControlBean {
 	private DataTypeFactory dataTypeFactory;
 	private TableReport tableReport;
 	private CommandTypeFactory commandTypeFactory;
+	private StatementSetter statementSetter;
 
 	private String dbVenderName;
 
@@ -89,6 +91,12 @@ public class MetaControlBean {
 			this.commandTypeFactory = getBeanObject(CommandTypeFactoryOther.class, CommandTypeFactory.class);
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error commandTypeFactory :{} ", e.getMessage(), e);
+		}
+		
+		try {
+			this.statementSetter = getBeanObject(StatementSetterOther.class, StatementSetter.class);
+		} catch (Exception e) {
+			logger.error("@@@ varsql bean error statementSetter :{} ", e.getMessage(), e);
 		}
 	}
 
@@ -298,6 +306,10 @@ public class MetaControlBean {
 
 	public TableReport getTableReportImpl() {
 		return tableReport;
+	}
+	
+	public StatementSetter getStatementSetter() {
+		return this.statementSetter;
 	}
 
 	public String getDbVenderName(){

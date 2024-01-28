@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
+import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.BlockingUserException;
 import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.sql.SqlExecuteManager;
@@ -77,8 +78,10 @@ public class DatabaseController extends AbstractController {
 	@RequestMapping(value={"/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {
 		ModelMap model = mav.getModelMap();
+		
+		DatabaseInfo databaseinfo = SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid());
 
-		String vname = SecurityUtil.loginInfo(req).getDatabaseInfo().get(preferencesInfo.getConuid()).getName();
+		String vname = databaseinfo.getName();
 		if(!SecurityUtil.isAdmin()) {
 			List<UserPermissionInfoDTO> permissionList	=databaseServiceImpl.findUserPermission();
 
@@ -107,6 +110,7 @@ public class DatabaseController extends AbstractController {
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
 		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
 		model.addAttribute("vname", vname);
+		model.addAttribute("limitSelectRow", databaseinfo.getMaxSelectCount());
 
 		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
 
