@@ -213,12 +213,15 @@ VarsqlAPP.vueServiceBean({
 			}else{
 				importFileIds.push(selectFile.fileId);
 			}
-
+			
 			var param = {
 				importType : this.importType,
 				conuid : this.conuid,
 				fileIds : importFileIds.join(',')
 			}
+			
+			param.progressUid = VARSQL.generateUUID();
+			
 			var _this =this;
 
 			this.$ajax({
@@ -234,7 +237,36 @@ VarsqlAPP.vueServiceBean({
 					
 					document.getElementById('importFileResult').scrollTop =0;
 				}
+				
 			})
+			
+			var progressEle = $('body .center-loading-centent'); 
+			VARSQL.req.progressInfo({
+				progressUid : param.progressUid
+				,callback : function (resData){
+					var item = resData.item; 
+					
+					if(item == 'fail'){
+						progressEle.text('fail');
+					}else if(item == 'complete'){
+						progressEle.text('complete');
+					}else{
+						if(item != null){
+							var progressText = VARSQL.util.numberFormat(item.progressContentLength)+'';
+							
+							if(item.totalContentLength && item.totalContentLength > 0){
+								progressText += ' / ' + VARSQL.util.numberFormat(item.totalContentLength);
+							}
+							
+							if(item.name){
+								progressText = item.name + '('+progressText + ')';
+							}
+							
+							progressEle.text(progressText);
+						}
+					}
+				} 
+			});
 		}
 		// 선택된 파일 import
 		,selectImport : function (){

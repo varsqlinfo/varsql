@@ -69,7 +69,7 @@
 										<a href="javascript:;" @click="download(item)" title="download" style="margin-right:10px;"><i class="fa fa-download"></i></a>
 										<a href="javascript:;" @click="detail(item)" :title="item.fileName">{{item.fileName}}</a>
 									</td>
-									<td class="center">{{item.fileSize}}</td>
+									<td class="center">{{VARSQL.util.fileDisplaySize(item.fileSize)}}</td>
 									<td class="center">{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">
@@ -94,7 +94,7 @@
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="col-xs-12">
-						최대 5000개 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
+						최대 5000라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
 					</div>
 					<div class="pull-right" v-if="detailItem.fileId" @click="download(detailItem)">
 						<button type="button" class="btn btn-sm btn-default">다운로드</button>
@@ -102,10 +102,7 @@
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
 						<div class="col-xs-12">
-							<div id="fileList" style="height:300px;" class="form-control input-init-type"></div>
-							
-							<br/>
-							최대 5000 라인 까지 확인 가능
+							<div id="fileList" style="height:300px;margin-bottom:20px;" class="form-control input-init-type" v-show="detailItem.ext=='zip'"></div>
 							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
 						</div>
 					</div>
@@ -136,7 +133,7 @@ VarsqlAPP.vueServiceBean({
 		,selectItem :[]
 		,pageInfo : {}
 		,gridData :  []
-		,detailItem : {}
+		,detailItem : {ext:'zip'}
 		,vconnid : 'ALL'
 		,isDetailFlag :false
 		,fileListGridObj : {}
@@ -245,7 +242,14 @@ VarsqlAPP.vueServiceBean({
 					fileId : item.fileId
 				}
 				,success:function (resData){
-					_this.fileListGridObj.setData(resData.list);
+					if(item.ext =='zip'){
+						_this.fileListGridObj.setData(resData.list);
+						_this.fileViewEditor.setValue('');
+						return ; 
+					}
+					
+					_this.fileViewEditor.setValue(resData.item||'');
+					_this.fileViewEditor.setHistory({done:[],undone:[]});
 				}
 			});
 		}

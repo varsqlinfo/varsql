@@ -26,36 +26,36 @@ public enum DBColumnMetaInfo {
 	,FLOAT(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
-			if(precision < 0) return "";
-			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+			if(precision < 1) return "";
+			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
 		}
 	})
 	,DOUBLE(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
-			if(precision < 0) return "";
-			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+			if(precision < 1) return "";
+			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
 		}
 	})
 	,NUMERIC(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
-			if(precision < 0) return "";
-			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+			if(precision < 1) return "";
+			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
 		}
 	})
 	,BIGDECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
-			if(precision < 0) return "";
-			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+			if(precision < 1) return "";
+			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
 		}
 	})
 	,DECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
-			if(precision < 0) return "";
-			return "(" + precision+ (scale> 0 ? "," + scale :"") +")";
+			if(precision < 1) return "";
+			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
 		}
 	})
 	,STRING(2, true)
@@ -117,12 +117,12 @@ public enum DBColumnMetaInfo {
 		if(!StringUtils.isBlank(typeAndLength)) {
 			return typeAndLength;
 		}else {
-			columnSize = dataTypeInfo.getMetaDataHandler().getColumnLength(columnSize);
-			
 			if(this.columnMetaHandler != null) {
 				dataType += this.columnMetaHandler.typeAndLength(precision, scale);
 			}else {
-				if(columnSize < 0) return dataType;
+				columnSize = dataTypeInfo.getMetaDataHandler().getColumnLength(columnSize);
+				
+				if(columnSize < 1) return dataType;
 				
 				if(this.isSize()){
 					dataType +="(" + columnSize+")";

@@ -103,7 +103,7 @@
 				<template v-if="downloadStatus != 'complete'">
 					<div id="exportItemEl" style="margin-top: 15px;border: 1px solid #ddd;padding: 10px;height: 200px;width: 100%; overflow:auto;">
 						<template v-for="(item,index) in exportItems">
-							<div style="height:20px;line-height:20px;"><span>{{item.name}}</span><span class="pull-right">{{item.status?VARSQL.message('complete'):item.exportCount}}</span></div>
+							<div style="height:20px;line-height:20px;"><span>{{item.name}}</span><span class="pull-right">{{item.status?VARSQL.message('complete'):VARSQL.util.numberFormat(item.exportCount)}}</span></div>
 						</template>
 					</div>
 					
@@ -117,7 +117,7 @@
 			</div>
 		</div>
 		
-		<step-button :step.sync="step" :end-step="endStep" ref="stepButton" :disable-complete-btn="true"></step-button>
+		<step-button :step.sync="step" :end-step="endStep" ref="stepButton" :disable-complete="true"></step-button>
 	</div>
 </div>
 
@@ -140,7 +140,7 @@ VarsqlAPP.vueServiceBean({
 		, selectTableObj : {}
 		, userSetting : VARSQL.util.objectMerge({schema:'${schemaInfo}', tables:[]},${userSettingInfo})
 		, detailItem :{}
-		, navItems :['<spring:message code="msg.export.spec.step1" />','<spring:message code="msg.export.spec.step2" />', VARSQL.message('complete')]
+		, navItems :['<spring:message code="msg.export.spec.step1" />','<spring:message code="msg.export.spec.step2" />']
 		, exportItems : []
 	}
 	,methods:{
@@ -186,7 +186,7 @@ VarsqlAPP.vueServiceBean({
 			
 			this.getExportItems();
 			
-			var requid = VARSQL.generateUUID();
+			var progressUid = VARSQL.generateUUID();
 			
 			var prefVal = VARSQL.util.objectMerge({
 				conuid : '${param.conuid}'
@@ -195,61 +195,51 @@ VarsqlAPP.vueServiceBean({
 				,exportItems : _self.exportItems
 			}, _self.exportInfo);
 		
-			var beforeCurrIdx = 0;	
-			function processBar(){
-				VARSQL.req.ajax({
-					url : {type:VARSQL.uri.progress, url:'/info'}
-					,data: {
-						requid : requid
-						,type : 'dataExport'
-					}
-					,success:function (resData){
-						var item = resData.item; 
-						
-						if(item == 'fail'){
-							_self.downloadStatus = 'fail';
-						}else if(item == 'complete'){
-							_self.downloadStatus = 'complete'; 
-							for(var i =beforeCurrIdx; i < _self.exportItems.length; i++){
-								_self.exportItems[i].status= true;
-							}				
-						}else{
-							
-							if(item != null){
-								var currIdx = item.itemIdx-1;
-								for(var i =beforeCurrIdx;i < item.itemIdx; i++){
-									if(i == currIdx){
-										_self.exportItems[i].exportCount = item.progressContentLength;
-									}else{
-										_self.exportItems[i].status= true;
-									}
-								}	
-								beforeCurrIdx = currIdx;
-								
-								$($('#exportItemEl').children()[currIdx]).attr('tabindex','-1').focus().removeAttr('tabindex');
-							}
-							
-							setTimeout(function() {
-								processBar();
-							}, 700);
-						}
-					}
-				});
-			}
-			
 			this.downloadStatus = 'start';
 			VARSQL.req.download({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/downloadTableData?'}
 				,params : {
 					prefVal : JSON.stringify(prefVal)
-					,requid : requid
+					,progressUid : progressUid
 					,schema : _self.selectSchema
 					,conuid : '${param.conuid}'
 				}
 			});
 			
-			processBar();
+			var beforeCurrIdx = 0;	
+			
+			VARSQL.req.progressInfo({
+				progressUid : progressUid
+				,type : 'dataExport'
+				,callback : function (resData){
+					var item = resData.item; 
+					
+					if(item == 'fail'){
+						_self.downloadStatus = 'fail';
+					}else if(item == 'complete'){
+						_self.downloadStatus = 'complete'; 
+						for(var i =beforeCurrIdx; i < _self.exportItems.length; i++){
+							_self.exportItems[i].status= true;
+						}				
+					}else{
+						
+						if(item != null){
+							var currIdx = item.itemIdx-1;
+							for(var i =beforeCurrIdx;i < item.itemIdx; i++){
+								if(i == currIdx){
+									_self.exportItems[i].exportCount = item.progressContentLength;
+								}else{
+									_self.exportItems[i].status= true;
+								}
+							}	
+							beforeCurrIdx = currIdx;
+							
+							$($('#exportItemEl').children()[currIdx]).attr('tabindex','-1').focus().removeAttr('tabindex');
+						}
+					}
+				} 
+			});
 			
 		}
 		,setUserConfigInfo : function (){

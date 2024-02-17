@@ -70,7 +70,7 @@
 										<a href="javascript:;" @click="download(item)" title="download" style="margin-right:10px;"><i class="fa fa-download"></i></a>
 										<a href="javascript:;" @click="detail(item)" :title="item.fileName">{{item.fileName}}</a>
 									</td>
-									<td class="center">{{item.fileSize}}</td>
+									<td class="center">{{VARSQL.util.fileDisplaySize(item.fileSize)}}</td>
 									<td class="center">{{item.regDt}}</td>
 								</tr>
 								<tr v-if="gridData.length === 0">

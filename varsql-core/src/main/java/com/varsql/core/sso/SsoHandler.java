@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
+
 /**
 *
 * @FileName  : SsoHandler.java
@@ -25,8 +27,14 @@ public interface SsoHandler {
 	public Map<String,Object> customUserInfo(HttpServletRequest request,HttpServletResponse response, Map userInfo);
 
 	// sso 끝나고 난뒤 처리.
-	public boolean afterSsoHandler(HttpServletRequest request,HttpServletResponse response, String ssoId);
+	public boolean afterSsoHandler(HttpServletRequest request,HttpServletResponse response, Authentication auth);
 
 	// 시용자 권한
 	public List<String> userAuthorities(String userId, HttpServletRequest request, HttpServletResponse response);
+	
+	// 성공후 redirectURL
+	public String successRedirectURL(HttpServletRequest request, HttpServletResponse response);
+	
+	// login redirectURL
+	public String loginURL(HttpServletRequest request, HttpServletResponse response);
 }

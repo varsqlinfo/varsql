@@ -156,7 +156,7 @@ Vue.component('step-button', {
 	template : '<div class="process-step-area"><div class="process-step-btn-area">'
 	+ '<button type="button" class="" :class="[cssClass, (step == 1 ? \'disabled\' :\'\') ]" @click="moveHandle(\'prev\')">{{btnName.prev}}</button>'
 	+ '<button type="button" :class="cssClass" v-show="(step != endStep)" @click="moveHandle(\'next\')">{{(btnName[step]||btnName.next)}}</button>'
-	+ '<button type="button" :class="cssClass" v-show="(step == endStep)" @click="moveHandle(\'complete\')">{{btnName.complete}}</button>'
+	+ '<button type="button" :class="cssClass" v-show="(step == endStep && disableComplete !== true)" @click="moveHandle(\'complete\')">{{btnName.complete}}</button>'
 	+ '</div></div>'
 
 	//template: portalDefaultTemplate.stepTemplate
@@ -167,6 +167,7 @@ Vue.component('step-button', {
 		,cssClass : {type: String,	default: 'btn-md' }
 		,moveStep : {type: String,	default: 'moveStep' }
 		,complete : {type: String,	default: 'complete' }
+		,disableComplete : {type: Boolean,	default: false }
 	}
 	,data : function (){
 		return {

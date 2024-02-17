@@ -39,7 +39,7 @@ public class SQLWriter extends AbstractWriter{
 		this.dbytpe = dbytpe;
 		this.tableName = tableName;
 		this.columnInfos = columnInfos;
-		this.writer = new BufferedWriter(new OutputStreamWriter(output,VarsqlConstants.CHAR_SET));
+		this.writer = new BufferedWriter(new OutputStreamWriter(output, charset));
 	}
 
 	private boolean firstFlag = true;

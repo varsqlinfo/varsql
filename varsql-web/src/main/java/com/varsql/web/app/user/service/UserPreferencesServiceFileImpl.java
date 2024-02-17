@@ -3,6 +3,7 @@ package com.varsql.web.app.user.service;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.SecurityUtil;
@@ -74,38 +76,65 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 		}
 		
 		if(UploadFileType.EXPORT.equals(UploadFileType.getDivType(entity.getFileDiv()))){
-			Map item;
 			
-			List<Map> fileList = new ArrayList<>();
-			try (ZipFile zipFile = new ZipFile(FileServiceUtils.getFileInfoToFile(entity))){
-				final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				ZipEntry entry;
+			if(VarsqlFileType.ZIP.equals(VarsqlFileType.getFileType(entity.getFileExt()))){
 				
-				while(entries.hasMoreElements()) {
-					entry = entries.nextElement();
+				Map item;
+				
+				List<Map> fileList = new ArrayList<>();
+				try (ZipFile zipFile = new ZipFile(FileServiceUtils.getFileInfoToFile(entity))){
+					final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+					ZipEntry entry;
 					
-					item = new HashMap();
-					
-					item.put("fileName", entry.getName());
-			    	item.put("fileSize", entry.getSize());
-			    	item.put("compressFileSize", entry.getCompressedSize());
-			    	item.put("updDt", VarsqlDateUtils.format(VarsqlConstants.TIMESTAMP_FORMAT, entry.getLastModifiedTime().toMillis()));
-					
-					fileList.add(item);
+					while(entries.hasMoreElements()) {
+						entry = entries.nextElement();
+						
+						item = new HashMap();
+						
+						item.put("fileName", entry.getName());
+						item.put("fileSize", entry.getSize());
+						item.put("compressFileSize", entry.getCompressedSize());
+						item.put("updDt", VarsqlDateUtils.format(VarsqlConstants.TIMESTAMP_FORMAT, entry.getLastModifiedTime().toMillis()));
+						
+						fileList.add(item);
+					}
+					IOUtils.close(zipFile);
+				}catch(Exception e){
+					logger.error("detail fileId : {}", fileId, e);
 				}
-				IOUtils.close(zipFile);
-			}catch(Exception e){
+				return VarsqlUtils.getResponseResultItemList(fileList);
+			}
+			
+			StringBuffer sb = new StringBuffer();
+			
+			try(InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(entity.getFilePath())), VarsqlConstants.CHAR_SET);
+				BufferedReader	br = new BufferedReader(isr);){
+							
+				String read_data ="";
+				int lineCount = 0;
+				
+				while((read_data =br.readLine()) != null){
+					if(lineCount >= MAX_LINE) {
+						break; 
+					}
+					lineCount++;
+					sb.append(read_data).append(BlankConstants.NEW_LINE);
+				}
+				
+				IOUtils.close(br);
+				IOUtils.close(isr);
+			} catch (IOException e) {
 				logger.error("detail fileId : {}", fileId, e);
 			}
 			
-			return VarsqlUtils.getResponseResultItemList(fileList);
+			return VarsqlUtils.getResponseResultItemOne(sb.toString());
 			
 		}else if(UploadFileType.IMPORT.equals(UploadFileType.getDivType(entity.getFileDiv()))){
 			StringBuffer sb = new StringBuffer();
 			
 			Map item = new HashMap();
 			
-			try(InputStreamReader isr = new InputStreamReader(new FileInputStream(FileServiceUtils.getFileInfoToFile(entity)));
+			try(InputStreamReader isr = new InputStreamReader(new FileInputStream(FileServiceUtils.getFileInfoToFile(entity)), VarsqlConstants.CHAR_SET);
 				BufferedReader	br = new BufferedReader(isr);){
 							
 				String read_data ="";
@@ -150,7 +179,7 @@ public class UserPreferencesServiceFileImpl extends AbstractService {
 			
 			if(entry.getName().equals(fileName)) {
 			
-				try(InputStreamReader isr = new InputStreamReader(zipFile.getInputStream(entry));
+				try(InputStreamReader isr = new InputStreamReader(zipFile.getInputStream(entry), VarsqlConstants.CHAR_SET);
 					BufferedReader	br = new BufferedReader(isr);){
 								
 					String read_data ="";

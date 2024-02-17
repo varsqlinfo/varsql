@@ -466,7 +466,7 @@ _ui.headerMenu ={
 						case 'import': // 가져오기
 
 							var dimension = VARSQL.util.browserSize();
-							var popt = 'width=800px,height=500px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
+							var popt = 'width=800px,height=550px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
 
 							VARSQLUI.popup.open(VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid), {
 								name : 'import_win'+_g_options.conuid
@@ -1543,11 +1543,11 @@ _ui.addDbServiceObject({
 
 							var cacheData = _g_cache.getSOMetaCache($$objectType,tmpName, 'column');
 							
-							if(VARSQL.isUndefined(cacheData) && sItem.colList){
+							if(VARSQL.isBlank(cacheData) && sItem.colList){
 								_g_cache.setSOMetaCache($$objectType, tmpName, 'column', sItem.colList);
 								cacheData = {items:sItem.colList};
 							}
-
+							
 							var params ={
 								objectType : $$objectType
 								,gubunKey :key
@@ -4808,22 +4808,18 @@ _ui.SQL = {
 				type: 'post'
 				,loadSelector : dataExportModealElId
 				,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
+				,progressBar : true
 				,params:params
 			});
 		}
 
 		modalEle.dialog({
-			height: 430
+			height: 480
 			,width: 730
 			,modal: true
 			,show : false
 			,buttons: {
-				"Export & Close":function (){
-					if(exportData() ===false) return ;
-
-					$( this ).dialog( "close" );
-				}
-				,"Export":function (){
+				"Export":function (){
 					exportData();
 				}
 				,Cancel: function() {

@@ -323,8 +323,8 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) {
-		String requid = HttpUtils.getString(req, "requid");
-		String sessAttrKey = HttpSessionConstants.progressKey(requid);
+		String progressUid = HttpUtils.getString(req, "progressUid");
+		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
 		
 		HttpSession session = req.getSession();
 		

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.varsql.core.common.beans.ProgressInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.ColumnJavaType;
@@ -54,13 +56,16 @@ import com.varsql.core.sql.format.VarsqlFormatterUtil;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLUtils;
 import com.varsql.web.common.service.CommonLogService;
+import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.exception.VarsqlAppException;
+import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
+import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.ValidateUtils;
@@ -68,7 +73,6 @@ import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.excel.ExcelCellMetaInfo;
-import com.vartech.common.excel.ExcelCellStyle;
 import com.vartech.common.io.writer.AbstractWriter;
 import com.vartech.common.io.writer.CSVWriter;
 import com.vartech.common.io.writer.ExcelWriter;
@@ -77,6 +81,7 @@ import com.vartech.common.io.writer.WriteMetadataInfo;
 import com.vartech.common.io.writer.XMLWriter;
 import com.vartech.common.report.ExcelConstants;
 import com.vartech.common.utils.FileUtils;
+import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.StringUtils.EscapeType;
@@ -96,6 +101,9 @@ public class SQLServiceImpl{
 
 	@Autowired
 	private CommonLogService commonLogService;
+	
+	@Autowired
+	private FileInfoEntityRepository fileInfoEntityRepository;
 	
 	/**
 	 *
@@ -147,6 +155,7 @@ public class SQLServiceImpl{
 		List<SqlSource> sqlList = parseInfo.getList();
 
 		int limit = sqlExecuteInfo.getLimit();
+		limit = limit <= 0 ? SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT : limit;
 
 		if(!SecurityUtil.isAdmin()) {
 			sqlExecuteInfo.setLimit(limit > dbinfo.getMaxSelectCount() ? dbinfo.getMaxSelectCount() : limit);
@@ -320,6 +329,9 @@ public class SQLServiceImpl{
 	 */
 	@SuppressWarnings("rawtypes")
 	public void dataExport(DataMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		
+		String progressUid = HttpUtils.getString(req, "progressUid");
+		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
 
 		String objectName = sqlExecuteInfo.getObjectName();
 
@@ -346,8 +358,17 @@ public class SQLServiceImpl{
 
 		OutputStream outstream = null;
 		AbstractWriter writer = null;
+		
+		HttpSession session = req.getSession();
 
 		try {
+			
+			ProgressInfo progressInfo = new ProgressInfo();
+			progressInfo.setTotalItemSize(1);
+			progressInfo.setName(objectName);
+			progressInfo.setItemIdx(1);
+			
+			session.setAttribute(sessAttrKey, progressInfo);
 
 			VarsqlFileType exportType = sqlExecuteInfo.getExportType();
 
@@ -375,6 +396,7 @@ public class SQLServiceImpl{
 
 			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new SelectExecutorHandler(writer) {
 				private boolean firstFlag = true;
+				private int rowIdx = 0;
 
 				@Override
 				public boolean handle(SelectInfo handleParam) {
@@ -407,11 +429,18 @@ public class SQLServiceImpl{
 						}
 						firstFlag =false;
 					}
+					
+					if(progressInfo != null) {
+						progressInfo.setProgressContentLength(++rowIdx);
+					}
+					
+					Object rowObj = handleParam.getRowObject(); 
 
 					try {
-						getWriter().addRow(handleParam.getRowObject());
+						getWriter().addRow(rowObj);
 					} catch (IOException e) {
-						logger.error(e.getMessage() , e);
+						logger.error("error row idx : {}, info : {}", rowIdx, rowObj);
+						logger.error(e.getMessage(), e);
 						return false;
 					}
 					return true;
@@ -425,10 +454,30 @@ public class SQLServiceImpl{
 			}
 
 			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", objectName));
+			
+			session.setAttribute(sessAttrKey, "complete");
+			
+			Map tableExportCount = new HashMap<>();
+			tableExportCount.put(objectName, progressInfo.getProgressContentLength());
+			
+			File downloadFile = new File(downloadFilePath);
+
+			String fileId = VartechUtils.generateUUID();
+			fileInfoEntityRepository.save(FileInfoEntity.builder().fileId(fileId)
+				.fileContId(fileId)
+				.fileDiv(UploadFileType.EXPORT.getDiv())
+				.contGroupId(sqlExecuteInfo.getDatabaseInfo().getVconnid())
+				.fileFieldName("exportTableData")
+				.fileName(objectName+"."+exportType.getExtension())
+				.fileSize(downloadFile.length())
+				.fileExt(exportType.getExtension())
+				.filePath(downloadFile.getAbsolutePath())
+				.customInfo(tableExportCount)
+				.build());
 
 			VarsqlUtils.setResponseDownAttr(res, req, exportType.concatExtension(exportFileName));
 
-			try(FileInputStream fileInputStream  = new FileInputStream(new File(downloadFilePath));
+			try(FileInputStream fileInputStream  = new FileInputStream(downloadFile);
 				OutputStream downloadStream = res.getOutputStream();)
 			{
 				byte[] buf = new byte[8192];
@@ -442,8 +491,11 @@ public class SQLServiceImpl{
 		        downloadStream.close();
 		        fileInputStream.close();
 			}
+			
+			
 
 		}catch(Exception e) {
+			session.setAttribute(sessAttrKey, "fail");
 			throw e;
 		}finally {
 			IOUtils.close(writer);

@@ -40,8 +40,6 @@ public class Configuration extends AbstractConfiguration{
 	private ConnectionInfo vConInfo;
 	private MailConfigBean mailConfigBean;
 
-	private final String TYPE = "varsql.type";
-
 	private final String USE_CONNID_KEY = "varsql.connid.uuid.use";
 	private final String PASSWORD_INIT_TYPE = "varsql.password.init.type";
 	private final String PASSWORD_INIT_SIZE = "varsql.password.init.size";
@@ -160,7 +158,7 @@ public class Configuration extends AbstractConfiguration{
 		// varsql server config
 		protocol = props.getProperty("varsql.protocol", "http");
 		hostname = props.getProperty("varsql.hostname", "localhost");
-		port = Integer.parseInt(props.getProperty("varsql.port", "12312"));
+		port = Integer.parseInt(props.getProperty("varsql.port", "12345"));
 		contextPath = props.getProperty("varsql.contextpath", "/vsql");
 		connectiondaoPackage = props.getProperty("varsql.connectiondao.package", "com.varsql");
 		
@@ -233,6 +231,7 @@ public class Configuration extends AbstractConfiguration{
 		parseXml(connectionResource);
 
 		logger.info("varsql Connection Info : {}" , this.vConInfo);
+		logger.info("varsql.timezone info : {}" , getTimeZoneId());
 	}
 
 	/**
@@ -289,7 +288,7 @@ public class Configuration extends AbstractConfiguration{
 	}
 
 	public String getDbType() {
-		return props.getProperty(TYPE , "h2");
+		return this.vConInfo.getType();
 	}
 
 	public boolean useConnUID() {
@@ -399,6 +398,10 @@ public class Configuration extends AbstractConfiguration{
 
 	public String getConnectiondaoPackage() {
 		return connectiondaoPackage;
+	}
+	
+	public String getTimeZoneId() {
+		return getProperties().getProperty("varsql.timezone","");
 	}
 
 }

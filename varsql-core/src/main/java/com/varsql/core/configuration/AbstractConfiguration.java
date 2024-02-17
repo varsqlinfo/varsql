@@ -2,6 +2,8 @@ package com.varsql.core.configuration;
 
 import java.io.File;
 
+import com.vartech.common.utils.StringUtils;
+
 
 /**
  *
@@ -28,11 +30,24 @@ public abstract class AbstractConfiguration{
 		if(installRoot != null && !"".equals(installRoot)) {
 			;
 		}else {
+			
 			String catalinaHome = System.getProperty("catalina.home" ,"");
+
 			if(!"".equals(catalinaHome)) {
 				installRoot =catalinaHome+File.separator +"resources";
 			}else {
-				return Thread.currentThread().getContextClassLoader().getResource("").getFile();
+				
+				String userHome = System.getProperty("user.home");
+				installRoot = "C:/zzz/resources/";
+				
+				if(!StringUtils.isBlank(userHome)) {
+					File dir = new File(userHome, ".varsql");
+					if(!dir.exists()) {
+						dir.mkdir();
+					}
+					
+					installRoot = dir.getAbsolutePath();
+				}
 			}
 		}
 		

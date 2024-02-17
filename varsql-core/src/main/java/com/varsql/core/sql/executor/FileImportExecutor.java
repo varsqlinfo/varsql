@@ -26,6 +26,8 @@ import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
+import com.varsql.core.sql.executor.handler.UpdateExecutorHandler;
+import com.varsql.core.sql.executor.handler.UpdateInfo;
 import com.varsql.core.sql.util.JdbcUtils;
 
 /**
@@ -45,9 +47,19 @@ public class FileImportExecutor extends UpdateExecutor{
 	private final Logger logger = LoggerFactory.getLogger(FileImportExecutor.class);
 
 	public static String IMPORT_FILE_PARAM_NAME = "importFile";
-
+	
 	@Override
 	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
+		return execute(statementInfo, new UpdateExecutorHandler() {
+			@Override
+			public boolean handle(UpdateInfo sqlResultVO) {
+				return true;
+			}
+		});
+	}
+
+	@Override
+	public SQLExecuteResult execute(SqlStatementInfo statementInfo, final UpdateExecutorHandler updateHandler) throws SQLException {
 
 		SQLExecuteResult result = new SQLExecuteResult();
 
@@ -65,6 +77,7 @@ public class FileImportExecutor extends UpdateExecutor{
 			result.setMessage(" error message :  "+  e1.getMessage());
 			return result;
 		}
+		
 
 		result.setStartTime(System.currentTimeMillis());
 
@@ -93,6 +106,11 @@ public class FileImportExecutor extends UpdateExecutor{
 
 				@Override
 				public void handler(Map rowInfo) throws SQLException {
+					
+					if(!updateHandler.handle(UpdateInfo.builder().parameter(rowInfo).build())) {
+						return ; 
+					}
+					
 					if(firstFlag) {
 						statement = handlerVariable.getStatement(getSql());
 						firstFlag = false;

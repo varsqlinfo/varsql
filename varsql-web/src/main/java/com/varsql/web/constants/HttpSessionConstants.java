@@ -13,7 +13,7 @@ package com.varsql.web.constants;
 *-----------------------------------------------------------------------------
  */
 public interface HttpSessionConstants {
-	public static String progressKey(String requid) {
-		return requid+"_progress";
+	public static String progressKey(String progressUid) {
+		return progressUid+"_progress";
 	}
 }

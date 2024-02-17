@@ -428,10 +428,11 @@ if (typeof window != "undefined") {
 		if (opts.disableResultCheck !== true) {
 			if (statusCode != 200) {
 				if (resultCode == 500) {	// error
+					PROGRESS_BAR_STATUS=false;
 					alert(data.message);
 					return false;
 				} else if (resultCode != 200) {
-
+					PROGRESS_BAR_STATUS=false;
 					if (data.messageCode) {
 						alert('request check : ' + data.messageCode);
 					} else {
@@ -454,6 +455,7 @@ if (typeof window != "undefined") {
 	 * ajax 요청
 	 */
 	var ALL_REQ_STATUS = {};
+	var PROGRESS_BAR_STATUS = false;
 	_$base.req = {
 		isConnectError: false
 
@@ -561,6 +563,7 @@ if (typeof window != "undefined") {
 					$(loadSelector).centerLoadingClose();
 				}
 			}).fail(function (xhr) {
+				PROGRESS_BAR_STATUS=false;
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
 					$(loadSelector).centerLoadingClose();
@@ -693,9 +696,14 @@ if (typeof window != "undefined") {
 
 			var loadSelector = (opts.loadSelector ? opts.loadSelector : 'body');
 
-			tmpParam[$$csrf_param] = $$csrf_token
+			tmpParam[$$csrf_param] = $$csrf_token;
+			
+			if(VARSQL.isUndefined(tmpParam.progressUid)){
+				tmpParam.progressUid = VARSQL.generateUUID();	
+			}
 
 			try {
+				PROGRESS_BAR_STATUS = true; 
 				$.ajax({
 					type: "POST",
 					url: (typeof urlObj) === 'string' ? _$base.url(urlObj) : _$base.url(urlObj.type, urlObj.url),
@@ -720,6 +728,7 @@ if (typeof window != "undefined") {
 
 							$(loadSelector).centerLoading({
 								contentClear: false
+								,content:''
 							});
 						}
 					}
@@ -739,6 +748,7 @@ if (typeof window != "undefined") {
 						saveAs(blob, filename)
 					}
 					, error: function (xhr) {
+						PROGRESS_BAR_STATUS = false; 
 						if (xhr.readyState == 4) {
 							// xhr.status , xhr.statusText check
 						} else if (xhr.readyState == 0) { // connection refused , access denied
@@ -760,10 +770,12 @@ if (typeof window != "undefined") {
 						}
 					}
 				}).done(function (xhr) {
+					PROGRESS_BAR_STATUS = false; 
 					if (loadSelector) {
 						$(loadSelector).centerLoadingClose();
 					}
 				}).fail(function (xhr) {
+					PROGRESS_BAR_STATUS = false; 
 					if (xhr.status == 404) {
 						alert('File not found');
 					} else if (xhr.status == 401) {
@@ -787,6 +799,35 @@ if (typeof window != "undefined") {
 						$(loadSelector).centerLoadingClose();
 					}
 				})
+				
+				if(opts.progressBar===true){
+					_$base.req.progressInfo({
+						progressUid : tmpParam.progressUid
+						,callback : function (resData){
+							var item = resData.item; 
+							
+							if(item == 'fail'){
+								$(loadSelector +' .center-loading-centent').text('fail');
+							}else if(item == 'complete'){
+								$(loadSelector +' .center-loading-centent').text('complete');
+							}else{
+								if(item != null){
+									var progressText = VARSQL.util.numberFormat(item.progressContentLength)+'';
+							
+									if(item.totalContentLength && item.totalContentLength > 0){
+										progressText += ' / ' + VARSQL.util.numberFormat(item.totalContentLength);
+									}
+									
+									if(item.name){
+										progressText = item.name + '('+progressText + ')';
+									}
+									
+									$(loadSelector +' .center-loading-centent').text(progressText);
+								}
+							}
+						} 
+					});
+				}
 			} catch (e) {
 				var tmpParam = opts.params ? opts.params : {}
 					, urlObj = opts.url;
@@ -822,7 +863,55 @@ if (typeof window != "undefined") {
 				document.varsql_hidden_down_form.submit();
 			}
 		}
+		, progressInfo : function(progressBarInfo){
+			progressBar(progressBarInfo);
+		}
+		, stopProgress : function(){
+			PROGRESS_BAR_STATUS=false;
+		}
 	};
+	
+	function progressBar(progressBarInfo){
+		if(PROGRESS_BAR_STATUS===false)return; 
+		
+		$.ajax({
+			type: "POST",
+			cache: false,
+			dataType: "json",
+			url: _$base.url(VARSQL.uri.progress, '/info'),
+			data:  {
+				progressUid : progressBarInfo.progressUid
+				,type : progressBarInfo.type || 'download'
+				,keep : (progressBarInfo.keep ==true ?"Y":"N")
+			}
+			, beforeSend: function (xhr) {
+				xhr.setRequestHeader($$csrf_header, $$csrf_token);
+			}
+			,success: function (resData, status, xhr) {
+				
+				if(progressBarInfo.type == 'remove'){
+					return ; 
+				}
+				
+				var item = resData.item; 
+				
+				if(progressBarInfo.callback(resData)===false){
+					return ; 
+				}
+					
+				if(item != 'fail' && item != 'complete'){
+					setTimeout(function() {
+						progressBar(progressBarInfo);
+					}, progressBarInfo.timeout || 700);
+				}
+			}
+		}).fail(function (xhr) {
+			if(progressBarInfo.type !='remove'){
+				progressBarInfo.type = 'remove';
+				progressBar(progressBarInfo);	
+			}
+		})
+	}
 
 	// database request cancel
 	function databaseReqCancel(reqUid) {
@@ -1009,7 +1098,7 @@ if (typeof window != "undefined") {
 			cursor: 'wait',
 			contentClear: false,
 			enableLoadSelectorBtn: false,
-			callback: false
+			callback: false,
 		}
 
 		var id, w, h;
@@ -1025,21 +1114,17 @@ if (typeof window != "undefined") {
 		var loadStr = '<div class="centerLoading" style="cursor:' + config.cursor + ';top:0px;left:0px;z-index:100;position:absolute;width:100%; height:100%;">';
 
 		loadStr += '<div style="position:absolute;background: ' + config.bgColor + ';opacity: 0.5; width:100%; height:100%;z-index:1;"></div>';
-		if (config.content) {
-			if (config.centerYn == 'Y') {
-				loadStr += '<div style="z-index:10; text-align:center; margin: 0; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);">' + config.content + '</div>';
-			} else {
-				loadStr += config.content;
-			}
-		} else {
-			loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="' + config.loadingImg + '"/> ';
+		
+		loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="' + config.loadingImg + '"/> ';
+		
+		loadStr += ' <div class="center-loading-centent" style="padding: 5px;">' + (config.content ||'') + '</div>';
 
-			if (config.enableLoadSelectorBtn === true) {
-				loadStr += '<div style="height: 35px;line-height: 35px;"><a href="javascript:;" class="center-loading-btn _loadSelectorCancelBtn">Cancel</a></div>';
-			}
-
-			loadStr += '</div>';
+		if (config.enableLoadSelectorBtn === true) {
+			loadStr += '<div style="height: 35px;line-height: 35px;"><a href="javascript:;" class="center-loading-btn _loadSelectorCancelBtn">Cancel</a></div>';
 		}
+
+		loadStr += '</div>';
+		
 		loadStr += '</div>';
 
 		if (!config.contentClear) {
@@ -1746,6 +1831,27 @@ if (typeof window != "undefined") {
 			}
 
 			return str;
+		}
+		/**
+		 * number format
+		 */
+		,numberFormat:function(num){
+			return num.toLocaleString();
+		}
+		/**
+		 * number format
+		 */
+		,fileDisplaySize :function(fileSize) {
+		    if (fileSize <= 1) {
+		        return fileSize + " bytes";
+		    }
+		
+		    var units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+		    var digitGroups = Math.floor(Math.log(fileSize) / Math.log(1024));
+		    if(digitGroups ==0){
+				return fileSize +' '+ units[digitGroups];
+			}
+		    return (fileSize / Math.pow(1024, digitGroups)).toFixed(2) + " " + units[digitGroups];
 		}
 	}
 

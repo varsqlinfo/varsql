@@ -67,11 +67,7 @@ public class SqlStatementInfo{
 	}
 
 	public void setLimit(int limit) {
-		if(limit > -1) {
-			this.limit =limit;
-		}else {
-			this.limit = SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT;
-		}
+		this.limit =limit;
 	}
 
 	public String getSqlParam() {

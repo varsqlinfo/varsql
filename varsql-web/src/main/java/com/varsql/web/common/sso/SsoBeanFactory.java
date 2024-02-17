@@ -27,7 +27,7 @@ public class SsoBeanFactory {
 		try {
 			return beanFactory.getBean(VarsqlWebConfig.getInstance().getSsoConfig().getComponentName(), SsoHandler.class);
 		}catch(BeansException e) {
-			logger.error("sso component name: '{}' not found" , VarsqlWebConfig.getInstance().getSsoConfig().getComponentName() , e);
+			logger.error("sso handler name: '{}' not found" , VarsqlWebConfig.getInstance().getSsoConfig().getComponentName() , e);
 			return null;
 		}
 	}

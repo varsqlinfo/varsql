@@ -31,14 +31,14 @@ public class ProgressInfoController extends AbstractController  {
 
 	@PostMapping(value = { "/info" })
 	@ResponseBody
-	public ResponseResult progress(@RequestParam(value = "requid", required = true) String requestUid,
+	public ResponseResult progress(@RequestParam(value = "progressUid", required = true) String progressUid,
 			@RequestParam(value = "type", required = true) String type, HttpServletRequest req,
 			HttpServletResponse response) throws Exception {
 
-		String sessAttrKey = HttpSessionConstants.progressKey(requestUid);
+		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
 		Object obj = req.getSession().getAttribute(sessAttrKey);
 		
-		if (obj == "complete") {
+		if ("complete".equals(obj) || "fail".equals(obj) || "remove".equals(type)) {
 			req.getSession(true).removeAttribute(sessAttrKey);
 		}
 

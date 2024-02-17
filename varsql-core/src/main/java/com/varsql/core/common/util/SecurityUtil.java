@@ -146,9 +146,14 @@ public final class SecurityUtil {
 	 * @return
 	 */
 	public static boolean isAdmin(){
+		
+		return isAdmin(getAuthentication ());
+	}
+	
+	public static boolean isAdmin(Authentication auth){
 		if(isAnonymous()) return false; 
 		
-		java.util.Iterator<? extends GrantedAuthority> iter =loginInfo().getAuthorities().iterator();
+		java.util.Iterator<? extends GrantedAuthority> iter =loginInfo(auth).getAuthorities().iterator();
 		while(iter.hasNext()){
 			if(AuthorityTypeImpl.ADMIN.name().equals(((Authority)iter.next()).getName())){
 				return true;

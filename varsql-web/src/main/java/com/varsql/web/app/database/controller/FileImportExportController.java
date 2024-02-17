@@ -3,6 +3,8 @@ package com.varsql.web.app.database.controller;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,12 @@ import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.database.service.FileImportExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
+import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
 
 
@@ -89,7 +93,7 @@ public class FileImportExportController extends AbstractController {
 	}
 
 	@RequestMapping(value="/import", method=RequestMethod.POST)
-	public @ResponseBody ResponseResult fileImport(FileImportInfo fii) throws IOException {
+	public @ResponseBody ResponseResult fileImport(FileImportInfo fii, HttpServletRequest req) throws IOException {
 		
 		logger.debug(" import file info: {}" , fii);
 
@@ -99,8 +103,8 @@ public class FileImportExportController extends AbstractController {
 			result.setMessage("select file");
 			return result;
 		}
-
-		return fileImportExportServiceImpl.importFile(fii);
+		
+		return fileImportExportServiceImpl.importFile(fii, req);
 
 	}
 

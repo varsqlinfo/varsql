@@ -15,6 +15,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.varsql.core.common.util.TimeZoneUtils;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.db.datatype.handler.MetaDataHandler;
 import com.varsql.core.db.datatype.handler.ResultSetHandler;
@@ -609,7 +610,7 @@ public enum DefaultDataType implements DataType {
 					return val.getTime();
 				}
 				
-				return val.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+				return val.toInstant().atZone(TimeZoneUtils.getZoneId(null)).toString();
 			}
 		}).build()
 	),

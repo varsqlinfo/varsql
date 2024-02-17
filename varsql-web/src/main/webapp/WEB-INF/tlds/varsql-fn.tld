@@ -70,4 +70,16 @@
 		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
 		<function-signature>java.lang.Boolean isPasswordResetModeEmail()</function-signature>
 	</function>
+	
+	<!-- role check -->
+	<function>
+		<name>isAdmin</name>
+		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
+		<function-signature>java.lang.Boolean isAdmin()</function-signature>
+	</function>
+	<function>
+		<name>isManager</name>
+		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
+		<function-signature>java.lang.Boolean isManager()</function-signature>
+	</function>
 </taglib>

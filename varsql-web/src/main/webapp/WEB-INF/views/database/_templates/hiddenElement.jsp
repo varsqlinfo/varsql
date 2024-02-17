@@ -185,7 +185,8 @@
 <%--data export template --%>
 <script id="dataExportTemplate" type="text/varsql-template">
 <div id="data-export-modal" title="<spring:message code="data.export" />">
-	<div class="export-dialog-area">
+	<div style="padding-bottom: 6px;"><spring:message code="data.export.history.msg" text="다운로드 항목은 환경설정 -> 파일 에서 이력을 조회 할수 있습니다."/></div> 
+	<div class="export-dialog-area" style="height:calc(100% - 25px);">
 		<div id="data-export-column-list" class="export-column-area">
 
 		</div>
@@ -211,7 +212,24 @@
 				<tr>
 					<td><label class="control-label">Limit Count</label></td>
 					<td>
-						<input class="" id="exportCount" name="exportCount" value="1000">
+						<select id="exportCount"  name="exportCount" style="width: 100%;">
+							<c:choose>
+								<c:when test="${varsqlfn:isManager() or varsqlfn:isAdmin()}">
+									<option value="-1" select>ALL</option>
+									<option value="1000">1000</option>
+								</c:when>
+								<c:otherwise>
+									<option value="1000" selected>1000</option>
+								</c:otherwise>
+							</c:choose>
+							
+							<c:forTokens var="item" items="5000,10000,100000,1000000" delims=",">
+								<c:if test="${item < limitSelectRow}">
+		       					<option value="${item}">${item}</option>
+								</c:if>
+							</c:forTokens>
+							<option value="${limitSelectRow}">${limitSelectRow}</option>
+						</select>
 					</td>
 				</tr>
 				<tr>

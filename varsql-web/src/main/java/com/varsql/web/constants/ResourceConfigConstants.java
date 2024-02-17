@@ -23,8 +23,6 @@ public interface ResourceConfigConstants {
 
 	final String APP_SSO_COMPONENT = "ssoComponent";
 
-	final String APP_SSO_SIMPLE_COMPONENT = "simpleSsoComponent";
-	
 	final String CACHE_CONDITION_COMPONENT = "varsqlCacheCondition";
 	
 	final String CACHE_MANAGER = "varsqlCacheManager";

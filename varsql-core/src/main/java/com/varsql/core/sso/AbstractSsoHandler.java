@@ -7,6 +7,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
+
+import com.vartech.common.utils.StringUtils;
+
 /**
 *
 * @FileName  : AbstractSsoHandler.java
@@ -17,23 +21,41 @@ import javax.servlet.http.HttpServletResponse;
 */
 public abstract class AbstractSsoHandler implements SsoHandler {
 
+	final static String REDIRECT_URL ="redirectURL"; 
+	
+	// sso 체크. 
 	@Override
 	public boolean beforeSsoHandler(HttpServletRequest request, HttpServletResponse response) {
 		return true;
 	}
-
+	
 	@Override
 	public Map<String, Object> customUserInfo(HttpServletRequest request, HttpServletResponse response,	@SuppressWarnings("rawtypes") Map userInfo) {
 		return null;
 	}
 
 	@Override
-	public boolean afterSsoHandler(HttpServletRequest request, HttpServletResponse response, String ssoId) {
+	public boolean afterSsoHandler(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
 		return true;
 	}
 
 	@Override
 	public List<String> userAuthorities(String userId, HttpServletRequest request, HttpServletResponse response) {
 		return Collections.EMPTY_LIST;
+	}
+	
+	@Override
+	public String successRedirectURL(HttpServletRequest request, HttpServletResponse response) {
+		String redirectURL = request.getParameter(REDIRECT_URL); 
+		if(!StringUtils.isBlank(redirectURL)) {
+			return redirectURL;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public String loginURL(HttpServletRequest request, HttpServletResponse response) {
+		return "";
 	}
 }

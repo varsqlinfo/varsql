@@ -1,5 +1,9 @@
 package com.varsql.web.common.controller;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,17 +18,20 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.code.VarsqlSsoType;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.configuration.VarsqlWebConfig;
 import com.varsql.core.sso.SsoHandler;
 import com.varsql.web.common.sso.SsoBeanFactory;
 import com.varsql.web.common.sso.SsoComponent;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.vartech.common.utils.StringUtils;
 
 /**
 *
@@ -68,19 +75,54 @@ public class SsoController implements InitializingBean  {
 		*/
 
 		if(!ssoHandler.beforeSsoHandler(request, response)) {
-			return new ModelAndView("redirect:/");
+			String loginUrl = ssoHandler.loginURL(request, response); 
+			if(StringUtils.isBlank(loginUrl)) {
+				return new ModelAndView("redirect:/");
+			}
+			return new ModelAndView("redirect:"+ loginUrl);
 		}
-		logger.debug("SsoController req uri : {} " , request.getRequestURI());
-
-    	String usrid = ssoHandler.handler(request, response);
+		
+		String usrid = ssoHandler.handler(request, response);
+		
+		logger.debug("req ssoId : {}, uri : {} " , usrid, request.getRequestURI());
 
     	Authentication auth = ssoComponent.ssoLogin(usrid);
 
-    	if(auth == null ) {
-    		return new ModelAndView("redirect:/");
+    	if(auth == null ||!SecurityUtil.isAdmin(auth)) {
+    		
+    		logger.debug("auth : {} " , auth);
+    		
+    		request.setAttribute("ssoId", usrid);
+    		
+    		ssoHandler.afterSsoHandler(request, response, auth);
+    		
+    		if(!SecurityUtil.isAnonymous()) {
+				new SecurityContextLogoutHandler().logout(request, null, null);
+			}
+    		
+    		return getLoginRedirectMav(request, ssoHandler.loginURL(request, response));
     	}
+    	
+    	String redirectUrl = ssoHandler.successRedirectURL(request, response);
+    	
+    	if(StringUtils.isBlank(redirectUrl)) {
+    		return new ModelAndView("redirect:" + AuthorityTypeImpl.USER.getMainPage());
+    	}
+    	
+    	return new ModelAndView("redirect:" + redirectUrl);
+	}
 
-		return new ModelAndView("redirect:" + AuthorityTypeImpl.USER.getMainPage());
+	// login redirect ModelAndView
+	private ModelAndView getLoginRedirectMav(HttpServletRequest request, String redirectLoginPath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+
+		Enumeration<String> names = request.getAttributeNames();
+		if (names.hasMoreElements()) {
+			String name = names.nextElement();
+			model.put(name, request.getAttribute(name));
+		}
+
+		return new ModelAndView(redirectLoginPath, model);
 	}
 
 

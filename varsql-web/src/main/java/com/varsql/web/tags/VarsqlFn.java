@@ -3,6 +3,7 @@ package com.varsql.web.tags;
 import javax.servlet.http.HttpServletRequest;
 
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.constants.WebStaticResourceVersion;
@@ -81,5 +82,13 @@ public final class VarsqlFn{
 	
 	public static boolean isPasswordResetModeEmail() {
 		return Configuration.getInstance().getPasswordResetMode().equals(VarsqlConstants.PASSWORD_RESET_MODE.EMAIL);
+	}
+	
+	public static boolean isManager() {
+		return SecurityUtil.isManager();
+	}
+	
+	public static boolean isAdmin() {
+		return SecurityUtil.isAdmin();
 	}
 }

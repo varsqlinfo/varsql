@@ -15,8 +15,8 @@ public class ProgressInfo {
 	private int itemIdx;
 	private int totalItemSize;
 	
-	private int progressContentLength;
-	private int totalContentLength;
+	private long progressContentLength;
+	private long totalContentLength;
 	
 	public String getRequid() {
 		return requid;
@@ -50,15 +50,15 @@ public class ProgressInfo {
 		this.totalItemSize = totalItemSize;
 	}
 
-	public int getProgressContentLength() {
+	public long getProgressContentLength() {
 		return progressContentLength;
 	}
 
-	public void setProgressContentLength(int progressContentLength) {
+	public void setProgressContentLength(long progressContentLength) {
 		this.progressContentLength = progressContentLength;
 	}
 
-	public int getTotalContentLength() {
+	public long getTotalContentLength() {
 		return totalContentLength;
 	}
 

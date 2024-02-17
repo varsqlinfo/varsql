@@ -262,11 +262,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                .userDetailsService(rememberMeUserService()).and();
 	}
 
-    @Bean(ResourceConfigConstants.APP_SSO_SIMPLE_COMPONENT)
-    public SimpleSsoHandler simpleSsoComponent() {
-    	return new SimpleSsoHandler();
-    }
-    
     @Bean(ResourceConfigConstants.REMEMBERME_USER_DETAIL_SERVICE)
     public RememberMeUserService rememberMeUserService() {
     	return new RememberMeUserService();

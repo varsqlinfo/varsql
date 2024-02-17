@@ -2,6 +2,8 @@ package com.varsql.core.configuration;
 
 import java.io.File;
 
+import com.vartech.common.utils.StringUtils;
+
 
 /**
  *
@@ -38,7 +40,7 @@ public class ConfigurationFilePath extends AbstractConfiguration{
 
 		if("".equals(catalinaHome)) {
 			System.setProperty(Constants.RUNTIME_KEY, "local");
-			System.setProperty(Constants.CONFIG_PROPERTY_KEY, "C:/zzz/resources/");
+			System.setProperty(Constants.CONFIG_PROPERTY_KEY, getInstallRoot());
 			System.setProperty("spring.devtools.restart.enabled", "true");
 			System.setProperty("spring.devtools.livereload.enable", "true");
 		}

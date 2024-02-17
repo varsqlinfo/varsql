@@ -9,7 +9,6 @@ import lombok.ToString;
 @ToString
 public class DataExportVO {
 
-	private String requid;
 	
 	private String conuid;
 
@@ -25,14 +24,6 @@ public class DataExportVO {
 	
 	private List<DataExportItemVO> exportItems;
 	
-	public String getRequid() {
-		return requid;
-	}
-
-	public void setRequid(String requid) {
-		this.requid = requid;
-	}
-
 	public String getConuid() {
 		return conuid;
 	}
