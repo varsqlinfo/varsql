@@ -164,6 +164,7 @@ VarsqlAPP.vueServiceBean({
 			VARSQL.req.download({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport'}
+				,isDataDownload :true
 				,params : param
 			});
 		}

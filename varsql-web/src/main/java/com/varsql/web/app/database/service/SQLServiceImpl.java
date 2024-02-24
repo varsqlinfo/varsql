@@ -58,6 +58,7 @@ import com.varsql.core.sql.util.SQLUtils;
 import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
+import com.varsql.web.constants.VarsqlURLInfo;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.DataDownloadException;
@@ -328,7 +329,8 @@ public class SQLServiceImpl{
 	 * @param res
 	 */
 	@SuppressWarnings("rawtypes")
-	public void dataExport(DataMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public ResponseResult dataExport(DataMap paramMap, SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		ResponseResult responseResult = new ResponseResult();
 		
 		String progressUid = HttpUtils.getString(req, "progressUid");
 		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
@@ -475,25 +477,10 @@ public class SQLServiceImpl{
 				.customInfo(tableExportCount)
 				.build());
 
-			VarsqlUtils.setResponseDownAttr(res, req, exportType.concatExtension(exportFileName));
-
-			try(FileInputStream fileInputStream  = new FileInputStream(downloadFile);
-				OutputStream downloadStream = res.getOutputStream();)
-			{
-				byte[] buf = new byte[8192];
-
-				int read = 0;
-		        while ((read = fileInputStream.read(buf)) != -1){
-		        	downloadStream.write(buf, 0, read);
-		        }
-		        downloadStream.flush();
-
-		        downloadStream.close();
-		        fileInputStream.close();
-			}
-			
-			
-
+			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap() {{
+				put("fileId", fileId);
+				put("contId", "");
+			}}));
 		}catch(Exception e) {
 			session.setAttribute(sessAttrKey, "fail");
 			throw e;
@@ -501,6 +488,8 @@ public class SQLServiceImpl{
 			IOUtils.close(writer);
 			IOUtils.close(outstream);
 		}
+		
+		return responseResult; 
 	}
 	/**
 	 *

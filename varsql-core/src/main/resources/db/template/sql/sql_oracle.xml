@@ -118,7 +118,16 @@ CREATE OR REPLACE {{{sourceText}}}
 		<create>
 {{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
 
-{{{sourceText}}}
+{{#xif sourceText '!=' ''}}{{{sourceText}}}{{/xif~}}
+
+{{#xif sourceText '==' ''}}
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{../schema}}.{{objectName}}
+on
+{{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{columnName}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+{{/xif}}
 		</create>
 	</index>
 

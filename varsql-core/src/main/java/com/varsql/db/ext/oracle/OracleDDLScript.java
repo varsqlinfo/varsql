@@ -1,9 +1,11 @@
 package com.varsql.db.ext.oracle;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,21 +131,48 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-
+		
+		DDLTemplateParam param = DDLTemplateParam.builder()
+			.dbType(dataParamInfo.getDbType())
+			.schema(dataParamInfo.getSchema())
+			.ddlOpt(ddlOption)
+		.build();
+		
+		boolean dbmsAuthError = false; 
 		for (String objNm : objNmArr) {
 
 			ddlInfo = new DDLInfo();
 			ddlInfo.setName(objNm);
 			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.sourceText(StringUtils.trim(sqlSesseion.selectOne("indexScriptSource", dataParamInfo)))
-			.build();
-
+			
+			param.setObjectName(objNm);
+			List items = null;
+			String sql = "";
+			try {
+				if(dbmsAuthError) {
+					items =sqlSesseion.selectList("indexScript", dataParamInfo);
+				}else {
+					sql = StringUtils.trim(sqlSesseion.selectOne("indexScriptSource", dataParamInfo));
+				}
+			}catch(Exception e) {
+				dbmsAuthError = true; 
+				logger.error("index ddl error : ", e.getMessage());
+				if(e instanceof PersistenceException) {
+					sql = "/*Error Reading Source;\n" +e.getCause().getMessage()+"\n*/";
+				}else {
+					sql = "/*Error Reading Source;\n" +e.getMessage()+"\n*/";
+				}
+			}
+			
+			if(dbmsAuthError) {
+				param.setSourceText("");
+				if(items == null) {
+					items =sqlSesseion.selectList("indexScript", dataParamInfo);
+				}
+				param.setItems(items);
+			}else {
+				param.setSourceText(sql);
+			}
 			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
 			reval.add(ddlInfo);
 		}

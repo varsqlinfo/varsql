@@ -29,14 +29,6 @@
 							<input class="form-control text required input-sm" name="export_name" v-model="downloadConfig.exportName">
 						</div>
 					</div>
-					<div class="field-group">
-						<label class="col-xs-3"><spring:message code="label.schema" /> : </label>
-						<select v-model="selectSchema" id="selectSchema" class="col-xs-9 padding0">
-							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
-								<option value="${item}">${item}</option>
-							</c:forEach>
-						</select>
-					</div>
 				</form>
 			</div>
 		</div>
@@ -50,9 +42,9 @@
 				<ul>
 					<template v-for="(objInfo,index) in exportObject">
 					   <li>
-					   		<input type="checkbox" :id="'check'+objInfo.contentid" @click="selectItem(objInfo)">
+							<input type="checkbox" :id="'check'+objInfo.contentid" @click="selectItem(objInfo)">
 							<label :for="'check'+objInfo.contentid" :title="objInfo.name">{{ objInfo.name }}</label>
-					   	</li>
+					   </li>
 					</template>
 				</ul>
 			</div>
@@ -61,6 +53,17 @@
 		<div class="process-step" :class="step==3?'active':''">
 			<div class="col-xs-12">
 				<div class="process-title"><spring:message code="msg.export.ddl.object.select.title" /></div>
+				
+				<c:if test="${schemaInfo ne ''}">
+					<div style="padding: 5px 0px 0px;">
+						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </label>
+						<select v-model="selectSchema" @change="loadObjectInfo()" style="width: calc(100% - 80px);">
+							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
+								<option value="${item}">${item}</option>
+							</c:forEach>
+						</select>
+					</div>
+				</c:if>
 				<div class="process-desc"><spring:message code="msg.table.dbclick.move" /></div>
 			</div>
 			<div class="col-xs-3">
@@ -98,8 +101,9 @@ VarsqlAPP.vueServiceBean({
 			exportName : 'ddlInfo'
 		}
 		,selectSchema : '${currentSchemaName}'
+		,objectLoadSchema : ''
 		,selectExportObject : ''
-		,selectDbObjectInfo : []
+		,selectDbObjectInfo : null
 		,selectObjectItems :{}
 		,objExportInfo : {}
 		,selectExportInfo : {}
@@ -127,42 +131,47 @@ VarsqlAPP.vueServiceBean({
 		,moveStep : function (step){
 			var _self = this;
 			
-			if(step == 2 && VARSQL.isBlank($('#selectSchema option:selected').val())){
-				VARSQLUI.toast.open('Schema '+VARSQL.message('varsql.0006'));
-				this.selectStep(1);
-				return false;
-			}
-
 			if(step < 3){
 				return true;
-			}
-
-			var objItem = _self.selectObjectItems;
-			
-			var dbObjType = [];
-			var activeObjItem = {};
-			var firstFlag = true; 
-			for(var key in objItem){
-				
-				if(firstFlag){
-					activeObjItem = objItem[key];
-				}
-				
-				if(objItem[key].isActive){
-					activeObjItem = objItem[key];
-				}
-				
-				if(typeof _self.objExportInfo[key] ==='undefined'){
-					dbObjType.push(key);
-				}
-				
-				firstFlag = false; 
 			}
 			
 			if(VARSQL.getLength(_self.selectObjectItems) < 1){
 				VARSQL.toastMessage('varsql.0006');
 				this.selectStep(2);
 				return false;
+			}
+			
+			this.loadObjectInfo();
+			
+		}
+		,loadObjectInfo: function (){
+			var _self = this;
+			
+			var selectObjectItems = _self.selectObjectItems;
+			
+			if(_self.objectLoadSchema != _self.selectSchema){
+				_self.objExportInfo= {};
+				_self.selectExportInfo = {};
+			}
+			
+			var dbObjType = [];
+			var activeObjItem = {};
+			var firstFlag = true; 
+			for(var key in selectObjectItems){
+				
+				if(firstFlag){
+					activeObjItem = selectObjectItems[key];
+				}
+				
+				if(selectObjectItems[key].isActive){
+					activeObjItem = selectObjectItems[key];
+				}
+				
+				if(_self.objectLoadSchema != _self.selectSchema || typeof _self.objExportInfo[key] ==='undefined'){
+					dbObjType.push(key);
+				}
+				
+				firstFlag = false; 
 			}
 			
 			if(dbObjType.length < 1){
@@ -181,29 +190,31 @@ VarsqlAPP.vueServiceBean({
 				,data: param
 				,loadSelector : '.menu-tools-body'
 				,success:function (resData){
+					
 					var customItem = resData.customMap;
 
 					var firstFlag = true;
 
-					var selectKeyInfo;
+					var viewObjectKey;
 
-					for(var key in objItem){
+					for(var key in selectObjectItems){
 
 						if(VARSQL.isUndefined(customItem[key])){
 							continue ;
 						}
+						
+						if(firstFlag){
+							viewObjectKey =key;
+						}
 
 						_self.objExportInfo[key] = $.isArray(customItem[key])?customItem[key] : [];
-						if(firstFlag){
-							selectKeyInfo =key;
-						}else{
-							_self.selectExportInfo[key] = customItem[key];
-						}
+						_self.selectExportInfo[key] = _self.objExportInfo[key];
 
 						firstFlag = false;
 					}
-
-					_self.setSelectObject(_self.selectObjectItems[selectKeyInfo]);
+					
+					_self.objectLoadSchema = param.schema;
+					_self.setSelectObject(_self.selectObjectItems[viewObjectKey], true);
 				}
 			});
 		}
@@ -232,7 +243,9 @@ VarsqlAPP.vueServiceBean({
 			VARSQL.req.download({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/ddl/export'}
+				,mode :true
 				,params : param
+				,mode : 3
 			});
 
 			//_self.exportInfo();
@@ -249,7 +262,7 @@ VarsqlAPP.vueServiceBean({
 			}
 		}
 		//object list
-		,setSelectObject : function (sObj){
+		,setSelectObject : function (sObj, initFlag){
 
 			var _self =this;
 
@@ -261,19 +274,21 @@ VarsqlAPP.vueServiceBean({
 			
 			sObj.isActive = true;
 			
-			if(_self.selectExportObject != ''){
+			if(initFlag !== true && _self.selectExportObject != ''){
 				//_self.selectExportObject.isActive = false;
 				_self.selectExportInfo[_self.selectExportObject.contentid] = _self.selectDbObjectInfo.getTargetItem();
 			}
 
 			_self.selectExportObject = sObj;
 
-			var sObjInfo = _self.objExportInfo[objName];
-
-			var targetInfo = _self.selectExportInfo[objName] || sObjInfo;
-
-			var tmpSourceItem = [] , paramSourceItem=sObjInfo;
-
+			var sourceItems = _self.objExportInfo[objName];
+			var targetItems = _self.selectExportInfo[objName] || sObjInfo;
+			
+			if(_self.selectDbObjectInfo != null){
+				_self.selectDbObjectInfo.setSourceItem(sourceItems);
+    			_self.selectDbObjectInfo.setTargetItem(targetItems);
+			}
+			
 			_self.selectDbObjectInfo= $.pubMultiselect('#source', {
 				duplicateCheck : true
 				,header : {
@@ -283,13 +298,13 @@ VarsqlAPP.vueServiceBean({
 				,valueKey : 'name'	
 				,labelKey : 'name'
 				,source : {
-					items : paramSourceItem
+					items : sourceItems
 					,search :{
 						enable : true
 					}
 				}
 				,target : {
-					items : targetInfo
+					items : targetItems
 					,search :{
 						enable : true
 					}

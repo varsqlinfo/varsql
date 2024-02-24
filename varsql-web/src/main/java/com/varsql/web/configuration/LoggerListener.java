@@ -1,5 +1,8 @@
 package com.varsql.web.configuration;
 
+import java.io.File;
+
+import com.varsql.core.configuration.ConfigurationFilePath;
 import com.varsql.core.configuration.Constants;
 import com.vartech.common.utils.StringUtils;
 
@@ -37,7 +40,7 @@ public class LoggerListener extends ContextAwareBase implements LoggerContextLis
 
         if("local".equals(varsqlRuntime)) {
         	context.putProperty("runtime", "local");
-        	context.putProperty("LOG_DIR", "c:/zzz/logs/varsql");
+        	context.putProperty("LOG_DIR", ConfigurationFilePath.getInstance().getInstallRoot()+File.separator+"logs");
         }else {
 	        String logBase = System.getProperty("catalina.base"); 
         	if(!StringUtils.isBlank(logBase)) {
@@ -45,7 +48,7 @@ public class LoggerListener extends ContextAwareBase implements LoggerContextLis
 	        	context.putProperty("LOG_DIR", System.getProperty("catalina.base")+"/logs/varsql");
         	}else {
         		context.putProperty("runtime", "local");
-            	context.putProperty("LOG_DIR", "c:/zzz/logs/varsql");
+            	context.putProperty("LOG_DIR", ConfigurationFilePath.getInstance().getInstallRoot()+File.separator+"logs");
         	}
         }
 

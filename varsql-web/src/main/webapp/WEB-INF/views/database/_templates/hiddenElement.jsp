@@ -213,22 +213,16 @@
 					<td><label class="control-label">Limit Count</label></td>
 					<td>
 						<select id="exportCount"  name="exportCount" style="width: 100%;">
-							<c:choose>
-								<c:when test="${varsqlfn:isManager() or varsqlfn:isAdmin()}">
-									<option value="-1" select>ALL</option>
-									<option value="1000">1000</option>
-								</c:when>
-								<c:otherwise>
-									<option value="1000" selected>1000</option>
-								</c:otherwise>
-							</c:choose>
-							
+							<option value="1000" selected>1000</option>
 							<c:forTokens var="item" items="5000,10000,100000,1000000" delims=",">
 								<c:if test="${item < limitSelectRow}">
 		       					<option value="${item}">${item}</option>
 								</c:if>
 							</c:forTokens>
 							<option value="${limitSelectRow}">${limitSelectRow}</option>
+							<c:if test="${varsqlfn:isManager() or varsqlfn:isAdmin()}">
+								<option value="-1">ALL</option>
+							</c:if>
 						</select>
 					</td>
 				</tr>

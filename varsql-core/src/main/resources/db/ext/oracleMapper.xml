@@ -399,7 +399,7 @@
 	</select>
 	
 	<!-- index and column info -->
-	 <select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
+	<select id="indexMetadata" parameterType="databaseParamInfo" resultType="dataMap">
 		 select a.* ,b.* 
 		 from (
 			 SELECT 
@@ -868,6 +868,82 @@
 	 -->
 	<select id="indexScriptSource" parameterType="databaseParamInfo" resultType="string" >
 		SELECT DBMS_METADATA.GET_DDL('INDEX', UPPER( #{objectName}), #{schema}) FROM DUAL
+	</select>
+	<!-- index and column info -->
+	<select id="indexScript" parameterType="databaseParamInfo" resultType="hashmap">
+		select 
+			a.TYPE as "type"
+			,a.TABLE_NAME as "tableName"
+			,b.INDEX_NAME as "objectName"
+			,b.COLUMN_NAME as "columnName" 
+			,b.COLUMN_POSITION as "ordinalPosition"
+			, (case when b.DESCEND ='ASC' then 'ASC'
+						else 'DESC' end)   as "ascOrDesc"
+			,a.*
+			from (
+				SELECT 
+				ui.INDEX_NAME
+				,ui.TABLE_NAME
+				,ui.TABLESPACE_NAME as "TABLE_SPACE"
+				,ui.UNIQUENESS
+				,ui.TABLE_OWNER
+				,ui.COMPRESSION
+				,ui.LOGGING
+				,ui.PCT_FREE
+				,ui.INI_TRANS
+				,ui.MAX_TRANS
+				,ui.INITIAL_EXTENT
+				,ui.MIN_EXTENTS
+				,ui.MAX_EXTENTS
+				,ui.PCT_INCREASE
+				,ui.BUFFER_POOL
+				,CASE
+					WHEN uc.CONSTRAINT_TYPE = 'P' THEN 'PK'
+					WHEN ui.UNIQUENESS = 'UNIQUE' THEN 'UQ'
+					ELSE ''
+					END
+					AS "TYPE"
+				,uc.STATUS
+		<choose>
+		<when test="baseSchemaFlag">
+			FROM  USER_INDEXES ui  left outer join  USER_CONSTRAINTS uc
+			ON	ui.TABLE_NAME = uc.TABLE_NAME
+			AND	ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND	uc.STATUS = 'ENABLED'
+			where 1 =1 
+		</when>
+		<otherwise>
+			FROM  ALL_INDEXES ui left outer join ALL_CONSTRAINTS uc
+			ON  ui.OWNER = uc.OWNER
+			and  ui.TABLE_NAME = uc.TABLE_NAME
+			AND ui.INDEX_NAME = uc.CONSTRAINT_NAME
+			AND uc.STATUS = 'ENABLED'  
+			where ui.OWNER = #{schema}
+		</otherwise>
+		</choose>
+			and ui.index_type = 'NORMAL'
+			and (uc.CONSTRAINT_TYPE is null or uc.CONSTRAINT_TYPE not in ('P'))
+			and ui.INDEX_NAME = #{objectName}
+		) a , (
+			select 
+				INDEX_NAME
+				,COLUMN_NAME
+				,COLUMN_POSITION
+				,DESCEND
+			<choose>
+			<when test="baseSchemaFlag">
+				from USER_IND_COLUMNS
+				where 1=1
+			</when>
+			<otherwise>
+				from ALL_IND_COLUMNS
+				where INDEX_OWNER = #{schema}
+			</otherwise>
+			</choose>
+			and INDEX_NAME = #{objectName}
+		)b
+		where a.INDEX_NAME = b.INDEX_NAME
+		ORDER BY a.TABLE_NAME, a.INDEX_NAME , b.COLUMN_POSITION
 	</select>
 
 	<!-- 

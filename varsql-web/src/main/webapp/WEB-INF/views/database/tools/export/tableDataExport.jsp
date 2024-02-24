@@ -198,11 +198,13 @@ VarsqlAPP.vueServiceBean({
 			this.downloadStatus = 'start';
 			VARSQL.req.download({
 				type: 'post'
-				,url: {type:VARSQL.uri.database, url:'/tools/export/downloadTableData?'}
+				,url: {type:VARSQL.uri.database, url:'/tools/export/downloadTableData'}
+				,mode : 2
 				,params : {
 					prefVal : JSON.stringify(prefVal)
 					,progressUid : progressUid
 					,schema : _self.selectSchema
+					,isDataDownload :true
 					,conuid : '${param.conuid}'
 				}
 			});

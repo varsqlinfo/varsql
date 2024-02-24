@@ -395,6 +395,7 @@ Vue.component('file-upload', {
 			thumbnailHeight: 50,
 			parallelUploads: 20,
 			uploadMultiple : true,
+			timeout: 3600000,
 			maxFilesize: VARSQL.getFileMaxUploadSize(),
 			autoQueue: false,
 			previewTemplate :  this.previewTemplate,

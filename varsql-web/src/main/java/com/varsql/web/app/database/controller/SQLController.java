@@ -80,8 +80,8 @@ public class SQLController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dataExport", method = RequestMethod.POST)
-	public void dataExport(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
-		sqlServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, req, response);
+	public @ResponseBody ResponseResult dataExport(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
+		return sqlServiceImpl.dataExport(HttpUtils.getServletRequestParam(req), sqlExecuteInfo, req, response);
 	}
 
 	/**

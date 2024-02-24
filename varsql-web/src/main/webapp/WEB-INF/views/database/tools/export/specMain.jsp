@@ -198,6 +198,7 @@ VarsqlAPP.vueServiceBean({
 				type: 'post'
 				,url: {type:VARSQL.uri.database, url:'/tools/export/spec/tableExport'}
 				,params : param
+				,mode : 3
 			});
 		}
 		,setUserConfigInfo : function (){

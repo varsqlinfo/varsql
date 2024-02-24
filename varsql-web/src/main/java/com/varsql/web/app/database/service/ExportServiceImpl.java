@@ -56,6 +56,7 @@ import com.varsql.core.sql.util.SQLUtils;
 import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.UploadFileType;
+import com.varsql.web.constants.VarsqlURLInfo;
 import com.varsql.web.dto.DDLExportItemVO;
 import com.varsql.web.dto.DDLExportVO;
 import com.varsql.web.dto.DataExportItemVO;
@@ -262,10 +263,11 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception
 	 */
-	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public void ddlExport(PreferencesRequestDTO preferencesInfo, String schema, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String jsonString = preferencesInfo.getPrefVal();
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
+		dpi.setSchema(schema);
 
 		logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
 		logger.debug("settingInfo :{}", jsonString );
@@ -294,10 +296,17 @@ public class ExportServiceImpl{
 			dpi.setObjectType(objectType.name());
 
 			List<DDLInfo> ddlList = dbMetaEnum.getDDLScript(objectType.getObjectTypeId(), dpi, ddlOption, objNmArr);
-
-			for (DDLInfo ddlInfo : ddlList) {
-				allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE_TWO);
+			
+			if(ddlList==null) {
+				allDDLScript.append("!!!!!# system check #!!!!!");
+				allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
+			}else {
+				for (DDLInfo ddlInfo : ddlList) {
+					allDDLScript.append(ddlInfo.getCreateScript()).append(BlankConstants.NEW_LINE_TWO);
+				}
 			}
+
+			
 
 			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
 
@@ -322,9 +331,11 @@ public class ExportServiceImpl{
 	 * @param res
 	 * @throws Exception
 	 */
-	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) {
+	public ResponseResult downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) {
 		String progressUid = HttpUtils.getString(req, "progressUid");
 		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
+		
+		ResponseResult responseResult = new ResponseResult();
 		
 		HttpSession session = req.getSession();
 		
@@ -349,28 +360,16 @@ public class ExportServiceImpl{
 	
 			session.setAttribute(sessAttrKey, "complete");
 	
-			VarsqlUtils.setResponseDownAttr(res, req, fie.getFileName());
-	
-			res.setHeader("Content-Length", "" + fie.getFileSize());
-	
-			File file = FileServiceUtils.getFileInfoToFile(fie);
-			byte[] b = new byte[2048];
-			try (BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file));
-					BufferedOutputStream outs = new BufferedOutputStream(res.getOutputStream())) {
-				int read = 0;
-				while ((read = fin.read(b)) != -1) {
-					outs.write(b, 0, read);
-				}
-	
-				outs.flush();
-	
-				IOUtils.close(fin);
-				IOUtils.close(outs);
-			}
+			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap() {{
+				put("fileId", fie.getFileId());
+				put("contId", "");
+			}}));
 		}catch(Exception e) {
 			session.setAttribute(sessAttrKey, "fail");
 			throw new DataDownloadException(VarsqlAppCode.COMM_FILE_DOWNLOAD_ERROR, e.getMessage(), e);
 		}
+		
+		return responseResult; 
 	}
 
 	/**

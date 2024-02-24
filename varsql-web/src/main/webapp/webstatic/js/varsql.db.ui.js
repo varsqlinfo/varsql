@@ -771,11 +771,11 @@ _ui.headerMenu ={
 		var _self = this;
 
 		if(type=='spec'){
-			_self.openPreferences('Table Spec Export',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid));
+			_self.openPreferences('Table Spec Export',VARSQL.getContextPathUrl('/database/tools/export/specMain?conuid='+_g_options.param.conuid),{width:800});
 		}else if(type=='ddl'){
-			_self.openPreferences('DDL Export',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid), {width:700,height:470});
+			_self.openPreferences('DDL Export',VARSQL.getContextPathUrl('/database/tools/export/ddlMain?conuid='+_g_options.param.conuid), {width:800,height:500});
 		}else if(type=='tableData'){
-			_self.openPreferences('Table Data Export',VARSQL.getContextPathUrl('/database/tools/export/tableDataExport?conuid='+_g_options.param.conuid));
+			_self.openPreferences('Table Data Export',VARSQL.getContextPathUrl('/database/tools/export/tableDataExport?conuid='+_g_options.param.conuid),{width:800});
 		}
 	}
 	//header 메뉴 환경설정처리.
@@ -4809,6 +4809,7 @@ _ui.SQL = {
 				,loadSelector : dataExportModealElId
 				,url: {type:VARSQL.uri.sql, url:'/base/dataExport'}
 				,progressBar : true
+				,mode : 2
 				,params:params
 			});
 		}

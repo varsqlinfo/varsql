@@ -158,8 +158,8 @@ public class ExportController extends AbstractController  {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/ddl/export", method = RequestMethod.POST)
-	public void ddlExport(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
-		exportServiceImpl.ddlExport(preferencesInfo, req, res);
+	public void ddlExport(PreferencesRequestDTO preferencesInfo, @RequestParam(value = "schema", required = true) String schema, HttpServletRequest req, HttpServletResponse res) throws Exception {
+		exportServiceImpl.ddlExport(preferencesInfo, schema, req, res);
 	}
 	
 	/**
@@ -187,13 +187,13 @@ public class ExportController extends AbstractController  {
 	}
 	  
 	@PostMapping(value = { "/downloadTableData" })
-	public void downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,
+	public @ResponseBody ResponseResult downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req,
 			HttpServletResponse response) throws Exception {
 
 		this.logger.debug("downloadTableData data export : {} ", preferencesInfo);
 
 		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
 
-		exportServiceImpl.downloadTableData(preferencesInfo, req, response);
+		return exportServiceImpl.downloadTableData(preferencesInfo, req, response);
 	}
 }

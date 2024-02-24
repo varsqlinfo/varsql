@@ -493,7 +493,7 @@ VarsqlAPP.vueServiceBean( {
 					,{key :'message', label:'Message', width:70, renderer:{
 						type : 'link'
 						,click : function (clickItem){
-							console.log(clickItem)
+							
 							VARSQL.req.download({
 								type: 'post'
 								,url: '/file/backup/download'

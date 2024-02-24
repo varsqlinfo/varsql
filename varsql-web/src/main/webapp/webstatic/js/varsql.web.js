@@ -690,6 +690,10 @@ if (typeof window != "undefined") {
 		}
 		, download: function (opts) {
 			var _this = this;
+			
+			var DOWNLOAD_MODE = {1 :'direct', 2:'ajax-direct', 3:'ajax'};
+			
+			var _downloadMode  = VARSQL.isUndefined(DOWNLOAD_MODE[opts.mode]) ? 1 : opts.mode;
 
 			var tmpParam = opts.params ? opts.params : {}
 				, urlObj = opts.url;
@@ -702,26 +706,19 @@ if (typeof window != "undefined") {
 				tmpParam.progressUid = VARSQL.generateUUID();	
 			}
 
+			if(_downloadMode==1){
+				fileDownload(opts);
+				return; 
+			}
+			
 			try {
 				PROGRESS_BAR_STATUS = true; 
-				$.ajax({
+				var ajaxOpt = {
 					type: "POST",
+					cache: false,
 					url: (typeof urlObj) === 'string' ? _$base.url(urlObj) : _$base.url(urlObj.type, urlObj.url),
 					data: tmpParam,
-					xhr: function () {
-						var xhr = new XMLHttpRequest();
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState == 2) {
-								if (xhr.status == 200) {
-									xhr.responseType = "blob";
-								} else {
-									xhr.responseType = "text";
-								}
-							}
-						};
-						return xhr;
-					}
-					, beforeSend: function (xhr) {
+					beforeSend: function (xhr) {
 						xhr.setRequestHeader($$csrf_header, $$csrf_token);
 
 						if ($(loadSelector).length > 0) {
@@ -733,8 +730,14 @@ if (typeof window != "undefined") {
 						}
 					}
 					, success: function (response, status, xhr) {
-						// check for a filename
-
+						if(_downloadMode==2){
+							opts.url = response.item;
+							setTimeout(function (){
+								fileDownload(opts);	
+							},1)
+							return; 
+						}
+						
 						var filename = "";
 						var disposition = xhr.getResponseHeader('Content-Disposition');
 
@@ -769,8 +772,27 @@ if (typeof window != "undefined") {
 							//Other errors
 						}
 					}
-				}).done(function (xhr) {
-					PROGRESS_BAR_STATUS = false; 
+				};
+				
+				if(_downloadMode==2){
+					ajaxOpt.dataType="json";	
+				}else{
+					ajaxOpt.xhr= function () {
+						var xhr = new XMLHttpRequest();
+						xhr.onreadystatechange = function () {
+							if (xhr.readyState == 2) {
+								if (xhr.status == 200) {
+									xhr.responseType = "blob";
+								} else {
+									xhr.responseType = "text";
+								}
+							}
+						};
+						return xhr;
+					}
+				}
+				
+				$.ajax(ajaxOpt).done(function (xhr) {
 					if (loadSelector) {
 						$(loadSelector).centerLoadingClose();
 					}
@@ -829,40 +851,10 @@ if (typeof window != "undefined") {
 					});
 				}
 			} catch (e) {
-				var tmpParam = opts.params ? opts.params : {}
-					, urlObj = opts.url;
-
-				if ($('#varsql_hidden_down_area').length < 1) {
-					var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
-						+ '<iframe name="varsql_hidden_down_iframe"  style="width:0px;height:0px;"></iframe><div id="varsql_hidden_down_form_area"></div><div>';
-					$('body').append(strHtm);
-				}
-
-				opts.url = (typeof urlObj) === 'string' ? _$base.url(urlObj) : _$base.url(urlObj.type, urlObj.url);
-
-				var contHtm = [];
-				contHtm.push('<form action="' + opts.url + '" method="post" name="varsql_hidden_down_form" target="varsql_hidden_down_iframe">');
-
-				var tmpVal;
-
-				contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-					'key': $$csrf_param, val: $$csrf_token
-				}));
-
-				for (var key in tmpParam) {
-					tmpVal = tmpParam[key];
-
-					contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-						'key': key, val: (typeof tmpVal === 'string' ? tmpVal : JSON.stringify(tmpVal))
-					}));
-				}
-				contHtm.push('</form>');
-
-				$('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
-
-				document.varsql_hidden_down_form.submit();
+				fileDownload(opts);
 			}
 		}
+		
 		, progressInfo : function(progressBarInfo){
 			progressBar(progressBarInfo);
 		}
@@ -870,6 +862,41 @@ if (typeof window != "undefined") {
 			PROGRESS_BAR_STATUS=false;
 		}
 	};
+	
+	function fileDownload(opts){
+		var tmpParam = opts.params ? opts.params : {}
+			, urlObj = opts.url;
+
+		if ($('#varsql_hidden_down_area').length < 1) {
+			var strHtm = '<div id="varsql_hidden_down_area"style="display:none;">'
+				+ '<iframe name="varsql_hidden_down_iframe"  style="width:0px;height:0px;"></iframe><div id="varsql_hidden_down_form_area"></div><div>';
+			$('body').append(strHtm);
+		}
+
+		opts.url = (typeof urlObj) === 'string' ? _$base.url(urlObj) : _$base.url(urlObj.type, urlObj.url);
+
+		var contHtm = [];
+		contHtm.push('<form action="' + opts.url + '" method="post" name="varsql_hidden_down_form" target="varsql_hidden_down_iframe">');
+
+		var tmpVal;
+
+		contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+			'key': $$csrf_param, val: $$csrf_token
+		}));
+
+		for (var key in tmpParam) {
+			tmpVal = tmpParam[key];
+
+			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
+				'key': key, val: (typeof tmpVal === 'string' ? tmpVal : JSON.stringify(tmpVal))
+			}));
+		}
+		contHtm.push('</form>');
+
+		$('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
+
+		document.varsql_hidden_down_form.submit();
+	}
 	
 	function progressBar(progressBarInfo){
 		if(PROGRESS_BAR_STATUS===false)return; 
