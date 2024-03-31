@@ -4,7 +4,7 @@
 <HTML>
 
 <head>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
@@ -26,57 +26,57 @@
 <body>
 
 <div class="container">
-    <h3 class="page-header"><spring:message code="page.title.varsql"/> <spring:message code="join.form.title"/></h3>
+    <h3 class="page-header"><spring:message code="varsql.title"/> <spring:message code="user.join"/></h3>
     <!-- form start -->
     <form name="joinForm" id="joinForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form" onsubmit="return false;">
 
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="join.form.uid"/></label>
+            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="user.id"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="join.form.uid" />" />
+                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="user.id" />" />
             </div>
         </div>
          <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.name"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.name"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control" id="uname" name="uname" placeholder="<spring:message code="join.form.name"/>"/>
+                <input type="text" class="form-control" id="uname" name="uname" placeholder="<spring:message code="user.name"/>"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.email"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="email"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="join.form.email" />"/>
+                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="email" />"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.organization"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.orgnm"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control" id="orgNm" name="orgNm" placeholder="<spring:message code="join.form.organization"/>"/>
+                <input type="text" class="form-control" id="orgNm" name="orgNm" placeholder="<spring:message code="user.orgnm"/>"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.password"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.password"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="join.form.password"/>" />
+                <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="user.password"/>" />
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.password.confirm"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.password.confirm"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="join.form.password.confirm" />" />
+                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="user.password.confirm" />" />
             </div>
         </div>
     </form>
     <div class="form-group">
           <div class="col-sm-12 text-center">
-              <button type="button" class="btn btn-info btn-join"><spring:message code="btn.join"/></button>
-              <button type="button" class="btn btn-default btnMain"><spring:message code="btn.main"/></button>
+              <button type="button" class="btn btn-info btn-join"><spring:message code="join"/></button>
+              <button type="button" class="btn btn-default btnMain"><spring:message code="screen.login"/></button>
           </div>
       </div>
 
@@ -174,8 +174,8 @@ var joinForm = {
 			,fields: {
 				uid: {
 					validators: {
-						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
-						,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.0043',{size:'3~100'})}
+						notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
+						,stringLength: { min: 3, max: 100, message: VARSQL.message('msg.valid.size.param',{size:'3~100'})}
 						,callback: {
 		                     message: '이미 존재하는 아이디 입니다.',
 		                     callback: function (value, validator, $field) {
@@ -186,9 +186,9 @@ var joinForm = {
 			  	}
 				,uname: {
 					validators: {
-						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
+						notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
 						,callback: {
-		                     message: VARSQL.message('varsql.0043',{size:'2~100'}),
+		                     message: VARSQL.message('msg.valid.size.param',{size:'2~100'}),
 		                     callback: function (value, validator, $field) {
 		                   	  	return $.trim(value).length > 1;
 		                     }
@@ -197,13 +197,13 @@ var joinForm = {
 			  	}
 				,uemail: {
 					validators: {
-						notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
-						,stringLength: { min: 0, max: 250, message: VARSQL.message('varsql.0043',{size:'3~100'})}
+						notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
+						,stringLength: { min: 0, max: 250, message: VARSQL.message('msg.valid.size.param',{size:'3~100'})}
 						,emailAddress: {
 							message: 'The input is not a valid email address'
 						}
 						,callback: {
-		                     message: VARSQL.message('varsql.0044','존재하는 이메일 입니다.'),
+		                     message: VARSQL.message('msg.valid.duplicated.param', VARSQL.message('email')),
 		                     callback: function (value, validator, $field) {
 		                   	  	return emailChecVal < 1;
 		                     }
@@ -213,31 +213,31 @@ var joinForm = {
 				,upw: {
 	                validators: {
 	                    notEmpty: {
-	                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
+	                        message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')
 	                    }
 	                    ,different: {
 	                        field: 'uid',
-	                        message: VARSQL.message('varsql.0045','아이디와 달라야 합니다.')
+	                        message: VARSQL.message('msg.valid.id.diffrent','아이디와 달라야 합니다.')
 	                    }
 	                    ,identical: {
 	                        field: 'confirmUpw',
-	                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
+	                        message: VARSQL.message('msg.valid.password.identical','비밀번호가 같아야합니다.')
 	                    }
 	                    ,stringLength: {
 	                        min: 4,
 	                        max: 200,
-	                        message: VARSQL.message('varsql.0047', {size : 4})
+	                        message: VARSQL.message('msg.valid.min.size.param', {size : 4})
 	                    }
 	                }
 	            }
 	            ,confirmUpw: {
 	                validators: {
 	                    notEmpty: {
-	                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
+	                        message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')
 	                    }
 	                    ,identical: {
 	                        field: 'upw',
-	                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
+	                        message: VARSQL.message('msg.valid.password.identical','비밀번호가 같아야합니다.')
 	                    }
 	                }
 	            }
@@ -261,7 +261,7 @@ var joinForm = {
 					return ;
 				}else{
 					if(resData.code ==409){
-						VARSQL.alertMessage('varsql.0049','아이디 중복 입니다.');
+						VARSQL.alertMessage('msg.valid.duplicated.param', VARSQL.message('id'));
 						return ;
 					}
 				}

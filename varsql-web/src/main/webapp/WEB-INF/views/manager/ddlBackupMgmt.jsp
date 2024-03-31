@@ -16,7 +16,7 @@
 				<div class="pull-right search-area">
 					<div class="dataTables_filter">
 						<div class="input-group floatright">
-							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 							<span class="input-group-btn">
 								<button class="btn btn-default" @click="search()" type="button">
 									<span class="glyphicon glyphicon-search"></span>
@@ -40,9 +40,9 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manager.backupmgmt.connection" text="Connection"/></th>
-									<th class="text-center"><spring:message	code="manager.backupmgmt.jobname" text="Job Name" /></th>
-									<th class="text-center"><spring:message	code="manager.backupmgmt.expression" text="Expression" /></th>
+									<th class="text-center"><spring:message	code="connection.db" text="Connection"/></th>
+									<th class="text-center"><spring:message	code="name" text="Job Name" /></th>
+									<th class="text-center"><spring:message	code="cron.expression" text="Expression" /></th>
 									<th class="text-center"><spring:message	code="operation" text="Operation" /></th>
 									<th class="text-center"></th>
 								</tr>
@@ -84,7 +84,7 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-6" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="manager.backupmgmt.form.header" text="Job 관리"/><span style="margin-left:10px;font-weight:bold;">{{detailItem.jobName}}</span></div>
+			<div class="panel-heading"><spring:message code="detail.view" text="상세보기"/><span style="margin-left:10px;font-weight:bold;">{{detailItem.jobName}}</span></div>
 			
 			<!-- /.panel-heading -->
 			<div class="panel-body">
@@ -92,15 +92,15 @@
 					<div class="col-sm-12">
 						<div class="pull-right">
 							<template v-if="viewMode=='form'">
-								<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
-								<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
+								<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="new"/></button>
+								<button type="button" class="btn btn-default" @click="save()"><spring:message code="save"/></button>
 	
 								<template v-if="detailFlag===true">
-									<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+									<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="delete"/></button>
 								</template>
 							</template>
 							<template v-else>
-								<button type="button" class="btn btn-default"  @click="viewArea('form')"><spring:message code="btn.close"/></button>
+								<button type="button" class="btn btn-default"  @click="viewArea('form')"><spring:message code="close"/></button>
 							</template>
 						</div>
 					</div>
@@ -109,7 +109,7 @@
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="view-area" :class="viewMode=='form'?'on':''">
 						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
-							<label class="col-sm-3 control-label"><spring:message code="manager.backupmgmt.jobname"  /></label>
+							<label class="col-sm-3 control-label"><spring:message code="name"  /></label>
 							<div class="col-sm-9">
 								<input type="text" v-model="detailItem.jobName" v-validate="'required'" name="NAME" class="form-control" />
 								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
@@ -117,7 +117,7 @@
 						</div>
 						
 						<div class="form-group" :class="errors.has('EXPRESSION') ? 'has-error' :''">
-							<label class="col-sm-3 control-label"><spring:message code="manager.backupmgmt.expression"  /></label>
+							<label class="col-sm-3 control-label"><spring:message code="cron.expression"  /></label>
 							<div class="col-sm-9">
 								<input type="text" v-model="detailItem.cronExpression" v-validate="'required'" name="EXPRESSION" placeholder="0 0 3 * * ? " class="form-control" />
 								<div>
@@ -137,7 +137,7 @@
 								</div>
 								
 								<div class="margin-bottom5">
-									<label><spring:message code="manager.backupmgmt.connection"  /></label>
+									<label><spring:message code="connection.db"  /></label>
 									<div>
 										<select class="form-control" v-model="detailItem.vconnid" @change="getObjectInfo(detailItem.vconnid)">
 											<option value=""><spring:message code="select" text="선택"/></option>
@@ -205,7 +205,7 @@ VarsqlAPP.vueServiceBean( {
 			this.selectObj= $.pubMultiselect('#backupList', {
 				duplicateCheck : true
 				,message :{
-					duplicate: VARSQL.message('varsql.0018')
+					duplicate: VARSQL.message('msg.item.added')
 				}
 				,valueKey : 'contentid'	
 				,labelKey : 'name'
@@ -322,14 +322,14 @@ VarsqlAPP.vueServiceBean( {
 					var item = _this.getParamVal();
 					
 					if(VARSQL.isBlank(item.vconnid)){
-						VARSQL.toastMessage('item.select.message', '<spring:message code="manager.backupmgmt.connection"  />');
+						VARSQL.toastMessage('msg.select.param', '<spring:message code="connection.db"  />');
 						return ;
 					}
 					
 					var backupItems = _this.selectObj.getTargetItem(); 
 					
 					if(backupItems.length < 1){
-						VARSQL.toastMessage('varsql.0034', 'Data Backup');
+						VARSQL.toastMessage('msg.item.select.param', 'DDL Backup');
 						return ;
 					}
 					
@@ -339,7 +339,7 @@ VarsqlAPP.vueServiceBean( {
 					
 					item.jobData =  JSON.stringify(item.jobData);
 					
-					if(!VARSQL.confirmMessage('varsql.0019')){
+					if(!VARSQL.confirmMessage('msg.save.confirm')){
 						return ;
 					}
 
@@ -369,11 +369,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.jobUid ==='undefined'){
-				VARSQL.toastMessage('varsql.0004');
+				VARSQL.toastMessage('msg.item.select', VARSQL.message('delete'));
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 
@@ -447,11 +447,11 @@ VarsqlAPP.vueServiceBean( {
 			};
 			
 			if(VARSQL.isBlank(param.jobUid)){
-				VARSQLUI.toast.open(mode + ' '+VARSQL.message('varsql.0006'));
+				VARSQLUI.toast.open(mode + ' '+VARSQL.message('msg.item.select'));
 				return ;
 			}
 			
-			if(!VARSQL.confirmMessage('varsql.0035', mode)){
+			if(!VARSQL.confirmMessage('msg.confirm.param', mode)){
 				return ; 
 			}
 			

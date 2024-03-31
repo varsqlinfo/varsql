@@ -478,7 +478,7 @@ _ui.headerMenu ={
 
 							//openMenuDialog : function (title,type ,loadUrl, dialogOpt){
 
-							_self.openMenuDialog(VARSQL.message('menu.file.export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
+							_self.openMenuDialog(VARSQL.message('export'),'fileExport',{type:VARSQL.uri.database, url:'/menu/fileExport'}, {'width':600,'height' : 400});
 							break;
 						case 'newwin': // 새창 보기.
 							var dimension = VARSQL.util.browserSize();
@@ -574,7 +574,7 @@ _ui.headerMenu ={
 
 							break;
 						case 'layout':	//레이아웃 초기화
-							if(VARSQL.confirmMessage('varsql.0013')){
+							if(VARSQL.confirmMessage('msg.layout.restore.confirm')){
 								_ui.preferences.save('init', function (){
 									location.href = location.href;
 									return ;
@@ -1177,10 +1177,27 @@ _ui.dbSchemaObject ={
 		_g_cache.initSOMetaCacheObject();
 
 		VARSQL.util.objectMerge(_self.options, _opts);
-
+		
+		_self.initSchema();
 		_self._initObjectTypeTab();
 		_self.initEvt();
 
+	}
+	// 사용자가 선택한 스키마 셋팅
+	,initSchema : function (){
+		var selectSchema =_g_options.screenSetting.selectSchema; 
+		
+		var schemaEle = $(this.selector.schemaObject+' .db-schema-item[obj_nm="'+selectSchema+'"]');
+		 
+		if(schemaEle.length > 0){
+			if(!schemaEle.hasClass('active')){
+				$(this.selector.schemaObject+' .db-schema-item.active').removeClass('active');
+				schemaEle.addClass('active');	
+				$('#varsqlSchemaName').val(selectSchema);
+			}
+			
+			_g_options.param.schema = selectSchema;
+		}
 	}
 	// init left event
 	,initEvt : function (){
@@ -1217,7 +1234,9 @@ _ui.dbSchemaObject ={
 			var objNm =sEle.attr('obj_nm'); 
 			_g_options.param.schema = objNm;
 
-			$('#varsqlSschemaName').val(_g_options.param.schema);
+			$('#varsqlSchemaName').val(_g_options.param.schema);
+			
+			_ui.preferences.save({selectSchema :  objNm});
 
 			_g_cache.initSOMetaCacheObject();
 			_self.selectObjectMenu = {};
@@ -1569,16 +1588,19 @@ _ui.addDbServiceObject({
 					            });
 
 								if(result.isError){
-									VARSQL.toastMessage('varsql.0025');
+									VARSQL.toastMessage('msg.setting.fail.check');
 					            	return ;
 					    		}
 
-								var resultCode = result.value;
-					            if(sObj.viewMode=='editor'){
-					            	_ui.SQL.addSqlEditContent(resultCode, false);
-					            }else{
-					            	_ui.text.copy(resultCode, 'java');
-					            }
+								var resultValue = result.value;
+								
+								if(!_ui.SQL.getSqlEditorObj() || sObj.viewMode != 'editor'){
+									_ui.text.copy(resultValue, 'java');
+									return ;
+								}else{
+									_ui.SQL.addSqlEditContent(resultValue, false);	
+								}
+					            
 								return ;
 							}
 
@@ -2416,16 +2438,19 @@ _ui.addODbServiceObjectMetadata({
 				            });
 
 							if(result.isError){
-								VARSQL.toastMessage('varsql.0025');
+								VARSQL.toastMessage('msg.setting.fail.check');
 				            	return ;
 				    		}
 
-							var resultCode = result.value;
-				            if(sObj.viewMode=='editor'){
-				            	_ui.SQL.addSqlEditContent(resultCode, false);
-				            }else{
-				            	_ui.text.copy(resultCode, 'java');
-				            }
+							var resultValue = result.value;
+							
+							if(!_ui.SQL.getSqlEditorObj() || sObj.viewMode != 'editor'){
+								_ui.text.copy(resultValue, 'java');
+								return ;
+							}else{
+								_ui.SQL.addSqlEditContent(resultValue, false);	
+							}
+								
 							return ;
 						}
 					}
@@ -3177,7 +3202,7 @@ _ui.SQL = {
 		var nameTxt = $('#editorSqlFileNameText').val();
 		if(VARSQL.str.trim(nameTxt)==''){
 			$('#editorSqlFileNameText').focus();
-			VARSQLUI.alert.open({key:'varsql.0010'});
+			VARSQL.alertMessage('msg.content.enter.param',VARSQL.message('sql.file.name'));
 			return ;
 		}
 
@@ -3698,11 +3723,10 @@ _ui.SQL = {
 	,sqlConvertText : function (){
 		var _self = this; 
 		
-		
 		if(this.convertTextDialog==null){
 			_self.convertTextDialog = $('#queryConvertDialog').dialog({
-				height: 350
-				,width: 640
+				height: 370
+				,width: 700
 				,modal: true
 				,buttons: {
 					"Apply":function (){
@@ -3827,7 +3851,7 @@ _ui.SQL = {
 			    cursor.replace(replaceTxt)
 			}
 
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0011', { count: replaceCount}))
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.change.count.param', { count: replaceCount}))
 
 			return ;
 		}
@@ -3835,19 +3859,19 @@ _ui.SQL = {
 		var isNext = cursor.find(isReverseFlag);
 
 		if(wrapSearch===true && isNext===false){
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
 			return ;
 		}
 
 		if(isNext){
 			var cursorFrom = cursor.from();
-			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
+			_self.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.find.line', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
 			_self.getSqlEditorObj().setSelection(cursorFrom, cursor.to());
 		}else{
 			if(findOpt.wrapSearch===true){
 				_self.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
 			}else{
-				_self.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+				_self.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
 				return ;
 			}
 		}
@@ -4101,19 +4125,19 @@ _ui.SQL = {
 
 		if(_self.noteDialog==null){
 			_self.noteDialog = $('#noteTemplate').dialog({
-				height: 350
-				,width: 640
+				height: 370
+				,width: 700
 				,modal: true
 				,buttons: {
 					"Send":function (){
 						var recvList = _self.recvIdMultiSelectObj.getTargetItem();
 
 						if(recvList.length < 1) {
-							VARSQLUI.alert.open({key:'varsql.0007'});
+							VARSQL.alertMessage('msg.add.param', VARSQL.message('recipient'));
 							return ;
 						}
 
-						if(!VARSQL.confirmMessage('varsql.0014')) return ;
+						if(!VARSQL.confirmMessage('msg.send.confirm')) return ;
 
 						var recv_id = [];
 						
@@ -4158,11 +4182,11 @@ _ui.SQL = {
 					,enableItemEvtBtn : true 
 				}
 				,message :{
-					duplicate: VARSQL.message('varsql.0018')
+					duplicate: VARSQL.message('msg.item.added')
 				}
 				,source : {
 					items : []
-					,emptyMessage : VARSQL.message('search.message',{searchType : VARSQL.message('user')})
+					,emptyMessage : VARSQL.message('msg.valid.search.param',{item : VARSQL.message('user')})
 				}
 				,target : {
 					label : VARSQL.message('recipient')
@@ -4287,7 +4311,7 @@ _ui.SQL = {
 
 						_self.sqlFileNameDialogEle.dialog("open");
 		    		}else{
-		    			if(!VARSQL.confirmMessage('varsql.0015', {itemText : sItem.sqlTitle})){
+		    			if(!VARSQL.confirmMessage('msg.delete.confirm.param', {item : sItem.sqlTitle})){
 		    				return ;
 		    			}
 
@@ -4779,11 +4803,11 @@ _ui.SQL = {
 			var chkItems =$.pubGrid('#data-export-column-list').getCheckItems();
 			var chkItemLen = chkItems.length;
 			if(chkItemLen < 1){
-				VARSQLUI.alert.open({key:'varsql.0006'});
+				VARSQLUI.alert.open({key:'msg.item.select'});
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0008')) return false;
+			if(!VARSQL.confirmMessage('msg.export.confirm')) return false;
 
 			var columnNameArr = [];
 			for(var i =0 ;i < chkItemLen;i++){
@@ -4898,7 +4922,7 @@ _ui.SQL = {
 		var editObj =_self.getSqlEditorObj();
 
 		if(!editObj){
-			VARSQLUI.alert.open({key:'varsql.0009'});
+			VARSQLUI.alert.open({key:'msg.editor.empty.warning'});
 			return ;
 		}
 		
@@ -4931,9 +4955,9 @@ _ui.sqlDataArea =  {
 
 		_self.resultTab = $.pubTab(_selector.plugin.sqlResult, {
 			items : [
-				{id :'queryData', name : 'Result'}
-				,{id :'queryColumn', name : 'Column'}
-				,{id :'queryLog', name : 'Log'}
+				{id :'queryData', name : VARSQL.message('result')}
+				,{id :'queryColumn', name : VARSQL.message('column')}
+				,{id :'queryLog', name : VARSQL.message('log')}
 			]
 			,itemKey :{							// item key mapping
 				title :'name'

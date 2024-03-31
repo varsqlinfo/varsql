@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 
 <div class="display-off" id="vueArea">
-	<h1 style="width: 145px;display: inline-block;">
+	<h1 style="display: inline-block;">
 		<a href=""><spring:message code="detail.view" text="상세보기"/></a>
 	</h1>
 	<a href="#" class="fa fa-edit" target="_blank"><spring:message code="newwin.view" text="새창보기"/></a>
@@ -11,7 +11,7 @@
 		<a href="<varsql-app:boardUrl />" class="btn btn-default"><spring:message code="list" text="목록"/></a>
 		<template v-if="articleInfo.modifyAuth">
 			<a @click="modifyInfo()"  class="btn btn-primary"><spring:message code="modify" text="수정"/></a>
-			<a href="javascript:;" @click="deleteItem()" class="btn btn-warning"><spring:message code="label.delete" text="삭제"/></a>
+			<a href="javascript:;" @click="deleteItem()" class="btn btn-warning"><spring:message code="delete" text="삭제"/></a>
 		</template>
 	</div>
 	<div style="clear:both;padding-top: 15px;"></div>
@@ -187,7 +187,7 @@ VarsqlAPP.vueServiceBean({
 		}
 		,deleteItem : function(){
 
-			if(!VARSQL.confirmMessage('varsql.0037','게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
+			if(!VARSQL.confirmMessage('msg.brd.article.delete','게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
 
 			var param = {
 				'articleId' : this.articleInfo.articleId
@@ -230,7 +230,7 @@ VarsqlAPP.vueServiceBean({
 			}
 
 			if(VARSQL.isBlank(saveInfo.contents)){
-				VARSQLUI.toast.open({text : VARSQL.message('varsql.0028','내용을 입력해주세요.')});
+				VARSQL.toastMessage('msg.content.enter.param',VARSQL.message('content'));
 				return ;
 			}
 
@@ -353,7 +353,7 @@ VarsqlAPP.vueServiceBean({
 		,commentDelete : function(item){
 			var _this = this;
 
-			if(!VARSQL.confirmMessage('varsql.0036','댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
+			if(!VARSQL.confirmMessage('msg.brd.comment.delete','댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
 
 			var param = {
 				articleId : this.articleInfo.articleId

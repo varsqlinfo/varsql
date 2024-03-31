@@ -3,7 +3,7 @@
 
 <div id="userTopArea" class="display-off">
 	<div class="user-connection-list-area">
-		<label @click="getConnectionInfo()" class="main-logo-area" title="<spring:message code="refresh.connnection.info"/>">
+		<label @click="getConnectionInfo()" class="main-logo-area" title="<spring:message code="msg.refresh.connnection.info"/>">
 		    <img src="${pageContextPath}/webstatic/vt/vt32.png" class="user-main-logo">
 		    <span>Connect : </span>
 		</label>
@@ -43,7 +43,7 @@
 					</jsp:include>
 
 					<li>
-						<a href="<c:url value="/user/preferences" />" target="_blank" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
+						<a href="<c:url value="/user/preferences" />" target="_blank" class="preferences"><i class="fa fa-fw fa-user"></i> <spring:message code="user.preferences"/></a>
 					</li>
 					<li class="divider"></li>
 					<li>
@@ -80,7 +80,7 @@
 		    <div class="col-xs-7 h100">
 		        <div style="height: 50%;" :style="tabInfo=='old'?'height:100%':'height:50%'">
 		        	<div style="padding: 0px 0px 5px;">
-			        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="label.send.user" text="보낸사람"/> : {{detailItem.regInfo.uname}} </div>
+			        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="send.user" text="보낸사람"/> : {{detailItem.regInfo.uname}} </div>
 			        </div>
 		        	<textarea style="height: calc(100% - 21px);" :value="detailItem.noteCont" disabled="disabled"></textarea>
 		        </div>
@@ -197,7 +197,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 		,getConnectionInfo : function (msgFlag){
 
 			if(msgFlag !== false){
-				if(!confirm('커넥션 정보를 새로고침 하시겠습니까?')){
+				if(!VARSQL.confirmMessage('msg.refresh.connnection.info.confirm')){
 					return ;
 				}
 			}
@@ -287,14 +287,14 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			var _this =this;
 
 			if(VARSQL.isBlank(this.detailItem.noteId)){
-				VARSQL.toastMessage('varsql.0006');
+				VARSQL.toastMessage('msg.item.select');
 				return ;
 			}else if(VARSQL.isBlank(this.detailItem.reNoteCont)){
-				VARSQL.toastMessage('varsql.0028');
+				VARSQL.toastMessage('msg.content.enter.param',VARSQL.message('content'));
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0014')){
+			if(!VARSQL.confirmMessage('msg.send.confirm')){
 				return ;
 			}
 
@@ -306,7 +306,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendNote'}
 			    ,data:params
 			    ,success:function (resData){
-			    	VARSQL.toastMessage('varsql.0002');
+			    	VARSQL.toastMessage('msg.save.success');
 				}
 			});
 		}

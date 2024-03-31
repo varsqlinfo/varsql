@@ -5,7 +5,7 @@
     <div class="col-lg-12">
         <h1 class="page-header">
         	<spring:message code="header.menu.tool.utils.multidbsqlexecute" />
-        	<button type="button" class="btn btn-default btn-sm layoutInitBtn">Init Layout</button>
+        	<button type="button" class="btn btn-default btn-sm layoutInitBtn"><spring:message code="init.layout" /></button>
         </h1>
     </div>
     <!-- /.col-lg-12 -->
@@ -20,8 +20,7 @@
 <div id="dbSqlEditorTemplate" style="display:none;margin:0px;padding:0px;" title="DB Info">
 	<div id="dbSqlEditor" class="wh100">
 		<div id="dbConnectionList" class="split-item" style="width:200px; height:100%; overflow:auto;border-right: 1px solid #d5d5d8;">
-			<div style="height:20px;"><label><input type="checkbox" :checked="selectAllCheck" @click="selectAll()">전체선택/해제</label></div>
-			<div style="height:calc(100% - 20px);overflow:auto;">
+			<div style="height:100%;overflow:auto;">
 				<ul>
 					<li v-for="(dbItem,index) in dbList">
 						<a href="javascript:" class="db-conn-item">
@@ -44,10 +43,10 @@
 					</select>
 				</span>
 				<span>
-					<button class="varsql-btn-info" @click="sqlData()" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter"><i class="fa fa-play"></i></button>
+					<button class="varsql-btn-info" @click="sqlData()" title="<spring:message code="toolbar.execute" /> Ctrl+Enter"><i class="fa fa-play"></i></button>
 				</span>
 				<span>
-					<button type="button" @click="saveSql()" class="sql-edit-btn varsql-btn-trans" title="<spring:message code="btn.toolbar.save" /> Ctrl+S">
+					<button type="button" @click="saveSql()" class="sql-edit-btn varsql-btn-trans" title="<spring:message code="toolbar.save" /> Ctrl+S">
 						<i class="fa fa-save"></i>
 					</button>
 				</span>
@@ -91,13 +90,13 @@
 			<div><spring:message code="options" /></div>
 			<ul class="find-text-option-area">
 				<li>
-					<label class="checkbox-container"><spring:message code="label.case.sensitive" />
+					<label class="checkbox-container"><spring:message code="case.sensitive" />
 					  <input type="checkbox" name="find-text-option" value="caseSearch">
 					  <span class="checkmark"></span>
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container"><spring:message code="label.wrap.search" />
+					<label class="checkbox-container"><spring:message code="wrap.search" />
 					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
 					  <span class="checkmark"></span>
 					</label>
@@ -152,6 +151,8 @@
 VARSQLCont.init('${dbtype}');
 var varsqlLayout;
 $('.layoutInitBtn').on('click',function (){
+	if(!VARSQL.confirmMessage('msg.layout.restore.confirm')) return ; 
+	
 	componentCtrl.saveChangeData({layout : {}}, true)	
 })
 
@@ -173,7 +174,7 @@ var componentCtrl = {
 		var componentId = componentState.key;
 		
 		if(VARSQL.isUndefined(this.dbConInfo[componentId])){
-			$(getResultTabSelector(componentId)).html('<table class="wh100"><tr><td style="text-align: center;"><a href="javascript:;" class="delete-component">삭제하기</a><br/>삭제된 컴포넌트 정보 입니다.</td></tr></table>');
+			$(getResultTabSelector(componentId)).html('<table class="wh100"><tr><td style="text-align: center;"><a href="javascript:;" class="delete-component">'+VARSQL.message('delete')+'</a><br/>'+VARSQL.message('msg.deleted.param', VARSQL.message('component'))+'</td></tr></table>');
 			return ; 
 		}
 		
@@ -192,9 +193,9 @@ var componentCtrl = {
 		var _this =this; 
 		$.pubTab(getResultTabSelector(componentId), {
 			items : [
-				{id :'queryData', name : 'Result'}
-				,{id :'queryColumn', name : 'Column'}
-				,{id :'queryLog', name : 'Log'}
+				{id :'queryData', name : VARSQL.message('result')}
+				,{id :'queryColumn', name : VARSQL.message('column')}
+				,{id :'queryLog', name : VARSQL.message('log')}
 			]
 			,itemKey :{							// item key mapping
 				title :'name'
@@ -248,8 +249,8 @@ var componentCtrl = {
 				lineNumber : {enabled : true, width : 30, styleCss : 'text-align:right;padding-right:3px;'}
 			}
 			,tColItem: [
-				{label: "NAME", key: "label"}
-				,{label: "TYPE", key: "dbType"}
+				{label: VARSQL.message('column'), key: "label"}
+				,{label:VARSQL.message('data.type'), key: "dbType"}
 			]
 			,tbodyItem: ((viewObj.allResultData[conuid]||{}).column||[])
 		});
@@ -532,7 +533,7 @@ function initVue(){
 					    cursor.replace(replaceTxt)
 					}
 	
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0011', { count: replaceCount}))
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.change.count.param', { count: replaceCount}))
 	
 					return ;
 				}
@@ -540,19 +541,19 @@ function initVue(){
 				var isNext = cursor.find(isReverseFlag);
 	
 				if(wrapSearch===true && isNext===false){
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
 					return ;
 				}
 	
 				if(isNext){
 					var cursorFrom = cursor.from();
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0030', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
+					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.find.line', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
 					_this.editor.setSelection(cursorFrom, cursor.to());
 				}else{
 					if(findOpt.wrapSearch===true){
 						_this.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
 					}else{
-						_this.findTextEle.find('.find-result').empty().html(VARSQL.message('varsql.0012', { findText: orginTxt}));
+						_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
 						return ;
 					}
 				}

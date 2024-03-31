@@ -94,7 +94,7 @@ public class PreferencesDataFactory{
 	private void initConfig() throws IOException {
 		logger.debug("default preferences template file path : {} ", TEMPLATE_PACKAGE);
 
-		Resource[] resources = ResourceUtils.getPackageResources(TEMPLATE_PACKAGE);
+		Resource[] resources = ResourceUtils.getResources(TEMPLATE_PACKAGE);
 		
 		for (Resource resource: resources){
 			PREFERENCES_FILE prefInfo = PREFERENCES_FILE.get(resource.getFilename());

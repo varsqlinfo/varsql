@@ -191,5 +191,5 @@
 </ul>
 
 <div class="pull-right">
-	<a href="javascript:;" class="database-board-view-btn">게시판</a>
+	<a href="javascript:;" class="database-board-view-btn"><spring:message code="board" /></a>
 </div>

@@ -17,10 +17,10 @@ public abstract class AbstractConfiguration{
 	
 	protected final String VARSQL_INSTALL_PATH = getInstallRoot();
 	
-	protected final String VARSQL_PROPERTIES_FILE= "config/varsqlConfig.properties";
-	protected final String VARSQL_QUARTZ_PROPERTIES_FILE= "config/varsqlQuartz.properties";
+	protected final String VARSQL_PROPERTIES_FILE= "config/application.properties";
+	protected final String VARSQL_QUARTZ_PROPERTIES_FILE= "config/quartz.properties";
 	protected final String VARSQL_HIBERNATE_PROPERTIES_FILE= "config/hibernate.properties";
-	protected final String CONNECTION_XML_FILE= "config/varsqlConnectionConfig.xml";
+	protected final String CONNECTION_XML_FILE= "config/dbConfig.xml";
 	
 	protected final String LOGBACK_XML_FILE= "config/logback.xml";
 	

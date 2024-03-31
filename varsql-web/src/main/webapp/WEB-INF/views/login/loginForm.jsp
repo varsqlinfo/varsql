@@ -4,7 +4,7 @@
 <HTML>
 <head>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
@@ -79,7 +79,7 @@ $(document).ready(function (){
 		shiftKey=e.shiftKey;
 
 		if (((keyCode >= 65 && keyCode <= 90)&& !shiftKey)||((keyCode >= 97 && keyCode <= 122)&& shiftKey)){
-			$('.error-msg').empty().html(VARSQL.message('varsql.0050', 'CapsLock이 켜져 있습니다'));
+			$('.error-msg').empty().html(VARSQL.message('msg.capsLock', 'CapsLock이 켜져 있습니다'));
 		}else{
 			$('.error-msg').empty().html("");
 		}
@@ -109,6 +109,15 @@ $(document).ready(function (){
 		}
 		document.f.submit();
 	});
+	
+	$('#lang').on('change',function (){
+		var lang = $(this).val();
+		var localeParam = '';
+		if(!VARSQL.isBlank(lang)){
+			localeParam = '?locale='+lang;
+		}
+		location.href=VARSQL.getContextPathUrl()+"/login"+localeParam;
+	})
 })
 </script>
 </head>
@@ -116,21 +125,23 @@ $(document).ready(function (){
 	<div class="container">
 		<form name="f" action="${varsqlfn:loginUrl(pageContext.request)}" method="post"
 			class="form-signin" role="form" onsubmit="return false;">
-			<h2 class="form-signin-heading" style="text-align:center;"><spring:message code="msg.please.sign.in" /></h2>
+			<h2 class="form-signin-heading" style="text-align:center;"><spring:message code="sign.in.header" /></h2>
 			<sec:csrfInput/>
 
-			<input class="form-control" id="vsql_login_id" name="vsql_login_id" type="text" placeholder="<spring:message code="login.form.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off">
-			<input class="form-control" id="vsql_login_password" name="vsql_login_password" type="password" placeholder="<spring:message code="login.form.pw"/>" value="">
+			<input class="form-control" id="vsql_login_id" name="vsql_login_id" type="text" placeholder="<spring:message code="user.id"/>" style="margin-bottom:5px;"	autofocus autocomplete="off">
+			<input class="form-control" id="vsql_login_password" name="vsql_login_password" type="password" placeholder="<spring:message code="user.password"/>" value="">
 			<div class="checkbox" style="margin-bottom:13px;">
 				<label style="padding-top:5px;">
 					<input type="checkbox" id="varsqlRememberMe" name="varsqlRememberMe" value="on"> Remember me
 				</label>
-				<div class="pull-right" style="display:none;">
-					<select name="lang" style="padding:3px;">
-						<option value=""><spring:message code="language.select" text="언어선택"/></option>
-						<option value="ko">한국어</option>
-						<option value="en">English</option>
-					</select>
+				<div class="pull-right">
+					<varsql:supportLocale var="localeInfo"/>
+					<select class="input-sm" id="lang" name="lang" style="padding:3px;" >
+	            		<option value=""><spring:message code="language.select" text="언어선택"/></option>
+	            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
+							<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
+						</c:forEach>
+	            	</select>
 				</div>
 			</div>
 			<div class="error">
@@ -149,7 +160,7 @@ $(document).ready(function (){
 				
 				<c:if test="${varsqlfn:isPasswordResetModeEmail()}">
 					<span style="float:right;margin-top:10px;">
-						<a href="<c:url value="/lostPassword" />"><spring:message code="msg.lost.password" /></a>
+						<a href="<c:url value="/lostPassword" />"><spring:message code="msg.password.lost" /></a>
 					</span>
 				</c:if>
 			</div>

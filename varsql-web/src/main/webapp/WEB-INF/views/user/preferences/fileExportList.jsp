@@ -15,7 +15,7 @@
 				<div class="row search-area">
 					<div class="col-sm-4">
 						<label>
-							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="btn.delete" /></button>
+							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="delete" /></button>
 						</label>
 					</div>
 					<div class="col-sm-8">
@@ -29,7 +29,7 @@
 								</select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" value="" v-model="searchVal" class=" form-control" @keydown.enter="search()">
+								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
@@ -52,7 +52,7 @@
 										</div>
 									</th>
 									<th style="width: 195px;">
-										<spring:message	code="sql_file_name" />
+										<spring:message	code="sql.file.name" />
 									</th>
 									<th style="width: 120px;">
 										<spring:message	code="size" />
@@ -94,13 +94,13 @@
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="col-xs-12">
-						최대 5000라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
+						<spring:message	code="msg.sqlfile.limit.view" text="최대 5000라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다." />
 					</div>
 					<div class="pull-right" v-if="detailItem.fileId" @click="download(detailItem)">
-						<button type="button" class="btn btn-sm btn-default">다운로드</button>
+						<button type="button" class="btn btn-sm btn-default"><spring:message code="download" /></button>
 					</div>
 					<div class="form-group">
-						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
+						<div class="col-xs-12"><label class="control-label"><spring:message code="content" /></label></div>
 						<div class="col-xs-12">
 							<div id="fileList" style="height:300px;margin-bottom:20px;" class="form-control input-init-type" v-show="detailItem.ext=='zip'"></div>
 							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
@@ -153,14 +153,14 @@ VarsqlAPP.vueServiceBean({
 			this.fileListGridObj = $.pubGrid('#fileList', {
 				asideOptions :{lineNumber : {enabled : true	,width : 30}}
 				,tColItem : [
-					{ label: 'Name', key: 'fileName',width:80},
-					{ label: 'Size', key: 'fileSize', align:'right', width:45},
-					{ label: 'Compress Size', key: 'compressFileSize', align:'right', width:45},
-					{ label: 'UPD DT', key: 'updDt',width:50},
-					{ label: '보기', key: 'viewCont',width:85, align:'center' 
+					{ label: VARSQL.message('file.name'), key: 'fileName',width:80},
+					{ label: VARSQL.message('size'), key: 'fileSize', align:'right', width:45},
+					{ label: VARSQL.message('compressed.size'), key: 'compressFileSize', align:'right', width:45},
+					{ label: VARSQL.message('upd_dt'), key: 'updDt',width:50},
+					{ label: VARSQL.message('view'), key: 'viewCont',width:85, align:'center' 
 						,"renderer": { 
 							type : "button" 
-							,label : '내용보기'
+							,label : VARSQL.message('view')
 							,click : function (info){
 								_this.$ajax({
 									url : {type:VARSQL.uri.user, url:'/preferences/file/zipDetail'}
@@ -273,11 +273,11 @@ VarsqlAPP.vueServiceBean({
 			var selectItem = _this.selectItem;
 
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQL.alertMessage('varsql.0006');
+				VARSQL.alertMessage('msg.item.select');
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 
@@ -287,7 +287,7 @@ VarsqlAPP.vueServiceBean({
 					selectItem : selectItem.join(',')
 				}
 				,success:function (resData){
-					VARSQL.toastMessage('varsql.0017');
+					VARSQL.toastMessage('msg.delete.success');
 					_this.search();
 				}
 			});

@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <style>
 html, body{width:100%;height:100%;overflow:hidden;}
 </style>
@@ -16,7 +16,7 @@ html, body{width:100%;height:100%;overflow:hidden;}
 				<td style="text-align: center;">
 					<div><a href="${pageContext.request.contextPath}/login"><spring:message code="login.page.view" text="로그인 화면 이동"/></a></div>
 					<div class="var-load-frame" style="font-size: 3em;">
-						<div><spring:message code="not.valid.token"/></div>
+						<div><spring:message code="invalid.token"/></div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
 					</div>

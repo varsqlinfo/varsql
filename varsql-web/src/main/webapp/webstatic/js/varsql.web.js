@@ -13,7 +13,7 @@ if (typeof window != "undefined") {
 	}
 }
 
-(function (window) {
+(function(window) {
 	'use strict';
 
 	if (typeof Object.assign != 'function') {
@@ -84,14 +84,13 @@ if (typeof window != "undefined") {
 		};
 
 	_$base.staticResource = {
-		get: function (type) {
+		get: function(type) {
 			return this[type];
 		}
 		, 'juiChart':
 		{
 			'js': [
-				'/webstatic/js/plugins/jui/core.min.js',
-				'/webstatic/js/plugins/jui/chart.min.js',
+				'/webstatic/js/plugins/jui/jui-chart.min.js',
 			]
 		}
 		,
@@ -113,11 +112,11 @@ if (typeof window != "undefined") {
 		}
 	};
 
-	_$base.getContextPathUrl = function (url) {
+	_$base.getContextPathUrl = function(url) {
 		return url ? _$base.contextPath + url : _$base.contextPath;
 	}
 
-	_$base.url = function (type, url) {
+	_$base.url = function(type, url) {
 		if (url !== undefined) {
 			return _$base.getContextPathUrl(type + url);
 		} else {
@@ -225,7 +224,7 @@ if (typeof window != "undefined") {
 	/**
 	 * array contain
 	 */
-	_$base.inArray = function (array, val) {
+	_$base.inArray = function(array, val) {
 		for (var i = 0, l = array.length; i < l; i++) {
 			if (array[i] == val) { return i; }
 		}
@@ -235,7 +234,7 @@ if (typeof window != "undefined") {
 	/**
 	 * object , array , string length
 	 */
-	_$base.getLength = function (val) {
+	_$base.getLength = function(val) {
 		if (isObject(val)) {
 			return Object.keys(val).length;
 		} else if (isArray(val)) {
@@ -253,7 +252,7 @@ if (typeof window != "undefined") {
 	 * @param opt {string,object} object :{key, value, remove, clear}
 	 * @description 글자 형식 처리.
 	 */
-	_$base.localStorage = function (opt) {
+	_$base.localStorage = function(opt) {
 
 		if (isString(opt)) {
 			return localStorage.getItem(opt);
@@ -273,16 +272,16 @@ if (typeof window != "undefined") {
 	/**
 	 * message
 	 */
-	_$base.confirmMessage = function (fmt, msgParam) {
+	_$base.confirmMessage = function(fmt, msgParam) {
 		return confirm(_$base.message(fmt, msgParam));
 	}
-	_$base.alertMessage = function (fmt, msgParam) {
+	_$base.alertMessage = function(fmt, msgParam) {
 		return VARSQLUI.alert.open(_$base.message(fmt, msgParam));
 	}
-	_$base.toastMessage = function (fmt, msgParam) {
+	_$base.toastMessage = function(fmt, msgParam) {
 		return VARSQLUI.toast.open(_$base.message(fmt, msgParam));
 	}
-	_$base.message = function (fmt, msgParam) {
+	_$base.message = function(fmt, msgParam) {
 
 		var msgFormat = VARSQL_LANG[fmt];
 
@@ -312,7 +311,7 @@ if (typeof window != "undefined") {
 
 		this.$$index = 0;
 
-		return msgFormat.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function (match, key) {
+		return msgFormat.replace(/\{{1,1}([A-Za-z0-9_.]*)\}{1,1}/g, function(match, key) {
 			if (strFlag) {
 				return msgParam;
 			} else if (arrFlag) {
@@ -332,27 +331,27 @@ if (typeof window != "undefined") {
 	}
 	//웹 로그 쌓기
 	_$base.log = {
-		debug: function (msg) {
+		debug: function(msg) {
 			if (_$base.logLevel > 1) return;
 			Array.prototype.unshift.call(arguments, "vsql debug : ");
 			this._consoleApply('debug', arguments);
 		}
-		, info: function (msg) {
+		, info: function(msg) {
 			if (_$base.logLevel > 2) return;
 			Array.prototype.unshift.call(arguments, "vsql info : ");
 			this._consoleApply('info', arguments);
 		}
-		, warn: function (msg) {
+		, warn: function(msg) {
 			if (_$base.logLevel > 3) return;
 			Array.prototype.unshift.call(arguments, "vsql warn : ");
 			this._consoleApply('warn', arguments);
 		}
-		, error: function (msg) {
+		, error: function(msg) {
 			if (_$base.logLevel > 4) return;
 			Array.prototype.unshift.call(arguments, "vsql error : ");
 			this._consoleApply('error', arguments);
 		}
-		, _consoleApply: function (method, args) {
+		, _consoleApply: function(method, args) {
 			var i, s,
 				fn = window.console ? window.console[method] : null;
 			if (fn) {
@@ -428,11 +427,11 @@ if (typeof window != "undefined") {
 		if (opts.disableResultCheck !== true) {
 			if (statusCode != 200) {
 				if (resultCode == 500) {	// error
-					PROGRESS_BAR_STATUS=false;
+					PROGRESS_BAR_STATUS = false;
 					alert(data.message);
 					return false;
 				} else if (resultCode != 200) {
-					PROGRESS_BAR_STATUS=false;
+					PROGRESS_BAR_STATUS = false;
 					if (data.messageCode) {
 						alert('request check : ' + data.messageCode);
 					} else {
@@ -459,7 +458,7 @@ if (typeof window != "undefined") {
 	_$base.req = {
 		isConnectError: false
 
-		, ajax: function (option) {
+		, ajax: function(option) {
 			var _this = this;
 			var urlObj = option.url;
 
@@ -487,7 +486,7 @@ if (typeof window != "undefined") {
 
 			var cancelFlag = false;
 
-			ajaxOpt.beforeSend = function (xhr) {
+			ajaxOpt.beforeSend = function(xhr) {
 				xhr.setRequestHeader($$csrf_header, $$csrf_token);
 				xhr.setRequestHeader('WWW-Authenticate', 'Basic realm=varsql');
 
@@ -500,7 +499,7 @@ if (typeof window != "undefined") {
 					$(loadSelector).centerLoading({
 						contentClear: false
 						, enableLoadSelectorBtn: option.enableLoadSelectorBtn
-						, callback: function () {
+						, callback: function() {
 							cancelFlag = true;
 							//xhr.abort();
 							databaseReqCancel(ajaxUid);
@@ -513,7 +512,7 @@ if (typeof window != "undefined") {
 				}
 			}
 
-			ajaxOpt.error = function (xhr) {
+			ajaxOpt.error = function(xhr) {
 				if (cancelFlag) {
 					return;
 				}
@@ -532,7 +531,7 @@ if (typeof window != "undefined") {
 
 					_$base.log.error(xhr);
 
-					setTimeout(function () {
+					setTimeout(function() {
 						_this.isConnectError = false;
 					}, 2000);
 
@@ -542,7 +541,7 @@ if (typeof window != "undefined") {
 				}
 			}
 
-			ajaxOpt.success = function (data, status, jqXHR) {
+			ajaxOpt.success = function(data, status, jqXHR) {
 				_this.isConnectError = false;
 
 				if (ajaxOpt.dataType == 'json') {
@@ -557,20 +556,20 @@ if (typeof window != "undefined") {
 				}
 			}
 
-			$.ajax(ajaxOpt).done(function (xhr) {
+			$.ajax(ajaxOpt).done(function(xhr) {
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
 					$(loadSelector).centerLoadingClose();
 				}
-			}).fail(function (xhr) {
-				PROGRESS_BAR_STATUS=false;
+			}).fail(function(xhr) {
+				PROGRESS_BAR_STATUS = false;
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
 					$(loadSelector).centerLoadingClose();
 				}
 			});
 		}
-		, validationCheck: function (resData) {
+		, validationCheck: function(resData) {
 			if (resData.messageCode == 'valid') {
 				var items = resData.list;
 
@@ -589,14 +588,14 @@ if (typeof window != "undefined") {
 			}
 			return true;
 		}
-		, getCsrf: function () {
+		, getCsrf: function() {
 			var csrfVal = {};
 			csrfVal[$$csrf_header] = $$csrf_token;
 			csrfVal[$$csrf_param] = $$csrf_token;
 
 			return csrfVal;
 		}
-		, uploadFile: function (formSelector, opts) {
+		, uploadFile: function(formSelector, opts) {
 			var _this = this;
 
 			var formData = new FormData($(formSelector)[0]);
@@ -621,11 +620,11 @@ if (typeof window != "undefined") {
 				data: formData,
 				processData: false,
 				contentType: false,
-				beforeSend: function (xhr) {
+				beforeSend: function(xhr) {
 					xhr.setRequestHeader($$csrf_header, $$csrf_token);
 					$('body').centerLoading();
 				}
-				, success: function (data, status, jqXHR) {
+				, success: function(data, status, jqXHR) {
 					_this.isConnectError = false;
 
 					if (!fnReqCheck(data, opts)) return;
@@ -636,7 +635,7 @@ if (typeof window != "undefined") {
 						console.log(e);
 					}
 				}
-				, error: function (xhr) {
+				, error: function(xhr) {
 					if (xhr.readyState == 4) {
 						// xhr.status , xhr.statusText check
 					} else if (xhr.readyState == 0) { // connection refused , access denied
@@ -648,7 +647,7 @@ if (typeof window != "undefined") {
 						alert(_$base.message('error.0004'));
 						_this.isConnectError = true;
 
-						setTimeout(function () {
+						setTimeout(function() {
 							_this.isConnectError = false;
 						}, 2000);
 
@@ -657,13 +656,13 @@ if (typeof window != "undefined") {
 						//Other errors
 					}
 				}
-			}).done(function (xhr) {
+			}).done(function(xhr) {
 				$('body').centerLoadingClose();
-			}).fail(function (xhr) {
+			}).fail(function(xhr) {
 				$('body').centerLoadingClose();
 			});
 		}
-		, ajaxSubmit: function (formid, opts) {
+		, ajaxSubmit: function(formid, opts) {
 
 			var formObj = $(formid)
 				, tmpParam = opts.params ? opts.params : {}
@@ -681,19 +680,19 @@ if (typeof window != "undefined") {
 			formObj.empty();
 			formObj.append(inputStr.join(''));
 
-			opts.beforeSubmit = function (arr, formObj, opts) {
+			opts.beforeSubmit = function(arr, formObj, opts) {
 				//_cursorWaitStart();
 				return true;
 			}
 
 			formObj.ajaxSubmit(opts);
 		}
-		, download: function (opts) {
+		, download: function(opts) {
 			var _this = this;
-			
-			var DOWNLOAD_MODE = {1 :'direct', 2:'ajax-direct', 3:'ajax'};
-			
-			var _downloadMode  = VARSQL.isUndefined(DOWNLOAD_MODE[opts.mode]) ? 1 : opts.mode;
+
+			var DOWNLOAD_MODE = { 1: 'direct', 2: 'ajax-direct', 3: 'ajax' };
+
+			var _downloadMode = VARSQL.isUndefined(DOWNLOAD_MODE[opts.mode]) ? 1 : opts.mode;
 
 			var tmpParam = opts.params ? opts.params : {}
 				, urlObj = opts.url;
@@ -701,43 +700,43 @@ if (typeof window != "undefined") {
 			var loadSelector = (opts.loadSelector ? opts.loadSelector : 'body');
 
 			tmpParam[$$csrf_param] = $$csrf_token;
-			
-			if(VARSQL.isUndefined(tmpParam.progressUid)){
-				tmpParam.progressUid = VARSQL.generateUUID();	
+
+			if (VARSQL.isUndefined(tmpParam.progressUid)) {
+				tmpParam.progressUid = VARSQL.generateUUID();
 			}
 
-			if(_downloadMode==1){
+			if (_downloadMode == 1) {
 				fileDownload(opts);
-				return; 
+				return;
 			}
-			
+
 			try {
-				PROGRESS_BAR_STATUS = true; 
+				PROGRESS_BAR_STATUS = true;
 				var ajaxOpt = {
 					type: "POST",
 					cache: false,
 					url: (typeof urlObj) === 'string' ? _$base.url(urlObj) : _$base.url(urlObj.type, urlObj.url),
 					data: tmpParam,
-					beforeSend: function (xhr) {
+					beforeSend: function(xhr) {
 						xhr.setRequestHeader($$csrf_header, $$csrf_token);
 
 						if ($(loadSelector).length > 0) {
 
 							$(loadSelector).centerLoading({
 								contentClear: false
-								,content:''
+								, content: ''
 							});
 						}
 					}
-					, success: function (response, status, xhr) {
-						if(_downloadMode==2){
+					, success: function(response, status, xhr) {
+						if (_downloadMode == 2) {
 							opts.url = response.item;
-							setTimeout(function (){
-								fileDownload(opts);	
-							},1)
-							return; 
+							setTimeout(function() {
+								fileDownload(opts);
+							}, 1)
+							return;
 						}
-						
+
 						var filename = "";
 						var disposition = xhr.getResponseHeader('Content-Disposition');
 
@@ -750,8 +749,8 @@ if (typeof window != "undefined") {
 
 						saveAs(blob, filename)
 					}
-					, error: function (xhr) {
-						PROGRESS_BAR_STATUS = false; 
+					, error: function(xhr) {
+						PROGRESS_BAR_STATUS = false;
 						if (xhr.readyState == 4) {
 							// xhr.status , xhr.statusText check
 						} else if (xhr.readyState == 0) { // connection refused , access denied
@@ -763,7 +762,7 @@ if (typeof window != "undefined") {
 							alert(_$base.message('error.0004'));
 							_this.isConnectError = true;
 
-							setTimeout(function () {
+							setTimeout(function() {
 								_this.isConnectError = false;
 							}, 2000);
 
@@ -773,13 +772,13 @@ if (typeof window != "undefined") {
 						}
 					}
 				};
-				
-				if(_downloadMode==2){
-					ajaxOpt.dataType="json";	
-				}else{
-					ajaxOpt.xhr= function () {
+
+				if (_downloadMode == 2) {
+					ajaxOpt.dataType = "json";
+				} else {
+					ajaxOpt.xhr = function() {
 						var xhr = new XMLHttpRequest();
-						xhr.onreadystatechange = function () {
+						xhr.onreadystatechange = function() {
 							if (xhr.readyState == 2) {
 								if (xhr.status == 200) {
 									xhr.responseType = "blob";
@@ -791,28 +790,28 @@ if (typeof window != "undefined") {
 						return xhr;
 					}
 				}
-				
-				$.ajax(ajaxOpt).done(function (xhr) {
+
+				$.ajax(ajaxOpt).done(function(xhr) {
 					if (loadSelector) {
 						$(loadSelector).centerLoadingClose();
 					}
-				}).fail(function (xhr) {
-					PROGRESS_BAR_STATUS = false; 
+				}).fail(function(xhr) {
+					PROGRESS_BAR_STATUS = false;
 					if (xhr.status == 404) {
 						alert('File not found');
 					} else if (xhr.status == 401) {
 						alert('Unauthorized');
 					} else {
 						if (xhr.responseText) {
-							try{
+							try {
 								var responseData = JSON.parse(xhr.responseText);
 								if (responseData.message) {
 									alert(responseData.message);
 								} else {
 									alert('File download error');
 								}
-							}catch(e){
-								alert('File download error\n'+e.message);
+							} catch (e) {
+								alert('File download error\n' + e.message);
 							}
 						}
 					}
@@ -821,49 +820,49 @@ if (typeof window != "undefined") {
 						$(loadSelector).centerLoadingClose();
 					}
 				})
-				
-				if(opts.progressBar===true){
+
+				if (opts.progressBar === true) {
 					_$base.req.progressInfo({
-						progressUid : tmpParam.progressUid
-						,callback : function (resData){
-							var item = resData.item; 
-							
-							if(item == 'fail'){
-								$(loadSelector +' .center-loading-centent').text('fail');
-							}else if(item == 'complete'){
-								$(loadSelector +' .center-loading-centent').text('complete');
-							}else{
-								if(item != null){
-									var progressText = VARSQL.util.numberFormat(item.progressContentLength)+'';
-							
-									if(item.totalContentLength && item.totalContentLength > 0){
+						progressUid: tmpParam.progressUid
+						, callback: function(resData) {
+							var item = resData.item;
+
+							if (item == 'fail') {
+								$(loadSelector + ' .center-loading-centent').text('fail');
+							} else if (item == 'complete') {
+								$(loadSelector + ' .center-loading-centent').text('complete');
+							} else {
+								if (item != null) {
+									var progressText = VARSQL.util.numberFormat(item.progressContentLength) + '';
+
+									if (item.totalContentLength && item.totalContentLength > 0) {
 										progressText += ' / ' + VARSQL.util.numberFormat(item.totalContentLength);
 									}
-									
-									if(item.name){
-										progressText = item.name + '('+progressText + ')';
+
+									if (item.name) {
+										progressText = item.name + '(' + progressText + ')';
 									}
-									
-									$(loadSelector +' .center-loading-centent').text(progressText);
+
+									$(loadSelector + ' .center-loading-centent').text(progressText);
 								}
 							}
-						} 
+						}
 					});
 				}
 			} catch (e) {
 				fileDownload(opts);
 			}
 		}
-		
-		, progressInfo : function(progressBarInfo){
+
+		, progressInfo: function(progressBarInfo) {
 			progressBar(progressBarInfo);
 		}
-		, stopProgress : function(){
-			PROGRESS_BAR_STATUS=false;
+		, stopProgress: function() {
+			PROGRESS_BAR_STATUS = false;
 		}
 	};
-	
-	function fileDownload(opts){
+
+	function fileDownload(opts) {
 		var tmpParam = opts.params ? opts.params : {}
 			, urlObj = opts.url;
 
@@ -880,62 +879,61 @@ if (typeof window != "undefined") {
 
 		var tmpVal;
 
-		contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-			'key': $$csrf_param, val: $$csrf_token
-		}));
-
 		for (var key in tmpParam) {
-			tmpVal = tmpParam[key];
-
-			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
-				'key': key, val: (typeof tmpVal === 'string' ? tmpVal : JSON.stringify(tmpVal))
+			contHtm.push(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="" />', {
+				'key': key
 			}));
 		}
 		contHtm.push('</form>');
 
 		$('#varsql_hidden_down_form_area').empty().html(contHtm.join(''));
 
+		for (var key in tmpParam) {
+			tmpVal = tmpParam[key];
+			$('#varsql_hidden_down_form_area [name="' + key + '"]').val((typeof tmpVal === 'string' ? tmpVal : JSON.stringify(tmpVal)))
+		}
+
 		document.varsql_hidden_down_form.submit();
 	}
-	
-	function progressBar(progressBarInfo){
-		if(PROGRESS_BAR_STATUS===false)return; 
-		
+
+	function progressBar(progressBarInfo) {
+		if (PROGRESS_BAR_STATUS === false) return;
+
 		$.ajax({
 			type: "POST",
 			cache: false,
 			dataType: "json",
 			url: _$base.url(VARSQL.uri.progress, '/info'),
-			data:  {
-				progressUid : progressBarInfo.progressUid
-				,type : progressBarInfo.type || 'download'
-				,keep : (progressBarInfo.keep ==true ?"Y":"N")
+			data: {
+				progressUid: progressBarInfo.progressUid
+				, type: progressBarInfo.type || 'download'
+				, keep: (progressBarInfo.keep == true ? "Y" : "N")
 			}
-			, beforeSend: function (xhr) {
+			, beforeSend: function(xhr) {
 				xhr.setRequestHeader($$csrf_header, $$csrf_token);
 			}
-			,success: function (resData, status, xhr) {
-				
-				if(progressBarInfo.type == 'remove'){
-					return ; 
+			, success: function(resData, status, xhr) {
+
+				if (progressBarInfo.type == 'remove') {
+					return;
 				}
-				
-				var item = resData.item; 
-				
-				if(progressBarInfo.callback(resData)===false){
-					return ; 
+
+				var item = resData.item;
+
+				if (progressBarInfo.callback(resData) === false) {
+					return;
 				}
-					
-				if(item != 'fail' && item != 'complete'){
+
+				if (item != 'fail' && item != 'complete') {
 					setTimeout(function() {
 						progressBar(progressBarInfo);
 					}, progressBarInfo.timeout || 700);
 				}
 			}
-		}).fail(function (xhr) {
-			if(progressBarInfo.type !='remove'){
+		}).fail(function(xhr) {
+			if (progressBarInfo.type != 'remove') {
 				progressBarInfo.type = 'remove';
-				progressBar(progressBarInfo);	
+				progressBar(progressBarInfo);
 			}
 		})
 	}
@@ -953,13 +951,13 @@ if (typeof window != "undefined") {
 					_requid_: reqUid
 					, conuid: ($varsqlConfig || {}).conuid
 				}
-				, success: function (resData) {
+				, success: function(resData) {
 				}
 			})
 		}
 	}
 
-	$(window).on("beforeunload", function () {
+	$(window).on("beforeunload", function() {
 		_$base.socket.close();
 
 		var reqKeys = [];
@@ -973,7 +971,7 @@ if (typeof window != "undefined") {
 	})
 
 
-	_$base.logout = function (callback) {
+	_$base.logout = function(callback) {
 		if (_$base.isFunction(callback)) {
 			_$base.req.ajax({
 				url: { type: 'ignore', url: $varsqlConfig.logoutUrl }
@@ -986,12 +984,12 @@ if (typeof window != "undefined") {
 	}
 
 	// file upload size
-	_$base.getFileMaxUploadSize = function () {
+	_$base.getFileMaxUploadSize = function() {
 		return $varsqlConfig.file.maxUploadSize || 1000;
 	}
 
 	// file unit max size
-	_$base.getFileSizePerFile = function () {
+	_$base.getFileSizePerFile = function() {
 		return $varsqlConfig.file.sizePerFile || 1000;
 	}
 
@@ -1003,7 +1001,7 @@ if (typeof window != "undefined") {
 		, subscripeActiveMap: {}
 		, subscripeObj: {}
 		//알림 수신
-		, addSubscribe: function (endpoint, headers, callback) {
+		, addSubscribe: function(endpoint, headers, callback) {
 
 			var subscribeId = this.getSubscribeId(endpoint, headers.uid);
 
@@ -1013,16 +1011,16 @@ if (typeof window != "undefined") {
 
 			this.subscripeActiveMap[subscribeId] = true;
 
-			this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function (data) {
+			this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function(data) {
 				if (_$base.isFunction(callback)) {
 					callback.call(null, parseJSON(data.body));
 				}
 			});
 		}
-		, getSubscribeId: function (endpoint, id) {
+		, getSubscribeId: function(endpoint, id) {
 			return '/user/' + endpoint + '.' + id;
 		}
-		, unSubscribe: function (endpoint, id) {
+		, unSubscribe: function(endpoint, id) {
 			var subscribeId = this.getSubscribeId(endpoint, id);
 			try {
 				delete this.subscripeActiveMap[subscribeId];
@@ -1031,7 +1029,7 @@ if (typeof window != "undefined") {
 				console.log(e);
 			}
 		}
-		, connect: function (endpoint, headers, callback) {
+		, connect: function(endpoint, headers, callback) {
 			var _this = this;
 			headers = headers || {};
 
@@ -1050,7 +1048,7 @@ if (typeof window != "undefined") {
 					_this.addSubscribe(endpoint, headers, callback);
 				} else {
 
-					var connectTimer = setInterval(function () {
+					var connectTimer = setInterval(function() {
 						if (_this.stompClient.connected === true) {
 							clearInterval(connectTimer);
 							_this.addSubscribe(endpoint, headers, callback);
@@ -1059,11 +1057,11 @@ if (typeof window != "undefined") {
 				}
 			}
 		}
-		, _createConnection: function (endpoint, headers, callback) {
+		, _createConnection: function(endpoint, headers, callback) {
 			var _this = this;
 
 			this.subscripeActiveMap = {};
-			
+
 			//var url = location.protocol + '//' + location.host + _$base.getContextPathUrl("/ws/" + endpoint);
 			var url = _$base.getContextPathUrl("/ws/" + endpoint);
 
@@ -1074,15 +1072,15 @@ if (typeof window != "undefined") {
 			stompClient.heartbeat.outgoing = 20000;
 			stompClient.heartbeat.incoming = 20000;
 			stompClient.reconnect_delay = 5000;
-			stompClient.debug = function (str) {
+			stompClient.debug = function(str) {
 				//console.log('STOMP: ' + str);
 			}
 
-			stompClient.connect({}, function (frame) {
+			stompClient.connect({}, function(frame) {
 				_this.isCreate = true;
 				_this.addSubscribe(endpoint, headers, callback);
-			}, function (err) {
-				if(_this.stompClient){
+			}, function(err) {
+				if (_this.stompClient) {
 					console.log(location.href, err);
 				}
 			});
@@ -1092,14 +1090,14 @@ if (typeof window != "undefined") {
 		}
 		,
 		// 알림 연결 끊기
-		close: function () {
+		close: function() {
 			if (this.stompClient != null) {
 				this.stompClient.reconnect_delay = -1;
 				this.stompClient.disconnect();
-				this.stompClient = null; 
+				this.stompClient = null;
 			}
 		}
-		, isConnect: function () {
+		, isConnect: function() {
 			if (this.stompClient != null) {
 				return this.stompClient.connected;
 			}
@@ -1108,7 +1106,7 @@ if (typeof window != "undefined") {
 		}
 	}
 
-	jQuery.fn.centerLoading = function (options) {
+	jQuery.fn.centerLoading = function(options) {
 		this.config = {
 			closeAutoYn: 'N',
 			timeOut: 1000,
@@ -1141,17 +1139,17 @@ if (typeof window != "undefined") {
 		var loadStr = '<div class="centerLoading" style="cursor:' + config.cursor + ';top:0px;left:0px;z-index:100;position:absolute;width:100%; height:100%;">';
 
 		loadStr += '<div style="position:absolute;background: ' + config.bgColor + ';opacity: 0.5; width:100%; height:100%;z-index:1;"></div>';
-		
+
 		loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="' + config.loadingImg + '"/> ';
-		
-		loadStr += ' <div class="center-loading-centent" style="padding: 5px;">' + (config.content ||'') + '</div>';
+
+		loadStr += ' <div class="center-loading-centent" style="padding: 5px;">' + (config.content || '') + '</div>';
 
 		if (config.enableLoadSelectorBtn === true) {
 			loadStr += '<div style="height: 35px;line-height: 35px;"><a href="javascript:;" class="center-loading-btn _loadSelectorCancelBtn">Cancel</a></div>';
 		}
 
 		loadStr += '</div>';
-		
+
 		loadStr += '</div>';
 
 		if (!config.contentClear) {
@@ -1162,7 +1160,7 @@ if (typeof window != "undefined") {
 
 		if (config.enableLoadSelectorBtn === true) {
 			var centerLoadingEle = $(this);
-			this.find('._loadSelectorCancelBtn').on('click', function (e) {
+			this.find('._loadSelectorCancelBtn').on('click', function(e) {
 				if (_$base.isFunction(config.callback)) {
 					config.callback();
 				} else {
@@ -1185,7 +1183,7 @@ if (typeof window != "undefined") {
 		return this;
 	};
 
-	jQuery.fn.centerLoadingClose = function (options) {
+	jQuery.fn.centerLoadingClose = function(options) {
 
 		this.find('.centerLoading').remove();
 		var posVal = (this.attr('var-css-key') || '');
@@ -1196,7 +1194,7 @@ if (typeof window != "undefined") {
 	};
 
 	_$base.progress = {
-		start: function (divObj) {
+		start: function(divObj) {
 			try {
 				var obj = $(divObj);
 
@@ -1212,7 +1210,7 @@ if (typeof window != "undefined") {
 				_$base.log(e);
 			}
 		},
-		end: function (divObj) {
+		end: function(divObj) {
 			try {
 				$('.' + divObj.replace(/^[.#]/, '') + 'dialog-modal').hide();
 			} catch (e) {
@@ -1221,14 +1219,14 @@ if (typeof window != "undefined") {
 		}
 	};
 
-	_$base.isDataEmpty = function (opt) {
+	_$base.isDataEmpty = function(opt) {
 		return $.isEmptyObject(opt);
 	};
 
 	/**
 	 add csrf html
 	 */
-	_$base.addCsrfElement = function (eleSelector) {
+	_$base.addCsrfElement = function(eleSelector) {
 		$(eleSelector).append(_$base.util.renderHtml('<input type="hidden" name="{{key}}" value="{{val}}" />', {
 			'key': $$csrf_param, val: $$csrf_token
 		}));
@@ -1239,7 +1237,7 @@ if (typeof window != "undefined") {
 	 *check box util
 	 */
 	_$base.check = {
-		getCheckVal: function (opt) {
+		getCheckVal: function(opt) {
 			var option = { delim: ',' }
 				, rv = [];
 
@@ -1247,13 +1245,13 @@ if (typeof window != "undefined") {
 				option.selector = opt;
 			}
 
-			$(option.selector + ':checked').each(function () {
+			$(option.selector + ':checked').each(function() {
 				rv.push($(this).val());
 			});
 
 			return rv;
 		}
-		, allCheck: function (allSelector, itemSelector) {
+		, allCheck: function(allSelector, itemSelector) {
 
 			if ($(allSelector).is(":checked")) {
 				$(itemSelector).prop("checked", true);
@@ -1261,7 +1259,7 @@ if (typeof window != "undefined") {
 				$(itemSelector).prop("checked", false);
 			}
 		}
-		, radio: function (itemSelector) {
+		, radio: function(itemSelector) {
 			return $(itemSelector + ':checked').val()
 		}
 	};
@@ -1270,7 +1268,7 @@ if (typeof window != "undefined") {
 	 * @description 페이지 빠져나가기
 	 */
 	var $$initFlag = false;
-	_$base.unload = function (mode) {
+	_$base.unload = function(mode) {
 		if ($$initFlag) {
 			return;
 		}
@@ -1278,7 +1276,7 @@ if (typeof window != "undefined") {
 
 
 		// F5, ctrl + F5, ctrl + r 새로고침 막기
-		$(document).keydown(function (e) {
+		$(document).keydown(function(e) {
 			var keychk = false;
 
 			var keyCode = e.which;
@@ -1337,7 +1335,7 @@ if (typeof window != "undefined") {
 					return false;
 				}
 
-				if (!confirm(_$base.message('varsql.0001'))) {
+				if (!confirm(_$base.message('msg.leave.confirm'))) {
 					return false;
 				} else {
 					e.preventDefault()
@@ -1367,10 +1365,10 @@ if (typeof window != "undefined") {
 	/**
 	 * drop 무효화
 	 */
-	_$base.undrop = function () {
-		$(document).on("dragover", function (e) {
+	_$base.undrop = function() {
+		$(document).on("dragover", function(e) {
 			return false;
-		}).on("drop", function (e) {
+		}).on("drop", function(e) {
 			return false;
 		})
 	}
@@ -1412,7 +1410,7 @@ if (typeof window != "undefined") {
 			}
 		}
 	}
-	_$base.loadResource = function (resources) {
+	_$base.loadResource = function(resources) {
 		var _self = _$base;
 
 		if (isArray(resources)) {
@@ -1428,9 +1426,9 @@ if (typeof window != "undefined") {
 	/**
 	 * unique 한값 찾기
 	 */
-	_$base.generateUUID = function () {
+	_$base.generateUUID = function() {
 		var d = new Date().getTime();
-		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = (d + Math.random() * 16) % 16 | 0;
 			d = Math.floor(d / 16);
 			return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
@@ -1441,7 +1439,7 @@ if (typeof window != "undefined") {
 	/**
 	 * 매칭되는 글자수
 	 */
-	_$base.matchCount = function (str, ms) {
+	_$base.matchCount = function(str, ms) {
 		var re = new RegExp(ms, "ig");
 		var resultArray = str.match(re);
 		return resultArray.length;
@@ -1450,7 +1448,7 @@ if (typeof window != "undefined") {
 	/**
 	 * 글자 끝부분 맞는지 체크
 	 */
-	_$base.endsWith = function (str, searchString, position) {
+	_$base.endsWith = function(str, searchString, position) {
 		var subjectString = str.toString();
 		if (position === undefined || position > subjectString.length) {
 			position = subjectString.length;
@@ -1461,7 +1459,7 @@ if (typeof window != "undefined") {
 	};
 
 	// 글자 시작 부분 체크.
-	_$base.startsWith = function (str, search, pos) {
+	_$base.startsWith = function(str, search, pos) {
 		return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
 	};
 
@@ -1594,21 +1592,21 @@ if (typeof window != "undefined") {
 	 * @description 글자 형식 처리.
 	 */
 	_$base.str = {
-		trim: function (str) {
+		trim: function(str) {
 			return str.replace(/(^\s*)|(\s*$)/gi, '');
 		}
-		, allTrim: function (str) {
+		, allTrim: function(str) {
 			return str.replace(/\s/g, '');
 		}
-		, allLineTrim: function (str) {
+		, allLineTrim: function(str) {
 			return str.replace(/^\s+|\s+$/gm, '');
 		}
 		// 왼쪽 공백 제거
-		, ltrim: function (str) {
+		, ltrim: function(str) {
 			return str.replace(/^\s+/, "");
 		}
 		// 오른쪽 공백 제거
-		, rtrim: function (str) {
+		, rtrim: function(str) {
 			return str.replace(/\s+$/, "");
 		}
 	}
@@ -1621,7 +1619,7 @@ if (typeof window != "undefined") {
 		 * @param masks
 		 * @description 날짜 계산
 		 */
-		calcDate: function (date, num, type) {
+		calcDate: function(date, num, type) {
 			var a = new Date(date);
 			var format = "yyyy-mm-dd";
 			if (type == 'm') {
@@ -1632,7 +1630,7 @@ if (typeof window != "undefined") {
 			}
 			return this.dateFormat(a, format);
 		}
-		, renderHtml: function (template, renderItem) {
+		, renderHtml: function(template, renderItem) {
 			return VARSQLTemplate.render.html(template, renderItem);
 		}
 		/**
@@ -1641,7 +1639,7 @@ if (typeof window != "undefined") {
 		 * @param masks
 		 * @description 날짜 포켓 변환
 		 */
-		, dateFormat: function (date, masks) {
+		, dateFormat: function(date, masks) {
 			return dateFormat(date, masks);
 		}
 		/**
@@ -1649,7 +1647,7 @@ if (typeof window != "undefined") {
 		 * @param str
 		 * @description 특수문자 제거
 		 */
-		, removeSpecial: function (str) {
+		, removeSpecial: function(str) {
 			return str.replace(/[-&\/\\#,+()$~%.'":*?<>{}]/g, '');
 		}
 		/**
@@ -1660,7 +1658,7 @@ if (typeof window != "undefined") {
 		 * @param rangeNum
 		 * @description 날자 범위 지정하기
 		 */
-		, setRangeDate: function (sdtObj, edtObj, cdt, rangeNum, type) {
+		, setRangeDate: function(sdtObj, edtObj, cdt, rangeNum, type) {
 
 			if (isNaN(rangeNum)) return false;
 
@@ -1693,7 +1691,7 @@ if (typeof window != "undefined") {
 				sdtObj.val(tmped);
 			}
 		}
-		, copyObject: function (obj) {
+		, copyObject: function(obj) {
 			return this.objectMerge({}, obj);
 		}
 		/**
@@ -1702,7 +1700,7 @@ if (typeof window != "undefined") {
 		 * @param source
 		 * @description object merge
 		 */
-		, objectMerge: function () {
+		, objectMerge: function() {
 			var reval = arguments[0];
 			if (typeof reval !== 'object' || reval === null) { return reval; }
 			var i = 1;
@@ -1716,8 +1714,8 @@ if (typeof window != "undefined") {
 			}
 			return reval;
 		}
-		, escapeHTML: function (html) {
-			var fn = function (tag) {
+		, escapeHTML: function(html) {
+			var fn = function(tag) {
 				var charsToReplace = {
 					'&': '&amp;',
 					'<': '&lt;',
@@ -1728,18 +1726,18 @@ if (typeof window != "undefined") {
 			}
 			return html.replace(/[&<>"]/g, fn);
 		}
-		, getCharLength: function (s, b, i, c) {
+		, getCharLength: function(s, b, i, c) {
 			for (b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 2 : c >> 7 ? 2 : 1);
 			return b;
 		}
-		, getConvertCamelObject: function (obj) {
+		, getConvertCamelObject: function(obj) {
 			var param = {};
 			for (var key in obj) {
 				param[_fnConvertCamel(key)] = obj[key];
 			}
 			return param;
 		}
-		, removeUnderscore: function (str, lowerCaseFlag) {
+		, removeUnderscore: function(str, lowerCaseFlag) {
 			if (str == '') {
 				return str;
 			}
@@ -1748,14 +1746,14 @@ if (typeof window != "undefined") {
 				str = str.toLowerCase();
 			}
 			// conversion
-			var returnStr = str.replace(/_(\w)/g, function (word) {
+			var returnStr = str.replace(/_(\w)/g, function(word) {
 				return word;
 			});
 			returnStr = returnStr.replace(/_/g, "");
 
 			return returnStr;
 		}
-		, appendUrlParam: function (url, params) {
+		, appendUrlParam: function(url, params) {
 			if (!isObject(params)) {
 				return url;
 			}
@@ -1767,11 +1765,11 @@ if (typeof window != "undefined") {
 			return url;
 		}
 		// post method check
-		, isMethodPost: function (method) {
+		, isMethodPost: function(method) {
 			return (method + '').toLowerCase() == 'post';
 		}
 		// get method check
-		, isMethodGet: function (method) {
+		, isMethodGet: function(method) {
 			return (method + '').toLowerCase() == 'get';
 		}
 
@@ -1780,19 +1778,19 @@ if (typeof window != "undefined") {
 		, convertUnderscoreCase: _fnConvertUnderscoreCase
 		, toLowerCase: _fnToLowerCase
 		, toUpperCase: _fnToUpperCase
-		, capitalize: function (str) {
+		, capitalize: function(str) {
 			return str.charAt(0).toUpperCase() + str.slice(1);
 		}
 		, paramToArray: paramToArray
 		, getParameter: getParameter
 		, getLocationParameter: getLocationParameter
-		, browserSize: function () {
+		, browserSize: function() {
 			return {
 				width: (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 				, height: (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight)
 			}
 		}
-		, replaceParamUrl: function (url, param) {
+		, replaceParamUrl: function(url, param) {
 			var _this = this;
 			if (!url) return '';
 
@@ -1821,7 +1819,7 @@ if (typeof window != "undefined") {
 		 * @param replaceParam 변경함 파라미터
 		 * @description get all attirbute
 		 */
-		, replaceParam: function (str, replaceParam) {
+		, replaceParam: function(str, replaceParam) {
 			var matchObj = str.match(/#.*?#/g);
 
 			if (matchObj != null) {
@@ -1862,23 +1860,23 @@ if (typeof window != "undefined") {
 		/**
 		 * number format
 		 */
-		,numberFormat:function(num){
+		, numberFormat: function(num) {
 			return num.toLocaleString();
 		}
 		/**
 		 * number format
 		 */
-		,fileDisplaySize :function(fileSize) {
-		    if (fileSize <= 1) {
-		        return fileSize + " bytes";
-		    }
-		
-		    var units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-		    var digitGroups = Math.floor(Math.log(fileSize) / Math.log(1024));
-		    if(digitGroups ==0){
-				return fileSize +' '+ units[digitGroups];
+		, fileDisplaySize: function(fileSize) {
+			if (fileSize <= 1) {
+				return fileSize + " bytes";
 			}
-		    return (fileSize / Math.pow(1024, digitGroups)).toFixed(2) + " " + units[digitGroups];
+
+			var units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+			var digitGroups = Math.floor(Math.log(fileSize) / Math.log(1024));
+			if (digitGroups == 0) {
+				return fileSize + ' ' + units[digitGroups];
+			}
+			return (fileSize / Math.pow(1024, digitGroups)).toFixed(2) + " " + units[digitGroups];
 		}
 	}
 
@@ -1886,7 +1884,7 @@ if (typeof window != "undefined") {
 	 * 숫자 계산
 	 */
 	_$base.math = {
-		cal: function (a, b, calType, fixNum) {
+		cal: function(a, b, calType, fixNum) {
 
 			a = isNaN(a) ? 0 : a;
 			b = isNaN(b) ? 0 : b;
@@ -1922,11 +1920,11 @@ if (typeof window != "undefined") {
 
 			return fixNum > 0 ? reval.toFixed(fixNum) : reval;
 		}
-		, sum: function (a, b) {
+		, sum: function(a, b) {
 			return a + b;
 		}
 		//배열 sum
-		, arraySum: function (array, key) {
+		, arraySum: function(array, key) {
 			if (array.length < 1) return 0;
 
 			var _self = this;
@@ -1934,7 +1932,7 @@ if (typeof window != "undefined") {
 			var result = 0.0, tmpVal = 0.0, maxFixed = 0, dotIdx
 				, flag = key ? true : false;
 
-			$.each(array, function () {
+			$.each(array, function() {
 				tmpVal = flag ? this[key] : this;
 
 				if (isNaN(tmpVal)) {
@@ -1952,7 +1950,7 @@ if (typeof window != "undefined") {
 			return result;
 		}
 		// 배열 평균 구하기 함수
-		, average: function (array, key) {
+		, average: function(array, key) {
 			if (array.length < 1) return 0;
 			var tmpSum = this.arraySum(array, key);
 
@@ -1965,11 +1963,11 @@ if (typeof window != "undefined") {
 
 
 	/** -------------------------plugin-------------------------------------- **/
-	var dateFormat = function () {
+	var dateFormat = function() {
 		var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
 			timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
 			timezoneClip = /[^-+\dA-Z]/g,
-			pad = function (val, len) {
+			pad = function(val, len) {
 				val = String(val);
 				len = len || 2;
 				while (val.length < len) val = "0" + val;
@@ -1977,7 +1975,7 @@ if (typeof window != "undefined") {
 			};
 
 		// Regexes and supporting functions are cached through closure
-		return function (date, mask, utc) {
+		return function(date, mask, utc) {
 			var dF = dateFormat;
 
 			// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
@@ -2038,7 +2036,7 @@ if (typeof window != "undefined") {
 					S: ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
 				};
 
-			return mask.replace(token, function ($0) {
+			return mask.replace(token, function($0) {
 				return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
 			});
 		};
@@ -2090,7 +2088,7 @@ if (typeof window != "undefined") {
 		}
 		camelStr = _fnToLowerCase(camelStr);
 		// conversion
-		var returnStr = camelStr.replace(/_(\w)/g, function (word) {
+		var returnStr = camelStr.replace(/_(\w)/g, function(word) {
 			return _fnToUpperCase(word);
 		});
 		returnStr = returnStr.replace(/_/g, "");

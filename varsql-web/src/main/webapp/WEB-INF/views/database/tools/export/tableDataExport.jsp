@@ -42,14 +42,14 @@
 						  <input type="radio" v-model="exportType" value="sql" checked="checked">
 						  <span class="radiomark"></span>
 						</label>
-						<div class="checkbox-container-desc"><spring:message code="export.file.xml.msg" text="SQL 파일로 내보내기"/></div>
+						<div class="checkbox-container-desc">SQL <spring:message code="file.export" text="File Export"/></div>
 					</li>
 					<li>
 						<label class="checkbox-container">XML
 						  <input type="radio" v-model="exportType" value="xml">
 						  <span class="radiomark"></span>
 						</label>
-						<div class="checkbox-container-desc"><spring:message code="export.file.xml.msg" text="XML 파일로 내보내기"/></div>
+						<div class="checkbox-container-desc">XML <spring:message code="file.export" text="File Export"/></div>
 					</li>
 				</ul>
 			</div>
@@ -60,14 +60,14 @@
 						  <input type="radio" v-model="exportType" value="json">
 						  <span class="radiomark"></span>
 						</label>
-						<div class="checkbox-container-desc"><spring:message code="export.file.json.msg" text="JSON 파일로 내보내기"/></div>
+						<div class="checkbox-container-desc">JSON <spring:message code="file.export" text="File Export"/></div>
 					</li>
 					<li>
 						<label class="checkbox-container">CSV
 						  <input type="radio" v-model="exportType" value="csv">
 						  <span class="radiomark"></span>
 						</label>
-						<div class="checkbox-container-desc"><spring:message code="export.file.csv.msg" text="CSV 파일로 내보내기"/></div>
+						<div class="checkbox-container-desc">CSV <spring:message code="file.export" text="File Export"/></div>
 					</li>
 				</ul>
 			</div>
@@ -79,7 +79,7 @@
 
 				<c:if test="${schemaInfo ne ''}">
 					<div style="padding: 5px 0px 0px;">
-						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </label>
+						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="db.schema" /> : </label>
 						<select v-model="selectSchema" @change="getTableList()" style="width: calc(100% - 80px);">
 							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
 								<option value="${item}">${item}</option>
@@ -91,7 +91,7 @@
 			</div>
 			<div class="wh100-relative table-select-area" style="float: left;">
 				<div class="col-xs-12">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="db.table" /></div>
 					<div id="source"  style="height: 200px;width: 100%;"></div>
 				</div>
 			</div>
@@ -111,7 +111,7 @@
 				</template>
 				<template v-else>
 					<div style="margin-top: 15px;border: 1px solid #ddd;padding: 10px;height: 200px;width: 100%;">
-						<spring:message code="data.export.history.msg" text="다운로드 항목은 환경설정 -> 파일 에서 이력을 조회 할수 있습니다."/> 
+						<spring:message code="msg.download.history.help" text="다운로드 항목은 환경설정 -> 파일 에서 이력을 조회 할수 있습니다."/> 
 					</div>
 				</template>
 			</div>
@@ -158,7 +158,7 @@ VarsqlAPP.vueServiceBean({
 			this.step = step;
 			if(this.step == 3 && this.selectTableObj.getTargetItem().length < 1){
 				this.step=2;
-    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
+				VARSQL.alertMessage('msg.select.param', VARSQL.message('table'));
     			return false;
     		}
 			

@@ -38,7 +38,7 @@
 	<div class="col-xs-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<span v-if="detailItem.vname">[{{detailItem.vname}}]</span> <spring:message code="admin.managerlist.dbuser" />
+				<span v-if="detailItem.vname">[{{detailItem.vname}}]</span> <spring:message code="manager" />
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body manage-user-detail">
@@ -77,7 +77,7 @@ VarsqlAPP.vueServiceBean( {
 				orientation : 'y'
 				,duplicateCheck : true
 				,message :{
-					duplicate: VARSQL.message('varsql.0018')
+					duplicate: VARSQL.message('msg.item.added')
 				}
 				,valueKey : 'viewid'	
 				,labelKey : 'name'
@@ -167,7 +167,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(!_self.detailItem.vconnid){
-				VARSQL.alertMessage('varsql.0003');
+				VARSQL.alertMessage('msg.item.select', VARSQL.message('add'));
 				return false;
 			}
 

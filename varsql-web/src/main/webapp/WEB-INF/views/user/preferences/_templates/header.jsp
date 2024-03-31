@@ -4,7 +4,7 @@
 
 <div id="logo" class="navbar-header col-xs-12 col-sm-2">
 	<a id="logo-title" href="<c:url value="/user/preferences" />">
-		<spring:message	code="label.user.preferences" />
+		<spring:message	code="user.preferences" />
 	</a>
 	<div class="pull-right">
 		<a href="#" class="show-sidebar"> <i class="fa fa-bars"></i></a>

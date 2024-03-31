@@ -121,6 +121,11 @@
 	<definition name="/error/**" extends="no-template">
 		<put-attribute name="body" value="/WEB-INF/views/error/{1}.jsp" />
 	</definition>
+	
+	<!-- setup -->
+	<definition name="/setup/**" template="/WEB-INF/views/setup/_templates/main.jsp">
+		<put-attribute name="body" value="/WEB-INF/views/setup/{1}.jsp" />
+	</definition>
 
 	<!-- popup -->
 	<definition name="common.popup" extends="database-popup-template">

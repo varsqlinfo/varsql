@@ -101,7 +101,7 @@ var $userMain = {
 							return ;
 						}
 
-						if(!VARSQL.confirmMessage('varsql.0033', {name : item.name})) return ;
+						if(!VARSQL.confirmMessage('msg.close.confirm.param', {name : item.name})) return ;
 
 						_self.tabObj.removeItem(item);
 
@@ -248,7 +248,7 @@ window.userMain = {
 	<div class="browser-loading-msg">
 		<div style="display:table-cell;text-align:center;vertical-align: middle;font-size: 3em;">
 			<img src="${pageContext.request.contextPath}/webstatic/css/images/loading.gif">
-			<div>[{{name}}] <spring:message code="msg.dbdata.load" text="db loading" /> </div>
+			<div>[{{name}}] <spring:message code="msg.db.load" text="db loading" /> </div>
 		</div>
 	</div>
 </script>
@@ -257,7 +257,7 @@ window.userMain = {
 	<div class="wh100" id="dbBrowserContainer">
 		<div class="db-browser-content" style="z-index:0;display:table;">
 			<div class="var-db-select-text" style="display:table-cell;text-align:center;vertical-align: middle;font-size: 3em;">
-				<spring:message code="msg.connect.db.select" arguments="${pageContext.request.contextPath}" text="Select database" />
+				<spring:message code="msg.db.connect.select" arguments="${pageContext.request.contextPath}" text="Select database" />
 			</div>
 		</div>
 	</div>

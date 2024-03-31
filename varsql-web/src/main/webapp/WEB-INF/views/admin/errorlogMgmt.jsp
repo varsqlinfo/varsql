@@ -24,14 +24,14 @@
 						</label>
 						<label style="float:left; margin-right: 5px;">
 							<select v-model="searchCatg" class="form-control ">
-								<option	value="title"><spring:message code="admin.errorlog.title" /></option>
-								<option value="cont"><spring:message code="admin.errorlog.cont" /></option>
-								<option value="type"><spring:message code="admin.errorlog.type" /></option>
-								<option	value="server"><spring:message code="admin.errorlog.server" /></option>
+								<option	value="title"><spring:message code="error.message" /></option>
+								<option value="cont"><spring:message code="error.cont" /></option>
+								<option value="type"><spring:message code="error.type" /></option>
+								<option	value="server"><spring:message code="error.server" /></option>
 							</select>
 						</label>
 						<div class="input-group floatright">
-							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 							<span class="input-group-btn">
 								<button class="btn btn-default" @click="search()" type="button">
 									<span class="glyphicon glyphicon-search"></span>
@@ -54,9 +54,9 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="admin.errorlog.title" /></th>
-									<th class="text-center"><spring:message	code="admin.errorlog.server" /></th>
-									<th class="text-center"><spring:message	code="admin.errorlog.type" /></th>
+									<th class="text-center"><spring:message	code="error.message" /></th>
+									<th class="text-center"><spring:message	code="error.server" /></th>
+									<th class="text-center"><spring:message	code="error.type" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
@@ -84,30 +84,30 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-lg-7">
 		<div class="panel panel-default" >
-			<div class="panel-heading"><spring:message code="manager.menu.glossary" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
+			<div class="panel-heading"><spring:message code="detail" /><span id="selectItemInfo" style="margin:left:10px;font-weight:bold;"></span></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" >
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.title" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="error.message" /></label>
 						<div class="col-xs-10">
 							<pre style="min-height:90px;">{{detailItem.excpTitle}}</pre>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.type" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="error.type" /></label>
 						<div class="col-xs-10">
 							<input class="form-control text required" v-model="detailItem.excpType" disabled="disabled">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.server" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="error.server" /></label>
 						<div class="col-xs-10">
 							<input class="form-control text required" v-model="detailItem.serverId" disabled="disabled">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><spring:message code="admin.errorlog.cont" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="error.cont" /></label>
 						<div class="col-xs-10">
 							<textarea class="form-control text" rows="20" v-model="detailItem.excpCont" style="width:100%;" disabled="disabled"></textarea>
 						</div>

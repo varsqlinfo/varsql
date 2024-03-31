@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <html>
 <head>
-<title><spring:message code="admin.home.title" /></title>
+<title>- <spring:message code="screen.admin" /> - </title>
 <%@ include file="/WEB-INF/include/head-admin.jsp"%>
 </head>
 

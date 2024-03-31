@@ -14,7 +14,7 @@
 					<div class="col-sm-12">
 						<div class="pull-right margin-bottom5">
 							<button type="button" class="btn btn-default save-btn">
-								<i class="fa fa-save"></i><spring:message code="btn.save" text="저장"/>
+								<i class="fa fa-save"></i><spring:message code="save" text="저장"/>
 							</button>
 						</div>
 					</div>
@@ -23,36 +23,37 @@
 				<div>
 					<form id="writeForm" name="writeForm" role="form" class="form-horizontal">
 						<div class="form-group">
-							<label class="col-lg-2 control-label" for="inputError"><spring:message code="label.id" text="ID"/></label>
+							<label class="col-lg-2 control-label" for="inputError"><spring:message code="user.id" text="Id"/></label>
 							<div class="col-lg-10">
 								<input type="text"  id=uid name="uid" value="${detailInfo.uid}" class="form-control text required" disabled>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label" for="inputError"><spring:message code="label.email" text="email"/></label>
+							<label class="col-lg-2 control-label" for="inputError"><spring:message code="email" text="Email"/></label>
 							<div class="col-lg-10">
 								<input type="text"  id=uemail name="uemail" value="${detailInfo.uemail}" class="form-control text required" disabled>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label" for="inputError"><spring:message code="join.form.name" text="URL"/></label>
+							<label class="col-lg-2 control-label" for="inputError"><spring:message code="user.name" text="Name"/></label>
 							<div class="col-lg-10">
-								 <input type="text" class="form-control" id="uname" name="uname"  value="${detailInfo.uname}" placeholder="<spring:message code="join.form.name"/>"/>
+								 <input type="text" class="form-control" id="uname" name="uname"  value="${detailInfo.uname}" placeholder="<spring:message code="user.name"/>"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="join.form.organization"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.orgnm"/></label>
 
 				            <div class="col-lg-10">
-				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.orgNm}" placeholder="<spring:message code="join.form.organization"/>"/>
+				                <input type="text" class="form-control" id="deptNm" name="deptNm" value="${detailInfo.orgNm}" placeholder="<spring:message code="user.orgnm"/>"/>
 				            </div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="join.form.locale"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="language"/></label>
 
 				            <div class="col-lg-10">
+				            	<varsql:supportLocale var="localeInfo"/>
 				            	<select class="form-control" id="lang" name="lang">
-				            		<option value=""><spring:message code="join.form.locale"/></option>
+				            		<option value=""><spring:message code="language.select"/></option>
 				            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
 										<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
 									</c:forEach>
@@ -60,10 +61,10 @@
 				            </div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="join.form.desc"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="desc"/></label>
 
 				            <div class="col-lg-10">
-				                <textarea class="form-control" rows="3" id="description" name="description" placeholder="<spring:message code="join.form.desc"/>" >${detailInfo.description}</textarea>
+				                <textarea class="form-control" rows="3" id="description" name="description" placeholder="<spring:message code="desc"/>" >${detailInfo.description}</textarea>
 				            </div>
 						</div>
 					</form>
@@ -97,14 +98,14 @@
 				fields: {
 					uname : {
 						validators: {
-							notEmpty: { message: VARSQL.message('varsql.form.0001') }
-							,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.form.0004',{range : '3~100'}) }
+							notEmpty: { message: VARSQL.message('msg.valid.required') }
+							,stringLength: { min: 3, max: 100, message: VARSQL.message('msg.valid.range.param',{range : '3~100'}) }
 						}
 				  	}
 					,uemail : {
 						validators: {
-							notEmpty: { message: VARSQL.message('varsql.form.0001')}
-							,stringLength: { min: 0, max: 500, message: VARSQL.message('varsql.form.0004',{range : '0~250'}) }
+							notEmpty: { message: VARSQL.message('msg.valid.required')}
+							,stringLength: { min: 0, max: 500, message: VARSQL.message('msg.valid.range.param',{range : '0~250'}) }
 							,emailAddress: {
 								message: 'The input is not a valid email address'
 							}
@@ -112,7 +113,7 @@
 				  	}
 					,udept : {
 						validators: {
-							stringLength: { min: 0, max: 120, message: VARSQL.message('varsql.form.0004',{range : '0~120'}) }
+							stringLength: { min: 0, max: 120, message: VARSQL.message('msg.valid.range.param',{range : '0~120'}) }
 					  }
 				  	}
 				}

@@ -4,7 +4,7 @@
 <HTML>
 
 <head>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
@@ -27,39 +27,39 @@
 <body>
 
 <div id="vueArea" class="container">
-    <h3 class="page-header" style="text-align:center;"><spring:message code="page.title.varsql"/> <spring:message code="password.reset"/></h3>
+    <h3 class="page-header" style="text-align:center;"><spring:message code="varsql.title"/> <spring:message code="password.reset"/></h3>
     <!-- form start -->
     <form name="resetForm" id="resetForm" method="POST" action="<c:url value='/join/join' />"  class="form-horizontal well" role="form" onsubmit="return false;">
 		
 		<div  style="text-align: center;">
 	        <ul style="list-style: none;font-weight: bold;">
 	        	<li v-if="msgView =='error'" style="color: #ff2b2b;">
-	        		<spring:message code="send.mail.password.fail.msg" text="메일 발송에 실패했습니다. <br/> 잘못된 비밀번호 재 설정 요청입니다."/>
+	        		<spring:message code="msg.send.mail.password.fail" text="메일 발송에 실패했습니다. <br/> 잘못된 비밀번호 재 설정 요청입니다."/>
 	        	</li>
-	        	<li v-else-if="msgView =='success'" style="color: #1eaef7;"><spring:message code="send.mail.msg" text="메일을 발송하였습니다."/></li>
+	        	<li v-else-if="msgView =='success'" style="color: #1eaef7;"><spring:message code="msg.send.mail" text="메일을 발송하였습니다."/></li>
 	        </ul>
 		</div>
 		
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="join.form.uid"/></label>
+            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="email"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="join.form.uid" />" />
+                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="email" />" />
             </div>
         </div>
         
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.email"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.email"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="join.form.email" />"/>
+                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="user.email" />"/>
             </div>
         </div>
     </form>
     <div class="form-group">
           <div class="col-sm-12 text-center">
               <button type="button" @click="submit()" class="btn btn-info"><spring:message code="btn.confirm"/></button>
-              <button type="button" @click="goCancel()" class="btn btn-default"><spring:message code="label.cancel"/></button>
+              <button type="button" @click="goCancel()" class="btn btn-default"><spring:message code="cancel"/></button>
           </div>
       </div>
     <!--/form-->
@@ -89,16 +89,16 @@ VarsqlAPP.vueServiceBean({
 				,fields: {
 					uid: {
 						validators: {
-							notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
-							,stringLength: { min: 3, max: 100, message: VARSQL.message('varsql.0043',{size:'3~100'})}
+							notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
+							,stringLength: { min: 3, max: 100, message: VARSQL.message('msg.valid.size.param',{size:'3~100'})}
 						}
 				  	}
 					,uemail: {
 						validators: {
-							notEmpty: { message: VARSQL.message('varsql.0042','필수 입력사항입니다.')}
-							,stringLength: { min: 0, max: 250, message: VARSQL.message('varsql.0043',{size:'0~250'})}
+							notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
+							,stringLength: { min: 0, max: 250, message: VARSQL.message('msg.valid.size.param',{size:'0~250'})}
 							,emailAddress: {
-								message: VARSQL.message('varsql.0051', '유효하지않은 Email입니다.'))
+								message: VARSQL.message('msg.valid.invalid.param', VARSQL.message('email')))
 							}
 					  }
 				  	}

@@ -30,7 +30,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class=" form-control" @keyup="search()">
+								<input type="text" v-model="searchVal" class="form-control" @keyup="search()" placeholder="<spring:message code="search.placeholder" />">
 								 <span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -61,17 +61,17 @@
 										</div>
 									</th>
 									<th class="text-center">
-										<spring:message	code="manager.userlist.name" />
-										(<spring:message	code="manager.userlist.id" />)
+										<spring:message	code="user.name" />
+										(<spring:message	code="user.id" />)
 									</th>
 									<th class="text-center">
-										<spring:message	code="manager.userlist.date" />
+										<spring:message	code="reg_dt" />
 									</th>
 									<th class="text-center">
-										<spring:message	code="manager.userlist.access" />
+										<spring:message	code="accept.yn" />
 									</th>
 									<th class="text-center" v-if="enableInitPassword">
-										<spring:message	code="manager.userlist.init.password" />
+										<spring:message	code="password.reset" />
 									</th>
 								</tr>
 							</thead>
@@ -112,29 +112,31 @@
 					</colgroup>
 					<tbody class="dataTableContent">
 						<tr>
-							<th><spring:message code="label.username"/></th><td>{{clickItem.uname}}</td>
+							<th><spring:message code="user.name"/></th><td>{{clickItem.uname}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.id"/></th><td>{{clickItem.uid}}</td>
+							<th><spring:message code="user.id"/></th><td>{{clickItem.uid}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.email" text="email"/></th><td>{{clickItem.uemail}}</td>
+							<th><spring:message code="email" text="email"/></th><td>{{clickItem.uemail}}</td>
 						</tr>
 						<tr>
-							<th><spring:message code="label.orgnm" text="orgnm"/></th><td>{{clickItem.orgNm}}</td>
+							<th><spring:message code="user.orgnm" text="orgnm"/></th><td>{{clickItem.orgNm}}</td>
 						</tr>
+						<%--
 						<tr>
-							<th><spring:message code="label.deptnm" text="orgnm"/></th><td>{{clickItem.deptNm}}</td>
+							<th><spring:message code="user.deptnm" text="orgnm"/></th><td>{{clickItem.deptNm}}</td>
 						</tr>
+						 --%>
 						<tr>
-							<th><spring:message code="label.block"/></th>
+							<th><spring:message code="user.block"/></th>
 							<td>
 								<template v-if="clickItem !==false">
 									<template v-if="clickItem.blockYn">
-										<button type="button" class="btn btn-xs btn-info" @click="userBlock('N')"><spring:message code="release"/></button>
+										<button type="button" class="btn btn-xs btn-info" @click="userBlock('N')"><spring:message code="user.release"/></button>
 									</template>
 									<template v-else>
-										<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="block"/></button>
+										<button type="button" class="btn btn-xs btn-danger" @click="userBlock('Y')"><spring:message code="user.block"/></button>
 									</template>
 								</template>
 							</td>
@@ -156,14 +158,14 @@
 												</colgroup>
 												<thead>
 													<tr>
-														<th style="width: 100%" colspan="2"><div class="th-text text-center"><spring:message code="label.dbgroup" text="Db group"/></div></th>
+														<th style="width: 100%" colspan="2"><div class="th-text text-center"><spring:message code="dbgroup" text="Db group"/></div></th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr v-for="(item,index) in dbGroup">
 														<td class="text-left">{{item.groupName}}</td>
 														<td >
-															<button type="button" @click="removeDbGroupInfo(item)"><spring:message code="label.remove" text="제거"/></button>
+															<button type="button" @click="removeDbGroupInfo(item)"><spring:message code="remove" text="제거"/></button>
 														</td>
 													</tr>
 													<tr v-if="dbGroup.length === 0">
@@ -185,7 +187,7 @@
 												</colgroup>
 												<thead>
 													<tr>
-														<th style="width: 100%" colspan="2"><div class="th-text text-center"><spring:message code="msg.auth_db_list" text="db list"/></div></th>
+														<th style="width: 100%" colspan="2"><div class="th-text text-center"><spring:message code="msg.auth.db.list" text="db list"/></div></th>
 													</tr>
 												</thead>
 												<tbody>
@@ -198,10 +200,10 @@
 															<template v-else>
 																<template v-if="(item.manager===false)">
 																	<template v-if="item.blockYn == 'N'">
-																		<button type="button" class="btn btn-xs btn-danger" @click="dbBlockInfo(item, 'block')"><spring:message code="label.block" text="차단"/></button>
+																		<button type="button" class="btn btn-xs btn-danger" @click="dbBlockInfo(item, 'block')"><spring:message code="user.block" text="차단"/></button>
 																	</template>
 																	<template v-else>
-																		<button type="button" class="btn btn-xs btn-primary" @click="dbBlockInfo(item, 'cancel')"><spring:message code="label.release" text="해제"/></button>
+																		<button type="button" class="btn btn-xs btn-primary" @click="dbBlockInfo(item, 'cancel')"><spring:message code="user.release" text="해제"/></button>
 																	</template>
 																</template>
 																<template v-else>{{item.blockYn=='N'?'Y':'N'}}</template>
@@ -310,7 +312,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 			var clickItem = _self.clickItem;
 
-			if(!confirm(mode=='Y'?VARSQL.message('varsql.m.0003'):VARSQL.message('varsql.m.0004'))){
+			if(!confirm(mode=='Y'?VARSQL.message('msg.block.confirm'):VARSQL.message('msg.release.confirm'))){
 				return ;
 			}
 
@@ -356,7 +358,7 @@ VarsqlAPP.vueServiceBean( {
 				,groupId : item.groupId
 			};
 
-			if(!VARSQL.confirmMessage('varsql.m.0005', {itemName : item.groupName})){
+			if(!VARSQL.confirmMessage('msg.user.group.remove.confirm', {itemName : item.groupName})){
 				return ;;
 			}
 
@@ -390,7 +392,7 @@ VarsqlAPP.vueServiceBean( {
 		,initPassword :function(sItem){
 			var _self = this;
 
-			if(!VARSQL.confirmMessage('varsql.m.0009', {userName : sItem.uname})){
+			if(!VARSQL.confirmMessage('msg.user.password.init', {userName : sItem.uname})){
 				return ;
 			}
 
@@ -412,9 +414,9 @@ VarsqlAPP.vueServiceBean( {
 			var confirmMsg =this.clickItem.uname +' ['+item.vname+']';
 
 			if(mode=='block'){
-				confirmMsg += VARSQL.message('varsql.m.0003');
+				confirmMsg += VARSQL.message('msg.block.confirm');
 			}else{
-				confirmMsg += VARSQL.message('varsql.m.0004');
+				confirmMsg += VARSQL.message('msg.release.confirm');
 			}
 
 			if(!confirm(confirmMsg)){

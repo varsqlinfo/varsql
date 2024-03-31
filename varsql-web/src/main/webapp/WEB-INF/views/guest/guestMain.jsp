@@ -5,7 +5,7 @@
 <!doctype html>
 <HTML>
 <head>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,7 +34,7 @@
 	<header class="navbar navbar-default">
 	    <div class="container">
 	        <div class="navbar-header">
-	            <a class="navbar-brand" href="javascript:;"><spring:message code="guest.title"/></a>
+	            <a class="navbar-brand" href="javascript:;"><spring:message code="msg.welcome"/></a>
 	        </div>
 	    </div>
 	</header>
@@ -42,26 +42,26 @@
 	<div class="container" id="varsqlVueArea">
 		<h3 class="page-header">
 			<sec:authentication property="principal.fullname" />
-			<spring:message code="guest.message" />
+			<spring:message code="msg.guest.permission" />
 		</h3>
 		<!-- form start -->
 		<form class="form-horizontal" onsubmit="return false; ">
 			<div class="form-group" :class="errors.has('TITLE') ? 'has-error' :''">
-				<label><spring:message code="guest.form.title" /></label>
+				<label><spring:message code="title" /></label>
 				<input type="text" v-model="detailItem.title"  v-validate="'required'" name="TITLE" class="form-control" />
 				<div v-if="errors.has('TITLE')" class="help-block">{{errors.first('TITLE')}}</div>
 			</div>
 			<div class="form-group" :class="errors.has('QUESTION') ? 'has-error' :''">
-				<label><spring:message code="guest.form.question" /></label>
+				<label><spring:message code="question" /></label>
 				<textarea v-model="detailItem.question" rows="3" v-validate="'required'" name="QUESTION" class="form-control"></textarea>
 				<div v-if="errors.has('QUESTION')" class="help-block">{{errors.first('QUESTION')}}</div>
 			</div>
 
 			<div class="form-group">
 				<div class="col-sm-12 text-center">
-					<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="btn.add"/></button>
-					<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
-					<button type="button" @click="goMain()" class="btn btn-default"><spring:message code="btn.login.screen" /></button>
+					<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="new"/></button>
+					<button type="button" @click="save()" class="btn btn-info"><spring:message code="save"/></button>
+					<button type="button" @click="goMain()" class="btn btn-default"><spring:message code="screen.login" /></button>
 				</div>
 			</div>
 		</form>
@@ -69,12 +69,12 @@
 
 		<div class="row panel panel-default">
 			<div class="panel-heading">
-				<spring:message code="guest.form.question" />
+				<spring:message code="question" />
 				<div class="input-group">
 					<input type="text" v-model="searchVal" @keydown.enter="search()" class="form-control input-sm" placeholder="<spring:message code="msg.search.placeholder" />">
 					<span class="input-group-btn"  class="form-control">
 						<button type="button" class="btn btn-warning btn-sm searchBtn"  @click="search()">
-							<spring:message code="btn.search" />
+							<spring:message code="search" />
 						</button>
 					</span>
 				</div>
@@ -100,7 +100,7 @@
 
 	    			<template v-if="item.answerYn != 'N'">
 		    			<div class="replymargin30">
-							<strong class="primary-font"><spring:message code="guest.form.answer"/></strong>
+							<strong class="primary-font"><spring:message code="answer"/></strong>
 							<i class="fa fa-clock-o fa-fw"></i>{{item.answerDt}}
 							<div><pre>{{item.answer}}</pre></div>
 		    			</div>

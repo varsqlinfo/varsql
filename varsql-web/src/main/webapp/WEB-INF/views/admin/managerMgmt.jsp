@@ -10,7 +10,7 @@
 <div class="row display-off" id="varsqlVueArea">
 	<div class="col-sm-6">
 		<div class="panel panel-default">
-			<div class="panel-heading"><spring:message code="admin.userlist.search.head" /></div>
+			<div class="panel-heading"><spring:message code="user.list" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row search-area">
@@ -33,16 +33,16 @@
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manager.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manager.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manager.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="user.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="user.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="user.orgnm" /></th>
 								</tr>
 							</thead>
 							<tbody>
 				    			<tr v-for="(item,index) in userGridData" class="gradeA " :class="index%2==0?'add':'even'" >
 									<td class=""><a href="javascript:;" @click="roleAction(item,'add')">{{item.uname}}</a></td>
 									<td class="">{{item.uid}}</td>
-									<td class="center">{{item.deptNm}}</td>
+									<td class="center">{{item.orgNm}}</td>
 								</tr>
 				    			<tr v-if="userGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>
@@ -58,7 +58,7 @@
 
 	<div class="col-sm-6">
 		<div class="panel panel-default">
-			<div class="panel-heading"><spring:message code="admin.managerlist.head" /></div>
+			<div class="panel-heading"><spring:message code="manager.list" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="row search-area">
@@ -81,16 +81,16 @@
 							id="dataTables-example">
 							<thead>
 								<tr role="row">
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="manager.userlist.name" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="manager.userlist.id" /></th>
-									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="manager.userlist.dept" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 195px;"><spring:message code="user.name" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 150px;"><spring:message code="user.id" /></th>
+									<th tabindex="0" rowspan="1" colspan="1" style="width: 179px;"><spring:message code="user.orgnm" /></th>
 								</tr>
 							</thead>
 							<tbody>
 				    			<tr v-for="(item,index) in managerGridData" class="gradeA " :class="index%2==0?'add':'even'" >
 									<td class=""><a href="javascript:;" @click="roleAction(item,'remove')">{{item.uname}}</a></td>
 									<td class="">{{item.uid}}</td>
-									<td class="center">{{item.deptNm}}</td>
+									<td class="center">{{item.orgNm}}</td>
 								</tr>
 				    			<tr v-if="managerGridData.length === 0"><td colspan="3"><div class="text-center"><spring:message code="msg.nodata"/></div></td></tr>
 							</tbody>

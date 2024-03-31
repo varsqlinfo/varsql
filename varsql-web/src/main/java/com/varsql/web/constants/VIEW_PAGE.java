@@ -16,6 +16,7 @@ public enum VIEW_PAGE{
 	, USER_PREFERENCES("/user/preferences")
 	, MANAGER("/manager")
 	, ADMIN("/admin")
+	, SETUP("/setup")
 
 	,BOARD("/board");
 

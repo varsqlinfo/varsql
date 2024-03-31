@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+    <description>설명</description>
+    <apply>
+        <sql description="add admin">
+<![CDATA[
+insert into VTUSER ( viewid ,uid ,upw ,uname ,org_nm ,dept_nm ,uemail ,user_role ,description ,reg_id ,upd_id , accept_yn)
+values('0000001' ,'varsqladmin','$2a$10$uKz.HYN83Z6K1QrW3jTnMeRM3FzcPPoMbJfDDAQrZBlZ5DSdcMHF2','관리자','orgnm','dept_nm','admin@varsql.com','ADMIN','administrator','varsqladmin','varsqladmin','Y');
+]]>
+        </sql>
+        
+         <sql description="add dbtype" multiple="true" delimiter=";">
+<![CDATA[
+-- db2
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('001' ,'db2','dbtype.db2','db2');
+
+-- oracle
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('002' ,'oracle','dbtype.oracle','oracle');
+
+-- mysql
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('003' ,'mysql','dbtype.mysql','mysql');
+
+-- sqlserver
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('004' ,'sqlserver','dbtype.sqlserver','sqlserver');
+
+-- h2
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('005' ,'h2','dbtype.h2','h2');
+
+-- sybase
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('006' ,'sybase','dbtype.sybase','sybase');
+
+-- postgresql
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('007' ,'postgresql','dbtype.postgresql','postgresql');
+
+-- mariadb
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('008' ,'mariadb','dbtype.mariadb','mariadb');
+
+-- tibero
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('009' ,'tibero','dbtype.tibero','tibero');
+
+-- cubrid
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('010' ,'cubrid','dbtype.cubrid','cubrid');
+
+-- etc
+insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
+values('999' ,'etc','dbtype.etc','etc');
+]]>
+        </sql>
+        
+         <sql description="add DBTYPE_DRIVER" multiple="true" delimiter=";">
+<![CDATA[
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('001' ,'oracle','oracle.jdbc.driver.OracleDriver', 'select 1 from dual','oracle' ,'jdbc:oracle:thin:@{serverIp}{if(port)}:{port}{endif}:{databaseName}',1521,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('002', 'db2','com.ibm.db2.jcc.DB2Driver', 'select 1 from sysibm.sysdummy1','db2','jdbc:db2://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('003', 'mysql','com.mysql.jdbc.Driver', 'select 1','mysql','jdbc:mysql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('004', 'h2','org.h2.Driver', 'select 1','h2','jdbc:h2:{serverIp}',-1,'PUBLIC');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('005', 'sqlserver','com.microsoft.jdbc.sqlserver.SQLServerDriver', 'select 1','SQL SERVER 2000','jdbc:microsoft:sqlserver://{serverIp}{if(port)}:{port}{endif};databaseName={databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('006', 'sqlserver','com.microsoft.sqlserver.jdbc.SQLServerDriver', 'select 1','SQL SERVER 2005','jdbc:sqlserver://{serverIp}{if(port)}:{port}{endif};databaseName={databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('007','sybase','com.sybase.jdbc4.jdbc.SybDriver', 'select 1','sybase','jdbc:sybase:Tds:{serverIp}{if(port)}:{port}{endif}?ServiceName={databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('008','postgresql','org.postgresql.Driver', 'select 1','postgresql','jdbc:postgresql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',5432,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('009', 'firebird','org.firebirdsql.jdbc.FBDriver', 'select 1 from rdb$database','firebird','jdbc:firebirdsql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('010', 'derby','org.apache.derby.jdbc.ClientDriver', 'values 1','derby',' jdbc:derby://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('011', 'hsqldb','org.hsqldb.jdbcDriver', 'select 1 from INFORMATION_SCHEMA.SYSTEM_USERS','hsqldb','jdbc:hsqldb:hsql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('012', 'tibero','com.tmax.tibero.jdbc.TbDriver', 'select 1 from dual','tibero','jdbc:tibero:thin:@{serverIp}{if(port)}:{port}{endif}:{databaseName}',-1,'user');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('013', 'mariadb','org.mariadb.jdbc.Driver', 'select 1','mariadb','jdbc:mariadb://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('014', 'cubrid','cubrid.jdbc.driver.CUBRIDDriver', 'select 1','cubrid','jdbc:cubrid:{serverIp}{if(port)}:{port}{endif}:{databaseName}:::',-1,'db');
+]]>
+        </sql>
+    </apply>
+    <revert>
+        <sql description="data revert">
+delete from VTUSER; 
+delete from VTDBTYPE; 
+delete from VTDBTYPE_DRIVER_TYPE; 
+        </sql>
+    </revert>
+</database>

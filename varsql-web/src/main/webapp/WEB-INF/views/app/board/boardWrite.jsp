@@ -12,7 +12,7 @@
 
 		<form id="writeForm" name="writeForm" role="form" class="bv-form">
 			<div class="form-group">
-				<input v-model="articleInfo.title" placeholder="제목" class="form-control">
+				<input v-model="articleInfo.title" placeholder="<spring:message code="title"/>" class="form-control">
 			</div>
 			<div class="form-group">
 				<label for="noticeId"><input type="checkbox" id="noticeId" v-model="articleInfo.noticeYn" true-value="Y" false-value="N">
@@ -85,7 +85,7 @@ VarsqlAPP.vueServiceBean({
 			var saveInfo = VARSQL.util.objectMerge({}, this.articleInfo);
 
 			if(VARSQL.isBlank(saveInfo.title)){
-				VARSQLUI.toast.open({text : VARSQL.message('varsql.0038','제목을 입력 하세요.')});
+				VARSQL.toastMessage('msg.content.enter.param',VARSQL.message('title'));
 				return ;
 			}
 

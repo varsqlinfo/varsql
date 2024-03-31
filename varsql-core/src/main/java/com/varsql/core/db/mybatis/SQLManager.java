@@ -6,7 +6,6 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
@@ -16,20 +15,19 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.SqlSessionUtils;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
+import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
+import com.varsql.core.db.datasource.SimpleDataSource;
 import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.handler.type.LONGVARCHARHandler;
 import com.varsql.core.db.valueobject.CommentInfo;
@@ -39,7 +37,6 @@ import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.app.beans.DataMap;
-import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -136,14 +133,12 @@ public final class SQLManager {
 
 		sqlSessionFactory.setConfiguration(getConfiguration());
 
-		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		
 		DBVersionInfo dbVersionInfo=connInfo.getVersion();
 		
 		if(dbVersionInfo.isDefultFlag() || dbVersionInfo.getMajor()==-1) {
-			sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
+			sqlSessionFactory.setMapperLocations(ResourceUtils.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
 		}else {
-			sqlSessionFactory.setMapperLocations(resolver.getResources(String.format("classpath*:db/ext/%sMapper-%s.xml",connInfo.getType(), dbVersionInfo.getVersion())));
+			sqlSessionFactory.setMapperLocations(ResourceUtils.getResources(String.format("classpath*:db/ext/%sMapper-%s.xml",connInfo.getType(), dbVersionInfo.getVersion())));
 		}
 		
 		return sqlSessionFactory;
@@ -174,7 +169,7 @@ public final class SQLManager {
 	    } 
 	    
 		if(!connInfo.isEnableConnectionPool()) {
-			return new SimpleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+			return new SimpleDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
 		}
 		
 		BasicDataSource dataSource = new BasicDataSource();

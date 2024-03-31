@@ -7,7 +7,8 @@
 			<table class="wh100">
 				<tr>
 					<td class="text-center" style="text-align: center; font-size: 3em;">
-						<spring:message code="retry.bad.request" text="다시 시도 해주세요.</br> 정상적인 접근이 아닙니다."/>
+						<spring:message code="msg.retry" text="다시 시도 해주세요"/><br/>
+						<spring:message code="error.400" text="잘못된 요청 입니다"/>
 					</td>
 				</tr>
 			</table>

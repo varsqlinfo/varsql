@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<!-- 파일 메뉴 -->
+<entry key="header.menu.file">파일</entry>
+<entry key="header.menu.file.new">새 파일</entry>
+<entry key="header.menu.file.save">저장</entry>
+<entry key="header.menu.file.allsave">모두 저장</entry>
+<entry key="header.menu.file.import">가져오기...</entry>
+<entry key="header.menu.file.export">내보내기...</entry>
+<entry key="header.menu.file.import_export">가져오기 및 내보내기...</entry>
+<entry key="header.menu.file.newwin">새창보기</entry>
+<entry key="header.menu.file.close">닫기</entry>
+
+<!-- 편집 메뉴 -->
+<entry key="header.menu.edit">편집</entry>
+<entry key="header.menu.edit.paste">붙여넣기</entry>
+<entry key="header.menu.edit.undo">실행취소</entry>
+<entry key="header.menu.edit.redo">다시실행</entry>
+<entry key="header.menu.edit.find">찾기</entry>
+<entry key="header.menu.edit.compare">쿼리 비교</entry>
+
+<!-- 검색 메뉴 -->
+<entry key="header.menu.search">검색</entry>
+<entry key="header.menu.search.find">찾기</entry>
+
+<!-- 도구 메뉴 -->
+<entry key="header.menu.tool">도구</entry>
+<entry key="header.menu.tool.import">가져오기</entry>
+<entry key="header.menu.tool.export">내보내기</entry>
+<entry key="header.menu.tool.export.specification">테이블 명세서</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">데이터</entry>
+<entry key="header.menu.tool.setting">설정</entry>
+<entry key="header.menu.tool.show.plugin">컴포넌트보기</entry>
+<entry key="header.menu.tool.show.glossary">용어집</entry>
+<entry key="header.menu.tool.show.history">History</entry>
+
+<entry key="header.menu.tool.theme">테마설정</entry>
+<entry key="header.menu.tool.theme.light">light</entry>
+<entry key="header.menu.tool.theme.dark">dark</entry>
+
+<entry key="header.menu.tool.initlayout">레이아웃 초기화</entry>
+
+<entry key="header.menu.tool.utils">유틸리티</entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[테이블 생성]]></entry>
+<entry key="header.menu.tool.utils.multidbsqlexecute">멀티 DB SQL 실행</entry>
+<entry key="header.menu.tool.utils.tableddlconvert">테이블 DDL 변환</entry>
+<entry key="header.menu.tool.utils.tablecolumnsearch">테이블 컬럼 조회</entry>
+
+<!-- 도움말 메뉴 -->
+<entry key="header.menu.help">도움말</entry>
+<entry key="header.menu.help.help">도움말 항목</entry>
+<entry key="header.menu.help.dbinfo">DB 정보</entry>
+<entry key="header.menu.help.info">VARSQL 정보</entry>
+
+<!-- admin menu -->
+<entry key="admin.menu.database">Database 관리</entry>
+<entry key="admin.menu.databaseoptmgmt">Database 옵션 관리</entry>
+<entry key="admin.menu.managermgmt">매니저 권한 관리</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & 매니저 관리]]></entry>
+<entry key="admin.menu.report">Report</entry>
+<entry key="admin.menu.dbmenumgmt">메뉴관리</entry>
+<entry key="admin.menu.errorlog">에러 로그</entry>
+<entry key="admin.menu.jdbcprovidermgmt">JDBC 제공자 관리</entry>
+
+<!-- app 관리 menu -->
+<entry key="manager.menu.usermgmt">사용자 관리</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & 사용자 관리]]></entry>
+<entry key="manager.menu.dbgroup">DB 그룹관리</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB 그룹 & 사용자관리]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[용어집]]></entry>
+<entry key="manager.menu.logmgmt">로그</entry>
+<entry key="manager.menu.dbcomparemgmt">DB 비교</entry>
+<entry key="manager.menu.sqllogmgmt">SQL 통계</entry>
+<entry key="manager.menu.sqllog">SQL 로그</entry>
+<entry key="manager.menu.userlogmgmt">사용자 로그 통계</entry>
+<entry key="manager.menu.scheduler">Scheduler</entry>
+<entry key="manager.menu.databackupgmgmt">데이터 백업 관리</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL 백업 관리</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+
+<!-- user menu -->
+<entry key="user.prefernces.menu.general">프로필 수정</entry>
+<entry key="user.prefernces.menu.pasword">비밀번호 변경</entry>
+<entry key="user.prefernces.menu.message">메시지 관리</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL 파일</entry>
+
+<entry key="user.prefernces.menu.file">파일</entry>
+<entry key="user.prefernces.menu.fileimportlist">가져오기 이력</entry>
+<entry key="user.prefernces.menu.fileexportlist">다운로드 이력</entry>
+
+
+
+</properties>

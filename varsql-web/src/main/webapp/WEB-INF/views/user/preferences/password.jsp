@@ -19,7 +19,7 @@ response.setDateHeader ("Expires", -1);
 					<div class="col-sm-12">
 						<div class="pull-right margin-bottom5">
 							<button type="button" class="btn btn-default save-btn">
-								<i class="fa fa-save"></i><spring:message code="btn.save"/>
+								<i class="fa fa-save"></i><spring:message code="save"/>
 							</button>
 						</div>
 					</div>
@@ -28,19 +28,19 @@ response.setDateHeader ("Expires", -1);
 				<div>
 					<form id="passwordResetForm" class="form-horizontal required-validate" method="post" onsubmit="return false;">
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="user.form.password.current"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.password.current"/></label>
 							<div class="col-lg-10">
 								<input type="password"  id="currPw" name="currPw" value="" class="form-control text">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="user.form.password.new" /></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.password.new" /></label>
 							<div class="col-lg-10">
 								 <input type="password" id="upw" name="upw" value="" class="form-control"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-2 control-label"><spring:message code="user.form.password.confirm"/></label>
+							<label class="col-lg-2 control-label"><spring:message code="user.password.confirm"/></label>
 
 				            <div class="col-lg-10">
 				                <input type="password" id="confirmUpw" name="confirmUpw" value="" class="form-control"/>
@@ -82,27 +82,27 @@ response.setDateHeader ("Expires", -1);
 				fields: {
 					currPw: {
 		                validators: {
-		                    notEmpty: { message: VARSQL.message('varsql.form.0001') }
+		                    notEmpty: { message: VARSQL.message('msg.valid.required') }
 		                }
 		            }
 					,upw : {
 		                validators: {
-		                	 notEmpty: { message: VARSQL.message('varsql.form.0001')}
-	                    	,stringLength: {min: 4, max: 500, message:  VARSQL.message('varsql.form.0002' , {len:4}) }
+		                	 notEmpty: { message: VARSQL.message('msg.valid.required')}
+	                    	,stringLength: {min: 4, max: 500, message:  VARSQL.message('msg.valid.min.size.param' , {len:4}) }
 		                    ,identical: {
 		                        field: 'confirmUpw',
-		                        message: VARSQL.message('varsql.form.0003')
+		                        message: VARSQL.message('msg.valid.password.identical')
 		                    }
 		                }
 		            }
 		            ,confirmUpw : {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.message('varsql.form.0001')
+		                        message: VARSQL.message('msg.valid.required')
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
-		                        message: VARSQL.message('varsql.form.0003')
+		                        message: VARSQL.message('msg.valid.password.identical')
 		                    }
 		                }
 		            }
@@ -129,7 +129,7 @@ response.setDateHeader ("Expires", -1);
 					}
 
 					if(resData.resultCode == 50001){
-						VARSQL.alertMessage('varsql.m.0007');
+						VARSQL.alertMessage('msg.valid.password.identical');
 						return ;
 					}else{
 						if(resData.resultCode != 200){
@@ -138,7 +138,7 @@ response.setDateHeader ("Expires", -1);
 						}
 					}
 
-					VARSQL.alertMessage('varsql.m.0008');
+					VARSQL.alertMessage('msg.password.change.success');
 
 					location.href= location.href;
 				}

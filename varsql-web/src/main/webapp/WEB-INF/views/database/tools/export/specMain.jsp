@@ -18,12 +18,12 @@
 	<div class="menu-tools-body col-xs-9 scroll-y">
 		<div class="process-step" :class="step==1?'active':''">
 			<div class="col-xs-12">
-				<div class="process-title"><spring:message code="msg.table.export.info" /></div>
+				<div class="process-title"><spring:message code="basic.information" text="기본정보" /></div>
 			</div>
 			<div class="col-xs-12">
 				<form id="firstConfigForm" name="firstConfigForm" class="form-horizontal bv-form eportalForm">
 					<div class="field-group">
-						<label class="col-xs-3 control-label"><spring:message code="file_name" /></label>
+						<label class="col-xs-3 control-label"><spring:message code="file.name" /></label>
 						<div class="col-xs-9 padding0">
 							<input class="form-control text required input-sm" name="exportName" v-model="userSetting.exportName" value="table_spec">
 						</div>
@@ -57,7 +57,7 @@
 
 				<c:if test="${schemaInfo ne ''}">
 					<div style="padding: 5px 0px 0px;">
-						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </label>
+						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="db.schema" /> : </label>
 						<select v-model="selectSchema" @change="getTableList()" style="width: calc(100% - 80px);">
 							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
 								<option value="${item}">${item}</option>
@@ -69,7 +69,7 @@
 			</div>
 			<div class="wh100-relative table-select-area" style="float: left;">
 				<div class="col-xs-12">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="db.table" /></div>
 					<div id="source" style="height: 200px;width: 100%;"></div>
 				</div>
 				
@@ -98,7 +98,7 @@
 							</div>
 						</div>
 						<div class="field-group">
-							<label class="col-xs-3 control-label padding0"><spring:message code="column_name" /></label>
+							<label class="col-xs-3 control-label padding0"><spring:message code="column.name" /></label>
 							<div class="col-xs-9">
 								<input class="form-control text required input-sm" v-model="detailItem.title" >
 							</div>
@@ -148,12 +148,12 @@ VarsqlAPP.vueServiceBean({
 			var _self = this;
 			if(_self.selectTableObj.getTargetItem().length < 1){
 				this.step=2;
-    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
+				VARSQL.alertMessage('msg.select.param', VARSQL.message('table'));
     			return ;
     		}
 
 			if(_self.selectColumnObj.getTargetItem().length < 1){
-    			VARSQL.alertMessage('<spring:message code="msg.column.select" />');
+				VARSQL.alertMessage('msg.select.param', VARSQL.message('column'));
     			return ;
     		}
 

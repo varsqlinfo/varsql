@@ -4,23 +4,28 @@
 
 <comment>label</comment>
 
+<entry key="varsql.title">Varsql</entry>
+<entry key="varsql.info">Varsql Information</entry>
+<entry key="sign.in.header">Sign in to Varsql</entry>
 
+<entry key="name">Name</entry>
 <entry key="complete">Complete</entry>
-
-
 <entry key="title">Title</entry>
 <entry key="content">Content</entry>
-<entry key="reg_user">Writer</entry>
-<entry key="reg_dt">Registration date</entry>
-<entry key="view_dt">View Date</entry>
-<entry key="upd_dt">Modified Date</entry>
-<entry key="upd_user">Modifier</entry>
+<entry key="question">Question</entry>
+<entry key="answer">Answer</entry>
+<entry key="answer.yn">Answer</entry>
+<entry key="reg_user">Registered User</entry>
+<entry key="reg_dt">Registration Date</entry>
+<entry key="view_dt">Viewing Date</entry>
+<entry key="upd_dt">Update Date</entry>
+<entry key="upd_user">Updater</entry>
 <entry key="std_day">Start Date</entry>
 <entry key="end_day">End Date</entry>
 <entry key="std_time">Start Time</entry>
 <entry key="end_time">End Time</entry>
-<entry key="file_name">File name</entry>
-<entry key="sql_file_name">Sql File name</entry>
+
+<entry key="sql.file.name">SQL File Name</entry>
 <entry key="preferences">Preferences</entry>
 <entry key="object">Object</entry>
 <entry key="export">Export</entry>
@@ -28,226 +33,359 @@
 <entry key="copy">Copy</entry>
 <entry key="reply">Reply</entry>
 <entry key="send">Send</entry>
-<entry key="desc">Desc</entry>
+<entry key="desc">Description</entry>
 <entry key="all">All</entry>
 <entry key="remarks">Remarks</entry>
 <entry key="apply">Apply</entry>
 <entry key="charset">Charset</entry>
 <entry key="export.filetype">Export Type</entry>
-<entry key="export.info">Export Info</entry>
+<entry key="export.info">Export Information</entry>
 <entry key="restore.default">Restore Defaults</entry>
 <entry key="type">Type</entry>
+<entry key="newwin.view">New Window View</entry>
 
+<entry key="ok">Ok</entry>
+<entry key="success">Success</entry>
+<entry key="fail">Fail</entry>
+<entry key="remove">Remove</entry>
+<entry key="clear">Clear</entry>
+<entry key="data">Data</entry>
+<entry key="dataview">Data View</entry>
+<entry key="count">Count</entry>
+<entry key="refresh">Refresh</entry>
+<entry key="up">Up</entry>
+<entry key="down">Down</entry>
+<entry key="more">More</entry>
+<entry key="new">New</entry>
+<entry key="add">Add</entry>
+<entry key="all.add">Add All</entry>
+<entry key="all.remove">Remove All</entry>
+<entry key="sender">Sender</entry>
+<entry key="recipient">Recipient</entry>
+<entry key="download">Download</entry>
+<entry key="password">Password</entry>
+<entry key="password.confirm">Confirm Password</entry>
+<entry key="password.reset">Reset Password</entry>
+
+<entry key="back">Back</entry>
+<entry key="prev">Previous</entry>
+<entry key="next">Next</entry>
 
 <entry key="regular.expression">Regular Expression</entry>
 <entry key="replace">Replace</entry>
-<entry key="find.word">Find</entry>
-<entry key="replace.word">Replace With</entry>
+<entry key="find.word">Find Word</entry>
+<entry key="replace.word">Replace Word</entry>
 <entry key="all.replace">Replace All</entry>
 <entry key="find">Find</entry>
 <entry key="close">Close</entry>
 <entry key="data.export">Data Export</entry>
 <entry key="data.import">Data Import</entry>
-
 <entry key="block">Block</entry>
+<entry key="release">Release</entry>
 <entry key="convert">Convert</entry>
-
 <entry key="release">Release</entry>
 <entry key="options">Options</entry>
-
 <entry key="direction">Direction</entry>
-<entry key="up">Up</entry>
-<entry key="down">Down</entry>
-
-<entry key="more">More</entry>
-
-
-<entry key="information">Info </entry>
-<entry key="basic.information">Basic Information </entry>
+<entry key="information">Information</entry>
+<entry key="basic.information">Basic Information</entry>
 <entry key="single">Single</entry>
 <entry key="multiple">Multiple</entry>
-<entry key="addflag">Additional</entry>
-<entry key="delflag">Delete </entry>
-<entry key="column">Column </entry>
-<entry key="column_name">Column name </entry>
+<entry key="addflag">Add Flag</entry>
+<entry key="delflag">Delete Flag</entry>
+<entry key="table">Table</entry>
+<entry key="column">Column</entry>
 <entry key="id">ID</entry>
 <entry key="ip">IP</entry>
 <entry key="size">Size</entry>
-<entry key="loading">Loading.</entry>
+<entry key="loading">Loading...</entry>
 <entry key="upload">Upload</entry>
-<entry key="select">select</entry>
+<entry key="uploaded.file">Uploaded File</entry>
+<entry key="select">Select</entry>
+<entry key="select.format">Select Format</entry>
 <entry key="source">Source</entry>
 <entry key="target">Target</entry>
 <entry key="result">Result</entry>
-<entry key="result.download">Download</entry>
+<entry key="result.download">Download Result</entry>
 <entry key="new.note">New Note</entry>
 <entry key="note.box">Note Box</entry>
+<entry key="contact">Contact</entry>
+<entry key="tool">Tool</entry>
+<entry key="detail">Detail</entry>
+<entry key="detail.view">Detail View</entry>
 
-<entry key="compare.result">Comparison Results</entry>
-<entry key="compare.detail">Comparison Details</entry>
-<entry key="compare.info">Comparison Info</entry>
+<entry key="compare.result">Comparison Result</entry>
+<entry key="compare.detail">Comparison Detail</entry>
+<entry key="compare.info">Comparison Information</entry>
 
-<entry key="label.db">DB</entry>
-<entry key="label.database">Database</entry>
-<entry key="label.remove">Remove</entry>
-<entry key="label.user">User</entry>
-<entry key="label.username">User Name</entry>
-<entry key="label.orgnm">organization</entry>
-<entry key="label.deptnm">Department</entry>
-<entry key="label.manager">Manager</entry>
-<entry key="label.block">Blcok</entry>
-<entry key="label.release">Release</entry>
-<entry key="label.id">Id</entry>
-<entry key="label.pw">Password</entry>
-<entry key="label.login">Login</entry>
+<entry key="db">DB</entry>
+<entry key="database">Database</entry>
+<entry key="group">Group</entry>
+<entry key="dbgroup">DB Group</entry>
 
-<entry key="label.dbgroup">DB Group</entry>
-<entry key="label.dbgroup">DB Group</entry>
+<entry key="email">Email</entry>
+<entry key="category">Category</entry>
 
-<entry key="label.first.name">First Name</entry>
-<entry key="label.last.name">Last Name</entry>
-<entry key="label.email">Email</entry>
-<entry key="label.pw_re">Re Enter Password</entry>
-<entry key="label.birthday">Birthday</entry>
-<entry key="label.sex">Sex</entry>
-<entry key="label.category">Category</entry>
-<entry key="label.file.import_export">Import and Export..</entry>
+<entry key="db.table">Table</entry>
+<entry key="db.view">View</entry>
+<entry key="db.schema">Schema</entry>
+<entry key="db.function">Function</entry>
+<entry key="db.procedure">Procedure</entry>
+<entry key="db.sequence">Sequence</entry>
 
-<entry key="label.user.preferences">Preferences</entry>
+<entry key="recv.msg">Received Message</entry>
+<entry key="send.msg">Sent Message</entry>
 
+<entry key="send.user">Sender</entry>
+<entry key="recv.user">Recipient</entry>
 
-<entry key="label.table">Table</entry>
-<entry key="label.view">View</entry>
-<entry key="label.schema">Scheam</entry>
-<entry key="label.function">Function</entry>
-<entry key="label.procedure">Procedure</entry>
+<entry key="wrap.search">Wrap Search</entry>
+<entry key="case.sensitive">Case Sensitive</entry>
 
-<entry key="label.back">Back</entry>
-<entry key="label.complete">Complete</entry>
-<entry key="label.prev">Prev</entry>
-<entry key="label.next">Next</entry>
-<entry key="label.add">Add</entry>
-<entry key="label.delete">Delete</entry>
-<entry key="label.cancel">Cancle</entry>
+<entry key="contextmenu.name">Context Menu Name</entry>
+<entry key="view.mode">View Mode</entry>
+<entry key="view.mode.editor">Editor</entry>
+<entry key="view.mode.dialog">Dialog</entry>
 
-<entry key="label.recv.msg">Received</entry>
-<entry key="label.send.msg">Send</entry>
+<entry key="btn.password.view">View Password</entry>
+<entry key="btn.pool.init">Initialize Pool</entry>
+<entry key="btn.pool.close">Close Pool</entry>
 
-<entry key="label.send.user">Sender</entry>
-<entry key="label.recv.user">Recipient</entry>
-
-<entry key="label.wrap.search">Wrap search</entry>
-<entry key="label.case.sensitive">Case Sensitive</entry>
-
-<entry key="label.contextmenu.name">Contextmenu Name</entry>
-<entry key="label.view.mode">View Mode</entry>
-<entry key="label.view.mode.editor">Editor</entry>
-<entry key="label.view.mode.dialog">Dialog</entry>
-
-
-<entry key="btn.close">Close</entry>
-<entry key="btn.password.view">Password view</entry>
-<entry key="btn.pool.init">Pool init</entry>
-<entry key="btn.pool.close">Pool close</entry>
-
-<entry key="back.page">Prev</entry>
-<entry key="main.page">Main</entry>
-
-<entry key="ko.lang">한국어</entry>
-<entry key="en.lang">English</entry>
-
-<entry key="main.screen">Main Page</entry>
-
-
-
+<entry key="back.page">Previous Page</entry>
+<entry key="main.page">Main Page</entry>
 
 <!-- button message -->
-<entry key="btn.search">Search</entry>
 <entry key="btn.compare">Compare</entry>
-<entry key="btn.save">Save</entry>
-<entry key="btn.copy">Copy</entry>
-<entry key="btn.delete">Delete</entry>
-<entry key="btn.add">Add</entry>
-<entry key="btn.new">New</entry>
-<entry key="btn.sub.add">Add child</entry>
-<entry key="btn.save.andpoolnit"><![CDATA[Save & DB pool init]]></entry>
-<entry key="btn.connnection.check">Connect test</entry>
-<entry key="btn.connnection.close">Connect close</entry>
+
+<entry key="sub.add">Add Sub</entry>
+<entry key="save.andpoolnit"><![CDATA[Save & Initialize DB Pool]]></entry>
+<entry key="btn.connnection.check">Check Connection</entry>
+<entry key="btn.connnection.close">Close Connection</entry>
 <entry key="btn.login">Login</entry>
 <entry key="btn.accept">Accept</entry>
-<entry key="btn.denial">Denial</entry>
+<entry key="btn.denial">Deny</entry>
 
 <entry key="btn.profile">Profile</entry>
-<entry key="btn.setting">Setting</entry>
-<entry key="btn.signup">Signup</entry>
+<entry key="btn.setting">Settings</entry>
+<entry key="btn.signup">Sign Up</entry>
 <entry key="btn.logout">Logout</entry>
 
 <!-- toolbar button -->
-<entry key="btn.toolbar.execute">Execute</entry>
-<entry key="btn.toolbar.newfile">New file</entry>
-<entry key="btn.toolbar.save">Save</entry>
-<entry key="btn.toolbar.allsave">Save All</entry>
+<entry key="toolbar.execute">Execute</entry>
+<entry key="toolbar.newfile">New File</entry>
+<entry key="toolbar.save">Save</entry>
+<entry key="toolbar.allsave">Save All</entry>
 
-<entry key="btn.toolbar.cut">Cut</entry>
-<entry key="btn.toolbar.copy">Copy</entry>
-<entry key="btn.toolbar.eraser">Delete</entry>
+<entry key="toolbar.cut">Cut</entry>
+<entry key="toolbar.copy">Copy</entry>
+<entry key="toolbar.eraser">Erase</entry>
 
-<entry key="btn.toolbar.undo">Undo</entry>
-<entry key="btn.toolbar.redo">Redo</entry>
-<entry key="btn.toolbar.linewrapper">Wrap Auto Line</entry>
-<entry key="btn.toolbar.convertext">Text Convert</entry>
-<entry key="btn.toolbar.format">Format </entry>
-<entry key="btn.toolbar.send">Send Message </entry>
-<entry key="btn.toolbar.parameter">Parameters </entry>
+<entry key="toolbar.undo">Undo</entry>
+<entry key="toolbar.redo">Redo</entry>
+<entry key="toolbar.linewrapper">Line Wrapper</entry>
+<entry key="toolbar.convertext">Convert Text</entry>
+<entry key="toolbar.format">Format Query</entry>
+<entry key="toolbar.send">Send Message</entry>
+<entry key="toolbar.parameter">Parameter</entry>
 
 <!-- tool msg -->
 <entry key="msg.sendmsg.title">Send Message</entry>
-<entry key="msg.sendmsg.recv.txt.holder">To </entry>
-
-<!-- sql result button -->
-<entry key="btn.resultarea.tab.grid">Result</entry>
-<entry key="btn.resultarea.tab.column">Column</entry>
-<entry key="btn.resultarea.tab.log">Log</entry>
-
-<!-- 용어 사전 button -->
-<entry key="btn.glossary.search">Search</entry>
-<entry key="btn.glossary.convert">Conversion</entry>
-<entry key="btn.glossary.remove">Remove</entry>
+<entry key="msg.sendmsg.recv.txt.holder">Recipient</entry>
 
 <!-- compare page -->
-<entry key="same.count">Same Coune</entry>
+<entry key="same.count">Same Count</entry>
 <entry key="different.count">Different Count</entry>
 <entry key="empty.count">Empty Count</entry>
 
-<entry key="btn.ok">Ok</entry>
-<entry key="btn.cancel">Cancel</entry>
-<entry key="btn.close">Close</entry>
-<entry key="btn.copy">Copy</entry>
-<entry key="btn.save">Save</entry>
-<entry key="copy">Copy</entry>
-<entry key="success">Success</entry>
-<entry key="fail">Fail</entry>
-<entry key="remove">remove</entry>
-<entry key="data">Data</entry>
-<entry key="dataview">Data View</entry>
-<entry key="count">Data Count</entry>
-<entry key="export">Export</entry>
-<entry key="refresh">Refresh</entry>
-<entry key="data.export">Export Data</entry>
-<entry key="item.select.message">{}을(를) 선택하세요.</entry>
-<entry key="up">up</entry>
-<entry key="down">down</entry>
-<entry key="add">add</entry>
-<entry key="all.add">All add</entry>
-<entry key="all.remove">All remove</entry>
+<entry key="btn.confirm">Confirm</entry>
+<entry key="attach.file">Attach File</entry>
+<entry key="comment">Comment</entry>
+<entry key="save">Save</entry>
+<entry key="delete">Delete</entry>
+<entry key="modify">Modify</entry>
+<entry key="list">List</entry>
+<entry key="list.view">View List</entry>
+<entry key="delete.warning.msg">Deleted Message</entry>
+<entry key="re.comment">Reply Comment</entry>
+<entry key="input.placeholder">Input...</entry>
+<entry key="search.word">Search Word</entry>
 <entry key="search">Search</entry>
-<entry key="search.input">Search word</entry>
-<entry key="search.message">{searchType} Search</entry>
-<entry key="empty.data">No Data</entry>
+<entry key="search.placeholder">Search...</entry>
+<entry key="writing">Writing</entry>
+<entry key="write">Write</entry>
+<entry key="registration">Registration</entry>
+<entry key="notice">Notice</entry>
+<entry key="cancel">Cancel</entry>
+<entry key="language">Language</entry>
+<entry key="language.select">Select Language</entry>
+<entry key="login.page.view">Move to Login Page</entry>
+<entry key="lang.ko">한국어</entry>
+<entry key="lang.en">English</entry>
+
+
+<entry key="screen">Screen</entry>
 <entry key="user">User</entry>
-<entry key="sender">Sender</entry>
-<entry key="recipient">Recipient</entry>
-<entry key="complete">Complete</entry>
-<entry key="download">Download</entry>
+<entry key="manager">Manager</entry>
+<entry key="administrator">Administrator</entry>
+
+<!-- 사용자 -->
+<entry key="user.orgnm">Organization</entry>
+<entry key="user.deptnm">Department</entry>
+<entry key="user.block">Block</entry>
+<entry key="user.release">Release</entry>
+<entry key="user.id">ID</entry>
+<entry key="user.password">Password</entry>
+<entry key="user.password.new">New Password</entry>
+<entry key="user.password.current">Current Password</entry>
+<entry key="user.password.confirm">Confirm Password</entry>
+<entry key="user.name">Username</entry>
+<entry key="user.birthday">Birthday</entry>
+<entry key="user.sex">Gender</entry>
+<entry key="user.preferences">Preferences</entry>
+<entry key="first.name">First Name</entry>
+<entry key="last.name">Last Name</entry>
+
+<entry key="user.join">Join</entry>
+<entry key="join">Join</entry>
+
+<entry key="validation.check">Validation Check</entry>
+<entry key="driverclass.check">Driver Check</entry>
+
+<entry key="accept.yn">Acceptance</entry>
+<entry key="data.type">Data Type</entry>
+<entry key="length">Length</entry>
+
+<entry key="glossary">Glossary</entry>
+<entry key="glossary.en">English Name</entry>
+<entry key="glossary.abbr">Abbreviation</entry>
+
+<entry key="command">Command</entry>
+<entry key="query">Query</entry>
+<entry key="delay.time">Delay Time</entry>
+
+<!-- setup -->
+<entry key="admim.account.settings">Administrator Account Settings</entry>
+<entry key="admim.default.name">Administrator</entry>
+<entry key="app.settings">App Settings</entry>
+
+<!-- file -->
+<entry key="file.new">New File</entry>
+<entry key="file.name">File Name</entry>
+<entry key="file.import_export">Import and Export...</entry>
+<entry key="file.retention.period">File Retention Period</entry>
+<entry key="file.export">Export File</entry>
+<entry key="file.select">Select File</entry>
+<entry key="file.add">Add File</entry>
+<entry key="file.upload">Upload</entry>
+<entry key="file.remove">Remove All</entry>
+
+<entry key="step.prev">Previous</entry>
+<entry key="step.next">Next</entry>
+<entry key="step.complete">Complete</entry>
+<entry key="step.close">Close</entry>
+
+<entry key="error.message">Error Message</entry>
+<entry key="error.type">Error Type</entry>
+<entry key="error.cont">Error Content</entry>
+<entry key="error.server">Host</entry>
+
+<entry key="user.list">User List</entry>
+<entry key="manager.list">Manager List</entry>
+<entry key="administrator.list">Administrator List</entry>
+
+<entry key="screen.user">User</entry>
+<entry key="screen.manager">App Manager</entry>
+<entry key="screen.admin">Admin Console</entry>
+<entry key="screen.login">Login Screen</entry>
+<entry key="screen.main">Main</entry>
+
+<entry key="group.name">Group Name</entry>
+<entry key="group.mapping">Group Mapping</entry>
+<entry key="group.usermapping">Group User Mapping</entry>
+
+
+<entry key="db.type">DB Type</entry>
+<entry key="provider.name">Name</entry>
+<entry key="driver.class">Driver Class</entry>
+<entry key="path.type">Path Type</entry>
+<entry key="validation.query">Validation Query</entry>
+<entry key="path">Path</entry>
+<entry key="direct.input">Direct Input</entry>
+
+<entry key="table.name">Table Name</entry>
+<entry key="column.name">Column Name</entry>
+<entry key="column.comment">Comment</entry>
+<entry key="nullable">Nullable</entry>
+<entry key="constraints.key">Key</entry>
+<entry key="default.value">Default Value</entry>
+<entry key="parameter.name">Parameter Name</entry>
+<entry key="parameter.inout">IN/OUT</entry>
+
+<!-- db -->
+<entry key="db.info">Database Info</entry>
+<entry key="db.vname">Connection Name</entry>
+<entry key="db.vurl">URL</entry>
+<entry key="db.serverip">Server IP</entry>
+<entry key="db.port">Port</entry>
+<entry key="db.urldirectmsg">Direct URL Input</entry>
+<entry key="db.databasename">DB Name(SID)</entry>
+<entry key="db.vdriver">Driver</entry>
+<entry key="db.useyn">Use</entry>
+<entry key="db.schemaviewyn">View All Schemas</entry>
+<entry key="db.vid">ID</entry>
+<entry key="db.vpw">Password</entry>
+<entry key="db.enableConnectionPool">Enable DB Metadata Pool</entry>
+<entry key="db.lazyloadyn">Async Load</entry>
+<entry key="db.basetableyn">Use Base Table</entry>
+<entry key="db.vconnopt">Connection Option</entry>
+<entry key="db.vpoolopt">Pool Option</entry>
+<entry key="db.max_select_count">Limit Select Row</entry>
+<entry key="db.test_while_idle">Test Idle Connection</entry>
+<entry key="db.maxactive">Max Active</entry>
+<entry key="db.minidle">Min Idle</entry>
+<entry key="db.timeout">Timeout</entry>
+<entry key="db.exportcount">Export Count</entry>
+<entry key="db.usecolumnlabel">Use ResultSet Column Label</entry>
+
+<!-- jdbc -->
+<entry key="jdbc.provider.shortcuts">JDBC Provider Settings Shortcut</entry>
+<entry key="jdbc.provider.msg">Please set up JDBC Provider first.</entry>
+<entry key="jdbc.driver">JDBC Driver</entry>
+
+<!-- data backup -->
+<entry key="cron.expression">Cron Expression</entry>
+<entry key="connection.db">Connected DB</entry>
+
+<entry key="text.convert">Text conversion</entry>
+<entry key="template">Template</entry>
+<entry key="split.char">Split character</entry>
+<entry key="view">View</entry>
+<entry key="content.view">View Content</entry>
+<entry key="compressed">Compression</entry>
+<entry key="compressed.size">Compression Size</entry>
+
+<entry key="date">Date</entry>
+<entry key="period">Period</entry>
+<entry key="schedule">Schedule</entry>
+<entry key="calendar">Calendar</entry>
+
+<entry key="week">Week</entry>
+<entry key="month">Month</entry>
+<entry key="quarter">Quarter</entry>
+<entry key="year">Year</entry>
+<entry key="select.delete">Select Delete</entry>
+<entry key="select.all">Select All</entry>
+<entry key="log">Log</entry>
+<entry key="component">Component</entry>
+<entry key="init">Initialize</entry>
+<entry key="layout">Layout</entry>
+<entry key="init.layout">Initialize Layout</entry>
+<entry key="board">Board</entry>
+<entry key="key">Key</entry>
+<entry key="value">Value</entry>
+<entry key="asc">Ascending</entry>
+<entry key="desc">Descending</entry>
+<entry key="asc.desc">Ascending/Descending</entry>
+<entry key="sort.order">Sort Order</entry>
+<entry key="sort.type">Sort Type</entry>
 
 </properties>

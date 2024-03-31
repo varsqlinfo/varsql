@@ -23,7 +23,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -48,10 +48,10 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manager.glossary.word" /></th>
-									<th class="text-center"><spring:message	code="manager.glossary.word_en" /></th>
-									<th class="text-center"><spring:message	code="manager.glossary.word_abbr" /></th>
-									<th class="text-center"><spring:message	code="manager.glossary.desc" /></th>
+									<th class="text-center"><spring:message	code="glossary" /></th>
+									<th class="text-center"><spring:message	code="glossary.en" /></th>
+									<th class="text-center"><spring:message	code="glossary.abbr" /></th>
+									<th class="text-center"><spring:message	code="desc" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
 							</thead>
@@ -87,33 +87,33 @@
 					<div class="form-group">
 						<div class="col-sm-12">
 							<div class="pull-right">
-								<button type="button" class="btn btn-default" @click="fieldClear()"><spring:message code="btn.add"/></button>
-								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
-								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+								<button type="button" class="btn btn-default" @click="fieldClear()"><spring:message code="new"/></button>
+								<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="save"/></button>
+								<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')"  @click="deleteInfo()"><spring:message code="delete"/></button>
 							</div>
 						</div>
 					</div>
 					<div id="warningMsgDiv"></div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="glossary" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.word">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_en" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="glossary.en" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordEn">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_abbr" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="glossary.abbr" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordAbbr">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_type" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="data.type" /></label>
 						<div class="col-sm-8">
 							<select	v-model="detailItem.wordType" class="form-control text required">
 								<option v-for="(item,index) in wordTypeArr" :value="item.type">{{item.name}}</option>
@@ -121,14 +121,14 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.word_length" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="length" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordLength">
 							<div>char,string -> 정수값 , number, float -> (0,1)</div>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label"><spring:message code="manager.glossary.desc" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="desc" /></label>
 						<div class="col-sm-8">
 							<textarea class="form-control text" rows="3" v-model="detailItem.wordDesc" style="width:100%;"></textarea>
 						</div>

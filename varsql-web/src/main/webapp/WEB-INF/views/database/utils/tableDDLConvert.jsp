@@ -9,7 +9,7 @@
 
 				<c:if test="${schemaInfo ne ''}">
 					<div style="padding: 5px 0px 0px;">
-						<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </span>
+						<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="db.schema" /> : </span>
 						<select v-model="selectSchema" @change="getTableList()" style="width: calc(100% - 100px);">
 							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
 								<option value="${item}">${item}</option>
@@ -19,7 +19,7 @@
 				</c:if>
 				
 				<div style="padding: 5px 0px 0px;">
-					<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="label.db" /> : </span>
+					<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="database" /> : </span>
 					<select v-model="selectConvertDB" style="width: calc(100% - 100px);">
 						<c:forEach var="item" items="${dbTypeList}" begin="0" varStatus="status">
 							<c:if test="${item.dbVenderName ne 'other'}">
@@ -33,7 +33,7 @@
 			</div>
 			<div class="wh100-relative table-select-area" style="float: left;">
 				<div class="col-xs-12">
-					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="label.table" /></div>
+					<div class="top-select mbottom-10 fb tl mRight-20"><spring:message code="db.table" /></div>
 					<div id="source" style="height: 200px;width: 100%;"></div>
 				</div>
 			</div>
@@ -88,12 +88,12 @@ VarsqlAPP.vueServiceBean({
 		,convert : function (){
 			var _self = this;
 			if(_self.selectTableObj.getTargetItem().length < 1){
-    			VARSQL.alertMessage('<spring:message code="msg.table.select" />');
+				VARSQL.alertMessage('msg.select.param', VARSQL.message('table'));
     			return ;
     		}
 			
 			if(VARSQL.isBlank(_self.selectConvertDB)){
-    			VARSQL.alertMessage('<spring:message code="db.select" />');
+				VARSQL.alertMessage('msg.select.param', VARSQL.message('db'));
     			return ;
     		}
 

@@ -44,7 +44,7 @@ $(document).ready(function(){
 <div id="pluginSchemaObject" class="varsql-plugin-wrapper">
 	<div class="db-schema">
 		<a href="javascript:;" title="View Default DB" class="default_db_view_btn"><img src="${pageContextPath}/webstatic/imgs/Database.gif" style="position: relative;top: 3px;"/></a>
-		<input type="text" id="varsqlSschemaName" value="${fn:length(screenConfigInfo.schemaList) == 0?screenConfigInfo.schemaList[0]: screenConfigInfo.schema}" class="schema-name-text" disabled="">
+		<input type="text" id="varsqlSchemaName" value="${fn:length(screenConfigInfo.schemaList) == 0?screenConfigInfo.schemaList[0]: screenConfigInfo.schema}" class="schema-name-text" disabled="">
 
 		<div class="schema-view-btn pull-right varsql-widget-layer">
 			<c:if test="${fn:length(screenConfigInfo.schemaList) > 1}">
@@ -76,78 +76,78 @@ $(document).ready(function(){
 	<div class="sql-editor-toolbar">
 		<ul>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans varsql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.execute" /> Ctrl+Enter">
+				<button type="button" class="sql-edit-btn varsql-btn-trans varsql-btn-info sql_toolbar_execute_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.execute" /> Ctrl+Enter">
 					<i class="fa fa-play"></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_new_file" title="<spring:message code="btn.toolbar.newfile" /> Ctrl+Alt+N">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_new_file" title="<spring:message code="toolbar.newfile" /> Ctrl+Alt+N">
 					<i class="fa fa-file-o"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.save" /> Ctrl+S">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_save_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.save" /> Ctrl+S">
 					<i class="fa fa-save"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_allsave_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.allsave" /> Ctrl+Shift+S">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_allsave_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.allsave" /> Ctrl+Shift+S">
 					<i class="fa fa-save-all"></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.cut" /> Ctrl+X">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.cut" /> Ctrl+X">
 					<i class="fa fa-scissors"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.copy" /> Ctrl+C">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.copy" /> Ctrl+C">
 					<i class="fa fa-copy"></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.eraser" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.eraser" />">
 					<i class="fa fa-eraser"></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.undo" /> Ctrl+Z">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.undo" /> Ctrl+Z">
 					<i class="fa fa-undo" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_redo_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.redo" /> Ctrl+Y">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_redo_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.redo" /> Ctrl+Y">
 					<i class="fa fa-repeat" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.linewrapper" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.linewrapper" />">
 					<i class="fa fa-dedent" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_convertext_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.convertext" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_convertext_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.convertext" />">
 					<i class="fa fa-retweet" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="btn.toolbar.format" /> Ctrl+Shift+F">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.format" /> Ctrl+Shift+F">
 					<i class="fa fa-align-justify" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_send_btn" title="<spring:message code="btn.toolbar.send" />">
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_send_btn" title="<spring:message code="toolbar.send" />">
 					<i class="fa fa-paper-plane-o"></i>
 				</button>
 			</li>
 		</ul>
 		<div class="float-right">
 			<button id="sql_parameter_toggle_btn" data-sql-editor-menu="y" class="sql-edit-btn sql-parameter-btn disable">
-				<span class="fa fa-plus-square-o"></span><spring:message code="btn.toolbar.parameter"/>
+				<span class="fa fa-plus-square-o"></span><spring:message code="toolbar.parameter"/>
 			</button>
 		</div>
 	</div>
@@ -186,7 +186,7 @@ $(document).ready(function(){
 			<div class="sql-editor-item active" data-editor-id="empty">
 	 			<p class="msg-text">
 					<a href="javascript:;" class="sql_new_file">
-						<button type="button" class=""><span class="fa fa-file-o"></span></button><spring:message code="msg.editor.newfile" />
+						<button type="button" class=""><span class="fa fa-file-o"></span></button><spring:message code="file.new" />
 					</a>
 					<br><spring:message code="msg.editor.info" />
 				</p>
@@ -217,12 +217,12 @@ $(document).ready(function(){
 	<div id="pluginGlossary" class="varsql-plugin-wrapper">
 		<div class="glossary-search-area-wrapper">
 			<div class="glossary-search-area">
-				<input type="text" id="glossarySearchTxt" class="input-text" placeholder="Search...">
-				<button type="button" class="varsql-btn-default glossary-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
+				<input type="text" id="glossarySearchTxt" class="input-text" placeholder="<spring:message code="search.placeholder" />">
+				<button type="button" class="varsql-btn-default glossary-search-btn" title="<spring:message code="search"/>"><span class="fa fa-search"></span></button>
 			</div>
 			<div class="glossary-convert-area">
-				<button type="button" class="varsql-btn-default glossary-convert-camelcase" title="<spring:message code="btn.glossary.convert"/>"><span class="fa fa-retweet"></span></button>
-				<button type="button" class="varsql-btn-default glossary-convert-clear" title="<spring:message code="btn.glossary.remove"/>"><span class="fa fa-trash-o"></span></button>
+				<button type="button" class="varsql-btn-default glossary-convert-camelcase" title="<spring:message code="convert"/>"><span class="fa fa-retweet"></span></button>
+				<button type="button" class="varsql-btn-default glossary-convert-clear" title="<spring:message code="clear"/>"><span class="fa fa-trash-o"></span></button>
 				<input type="text" id="glossaryConvertTxt" class="input-text">
 			</div>
 		</div>
@@ -238,8 +238,8 @@ $(document).ready(function(){
 	<div id="pluginHistory" class="varsql-plugin-wrapper">
 		<div class="history-search-area-wrapper">
 			<div class="history-search-area">
-				<input type="text" id="historySearchTxt" class="input-text" placeholder="Search..." autocomplete="off">
-				<button type="button" class="varsql-btn-default history-search-btn" title="<spring:message code="btn.search"/>"><span class="fa fa-search"></span></button>
+				<input type="text" id="historySearchTxt" class="input-text" placeholder="<spring:message code="search.placeholder" />" autocomplete="off">
+				<button type="button" class="varsql-btn-default history-search-btn" title="<spring:message code="search"/>"><span class="fa fa-search"></span></button>
 			</div>
 		</div>
 		<div class="history-result-area">

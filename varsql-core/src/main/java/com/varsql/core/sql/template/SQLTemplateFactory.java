@@ -90,7 +90,7 @@ public class SQLTemplateFactory {
 	private void initConfig() throws IOException {
 
 		logger.debug("default sql template file path : {} ", TEMPLATE_PACKAGE);
-		Resource[] resources = ResourceUtils.getPackageResources(TEMPLATE_PACKAGE);
+		Resource[] resources = ResourceUtils.getResources(TEMPLATE_PACKAGE);
 
 		for (Resource resource: resources){
 

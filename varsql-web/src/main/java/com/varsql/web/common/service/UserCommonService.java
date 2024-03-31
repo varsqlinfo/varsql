@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.auth.User;
+import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.common.util.VarsqlDateUtils;
@@ -140,6 +142,27 @@ public class UserCommonService {
 		entity = userInfoRepository.save(entity);
 		
 		emailTokenEntityRepository.deleteTokenInfo(tokenInfo.getToken(), tokenInfo.getTokenType());
+		
+		return VarsqlUtils.getResponseResultItemOne("success");
+	}
+	
+	/**
+	 * 사용자 언어 변경.
+	 * 
+	 * @param userLocale
+	 * @param userInfo
+	 * @return
+	 */
+	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
+	public ResponseResult changeUserLocale(String lang, User userInfo) {
+		
+		UserEntity entity= userInfoRepository.findByViewid(userInfo.getViewid());
+		
+		System.out.println("########### lang : "+ lang);
+		System.out.println("entity.getLang() : " + entity.getLang());
+		
+		entity.setLang(LocaleConstants.getLocaleConstantsVal(lang).getLocale());
+		entity = userInfoRepository.save(entity);
 		
 		return VarsqlUtils.getResponseResultItemOne("success");
 	}

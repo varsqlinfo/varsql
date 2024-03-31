@@ -41,7 +41,7 @@ public class DDLConversionFactory {
 	private void initConfig() throws IOException {
 
 		logger.debug("default conversion file path : {} ", TEMPLATE_PACKAGE);
-		Resource[] resources = ResourceUtils.getPackageResources(TEMPLATE_PACKAGE);
+		Resource[] resources = ResourceUtils.getResources(TEMPLATE_PACKAGE);
 
 		for (Resource resource: resources){
 			logger.debug("conversion resource : {} ", resource);

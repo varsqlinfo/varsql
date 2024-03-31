@@ -1,4 +1,6 @@
 package com.varsql.web.app.database.service;
+
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,15 +34,14 @@ import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.HttpUtils;
 
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
-* @NAME		: ExportServiceImpl.java
-* @DESC		: export service
+* @NAME		: FileImportExportServiceImpl.java
+* @DESC		: file import export service
 * @AUTHOR	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -70,7 +71,7 @@ public class FileImportExportServiceImpl{
 		String conuid  = fii.getConuid();
 		String importType = fii.getImportType();
 
-		List<FileInfoEntity> importFileList = fileInfoEntityRepository.findAllById(Arrays.asList(CommUtils.getFileIds(fii.getFileIds())));
+		List<FileInfoEntity> importFileList = fileInfoEntityRepository.findAllById(Arrays.asList(FileUtils.getFileIds(fii.getFileIds())));
 
 		ResponseResult result = new ResponseResult();
 		List<FileImportResult> resultInfo = new ArrayList<>();

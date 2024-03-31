@@ -19,12 +19,12 @@
 	<div class="menu-tools-body process-step-area col-xs-9 scroll-y">
 		<div class="process-step" :class="step==1?'active':''">
 			<div class="col-xs-12">
-				<div class="process-title"><spring:message code="msg.export.ddl.info" /></div>
+				<div class="process-title"><spring:message code="export.info" /></div>
 			</div>
 			<div class="col-xs-12">
 				<form id="firstConfigForm" name="firstConfigForm" class="form-horizontal bv-form eportalForm">
 					<div class="field-group">
-						<label class="col-xs-3"><spring:message code="file_name" /></label>
+						<label class="col-xs-3"><spring:message code="file.name" /></label>
 						<div class="col-xs-9 padding0">
 							<input class="form-control text required input-sm" name="export_name" v-model="downloadConfig.exportName">
 						</div>
@@ -56,7 +56,7 @@
 				
 				<c:if test="${schemaInfo ne ''}">
 					<div style="padding: 5px 0px 0px;">
-						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </label>
+						<label class="control-label" style="font-weight: bold;margin-right:5px;"><spring:message code="db.schema" /> : </label>
 						<select v-model="selectSchema" @change="loadObjectInfo()" style="width: calc(100% - 80px);">
 							<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
 								<option value="${item}">${item}</option>
@@ -136,7 +136,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			if(VARSQL.getLength(_self.selectObjectItems) < 1){
-				VARSQL.toastMessage('varsql.0006');
+				VARSQL.toastMessage('msg.item.select');
 				this.selectStep(2);
 				return false;
 			}

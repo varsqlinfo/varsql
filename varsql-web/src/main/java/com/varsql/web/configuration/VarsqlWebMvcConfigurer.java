@@ -94,7 +94,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     @Bean(name = ResourceConfigConstants.APP_MESSAGE_SOURCE)
     public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {
     	AppResourceMessageBundleSource messageSource = new AppResourceMessageBundleSource();
-        messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label",  "classpath:nl/client/scriptMessages");
+        messageSource.setBasenames("classpath:nl/messages", "classpath:nl/label/label", "classpath:nl/menu/menu" );
         messageSource.setDefaultEncoding(VarsqlConstants.CHAR_SET);
 
         if(VarsqlUtils.isRuntimeLocal()) {

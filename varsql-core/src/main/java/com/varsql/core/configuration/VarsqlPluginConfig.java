@@ -26,7 +26,7 @@ public class VarsqlPluginConfig extends AbstractXmlLoad{
 
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 	
-	private final String PLUGIN_CONFIG_FILE = "config/varsql-plugin-config.xml";
+	private final String PLUGIN_CONFIG_FILE = "config/plugin-config.xml";
 
 	private DataMap<String,Object> CONFIG_INFO = new DataMap<String,Object>();
 	private Object lock = new Object();

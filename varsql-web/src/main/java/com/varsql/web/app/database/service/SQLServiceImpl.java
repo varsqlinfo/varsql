@@ -1,6 +1,5 @@
 package com.varsql.web.app.database.service;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -509,6 +508,10 @@ public class SQLServiceImpl{
 		String exportCharset = VarsqlConstants.CHAR_SET;
 		String downloadName = StringUtils.isBlank(sqlGridDownloadInfo.getFileName())? "varsql-select-data" : sqlGridDownloadInfo.getFileName();
 
+		if(StringUtils.isBlank(sqlGridDownloadInfo.getGridData()) && StringUtils.isBlank(sqlGridDownloadInfo.getHeaderInfo())) {
+			throw new DataDownloadException("grid data null : "+ sqlGridDownloadInfo.toString());
+		}
+		
 		AbstractWriter writer = null;
 		JsonParser parser =null;
 
@@ -596,8 +599,11 @@ public class SQLServiceImpl{
 
 			if(outstream !=null) outstream.close();
 		}catch(Exception e) {
+			
 			logger.error(" param {} ", sqlGridDownloadInfo);
 			logger.error(" gridDownload {}", e.getMessage(), e);
+			
+			throw new DataDownloadException(e.getMessage());
 		}finally {
 			IOUtils.close(writer);
 			if(parser!=null)parser.close();

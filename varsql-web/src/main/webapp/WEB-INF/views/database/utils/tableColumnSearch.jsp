@@ -6,7 +6,7 @@
 
 		<c:if test="${schemaInfo ne ''}">
 			<div style="padding: 5px 0px 0px;">
-				<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="label.schema" /> : </span>
+				<span class="control-label" style="width:100px;font-weight: bold;margin-right:5px;"><spring:message code="db.schema" /> : </span>
 				<select v-model="selectSchema" @change="loadColumns()" style="width: calc(100% - 100px);">
 					<c:forEach var="item" items="${schemaList}" begin="0" varStatus="status">
 						<option value="${item}">${item}</option>
@@ -42,12 +42,12 @@ VarsqlAPP.vueServiceBean({
 					lineNumber : {enabled : true, width : 30, align: 'right'}
 				}
 				,tColItem : [
-					{ label: 'Column', key: 'name',width:80 },
-					{ label: 'Table', key: 'tableName' , width:80},
-					{ label: 'DataType', key: 'typeAndLength',width:120},
-					{ label: 'Nullable', key: 'nullable',width:20},
-					{ label: 'Key', key: 'constraints',width:20},
-					{ label: 'Desc', key: 'comment',width:45}]
+					{ label: VARSQL.message('column'), key: 'name',width:80 },
+					{ label: VARSQL.message('table'), key: 'tableName' , width:80},
+					{ label: VARSQL.message('data.type'), key: 'typeAndLength',width:120},
+					{ label: VARSQL.message('nullable'), key: 'nullable',width:20},
+					{ label: VARSQL.message('constraints.key'), key: 'constraints',width:20},
+					{ label: VARSQL.message('desc'), key: 'comment',width:45}]
 				,tbodyItem : []
 				,toolbar:{
 					enabled : true

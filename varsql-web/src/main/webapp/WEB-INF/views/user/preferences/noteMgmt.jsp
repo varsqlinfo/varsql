@@ -13,10 +13,10 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<label>
-					<input type="radio" value="recv" v-model="message_type" @change="search()"><spring:message code="label.recv.msg" text="받은메시지" />
+					<input type="radio" value="recv" v-model="message_type" @change="search()"><spring:message code="recv.msg" text="받은메시지" />
 				</label>
 				<label>
-					<input type="radio" value="send" v-model="message_type" @change="search()"><spring:message code="label.send.msg" text="보낸메시지"/>
+					<input type="radio" value="send" v-model="message_type" @change="search()"><spring:message code="send.msg" text="보낸메시지"/>
 				</label>
 			</div>
 			<!-- /.panel-heading -->
@@ -30,7 +30,7 @@
 				<div class="row search-area">
 					<div class="col-sm-6">
 						<label>
-							<button type="button" class="btn btn-sm btn-primary" @click="deleteMsg()"><spring:message code="label.delete" /></button>
+							<button type="button" class="btn btn-sm btn-primary" @click="deleteMsg()"><spring:message code="delete" /></button>
 						</label>
 					</div>
 					<div class="col-sm-6">
@@ -42,7 +42,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal"	class=" form-control">
+								<input type="text" v-model="searchVal" class=" form-control" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -65,10 +65,10 @@
 										<!-- <div class="text-center"><input type="checkbox" @click="allCheck(this)"></div> -->
 									</th>
 									<th style="width: 195px;">
-										<spring:message	code="user.edit.msgtitle" />
+										<spring:message	code="title" />
 									</th>
 									<th style="width: 150px;">
-										<spring:message	code="user.edit.send_id" />
+										<spring:message	code="send.user" />
 									</th>
 									<th style="width: 150px;">
 										<spring:message	code="reg_dt" />
@@ -101,7 +101,7 @@
 										<!-- <div class="text-center"><input type="checkbox" @click="allCheck(this)"></div> -->
 									</th>
 									<th style="width: 195px;">
-										<spring:message	code="user.edit.msgtitle" />
+										<spring:message	code="title" />
 									</th>
 									<th style="width: 150px;">
 										<spring:message	code="reg_dt" />
@@ -146,7 +146,7 @@
 					</div>
 
 					<div v-if="message_type=='send'">
-					 	<div><spring:message code="label.recv.user" text="받는사람"/></div>
+					 	<div><spring:message code="recv.user" text="받는사람"/></div>
 						<div class="form-group">
 							<div class="col-sm-12">
 								<div style="height:100px;overflow:auto;border:1px solid #ddd;">
@@ -227,11 +227,11 @@ VarsqlAPP.vueServiceBean( {
 			var selectItem = _self.selectItem;
 
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQL.alertMessage('varsql.0006');
+				VARSQL.alertMessage('msg.item.select');
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 
@@ -275,7 +275,7 @@ VarsqlAPP.vueServiceBean( {
 			    url:{type:VARSQL.uri.user, url:'/resendNote'}
 			    ,data:params
 			    ,success:function (resData){
-			    	VARSQL.toastMessage('varsql.0002');
+			    	VARSQL.toastMessage('msg.save.success');
 
 			    	_this.viewItem(_this.detailItem)
 				}

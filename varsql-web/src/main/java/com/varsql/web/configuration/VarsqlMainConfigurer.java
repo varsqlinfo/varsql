@@ -30,6 +30,8 @@ import com.varsql.core.common.constants.VarsqlConstants;
 
 *-----------------------------------------------------------------------------
  */
+
+
 @Import(value = {
 	DBConfigurer.class
 	,VarsqlTilesConfigurer.class
@@ -41,28 +43,6 @@ import com.varsql.core.common.constants.VarsqlConstants;
 public class VarsqlMainConfigurer {
 
 	private final Logger LOG = LoggerFactory.getLogger(VarsqlMainConfigurer.class);
-
-    @Autowired
-    private Environment env;
-
-    /**
-     * Application custom initialization code.
-     * <p/>
-     * Spring profiles can be configured with a system property
-     * -Dspring.profiles.active=javaee
-     * <p/>
-     */
-    @PostConstruct
-    public void initApp() {
-        LOG.debug("Looking for Spring profiles...");
-        if (env.getActiveProfiles().length == 0) {
-            LOG.info("No Spring profile configured, running with default configuration.");
-        } else {
-            for (String profile : env.getActiveProfiles()) {
-                LOG.info("Detected Spring profile: {}", profile);
-            }
-        }
-    }
 
     @Bean()
     public StringHttpMessageConverter converter() {

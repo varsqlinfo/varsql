@@ -31,6 +31,7 @@ import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.HttpUtils;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -64,13 +65,23 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			final Authentication authentication) throws IOException, ServletException {
 
 		User userInfo = SecurityUtil.loginInfo();
-		String targetUrl = userRedirectTargetUrl(request ,response, userInfo, authentication);
+		String targetUrl = userRedirectTargetUrl(request, response, userInfo, authentication);
 
 		if (response.isCommitted()) {
 			logger.debug("Response has already been committed. Unable to redirect to {} ", targetUrl);
 			return;
 		}
+		
+		String lang = request.getParameter("lang");
 
+		if(!StringUtils.isBlank(lang)){
+			Locale userLocale= LocaleConstants.parseLocaleString(lang);
+			if( userLocale != null && !userLocale.equals(userInfo.getUserLocale())) {
+				userCommonService.changeUserLocale(lang, userInfo);
+				userInfo.setUserLocale(userLocale);
+			}
+		}
+		
 		securityLogService.addLog(userInfo, userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
 		if(userInfo.isLoginRememberMe()) {
@@ -128,7 +139,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		}
 	}
 
-	private String userRedirectTargetUrl(HttpServletRequest request, HttpServletResponse response,User userInfo , final Authentication authentication) {
+	private String userRedirectTargetUrl(HttpServletRequest request, HttpServletResponse response, User userInfo, final Authentication authentication) {
 
 		AuthorityType topAuthority = userInfo.getTopAuthority();
 
@@ -136,14 +147,6 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		for(AuthorityType auth : AuthorityTypeImpl.values()){
 			if(!AuthorityTypeImpl.GUEST.equals(auth) &&  topAuthority.getPriority() >=auth.getPriority()){
 				userScreen.add(auth);
-			}
-		}
-		String lang = request.getParameter("lang");
-
-		if(lang !=null && !"".equals(lang)){
-			Locale userLacle= LocaleConstants.parseLocaleString(lang);
-			if( userLacle != null) {
-				userInfo.setUserLocale(userLacle);
 			}
 		}
 

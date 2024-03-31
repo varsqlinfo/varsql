@@ -24,7 +24,7 @@ function fnRefresh(){
 				<td style="text-align: center;">
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div>
-							<spring:message code="error.message404" /><br/>
+							<spring:message code="error.404" /><br/>
 						</div>
 						<div>&nbsp;</div>
 					</div>

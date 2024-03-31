@@ -20,7 +20,7 @@
 		                <ul class="top-setting-menu dropdown-menu">
 		                	<%@ include file="/WEB-INF/include/screen.jsp"%>
 		                    <li>
-		                        <a href="<c:url value="/user/preferences" />"><i class="fa fa-fw fa-user"></i> <spring:message code="label.user.preferences"/></a>
+		                        <a href="<c:url value="/user/preferences" />"><i class="fa fa-fw fa-user"></i> <spring:message code="user.preferences"/></a>
 		                    </li>
 		                    <li class="divider"></li>
 		                    <li>

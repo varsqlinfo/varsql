@@ -14,35 +14,30 @@
 			<div class="panel-heading">
 				<div class="row" style="margin-bottom: -10px;">
 					<div class="form-horizontal">
-						<div class="control-group row" style="margin-bottom: 8px;">
-						 	<div class="col-xs-2">
-								<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="form-control ">
-									<option value="">선택</option>
+						<div class="control-group row " style="margin-bottom: 8px;">
+						 	<div class="pull-right">
+						 		<span style="margin-right: 5px;"><spring:message code="db" /></span>
+								<select id="dbinfolist" v-model="vconnid" @change="dbStatsInfo()" class="input-sm">
+									<option value=""><spring:message code="select" /></option>
 									<c:forEach items="${dbList}" var="tmpInfo" varStatus="status">
 										<option value="${tmpInfo.vconnid}">${tmpInfo.vname}</option>
 									</c:forEach>
 								</select>
-							</div>
-							<div class="col-xs-10">
-							 	<div class="input-group input-daterange">
-						            <span class="input-group-addon" style="padding:0px 6px 0px 0px;background:auto;border:0px;">
-						            	<input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
-						            	<select id="searchGubun" name="searchGubun" class="form-control" style="width:110px;">
-											<option value="">날짜구분</option>
-											<option value="7">주</option>
-											<option value="30">월</option>
-											<option value="90">분기</option>
-											<option value="365">년</option>
-										</select>
-						            </span>
-						            <input name="sdt" id="sdt" type="text" value="${startDate}"  class=" form-control">
-						            <span class="input-group-addon">~</span>
-									<input name="edt" id="edt" type="text" value="${currentDate}"  class=" form-control">
-
-									<span class="input-group-addon" style="padding: 0px 0px 0px 5px; border: 0px solid transparent;">
-										<button type="button" @click="dbStatsInfo()" class="btn btn-sm  btn-outline btn-primary">조회</button>
-									</span>
-				          		</div>
+								<span style="margin: 0px 5px 0px 10px;"><spring:message code="date" /></span>
+					            <span class="input-sm" style="padding:0px 6px 0px 0px;background:auto;border:0px;">
+					            	<select id="searchGubun" name="searchGubun" class="input-sm" style="width:110px;">
+										<option value=""><spring:message code="select" /></option>
+										<option value="7" selected><spring:message code="week" /></option>
+										<option value="30"><spring:message code="month" /></option>
+										<option value="90"><spring:message code="quarter" /></option>
+										<option value="365"><spring:message code="year" /></option>
+									</select>
+					            </span>
+					            <input type="hidden" name="hidCurrentDate" id="hidCurrentDate" value="${varsqlfn:currentDate('yyyy-MM-dd')}">
+					            <input name="sdt" id="sdt" type="text" value="${startDate}" class="input-sm">
+					            <span >~</span>
+					            <input name="edt" id="edt" type="text" value="${currentDate}" class="input-sm">
+								<button type="button" @click="dbStatsInfo()" class="btn btn-sm  btn-outline btn-primary">조회</button>
 							</div>
 					    </div>
 					</div>
@@ -79,7 +74,6 @@
 
 <script>
 VARSQL.loadResource(['juiChart','datepicker']);
-
 
 VarsqlAPP.vueServiceBean( {
 	el: '#varsqlVueArea'
@@ -130,7 +124,7 @@ VarsqlAPP.vueServiceBean( {
 			// main chart;
 			VARSQL.pluginUI.chart.bar("#sqlDateChart", {
 
-				axis : [{
+				axis : {
 			        x : {
 			            type : "block",
 			            domain : "xCol",
@@ -143,12 +137,12 @@ VarsqlAPP.vueServiceBean( {
 						line : true
 			        },
 			        data : []
-			    }],
-			    brush : [{
+			    },
+			    brush : {
 			        type : "column",
 			        outerPadding : 20,
 			        target : "yCol"
-			    }],
+			    },
 				 event : {
 			        click : function(obj, e) {
 			            if (obj) {
@@ -157,24 +151,23 @@ VarsqlAPP.vueServiceBean( {
 			        }
 			    }
 				,widget : [{
-			        type : "tooltip"
-			    },
-				{
-			        type : "title",
-			        text : "COUNT",
-			        align : "start",
-			        orient : "center",
-			        dx : -120,
-			        dy : -10
-			    }
-
+				        type : "tooltip"
+				    },
+					{
+				        type : "title",
+				        text : "COUNT",
+				        align : "start",
+				        orient : "center",
+				        dx : -120,
+				        dy : -10
+				    }
 				]
 			});
-
+			
 			// 상세차트.
 			VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
 
-				axis : [{
+				axis : {
 			        x : {
 			            type : "block",
 			            domain : "xCol",
@@ -187,14 +180,13 @@ VarsqlAPP.vueServiceBean( {
 						line : true
 			        },
 			        data : []
-			    }],
-			    brush : [{
+			    },
+			    brush : {
 			        type : "column",
 			        outerPadding : 20,
 			        target : "yCol",
-			        animate : true
-			    }],
-				 event : {
+			    },
+				event : {
 			        click : function(obj, e) {
 			            if (obj) {
 							_self.sqlUserRank(obj.data.xCol);
@@ -204,7 +196,6 @@ VarsqlAPP.vueServiceBean( {
 				,widget : [
 					{ type : "title", text : "Query 구문별" },
 			        { type : "tooltip", orient: "center" },
-
 				]
 			});
 		}
@@ -226,9 +217,9 @@ VarsqlAPP.vueServiceBean( {
 					var items = response.list ||[];
 
 					VARSQL.pluginUI.chart.bar("#sqlDateChart", {
-						axis : [{
+						axis : {
 					        data :items
-					    }]
+					    }
 					});
 
 					if(items.length > 0){
@@ -263,9 +254,9 @@ VarsqlAPP.vueServiceBean( {
 
 					if(items.length > 0){
 						VARSQL.pluginUI.chart.bar("#dateDetailStatsChart", {
-							axis : [{
+							axis : {
 						        data :items
-						    }]
+						    }
 						});
 						_self.sqlUserRank('all');
 					}else{

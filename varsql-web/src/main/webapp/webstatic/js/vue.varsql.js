@@ -330,7 +330,7 @@ Vue.component('file-upload', {
 		,buttons :{
 			type: Object
 			, default :{
-				add : VARSQL.message('file.add')
+				add : VARSQL.message('file.select')
 				,upload : VARSQL.message('file.upload')
 				,remove : VARSQL.message('file.remove')
 			}
@@ -421,7 +421,7 @@ Vue.component('file-upload', {
 				
 				if(VARSQL.inArray(_this.accept.split(','), ext) < 0){
 					this.removeFile(file);
-					VARSQL.toastMessage('varsql.0031',{accept : _this.accept});
+					VARSQL.toastMessage('"msg.file.allowed.param',{accept : _this.accept});
 					return '';
 				}
 			}

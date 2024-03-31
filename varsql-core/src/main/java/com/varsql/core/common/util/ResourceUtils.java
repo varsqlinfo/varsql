@@ -25,8 +25,8 @@ import com.varsql.core.configuration.Configuration;
  */
 public final class ResourceUtils {
 
-	private final static String FILE_PREFIX = "file:";
-	private final static String CLASS_PREFIX = "classpath:";
+	public final static String FILE_PREFIX = "file:";
+	public final static String CLASS_PREFIX = "classpath:";
 
 	private ResourceUtils() {}
 
@@ -39,9 +39,9 @@ public final class ResourceUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Resource[] getPackageResources(String packagePath) throws IOException {
+	public static Resource[] getResources(String resourcePath) throws IOException {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
-		return resolver.getResources(packagePath) ;
+		return resolver.getResources(resourcePath) ;
 	}
 
 	/**

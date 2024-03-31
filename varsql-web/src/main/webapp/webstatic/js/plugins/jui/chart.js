@@ -5771,7 +5771,7 @@ jui.define("chart.grid.core", [ "util.base", "util.math", "chart.grid.draw2d", "
 				draw = (this.axis.isFull3D()) ? Draw3D : Draw2D;
 
 			// wrapped scale
-			this.scale = this.wrapper(this.scale, this.grid.key);
+			this.scale = this.wrapper(this.scale, this.constraints.key);
 
 			// render axis
 			if(_.typeCheck("function", func)) {

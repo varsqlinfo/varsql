@@ -3,237 +3,210 @@
 <properties>
 
 <comment>varsql</comment>
-<entry key="page.title.varsql">Varsql</entry>
-<entry key="varsql.info">Varsql</entry>
-<entry key="user.home.title">- VarSQL -</entry>
-<entry key="manager.home.title">-- Manager --</entry>
-<entry key="admin.home.title">--- Admin ---</entry>
-<entry key="user.preferences.title">Preferences</entry>
-<entry key="msg.please.sign.in">VARSQL Login</entry>
 
+<!-- guest -->
+<entry key="msg.welcome">Welcome.</entry>
+<entry key="msg.guest.permission"><![CDATA[Your permissions have not been processed yet.<br/>Please contact the administrator.]]></entry>
 
-<entry key="header.menu.file">File</entry>
-<entry key="header.menu.file.new">New</entry>
-<entry key="header.menu.file.save">Save</entry>
-<entry key="header.menu.file.allsave">Save As...</entry>
+<entry key="msg.analyzing">Analyzing...</entry>
+<entry key="msg.auth.db.list">Authorized DB List</entry>
 
-<entry key="header.menu.file.import">Import...</entry>
-<entry key="header.menu.file.export">Export...</entry>
-<entry key="header.menu.file.import_export"><![CDATA[Import & Export...]]></entry>
-<entry key="header.menu.file.newwin">New Window</entry>
+<!-- editor msg -->
+<entry key="msg.editor.info">Click on a new file to open an editor where you can execute queries.</entry>
+<entry key="msg.editor.empty.warning">No editor window found.\nPlease click on New File to add one.</entry>
+<entry key="msg.editor.change.count.param">{count} occurrences were changed.</entry>
+<entry key="msg.editor.not.found">The following text could not be found:\n{findText}</entry>
+<entry key="msg.editor.find.line">find line:{line}, ch:{ch}</entry>
 
-<entry key="header.menu.file.close">Close</entry>
-
-<entry key="header.menu.edit">Edit</entry>
-<entry key="header.menu.edit.paste">Paste</entry>
-<entry key="header.menu.edit.undo">Undo</entry>
-<entry key="header.menu.edit.redo">Redo</entry>
-<entry key="header.menu.edit.compare">Query compare</entry>
-
-<!-- 검색 메뉴 -->
-<entry key="header.menu.search">Search</entry>
-<entry key="header.menu.search.find">Find</entry>
-
-
-<entry key="header.menu.tool">Tool</entry>
-<entry key="header.menu.tool.import">Import</entry>
-<entry key="header.menu.tool.export">Export</entry>
-<entry key="header.menu.tool.export.specification">Table spec</entry>
-<entry key="header.menu.tool.export.ddl">DDL</entry>
-<entry key="header.menu.tool.export.data">Data</entry>
-<entry key="header.menu.tool.setting">Preferences</entry>
-<entry key="header.menu.tool.initlayout">Init Layout</entry>
-
-<entry key="header.menu.tool.show.plugin">Show Component</entry>
-<entry key="header.menu.tool.show.glossary">Glossary</entry>
-<entry key="header.menu.tool.show.history">History</entry>
-
-
-<entry key="header.menu.tool.theme">Color Theme</entry>
-<entry key="header.menu.tool.theme.light">light</entry>
-<entry key="header.menu.tool.theme.dark">dark</entry>
-
-
-<entry key="header.menu.tool.utils">Utils</entry>
-<entry key="header.menu.tool.utils.gentable"><![CDATA[Table Generate]]></entry>
-<entry key="header.menu.tool.utils.tableddlconvert">Table DDL Convert</entry>
-<entry key="header.menu.tool.utils.tablecolumnsearch">Table Column Search</entry>
-
-<!-- 도움말 메뉴 -->
-<entry key="header.menu.help">Help</entry>
-<entry key="header.menu.help.help">Help</entry>
-<entry key="header.menu.help.dbinfo">DB Infomation</entry>
-<entry key="header.menu.help.info">About Varsql</entry>
-
-<entry key="screen">Screen</entry>
-<entry key="screen.user">User</entry>
-<entry key="screen.manager">App Management</entry>
-<entry key="screen.admin">Administration Console</entry>
-
-<!-- admin menu -->
-<entry key="admin.menu.database">Database</entry>
-<entry key="admin.menu.databaseoptmgmt">Database Options</entry>
-<entry key="admin.menu.managermgmt">Manager Auth Authority</entry>
-<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager]]></entry>
-<entry key="admin.menu.report">Report</entry>
-<entry key="admin.menu.dbmenumgmt">Menu  Management</entry>
-<entry key="admin.menu.jdbcprovidermgmt">JDBC Provider</entry>
-
-<!-- manage menu -->
-<entry key="manager.menu.usermgmt">User Management</entry>
-<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 관리]]></entry>
-<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
-<entry key="manager.menu.logmgmt">Log Statistics</entry>
-<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
-<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
-
-
-<entry key="manager.menu.usermgmt">User Management</entry>
-<entry key="manager.menu.qnamgmt"><![CDATA[Q&A]]></entry>
-<entry key="manager.menu.dbnuser"><![CDATA[DB & User]]></entry>
-<entry key="manager.menu.dbgroup">DB Group</entry>
-<entry key="manager.menu.dbgroupnuser"><![CDATA[DB Group & User]]></entry>
-<entry key="manager.menu.glossary"><![CDATA[Glossary]]></entry>
-<entry key="manager.menu.logmgmt">Log</entry>
-<entry key="manager.menu.dbcomparemgmt">DB Compare</entry>
-<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
-<entry key="manager.menu.sqllog">SQL Log</entry>
-<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
-<entry key="manager.menu.scheduler">Scheduler</entry>
-<entry key="manager.menu.databackupmgmt">Data Backup</entry>
-<entry key="manager.menu.ddlbackupmgmt">DDL Backup</entry>
-<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
-
-<!-- user menu -->
-<entry key="user.edit.general">Modify Profile</entry>
-<entry key="user.edit.pasword">Password Change</entry>
-<entry key="user.edit.message">Message Management</entry>
-
-<entry key="login.form.id">Id</entry>
-<entry key="login.form.pw">Password</entry>
-
-<!-- guest  -->
-<entry key="guest.title">Welcome Varsql.</entry>
-<entry key="guest.message"><![CDATA[Sir, your authority has not been processed yet.Please contact your <br/> administrator.]]></entry>
-<entry key="btn.contact">Question</entry>
-<entry key="btn.login.screen">Login</entry>
-<entry key="guest.form.title">Title</entry>
-<entry key="guest.form.question">Questions</entry>
-<entry key="guest.form.answer">Answer</entry>
-
-<!-- join form -->
-<entry key="join.form.title">Sign up</entry>
-<entry key="join.form.uid">Id</entry>
-<entry key="join.form.email">email</entry>
-<entry key="join.form.name">Name</entry>
-<entry key="join.form.organization">Org</entry>
-<entry key="join.form.dept">Dept</entry>
-<entry key="join.form.desc">Description</entry>
-<entry key="join.form.locale">Language</entry>
-
-
-<entry key="join.form.password">Password</entry>
-<entry key="join.form.password.confirm">Password confirm</entry>
-<entry key="btn.join">Join</entry>
-<entry key="btn.main">Main</entry>
-
-<!-- user form  -->
-<entry key="user.form.password.current">Current Password</entry>
-<entry key="user.form.password.new">New Password</entry>
-<entry key="user.form.password.confirm">Re Password</entry>
-
-<entry key="msg.email.empty">Please enter an your email</entry>
+<entry key="msg.email.empty">Please enter your email</entry>
 <entry key="msg.title.empty">Please enter a title</entry>
 <entry key="msg.contactus.empty">Please enter your inquiry</entry>
-<entry key="msg.name.empty">Please enter a name</entry>
-<entry key="msg.password.empty">Please enter a password</entry>
-<entry key="msg.password.differrent">The password is not the same.</entry>
-<entry key="msg.password.length.check">Password must be at least 6 digits long</entry>
-<entry key="msg.login.fail">wrong ID or password.</entry>
-<entry key="msg.save.confirm">Save it?</entry>
+<entry key="msg.name.empty">Please enter your name</entry>
+<entry key="msg.password.empty">Please enter your password</entry>
+<entry key="msg.password.differrent">Passwords do not match</entry>
+<entry key="msg.password.length.check">Password must be at least 6 characters</entry>
+<entry key="msg.login.fail">Incorrect username or password</entry>
+<entry key="msg.saveandclose.confirm">Save and close?</entry>
+<entry key="msg.saveandreload">Save?\nChanges will take effect after the page is refreshed.</entry>
+<entry key="msg.create.confirm">Create?</entry>
+<entry key="msg.create.confirm.param">Create {item}?</entry>
+<entry key="msg.create.success">Created</entry>
+<entry key="msg.save.confirm">Save?</entry>
 <entry key="msg.save.success">Saved</entry>
-<entry key="msg.save.fail">Save failed</entry>
-<entry key="msg.delete.confirm">Delete it?</entry>
-<entry key="msg.nodata">No Data.</entry>
-<entry key="msg.success">Success</entry>
-<entry key="msg.search.placeholder">Search...</entry>
-<entry key="msg.data.select">Select the data.</entry>
-<entry key="msg.accept.msg">Do you want to accept the selected user?</entry>
-<entry key="msg.denial.msg">Are you sure you want to reject the selected user?</entry>
-<entry key="msg.add.manager.confirm">선택된 사용자를  매니저로 등록하시겠습니까?</entry>
-<entry key="msg.del.manager.confirm">선택된 사용자를  매니저에서 삭제하시겠습니까?</entry>
-<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
-<entry key="msg.table.export.info"><![CDATA[기본정보]]></entry>
+<entry key="msg.delete.confirm">Delete?</entry>
+<entry key="msg.delete.confirm.param">Delete {item}?</entry>
+<entry key="msg.delete.success">Deleted</entry>
+<entry key="msg.apply.confirm">Apply?</entry>
+<entry key="msg.apply.success">Applied</entry>
+<entry key="msg.copy.success">Copied</entry>
+<entry key="msg.change.confirm">Change?</entry>
+<entry key="msg.change.success">Changed</entry>
+<entry key="msg.confirm.param">Continue with {item}?</entry>
+<entry key="msg.confirm.success.param">{item} successful</entry>
+<entry key="msg.block.confirm">Block?</entry>
+<entry key="msg.block.success">Blocked</entry>
+<entry key="msg.release.confirm">Release?</entry>
+<entry key="msg.release.success">Released</entry>
+<entry key="msg.send.confirm">Send?</entry>
+<entry key="msg.send.confirm.param">Send {item}?</entry>
 
+<entry key="msg.close.confirm">Close?</entry>
+<entry key="msg.close.confirm.param">Close [{name}]?</entry>
+<entry key="msg.export.confirm">Export?</entry>
+<entry key="msg.export.confirm.param">Export {item}?</entry>
+<entry key="msg.init.restore.confirm">Restore to initial settings?</entry>
+<entry key="msg.setting.fail">Invalid setting information</entry>
+<entry key="msg.setting.fail.restore">Invalid setting information\nRestore to initial settings?</entry>
+<entry key="msg.layout.restore.confirm">Resetting will revert to default layout and refresh the page.\nReset?</entry>
 
-<entry key="msg.select.value">선택된 값</entry>
-<entry key="msg.warning.select">선택하시오</entry>
-<entry key="msg.records.per.page">페이지 당 레코드</entry>
-<entry key="msg.table.dbclick.move">* 테이블을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
-<entry key="msg.column.dbclick.move">* 컬럼을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 하세요.</entry>
+<entry key="msg.setting.fail">Invalid setting information</entry>
+<entry key="msg.setting.fail.restore">Invalid setting information\nRestore to initial settings?</entry>
+<entry key="msg.setting.fail.check">Invalid setting information\nPlease check the settings.</entry>
+<entry key="msg.setting.invalid">Invalid settings.</entry>
 
-<entry key="database.preferences">환경설정</entry>
-<entry key="database.tools">도구</entry>
+<entry key="msg.password.change.confirm">Change password?</entry>
+<entry key="msg.password.change.success">Password changed</entry>
+<entry key="msg.password.re.enter">Please re-enter your password</entry>
+<entry key="msg.password.lost">Forgot your password?</entry>
 
-<entry key="admin.form.header">Database info</entry>
-<entry key="admin.form.db.vname">Name</entry>
-<entry key="admin.form.db.vurl">Url</entry>
-<entry key="admin.form.db.databasename">schema name</entry>
-<entry key="admin.form.db.vdriver">Driver</entry>
-<entry key="admin.form.db.vid">Id</entry>
-<entry key="admin.form.db.vpw">Password</entry>
-<entry key="admin.form.db.enableConnectionPool">DB Metadata Pool Enable</entry>
-<entry key="admin.form.db.vconnopt">Connection Option</entry>
-<entry key="admin.form.db.vpoolopt">Pool Option</entry>
+<entry key="msg.fail">Failed</entry>
+<entry key="msg.nodata">No data available</entry>
+<entry key="msg.search.placeholder">Enter search term</entry>
+<entry key="msg.data.select">Please select data</entry>
+<entry key="msg.accept.msg">Accept selected user?</entry>
+<entry key="msg.denial.msg">Deny selected user?</entry>
+<entry key="msg.add.manager.confirm">Register selected user as manager?</entry>
+<entry key="msg.del.manager.confirm">Remove selected user from managers?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[If you save, the current pool information will be reset and a new pool will be created. Continue?]]></entry>
+<entry key="msg.note.arrived">Memo arrived</entry>
 
-<entry key="admin.form.db.maxactive">Max Active</entry>
-<entry key="admin.form.db.test_while_idle">Test While Idle</entry>
+<!-- export table spec -->
+<entry key="msg.export.spec.step1">Export Information</entry>
+<entry key="msg.export.spec.step2">Table Selection</entry>
+<entry key="msg.export.spec.step3">Complete</entry>
+<entry key="msg.export.spec.table.definition">Table Definition</entry>
+<entry key="msg.export.spec.column.multi.sheet">Multi-Sheet Columns</entry>
+<entry key="msg.export.spec.column.detail">Column Details</entry>
+<entry key="msg.export.spec.column.title">Export Column Information</entry>
+<entry key="msg.export.spec.schema.select">Please select a schema.</entry>
 
-<entry key="admin.form.db.minidle">Min Idle</entry>
-<entry key="admin.form.db.timeout">Timeout</entry>
-<entry key="admin.form.db.exportcount">Export Count</entry>
-<entry key="admin.form.db.usecolumnlabel">ResultSet ColumnLabel use</entry>
+<entry key="msg.table.dbclick.move">* Double-click to move or select and use arrow keys to register.</entry>
+<entry key="msg.column.dbclick.move">* Double-click columns to move or select and use arrow keys to register.</entry>
 
-<entry key="admin.userlist.search.head">사용자 검색</entry>
-<entry key="admin.managerlist.head">관리자 목록</entry>
+<entry key="msg.export.ddl.step1">Object Selection</entry>
+<entry key="msg.export.ddl.step2">Detailed Selection</entry>
+<entry key="msg.export.ddl.step3">Complete</entry>
+<entry key="msg.export.multi.file">Multi-File</entry>
+<entry key="msg.export.multi.file.single">Single File</entry>
+<entry key="msg.export.multi.file.multi">Separate File per Object</entry>
+<entry key="msg.select.object">Selected Object</entry>
+<entry key="msg.export.ddl.object.select.title">Select Export Object</entry>
+<entry key="msg.export.ddl.object.desc">Please select the objects to export.</entry>
+<entry key="msg.export.ddl.object.nodata">Please select objects.</entry>
 
-<entry key="admin.managerlist.dbuser">매니저 </entry>
+<entry key="msg.retry">Please try again</entry>
+<entry key="msg.refresh.connnection.info">Refresh Connection Information</entry>
+<entry key="msg.refresh.connnection.info.confirm">Would you like to refresh the connection information?</entry>
 
-<entry key="admin.databaseUserMgmt.adduser.confirm">사용자를 추가하시겠습니까?</entry>
+<entry key="msg.limit.file.msg">Up to {0} attachments are allowed.</entry>
 
-<entry key="manager.userlist.head">사용자 목록</entry>
-<entry key="manager.userlist.name">이름</entry>
-<entry key="manager.userlist.id">아이디</entry>
-<entry key="manager.userlist.dept">소속</entry>
-<entry key="manager.userlist.init.password">패스워드 초기화</entry>
-<entry key="manager.userlist.date">등록일</entry>
-<entry key="manager.userlist.access">수락여부</entry>
-<entry key="manager.userlist.useyn">사용여부</entry>
-<entry key="manager.userlist.dept">소속</entry>
-<entry key="manager.qnalist.head"><![CDATA[Q&A 목록]]></entry>
-<entry key="manager.answeryn">답변여부</entry>
-<entry key="manager.dbnuser.dbuseuser">데이터 베이스 사용자 관리</entry>
+<entry key="msg.driver.path.desc">Please separate paths with semicolons (";") if there are multiple.</entry>
 
-<!-- user menu -->
-<entry key="user.prefernces.menu.general">General</entry>
-<entry key="user.prefernces.menu.pasword">Password</entry>
-<entry key="user.prefernces.menu.message">Note</entry>
-<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
-<entry key="user.prefernces.menu.sqlfile">SQL FILE</entry>
+<entry key="msg.download.history.help"><![CDATA[You can check the history in <span style="font-weight: bold;">Settings -> Files</span>.]]></entry>
 
-<entry key="user.edit.msgtitle">Title</entry>
-<entry key="user.edit.send_id">Sender</entry>
-<entry key="user.edit.recv_id">Recv</entry>
-<entry key="user.edit.msgcont">Content</entry>
-<entry key="detail.view">Detail</entry>
-<entry key="reg_dt">Registration Date</entry>
-<entry key="view_dt">View Date</entry>
-<entry key="upd_dt">Modified Date</entry>
+<entry key="msg.send.mail.password.fail"><![CDATA[Failed to send email. <br/> Incorrect password reset request.]]></entry>
+<entry key="msg.send.mail"><![CDATA[Email has been sent.]]></entry>
+<entry key="invalid.token">Invalid token.</entry>
 
-<entry key="refresh.connnection.info">Refresh connection info</entry>
+<entry key="msg.close.window">Would you like to close the window?</entry>
+<entry key="msg.loading">Loading...</entry>
+<entry key="msg.refresh">Would you like to refresh?</entry>
 
+<entry key="msg.content.enter">Please enter.</entry>
+<entry key="msg.content.enter.param">Please enter {item}.</entry>
 
-<entry key="msg.lost.password">Forgot password?</entry>
-<entry key="password.reset">Password reset</entry>
+<entry key="msg.leave.confirm">Are you sure you want to leave?</entry>
+<entry key="msg.item.added">Item added.</entry>
+<entry key="msg.item.select">Please select an item.</entry>
+<entry key="msg.item.select.param">Please select {msg}.</entry>
+<entry key="msg.select.param">Please select {0}.</entry>
+<entry key="msg.add">Please add.</entry>
+<entry key="msg.add.param">Please add {0}.</entry>
+
+<entry key="msg.select.file.import.confirm">Would you like to import the selected file?</entry>
+<entry key="msg.file.uploadandexecute">Please upload the file and execute.</entry>
+
+<entry key="msg.file.allowed.param">Allowed extensions: {accept}</entry>
+<entry key="msg.capsLock">CapsLock is on.</entry>
+<entry key="msg.user.group.remove.confirm">Would you like to remove the {itemName} group of the user?\nIf you remove the group, you will not be able to access any databases belonging to the group.</entry>
+<entry key="msg.user.password.init">Would you like to change the password for {userName}?\nThe changed password will disappear after 5 seconds.</entry>
+<entry key="msg.group.delete.confirm">If you remove the {groupName} group, all database mapping information and user information belonging to the group will be deleted.\nWould you like to delete the group?</entry>
+
+<!-- validator -->
+<entry key="msg.valid.required">This field is required.</entry>
+<entry key="msg.valid.size.param">Size must be {size}.</entry>
+<entry key="msg.valid.id.diffrent">Must be different from the ID.</entry>
+<entry key="msg.valid.password.identical">Passwords must be identical.</entry>
+<entry key="msg.valid.min.size.param">Must be at least {size} characters long.</entry>
+<entry key="msg.valid.duplicated">Item already exists.</entry>
+<entry key="msg.valid.duplicated.param">{item} already exists.</entry>
+<entry key="msg.valid.range.param">Size must be within {range}.</entry>
+<entry key="msg.valid.invalid.param">Invalid {item}.</entry>
+<entry key="msg.valid.enter">Please enter.</entry>
+<entry key="msg.valid.enter.param">Please enter {item}.</entry>
+<entry key="msg.valid.search">Please search.</entry>
+<entry key="msg.valid.search.param">Please search for {item}.</entry>
+
+<!-- db -->
+<entry key="msg.db.load">Loading database information.</entry>
+<entry key="msg.db.connect.select"><![CDATA[Select the database to connect <img src="{0}/webstatic/imgs/Database.gif">.]]></entry>
+<entry key="msg.db.pool.close.confirm">Do you want to close the DB connection?</entry>
+<entry key="msg.db.pool.init">Success\nPlease initialize the pool if you want to reconnect.</entry>
+<entry key="msg.db.pool.init.confirm">Do you want to initialize all?</entry>
+<entry key="msg.db.pool.init.warning">This requires a pool initialization.</entry>
+
+<!-- db compare -->
+<entry key="msg.db.compare.001">Table descriptions are different. Source: [{sourceRemark}], Target: [{targetRemark}]</entry>
+<entry key="msg.db.compare.002">Column counts Source: {sourceLen}, Target: {targetLen}</entry>
+<entry key="msg.db.compare.003">Table information is not identical.</entry>
+<entry key="msg.db.compare.004">{columnLabel} Source: [{sourceValue}], Target: [{targetValue}]</entry>
+<entry key="msg.db.compare.005">Column [{sourceKey}] does not exist in the target table.</entry>
+<entry key="msg.db.compare.006">In the source</entry>
+<entry key="msg.db.compare.007">Table does not exist</entry>
+<entry key="msg.db.compare.008">In the target</entry>
+<entry key="msg.db.compare.009">[{key}] is not the same.</entry>
+<entry key="msg.db.compare.010">[{key}] is not the same. Source: {sourceValue}, Target: {targetValue}</entry>
+<entry key="msg.db.compare.011">does not exist</entry>
+<entry key="msg.db.compare.012">Column [{targetKey}] does not exist in the source table.</entry>
+
+<!-- db data import -->
+<entry key="msg.file.import.001">Please select the format of the import operation below.</entry>
+<entry key="msg.file.import.002">Input data by executing SQL files</entry>
+<entry key="msg.file.import.003">Input data using XML files</entry>
+<entry key="msg.file.import.004">Input data using JSON files</entry>
+<entry key="msg.file.import.002">Input data by executing SQL files</entry>
+
+<!-- board -->
+<entry key="msg.brd.comment.delete">Once deleted, comments cannot be recovered. Are you sure you want to delete?</entry>
+<entry key="msg.brd.article.delete">Once deleted, articles cannot be recovered. Are you sure you want to delete?</entry>
+
+<!-- error -->
+<entry key="error.400">Bad request.</entry>
+<entry key="error.403">Access forbidden.</entry>
+<entry key="error.404">Page not found.</entry>
+<entry key="error.0001">You have been logged out. Would you like to go to the login page?</entry>
+<entry key="error.0002">Invalid request. Would you like to refresh?</entry>
+<entry key="error.0003">Invalid database. Would you like to go to the main page?</entry>
+<entry key="error.0004">Connection refused. Please contact the administrator.</entry>
+<entry key="error.80000">Connection [80000] refused. Please contact the administrator.</entry>
+<entry key="error.80001">Connection [80001] is closed. Please contact the administrator.</entry>
+<entry key="error.80002">Error code: {errorCode}\nThe connection is not valid. Please contact the administrator.</entry>
+<entry key="error.default">Error code: {errorCode}\nAn error has occurred. Please contact the administrator.</entry>
+
+<entry key="msg.sqlfile.limit.view">Up to 5000 lines are visible, please download for further content.</entry>
+<entry key="msg.file.add">Please add file.</entry>
+<entry key="msg.deleted.info">Deleted information.</entry>
+<entry key="msg.deleted.param">The {item} has been deleted.</entry>
+
 
 </properties>

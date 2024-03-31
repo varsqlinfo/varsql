@@ -14,13 +14,12 @@ _pluginUI.chart = {
 	,bar :function (selector , opt){
 		var _this = this; 
 		
-		
 		if(_this._chartEnable(selector , opt)) return ; 
 		
 		//$(selector).empty();
 		
-		 jui.ready([ "chart.builder" ], function(chart) {
-	        _this._chartInfo[selector] = chart(selector, $.extend({},{
+		 graph.ready([ "chart.builder" ], function(chart) {
+	        _this._chartInfo[selector] = chart(selector, VARSQL.util.objectMerge({},{
 	        	 theme : "gradient"
 	        },opt)); 
 		})
@@ -33,8 +32,8 @@ _pluginUI.chart = {
 		
 		//if(_this._chartEnable(selector , opt)) return ; 
 		
-		jui.ready([ "chart.builder" ], function(chart) {
-	        chart(selector, $.extend({},{
+		graph.ready([ "chart.builder" ], function(chart) {
+	        chart(selector, VARSQL.util.objectMerge({},{
 	        	//theme : "jennifer"
 	        },opt)); 
 		})
@@ -43,7 +42,7 @@ _pluginUI.chart = {
 		var _this = this; 
 		
 		if(_this._chartInfo[selector]){
-			_this._chartInfo[selector].axis(0).update(opt.axis[0].data);
+			_this._chartInfo[selector].axis(0).update(opt.axis.data);
 			return true; 
 		}
 		

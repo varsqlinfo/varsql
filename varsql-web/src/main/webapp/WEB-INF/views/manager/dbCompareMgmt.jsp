@@ -47,7 +47,7 @@
 						</select>
 
 					</span>
-					<spring:message code="target" text="타켓"/>
+					<spring:message code="target" text="대상"/>
 					<span>
 						<select class="input-sm" v-model="diffItem.target" @change="targetChange(diffItem.target)" style="width:18%">
 							<option value=""><spring:message code="select" text="선택"/></option>
@@ -102,7 +102,7 @@
 										
 										<label for="caseSensitive" style="margin-bottom:0px;">
 											<input style="margin:0px;" id="caseSensitive" @click="changeCaseSensitive($event)" type="checkbox" v-model="caseSensitive" value="Y">
-											<spring:message code="label.case.sensitive" text="대소문자"/>
+											<spring:message code="case.sensitive" text="대소문자"/>
 										</label>
 										
 										<span>
@@ -126,7 +126,7 @@
 									<div style="margin:3px;">
 										<div style="height:25px;">
 											<span style="position: absolute;margin-top: 5px;">
-												<spring:message code="target" text="타켓"/> <span class="object-count"> [{{resultInfo.targetSchCnt}}/{{resultInfo.targetCount}}]</span>
+												<spring:message code="target" text="대상"/> <span class="object-count"> [{{resultInfo.targetSchCnt}}/{{resultInfo.targetCount}}]</span>
 											</span>
 										</div>
 										<div id="targetObjectMeta" class="row source-target-meta"></div>
@@ -202,7 +202,7 @@
 										<div style="margin:3px;">
 											<div class="row">
 												<span class="text-ellipsis">
-													<spring:message code="target" text="타켓"/>
+													<spring:message code="target" text="대상"/>
 													<span :class="compareSourceItem.remarks != compareTargetItem.remarks ?'error':''">
 														{{compareTargetItem.remarks}}
 													</span>
@@ -238,8 +238,8 @@
 <meta charset="utf-8">
 </head>
 <body>
-	<span><spring:message code="source" text="대상"/> : {{sourceSchema}}</span>
-	<span><spring:message code="target" text="타켓"/> :  {{targetSchema}}</span>
+	<span><spring:message code="source" text="원천"/> : {{sourceSchema}}</span>
+	<span><spring:message code="target" text="대상"/> :  {{targetSchema}}</span>
 
 	{{{compareResult}}}
 </body>
@@ -529,17 +529,17 @@ VarsqlAPP.vueServiceBean( {
 
 			var diffItem = _self.diffItem;
 			if(diffItem.source ==''){
-				VARSQL.toastMessage('varsql.m.0010');
+				VARSQL.toastMessage('msg.select.param', VARSQL.message('source'));
 				return ;
 			}
 			if(diffItem.target ==''){
-				VARSQL.toastMessage('varsql.m.0011');
+				VARSQL.toastMessage('msg.select.param', VARSQL.message('target'));
 				return ;
 			}
 
 			var objectType = diffItem.objectType;
 			if(objectType ==''){
-				VARSQL.toastMessage('varsql.m.0012');
+				VARSQL.toastMessage('msg.select.param', 'Object type');
 				return ;
 			}
 
@@ -728,14 +728,14 @@ VarsqlAPP.vueServiceBean( {
 				compareFlag = false;
 				if(targetCompareNameMap.hasOwnProperty(key)){
 					compareLog.push('<a href="javascript:;" class="table-info table-name" data-table-name="'+key+'">'+key +'</a> ');
-					compareLog.push(VARSQL.message('varsql.m.0015')+'<div class="column-compare-log" data-tbl-name="'+key+'">');
+					compareLog.push(VARSQL.message('msg.db.compare.003')+'<div class="column-compare-log" data-tbl-name="'+key+'">');
 
 					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 
 					if(sourceItem.remarks != targetItem.remarks){
 						compareFlag = true;
-						compareLog.push(VARSQL.message('varsql.m.0013',{sourceRemark : sourceNameMap[key].remarks, targetRemark : targetCompareNameMap[key].remarks })+'\n');
+						compareLog.push(VARSQL.message('msg.db.compare.001',{sourceRemark : sourceNameMap[key].remarks, targetRemark : targetCompareNameMap[key].remarks })+'\n');
 					}
 
 					sourceColList = sourceItem.colList;
@@ -746,7 +746,7 @@ VarsqlAPP.vueServiceBean( {
 
 					if(sourceColLen != targetColLen){
 						compareFlag = true;
-						compareLog.push(VARSQL.message('varsql.m.0014',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
+						compareLog.push(VARSQL.message('msg.db.compare.002',{sourceLen : sourceColLen, targetLen : targetColLen})+'\n');
 					}
 
 					var maxColLen = Math.max(sourceColLen, targetColLen);
@@ -776,7 +776,7 @@ VarsqlAPP.vueServiceBean( {
 
 					objectColNameMap[key] = colNameMap; // table columun name 저장.
 
-					compareLog.push('# '+VARSQL.message('varsql.m.0025')+' #\n');
+					compareLog.push('# '+VARSQL.message('source')+' #\n');
 					for(var sourceColKey in sourceColMap){
 						sourceColItem = sourceColMap[sourceColKey];
 						targetColItem = targetColMap[sourceColKey];
@@ -800,7 +800,7 @@ VarsqlAPP.vueServiceBean( {
 										if(firstFlag){
 											compareLog.push('Column : '+sourceColKey+' \t ');
 										}
-										compareLog.push(VARSQL.message('varsql.m.0016',{columnLabel : compareItemInfo.label, sourceValue : sourceColItem[colItemKey], targetValue: targetColItem[colItemKey] }) + (firstFlag ? '' : ','));
+										compareLog.push(VARSQL.message('msg.db.compare.004',{columnLabel : compareItemInfo.label, sourceValue : sourceColItem[colItemKey], targetValue: targetColItem[colItemKey] }) + (firstFlag ? '' : ','));
 										firstFlag = false;
 
 									}
@@ -808,15 +808,15 @@ VarsqlAPP.vueServiceBean( {
 								if(addFlag) compareLog.push('\n');
 							}else{
 								compareFlag = true;
-								compareLog.push(VARSQL.message('varsql.m.0017',{sourceKey : sourceColKey})+'\n');
+								compareLog.push(VARSQL.message('msg.db.compare.005',{sourceKey : sourceColKey})+'\n');
 							}
 						}
 					}
 
-					compareLog.push('# '+VARSQL.message('varsql.m.0026')+' #\n');
+					compareLog.push('# '+VARSQL.message('target')+' #\n');
 					for(var targetColKey in targetColMap){
 						compareFlag = true;
-						compareLog.push(VARSQL.message('varsql.m.0024',{targetKey : targetColKey})+'\n');
+						compareLog.push(VARSQL.message('msg.db.compare.012',{targetKey : targetColKey})+'\n');
 					}
 
 					compareLog.push('</div>');
@@ -832,7 +832,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.message('varsql.m.0023')+'</span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.006')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.message('msg.db.compare.011')+'</span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -841,7 +841,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.message('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.008')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
 			}
 
 			return compareResult.join('\n');
@@ -1138,7 +1138,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : VARSQL.message('varsql.m.0019')
+						empty : VARSQL.message('msg.db.compare.007')
 					}
 				});
 			}
@@ -1194,7 +1194,7 @@ VarsqlAPP.vueServiceBean( {
 						}
 					}
 					,message : {
-						empty : VARSQL.message('varsql.m.0019')
+						empty : VARSQL.message('msg.db.compare.007')
 					}
 				});
 			}
@@ -1351,9 +1351,9 @@ VarsqlAPP.vueServiceBean( {
 							compareFlag = true;
 
 							if(itemKey =='createScript'){
-								compareLog.push(VARSQL.message('varsql.m.0021', {key: itemKey})+'\n');
+								compareLog.push(VARSQL.message('msg.db.compare.009', {key: itemKey})+'\n');
 							}else{
-								compareLog.push(VARSQL.message('varsql.m.0022', {key: itemKey, sourceValue : sourceItem[itemKey], targetValue : targetItem[itemKey]})+'\n');
+								compareLog.push(VARSQL.message('msg.db.compare.010', {key: itemKey, sourceValue : sourceItem[itemKey], targetValue : targetItem[itemKey]})+'\n');
 							}
 						}
 					}
@@ -1371,7 +1371,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('varsql.m.0018')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.message('varsql.m.0023')+' </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.006')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.message('msg.db.compare.011')+' </span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -1380,7 +1380,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('varsql.m.0020')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.message('varsql.m.0023')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.008')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
 			}
 
 			return compareResult.join('\n');

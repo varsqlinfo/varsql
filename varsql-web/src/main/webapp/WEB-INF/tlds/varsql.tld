@@ -27,6 +27,17 @@
 	</tag>
 	
 	<tag>
+		<name>supportLocale</name>
+		<tag-class>com.varsql.web.tags.SupportLocaleTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	<tag>
 		<name>messageResourceUrl</name>
 		<tag-class>com.varsql.web.tags.MessageResourceUrl</tag-class>
 		<body-content>empty</body-content>

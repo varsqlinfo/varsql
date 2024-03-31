@@ -11,8 +11,8 @@
 							<span @click="viewItem(item,'parent')">{{item.name}}</span>
 
 							<span class="pull-right">
-								<button class="btn btn-sm btn-default" @click="addChildItem(item)"><spring:message code="btn.sub.add"/></button>
-								<button class="btn btn-sm btn-default" @click="removeItem(contextItems,index,item)"><spring:message code="btn.delete"/></button>
+								<button class="btn btn-sm btn-default" @click="addChildItem(item)"><spring:message code="sub.add"/></button>
+								<button class="btn btn-sm btn-default" @click="removeItem(contextItems,index,item)"><spring:message code="delete"/></button>
 							</span>
 						</a>
 						<template v-if="item.templateInfos.length > 0">
@@ -21,7 +21,7 @@
 									<a :class="deteilItem == childItem ? 'active':''">
 										<span @click="viewItem(childItem,'child')">{{childItem.name}}</span>
 										<span class="pull-right">
-											<button class="btn btn-sm btn-default" @click="removeItem(item.templateInfos, index2, childItem)"><spring:message code="btn.delete"/></button>
+											<button class="btn btn-sm btn-default" @click="removeItem(item.templateInfos, index2, childItem)"><spring:message code="delete"/></button>
 										</span>
 									</a>
 								</li>
@@ -33,25 +33,25 @@
 			<div class="col-xs-7">
 				<div class="col-sm-12 padding0">
 					<div class="pull-right">
-						<button type="button" class="btn btn-md btn-default" @click="newItem()"><spring:message code="btn.new"/></button>
-						<button type="button" class="btn btn-md btn-default" @click="save()" v-show="viewItemType=='new'"><spring:message code="btn.save"/></button>
+						<button type="button" class="btn btn-md btn-default" @click="newItem()"><spring:message code="new"/></button>
+						<button type="button" class="btn btn-md btn-default" @click="save()" v-show="viewItemType=='new'"><spring:message code="save"/></button>
 					</div>
 				</div>
 				<div class="col-xs-12 padding0">
 					<div class="field-group">
-						<label class="col-xs-2 control-label"><spring:message code="label.contextmenu.name" text="컨텍스트명"/></label>
+						<label class="col-xs-2 control-label"><spring:message code="contextmenu.name" text="컨텍스트명"/></label>
 						<div class="col-xs-10">
 							<input v-model="deteilItem.name" class="form-control text required input-sm">
 						</div>
 					</div>
 					<div class="field-group" v-show="viewItemType=='child'">
-						<label class="col-xs-2 control-label"><spring:message code="label.view.mode" text="보기 방식"/></label>
+						<label class="col-xs-2 control-label"><spring:message code="view.mode" text="보기 방식"/></label>
 						<div class="col-xs-10">
-							<label class="checkbox-container display-inline"><spring:message code="label.view.mode.editor" text="에디터보기"/>
+							<label class="checkbox-container display-inline"><spring:message code="view.mode.editor" text="에디터보기"/>
 							  <input type="radio" v-model="deteilItem.viewMode" value="editor" checked="checked">
 							  <span class="radiomark"></span>
 							</label>
-							<label class="checkbox-container display-inline"><spring:message code="label.view.mode.dialog" text="다이얼로그"/>
+							<label class="checkbox-container display-inline"><spring:message code="view.mode.dialog" text="다이얼로그"/>
 							  <input type="radio" v-model="deteilItem.viewMode" value="dialog" checked="checked">
 							  <span class="radiomark"></span>
 							</label>
@@ -149,7 +149,7 @@
 	    		this.contextItems = allContextInfo;
 
 	    		if(!VARSQL.isArray(this.contextItems)){
-	    			if(VARSQL.confirmMessage('varsql.0022')){
+	    			if(VARSQL.confirmMessage('msg.setting.fail.restore')){
 	    				this.restoreDefault(false);
 	    			}
 	    		}
@@ -221,7 +221,7 @@
 	    				var result =VARSQLTemplate.render.generateSource(templateInfo, defaultTableColumnInfo);
 
 	    				if(result.isError){
-	    	    			VARSQL.toastMessage('varsql.0026');
+	    	    			VARSQL.toastMessage('msg.setting.invalid');
 	    	    			this.viewItem(templateInfo, 'child');
 	    	    			return null;
 	    	    		}
@@ -238,7 +238,7 @@
 					return ;
 				}
 
-	    		if(!VARSQL.confirmMessage('varsql.0024')){
+	    		if(!VARSQL.confirmMessage('msg.saveandreload')){
 	    			return ;
 	    		}
 
@@ -273,7 +273,7 @@
 	    	,restoreDefault :function (messageView){
 
 	    		if(messageView !== false){
-		    		if(!VARSQL.confirmMessage('varsql.0021')){
+		    		if(!VARSQL.confirmMessage('msg.init.restore.confirm')){
 		    			return ;
 		    		}
 	    		}
@@ -351,7 +351,7 @@
 	    	}
 	    	// item 삭제.
 	    	,removeItem : function (items,index,item){
-	    		if(!VARSQL.confirmMessage('varsql.0016')){
+	    		if(!VARSQL.confirmMessage('msg.delete.confirm')){
 					return ;
 				}
 

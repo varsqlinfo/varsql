@@ -10,13 +10,13 @@
 	<div>
 		<div class="form-group" style="width:300px;float:left;">
 			<div class="input-group">
-				<input class="form-control" v-model="searchVal" placeholder="Search..." @keyup.enter="search()">
+				<input class="form-control" v-model="searchVal" placeholder="<spring:message code="search.placeholder" />" @keyup.enter="search()">
 				<span class="input-group-btn"> <button class="btn btn-default search-btn" type="button" @click="search()"><spring:message code="search" text="검색"/></button>
 				</span>
 			</div>
 		</div>
 		<div style="float:right;">
-			<a href="<varsql-app:boardUrl addUrl="write"/>" class="btn btn-default"><spring:message code="writing" text="글쓰기"/></a>
+			<a href="<varsql-app:boardUrl addUrl="write"/>" class="btn btn-default"><spring:message code="write" text="작성"/></a>
 		</div>
 		<div style="clear:both;"></div>
 	</div>

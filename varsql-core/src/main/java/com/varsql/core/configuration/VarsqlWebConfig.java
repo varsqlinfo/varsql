@@ -26,7 +26,7 @@ public class VarsqlWebConfig{
 
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 	
-	private final String WEB_CONFIG_FILE = "config/varsql-web-config.xml";
+	private final String WEB_CONFIG_FILE = "config/web-config.xml";
 
 	private VarsqlWebConfigBean webConfigBean;
 

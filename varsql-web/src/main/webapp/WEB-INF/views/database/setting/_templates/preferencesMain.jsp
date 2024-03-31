@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <html>
 <head>
-<title><spring:message code="database.preferences" /></title>
+<title><spring:message code="preferences" /></title>
 <%@ include file="/WEB-INF/include/database-preferences.jsp"%>
 
 </head>

@@ -4,7 +4,7 @@
 <HTML>
 
 <head>
-<title><spring:message code="page.title.varsql"/></title>
+<title><spring:message code="varsql.title"/></title>
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
@@ -27,28 +27,28 @@
 <body>
 
 <div id="vueArea" class="container">
-    <h3 class="page-header" style="text-align:center;"><spring:message code="page.title.varsql"/> <spring:message code="password.reset"/></h3>
+    <h3 class="page-header" style="text-align:center;"><spring:message code="varsql.title"/> <spring:message code="password.reset"/></h3>
    <form name="resetForm" id="resetForm" class="form-horizontal well" role="form" onsubmit="return false;">
 		<input type="hidden" name="token" value="<c:out value='${param.token}' />">
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.password"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.password"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="join.form.password"/>" />
+                <input type="password" class="form-control" id="upw" name="upw" placeholder="<spring:message code="user.password"/>" />
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="join.form.password.confirm"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="user.password.confirm"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="join.form.password.confirm" />" />
+                <input type="password" class="form-control" id="confirmUpw" name="confirmUpw" placeholder="<spring:message code="user.password.confirm" />" />
             </div>
         </div>
     </form>
     <div class="form-group">
           <div class="col-sm-12 text-center">
               <button type="button" @click="submit()" class="btn btn-info btn-reset"><spring:message code="btn.confirm"/></button>
-              <button type="button" @click="goCancel()" class="btn btn-default btnMain"><spring:message code="label.cancel"/></button>
+              <button type="button" @click="goCancel()" class="btn btn-default btnMain"><spring:message code="cancel"/></button>
           </div>
       </div>
     <!--/form-->
@@ -79,27 +79,27 @@ VarsqlAPP.vueServiceBean({
 					upw: {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
+		                        message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')
 		                    }
 		                    ,identical: {
 		                        field: 'confirmUpw',
-		                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
+		                        message: VARSQL.message('msg.valid.password.identical','비밀번호가 같아야합니다.')
 		                    }
 		                    ,stringLength: {
 		                        min: 4,
 		                        max: 200,
-		                        message: VARSQL.message('varsql.0047', {size : 4})
+		                        message: VARSQL.message('msg.valid.min.size.param', {size : 4})
 		                    }
 		                }
 		            }
 		            ,confirmUpw: {
 		                validators: {
 		                    notEmpty: {
-		                        message: VARSQL.message('varsql.0042','필수 입력사항입니다.')
+		                        message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')
 		                    }
 		                    ,identical: {
 		                        field: 'upw',
-		                        message: VARSQL.message('varsql.0046','비밀번호가 같아야합니다.')
+		                        message: VARSQL.message('msg.valid.password.identical','비밀번호가 같아야합니다.')
 		                    }
 		                }
 		            }
@@ -130,16 +130,16 @@ VarsqlAPP.vueServiceBean({
 	                    
                     if(item != 'success'){
                         if(item=='token'){
-                            VARSQL.alertMessage('varsql.0052','유효하지 않은 토근입니다.');
+                            VARSQL.alertMessage('invalid.token','유효하지 않은 토근입니다.');
                         }else if(item=='password'){
-                            VARSQL.alertMessage('varsql.0053', '패스워드를 정확히 입력해주세요.');
+                            VARSQL.alertMessage('msg.valid.id.diffrent', '비밀번호가 같아야합니다.');
                         }else{
                             VARSQL.alertMessage(item);
                         }
                         
                         return ;
                     }else{
-                        VARSQL.alertMessage('varsql.0054', '변경되었습니다.');
+                        VARSQL.alertMessage('msg.change.success', '변경되었습니다.');
                         location.href='<c:url value="/" />';
                     }
 				},

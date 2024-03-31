@@ -15,7 +15,7 @@
 				<div class="row search-area">
 					<div class="col-sm-4">
 						<label>
-							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="btn.delete" /></button>
+							<button @click="deleteInfo()" type="button" class="btn btn-xs btn-danger"><spring:message code="delete" /></button>
 						</label>
 					</div>
 					<div class="col-sm-8">
@@ -29,7 +29,7 @@
 								</select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" value="" v-model="searchVal" class=" form-control" @keydown.enter="search()">
+								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
@@ -53,7 +53,7 @@
 										</div>
 									</th>
 									<th style="width: 195px;">
-										<spring:message	code="sql_file_name" />
+										<spring:message	code="sql.file.name" />
 									</th>
 									<th style="width: 120px;">
 										<spring:message	code="size" />
@@ -95,13 +95,13 @@
 			<div class="panel-body">
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="col-xs-12">
-						최대 5000 라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.
+						<spring:message	code="msg.sqlfile.limit.view" text="최대 5000라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다." />
 					</div>
 					<div class="pull-right" v-if="detailItem.content" @click="download(currentItem)">
 						<button type="button" class="btn btn-sm btn-default">다운로드</button>
 					</div>
 					<div class="form-group">
-						<div class="col-xs-12"><label class="control-label"><spring:message code="user.preferences.sqlcont" /></label></div>
+						<div class="col-xs-12"><label class="control-label"><spring:message code="content" /></label></div>
 						<div class="col-xs-12">
 							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
 						</div>
@@ -240,11 +240,11 @@ VarsqlAPP.vueServiceBean({
 			var selectItem = _this.selectItem;
 
 			if(VARSQL.isDataEmpty(selectItem)){
-				VARSQL.alertMessage('varsql.0006');
+				VARSQL.alertMessage('msg.item.select');
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 
@@ -254,7 +254,7 @@ VarsqlAPP.vueServiceBean({
 					selectItem : selectItem.join(',')
 				}
 				,success:function (resData){
-					VARSQL.toastMessage('varsql.0017');
+					VARSQL.toastMessage('msg.delete.success');
 					_this.search();
 				}
 			});

@@ -2,8 +2,6 @@ package com.varsql.core.common.constants;
 
 import java.util.Locale;
 
-import com.vartech.common.utils.StringUtils;
-
 
 /**
  *
@@ -13,15 +11,15 @@ import com.vartech.common.utils.StringUtils;
  * @작성자      : ytkim
  * @변경이력 :
  */
-public enum LocaleConstants {
+public enum LocaleConstants  {
 	KO("ko") , EN ("en");
 
 	private String locale;
 	private String i18n;
-
+	
 	LocaleConstants(String locale){
 		this.locale = locale;
-		this.i18n = locale +".lang";
+		this.i18n = "lang."+locale ;
 	}
 
 	public String getLocale() {
@@ -61,6 +59,8 @@ public enum LocaleConstants {
 		}
 		return LocaleConstants.KO;
 	}
+	
+	
 
 }
 

@@ -29,7 +29,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -55,12 +55,12 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manager.log.query" /></th>
+									<th class="text-center"><spring:message	code="query" /></th>
 									<th class="text-center"><spring:message	code="id" /></th>
 									<th class="text-center"><spring:message	code="ip" /></th>
 									<th class="text-center"><spring:message	code="std_time" /><br><spring:message code="end_time" /></th>
 									<th class="text-center"><spring:message code="result" /></th>
-									<th class="text-center"><spring:message	code="manager.log.delay" /></th>
+									<th class="text-center"><spring:message	code="delay.time" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">

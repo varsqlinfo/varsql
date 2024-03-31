@@ -4,7 +4,7 @@
 <ul class="nav left-menu">
 	<li>
         <a href="<c:url value="/user/" />" style="text-align:center;">
-        	<i class="fa fa-home"></i><spring:message code="database.screen" text="메인화면 가기"/>
+        	<i class="fa fa-home"></i><spring:message code="screen.main" text="메인화면 가기"/>
         </a>
     </li>
     <li class="<c:if test="${fn:endsWith(originalURL,'/user/preferences')}"> active</c:if>">

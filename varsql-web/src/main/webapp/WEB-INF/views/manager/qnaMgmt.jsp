@@ -22,7 +22,7 @@
 								<option value="50">50</option>
 								<option value="100">100</option></select>
 						</label>
-						<label class="radio-inline">답변여부</label>
+						<label class="radio-inline"><spring:message code="answer.yn" text="답변여부" /></label>
 						<label class="radio-inline">
 							<input type="radio"	name="answerYn" v-model="answerYn" value="ALL" checked>ALL
 						</label>
@@ -37,7 +37,7 @@
 						<div class="dataTables_filter">
 							<div class="input-group floatright">
 
-								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="msg.search.placeholder" />">
+								<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 								</span>
@@ -134,10 +134,10 @@ VarsqlAPP.vueServiceBean({
 						}
 
 						if(resData.item > 0){
-							VARSQL.toastMessage('varsql.0002');
+							VARSQL.toastMessage('msg.save.success');
 							return ;
 						}else{
-							VARSQL.toastMessage('varsql.0002');
+							VARSQL.toastMessage('msg.save.success');
 							return ;
 						}
 					}

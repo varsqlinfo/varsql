@@ -543,7 +543,7 @@ FileComponent.prototype = {
 				var btnClass = btnClassName;
 				this.btnClassName = 'wrapper-'+btnClass;
 
-				var btnHtml = '<div class="file-add-btn-area wrapper-'+btnClass+'""><button type="button" class="file-add-btn '+btnClass+'">파일찾기</button></div>';
+				var btnHtml = '<div class="file-add-btn-area wrapper-'+btnClass+'""><button type="button" class="file-add-btn '+btnClass+'">'+VARSQL.message('file.add')+'</button></div>';
 				if(opt.btn == 'top'){
 					$(opt.el).before(btnHtml);
 				}else{

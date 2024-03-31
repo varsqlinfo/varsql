@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title><spring:message code="user.preferences.title"/></title>
+	<title><spring:message code="preferences"/></title>
 	<%@ include file="/WEB-INF/include/head-manager.jsp"%>
 </head>
 <body>

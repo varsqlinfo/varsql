@@ -22,7 +22,7 @@
 					<input type="text" id="noteTitle" name="noteTitle" value="" class="form-control" placeholder="<spring:message code="title" />">
 				</div>
 				<div>
-					<textarea id="noteContent" name="noteContent" class="form-control" style="height: 230px;" placeholder="<spring:message code="content" />"></textarea>
+					<textarea id="noteContent" name="noteContent" class="form-control" style="height: 245px;" placeholder="<spring:message code="content" />"></textarea>
 				</div>
 			</div>
 		</div>
@@ -84,13 +84,13 @@
 			<div><spring:message code="options" /></div>
 			<ul class="find-text-option-area">
 				<li>
-					<label class="checkbox-container"><spring:message code="label.case.sensitive" />
+					<label class="checkbox-container"><spring:message code="case.sensitive" />
 					  <input type="checkbox" name="find-text-option" value="caseSearch">
 					  <span class="checkmark"></span>
 					</label>
 				</li>
 				<li>
-					<label class="checkbox-container"><spring:message code="label.wrap.search" />
+					<label class="checkbox-container"><spring:message code="wrap.search" />
 					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
 					  <span class="checkmark"></span>
 					</label>
@@ -135,20 +135,19 @@
 	</div>
 </div>
 
-<div id="queryConvertDialog" class="query-convert-dialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="Text Convert">
+<div id="queryConvertDialog" class="query-convert-dialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="<spring:message code="text.convert" text="텍스트 변환"/>">
 	<div class="query-convert-header col-xs-12"> 
-		Template
+		<spring:message code="template" text="템플릿" />
 		<select id="queryConvertType">
-			
 		</select>
-		Split Char
+		<spring:message code="split.char" text="분리 문자" />
 		<select id="queryConvertSplitChar">
 			<option value="newline" selected>New Line(\n)</option>
 			<option value="tab">Tab(\t)</option>
 			<option value="comma">Comma(,)</option>
 			<option value="space">Space(\s)</option>
 		</select>
-		<button class="query_convert_text_btn">변환</button>
+		<button class="query_convert_text_btn"><spring:message code="convert" text="변환" /></button>
 	</div>
 	<div class="query-convert-body">
 		<div class="col-xs-6 padding5 h100">
@@ -185,7 +184,7 @@
 <%--data export template --%>
 <script id="dataExportTemplate" type="text/varsql-template">
 <div id="data-export-modal" title="<spring:message code="data.export" />">
-	<div style="padding-bottom: 6px;"><spring:message code="data.export.history.msg" text="다운로드 항목은 환경설정 -> 파일 에서 이력을 조회 할수 있습니다."/></div> 
+	<div style="padding-bottom: 6px;"><spring:message code="msg.download.history.help" text="다운로드 항목은 환경설정 -> 파일 에서 이력을 조회 할수 있습니다."/></div> 
 	<div class="export-dialog-area" style="height:calc(100% - 25px);">
 		<div id="data-export-column-list" class="export-column-area">
 

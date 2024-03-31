@@ -21,6 +21,7 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.ConfigurationException;
 import com.vartech.common.crypto.password.PasswordType;
+import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.VartechUtils;
 
 
@@ -84,6 +85,8 @@ public class Configuration extends AbstractConfiguration{
 
 	private int fileUploadMaxInMemorySize=0;
 	
+	private boolean isInit;
+	
 	private VarsqlConstants.PASSWORD_RESET_MODE passwordResetMode;
 	
 	private static class ConfigurationHolder{
@@ -117,9 +120,28 @@ public class Configuration extends AbstractConfiguration{
 	 * @throws Exception
 	 */
 	private void initConfig() throws Exception {
+		File file = new File(VARSQL_INSTALL_PATH, VARSQL_PROPERTIES_FILE);
 
-		logger.info("VARSQL_INSTALL_PATH : {}",VARSQL_INSTALL_PATH);
-		logger.info("configuration filename : {}",VARSQL_PROPERTIES_FILE);
+		logger.info("Varsql Resource Path : {}",VARSQL_INSTALL_PATH);
+		logger.info("Configuration file : {}",file);
+		
+		if(!file.exists()) {
+			isInit = false;
+			try(InputStream is= ResourceUtils.getResource(ResourceUtils.CLASS_PREFIX+VARSQL_PROPERTIES_FILE).getInputStream();){
+				if(!new File(file.getParent()).exists()) {
+					new File(file.getParent()).mkdirs();
+				}
+				
+				System.out.println("file.getParent() : "+ file.getParent());
+				
+				
+				IOUtils.write(is, file);
+			}catch(Exception e) {
+				logger.error("properties init error : {}", e.getMessage(), e);
+			}
+		}else {
+			isInit = true;
+		}
 
 		Resource configResource = getResourceFile(VARSQL_PROPERTIES_FILE);
 
@@ -132,6 +154,8 @@ public class Configuration extends AbstractConfiguration{
 		}catch(IOException e) {
 			throw new ConfigurationException(e);
 		}
+		
+		
 
 		setConfigProperty();
 		
@@ -215,13 +239,17 @@ public class Configuration extends AbstractConfiguration{
 		}else {
 			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_XML_FILE);
 			
+			if(!file.exists()) {
+				try(InputStream is= ResourceUtils.getResource(ResourceUtils.CLASS_PREFIX+CONNECTION_XML_FILE).getInputStream();){
+					IOUtils.write(is, file);
+				}catch(Exception e) {
+					logger.error("db connection file create error : {}", e.getMessage(), e);
+				}
+			}
+			
 			logger.info("connection config read file path : {}", file.getAbsolutePath());
 			
-			if(file.exists()) {
-				connectionResource = ResourceUtils.getResource(file.getPath());
-			}else {
-				connectionResource = ResourceUtils.getResource(CONNECTION_XML_FILE);
-			}
+			connectionResource = ResourceUtils.getResource(file.getPath());
 		}
 
 		if(connectionResource==null){
@@ -388,6 +416,10 @@ public class Configuration extends AbstractConfiguration{
 	}
 	
 	private Resource getResourceFile(String filePath) {
+		return getResourceFile(filePath, false);
+	}
+	
+	private Resource getResourceFile(String filePath, boolean createFlag) {
 		File file = new File(VARSQL_INSTALL_PATH, filePath);
 		if(file.exists()) {
 			return ResourceUtils.getResource(file.getPath());
@@ -402,6 +434,10 @@ public class Configuration extends AbstractConfiguration{
 	
 	public String getTimeZoneId() {
 		return getProperties().getProperty("varsql.timezone","");
+	}
+
+	public boolean isInit() {
+		return isInit;
 	}
 
 }

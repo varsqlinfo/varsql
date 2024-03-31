@@ -212,42 +212,42 @@ var DEFINE_INFO = {
 		}
 		,mainMetaGridHeader : {
 			tableColumn : [
-				{ label: VARSQL.message('grid.column.name'), key: 'name',width:80 },
-				{ label: VARSQL.message('grid.data.type'), key: 'typeAndLength' },
-				{ label: VARSQL.message('grid.key'), key: 'constraints',width:45},
-				{ label: VARSQL.message('grid.default.value'), key: 'defaultVal',width:45},
-				{ label: VARSQL.message('grid.nullable'), key: 'nullable',width:45},
-				{ label: VARSQL.message('grid.desc'), key: 'comment',width:45}
+				{ label: VARSQL.message('column.name'), key: 'name',width:80 },
+				{ label: VARSQL.message('data.type'), key: 'typeAndLength' },
+				{ label: VARSQL.message('constraints.key'), key: 'constraints',width:45},
+				{ label: VARSQL.message('default.value'), key: 'defaultVal',width:45},
+				{ label: VARSQL.message('nullable'), key: 'nullable',width:45},
+				{ label: VARSQL.message('column.comment'), key: 'comment',width:45}
 			]
 			,viewColumn : [
-				{ label: VARSQL.message('grid.column.name'), key: 'name',width:80 },
-				{ label: VARSQL.message('grid.data.type'), key: 'typeName' },
-				{ label: VARSQL.message('grid.desc'), key: 'comment',width:45}
+				{ label: VARSQL.message('column.name'), key: 'name',width:80 },
+				{ label: VARSQL.message('data.type'), key: 'typeName' },
+				{ label: VARSQL.message('column.comment'), key: 'comment',width:45}
 			]
 			,procedureColumn : [
-				{ label: VARSQL.message('grid.parameter.name'), key: 'name',width:80 },
-				{ label: VARSQL.message('grid.data.type') , key: 'typeName' },
-				{ label: VARSQL.message('grid.inout.name'), key: 'columnType',width:45},
-				{ label: VARSQL.message('grid.desc'), key: 'comment',width:45}
+				{ label: VARSQL.message('parameter.name'), key: 'name',width:80 },
+				{ label: VARSQL.message('data.type') , key: 'typeName' },
+				{ label: VARSQL.message('parameter.inout'), key: 'columnType',width:45},
+				{ label: VARSQL.message('column.comment'), key: 'comment',width:45}
 			]
 			,functionColumn : [
-				{ label: VARSQL.message('grid.parameter.name'), key: 'name',width:80 }, // 파라미터
-				{ label: VARSQL.message('grid.data.type') , key: 'typeName' },		// datatype
-				{ label: VARSQL.message('grid.inout.name'), key: 'columnType',width:45},	// in/out
-				{ label: VARSQL.message('grid.desc'), key: 'comment',width:45}	// 설명
+				{ label: VARSQL.message('parameter.name'), key: 'name',width:80 }, // 파라미터
+				{ label: VARSQL.message('data.type') , key: 'typeName' },		// datatype
+				{ label: VARSQL.message('parameter.inout'), key: 'columnType',width:45},	// in/out
+				{ label: VARSQL.message('column.comment'), key: 'comment',width:45}	// 설명
 			]
 			,indexColumn : [
-				{ label: VARSQL.message('grid.column.name'), key: 'name',width:80 },
-				{ label: 'POSITION', key: 'no',width:80 },
-				{ label: 'ASC OR DESC', key: 'ascOrdesc' }
+				{ label: VARSQL.message('column.name'), key: 'name',width:80 },
+				{ label: VARSQL.message('position'), key: 'no',width:80 },
+				{ label: VARSQL.message('sort.type'), key: 'ascOrdesc' }
 			]
 			,triggerInfo : [
-				{ label: 'Name', key: 'name'},
-				{ label: 'Value', key: 'val',width:80 }
+				{ label: VARSQL.message('key'), key: 'name'},
+				{ label: VARSQL.message('value'), key: 'val',width:80 }
 			]
 			,sequenceInfo : [
-				{ label: 'Name', key: 'name'},
-				{ label: 'Value', key: 'val',width:80 },
+				{ label: VARSQL.message('key'), key: 'name'},
+				{ label: VARSQL.message('value'), key: 'val',width:80 },
 			]
 
 		}

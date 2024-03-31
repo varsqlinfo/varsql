@@ -23,7 +23,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -44,7 +44,7 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manager.dbgroup.nm" /></th>
+									<th class="text-center"><spring:message	code="group.name" /></th>
 								</tr>
 							</thead>
 							<tbody class="dataTableContent">
@@ -69,7 +69,7 @@
 	<div class="col-xs-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<spring:message code="manager.dbgroup.usermapping" />
+				<spring:message code="group.usermapping" />
 				<template v-if="detailItem.groupName">
 					[<b>{{detailItem.groupName}}</b>]
 				</template>
@@ -155,7 +155,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 				,target : {
 					items : []
-					,emptyMessage :'데이터가 존재하지 않습니다.'
+					,emptyMessage :VARSQL.message('msg.nodata')
 					,search :{
 						enable : true
 						,callback : function (searchWord){
@@ -245,7 +245,7 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 
 			if(!_self.detailItem.groupId){
-				VARSQL.alertMessage('varsql.0003');
+				VARSQL.alertMessage('msg.item.select', VARSQL.message('add'));
 				return false;
 			}
 

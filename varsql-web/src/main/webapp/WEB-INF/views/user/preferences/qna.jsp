@@ -12,7 +12,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="input-group">
-					<input type="text" value="" v-model="searchVal" class="form-control" @keydown.enter="search()">
+					<input type="text" v-model="searchVal" class="form-control" @keydown.enter="search()" placeholder="<spring:message code="search.placeholder" />">
 					<span class="input-group-btn">
 						<button class="btn btn-default searchBtn" type="button" @click="search()"> <span class="glyphicon glyphicon-search"></span></button>
 					</span>
@@ -50,15 +50,15 @@
 					<div class="form-group">
 						<div class="col-sm-12">
 							<div class="pull-right">
-								<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="btn.add"/></button>
-								<button type="button" @click="save()" class="btn btn-info"><spring:message code="btn.save"/></button>
-								<button type="button" v-if="isDetailFlag && detailItem.answerYn == 'N'" @click="deleteInfo()" class="btn btn-primary"><spring:message code="btn.delete" /></button>
+								<button type="button" v-if="isDetailFlag" @click="qnaModify()" class="btn btn-default"><spring:message code="new"/></button>
+								<button type="button" @click="save()" class="btn btn-info"><spring:message code="save"/></button>
+								<button type="button" v-if="isDetailFlag && detailItem.answerYn == 'N'" @click="deleteInfo()" class="btn btn-primary"><spring:message code="delete" /></button>
 							</div>
 						</div>
 					</div>
 
 					<div class="form-group" :class="errors.has('Title') ? 'has-error' :''">
-						<div class="col-xs-12"><label class="control-label"><spring:message code="guest.form.title" /></label></div>
+						<div class="col-xs-12"><label class="control-label"><spring:message code="title" /></label></div>
 
 						<div class="col-xs-12">
 							<input type="text" v-model="detailItem.title"  v-validate="'required'" name="Title" class="form-control" />
@@ -66,7 +66,7 @@
 						</div>
 					</div>
 					<div class="form-group" :class="errors.has('Question') ? 'has-error' :''">
-						<div class="col-xs-12"><label class="control-label"><spring:message code="guest.form.question" /></label></div>
+						<div class="col-xs-12"><label class="control-label"><spring:message code="question" /></label></div>
 						<div class="col-xs-12">
 							<textarea v-model="detailItem.question" rows="3" v-validate="'required'" name="Question" class="form-control"></textarea>
 							<div v-if="errors.has('Question')" class="help-block">{{errors.first('Question')}}</div>
@@ -74,7 +74,7 @@
 					</div>
 					<div class="form-group">
 						<div class="col-xs-12">
-							<label class="control-label"><spring:message code="guest.form.answer" /></label>
+							<label class="control-label"><spring:message code="answer" /></label>
 							<span v-if="detailItem.answerYn != 'N'">({{detailItem.answerDt}})</span>
 						</div>
 						<div class="col-xs-12">
@@ -166,7 +166,7 @@ VarsqlAPP.vueServiceBean({
 
 			var item = this.detailItem;
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 

@@ -4,7 +4,7 @@
 
 <html>
 <head>
-<title><spring:message code="user.home.title"/></title>
+<title><spring:message code="varsql.title"/></title>
 <%@ include file="/WEB-INF/include/head-user.jsp"%>
 </head>
 <body class="user-main-body">

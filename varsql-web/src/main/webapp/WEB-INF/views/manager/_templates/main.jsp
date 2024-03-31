@@ -4,7 +4,7 @@
 
 <html>
 <head>
-<title><spring:message code="manager.home.title" /></title>
+<title>- <spring:message code="screen.manager" /> -</title>
 <%@ include file="/WEB-INF/include/head-manager.jsp"%>
 </head>
 

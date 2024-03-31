@@ -23,7 +23,7 @@
 								<option value="100">100</option></select>
 							</label>
 							<div class="input-group floatright">
-								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+								<input type="text" v-model="searchVal" class=" form-control" @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 								<span class="input-group-btn">
 									<button class="btn btn-default" @click="search()" type="button">
 										<span class="glyphicon glyphicon-search"></span>
@@ -46,7 +46,7 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="manager.dbgroup.nm" /></th>
+									<th class="text-center"><spring:message	code="group.name" /></th>
 									<th class="text-center"><spring:message	code="reg_user" /></th>
 									<th class="text-center"><spring:message	code="reg_dt" /></th>
 								</tr>
@@ -79,9 +79,9 @@
 				<div class="form-group">
 					<div class="col-sm-12">
 						<div class="pull-right">
-							<button type="button" class="btn btn-default" :class="(isViewMode?'':'hide')" @click="fieldClear()"><spring:message code="btn.add"/></button>
-							<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="btn.save"/></button>
-							<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')" @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+							<button type="button" class="btn btn-default" :class="(isViewMode?'':'hide')" @click="fieldClear()"><spring:message code="new"/></button>
+							<button type="button" class="btn btn-default" @click="saveInfo()"><spring:message code="save"/></button>
+							<button type="button" class="btn btn-danger" :class="(isViewMode?'':'hide')" @click="deleteInfo()"><spring:message code="delete"/></button>
 						</div>
 					</div>
 				</div>
@@ -89,7 +89,7 @@
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<input type="hidden" v-model="detailItem.wordIdx">
 					<div class="form-group" :class="errors.has('GROUPNAME') ? 'has-error' :''">
-						<label class="col-sm-4 control-label"><spring:message code="manager.dbgroup.nm" /></label>
+						<label class="col-sm-4 control-label"><spring:message code="group.name" /></label>
 						<div class="col-sm-8">
 							<input type="text" v-model="detailItem.groupName" v-validate="'required'" name="GROUPNAME" class="form-control" />
 							<div v-if="errors.has('GROUPNAME')" class="help-block">{{ errors.first('GROUPNAME') }}</div>
@@ -108,7 +108,7 @@
 		</div>
 
 		<div class="panel panel-default" :class="isViewMode ?'' :'hidden'" >
-			<div class="panel-heading"><spring:message code="manager.dbgroup.mapping" /></div>
+			<div class="panel-heading"><spring:message code="group.mapping" /></div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="col-sm-12">
@@ -148,7 +148,7 @@ VarsqlAPP.vueServiceBean( {
 			_self.selectObj= $.pubMultiselect('#source', {
 				duplicateCheck : true
 				,message :{
-					duplicate: VARSQL.message('varsql.0018')
+					duplicate: VARSQL.message('msg.item.added')
 				}
 				,valueKey : 'vconnid'	
 				,labelKey : 'vname'
@@ -240,7 +240,7 @@ VarsqlAPP.vueServiceBean( {
 		,deleteInfo : function(){
 			var _self = this;
 
-			if(!VARSQL.confirmMessage('varsql.m.0006', _self.detailItem)){
+			if(!VARSQL.confirmMessage('msg.group.delete.confirm', _self.detailItem)){
 				return ;
 			}
 

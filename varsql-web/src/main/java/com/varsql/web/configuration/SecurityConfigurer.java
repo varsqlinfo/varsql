@@ -21,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -35,8 +37,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.code.VarsqlSsoType;
+import com.varsql.core.configuration.Configuration;
 import com.varsql.core.configuration.VarsqlWebConfig;
-import com.varsql.core.sso.SimpleSsoHandler;
+import com.varsql.web.common.filter.AppInitFilter;
 import com.varsql.web.common.filter.VarsqlSsoFilter;
 import com.varsql.web.common.sso.SsoBeanFactory;
 import com.varsql.web.common.sso.SsoComponent;
@@ -133,6 +136,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
+		
+		if(!Configuration.getInstance().isInit()) {
+			http.addFilterBefore(new AppInitFilter(), BasicAuthenticationFilter.class);
+			return ;
+		}
+		
 		configureRememberMe(http);
 		configureHttpSecurity(http);
     }
@@ -251,20 +260,31 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     private void configureRememberMe(HttpSecurity http) throws Exception {
+    	PersistentTokenRepository tokenRepository = rememberMeTokenRepository();
+    	RememberMeUserService rememberMeUserService = rememberMeUserService();
         http.rememberMe()
                .key(SecurityConstants.REMEMBERME_KEY)
-               .rememberMeParameter(SecurityConstants.REMEMBERME_PARAMETER)
-               .rememberMeCookieName(SecurityConstants.REMEMBERME_COOKIENAME)
-               .tokenValiditySeconds(60 * 60 * 24 * 7)
+               .rememberMeServices(rememberMeServices(tokenRepository, rememberMeUserService))
                .authenticationSuccessHandler(varsqlAuthenticationSuccessHandler)
-               .alwaysRemember(false)
-               .tokenRepository(rememberMeTokenRepository())
-               .userDetailsService(rememberMeUserService()).and();
+               .tokenRepository(tokenRepository)
+               .userDetailsService(rememberMeUserService).and();
 	}
 
     @Bean(ResourceConfigConstants.REMEMBERME_USER_DETAIL_SERVICE)
     public RememberMeUserService rememberMeUserService() {
     	return new RememberMeUserService();
+    }
+    
+    @Bean
+    public PersistentTokenBasedRememberMeServices rememberMeServices(PersistentTokenRepository tokenRepository, RememberMeUserService rememberMeUserService) {
+        PersistentTokenBasedRememberMeServices rememberMeServices = new
+                PersistentTokenBasedRememberMeServices(SecurityConstants.REMEMBERME_KEY, rememberMeUserService, tokenRepository);
+        rememberMeServices.setParameter(SecurityConstants.REMEMBERME_PARAMETER);
+        rememberMeServices.setAlwaysRemember(false);
+        rememberMeServices.setTokenValiditySeconds(60 * 60 * 24 * 7);
+        rememberMeServices.setCookieName(SecurityConstants.REMEMBERME_COOKIENAME);
+        
+        return rememberMeServices;
     }
     
     @Bean

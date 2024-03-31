@@ -7,29 +7,29 @@
 		<div class="process-step" :class="step==1?'active':''">
 			<div class="col-xs-12">
 				<div class="field-group">
-					<h2 class="process-header">가져오기 유형 선택</h2>
-					<div class="process-header-desc">가져오기할 작업의 유형을 아래에서 선택해주세요.</div>
+					<h2 class="process-header"><spring:message code="select.format" text="형식 선택"/></h2>
+					<div class="process-header-desc"><spring:message code="msg.file.import.001" text="가져오기할 작업의 형식을 아래에서 선택해주세요."/></div>
 					<ul class="process-type-select">
 						<li>
 							<label class="checkbox-container">SQL
 							  <input type="radio" v-model="importType" value="sql" checked="checked">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"> SQL 파일을 실행해서 입력합니다</div>
+							<div class="checkbox-container-desc"><spring:message code="msg.file.import.002" text="SQL 파일을 실행해서 입력합니다"/></div>
 						</li>
 						<li>
 							<label class="checkbox-container">XML
 							  <input type="radio" v-model="importType" value="xml">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"> XML 파일을 이용하여 데이터를  입력합니다</div>
+							<div class="checkbox-container-desc"><spring:message code="msg.file.import.003" text="XML 파일을 이용하여 데이터를  입력합니다"/></div>
 						</li>
 						<li>
 							<label class="checkbox-container">JSON
 							  <input type="radio" v-model="importType" value="json">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"> JSON 파일을 이용하여 데이터를  입력합니다</div>
+							<div class="checkbox-container-desc"><spring:message code="msg.file.import.003" text="JSON 파일을 이용하여 데이터를  입력합니다"/></div>
 						</li>
 						<!--  li>
 							<label class="checkbox-container">CSV
@@ -50,8 +50,8 @@
 				<div style="padding-top:10px;">
 					<div>
 						<div>
-							업로드된 파일
-							<button @click="selectImport()">Import</button>
+							<spring:message code="uploaded.file" text="업로드된 파일"/>
+							<button @click="selectImport()"><spring:message code="import" text="가져오기"/></button>
 						</div>
 					</div>
 					<div class="row import-file-area">
@@ -202,11 +202,11 @@ VarsqlAPP.vueServiceBean({
 					}
 				}
 				if(importFileIds.length < 1){
-					VARSQL.toastMessage('varsql.0029');
+					VARSQL.toastMessage('msg.file.uploadandexecute');
 					return false;
 				}
 
-				if(!confirm('선택한 파일을 import 하시겠습니까?')){
+				if(!VARSQL.confirmMessage('msg.select.file.import.confirm','선택한 파일을 import 하시겠습니까?')){
 					return ;
 				}
 

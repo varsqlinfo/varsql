@@ -79,7 +79,6 @@ public class UserPreferencesController extends AbstractController{
 
 		setModelDefaultValue(req , model);
 		model.addAttribute("detailInfo" , userPreferencesServiceImpl.findUserInfo(SecurityUtil.userViewId(req)));
-		model.addAttribute("localeInfo" , LocaleConstants.values());
 		return getModelAndView("/general", VIEW_PAGE.USER_PREFERENCES, model);
 	}
 

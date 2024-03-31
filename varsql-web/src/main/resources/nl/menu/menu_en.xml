@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<!-- 파일 메뉴 -->
+<entry key="header.menu.file">File</entry>
+<entry key="header.menu.file.new">New File</entry>
+<entry key="header.menu.file.save">Save</entry>
+<entry key="header.menu.file.allsave">Save All</entry>
+<entry key="header.menu.file.import">Import...</entry>
+<entry key="header.menu.file.export">Export...</entry>
+<entry key="header.menu.file.import_export">Import and Export...</entry>
+<entry key="header.menu.file.newwin">New Window</entry>
+<entry key="header.menu.file.close">Close</entry>
+
+<!-- 편집 메뉴 -->
+<entry key="header.menu.edit">Edit</entry>
+<entry key="header.menu.edit.paste">Paste</entry>
+<entry key="header.menu.edit.undo">Undo</entry>
+<entry key="header.menu.edit.redo">Redo</entry>
+<entry key="header.menu.edit.find">Find</entry>
+<entry key="header.menu.edit.compare">Compare Queries</entry>
+
+<!-- 검색 메뉴 -->
+<entry key="header.menu.search">Search</entry>
+<entry key="header.menu.search.find">Find</entry>
+
+<!-- 도구 메뉴 -->
+<entry key="header.menu.tool">Tool</entry>
+<entry key="header.menu.tool.import">Import</entry>
+<entry key="header.menu.tool.export">Export</entry>
+<entry key="header.menu.tool.export.specification">Table Specifications</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">Data</entry>
+<entry key="header.menu.tool.setting">Settings</entry>
+<entry key="header.menu.tool.show.plugin">Show Components</entry>
+<entry key="header.menu.tool.show.glossary">Glossary</entry>
+<entry key="header.menu.tool.show.history">History</entry>
+
+<entry key="header.menu.tool.theme">Theme Settings</entry>
+<entry key="header.menu.tool.theme.light">Light</entry>
+<entry key="header.menu.tool.theme.dark">Dark</entry>
+
+<entry key="header.menu.tool.initlayout">Reset Layout</entry>
+
+<entry key="header.menu.tool.utils">Utilities</entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[Generate Table]]></entry>
+<entry key="header.menu.tool.utils.multidbsqlexecute">Multi-DB SQL Execution</entry>
+<entry key="header.menu.tool.utils.tableddlconvert">Table DDL Conversion</entry>
+<entry key="header.menu.tool.utils.tablecolumnsearch">Table Column Search</entry>
+
+<!-- 도움말 메뉴 -->
+<entry key="header.menu.help">Help</entry>
+<entry key="header.menu.help.help">Help Topics</entry>
+<entry key="header.menu.help.dbinfo">DB Information</entry>
+<entry key="header.menu.help.info">VARSQL Information</entry>
+
+<!-- admin menu -->
+<entry key="admin.menu.database">Database Management</entry>
+<entry key="admin.menu.databaseoptmgmt">Database Option Management</entry>
+<entry key="admin.menu.managermgmt">Manager Authorization Management</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager Management]]></entry>
+<entry key="admin.menu.report">Report</entry>
+<entry key="admin.menu.dbmenumgmt">Menu Management</entry>
+<entry key="admin.menu.errorlog">Error Logs</entry>
+<entry key="admin.menu.jdbcprovidermgmt">JDBC Provider Management</entry>
+
+<!-- app management menu -->
+<entry key="manager.menu.usermgmt">User Management</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A Management]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & User Management]]></entry>
+<entry key="manager.menu.dbgroup">DB Group Management</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB Group & User Management]]></entry>
+<entry key="manager.menu.glossary">Glossary</entry>
+<entry key="manager.menu.logmgmt">Logs</entry>
+<entry key="manager.menu.dbcomparemgmt">DB Compare</entry>
+<entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
+<entry key="manager.menu.sqllog">SQL Logs</entry>
+<entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
+<entry key="manager.menu.scheduler">Scheduler</entry>
+<entry key="manager.menu.databackupgmgmt">Data Backup Management</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL Backup Management</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+
+<!-- user menu -->
+<entry key="user.prefernces.menu.general">Edit Profile</entry>
+<entry key="user.prefernces.menu.pasword">Change Password</entry>
+<entry key="user.prefernces.menu.message">Message Management</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL File</entry>
+
+<entry key="user.prefernces.menu.file">File</entry>
+<entry key="user.prefernces.menu.fileimportlist">Import History</entry>
+<entry key="user.prefernces.menu.fileexportlist">Download History</entry>
+
+
+
+</properties>

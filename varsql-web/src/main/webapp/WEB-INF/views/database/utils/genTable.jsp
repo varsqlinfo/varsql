@@ -26,10 +26,10 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<div class="field-group" style="height: 42px;">
-						<label class="col-xs-2 control-label"><spring:message code="manager.glossary.word" /></label>
+						<label class="col-xs-2 control-label"><spring:message code="glossary" /></label>
 						<div class="col-xs-10">
-							<input class="form-control text required input-md" v-model="glossarySearchTxt" @keydown.enter="searchGlossary()" style="margin:0px 5px 0px 5px;width: calc(100% - 120px);" placeholder="<spring:message code="manager.glossary.word" />">
-							<button @click="searchGlossary()" class="varsql-btn-default  btn-md" style="padding: 3px 10px;width: 100px;vertical-align: top;"><spring:message code="btn.search" /></button>
+							<input class="form-control text required input-md" v-model="glossarySearchTxt" @keydown.enter="searchGlossary()" style="margin:0px 5px 0px 5px;width: calc(100% - 120px);" placeholder="<spring:message code="glossary" />">
+							<button @click="searchGlossary()" class="varsql-btn-default  btn-md" style="padding: 3px 10px;width: 100px;vertical-align: top;"><spring:message code="search" /></button>
 						</div>
 	
 					</div>
@@ -162,15 +162,15 @@ VarsqlAPP.vueServiceBean( {
 	        	});
 				return ;
 			}
-
+			
 			_this.glossaryGridObj = $.pubGrid('#glossaryInfo', {
 				asideOptions :{lineNumber : {enabled : false	,width : 30}}
 				,tColItem : [
-					{ label: 'WORD', key: 'word',width:80 },
-					{ label: 'EN', key: 'wordEn' },
-					{ label: 'ABBR', key: 'wordAbbr', width:45},
-					{ label: 'TYPE', key: 'wordType',width:45},
-					{ label: 'DESC', key: 'wordDesc',width:45},
+					{ label: VARSQL.message('glossary'), key: 'word',width:80 },
+					{ label: VARSQL.message('glossary.en'), key: 'wordEn' },
+					{ label: VARSQL.message('glossary.abbr'), key: 'wordAbbr', width:45},
+					{ label: VARSQL.message('type'), key: 'wordType',width:45},
+					{ label: VARSQL.message('desc'), key: 'wordDesc',width:45},
 				]
 				,tbodyItem :[]
 				,rowOptions :{
@@ -183,7 +183,7 @@ VarsqlAPP.vueServiceBean( {
 							}
 						},
 						items: [
-							{key : "addItem", "name": "추가"	}
+							{key : "addItem", "name": VARSQL.message('add')	}
 						]
 					}
 				}
@@ -258,31 +258,31 @@ VarsqlAPP.vueServiceBean( {
 							}
 						},
 						items: [
-							{key : "selectionDelete", "name": "선택 삭제"	}
+							{key : "selectionDelete", "name":  VARSQL.message('select.delete')}
 						]
 					}
 		        }
 		        ,editable: true
 		        , tColItem: [
-		        	{label: '컬럼명', key: 'name', width: 80}
-		        	, {label: '데이터타입', key: 'typeName', width: 80, renderer :{
+		        	{label: VARSQL.message('column.name'), key: 'name', width: 80}
+		        	, {label: VARSQL.message('date.type'), key: 'typeName', width: 80, renderer :{
 		        		type : 'dropdown'
 	        			,labelField : 'name'
 	        			,valueField : 'name'
 			        	,list : VARSQLCont.allDataType()
 					}}
-		        	, {label: '길이', key: 'length', renderer :{
+		        	, {label: VARSQL.message('length'), key: 'length', renderer :{
 		        		type : 'number'
 			        }}
-		        	, {label: 'Nullable', key: 'nullable', renderer :{
+		        	, {label: VARSQL.message('nullable'), key: 'nullable', renderer :{
 		        		type : 'dropdown'
 		        		,list : [
 							'Y'
 							,'N'
 						]
 		        	}}
-		        	, {label: '기본값', key: 'defaultVal', width: 45}
-		        	, {label: '설명', key: 'comment', width: 45}
+		        	, {label: VARSQL.message('default.value'), key: 'defaultVal', width: 45}
+		        	, {label: VARSQL.message('column.comment'), key: 'comment', width: 45}
 		        ]
 		        , tbodyItem: tbodyItems
 		    });
@@ -328,12 +328,12 @@ VarsqlAPP.vueServiceBean( {
 	        }
 	        
 	        if(VARSQL.isBlank(tableName)){
-				VARSQLUI.toast.open({text :VARSQL.message('varsql.0039','테이블명을 입력해주세요.')})
+	        	VARSQL.toastMessage('msg.valid.enter.param', VARSQL.message('table.name'));
 				return false; 
 			}
 			
 			if(columnList.length < 1){
-				VARSQLUI.toast.open({text :VARSQL.message('varsql.0040','컬럼 정보를 입력해주세요.')})
+				VARSQL.toastMessage('msg.valid.enter.param', VARSQL.message('column'));
 				return false; 
 			}
 			
@@ -385,7 +385,7 @@ VarsqlAPP.vueServiceBean( {
 			this.generateDDL(function(ddl){
 				if(ddl==false) return ; 
 				
-				if(!VARSQL.confirmMessage('varsql.0041','테이블을 생성하시겠습니까?')){
+				if(!VARSQL.confirmMessage('msg.create.confirm','생성하시겠습니까?')){
 					return ;
 				}
 				

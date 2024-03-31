@@ -18,6 +18,11 @@ public class SchedulerCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		
+		if(!Configuration.getInstance().isInit()) {
+			return false; 
+		}
+		
 		if("Y".equals(System.getProperty(SYSTEM_PROP_CONFIG_KEY))) {
 			return false; 
 		}

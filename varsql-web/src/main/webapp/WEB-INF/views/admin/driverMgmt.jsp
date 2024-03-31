@@ -16,7 +16,7 @@
 				<div class="pull-right search-area">
 					<div class="dataTables_filter">
 						<div class="input-group floatright">
-							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="Search...">
+							<input type="text" v-model="searchVal" class="form-control " @keyup.enter="search()" autofocus="autofocus" placeholder="<spring:message code="search.placeholder" />">
 							<span class="input-group-btn">
 								<button class="btn btn-default" @click="search()" type="button">
 									<span class="glyphicon glyphicon-search"></span>
@@ -39,10 +39,10 @@
 							</colgroup>
 							<thead>
 								<tr role="row">
-									<th class="text-center"><spring:message	code="admin.drivermgmt.db_type" /></th>
-									<th class="text-center"><spring:message	code="admin.drivermgmt.provider_name" /></th>
-									<th class="text-center"><spring:message	code="admin.drivermgmt.driver_class" /></th>
-									<th class="text-center"><spring:message	code="admin.drivermgmt.path_type" /></th>
+									<th class="text-center"><spring:message	code="db.type" /></th>
+									<th class="text-center"><spring:message	code="name" /></th>
+									<th class="text-center"><spring:message	code="driver.class" /></th>
+									<th class="text-center"><spring:message	code="path.type" /></th>
 								</tr>
 							</thead>
 
@@ -70,19 +70,19 @@
 	<!-- /.col-lg-4 -->
 	<div class="col-xs-7" >
 		<div class="panel panel-default detail_area_wrapper" >
-			<div class="panel-heading"><spring:message code="admin.form.header" /><span id="selectDbInfo" style="margin-left:10px;font-weight:bold;">{{detailItem.providerName}}</span></div>
+			<div class="panel-heading"><spring:message code="detail" /><span id="selectDbInfo" style="margin-left:10px;font-weight:bold;">{{detailItem.providerName}}</span></div>
 			
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="form-group" style="height: 34px;margin-bottom:10px;">
 					<div class="col-sm-12">
 						<div class="pull-right">
-							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="btn.add"/></button>
-							<button type="button" class="btn btn-default" @click="save()"><spring:message code="btn.save"/></button>
+							<button type="button" class="btn btn-default" @click="setDetailItem()"><spring:message code="new"/></button>
+							<button type="button" class="btn btn-default" @click="save()"><spring:message code="save"/></button>
 
 							<template v-if="detailFlag===true">
-								<button type="button" class="btn btn-primary" @click="driverCheck()"><spring:message code="btn.driverclass.check"/></button>
-								<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="btn.delete"/></button>
+								<button type="button" class="btn btn-primary" @click="driverCheck()"><spring:message code="driverclass.check"/></button>
+								<button type="button" class="btn btn-danger"  @click="deleteInfo()"><spring:message code="delete"/></button>
 							</template>
 						</div>
 					</div>
@@ -91,7 +91,7 @@
 				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					<div class="view-area" data-view-mode="view" :class="viewMode=='view'?'on':''">
 						<div class="form-group" :class="errors.has('NAME') ? 'has-error' :''">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.provider_name" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="name" /></label>
 							<div class="col-sm-8">
 								<input type="text" v-model="detailItem.providerName" v-validate="'required'" name="NAME" class="form-control" />
 								<div v-if="errors.has('NAME')" class="help-block">{{ errors.first('NAME') }}</div>
@@ -99,7 +99,7 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.db_type" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="db.type" /></label>
 							<div class="col-sm-8">
 								<select class="form-control text required" v-model="detailItem.dbType" @change="loadDriverList(detailItem.dbType)">
 									<option value="select">SELECT</option>
@@ -111,9 +111,9 @@
 						</div>
 						
 						<div class="form-group" :class="errors.has('driverclass') ? 'has-error' :''">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.driver_class" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="driver.class" /></label>
 							<div class="col-sm-8">
-								<div><input type="checkbox" id="directYn" v-model="detailItem.directYn" true-value="Y" false-value="N" /><label for="directYn"><spring:message code="label.direct.input" /></label></div>
+								<div><input type="checkbox" id="directYn" v-model="detailItem.directYn" true-value="Y" false-value="N" /><label for="directYn"><spring:message code="direct.input" /></label></div>
 								<template v-if="detailItem.directYn != 'Y'">
 									<select class="form-control text required" name="driverId" @change="changeDriverInfo($event)" v-model="detailItem.driverId">
 										<option v-for="(item,index) in driverList" :value="item.driverId" :data-driver="item.dbdriver" selected="{{detailItem.driverId==item.driverId?true:(detailItem.driverId==''&& index==0?true:false)}}">
@@ -130,34 +130,36 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.driver" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="jdbc.driver" /></label>
 							<div class="col-sm-8">
 								<div>
 									<label><input type="radio" name="pathtype" value="file" v-model="detailItem.pathType" checked>File Upload</label>
-									<label><input type="radio" name="pathtype" value="path" v-model="detailItem.pathType" ><spring:message code="label.direct.input" /></label>
+									<label><input type="radio" name="pathtype" value="path" v-model="detailItem.pathType" ><spring:message code="direct.input" /></label>
 								</div>
 								
 								<div v-if="detailItem.pathType == 'file'">
-									<div id="fileDropArea" class="add-file-upload-area" style="width: 100%;height: 36px;border: 1px solid #ccc;text-align: center;vertical-align: middle;line-height: 36px;cursor:pointer;">파일을 첨부 해주세요.</div>
+									<div id="fileDropArea" class="add-file-upload-area" style="width: 100%;height: 36px;border: 1px solid #ccc;text-align: center;vertical-align: middle;line-height: 36px;cursor:pointer;">
+										<spring:message code="msg.file.add" text="파일을 추가 해주세요."/>
+									</div>
 									<div id="fileUploadPreview" class="file-upload-area"></div>
-									<div><spring:message code="admin.drivermgmt.file.desc" /></div>
+									<div><spring:message code="msg.limit.file.msg" arguments="5" /></div>
 								</div>
 								<div v-else>
 									<input type="text" v-model="detailItem.driverPath" class="form-control" />
-									<div><spring:message code="admin.drivermgmt.driver_path.desc" /></div>
+									<div><spring:message code="msg.driver.path.desc" /></div>
 								</div>
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.validation_query" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="validation.query" /></label>
 							<div class="col-sm-8">
 								<input type="text" v-model="detailItem.validationQuery" class="form-control" />
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-4 control-label"><spring:message code="admin.drivermgmt.driver_desc" /></label>
+							<label class="col-sm-4 control-label"><spring:message code="desc" /></label>
 							<div class="col-sm-8">
 								<textarea v-model="detailItem.driverDesc" rows="3" class="form-control" /></textarea>
 							</div>
@@ -378,11 +380,11 @@ VarsqlAPP.vueServiceBean( {
 			var _this = this;
 
 			if(typeof this.detailItem.driverProviderId ==='undefined'){
-				VARSQL.toastMessage('varsql.0004');
+				VARSQL.toastMessage('msg.item.select', VARSQL.message('delete'));
 				return ;
 			}
 
-			if(!VARSQL.confirmMessage('varsql.0016')){
+			if(!VARSQL.confirmMessage('msg.delete.confirm')){
 				return ;
 			}
 
