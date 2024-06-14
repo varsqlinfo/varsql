@@ -1,9 +1,9 @@
 package com.varsql.web.dto.sql;
 
 import com.varsql.core.common.constants.SqlDataConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.sql.SqlFileEntity;
 import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.util.SecurityUtil;
 
 import lombok.Getter;
 import lombok.Setter;

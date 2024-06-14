@@ -41,18 +41,18 @@
 		</div>
 		
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="email"/></label>
+            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="user.id"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="email" />" />
+                <input type="text" class="form-control required" id="uid" name="uid" placeholder="<spring:message code="user.id" />" />
             </div>
         </div>
         
         <div class="form-group">
-            <label class="col-sm-3 control-label"><spring:message code="user.email"/></label>
+            <label class="col-sm-3 control-label"><spring:message code="email"/></label>
 
             <div class="col-sm-6 col-md-6">
-                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="user.email" />"/>
+                <input type="email" class="form-control" id="uemail" name="uemail" placeholder="<spring:message code="email" />"/>
             </div>
         </div>
     </form>
@@ -98,7 +98,7 @@ VarsqlAPP.vueServiceBean({
 							notEmpty: { message: VARSQL.message('msg.valid.required','필수 입력사항입니다.')}
 							,stringLength: { min: 0, max: 250, message: VARSQL.message('msg.valid.size.param',{size:'0~250'})}
 							,emailAddress: {
-								message: VARSQL.message('msg.valid.invalid.param', VARSQL.message('email')))
+								message: VARSQL.message('msg.valid.invalid.param', VARSQL.message('email'))
 							}
 					  }
 				  	}

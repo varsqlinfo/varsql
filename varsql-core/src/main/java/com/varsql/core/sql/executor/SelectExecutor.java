@@ -16,6 +16,7 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
@@ -63,6 +64,8 @@ public class SelectExecutor implements Executor{
 		if(resultHandler==null) {
 			resultHandler = getDefaultSelectHandler();
 		}
+		
+		String requid = statementInfo.getRequid$$(); 
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -73,8 +76,11 @@ public class SelectExecutor implements Executor{
 			logger.debug("execute query: {}", tmpSqlSource.getQuery());
 			
 			conn.setAutoCommit(false);
-
+			
 			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
+			
+			// request 실행 취소 정보 추가
+			SqlExecuteManager.getInstance().addStatementInfo(requid, pstmt);
 			
 			if(statementInfo.getLimit() > 0) {
 				pstmt.setMaxRows(statementInfo.getLimit());
@@ -97,6 +103,8 @@ public class SelectExecutor implements Executor{
 				conn.setAutoCommit(true);
 				JdbcUtils.close(conn, pstmt, rs);
 			}
+			// request 실행 취소 정보 제거
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
 		}
 		result.setTotalCount(resultHandler.getTotalCount());
 		result.setEndTime(System.currentTimeMillis());

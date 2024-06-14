@@ -2,9 +2,11 @@ package com.varsql.core.sql.executor;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -139,32 +141,31 @@ public class FileImportExecutor extends UpdateExecutor{
 							//e.printStackTrace();
 						}
 					}
-
+					
 					statement.addBatch();
 					statement.clearParameters();
 
 					handlerVariable.addCount();
 
 					if(handlerVariable.getCount() % getBatchCount()==0) {
-						statement.executeBatch();
-						statement.clearBatch();
+						setExecuteBatch(statement, handlerVariable, getBatchCount());
 					}
 				}
 			});
 
-
-			if(handlerVariable.getCount()  % getBatchCount() != 0) {
-				handlerVariable.getStatement().executeBatch();
-				handlerVariable.getStatement().clearBatch();
+			int lastBatchCount = handlerVariable.getCount() % getBatchCount(); 
+			if(lastBatchCount != 0) {
+				setExecuteBatch(handlerVariable.getStatement(), handlerVariable, lastBatchCount);
 			}
 
 			conn.commit();
 		} catch (Throwable e ) {
 			if(conn != null) conn.rollback();
+			
 			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
-			result.setMessage("errorLine : "+handlerVariable.getCount()  +", error message :  "+  e.getMessage());
+			result.setMessage("error row : "+handlerVariable.getFailIdx()  +", error message :  "+  e.getMessage()+ ", sql : "+handlerVariable.getSql());
 
-			logger.error("update : {} ", e.getMessage(), e);
+			logger.error("execute sql : {} ", handlerVariable.getSql(), e);
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);
@@ -176,38 +177,7 @@ public class FileImportExecutor extends UpdateExecutor{
 		result.setExecuteCount(handlerVariable.getCount());
 		result.setResult(handlerVariable.getCount());
 
-
 		return result;
-	}
-
-
-	class HandlerVariable {
-		private int count = 0;
-		private PreparedStatement statement;
-		private Connection conn;
-
-		public HandlerVariable(Connection conn) {
-			this.conn = conn;
-		}
-
-		public int getCount() {
-			return count;
-		}
-		public void addCount() {
-			++this.count;
-		}
-
-		public PreparedStatement getStatement() throws SQLException {
-			return getStatement(null);
-		}
-		public PreparedStatement getStatement(String sql) throws SQLException {
-			if(statement == null) {
-				statement = this.conn.prepareStatement(sql);
-			}
-			return statement;
-		}
-
-
 	}
 }
 

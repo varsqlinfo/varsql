@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.dto.db.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -47,8 +47,6 @@ public class SQLController extends AbstractController  {
 	@RequestMapping(value = "/sqlData", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 		logger.debug("sqlData , :{}" , sqlExecuteInfo);
-		
-		sqlExecuteInfo.set_requid_(req.getParameter("_requid_"));
 		
 		return sqlServiceImpl.sqlData(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
 	}

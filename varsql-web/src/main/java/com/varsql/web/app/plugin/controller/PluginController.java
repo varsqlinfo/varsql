@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.plugin.service.PluginServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -75,8 +75,8 @@ public class PluginController extends AbstractController{
 	public @ResponseBody ResponseResult historySearch(HttpServletRequest req) throws Exception {
 		SearchParameter param = HttpUtils.getSearchParameter(req);
 
-		param.addCustomParam(VarsqlParamConstants.CONN_UUID, SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get(VarsqlParamConstants.CONN_UUID))));
-		param.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId());
+		param.addCustomParam(HttpParamConstants.CONN_UUID, SecurityUtil.getVconnid(String.valueOf(param.getCustomParam().get(HttpParamConstants.CONN_UUID))));
+		param.addCustomParam(HttpParamConstants.UID, SecurityUtil.userViewId());
 
 		return pluginServiceImpl.historySearch(param);
 	}

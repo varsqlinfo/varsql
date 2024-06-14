@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.util.VarsqlSpringBeanUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.pool.ConnectionPoolInterface;
@@ -146,7 +145,7 @@ public final class ConnectionFactory implements ConnectionContext{
 	 */
 	public synchronized void poolShutdown(String connid) throws SQLException, ConnectionFactoryException  {
 
-		logger.error("db pool shutdown : {}" , connid);
+		logger.info("db pool shutdown : {}" , connid);
 
 		if(connectionConfig.containsKey(connid)){
 			ConnectionFactory.getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
@@ -204,6 +203,8 @@ public final class ConnectionFactory implements ConnectionContext{
 	}
 
 	private void init() {
+		
+		logger.debug("connection info config scan package : {}", Configuration.getInstance().getConnectiondaoPackage());
 		try {
 			Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage())).setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
 
@@ -213,14 +214,11 @@ public final class ConnectionFactory implements ConnectionContext{
 			for (Class<?> type : types) {
 				ConnectionInfoConfig annoInfo = type.getAnnotation(ConnectionInfoConfig.class);
 				sb.append("beanType : [").append(annoInfo.beanType());
+				sb.append("] primary : [").append(annoInfo.primary()).append("]");
 				sb.append("] beanName : [").append(annoInfo.beanName()).append("]");
 
-				if(BeanType.JAVA.equals(annoInfo.beanType())) {
-					connectionInfoDao =	(ConnectionInfoDao)type.getDeclaredConstructor().newInstance(new Object[] {});
-				}else {
-					connectionInfoDao =	VarsqlSpringBeanUtils.getBean(annoInfo.beanName(), ConnectionInfoDao.class);
-				}
-
+				connectionInfoDao =	(ConnectionInfoDao)type.getDeclaredConstructor().newInstance(new Object[] {});
+				
 				if(annoInfo.primary() == true) {
 					break ;
 				}

@@ -12,8 +12,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.auth.User;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
@@ -34,7 +32,9 @@ import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.repository.db.DBConnTabEntityRepository;
 import com.varsql.web.repository.spec.DBConnTabSpec;
 import com.varsql.web.repository.user.UserInfoRepository;
+import com.varsql.web.security.User;
 import com.varsql.web.util.DefaultValueUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.sort.TreeDataSort;

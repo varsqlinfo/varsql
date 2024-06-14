@@ -12,7 +12,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.configuration.Configuration;
 
 
 /**

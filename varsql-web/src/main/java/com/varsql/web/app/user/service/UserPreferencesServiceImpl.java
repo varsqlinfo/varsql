@@ -20,7 +20,6 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.user.NoteRequestDTO;
@@ -39,6 +38,7 @@ import com.varsql.web.repository.app.QnAEntityRepository;
 import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.repository.user.UserInfoRepository;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

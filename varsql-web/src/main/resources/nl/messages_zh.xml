@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>varsql</comment>
+
+<!-- guest  -->
+<entry key="msg.welcome">欢迎.</entry>
+<entry key="msg.guest.permission"><![CDATA[您的权限尚未处理.<br/> 请联系管理员.]]></entry>
+
+<entry key="msg.analyzing">分析中.</entry>
+<entry key="msg.auth.db.list">权限数据库列表</entry>
+
+<!-- editor msg -->
+<entry key="msg.editor.info">单击新建文件即可打开查询编辑器.</entry>
+<entry key="msg.editor.empty.warning">编辑器窗口为空.\n请单击新建文件后添加.</entry>
+<entry key="msg.editor.change.count.param">{count}次匹配项已更改.</entry>
+<entry key="msg.editor.not.found">找不到以下字符串.\n{findText}</entry>
+<entry key="msg.editor.find.line">查找行：{line}，字符：{ch}</entry>
+
+<entry key="msg.email.empty">请输入电子邮件</entry>
+<entry key="msg.title.empty">请输入标题</entry>
+<entry key="msg.contactus.empty">请输入咨询内容</entry>
+<entry key="msg.name.empty">请输入姓名</entry>
+<entry key="msg.password.empty">请输入密码</entry>
+<entry key="msg.password.differrent">密码不相同</entry>
+<entry key="msg.password.length.check">密码必须至少为6个字符</entry>
+<entry key="msg.login.fail">用户名或密码输入错误</entry>
+<entry key="msg.saveandclose.confirm">是否保存并关闭 ?</entry>
+<entry key="msg.saveandreload">是否保存 ?\n保存后需要刷新页面以生效.</entry>
+<entry key="msg.create.confirm">确定创建 ?</entry>
+<entry key="msg.create.confirm.param">确定创建 {item} ?</entry>
+<entry key="msg.create.success">已创建</entry>
+<entry key="msg.save.confirm">确定保存 ?</entry>
+<entry key="msg.save.success">已保存</entry>
+<entry key="msg.delete.confirm">确定删除 ?</entry>
+<entry key="msg.delete.confirm.param">确定删除 {item} ?</entry>
+<entry key="msg.delete.success">已删除</entry>
+<entry key="msg.apply.confirm">确定应用 ?</entry>
+<entry key="msg.apply.success">已应用</entry>
+<entry key="msg.copy.success">已复制</entry>
+<entry key="msg.change.confirm">确定更改 ?</entry>
+<entry key="msg.change.success">已更改</entry>
+<entry key="msg.confirm.param">确定 {item} ?</entry>
+<entry key="msg.confirm.success.param">{item}已完成</entry>
+<entry key="msg.block.confirm">确定阻止 ?</entry>
+<entry key="msg.block.success">已阻止</entry>
+<entry key="msg.release.confirm">确定释放 ?</entry>
+<entry key="msg.release.success">已释放</entry>
+<entry key="msg.send.confirm">确定发送 ?</entry>
+<entry key="msg.send.confirm.param">确定发送 {item} ?</entry>
+
+<entry key="msg.close.confirm">确定关闭 ?</entry>
+<entry key="msg.close.confirm.param">确定关闭 [{name}] ?</entry>
+<entry key="msg.export.confirm">确定导出 ?</entry>
+<entry key="msg.export.confirm.param">确定导出 {item} ?</entry>
+<entry key="msg.init.restore.confirm">确定恢复为初始设置 ?</entry>
+<entry key="msg.setting.fail">设置信息有误</entry>
+<entry key="msg.setting.fail.restore">设置信息有误\n确定恢复为初始设置 ?</entry>
+<entry key="msg.layout.restore.confirm">初始化将恢复为默认布局并刷新页面.\n确定初始化 ?</entry>
+
+<entry key="msg.password.change.confirm">确定更改密码 ?</entry>
+<entry key="msg.password.change.success">密码已更改</entry>
+<entry key="msg.password.re.enter">请重新输入密码</entry>
+<entry key="msg.password.lost">忘记密码了吗 ?</entry>
+
+<entry key="msg.fail">失败</entry>
+<entry key="msg.nodata">没有数据.</entry>
+<entry key="msg.search.placeholder">请输入搜索词.</entry>
+<entry key="msg.data.select">请选择数据.</entry>
+<entry key="msg.accept.msg">确定接受所选用户 ?</entry>
+<entry key="msg.denial.msg">确定拒绝所选用户 ?</entry>
+<entry key="msg.add.manager.confirm">确定将所选用户注册为管理员 ?</entry>
+<entry key="msg.del.manager.confirm">确定从管理员中删除所选用户 ?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[保存后，当前连接信息将被清除，并生成新的连接池.\n是否继续 ?]]></entry>
+<entry key="msg.note.arrived">有新留言.</entry>
+
+<!-- export table spec -->
+<entry key="msg.export.spec.step1">导出信息</entry>
+<entry key="msg.export.spec.step2">选择表</entry>
+<entry key="msg.export.spec.step3">完成</entry>
+<entry key="msg.export.spec.table.definition">表定义</entry>
+<entry key="msg.export.spec.column.multi.sheet">是否多表分页</entry>
+<entry key="msg.export.spec.column.detail">列详细信息</entry>
+<entry key="msg.export.spec.column.title">导出列信息</entry>
+<entry key="msg.export.spec.schema.select">请选择模式.</entry>
+
+<entry key="msg.table.dbclick.move">* 双击移动，或选择后使用方向键注册.</entry>
+<entry key="msg.column.dbclick.move">* 双击列名移动，或选择后使用方向键注册.</entry>
+
+<entry key="msg.export.ddl.step1">选择对象</entry>
+<entry key="msg.export.ddl.step2">详细选择</entry>
+<entry key="msg.export.ddl.step3">完成</entry>
+<entry key="msg.export.multi.file">是否多文件</entry>
+<entry key="msg.export.multi.file.single">单文件</entry>
+<entry key="msg.export.multi.file.multi">按对象分文件</entry>
+<entry key="msg.select.object">已选对象</entry>
+<entry key="msg.export.ddl.object.select.title">选择导出对象</entry>
+<entry key="msg.export.ddl.object.desc">请选择要导出的对象.</entry>
+<entry key="msg.export.ddl.object.nodata">请选择对象.</entry>
+
+<entry key="msg.retry">请重试</entry>
+<entry key="msg.refresh.connnection.info">刷新连接信息</entry>
+<entry key="msg.refresh.connnection.info.confirm">确定刷新连接信息 ?</entry>
+
+<entry key="msg.limit.file.msg">最多可附加{0}个文件.</entry>
+
+<entry key="msg.driver.path.desc">如果有多个路径，请用分号（";"）分隔.</entry>
+
+<entry key="msg.download.history.help"><![CDATA[下载历史可在 <span style="font-weight: bold;">设置 -> 文件</span> 中查看.]]></entry>
+
+<entry key="msg.send.mail.password.fail"><![CDATA[邮件发送失败.<br/> 密码重置请求有误.]]></entry>
+<entry key="msg.send.mail">邮件已发送.</entry>
+<entry key="invalid.token">无效的令牌.</entry>
+
+<entry key="msg.close.window">确定关闭窗口 ?</entry>
+<entry key="msg.loading">加载中.</entry>
+<entry key="msg.refresh">确定刷新 ?</entry>
+
+<entry key="msg.content.enter">请输入内容.</entry>
+<entry key="msg.content.enter.param">请输入 {item}.</entry>
+
+<entry key="msg.leave.confirm">确定离开 ?</entry>
+<entry key="msg.item.added">已添加项目.</entry>
+<entry key="msg.item.select">请选择项目.</entry>
+<entry key="msg.item.select.param">请选择 {msg}.</entry>
+<entry key="msg.select.param">请选择 {0}.</entry>
+<entry key="msg.add">请添加.</entry>
+<entry key="msg.add.param">请添加 {0}.</entry>
+
+<entry key="msg.select.file.import.confirm">确定导入选定的文件 ?</entry>
+<entry key="msg.file.uploadandexecute">请上传文件后执行.</entry>
+
+<entry key="msg.file.allowed.param">允许的扩展名：{accept}</entry>
+<entry key="msg.capsLock">大写锁定已打开</entry>
+<entry key="msg.user.group.remove.confirm">确定从用户中删除 {itemName} 组 ?\n删除组后，将无法访问属于该组的所有数据库.</entry>
+<entry key="msg.user.password.init">确定重置 {userName} 的密码 ?\n密码将在5秒后消失.</entry>
+<entry key="msg.group.delete.confirm">确定删除 {groupName} 组 ?\n删除组后，将删除属于该组的所有数据库映射信息和用户信息.</entry>
+
+<!-- validator -->
+<entry key="msg.valid.required">必填项.</entry>
+<entry key="msg.valid.size.param">大小必须为 {size}.</entry>
+<entry key="msg.valid.id.diffrent">必须与用户名不同.</entry>
+<entry key="msg.valid.password.identical">密码必须相同.</entry>
+<entry key="msg.valid.min.size.param">至少为 {size} 个字符.</entry>
+<entry key="msg.valid.duplicated">已存在.</entry>
+<entry key="msg.valid.duplicated.param">{item} 已存在.</entry>
+<entry key="msg.valid.range.param">大小必须在 {range} 之间.</entry>
+<entry key="msg.valid.invalid.param">{item} 无效.</entry>
+<entry key="msg.valid.enter">请输入.</entry>
+<entry key="msg.valid.enter.param">请输入 {item}.</entry>
+<entry key="msg.valid.search">请搜索.</entry>
+<entry key="msg.valid.search.param">请搜索 {item}.</entry>
+<entry key="msg.valid.string.min">必须输入至少 {size} 个字符。</entry>
+<entry key="msg.valid.string.max">不能输入超过 {size} 个字符。</entry>
+<entry key="msg.valid.number.min">必须大于 {size}。</entry>
+<entry key="msg.valid.number.max">必须小于 {size}。</entry>
+<entry key="msg.valid.regexp.email">电子邮件无效。</entry>
+<entry key="msg.valid.regexp.url">URL 无效。</entry>
+
+
+<!-- db -->
+<entry key="msg.db.load">正在加载数据库信息.</entry>
+<entry key="msg.db.connect.select"><![CDATA[请选择要连接的数据库 <img src="{0}/webstatic/imgs/Database.gif">.]]></entry>
+<entry key="msg.db.pool.close.confirm">确定关闭数据库连接 ?</entry>
+<entry key="msg.db.pool.init">成功\n重新连接时，请初始化连接池.</entry>
+<entry key="msg.db.pool.init.confirm">确定全部初始化 ?</entry>
+<entry key="msg.db.pool.init.warning">需要进行[初始化连接池].</entry>
+
+<!-- db compare -->
+<entry key="msg.db.compare.001">表描述不同.源：[{sourceRemark}] 目标：[{targetRemark}]</entry>
+<entry key="msg.db.compare.002">列计数 源：{sourceLen} 目标：{targetLen}</entry>
+<entry key="msg.db.compare.003">表信息不同.</entry>
+<entry key="msg.db.compare.004">{columnLabel} 源：[{sourceValue}] 目标：[{targetValue}]</entry>
+<entry key="msg.db.compare.005">目标表中不存在 [{sourceKey}] 列.</entry>
+<entry key="msg.db.compare.006">在源中</entry>
+<entry key="msg.db.compare.007">表不存在</entry>
+<entry key="msg.db.compare.008">在目标中</entry>
+<entry key="msg.db.compare.009">[{key}] 不同.</entry>
+<entry key="msg.db.compare.010">[{key}] 不同. 源：{sourceValue} 目标：{targetValue}</entry>
+<entry key="msg.db.compare.011">不存在</entry>
+<entry key="msg.db.compare.012">源表中不存在 [{targetKey}] 列.</entry>
+
+<!-- db data import -->
+<entry key="msg.file.import.001">请在下方选择要导入的工作格式.</entry>
+<entry key="msg.file.import.002">通过执行 SQL 文件来输入数据</entry>
+<entry key="msg.file.import.003">通过 XML 文件输入数据</entry>
+<entry key="msg.file.import.004">通过 JSON 文件输入数据</entry>
+<entry key="msg.file.import.002">通过执行 SQL 文件来输入数据</entry>
+
+<!-- board -->
+<entry key="msg.brd.comment.delete">删除评论后将无法恢复.确定删除 ?</entry>
+<entry key="msg.brd.article.delete">删除帖子后将无法恢复.确定删除 ?</entry>
+
+<!-- error -->
+<entry key="error.400">请求有误.</entry>
+<entry key="error.403">权限不足.</entry>
+<entry key="error.404">页面未注册.</entry>
+<entry key="error.0001">已注销.\n是否跳转至登录窗口 ?</entry>
+<entry key="error.0002">请求无效.是否刷新 ?</entry>
+<entry key="error.0003">数据库无效.\n是否跳转至主页 ?</entry>
+<entry key="error.0004">连接被拒绝，请联系管理员.</entry>
+<entry key="error.80000">连接[80000]被拒绝.\n请联系管理员.</entry>
+<entry key="error.80001">连接[80001]已关闭.\n请联系管理员.</entry>
+<entry key="error.80002">错误码：{errorCode}\n连接无效.\n请联系管理员.</entry>
+<entry key="error.default">错误码：{errorCode}\n出现错误.\n请联系管理员.</entry>
+
+<entry key="msg.sqlfile.limit.view">最多显示5000行，更多内容请下载后查看.</entry>
+<entry key="msg.file.add">请添加文件.</entry>
+<entry key="msg.deleted.info">已删除信息.</entry>
+<entry key="msg.deleted.param">已删除 {item}.</entry>
+
+<!-- setup -->
+<entry key="msg.setting.code.template.desc">编写模板，以便能够使用DB表的列信息自动生成代码。</entry>
+<entry key="msg.install.end">安装完成后，请重新启动服务器。</entry>
+<entry key="msg.install.complete">安装完成</entry>
+
+</properties>

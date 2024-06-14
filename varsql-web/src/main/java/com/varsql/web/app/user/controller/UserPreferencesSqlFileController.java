@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.user.service.UserPreferencesSqlFileServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -56,7 +56,7 @@ public class UserPreferencesSqlFileController extends AbstractController{
 	@RequestMapping(value="/list", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult list(@RequestParam(value = "vconnid", required = true)  String vconnid, HttpServletRequest req) {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
+		searchParameter.addCustomParam(HttpParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return  userPreferencesSqlFileServiceImpl.sqlFileList(vconnid, searchParameter);
 	}

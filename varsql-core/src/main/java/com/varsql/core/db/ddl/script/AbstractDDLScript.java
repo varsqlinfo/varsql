@@ -204,30 +204,31 @@ public abstract class AbstractDDLScript implements DDLScript{
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String viewNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(viewNm);
-
-			dataParamInfo.setObjectName(viewNm);
-
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("viewScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			for (String viewNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(viewNm);
+	
+				dataParamInfo.setObjectName(viewNm);
+	
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSesseion.selectList("viewScript", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(viewNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(viewNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -250,30 +251,31 @@ public abstract class AbstractDDLScript implements DDLScript{
 	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames)	throws Exception {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcList = sqlSesseion.selectList("indexScript", dataParamInfo);
-			
-			for (int j = 0; j < srcList.size(); j++) {
-				sourceSb.append( srcList.get(j));
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			for (String objNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcList = sqlSesseion.selectList("indexScript", dataParamInfo);
+				
+				for (int j = 0; j < srcList.size(); j++) {
+					sourceSb.append( srcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param));
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -297,30 +299,31 @@ public abstract class AbstractDDLScript implements DDLScript{
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("functionScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			for (String objNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSesseion.selectList("functionScript", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
-			
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -344,29 +347,30 @@ public abstract class AbstractDDLScript implements DDLScript{
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("procedureScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			for (String objNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSesseion.selectList("procedureScript", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -389,29 +393,30 @@ public abstract class AbstractDDLScript implements DDLScript{
 	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-		for (String objNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("triggerScript", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			for (String objNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSesseion.selectList("triggerScript", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -435,24 +440,25 @@ public abstract class AbstractDDLScript implements DDLScript{
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		DDLInfo ddlInfo;
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 		
-		for (String objNm : objNames) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.item(sqlSesseion.selectOne("sequenceScript", dataParamInfo))
-			.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.SEQUENCE.create, param));
-			reval.add(ddlInfo);
+			for (String objNm : objNames) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.item(sqlSesseion.selectOne("sequenceScript", dataParamInfo))
+				.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.SEQUENCE.create, param));
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;

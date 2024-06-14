@@ -4,209 +4,221 @@
 
 <comment>varsql</comment>
 
-<!-- guest  -->
-<entry key="msg.welcome">환영합니다.</entry>
-<entry key="msg.guest.permission"><![CDATA[님 아직 권한이 처리 되지 않았습니다<br/> 관리자에게 문의하시기 바랍니다.]]></entry>
+<!-- guest -->
+<entry key="msg.welcome">Welcome.</entry>
+<entry key="msg.guest.permission"><![CDATA[Your permissions have not been processed yet.<br/>Please contact the administrator.]]></entry>
 
-<entry key="msg.analyzing">분석 중입니다.</entry>
-<entry key="msg.auth.db.list">권한 있는 DB 목록</entry>
+<entry key="msg.analyzing">Analyzing...</entry>
+<entry key="msg.auth.db.list">Authorized DB List</entry>
 
 <!-- editor msg -->
-<entry key="msg.editor.info">새 파일을 클릭하시면 쿼리를 실행하실수 있는 에디터가 열립니다.</entry>
-<entry key="msg.editor.empty.warning">에디터 창이 없습니다.\n새파일을 클릭후에 추가해주세요.</entry>
-<entry key="msg.editor.change.count.param">일치하는 내용이 {count}회 변경되었습니다.</entry>
-<entry key="msg.editor.not.found">다음 문자열을 찾을수 없습니다.\n{findText}</entry>
+<entry key="msg.editor.info">Click on a new file to open an editor where you can execute queries.</entry>
+<entry key="msg.editor.empty.warning">No editor window found.\nPlease click on New File to add one.</entry>
+<entry key="msg.editor.change.count.param">{count} occurrences were changed.</entry>
+<entry key="msg.editor.not.found">The following text could not be found:\n{findText}</entry>
 <entry key="msg.editor.find.line">find line:{line}, ch:{ch}</entry>
 
-<entry key="msg.email.empty">이메일을 입력해주세요</entry>
-<entry key="msg.title.empty">제목을 입력해주세요</entry>
-<entry key="msg.contactus.empty">문의사항을 입력해주세요</entry>
-<entry key="msg.name.empty">이름을 입력해주세요</entry>
-<entry key="msg.password.empty">패스워드를 입력해주세요</entry>
-<entry key="msg.password.differrent">패스워드가 같지 않습니다</entry>
-<entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
-<entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
-<entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
-<entry key="msg.saveandreload">저장하시겠습니까?\n저장후 페이지 새로고침 이후 반영됩니다.</entry>
-<entry key="msg.create.confirm">생성하시겠습니까?</entry>
-<entry key="msg.create.confirm.param">{item} 생성하시겠습니까?</entry>
-<entry key="msg.create.success">생성되었습니다</entry>
-<entry key="msg.save.confirm">저장하시겠습니까?</entry>
-<entry key="msg.save.success">저장되었습니다</entry>
-<entry key="msg.delete.confirm">삭제하시겠습니까?</entry>
-<entry key="msg.delete.confirm.param">{item} 삭제하시겠습니까?</entry>
-<entry key="msg.delete.success">삭제되었습니다</entry>
-<entry key="msg.apply.confirm">적용하시겠습니까?</entry>
-<entry key="msg.apply.success">적용되었습니다.</entry>
-<entry key="msg.copy.success">복사되었습니다</entry>
-<entry key="msg.change.confirm">변경하시겠습니까?</entry>
-<entry key="msg.change.success">변경되었습니다</entry>
-<entry key="msg.confirm.param">{item}하시겠습니까?</entry>
-<entry key="msg.confirm.success.param">{item}되었습니다</entry>
-<entry key="msg.block.confirm">차단하시겠습니까?</entry>
-<entry key="msg.block.success">차단되었습니다</entry>
-<entry key="msg.release.confirm">해제하시겠습니까?</entry>
-<entry key="msg.release.success">해제되었습니다</entry>
-<entry key="msg.send.confirm">보내시겠습니까?</entry>
-<entry key="msg.send.confirm.param">{item} 을(를) 보내시겠습니까?</entry>
+<entry key="msg.email.empty">Please enter your email</entry>
+<entry key="msg.title.empty">Please enter a title</entry>
+<entry key="msg.contactus.empty">Please enter your inquiry</entry>
+<entry key="msg.name.empty">Please enter your name</entry>
+<entry key="msg.password.empty">Please enter your password</entry>
+<entry key="msg.password.differrent">Passwords do not match</entry>
+<entry key="msg.password.length.check">Password must be at least 6 characters</entry>
+<entry key="msg.login.fail">Incorrect username or password</entry>
+<entry key="msg.saveandclose.confirm">Save and close?</entry>
+<entry key="msg.saveandreload">Save?\nChanges will take effect after the page is refreshed.</entry>
+<entry key="msg.create.confirm">Create?</entry>
+<entry key="msg.create.confirm.param">Create {item}?</entry>
+<entry key="msg.create.success">Created</entry>
+<entry key="msg.save.confirm">Save?</entry>
+<entry key="msg.save.success">Saved</entry>
+<entry key="msg.delete.confirm">Delete?</entry>
+<entry key="msg.delete.confirm.param">Delete {item}?</entry>
+<entry key="msg.delete.success">Deleted</entry>
+<entry key="msg.apply.confirm">Apply?</entry>
+<entry key="msg.apply.success">Applied</entry>
+<entry key="msg.copy.success">Copied</entry>
+<entry key="msg.change.confirm">Change?</entry>
+<entry key="msg.change.success">Changed</entry>
+<entry key="msg.confirm.param">Continue with {item}?</entry>
+<entry key="msg.confirm.success.param">{item} successful</entry>
+<entry key="msg.block.confirm">Block?</entry>
+<entry key="msg.block.success">Blocked</entry>
+<entry key="msg.release.confirm">Release?</entry>
+<entry key="msg.release.success">Released</entry>
+<entry key="msg.send.confirm">Send?</entry>
+<entry key="msg.send.confirm.param">Send {item}?</entry>
 
-<entry key="msg.close.confirm">닫으시겠습니까?</entry>
-<entry key="msg.close.confirm.param">[{name}] 을(를) 닫으시겠습니까?</entry>
-<entry key="msg.export.confirm">내보내기하시겠습니까</entry>
-<entry key="msg.export.confirm.param">{item} 내보내기하시겠습니까</entry>
-<entry key="msg.init.restore.confirm">초기 설정으로 복구하시겠습니까?</entry>
-<entry key="msg.setting.fail">설정 정보가 잘못되었습니다</entry>
-<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구하시겠습니까?</entry>
-<entry key="msg.layout.restore.confirm">초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화하시겠습니까?</entry>
+<entry key="msg.close.confirm">Close?</entry>
+<entry key="msg.close.confirm.param">Close [{name}]?</entry>
+<entry key="msg.export.confirm">Export?</entry>
+<entry key="msg.export.confirm.param">Export {item}?</entry>
+<entry key="msg.init.restore.confirm">Restore to initial settings?</entry>
+<entry key="msg.setting.fail">Invalid setting information</entry>
+<entry key="msg.setting.fail.restore">Invalid setting information\nRestore to initial settings?</entry>
+<entry key="msg.layout.restore.confirm">Resetting will revert to default layout and refresh the page.\nReset?</entry>
 
-<entry key="msg.setting.fail">설정 정보가 잘못되었습니다</entry>
-<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구하시겠습니까?</entry>
-<entry key="msg.setting.fail.check">설정 정보가 잘못되었습니다\n 설정 정보를 확인해주세요.</entry>
-<entry key="msg.setting.invalid">유효 하지 않은 설정입니다.</entry>
+<entry key="msg.setting.fail">Invalid setting information</entry>
+<entry key="msg.setting.fail.restore">Invalid setting information\nRestore to initial settings?</entry>
+<entry key="msg.setting.fail.check">Invalid setting information\nPlease check the settings.</entry>
+<entry key="msg.setting.invalid">Invalid settings.</entry>
 
+<entry key="msg.password.change.confirm">Change password?</entry>
+<entry key="msg.password.change.success">Password changed</entry>
+<entry key="msg.password.re.enter">Please re-enter your password</entry>
+<entry key="msg.password.lost">Forgot your password?</entry>
 
-<entry key="msg.password.change.confirm">비밀번호를 변경하시겠습니까?</entry>
-<entry key="msg.password.change.success">비밀번호가 변경되었습니다</entry>
-<entry key="msg.password.re.enter">비밀번호를 다시 입력해주세요</entry>
-<entry key="msg.password.lost">비밀번호를 잊어버리셨나요?</entry>
-
-<entry key="msg.fail">실패 하였습니다</entry>
-<entry key="msg.nodata">데이터가 없습니다.</entry>
-<entry key="msg.search.placeholder">검색어를 입력해주세요.</entry>
-<entry key="msg.data.select">데이터를 선택해주세요.</entry>
-<entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
-<entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
-<entry key="msg.add.manager.confirm">선택된 사용자를 매니저로 등록하시겠습니까?</entry>
-<entry key="msg.del.manager.confirm">선택된 사용자를 매니저에서 삭제하시겠습니까?</entry>
-<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
-<entry key="msg.note.arrived">메모가 도착했습니다.</entry>
+<entry key="msg.fail">Failed</entry>
+<entry key="msg.nodata">No data available</entry>
+<entry key="msg.search.placeholder">Enter search term</entry>
+<entry key="msg.data.select">Please select data</entry>
+<entry key="msg.accept.msg">Accept selected user?</entry>
+<entry key="msg.denial.msg">Deny selected user?</entry>
+<entry key="msg.add.manager.confirm">Register selected user as manager?</entry>
+<entry key="msg.del.manager.confirm">Remove selected user from managers?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[If you save, the current pool information will be reset and a new pool will be created. Continue?]]></entry>
+<entry key="msg.note.arrived">Memo arrived</entry>
 
 <!-- export table spec -->
-<entry key="msg.export.spec.step1">내보내기 정보</entry>
-<entry key="msg.export.spec.step2">테이블 선택</entry>
-<entry key="msg.export.spec.step3">완료</entry>
-<entry key="msg.export.spec.table.definition">테이블정의서</entry>
-<entry key="msg.export.spec.column.multi.sheet">컬럼다중시트여부</entry>
-<entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
-<entry key="msg.export.spec.column.title">Export 컬럼 정보</entry>
-<entry key="msg.export.spec.schema.select">스키마를 선택해주세요.</entry>
+<entry key="msg.export.spec.step1">Export Information</entry>
+<entry key="msg.export.spec.step2">Table Selection</entry>
+<entry key="msg.export.spec.step3">Complete</entry>
+<entry key="msg.export.spec.table.definition">Table Definition</entry>
+<entry key="msg.export.spec.column.multi.sheet">Multi-Sheet Columns</entry>
+<entry key="msg.export.spec.column.detail">Column Details</entry>
+<entry key="msg.export.spec.column.title">Export Column Information</entry>
+<entry key="msg.export.spec.schema.select">Please select a schema.</entry>
 
-<entry key="msg.table.dbclick.move">* 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 해주세요.</entry>
-<entry key="msg.column.dbclick.move">* 컬럼을 더블클릭 해서 이동 하시거나 선택후 방향키로 등록 해주세요.</entry>
+<entry key="msg.table.dbclick.move">* Double-click to move or select and use arrow keys to register.</entry>
+<entry key="msg.column.dbclick.move">* Double-click columns to move or select and use arrow keys to register.</entry>
 
-<entry key="msg.export.ddl.step1">object 선택</entry>
-<entry key="msg.export.ddl.step2">상세선택</entry>
-<entry key="msg.export.ddl.step3">완료</entry>
-<entry key="msg.export.multi.file">다중파일여부</entry>
-<entry key="msg.export.multi.file.single">한파일</entry>
-<entry key="msg.export.multi.file.multi">object별 파일</entry>
-<entry key="msg.select.object">선택된 object</entry>
-<entry key="msg.export.ddl.object.select.title">Export Object 선택</entry>
-<entry key="msg.export.ddl.object.desc">내보내기할 object 를 선택해주세요.</entry>
-<entry key="msg.export.ddl.object.nodata">object를 선택해주세요.</entry>
+<entry key="msg.export.ddl.step1">Object Selection</entry>
+<entry key="msg.export.ddl.step2">Detailed Selection</entry>
+<entry key="msg.export.ddl.step3">Complete</entry>
+<entry key="msg.export.multi.file">Multi-File</entry>
+<entry key="msg.export.multi.file.single">Single File</entry>
+<entry key="msg.export.multi.file.multi">Separate File per Object</entry>
+<entry key="msg.select.object">Selected Object</entry>
+<entry key="msg.export.ddl.object.select.title">Select Export Object</entry>
+<entry key="msg.export.ddl.object.desc">Please select the objects to export.</entry>
+<entry key="msg.export.ddl.object.nodata">Please select objects.</entry>
 
-<entry key="msg.retry">다시 시도 해주세요</entry>
-<entry key="msg.refresh.connnection.info">커넥션 정보 새로고침</entry>
-<entry key="msg.refresh.connnection.info.confirm">커넥션 정보를 새로고침 하시겠습니까?</entry>
+<entry key="msg.retry">Please try again</entry>
+<entry key="msg.refresh.connnection.info">Refresh Connection Information</entry>
+<entry key="msg.refresh.connnection.info.confirm">Would you like to refresh the connection information?</entry>
 
-<entry key="msg.limit.file.msg">최대 {0}대까지 첨부 가능합니다.</entry>
+<entry key="msg.limit.file.msg">Up to {0} attachments are allowed.</entry>
 
-<entry key="msg.driver.path.desc">경로가 다수일 경우 세미콜론(";")으로 분리해주세요</entry>
+<entry key="msg.driver.path.desc">Please separate paths with semicolons (";") if there are multiple.</entry>
 
-<entry key="msg.download.history.help"><![CDATA[다운로드 항목은 <span style="font-weight: bold;">환경설정 -> 파일 </span> 에서 이력을 조회 할수 있습니다.]]></entry>
+<entry key="msg.download.history.help"><![CDATA[You can check the history in <span style="font-weight: bold;">Settings -> Files</span>.]]></entry>
 
-<entry key="msg.send.mail.password.fail"><![CDATA[메일 발송에 실패했습니다. <br/> 잘못된 비밀번호 재 설정 요청입니다.]]></entry>
-<entry key="msg.send.mail"><![CDATA[메일을 발송하였습니다.]]></entry>
-<entry key="invalid.token">유효하지 않은 토근입니다.</entry>
+<entry key="msg.send.mail.password.fail"><![CDATA[Failed to send email. <br/> Incorrect password reset request.]]></entry>
+<entry key="msg.send.mail"><![CDATA[Email has been sent.]]></entry>
+<entry key="invalid.token">Invalid token.</entry>
 
-<entry key="msg.close.window">창을 닫으시겠습니까?</entry>
-<entry key="msg.loading">로딩중 입니다.</entry>
-<entry key="msg.refresh">새로고침하시겠습니까?</entry>
+<entry key="msg.close.window">Would you like to close the window?</entry>
+<entry key="msg.loading">Loading...</entry>
+<entry key="msg.refresh">Would you like to refresh?</entry>
 
-<entry key="msg.content.enter">입력해주세요.</entry>
-<entry key="msg.content.enter.param">{item} 을(를) 입력해주세요</entry>
+<entry key="msg.content.enter">Please enter.</entry>
+<entry key="msg.content.enter.param">Please enter {item}.</entry>
 
-<entry key="msg.leave.confirm">나가시겠습니까?</entry>
-<entry key="msg.item.added">추가된 항목 입니다</entry>
-<entry key="msg.item.select">항목을 선택해주세요.</entry>
-<entry key="msg.item.select.param">{msg} 항목을 선택해주세요.</entry>
-<entry key="msg.select.param">{0}을(를) 선택해주세요.</entry>
-<entry key="msg.add">추가해주세요.</entry>
-<entry key="msg.add.param">{0}을(를) 추가해주세요.</entry>
+<entry key="msg.leave.confirm">Are you sure you want to leave?</entry>
+<entry key="msg.item.added">Item added.</entry>
+<entry key="msg.item.select">Please select an item.</entry>
+<entry key="msg.item.select.param">Please select {msg}.</entry>
+<entry key="msg.select.param">Please select {0}.</entry>
+<entry key="msg.add">Please add.</entry>
+<entry key="msg.add.param">Please add {0}.</entry>
 
-<entry key="msg.select.file.import.confirm">선택한 파일을 import 하시겠습니까?</entry>
-<entry key="msg.file.uploadandexecute">파일 업로드후 처리 실행해주세요.</entry>
+<entry key="msg.select.file.import.confirm">Would you like to import the selected file?</entry>
+<entry key="msg.file.uploadandexecute">Please upload the file and execute.</entry>
 
-<entry key="msg.file.allowed.param">허용하는 확장자 : {accept}</entry>
-<entry key="msg.capsLock">CapsLock이 켜져 있습니다</entry>
-<entry key="msg.user.group.remove.confirm">사용자의 {itemName} 그룹을 제거 하시겠습니까?\n그룹을 제거 하시면 그룹에 속한 모든 db를 접근할수 없습니다.</entry>
-<entry key="msg.user.password.init">{userName}님의 비밀번호를 변경하시겠습니까?\n변경된 패스워드는 5초후에 사라집니다.</entry>
-<entry key="msg.group.delete.confirm">{groupName} 그룹을 제거 하시면 그룹에 속한 모든 db맵핑 정보와 사용자 정보가 삭제 됩니다.\n그룹을 삭제 하시겠습니까?</entry>
+<entry key="msg.file.allowed.param">Allowed extensions: {accept}</entry>
+<entry key="msg.capsLock">CapsLock is on.</entry>
+<entry key="msg.user.group.remove.confirm">Would you like to remove the {itemName} group of the user?\nIf you remove the group, you will not be able to access any databases belonging to the group.</entry>
+<entry key="msg.user.password.init">Would you like to change the password for {userName}?\nThe changed password will disappear after 5 seconds.</entry>
+<entry key="msg.group.delete.confirm">If you remove the {groupName} group, all database mapping information and user information belonging to the group will be deleted.\nWould you like to delete the group?</entry>
 
 <!-- validator -->
-<entry key="msg.valid.required">필수 입력사항입니다</entry>
-<entry key="msg.valid.size.param">사이즈는 {size} 사이여야 합니다</entry>
-<entry key="msg.valid.id.diffrent">아이디와 달라야 합니다.</entry>
-<entry key="msg.valid.password.identical">비밀번호가 같아야합니다.</entry>
-<entry key="msg.valid.min.size.param">최소 {size}글자 이상 이여야 합니다</entry>
-<entry key="msg.valid.duplicated">존재하는 항목 입니다.</entry>
-<entry key="msg.valid.duplicated.param">존재하는 {item} 입니다.</entry>
-<entry key="msg.valid.range.param">크기는 {range} 사이여야 합니다</entry>
-<entry key="msg.valid.invalid.param">유효하지않은 {item} 입니다.</entry>
-<entry key="msg.valid.enter">입력해주세요</entry>
-<entry key="msg.valid.enter.param">{item} 을(를) 입력해주세요</entry>
-<entry key="msg.valid.search">검색해주세요</entry>
-<entry key="msg.valid.search.param">{item} 을(를) 검색해주세요</entry>
+<entry key="msg.valid.required">This field is required.</entry>
+<entry key="msg.valid.size.param">Size must be {size}.</entry>
+<entry key="msg.valid.id.diffrent">Must be different from the ID.</entry>
+<entry key="msg.valid.password.identical">Passwords must be identical.</entry>
+<entry key="msg.valid.min.size.param">Must be at least {size} characters long.</entry>
+<entry key="msg.valid.duplicated">Item already exists.</entry>
+<entry key="msg.valid.duplicated.param">{item} already exists.</entry>
+<entry key="msg.valid.range.param">Size must be within {range}.</entry>
+<entry key="msg.valid.invalid.param">Invalid {item}.</entry>
+<entry key="msg.valid.enter">Please enter.</entry>
+<entry key="msg.valid.enter.param">Please enter {item}.</entry>
+<entry key="msg.valid.search">Please search.</entry>
+<entry key="msg.valid.search.param">Please search for {item}.</entry>
+<entry key="msg.valid.string.min">You must enter at least {size} characters.</entry>
+<entry key="msg.valid.string.max">You cannot enter more than {size} characters.</entry>
+<entry key="msg.valid.number.min">It must be greater than {size}.</entry>
+<entry key="msg.valid.number.max">It must be less than {size}.</entry>
+<entry key="msg.valid.regexp.email">The email is invalid.</entry>
+<entry key="msg.valid.regexp.url">The URL is invalid.</entry>
+
 
 <!-- db -->
-<entry key="msg.db.load">db 정보를 로드중입니다.</entry>
-<entry key="msg.db.connect.select"><![CDATA[접속할 db <img src="{0}/webstatic/imgs/Database.gif"> 선택해주세요.]]></entry>
-<entry key="msg.db.pool.close.confirm">DB 연결을 닫으시겠습니까?</entry>
-<entry key="msg.db.pool.init">성공\n다시 연결을 하실경우 풀 초기화를 해주세요.</entry>
-<entry key="msg.db.pool.init.confirm">모두 초기화 하시겠습니까?</entry>
-<entry key="msg.db.pool.init.warning">[풀 초기화]를 해야 적용 됩니다.</entry>
+<entry key="msg.db.load">Loading database information.</entry>
+<entry key="msg.db.connect.select"><![CDATA[Select the database to connect <img src="{0}/webstatic/imgs/Database.gif">.]]></entry>
+<entry key="msg.db.pool.close.confirm">Do you want to close the DB connection?</entry>
+<entry key="msg.db.pool.init">Success\nPlease initialize the pool if you want to reconnect.</entry>
+<entry key="msg.db.pool.init.confirm">Do you want to initialize all?</entry>
+<entry key="msg.db.pool.init.warning">This requires a pool initialization.</entry>
 
 <!-- db compare -->
-<entry key="msg.db.compare.001">테이블의 설명이 같지 않습니다. 원천 : [{sourceRemark}] 대상 : [{targetRemark}]</entry>
-<entry key="msg.db.compare.002">컬럼 카운트 원천 : {sourceLen} 대상 : {targetLen}</entry>
-<entry key="msg.db.compare.003">테이블 정보가 동일하지 않습니다.</entry>
-<entry key="msg.db.compare.004">{columnLabel} 원천 : [{sourceValue}] 대상 : [{targetValue}]</entry>
-<entry key="msg.db.compare.005">대상 테이블에 [{sourceKey}] 컬럼이 존재 하지 않습니다.</entry>
-<entry key="msg.db.compare.006">원천에</entry>
-<entry key="msg.db.compare.007">테이블이 존재 하지 않습니다</entry>
-<entry key="msg.db.compare.008">대상에</entry>
-<entry key="msg.db.compare.009">[{key}] 같지 않습니다.</entry>
-<entry key="msg.db.compare.010">[{key}] 같지 않습니다. 원천 : {sourceValue} 타켓 : {targetValue}</entry>
-<entry key="msg.db.compare.011">존재 하지 않습니다</entry>
-<entry key="msg.db.compare.012">원천 테이블에 [{targetKey}] 컬럼이 존재 하지 않습니다.</entry>
+<entry key="msg.db.compare.001">Table descriptions are different. Source: [{sourceRemark}], Target: [{targetRemark}]</entry>
+<entry key="msg.db.compare.002">Column counts Source: {sourceLen}, Target: {targetLen}</entry>
+<entry key="msg.db.compare.003">Table information is not identical.</entry>
+<entry key="msg.db.compare.004">{columnLabel} Source: [{sourceValue}], Target: [{targetValue}]</entry>
+<entry key="msg.db.compare.005">Column [{sourceKey}] does not exist in the target table.</entry>
+<entry key="msg.db.compare.006">In the source</entry>
+<entry key="msg.db.compare.007">Table does not exist</entry>
+<entry key="msg.db.compare.008">In the target</entry>
+<entry key="msg.db.compare.009">[{key}] is not the same.</entry>
+<entry key="msg.db.compare.010">[{key}] is not the same. Source: {sourceValue}, Target: {targetValue}</entry>
+<entry key="msg.db.compare.011">does not exist</entry>
+<entry key="msg.db.compare.012">Column [{targetKey}] does not exist in the source table.</entry>
 
 <!-- db data import -->
-<entry key="msg.file.import.001">가져오기할 작업의 형식을 아래에서 선택해주세요.</entry>
-<entry key="msg.file.import.002">SQL 파일을 실행해서 입력합니다</entry>
-<entry key="msg.file.import.003">XML 파일을 이용하여 데이터를 입력합니다</entry>
-<entry key="msg.file.import.004">JSON 파일을 이용하여 데이터를 입력합니다</entry>
-<entry key="msg.file.import.002">SQL 파일을 실행해서 입력합니다</entry>
+<entry key="msg.file.import.001">Please select the format of the import operation below.</entry>
+<entry key="msg.file.import.002">Input data by executing SQL files</entry>
+<entry key="msg.file.import.003">Input data using XML files</entry>
+<entry key="msg.file.import.004">Input data using JSON files</entry>
+<entry key="msg.file.import.002">Input data by executing SQL files</entry>
 
 <!-- board -->
-<entry key="msg.brd.comment.delete">댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?</entry>
-<entry key="msg.brd.article.delete">게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?</entry>
+<entry key="msg.brd.comment.delete">Once deleted, comments cannot be recovered. Are you sure you want to delete?</entry>
+<entry key="msg.brd.article.delete">Once deleted, articles cannot be recovered. Are you sure you want to delete?</entry>
 
 <!-- error -->
-<entry key="error.400">잘못된 요청 입니다.</entry>
-<entry key="error.403">권한이 없습니다.</entry>
-<entry key="error.404">등록되지 않은 페이지 입니다.</entry>
-<entry key="error.0001">로그아웃 되었습니다.\n로그인창 으로 이동하시겠습니까?</entry>
-<entry key="error.0002">유효하지않은 요청입니다. 새로고침하시겠습니까?</entry>
-<entry key="error.0003">유효하지않은 database 입니다.\n메인 페이지로 이동하시겠습니까?</entry>
-<entry key="error.0004">연결이 거부 되었습니다.관리자에게 문의해주세요.</entry>
-<entry key="error.80000">연결[80000]이 거부되었습니다.\n관리자에게 문의해주세요.</entry>
-<entry key="error.80001">연결[80001]이 닫혀 있습니다.\n관리자에게 문의해주세요.</entry>
-<entry key="error.80002">에러코드 : {errorCode}\n연결이 유효하지 않습니다.\n관리자에게 문의해주세요.</entry>
-<entry key="error.default">에러코드 : {errorCode}\n에러가 발생하였습니다\n관리자에게 문의해주세요.</entry>
+<entry key="error.400">Bad request.</entry>
+<entry key="error.403">Access forbidden.</entry>
+<entry key="error.404">Page not found.</entry>
+<entry key="error.0001">You have been logged out. Would you like to go to the login page?</entry>
+<entry key="error.0002">Invalid request. Would you like to refresh?</entry>
+<entry key="error.0003">Invalid database. Would you like to go to the main page?</entry>
+<entry key="error.0004">Connection refused. Please contact the administrator.</entry>
+<entry key="error.80000">Connection [80000] refused. Please contact the administrator.</entry>
+<entry key="error.80001">Connection [80001] is closed. Please contact the administrator.</entry>
+<entry key="error.80002">Error code: {errorCode}\nThe connection is not valid. Please contact the administrator.</entry>
+<entry key="error.default">Error code: {errorCode}\nAn error has occurred. Please contact the administrator.</entry>
 
-<entry key="msg.sqlfile.limit.view">최대 5000라인 까지 보이며 더 많은 내용은 다운로드 후 확인 바랍니다.</entry>
-<entry key="msg.file.add">파일을 추가 해주세요.</entry>
-<entry key="msg.deleted.info">삭제된 정보 입니댜.</entry>
-<entry key="msg.deleted.param">삭제된 {item} 입니댜.</entry>
+<entry key="msg.sqlfile.limit.view">Up to 5000 lines are visible, please download for further content.</entry>
+<entry key="msg.file.add">Please add file.</entry>
+<entry key="msg.deleted.info">Deleted information.</entry>
+<entry key="msg.deleted.param">The {item} has been deleted.</entry>
+
+<!-- setup  -->
+<entry key="msg.setting.code.template.desc">Create a template that can automatically generate code using the column information of the DB table.</entry>
+<entry key="msg.install.end">Please restart the server after installation is complete.</entry>
+<entry key="msg.install.complete">Installation complete</entry>
+
 
 </properties>

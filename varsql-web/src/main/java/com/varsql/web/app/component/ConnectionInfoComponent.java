@@ -8,12 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
-import com.varsql.core.connection.ConnectionInfoConfig;
-import com.varsql.core.connection.ConnectionInfoDao;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
@@ -24,12 +21,12 @@ import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
+import com.vartech.common.app.beans.FileInfo;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
 
 @Component("connectionInfoDao")
-@ConnectionInfoConfig(beanName = "connectionInfoDao", primary = true)
-public class ConnectionInfoComponent implements ConnectionInfoDao {
+public class ConnectionInfoComponent {
 
 	private final Logger logger = LoggerFactory.getLogger(ConnectionInfoComponent.class);
 
@@ -42,7 +39,6 @@ public class ConnectionInfoComponent implements ConnectionInfoDao {
 		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository;
 	}
 
-	@Override
 	public ConnectionInfo getConnectionInfo(String connid) throws EncryptDecryptException {
 
 		logger.debug("create connection info : {}", connid);

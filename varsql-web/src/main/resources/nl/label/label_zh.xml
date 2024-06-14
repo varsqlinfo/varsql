@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<entry key="varsql.title">Varsql</entry>
+<entry key="varsql.info">Varsql信息</entry>
+<entry key="sign.in.header">VARSQL登录</entry>
+
+<entry key="name">姓名</entry>
+<entry key="complete">完成</entry>
+<entry key="title">标题</entry>
+<entry key="content">内容</entry>
+<entry key="question">咨询事项</entry>
+<entry key="answer">答案</entry>
+<entry key="answer.yn">回答状态</entry>
+<entry key="reg_user">注册者</entry>
+<entry key="reg_dt">注册日期</entry>
+<entry key="view_dt">确认日期</entry>
+<entry key="upd_dt">修改日期</entry>
+<entry key="upd_user">修改者</entry>
+<entry key="std_day">开始日期</entry>
+<entry key="end_day">结束日期</entry>
+<entry key="std_time">开始时间</entry>
+<entry key="end_time">结束时间</entry>
+
+<entry key="sql.file.name">SQL文件名</entry>
+<entry key="preferences">环境设置</entry>
+<entry key="object">对象</entry>
+<entry key="export">导出</entry>
+<entry key="import">导入</entry>
+<entry key="copy">复制</entry>
+<entry key="reply">回复</entry>
+<entry key="send">发送</entry>
+<entry key="desc">描述</entry>
+<entry key="all">全部</entry>
+<entry key="remarks">备注</entry>
+<entry key="apply">应用</entry>
+<entry key="charset">字符集</entry>
+<entry key="export.filetype">导出类型</entry>
+<entry key="export.info">导出信息</entry>
+<entry key="restore.default">恢复默认</entry>
+<entry key="type">类型</entry>
+<entry key="newwin.view">新窗口查看</entry>
+
+<entry key="ok">确定</entry>
+<entry key="success">成功</entry>
+<entry key="fail">失败</entry>
+<entry key="remove">移除</entry>
+<entry key="clear">清除</entry>
+<entry key="data">数据</entry>
+<entry key="dataview">数据查看</entry>
+<entry key="count">计数</entry>
+<entry key="refresh">刷新</entry>
+<entry key="up">上</entry>
+<entry key="down">下</entry>
+<entry key="more">更多</entry>
+<entry key="new">新</entry>
+<entry key="add">添加</entry>
+<entry key="all.add">全部添加</entry>
+<entry key="all.remove">全部删除</entry>
+<entry key="sender">发送者</entry>
+<entry key="recipient">接收者</entry>
+<entry key="download">下载</entry>
+<entry key="password">密码</entry>
+<entry key="password.confirm">确认密码</entry>
+<entry key="password.reset">重置密码</entry>
+
+<entry key="back">返回</entry>
+<entry key="prev">前</entry>
+<entry key="next">下一个</entry>
+
+<entry key="regular.expression">正则表达式</entry>
+<entry key="replace">替换</entry>
+<entry key="find.word">查找词</entry>
+<entry key="replace.word">替换词</entry>
+<entry key="all.replace">全部替换</entry>
+<entry key="find">查找</entry>
+<entry key="close">关闭</entry>
+<entry key="data.export">数据导出</entry>
+<entry key="data.import">数据导入</entry>
+<entry key="block">阻止</entry>
+<entry key="release">释放</entry>
+<entry key="convert">转换</entry>
+<entry key="options">选项</entry>
+<entry key="direction">方向</entry>
+<entry key="information">信息</entry>
+<entry key="basic.information">基本信息</entry>
+<entry key="single">单个</entry>
+<entry key="multiple">多个</entry>
+<entry key="addflag">添加标志</entry>
+<entry key="delflag">删除标志</entry>
+<entry key="table">表</entry>
+<entry key="column">列</entry>
+<entry key="id">ID</entry>
+<entry key="ip">IP</entry>
+<entry key="size">尺寸</entry>
+<entry key="loading">加载中</entry>
+<entry key="upload">上传</entry>
+<entry key="uploaded.file">已上传文件</entry>
+<entry key="select">选择</entry>
+<entry key="select.format">选择格式</entry>
+<entry key="source">源</entry>
+<entry key="target">目标</entry>
+<entry key="result">结果</entry>
+<entry key="result.download">结果下载</entry>
+<entry key="new.note">新便条</entry>
+<entry key="note.box">便条箱</entry>
+<entry key="contact">联系</entry>
+<entry key="tool">工具</entry>
+<entry key="detail">详情</entry>
+<entry key="detail.view">详细查看</entry>
+
+<entry key="compare.result">比较结果</entry>
+<entry key="compare.detail">比较详情</entry>
+<entry key="compare.info">比较信息</entry>
+
+<entry key="db">数据库</entry>
+<entry key="database">数据库</entry>
+<entry key="group">组</entry>
+<entry key="dbgroup">数据库组</entry>
+
+<entry key="email">电子邮件</entry>
+<entry key="category">类别</entry>
+
+<entry key="db.table">Table</entry>
+<entry key="db.view">View</entry>
+<entry key="db.schema">Schema</entry>
+<entry key="db.function">Function</entry>
+<entry key="db.procedure">Procedure</entry>
+<entry key="db.sequence">Sequence</entry>
+
+<entry key="recv.msg">收到消息</entry>
+<entry key="send.msg">发送消息</entry>
+
+<entry key="send.user">发送用户</entry>
+<entry key="recv.user">接收用户</entry>
+
+<entry key="wrap.search">封装搜索</entry>
+<entry key="case.sensitive">区分大小写</entry>
+
+<entry key="contextmenu.name">上下文菜单名称</entry>
+<entry key="view.mode">视图模式</entry>
+<entry key="view.mode.editor">编辑器</entry>
+<entry key="view.mode.dialog">对话框</entry>
+
+<entry key="btn.password.view">查看密码</entry>
+<entry key="btn.pool.init">池初始化</entry>
+<entry key="btn.pool.close">关闭池</entry>
+
+<entry key="back.page">上一页</entry>
+<entry key="main.page">主页</entry>
+
+<!-- 按钮消息 -->
+<entry key="btn.compare">比较</entry>
+
+<entry key="sub.add">添加子项目</entry>
+<entry key="save.andpoolnit">保存 &amp; 数据库池重新初始化</entry>
+<entry key="btn.connnection.check">连接测试</entry>
+<entry key="btn.connnection.close">关闭连接</entry>
+<entry key="btn.login">登录</entry>
+<entry key="btn.accept">接受</entry>
+<entry key="btn.denial">拒绝</entry>
+
+<entry key="btn.profile">个人资料</entry>
+<entry key="btn.setting">设置</entry>
+<entry key="btn.signup">注册</entry>
+<entry key="btn.logout">登出</entry>
+
+<!-- 工具栏按钮 -->
+<entry key="toolbar.execute">执行</entry>
+<entry key="toolbar.newfile">新建文件</entry>
+<entry key="toolbar.save">保存</entry>
+<entry key="toolbar.allsave">全部保存</entry>
+
+<entry key="toolbar.cut">剪切</entry>
+<entry key="toolbar.copy">复制</entry>
+<entry key="toolbar.eraser">擦除</entry>
+
+<entry key="toolbar.undo">撤销</entry>
+<entry key="toolbar.redo">重做</entry>
+<entry key="toolbar.linewrapper">自动换行</entry>
+<entry key="toolbar.convertext">文本转换</entry>
+<entry key="toolbar.format">查询整理</entry>
+<entry key="toolbar.send">发送消息</entry>
+<entry key="toolbar.parameter">参数</entry>
+
+<!-- 工具消息 -->
+<entry key="msg.sendmsg.title">发送消息</entry>
+<entry key="msg.sendmsg.recv.txt.holder">接收用户</entry>
+
+<!-- 比较页面 -->
+<entry key="same.count">相同数</entry>
+<entry key="different.count">不同数</entry>
+<entry key="empty.count">空数</entry>
+
+<entry key="btn.confirm">确认</entry>
+<entry key="attach.file">附加文件</entry>
+<entry key="comment">评论</entry>
+<entry key="save">保存</entry>
+<entry key="delete">删除</entry>
+<entry key="modify">修改</entry>
+<entry key="list">列表</entry>
+<entry key="list.view">查看列表</entry>
+<entry key="delete.warning.msg">已删除的消息</entry>
+<entry key="re.comment">回复评论</entry>
+<entry key="input.placeholder">输入...</entry>
+<entry key="search.word">搜索词</entry>
+<entry key="search">搜索</entry>
+<entry key="search.placeholder">搜索...</entry>
+<entry key="writing">写作</entry>
+<entry key="write">写</entry>
+<entry key="registration">注册</entry>
+<entry key="notice">公告</entry>
+<entry key="cancel">取消</entry>
+<entry key="language">语言</entry>
+<entry key="language.select">选择语言</entry>
+<entry key="login.page.view">转到登录页面</entry>
+<entry key="lang.ko">한국어(KR)</entry>
+<entry key="lang.en">English(EN)</entry>
+<entry key="lang.ja">日本語(JP)</entry>
+<entry key="lang.zh">繁體中文(CN)</entry>
+
+<entry key="screen">屏幕</entry>
+<entry key="user">用户</entry>
+<entry key="manager">管理者</entry>
+<entry key="administrator">管理员</entry>
+
+<!-- 用户 -->
+<entry key="user.orgnm">组织</entry>
+<entry key="user.deptnm">部门</entry>
+<entry key="user.block">阻止</entry>
+<entry key="user.release">释放</entry>
+<entry key="user.id">Id</entry>
+<entry key="user.password">密码</entry>
+<entry key="user.password.new">新密码</entry>
+<entry key="user.password.current">当前密码</entry>
+<entry key="user.password.confirm">确认密码</entry>
+<entry key="user.name">用户名</entry>
+<entry key="user.birthday">生日</entry>
+<entry key="user.sex">性别</entry>
+<entry key="user.preferences">首选项</entry>
+<entry key="first.name">名字</entry>
+<entry key="last.name">姓</entry>
+
+<entry key="user.join">用户注册</entry>
+<entry key="join">注册</entry>
+
+<entry key="validation.check">验证检查</entry>
+<entry key="driverclass.check">Driver检查</entry>
+
+<entry key="accept.yn">接受与否</entry>
+<entry key="data.type">数据类型</entry>
+<entry key="length">长度</entry>
+
+<entry key="glossary">术语</entry>
+<entry key="glossary.en">英文名称</entry>
+<entry key="glossary.abbr">缩写名称</entry>
+
+<entry key="command">Command</entry>
+<entry key="query">查询</entry>
+<entry key="delay.time">延迟时间</entry>
+
+<!-- 设置 -->
+<entry key="admim.account.settings">管理员账户设置</entry>
+<entry key="admim.default.name">管理员</entry>
+<entry key="app.settings">站点设置</entry>
+
+<!-- 文件 -->
+<entry key="file.new">新建文件</entry>
+<entry key="file.name">文件名</entry>
+<entry key="file.import_export">导入和导出...</entry>
+<entry key="file.retention.period">文件保留期限</entry>
+<entry key="file.export">文件导出</entry>
+<entry key="file.select">选择文件</entry>
+<entry key="file.add">添加文件</entry>
+<entry key="file.upload">上传</entry>
+<entry key="file.remove">全部删除</entry>
+
+<entry key="step.prev">前</entry>
+<entry key="step.next">下一步</entry>
+<entry key="step.complete">完成</entry>
+<entry key="step.close">关闭</entry>
+
+<entry key="error.message">错误消息</entry>
+<entry key="error.type">错误类型</entry>
+<entry key="error.cont">错误内容</entry>
+<entry key="error.server">主机</entry>
+
+<entry key="user.list">用户列表</entry>
+<entry key="manager.list">管理员列表</entry>
+<entry key="administrator.list">管理员列表</entry>
+
+<entry key="screen.user">用户</entry>
+<entry key="screen.manager">应用管理</entry>
+<entry key="screen.admin">管理控制台</entry>
+<entry key="screen.login">登录屏幕</entry>
+<entry key="screen.main">主屏幕</entry>
+
+<entry key="group.name">组名</entry>
+<entry key="group.mapping">组映射</entry>
+<entry key="group.usermapping">用户组映射</entry>
+
+
+<entry key="db.type">数据库类型</entry>
+<entry key="provider.name">名称</entry>
+<entry key="driver.class">Driver类</entry>
+<entry key="path.type">路径类型</entry>
+<entry key="validation.query">验证查询</entry>
+<entry key="path">路径</entry>
+<entry key="direct.input">直接输入</entry>
+
+<entry key="table.name">表名</entry>
+<entry key="column.name">列名</entry>
+<entry key="column.comment">描述</entry>
+<entry key="nullable">Nullable</entry>
+<entry key="constraints.key">键</entry>
+<entry key="default.value">默认值</entry>
+<entry key="parameter.name">参数名</entry>
+<entry key="parameter.inout">IN/OUT</entry>
+
+<!-- 数据库 -->
+<entry key="db.info">数据库信息</entry>
+<entry key="db.vname">连接名</entry>
+<entry key="db.vurl">URL</entry>
+<entry key="db.serverip">服务器IP</entry>
+<entry key="db.port">端口</entry>
+<entry key="db.urldirectmsg">直接输入URL</entry>
+<entry key="db.databasename">数据库名(SID)</entry>
+<entry key="db.vdriver">Driver</entry>
+<entry key="db.useyn">是否使用</entry>
+<entry key="db.schemaviewyn">查看全部模式</entry>
+<entry key="db.vid">ID</entry>
+<entry key="db.vpw">密码</entry>
+<entry key="db.enableConnectionPool">DB Metadata Pool 激活</entry>
+<entry key="db.lazyloadyn">异步加载</entry>
+<entry key="db.basetableyn">是否使用基本表</entry>
+<entry key="db.vconnopt">连接选项</entry>
+<entry key="db.vpoolopt">池选项</entry>
+<entry key="db.max_select_count">Limit Select Row</entry>
+<entry key="db.test_while_idle">空闲状态连接测试</entry>
+<entry key="db.maxactive">Max Active</entry>
+<entry key="db.minidle">Min Idle</entry>
+<entry key="db.timeout">Timeout</entry>
+<entry key="db.exportcount">导出计数</entry>
+<entry key="db.usecolumnlabel">是否使用ResultSet列标签</entry>
+
+<!-- JDBC -->
+<entry key="jdbc.provider.shortcuts">JDBC提供商设置快捷方式</entry>
+<entry key="jdbc.provider.msg">请先设置JDBC提供商。</entry>
+<entry key="jdbc.driver">JDBC驱动程序</entry>
+
+<!-- 数据备份 -->
+<entry key="cron.expression">Cron Expression</entry>
+<entry key="connection.db">连接数据库</entry>
+
+<entry key="text.convert">文本转换</entry>
+<entry key="template">模板</entry>
+<entry key="split.char">分隔符</entry>
+<entry key="view">视图</entry>
+<entry key="content.view">内容视图</entry>
+<entry key="compressed">压缩</entry>
+<entry key="compressed.size">压缩大小</entry>
+
+<entry key="date">日期</entry>
+<entry key="period">周期</entry>
+<entry key="schedule">日程</entry>
+<entry key="calendar">日历</entry>
+
+<entry key="week">周</entry>
+<entry key="month">月</entry>
+<entry key="quarter">季度</entry>
+<entry key="year">年</entry>
+<entry key="select.delete">选择删除</entry>
+<entry key="select.all">全部选择</entry>
+<entry key="log">日志</entry>
+<entry key="component">组件</entry>
+<entry key="init">初始化</entry>
+<entry key="layout">布局</entry>
+<entry key="init.layout">初始化布局</entry>
+<entry key="board">板</entry>
+<entry key="key">键</entry>
+<entry key="value">值</entry>
+<entry key="position">位置</entry>
+<entry key="ascending">升序</entry>
+<entry key="descending">降序</entry>
+<entry key="asc.desc">升序/降序</entry>
+<entry key="sort.order">排序顺序</entry>
+<entry key="sort.type">排序类型</entry>
+
+<entry key="help">帮助</entry>
+<entry key="install">インストール</entry>
+<entry key="install.start">安装开始</entry>
+</properties>

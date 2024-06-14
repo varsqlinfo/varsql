@@ -1,4 +1,4 @@
-package com.varsql.core.common.util;
+package com.varsql.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,12 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.varsql.core.auth.Authority;
-import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.AuthorityTypeImpl;
-import com.varsql.core.auth.User;
+import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.web.security.Authority;
+import com.varsql.web.security.User;
 
 public final class SecurityUtil {
 
@@ -330,12 +330,12 @@ public final class SecurityUtil {
 		return userRoleInfo;
 	}
 
-	public static boolean isSchemaView(DatabaseParamInfo dataParamInfo) {
-		return dataParamInfo.isSchemaViewYn() || SecurityUtil.loginRolePriority() >= AuthorityTypeImpl.MANAGER.getPriority();
-	}
-
 	public static Authentication getAuthentication () {
 		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	public static boolean isSchemaView(DatabaseParamInfo dpi) {
+		return DbMetaUtils.isSchemaView(dpi) || SecurityUtil.loginRolePriority() >= AuthorityTypeImpl.MANAGER.getPriority();
 	}
 
 }

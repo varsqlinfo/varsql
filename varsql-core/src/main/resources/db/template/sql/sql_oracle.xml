@@ -67,6 +67,12 @@ COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{{comment}}}';
 CREATE OR REPLACE VIEW {{objectName}} ({{item.header}})
 AS
 {{{item.body}}}
+;
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{name}} is '{{{comment}}}';{{/xif}}
+{{/commentsList}}
         </create>
     </view>
 

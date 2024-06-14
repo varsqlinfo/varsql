@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>varsql</comment>
+
+<!-- guest -->
+<entry key="msg.welcome">ようこそ.</entry>
+<entry key="msg.guest.permission"><![CDATA[まだ権限が付与されていません.<br/>管理者にお問い合わせください.]]></entry>
+
+<entry key="msg.analyzing">分析中です.</entry>
+<entry key="msg.auth.db.list">権限のあるDBリスト</entry>
+
+<!-- editor msg -->
+<entry key="msg.editor.info">新しいファイルをクリックすると、クエリを実行できるエディタが開きます.</entry>
+<entry key="msg.editor.empty.warning">エディタウィンドウがありません.\n新しいファイルをクリックして追加してください.</entry>
+<entry key="msg.editor.change.count.param">一致する内容が{count}回変更されました.</entry>
+<entry key="msg.editor.not.found">次の文字列が見つかりません.\n{findText}</entry>
+<entry key="msg.editor.find.line">行を見つける：{line}、文字：{ch}</entry>
+
+<entry key="msg.email.empty">メールアドレスを入力してください</entry>
+<entry key="msg.title.empty">題名を入力してください</entry>
+<entry key="msg.contactus.empty">お問い合わせ内容を入力してください</entry>
+<entry key="msg.name.empty">名前を入力してください</entry>
+<entry key="msg.password.empty">パスワードを入力してください</entry>
+<entry key="msg.password.differrent">パスワードが一致しません</entry>
+<entry key="msg.password.length.check">パスワードは6文字以上である必要があります</entry>
+<entry key="msg.login.fail">ユーザー名またはパスワードが間違っています</entry>
+<entry key="msg.saveandclose.confirm">保存して閉じますか?</entry>
+<entry key="msg.saveandreload">保存しますか?\n保存後、ページをリロードすると反映されます.</entry>
+<entry key="msg.create.confirm">作成しますか?</entry>
+<entry key="msg.create.confirm.param">{item}を作成しますか?</entry>
+<entry key="msg.create.success">作成されました</entry>
+<entry key="msg.save.confirm">保存しますか?</entry>
+<entry key="msg.save.success">保存されました</entry>
+<entry key="msg.delete.confirm">削除しますか?</entry>
+<entry key="msg.delete.confirm.param">{item}を削除しますか?</entry>
+<entry key="msg.delete.success">削除されました</entry>
+<entry key="msg.apply.confirm">適用しますか?</entry>
+<entry key="msg.apply.success">適用されました.</entry>
+<entry key="msg.copy.success">コピーされました</entry>
+<entry key="msg.change.confirm">変更しますか?</entry>
+<entry key="msg.change.success">変更されました</entry>
+<entry key="msg.confirm.param">{item}しますか?</entry>
+<entry key="msg.confirm.success.param">{item}されました</entry>
+<entry key="msg.block.confirm">ブロックしますか?</entry>
+<entry key="msg.block.success">ブロックされました</entry>
+<entry key="msg.release.confirm">解除しますか?</entry>
+<entry key="msg.release.success">解除されました</entry>
+<entry key="msg.send.confirm">送信しますか?</entry>
+<entry key="msg.send.confirm.param">{item}を送信しますか?</entry>
+
+<entry key="msg.close.confirm">閉じますか?</entry>
+<entry key="msg.close.confirm.param">[{name}]を閉じますか?</entry>
+<entry key="msg.export.confirm">エクスポートしますか?</entry>
+<entry key="msg.export.confirm.param">{item}をエクスポートしますか?</entry>
+<entry key="msg.init.restore.confirm">初期設定に復元しますか?</entry>
+<entry key="msg.setting.fail">設定情報が正しくありません</entry>
+<entry key="msg.setting.fail.restore">設定情報が正しくありません\n初期設定に復元しますか?</entry>
+<entry key="msg.layout.restore.confirm">初期化すると、デフォルトのレイアウトに戻り、ページがリフレッシュされます.\n初期化しますか?</entry>
+
+<entry key="msg.setting.fail">設定情報が正しくありません</entry>
+<entry key="msg.setting.fail.restore">設定情報が正しくありません\n初期設定に復元しますか?</entry>
+<entry key="msg.setting.fail.check">設定情報が正しくありません\n設定情報を確認してください.</entry>
+<entry key="msg.setting.invalid">無効な設定です.</entry>
+
+
+<entry key="msg.password.change.confirm">パスワードを変更しますか?</entry>
+<entry key="msg.password.change.success">パスワードが変更されました</entry>
+<entry key="msg.password.re.enter">パスワードをもう一度入力してください</entry>
+<entry key="msg.password.lost">パスワードを忘れましたか?</entry>
+
+<entry key="msg.fail">失敗しました</entry>
+<entry key="msg.nodata">データがありません.</entry>
+<entry key="msg.search.placeholder">検索キーワードを入力してください.</entry>
+<entry key="msg.data.select">データを選択してください.</entry>
+<entry key="msg.accept.msg">選択されたユーザーを受け入れますか?</entry>
+<entry key="msg.denial.msg">選択されたユーザーを拒否しますか?</entry>
+<entry key="msg.add.manager.confirm">選択されたユーザーをマネージャーとして登録しますか?</entry>
+<entry key="msg.del.manager.confirm">選択されたユーザーをマネージャーから削除しますか?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[保存すると、現在のプール情報が初期化され、新しいプールが作成されます.\n続行しますか?]]></entry>
+<entry key="msg.note.arrived">メモが届きました.</entry>
+
+<!-- export table spec -->
+<entry key="msg.export.spec.step1">エクスポート情報</entry>
+<entry key="msg.export.spec.step2">テーブル選択</entry>
+<entry key="msg.export.spec.step3">完了</entry>
+<entry key="msg.export.spec.table.definition">テーブル定義書</entry>
+<entry key="msg.export.spec.column.multi.sheet">複数シートの列</entry>
+<entry key="msg.export.spec.column.detail">列の詳細情報</entry>
+<entry key="msg.export.spec.column.title">エクスポート列情報</entry>
+<entry key="msg.export.spec.schema.select">スキーマを選択してください.</entry>
+
+<entry key="msg.table.dbclick.move">* ダブルクリックして移動するか、選択してから方向キーで登録してください.</entry>
+<entry key="msg.column.dbclick.move">* 列をダブルクリックして移動するか、選択してから方向キーで登録してください.</entry>
+
+<entry key="msg.export.ddl.step1">オブジェクトの選択</entry>
+<entry key="msg.export.ddl.step2">詳細選択</entry>
+<entry key="msg.export.ddl.step3">完了</entry>
+<entry key="msg.export.multi.file">複数ファイル</entry>
+<entry key="msg.export.multi.file.single">単一ファイル</entry>
+<entry key="msg.export.multi.file.multi">オブジェクトごとのファイル</entry>
+<entry key="msg.select.object">選択されたオブジェクト</entry>
+<entry key="msg.export.ddl.object.select.title">エクスポートオブジェクトの選択</entry>
+<entry key="msg.export.ddl.object.desc">エクスポートするオブジェクトを選択してください.</entry>
+<entry key="msg.export.ddl.object.nodata">オブジェクトを選択してください.</entry>
+
+<entry key="msg.retry">もう一度やり直してください</entry>
+<entry key="msg.refresh.connnection.info">接続情報をリフレッシュ</entry>
+<entry key="msg.refresh.connnection.info.confirm">接続情報をリフレッシュしますか?</entry>
+
+<entry key="msg.limit.file.msg">最大{0}台まで添付できます.</entry>
+
+<entry key="msg.driver.path.desc">複数のパスがある場合は、セミコロン(";")で区切ってください</entry>
+
+<entry key="msg.download.history.help"><![CDATA[ダウンロード項目は<span style="font-weight: bold;">設定 -> ファイル</span>から履歴を確認できます.]]></entry>
+
+<entry key="msg.send.mail.password.fail"><![CDATA[メールの送信に失敗しました.<br/>誤ったパスワード再設定要求です.]]></entry>
+<entry key="msg.send.mail"><![CDATA[メールが送信されました.]]></entry>
+<entry key="invalid.token">無効なトークンです.</entry>
+
+<entry key="msg.close.window">ウィンドウを閉じますか?</entry>
+<entry key="msg.loading">ロード中です.</entry>
+<entry key="msg.refresh">リフレッシュしますか?</entry>
+
+<entry key="msg.content.enter">入力してください.</entry>
+<entry key="msg.content.enter.param">{item}を入力してください.</entry>
+
+<entry key="msg.leave.confirm">退出しますか?</entry>
+<entry key="msg.item.added">追加されたアイテムです</entry>
+<entry key="msg.item.select">アイテムを選択してください.</entry>
+<entry key="msg.item.select.param">{msg}アイテムを選択してください.</entry>
+<entry key="msg.select.param">{0}を選択してください.</entry>
+<entry key="msg.add">追加してください.</entry>
+<entry key="msg.add.param">{0}を追加してください.</entry>
+
+<entry key="msg.select.file.import.confirm">選択したファイルをインポートしますか?</entry>
+<entry key="msg.file.uploadandexecute">ファイルをアップロードして実行してください.</entry>
+
+<entry key="msg.file.allowed.param">許可されている拡張子：{accept}</entry>
+<entry key="msg.capsLock">CapsLockがオンになっています</entry>
+<entry key="msg.user.group.remove.confirm">{itemName}のグループを削除しますか?\nグループを削除すると、グループに属するすべてのDBへのアクセスができなくなります.</entry>
+<entry key="msg.user.password.init">{userName}さんのパスワードを変更しますか?\n変更されたパスワードは5秒後に消去されます.</entry>
+<entry key="msg.group.delete.confirm">{groupName}グループを削除すると、グループに属するすべてのDBマッピング情報とユーザー情報が削除されます.\nグループを削除しますか?</entry>
+
+<!-- validator -->
+<entry key="msg.valid.required">必須項目です</entry>
+<entry key="msg.valid.size.param">サイズは{size}の間でなければなりません</entry>
+<entry key="msg.valid.id.diffrent">IDは異なる必要があります.</entry>
+<entry key="msg.valid.password.identical">パスワードは同じである必要があります.</entry>
+<entry key="msg.valid.min.size.param">{size}文字以上でなければなりません</entry>
+<entry key="msg.valid.duplicated">既に存在するアイテムです.</entry>
+<entry key="msg.valid.duplicated.param">既に存在する{item}です.</entry>
+<entry key="msg.valid.range.param">サイズは{range}の間でなければなりません</entry>
+<entry key="msg.valid.invalid.param">無効な{item}です.</entry>
+<entry key="msg.valid.enter">入力してください</entry>
+<entry key="msg.valid.enter.param">{item}を入力してください</entry>
+<entry key="msg.valid.search">検索してください</entry>
+<entry key="msg.valid.search.param">{item}を検索してください</entry>
+<entry key="msg.valid.string.min">{size} 文字以上入力してください。</entry>
+<entry key="msg.valid.string.max">{size} 文字以上入力することはできません。</entry>
+<entry key="msg.valid.number.min">{size} より大きくなければなりません。</entry>
+<entry key="msg.valid.number.max">{size} より小さくなければなりません。</entry>
+<entry key="msg.valid.regexp.email">メールアドレスが無効です。</entry>
+<entry key="msg.valid.regexp.url">URLが無効です。</entry>
+
+
+<!-- db -->
+<entry key="msg.db.load">DB情報をロードしています.</entry>
+<entry key="msg.db.connect.select"><![CDATA[接続するDB <img src="{0}/webstatic/imgs/Database.gif"> を選択してください.]]></entry>
+<entry key="msg.db.pool.close.confirm">DB接続を閉じますか?</entry>
+<entry key="msg.db.pool.init">成功\n再接続する場合は、プールを初期化してください.</entry>
+<entry key="msg.db.pool.init.confirm">すべて初期化しますか?</entry>
+<entry key="msg.db.pool.init.warning">[プールの初期化]を実行する必要があります.</entry>
+
+<!-- db compare -->
+<entry key="msg.db.compare.001">テーブルの説明が一致しません.ソース：[{sourceRemark}] ターゲット：[{targetRemark}]</entry>
+<entry key="msg.db.compare.002">列カウント ソース：{sourceLen} ターゲット：{targetLen}</entry>
+<entry key="msg.db.compare.003">テーブル情報が一致しません.</entry>
+<entry key="msg.db.compare.004">{columnLabel} ソース：[{sourceValue}] ターゲット：[{targetValue}]</entry>
+<entry key="msg.db.compare.005">ターゲットテーブルに[{sourceKey}]列が存在しません.</entry>
+<entry key="msg.db.compare.006">ソースに</entry>
+<entry key="msg.db.compare.007">テーブルが存在しません</entry>
+<entry key="msg.db.compare.008">ターゲットに</entry>
+<entry key="msg.db.compare.009">[{key}]が一致しません.</entry>
+<entry key="msg.db.compare.010">[{key}]が一致しません. ソース：{sourceValue} ターゲット：{targetValue}</entry>
+<entry key="msg.db.compare.011">存在しません</entry>
+<entry key="msg.db.compare.012">ソーステーブルに[{targetKey}]列が存在しません.</entry>
+
+<!-- db data import -->
+<entry key="msg.file.import.001">インポートする操作の形式を下から選択してください.</entry>
+<entry key="msg.file.import.002">SQLファイルを実行して入力します</entry>
+<entry key="msg.file.import.003">XMLファイルを使用してデータを入力します</entry>
+<entry key="msg.file.import.004">JSONファイルを使用してデータを入力します</entry>
+<entry key="msg.file.import.002">SQLファイルを実行して入力します</entry>
+
+<!-- board -->
+<entry key="msg.brd.comment.delete">コメントを削除すると元に戻すことはできません.それでも削除しますか?</entry>
+<entry key="msg.brd.article.delete">投稿を削除すると元に戻すことはできません.それでも削除しますか?</entry>
+
+<!-- error -->
+<entry key="error.400">無効なリクエストです.</entry>
+<entry key="error.403">アクセスが拒否されました.</entry>
+<entry key="error.404">登録されていないページです.</entry>
+<entry key="error.0001">ログアウトしました.\nログイン画面に移動しますか?</entry>
+<entry key="error.0002">無効なリクエストです.リフレッシュしますか?</entry>
+<entry key="error.0003">無効なデータベースです.\nメインページに移動しますか?</entry>
+<entry key="error.0004">接続が拒否されました.管理者に問い合わせてください.</entry>
+<entry key="error.80000">接続[80000]が拒否されました.\n管理者に問い合わせてください.</entry>
+<entry key="error.80001">接続[80001]が閉じられています.\n管理者に問い合わせてください.</entry>
+<entry key="error.80002">エラーコード：{errorCode}\n接続が無効です.\n管理者に問い合わせてください.</entry>
+<entry key="error.default">エラーコード：{errorCode}\nエラーが発生しました.\n管理者に問い合わせてください.</entry>
+
+<entry key="msg.sqlfile.limit.view">最大5000行まで表示され、詳細はダウンロードして確認してください.</entry>
+<entry key="msg.file.add">ファイルを追加してください.</entry>
+<entry key="msg.deleted.info">削除された情報です.</entry>
+<entry key="msg.deleted.param">削除された{item}です.</entry>
+
+<!-- setup -->
+<entry key="msg.setting.code.template.desc">DBテーブルのカラム情報を使用してコードを自動生成できるテンプレートを作成します。</entry>
+<entry key="msg.install.end">インストール完了後、サーバーを再起動してください。</entry>
+<entry key="msg.install.complete">インストール完了</entry>
+
+</properties>

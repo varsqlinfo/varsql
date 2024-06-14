@@ -1,8 +1,8 @@
 package com.varsql.web.dto.db;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.db.DBConnTabEntity;
 import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.StringUtils;
 
 /**

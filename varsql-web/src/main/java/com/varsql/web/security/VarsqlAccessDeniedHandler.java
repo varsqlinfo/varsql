@@ -17,7 +17,7 @@ import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;

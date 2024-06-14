@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
@@ -30,6 +31,8 @@ import com.varsql.web.constants.ResourceConfigConstants;
 
 *-----------------------------------------------------------------------------
  */
+//@ConditionalOnProperty(prefix = "varsql" ,name = "runtime",  havingValue = "test", matchIfMissing = false)
+@ConditionalOnExpression("!'true'.equals('${varsql.runtime.test}')")
 @EnableTransactionManagement
 @Import(value = {
    JPAConfigurer.class,

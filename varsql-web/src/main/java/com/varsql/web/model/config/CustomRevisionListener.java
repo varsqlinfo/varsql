@@ -2,7 +2,7 @@ package com.varsql.web.model.config;
 
 import org.hibernate.envers.RevisionListener;
 
-import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.web.util.SecurityUtil;
 
 public class CustomRevisionListener implements RevisionListener {
 

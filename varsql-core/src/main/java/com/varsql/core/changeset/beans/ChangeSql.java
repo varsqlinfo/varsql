@@ -12,6 +12,7 @@ public class ChangeSql {
 	private boolean multiple;
 	private String delimiter;
 	private String sql; 
+	private String log; 
 	
 	@Override
 	public String toString() {

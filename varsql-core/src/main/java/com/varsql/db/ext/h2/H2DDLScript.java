@@ -39,27 +39,28 @@ public class H2DDLScript extends AbstractDDLScript {
 		logger.debug(" Function DDL Generation...");
 
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
 		
-		for (String name : objNmArr) {
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
-
-			DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, null);
-			param.setSourceText(StringUtils.trim(sqlSesseion.selectOne("functionScript", dataParamInfo)));
+			DDLInfo ddlInfo;
 			
-			String tempateSource = SQLTemplateFactory.getInstance().sqlRender(DBVenderType.H2, SQLTemplateCode.FUNCTION.create, param);
-			
-			ddlInfo.setChangeFormat(false);
-			ddlInfo.setCreateScript(tempateSource);
-
-			reval.add(ddlInfo);
+			for (String name : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(name);
+				dataParamInfo.setObjectName(name);
+	
+				DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, null);
+				param.setSourceText(StringUtils.trim(sqlSession.selectOne("functionScript", dataParamInfo)));
+				
+				String tempateSource = SQLTemplateFactory.getInstance().sqlRender(DBVenderType.H2, SQLTemplateCode.FUNCTION.create, param);
+				
+				ddlInfo.setChangeFormat(false);
+				ddlInfo.setCreateScript(tempateSource);
+	
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -69,21 +70,22 @@ public class H2DDLScript extends AbstractDDLScript {
 	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
 
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		for (String name : objNmArr) {
+		
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(name);
-			dataParamInfo.setObjectName(name);
-
-			DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSesseion.selectList("indexScript", dataParamInfo));
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
-			
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+			for (String name : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(name);
+				dataParamInfo.setObjectName(name);
+	
+				DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSession.selectList("indexScript", dataParamInfo));
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
+				
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;

@@ -1,8 +1,8 @@
 package com.varsql.web.dto.user;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.user.UserDBPreferencesEntity;
 import com.varsql.web.util.DatabaseUtils;
+import com.varsql.web.util.SecurityUtil;
 
 import lombok.Getter;
 import lombok.Setter;

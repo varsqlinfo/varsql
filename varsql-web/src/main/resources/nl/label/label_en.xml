@@ -83,7 +83,6 @@
 <entry key="block">Block</entry>
 <entry key="release">Release</entry>
 <entry key="convert">Convert</entry>
-<entry key="release">Release</entry>
 <entry key="options">Options</entry>
 <entry key="direction">Direction</entry>
 <entry key="information">Information</entry>
@@ -218,8 +217,10 @@
 <entry key="language">Language</entry>
 <entry key="language.select">Select Language</entry>
 <entry key="login.page.view">Move to Login Page</entry>
-<entry key="lang.ko">한국어</entry>
-<entry key="lang.en">English</entry>
+<entry key="lang.ko">한국어(KR)</entry>
+<entry key="lang.en">English(EN)</entry>
+<entry key="lang.ja">日本語(JP)</entry>
+<entry key="lang.zh">繁體中文(CN)</entry>
 
 
 <entry key="screen">Screen</entry>
@@ -382,10 +383,14 @@
 <entry key="board">Board</entry>
 <entry key="key">Key</entry>
 <entry key="value">Value</entry>
-<entry key="asc">Ascending</entry>
-<entry key="desc">Descending</entry>
+<entry key="ascending">Ascending</entry>
+<entry key="descending">Descending</entry>
 <entry key="asc.desc">Ascending/Descending</entry>
 <entry key="sort.order">Sort Order</entry>
 <entry key="sort.type">Sort Type</entry>
+
+<entry key="help">Help</entry>
+<entry key="install">Installation</entry>
+<entry key="install.start"> Installation started</entry>
 
 </properties>

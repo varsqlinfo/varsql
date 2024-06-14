@@ -83,7 +83,6 @@
 <entry key="block">차단</entry>
 <entry key="release">해제</entry>
 <entry key="convert">변환</entry>
-<entry key="release">출시</entry>
 <entry key="options">옵션</entry>
 <entry key="direction">방향</entry>
 <entry key="information">정보</entry>
@@ -218,8 +217,10 @@
 <entry key="language">언어</entry>
 <entry key="language.select">언어선택</entry>
 <entry key="login.page.view">로그인 화면 이동</entry>
-<entry key="lang.ko">한국어</entry>
-<entry key="lang.en">English</entry>
+<entry key="lang.ko">한국어(KR)</entry>
+<entry key="lang.en">English(EN)</entry>
+<entry key="lang.ja">日本語(JP)</entry>
+<entry key="lang.zh">繁體中文(CN)</entry>
 
 
 <entry key="screen">화면</entry>
@@ -382,11 +383,14 @@
 <entry key="board">게시판</entry>
 <entry key="key">키</entry>
 <entry key="value">값</entry>
-<entry key="asc">오름차순</entry>
-<entry key="desc">내림차순</entry>
+<entry key="ascending">오름차순</entry>
+<entry key="descending">내림차순</entry>
 <entry key="asc.desc">오름/내림차순</entry>
 <entry key="sort.order">정렬순서</entry>
 <entry key="sort.type">정렬형식</entry>
 
+<entry key="help">도움말</entry>
+<entry key="install">설치</entry>
+<entry key="install.start">설치 시작</entry>
 
 </properties>

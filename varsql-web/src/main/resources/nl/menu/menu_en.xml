@@ -95,6 +95,8 @@
 <entry key="user.prefernces.menu.fileimportlist">Import History</entry>
 <entry key="user.prefernces.menu.fileexportlist">Download History</entry>
 
+<!-- setting menu -->
+<entry key="setting.menu.template.gen">Code generation template</entry>
 
 
 </properties>

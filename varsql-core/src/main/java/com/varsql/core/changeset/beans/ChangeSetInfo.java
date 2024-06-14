@@ -2,7 +2,7 @@ package com.varsql.core.changeset.beans;
 
 import java.util.List;
 
-import org.springframework.core.io.Resource;
+import com.vartech.common.io.Resource;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,14 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ChangeSetInfo {
-	private String type; 
+	private String type;
+	
+	private String fileName;
+	
+	private String hash;
+	
+	private String description;
+	
 	private int version;
 	
 	private Resource resource;

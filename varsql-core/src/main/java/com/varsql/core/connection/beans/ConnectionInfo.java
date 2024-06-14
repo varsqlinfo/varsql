@@ -74,7 +74,11 @@ public class ConnectionInfo implements Serializable {
 		this.enableConnectionPool = enableConnectionPool;
 		this.jdbcDriverInfo = jdbcDriverInfo;
 	}
-
+	
+	public void setEnableConnectionPool(boolean enableConnectionPool){
+		this.enableConnectionPool = enableConnectionPool;
+	}
+	
 	@Override
 	public String toString() {
 
@@ -103,4 +107,6 @@ public class ConnectionInfo implements Serializable {
 
 	    return result.toString();
 	}
+
+	
 }

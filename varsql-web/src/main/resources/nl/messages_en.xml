@@ -156,6 +156,12 @@
 <entry key="msg.valid.enter.param">Please enter {item}.</entry>
 <entry key="msg.valid.search">Please search.</entry>
 <entry key="msg.valid.search.param">Please search for {item}.</entry>
+<entry key="msg.valid.string.min">You must enter at least {size} characters.</entry>
+<entry key="msg.valid.string.max">You cannot enter more than {size} characters.</entry>
+<entry key="msg.valid.number.min">It must be greater than {size}.</entry>
+<entry key="msg.valid.number.max">It must be less than {size}.</entry>
+<entry key="msg.valid.regexp.email">The email is invalid.</entry>
+<entry key="msg.valid.regexp.url">The URL is invalid.</entry>
 
 <!-- db -->
 <entry key="msg.db.load">Loading database information.</entry>
@@ -208,5 +214,8 @@
 <entry key="msg.deleted.info">Deleted information.</entry>
 <entry key="msg.deleted.param">The {item} has been deleted.</entry>
 
-
+<!-- setup  -->
+<entry key="msg.setting.code.template.desc">Create a template that can automatically generate code using the column information of the DB table.</entry>
+<entry key="msg.install.end">Please restart the server after installation is complete.</entry>
+<entry key="msg.install.complete">Installation complete</entry>
 </properties>

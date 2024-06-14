@@ -72,8 +72,7 @@ public class ImportJsonData extends AbstractImportData{
 	        parser.close();
 
 		}catch(Exception e) {
-			logger.error("import json data " , e);
-			throw new ImportDataException("import json exception", e);
+			throw new ImportDataException(e.getMessage(), e);
 		}
 	}
 

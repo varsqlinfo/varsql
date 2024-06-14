@@ -12,6 +12,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.constants.LocaleConstants;
+import com.varsql.web.constants.HttpHeaderConstants;
+import com.varsql.web.constants.HttpSessionConstants;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -40,12 +44,19 @@ public class VarsqlAuthenticationLogoutSuccessHandler implements LogoutSuccessHa
 			}
 		}
 		
+		String locale = response.getHeader(HttpHeaderConstants.LOCALE); 
+		
+		String paramLocale = "";
+		if(!StringUtils.isBlank(locale)) {
+			paramLocale="?locale="+ LocaleConstants.parseLocaleString(response.getHeader(HttpHeaderConstants.LOCALE));
+		}
+		
 		response.setStatus(HttpServletResponse.SC_OK);
 		
 		if(!StringUtils.isBlank(viewPage)) {
 			response.sendRedirect(request.getContextPath() + viewPage);
 		}else {
-			response.sendRedirect(request.getContextPath());
+			response.sendRedirect(request.getContextPath()+"/login"+paramLocale);
 		}
 
 		

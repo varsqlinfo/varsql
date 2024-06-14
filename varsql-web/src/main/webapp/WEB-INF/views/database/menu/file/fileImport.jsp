@@ -11,11 +11,11 @@
 					<div class="process-header-desc"><spring:message code="msg.file.import.001" text="가져오기할 작업의 형식을 아래에서 선택해주세요."/></div>
 					<ul class="process-type-select">
 						<li>
-							<label class="checkbox-container">SQL
-							  <input type="radio" v-model="importType" value="sql" checked="checked">
+							<label class="checkbox-container">JSON
+							  <input type="radio" v-model="importType" value="json">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"><spring:message code="msg.file.import.002" text="SQL 파일을 실행해서 입력합니다"/></div>
+							<div class="checkbox-container-desc"><spring:message code="msg.file.import.003" text="JSON 파일을 이용하여 데이터를  입력합니다"/></div>
 						</li>
 						<li>
 							<label class="checkbox-container">XML
@@ -25,12 +25,12 @@
 							<div class="checkbox-container-desc"><spring:message code="msg.file.import.003" text="XML 파일을 이용하여 데이터를  입력합니다"/></div>
 						</li>
 						<li>
-							<label class="checkbox-container">JSON
-							  <input type="radio" v-model="importType" value="json">
+							<label class="checkbox-container">SQL
+							  <input type="radio" v-model="importType" value="sql" checked="checked">
 							  <span class="radiomark"></span>
 							</label>
-							<div class="checkbox-container-desc"><spring:message code="msg.file.import.003" text="JSON 파일을 이용하여 데이터를  입력합니다"/></div>
-						</li>
+							<div class="checkbox-container-desc"><spring:message code="msg.file.import.002" text="SQL 파일을 실행해서 입력합니다"/></div>
+						</li>						
 						<!--  li>
 							<label class="checkbox-container">CSV
 							  <input type="radio" v-model="importType" value="csv">
@@ -128,7 +128,7 @@ VarsqlAPP.vueServiceBean({
 	el: '#<varsql:namespace/>'
 	,data: {
 		step : 1
-		,importType : 'sql'
+		,importType : 'json'
 		,fileExtensions : ''
 		,importExtInfo :{
 			sql : {ext : 'sql', endStep : 2}
@@ -237,10 +237,13 @@ VarsqlAPP.vueServiceBean({
 					
 					document.getElementById('importFileResult').scrollTop =0;
 				}
-				
 			})
 			
 			var progressEle = $('body .center-loading-centent'); 
+			progressEle.append('<div id="progressItemImport"></div><div id="progressItemContent"></div>');
+			
+			var progressItemImportEle = $('#progressItemImport');
+			var progressItemContentEle = $('#progressItemContent');
 			VARSQL.req.progressInfo({
 				progressUid : param.progressUid
 				,callback : function (resData){
@@ -252,7 +255,12 @@ VarsqlAPP.vueServiceBean({
 						progressEle.text('complete');
 					}else{
 						if(item != null){
+							
+							var resultItems = item.items ||[];
+							
 							var progressText = VARSQL.util.numberFormat(item.progressContentLength)+'';
+							
+							progressItemImportEle.text(item.itemIdx+'/'+item.totalItemSize);
 							
 							if(item.totalContentLength && item.totalContentLength > 0){
 								progressText += ' / ' + VARSQL.util.numberFormat(item.totalContentLength);
@@ -262,7 +270,7 @@ VarsqlAPP.vueServiceBean({
 								progressText = item.name + '('+progressText + ')';
 							}
 							
-							progressEle.text(progressText);
+							progressItemContentEle.html(progressText);
 						}
 					}
 				} 

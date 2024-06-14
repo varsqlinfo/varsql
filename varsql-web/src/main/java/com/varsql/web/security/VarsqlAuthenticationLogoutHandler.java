@@ -10,8 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.constants.LocaleConstants;
+import com.varsql.web.constants.HttpHeaderConstants;
+import com.varsql.web.constants.HttpSessionConstants;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.CommUtils;
-import com.varsql.core.common.util.SecurityUtil;
 
 /**
  * log out handler
@@ -28,7 +31,18 @@ public class VarsqlAuthenticationLogoutHandler implements LogoutHandler {
 
     public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
 
+    	Object locale = request.getSession().getAttribute(HttpSessionConstants.USER_LOCALE); 
+    	
+    	if(locale != null) {
+    		response.setHeader(HttpHeaderConstants.LOCALE, locale.toString());
+    	}
+    	
     	if (authentication != null && authentication.getDetails() != null) {
+    		
+    		if(locale != null) {
+        		response.setHeader(HttpHeaderConstants.LOCALE, LocaleConstants.localeToLocaleCode(SecurityUtil.loginInfo().getUserLocale()));
+        	}
+    		
 			try {
 				securityLogService.addLog(SecurityUtil.loginInfo(), "logout", CommUtils.getClientPcInfo(request));
 			} catch (Exception e) {

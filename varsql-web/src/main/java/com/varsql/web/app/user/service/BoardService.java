@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.exception.PermissionDeniedException;
 import com.varsql.web.common.service.FileUploadService;
 import com.varsql.web.constants.ResourceConfigConstants;
@@ -32,6 +31,7 @@ import com.varsql.web.repository.board.BoardFileRepository;
 import com.varsql.web.repository.board.BoardRepository;
 import com.varsql.web.repository.spec.BoardSpec;
 import com.varsql.web.util.NumberUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

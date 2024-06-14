@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.exception.VarsqlTagException;
 
 /**
@@ -34,7 +34,7 @@ public class DBConuidTag extends TagSupport {
 		JspWriter jw= pageContext.getOut();
 
 		try {
-			Object propVal = pageContext.getRequest().getAttribute(VarsqlParamConstants.CONN_UUID);
+			Object propVal = pageContext.getRequest().getAttribute(HttpParamConstants.CONN_UUID);
 
 			if(var ==null){
 				jw.write(String.valueOf(propVal));

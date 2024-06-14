@@ -7,8 +7,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.core.Authentication;
-
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -35,7 +33,7 @@ public abstract class AbstractSsoHandler implements SsoHandler {
 	}
 
 	@Override
-	public boolean afterSsoHandler(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+	public boolean afterSsoHandler(HttpServletRequest request, HttpServletResponse response, Object auth) {
 		return true;
 	}
 

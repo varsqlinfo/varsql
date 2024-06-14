@@ -39,29 +39,31 @@ public class CubridDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
+		
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		for(String objNm : objNmArr){
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			DataMap source = sqlSesseion.selectOne("tableScript", dataParamInfo);
-			
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.sourceText(source.getString("CREATE TABLE"))
-			.build();
-			
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for(String objNm : objNmArr){
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				DataMap source = sqlSession.selectOne("tableScript", dataParamInfo);
+				
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(source.getString("CREATE TABLE"))
+				.build();
+				
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -69,30 +71,31 @@ public class CubridDDLScript extends AbstractDDLScript {
 
 	@Override
 	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-
-		for (String objNm : objNmArr) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			DataMap source = sqlSesseion.selectOne("viewScript", dataParamInfo);
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.sourceText(source.getString("Create View"))
-			.build();
-			
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
-			
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				DataMap source = sqlSession.selectOne("viewScript", dataParamInfo);
+				
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(source.getString("Create View"))
+				.build();
+				
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -100,59 +103,61 @@ public class CubridDDLScript extends AbstractDDLScript {
 
 	@Override
 	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		for (String objNm : objNmArr) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.items(sqlSesseion.selectList("indexScript", dataParamInfo))
-			.build();
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
-			reval.add(ddlInfo);
+			
+			DDLInfo ddlInfo;
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.items(sqlSession.selectList("indexScript", dataParamInfo))
+				.build();
+	
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				reval.add(ddlInfo);
+			}
 		}
-
+		
 		return reval;
 	}
 
 	@Override
 	public List<DDLInfo> getFunctions(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug(" Function DDL Generation...");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
 
-		for (String objNm : objNmArr) {
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-
-			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.item(sqlSesseion.selectOne("functionScript", dataParamInfo))
-			.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.FUNCTION.create, param));
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+	
+				dataParamInfo.setObjectName(objNm);
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.item(sqlSession.selectOne("functionScript", dataParamInfo))
+				.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.FUNCTION.create, param));
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -161,30 +166,32 @@ public class CubridDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug(" Procedure DDL Generation... ");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
+		
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
 
-		for (String objNm : objNmArr) {
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-
-			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.item(sqlSesseion.selectOne("procedureScript", dataParamInfo))
-			.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.PROCEDURE.create, param));
-
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+	
+				dataParamInfo.setObjectName(objNm);
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.item(sqlSession.selectOne("procedureScript", dataParamInfo))
+				.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.PROCEDURE.create, param));
+	
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -206,34 +213,35 @@ public class CubridDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug("Trigger DDL Generation...");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		for (String objNm : objNmArr) {
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			for (int j = 0; j < srcList.size(); j++) {
-				sourceSb.append(srcList.get(j));
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+		
+			DDLInfo ddlInfo;
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+				for (int j = 0; j < srcList.size(); j++) {
+					sourceSb.append(srcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(StringUtils.trim(sourceSb.toString()))
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+	
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(StringUtils.trim(sourceSb.toString()))
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
-
-			reval.add(ddlInfo);
 		}
 
 		return reval;

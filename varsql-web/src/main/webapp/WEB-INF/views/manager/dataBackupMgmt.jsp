@@ -218,9 +218,9 @@ VarsqlAPP.vueServiceBean( {
 		,schemaList :[]
 		,viewMode : 'form'
 		,exportTypeList : {
-			'xml' : 'XML'
-			,'json' : 'JSON'
+			'json' : 'JSON'
 			,'csv' : 'CSV'
+			,'xml' : 'XML'
 			,'sql' : 'Insert Query'
 		}
 		,selectObj : {}

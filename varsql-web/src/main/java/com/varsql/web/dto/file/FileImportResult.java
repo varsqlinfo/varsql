@@ -21,6 +21,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FileImportResult {
+	private String fileId;
+	
 	private String fileName;
 
 	private String message;

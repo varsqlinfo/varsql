@@ -396,7 +396,7 @@ Vue.component('file-upload', {
 			parallelUploads: 20,
 			uploadMultiple : true,
 			timeout: 3600000,
-			maxFilesize: VARSQL.getFileMaxUploadSize(),
+			maxFilesize: VARSQL.getFileMaxUploadSize('M'),
 			autoQueue: false,
 			previewTemplate :  this.previewTemplate,
 			previewsContainer: "#"+this.id+"_previews",
@@ -411,8 +411,24 @@ Vue.component('file-upload', {
 		
 		var dropzone = new Dropzone(this.$el, dropzoneOpt);
 
+		dropzone.on("sending", function(file, xhr, formData) {
+	        xhr.ontimeout = function (){
+				VARSQLUI.toast.open('File upload timeout');
+			}
+		});
+		
 		dropzone.on("addedfile", function(file) {
 			var fileName = file.name;
+			
+			if (file.size >  VARSQL.getFileMaxUploadSize()) {
+				this.removeFile(file);
+				
+				VARSQLUI.toast.open({
+					text:'add file size : '+ VARSQL.util.fileDisplaySize(file.size) + '<br>'+'max upload file size : '+ VARSQL.util.fileDisplaySize(VARSQL.getFileMaxUploadSize())
+					, hideAfter:3000
+				})
+                return '';
+            }
 			
 			if(file.status == Dropzone.ADDED && !VARSQL.isBlank(_this.accept)){
 				

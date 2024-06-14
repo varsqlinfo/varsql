@@ -2,11 +2,11 @@
 <!DOCTYPE dataSource SYSTEM  "../dtd/connection.config.dtd">
 
 <dataSource name="varsql">
-	<type>h2</type>
-	<driver>org.h2.Driver</driver>
-	<url>jdbc:h2:file:#resourePath#/varsql;AUTO_SERVER=TRUE;CACHE_SIZE=131072;</url>
-	<username>sa</username>
-	<password>sa</password>
+	<type>{{type}}</type>
+	<driver>{{driverClass}}</driver>
+	<url>{{{url}}}</url>
+	<username>{{username}}</username>
+	<password>{{pw}}</password>
 	<initial_size>5</initial_size>
 	<max_active>10</max_active>
 	<min_idle>3</min_idle>

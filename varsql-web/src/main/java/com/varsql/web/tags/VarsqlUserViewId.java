@@ -6,9 +6,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.varsql.core.auth.User;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.exception.VarsqlTagException;
+import com.varsql.web.security.User;
+import com.varsql.web.util.SecurityUtil;
 
 public class VarsqlUserViewId extends TagSupport {
 

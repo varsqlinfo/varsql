@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.board.BoardCommentEntity;
+import com.varsql.web.util.SecurityUtil;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

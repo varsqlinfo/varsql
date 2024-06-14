@@ -21,11 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.core.exception.BlockingUserException;
-import com.varsql.core.exception.VarsqlAccessDeniedException;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.database.service.DatabaseServiceImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
@@ -34,12 +31,15 @@ import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBMetadataRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.dto.user.UserPermissionInfoDTO;
+import com.varsql.web.exception.BlockingUserException;
 import com.varsql.web.exception.DatabaseBlockingException;
+import com.varsql.web.exception.VarsqlAccessDeniedException;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
@@ -108,11 +108,11 @@ public class DatabaseController extends AbstractController {
 		}
 
 		databaseServiceImpl.insertDbConnectionHistory(preferencesInfo); // 접속 로그.
-		model.addAttribute(VarsqlParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
+		model.addAttribute(HttpParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
 		model.addAttribute("vname", vname);
 		model.addAttribute("limitSelectRow", databaseinfo.getMaxSelectCount());
 
-		model.addAttribute(VarsqlParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
+		model.addAttribute(HttpParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
 
 		return getModelAndView("/main",VIEW_PAGE.DATABASE , model);
 	}
@@ -252,7 +252,7 @@ public class DatabaseController extends AbstractController {
 	
 	@RequestMapping(value =  "/reqCancel", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseResult connectionCancel(@RequestParam(value = "_requid_", required = true) String requestUid,
+	public ResponseResult connectionCancel(@RequestParam(value = "requid$$", required = true) String requestUid,
 			@RequestParam(value = "conuid", required = true) String conuid, HttpServletRequest req) throws Exception {
 				
 		String [] reqUid = requestUid.split(",");

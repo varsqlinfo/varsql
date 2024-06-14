@@ -1,12 +1,15 @@
 package com.varsql.web.tags;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 
+import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.web.constants.WebStaticResourceVersion;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -90,5 +93,27 @@ public final class VarsqlFn{
 	
 	public static boolean isAdmin() {
 		return SecurityUtil.isAdmin();
+	}
+	
+	/**
+	 * app support locale 
+	 * 
+	 * @param locale locale
+	 * @return "ko_kr" -> ko, en_us -> en
+	 */
+	public static String requestLocaleCode(HttpServletRequest request) {
+		String locale = request.getParameter("locale");
+		if(locale != null) {
+			return LocaleConstants.getLocaleConstantsVal(locale).getLocaleCode();
+		}
+		
+		Locale appLocale = VarsqlUtils.getAppLocale(request);
+		
+		if(appLocale != null) {
+			return LocaleConstants.localeToLocaleCode(appLocale); 
+		}
+		
+		return LocaleConstants.localeToLocaleCode(request.getLocale());
+		
 	}
 }

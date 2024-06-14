@@ -12,18 +12,18 @@ import java.util.Locale;
  * @변경이력 :
  */
 public enum LocaleConstants  {
-	KO("ko") , EN ("en");
+	KOREAN("ko") , ENGLISH ("en"), JAPANESE ("ja"), CHINESE ("zh");
 
-	private String locale;
+	private String localeCode;
 	private String i18n;
 	
 	LocaleConstants(String locale){
-		this.locale = locale;
+		this.localeCode = locale;
 		this.i18n = "lang."+locale ;
 	}
 
-	public String getLocale() {
-		return locale;
+	public String getLocaleCode() {
+		return localeCode;
 	}
 
 	public String getI18n() {
@@ -31,7 +31,11 @@ public enum LocaleConstants  {
 	}
 
 	public static Locale parseLocaleString(String locale) {
-		return new Locale(getLocaleConstantsVal(locale).getLocale());
+		return new Locale(getLocaleConstantsVal(locale).getLocaleCode());
+	}
+	
+	public static String localeToLocaleCode(Locale locale) {
+		return getLocaleConstantsVal(locale.getLanguage()).getLocaleCode();
 	}
 
 	/**
@@ -43,7 +47,7 @@ public enum LocaleConstants  {
 		if(locale==null) {
 			locale = "";
 		}else {
-			locale = locale.toUpperCase();
+			locale = locale.toLowerCase();
 		}
 		
 		String secondLocale = null;
@@ -52,15 +56,14 @@ public enum LocaleConstants  {
 		}
 
 		for(LocaleConstants localeConstant : LocaleConstants.values()) {
-			String localeCodeName = localeConstant.name(); 
-			if(localeCodeName.equals(locale) || localeCodeName.equals(secondLocale)) {
+			String localeCode = localeConstant.localeCode;
+			if(localeCode.equals(locale) || localeCode.equals(secondLocale)) {
 				return localeConstant;
 			}			
 		}
-		return LocaleConstants.KO;
+		
+		return LocaleConstants.ENGLISH;
 	}
-	
-	
 
 }
 

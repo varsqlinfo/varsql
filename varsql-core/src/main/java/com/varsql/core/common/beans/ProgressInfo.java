@@ -1,5 +1,8 @@
 package com.varsql.core.common.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * data download progress info
 * 
@@ -17,6 +20,8 @@ public class ProgressInfo {
 	
 	private long progressContentLength;
 	private long totalContentLength;
+	
+	private List items;
 	
 	public String getRequid() {
 		return requid;
@@ -64,6 +69,22 @@ public class ProgressInfo {
 
 	public void setTotalContentLength(int totalContentLength) {
 		this.totalContentLength = totalContentLength;
+	}
+
+	public List<?> getItems() {
+		return items;
+	}
+
+	public void setItems(List<?> items) {
+		this.items = items;
+	}
+	
+	public void addItem(Object item) {
+		if(items == null) {
+			items= new ArrayList<>();
+		}
+		
+		items.add(item);
 	}
 	
 	

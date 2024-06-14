@@ -164,7 +164,7 @@ var DEFINE_INFO = {
 	}
 	,DB2  :{
 		type :'text/x-mariadb'
-		,formatType : 'DB2'
+		,formatType : 'db2'
 	}
 	,'DEFAULT' : {
 		type :  'text/x-sql',hint : [] ,dataType:{}

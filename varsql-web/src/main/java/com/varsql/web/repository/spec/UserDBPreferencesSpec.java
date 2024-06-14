@@ -7,9 +7,9 @@ import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.model.entity.user.UserDBPreferencesEntity;
+import com.varsql.web.util.SecurityUtil;
 
 /**
  * -----------------------------------------------------------------------------

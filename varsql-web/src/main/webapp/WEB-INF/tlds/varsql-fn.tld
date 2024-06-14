@@ -58,6 +58,11 @@
 		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
 		<function-signature>java.lang.String contextPath(javax.servlet.http.HttpServletRequest)</function-signature>
 	</function>
+	<function>
+		<name>requestLocaleCode</name>
+		<function-class>com.varsql.web.tags.VarsqlFn</function-class>
+		<function-signature>java.lang.String requestLocaleCode(javax.servlet.http.HttpServletRequest)</function-signature>
+	</function>
 	
 	<!-- password mode  -->
 	<function>

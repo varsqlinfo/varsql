@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.SqlStatsServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -57,9 +57,9 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbSqlDateStats", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDateStats(@RequestParam(value = HttpParamConstants.VCONNID, required = true) String vconnid
+			,@RequestParam(value = HttpParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = HttpParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 
 		return sqlStatsServiceImpl.dbSqlDateStats(vconnid, s_date, e_date);
@@ -79,9 +79,9 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbSqlDayStats", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDayStats(@RequestParam(value = HttpParamConstants.VCONNID, required = true) String vconnid
+			,@RequestParam(value = HttpParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = HttpParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			) throws Exception {
 
 		return sqlStatsServiceImpl.dbSqlDayStats(vconnid, s_date, e_date);
@@ -102,9 +102,9 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/dbSqlDayUserRank", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
-			,@RequestParam(value = VarsqlParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
+	public @ResponseBody ResponseResult dbSqlDayUserRank(@RequestParam(value = HttpParamConstants.VCONNID, required = true) String vconnid
+			,@RequestParam(value = HttpParamConstants.SEARCH_START_DATE, required = true, defaultValue = "" )  String s_date
+			,@RequestParam(value = HttpParamConstants.SEARCH_END_DATE, required = true, defaultValue = "" )  String e_date
 			,@RequestParam(value = "command_type", required = false,defaultValue = "" )  String command_type
 			) throws Exception {
 
@@ -124,7 +124,7 @@ public class SqlStatsController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/logList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = VarsqlParamConstants.VCONNID, required = true) String vconnid, HttpServletRequest req) throws Exception {
+	public @ResponseBody ResponseResult findSqlLog(@RequestParam(value = HttpParamConstants.VCONNID, required = true) String vconnid, HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return sqlStatsServiceImpl.findSqlLog(vconnid, searchParameter);
 	}

@@ -1,4 +1,4 @@
-package com.varsql.core.auth;
+package com.varsql.web.security;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 
 /**

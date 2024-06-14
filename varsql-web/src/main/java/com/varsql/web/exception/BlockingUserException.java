@@ -1,4 +1,4 @@
-package com.varsql.core.exception;
+package com.varsql.web.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

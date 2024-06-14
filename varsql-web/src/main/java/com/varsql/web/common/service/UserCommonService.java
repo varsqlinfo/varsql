@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.UUIDUtil;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
@@ -27,7 +25,9 @@ import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.repository.user.EmailTokenEntityRepository;
 import com.varsql.web.repository.user.UserDBMappingInfoEntityRepository;
 import com.varsql.web.repository.user.UserInfoRepository;
+import com.varsql.web.security.User;
 import com.varsql.web.util.ConvertUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.MailInfo;
 import com.vartech.common.app.beans.ResponseResult;
@@ -158,10 +158,7 @@ public class UserCommonService {
 		
 		UserEntity entity= userInfoRepository.findByViewid(userInfo.getViewid());
 		
-		System.out.println("########### lang : "+ lang);
-		System.out.println("entity.getLang() : " + entity.getLang());
-		
-		entity.setLang(LocaleConstants.getLocaleConstantsVal(lang).getLocale());
+		entity.setLang(LocaleConstants.getLocaleConstantsVal(lang).getLocaleCode());
 		entity = userInfoRepository.save(entity);
 		
 		return VarsqlUtils.getResponseResultItemOne("success");

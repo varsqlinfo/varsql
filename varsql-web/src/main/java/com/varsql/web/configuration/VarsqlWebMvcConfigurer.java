@@ -27,8 +27,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.VarsqlSpringBeanUtils;
-import com.varsql.core.configuration.Constants;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.DatabaseBoardAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
@@ -54,8 +52,7 @@ import com.vartech.common.constants.ViewResourceConstants;
 @ComponentScan(
 	basePackages = { "com.varsql.web"},
 	includeFilters = {
-		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = { Controller.class, Service.class, Repository.class, Component.class}),
-		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "(service|controller|DAO|Repository)\\.\\.*")
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = { Controller.class, Service.class, Component.class}),
 	}
 	,excludeFilters = {
 			@ComponentScan.Filter(type = FilterType.REGEX, pattern = "(configuration)\\.*")	
@@ -71,17 +68,6 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 
     @PostConstruct
     public void init() {
-    }
-
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-    	
-        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix(ViewResourceConstants.VIEW_PREFIX);
-        resolver.setSuffix(ViewResourceConstants.VIEW_SUFFIX);
-        resolver.setOrder(2);
-        //resolver.setViewClass(JstlView.class);
-        registry.viewResolver(resolver);
     }
 
     /**
@@ -138,9 +124,9 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 	    registry.addInterceptor(databaseAuthInterceptor()).addPathPatterns("/database/**","/sql/base/**");
 
-	    registry.addInterceptor(databaseBoardAuthInterceptor()).addPathPatterns(new String[] { "/board/**" });
+	    registry.addInterceptor(databaseBoardAuthInterceptor()).addPathPatterns( "/board/**" );
 
-	    registry.addInterceptor(languageInterceptor()).excludePathPatterns(SecurityConfigurer.WEB_RESOURCES).addPathPatterns("/**");
+	    registry.addInterceptor(languageInterceptor()).addPathPatterns("/login");
 	}
 
     /**
@@ -178,11 +164,6 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         final SessionLocaleResolver localeResolver = new SessionLocaleResolver();
         return localeResolver;
     }
-
-    @Bean
-	public VarsqlSpringBeanUtils varsqlSpringBeanUtils() {
-		return new VarsqlSpringBeanUtils();
-	}
 
     @Bean
     public MultipartResolver multipartResolver() {

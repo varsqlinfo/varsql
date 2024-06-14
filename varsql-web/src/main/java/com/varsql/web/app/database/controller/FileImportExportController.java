@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.database.service.FileImportExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
@@ -24,6 +23,7 @@ import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.model.entity.app.FileInfoEntity;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;

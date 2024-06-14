@@ -7,10 +7,10 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.EntityValueConstants;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBManagerEntity;
+import com.varsql.web.util.SecurityUtil;
 
 /**
  * -----------------------------------------------------------------------------

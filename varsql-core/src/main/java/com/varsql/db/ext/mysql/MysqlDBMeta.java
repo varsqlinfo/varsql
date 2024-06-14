@@ -52,19 +52,25 @@ public class MysqlDBMeta extends AbstractDBMeta{
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("dbSystemView", dataParamInfo);
+		}
 	}
 	
 	@Override
 	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("schemaList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("schemaList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
 		
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("tableList", dataParamInfo);
+		}
 	}
 
 	@Override
@@ -76,8 +82,11 @@ public class MysqlDBMeta extends AbstractDBMeta{
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("viewList", dataParamInfo);
+		}
 	}
+	
 	@Override
 	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... tableNmArr) throws Exception	{
 		return tableAndColumnsInfo(dataParamInfo,"viewMetadata" ,tableNmArr);
@@ -86,32 +95,41 @@ public class MysqlDBMeta extends AbstractDBMeta{
 	@Override
 	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("procedureList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... prodecureName) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("objectMetadataList", dataParamInfo);
+		}
 	}
-
 
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("functionList", dataParamInfo);
+		}
 	}
+	
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... objNames) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("objectMetadataList", dataParamInfo);
+		}
 	}
-
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("indexList", dataParamInfo);
+		}
 	}
 	@Override
 	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexName) throws Exception {
@@ -142,22 +160,27 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 			dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, indexNameList);
 		}
-
-		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo , handler);
-
+		
+		try(SqlSession sqlSesseion = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			sqlSesseion.select("indexMetadata" ,dataParamInfo , handler);
+		}
 		return handler.getIndexInfoList();
 	}
 
 	@Override
 	public List getTriggers(DatabaseParamInfo dataParamInfo){
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("triggerList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerArr) throws Exception {
 		dataParamInfo.setSchema(dataParamInfo.getSchema().toUpperCase());
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("triggerMetadata", dataParamInfo);
+		}
 	}
 
 	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... tableNmArr){
@@ -187,32 +210,30 @@ public class MysqlDBMeta extends AbstractDBMeta{
 
 			dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoList);
 		}
-
-		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
+		TableInfoMysqlHandler tableInfoMysqlHandler;
+		
 		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 
-		TableInfoMysqlHandler tableInfoMysqlHandler;
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		if("viewMetadata".equals(queryId)){
-			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl());
-		}else{
-			tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
-
-			if(tableInfoMysqlHandler.getTableNameList() !=null  && tableInfoMysqlHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoMysqlHandler.getTableNameList());
+			if("viewMetadata".equals(queryId)){
+				tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl());
+			}else{
+				tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
+	
+				if(tableInfoMysqlHandler.getTableNameList() !=null  && tableInfoMysqlHandler.getTableNameList().size() > 0){
+					dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoMysqlHandler.getTableNameList());
+				}
 			}
+	
+			sqlSession.select(queryId ,dataParamInfo,tableInfoMysqlHandler);
 		}
-
-		sqlSession.select(queryId ,dataParamInfo,tableInfoMysqlHandler);
 
 		return tableInfoMysqlHandler.getTableInfoList();
 	}
 
 	@Override
 	public <T>T getExtensionMetadata(DatabaseParamInfo dataParamInfo, String serviceName, Map param) throws Exception {
-
-
 		return null;
 	}
 

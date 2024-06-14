@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
 import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
@@ -28,6 +27,7 @@ import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
 import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.HttpUtils;

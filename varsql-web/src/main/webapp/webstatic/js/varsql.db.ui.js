@@ -464,15 +464,7 @@ _ui.headerMenu ={
 							$('.sql_toolbar_allsave_btn').trigger('click');
 							break;
 						case 'import': // 가져오기
-
-							var dimension = VARSQL.util.browserSize();
-							var popt = 'width=800px,height=550px,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0';
-
-							VARSQLUI.popup.open(VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid), {
-								name : 'import_win'+_g_options.conuid
-								,viewOption : popt
-							});
-
+							_self.openPreferences('Table Data Import',VARSQL.url(VARSQL.uri.database, '/menu/fileImport?conuid='+_g_options.param.conuid),{width:800, height:560});
 							break;
 						case 'export': // 내보내기
 
@@ -4835,6 +4827,7 @@ _ui.SQL = {
 				,progressBar : true
 				,mode : 2
 				,params:params
+				,enableLoadSelectorBtn : true 
 			});
 		}
 
@@ -5726,10 +5719,21 @@ function getFormatSql(sql, dbtype, sqlType){
 		
 		var formatType = VARSQLCont.formatType(_g_options.dbtype);
 		
+		var indentStyle = 'tabularLeft'; 
+		if(sql =='ddl'){
+			indentStyle = 'standard';
+		}
+		
+		if(/\s?create|alter/gi.test(sql)){
+			indentStyle = 'standard';
+		}
+		
 		return sqlFormatter.format(sql, {
-	        language: (sqlFormatter.isSupportDialects(formatType)?formatType : 'sql'),
-	        linesBetweenQueries : 2
-		});
+			language: formatType,
+	        lineBetweenQueries : 2,
+	        indentStyle : indentStyle,
+		  	paramTypes: { custom: [{ regex: String.raw`#\{\w+\}` }, { regex: String.raw`\$\{\w+\}` }] },
+		})
 	}catch(e){
 		if(sqlType == 'sql'){
 			throw e;

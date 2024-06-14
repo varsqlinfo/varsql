@@ -12,6 +12,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import com.varsql.core.common.code.VarsqlAppCode;
@@ -31,10 +32,14 @@ import com.varsql.web.configuration.ApplicationContextProvider;
 *-----------------------------------------------------------------------------
  */
 public class VarsqlBeanUtils {
-    public static Object getStringBean(String beanName) {
-        ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
-        return applicationContext.getBean(beanName);
-    }
+	
+	public static Object getStringBean(String beanName) {
+		return ApplicationContextProvider.getApplicationContext().getBean(beanName);
+	}
+
+	public static <T> T getBean(String beanName, Class<T> requiredType) {
+		return (T) ApplicationContextProvider.getApplicationContext().getBean(beanName, requiredType);
+	}
     
     /**
 	 * 

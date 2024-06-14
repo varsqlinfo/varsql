@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
+import com.vartech.common.io.Resource;
 
 import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;

@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 
 
 public class BoardUrlTag extends SimpleTagSupport {
@@ -32,7 +32,7 @@ public class BoardUrlTag extends SimpleTagSupport {
 		if(boardCode != null) {
 			sb.append(boardCode);
 		}else {
-			sb.append(((PageContext)getJspContext()).getRequest().getAttribute(VarsqlParamConstants.BOARD_CODE));
+			sb.append(((PageContext)getJspContext()).getRequest().getAttribute(HttpParamConstants.BOARD_CODE));
 		}
 		
 		if(addUrl != null) {

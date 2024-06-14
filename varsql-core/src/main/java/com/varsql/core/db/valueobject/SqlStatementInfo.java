@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.varsql.core.common.code.VarsqlFileType;
-import com.varsql.core.common.constants.SqlDataConstants;
 
 /**
  *
@@ -21,7 +20,8 @@ import com.varsql.core.common.constants.SqlDataConstants;
 *-----------------------------------------------------------------------------
  */
 public class SqlStatementInfo{
-
+	private String requid$$;
+	
 	// sql
 	private String sql;
 	
@@ -42,9 +42,14 @@ public class SqlStatementInfo{
 
 	private String columnInfo;
 	
+	// export charset
 	private String charset;
 	
+	// column alias 
 	private boolean useColumnAlias = true;
+	
+	// format value default = false
+	private boolean isFormatValue = true; 
 	
 	private Map<String , Object> custom;
 	
@@ -52,6 +57,14 @@ public class SqlStatementInfo{
 
 	public SqlStatementInfo(){
 		super();
+	}
+
+	public String getRequid$$() {
+		return this.requid$$;
+	}
+
+	public void setRequid$$(String requid$$) {
+		this.requid$$ = requid$$;
 	}
 
 	public String getSql() {
@@ -134,18 +147,7 @@ public class SqlStatementInfo{
 	public void setDatabaseInfo(DatabaseInfo databaseInfo) {
 		this.databaseInfo = databaseInfo;
 	}
-
-	@Override
-	public String toString() {
-
-		return new StringBuilder()
-				.append("sql : ").append(sql)
-				.append(" , sqlParam : ").append(sqlParam)
-				.append(" , columnInfo : ").append(columnInfo)
-				.append(" , charset : ").append(charset)
-				.toString();
-	}
-
+	
 	public String getSchema() {
 		return schema;
 	}
@@ -160,5 +162,24 @@ public class SqlStatementInfo{
 
 	public void setObjectName(String objectName) {
 		this.objectName = objectName;
+	}
+
+	public boolean isFormatValue() {
+		return isFormatValue;
+	}
+
+	public void setFormatValue(boolean isFormatValue) {
+		this.isFormatValue = isFormatValue;
+	}
+
+	@Override
+	public String toString() {
+
+		return new StringBuilder()
+				.append("sql : ").append(sql)
+				.append(" , sqlParam : ").append(sqlParam)
+				.append(" , columnInfo : ").append(columnInfo)
+				.append(" , charset : ").append(charset)
+				.toString();
 	}
 }

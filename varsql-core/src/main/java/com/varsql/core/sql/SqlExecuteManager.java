@@ -1,5 +1,6 @@
 package com.varsql.core.sql;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,51 +39,91 @@ public class SqlExecuteManager {
 		private static final SqlExecuteManager instance = new SqlExecuteManager();
 	}
 
-	public synchronized void setStatementInfo(String uid, Statement statement) {
-		setStatementInfo(uid, statement, Thread.currentThread().getId());
+	public synchronized void addStatementInfo(String requid, Statement statement) {
+		addStatementInfo(requid, statement, Thread.currentThread().getId());
 	}
 	
-	public synchronized void setStatementInfo(String uid, Statement statement, long threadId) {
+	public synchronized void addStatementInfo(String requid, Statement statement, long threadId) {
 		
-		if(uid == null) return ; 
+		if(requid == null) return ; 
 		
-		if(!SQL_EXECUTE_INFO.containsKey(uid)) {
+		if(!SQL_EXECUTE_INFO.containsKey(requid)) {
 			SqlExecuteBean seb = new SqlExecuteBean();
 			
 			seb.setThreadId(threadId);
 			seb.setStartTime(System.currentTimeMillis());
 			seb.addStatement(statement);
-			SQL_EXECUTE_INFO.put(uid, seb);
+			SQL_EXECUTE_INFO.put(requid, seb);
 		}else {
-			SQL_EXECUTE_INFO.get(uid).addStatement(statement);
+			SQL_EXECUTE_INFO.get(requid).addStatement(statement);
 		}
 	}
 	
-	public SqlExecuteBean getStatementInfo(String uid) {
-		return SQL_EXECUTE_INFO.get(uid);
+	public SqlExecuteBean getStatementInfo(String requid) {
+		return SQL_EXECUTE_INFO.get(requid);
 	}
-
-	public synchronized void removeStatementInfo(String uid) {
-		SQL_EXECUTE_INFO.remove(uid);
+	
+	/**
+	 * remove request
+	 * 
+	 * @param requid
+	 */
+	public synchronized void removeStatementInfo(String requid) {
+		removeStatementInfo(requid, true);
 	}
-
-	public synchronized void cancelStatementInfo(String uid) {
-		SqlExecuteBean seb = getStatementInfo(uid);
+	
+	/**
+	 * remove request
+	 * 
+	 * @param requid request uid
+	 * @param statementCancelFlag statement cancel (true = cancel, false = item remove)
+	 */
+	public synchronized void removeStatementInfo(String requid, boolean statementCancelFlag) {
 		
+		if(statementCancelFlag) {
+			SqlExecuteBean seb = getStatementInfo(requid);
+			
+			if (seb != null && seb.getStatement() != null) {
+				for(Statement statement : seb.getStatement()) {
+					try {
+						if(statement != null && !statement.isClosed()) {
+							statement.cancel();
+							JdbcUtils.close(statement);
+						}
+					} catch (SQLException e) {
+						// ignore 
+					}
+				} 
+			}
+		}
+		SQL_EXECUTE_INFO.remove(requid);
+	}
+	
+	/**
+	 * request cancel
+	 * @param requid
+	 */
+	public synchronized void cancelStatementInfo(String requid) {
+		SqlExecuteBean seb = getStatementInfo(requid);
+		
+		logger.info("cancel : {} , seb : {}", requid, seb);
 		if (seb == null ||seb.getStatement()== null) {
 			return ; 
 		}
 
 		try {
+			boolean statementClose = false; 
 			for(Statement statement : seb.getStatement()) {
 				if(statement != null) {
+					statementClose = true; 
 					statement.cancel();
 					JdbcUtils.close(statement);
 				}
 			}
-			
-			removeStatementInfo(uid);
-			return ; 
+			if(statementClose) {
+				removeStatementInfo(requid, false);
+				return ; 
+			}
 		} catch (Throwable e) {
 			logger.error("cancelStatementInfo statement cancel : {}", e.getMessage(), e);
 		}
@@ -101,6 +142,8 @@ public class SqlExecuteManager {
 		numThreads = root.enumerate(threads);
 
 		long threadId = seb.getThreadId();
+		
+		logger.info("cancel thread id : {}", threadId);
 
 		if (threadId != -1) {
 			try {
@@ -120,6 +163,6 @@ public class SqlExecuteManager {
 			}
 		}
 		
-		removeStatementInfo(uid);
+		removeStatementInfo(requid, false);
 	}
 }

@@ -5,24 +5,41 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.util.FieldUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.model.mapper.GenericMapper;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -93,7 +110,7 @@ public final class VarsqlUtils {
 	}
 
 	public static String getVonnid (HttpServletRequest req) {
-		return (String)req.getAttribute(VarsqlParamConstants.VCONNID);
+		return (String)req.getAttribute(HttpParamConstants.VCONNID);
 	}
 
 	public static String getClientIp(HttpServletRequest request) {
@@ -245,7 +262,7 @@ public final class VarsqlUtils {
 		String errorMessage = "";
 		if(fieldErrors.size() >0) {
 			FieldError errorInfo = fieldErrors.get(0);
-			errorMessage= String.format("field : %s\nmessage : %s\nvalue : %s", errorInfo.getField(), errorInfo.getDefaultMessage() , errorInfo.getRejectedValue());
+			errorMessage= errorMessage(errorInfo);
 
 			resultObject.setItemOne(errorInfo.getField());
 		}else {
@@ -276,5 +293,85 @@ public final class VarsqlUtils {
 		ResponseResult responseResult = new ResponseResult();
 		responseResult.setList(result.stream().map(item -> instance.toDto(item)).collect(Collectors.toList()));
 		return responseResult;
+	}
+	
+	/**
+	 * 언어 변경. 
+	 * 
+	 * @param request HttpServletRequest
+	 * @param response HttpServletResponse
+	 * @param changeLocale 변경할 locale
+	 */
+	public static void changeLocale(HttpServletRequest request, HttpServletResponse response, Locale changeLocale) {
+		LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+		
+		request.getSession().setAttribute(HttpSessionConstants.USER_LOCALE, LocaleConstants.localeToLocaleCode(changeLocale));
+		
+		if(localeResolver != null) {
+			localeResolver.setLocale(request, response, changeLocale);
+		}else {
+			request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, changeLocale);
+		}
+	}
+	
+	/**
+	 * 현재 다국어 locale
+	 *  
+	 * @param request HttpServletRequest
+	 * @return locale 	app locale 정보
+	 */
+	public static Locale getAppLocale(HttpServletRequest request) {
+		LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+		
+		if(localeResolver != null) {
+			return localeResolver.resolveLocale(request);
+		}else {
+			Object locale = request.getSession().getAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME); 
+			if(locale instanceof Locale) {
+				return (Locale)locale;
+			}
+			
+			return null;
+		}
+	}
+	
+	public static List<FieldError> validationCheck(Object value, String... propertyNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		List<FieldError> result = new LinkedList<>();
+		
+		if(propertyNames.length > 0) {
+			for (String propertyName : propertyNames) {
+				validationCheck(PropertyUtils.getProperty(value, propertyName), result);
+			}
+		}else {
+			validationCheck(value, result);
+		}
+		
+	    return result; 
+	}
+	
+	/**
+	 * validation check
+	 * @param value
+	 * @param result
+	 * @return
+	 */
+	private static List<FieldError> validationCheck(Object value, List<FieldError> result){
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    Validator validator = factory.getValidator();
+	    Set<ConstraintViolation<Object>> violations = validator.validate(value);
+	    if (!violations.isEmpty()) {
+	    	Iterator<ConstraintViolation<Object>> iter = violations.iterator();
+	    	while(iter.hasNext()) {
+	    		ConstraintViolation errorInfo = iter.next();
+	    		String propertyPath = errorInfo.getPropertyPath().toString();
+	    		result.add(new FieldError(value.getClass().getName(), propertyPath, errorInfo.getInvalidValue(), false,null, null, errorInfo.getMessage()));
+	    	}
+	    }
+	    
+	    return result; 
+	}
+
+	public static String errorMessage(FieldError errorInfo) {
+		return String.format("field : %s\nmessage : %s\nvalue : %s", errorInfo.getField(), errorInfo.getDefaultMessage() , errorInfo.getRejectedValue());
 	}
 }

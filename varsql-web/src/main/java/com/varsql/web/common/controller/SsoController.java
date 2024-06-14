@@ -25,12 +25,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.code.VarsqlSsoType;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.configuration.VarsqlWebConfig;
 import com.varsql.core.sso.SsoHandler;
 import com.varsql.web.common.sso.SsoBeanFactory;
 import com.varsql.web.common.sso.SsoComponent;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.StringUtils;
 
 /**

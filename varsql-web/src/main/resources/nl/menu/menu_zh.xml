@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<entry key="header.menu.file">文件</entry>
+<entry key="header.menu.file.new">新建文件</entry>
+<entry key="header.menu.file.save">保存</entry>
+<entry key="header.menu.file.allsave">全部保存</entry>
+<entry key="header.menu.file.import">导入...</entry>
+<entry key="header.menu.file.export">导出...</entry>
+<entry key="header.menu.file.import_export">导入和导出...</entry>
+<entry key="header.menu.file.newwin">新窗口</entry>
+<entry key="header.menu.file.close">关闭</entry>
+
+<!-- 编辑菜单 -->
+<entry key="header.menu.edit">编辑</entry>
+<entry key="header.menu.edit.paste">粘贴</entry>
+<entry key="header.menu.edit.undo">撤消</entry>
+<entry key="header.menu.edit.redo">重做</entry>
+<entry key="header.menu.edit.find">查找</entry>
+<entry key="header.menu.edit.compare">查询比较</entry>
+
+<!-- 搜索菜单 -->
+<entry key="header.menu.search">搜索</entry>
+<entry key="header.menu.search.find">查找</entry>
+
+<!-- 工具菜单 -->
+<entry key="header.menu.tool">工具</entry>
+<entry key="header.menu.tool.import">导入</entry>
+<entry key="header.menu.tool.export">导出</entry>
+<entry key="header.menu.tool.export.specification">表规范</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">数据</entry>
+<entry key="header.menu.tool.setting">设置</entry>
+<entry key="header.menu.tool.show.plugin">组件视图</entry>
+<entry key="header.menu.tool.show.glossary">术语表</entry>
+<entry key="header.menu.tool.show.history">历史</entry>
+
+<entry key="header.menu.tool.theme">主题设置</entry>
+<entry key="header.menu.tool.theme.light">浅色</entry>
+<entry key="header.menu.tool.theme.dark">深色</entry>
+
+<entry key="header.menu.tool.initlayout">初始化布局</entry>
+
+<entry key="header.menu.tool.utils">实用工具</entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[生成表]]></entry>
+<entry key="header.menu.tool.utils.multidbsqlexecute">多个DB SQL执行</entry>
+<entry key="header.menu.tool.utils.tableddlconvert">表DDL转换</entry>
+<entry key="header.menu.tool.utils.tablecolumnsearch">表列搜索</entry>
+
+<!-- 帮助菜单 -->
+<entry key="header.menu.help">帮助</entry>
+<entry key="header.menu.help.help">帮助主题</entry>
+<entry key="header.menu.help.dbinfo">数据库信息</entry>
+<entry key="header.menu.help.info">VARSQL信息</entry>
+
+<!-- 管理菜单 -->
+<entry key="admin.menu.database">数据库管理</entry>
+<entry key="admin.menu.databaseoptmgmt">数据库选项管理</entry>
+<entry key="admin.menu.managermgmt">管理员权限管理</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[数据库 & 管理员管理]]></entry>
+<entry key="admin.menu.report">报告</entry>
+<entry key="admin.menu.dbmenumgmt">菜单管理</entry>
+<entry key="admin.menu.errorlog">错误日志</entry>
+<entry key="admin.menu.jdbcprovidermgmt">JDBC提供者管理</entry>
+
+<!-- 应用管理菜单 -->
+<entry key="manager.menu.usermgmt">用户管理</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[问答管理]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[数据库 & 用户管理]]></entry>
+<entry key="manager.menu.dbgroup">数据库组管理</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[数据库组 & 用户管理]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[术语表]]></entry>
+<entry key="manager.menu.logmgmt">日志</entry>
+<entry key="manager.menu.dbcomparemgmt">数据库比较</entry>
+<entry key="manager.menu.sqllogmgmt">SQL统计</entry>
+<entry key="manager.menu.sqllog">SQL日志</entry>
+<entry key="manager.menu.userlogmgmt">用户日志统计</entry>
+<entry key="manager.menu.scheduler">调度器</entry>
+<entry key="manager.menu.databackupgmgmt">数据备份管理</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL备份管理</entry>
+<entry key="manager.menu.sqljobmgmt">SQL任务</entry>
+
+<!-- 用户菜单 -->
+<entry key="user.prefernces.menu.general">个人资料修改</entry>
+<entry key="user.prefernces.menu.pasword">修改密码</entry>
+<entry key="user.prefernces.menu.message">消息管理</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[问答]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL文件</entry>
+
+<entry key="user.prefernces.menu.file">文件</entry>
+<entry key="user.prefernces.menu.fileimportlist">导入历史</entry>
+<entry key="user.prefernces.menu.fileexportlist">下载历史</entry>
+
+<!-- setting menu -->
+<entry key="setting.menu.template.gen">代码生成模板</entry>
+
+</properties>

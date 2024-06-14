@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.websocket.service.WebSocketServiceImpl;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
@@ -26,6 +25,7 @@ import com.varsql.web.repository.spec.NoteSpec;
 import com.varsql.web.repository.spec.UserSpec;
 import com.varsql.web.repository.user.UserInfoRepository;
 import com.varsql.web.util.DefaultValueUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConnectionInfoConfig {
-	public BeanType beanType() default BeanType.SPRING;
+	public BeanType beanType() default BeanType.JAVA;
 	
 	public String beanName() default "simpleConnectionInfoDao";
 	

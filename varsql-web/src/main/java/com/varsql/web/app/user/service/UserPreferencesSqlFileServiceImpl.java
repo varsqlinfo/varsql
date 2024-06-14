@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.sql.SqlFileResponseDTO;
@@ -18,6 +17,7 @@ import com.varsql.web.model.entity.sql.SqlFileEntity;
 import com.varsql.web.model.mapper.sql.SqlFileMapper;
 import com.varsql.web.repository.spec.SqlFileSpec;
 import com.varsql.web.repository.sql.SqlFileEntityRepository;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

@@ -42,7 +42,7 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 	private final Logger logger = LoggerFactory.getLogger(ConnectionDBCP2.class);
 
-	PoolingDriver driver;
+	private PoolingDriver driver;
 
 	public ConnectionDBCP2() {
 		 //커넥션 풀을 제공하는 jdbc 드라이버를 등록.

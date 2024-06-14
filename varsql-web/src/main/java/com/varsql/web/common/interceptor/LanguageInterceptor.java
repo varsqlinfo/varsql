@@ -14,57 +14,47 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.varsql.core.common.util.SecurityUtil;
+import com.varsql.core.common.constants.LocaleConstants;
+import com.varsql.web.constants.HttpSessionConstants;
+import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.util.SecurityUtil;
+import com.varsql.web.util.VarsqlUtils;
 
 public class LanguageInterceptor implements HandlerInterceptor  {
-
-	public static final String DEFAULT_PARAM_NAME = "locale";
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws ServletException {
 		
+		if("post".equalsIgnoreCase(request.getMethod())) {
+			return true; 
+		}
+		
 		Locale locale;
 		if(SecurityUtil.isAuthenticated()) {
 			locale = SecurityUtil.loginInfo().getUserLocale();
 		}else {
-			locale = extractLocale(request);
+			locale = LocaleConstants.parseLocaleString(extractLocaleString(request));
 		}
 		
-		if (locale != null && !locale.equals(request.getLocale())) {
-			
-			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-			if (localeResolver == null) {
-				throw new IllegalStateException("No LocaleResolver found.");
-			}
-			
-			if(localeResolver.resolveLocale(request) != locale) {
-				localeResolver.setLocale(request, response, locale);
-			}
+		if(!locale.getLanguage().equals(request.getSession().getAttribute(HttpSessionConstants.USER_LOCALE))) {
+			VarsqlUtils.changeLocale(request, response, locale);
 		}
+		
 		return true;
-	}
-
-	private Locale extractLocale(HttpServletRequest request) {
-		String newLocale = extractLocaleString(request);
-		if (StringUtils.hasText(newLocale)) {
-			return StringUtils.parseLocaleString(newLocale);
-		}
-		return request.getLocale();
 	}
 
 	@SuppressWarnings({ "rawtypes" })
 	private String extractLocaleString(HttpServletRequest request) {
-		Map pathVariables = (Map) request
-				.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+		Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		String newLocale = null;
 		
 		if (MapUtils.isNotEmpty(pathVariables)) {
-			newLocale = (String) pathVariables.get(DEFAULT_PARAM_NAME);
+			newLocale = (String) pathVariables.get(HttpParamConstants.LANG_LOCALE);
 		}
 		if (!StringUtils.hasText(newLocale)) {
-			newLocale = request.getParameter(DEFAULT_PARAM_NAME);
+			newLocale = request.getParameter(HttpParamConstants.LANG_LOCALE);
 		}
-		return newLocale;
+		return newLocale != null ? newLocale : request.getLocale().getLanguage();
 	}
 }

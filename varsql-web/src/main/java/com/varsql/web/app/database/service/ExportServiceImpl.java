@@ -34,7 +34,6 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.data.writer.SQLWriter;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
@@ -47,7 +46,6 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
-import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
@@ -62,11 +60,13 @@ import com.varsql.web.dto.DDLExportVO;
 import com.varsql.web.dto.DataExportItemVO;
 import com.varsql.web.dto.DataExportVO;
 import com.varsql.web.dto.db.DBMetadataRequestDTO;
+import com.varsql.web.dto.db.SqlExecuteDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
@@ -437,10 +437,13 @@ public class ExportServiceImpl{
 				try (OutputStream outstream = new FileOutputStream(exportFilePath);) {
 
 					if (VarsqlFileType.CSV.equals(exportType)) {
+						
 						writer = new CSVWriter(outstream, ',', charset);
 					} else if (VarsqlFileType.JSON.equals(exportType)) {
+						seDto.setFormatValue(false);
 						writer = new JSONWriter(outstream, charset);
 					} else if (VarsqlFileType.XML.equals(exportType)) {
+						seDto.setFormatValue(false);
 						writer = new XMLWriter(outstream, "row", charset);
 					} else if (VarsqlFileType.EXCEL.equals(exportType)) {
 						writer = new ExcelWriter(outstream);

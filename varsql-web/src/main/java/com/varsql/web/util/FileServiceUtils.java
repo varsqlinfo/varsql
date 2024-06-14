@@ -23,12 +23,9 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.vartech.common.utils.CommUtils;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.web.constants.SavePathType;
@@ -36,6 +33,10 @@ import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.FileBaseEntity;
 import com.vartech.common.app.beans.ClientInfo;
+import com.vartech.common.app.beans.FileInfo;
+import com.vartech.common.io.RESOURCE_TYPE;
+import com.vartech.common.io.Resource;
+import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.FileUtils;
 
 /**
@@ -173,12 +174,12 @@ public final class FileServiceUtils {
 	 * @date   : 2021. 1. 3.
 	 * @param fileName
 	 * @return
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
-	public static Resource loadFileAsResource(String filePath) throws MalformedURLException {
+	public static Resource loadFileAsResource(String filePath) throws IOException {
 		Path path = getUploadRootPath().resolve(filePath).normalize();
-
-		Resource resource = new UrlResource(path.toUri());
+		
+		Resource resource = ResourceUtils.getResource(RESOURCE_TYPE.FILE.getPath(path.toFile().getAbsolutePath()));
 		if (resource.exists()) {
 			return resource;
 		} else {

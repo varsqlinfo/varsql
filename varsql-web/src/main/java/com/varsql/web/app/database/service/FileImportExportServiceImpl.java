@@ -20,7 +20,6 @@ import com.varsql.core.common.beans.ProgressInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
 import com.varsql.core.sql.executor.SQLExecuteResult;
@@ -33,6 +32,7 @@ import com.varsql.web.dto.file.FileImportResult;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.HttpUtils;
@@ -94,6 +94,7 @@ public class FileImportExportServiceImpl{
 			
 			FileImportResult fileImportResult = new FileImportResult();
 			try {
+				fileImportResult.setFileId(fileInfo.getFileId());
 				fileImportResult.setFileName(fileInfo.getFileName());
 				SQLExecuteResult ser =null;
 				if("sql".equals(importType)) {
@@ -118,6 +119,8 @@ public class FileImportExportServiceImpl{
 				logger.error("file import error importType : {} , conuid : {} , fileInfo :{} " ,importType, fileInfo);
 				logger.error("error message : {}" ,e.getMessage(), e);
 			}
+			
+			progressInfo.addItem(fileImportResult);
 
 			resultInfo.add(fileImportResult);
 		}

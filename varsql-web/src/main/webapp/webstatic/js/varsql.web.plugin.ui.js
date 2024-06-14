@@ -42,7 +42,7 @@ _pluginUI.chart = {
 		var _this = this; 
 		
 		if(_this._chartInfo[selector]){
-			_this._chartInfo[selector].axis(0).update(opt.axis.data);
+			_this._chartInfo[selector].axis(0).update(opt.axis.data ||[]);
 			return true; 
 		}
 		

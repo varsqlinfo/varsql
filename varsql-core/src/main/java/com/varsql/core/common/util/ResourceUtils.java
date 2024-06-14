@@ -2,14 +2,14 @@ package com.varsql.core.common.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.configuration.Configuration;
+import com.vartech.common.io.Resource;
+import com.vartech.common.io.match.PathMatchingResource;
 
 /**
  * -----------------------------------------------------------------------------
@@ -25,9 +25,6 @@ import com.varsql.core.configuration.Configuration;
  */
 public final class ResourceUtils {
 
-	public final static String FILE_PREFIX = "file:";
-	public final static String CLASS_PREFIX = "classpath:";
-
 	private ResourceUtils() {}
 
 	/**
@@ -35,13 +32,12 @@ public final class ResourceUtils {
 	 * @desc : 하위 패키지 밑에 경로 가져오기.
 	 * @author   : ytkim
 	 * @date   : 2020. 9. 18.
-	 * @param packagePath ex : classpath*:preferences\/*\/*.xml
+	 * @param packagePath ex : classpath:preferences\/*\/*.xml
 	 * @return
 	 * @throws IOException
 	 */
 	public static Resource[] getResources(String resourcePath) throws IOException {
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
-		return resolver.getResources(resourcePath) ;
+		return new PathMatchingResource(ResourceUtils.class.getClassLoader()).getResources(resourcePath) ;
 	}
 
 	/**
@@ -53,25 +49,8 @@ public final class ResourceUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Resource getResource(String resourcePath)  {
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
-
-		Resource reval;
-		if(resourcePath.startsWith(CLASS_PREFIX) || resourcePath.startsWith(FILE_PREFIX)) {
-			reval = resolver.getResource(resourcePath);
-		}else {
-			if(new File(resourcePath).exists()) {
-				reval = resolver.getResource(FILE_PREFIX+resourcePath);
-			}else {
-				reval = resolver.getResource(resourcePath);
-			}
-		}
-
-		if(reval.exists()) {
-			return reval;
-		}else {
-			return null;
-		}
+	public static Resource getResource(String resourcePath) throws IOException  {
+		return new PathMatchingResource(ResourceUtils.class.getClassLoader()).getResource(resourcePath);
 	}
 
 	/**
@@ -101,7 +80,9 @@ public final class ResourceUtils {
 	}
 
 	public static String getResourceString(Resource resource, String charset) throws IOException {
-		return IOUtils.toString(resource.getInputStream(), charset);
+		try(InputStream is=resource.getInputStream()){
+			return IOUtils.toString(is, charset);
+		}
 	}
 
 	/**
@@ -122,7 +103,17 @@ public final class ResourceUtils {
 		}else {
 			configResource = ResourceUtils.getResource(resourcePath);
 		}
-
+		
 		return configResource;
+	}
+	
+	/**
+	 * 설치 경로의 resource path 
+	 * 
+	 * @param resourcePath resource path
+	 * @return File install path +  resource path;
+	 */
+	public static File getInstallPathFile(String resourcePath) {
+		return new File(Configuration.getInstance().getInstallRoot(), resourcePath);
 	}
 }

@@ -42,32 +42,34 @@ public class TiberoDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 
-		SqlSession client = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
+		
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		for(String objNm : objNmArr){
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-
-			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.columnList(client.selectList("tableScriptColumn", dataParamInfo))
-					.keyList(client.selectList("tableConstraints", dataParamInfo))
-					.commentsList(client.selectList("tableColumnComments",dataParamInfo))
-				.build();
-				
-				param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
-				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for(String objNm : objNmArr){
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+	
+				dataParamInfo.setObjectName(objNm);
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.columnList(sqlSession.selectList("tableScriptColumn", dataParamInfo))
+						.keyList(sqlSession.selectList("tableConstraints", dataParamInfo))
+						.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
+					.build();
+					
+					param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
+					
+					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -75,45 +77,47 @@ public class TiberoDDLScript extends AbstractDDLScript {
 
 	@Override
 	public List<DDLInfo> getViews(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		for (String objNm : objNmArr) {
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
 
-			dataParamInfo.setObjectName(objNm);
-			
-			DataMap sourceInfo = new DataMap();
-			
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> viewHeaderList = sqlSesseion.selectList("viewHeaderScript", dataParamInfo);
-			boolean firstCheck = true;
-			for (String source :viewHeaderList) {
-				sourceSb.append(firstCheck ? "" :", ").append(source);
-				firstCheck = false;
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+
+			DDLInfo ddlInfo;
+			for (String objNm : objNmArr) {
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+	
+				dataParamInfo.setObjectName(objNm);
+				
+				DataMap sourceInfo = new DataMap();
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> viewHeaderList = sqlSession.selectList("viewHeaderScript", dataParamInfo);
+				boolean firstCheck = true;
+				for (String source :viewHeaderList) {
+					sourceSb.append(firstCheck ? "" :", ").append(source);
+					firstCheck = false;
+				}
+				sourceInfo.put("header", sourceSb.toString());
+	
+				List<String> srcViewBodyList = sqlSession.selectList("viewBodyScript", dataParamInfo);
+				sourceSb = new StringBuilder();
+				for (String source :srcViewBodyList) {
+					sourceSb.append(source).append(BlankConstants.NEW_LINE);
+				}
+				sourceInfo.put("body", sourceSb.toString());
+				
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.item(sourceInfo)
+					.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
+				.build();
+	
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param), dbType));
+				reval.add(ddlInfo);
 			}
-			sourceInfo.put("header", sourceSb.toString());
-
-			List<String> srcViewBodyList = sqlSesseion.selectList("viewBodyScript", dataParamInfo);
-			sourceSb = new StringBuilder();
-			for (String source :srcViewBodyList) {
-				sourceSb.append(source).append(BlankConstants.NEW_LINE);
-			}
-			sourceInfo.put("body", sourceSb.toString());
-			
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.item(sourceInfo)
-			.build();
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param), dbType));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -121,28 +125,29 @@ public class TiberoDDLScript extends AbstractDDLScript {
 
 	@Override
 	public List<DDLInfo> getIndexs(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
 
-		for (String objNm : objNmArr) {
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-				.sourceText(StringUtils.trim(sqlSesseion.selectOne("indexScriptSource", dataParamInfo)))
-			.build();
-
-			ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
-			reval.add(ddlInfo);
+			DDLInfo ddlInfo;
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+					.sourceText(StringUtils.trim(sqlSession.selectOne("indexScriptSource", dataParamInfo)))
+				.build();
+	
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				reval.add(ddlInfo);
+			}
 		}
 
 		return reval;
@@ -151,35 +156,37 @@ public class TiberoDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getFunctions(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug(" Function DDL Generation info {}" , VartechUtils.reflectionToString(dataParamInfo));
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
 
-		dataParamInfo.setObjectType(ObjectType.FUNCTION.name());
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		for (String objNm : objNmArr) {
-
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+			DDLInfo ddlInfo;
+	
+			dataParamInfo.setObjectType(ObjectType.FUNCTION.name());
+	
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+	
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -187,61 +194,62 @@ public class TiberoDDLScript extends AbstractDDLScript {
 
 	public List<DDLInfo> getProcedures(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr)	throws Exception {
 		logger.debug(" Procedure DDL Generation...");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		for (String objNm : objNmArr) {
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			DDLTemplateParam param = DDLTemplateParam.builder()
-				.dbType(dataParamInfo.getDbType())
-				.schema(dataParamInfo.getSchema())
-				.objectName(objNm)
-				.ddlOpt(ddlOption)
-			.build();
-			
-			reval.add(ddlInfo);
-			
-			String objType = sqlSesseion.selectOne("sourceObjectType",dataParamInfo);
-			if (StringUtils.contains(objType, "PROCEDURE")) {
-				
-				StringBuilder sourceSb = new StringBuilder();
-				List<String> srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int j = 0; j < srcList.size(); j++) {
-					sourceSb.append( srcList.get(j));
-				}
-				param.setSourceText(sourceSb.toString());
-				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
-			} else if (StringUtils.contains(objType, "PACKAGE")) {
-				DataMap sourceInfo = new DataMap();
-				
-				dataParamInfo.setObjectType("PACKAGE");
-				StringBuilder sourceSb = new StringBuilder();
-				List<String> srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int i = 0; i < srcList.size(); i++) {
-					sourceSb.append( srcList.get(i));
-				}
-				sourceInfo.put("package", sourceSb.toString());
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-				sourceSb = new StringBuilder();
-				dataParamInfo.setObjectType("PACKAGE BODY");
-				srcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-				for (int i = 0; i < srcList.size(); i++) {
-					sourceSb.append( srcList.get(i));
-				}
-				sourceInfo.put("packageBody", sourceSb.toString());
+			DDLInfo ddlInfo;
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
 				
-				param.setItem(sourceInfo);
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PACKAGE.create, param));
+				DDLTemplateParam param = DDLTemplateParam.builder()
+					.dbType(dataParamInfo.getDbType())
+					.schema(dataParamInfo.getSchema())
+					.objectName(objNm)
+					.ddlOpt(ddlOption)
+				.build();
+				
+				reval.add(ddlInfo);
+				
+				String objType = sqlSession.selectOne("sourceObjectType",dataParamInfo);
+				if (StringUtils.contains(objType, "PROCEDURE")) {
+					
+					StringBuilder sourceSb = new StringBuilder();
+					List<String> srcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+					for (int j = 0; j < srcList.size(); j++) {
+						sourceSb.append( srcList.get(j));
+					}
+					param.setSourceText(sourceSb.toString());
+					
+					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				} else if (StringUtils.contains(objType, "PACKAGE")) {
+					DataMap sourceInfo = new DataMap();
+					
+					dataParamInfo.setObjectType("PACKAGE");
+					StringBuilder sourceSb = new StringBuilder();
+					List<String> srcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+					for (int i = 0; i < srcList.size(); i++) {
+						sourceSb.append( srcList.get(i));
+					}
+					sourceInfo.put("package", sourceSb.toString());
+	
+					sourceSb = new StringBuilder();
+					dataParamInfo.setObjectType("PACKAGE BODY");
+					srcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+					for (int i = 0; i < srcList.size(); i++) {
+						sourceSb.append( srcList.get(i));
+					}
+					sourceInfo.put("packageBody", sourceSb.toString());
+					
+					param.setItem(sourceInfo);
+					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PACKAGE.create, param));
+				}
+				
+				reval.add(ddlInfo);
 			}
-			
-			reval.add(ddlInfo);
 		}
 
 		return reval;
@@ -263,34 +271,35 @@ public class TiberoDDLScript extends AbstractDDLScript {
 	@Override
 	public List<DDLInfo> getTriggers(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNmArr) throws Exception {
 		logger.debug("Trigger DDL Generation...");
-
-		SqlSession sqlSesseion = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
-		DDLInfo ddlInfo;
-		for (String objNm : objNmArr) {
 
-			ddlInfo = new DDLInfo();
-			ddlInfo.setName(objNm);
-			dataParamInfo.setObjectName(objNm);
-			
-			StringBuilder sourceSb = new StringBuilder();
-			List<String> srcProcList = sqlSesseion.selectList("objectScriptSource", dataParamInfo);
-			for (int j = 0; j < srcProcList.size(); j++) {
-				sourceSb.append( srcProcList.get(j));
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+
+			DDLInfo ddlInfo;
+			for (String objNm : objNmArr) {
+	
+				ddlInfo = new DDLInfo();
+				ddlInfo.setName(objNm);
+				dataParamInfo.setObjectName(objNm);
+				
+				StringBuilder sourceSb = new StringBuilder();
+				List<String> srcProcList = sqlSession.selectList("objectScriptSource", dataParamInfo);
+				for (int j = 0; j < srcProcList.size(); j++) {
+					sourceSb.append( srcProcList.get(j));
+				}
+	
+				DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(sourceSb.toString())
+					.build();
+	
+				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				
+				reval.add(ddlInfo);
 			}
-
-			DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(sourceSb.toString())
-				.build();
-
-			ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
-			
-			reval.add(ddlInfo);
 		}
 
 		return reval;

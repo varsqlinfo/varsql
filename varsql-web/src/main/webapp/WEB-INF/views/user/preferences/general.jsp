@@ -55,7 +55,7 @@
 				            	<select class="form-control" id="lang" name="lang">
 				            		<option value=""><spring:message code="language.select"/></option>
 				            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
-										<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
+										<option value="${item.localeCode}" ${item.localeCode == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
 									</c:forEach>
 				            	</select>
 				            </div>

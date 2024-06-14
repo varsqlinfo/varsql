@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -19,6 +18,7 @@ import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.sql.SQLTemplateCode;
 import com.varsql.core.sql.template.SQLTemplateFactory;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 

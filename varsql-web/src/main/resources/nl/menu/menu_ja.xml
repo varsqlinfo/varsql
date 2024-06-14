@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+
+<comment>label</comment>
+
+<!-- ファイルメニュー -->
+<entry key="header.menu.file">ファイル</entry>
+<entry key="header.menu.file.new">新規ファイル</entry>
+<entry key="header.menu.file.save">保存</entry>
+<entry key="header.menu.file.allsave">すべて保存</entry>
+<entry key="header.menu.file.import">インポート...</entry>
+<entry key="header.menu.file.export">エクスポート...</entry>
+<entry key="header.menu.file.import_export">インポートとエクスポート...</entry>
+<entry key="header.menu.file.newwin">新しいウィンドウを開く</entry>
+<entry key="header.menu.file.close">閉じる</entry>
+
+<!-- 編集メニュー -->
+<entry key="header.menu.edit">編集</entry>
+<entry key="header.menu.edit.paste">貼り付け</entry>
+<entry key="header.menu.edit.undo">元に戻す</entry>
+<entry key="header.menu.edit.redo">やり直す</entry>
+<entry key="header.menu.edit.find">検索</entry>
+<entry key="header.menu.edit.compare">クエリの比較</entry>
+
+<!-- 検索メニュー -->
+<entry key="header.menu.search">検索</entry>
+<entry key="header.menu.search.find">検索</entry>
+
+<!-- ツールメニュー -->
+<entry key="header.menu.tool">ツール</entry>
+<entry key="header.menu.tool.import">インポート</entry>
+<entry key="header.menu.tool.export">エクスポート</entry>
+<entry key="header.menu.tool.export.specification">テーブル仕様書</entry>
+<entry key="header.menu.tool.export.ddl">DDL</entry>
+<entry key="header.menu.tool.export.data">データ</entry>
+<entry key="header.menu.tool.setting">設定</entry>
+<entry key="header.menu.tool.show.plugin">コンポーネント表示</entry>
+<entry key="header.menu.tool.show.glossary">用語集</entry>
+<entry key="header.menu.tool.show.history">履歴</entry>
+
+<entry key="header.menu.tool.theme">テーマ設定</entry>
+<entry key="header.menu.tool.theme.light">ライト</entry>
+<entry key="header.menu.tool.theme.dark">ダーク</entry>
+
+<entry key="header.menu.tool.initlayout">レイアウトの初期化</entry>
+
+<entry key="header.menu.tool.utils">ユーティリティ</entry>
+<entry key="header.menu.tool.utils.gentable"><![CDATA[テーブル作成]]></entry>
+<entry key="header.menu.tool.utils.multidbsqlexecute">マルチDB SQL 実行</entry>
+<entry key="header.menu.tool.utils.tableddlconvert">テーブルDDL 変換</entry>
+<entry key="header.menu.tool.utils.tablecolumnsearch">テーブル列検索</entry>
+
+<!-- ヘルプメニュー -->
+<entry key="header.menu.help">ヘルプ</entry>
+<entry key="header.menu.help.help">ヘルプ項目</entry>
+<entry key="header.menu.help.dbinfo">DB 情報</entry>
+<entry key="header.menu.help.info">VARSQL 情報</entry>
+
+<!-- 管理メニュー -->
+<entry key="admin.menu.database">Database 管理</entry>
+<entry key="admin.menu.databaseoptmgmt">Database オプション 管理</entry>
+<entry key="admin.menu.managermgmt">マネージャー 権限 管理</entry>
+<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & マネージャー 管理]]></entry>
+<entry key="admin.menu.report">Report</entry>
+<entry key="admin.menu.dbmenumgmt">メニュー管理</entry>
+<entry key="admin.menu.errorlog">エラーログ</entry>
+<entry key="admin.menu.jdbcprovidermgmt">JDBC プロバイダ 管理</entry>
+
+<!-- アプリ管理メニュー -->
+<entry key="manager.menu.usermgmt">ユーザー 管理</entry>
+<entry key="manager.menu.qnamgmt"><![CDATA[Q&A 管理]]></entry>
+<entry key="manager.menu.dbnuser"><![CDATA[DB & ユーザー 管理]]></entry>
+<entry key="manager.menu.dbgroup">DB グループ管理</entry>
+<entry key="manager.menu.dbgroupnuser"><![CDATA[DB グループ & ユーザー管理]]></entry>
+<entry key="manager.menu.glossary"><![CDATA[用語集]]></entry>
+<entry key="manager.menu.logmgmt">ログ</entry>
+<entry key="manager.menu.dbcomparemgmt">DB 比較</entry>
+<entry key="manager.menu.sqllogmgmt">SQL 統計</entry>
+<entry key="manager.menu.sqllog">SQL ログ</entry>
+<entry key="manager.menu.userlogmgmt">ユーザーログ 統計</entry>
+<entry key="manager.menu.scheduler">スケジューラ</entry>
+<entry key="manager.menu.databackupgmgmt">データバックアップ 管理</entry>
+<entry key="manager.menu.ddlbackupmgmt">DDL バックアップ 管理</entry>
+<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+
+<!-- ユーザーメニュー -->
+<entry key="user.prefernces.menu.general">プロフィール修正</entry>
+<entry key="user.prefernces.menu.pasword">パスワード変更</entry>
+<entry key="user.prefernces.menu.message">メッセージ管理</entry>
+<entry key="user.prefernces.menu.qna"><![CDATA[Q&A]]></entry>
+<entry key="user.prefernces.menu.sqlfile">SQL ファイル</entry>
+
+<entry key="user.prefernces.menu.file">ファイル</entry>
+<entry key="user.prefernces.menu.fileimportlist">インポート履歴</entry>
+<entry key="user.prefernces.menu.fileexportlist">ダウンロード履歴</entry>
+
+<!-- setting menu -->
+<entry key="setting.menu.template.gen">コード生成テンプレート</entry>
+
+</properties>

@@ -1,5 +1,6 @@
 package com.varsql.core.sql.executor;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -85,8 +86,11 @@ public class UpdateExecutor implements Executor{
 		int addCount = 0;
 		Connection conn = null;
 		Statement statement = null;
+		
+		final HandlerVariable handlerVariable = new HandlerVariable();
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
+			
 			conn.setAutoCommit(false);
 
 			statement = conn.createStatement();
@@ -106,23 +110,23 @@ public class UpdateExecutor implements Executor{
 				addCount++;
 
 				if(addCount % getBatchCount()==0) {
-					statement.executeBatch();
-					statement.clearBatch();
+					setExecuteBatch(statement, handlerVariable, getBatchCount());
 				}
 			}
-
-			if(addCount % getBatchCount() != 0) {
-				statement.executeBatch();
-				statement.clearBatch();
+			
+			int lastBatchCount = addCount % getBatchCount(); 
+			if(lastBatchCount != 0) {
+				setExecuteBatch(statement, handlerVariable, lastBatchCount);
 			}
-
+			
 			conn.commit();
 		} catch (Throwable e ) {
 			if(conn != null) conn.rollback();
 			result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
-			result.setMessage("errorLine : "+sqlIdx +", error message :  "+  e.getMessage());
+			result.setMessage("errorLine : "+handlerVariable.getFailIdx()  +", error message :  "+  e.getMessage()+ ", sql : "+handlerVariable.getSql());
 
-			logger.error("update : {} ", e.getMessage(), e);
+			logger.error("execute sql : {} ", handlerVariable.getSql());
+			logger.error("execute error message : {} ", e.getMessage(), e);
 		}finally{
 			if(conn !=null){
 				conn.setAutoCommit(true);
@@ -135,5 +139,30 @@ public class UpdateExecutor implements Executor{
 		result.setResult(addCount);
 
 		return result;
+	}
+	
+	protected void setExecuteBatch(Statement statement, HandlerVariable handlerVariable, int batchCount) throws SQLException {
+		
+	    try {
+	    	statement.executeBatch();
+			statement.clearBatch();
+	    } catch (BatchUpdateException bue) {
+	        int[] updateCounts = bue.getUpdateCounts();
+	        
+	        if (updateCounts != null) {
+		        int failIdx = 1;
+		        for (int uc : updateCounts) {
+		        	if(uc == Statement.EXECUTE_FAILED) {
+		        		break; 
+		        	}
+		        	failIdx++;
+		        }
+		        
+		        handlerVariable.setFailIdx(handlerVariable.getCount() - batchCount +  failIdx );
+	        }
+	        throw bue;
+	    } catch (SQLException se) {
+	    	throw se;
+	    }
 	}
 }

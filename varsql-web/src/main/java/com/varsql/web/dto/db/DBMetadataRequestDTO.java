@@ -1,7 +1,7 @@
 package com.varsql.web.dto.db;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
+import com.varsql.web.util.SecurityUtil;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -23,7 +23,7 @@
 			<div class="preferences-body-header">
 				{{detailItem.desc}}
 
-				<button type="button" @click="viewHelpPage()" class="pull-right">도움말</button>
+				<button type="button" @click="viewHelpPage()" class="pull-right"><spring:message code="help" /></button>
 			</div>
 			<div class="preferences-body-cont">
 				<template v-if="!VARSQL.isUndefined(detailItem.url) && detailItem.url !=''">
@@ -70,8 +70,8 @@ VarsqlAPP.vueServiceBean({
 			treeItem.push({
 				id:'6'
 				, pid:'top'
-				, name:'코드 생성설정'
-				, desc :'DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성'
+				, name: VARSQL.message('setting.menu.template.gen','코드 생성설정') 
+				, desc : VARSQL.message('msg.setting.code.template.desc','DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성')
 				, url:'<c:url value="/database/preferences/contextMenuSetting?conuid=${param.conuid}" />'
 				, help:{
 					name : '도울말'

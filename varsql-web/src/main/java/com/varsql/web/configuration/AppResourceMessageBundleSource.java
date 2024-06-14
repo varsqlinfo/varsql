@@ -55,7 +55,7 @@ public class AppResourceMessageBundleSource extends ReloadableResourceBundleMess
 				}
 			}else {
 				for(LocaleConstants code :  LocaleConstants.values()) {
-					Locale locale = new Locale(code.getLocale());
+					Locale locale = new Locale(code.getLocaleCode());
 					
 					if(reloadTime.containsKey(locale)) {
 						reloadTime.put(locale, System.currentTimeMillis());

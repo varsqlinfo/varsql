@@ -2,8 +2,8 @@ package com.varsql.web.repository.spec;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.entity.sql.SqlFileTabEntity;
+import com.varsql.web.util.SecurityUtil;
 
 /**
  * -----------------------------------------------------------------------------

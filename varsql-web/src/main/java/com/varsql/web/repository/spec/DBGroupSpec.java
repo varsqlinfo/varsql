@@ -4,10 +4,10 @@ import javax.persistence.criteria.Join;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.EntityFieldConstants;
 import com.varsql.web.model.entity.db.DBGroupEntity;
 import com.varsql.web.model.entity.db.DBGroupMappingUserEntity;
+import com.varsql.web.util.SecurityUtil;
 
 /**
  * -----------------------------------------------------------------------------

@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.varsql.core.common.constants.VarsqlConstants;
@@ -21,6 +20,8 @@ import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.exception.ConfigurationException;
 import com.vartech.common.crypto.password.PasswordType;
+import com.vartech.common.io.RESOURCE_TYPE;
+import com.vartech.common.io.Resource;
 import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.VartechUtils;
 
@@ -35,6 +36,9 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class Configuration extends AbstractConfiguration{
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
+	
+	public static final String DEFAULT_JDBC_URL = "jdbc:h2:file:#resourePath#/varsql;AUTO_SERVER=TRUE;CACHE_SIZE=131072;";
+	public static final String DEFAULT_JDBC_DRIVER = "org.h2.Driver";
 	
 	private Properties props = new Properties();
 
@@ -104,7 +108,9 @@ public class Configuration extends AbstractConfiguration{
 	protected void initialize() {
 		try{
 			initConfig();
-			initConnection();
+			if(this.isInit) {
+				initConnection();
+			}
 		}catch(Exception e){
 			logger.error(this.getClass().getName(), e);
 			throw new RuntimeException(e);
@@ -126,21 +132,33 @@ public class Configuration extends AbstractConfiguration{
 		logger.info("Configuration file : {}",file);
 		
 		if(!file.exists()) {
-			isInit = false;
-			try(InputStream is= ResourceUtils.getResource(ResourceUtils.CLASS_PREFIX+VARSQL_PROPERTIES_FILE).getInputStream();){
-				if(!new File(file.getParent()).exists()) {
-					new File(file.getParent()).mkdirs();
-				}
-				
-				System.out.println("file.getParent() : "+ file.getParent());
-				
-				
-				IOUtils.write(is, file);
-			}catch(Exception e) {
-				logger.error("properties init error : {}", e.getMessage(), e);
-			}
+			this.isInit = false;
+			
+			this.vConInfo = ConnectionInfo.builder()
+					.connid(ConnectionContext.DEFAULT_CONN_ID)
+					.aliasName("varsql-mem")
+					.type("h2")
+					.url("jdbc:h2:mem:varsqlInitDb;DB_CLOSE_DELAY=-1")
+					.username("sa")
+					.password("")
+					.validationQuery(ValidationProperty.getInstance().validationQuery("h2"))
+					.initialSize(5)
+					.minIdle(3)
+					.maxIdle(5)
+					.maxActive(5)
+					.jdbcDriverInfo(JDBCDriverInfo.builder()
+						.providerId("baseProvider")
+						.driverId("base")
+						.driverClass("org.h2.Driver")
+						.build()
+					)
+				.build();
+			
+			this.mailConfigBean = MailConfigBean.getMailConfigBean(new Properties());
+			
+			return ;
 		}else {
-			isInit = true;
+			this.isInit = true;
 		}
 
 		Resource configResource = getResourceFile(VARSQL_PROPERTIES_FILE);
@@ -154,8 +172,6 @@ public class Configuration extends AbstractConfiguration{
 		}catch(IOException e) {
 			throw new ConfigurationException(e);
 		}
-		
-		
 
 		setConfigProperty();
 		
@@ -240,7 +256,7 @@ public class Configuration extends AbstractConfiguration{
 			File file = new File(VARSQL_INSTALL_PATH, CONNECTION_XML_FILE);
 			
 			if(!file.exists()) {
-				try(InputStream is= ResourceUtils.getResource(ResourceUtils.CLASS_PREFIX+CONNECTION_XML_FILE).getInputStream();){
+				try(InputStream is= ResourceUtils.getResource(RESOURCE_TYPE.CLASSPATH.getPath(CONNECTION_XML_FILE)).getInputStream();){
 					IOUtils.write(is, file);
 				}catch(Exception e) {
 					logger.error("db connection file create error : {}", e.getMessage(), e);
@@ -278,10 +294,9 @@ public class Configuration extends AbstractConfiguration{
 			String type = jsonInfo.get("type").asText("h2"); 
 			this.vConInfo = ConnectionInfo.builder()
 				.connid(ConnectionContext.DEFAULT_CONN_ID)
-				.aliasName(jsonInfo.get("name").asText(""))
+				.aliasName(jsonInfo.get("name").asText(ConnectionContext.DEFAULT_ALIAS))
 				.type(type)
-				
-				.url(jsonInfo.get("url").asText("jdbc:h2:file:#resourePath#/varsql;MV_STORE=FALSE;CACHE_SIZE=131072;").replace("#resourePath#", getInstallRoot()))
+				.url(jsonInfo.get("url").asText(DEFAULT_JDBC_URL).replace("#resourePath#", getInstallRoot()))
 				.username(jsonInfo.get("username").asText(""))
 				.password(jsonInfo.get("password").asText(""))
 				
@@ -296,7 +311,7 @@ public class Configuration extends AbstractConfiguration{
 				.jdbcDriverInfo(JDBCDriverInfo.builder()
 					.providerId("baseProvider")
 					.driverId("base")
-					.driverClass(jsonInfo.get("driver").asText("org.h2.Driver"))
+					.driverClass(jsonInfo.get("driver").asText(DEFAULT_JDBC_DRIVER))
 					.build()
 				)
 			.build();
@@ -407,24 +422,30 @@ public class Configuration extends AbstractConfiguration{
 		return scheduleEnable;
 	}
 	
-	public Resource getQuartzConfig() {
-		return getResourceFile(VARSQL_QUARTZ_PROPERTIES_FILE);
+	public String getQuartzConfig() {
+		return getResourceFilePath(QUARTZ_PROPERTIES_FILE);
 	}
 	
-	public Resource getHibernateConfig() {
-		return getResourceFile(VARSQL_HIBERNATE_PROPERTIES_FILE);
+	public String getHibernateConfig() {
+		return getResourceFilePath(HIBERNATE_PROPERTIES_FILE);
 	}
 	
 	private Resource getResourceFile(String filePath) {
-		return getResourceFile(filePath, false);
+		filePath = getResourceFilePath(filePath);
+		try {
+			
+			return ResourceUtils.getResource(filePath);
+		}catch(Exception e) {
+			throw new RuntimeException("resource not found : "+ filePath, e);
+		}
 	}
 	
-	private Resource getResourceFile(String filePath, boolean createFlag) {
+	private String getResourceFilePath (String filePath) {
 		File file = new File(VARSQL_INSTALL_PATH, filePath);
 		if(file.exists()) {
-			return ResourceUtils.getResource(file.getPath());
+			return file.getPath();
 		}else {
-			return ResourceUtils.getResource(filePath);
+			return filePath;
 		}
 	}
 
@@ -438,6 +459,22 @@ public class Configuration extends AbstractConfiguration{
 
 	public boolean isInit() {
 		return isInit;
+	}
+	
+	public String appConfigFilePath() {
+		return VARSQL_PROPERTIES_FILE;
+	}
+	
+	public String appDbConfigFilePath() {
+		return CONNECTION_XML_FILE;
+	}
+	
+	/**
+	 * varsql prop file check
+	 * @return
+	 */
+	public boolean existsAppConfigFile() {
+		return new File(VARSQL_INSTALL_PATH, VARSQL_PROPERTIES_FILE).exists();
 	}
 
 }

@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.exception.BoardInvalidException;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.StringUtils;
 
 public class DatabaseBoardAuthInterceptor implements HandlerInterceptor {
@@ -22,10 +22,10 @@ public class DatabaseBoardAuthInterceptor implements HandlerInterceptor {
 		Map pathVariables = (Map) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
 		String boardCd = null;
-		if(pathVariables.containsKey(VarsqlParamConstants.BOARD_CODE)) {
-			boardCd = String.valueOf(pathVariables.get(VarsqlParamConstants.BOARD_CODE));
+		if(pathVariables.containsKey(HttpParamConstants.BOARD_CODE)) {
+			boardCd = String.valueOf(pathVariables.get(HttpParamConstants.BOARD_CODE));
 
-			req.setAttribute(VarsqlParamConstants.BOARD_CODE, boardCd);
+			req.setAttribute(HttpParamConstants.BOARD_CODE, boardCd);
 
 			if(StringUtils.isBlank(boardCd)) {
 				return false;
@@ -45,7 +45,7 @@ public class DatabaseBoardAuthInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		req.setAttribute(VarsqlParamConstants.VCONNID, dataBaseInfo.get(boardCd).getVconnid());
+		req.setAttribute(HttpParamConstants.VCONNID, dataBaseInfo.get(boardCd).getVconnid());
 
 		return true;
 	}

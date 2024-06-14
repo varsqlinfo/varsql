@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
@@ -18,6 +17,7 @@ import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.spec.DBConnectionSpec;
 import com.varsql.web.repository.spec.UserSpec;
 import com.varsql.web.repository.user.UserMgmtRepository;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

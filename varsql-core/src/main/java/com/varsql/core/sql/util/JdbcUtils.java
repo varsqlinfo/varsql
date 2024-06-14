@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +18,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.util.JdbcDriverLoader;
+import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
+import com.varsql.core.db.DBVenderType;
 import com.vartech.common.app.beans.FileInfo;
 
 public final class JdbcUtils {
@@ -90,6 +93,41 @@ public final class JdbcUtils {
 			pstmt.executeQuery();
 			connChk.close();
 			
+		}finally {
+			JdbcUtils.close(connChk, pstmt, null);
+		}
+	}
+	
+	public static boolean connectionTest(DBVenderType dbType, String driverClass, String connectionUrl,  String user,
+			 String pw, int networkTimeout, int queryTimeout) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
+		
+		PreparedStatement pstmt = null;
+		
+		Connection connChk = null;
+		try {
+			
+			Executor executor= null; 
+			if (dbType.name().equalsIgnoreCase("mysql")) {
+				executor = new MysqlExecutor();
+			} else {
+				executor = Executors.newSingleThreadExecutor();
+			}
+			
+			Class.forName(driverClass);
+			connChk= DriverManager.getConnection(connectionUrl, user, pw);
+			
+			if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
+				connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+			}
+			
+			pstmt = connChk.prepareStatement(ValidationProperty.getInstance().validationQuery(dbType));
+			
+			pstmt.setQueryTimeout(queryTimeout);
+			
+			pstmt.executeQuery();
+			connChk.close();
+			
+			return true; 
 		}finally {
 			JdbcUtils.close(connChk, pstmt, null);
 		}

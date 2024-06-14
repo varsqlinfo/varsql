@@ -3,8 +3,8 @@ package com.varsql.web.security.rememberme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.varsql.core.auth.User;
 import com.varsql.web.security.AuthService;
+import com.varsql.web.security.User;
 import com.varsql.web.security.UserService;
 
 

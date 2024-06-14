@@ -16,11 +16,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
@@ -112,16 +112,10 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 		List<Map> result = new ArrayList();
 
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			DatabaseMetaData  meta = session.getConnection().getMetaData();
-
 			result.add( Collections.singletonMap("VERSIONINFO", meta.getDatabaseProductVersion()));
 			result.add( Collections.singletonMap("DRIVERINFO", meta.getDriverMajorVersion()));
-
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 
 		return result;
@@ -151,9 +145,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 		Connection conn = null;
 		ResultSet rs = null;
 
-		SqlSession session = SQLManager.getInstance().openSession(dbAlias);
-
-		try {
+		try (SqlSession session = SQLManager.getInstance().getSqlSession(dbAlias)){
 			conn = session.getConnection();
 
 			DatabaseMetaData dbmd = conn.getMetaData();
@@ -166,7 +158,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 					uSchema = dbmd.getUserName();
 				}catch(Throwable e3) {};
 			}
-			if(SecurityUtil.isSchemaView(dataParamInfo)) {
+			if(DbMetaUtils.isSchemaView(dataParamInfo)) {
 
 				rs =dbmd.getSchemas();
 
@@ -177,9 +169,8 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}else{
 				reLst.add(uSchema);
 			}
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
+		
 		return reLst;
 	}
 	
@@ -194,9 +185,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 		Connection conn = null;
 		ResultSet rs = null;
 
-		SqlSession session = SQLManager.getInstance().openSession(dbAlias);
-
-		try {
+		try (SqlSession session = SQLManager.getInstance().getSqlSession(dbAlias);){
 			conn = session.getConnection();
 
 			DatabaseMetaData dbmd = conn.getMetaData();
@@ -208,7 +197,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 				
 			}
 			
-			if(SecurityUtil.isSchemaView(dataParamInfo)) {
+			if(DbMetaUtils.isSchemaView(dataParamInfo)) {
 
 				rs =dbmd.getCatalogs();
 				if(rs!=null) {
@@ -220,9 +209,10 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}else{
 				reLst.add(databaseName);
 			}
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
+		}finally {
+			JdbcUtils.close(rs);
 		}
+		
 		return reLst;
 	}
 
@@ -243,24 +233,16 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 		logger.debug("DBMetaImpl getTables {}  ", VartechReflectionUtils.reflectionToString(dataParamInfo));
 
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			Connection conn = session.getConnection();
-			return dBMetaDataUtil.tableInfo(dataParamInfo,conn, "TABLE");
-
-		}finally {
-			sessionClose(dataParamInfo.getVconnid(), session);
+			return dBMetaDataUtil.tableInfo(dataParamInfo, conn, "TABLE");
 		}
 	}
 
 	public List<TableInfo> getTableMetadata(DatabaseParamInfo dataParamInfo, String... tableNames) throws Exception {
 
 		logger.debug("DBMetaImpl getTableMetadata {}  tableArr :: {}", VartechReflectionUtils.reflectionToString(dataParamInfo), tableNames);
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
-
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			Connection conn = session.getConnection();
 
 			List<TableInfo> tableList = null;
@@ -281,8 +263,6 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}
 
 			return dBMetaDataUtil.tableAndColumnsInfo(dataParamInfo,conn, dbInstanceFactory,"TABLE" ,tableList);
-		}finally {
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 	}
 
@@ -300,44 +280,34 @@ public abstract class AbstractDBMeta implements DBMeta{
 	 */
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception{
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		try {
 			Connection conn = session.getConnection();
-			
-			
-
-			return dBMetaDataUtil.tableInfo(dataParamInfo,conn, "VIEW");
-		}finally {
-			sessionClose(dataParamInfo.getVconnid(), session);
+			return dBMetaDataUtil.tableInfo(dataParamInfo, conn, "VIEW");
 		}
 	}
 
 	@Override
 	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo, String... viewNames) throws Exception{
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
+		try (SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
 			Connection conn = session.getConnection();
 			List<TableInfo> tableList = null;
-			if(viewNames !=null  && viewNames.length > 0){
+			if (viewNames != null && viewNames.length > 0) {
 				tableList = new ArrayList<TableInfo>();
 
 				TableInfo tableInfo = null;
-				for (String nm :viewNames) {
+				for (String nm : viewNames) {
 					tableInfo = new TableInfo();
 
 					tableInfo.setName(nm);
 					tableList.add(tableInfo);
 				}
-			}else{
-				tableList = dBMetaDataUtil.tableInfo(dataParamInfo,conn, "VIEW");
+			} else {
+				tableList = dBMetaDataUtil.tableInfo(dataParamInfo, conn, "VIEW");
 			}
-			return dBMetaDataUtil.tableAndColumnsInfo(dataParamInfo, conn, dbInstanceFactory, "VIEW" ,tableList);
-		}finally {
-			sessionClose(dataParamInfo.getVconnid(), session);
+			return dBMetaDataUtil.tableAndColumnsInfo(dataParamInfo, conn, dbInstanceFactory, "VIEW", tableList);
 		}
-}
+	}
 
 	/**
 	 *
@@ -354,13 +324,9 @@ public abstract class AbstractDBMeta implements DBMeta{
 	 */
 	@Override
 	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			Connection conn = session.getConnection();
-			return dBMetaDataUtil.proceduresInfo(dataParamInfo,conn);
-		}finally {
-			sessionClose(dataParamInfo.getVconnid(), session);
+			return dBMetaDataUtil.proceduresInfo(dataParamInfo, conn);
 		}
 	}
 
@@ -378,9 +344,8 @@ public abstract class AbstractDBMeta implements DBMeta{
 	 */
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... procedureNames) throws Exception{
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		try {
 			Connection conn = session.getConnection();
 			List<ObjectInfo> objectInfoList = null;
 			if(procedureNames==null){
@@ -397,8 +362,6 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}
 
 			return dBMetaDataUtil.proceduresAndMetadatas(dataParamInfo, conn, dbInstanceFactory,objectInfoList);
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 	}
 
@@ -417,13 +380,9 @@ public abstract class AbstractDBMeta implements DBMeta{
 	 */
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
-
-		try {
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			Connection conn = session.getConnection();
 			return dBMetaDataUtil.functionInfo(dataParamInfo,conn);
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 
 	}
@@ -444,9 +403,8 @@ public abstract class AbstractDBMeta implements DBMeta{
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames)
 			throws Exception {
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		try {
 			Connection conn = session.getConnection();
 			List<ObjectInfo> objectInfoList = null;
 			if(functionNames!=null && functionNames.length > 0){
@@ -463,8 +421,6 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}
 
 			return dBMetaDataUtil.functionAndMetadatas(dataParamInfo, conn, dbInstanceFactory,objectInfoList);
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 	}
 
@@ -488,9 +444,8 @@ public abstract class AbstractDBMeta implements DBMeta{
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
 
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		try {
 			Connection conn = null;
 			ResultSet rs = null;
 			List<Map> keyColumn = new ArrayList<Map>();
@@ -513,16 +468,13 @@ public abstract class AbstractDBMeta implements DBMeta{
 				throw e;
 			}
 			return keyColumn;
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 	}
 
 	@Override
 	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
-		SqlSession session = SQLManager.getInstance().openSession(dataParamInfo.getVconnid());
+		try(SqlSession session = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
-		try {
 			Connection conn = null;
 			ResultSet rs = null;
 			List<IndexInfo> indexInfoList = new ArrayList<IndexInfo>();
@@ -591,8 +543,6 @@ public abstract class AbstractDBMeta implements DBMeta{
 				throw e;
 			}
 			return indexInfoList;
-		}finally{
-			sessionClose(dataParamInfo.getVconnid(), session);
 		}
 	}
 
@@ -618,6 +568,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 	protected Map getComments(Connection conn, String query) throws SQLException {
 		return getComments(conn, query, null);
 	}
+	
 	protected Map getComments(Connection conn, String query, String nm) throws SQLException {
 		Map reval = new HashMap();
 		PreparedStatement pstmt = null;
@@ -630,7 +581,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 			}
 			rs.close();
 		}finally{
-			JdbcUtils.close(pstmt ,rs);
+			JdbcUtils.close(pstmt, rs);
 		}
 		return reval;
 	}
@@ -662,10 +613,6 @@ public abstract class AbstractDBMeta implements DBMeta{
 		return dataParamInfo;
 	}
 
-	public static void sessionClose(String sessionType, SqlSession session) {
-		SQLManager.getInstance().closeSession(sessionType, session);
-	}
-	
 	@Override
 	public List<ConstraintInfo> getConstraintsKeys(DatabaseParamInfo dataParamInfo, String tableNm) throws Exception {
 		Connection conn = null;
@@ -674,9 +621,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 		String dbAlias =  dataParamInfo.getVconnid();
 		String schema = dataParamInfo.getSchema();
 
-		SqlSession session  = SQLManager.getInstance().openSession(dbAlias);
-
-		try {
+		try(SqlSession session  = SQLManager.getInstance().getSqlSession(dbAlias);) {
 			conn = session.getConnection();
 			DatabaseMetaData dbmd = conn.getMetaData();
 
@@ -693,8 +638,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 		} catch (SQLException e) {
 			throw e;
 		}finally{
-			SQLManager.getInstance().closeSession(dbAlias, session);
-			JdbcUtils.close(conn, null ,rs);
+			JdbcUtils.close(conn, null, rs);
 		}
 		return keyColumn;
 	}

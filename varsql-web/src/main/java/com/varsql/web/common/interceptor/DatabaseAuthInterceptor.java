@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.exception.DatabaseInvalidException;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.StringUtils;
 
@@ -29,7 +29,7 @@ public class DatabaseAuthInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
 			throws ServletException, IOException {
-		String conuid =req.getParameter(VarsqlParamConstants.CONN_UUID);
+		String conuid =req.getParameter(HttpParamConstants.CONN_UUID);
 
 		if (!authCheck(req, conuid)) {
 			if(StringUtils.isBlank(conuid) && VarsqlUtils.isRuntimeLocal() && SecurityUtil.isAdmin()) {
@@ -62,10 +62,10 @@ public class DatabaseAuthInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		req.setAttribute(VarsqlParamConstants.CONN_UUID, conuid);
-		req.setAttribute(VarsqlParamConstants.DB_TYPE, dataBaseInfo.get(conuid).getType());
-		req.setAttribute(VarsqlParamConstants.VCONNID, dataBaseInfo.get(conuid).getVconnid());
-		req.setAttribute(VarsqlParamConstants.DB_SCHEMA, dataBaseInfo.get(conuid).getSchema());
+		req.setAttribute(HttpParamConstants.CONN_UUID, conuid);
+		req.setAttribute(HttpParamConstants.DB_TYPE, dataBaseInfo.get(conuid).getType());
+		req.setAttribute(HttpParamConstants.VCONNID, dataBaseInfo.get(conuid).getVconnid());
+		req.setAttribute(HttpParamConstants.DB_SCHEMA, dataBaseInfo.get(conuid).getSchema());
 		return true;
 	}
 }

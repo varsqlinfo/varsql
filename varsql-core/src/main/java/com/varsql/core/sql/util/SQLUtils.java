@@ -14,10 +14,10 @@ import java.util.Map;
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.StatementSetter;
 import com.varsql.core.sql.beans.GridColumnInfo;
-import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
@@ -125,19 +125,19 @@ public final class SQLUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static SqlSourceResultVO getSqlExecute(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias) throws SQLException {
+	public static SqlSourceResultVO getSqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias) throws SQLException {
 		return getSqlExecute(sqlExecuteInfo, conn, tmpSqlSource, gridKeyAlias, null); 
 	}
-	public static SqlSourceResultVO getSqlExecute(SqlExecuteDTO sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias, SelectExecutorHandler selectExecutorHandler) throws SQLException {
+	public static SqlSourceResultVO getSqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias, SelectExecutorHandler selectExecutorHandler) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
 
 		int maxRow = sqlExecuteInfo.getLimit();
 
-		String requid = sqlExecuteInfo.get_requid_();
+		String requid = sqlExecuteInfo.getRequid$$();
 		
-		String executeQuery = tmpSqlSource.getQuery(); 
+		String executeQuery = tmpSqlSource.getQuery();
 		
 		StatementSetter statementSetter = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getStatementSetter();
 		
@@ -148,14 +148,16 @@ public final class SQLUtils {
 				
 				JdbcUtils.setStatementFetchSize(stmt, sqlExecuteInfo.getLimit());
 				
-				SqlExecuteManager.getInstance().setStatementInfo(requid, stmt);
+				// request 실행 취소 정보 추가
+				SqlExecuteManager.getInstance().addStatementInfo(requid, stmt);
 				
 				statementSetter.setMaxRow(stmt, maxRow, tmpSqlSource);
 				hasResults = stmt.execute(executeQuery);
 			}else if(VarsqlStatementType.CALLABLE.equals(tmpSqlSource.getStatementType())){
 				CallableStatement callStatement = conn.prepareCall(executeQuery);
 
-				SqlExecuteManager.getInstance().setStatementInfo(requid, callStatement);
+				// request 실행 취소 정보 추가
+				SqlExecuteManager.getInstance().addStatementInfo(requid, callStatement);
 				
 		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
 		        statementSetter.setMaxRow(callStatement, maxRow, tmpSqlSource);
@@ -230,7 +232,8 @@ public final class SQLUtils {
 			}else{
 				PreparedStatement pstmt = conn.prepareStatement(executeQuery);
 				
-				SqlExecuteManager.getInstance().setStatementInfo(requid, pstmt);
+				// request 실행 취소 정보 추가
+				SqlExecuteManager.getInstance().addStatementInfo(requid, pstmt);
 				JdbcUtils.setStatementFetchSize(pstmt, sqlExecuteInfo.getLimit());
 				
  				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);

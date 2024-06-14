@@ -20,14 +20,17 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.AuthorityTypeImpl;
-import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.UserCommonService;
+import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.security.rememberme.RememberMeHttpServletRequestWapper;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.CommUtils;
 import com.vartech.common.utils.HttpUtils;
@@ -73,14 +76,18 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		}
 		
 		String lang = request.getParameter("lang");
-
+		Locale userLocale = null; 
 		if(!StringUtils.isBlank(lang)){
-			Locale userLocale= LocaleConstants.parseLocaleString(lang);
-			if( userLocale != null && !userLocale.equals(userInfo.getUserLocale())) {
+			userLocale= LocaleConstants.parseLocaleString(lang);
+			if( userLocale != null && !userLocale.getLanguage().equals(userInfo.getUserLocale().getLanguage())) {
 				userCommonService.changeUserLocale(lang, userInfo);
 				userInfo.setUserLocale(userLocale);
 			}
+		}else {
+			userLocale = userInfo.getUserLocale();
 		}
+		
+		VarsqlUtils.changeLocale(request, response, userLocale);
 		
 		securityLogService.addLog(userInfo, userInfo.isLoginRememberMe()?"auto" :"login", CommUtils.getClientPcInfo(request));
 
@@ -150,7 +157,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			}
 		}
 
-		request.getSession().setAttribute("var.user.screen", userScreen);
+		request.getSession().setAttribute(HttpSessionConstants.USER_SCREEN, userScreen);
 
 		return userInfo.getTopAuthority().mainPage();
 	}

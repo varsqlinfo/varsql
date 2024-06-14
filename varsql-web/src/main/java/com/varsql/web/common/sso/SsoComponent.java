@@ -7,10 +7,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.security.SsoAuthToken;
 import com.varsql.web.security.VarsqlAuthenticationProvider;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.StringUtils;
 
 @Component(ResourceConfigConstants.APP_SSO_COMPONENT)

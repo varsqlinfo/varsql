@@ -10,8 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.auth.User;
-import com.varsql.core.exception.BlockingUserException;
+import com.varsql.web.exception.BlockingUserException;
 
 @Component
 public class VarsqlAuthenticationProvider implements AuthenticationProvider {

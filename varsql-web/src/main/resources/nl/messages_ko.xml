@@ -157,6 +157,13 @@
 <entry key="msg.valid.enter.param">{item} 을(를) 입력해주세요</entry>
 <entry key="msg.valid.search">검색해주세요</entry>
 <entry key="msg.valid.search.param">{item} 을(를) 검색해주세요</entry>
+<entry key="msg.valid.string.min">{size} 글자 이상 입력해야합니다.</entry>
+<entry key="msg.valid.string.max">{size} 글자 이상 입력할 수 없습니다.</entry>
+<entry key="msg.valid.number.min">{size} 보다 커야 합니다</entry>
+<entry key="msg.valid.number.max">{size} 보다 작아야 합니다.</entry>
+<entry key="msg.valid.regexp.email">이메일이 유효하지 않습니다.</entry>
+<entry key="msg.valid.regexp.url">URL이 유효하지 않습니다.</entry>
+
 
 <!-- db -->
 <entry key="msg.db.load">db 정보를 로드중입니다.</entry>
@@ -208,5 +215,10 @@
 <entry key="msg.file.add">파일을 추가 해주세요.</entry>
 <entry key="msg.deleted.info">삭제된 정보 입니댜.</entry>
 <entry key="msg.deleted.param">삭제된 {item} 입니댜.</entry>
+
+<!-- install  -->
+<entry key="msg.setting.code.template.desc">DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성</entry>
+<entry key="msg.install.end">설치 완료 후 서버를 재기동 해주세요.</entry>
+<entry key="msg.install.complete">설치 완료</entry>
 
 </properties>

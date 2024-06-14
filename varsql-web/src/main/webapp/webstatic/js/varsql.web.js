@@ -369,6 +369,19 @@ if (typeof window != "undefined") {
 			}
 		}
 	};
+	
+	/**
+	 * set request uid
+	 */
+	function setRequestUid(data, uid){
+		
+		if(VARSQL.isUndefined(data)){
+			data = {};
+		}
+					
+		data['requid$$'] = uid;
+		return data; 
+	}
 	var _currentAjaxUid;
 	var pageReloadCheckFlag = false;
 	function fnReqCheck(data, opts) {
@@ -427,16 +440,19 @@ if (typeof window != "undefined") {
 		if (opts.disableResultCheck !== true) {
 			if (statusCode != 200) {
 				if (resultCode == 500) {	// error
-					PROGRESS_BAR_STATUS = false;
+					PROGRESS_BAR_STATUS = -1;
 					alert(data.message);
 					return false;
 				} else if (resultCode != 200) {
-					PROGRESS_BAR_STATUS = false;
+					PROGRESS_BAR_STATUS = -1;
+					var message = 'result code :' + resultCode;
+					
 					if (data.messageCode) {
-						alert('request check : ' + data.messageCode);
-					} else {
-						alert('request check : ' + data.message);
-					}
+						message += '\nerror : '+data.messageCode;
+					} 
+					message += data.message ? '\nmessage : '+data.message : '';
+					alert(message);
+					
 					return false;
 				}
 			}
@@ -454,7 +470,7 @@ if (typeof window != "undefined") {
 	 * ajax 요청
 	 */
 	var ALL_REQ_STATUS = {};
-	var PROGRESS_BAR_STATUS = false;
+	var PROGRESS_BAR_STATUS = 0; // 0= stop , 1= progress, -1= error
 	_$base.req = {
 		isConnectError: false
 
@@ -481,9 +497,17 @@ if (typeof window != "undefined") {
 			var ajaxUid = _$base.generateUUID();
 
 			_currentAjaxUid = ajaxUid;
-
-			var ajaxOpt = _$base.util.objectMerge({}, _defaultAjaxOption, option, (option.ignoreUid !== true ? { data: { _requid_: ajaxUid } } : {}));
-
+			
+			var ajaxOpt = _$base.util.objectMerge({}, _defaultAjaxOption, option);
+			
+			if(VARSQL.isString(option.data)){
+				ajaxOpt.contentType = 'application/json';
+			}else{
+				if(option.ignoreUid !==true){
+					ajaxOpt.data = setRequestUid(ajaxOpt.data, ajaxUid)
+				}
+			}
+			
 			var cancelFlag = false;
 
 			ajaxOpt.beforeSend = function(xhr) {
@@ -562,7 +586,7 @@ if (typeof window != "undefined") {
 					$(loadSelector).centerLoadingClose();
 				}
 			}).fail(function(xhr) {
-				PROGRESS_BAR_STATUS = false;
+				PROGRESS_BAR_STATUS = -1;
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
 					$(loadSelector).centerLoadingClose();
@@ -700,10 +724,16 @@ if (typeof window != "undefined") {
 			var loadSelector = (opts.loadSelector ? opts.loadSelector : 'body');
 
 			tmpParam[$$csrf_param] = $$csrf_token;
+			
+			
 
 			if (VARSQL.isUndefined(tmpParam.progressUid)) {
 				tmpParam.progressUid = VARSQL.generateUUID();
 			}
+			
+			var requid = tmpParam.progressUid; 
+			
+			setRequestUid(tmpParam, requid);
 
 			if (_downloadMode == 1) {
 				fileDownload(opts);
@@ -711,7 +741,6 @@ if (typeof window != "undefined") {
 			}
 
 			try {
-				PROGRESS_BAR_STATUS = true;
 				var ajaxOpt = {
 					type: "POST",
 					cache: false,
@@ -721,10 +750,17 @@ if (typeof window != "undefined") {
 						xhr.setRequestHeader($$csrf_header, $$csrf_token);
 
 						if ($(loadSelector).length > 0) {
-
+							
+							if (opts.enableLoadSelectorBtn) {
+								ALL_REQ_STATUS[requid] = true;
+							}
+		
 							$(loadSelector).centerLoading({
 								contentClear: false
-								, content: ''
+								, enableLoadSelectorBtn: opts.enableLoadSelectorBtn
+								, callback: function() {
+									databaseReqCancel(requid);
+								}
 							});
 						}
 					}
@@ -750,7 +786,7 @@ if (typeof window != "undefined") {
 						saveAs(blob, filename)
 					}
 					, error: function(xhr) {
-						PROGRESS_BAR_STATUS = false;
+						PROGRESS_BAR_STATUS = -1;
 						if (xhr.readyState == 4) {
 							// xhr.status , xhr.statusText check
 						} else if (xhr.readyState == 0) { // connection refused , access denied
@@ -792,11 +828,13 @@ if (typeof window != "undefined") {
 				}
 
 				$.ajax(ajaxOpt).done(function(xhr) {
+					delete ALL_REQ_STATUS[requid];
 					if (loadSelector) {
 						$(loadSelector).centerLoadingClose();
 					}
 				}).fail(function(xhr) {
-					PROGRESS_BAR_STATUS = false;
+					delete ALL_REQ_STATUS[requid];
+					PROGRESS_BAR_STATUS = -1;
 					if (xhr.status == 404) {
 						alert('File not found');
 					} else if (xhr.status == 401) {
@@ -855,10 +893,11 @@ if (typeof window != "undefined") {
 		}
 
 		, progressInfo: function(progressBarInfo) {
+			PROGRESS_BAR_STATUS = PROGRESS_BAR_STATUS == -1 ? 0 : 1; 
 			progressBar(progressBarInfo);
 		}
 		, stopProgress: function() {
-			PROGRESS_BAR_STATUS = false;
+			PROGRESS_BAR_STATUS = 0;
 		}
 	};
 
@@ -897,7 +936,8 @@ if (typeof window != "undefined") {
 	}
 
 	function progressBar(progressBarInfo) {
-		if (PROGRESS_BAR_STATUS === false) return;
+		
+		if (PROGRESS_BAR_STATUS < 1) return;
 
 		$.ajax({
 			type: "POST",
@@ -915,12 +955,14 @@ if (typeof window != "undefined") {
 			, success: function(resData, status, xhr) {
 
 				if (progressBarInfo.type == 'remove') {
+					PROGRESS_BAR_STATUS =0;
 					return;
 				}
 
 				var item = resData.item;
 
 				if (progressBarInfo.callback(resData) === false) {
+					PROGRESS_BAR_STATUS =0;
 					return;
 				}
 
@@ -943,14 +985,12 @@ if (typeof window != "undefined") {
 		reqUid = reqUid || _currentAjaxUid;
 
 		if (!_$base.isBlank(reqUid) && ($varsqlConfig || {}).conuid) {
+			var param = setRequestUid({ conuid: ($varsqlConfig || {}).conuid}, reqUid)
 
 			_$base.req.ajax({
 				url: { type: VARSQL.uri.database, url: '/reqCancel' }
 				, ignoreUid: true
-				, data: {
-					_requid_: reqUid
-					, conuid: ($varsqlConfig || {}).conuid
-				}
+				, data: param
 				, success: function(resData) {
 				}
 			})
@@ -984,13 +1024,31 @@ if (typeof window != "undefined") {
 	}
 
 	// file upload size
-	_$base.getFileMaxUploadSize = function() {
-		return $varsqlConfig.file.maxUploadSize || 1000;
+	_$base.getFileMaxUploadSize = function(type) {
+		if($varsqlConfig.file.maxUploadSize == -1){
+			return -1; 
+		}
+		
+		var calcSize =1; 
+		if(type =='M'){
+			calcSize = 1024*1024;
+		}
+		
+		return ($varsqlConfig.file.sizePerFile || 10485760) / calcSize
 	}
 
 	// file unit max size
 	_$base.getFileSizePerFile = function() {
-		return $varsqlConfig.file.sizePerFile || 1000;
+		if($varsqlConfig.file.maxUploadSize == -1){
+			return -1; 
+		}
+		
+		var calcSize =1; 
+		if(type =='M'){
+			calcSize = 1024*1024;
+		}
+		
+		return ($varsqlConfig.file.sizePerFile || 5242880) / calcSize
 	}
 
 	_$base.socket = {
@@ -1142,7 +1200,7 @@ if (typeof window != "undefined") {
 
 		loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="' + config.loadingImg + '"/> ';
 
-		loadStr += ' <div class="center-loading-centent" style="padding: 5px;">' + (config.content || '') + '</div>';
+		loadStr += ' <div class="center-loading-centent" style="background: #acacac;color: #000;font-size: 12pt;padding: 0px 10px;">' + (config.content || '') + '</div>';
 
 		if (config.enableLoadSelectorBtn === true) {
 			loadStr += '<div style="height: 35px;line-height: 35px;"><a href="javascript:;" class="center-loading-btn _loadSelectorCancelBtn">Cancel</a></div>';
@@ -1185,7 +1243,7 @@ if (typeof window != "undefined") {
 
 	jQuery.fn.centerLoadingClose = function(options) {
 
-		this.find('.centerLoading').remove();
+		this.find('>.centerLoading').remove();
 		var posVal = (this.attr('var-css-key') || '');
 		if (posVal.indexOf('relative') > -1) {
 			this.css('position', '');
@@ -1867,16 +1925,17 @@ if (typeof window != "undefined") {
 		 * number format
 		 */
 		, fileDisplaySize: function(fileSize) {
-			if (fileSize <= 1) {
+			var k = 1024.0;
+			if (fileSize < k) {
 				return fileSize + " bytes";
 			}
 
-			var units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-			var digitGroups = Math.floor(Math.log(fileSize) / Math.log(1024));
-			if (digitGroups == 0) {
-				return fileSize + ' ' + units[digitGroups];
-			}
-			return (fileSize / Math.pow(1024, digitGroups)).toFixed(2) + " " + units[digitGroups];
+			var units = [ "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+			var i = Math.floor(Math.log(fileSize) / Math.log(k));
+			var unit = k ** i;
+			var reval = (fileSize / unit); 
+			
+			return (reval != Math.ceil(reval) ? reval.toFixed(2) : reval) + " " + units[i-1];
 		}
 	}
 

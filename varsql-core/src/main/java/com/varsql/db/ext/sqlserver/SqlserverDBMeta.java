@@ -1,10 +1,6 @@
 package com.varsql.db.ext.sqlserver;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +8,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
-import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
@@ -57,16 +51,22 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("dbSystemView" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("dbSystemView", dataParamInfo);
+		}
 	}
 	
 	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException{
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("schemaList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("schemaList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List<TableInfo> getTables(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("tableList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("tableList", dataParamInfo);
+		}
 	}
 
 	@Override
@@ -77,7 +77,9 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<TableInfo> getViews(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("viewList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("viewList", dataParamInfo);
+		}
 	}
 	@Override
 	public List<TableInfo> getViewMetadata(DatabaseParamInfo dataParamInfo,String... viewNames) throws Exception	{
@@ -86,95 +88,111 @@ public class SqlserverDBMeta extends AbstractDBMeta{
 
 	@Override
 	public List<ObjectInfo> getProcedures(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("procedureList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("procedureList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List<ObjectInfo> getProcedureMetadata(DatabaseParamInfo dataParamInfo, String... procedureNames) throws Exception {
 		setObjectNameList(dataParamInfo, procedureNames);
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("objectMetadataList", dataParamInfo);
+		}
 	}
-
 
 	@Override
 	public List<ObjectInfo> getFunctions(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("functionList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("functionList", dataParamInfo);
+		}
 	}
+	
 	@Override
 	public List<ObjectInfo> getFunctionMetadata(DatabaseParamInfo dataParamInfo, String... functionNames) throws Exception {
 		setObjectNameList(dataParamInfo, functionNames);
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("objectMetadataList", dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("objectMetadataList", dataParamInfo);
+		}
 	}
-
 
 	@Override
 	public List getIndexs(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("indexList", dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("indexList", dataParamInfo);
+		}
 	}
+	
 	@Override
 	public List<IndexInfo> getIndexMetadata(DatabaseParamInfo dataParamInfo, String... indexNames) throws Exception {
 
 		IndexInfoHandler handler = new IndexInfoHandler(dbInstanceFactory.getDataTypeImpl());
 
 		setObjectNameList(dataParamInfo, indexNames);
-
-		SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).select("indexMetadata" ,dataParamInfo, handler);
+		
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			sqlSession.select("indexMetadata" ,dataParamInfo, handler);
+		}
 
 		return handler.getIndexInfoList();
 	}
 
 	@Override
 	public List getTriggers(DatabaseParamInfo dataParamInfo){
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("triggerList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List getTriggerMetadata(DatabaseParamInfo dataParamInfo, String... triggerNames) throws Exception {
 		setObjectNameList(dataParamInfo, triggerNames);
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("triggerMetadata" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("triggerMetadata", dataParamInfo);
+		}
 	}
 
 	private List<TableInfo> tableAndColumnsInfo (DatabaseParamInfo dataParamInfo, String queryId, String... names){
 
 		setObjectNameList(dataParamInfo, names);
-
-		SqlSession sqlSession = SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid());
-
 		logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
-
+		
 		TableInfoHandler tableInfoHandler;
 
-		if("viewMetadata".equals(queryId)){
-			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
-		}else{
-			tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList", dataParamInfo));
-
-			if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
-				dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
+		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
+			if("viewMetadata".equals(queryId)){
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
+			}else{
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList", dataParamInfo));
+				
+				if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
+					dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
+				}
 			}
+			
+			sqlSession.select(queryId, dataParamInfo, tableInfoHandler);
 		}
-
-		sqlSession.select(queryId, dataParamInfo, tableInfoHandler);
 
 		return tableInfoHandler.getTableInfoList();
 	}
 
 	@Override
 	public List<ObjectInfo> getSequences(DatabaseParamInfo dataParamInfo) throws Exception {
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceList" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("sequenceList", dataParamInfo);
+		}
 	}
 
 	@Override
 	public List getSequenceMetadata(DatabaseParamInfo dataParamInfo, String... sequenceNames) throws Exception {
 		setObjectNameList(dataParamInfo, sequenceNames);
-		return SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("sequenceMetadata" ,dataParamInfo);
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("sequenceMetadata", dataParamInfo);
+		}
 	}
 
 	@Override
 	public <T>T getExtensionMetadata(DatabaseParamInfo dataParamInfo, String serviceName, Map param) throws Exception {
-		if("package".equalsIgnoreCase(serviceName)){
-			return (T)SQLManager.getInstance().sqlSessionTemplate(dataParamInfo.getVconnid()).selectList("packageList" ,dataParamInfo);
-		}
 
 		return null;
 	}

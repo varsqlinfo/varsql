@@ -11,7 +11,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -42,7 +41,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getByte(columnIndex);
 			}
 		}).build()
@@ -54,7 +53,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getShort(columnIndex);
 			}
 		}).build()
@@ -71,7 +70,7 @@ public enum DefaultDataType implements DataType {
 				
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getInt(columnIndex);
 			}
 		}).build()
@@ -89,7 +88,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getLong(columnIndex);
 			}
 		}).build()
@@ -105,7 +104,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getFloat(columnIndex);
 			}
 		}).build()
@@ -121,7 +120,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getFloat(columnIndex);
 			}
 		}).build()
@@ -137,7 +136,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getDouble(columnIndex);
 			}
 		}).build()
@@ -153,7 +152,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Object reval = rs.getObject(columnIndex);
 				
 				if(reval ==null) {
@@ -194,7 +193,7 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				BigDecimal bd = rs.getBigDecimal(columnIndex); 
 				
 				if(bd == null || bd == BigDecimal.ZERO) {
@@ -221,7 +220,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -233,7 +232,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -245,7 +244,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getString(columnIndex);
 			}
 		}).build()
@@ -263,12 +262,12 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Date val = rs.getDate(columnIndex);
 				
 				if(isNull(val)) return null;
 				
-				if(exportFlag) {
+				if(!isFormatValue) {
 					return val.getTime();
 				}
 				
@@ -301,12 +300,12 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Time val = rs.getTime(columnIndex);
 				
 				if(isNull(val)) return null;
 				
-				if(exportFlag) {
+				if(!isFormatValue) {
 					return val.getTime();
 				}
 				
@@ -337,12 +336,12 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Timestamp val = rs.getTimestamp(columnIndex);
 				
 				if(isNull(val)) return null;
 				
-				if(exportFlag) {
+				if(!isFormatValue) {
 					return val.getTime();
 				}
 				
@@ -359,7 +358,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				if(isNull(rs.getBinaryStream(columnIndex))) return null;
 				
 				return dataType.getTypeName() + " BINARY";
@@ -376,7 +375,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -389,7 +388,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -401,7 +400,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Array reval = rs.getArray(columnIndex);
 				return reval==null ? null : reval.getArray();
 			}
@@ -414,7 +413,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				if(isNull(rs.getBlob(columnIndex))) return null;
 				
 				return dataType.getTypeName();
@@ -430,7 +429,7 @@ public enum DefaultDataType implements DataType {
 		}).resultSetHandler(new ResultSetHandler() {
 			
 			@Override
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				try(Reader val = rs.getCharacterStream(columnIndex);){
 					
 					if(isNull(val)) return null;
@@ -466,7 +465,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getRef(columnIndex);
 			}
 		}).build()
@@ -479,7 +478,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getBoolean(columnIndex);
 			}
 		}).build()
@@ -491,7 +490,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getRowId(columnIndex);
 			}
 		}).build()
@@ -503,7 +502,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -515,7 +514,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -527,7 +526,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getNString(columnIndex);
 			}
 		}).build()
@@ -540,7 +539,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				SQLXML val  = rs.getSQLXML(columnIndex);
 				
 				if(isNull(val)) return null;
@@ -555,7 +554,7 @@ public enum DefaultDataType implements DataType {
 				pstmt.setObject(parameterIndex, value);
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				return rs.getObject(columnIndex);
 			}
 		}).build()
@@ -575,12 +574,12 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Time val = rs.getTime(columnIndex);
 				
 				if(isNull(val)) return null;
 				
-				if(exportFlag) {
+				if(!isFormatValue) {
 					return val.getTime();
 				}
 				
@@ -601,12 +600,12 @@ public enum DefaultDataType implements DataType {
 				}
 			}
 		}).resultSetHandler(new ResultSetHandler() {
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean exportFlag) throws SQLException {
+			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
 				Timestamp val = rs.getTimestamp(columnIndex);
 				
 				if(isNull(val)) return null;
 				
-				if(exportFlag) {
+				if(!isFormatValue) {
 					return val.getTime();
 				}
 				

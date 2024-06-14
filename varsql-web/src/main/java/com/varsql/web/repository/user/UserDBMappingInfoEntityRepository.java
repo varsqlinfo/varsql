@@ -14,7 +14,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.varsql.core.auth.AuthorityTypeImpl;
-import com.varsql.core.auth.User;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
@@ -26,6 +25,7 @@ import com.varsql.web.model.entity.db.QDBGroupMappingUserEntity;
 import com.varsql.web.model.entity.db.QDBManagerEntity;
 import com.varsql.web.model.entity.db.QDBTypeDriverProviderEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
+import com.varsql.web.security.User;
 import com.varsql.web.util.ConvertUtils;
 
 import lombok.Getter;

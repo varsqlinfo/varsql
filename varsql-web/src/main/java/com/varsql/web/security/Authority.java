@@ -1,8 +1,10 @@
-package com.varsql.core.auth;
+package com.varsql.web.security;
 
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+
+import com.varsql.core.auth.Privilege;
 
 /**
  * -----------------------------------------------------------------------------

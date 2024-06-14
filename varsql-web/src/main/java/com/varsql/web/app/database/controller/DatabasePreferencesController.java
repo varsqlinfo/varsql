@@ -18,7 +18,7 @@ import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -146,7 +146,7 @@ public class DatabasePreferencesController extends AbstractController  {
 
 		String prefVal = preferencesServiceImpl.selectPreferencesInfo(preferencesInfo);
 
-		model.addAttribute(VarsqlParamConstants.SETTING_INFO, prefVal == null? PreferencesDataFactory.getInstance().getDefaultValue(PreferencesConstants.PREFKEY.CONTEXTMENU_SERVICEOBJECT.key()) :prefVal);
+		model.addAttribute(HttpParamConstants.SETTING_INFO, prefVal == null? PreferencesDataFactory.getInstance().getDefaultValue(PreferencesConstants.PREFKEY.CONTEXTMENU_SERVICEOBJECT.key()) :prefVal);
 		return getModelAndView("/contextMenuSetting", VIEW_PAGE.DATABASE_PREFERENCES, model);
 	}
 

@@ -95,6 +95,9 @@
 <entry key="user.prefernces.menu.fileimportlist">가져오기 이력</entry>
 <entry key="user.prefernces.menu.fileexportlist">다운로드 이력</entry>
 
+<!-- setting menu -->
+<entry key="setting.menu.template.gen">코드 생성 템플릿</entry>
+
 
 
 </properties>

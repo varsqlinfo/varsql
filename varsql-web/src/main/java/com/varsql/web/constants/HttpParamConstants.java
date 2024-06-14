@@ -1,6 +1,6 @@
 package com.varsql.web.constants;
 
-public interface VarsqlParamConstants {
+public interface HttpParamConstants {
 
 	final public String VCONNID ="vconnid";
 	final public String CONN_UUID ="conuid";
@@ -46,4 +46,6 @@ public interface VarsqlParamConstants {
 
 	final public String BOARD_CODE = "boardCode";
 	final public String DOC_ID = "docId";
+	
+	final public String LANG_LOCALE = "locale";
 }

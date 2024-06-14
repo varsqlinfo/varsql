@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
+import com.vartech.common.io.Resource;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
@@ -26,7 +26,7 @@ import com.vartech.common.utils.VartechUtils;
 public class PreferencesDataFactory{
 	private final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-	private final String TEMPLATE_PACKAGE= "classpath*:preferences/*/*.xml";
+	private final String TEMPLATE_PACKAGE= "classpath:preferences/*/*.xml";
 	private final String DEFAULT_KEY_NAME= "key";
 	
 	
@@ -97,7 +97,7 @@ public class PreferencesDataFactory{
 		Resource[] resources = ResourceUtils.getResources(TEMPLATE_PACKAGE);
 		
 		for (Resource resource: resources){
-			PREFERENCES_FILE prefInfo = PREFERENCES_FILE.get(resource.getFilename());
+			PREFERENCES_FILE prefInfo = PREFERENCES_FILE.get(resource.getFileName());
 			
 			String xml = ResourceUtils.getResourceString(resource);
 			
@@ -109,7 +109,7 @@ public class PreferencesDataFactory{
 				key=(String) VartechReflectionUtils.getProperty(xmlConfigObj, DEFAULT_KEY_NAME);
 				
 				if(key == null) {
-					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
+					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFileName() ,resource.getFile().getPath() , xml);
 					continue;
 				}
 				
@@ -118,7 +118,7 @@ public class PreferencesDataFactory{
 				
 				ObjectNode node = (ObjectNode)VartechUtils.xmlToJsonNode(xml);
 				if(node.get(DEFAULT_KEY_NAME) == null) {
-					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFilename() ,resource.getFile().getPath() , xml);
+					logger.debug("key empty resource name : {} , path : {} , xml : {}",resource.getFileName() ,resource.getFile().getPath() , xml);
 					continue;
 				}
 				

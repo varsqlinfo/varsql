@@ -11,10 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.auth.Authority;
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.AuthorityTypeImpl;
-import com.varsql.core.auth.User;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.user.UserEntity;

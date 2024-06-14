@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.app.manager.service.QnaServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VarsqlParamConstants;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.user.QnARequesetDTO;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -59,8 +59,8 @@ public class QnaController extends AbstractController {
 	public @ResponseBody ResponseResult qnaMgmtList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
-		searchParameter.addCustomParam(VarsqlParamConstants.ROLE, SecurityUtil.loginRole(req));
-		searchParameter.addCustomParam(VarsqlParamConstants.UID, SecurityUtil.userViewId(req));
+		searchParameter.addCustomParam(HttpParamConstants.ROLE, SecurityUtil.loginRole(req));
+		searchParameter.addCustomParam(HttpParamConstants.UID, SecurityUtil.userViewId(req));
 
 		return qnaServiceImpl.selectQnaMgmtList(searchParameter);
 	}

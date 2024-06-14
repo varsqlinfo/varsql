@@ -11,12 +11,12 @@ import javax.sql.DataSource;
 
 
 /**
- * simple datasource
+ * 단일 커넥션 드라이버 데이터 소스 
  * 
  * @author ytkim
  *
  */
-public class SimpleDataSource implements DataSource {
+public class SingleDriverDataSource implements DataSource {
 	
 	private String url;
 
@@ -32,19 +32,19 @@ public class SimpleDataSource implements DataSource {
 
 	private Driver driver;
 
-	public SimpleDataSource(Driver driver, String url) {
+	public SingleDriverDataSource(Driver driver, String url) {
 		setDriver(driver);
 		setUrl(url);
 	}
 
-	public SimpleDataSource(Driver driver, String url, String username, String password) {
+	public SingleDriverDataSource(Driver driver, String url, String username, String password) {
 		setDriver(driver);
 		setUrl(url);
 		setUsername(username);
 		setPassword(password);
 	}
 
-	public SimpleDataSource(Driver driver, String url, Properties conProps) {
+	public SingleDriverDataSource(Driver driver, String url, Properties conProps) {
 		setDriver(driver);
 		setUrl(url);
 		setConnectionProperties(conProps);

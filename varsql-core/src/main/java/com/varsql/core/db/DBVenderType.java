@@ -9,32 +9,34 @@ package com.varsql.core.db;
  * @변경이력 :
  */
 public enum DBVenderType {
-	MYSQL("mysql")
-	,DB2("db2")
-	,ORACLE("oracle")
-	,SQLSERVER("sqlserver", false)
-	,MARIADB("mariadb")
-	,DERBY("derby")
-	,HIVE("hive")
-	,HSQLDB("hsqldb")
-	,POSTGRESQL("postgresql")
-	,INGRES("ingres")
-	,H2("h2")
-	,TIBERO("tibero")
-	,CUBRID("cubrid")
-	,SYBASE("sybase")
-	,OTHER("other");
+	MYSQL("mysql", "com.mysql.jdbc.Driver"), 
+	DB2("db2", "com.ibm.db2.jcc.DB2Driver"),
+	ORACLE("oracle", "oracle.jdbc.driver.OracleDriver"),
+	SQLSERVER("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver", false),
+	MARIADB("mariadb", "org.mariadb.jdbc.Driver"), 
+	DERBY("derby", "org.apache.derby.jdbc.ClientDriver"),
+	HSQLDB("hsqldb", "org.hsqldb.jdbcDriver"), 
+	POSTGRESQL("postgresql", "org.postgresql.Driver"),
+	H2("h2", "org.h2.Driver"), 
+	TIBERO("tibero", "com.tmax.tibero.jdbc.TbDriver"),
+	CUBRID("cubrid", "cubrid.jdbc.driver.CUBRIDDriver"), 
+	SYBASE("sybase", "com.sybase.jdbc4.jdbc.SybDriver"),
+	OTHER("other", null);
 
 	private String dbVenderName;
 	
+	private String driverClass;
+	
 	private boolean useDatabaseName;
 
-	private DBVenderType(String db){
-		this(db, false);
+	
+	private DBVenderType(String db, String driverClass){
+		this(db, driverClass, false);
 	}
 	
-	private DBVenderType(String db, boolean useDatabaseName){
+	private DBVenderType(String db, String driverClass, boolean useDatabaseName){
 		this.dbVenderName =db;
+		this.driverClass =driverClass;
 		this.useDatabaseName =useDatabaseName;
 	}
 
@@ -71,5 +73,9 @@ public enum DBVenderType {
 
 	public boolean isUseDatabaseName() {
 		return useDatabaseName;
+	}
+
+	public String getDriverClass() {
+		return driverClass;
 	}
 }

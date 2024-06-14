@@ -6,7 +6,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.varsql.core.auth.User;
+import com.varsql.web.security.User;
 
 /**
  * -----------------------------------------------------------------------------

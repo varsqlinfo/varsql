@@ -11,29 +11,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
-import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.SqlSessionUtils;
-import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.vartech.common.io.Resource;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.db.datasource.SimpleDataSource;
+import com.varsql.core.db.datasource.SingleConnectionDataSource;
+import com.varsql.core.db.datasource.SingleDriverDataSource;
 import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.handler.type.LONGVARCHARHandler;
 import com.varsql.core.db.valueobject.CommentInfo;
 import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
+import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.app.beans.DataMap;
@@ -53,7 +57,6 @@ public final class SQLManager {
 
 	final private static String LOG_PREFIX = "com.varsql.core.varsql_query";
 
-	private Map<String, SqlSessionTemplate> sqlSessionMap = new ConcurrentHashMap<String, SqlSessionTemplate>();
 	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
 
 	private static class MybatisConfigHolder {
@@ -66,49 +69,32 @@ public final class SQLManager {
 
 	private SQLManager() {}
 
-	public SqlSessionTemplate sqlSessionTemplate(String connid) throws ConnectionFactoryException {
+	public SqlSession getSqlSession(String connid) throws ConnectionFactoryException {
 		if(ConnectionFactory.getInstance().isShutdown(connid)) {
 			return null;
 		}
 
-		if (!sqlSessionMap.containsKey(connid)) {
-			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
-		}
-
-		return sqlSessionMap.get(connid);
-	}
-
-	public SqlSession openSession(String connid) throws ConnectionFactoryException {
-		if(ConnectionFactory.getInstance().isShutdown(connid)) {
-			return null;
-		}
-		
 		if (!sqlSessionFactoryMap.containsKey(connid)) {
 			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
 		}
 
-		return SqlSessionUtils.getSqlSession(sqlSessionFactoryMap.get(connid));
+		return sqlSessionFactoryMap.get(connid).openSession();
 	}
 
-	public void closeSession(String connid, SqlSession session) throws ConnectionFactoryException {
-		SqlSessionUtils.closeSqlSession(session, sqlSessionFactoryMap.get(connid));
-	}
-
-	public void setSQLMapper(ConnectionInfo connInfo , Object obj){
+	public synchronized void setSQLMapper(ConnectionInfo connInfo , Object obj){
 		try{
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
 				logger.error("SQLManager setSQLMapper access denied object {}", obj );
 				throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_POOL,"SQLManager setSQLMapper access denied object "+obj);
 			}
 
-			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo).getObject();
+			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo);
 
 			try(Connection connChk = sqlSessionFactory.openSession().getConnection();){
 				JdbcUtils.close(connChk);
 			}
 
 			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
-			sqlSessionMap.put(connInfo.getConnid() , new SqlSessionTemplate(sqlSessionFactory));
 		} catch (Exception e) {
 			logger.error("connection info :  {}, error message : {} ", VartechReflectionUtils.reflectionToString(connInfo) , e.getMessage());
 			//logger.error("SQLManager :{} ", e.getMessage() , e);
@@ -126,20 +112,38 @@ public final class SQLManager {
 	 * @param connInfo
 	 * @return
 	 */
-	private SqlSessionFactoryBean sqlSessionFactory(ConnectionInfo connInfo) throws Exception {
-		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-		sqlSessionFactory.setDataSource(dataSource(connInfo));
-		sqlSessionFactory.setTransactionFactory(new SpringManagedTransactionFactory());
+	private SqlSessionFactory sqlSessionFactory(ConnectionInfo connInfo) throws Exception {
+		
+		Environment environment = new Environment(connInfo.getConnid(), new JdbcTransactionFactory(), dataSource(connInfo));
 
-		sqlSessionFactory.setConfiguration(getConfiguration());
+		Configuration configuration = getConfiguration(environment);
 
 		DBVersionInfo dbVersionInfo=connInfo.getVersion();
 		
-		if(dbVersionInfo.isDefultFlag() || dbVersionInfo.getMajor()==-1) {
-			sqlSessionFactory.setMapperLocations(ResourceUtils.getResources(String.format("classpath*:db/ext/%sMapper.xml",connInfo.getType())));
+		Resource[] resources = null; 
+		
+		if(dbVersionInfo == null|| dbVersionInfo.isDefultFlag() || dbVersionInfo.getMajor()==-1) {
+			resources = ResourceUtils.getResources(String.format("classpath:db/ext/%sMapper.xml",connInfo.getType()));
 		}else {
-			sqlSessionFactory.setMapperLocations(ResourceUtils.getResources(String.format("classpath*:db/ext/%sMapper-%s.xml",connInfo.getType(), dbVersionInfo.getVersion())));
+			resources= ResourceUtils.getResources(String.format("classpath:db/ext/%sMapper-%s.xml",connInfo.getType(), dbVersionInfo.getVersion()));
 		}
+
+		for (Resource resource : resources) {
+			if (resource == null || resource.getInputStream() == null) {
+				continue;
+			}
+
+			try {
+				XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(resource.getInputStream(), configuration,	resource.toString(), configuration.getSqlFragments());
+				xmlMapperBuilder.parse();
+			} catch (Exception e) {
+				logger.error("mapper load fail : {}", resource.getFile().getAbsolutePath());
+			} finally {
+				ErrorContext.instance().reset();
+			}
+		}
+
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 		
 		return sqlSessionFactory;
 	}
@@ -159,21 +163,31 @@ public final class SQLManager {
 	 * @throws InstantiationException
 	 */
 	private DataSource dataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+		Driver dbDriver = null;
 		
-		Driver dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
-	    if (dbDriver != null) {
-	      logger.info("jdbc driver load success driver class : {},majorVersion:{}, minorVersion: {}", dbDriver, dbDriver.getMajorVersion(), dbDriver.getMinorVersion());
-	    } else {
-	      logger.info("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
-	      throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
-	    } 
-	    
-		if(!connInfo.isEnableConnectionPool()) {
-			return new SimpleDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+		if (connInfo.getJdbcDriverInfo() != null) {
+			dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
+			if (dbDriver != null) {
+				logger.info("jdbc driver load success driver class : {},majorVersion:{}, minorVersion: {}", dbDriver, dbDriver.getMajorVersion(), dbDriver.getMinorVersion());
+			} else {
+				logger.error("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
+							
+				if(connInfo.getJdbcDriverInfo().getDriverFiles() != null  && connInfo.getJdbcDriverInfo().getDriverFiles().size() > 0) {
+					throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
+				}
+			}
 		}
 		
+		if(!connInfo.isEnableConnectionPool()) {
+	    	if(dbDriver != null) {
+	    		return new SingleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+	    	}else {
+				return new SingleConnectionDataSource(connInfo.getJdbcDriverInfo().getDriverClass(), connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+	    	}
+		}
+			
 		BasicDataSource dataSource = new BasicDataSource();
-
+		
 		dataSource.setUrl(connInfo.getUrl());
 		dataSource.setUsername(connInfo.getUsername());
 		dataSource.setPassword(connInfo.getPassword());
@@ -196,13 +210,19 @@ public final class SQLManager {
 		dataSource.setNumTestsPerEvictionRun(5);
 		dataSource.setMinEvictableIdleTimeMillis(-1);
 		dataSource.setPoolPreparedStatements(true);
-		dataSource.setDriver(dbDriver);
+		
+		if(dbDriver != null) {
+			dataSource.setDriver(dbDriver);
+		}else {
+			dataSource.setDriverClassName(connInfo.getJdbcDriverInfo().getDriverClass());
+		}
 
 		return dataSource;
 	}
 
 	/**
 	 *
+	 * @param environment 
 	 * @Method Name  : getConfiguration
 	 * @Method 설명 : mybatis config
 	 * @작성일   : 2020. 10. 20.
@@ -210,8 +230,8 @@ public final class SQLManager {
 	 * @변경이력  :
 	 * @return
 	 */
-	private Configuration getConfiguration() {
-		org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+	private Configuration getConfiguration(Environment environment) {
+		Configuration configuration = new Configuration(environment);
 		configuration.setCallSettersOnNulls(true);
 		configuration.setJdbcTypeForNull(JdbcType.NULL);
 		configuration.setCacheEnabled(true);
@@ -250,7 +270,6 @@ public final class SQLManager {
 				}
 				
 				sqlSessionFactoryMap.remove(connid);
-				sqlSessionMap.remove(connid);
 			} catch (SQLException e) {
 				throw new ConnectionException("mybatis datasource close connid:"+connid+", exception : "+e.getMessage() , e);
 			}

@@ -195,7 +195,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
      	.and() //log out
 	     	.logout()
 	        .logoutUrl("/logout")
-	        .logoutSuccessUrl("/login")
 	        .addLogoutHandler(varsqlAuthenticationLogoutHandler)
 	        .logoutSuccessHandler(varsqlAuthenticationLogoutSuccessHandler)
 	        .invalidateHttpSession(true)

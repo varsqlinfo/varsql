@@ -13,6 +13,10 @@ package com.varsql.web.constants;
 *-----------------------------------------------------------------------------
  */
 public interface HttpSessionConstants {
+	
+	public String USER_SCREEN = "varsql.user.screen";
+	public String USER_LOCALE = "varsql.current_user.locale";
+	
 	public static String progressKey(String progressUid) {
 		return progressUid+"_progress";
 	}

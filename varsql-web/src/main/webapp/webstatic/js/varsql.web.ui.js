@@ -519,7 +519,8 @@ FileComponent.prototype = {
 			thumbnailHeight: 50,
 			parallelUploads: 20,
 			uploadMultiple : true,
-			maxFilesize: VARSQL.getFileMaxUploadSize(),
+			timeout: 3600000,
+			maxFilesize: VARSQL.getFileMaxUploadSize('M'),
 			headers : VARSQL.req.getCsrf(),
 			autoQueue: false,
 			previewTemplate :  opt.previewTemplate||strHtm.join(''),
@@ -580,6 +581,12 @@ FileComponent.prototype = {
 				}
 			})
 		}
+		
+		dropzone.on("sending", function(file, xhr, formData) {
+	        xhr.ontimeout = function (){
+				VARSQLUI.toast.open('File upload timeout');
+			}
+		});
 
 		var isDuplCallback = $.isFunction(opt.callback.duplicateFile);
 		dropzone.on("addedfile", function(file) {
@@ -587,7 +594,17 @@ FileComponent.prototype = {
 
 			var fileName = file.name;
 			
-			if(file.status == Dropzone.ADDED && !VARSQL.isBlank(_this.accept)){
+			if (file.size > VARSQL.getFileMaxUploadSize()) {
+				this.removeFile(file);
+				
+				VARSQLUI.toast.open({
+					text:'add file size : '+ VARSQL.util.fileDisplaySize(file.size) + '<br>'+'max upload file size : '+ VARSQL.util.fileDisplaySize(VARSQL.getFileMaxUploadSize())
+					, hideAfter:3000
+				})
+                return '';
+            }
+			
+			if(file.status == Dropzone.ADDED && !VARSQL.isBlank(opt.accept)){
 				
 				var lastIdx = fileName.lastIndexOf('.');
 				var ext = lastIdx > -1 ? fileName.substring(lastIdx+1) : fileName;
@@ -643,6 +660,7 @@ FileComponent.prototype = {
 			});
 
 			dropzone.on('error', function(file, resp){
+				console.log(resp)
 				opt.callback.fail(file);
 			});
 		}

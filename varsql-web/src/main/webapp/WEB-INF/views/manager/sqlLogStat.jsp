@@ -194,7 +194,7 @@ VarsqlAPP.vueServiceBean( {
 			        }
 			    }
 				,widget : [
-					{ type : "title", text : "Query 구문별" },
+					{ type : "title", text : "Query Type" },
 			        { type : "tooltip", orient: "center" },
 				]
 			});

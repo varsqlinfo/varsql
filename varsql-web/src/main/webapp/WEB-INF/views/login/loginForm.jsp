@@ -136,10 +136,11 @@ $(document).ready(function (){
 				</label>
 				<div class="pull-right">
 					<varsql:supportLocale var="localeInfo"/>
+					<c:set var="requestLocaleCode" value="${varsqlfn:requestLocaleCode(pageContext.request) }"/>
 					<select class="input-sm" id="lang" name="lang" style="padding:3px;" >
 	            		<option value=""><spring:message code="language.select" text="언어선택"/></option>
 	            		<c:forEach var="item" items="${localeInfo}" begin="0" varStatus="status">
-							<option value="${item.locale}" ${item.locale == detailInfo.lang ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
+							<option value="${item.localeCode}" ${item.localeCode == requestLocaleCode ? 'selected="selected"' : '' }><spring:message code="${item.i18n}"/></option>
 						</c:forEach>
 	            	</select>
 				</div>

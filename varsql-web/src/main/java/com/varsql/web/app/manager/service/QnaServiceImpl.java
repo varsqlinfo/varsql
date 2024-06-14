@@ -3,13 +3,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.model.entity.app.QnAEntity;
 import com.varsql.web.repository.app.QnAEntityRepository;
 import com.varsql.web.repository.spec.QnASpec;
 import com.varsql.web.util.DefaultValueUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

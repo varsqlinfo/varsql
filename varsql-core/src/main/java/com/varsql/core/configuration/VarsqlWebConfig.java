@@ -1,10 +1,10 @@
 package com.varsql.core.configuration;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.beans.web.PageBean;
@@ -12,6 +12,8 @@ import com.varsql.core.configuration.beans.web.SsoBean;
 import com.varsql.core.configuration.beans.web.VarsqlWebConfigBean;
 import com.varsql.core.exception.ConfigurationException;
 import com.varsql.core.exception.ConfigurationLoadException;
+import com.vartech.common.io.Resource;
+import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -62,23 +64,24 @@ public class VarsqlWebConfig{
 	 */
 	private void initConfig() throws IOException {
 
-		logger.debug("default preferences template file path : {} ", WEB_CONFIG_FILE);
+		logger.debug("VarsqlWebConfig file path : {} ", WEB_CONFIG_FILE);
+		
+		Resource resource = ResourceUtils.getInstallPathResource(WEB_CONFIG_FILE);
 
-		Resource resources = ResourceUtils.getInstallPathResource(WEB_CONFIG_FILE);
-
-		if(resources== null || !resources.exists()) {
-			throw new ConfigurationLoadException(String.format("web config file not found : %s" ,WEB_CONFIG_FILE));
+		if(resource== null || !resource.exists()) {
+			throw new ConfigurationLoadException(String.format("web config file not found : %s", WEB_CONFIG_FILE));
 		}
 
-		String xml = ResourceUtils.getResourceString(resources);
-
-		webConfigBean = VartechUtils.xmlToBean(xml, VarsqlWebConfigBean.class);
-
-		logger.debug("web config info");
-		logger.debug("sso config : {}" , webConfigBean.getSso());
-		logger.debug("web page config : {}" , webConfigBean.getPage());
-		logger.debug("web config info");
-
+		try(InputStream is  = resource.getInputStream()){
+			String xml = IOUtils.toString(is);
+			
+			webConfigBean = VartechUtils.xmlToBean(xml, VarsqlWebConfigBean.class);
+			
+			logger.debug("web config info");
+			logger.debug("sso config : {}" , webConfigBean.getSso());
+			logger.debug("web page config : {}" , webConfigBean.getPage());
+			logger.debug("web config info");
+		}
 	}
 
 	public SsoBean getSsoConfig() {

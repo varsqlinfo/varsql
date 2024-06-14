@@ -12,6 +12,9 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -68,15 +71,26 @@ public class QuartzConfig {
 	
 	@Bean
 	public Properties quartzProperties() {
-		PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-		propertiesFactoryBean.setLocation(com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig());
-
+		
 		Properties properties = null;
 		try {
+			
+			logger.debug("quartz property : {}" , com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig());
+			
+			PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+			
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
+			Resource resource = resolver.getResource(com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig());
+			
+			propertiesFactoryBean.setLocation(resource);
 			propertiesFactoryBean.afterPropertiesSet();
 			properties = propertiesFactoryBean.getObject();
+			
+			
+			//path 수정 할것. 
+			
 		} catch (Exception e) {
-			logger.warn("Cannot load quartz config path : {} , msg: {} " , com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig(), e.getMessage(), e);
+			logger.warn("Cannot load quartz config path  msg: {} ", e.getMessage(), e);
 		}
 		return properties;
 	}

@@ -9,10 +9,10 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.web.model.EntityFieldConstants;
 import com.varsql.web.model.EntityValueConstants;
 import com.varsql.web.model.entity.app.QnAEntity;
+import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.SearchParameter;
 
 /**

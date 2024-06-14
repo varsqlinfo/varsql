@@ -12,6 +12,9 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -47,7 +50,6 @@ import com.vartech.common.utils.StringUtils;
 @EnableJpaRepositories(basePackages = {"com.varsql.web.repository" ,"com.varsql.web.security.repository"}
 ,includeFilters ={
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value={Repository.class})
-		,@ComponentScan.Filter(type = FilterType.REGEX, pattern="(service|controller|repository)\\.\\.*")
 })
 public class JPAConfigurer {
 
@@ -94,17 +96,23 @@ public class JPAConfigurer {
 
     final Properties additionalProperties() {
     	
-    	PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-		propertiesFactoryBean.setLocation(com.varsql.core.configuration.Configuration.getInstance().getHibernateConfig());
-    	
     	Properties properties = null;
 		try {
+			logger.debug("hibernate property path : {}" , com.varsql.core.configuration.Configuration.getInstance().getHibernateConfig());
+			
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
+			Resource resource = resolver.getResource(com.varsql.core.configuration.Configuration.getInstance().getHibernateConfig());
+			
+			PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+			propertiesFactoryBean.setLocation(resource);
+			
 			propertiesFactoryBean.afterPropertiesSet();
 			properties = propertiesFactoryBean.getObject();
+			
 		} catch (Exception e) {
-			logger.error("Cannot load hibernate config path : {} , msg: {} " , com.varsql.core.configuration.Configuration.getInstance().getQuartzConfig(), e.getMessage(), e);
+			logger.warn("Cannot load hibernate config msg: {} ", e.getMessage(), e);
 		}
-
+		
         final Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.hbm2ddl.auto", properties.getProperty("hibernate.hbm2ddl.auto"));
         hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");

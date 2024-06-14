@@ -94,6 +94,11 @@ CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index ""
 {{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
 
 {{{sourceText}}}
+;
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}};{{/xif}}
+{{~#xif type '==' 'COL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}}, 'COLUMN', {{name}};{{/xif}}
+{{/commentsList}}
         </create>
     </view>
 

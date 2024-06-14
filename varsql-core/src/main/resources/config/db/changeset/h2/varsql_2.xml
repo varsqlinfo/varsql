@@ -3,14 +3,7 @@
 <database>
     <description>설명</description>
     <apply>
-        <sql description="add admin">
-<![CDATA[
-insert into VTUSER ( viewid ,uid ,upw ,uname ,org_nm ,dept_nm ,uemail ,user_role ,description ,reg_id ,upd_id , accept_yn)
-values('0000001' ,'varsqladmin','$2a$10$uKz.HYN83Z6K1QrW3jTnMeRM3FzcPPoMbJfDDAQrZBlZ5DSdcMHF2','관리자','orgnm','dept_nm','admin@varsql.com','ADMIN','administrator','varsqladmin','varsqladmin','Y');
-]]>
-        </sql>
-        
-         <sql description="add dbtype" multiple="true" delimiter=";">
+         <sql description="add dbtype">
 <![CDATA[
 -- db2
 insert into VTDBTYPE (typeid ,name ,langkey ,urlprefix)
@@ -58,7 +51,7 @@ values('999' ,'etc','dbtype.etc','etc');
 ]]>
         </sql>
         
-         <sql description="add DBTYPE_DRIVER" multiple="true" delimiter=";">
+         <sql description="add DBTYPE_DRIVER">
 <![CDATA[
 insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
 values('001' ,'oracle','oracle.jdbc.driver.OracleDriver', 'select 1 from dual','oracle' ,'jdbc:oracle:thin:@{serverIp}{if(port)}:{port}{endif}:{databaseName}',1521,'user');

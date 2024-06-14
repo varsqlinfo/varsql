@@ -32,7 +32,6 @@ import com.varsql.core.common.constants.ColumnJavaType;
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.GridUtils;
-import com.varsql.core.common.util.SecurityUtil;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.data.writer.SQLWriter;
@@ -43,7 +42,6 @@ import com.varsql.core.exception.ResultSetConvertException;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.beans.ExportColumnInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
-import com.varsql.core.sql.beans.SqlExecuteDTO;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -58,6 +56,7 @@ import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.constants.VarsqlURLInfo;
+import com.varsql.web.dto.db.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.dto.sql.SqlLogInfoDTO;
 import com.varsql.web.exception.DataDownloadException;
@@ -68,6 +67,7 @@ import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
@@ -191,10 +191,6 @@ public class SQLServiceImpl{
 		try {
 			conn = ConnectionFactory.getInstance().getConnection(vconnid);
 			
-			if(!StringUtils.isBlank(sqlExecuteInfo.get_requid_())) {
-				SqlExecuteManager.getInstance().setStatementInfo(sqlExecuteInfo.get_requid_(), null);
-	    	}
-			
 			conn.setAutoCommit(false);
 
 			List<SqlStatisticsEntity> allSqlStatistics = new LinkedList<SqlStatisticsEntity>();
@@ -294,10 +290,11 @@ public class SQLServiceImpl{
 				conn.setAutoCommit(true);
 				JdbcUtils.close(conn);
 			}
-		}
-		
-		if(!StringUtils.isBlank(sqlExecuteInfo.get_requid_())) {
-			SqlExecuteManager.getInstance().removeStatementInfo(sqlExecuteInfo.get_requid_());
+			
+			// request 실행 취소 정보 제거
+			if(!StringUtils.isBlank(sqlExecuteInfo.getRequid$$())) {
+				SqlExecuteManager.getInstance().removeStatementInfo(sqlExecuteInfo.getRequid$$());
+			}
 		}
 
 		long enddt = System.currentTimeMillis();
@@ -381,8 +378,10 @@ public class SQLServiceImpl{
 			if(VarsqlFileType.CSV.equals(exportType)){
 				writer = new  CSVWriter(outstream, ',' , exportCharset);
 			}else if(VarsqlFileType.JSON.equals(exportType)){
+				sqlExecuteInfo.setFormatValue(false);
 				writer = new JSONWriter(outstream, exportCharset);
 			}else if(VarsqlFileType.XML.equals(exportType)){
+				sqlExecuteInfo.setFormatValue(false);
 				writer = new XMLWriter(outstream, "row" , exportCharset);
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
 				sqlExecuteInfo.setUseColumnAlias(false);
@@ -454,8 +453,6 @@ public class SQLServiceImpl{
 				throw new DataDownloadException(ser.getResultCode(), ser.getMessage(), new VarsqlAppException(ser.getMessage()));
 			}
 
-			String exportFileName = ValidateUtils.getValidFileName(paramMap.getString("fileName", objectName));
-			
 			session.setAttribute(sessAttrKey, "complete");
 			
 			Map tableExportCount = new HashMap<>();

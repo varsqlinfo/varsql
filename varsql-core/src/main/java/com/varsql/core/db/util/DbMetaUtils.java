@@ -1,6 +1,13 @@
 package com.varsql.core.db.util;
 
+import java.sql.SQLException;
+import java.util.List;
+
+import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -69,4 +76,28 @@ public final class DbMetaUtils {
 		}
 		return typeName;
 	}
+		
+	/**
+	 * 스키마 목록
+	 * @param dpi
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<String> schemaList(DatabaseParamInfo dpi) throws SQLException {
+		
+		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
+		
+		DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
+		
+		if(venderType.isUseDatabaseName()) {
+			return dbMetaEnum.getDatabases(dpi);
+		}else {
+			return dbMetaEnum.getSchemas(dpi);
+		}
+	}
+	
+	public static boolean isSchemaView(DatabaseParamInfo dataParamInfo) {
+		return dataParamInfo.isSchemaViewYn();
+	}
+
 }
