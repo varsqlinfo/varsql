@@ -47,14 +47,24 @@ public class DatabaseChangeExecutor {
 	private String resourcePath = RESOURCE_TYPE.CLASSPATH.getPath("config/db/changeset/%s/*.xml");
 	private String logPath;
 	private ConnectionInfo connectionInfo;
+	private boolean failRevertFlag;
 	
 	public DatabaseChangeExecutor(ConnectionInfo connectionInfo) {
-		this.connectionInfo = connectionInfo;
+		this(connectionInfo, true, null);
 	}
 	
-	public DatabaseChangeExecutor(String resourcePath, String logPath) {
-		this.resourcePath = resourcePath;
-		this.logPath = logPath;
+	public DatabaseChangeExecutor(ConnectionInfo connectionInfo, boolean failRevertFlag) {
+		this(connectionInfo, failRevertFlag, null);
+	}
+	
+	public DatabaseChangeExecutor(ConnectionInfo connectionInfo, boolean failRevertFlag, String logPath) {
+		this(connectionInfo, failRevertFlag, logPath, null);
+	}
+	public DatabaseChangeExecutor(ConnectionInfo connectionInfo, boolean failRevertFlag, String logPath, String resourcePath) {
+		this.connectionInfo = connectionInfo;
+		this.failRevertFlag = failRevertFlag; 
+		if(!StringUtils.isBlank(logPath)) this.logPath = logPath;
+		if(!StringUtils.isBlank(resourcePath)) this.resourcePath = resourcePath;
 	}
 	
 	public static void main(String[] args) {
@@ -68,10 +78,10 @@ public class DatabaseChangeExecutor {
 
 	public void changeApply() throws IOException, Exception {
 		ChangeSetData changeLogSQL;
-		if(this.connectionInfo != null) {
-			changeLogSQL = new ChangeSetDataDB(this.connectionInfo);
-		}else {
+		if(this.logPath != null) {
 			changeLogSQL = new ChangeSetDataFile(this.logPath);
+		}else {
+			changeLogSQL = new ChangeSetDataDB(this.connectionInfo);
 		}
 		
 		Resource[] changeXmls = null;
@@ -114,7 +124,6 @@ public class DatabaseChangeExecutor {
 	    	}
 	    		
 	    	changeSetsList.add(changeLogParser.getChangeSetInfo(xml, type, version, hash));
-	    	    	
 		}
 		
 		
@@ -143,14 +152,14 @@ public class DatabaseChangeExecutor {
 		
 		PreparedStatement pstmt = null;
 		
-		Connection connChk = null;
+		Connection conn = null;
 		try {
-			connChk = getConnection();
+			conn = getConnection();
 			
-			boolean stopFlag = executeApplySql(connChk, pstmt, changeSets); 
+			boolean stopFlag = executeApplySql(conn, pstmt, changeSets); 
 			
-			if(stopFlag) {
-				executeRevertSql(connChk, pstmt, changeSets); 
+			if(stopFlag && this.failRevertFlag) {
+				executeRevertSql(conn, pstmt, changeSets); 
 			}
 			
 			for (int i = 0; i < changeSets.length; i++) {
@@ -199,15 +208,16 @@ public class DatabaseChangeExecutor {
 					.build());
 			}
 			
+			if(!conn.getAutoCommit()) conn.setAutoCommit(true);
+			
+			conn.close();
+			
 			if(stopFlag) {
 				throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_CONNECTION, "Changed information cannot be applied. Please check the log");
 			}
-			
-			connChk.close();
-			
-			
 		}finally {
-			JdbcUtils.close(connChk, pstmt, null);
+			if(conn != null) conn.setAutoCommit(true);
+			JdbcUtils.close(conn, pstmt, null);
 		}
 	}
 	
@@ -249,10 +259,13 @@ public class DatabaseChangeExecutor {
 	 */
 	private boolean executeApplySql(Connection conn, PreparedStatement pstmt, ChangeSetInfo[] changeSets) throws SQLException {
 		boolean stopFlag = false; 
+		
 		for (int i = 0; i < changeSets.length; i++) {
 			ChangeSetInfo xml = changeSets[i];
 			
 			String changeSetInfo = xml.getFileName()+", type : " +xml.getType() +", version : "+xml.getVersion();
+			
+			conn.setAutoCommit(false);
 			
 			for(ChangeSql item : xml.getApplySqls()) {
 				String executeSql = item.getSql(); 
@@ -273,11 +286,10 @@ public class DatabaseChangeExecutor {
 						continue; 
 					}
 					
-					conn.setAutoCommit(false);
 					try {
 						pstmt = conn.prepareStatement(sql);
 						pstmt.execute();
-						conn.setAutoCommit(true);
+						
 					}catch(Exception e) {
 						item.setLog(e.getMessage());
 						logger.error("error info :{} sql : {}", changeSetInfo, sql, e);
@@ -295,6 +307,8 @@ public class DatabaseChangeExecutor {
 			if(stopFlag) {
 				break; 
 			}
+			
+			conn.setAutoCommit(true);
 		}
 		
 		return stopFlag;

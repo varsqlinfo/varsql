@@ -60,6 +60,9 @@ public class SqlExecuteManager {
 	}
 	
 	public SqlExecuteBean getStatementInfo(String requid) {
+		if(requid==null) {
+			return null; 
+		}
 		return SQL_EXECUTE_INFO.get(requid);
 	}
 	
@@ -79,11 +82,14 @@ public class SqlExecuteManager {
 	 * @param statementCancelFlag statement cancel (true = cancel, false = item remove)
 	 */
 	public synchronized void removeStatementInfo(String requid, boolean statementCancelFlag) {
+		if(requid==null) return ; 
 		
 		if(statementCancelFlag) {
 			SqlExecuteBean seb = getStatementInfo(requid);
 			
-			if (seb != null && seb.getStatement() != null) {
+			if(seb == null) return ; 
+			
+			if (seb.getStatement() != null) {
 				for(Statement statement : seb.getStatement()) {
 					try {
 						if(statement != null && !statement.isClosed()) {

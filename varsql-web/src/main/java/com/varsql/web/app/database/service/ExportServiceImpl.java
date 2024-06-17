@@ -437,7 +437,6 @@ public class ExportServiceImpl{
 				try (OutputStream outstream = new FileOutputStream(exportFilePath);) {
 
 					if (VarsqlFileType.CSV.equals(exportType)) {
-						
 						writer = new CSVWriter(outstream, ',', charset);
 					} else if (VarsqlFileType.JSON.equals(exportType)) {
 						seDto.setFormatValue(false);
@@ -525,6 +524,7 @@ public class ExportServiceImpl{
 					new File(exportFilePath).delete();
 
 				} catch (Exception e) {
+					logger.error("export table data error ", e);
 					throw e;
 				} finally {
 					IOUtils.close(writer);

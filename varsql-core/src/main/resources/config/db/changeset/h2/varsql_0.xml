@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+  <description>change log  테이블 작성</description>
+  <apply>
+    <sql description="create change set log table" multiple="true" delimiter=";">
+<![CDATA[
+-- database change log
+CREATE TABLE VTDATABASE_CHANGELOG(
+   ID VARCHAR(36)   NOT NULL
+  , TYPE VARCHAR(100)   NOT NULL   
+  , VERSION VARCHAR(30)   NOT NULL   
+  , HASH VARCHAR(255)   NOT NULL  
+  , APPLIED_DT TIMESTAMP   NOT NULL default current_timestamp
+  , DESCRIPTION VARCHAR(1000)  
+  , APPLY_SQL CLOB    
+  , REVERT_SQL CLOB    
+  , STATE VARCHAR(10)     
+  , SQL_LOG CLOB      
+  , CONSTRAINT PK_VTDATABASE_CHANGELOG PRIMARY KEY (ID, TYPE, VERSION)
+);
+]]>
+    </sql>
+  </apply>
+  <revert>
+    <sql description="drop">
+drop table VTDATABASE_CHANGELOG;
+    </sql>
+  </revert>
+</database>

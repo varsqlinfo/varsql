@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.varsql.core.changeset.DatabaseChangeExecutor;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.beans.MailConfigBean;
@@ -273,6 +274,9 @@ public class Configuration extends AbstractConfiguration{
 		}
 
 		parseXml(connectionResource);
+		
+		DatabaseChangeExecutor dce = new DatabaseChangeExecutor(this.vConInfo, false);
+		dce.changeApply();
 
 		logger.info("varsql Connection Info : {}" , this.vConInfo);
 		logger.info("varsql.timezone info : {}" , getTimeZoneId());
@@ -324,10 +328,6 @@ public class Configuration extends AbstractConfiguration{
 
 	private Properties getProperties() {
 		return props;
-	}
-
-	private String getSystemProperty(String key){
-		return System.getProperty(key);
 	}
 
 	public String getDbType() {
