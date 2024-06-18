@@ -13,8 +13,22 @@ varsql websqltool sqltool
 - java : 1.8
 - eclipse : Version: 2020-03 (4.15.0)
 - gradle : 7.3.3
-- spring boot : 2.2.6
+- spring boot : 2.6.6
 - lombok : 1.18.10
+
+
+
+# vscode 
+```
+vscode extensions 에서 아래 기능 추가
+
+Spring Boot Tools
+Spring Boot Dashboard
+Spring Boot Extension Pack
+
+varsql 폴더로 이동후 아래 커맨드 입력후 엔터  
+gradle clean build 
+```
 
 
 # 도커 
