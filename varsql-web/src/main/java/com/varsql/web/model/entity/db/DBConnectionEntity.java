@@ -41,7 +41,7 @@ import lombok.ToString;
 @DynamicUpdate
 @Audited
 @Table(name = DBConnectionEntity._TB_NAME)
-@ToString(exclude = {"vpw","dbTypeDriverProvider","managerList", "jobScheduleEntity"})
+@ToString(exclude = {"vpw","dbTypeDriverProvider","managerList"})
 public class DBConnectionEntity extends AbstractAuditorModel{
 
 	public final static String _TB_NAME="VTCONNECTION";

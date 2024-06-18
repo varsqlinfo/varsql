@@ -87,15 +87,15 @@ public class DatabaseChangeExecutor {
 		Resource[] changeXmls = null;
 		
 		String resourcePath = String.format(this.resourcePath, connectionInfo.getType().toLowerCase()); 
-		logger.info("change apply resource path : {} ", resourcePath);
 		try {
 			changeXmls = ResourceUtils.getResources(resourcePath);
 		} catch (IOException e) {
-			logger.error("database changeset not found : {}", e.getMessage());
+			logger.error("database changeset not found : {}, message : {}", resourcePath, e.getMessage());
+			return ;
 		}
 		
 		if(changeXmls == null || changeXmls.length < 1) {
-			logger.info("change apply resource path not found : {} ", changeXmls);
+			logger.info("change apply resource not found : {} ", resourcePath);
 			return ; 
 		}
 		
@@ -106,7 +106,7 @@ public class DatabaseChangeExecutor {
 			changeLogInfo = changeLogSQL.history();
 		}catch(Exception e) {
 			changeLogInfo = new HashMap();
-			logger.error("change log select error : {} ", e.getMessage(), e);
+			logger.error("change log select error : {} ", e.getMessage());
 		}
 		
 		ChangeLogParser changeLogParser = new ChangeLogParser();
@@ -216,7 +216,7 @@ public class DatabaseChangeExecutor {
 				throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_CONNECTION, "Changed information cannot be applied. Please check the log");
 			}
 		}finally {
-			if(conn != null) conn.setAutoCommit(true);
+			if(conn != null && !conn.isClosed() && !conn.getAutoCommit()) conn.setAutoCommit(true);
 			JdbcUtils.close(conn, pstmt, null);
 		}
 	}

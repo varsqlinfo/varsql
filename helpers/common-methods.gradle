@@ -1,0 +1,19 @@
+// file check method
+def isFileExists(filePath) {
+	File file = new File(filePath);
+    return file.isFile();
+}
+
+def updateDateCheck(filePath, outputs) {
+	File file = new File(filePath);
+	
+    if(!file.isFile()){
+    	//outputs.upToDateWhen { false }	// update 검사 조건을 check 하지 않는다. 위에 항목이 없을때는 변경된것이 없으면 task를 실행하지 않음.
+    	outputs.upToDateWhen { false };
+    };
+}
+
+ext {
+    fn_isFileExists = this.&isFileExists
+    fn_updateDateCheck = this.&updateDateCheck
+}
