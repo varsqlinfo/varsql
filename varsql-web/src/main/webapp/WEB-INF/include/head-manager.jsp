@@ -22,7 +22,7 @@
 
 <script src="<varsql:messageResourceUrl/>" type="text/javascript"></script>
 
-<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.7.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>
 

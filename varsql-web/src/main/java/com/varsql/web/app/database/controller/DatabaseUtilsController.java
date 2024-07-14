@@ -179,4 +179,19 @@ public class DatabaseUtilsController extends AbstractController  {
 		
 		return getModelAndView("/tableColumnSearch", VIEW_PAGE.DATABASE_UTILS, model);
 	}
+	
+	
+	/**
+	 * excel -> ddl 변환
+	 *
+	 * @method : genTable
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/diff", method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView diff(ModelAndView mav, HttpServletRequest req) throws Exception {
+		return getModelAndView("/diff", VIEW_PAGE.DATABASE_UTILS, mav.getModelMap());
+	}
 }

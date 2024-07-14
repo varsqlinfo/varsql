@@ -6,15 +6,10 @@
 <!ELEMENT item (templateInfo*)>
 <!ATTLIST item name CDATA #REQUIRED>
 
-<!ELEMENT templateInfo (main, propItems*)>
+<!ELEMENT templateInfo (main)>
 <!ATTLIST templateInfo
 	name CDATA #REQUIRED
 	viewMode (editor|dialog) #REQUIRED
 >
 
 <!ELEMENT main (#PCDATA)>
-
-<!ELEMENT propItems (key,code)>
-
-<!ELEMENT key (#PCDATA)>
-<!ELEMENT code (#PCDATA)>

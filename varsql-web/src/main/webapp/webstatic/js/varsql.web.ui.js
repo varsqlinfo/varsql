@@ -361,39 +361,30 @@ _$base.popup = {
 
 			return window.open(openUrl, tmpName, tmpPopOption);
 		}else{  // post method
-			var inputStr = [];
-			inputStr.push('<!doctype html><head>');
-			inputStr.push('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta charset="UTF-8" /></head>');
-			inputStr.push('<form action="'+openUrl+'" method="post" id="'+targetId+'" name="'+targetId+'">');
-
-			var tmpVal;
-			for(var key in tmpParam){
-				tmpVal = tmpParam[key];
-
-				inputStr.push('<input type="hidden" name="'+key+'" value=\''+((typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal))+'\'/>');
+			
+			var winPopupObj=window.open('about:blank', tmpName, tmpPopOption);
+			
+		 	var tmpForm = document.createElement('form');
+			tmpForm.id=targetId;
+		 	tmpForm.name= "name_"+targetId;
+		 	tmpForm.action = openUrl;
+		 	tmpForm.method= "POST";
+		 	tmpForm.target= tmpName;
+		 	
+		 	for(var key in tmpParam){
+				var tmpVal = tmpParam[key];
+				
+				var input = document.createElement('input');
+			 	input.type = 'hidden';
+			 	input.name = key;
+			 	input.value = (typeof tmpVal==='string')?tmpVal:JSON.stringify(tmpVal);
+			 	tmpForm.appendChild(input);
 			}
-			inputStr.push('</form>');
-			inputStr.push('<script async type="text/javascript">try{document.charset="utf-8";}catch(e){}document.'+targetId+'.submit();</'+'script>');
-
-			winPopupObj=window.open('about:blank', tmpName, tmpPopOption);
-
-			try{
-				try{winPopupObj.document.open();}catch(e){console.log(e)}
-				winPopupObj.document.write(inputStr.join(''));
-				winPopupObj.focus();
-				try{winPopupObj.document.close();}catch(e){console.log(e)}
-			}catch(e){
-				winPopupObj=window.open('about:blank', tmpName+targetId, tmpPopOption);
-				try{
-					try{winPopupObj.document.open();}catch(e){console.log(e)}
-					winPopupObj.document.write(inputStr.join(''));
-					winPopupObj.focus();
-
-					try{winPopupObj.document.close();}catch(e){console.log(e)}
-				}catch(e1){
-					console.log(e1);
-				}
-			}
+			
+			document.body.appendChild(tmpForm);
+		 	//최종 만들어진form 생성
+		 	tmpForm.submit();
+			document.getElementById(targetId).remove();
 
 			try{winPopupObj.VARSQLUI.refreshTheme();}catch(e){} // theme refresh
 

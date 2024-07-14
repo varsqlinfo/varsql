@@ -43,7 +43,7 @@
 		<div v-show="step==2">
 			<div class="process-title"><spring:message code="result" /></div>
 			<div style="height:300px">
-				<textarea class="wh100" id="tableDDLInfo"></textarea>
+				<div class="wh100 sql-code-editor" id="tableDDLInfo"></div>
 			</div>
 		</div>
 		
@@ -79,8 +79,13 @@ VarsqlAPP.vueServiceBean({
 			this.selectSchema = '${currentSchemaName}';
 			this.setUserConfigInfo();
 			
-			this.tableDDLEditor = CodeMirror.fromTextArea(document.getElementById('tableDDLInfo'), {
-				mode: 'text/x-sql'
+			this.tableDDLEditor = new codeEditor(document.getElementById('tableDDLInfo'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,minimap: {enabled: true} 
+					,contextmenu :false
+				}
 			})
 		}
 		
@@ -141,8 +146,8 @@ VarsqlAPP.vueServiceBean({
 		}
 		,download:function (){
 			var params ={
-   				exportType :'text'
-   				,fileName :'table-convert-ddl'+VARSQL.util.dateFormat(new Date(),'yyyy-mm-dd')+'.sql'
+   				exportType :'sql'
+   				,fileName :'table-convert-ddl'+VARSQL.util.dateFormat(new Date(),'yyyy-mm-dd')
    				,content : this.tableDDLEditor.getValue()
    			};
     		

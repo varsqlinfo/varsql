@@ -107,9 +107,8 @@
 						</div>
 						<div class="col-lg-12">
 							<div style="padding-top:10px;">SQL</div>
-							<div style="height:300px;">
-								<textarea id="epLogSqlArea" rows="10" class="form-control input-init-type"></textarea>
-							</div>
+							
+							<div id="epLogSqlArea" style="height:300px;" class="sql-code-editor"></div>
 						</div>
 
 						<div class="col-lg-12">
@@ -130,14 +129,6 @@
 
 <varsql:importResources resoures="codeEditor"/>
 
-<style>
-.CodeMirror {
-    width: 100%;
-    height: 300px;
-    border: 1px solid #c5bbbb;
-}
-</style>
-
 <script>
 
 VarsqlAPP.vueServiceBean( {
@@ -155,27 +146,20 @@ VarsqlAPP.vueServiceBean( {
 
 			$(this.$el).removeClass('display-off')
 
-			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('epLogSqlArea'), {
-				mode: 'text/x-sql',
-				indentWithTabs: true,
-				smartIndent: true,
-				autoCloseBrackets: true,
-				indentUnit : 4,
-				lineNumbers: true,
-				height:500,
-				lineWrapping: false,
-				matchBrackets : true,
-				theme: "eclipse",
-				readOnly:true
-			});
+			this.fileViewEditor = new codeEditor(document.getElementById('epLogSqlArea'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,minimap: {enabled: true} 
+					,readOnly: true
+					,contextmenu :false
+				}
+			})
 		}
 		// 상세
 		,itemView : function (item){
-
 			this.detailItem = item;
-
 			this.fileViewEditor.setValue(item.logSql||'');
-			this.fileViewEditor.setHistory({done:[],undone:[]});
 		}
 		// 검색
 		,search : function(no){

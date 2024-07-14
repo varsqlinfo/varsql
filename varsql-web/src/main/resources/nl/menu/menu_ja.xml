@@ -50,6 +50,7 @@
 <entry key="header.menu.tool.utils.multidbsqlexecute">マルチDB SQL 実行</entry>
 <entry key="header.menu.tool.utils.tableddlconvert">テーブルDDL 変換</entry>
 <entry key="header.menu.tool.utils.tablecolumnsearch">テーブル列検索</entry>
+<entry key="header.menu.tool.utils.diff">Diff</entry>
 
 <!-- ヘルプメニュー -->
 <entry key="header.menu.help">ヘルプ</entry>

@@ -32,7 +32,7 @@ public class CommonControllerAdvice {
       model.addAttribute("fileUploadSizePerFile", Configuration.getInstance().getFileUploadSizePerFile());
       model.addAttribute("pageContextPath", contextPath);
       model.addAttribute("pubjs_ver", VarsqlFn.pubJsVersion());
-      model.addAttribute("codemirror_ver", VarsqlFn.staticResourceVersion("codemirror"));
+      model.addAttribute("codeEditor_ver", VarsqlFn.staticResourceVersion("codeEditor_ver"));
       model.addAttribute("css_ver", VarsqlFn.staticResourceVersion("css"));
       model.addAttribute("prettify_ver", VarsqlFn.staticResourceVersion("prettify"));
       model.addAttribute("static_random_ver", VarsqlFn.randomVal(10000));

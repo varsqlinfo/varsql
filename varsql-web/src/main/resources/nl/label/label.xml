@@ -177,6 +177,7 @@
 <entry key="toolbar.cut">Cut</entry>
 <entry key="toolbar.copy">Copy</entry>
 <entry key="toolbar.eraser">Erase</entry>
+<entry key="toolbar.paste">Paste</entry>
 
 <entry key="toolbar.undo">Undo</entry>
 <entry key="toolbar.redo">Redo</entry>
@@ -185,6 +186,7 @@
 <entry key="toolbar.format">Format Query</entry>
 <entry key="toolbar.send">Send Message</entry>
 <entry key="toolbar.parameter">Parameter</entry>
+<entry key="toolbar.minimap">Minimap</entry>
 
 <!-- tool msg -->
 <entry key="msg.sendmsg.title">Send Message</entry>

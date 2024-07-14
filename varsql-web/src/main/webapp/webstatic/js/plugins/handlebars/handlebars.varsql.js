@@ -480,30 +480,7 @@ VARSQLTemplate.render ={
 		var reVal = {isError : false, value :'' , errorInfo :{}};
         try{
         	var template = VARSQLTemplate.compile(templateInfo.main);
-
-	        var propItems = templateInfo.propItems;
-
 	        var allParam = VARSQL.util.objectMerge({},item);
-
-	        for(var i=0; i< propItems.length; i++){
-	            var propItem = propItems[i];
-	            try{
-	            	var propTemplate = Handlebars.compile(propItem.code);
-	            	allParam[propItem.key] =VARSQL.str.trim(propTemplate(allParam));
-	            }catch(e){
-	            	if(breakFlag === false){
-	            		allParam[propItem.key] = e.message;
-	            	}else{
-		            	reVal.isError = true;
-		            	reVal.errorInfo ={
-		            		mode : 'prop'
-		            		,msg : e.message
-		            		,err : e
-		            	};
-		            	return reVal;
-	            	}
-	            }
-	        }
 	        reVal.value = VARSQL.str.trim(template(allParam));
 	        return reVal;
         }catch(e){

@@ -16,7 +16,7 @@
 <script src="${pageContextPath}/webstatic/js/plugins/filesaver/FileSaver.min.js"></script>
 
 <script src="<varsql:messageResourceUrl/>" type="text/javascript"></script>
-<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.7.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery-ui.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/sortable/Sortable.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/jquery.serializeJSON.js"></script>

@@ -98,22 +98,6 @@ $(document).ready(function(){
 			</li>
 			<li class="sql-btn-divider"></li>
 			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_cut_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.cut" /> Ctrl+X">
-					<i class="fa fa-scissors"></i>
-				</button>
-			</li>
-			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_copy_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.copy" /> Ctrl+C">
-					<i class="fa fa-copy"></i>
-				</button>
-			</li>
-			<li>
-				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_delete_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.eraser" />">
-					<i class="fa fa-eraser"></i>
-				</button>
-			</li>
-			<li class="sql-btn-divider"></li>
-			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_undo_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.undo" /> Ctrl+Z">
 					<i class="fa fa-undo" ></i>
 				</button>
@@ -126,6 +110,11 @@ $(document).ready(function(){
 			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.linewrapper" />">
 					<i class="fa fa-dedent" aria-hidden="true" ></i>
+				</button>
+			</li>
+			<li>
+				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_minimap_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.minimap" />">
+					<i class="fa fa-map" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>

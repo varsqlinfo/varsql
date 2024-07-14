@@ -12,7 +12,7 @@
 <%@ include file="/WEB-INF/include/head-meta.jspf"%>
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 
-<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.7.1.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>

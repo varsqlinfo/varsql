@@ -185,6 +185,8 @@
 <entry key="toolbar.format">クエリ整形</entry>
 <entry key="toolbar.send">メッセージ送信</entry>
 <entry key="toolbar.parameter">パラメータ</entry>
+<entry key="toolbar.minimap">Minimap</entry>
+<entry key="toolbar.paste">貼り付け</entry>
 
 <!-- tool msg -->
 <entry key="msg.sendmsg.title">メッセージ送信</entry>

@@ -64,44 +64,14 @@
 		<div class="col-xs-12 padding0" style="height:calc(100% - 175px);min-height:300px;padding-bottom: 5px;">
 			<div id="subCodeDisabled" class="wh100-abs overlay-bg" style="z-index: 10;position: absolute;"></div>
 			<div class="col-xs-12" style="height: 220px;">
-				<div class="col-xs-7 padding0 h100">
-					<div class="sub-cont-title">Template</div>
-					<div style="height: calc(100% - 30px);">
-						<textarea id="mainTemplate" class="wh100"></textarea>
-					</div>
-				</div>
-				<div class="splitter" data-orientation="vertical"></div>
-				<div class="col-xs-5 h100">
-					<div class="sub-cont-title" style="padding-top: 3px;"><button @click="generate()">Check source</button></div>
-					<textarea id="resultCode" class="wh100" style="height:calc(100% - 30px);">{{resultCode}}</textarea>
+				<div class="sub-cont-title">Template</div>
+				<div style="height: calc(100% - 30px);">
+					<div id="mainTemplate" class="wh100 sql-code-editor"></div>
 				</div>
 			</div>
 			<div class="col-xs-12"  style="height:calc(100% - 220px) ;">
-				<div class="col-xs-2 h100 padding0">
-					<div class="h100">
-				      	<div class="sub-cont-title">Template key</div>
-
-				      	<div class="border" style="height: calc(100% - 30px);overflow:auto;">
-				            <ul>
-				                <template v-for="(item,index) in templateInfo.propItems">
-				                    <li><a :class="item == codeDetailInfo ? 'active':''" @click="setGenCode(item)">{{item.key}}</a> <a v-if="item.isRemove===true" @click="removeTemplateProp(index);">삭제</a></li>
-				                </template>
-				           </ul>
-			           </div>
-					</div>
-				</div>
-				<div class="col-xs-10 h100 padding0">
-					<div class="sub-cont-title">Template code</div>
-					<div style="height: calc(100% - 30px);">
-						<div class="col-xs-8 h100">
-							<textarea id="subCodeTemplate" class="wh100"></textarea>
-						</div>
-						<div class="splitter" data-orientation="vertical"></div>
-						<div class="col-xs-4 h100">
-							<pre class="wh100">{{codeDetailInfo.compileValue}}</pre>
-						</div>
-					</div>
-				</div>
+				<div class="sub-cont-title" style="padding-top: 3px;"><button @click="generate()">Check source</button></div>
+				<textarea id="resultCode" class="wh100" style="height:calc(100% - 30px);">{{resultCode}}</textarea>
 			</div>
 		</div>
 
@@ -140,6 +110,7 @@
 	        ,contextItems : []
 	        ,templateInfo : {}
 	        ,codeDetailInfo: {}
+	        ,codeDetailCompileResult :''
 	        ,conuid: '<c:out value="${param.conuid}" escapeXml="true"></c:out>'
 	    }
 	    ,created : function (){
@@ -159,14 +130,6 @@
 	    		this.contextItems = [];
 	    	}
 	    }
-	    ,watch: {
-	        'codeDetailInfo.code': {
-	            handler: function (after, before) {
-	                this.compilePropCode();
-	            },
-	            deep: true
-	        }
-	    }
 	    ,methods:{
 
 	        init : function(){
@@ -182,32 +145,19 @@
 	    	,initEditor : function (){
 	    		var _this = this;
 				// main code
-	    		this.mainTemplateEditor = CodeMirror.fromTextArea(document.getElementById('mainTemplate'), {
-					mode: 'text/x-handlebars-template',
-					indentWithTabs: true,
-					smartIndent: true,
-					indentUnit : 4,
-					lineNumbers: true,
-					lineWrapping: false,
-					matchBrackets : true,
-					theme: "eclipse"
+	    		this.mainTemplateEditor = new codeEditor(document.getElementById('mainTemplate'), {
+					schema: '',
+					editorOptions: { 
+						theme: 'vs-light'
+						,minimap: {enabled: false} 
+						,contextmenu :false
+					},
+					change : ()=>{
+						_this.templateInfo.main = _this.mainTemplateEditor.getValue();
+						_this.generate();
+					}
 				})
-				this.mainTemplateEditor.on('change', function(cm) {
-					_this.templateInfo.main = cm.getValue();
-			    })
-
-			    this.mainTemplateEditor.on('blur', function(cm) {
-					_this.templateInfo.main = cm.getValue();
-					_this.setProperty();
-			    })
-
-			    // sub code
-	    		this.subCodeTemplateEditor = CodeMirror.fromTextArea(document.getElementById('subCodeTemplate'), {
-					mode: 'text/x-handlebars-template'
-				})
-				this.subCodeTemplateEditor.on('change', function(cm) {
-					_this.codeDetailInfo.code = cm.getValue();
-			    })
+				
 	    	}
 	    	,getSaveItem : function (){
 	    		var contextItems = this.contextItems;
@@ -297,14 +247,10 @@
 	    		if(type == 'parent'){
 	    			this.templateInfo = this.createSubItem();
 	    		}else{
-	    			item.propItems = item.propItems ||[]; 
 	    			this.templateInfo = item;
-	    			codeDetailInfo = item.propItems[0]||{};
 	    		}
 
 	    		this.setSubArea();
-	    		this.setGenCode(codeDetailInfo);
-	    		this.generate();
 	    	}
 	    	// 신규
 	    	,newItem : function (){
@@ -316,21 +262,20 @@
 				this.setSubArea();
 	    	}
 	    	,setSubArea : function (){
-
-	    		if(VARSQL.isArray(this.deteilItem.propItems)){
-	    			$('#subCodeDisabled').hide();
-	    		}else{
+	    		
+	    		if(VARSQL.isUndefined(this.deteilItem.main)){
 	    			$('#subCodeDisabled').show();
+	    		}else{
+	    			$('#subCodeDisabled').hide();
 	    		}
-	    		this.mainTemplateEditor.setValue(VARSQL.str.trim(this.templateInfo.main||''));
-				this.mainTemplateEditor.setHistory({done:[],undone:[]});
+	    		this.mainTemplateEditor.setValue(VARSQL.str.trim(this.templateInfo.main||''), 'handlebars');
+	    		
 	    	}
 	    	,createSubItem : function (pItem){
 	    		return {
 					name : 'sub-menu'
 					,viewMode : 'editor'
 					,main : ''
-					,propItems : []
 				};
 	    	}
 	    	// 하위 메뉴 추가.
@@ -359,6 +304,11 @@
 	    	}
 	    	//  generate source
 	        , generate : function(){
+	        	
+	        	if(VARSQL.str.trim(this.templateInfo.main||'') == ''){
+	        		this.resultCode = '';
+	        		return ; 
+	    		}
 
 	        	var result =VARSQLTemplate.render.generateSource(this.templateInfo, defaultTableColumnInfo, false);
 
@@ -369,101 +319,12 @@
 	    			this.resultCode =result.value;
 	    		}
 	        }
-	    	// property template code render
-	        , compilePropCode : function (item){
-	            var propItem = item || this.codeDetailInfo;
-	            var _this =this;
-
-            	if(propItem.code){
-                    propItem.compileValue = VARSQLTemplate.render.text(propItem.code, defaultTableColumnInfo, function (e){
-                    	_this.errorHandler('prop',e);
-                    });
-            	}
-	        }
-	        , setGenCode : function(item){
-
-				this.codeDetailInfo = item;
-
-				this.subCodeTemplateEditor.setValue(VARSQL.str.trim(this.codeDetailInfo.code||''));
-				this.subCodeTemplateEditor.setHistory({done:[],undone:[]});
-	        }
-	        ,removeTemplateProp : function (idx){
-	        	this.templateInfo.propItems.splice(idx,1);
-	        }
-	        , setProperty: function(){
-	            var source = this.templateInfo.main;
-	            var _this =this;
-            	var	parser = VARSQLTemplate.parse(source ,function (e){
-					_this.errorHandler('main',e);
-				});
-            	if(parser ===false) return false;
-
-            	this.generate();
-
-	            var len = parser.body.length;
-	            var currentPropItems = this.templateInfo.propItems;
-
-	            if(len > 0){
-
-	                var addPropObj = {};
-
-	                for(var i=0; i< currentPropItems.length; i++){
-	                    var bodyItem = currentPropItems[i];
-
-	                    addPropObj[bodyItem.key]  = bodyItem;
-	                }
-
-	                var addPropItems = [];
-	                for(var i=0; i< len; i++){
-	                    var bodyItem = parser.body[i];
-
-	                    if(bodyItem.type=='MustacheStatement'){
-
-	                        var propKey = bodyItem.path.original;
-
-	                        propKey = propKey +'';
-
-	                        if(propKey.indexOf('.') > -1 || bodyItem.params.length > 0){
-	                            continue;
-	                        }
-
-	                        var templateProp;
-
-	                        if(addPropObj[propKey]){
-	                            templateProp = addPropObj[propKey];
-	                            templateProp.isRemove =false;
-	                            delete addPropObj[propKey];
-	                        }else{
-	                            templateProp = {
-	                                key : propKey
-	                                ,code : ''
-	                                ,compileValue : ''
-	                            };
-	                        }
-	                        addPropItems.push(templateProp);
-	                    }
-	                }
-
-	                for(var key in addPropObj){
-	                    var bodyItem = addPropObj[key];
-	                    bodyItem.isRemove = true;
-	                    addPropItems.push(bodyItem);
-	                }
-
-	                this.templateInfo.propItems =  addPropItems;
-	            }else{
-	                for(var i=0; i< currentPropItems.length; i++){
-	                    var bodyItem = currentPropItems[i];
-	                    bodyItem.isRemove = true;
-	                }
-	            }
-	        }
 	        ,errorHandler : function (errorType , err){
 	        	var msg = err.message;
 	        	if('main' == errorType){
 					this.resultCode = msg;
 	        	}else {
-					this.codeDetailInfo.compileValue = msg;
+	        		this.codeDetailCompileResult = msg;
 	        	}
 	        }
 	    }

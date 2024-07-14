@@ -177,6 +177,7 @@
 <entry key="toolbar.cut">剪切</entry>
 <entry key="toolbar.copy">复制</entry>
 <entry key="toolbar.eraser">擦除</entry>
+<entry key="toolbar.paste">粘贴</entry>
 
 <entry key="toolbar.undo">撤销</entry>
 <entry key="toolbar.redo">重做</entry>
@@ -185,6 +186,7 @@
 <entry key="toolbar.format">查询整理</entry>
 <entry key="toolbar.send">发送消息</entry>
 <entry key="toolbar.parameter">参数</entry>
+<entry key="toolbar.minimap">Minimap</entry>
 
 <!-- 工具消息 -->
 <entry key="msg.sendmsg.title">发送消息</entry>

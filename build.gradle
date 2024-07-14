@@ -16,8 +16,7 @@ buildscript {
         lombokMapstructVersion = "0.2.0"
         
         def_version = [
-			springData: '2.2.6.RELEASE'
-			,springSecurity: '5.6.2'
+			springSecurity: '5.6.2'
 			,servletApi: '4.0.0'
 			,jackson : '2.15.0'
 			,poi : '5.2.0'

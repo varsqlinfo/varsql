@@ -75,7 +75,7 @@
 	
 	<div id="ddlDialog" title="DDL View" class="clearboth" style="display:none;">
 		<div style="height:350px">
-			<textarea class="wh100" id="tableDDLInfo"></textarea>
+			<div class="wh100 sql-code-editor" id="tableDDLInfo"></div>
 		</div>
 	</div>
 </div>
@@ -126,8 +126,8 @@ VarsqlAPP.vueServiceBean( {
 			});
 			
 			_this.ddlDialog = VARSQLUI.dialog.open('#ddlDialog', {
-				height: 400
-				,width: 450
+				height: 450
+				,width: 700
 				,modal: true
 				,autoOpen :false
 				,close: function() {
@@ -138,8 +138,12 @@ VarsqlAPP.vueServiceBean( {
 			_this.initGlossary();
 			_this.initExcelTableInfo();
 
-			this.tableDDLEditor = CodeMirror.fromTextArea(document.getElementById('tableDDLInfo'), {
-				mode: 'text/x-sql'
+			this.tableDDLEditor = new codeEditor(document.getElementById('tableDDLInfo'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,contextmenu :false
+				}
 			})
 		}
 		,initGlossary : function (){

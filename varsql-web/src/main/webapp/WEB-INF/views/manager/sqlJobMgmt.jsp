@@ -140,7 +140,7 @@
 											<option v-for="(item,index) in dbList" :value="item.vconnid">{{item.vname}}</option>
 										</select>
 										
-										<textarea id="sqlEditor" rows="10" class="form-control input-init-type" style="border:1px solid #ddd;"></textarea>
+										<div id="sqlEditor" class="sql-code-editor" style="height:200px;" ></div>
 										
 										<div>
 											<table class="table table-striped table-bordered table-hover dataTable no-footer" style="margin-top:10px;table-layout:fixed;">
@@ -233,19 +233,15 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self = this; 
 			
-			this.sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlEditor'), {
-				mode: 'text/x-sql',
-				indentWithTabs: true,
-				smartIndent: true,
-				autoCloseBrackets: true,
-				indentUnit : 4,
-				lineNumbers: true,
-				height:200,
-				lineWrapping: false,
-				matchBrackets : true,
-				autofocus: true,
-				hintOptions: {tables:{}}
-			});
+			this.fileViewEditor = new codeEditor(document.getElementById('sqlEditor'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,minimap: {enabled: false} 
+					,readOnly: true
+					,contextmenu :false
+				}
+			})
 		}
 		,search : function(no){
 			var _this = this;

@@ -80,6 +80,7 @@ import com.vartech.common.io.writer.JSONWriter;
 import com.vartech.common.io.writer.WriteMetadataInfo;
 import com.vartech.common.io.writer.XMLWriter;
 import com.vartech.common.report.ExcelConstants;
+import com.vartech.common.utils.DateUtils;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.IOUtils;
@@ -384,15 +385,16 @@ public class SQLServiceImpl{
 				sqlExecuteInfo.setFormatValue(false);
 				writer = new XMLWriter(outstream, "row" , exportCharset);
 			}else if(VarsqlFileType.EXCEL.equals(exportType)){
+				sqlExecuteInfo.setLimit( Long.valueOf( VarsqlFileType.EXCEL.getLimitCount()).intValue());
 				sqlExecuteInfo.setUseColumnAlias(false);
 				writer = new ExcelWriter(outstream);
 			}else {
-				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType()), objectName, exportCharset);
+				writer = new SQLWriter(outstream, DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType()), sqlExecuteInfo.getExportObjectName(), exportCharset);
 			}
 
 			logger.debug("data export downloadFilePath :{} , query : {}", downloadFilePath, sqlExecuteInfo.getSql());
 
-			final String tableName =objectName;
+			final String tableName = sqlExecuteInfo.getExportObjectName();
 
 			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new SelectExecutorHandler(writer) {
 				private boolean firstFlag = true;
@@ -466,7 +468,7 @@ public class SQLServiceImpl{
 				.fileDiv(UploadFileType.EXPORT.getDiv())
 				.contGroupId(sqlExecuteInfo.getDatabaseInfo().getVconnid())
 				.fileFieldName("exportTableData")
-				.fileName(objectName+"."+exportType.getExtension())
+				.fileName(objectName+"_"+DateUtils.currentDate("yyyy-MM-dd") +"."+exportType.getExtension())
 				.fileSize(downloadFile.length())
 				.fileExt(exportType.getExtension())
 				.filePath(downloadFile.getAbsolutePath())

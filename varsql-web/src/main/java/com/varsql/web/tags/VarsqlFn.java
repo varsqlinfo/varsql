@@ -52,8 +52,8 @@ public final class VarsqlFn{
 	}
 
 	public static String staticResourceVersion(String type) {
-		if("codemirror".equals(type)) {
-			return WebStaticResourceVersion.CODE_MIRROR;
+		if("codeEditor_ver".equals(type)) {
+			return WebStaticResourceVersion.CODE_EDITOR;
 		}else if("css".equals(type)) {
 			return WebStaticResourceVersion.VARSQL_CSS;
 		}else if("prettify".equals(type)) {

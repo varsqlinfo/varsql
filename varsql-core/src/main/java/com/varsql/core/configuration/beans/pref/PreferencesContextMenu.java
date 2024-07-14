@@ -88,11 +88,5 @@ class TemplateInfo {
 	public void setMain(String main) {
 		this.main = main;
 	}
-	public PropItem[] getPropItems() {
-		return propItems;
-	}
-	public void setPropItems(PropItem[] propItems) {
-		this.propItems = propItems;
-	}
 }
 

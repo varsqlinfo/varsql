@@ -1,0 +1,138 @@
+<!doctype html><html><head><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta http-equiv="Content-Type" content="text/html;charset=utf-8"/><script defer="defer" src="sql.editor.js"></script><link href="sql.editor.min.css" rel="stylesheet"></head><body><div><button class="button" onclick="tabMove(1)">Tab1</button> <button class="button" onclick="tabMove(2)">Tab2</button> <button class="button" onclick="tabMove(3)">Tab3</button></div><div><button class="button" onclick="addText(3)">addText</button></div><table style="width:100%;"><tr><td><div id="container" style="width:500px;height:600px;border:1px solid #ccc"></div></td><td><div id="container2" style="width:800px;height:600px;border:1px solid #ccc"></div></td></tr></table></body><script>function tabMove(sqlId) {
+		codeEditorObj.viewContent({
+			sqlId: sqlId, sqlCont: ` ${sqlId}
+			 select * From dual;`})
+	}
+
+	function addText() {
+		codeEditorObj.insertText(`insert into222 PT_ABRD_COMftescaewc (KEY1, KEY2, KEYNM, DATA1, DATA2, DATA3, DATA4, DATA5, INSUSER, INSTIME, UPDUSER, UPDTIME )
+values( #{KEY1},  #{KEY2},  #{KEYNM},  #{DATA1},  #{DATA2},  #{DATA3},  #{DATA4},  #{DATA5},  #{INSUSER},  #{INSTIME},  #{UPDUSER},  #{UPDTIME} );aecaweawec
+`, true)
+	}</script><script type="module">//	const diffEditor = codeEditor.diffEditor(document.getElementById('container2'));
+	//	diffEditor.diff("select * From dual", "select * from dual")
+
+	const codeEditorObj = new codeEditor(document.getElementById('container'), {
+		schema: 'dbnameTest',
+		editorOptions: { theme: 'vs-dark' },
+		
+		contentInfo: {
+			sqlId: 'test1',
+			sqlCont: `select    *
+from      AFT_MENU am
+where     am.MENU_TP MONTH in ('12', '1')
+and       am.
+
+BRD_TYPE	BRD_CD	DEPT_CD	DEPT_NMBRD_TYPE , BRD_CD , DEPT_CD , DEPT_NM BRD_TYPE='BASIC' 
+and BRD_CD='BA0053' 
+and DEPT_CD in ('21262','21259','21245','21243','21236','21261') 
+and DEPT_NM in ('경인AM지점','다복AM지점','대경AM지점','대구AM지점','동부AM지점','로얄AM지점') `
+		},
+		keyEvents: {
+			save: () => {
+				console.log('save', codeEditorObj.getValue())
+			}
+		}
+		, onContextMenu: (a, b, c) => {
+			console.log(a, b, c)
+		}
+		,contextItems:[
+			{
+				label : 'Diff'
+				,hotKey : ''
+				,action : function (){
+					console.log('1111')
+				}
+			}
+		]
+	})
+
+
+	var dbSchema = [{
+		dbName: 'dbnameTest'
+		, tables: [
+			{
+				name: 'AFT_MENU',
+				colList: [{
+					name: 'A_column'
+					, typeName: 'varchar'
+					, typeAndLength: 'varchar(10)'
+					, comment: '코멘트'
+				}, {
+					name: 'B_column'
+				}, {
+					name: 'C_column'
+				}
+				]
+			}
+			, {
+				name: 'AFT_MENU_TYPE'
+				, colList: [{
+					name: 'D_column'
+				}, {
+					name: 'E_column'
+				}, {
+					name: 'F_column'
+				}
+				]
+			}
+			, {
+				name: 'PT_ABRD_ATTACH'
+			}
+		]
+	}, {
+		dbName: 'dbnamesample'
+		, tables: [
+			{
+				name: 'AFT_MENU1'
+				, colList: [{
+					name: 'AA_column'
+				}, {
+					name: 'BB_column'
+				}, {
+					name: 'CC_column'
+				}
+				]
+			}
+			, {
+				name: 'tables'
+				, colList: [{
+					name: 'tables_AA_column'
+				}, {
+					name: 'tables_BB_column'
+				}, {
+					name: 'tables_CC_column'
+				}
+				]
+			}
+			, {
+				name: 'TABLE_CONSTRAINTS'
+				, colList: [{
+					name: 'tc_column'
+				}, {
+					name: 'tc_BB_column'
+				}, {
+					name: 'tc_CC_column'
+				}
+				]
+			}
+
+
+			, {
+				name: 'AFT_MENU_TYPE2'
+			}
+			, {
+				name: 'PT_ABRD_ATTACH3'
+			}
+		]
+	}
+	];
+
+	dbSchema.forEach((db) => {
+		let dbSchema1 = db.dbName;
+
+		//console.log('dbSchema ', dbSchema1, db.tables)
+
+		codeEditorObj.addSuggestionInfo(dbSchema1, 'table', db.tables);
+	});
+
+	window.codeEditorObj = codeEditorObj;</script></html>

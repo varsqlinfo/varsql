@@ -49,6 +49,7 @@
 <entry key="header.menu.tool.utils.multidbsqlexecute">多个DB SQL执行</entry>
 <entry key="header.menu.tool.utils.tableddlconvert">表DDL转换</entry>
 <entry key="header.menu.tool.utils.tablecolumnsearch">表列搜索</entry>
+<entry key="header.menu.tool.utils.diff">Diff</entry>
 
 <!-- 帮助菜单 -->
 <entry key="header.menu.help">帮助</entry>

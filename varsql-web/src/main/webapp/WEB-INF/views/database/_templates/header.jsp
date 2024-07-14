@@ -140,6 +140,9 @@
 					</li>
 				</ul>
 			</li>
+			<li class="varsql-menu-item" data-menu-item="tool_diff">
+				<a href="javascript:;"><span class="varsql-menu-item-text">Text Diff</span></a>
+			</li>
 			<li class="divider"></li>
 			<li class="varsql-menu-item" data-menu-item="tool_layout">
 				<a href="javascript:;">

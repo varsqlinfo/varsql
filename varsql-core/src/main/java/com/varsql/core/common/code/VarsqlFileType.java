@@ -21,7 +21,7 @@ public enum VarsqlFileType {
 	,XML(-1)
 	,TEXT(-1)
 	,HTML(-1)
-	,EXCEL(1048576 ,"xlsx")
+	,EXCEL(1048575 ,"xlsx") // 1048576 갯수는 이거 0 부터 시작하기 때문에 1이 빠짐. 
 	,ZIP(-1);
 
 	private long limitCount;

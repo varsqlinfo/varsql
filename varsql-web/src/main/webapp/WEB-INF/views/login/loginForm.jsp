@@ -8,7 +8,7 @@
 <%@ include file="/WEB-INF/include/headInitvariable.jspf"%>
 <link rel="shortcut icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
 <link rel="icon" href="${pageContextPath}/webstatic/favicon.ico" type="image/x-icon">
-<script src="${pageContextPath}/webstatic/js/jquery-3.3.1.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/jquery-3.7.1.min.js"></script>
 <script src="<varsql:messageResourceUrl/>" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="${pageContextPath}/webstatic/js/bootstrapValidator.js" type="text/javascript"></script>

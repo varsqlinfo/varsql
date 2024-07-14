@@ -21,8 +21,18 @@ public class SqlExecuteDTO extends SqlStatementInfo{
 	
 	private String conuid;
 	
+	private String exportObjectName;
+	
 	public void setConuid(String conuid) {
 		this.conuid = conuid; 
 		setDatabaseInfo(SecurityUtil.loginInfo().getDatabaseInfo().get(conuid));
+	}
+
+	public String getExportObjectName() {
+		return exportObjectName;
+	}
+
+	public void setExportObjectName(String exportObjectName) {
+		this.exportObjectName = exportObjectName;
 	}
 }

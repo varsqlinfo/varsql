@@ -50,6 +50,7 @@
 <entry key="header.menu.tool.utils.multidbsqlexecute">Multi-DB SQL Execution</entry>
 <entry key="header.menu.tool.utils.tableddlconvert">Table DDL Conversion</entry>
 <entry key="header.menu.tool.utils.tablecolumnsearch">Table Column Search</entry>
+<entry key="header.menu.tool.utils.diff">Diff</entry>
 
 <!-- 도움말 메뉴 -->
 <entry key="header.menu.help">Help</entry>

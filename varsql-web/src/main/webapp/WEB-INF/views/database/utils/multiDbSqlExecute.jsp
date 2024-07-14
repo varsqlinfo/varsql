@@ -72,61 +72,6 @@
 	</div>
 </div>
 
-<%--editor 문자 찾기 다이얼로그. --%>
-<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="<spring:message code="find" />">
-	<div class="find-text-area">
-		<ul class="find-text">
-			<li>
-				<label class="find-text-label"><spring:message code="find.word" /></label>
-				<span class="find-text-input-area"><input type="text" name="editorFindText"></span>
-			</li>
-			<li>
-				<label class="find-text-label"><spring:message code="replace.word" /></label>
-				<span class="find-text-input-area"><input type="text" name="editorReplaceText"></span>
-			</li>
-		</ul>
-		
-		<div class="rows" style="margin-top:5px;">
-			<div><spring:message code="options" /></div>
-			<ul class="find-text-option-area">
-				<li>
-					<label class="checkbox-container"><spring:message code="case.sensitive" />
-					  <input type="checkbox" name="find-text-option" value="caseSearch">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container"><spring:message code="wrap.search" />
-					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container"><spring:message code="regular.expression" />
-					  <input type="checkbox" name="find-text-option" value="regularSearch">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-			</ul>
-		</div>
-		<div class="rows" style="margin-top:38px;">
-			<ul class="find-text-button">
-				<li>
-					<button type="button" class="find_text" data-mode="find-up" style="width: 48%;">
-						<spring:message code="find" /> <i class="fa fa-long-arrow-up"></i>
-					</button>
-					<button type="button" class="find_text" data-mode="find-down" style="width: 48%;">
-						<spring:message code="find" /> <i class="fa fa-long-arrow-down"></i>
-					</button>
-				</li>
-				<li><button type="button" class="find_text" data-mode="replace"><spring:message code="replace" /></button></li>
-				<li><button type="button" class="find_text" data-mode="allreplace"><spring:message code="all.replace" /></button></li>
-				<li><button type="button" class="find_text" data-mode="close"><spring:message code="close" /></button></li>
-			</ul>
-		</div>
-		<div class="find-result"></div>
-	</div>
-</div>
 
 <varsql:importResources resoures="codeEditor,layout" editorHeight="100%"/>
 
@@ -369,194 +314,28 @@ function initVue(){
 		,methods:{
 			init : function(){
 				var _this = this; 
-				this.editor = CodeMirror(document.getElementById('editor'), {
-					mode: 'text/x-sql',
-					indentWithTabs: true,
-					smartIndent: true,
-					autoCloseBrackets: true,
-					indentUnit : 4,
-					lineNumbers: true,
-					height:'auto',
-					lineWrapping: false,
-					matchBrackets : true,
-					autofocus: true,
-					extraKeys: {
-						"Ctrl-Space": "autocomplete"
-						,"Ctrl-F": function (){
-							_this.findTextOpen();
-						}
-						,"Ctrl-S": function (){
-							_this.saveSql();
-						}
-						,"Ctrl-Enter": function (){
-							_this.sqlData();
-							return false; 
-						}
-						,"Shift-Ctrl-F" : function (){
-							_this.findTextOpen();
-						}
-						,"Shift-Ctrl-R" : function (){}
-						,"Ctrl-R" : function (){}
-						,"Shift-Ctrl-/" : function (){
-							_this.toggoleComment();
-							return false; 
-						}
-						,"Shift-Ctrl-C" : function (){
-							_this.toggoleComment();
-							return false; 
-						}
-						,"Ctrl-/" : function (){  // comment
-							_this.toggoleComment();
-							return false; 
-						}
-						,"F11": function(cm) {
-							_this.sqlData();
-						}
+				
+				this.editor = new codeEditor(document.getElementById('editor'), {
+					schema: '',
+					editorOptions: { 
+						theme: 'vs-light'
+						,minimap: {enabled: true} 
+						,fixedOverflowWidgets : true
+					}
+					,keyEvents: {
+				        executeSql: () => {
+				        	_this.sqlData();
+				        }
+				        ,save : ()=>{
+				        	_this.saveSql();
+				        }
 					},
-					hintOptions: {tables:{}}
-				});
+				})
 				
 				this.editor.setValue(componentCtrl.preferencesData.sql||'');
 				
 				this.addResultItem(this.dbList[this.conuid])
 				this.loadObject();
-			}
-			,findTextOpen : function(){
-				var _this = this;
-				
-				if(_this.findTextDialog==null){
-					_this.findTextEle = $('#editorFindTextDialog');
-					_this.findTextDialog = _this.findTextEle.dialog({
-						height: 315
-						,width: 280
-						,resizable: false
-						,modal: false
-						,close: function() {
-							_this.findTextDialog.dialog( "close" );
-						}
-					});
-					
-					// editor enter
-					_this.findTextEle.find('[name="editorFindText"]').on('keydown',function(e) {
-						if (e.keyCode == '13') {
-							_this.findTextEle.find('.find_text[data-mode="find-down"]').trigger('click.find.text');
-						}
-					});
-					
-					// 찾기 이벤트 처리
-					_this.findTextEle.find('.find_text').on('click.find.text', function (e){
-						var sEle = $(this);
-						var mode = sEle.attr('data-mode');
-						var findText = _this.findTextEle.find('[name="editorFindText"]').val();
-						var replaceText = _this.findTextEle.find('[name="editorReplaceText"]').val()
-	
-						if(mode=='find-up' || mode=='find-down'){
-							_this.searchFindText(mode, findText, replaceText, false);
-						}else if(mode=='replace'){
-							_this.searchFindText(mode, findText, replaceText, true);
-						}else if(mode=='allreplace'){
-							_this.searchFindText(mode, findText, replaceText, false, true);
-						}else{
-							_this.findTextDialog.dialog( "close" );
-						}
-					})
-				}
-	
-				var findSqlText = _this.getSql();
-				if(!VARSQL.isBlank(findSqlText)){
-					_this.findTextEle.find('[name="editorFindText"]').val(findSqlText);
-				}
-	
-				_this.findTextDialog.dialog("open");
-				_this.findTextEle.find('[name="editorFindText"]').focus();
-				_this.findTextEle.find('.find-result').empty();
-			}
-			// 검색.
-			,searchFindText : function (mode, orginTxt ,replaceTxt, replaceFlag, replaceAllFlag, wrapSearch){
-				var _this = this;
-				
-				var directionValue = 'down';
-				
-				if(VARSQL.startsWith(mode ,'find')){
-					var modeArr = mode.split('-');
-					directionValue = modeArr.length > 1 ? modeArr[1] :'down';
-				}
-	
-				var findOpt={}
-	
-				$('input:checkbox[name=find-text-option]:checked').each(function() {
-					findOpt[this.value] = true;
-				});
-	
-				var isReverseFlag = directionValue =='down' ? false : true;
-	
-				var findPos;
-				var wrapSearchPos;
-				if(isReverseFlag){
-					wrapSearchPos = {line: this.editor.lastLine()+1, ch: 0};
-					findPos = _this.getSelectionPosition();
-				}else{
-					wrapSearchPos = {line: 0, ch: 0};
-					findPos = _this.getSelectionPosition(true);
-				}
-				var schTxt = orginTxt;
-	
-				var caseSearchOpt = findOpt.caseSearch == true?'' :'i';
-	
-				if(findOpt.regularSearch===true){
-					schTxt = new RegExp(schTxt,caseSearchOpt);
-				}else{
-					schTxt = new RegExp(schTxt.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),caseSearchOpt);
-				}
-	
-				if(replaceAllFlag ===true){ //  모두 바꾸기
-					findPos = {line: 0, ch: 0};
-					isReverseFlag = false;
-				}else{
-					if(replaceFlag){
-						if(_this.getSql().match(schTxt) != null){
-							_this.editor.replaceSelection(replaceTxt);
-							findPos = _this.getSelectionPosition(true);
-						}
-					}
-				}
-	
-				var cursor =_this.editor.getSearchCursor(schTxt, (replaceAllFlag ? findPos :( wrapSearch ? wrapSearchPos : findPos)) , {
-					caseFold : !findOpt.caseSearch
-				})
-	
-				if(replaceAllFlag ===true){
-					var replaceCount =0;
-	
-					while (cursor.findNext()){
-						replaceCount++;
-					    cursor.replace(replaceTxt)
-					}
-	
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.change.count.param', { count: replaceCount}))
-	
-					return ;
-				}
-	
-				var isNext = cursor.find(isReverseFlag);
-	
-				if(wrapSearch===true && isNext===false){
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
-					return ;
-				}
-	
-				if(isNext){
-					var cursorFrom = cursor.from();
-					_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.find.line', {line : cursorFrom.line+1, ch : cursorFrom.ch+1 }));
-					_this.editor.setSelection(cursorFrom, cursor.to());
-				}else{
-					if(findOpt.wrapSearch===true){
-						_this.searchFindText(mode, orginTxt, replaceTxt, replaceFlag, replaceAllFlag, true);
-					}else{
-						_this.findTextEle.find('.find-result').empty().html(VARSQL.message('msg.editor.not.found', { findText: orginTxt}));
-						return ;
-					}
-				}
 			}
 			,selectAll : function (){
 				if(this.selectAllCheck){
@@ -575,6 +354,7 @@ function initVue(){
 			}
 			// table 명 힌트추가.
 			,loadObject : function (){
+				var _this =this; 
 				VARSQL.req.ajax({
 					url:{type:VARSQL.uri.database, url:'/dbObjectList'}
 					,data : {
@@ -582,112 +362,27 @@ function initVue(){
 						,objectType: 'table'
 					}
 					,success:function (resData){
-						
-						var tableHint = {};
-						$.each(resData.list, function (_idx, _item){
-							var tblName =_item.name;
-							var colList = _item.colList;
-
-							var colArr = [];
-							$.each(colList , function (j , colItem){
-								colArr.push(colItem.name);
-							});
-
-							tableHint[tblName] = {
-								columns:colArr
-								,text :tblName
-							};
-						})
-
-						// 테이블 hint;
-						VARSQLHints.setTableInfo(tableHint);
+						_this.editor.addSuggestionInfo('', 'table', resData.list);
 					}
 				});
 			}
-			,toggoleComment : function(){
-				var editor = this.editor; 
-				var selArr = editor.getSelections();
-				var selPosArr = editor.listSelections();
-
-				for(var i =0 ; i< selArr.length;i++){
-					var pos = selPosArr[i];
-
-					var startPos = pos.head
-					,endPos = pos.anchor;
-
-					if(pos.head.line > pos.anchor.line || (pos.head.line == pos.anchor.line && pos.head.ch > pos.anchor.ch)){
-						startPos = pos.anchor;
-						endPos = pos.head;
-					}
-					
-					var startLineCode = editor.getRange({line:startPos.line,ch:0},{line:startPos.line});
-
-					startLineCode = VARSQL.str.trim(startLineCode);
-
-					var addCommentFlag = true; 
-					var lineComment = '--';
-
-					if(startLineCode.indexOf(lineComment) == 0){
-						addCommentFlag = false; 
-					}
-
-					var endLine = endPos.line+(endPos.ch ==0? -1:0);
-
-					for(var j=startPos.line; j <= endLine; j++){
-						if(addCommentFlag){
-							editor.replaceRange(lineComment,{
-								line : j
-								,ch : 0
-							});
-						}else{
-							var lineCode = editor.getRange({line:j,ch:0},{line:j})+' ';
-
-							for(var k= 0; k < lineCode.length; k++){
-								var char = lineCode.charAt(k);
-								if((/\s/).test(char)){
-									continue ; 
-								}
-
-								var chkStr = char+lineCode.charAt(k+1);
-
-								if(chkStr == lineComment){
-									editor.replaceRange('', {line : j, ch : k}, {line : j, ch : k + lineComment.length});
-								}
-								break; 
-							}
-						}
-					}
-				}
-			}
 			,getSql: function (executeSqlFlag){
-				var _this = this;
-				var textObj = this.editor;
-				var executeSql = textObj.getSelection(); 
+				var _self = this;
+				var executeSql = this.editor.getSelectionValue(); 
 				
 				if(executeSql.trim() =='' && executeSqlFlag===true){
-					var pos = textObj.getCursor();
-					var result = VARSQLUtils.split(textObj.getValue() ,{findLine : pos.line, findCharPos : pos.ch});
+					var pos = this.editor.getCursorPosition();
+					var result = VARSQLUtils.split(this.editor.getValue() ,{findLine : pos.lineNumber, findCharPos : pos.column});
 					
 					if(result.length >0 ){
 						var item = result[0]; 
-						textObj.setSelection({line: item.startLine, ch: item.startCharPos-1 }, {line :item.endLine, ch: item.endCharPos});
+						this.editor.setSelection({startLineNumber :item.startLine ,startColumn :item.startCharPos-1
+							,endLineNumber :item.endLine ,endColumn : item.endCharPos
+						});
 						executeSql = item.statement;
 					}
 				}
 				return executeSql;
-			}
-			,getSelectionPosition : function(endFlag){
-				var std = this.editor.listSelections()[0].anchor
-				,end = this.editor.listSelections()[0].head;
-
-				var isChange = false;
-				if(std.line > end.line){
-					isChange = true;
-				}else if(std.line == end.line && std.ch > end.ch){
-					isChange = true;
-				}
-
-				return endFlag===true ? (isChange ? std :end ): (isChange ? end :std);
 			}
 			,sqlData : function (){
 				
@@ -892,6 +587,13 @@ function initVue(){
 	});
 }
 
+//sql editor z-index 변경. 
+function sqlEditorStyleChange(sqlContainer){
+	sqlContainer = sqlContainer.closest('.lm_item.lm_stack');
+	sqlContainer.find('>.lm_header').css('z-index',2);
+	sqlContainer.find('>.lm_items').css('z-index',2);
+}
+
 function setLayout(){
 	var config = {
 		settings: {
@@ -1006,8 +708,6 @@ function setLayout(){
 			}
 			clearTimeout(layoutSaveTimer);
 			
-			console.log(a1);
-			
 			if(!a1 || varsqlLayout._maximisedItem) return ;
 
 			layoutSaveTimer = setTimeout(function() {
@@ -1042,6 +742,10 @@ function setLayout(){
     	}else{
     		componentCtrl.resize(componentState.key);
     	}
+    	
+    	if(contentItem.config.componentName=='Sql'){
+			sqlEditorStyleChange($(contentItem.element));
+		}
     });
 
 	varsqlLayout.init();

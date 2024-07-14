@@ -251,11 +251,6 @@
 
 <style>
 
-.CodeMirror{
-	border: none;
-    height: 100%;
-}
-
 [data-compare-area="grid"]{
 	display:block;
 }
@@ -316,6 +311,7 @@ VarsqlAPP.vueServiceBean( {
 			,targetSchema : ''
 			,objectType : ''
 		}
+		,diffEditor : false
 		,caseSensitive : true	// 대소문자 체크
 		,scrollSync : true		// object scroll sync
 		,compareView : true		// 테이블 없는 컬럼 체크
@@ -1412,27 +1408,12 @@ VarsqlAPP.vueServiceBean( {
 			this.compareSourceItem = sourceItem;
 			this.compareTargetItem =targetItem;
 
-			var compareEle =document.getElementById('compareTextArea');
-			compareEle.innerHTML = '';
-
-			var mergeView = CodeMirror.MergeView(compareEle, {
-				value: (sourceItem.createScript||''),
-				orig: (targetItem.createScript||''),
-				lineNumbers: true,
-				mode: "text/x-sql",
-				highlightDifferences: true,
-				connect: 'align',
-				collapseIdentical: false
-			});
-
-// 			var height = 650;
-// 			if (mergeView.leftOriginal()){
-// 				mergeView.leftOriginal().setSize(null, height);
-// 			}
-// 			mergeView.editor().setSize(null, height);
-// 			if (mergeView.rightOriginal()){
-// 				mergeView.rightOriginal().setSize(null, height);
-// 			}
+			if(this.diffEditor === false){
+				this.diffEditor = codeEditor.diffEditor(document.getElementById('compareTextArea'),{automaticLayout: true});	
+			}
+			
+			this.diffEditor.diff(sourceItem.createScript||'', targetItem.createScript||'')	
+			
 		}
 		// object list select item compare
 		,selectItemCompare : function (){

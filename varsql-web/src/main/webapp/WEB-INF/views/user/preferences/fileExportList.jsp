@@ -103,7 +103,7 @@
 						<div class="col-xs-12"><label class="control-label"><spring:message code="content" /></label></div>
 						<div class="col-xs-12">
 							<div id="fileList" style="height:300px;margin-bottom:20px;" class="form-control input-init-type" v-show="detailItem.ext=='zip'"></div>
-							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
+							<div id="sqlFileViewer" class="sql-code-editor" style="height:300px;"></div>
 						</div>
 					</div>
 				</form>
@@ -117,13 +117,6 @@
 
 <varsql:importResources resoures="codeEditor"/>
 
-<style>
-.CodeMirror {
-    width: 100%;
-    height: 500px;
-    border: 1px solid #c5bbbb;
-}
-</style>
 <script>
 VarsqlAPP.vueServiceBean({
 	el: '#varsqlVueArea'
@@ -162,16 +155,17 @@ VarsqlAPP.vueServiceBean({
 							type : "button" 
 							,label : VARSQL.message('view')
 							,click : function (info){
+								var fileName = info.item.fileName;
 								_this.$ajax({
 									url : {type:VARSQL.uri.user, url:'/preferences/file/zipDetail'}
 									,loadSelector : '#main-content'
 									,data : {
 										fileId : _this.detailItem.fileId
-										,fileName : info.item.fileName
+										,fileName : fileName
 									}
 									,success:function (resData){
-										_this.fileViewEditor.setValue(resData.item||'');
-										_this.fileViewEditor.setHistory({done:[],undone:[]});
+										var ext = fileName.substring(fileName.lastIndexOf('.')+1);
+										_this.fileViewEditor.setValue(resData.item||'', ext);
 									}
 								});
 							}
@@ -184,19 +178,15 @@ VarsqlAPP.vueServiceBean({
 				,tbodyItem :[]
 			});
 			
-			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('sqlFileViewer'), {
-				mode: 'text/plain',
-				indentWithTabs: true,
-				smartIndent: true,
-				autoCloseBrackets: true,
-				indentUnit : 4,
-				lineNumbers: true,
-				height:500,
-				lineWrapping: false,
-				matchBrackets : true,
-				theme: "eclipse",
-				readOnly:true
-			});
+			this.fileViewEditor = new codeEditor(document.getElementById('sqlFileViewer'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,minimap: {enabled: true} 
+					,readOnly: true
+					,contextmenu :false
+				}
+			})
 		}
 		,selectAll : function (){
 			if(this.selectAllCheck){
@@ -249,7 +239,6 @@ VarsqlAPP.vueServiceBean({
 					}
 					
 					_this.fileViewEditor.setValue(resData.item||'');
-					_this.fileViewEditor.setHistory({done:[],undone:[]});
 				}
 			});
 		}

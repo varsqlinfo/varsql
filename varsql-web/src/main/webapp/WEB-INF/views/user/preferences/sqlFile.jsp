@@ -101,7 +101,7 @@
 					<div class="form-group">
 						<div class="col-xs-12"><label class="control-label"><spring:message code="content" /></label></div>
 						<div class="col-xs-12">
-							<textarea id="sqlFileViewer" rows="10" class="form-control input-init-type"></textarea>
+							<div id="sqlFileViewer" class="sql-code-editor" style="height:500px;"></div>
 						</div>
 					</div>
 				</form>
@@ -115,13 +115,6 @@
 
 <varsql:importResources resoures="codeEditor"/>
 
-<style>
-.CodeMirror {
-    width: 100%;
-    height: 500px;
-    border: 1px solid #c5bbbb;
-}
-</style>
 <script>
 VarsqlAPP.vueServiceBean({
 	el: '#varsqlVueArea'
@@ -144,21 +137,18 @@ VarsqlAPP.vueServiceBean({
 	,methods:{
 		init : function() {
 
-			$(this.$el).removeClass('display-off')
-
-			this.fileViewEditor = CodeMirror.fromTextArea(document.getElementById('sqlFileViewer'), {
-				mode: 'text/x-sql',
-				indentWithTabs: true,
-				smartIndent: true,
-				autoCloseBrackets: true,
-				indentUnit : 4,
-				lineNumbers: true,
-				height:500,
-				lineWrapping: false,
-				matchBrackets : true,
-				theme: "eclipse",
-				readOnly:true
-			});
+			$(this.$el).removeClass('display-off');
+			
+			this.fileViewEditor = new codeEditor(document.getElementById('sqlFileViewer'), {
+				schema: '',
+				editorOptions: { 
+					theme: 'vs-light'
+					,minimap: {enabled: true} 
+					,readOnly: true
+					,contextmenu :false
+				}
+			})
+			
 		}
 		,selectAll : function (){
 			if(this.selectAllCheck){
@@ -202,9 +192,7 @@ VarsqlAPP.vueServiceBean({
 				}
 				,success:function (resData){
 					_this.detailItem = resData.item;
-
 					_this.fileViewEditor.setValue(_this.detailItem.sqlCont||'');
-					_this.fileViewEditor.setHistory({done:[],undone:[]});
 				}
 			});
 		}

@@ -50,9 +50,9 @@
 			,(case when f.COLUMN_NAME is not null then 'PK' else '' end)as "CONSTRAINTS"
 		from ${databaseName}.INFORMATION_SCHEMA.tables tb inner join ${databaseName}.INFORMATION_SCHEMA.columns col on tb.TABLE_SCHEMA = col.TABLE_SCHEMA and  tb.TABLE_NAME = col.TABLE_NAME
 		LEFT JOIN ${databaseName}.SYS.EXTENDED_PROPERTIES prop WITH(NOLOCK) ON prop.MAJOR_ID = OBJECT_ID(tb.TABLE_CATALOG +'.'+tb.TABLE_SCHEMA +'.'+tb.TABLE_NAME )	AND prop.MINOR_ID = COLUMNPROPERTY(prop.MAJOR_ID, col.COLUMN_NAME, 'COLUMNID') AND prop.class = 1 AND prop.name = 'MS_Description'
-		LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS E WITH(NOLOCK) 
+		LEFT JOIN ${databaseName}.INFORMATION_SCHEMA.TABLE_CONSTRAINTS E WITH(NOLOCK) 
 		ON	tb.TABLE_SCHEMA = e.TABLE_SCHEMA and col.TABLE_NAME = E.TABLE_NAME AND	E.CONSTRAINT_TYPE = 'PRIMARY KEY'
-		LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE F WITH(NOLOCK)
+		LEFT JOIN ${databaseName}.INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE F WITH(NOLOCK)
 		ON	tb.TABLE_SCHEMA = e.TABLE_SCHEMA and F.TABLE_NAME = E.TABLE_NAME AND F.CONSTRAINT_NAME = E.CONSTRAINT_NAME	AND	F.COLUMN_NAME = Col.COLUMN_NAME
 		where 1=1 
 		and tb.TABLE_SCHEMA = #{schema}
@@ -210,7 +210,7 @@
 			,CREATED
 			,'' as "STATUS"
 		from
-			information_schema.ROUTINES a left join   ${databaseName}.SYS.EXTENDED_PROPERTIES prop 
+			${databaseName}.information_schema.ROUTINES a left join   ${databaseName}.SYS.EXTENDED_PROPERTIES prop 
 		ON prop.MAJOR_ID = OBJECT_ID(a.ROUTINE_CATALOG +'.'+ a.ROUTINE_SCHEMA +'.'+a.routine_name ) AND prop.MINOR_ID= 0 AND prop.class = 1 AND prop.name = 'MS_Description'
 		where 1=1
 		and ROUTINE_TYPE = 'FUNCTION'

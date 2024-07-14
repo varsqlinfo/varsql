@@ -66,63 +66,7 @@
 	</div>
 </div>
 
-<%--editor 문자 찾기 다이얼로그. --%>
-<div id="editorFindTextDialog" style="display:none;overflow: hidden;" title="<spring:message code="find" />">
-	<div class="find-text-area">
-		<ul class="find-text">
-			<li>
-				<label class="find-text-label"><spring:message code="find.word" /></label>
-				<span class="find-text-input-area"><input type="text" name="editorFindText"></span>
-			</li>
-			<li>
-				<label class="find-text-label"><spring:message code="replace.word" /></label>
-				<span class="find-text-input-area"><input type="text" name="editorReplaceText"></span>
-			</li>
-		</ul>
-		
-		<div class="rows" style="margin-top:5px;">
-			<div><spring:message code="options" /></div>
-			<ul class="find-text-option-area">
-				<li>
-					<label class="checkbox-container"><spring:message code="case.sensitive" />
-					  <input type="checkbox" name="find-text-option" value="caseSearch">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container"><spring:message code="wrap.search" />
-					  <input type="checkbox" name="find-text-option" value="wrapSearch" checked="checked">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-				<li>
-					<label class="checkbox-container"><spring:message code="regular.expression" />
-					  <input type="checkbox" name="find-text-option" value="regularSearch">
-					  <span class="checkmark"></span>
-					</label>
-				</li>
-			</ul>
-		</div>
-		<div class="rows" style="margin-top:38px;">
-			<ul class="find-text-button">
-				<li>
-					<button type="button" class="find_text" data-mode="find-up" style="width: 48%;">
-						<spring:message code="find" /> <i class="fa fa-long-arrow-up"></i>
-					</button>
-					<button type="button" class="find_text" data-mode="find-down" style="width: 48%;">
-						<spring:message code="find" /> <i class="fa fa-long-arrow-down"></i>
-					</button>
-				</li>
-				<li><button type="button" class="find_text" data-mode="replace"><spring:message code="replace" /></button></li>
-				<li><button type="button" class="find_text" data-mode="allreplace"><spring:message code="all.replace" /></button></li>
-				<li><button type="button" class="find_text" data-mode="close"><spring:message code="close" /></button></li>
-			</ul>
-		</div>
-		<div class="find-result"></div>
-	</div>
-</div>
-
-<%--editor 문자 찾기 다이얼로그. --%>
+<%--editor 새 파일 다이얼로그. --%>
 <div id="editorNewSqlFileDialog" style="display:none;margin:0px;padding:0px;overflow: hidden;" title="Sql File">
 	<div class="new-sqlfile-area" style="padding:10px;">
 		<div>
@@ -196,10 +140,10 @@
 					<col style="width:*;">
 				</colgroup>
 				<tr>
-					<td><label class="control-label">Export Name</label></td>
+					<td><label class="control-label">Object Name</label></td>
 					<td>
-						<input class="" type="text" id="exportFileName" name="exportFileName" value="">
-						<input type="hidden" id="exportObjectName" name="exportObjectName" value="">
+						<input type="text" id="exportObjectName" name="exportObjectName" value="">
+						<input type="hidden" id="exportOrginObjectName" name="exportOrginObjectName" value="">
 					</td>
 				</tr>
 				<tr>
@@ -265,7 +209,7 @@
 								</label>
 							</li>
 							<li>
-								<label class="checkbox-container">Excel
+								<label class="checkbox-container">Excel <span style="font-weight:bold;position: inherit;background: inherit;">(limit 1,048,576)</span>
 								  <input type="radio" name="exportType" value="excel">
 								  <span class="radiomark"></span>
 								</label>
