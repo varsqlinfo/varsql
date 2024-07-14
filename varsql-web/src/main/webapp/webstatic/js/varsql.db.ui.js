@@ -1397,9 +1397,17 @@ _ui.addDbServiceObject({
 			var itemArr = resData.list;
 
 			_ui.SQL.addEditorHint(_g_options.param.schema,'table',itemArr);
-
+			
 			if(reqParam.refresh ==true  && !VARSQL.isBlank(reqParam.objectNames)){
-				_self.objectGridObj.updateRow(reqParam.objectIdx, tableInfo, true);
+				
+				var refreshTableName = reqParam.objectNames;
+				
+				for(var item of itemArr){
+					if(item.name == refreshTableName){
+						_self.objectGridObj.updateRow(reqParam.objectIdx, item, true);
+						break; 
+					}
+				}
 				return ;
 			}
 
@@ -1635,9 +1643,8 @@ _ui.addDbServiceObject({
 					,text :tblName
 				};
 			})
-
-			// 테이블 hint;
-			VARSQLHints.setTableInfo(tableHint);
+			
+			_ui.SQL.addEditorHint(_g_options.param.schema,'table',itemArr);
 
 			var viewObj = $.pubGrid(_self.objectTypeTab.getTabContentSelector({contentid: $$objectType}),{
 				asideOptions :{
@@ -2293,11 +2300,7 @@ _ui.addODbServiceObjectMetadata({
 		var items = colData.items;
 
 		if(reloadFlag===true){ // 데이터 세로 로드시 cache에 추가.
-			var colArr = [];
-			$.each(items, function (i, item){
-				colArr.push(item.name);
-			});
-			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
+			_ui.SQL.addEditorHint(_g_options.param.schema,'table',{name : callParam.objectName , colList :items });
 		}
 
 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid' :tabKey});
@@ -2476,7 +2479,7 @@ _ui.addODbServiceObjectMetadata({
 			$.each(items , function (i , item){
 				colArr.push(item.name);
 			});
-			VARSQLHints.setTableColumns(callParam.objectName ,colArr);
+			_ui.SQL.addEditorHint(_g_options.param.schema,'table',{name : callParam.objectName , colList :items });
 		}
 
 		var metaEleId = _self.selectMetadata[$$objectType].metaTab.getTabContentSelector({'tabid': tabKey});
