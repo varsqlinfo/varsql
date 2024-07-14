@@ -318,7 +318,7 @@ function initVue(){
 				this.editor = new codeEditor(document.getElementById('editor'), {
 					schema: '',
 					editorOptions: { 
-						theme: 'vs-light'
+						theme: 'vs-'+VARSQLUI.theme()
 						,minimap: {enabled: true} 
 						,fixedOverflowWidgets : true
 					}

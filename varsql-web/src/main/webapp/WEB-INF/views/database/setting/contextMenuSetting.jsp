@@ -148,7 +148,7 @@
 	    		this.mainTemplateEditor = new codeEditor(document.getElementById('mainTemplate'), {
 					schema: '',
 					editorOptions: { 
-						theme: 'vs-light'
+						theme: 'vs-'+VARSQLUI.theme()
 						,minimap: {enabled: false} 
 						,contextmenu :false
 					},

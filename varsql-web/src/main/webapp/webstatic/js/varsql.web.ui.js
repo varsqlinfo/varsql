@@ -39,6 +39,10 @@ var defaultPopupPosition = {
  * theme get set
  */
 _$base.theme = function (uid, theme){
+	if(VARSQL.isUndefined(uid)){
+		return _$base.theme($varsqlConfig.conuid);
+	}
+	
 	if(VARSQL.isUndefined(theme)){
 		return VARSQL.localStorage(uid +'theme');
 	}else{

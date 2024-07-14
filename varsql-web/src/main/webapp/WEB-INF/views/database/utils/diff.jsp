@@ -26,8 +26,8 @@
 	<div id="diffEditor" class="wh100" style="height:calc(100% - 30px);">
 	</div>
 	
-	<pre id="orginCont" style="display:none;"><c:out value="${param.orgin}" escapeXml="true"></c:out></pre>
-	<pre id="modifedCont" style="display:none;"><c:out value="${param.modified}" escapeXml="true"></c:out></pre>
+	<pre id="orginCont" style="display:none;"><c:out value="${param.orgin}" escapeXml="true"/></pre>
+	<pre id="modifedCont" style="display:none;"><c:out value="${param.modified}" escapeXml="true"/></pre>
 </div>
 
 <varsql:importResources resoures="codeEditor" editorHeight="100%"/>
@@ -44,7 +44,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			this.diffEditor = codeEditor.diffEditor(document.getElementById('diffEditor'), {
 				useLineDiff: true,
-				editorOptions: {}
+				editorOptions: {theme: 'vs-'+VARSQLUI.theme()}
 			})
 			
 			this.diffEditor.diff(document.getElementById('orginCont').innerText, document.getElementById('modifedCont').innerText);

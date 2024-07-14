@@ -141,7 +141,7 @@ VarsqlAPP.vueServiceBean( {
 			this.tableDDLEditor = new codeEditor(document.getElementById('tableDDLInfo'), {
 				schema: '',
 				editorOptions: { 
-					theme: 'vs-light'
+					theme: 'vs-'+VARSQLUI.theme()
 					,contextmenu :false
 				}
 			})
