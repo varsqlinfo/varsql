@@ -1,0 +1,120 @@
+package com.varsql.web.app.manager.controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
+import com.varsql.web.app.manager.service.TaskSqlMgmtService;
+import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.dto.task.TaskSqlRequestDTO;
+import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.ResponseResult;
+import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ * log component management
+* 
+* @fileName	: CmpLogMgmtController.java
+* @author	: ytkim
+ */
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/manager/task/sql")
+public class TaskSqlMgmtController extends AbstractController {
+	
+
+	/** The Constant logger. */
+	private final static Logger logger = LoggerFactory.getLogger(TaskSqlMgmtController.class);
+	
+	final private TaskSqlMgmtService taskSqlMgmtService;
+	
+	final private ManagerCommonServiceImpl dbnUserServiceImpl;
+	
+	
+	@GetMapping({"","/"})
+	public ModelAndView main(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "taskMgmt");
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+		
+		return getModelAndView("/sqlTaskMgmt", VIEW_PAGE.MANAGER,model);
+	}
+	
+	@PostMapping({"/list" })
+	public @ResponseBody ResponseResult deployList(HttpServletRequest req,
+			HttpServletResponse res, ModelAndView mav) throws Exception {
+		
+		return taskSqlMgmtService.list(HttpUtils.getSearchParameter(req));
+	}
+	
+	/**
+	 * 정보 저장.
+	 *
+	 * @method : save
+	 * @param dto
+	 * @param result
+	 * @param mav
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping({"/save" })
+	public @ResponseBody ResponseResult save(@Valid TaskSqlRequestDTO dto, BindingResult result, ModelAndView mav, HttpServletRequest req) throws Exception {
+		
+		ResponseResult resultObject = new ResponseResult();
+		if (result.hasErrors()) {
+			for (ObjectError errorVal : result.getAllErrors()) {
+				logger.warn("###  changeLogItemInfo validation check {}", errorVal.toString());
+			}
+			return VarsqlUtils.getResponseResultValidItem(resultObject, result);
+		}
+		    
+		return taskSqlMgmtService.save(dto);
+	}
+	
+	/**
+	 * 정보 삭제.
+	 *
+	 * @method : remove
+	 * @param taskId
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping({"/remove" })
+	public @ResponseBody ResponseResult remove(@RequestParam(value = "taskId", required = true) String taskId, HttpServletRequest req) throws Exception {
+		return taskSqlMgmtService.remove(taskId);
+	}
+	
+	/**
+	 * 복사
+	 *
+	 * @method : copy
+	 * @param taskId
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping({"/copy" })
+	public @ResponseBody ResponseResult copy(@RequestParam(value = "taskId", required = true) String taskId, HttpServletRequest req) throws Exception {
+		return taskSqlMgmtService.copyInfo(taskId);
+	}
+}

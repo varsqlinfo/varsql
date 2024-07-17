@@ -45,7 +45,7 @@ public class WebSocketServiceImpl{
 		String jsonMsg = VartechUtils.objectToJsonString(msg); 
 		
 		for(String usrId : usrIds){
-			this.simpMessagingTemplate.convertAndSend(USER_PREFIX+"." +usrId, jsonMsg);
+			this.simpMessagingTemplate.convertAndSend(USER_PREFIX+"/" +usrId, jsonMsg);
 		}
 		
 	}

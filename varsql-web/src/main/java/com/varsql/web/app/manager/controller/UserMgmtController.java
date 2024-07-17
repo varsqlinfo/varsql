@@ -1,18 +1,23 @@
 package com.varsql.web.app.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.app.manager.service.UserMgmtServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -42,6 +47,13 @@ public class UserMgmtController extends AbstractController {
 
 	@Autowired
 	private UserMgmtServiceImpl userMgmtServiceImpl;
+	
+	@GetMapping(value = {"", "/","/main"})
+	public ModelAndView joinForm(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "userMgmt");
+		return getModelAndView("/userMgmt", VIEW_PAGE.MANAGER,model);
+	}
 
 	@RequestMapping(value = "/userList", method=RequestMethod.POST)
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {

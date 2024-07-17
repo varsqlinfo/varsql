@@ -1,18 +1,24 @@
 package com.varsql.web.app.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.app.manager.service.DbDiffServiceImpl;
+import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
 
 
@@ -38,6 +44,32 @@ public class DbDiffController extends AbstractController {
 
 	@Autowired
 	private DbDiffServiceImpl dbDiffServiceImpl;
+	
+	@Autowired
+	private ManagerCommonServiceImpl dbnUserServiceImpl;
+	
+	/**
+	 *
+	 * @Method Name  : dbCompareMgmt
+	 * @Method 설명 : db 비교.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping(value = {"", "/","/main"})
+	public ModelAndView dbCompareMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "dbCompareMgmt");
+
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+
+		return getModelAndView("/dbCompareMgmt", VIEW_PAGE.MANAGER,model);
+	}
 
 	/**
 	 *

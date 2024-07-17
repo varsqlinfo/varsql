@@ -1063,20 +1063,20 @@ if (typeof window != "undefined") {
 
 			var subscribeId = this.getSubscribeId(endpoint, headers.uid);
 
-			if (this.subscripeActiveMap[subscribeId] === true && this.stompClient.connected === true) {
-				return;
+			if(this.subscripeActiveMap[subscribeId]===true){
+				return ;
 			}
-
-			this.subscripeActiveMap[subscribeId] = true;
-
-			this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function(data) {
-				if (_$base.isFunction(callback)) {
-					callback.call(null, parseJSON(data.body));
-				}
-			});
+	
+			this.subscripeActiveMap[subscribeId] =true;
+	
+			this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function (data) {
+	    		if(_$base.isFunction(callback)){
+	          callback.call(null, parseJSON( data.body));
+	    		}
+	    	}, headers);
 		}
 		, getSubscribeId: function(endpoint, id) {
-			return '/user/' + endpoint + '.' + id;
+			return '/user/' + endpoint + '/' + id;
 		}
 		, unSubscribe: function(endpoint, id) {
 			var subscribeId = this.getSubscribeId(endpoint, id);
@@ -1087,80 +1087,78 @@ if (typeof window != "undefined") {
 				console.log(e);
 			}
 		}
-		, connect: function(endpoint, headers, callback) {
+		,connect : function(endpoint, headers, callback){
 			var _this = this;
-			headers = headers || {};
-
-			if (_$base.isUndefined(endpoint)) return;
-
-			if (_this.stompClient == null) {
+			headers = headers ||{};
+	
+			if(_$base.isUndefined(endpoint))  return ;
+	
+			if(_this.stompClient==null){
 				_this._createConnection(endpoint, headers, callback);
-			} else {
-				if (_this.isCreate) {
-					_this.close();
-					_this._createConnection(endpoint, headers, callback);
-					return;
-				}
-
-				if (_this.stompClient.connected === true) {
+			}else{
+			
+				if(_this.stompClient.connected===true){
 					_this.addSubscribe(endpoint, headers, callback);
-				} else {
-
-					var connectTimer = setInterval(function() {
-						if (_this.stompClient.connected === true) {
-							clearInterval(connectTimer);
+				}else{
+					var timer = setInterval(function (){
+						if(_this.stompClient.connected){
+							clearInterval(timer);
 							_this.addSubscribe(endpoint, headers, callback);
 						}
-					}, 1000);
+					},1000)
 				}
 			}
 		}
-		, _createConnection: function(endpoint, headers, callback) {
+		, _createConnection : function (endpoint, headers, callback){
 			var _this = this;
-
+	
 			this.subscripeActiveMap = {};
-
-			//var url = location.protocol + '//' + location.host + _$base.getContextPathUrl("/ws/" + endpoint);
-			var url = _$base.getContextPathUrl("/ws/" + endpoint);
-
-			var sockJSConn = new SockJS(url, null, { transports: ['websocket'], timeout: 60000 });
+			this.isCreate = true; 
+			var url = location.protocol+'//'+location.host +_$base.getContextPathUrl("/ws/"+endpoint);
+	
+			var sockJSConn = new SockJS(url , null, {transports : ['websocket'] ,timeout:60000});
 			//sockJSConn._transportTimeout = function() { console.log('gotcha!!!'); };
-
+	
 			var stompClient = Stomp.over(sockJSConn);
 			stompClient.heartbeat.outgoing = 20000;
 			stompClient.heartbeat.incoming = 20000;
 			stompClient.reconnect_delay = 5000;
-			stompClient.debug = function(str) {
-				//console.log('STOMP: ' + str);
-			}
-
-			stompClient.connect({}, function(frame) {
-				_this.isCreate = true;
+			
+			stompClient.debug = false;
+			
+	//		stompClient.debug = function (str) {
+	//			console.log('STOMP: ' + str);
+	//		}
+	
+			stompClient.connect({}, function (frame) {
+				 //var url = stompClient.ws._transport.url;
 				_this.addSubscribe(endpoint, headers, callback);
-			}, function(err) {
-				if (_this.stompClient) {
-					console.log(location.href, err);
-				}
-			});
-
+			}, function(err){
+				console.log(err);
+		    });
+	
 			_this.stompClient = stompClient;
+			
+	
 			return stompClient;
 		}
 		,
 		// 알림 연결 끊기
-		close: function() {
-			if (this.stompClient != null) {
-				this.stompClient.reconnect_delay = -1;
+		close : function(){
+			if(this.stompClient != null){
+				this.stompClient .reconnect_delay = -1;
 				this.stompClient.disconnect();
-				this.stompClient = null;
 			}
 		}
-		, isConnect: function() {
-			if (this.stompClient != null) {
+		,isConnect : function (){
+			if(this.stompClient != null){
 				return this.stompClient.connected;
 			}
-
-			return false;
+			
+			return false; 
+		}
+		,getClient : function (){
+			return this.stompClient; 
 		}
 	}
 

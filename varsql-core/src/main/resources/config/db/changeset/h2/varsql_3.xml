@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+    <description>task 테이블 생성</description>
+    <apply>
+         <sql description="add task 테이블">
+<![CDATA[
+-- TASK_ 기본 정보
+CREATE TABLE VTTASK(
+	TASK_ID VARCHAR(36) NOT NULL				-- TASK_ id 		
+	,TASK_NAME VARCHAR(36) NOT NULL 			-- TASK_명
+	,TASK_TYPE  VARCHAR(10) NOT NULL 		-- TASK_ 타입
+	,USE_YN 	CHAR(1) default 'Y'			-- 사용여부
+	,DESCRIPTION  VARCHAR(1000)				-- 설명
+	,REG_ID VARCHAR(36)						-- 등록자
+	,REG_DT TIMESTAMP DEFAULT CURRENT_TIMESTAMP	--등록일
+	,UPD_ID VARCHAR(36)						-- 수정자
+	,UPD_DT TIMESTAMP DEFAULT CURRENT_TIMESTAMP	-- 수정일
+	,CONSTRAINT VTTASK PRIMARY KEY  (TASK_ID)
+);
+
+-- TASK_ SQL
+CREATE TABLE VTTASK_SQL(
+	TASK_ID VARCHAR(36) NOT NULL				-- TASK_ id 		
+	,VCONNID 	VARCHAR(5) NOT NULL
+	,SQL CLOB
+	,PARAMETER VARCHAR(4000)					-- 파라미터 
+);
+ALTER TABLE VTTASK_SQL ADD CONSTRAINT FK_VTTASK_SQL FOREIGN KEY (TASK_ID) REFERENCES VTTASK (TASK_ID);
+
+CREATE TABLE VTTASK_TRANSPER(
+	TASK_ID VARCHAR(36) NOT NULL					-- TASK_ id
+	,TRANSPER_TYPE VARCHAR(5) NOT NULL				-- 이관 타입 (1=insert, 2 = insert_update, 3= delete_insert, 4= clear_insert)
+	,KEY_CHECK_SQL VARCHAR(4000)		
+	,SOURCE_VCONNID 	VARCHAR(5) NOT NULL
+	,SOURCE_CONFIG CLOB	-- SQL , 설정 정보가 들어감 JSON으로			
+	,FETCH_COUNT int
+	,TARGET_VCONNID 	VARCHAR(5) NOT NULL
+	,TARGET_CONFIG CLOB
+);
+
+ALTER TABLE VTTASK_TRANSPER ADD CONSTRAINT FK_VTTASK_TRANSPER FOREIGN KEY (TASK_ID) REFERENCES VTTASK (TASK_ID);
+]]>
+        </sql>
+    </apply>
+    <revert>
+        <sql description="vttask revert">
+drop table VTTASK; 
+drop table VTTASK_SQL; 
+drop table VTTASK_TRANSPER; 
+        </sql>
+    </revert>
+</database>

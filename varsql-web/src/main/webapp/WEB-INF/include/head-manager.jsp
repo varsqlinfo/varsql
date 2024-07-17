@@ -14,6 +14,7 @@
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css?version=${css_ver}" rel="stylesheet" type="text/css">
 <link href="${pageContextPath}/webstatic/css/prettify/prettify.css" rel="stylesheet" type="text/css">
+<link href="${pageContextPath}/webstatic/js/plugins/dara/dara.form.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
 
 <link href="${pageContextPath}/webstatic/css/varsql.mgmt.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
 
@@ -32,6 +33,8 @@
 <script src="${pageContextPath}/webstatic/js/plugins/toast/jquery.toast.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/pub.multiselect2.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.splitter.js?version=${pubjs_ver}"></script>
+
+<script src="${pageContextPath}/webstatic/js/plugins/dara/dara.form.min.js?v=${varsqlfn:staticResourceVersion('')}"></script>
 
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars-v4.7.6.js"></script>
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>

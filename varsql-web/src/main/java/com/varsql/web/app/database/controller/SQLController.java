@@ -44,11 +44,11 @@ public class SQLController extends AbstractController  {
 	 * @변경이력  :
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sqlData", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
+	@RequestMapping(value = "/execute", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult sqlExecute(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 		logger.debug("sqlData , :{}" , sqlExecuteInfo);
 		
-		return sqlServiceImpl.sqlData(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
+		return sqlServiceImpl.sqlExecute(sqlExecuteInfo, VarsqlUtils.getClientIp(req));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class SQLController extends AbstractController  {
 	 * @변경이력  :
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sqlFormat", method = RequestMethod.POST)
+	@RequestMapping(value = "/format", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult sqlFormat(SqlExecuteDTO sqlExecuteInfo, HttpServletRequest req) throws Exception {
 		sqlExecuteInfo.addCustom("formatType", HttpUtils.getString(req, "formatType"));
 		return sqlServiceImpl.sqlFormat(sqlExecuteInfo);

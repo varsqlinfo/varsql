@@ -131,21 +131,16 @@ public class SQLServiceImpl{
 		return result;
 
 	}
-
+	
 	/**
-	 *
-	 * @Method Name  : sqlData
-	 * @Method 설명 : 쿼리 데이터 보기.
-	 * @작성자   : ytkim
-	 * @작성일   : 2015. 4. 9.
-	 * @변경이력  :
+	 * sql 실행
 	 * @param sqlExecuteInfo
-	 * @param req
+	 * @param ip
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseResult sqlData(SqlExecuteDTO sqlExecuteInfo, String ip) throws Exception {
+	public ResponseResult sqlExecute(SqlExecuteDTO sqlExecuteInfo, String ip) throws Exception {
 
 		Map sqlParamMap = VartechUtils.jsonStringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
 

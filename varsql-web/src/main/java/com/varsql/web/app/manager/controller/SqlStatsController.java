@@ -1,19 +1,27 @@
 package com.varsql.web.app.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.util.VarsqlDateUtils;
+import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.app.manager.service.SqlStatsServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -42,6 +50,34 @@ public class SqlStatsController extends AbstractController {
 
 	@Autowired
 	private SqlStatsServiceImpl sqlStatsServiceImpl;
+	
+	@Autowired
+	private ManagerCommonServiceImpl dbnUserServiceImpl;
+	
+	/**
+	 *
+	 * @Method Name  : sqlLogStat
+	 * @Method 설명 : sql log  통계.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping(value = {"", "/","/main"})
+	public ModelAndView sqlLogStat(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "sqlLog");
+		model.addAttribute("startDate", VarsqlDateUtils.calcDateFormat(-7, VarsqlDateUtils.DateCheckType.DAY, VarsqlConstants.DATE_FORMAT));
+		model.addAttribute("currentDate", VarsqlDateUtils.currentDateFormat());
+
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+
+		return getModelAndView("/sqlLogStat", VIEW_PAGE.MANAGER,model);
+	}
 
 	/**
 	 *
@@ -109,6 +145,28 @@ public class SqlStatsController extends AbstractController {
 			) throws Exception {
 
 		return sqlStatsServiceImpl.dbSqlDayUserRank(vconnid, s_date, e_date ,command_type);
+	}
+	
+	/**
+	 *
+	 * @Method Name  : sqlLogHistory
+	 * @Method 설명 : sql 이력 조회.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/history")
+	public ModelAndView sqlLogHistory(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "sqlLog");
+		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
+
+		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER,model);
 	}
 	/**
 	 * @Method Name  : logList

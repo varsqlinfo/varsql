@@ -9,6 +9,8 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 import com.varsql.web.constants.WebSocketConstants;
 import com.vartech.common.utils.StringUtils;
@@ -32,6 +34,8 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 	
 	private final Logger logger = LoggerFactory.getLogger(WebSocketBrokerConfig.class);
 	
+	public static final int MESSAGE_SIZE_LIMIT = 1024*1024*1; 
+	
 	
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -50,6 +54,19 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes(WebSocketConstants.APP_DESTINATION_PREFIX);
         
     }
+    
+    /**
+	 * buffer size 설정. 
+	 */
+	public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+		registration.setSendTimeLimit(100 * 1000); // default : 10 * 1000
+		registration.setSendBufferSizeLimit(MESSAGE_SIZE_LIMIT); // default : 512 * 1024
+		registration.setDecoratorFactories(agentWebSocketHandlerDecoratorFactory());
+	}
+	
+	public WebSocketHandlerDecoratorFactory agentWebSocketHandlerDecoratorFactory() {
+		return new AgentWebSocketHandlerDecoratorFactory();
+	}
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -57,7 +74,10 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     	for(WebSocketConstants.Type type : WebSocketConstants.Type.values()) {
     		if(type.getEndPoint() != null) {
     			logger.debug("registerStompEndpoints : {}", type.getEndPoint());
-    			registry.addEndpoint(type.getEndPoint()).withSockJS();
+    			registry.addEndpoint(type.getEndPoint())
+				.setAllowedOriginPatterns("*")
+    			.withSockJS()
+    			.setStreamBytesLimit(MESSAGE_SIZE_LIMIT);
     		}
     	}
     }

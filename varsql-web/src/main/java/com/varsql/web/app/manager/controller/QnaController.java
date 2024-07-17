@@ -1,21 +1,26 @@
 package com.varsql.web.app.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.app.manager.service.QnaServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
@@ -45,6 +50,26 @@ public class QnaController extends AbstractController {
 
 	@Autowired
 	private QnaServiceImpl qnaServiceImpl;
+	
+	/**
+	 *
+	 * @Method Name  : qnaMgmtList
+	 * @Method 설명 : Q & A
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/qnaMgmt")
+	public ModelAndView qnaMgmtList(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "qnaMgmt");
+		return getModelAndView("/qnaMgmt", VIEW_PAGE.MANAGER,model);
+	}
 
 	/**
 	 * @method  : qnaMgmtList

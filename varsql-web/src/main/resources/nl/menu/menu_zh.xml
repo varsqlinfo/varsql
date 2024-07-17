@@ -83,6 +83,8 @@
 <entry key="manager.menu.databackupgmgmt">数据备份管理</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL备份管理</entry>
 <entry key="manager.menu.sqljobmgmt">SQL任务</entry>
+<entry key="manager.menu.task">Task</entry>
+<entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
 
 <!-- 用户菜单 -->
 <entry key="user.prefernces.menu.general">个人资料修改</entry>

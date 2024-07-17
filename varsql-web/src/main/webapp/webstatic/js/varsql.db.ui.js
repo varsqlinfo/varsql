@@ -1501,7 +1501,7 @@ _ui.addDbServiceObject({
 						if(selKey == 'name' ){
 							var item  = rowItem.item;
 
-							_ui.SQL._sqlData('select * from '+ getTableName(item),false);
+							_ui.SQL._sqlExecute('select * from '+ getTableName(item),false);
 						}
 					}
 					,keyNavHandler : function(moveInfo){
@@ -1538,10 +1538,10 @@ _ui.addDbServiceObject({
 							var tmpName = sItem.name;
 							
 							if(key=='dataview_all'){
-								_ui.SQL._sqlData('select * from '+getTableName(sItem),false);
+								_ui.SQL._sqlExecute('select * from '+getTableName(sItem),false);
 								return ;
 							}else if(key=='dataview_count'){
-								_ui.SQL._sqlData('select count(1) CNT from '+getTableName(sItem),false);
+								_ui.SQL._sqlExecute('select count(1) CNT from '+getTableName(sItem),false);
 								return ;
 							}
 
@@ -1662,7 +1662,7 @@ _ui.addDbServiceObject({
 
 						if(selKey == 'name' ){
 							var item  = rowItem.item;
-							_ui.SQL._sqlData('select * from '+ getTableName(item),false);
+							_ui.SQL._sqlExecute('select * from '+ getTableName(item),false);
 						}
 					}
 					,keyNavHandler : function(moveInfo){
@@ -3079,6 +3079,7 @@ _ui.SQL = {
 		
 		var codeEditorObj = new codeEditor(document.getElementById('varsql_main_editor'), {
 			schema: _g_options.schema,
+			mimeType : _g_options.dbtype,
 			editorOptions: { 
 				theme: 'vs-'+ (theme =='dark'?'dark':'light')
 				,minimap: {enabled: false} 
@@ -3120,7 +3121,7 @@ _ui.SQL = {
 		            _self.sqlFileTab.setActive(activeItem);
 		        },
 		        executeSql: () => {
-		            _self.sqlData();
+		            _self.sqlExecute();
 		        },
 		        sqlFormat: () => {
 		            _self.sqlFormatData();
@@ -3279,7 +3280,7 @@ _ui.SQL = {
 		
 		// sql 실행
 		$('.sql_toolbar_execute_btn').on('click',function (evt){
-			_self.sqlData();
+			_self.sqlExecute();
 		});
 
 		// 새파일
@@ -4065,14 +4066,14 @@ _ui.SQL = {
 		return true;
 	}
 	// sql 데이터 보기
-	,sqlData :function (evt){
+	,sqlExecute :function (evt){
 		var _self = this;
 		var sqlVal = _self.getSql(true);
 
-		_self._sqlData(sqlVal,true);
+		_self._sqlExecute(sqlVal,true);
 	}
 	// sql 데이터 보기
-	,_sqlData :function (sqlVal, paramFlag){
+	,_sqlExecute :function (sqlVal, paramFlag){
 		var _self = this;
 
 		if(top.mainSocketConnect) top.mainSocketConnect(); // main socket check
@@ -4101,7 +4102,7 @@ _ui.SQL = {
 		    loadSelector : '.varsql-body-wrapper'
 		    ,disableResultCheck : true
 		    ,enableLoadSelectorBtn : true 
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/execute'}
 		    ,data:params
 		    ,success:function (resData){
 		    	_ui.sqlDataArea.viewResult(resData)
@@ -4143,7 +4144,7 @@ _ui.SQL = {
 
 		VARSQL.req.ajax({
 		    loadSelector : '#sql_editor_wrapper'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlFormat'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/format'}
 		    ,data:params
 		    ,success:function (res){
 		    	var formatSql = res.item;

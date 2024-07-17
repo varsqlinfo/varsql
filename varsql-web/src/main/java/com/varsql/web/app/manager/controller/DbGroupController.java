@@ -1,21 +1,26 @@
 package com.varsql.web.app.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.web.app.manager.service.DbGroupServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.db.DBGroupRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -45,6 +50,26 @@ public class DbGroupController extends AbstractController {
 
 	@Autowired
 	private DbGroupServiceImpl dbGroupServiceImpl;
+	
+	/**
+	 *
+	 * @Method Name  : dbGroupMgmt
+	 * @Method 설명 : db 그룹 관리
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 9.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping(value = {"", "/","/main"})
+	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "dbGroupMgmt");
+		return getModelAndView("/dbGroupMgmt", VIEW_PAGE.MANAGER,model);
+	}
 
 	/**
 	 *
@@ -146,6 +171,26 @@ public class DbGroupController extends AbstractController {
 		if(!reusltFlag) return result; 
 		
 		return dbGroupServiceImpl.groupNDbMappingList(groupId, HttpUtils.getSearchParameter(req));
+	}
+	
+	/**
+	 *
+	 * @Method Name  : dbUserMgmt
+	 * @Method 설명 : db 그룹 사용자 관리.
+	 * @작성자   : ytkim
+	 * @작성일   : 2019. 8. 16.
+	 * @변경이력  :
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/groupUser")
+	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "dbGroupMgmt");
+		return getModelAndView("/dbGroupUserMgmt", VIEW_PAGE.MANAGER,model);
 	}
 
 	/**
